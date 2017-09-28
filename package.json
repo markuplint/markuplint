@@ -1,0 +1,25 @@
+{
+  "name": "markuplint",
+  "version": "0.1.0-alpha",
+  "description": "Lint for Markup language",
+  "main": "lib/index.js",
+  "author": "Yusuke Hirao",
+  "license": "MIT",
+  "private": false,
+  "repository": {
+    "url": "git@github.com:YusukeHirao/markuplint.git"
+  },
+  "scripts": {
+    "build": "gulp"
+  },
+  "dependencies": {
+    "parse5": "^3.0.2"
+  },
+  "devDependencies": {
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.2.2",
+    "run-sequence": "^2.2.0",
+    "typescript": "^2.5.2"
+  }
+}

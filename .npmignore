@@ -1,0 +1,14 @@
+.vscode
+dist
+out
+sample
+src
+test
+.editorcinfg
+.gitignore
+.travis.yml
+gulpfile.coffee
+tsconfig.json
+tslint.json
+yarn-error.log
+yarn.lock
