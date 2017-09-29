@@ -10,14 +10,19 @@
     "url": "git@github.com:YusukeHirao/markuplint.git"
   },
   "scripts": {
-    "build": "gulp"
+    "start": "node ./",
+    "build": "gulp",
+    "dev": "gulp watch",
+    "test": "ava"
   },
   "dependencies": {
     "parse5": "^3.0.2"
   },
   "devDependencies": {
+    "ava": "^0.22.0",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
+    "gulp-ava": "^0.18.0",
     "gulp-typescript": "^3.2.2",
     "run-sequence": "^2.2.0",
     "typescript": "^2.5.2"

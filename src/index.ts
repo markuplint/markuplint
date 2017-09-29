@@ -1,9 +1,5 @@
 import * as parse5 from 'parse5';
 
-const doc = parse5.parse(`
-<div>Hello world</div>
-`, {
-
-});
-
-console.log(doc);
+export function verify (html: string) {
+	const doc = parse5.parse(html, { locationInfo: true });
+}
