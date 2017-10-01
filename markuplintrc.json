@@ -1,0 +1,53 @@
+{
+  "$schema": "./markuplint.schema.json",
+  "extends": "***",
+  "rules": {
+    "require": {
+      "html": { "position": "child" },
+      "head": { "position": "descendant" },
+      "title": { "position": "descendant" },
+      "body": { "position": "descendant" },
+      "h1": { "position": "descendant" }
+    }
+  },
+  "localRules": [
+    {
+      "tag": "html",
+      "id": null,
+      "class": null,
+      "extends": "inherit",
+      "rules": {
+        "tagname-lowercase": ["error", "always"],
+        "attr-lowercase": ["error", "always", { "allowPattern": "/⚡/" }],
+        "attr-value-quotes": ["error", "double", { "avoidEscape": true }],
+        "attr-value-not-empty": true,
+        "attr-no-duplication": ["error", "always"],
+        "doctype-first": true,
+        "tag-pair": true,
+        "tag-self-close": true,
+        "spec-char-escape": true,
+        "id-unique": true,
+        "src-not-empty": true,
+        "title-require": true
+      }
+    },
+    {
+      "root": "svg",
+      "extends": "inherit",
+      "rules": {
+        "tagname-lowercase": true,
+        "attr-lowercase": true,
+        "attr-value-double-quotes": true,
+        "attr-value-not-empty": true,
+        "attr-no-duplication": true,
+        "doctype-first": true,
+        "tag-pair": true,
+        "tag-self-close": true,
+        "spec-char-escape": true,
+        "id-unique": true,
+        "src-not-empty": true,
+        "title-require": true
+      }
+    }
+  ]
+}

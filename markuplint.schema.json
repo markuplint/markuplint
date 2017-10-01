@@ -1,0 +1,148 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "MarkupLint Cofing JSON",
+  "type": "object",
+  "version": "v0.1.0-alpha",
+  "definitions": {
+    "enabled": {
+      "description": "enabled",
+      "type": "boolean"
+    },
+    "alwaysOrNever": {
+      "description": "always or never",
+      "type": ["string"],
+      "enum": [
+        "always",
+        "never"
+      ]
+    },
+    "annotationLevel": {
+      "description": "Annotation level",
+      "type": "string",
+      "enum": [
+        "warning",
+        "error"
+      ]
+    },
+    "defaultRuleSetting": {
+      "anyOf": [
+        {"$ref": "#/definitions/enabled"},
+        {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items":[
+            {"$ref": "#/definitions/annotationLevel"},
+            {"$ref": "#/definitions/alwaysOrNever"}
+          ]
+        }
+      ]
+    },
+    "rules": {
+      "type": "object",
+      "properties": {
+        "tagname-lowercase": {
+          "description": "Must tagname is lowercase",
+          "$ref": "#/definitions/defaultRuleSetting"
+        },
+        "attr-lowercase": {
+          "description": "Must tagname is lowercase",
+          "anyOf": [
+            {"$ref": "#/definitions/enabled"},
+            {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 3,
+              "items":[
+                {"$ref": "#/definitions/annotationLevel"},
+                {"$ref": "#/definitions/alwaysOrNever"},
+                {
+                  "description": "option",
+                  "type": "object",
+                  "properties": {
+                    "allowNonAlphanumeric": {
+                      "type": "boolean"
+                    },
+                    "allowPattern": {
+                      "type": "string",
+                      "pattern": "^/.+/(?:i?g?|g?i?)$"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "additionalProperties": {
+        "anyOf": [
+          {"$ref": "#/definitions/enabled"},
+          {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 3,
+            "items": [
+              {"$ref": "#/definitions/annotationLevel"},
+              {
+                "description": "rule value",
+                "type": "string"
+              },
+              {
+                "description": "rule option",
+                "type": "object",
+                "additionalProperties": {
+                  "anyOf":[
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "properties": {
+    "$schema": {"type": "string"},
+    "extends": {
+      "description": "extends rules",
+      "type": "string"
+    },
+    "rules": {
+      "description": "Global rules",
+      "$ref": "#/definitions/rules"
+    },
+    "localRules": {
+      "description": "Scope rules in Tags",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "tag"
+        ],
+        "properties": {
+          "tag": {
+            "description": "tag",
+            "type": "string",
+            "pattern": "^(\\*|[a-zA-Z][a-zA-Z0-9-]*)$"
+          },
+          "id": {"type": ["string", "null"]},
+          "class": {"type": ["string", "null"]},
+          "extends": {"type": ["string", "null"]},
+          "rules": {
+            "$ref": "#/definitions/rules"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

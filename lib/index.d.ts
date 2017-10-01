@@ -1,1 +1,3 @@
-export declare function verify(html: string): void;
+import Rule from './rule';
+import { Ruleset } from './ruleset';
+export declare function verify(html: string, ruleset: Ruleset, rules: Rule[]): string[];
