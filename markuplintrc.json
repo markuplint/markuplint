@@ -1,15 +1,49 @@
 {
   "$schema": "./markuplint.schema.json",
-  "extends": "***",
-  "rules": {
-    "require": {
-      "html": { "position": "child" },
-      "head": { "position": "descendant" },
-      "title": { "position": "descendant" },
-      "body": { "position": "descendant" },
-      "h1": { "position": "descendant" }
+  "extends": "rulesets/html-ls",
+  "node-rules": [
+    {
+      "nodeType": "#root",
+      "permitted-content": [
+        ["#doctype", { "require": true, "times": "once" }],
+        ["html", { "require": true, "times": "once" }]
+      ],
+      "inheritance": true
+    },
+    {
+      "nodeType": "html",
+      "permitted-content": [
+        ["head", { "require": true, "times": "once" }],
+        ["body", { "require": true, "times": "once" }]
+      ],
+      "attribute": {
+        "disallow": [
+          "manifest",
+          "version"
+        ]
+      },
+      "inheritance": true
+    },
+    {
+      "nodeType": "head",
+      "permitted-content": [
+        ["title", { "require": true, "times": "once" }],
+        ["meta", { "require": false, "times": "zero or more" }],
+        ["link", { "require": false, "times": "zero or more" }],
+        ["script", { "require": false, "times": "zero or more" }],
+        ["noscript", { "require": false, "times": "zero or more" }],
+        ["style", { "require": false, "times": "zero or more" }]
+      ],
+      "inheritance": true
+    },
+    {
+      "nodeType": "body",
+      "permitted-content": [
+        ["#flow-content", { "require": false, "times": "zero or more" }]
+      ],
+      "inheritance": true
     }
-  },
+  ],
   "localRules": [
     {
       "tag": "html",

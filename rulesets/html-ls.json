@@ -1,0 +1,124 @@
+{
+    "$schema": "../markuplint.schema.json",
+    "definitions": {
+        "#flowContent": [
+            "address",
+            "article",
+            "aside",
+            "audio",
+            "b",
+            "bdo",
+            "blockquote",
+            "br",
+            "button",
+            "canvas",
+            "cite",
+            "code",
+            "command",
+            "datalist",
+            "del",
+            "details",
+            "dfn",
+            "div",
+            "dl",
+            "em",
+            "embed",
+            "fieldset",
+            "figure",
+            "footer",
+            "form",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "header",
+            "hgroup",
+            "hr",
+            "i",
+            "iframe",
+            "img",
+            "input",
+            "ins",
+            "kbd",
+            "keygen",
+            "label",
+            "map",
+            "mark",
+            "math",
+            "menu",
+            "meter",
+            "nav",
+            "noscript",
+            "object",
+            "ol",
+            "output",
+            "p",
+            "pre",
+            "progress",
+            "q",
+            "ruby",
+            "samp",
+            "script",
+            "section",
+            "select",
+            "small",
+            "span",
+            "strong",
+            "sub",
+            "sup",
+            "svg",
+            "table",
+            "textarea",
+            "time",
+            "ul",
+            "var",
+            "video",
+            "wbr"
+        ]
+    },
+    "nodeRules": [
+        {
+            "nodeType": "#root",
+            "permittedContent": [
+                ["#doctype", { "required": true, "times": "once" }],
+                ["html", { "required": true, "times": "once" }]
+            ],
+            "inheritance": true
+        },
+        {
+            "nodeType": "html",
+            "permittedContent": [
+                ["head", { "required": true, "times": "once" }],
+                ["body", { "required": true, "times": "once" }]
+            ],
+            "attributes": {
+                "disallow": [
+                    "manifest",
+                    "version"
+                ]
+            },
+            "inheritance": true
+        },
+        {
+            "nodeType": "head",
+            "permittedContent": [
+                ["title", { "required": true, "times": "once" }],
+                ["meta", { "required": false, "times": "zero or more" }],
+                ["link", { "required": false, "times": "zero or more" }],
+                ["script", { "required": false, "times": "zero or more" }],
+                ["noscript", { "required": false, "times": "zero or more" }],
+                ["style", { "required": false, "times": "zero or more" }]
+            ],
+            "inheritance": true
+        },
+        {
+            "nodeType": "body",
+            "permittedContent": [
+                ["#flow-content", { "required": false, "times": "zero or more" }]
+            ],
+            "inheritance": true
+        }
+    ]
+}
