@@ -22,10 +22,21 @@ export class Indentation extends Rule {
 		let lastNode: Node;
 		document.walk((node) => {
 			if (lastNode instanceof TextNode) {
-				const hasBreakAndIndent = /^\s+|\s+$/.test(lastNode.textContent);
-				if (hasBreakAndIndent) {
-					// TODO: firstElement is not detect
-					console.log({t: lastNode.textContent, next: `${node.nodeName}`});
+				const matched = lastNode.textContent.match(/\n(\s+$)/);
+				if (matched) {
+					const spaces = matched[1];
+					if (!spaces) {
+						throw new TypeError(`Expected error.`);
+					}
+					const rule = ruleset.rules.indentation;
+					if (rule === 'tab') {
+						if (!/^\t+$/.test(spaces)) {
+							const line = lastNode.line + 1;
+							const col = lastNode.textContent.lastIndexOf(spaces);
+							reports.push(`Expected spaces. Indentaion is required tabs. (${line}:${col})`);
+						}
+					}
+					// console.log({t: lastNode.textContent, next: `${node.nodeName}`});
 				}
 			}
 			lastNode = node;

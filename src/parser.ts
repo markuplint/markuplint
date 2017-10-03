@@ -138,13 +138,32 @@ export class Document {
 		this._raw = rawHtml;
 		this._tree = nodes;
 
-		interface Pos { pos: number; node: Node; }
-		const pos: Pos[] = [];
+		const pos: { pos: number; node: Node }[] = [];
 		walk(nodes, (node) => {
-			const i = this._list.length;
+			const i = pos.length;
+
 			if (node instanceof InvalidNode) {
 				return;
 			}
+
+			if (i === 0 && node.startOffset > 0) {
+				const firstTextContent = rawHtml.slice(0, node.startOffset);
+				const firstTextNode = new TextNode({
+					nodeName: '#text',
+					location: {
+						line: 0,
+						col: 0,
+						startOffset: 0,
+						endOffset: null,
+					},
+					prevNode: null,
+					nextNode: node,
+					parentNode: null,
+					textContent: firstTextContent,
+				});
+				pos.push({ pos: 0, node: firstTextNode });
+			}
+
 			pos.push({ pos: node.startOffset, node });
 
 			if (node instanceof Element) {
