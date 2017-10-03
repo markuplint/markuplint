@@ -78,6 +78,10 @@
             "wbr"
         ]
     },
+    "rules": {
+        "verify-permitted-contents": true,
+        "indentation": "tab"
+    },
     "nodeRules": [
         {
             "nodeType": "#root",

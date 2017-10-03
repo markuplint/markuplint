@@ -16,11 +16,7 @@ export interface Ruleset {
         [defId: string]: string[];
     };
     nodeRules?: NodeRule[];
-    rules?: {
-        require?: {
-            [tag: string]: {
-                position: 'child' | 'descendant';
-            };
-        };
+    rules: {
+        [ruleName: string]: boolean | string | number;
     };
 }

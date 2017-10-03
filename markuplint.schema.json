@@ -41,6 +41,29 @@
     "rules": {
       "type": "object",
       "properties": {
+        "indentation": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "tab",
+                "editorconfig"
+              ]
+            },
+            {
+              "type": "integer",
+              "enum": [
+                0, 1, 2, 4, 6, 8
+              ]
+            },
+            {
+              "type": "boolean",
+              "enum": [
+                false
+              ]
+            }
+          ]
+        },
         "tagname-lowercase": {
           "description": "Must tagname is lowercase",
           "$ref": "#/definitions/defaultRuleSetting"

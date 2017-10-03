@@ -264,7 +264,7 @@
         "named-imports-order": "lowercase-first"
       }
     ],
-    "prefer-function-over-method": true,
+    "prefer-function-over-method": false,
     "prefer-method-signature": true,
     "prefer-switch": [
       true,
