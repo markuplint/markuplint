@@ -198,46 +198,6 @@ export class Document {
 		pos.sort((a, b) => a.pos - b.pos);
 
 		this._list = pos.map(p => p.node);
-
-		// optimaize TextNode between InvalidNode and Element
-		// let lastNode: Node | null = null;
-		// let firstNode: Node | null = null;
-		// let firstNodeIndex = NaN;
-		// for (let i = 0, l = this._list.length; i < l; i++) {
-		// 	const n = this._list[i];
-		// 	if (!(n instanceof InvalidNode)) {
-		// 		firstNode = n;
-		// 		firstNodeIndex = i;
-		// 		break;
-		// 	}
-		// 	lastNode = n;
-		// }
-
-		// if (firstNode) {
-		// 	if (lastNode instanceof InvalidNode) {
-		// 		const firstTextContent = rawHtml.slice(0, firstNode.startOffset);
-		// 		const firstTextNode = new TextNode({
-		// 			nodeName: '#text',
-		// 			location: {
-		// 				line: 0,
-		// 				col: 0,
-		// 				startOffset: 0,
-		// 				endOffeset: null,
-		// 			},
-		// 			prevNode: null,
-		// 			nextNode: firstNode,
-		// 			parentNode: null,
-		// 			textContent: firstTextContent,
-		// 		});
-		// 		firstNode.prevNode = firstTextNode;
-		// 		if (firstNode.parentNode instanceof InvalidNode) {
-		// 			firstNode.parentNode.childNodes.unshift(firstTextNode);
-		// 		}
-		// 		if (!isNaN(firstNodeIndex)) {
-		// 			this._list.splice(firstNodeIndex, 0, firstTextNode);
-		// 		}
-		// 	}
-		// }
 	}
 
 	public get root () {
