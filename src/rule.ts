@@ -7,7 +7,14 @@ import {
 
 export interface RuleInterface {
 	name: string;
-	verify (document: Document, ruleset: Ruleset): string[];
+	verify (document: Document, ruleset: Ruleset): VerifiedReport[];
+}
+
+export interface VerifiedReport {
+	message: string;
+	line: number;
+	col: number;
+	raw: string;
 }
 
 export default abstract class Rule implements RuleInterface {
@@ -18,6 +25,6 @@ export default abstract class Rule implements RuleInterface {
 	}
 
 	public verify (document: Document, ruleset: Ruleset) {
-		return [] as string[];
+		return [] as VerifiedReport[];
 	}
 }

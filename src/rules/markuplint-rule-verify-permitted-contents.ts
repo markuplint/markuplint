@@ -3,7 +3,9 @@ import {
 	Element,
 	Node,
 } from '../parser';
-import Rule from '../rule';
+import Rule, {
+	VerifiedReport,
+} from '../rule';
 import {
 	PermittedContent,
 	Ruleset,
@@ -16,7 +18,7 @@ import {
  */
 export class VerifyPermittedContents extends Rule {
 	public verify (document: Document, ruleset: Ruleset) {
-		const reports: string[] = [];
+		const reports: VerifiedReport[] = [];
 		if (ruleset && ruleset.nodeRules) {
 			for (const nodeRule of ruleset.nodeRules) {
 				if (nodeRule.nodeType === '#root') {
@@ -40,7 +42,7 @@ export class VerifyPermittedContents extends Rule {
 export default new VerifyPermittedContents('verify-permitted-contents');
 
 function checkPermittedContent (permittedContents: PermittedContent[], nodes: Node[], parentName: string) {
-	const reports: string[] = [];
+	const reports: VerifiedReport[] = [];
 
 	for (const permittedContent of permittedContents) {
 		const nodeName = permittedContent[0];
@@ -56,13 +58,23 @@ function checkPermittedContent (permittedContents: PermittedContent[], nodes: No
 			switch (options.times) {
 				case 'once': {
 					if (counter !== 1) {
-						reports.push(`<${nodeName}> is required that is premitted content of <${parentName}>.`);
+						reports.push({
+							message: `<${nodeName}> is required that is premitted content of <${parentName}>.`,
+							line: 0,
+							col: 0,
+							raw: '',
+						});
 					}
 					break;
 				}
 				case 'one or more': {
 					if (counter < 1) {
-						reports.push(`<${nodeName}> is required one or more, premitted content of <${parentName}>.`);
+						reports.push({
+							message: `<${nodeName}> is required one or more, premitted content of <${parentName}>.`,
+							line: 0,
+							col: 0,
+							raw: '',
+						});
 					}
 					break;
 				}

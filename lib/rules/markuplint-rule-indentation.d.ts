@@ -1,5 +1,5 @@
 import { Document } from '../parser';
-import Rule from '../rule';
+import Rule, { VerifiedReport } from '../rule';
 import { Ruleset } from '../ruleset';
 /**
  * `Indentation`
@@ -7,7 +7,7 @@ import { Ruleset } from '../ruleset';
  * *Core rule*
  */
 export declare class Indentation extends Rule {
-    verify(document: Document, ruleset: Ruleset): string[];
+    verify(document: Document, ruleset: Ruleset): VerifiedReport[];
 }
 declare const _default: Indentation;
 export default _default;

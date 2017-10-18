@@ -71,6 +71,10 @@ export abstract class Node {
 		this.nextNode = props.nextNode;
 		this.parentNode = props.parentNode;
 	}
+
+	public toString () {
+		return `<${this.nodeName}>`;
+	}
 }
 
 export class Element extends Node {
@@ -89,6 +93,10 @@ export class Element extends Node {
 		this.endOffset = props.location.endOffset || null;
 		this.startTagLocation = props.location.startTag || null;
 		this.endTagLocation = props.location.endTag || null;
+	}
+
+	public toString () {
+		return `<${this.nodeName}>`;
 	}
 }
 

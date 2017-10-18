@@ -5,7 +5,9 @@ import {
 	Node,
 	TextNode,
 } from '../parser';
-import Rule from '../rule';
+import Rule, {
+	VerifiedReport,
+} from '../rule';
 import {
 	PermittedContent,
 	Ruleset,
@@ -18,7 +20,7 @@ import {
  */
 export class Indentation extends Rule {
 	public verify (document: Document, ruleset: Ruleset) {
-		const reports: string[] = [];
+		const reports: VerifiedReport[] = [];
 		let lastNode: Node;
 		document.walk((node) => {
 			if (lastNode instanceof TextNode) {
@@ -31,9 +33,14 @@ export class Indentation extends Rule {
 					const rule = ruleset.rules.indentation;
 					if (rule === 'tab') {
 						if (!/^\t+$/.test(spaces)) {
-							const line = lastNode.line + 1;
+							const line = node.line;
 							const col = lastNode.textContent.lastIndexOf(spaces);
-							reports.push(`Expected spaces. Indentaion is required tabs. (${line}:${col})`);
+							reports.push({
+								message: 'Expected spaces. Indentaion is required tabs.',
+								line,
+								col,
+								raw: `${lastNode.textContent}${node}`,
+							});
 						}
 					}
 					// console.log({t: lastNode.textContent, next: `${node.nodeName}`});

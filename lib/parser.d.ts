@@ -50,6 +50,7 @@ export declare abstract class Node {
     nextNode: Node | null;
     readonly parentNode: Node | null;
     constructor(props: NodeProperties);
+    toString(): string;
 }
 export declare class Element extends Node {
     readonly attributes: {
@@ -62,6 +63,7 @@ export declare class Element extends Node {
     endTagNode: EndTagNode | null;
     raw: string;
     constructor(props: ElementProperties);
+    toString(): string;
 }
 export declare class TextNode extends Node {
     readonly textContent: string;

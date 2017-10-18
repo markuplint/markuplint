@@ -30,12 +30,35 @@ test('tab', async t => {
 		`,
 		{
 			rules: {
-				"indentation": "tab",
+				indentation: 'tab',
 			},
 		},
 		[rule]
 	);
-	t.deepEqual(r, []);
+	t.deepEqual(r, [
+		{
+			message: 'Expected spaces. Indentaion is required tabs.',
+			line: 2,
+			col: 1,
+			raw: `
+    <div>`,
+		},
+		{
+			message: 'Expected spaces. Indentaion is required tabs.',
+			line: 4,
+			col: 1,
+			raw: `
+        lorem
+        <p>`,
+		},
+		{
+			message: 'Expected spaces. Indentaion is required tabs.',
+			line: 5,
+			col: 1,
+			raw: `
+    </div>`,
+		},
+	]);
 });
 
 test('noop', t => t.pass());
