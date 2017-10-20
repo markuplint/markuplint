@@ -1,20 +1,21 @@
-import parser, {
-	Element,
-	Node,
-} from './parser';
-import Rule from './rule';
+import * as fs from 'fs';
+import * as util from 'util';
+
+import * as markuplint from './core';
+import Rule, {
+	VerifiedReport,
+} from './rule';
 import {
-	PermittedContent,
 	Ruleset,
 } from './ruleset';
 
-export function verify (html: string, ruleset: Ruleset, rules: Rule[]) {
-	const nodeTree = parser(html);
-	const reports: string[] = [];
-	for (const rule of rules) {
-		if (ruleset.rules[rule.name]) {
-			reports.push(...rule.verify(nodeTree, ruleset));
-		}
-	}
-	return reports;
+const readFile = util.promisify(fs.readFile);
+
+export async function verify (html: string, ruleset: Ruleset, rules: Rule[]) {
+	return markuplint.verify(html, ruleset, rules);
+}
+
+export async function verifyFile (path: string, ruleset: Ruleset, rules: Rule[]) {
+	const html = await readFile(path, 'utf-8');
+	return markuplint.verify(html, ruleset, rules);
 }
