@@ -34,7 +34,7 @@ export class Indentation extends Rule {
 					if (rule === 'tab') {
 						if (!/^\t+$/.test(spaces)) {
 							const line = node.line;
-							const col = lastNode.textContent.lastIndexOf(spaces);
+							const col = 1;
 							reports.push({
 								message: 'Expected spaces. Indentaion is required tabs.',
 								line,
@@ -43,7 +43,27 @@ export class Indentation extends Rule {
 							});
 						}
 					}
-					// console.log({t: lastNode.textContent, next: `${node.nodeName}`});
+					if (typeof rule === 'number') {
+						if (!/^ +$/.test(spaces)) {
+							const line = node.line;
+							const col = 1;
+							reports.push({
+								message: 'Expected spaces. Indentaion is required spaces.',
+								line,
+								col,
+								raw: `${lastNode.textContent}${node}`,
+							});
+						} else if (spaces.length % rule) {
+							const line = node.line;
+							const col = 1;
+							reports.push({
+								message: `Expected spaces. Indentaion is required ${rule} width spaces.`,
+								line,
+								col,
+								raw: `${lastNode.textContent}${node}`,
+							});
+						}
+					}
 				}
 			}
 			lastNode = node;
