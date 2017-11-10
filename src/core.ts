@@ -14,7 +14,7 @@ export function verify (html: string, ruleset: Ruleset, rules: Rule[]) {
 	const nodeTree = parser(html);
 	const reports: VerifiedReport[] = [];
 	for (const rule of rules) {
-		if (ruleset.rules[rule.name]) {
+		if (ruleset.rules && ruleset.rules[rule.name]) {
 			reports.push(...rule.verify(nodeTree, ruleset));
 		}
 	}
