@@ -1,0 +1,25 @@
+{
+  "nodeName": "address",
+  "contentCategories": [
+    "flowContent",
+    "palpableContent"
+  ],
+  "permittedContent": [
+    [
+      "#flowContent",
+      {
+        "excludes": [
+          "#headingContent",
+          "#sectioningContent"
+        ]
+      }
+    ]
+  ],
+  "tagOmission": "none",
+  "permittedARIARoles": [
+    "#all"
+  ],
+  "attributes": [
+    "#global"
+  ]
+}

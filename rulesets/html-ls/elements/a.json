@@ -1,0 +1,44 @@
+{
+  "nodeName": "a",
+  "contentCategories": [
+    "flowContent",
+    "phrasingContent",
+    "interactiveContent",
+    "palpableContent"
+  ],
+  "permittedContent": [
+    [
+      "#flowContent",
+      {
+        "excludes": [
+          "#interactiveContent"
+        ]
+      }
+    ],
+    "#phrasingContent",
+    "#transparentContent"
+  ],
+  "tagOmission": "none",
+  "permittedARIARoles": [
+    "button",
+    "checkbox",
+    "menuitem",
+    "menuitemcheckbox",
+    "menuitemradio",
+    "option",
+    "radio",
+    "switch",
+    "tab",
+    "treeitem"
+  ],
+  "attributes": [
+    "#global",
+    "download",
+    "href",
+    "hreflang",
+    "referrerpolicy",
+    "rel",
+    "target",
+    "type"
+  ]
+}

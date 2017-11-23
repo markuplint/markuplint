@@ -1,0 +1,18 @@
+{
+  "nodeName": "abbr",
+  "contentCategories": [
+    "flowContent",
+    "phrasingContent",
+    "palpableContent"
+  ],
+  "permittedContent": [
+    "#phrasingContent"
+  ],
+  "tagOmission": "none",
+  "permittedARIARoles": [
+    "#all"
+  ],
+  "attributes": [
+    "#global"
+  ]
+}
