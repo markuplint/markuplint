@@ -22,7 +22,7 @@ export async function verifyFile (filePath: string, ruleset?: Ruleset, rules?: R
 	const absFilePath = path.resolve(filePath);
 	const parsedPath = path.parse(absFilePath);
 	const dir = path.dirname(absFilePath);
-	ruleset = ruleset || await getRulest(dir);
+	ruleset = ruleset || await getRuleset(dir);
 	rules = rules || await getRuleModules();
 	const html = await readFile(filePath, 'utf-8');
 	return markuplint.verify(html, ruleset, rules);
@@ -41,7 +41,7 @@ async function getRuleModules (): Promise<Rule[]> {
 	return rules;
 }
 
-async function getRulest (dir: string): Promise<Ruleset> {
+async function getRuleset (dir: string): Promise<Ruleset> {
 	const rulesetFileNameList = [
 		'.markuplintrc',
 		'markuplintrc.json',
