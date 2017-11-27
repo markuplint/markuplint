@@ -1,5 +1,10 @@
 import * as parse5 from 'parse5';
 
+import {
+	parseRawTag,
+	RawAttribute,
+} from './parseRawTag';
+
 export interface NodeLocation {
 	line: number;
 	col: number;
@@ -55,13 +60,6 @@ export interface Attribute extends NodeLocation {
 	value: string;
 	endOffset: number;
 	rawAttr: RawAttribute[];
-}
-
-export interface RawAttribute {
-	name: string;
-	value: string;
-	quote: '"' | "'" | '';
-	raw: string;
 }
 
 export type Walker = (node: Node) => void;
@@ -218,10 +216,11 @@ export class Document {
 					node.raw = raw;
 				}
 
-				// Get raw tag name
+				// Get raw tag name and attributes
 				//
 				// NOTE:
-				// "parse5" parser will normalize the case of the tag name.
+				// "parse5" parser will normalize the case of the tag and attribute name.
+				// And duplicated attribute will leave one.
 				//
 				if (node.raw) {
 					const rawTag = parseRawTag(node.raw);
@@ -378,41 +377,6 @@ export default function parser (html: string) {
 
 	const nodeList: Node[] = traverse(doc);
 	return new Document(nodeList, html);
-}
-
-export function parseRawTag (rawStartTag: string) {
-	// const denyAttrNameCharactersRegExp = /[ "'>\/=\uFDD0-\uFDEF\uFFFF]/;
-	const matches = rawStartTag.match(/<([^>]+)>/);
-	if (!matches) {
-		throw new Error();
-	}
-	const tagWithAttrs = matches[1];
-	if (!tagWithAttrs) {
-		throw new Error();
-	}
-
-	// TODO: fix easy spliting...😆
-	const [tagName, ...attrStrings] = tagWithAttrs.split(/\s+/).map(node => node.trim());
-	const attrs: RawAttribute[] = attrStrings.map((attrString) => {
-		const nv = attrString.split('=');
-		const name = nv[0];
-		const valueWithQuote = nv[1] || '""'; // TODO
-		const valueWithQuoteMatches = valueWithQuote.match(/^("|')?(.+)\1$/);
-		if (!valueWithQuoteMatches) {
-			throw new Error();
-		}
-		const [, quote, value]: string[] = valueWithQuoteMatches;
-		return {
-			name,
-			value,
-			quote: (quote || '') as RawAttribute['quote'],
-			raw: attrString,
-		};
-	});
-	return {
-		tagName,
-		attrs,
-	};
 }
 
 type P5Document = parse5.AST.HtmlParser2.Document & parse5.AST.Document;

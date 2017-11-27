@@ -1,5 +1,4 @@
 import {
-	parseRawTag,
 	Document,
 	Element,
 } from '../parser';

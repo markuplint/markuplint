@@ -1,5 +1,5 @@
 import test from 'ava';
-import parser from '../lib/parser';
+import parser from '../../lib/parser';
 
 // test('standard', t => {
 // 	const r = parser(`
