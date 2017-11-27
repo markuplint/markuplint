@@ -43,6 +43,13 @@ export interface Attribute extends NodeLocation {
     name: string;
     value: string;
     endOffset: number;
+    rawAttr: RawAttribute[];
+}
+export interface RawAttribute {
+    name: string;
+    value: string;
+    quote: '"' | "'" | '';
+    raw: string;
 }
 export declare type Walker = (node: Node) => void;
 export declare abstract class Node {
@@ -97,3 +104,7 @@ export declare class Document {
     getNode(index: number): Node | null;
 }
 export default function parser(html: string): Document;
+export declare function parseRawTag(rawStartTag: string): {
+    tagName: string;
+    attrs: RawAttribute[];
+};

@@ -54,6 +54,14 @@ export interface Attribute extends NodeLocation {
 	name: string;
 	value: string;
 	endOffset: number;
+	rawAttr: RawAttribute[];
+}
+
+export interface RawAttribute {
+	name: string;
+	value: string;
+	quote: '"' | "'" | '';
+	raw: string;
 }
 
 export type Walker = (node: Node) => void;
@@ -216,11 +224,13 @@ export class Document {
 				// "parse5" parser will normalize the case of the tag name.
 				//
 				if (node.raw) {
-					const matches = node.raw.match(/^<\s*([^\s>]+)(?:\s+|>)/);
-					if (matches) {
-						const rawTagName = matches[1];
-						if (rawTagName) {
-							node.nodeName = rawTagName;
+					const rawTag = parseRawTag(node.raw);
+					node.nodeName = rawTag.tagName;
+					for (const attr of node.attributes) {
+						for (const rawAttr of rawTag.attrs) {
+							if (attr.name === rawAttr.name.toLowerCase()) {
+								attr.rawAttr.push(rawAttr);
+							}
 						}
 					}
 				}
@@ -323,6 +333,7 @@ function nodeize (p5node: P5ParentNode, prev: Node | null, parent: Node | null):
 						line: location.line,
 						startOffset: location.startOffset,
 						endOffset: location.endOffset,
+						rawAttr: [],
 					};
 				}) : [],
 				location: {
@@ -367,6 +378,41 @@ export default function parser (html: string) {
 
 	const nodeList: Node[] = traverse(doc);
 	return new Document(nodeList, html);
+}
+
+export function parseRawTag (rawStartTag: string) {
+	// const denyAttrNameCharactersRegExp = /[ "'>\/=\uFDD0-\uFDEF\uFFFF]/;
+	const matches = rawStartTag.match(/<([^>]+)>/);
+	if (!matches) {
+		throw new Error();
+	}
+	const tagWithAttrs = matches[1];
+	if (!tagWithAttrs) {
+		throw new Error();
+	}
+
+	// TODO: fix easy spliting...😆
+	const [tagName, ...attrStrings] = tagWithAttrs.split(/\s+/).map(node => node.trim());
+	const attrs: RawAttribute[] = attrStrings.map((attrString) => {
+		const nv = attrString.split('=');
+		const name = nv[0];
+		const valueWithQuote = nv[1] || '""'; // TODO
+		const valueWithQuoteMatches = valueWithQuote.match(/^("|')?(.+)\1$/);
+		if (!valueWithQuoteMatches) {
+			throw new Error();
+		}
+		const [, quote, value]: string[] = valueWithQuoteMatches;
+		return {
+			name,
+			value,
+			quote: (quote || '') as RawAttribute['quote'],
+			raw: attrString,
+		};
+	});
+	return {
+		tagName,
+		attrs,
+	};
 }
 
 type P5Document = parse5.AST.HtmlParser2.Document & parse5.AST.Document;
