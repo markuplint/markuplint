@@ -171,4 +171,22 @@ test('tab', async t => {
 	]);
 });
 
+test('tab', async t => {
+	const r = await markuplint.verify(
+		`
+   <div>
+      lorem
+      <p>ipsam</p>
+   </div>
+		`,
+		{
+			rules: {
+				"indentation": 3,
+			},
+		},
+		[rule]
+	);
+	t.deepEqual(r, []);
+});
+
 test('noop', t => t.pass());
