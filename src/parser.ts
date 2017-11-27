@@ -25,7 +25,8 @@ export interface NodeProperties {
 }
 
 export interface ElementProperties extends NodeProperties {
-	attributes: {[attrName: string]: string};
+	namespaceURI: string;
+	attributes: Attribute[];
 	childNodes: Node[];
 	location: ElementLocation;
 }
@@ -49,10 +50,16 @@ export interface EndTagNodeProperties extends NodeProperties {
 	startTagNode: Node;
 }
 
+export interface Attribute extends NodeLocation {
+	name: string;
+	value: string;
+	endOffset: number;
+}
+
 export type Walker = (node: Node) => void;
 
 export abstract class Node {
-	public readonly nodeName: string;
+	public nodeName: string;
 	public readonly line: number;
 	public readonly col: number;
 	public readonly startOffset: number;
@@ -78,7 +85,8 @@ export abstract class Node {
 }
 
 export class Element extends Node {
-	public readonly attributes: {[attrName: string]: string};
+	public readonly namespaceURI: string;
+	public readonly attributes: Attribute[];
 	public readonly childNodes: Node[];
 	public readonly endOffset: number | null;
 	public readonly startTagLocation: TagNodeLocation | null;
@@ -88,6 +96,7 @@ export class Element extends Node {
 
 	constructor (props: ElementProperties) {
 		super(props);
+		this.namespaceURI = props.namespaceURI;
 		this.attributes = props.attributes;
 		this.childNodes = props.childNodes;
 		this.endOffset = props.location.endOffset || null;
@@ -200,6 +209,21 @@ export class Document {
 					const raw = rawHtml.slice(node.startOffset, node.endOffset || node.startOffset);
 					node.raw = raw;
 				}
+
+				// Get raw tag name
+				//
+				// NOTE:
+				// "parse5" parser will normalize the case of the tag name.
+				//
+				if (node.raw) {
+					const matches = node.raw.match(/^<\s*([^\s>]+)(?:\s+|>)/);
+					if (matches) {
+						const rawTagName = matches[1];
+						if (rawTagName) {
+							node.nodeName = rawTagName;
+						}
+					}
+				}
 			}
 		});
 
@@ -283,7 +307,24 @@ function nodeize (p5node: P5ParentNode, prev: Node | null, parent: Node | null):
 		default: {
 			node = new Element({
 				nodeName: p5node.tagName,
-				attributes: p5node.attrs ? p5node.attrs[0] || {} : {},
+				namespaceURI: p5node.namespaceURI,
+				attributes: p5node.attrs ? p5node.attrs.map((attr) => {
+					if (!p5node.__location || !p5node.__location.attrs) {
+						throw new Error();
+					}
+					const location = p5node.__location.attrs[attr.name];
+					if (!location) {
+						throw new Error();
+					}
+					return {
+						name: attr.name,
+						value: attr.value,
+						col: location.col,
+						line: location.line,
+						startOffset: location.startOffset,
+						endOffset: location.endOffset,
+					};
+				}) : [],
 				location: {
 					line: p5node.__location.line,
 					col: p5node.__location.col,
@@ -317,7 +358,13 @@ function traverse (rootNode: P5ParentNode, parentNode: Node | null = null): Node
 }
 
 export default function parser (html: string) {
-	const doc = parse5.parse(html, {locationInfo: true}) as P5ParentNode;
+	const doc = parse5.parse(
+		html,
+		{
+			locationInfo: true,
+		},
+	) as P5ParentNode;
+
 	const nodeList: Node[] = traverse(doc);
 	return new Document(nodeList, html);
 }
@@ -327,7 +374,11 @@ interface P5Node extends parse5.AST.HtmlParser2.Node, parse5.AST.Default.Node {}
 interface P5ParentNode extends P5Node, parse5.AST.HtmlParser2.ParentNode {
 	tagName: string;
 	value: string;
-	attrs: [{[attrName: string]: string}];
+	attrs: {
+		name: string;
+		value: string;
+	}[];
+	namespaceURI: string;
 	childNodes: P5ParentNode[];
 	__location: {
 		line: number;
@@ -346,6 +397,14 @@ interface P5ParentNode extends P5Node, parse5.AST.HtmlParser2.ParentNode {
 			startOffset: number;
 			endOffset: number;
 		} | null;
+		attrs?: {
+			[attrName: string]: {
+				line: number;
+				col: number;
+				startOffset: number;
+				endOffset: number;
+			};
+		};
 	} | null;
 }
 

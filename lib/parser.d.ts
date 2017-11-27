@@ -19,9 +19,8 @@ export interface NodeProperties {
     parentNode: Node | null;
 }
 export interface ElementProperties extends NodeProperties {
-    attributes: {
-        [attrName: string]: string;
-    };
+    namespaceURI: string;
+    attributes: Attribute[];
     childNodes: Node[];
     location: ElementLocation;
 }
@@ -40,9 +39,14 @@ export interface InvalidNodeProperties extends NodeProperties {
 export interface EndTagNodeProperties extends NodeProperties {
     startTagNode: Node;
 }
+export interface Attribute extends NodeLocation {
+    name: string;
+    value: string;
+    endOffset: number;
+}
 export declare type Walker = (node: Node) => void;
 export declare abstract class Node {
-    readonly nodeName: string;
+    nodeName: string;
     readonly line: number;
     readonly col: number;
     readonly startOffset: number;
@@ -53,9 +57,8 @@ export declare abstract class Node {
     toString(): string;
 }
 export declare class Element extends Node {
-    readonly attributes: {
-        [attrName: string]: string;
-    };
+    readonly namespaceURI: string;
+    readonly attributes: Attribute[];
     readonly childNodes: Node[];
     readonly endOffset: number | null;
     readonly startTagLocation: TagNodeLocation | null;
