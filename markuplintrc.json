@@ -44,6 +44,21 @@
       "inheritance": true
     }
   ],
+  "rules": {
+    "tagname-lowercase": ["error", "always"],
+    "attr-lowercase": ["error", "always", { "allowPattern": "/⚡/" }],
+    "attr-value-quotes": ["error", "double", { "avoidEscape": true }],
+    "attr-value-double-quotes": true,
+    "attr-value-not-empty": true,
+    "attr-no-duplication": ["error", "always"],
+    "doctype-first": true,
+    "tag-pair": true,
+    "tag-self-close": true,
+    "spec-char-escape": true,
+    "id-unique": true,
+    "src-not-empty": true,
+    "title-require": true
+  },
   "localRules": [
     {
       "tag": "html",
