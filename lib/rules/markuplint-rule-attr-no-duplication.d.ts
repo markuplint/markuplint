@@ -6,8 +6,8 @@ import { Ruleset } from '../ruleset';
  *
  * *Core rule*
  */
-export declare class AttrValueDoubleQuotes extends Rule {
+export declare class AttrNoDuplication extends Rule {
     verify(document: Document, ruleset: Ruleset): VerifiedReport[];
 }
-declare const _default: AttrValueDoubleQuotes;
+declare const _default: AttrNoDuplication;
 export default _default;

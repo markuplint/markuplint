@@ -15,7 +15,7 @@ import {
  *
  * *Core rule*
  */
-export class AttrValueDoubleQuotes extends Rule {
+export class AttrNoDuplication extends Rule {
 	public verify (document: Document, ruleset: Ruleset) {
 		const reports: VerifiedReport[] = [];
 		document.walk((node) => {
@@ -42,4 +42,4 @@ export class AttrValueDoubleQuotes extends Rule {
 	}
 }
 
-export default new AttrValueDoubleQuotes('attr-no-duplication');
+export default new AttrNoDuplication('attr-no-duplication');
