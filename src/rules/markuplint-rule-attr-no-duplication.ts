@@ -42,4 +42,4 @@ export class AttrValueDoubleQuotes extends Rule {
 	}
 }
 
-export default new AttrValueDoubleQuotes('attr-value-double-quotes');
+export default new AttrValueDoubleQuotes('attr-no-duplication');

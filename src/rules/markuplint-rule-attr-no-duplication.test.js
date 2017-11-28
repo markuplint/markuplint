@@ -1,6 +1,6 @@
 import test from 'ava';
 import * as markuplint from '../../lib/';
-import rule from '../../lib/rules/markuplint-rule-attr-value-double-quotes';
+import rule from '../../lib/rules/markuplint-rule-attr-no-duplication';
 
 test('lower case', async t => {
 	const r = await markuplint.verify(
@@ -12,7 +12,7 @@ test('lower case', async t => {
 		`,
 		{
 			rules: {
-				"attr-value-double-quotes": true,
+				"attr-no-duplication": true,
 			},
 		},
 		[rule]
@@ -46,7 +46,7 @@ test('lower case', async t => {
 		`,
 		{
 			rules: {
-				"attr-value-double-quotes": true,
+				"attr-no-duplication": true,
 			},
 		},
 		[rule]
