@@ -27,8 +27,8 @@ export class AttrValueDoubleQuotes extends Rule {
 						if (attrNameStack.includes(attrName)) {
 							reports.push({
 								message: 'Duplication of attribute.',
-								line: attr.line,
-								col: attr.col,
+								line: rawAttr.line + node.line,
+								col: rawAttr.line === 0 ? rawAttr.col + node.col - 1 : rawAttr.col,
 								raw: rawAttr.raw,
 							});
 						} else {

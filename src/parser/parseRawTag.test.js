@@ -255,6 +255,39 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
+		parseRawTag(`
+
+<div
+
+a
+  b
+>`),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: null,
+					quote: null,
+					line: 2,
+					col: 0,
+					raw: 'a',
+				},
+				{
+					name: 'b',
+					value: null,
+					quote: null,
+					line: 3,
+					col: 2,
+					raw: 'b',
+				}
+			],
+		}
+	);
+});
+
+test('standard', t => {
+	t.deepEqual(
 		parseRawTag(`<div
      a
       b c
