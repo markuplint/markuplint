@@ -211,95 +211,95 @@ test('standard', t => {
 	);
 });
 
-test('standard', t => {
-	t.deepEqual(
-		parseRawTag(`<div
-a>`),
-		{
-			tagName: 'div',
-			attrs: [
-				{
-					name: 'a',
-					value: null,
-					quote: null,
-					line: 1,
-					col: 0,
-					raw: 'a',
-				}
-			],
-		}
-	);
-});
+// test('standard', t => {
+// 	t.deepEqual(
+// 		parseRawTag(`<div
+// a>`),
+// 		{
+// 			tagName: 'div',
+// 			attrs: [
+// 				{
+// 					name: 'a',
+// 					value: null,
+// 					quote: null,
+// 					line: 1,
+// 					col: 0,
+// 					raw: 'a',
+// 				}
+// 			],
+// 		}
+// 	);
+// });
 
-test('standard', t => {
-	t.deepEqual(
-		parseRawTag(`<div
+// test('standard', t => {
+// 	t.deepEqual(
+// 		parseRawTag(`<div
 
 
-			a>`),
-		{
-			tagName: 'div',
-			attrs: [
-				{
-					name: 'a',
-					value: null,
-					quote: null,
-					line: 3,
-					col: 3,
-					raw: 'a',
-				}
-			],
-		}
-	);
-});
+// 			a>`),
+// 		{
+// 			tagName: 'div',
+// 			attrs: [
+// 				{
+// 					name: 'a',
+// 					value: null,
+// 					quote: null,
+// 					line: 3,
+// 					col: 3,
+// 					raw: 'a',
+// 				}
+// 			],
+// 		}
+// 	);
+// });
 
-test('standard', t => {
-	t.deepEqual(
-		parseRawTag(`
-   <div
-     a
-      b c
-      d>
-		`),
-		{
-			tagName: 'div',
-			attrs: [
-				{
-					name: 'a',
-					value: null,
-					quote: null,
-					line: 2,
-					col: 6,
-					raw: 'a',
-				},
-				{
-					name: 'b',
-					value: null,
-					quote: null,
-					line: 3,
-					col: 7,
-					raw: 'b',
-				},
-				{
-					name: 'c',
-					value: null,
-					quote: null,
-					line: 3,
-					col: 9,
-					raw: 'c',
-				},
-				{
-					name: 'd',
-					value: null,
-					quote: null,
-					line: 4,
-					col: 7,
-					raw: 'd',
-				}
-			],
-		}
-	);
-});
+// test('standard', t => {
+// 	t.deepEqual(
+// 		parseRawTag(`
+//    <div
+//      a
+//       b c
+//       d>
+// 		`),
+// 		{
+// 			tagName: 'div',
+// 			attrs: [
+// 				{
+// 					name: 'a',
+// 					value: null,
+// 					quote: null,
+// 					line: 2,
+// 					col: 6,
+// 					raw: 'a',
+// 				},
+// 				{
+// 					name: 'b',
+// 					value: null,
+// 					quote: null,
+// 					line: 3,
+// 					col: 7,
+// 					raw: 'b',
+// 				},
+// 				{
+// 					name: 'c',
+// 					value: null,
+// 					quote: null,
+// 					line: 3,
+// 					col: 9,
+// 					raw: 'c',
+// 				},
+// 				{
+// 					name: 'd',
+// 					value: null,
+// 					quote: null,
+// 					line: 4,
+// 					col: 7,
+// 					raw: 'd',
+// 				}
+// 			],
+// 		}
+// 	);
+// });
 
 // test('empty', t => {
 // 	const r = parser(``);

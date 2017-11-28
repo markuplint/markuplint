@@ -8,75 +8,62 @@ export interface RawAttribute {
 }
 
 export function parseRawTag (rawStartTag: string) {
-	// const denyAttrNameCharactersRegExp = /[ "'>\/=\uFDD0-\uFDEF\uFFFF]/;
+	let line = 0;
+	let col = 0;
+
 	const matches = rawStartTag.match(/<([^>]+)>/);
 	if (!matches) {
-		throw new Error();
+		throw new SyntaxError('Invalid tag syntax');
 	}
 	const tagWithAttrs = matches[1];
 	if (!tagWithAttrs) {
-		throw new Error();
+		throw new SyntaxError('Invalid tag syntax');
 	}
 
-	// TODO: fix easy spliting...😆
-	const [tagName, ...rawAttrs] = tagWithAttrs.trim().split(/\s+/).map(node => node.trim());
+	// HTML Standard elements /^[a-z]+/
+	// HTML Custom elements /^[a-z]+(-[a-z]+)+/
+	// Namespaced element /^[a-z]+:[a-z]+/
+	const tagNameMatches = tagWithAttrs.match(/^(?:[a-z]+:)?[a-z]+(?:-[a-z]+)*/i);
+	if (!tagNameMatches) {
+		throw new SyntaxError('Invalid tag name');
+	}
+	const tagName = tagNameMatches[0];
+	let attrString = tagWithAttrs.substring(tagName.length);
 
-	let shavedOffset = tagName.length + 1; // +1 is "<" character.
-	let shavedTag = tagWithAttrs.substring(tagName.length);
+	// console.log({ tagName, attrString});
+
+	col += tagName.length + 1;
+
+	const regAttr = /([^\x00-\x1f\x7f-\x9f "'>\/=]+)(?:\s*=\s*(?:("|')([^\2]*)\2|([^ "'=<>`]+)))?/;
 	const attrs: RawAttribute[] = [];
-	for (const rawAttr of rawAttrs) {
-		let line = 0;
-		let attrIndex = 0;
-		if (/\r\n|\n/.test(shavedTag)) {
-			const lines = shavedTag.split(/\r\n|\n/);
-			for (const lineStr of lines) {
-				attrIndex = shavedTag.indexOf(rawAttr);
-				if (attrIndex >= 0) {
-					break;
-				}
-				line += 1;
-			}
-			shavedOffset = 0;
-		} else {
-			attrIndex = shavedTag.indexOf(rawAttr);
+
+	while (regAttr.test(attrString)) {
+		const attrMatchedMap = attrString.match(regAttr);
+		if (attrMatchedMap) {
+			const raw = attrMatchedMap[0];
+			const name = attrMatchedMap[1];
+			const quote = (attrMatchedMap[2] as '"' | "'" | void) || null;
+			const value = (quote ? attrMatchedMap[3] : attrMatchedMap[4]) || null;
+			const index = attrMatchedMap.index || 0;
+			col += index;
+
+			// console.log(rawStartTag);
+			// console.log(`${'_'.repeat(col)}${raw}`);
+			// console.log({ name, quote, value, col });
+
+			attrs.push({
+				name,
+				value,
+				quote,
+				line,
+				col,
+				raw,
+			});
+
+			attrString = attrString.substring(raw.length + index);
+
+			col += raw.length;
 		}
-		console.log(`${'_'.repeat(shavedOffset)}${shavedTag}`);
-		const col = shavedOffset + attrIndex;
-		shavedTag = shavedTag.substring(attrIndex + rawAttr.length);
-		shavedOffset += attrIndex + rawAttr.length;
-		console.log(rawStartTag);
-		console.log(`${' '.repeat(col)}^`);
-		console.log(`${' '.repeat(col)}${col}`);
-		console.log('\n\n');
-		const nameAndValue = rawAttr.split('=');
-		const name = nameAndValue[0];
-		if (!name) {
-			throw new Error('Expected unreachable code');
-		}
-		let value: string | null = null;
-		let quote: '"' | "'" | null = null;
-		const valueWithQuote = nameAndValue[1] || null;
-		if (valueWithQuote) {
-			const valueWithQuoteMatches = valueWithQuote.match(/^("|')?(.+)\1$/);
-			if (!valueWithQuoteMatches) {
-				throw new Error();
-			}
-			value = valueWithQuoteMatches[2] || null; // tslint:disable-line:no-magic-numbers
-			const _quote = valueWithQuoteMatches[1];
-			switch (_quote) {
-				case '"':
-				case "'":
-					quote = _quote;
-			}
-		}
-		attrs.push({
-			name,
-			value,
-			quote,
-			line,
-			col,
-			raw: rawAttr,
-		});
 	}
 	return {
 		tagName,
