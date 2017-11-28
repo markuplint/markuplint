@@ -25,14 +25,29 @@ export function parseRawTag (rawStartTag: string) {
 	let shavedTag = tagWithAttrs.substring(tagName.length);
 	const attrs: RawAttribute[] = [];
 	for (const rawAttr of rawAttrs) {
-		console.log({shavedTag});
-		const attrIndex = shavedTag.indexOf(rawAttr);
-		shavedOffset += attrIndex;
+		let line = 0;
+		let attrIndex = 0;
+		if (/\r\n|\n/.test(shavedTag)) {
+			const lines = shavedTag.split(/\r\n|\n/);
+			for (const lineStr of lines) {
+				attrIndex = shavedTag.indexOf(rawAttr);
+				if (attrIndex >= 0) {
+					break;
+				}
+				line += 1;
+			}
+			shavedOffset = 0;
+		} else {
+			attrIndex = shavedTag.indexOf(rawAttr);
+		}
+		console.log(`${'_'.repeat(shavedOffset)}${shavedTag}`);
+		const col = shavedOffset + attrIndex;
 		shavedTag = shavedTag.substring(attrIndex + rawAttr.length);
-		console.log('->', {shavedTag});
-		// console.log({ tagWithAttrs, shavedTag, shavedOffset });
-		const line = 0;
-		const col = shavedOffset;
+		shavedOffset += attrIndex + rawAttr.length;
+		console.log(rawStartTag);
+		console.log(`${' '.repeat(col)}^`);
+		console.log(`${' '.repeat(col)}${col}`);
+		console.log('\n\n');
 		const nameAndValue = rawAttr.split('=');
 		const name = nameAndValue[0];
 		if (!name) {
