@@ -33,6 +33,13 @@ test('foo', async t => {
 		{
 			level: 'error',
 			message: 'Attribute value is must quote on double',
+			line: 5,
+			col: 21,
+			raw: "content='width=device-width, initial-scale=1.0'",
+		},
+		{
+			level: 'error',
+			message: 'Attribute value is must quote on double',
 			line: 6,
 			col: 7,
 			raw: 'http-equiv=X-UA-Compatible',
