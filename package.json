@@ -17,9 +17,11 @@
     "cover": "nyc ava && nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
+    "meow": "^4.0.0",
     "parse5": "^3.0.3"
   },
   "devDependencies": {
+    "@types/meow": "^3.6.2",
     "ava": "^0.24.0",
     "coveralls": "^3.0.0",
     "del": "^3.0.0",
