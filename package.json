@@ -1,6 +1,6 @@
 {
   "name": "markuplint",
-  "version": "0.1.0-alpha",
+  "version": "0.1.0",
   "description": "Lint for Markup language",
   "main": "lib/index.js",
   "author": "Yusuke Hirao",
@@ -14,13 +14,13 @@
     "build": "gulp",
     "dev": "gulp watch",
     "test": "nyc ava && nyc report --reporter=html",
-    "coveralls": "nyc ava && nyc report --reporter=text-lcov | coveralls"
+    "cover": "nyc ava && nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
     "parse5": "^3.0.3"
   },
   "devDependencies": {
-    "ava": "^0.23.0",
+    "ava": "^0.24.0",
     "coveralls": "^3.0.0",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
@@ -29,6 +29,6 @@
     "nyc": "^11.3.0",
     "run-sequence": "^2.2.0",
     "tslint": "^5.8.0",
-    "typescript": "^2.6.1"
+    "typescript": "^2.6.2"
   }
 }
