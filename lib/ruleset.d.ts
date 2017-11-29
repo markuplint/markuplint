@@ -1,3 +1,4 @@
+import { RuleOption } from './rule';
 export interface PermittedContentOptions {
     required?: boolean;
     times?: 'once' | 'zero or more' | 'one or more' | 'any';
@@ -17,6 +18,6 @@ export interface Ruleset {
     };
     nodeRules?: NodeRule[];
     rules: {
-        [ruleName: string]: boolean | string | number;
+        [ruleName: string]: RuleOption<null, {}> | boolean;
     };
 }

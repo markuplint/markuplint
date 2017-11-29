@@ -1,14 +1,24 @@
 import { Document } from './parser';
 import { Ruleset } from './ruleset';
 export interface VerifiedReport {
-    level: 'error' | 'warning';
+    level: RuleLevel;
     message: string;
     line: number;
     col: number;
     raw: string;
 }
-export default abstract class Rule {
+export declare type RuleLevel = 'error' | 'warning';
+export declare type RuleOption<T, O> = [RuleLevel, T, O];
+export interface RuleConfig<T = null, O = {}> {
+    disabled: boolean;
+    level: RuleLevel;
+    value: T;
+    option: O | null;
+}
+export default abstract class Rule<T = null, O = {}> {
     readonly name: string;
-    defaultLevel: 'error' | 'warning';
-    abstract verify(document: Document, ruleset: Ruleset): VerifiedReport[];
+    readonly defaultLevel: RuleLevel;
+    readonly defaultValue: T;
+    abstract verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset): VerifiedReport[];
+    optimizeOption(option: RuleOption<T, O> | boolean): RuleConfig<T, O>;
 }

@@ -6,6 +6,7 @@ import {
 	TextNode,
 } from '../parser';
 import Rule, {
+	RuleConfig,
 	VerifiedReport,
 } from '../rule';
 import {
@@ -13,15 +14,17 @@ import {
 	Ruleset,
 } from '../ruleset';
 
+type DefaultValue = 'tab' | number;
+
 /**
  * `Indentation`
  *
  * *Core rule*
  */
-export default class extends Rule {
+export default class extends Rule<'tab' | number> {
 	public name = 'indentation';
 
-	public verify (document: Document, ruleset: Ruleset) {
+	public verify (document: Document, config: RuleConfig<'tab' | number>, ruleset: Ruleset) {
 		const reports: VerifiedReport[] = [];
 		let lastNode: Node;
 		document.walk((node) => {
@@ -32,8 +35,7 @@ export default class extends Rule {
 					if (!spaces) {
 						throw new TypeError(`Expected error.`);
 					}
-					const rule = ruleset.rules.indentation;
-					if (rule === 'tab') {
+					if (config.value === 'tab') {
 						if (!/^\t+$/.test(spaces)) {
 							const line = node.line;
 							const col = 1;
@@ -46,7 +48,7 @@ export default class extends Rule {
 							});
 						}
 					}
-					if (typeof rule === 'number') {
+					if (typeof config.value === 'number') {
 						if (!/^ +$/.test(spaces)) {
 							const line = node.line;
 							const col = 1;
@@ -57,12 +59,12 @@ export default class extends Rule {
 								col,
 								raw: `${lastNode.textContent}${node}`,
 							});
-						} else if (spaces.length % rule) {
+						} else if (spaces.length % config.value) {
 							const line = node.line;
 							const col = 1;
 							reports.push({
 								level: this.defaultLevel,
-								message: `Expected spaces. Indentaion is required ${rule} width spaces.`,
+								message: `Expected spaces. Indentaion is required ${config.value} width spaces.`,
 								line,
 								col,
 								raw: `${lastNode.textContent}${node}`,

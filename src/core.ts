@@ -15,7 +15,8 @@ export function verify (html: string, ruleset: Ruleset, rules: Rule[]) {
 	const reports: VerifiedReport[] = [];
 	for (const rule of rules) {
 		if (ruleset.rules && ruleset.rules[rule.name]) {
-			reports.push(...rule.verify(nodeTree, ruleset));
+			const config = rule.optimizeOption(ruleset.rules[rule.name]);
+			reports.push(...rule.verify(nodeTree, config, ruleset));
 		}
 	}
 	return reports;

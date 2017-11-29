@@ -14,7 +14,7 @@ test('tab', async t => {
 		`,
 		{
 			rules: {
-				"indentation": "tab",
+				indentation: ['error', 'tab'],
 			},
 		},
 		[rule]
@@ -32,7 +32,7 @@ test('tab', async t => {
 		`,
 		{
 			rules: {
-				indentation: 'tab',
+				indentation: ['error', 'tab'],
 			},
 		},
 		[rule]
@@ -76,7 +76,7 @@ test('tab', async t => {
 		`,
 		{
 			rules: {
-				indentation: 4,
+				indentation: ['error', 4],
 			},
 		},
 		[rule]
@@ -94,7 +94,7 @@ test('tab', async t => {
 		`,
 		{
 			rules: {
-				indentation: 2,
+				indentation: ['error', 2],
 			},
 		},
 		[rule]
@@ -112,7 +112,7 @@ test('tab', async t => {
 		`,
 		{
 			rules: {
-				"indentation": 4,
+				indentation: ['error', 4],
 			},
 		},
 		[rule]
@@ -156,7 +156,7 @@ test('tab', async t => {
 		`,
 		{
 			rules: {
-				"indentation": 2,
+				indentation: ['error', 2],
 			},
 		},
 		[rule]
@@ -191,7 +191,7 @@ test('tab', async t => {
 		`,
 		{
 			rules: {
-				"indentation": 3,
+				indentation: ['error', 3],
 			},
 		},
 		[rule]

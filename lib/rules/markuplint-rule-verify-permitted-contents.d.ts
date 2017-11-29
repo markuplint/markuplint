@@ -1,5 +1,5 @@
 import { Document } from '../parser';
-import Rule, { VerifiedReport } from '../rule';
+import Rule, { RuleConfig, VerifiedReport } from '../rule';
 import { Ruleset } from '../ruleset';
 /**
  * `VerifyPermittedContents`
@@ -8,5 +8,5 @@ import { Ruleset } from '../ruleset';
  */
 export default class  extends Rule {
     name: string;
-    verify(document: Document, ruleset: Ruleset): VerifiedReport[];
+    verify(document: Document, config: RuleConfig, ruleset: Ruleset): VerifiedReport[];
 }

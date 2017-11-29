@@ -3,6 +3,7 @@ import {
 	Element,
 } from '../parser';
 import Rule, {
+	RuleConfig,
 	VerifiedReport,
 } from '../rule';
 import {
@@ -18,7 +19,7 @@ import {
 export default class extends Rule {
 	public name = 'attr-no-duplication';
 
-	public verify (document: Document, ruleset: Ruleset) {
+	public verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
 		const reports: VerifiedReport[] = [];
 		document.walk((node) => {
 			if (node instanceof Element) {

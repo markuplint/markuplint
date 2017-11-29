@@ -4,6 +4,7 @@ import {
 	Node,
 } from '../parser';
 import Rule, {
+	RuleConfig,
 	VerifiedReport,
 } from '../rule';
 import {
@@ -19,7 +20,7 @@ import {
 export default class extends Rule {
 	public name = 'verify-permitted-contents';
 
-	public verify (document: Document, ruleset: Ruleset) {
+	public verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
 		const reports: VerifiedReport[] = [];
 		if (ruleset && ruleset.nodeRules) {
 			for (const nodeRule of ruleset.nodeRules) {
