@@ -15,7 +15,9 @@ import {
  *
  * *Core rule*
  */
-export class TagnameLowercase extends Rule {
+export default class extends Rule {
+	public name = 'tagname-lowercase';
+
 	public verify (document: Document, ruleset: Ruleset) {
 		const reports: VerifiedReport[] = [];
 		document.walk((node) => {
@@ -24,6 +26,7 @@ export class TagnameLowercase extends Rule {
 					const line = node.line;
 					const col = node.col;
 					reports.push({
+						level: this.defaultLevel,
 						message: 'HTMLElement name must be lowercase',
 						line: node.line,
 						col: node.col,
@@ -35,5 +38,3 @@ export class TagnameLowercase extends Rule {
 		return reports;
 	}
 }
-
-export default new TagnameLowercase('tagname-lowercase');

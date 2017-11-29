@@ -1,6 +1,8 @@
 import test from 'ava';
 import * as markuplint from '../../lib/';
-import rule from '../../lib/rules/markuplint-rule-attr-no-duplication';
+import CustomRule from '../../lib/rules/markuplint-rule-attr-no-duplication';
+
+const rule = new CustomRule();
 
 test('lower case', async t => {
 	const r = await markuplint.verify(
@@ -19,12 +21,14 @@ test('lower case', async t => {
 	);
 	t.deepEqual(r, [
 		{
+			level: 'error',
 			message: 'Duplication of attribute.',
 			line: 2,
 			col: 25,
 			raw: 'data-Attr=\'db\'',
 		},
 		{
+			level: 'error',
 			message: 'Duplication of attribute.',
 			line: 2,
 			col: 40,
@@ -53,12 +57,14 @@ test('lower case', async t => {
 	);
 	t.deepEqual(r, [
 		{
+			level: 'error',
 			message: 'Duplication of attribute.',
 			line: 4,
 			col: 3,
 			raw: 'data-Attr=\'db\'',
 		},
 		{
+			level: 'error',
 			message: 'Duplication of attribute.',
 			line: 5,
 			col: 3,

@@ -1,6 +1,8 @@
 import test from 'ava';
 import * as markuplint from '../../lib/';
-import rule from '../../lib/rules/markuplint-rule-indentation';
+import CustomRule from '../../lib/rules/markuplint-rule-indentation';
+
+const rule = new CustomRule();
 
 test('tab', async t => {
 	const r = await markuplint.verify(
@@ -37,6 +39,7 @@ test('tab', async t => {
 	);
 	t.deepEqual(r, [
 		{
+			level: 'error',
 			message: 'Expected spaces. Indentaion is required tabs.',
 			line: 2,
 			col: 1,
@@ -44,6 +47,7 @@ test('tab', async t => {
     <div>`,
 		},
 		{
+			level: 'error',
 			message: 'Expected spaces. Indentaion is required tabs.',
 			line: 4,
 			col: 1,
@@ -52,6 +56,7 @@ test('tab', async t => {
         <p>`,
 		},
 		{
+			level: 'error',
 			message: 'Expected spaces. Indentaion is required tabs.',
 			line: 5,
 			col: 1,
@@ -114,6 +119,7 @@ test('tab', async t => {
 	);
 	t.deepEqual(r, [
 		{
+			level: 'error',
 			message: 'Expected spaces. Indentaion is required spaces.',
 			line: 2,
 			col: 1,
@@ -121,6 +127,7 @@ test('tab', async t => {
 	<div>`,
 		},
 		{
+			level: 'error',
 			message: 'Expected spaces. Indentaion is required spaces.',
 			line: 4,
 			col: 1,
@@ -129,6 +136,7 @@ test('tab', async t => {
 		<p>`,
 		},
 		{
+			level: 'error',
 			message: 'Expected spaces. Indentaion is required spaces.',
 			line: 5,
 			col: 1,
@@ -155,6 +163,7 @@ test('tab', async t => {
 	);
 	t.deepEqual(r, [
 		{
+			level: 'error',
 			message: 'Expected spaces. Indentaion is required 2 width spaces.',
 			line: 2,
 			col: 1,
@@ -162,6 +171,7 @@ test('tab', async t => {
    <div>`,
 		},
 		{
+			level: 'error',
 			message: 'Expected spaces. Indentaion is required 2 width spaces.',
 			line: 5,
 			col: 1,

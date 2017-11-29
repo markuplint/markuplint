@@ -1,6 +1,8 @@
 import test from 'ava';
 import * as markuplint from '../../lib/';
-import rule from '../../lib/rules/markuplint-rule-attr-lowercase';
+import CustomRule from '../../lib/rules/markuplint-rule-attr-lowercase';
+
+const rule = new CustomRule();
 
 test('lower case', async t => {
 	const r = await markuplint.verify(
@@ -37,6 +39,7 @@ test('upper case', async t => {
 	);
 	t.deepEqual(r, [
 		{
+			level: 'error',
 			message: 'HTMLElement attribute name must be lowercase',
 			line: 2,
 			col: 8,
@@ -62,6 +65,7 @@ test('upper case', async t => {
 	);
 	t.deepEqual(r, [
 		{
+			level: 'error',
 			message: 'HTMLElement attribute name must be lowercase',
 			line: 2,
 			col: 8,
@@ -87,6 +91,7 @@ test('upper case', async t => {
 	);
 	t.deepEqual(r, [
 		{
+			level: 'error',
 			message: 'HTMLElement attribute name must be lowercase',
 			line: 2,
 			col: 9,
@@ -114,6 +119,7 @@ test('upper case', async t => {
 	);
 	t.deepEqual(r, [
 		{
+			level: 'error',
 			message: 'HTMLElement attribute name must be lowercase',
 			line: 4,
 			col: 3,

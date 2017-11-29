@@ -5,26 +5,17 @@ import {
 	Ruleset,
 } from './ruleset';
 
-export interface RuleInterface {
-	name: string;
-	verify (document: Document, ruleset: Ruleset): VerifiedReport[];
-}
-
 export interface VerifiedReport {
+	level: 'error' | 'warning';
 	message: string;
 	line: number;
 	col: number;
 	raw: string;
 }
 
-export default abstract class Rule implements RuleInterface {
+export default abstract class Rule {
 	public readonly name: string;
+	public defaultLevel: 'error' | 'warning' = 'error';
 
-	constructor (name: string) {
-		this.name = name;
-	}
-
-	public verify (document: Document, ruleset: Ruleset) {
-		return [] as VerifiedReport[];
-	}
+	public abstract verify (document: Document, ruleset: Ruleset): VerifiedReport[];
 }

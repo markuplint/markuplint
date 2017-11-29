@@ -16,7 +16,9 @@ import {
  *
  * *Core rule*
  */
-export class VerifyPermittedContents extends Rule {
+export default class extends Rule {
+	public name = 'verify-permitted-contents';
+
 	public verify (document: Document, ruleset: Ruleset) {
 		const reports: VerifiedReport[] = [];
 		if (ruleset && ruleset.nodeRules) {
@@ -39,8 +41,6 @@ export class VerifyPermittedContents extends Rule {
 	}
 }
 
-export default new VerifyPermittedContents('verify-permitted-contents');
-
 function checkPermittedContent (permittedContents: PermittedContent[], nodes: Node[], parentName: string) {
 	const reports: VerifiedReport[] = [];
 
@@ -59,6 +59,7 @@ function checkPermittedContent (permittedContents: PermittedContent[], nodes: No
 				case 'once': {
 					if (counter !== 1) {
 						reports.push({
+							level: 'error',
 							message: `<${nodeName}> is required that is premitted content of <${parentName}>.`,
 							line: 0,
 							col: 0,
@@ -70,6 +71,7 @@ function checkPermittedContent (permittedContents: PermittedContent[], nodes: No
 				case 'one or more': {
 					if (counter < 1) {
 						reports.push({
+							level: 'error',
 							message: `<${nodeName}> is required one or more, premitted content of <${parentName}>.`,
 							line: 0,
 							col: 0,

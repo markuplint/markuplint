@@ -10,33 +10,38 @@ test('foo', async t => {
 	const r = await markuplint.verifyFile('./src/test/002.html');
 	t.deepEqual(r, [
 		{
+			level: 'error',
+			message: 'Attribute value is must quote on double',
 			line: 2,
 			col: 6,
-			message: 'Attribute value is must quote on double',
 			raw: 'lang=en',
 		},
 		{
+			level: 'error',
+			message: 'Attribute value is must quote on double',
 			line: 4,
 			col: 7,
-			message: 'Attribute value is must quote on double',
 			raw: 'charset=UTF-8',
 		},
 		{
+			level: 'error',
+			message: 'Attribute value is must quote on double',
 			line: 5,
 			col: 7,
-			message: 'Attribute value is must quote on double',
 			raw: 'name=viewport',
 		},
 		{
+			level: 'error',
+			message: 'Attribute value is must quote on double',
 			line: 6,
 			col: 7,
-			message: 'Attribute value is must quote on double',
 			raw: 'http-equiv=X-UA-Compatible',
 		},
 		{
+			level: 'error',
+			message: 'Attribute value is must quote on double',
 			line: 6,
 			col: 34,
-			message: 'Attribute value is must quote on double',
 			raw: 'content=ie',
 		},
 	]);

@@ -34,8 +34,9 @@ async function getRuleModules (): Promise<Rule[]> {
 	const ruleFiles = await readdir(ruleDir);
 	for (const filePath of ruleFiles) {
 		if (/^markuplint-rule-[a-z\-]+\.js$/i.test(filePath)) {
-			const ruleModule = await import(path.resolve(ruleDir, filePath));
-			rules.push(ruleModule.default);
+			const mod = await import(path.resolve(ruleDir, filePath));
+			const CustomRule /* Subclass of Rule */ = mod.default;
+			rules.push(new CustomRule());
 		}
 	}
 	return rules;

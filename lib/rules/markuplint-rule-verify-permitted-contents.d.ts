@@ -6,8 +6,7 @@ import { Ruleset } from '../ruleset';
  *
  * *Core rule*
  */
-export declare class VerifyPermittedContents extends Rule {
+export default class  extends Rule {
+    name: string;
     verify(document: Document, ruleset: Ruleset): VerifiedReport[];
 }
-declare const _default: VerifyPermittedContents;
-export default _default;

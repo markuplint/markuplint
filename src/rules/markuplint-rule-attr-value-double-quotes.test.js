@@ -1,6 +1,8 @@
 import test from 'ava';
 import * as markuplint from '../../lib/';
-import rule from '../../lib/rules/markuplint-rule-attr-value-double-quotes';
+import CustomRule from '../../lib/rules/markuplint-rule-attr-value-double-quotes';
+
+const rule = new CustomRule();
 
 test('lower case', async t => {
 	const r = await markuplint.verify(
@@ -19,12 +21,14 @@ test('lower case', async t => {
 	);
 	t.deepEqual(r, [
 		{
+			level: 'error',
 			message: 'Attribute value is must quote on double',
 			line: 2,
 			col: 25,
 			raw: 'data-Attr=\'db\'',
 		},
 		{
+			level: 'error',
 			message: 'Attribute value is must quote on double',
 			line: 2,
 			col: 40,

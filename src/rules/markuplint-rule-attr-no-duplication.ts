@@ -15,7 +15,9 @@ import {
  *
  * *Core rule*
  */
-export class AttrNoDuplication extends Rule {
+export default class extends Rule {
+	public name = 'attr-no-duplication';
+
 	public verify (document: Document, ruleset: Ruleset) {
 		const reports: VerifiedReport[] = [];
 		document.walk((node) => {
@@ -26,6 +28,7 @@ export class AttrNoDuplication extends Rule {
 						const attrName = rawAttr.name.toLowerCase();
 						if (attrNameStack.includes(attrName)) {
 							reports.push({
+								level: this.defaultLevel,
 								message: 'Duplication of attribute.',
 								line: rawAttr.line + node.line,
 								col: rawAttr.line === 0 ? rawAttr.col + node.col - 1 : rawAttr.col,
@@ -41,5 +44,3 @@ export class AttrNoDuplication extends Rule {
 		return reports;
 	}
 }
-
-export default new AttrNoDuplication('attr-no-duplication');

@@ -15,7 +15,9 @@ import {
  *
  * *Core rule*
  */
-export class AttrLowercase extends Rule {
+export default class extends Rule {
+	public name = 'attr-lowercase';
+
 	public verify (document: Document, ruleset: Ruleset) {
 		const reports: VerifiedReport[] = [];
 		document.walk((node) => {
@@ -30,6 +32,7 @@ export class AttrLowercase extends Rule {
 							const line = node.line;
 							const col = node.col;
 							reports.push({
+								level: this.defaultLevel,
 								message: 'HTMLElement attribute name must be lowercase',
 								line: attr.line,
 								col: attr.col,
@@ -43,5 +46,3 @@ export class AttrLowercase extends Rule {
 		return reports;
 	}
 }
-
-export default new AttrLowercase('attr-lowercase');

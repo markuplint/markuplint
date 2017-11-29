@@ -15,7 +15,9 @@ import {
  *
  * *Core rule*
  */
-export class AttrValueDoubleQuotes extends Rule {
+export default class extends Rule {
+	public name = 'attr-value-double-quotes';
+
 	public verify (document: Document, ruleset: Ruleset) {
 		const reports: VerifiedReport[] = [];
 		document.walk((node) => {
@@ -24,6 +26,7 @@ export class AttrValueDoubleQuotes extends Rule {
 					for (const rawAttr of attr.rawAttr) {
 						if (rawAttr.quote !== '"') {
 							reports.push({
+								level: this.defaultLevel,
 								message: 'Attribute value is must quote on double',
 								line: rawAttr.line + node.line,
 								col: rawAttr.line === 0 ? rawAttr.col + node.col - 1 : rawAttr.col,
@@ -37,5 +40,3 @@ export class AttrValueDoubleQuotes extends Rule {
 		return reports;
 	}
 }
-
-export default new AttrValueDoubleQuotes('attr-value-double-quotes');

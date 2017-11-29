@@ -6,8 +6,7 @@ import { Ruleset } from '../ruleset';
  *
  * *Core rule*
  */
-export declare class AttrNoDuplication extends Rule {
+export default class  extends Rule {
+    name: string;
     verify(document: Document, ruleset: Ruleset): VerifiedReport[];
 }
-declare const _default: AttrNoDuplication;
-export default _default;

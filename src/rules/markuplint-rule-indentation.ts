@@ -18,7 +18,9 @@ import {
  *
  * *Core rule*
  */
-export class Indentation extends Rule {
+export default class extends Rule {
+	public name = 'indentation';
+
 	public verify (document: Document, ruleset: Ruleset) {
 		const reports: VerifiedReport[] = [];
 		let lastNode: Node;
@@ -36,6 +38,7 @@ export class Indentation extends Rule {
 							const line = node.line;
 							const col = 1;
 							reports.push({
+								level: this.defaultLevel,
 								message: 'Expected spaces. Indentaion is required tabs.',
 								line,
 								col,
@@ -48,6 +51,7 @@ export class Indentation extends Rule {
 							const line = node.line;
 							const col = 1;
 							reports.push({
+								level: this.defaultLevel,
 								message: 'Expected spaces. Indentaion is required spaces.',
 								line,
 								col,
@@ -57,6 +61,7 @@ export class Indentation extends Rule {
 							const line = node.line;
 							const col = 1;
 							reports.push({
+								level: this.defaultLevel,
 								message: `Expected spaces. Indentaion is required ${rule} width spaces.`,
 								line,
 								col,
@@ -71,5 +76,3 @@ export class Indentation extends Rule {
 		return reports;
 	}
 }
-
-export default new Indentation('indentation');
