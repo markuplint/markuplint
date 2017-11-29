@@ -5,7 +5,7 @@ import {
 	Ruleset,
 } from './ruleset';
 
-export interface VerifiedReport {
+export interface VerifiedResult {
 	level: RuleLevel;
 	message: string;
 	line: number;
@@ -29,7 +29,7 @@ export default abstract class Rule<T = null, O = {}> {
 	public readonly defaultLevel: RuleLevel = 'error';
 	public readonly defaultValue: T;
 
-	public abstract verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset): VerifiedReport[];
+	public abstract verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset): VerifiedResult[];
 
 	public optimizeOption (option: RuleOption<T, O> | boolean): RuleConfig<T, O> {
 		if (typeof option === 'boolean') {

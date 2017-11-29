@@ -1,5 +1,5 @@
 import { Document } from '../parser';
-import Rule, { RuleConfig, VerifiedReport } from '../rule';
+import Rule, { RuleConfig, VerifiedResult } from '../rule';
 import { Ruleset } from '../ruleset';
 /**
  * `attr-value-quotes`
@@ -9,5 +9,5 @@ import { Ruleset } from '../ruleset';
 export default class  extends Rule<'double' | 'single'> {
     name: string;
     defaultValue: 'double' | 'single';
-    verify(document: Document, config: RuleConfig<'double' | 'single'>, ruleset: Ruleset): VerifiedReport[];
+    verify(document: Document, config: RuleConfig<'double' | 'single'>, ruleset: Ruleset): VerifiedResult[];
 }

@@ -4,7 +4,7 @@ import {
 } from '../parser';
 import Rule, {
 	RuleConfig,
-	VerifiedReport,
+	VerifiedResult,
 } from '../rule';
 import {
 	PermittedContent,
@@ -20,7 +20,7 @@ export default class extends Rule {
 	public name = 'attr-no-duplication';
 
 	public verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
-		const reports: VerifiedReport[] = [];
+		const reports: VerifiedResult[] = [];
 		document.walk((node) => {
 			if (node instanceof Element) {
 				for (const attr of node.attributes) {

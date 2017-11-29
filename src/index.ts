@@ -4,7 +4,7 @@ import * as util from 'util';
 
 import * as markuplint from './core';
 import Rule, {
-	VerifiedReport,
+	VerifiedResult,
 } from './rule';
 import {
 	Ruleset,

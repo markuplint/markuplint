@@ -3,15 +3,19 @@
 const meow = require('meow');
 
 const { verifyFile } = require('../lib/');
+const { standardReporter } = require('../lib/reporter/');
 
 const cli = meow(`
-	HELP!
+	Usage
+	  $ markuplint <input>
+
+	Options
+	  --ruleset, -r    Ruleset file path
+
+	Examples
+	  $ markuplint verifyee.html --ruleset path/to/.markuplintrc
 `, {
 	flags: {
-		// version: {
-		// 	type: 'string',
-		// 	alias: 'v',
-		// },
 		ruleset: {
 			type: 'string',
 			alias: 'r',
@@ -31,14 +35,9 @@ if (cli.flags.h) {
 
 	for (const filePath of cli.input) {
 		const reports = await verifyFile(filePath, cli.flags.ruleset);
-		if (reports.length) {
-			console.log(`❌ : ${filePath} [markuplint]`);
-			for (const report of reports) {
-				console.warn(`\t${filePath}:${report.line}:${report.col} ${report.message} [markuplint]`);
-			}
-		} else {
-			console.log(`✅ : ${filePath} [markuplint]`);
-		}
+		await standardReporter(filePath, reports);
 	}
+
+	console.log(`🎉 markuplint CLI done.`);
 
 })();

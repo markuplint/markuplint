@@ -5,7 +5,7 @@ import {
 } from '../parser';
 import Rule, {
 	RuleConfig,
-	VerifiedReport,
+	VerifiedResult,
 } from '../rule';
 import {
 	PermittedContent,
@@ -21,7 +21,7 @@ export default class extends Rule {
 	public name = 'verify-permitted-contents';
 
 	public verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
-		const reports: VerifiedReport[] = [];
+		const reports: VerifiedResult[] = [];
 		if (ruleset && ruleset.nodeRules) {
 			for (const nodeRule of ruleset.nodeRules) {
 				if (nodeRule.nodeType === '#root') {
@@ -43,7 +43,7 @@ export default class extends Rule {
 }
 
 function checkPermittedContent (permittedContents: PermittedContent[], nodes: Node[], parentName: string) {
-	const reports: VerifiedReport[] = [];
+	const reports: VerifiedResult[] = [];
 
 	for (const permittedContent of permittedContents) {
 		const nodeName = permittedContent[0];

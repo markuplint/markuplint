@@ -4,11 +4,14 @@ out
 sample
 src
 test
-.editorcinfg
+.editorconfig
 .gitignore
 .travis.yml
-gulpfile.coffee
+gulpfile.js
 tsconfig.json
 tslint.json
 yarn-error.log
 yarn.lock
+coverage
+.nyc_output
+.coveralls.yml

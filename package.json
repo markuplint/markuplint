@@ -1,7 +1,7 @@
 {
   "name": "markuplint",
-  "version": "0.1.0",
-  "description": "Lint for Markup language",
+  "version": "0.2.0",
+  "description": "HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.",
   "main": "lib/index.js",
   "author": "Yusuke Hirao",
   "license": "MIT",

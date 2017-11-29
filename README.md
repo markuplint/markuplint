@@ -10,6 +10,25 @@ HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and mo
 $ yarn add markuplint
 ```
 
+## Usage
+
+### CLI
+
+```
+$ markuplint verifyee.html
+```
+
+```
+Usage
+  $ markuplint <input>
+
+Options
+  --ruleset, -r    Ruleset file path
+
+Examples
+  $ markuplint verifyee.html --ruleset path/to/.markuplintrc
+```
+
 ## Thanks
 
 This linter is inspired by

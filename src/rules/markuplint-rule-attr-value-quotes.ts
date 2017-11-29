@@ -4,7 +4,7 @@ import {
 } from '../parser';
 import Rule, {
 	RuleConfig,
-	VerifiedReport,
+	VerifiedResult,
 } from '../rule';
 import {
 	PermittedContent,
@@ -25,7 +25,7 @@ export default class extends Rule<'double' | 'single'> {
 			double: '"',
 			single: "'",
 		};
-		const reports: VerifiedReport[] = [];
+		const reports: VerifiedResult[] = [];
 		document.walk((node) => {
 			if (node instanceof Element) {
 				for (const attr of node.attributes) {

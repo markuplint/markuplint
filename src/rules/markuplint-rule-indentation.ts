@@ -7,7 +7,7 @@ import {
 } from '../parser';
 import Rule, {
 	RuleConfig,
-	VerifiedReport,
+	VerifiedResult,
 } from '../rule';
 import {
 	PermittedContent,
@@ -25,7 +25,7 @@ export default class extends Rule<'tab' | number> {
 	public name = 'indentation';
 
 	public verify (document: Document, config: RuleConfig<'tab' | number>, ruleset: Ruleset) {
-		const reports: VerifiedReport[] = [];
+		const reports: VerifiedResult[] = [];
 		let lastNode: Node;
 		document.walk((node) => {
 			if (lastNode instanceof TextNode) {
