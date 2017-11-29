@@ -1,8 +1,11 @@
 {
   "name": "markuplint",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.",
   "main": "lib/index.js",
+  "bin": {
+    "markuplint": "bin/index.js"
+  },
   "author": "Yusuke Hirao",
   "license": "MIT",
   "private": false,

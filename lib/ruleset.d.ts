@@ -21,3 +21,4 @@ export interface Ruleset {
         [ruleName: string]: RuleOption<null, {}> | boolean;
     };
 }
+export declare function getRuleset(dir: string): Promise<Ruleset>;

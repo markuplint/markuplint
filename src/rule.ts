@@ -1,9 +1,15 @@
+import * as fs from 'fs';
+import * as path from 'path';
+import * as util from 'util';
+
 import {
 	Document,
 } from './parser';
 import {
 	Ruleset,
 } from './ruleset';
+
+const readdir = util.promisify(fs.readdir);
 
 export interface VerifiedResult {
 	level: RuleLevel;
@@ -47,4 +53,18 @@ export default abstract class Rule<T = null, O = {}> {
 			option: option[2], // tslint:disable-line:no-magic-numbers
 		};
 	}
+}
+
+export async function getRuleModules (): Promise<Rule[]> {
+	const rules: Rule[] = [];
+	const ruleDir = path.resolve(__dirname, './rules');
+	const ruleFiles = await readdir(ruleDir);
+	for (const filePath of ruleFiles) {
+		if (/^markuplint-rule-[a-z\-]+\.js$/i.test(filePath)) {
+			const mod = await import(path.resolve(ruleDir, filePath));
+			const CustomRule /* Subclass of Rule */ = mod.default;
+			rules.push(new CustomRule());
+		}
+	}
+	return rules;
 }

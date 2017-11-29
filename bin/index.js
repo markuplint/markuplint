@@ -2,7 +2,7 @@
 
 const meow = require('meow');
 
-const { verifyFile } = require('../lib/');
+const { verify, verifyFile } = require('../lib/');
 const { standardReporter } = require('../lib/reporter/');
 
 const cli = meow(`
@@ -14,6 +14,7 @@ const cli = meow(`
 
 	Examples
 	  $ markuplint verifyee.html --ruleset path/to/.markuplintrc
+	  $ cat verifyee.html | markuplint
 `, {
 	flags: {
 		ruleset: {
@@ -31,13 +32,34 @@ if (cli.flags.h) {
 	cli.showHelp();
 }
 
-(async () => {
+if (cli.input.length) {
+	(async () => {
+		for (const filePath of cli.input) {
+			const reports = await verifyFile(filePath, cli.flags.ruleset);
+			await standardReporter(filePath, reports);
+		}
+		console.log(`🎉 markuplint CLI done.`);
+	})();
+}
 
-	for (const filePath of cli.input) {
-		const reports = await verifyFile(filePath, cli.flags.ruleset);
-		await standardReporter(filePath, reports);
-	}
+else {
+	stdinStopWhenEmpty();
+	const readline = require('readline');
+	const { getRuleset } = require('../lib/ruleset');
+	const { getRuleModules } = require('../lib/rule');
+	const lines = [];
+	const reader = readline.createInterface({ input: process.stdin });
+	reader.on('line', lines.push);
+	reader.on('close', async () => {
+		const html = lines.join('\n');
+		const ruleset = cli.flags.ruleset || await getRuleset(process.cwd());
+		const rules = await getRuleModules();
+		const reports = await verify(html, ruleset, rules);
+		await standardReporter('STDIN_DATA', reports);
+	});
+}
 
-	console.log(`🎉 markuplint CLI done.`);
-
-})();
+function stdinStopWhenEmpty () {
+	const id = setImmediate(() => cli.showHelp());
+	process.stdin.on('data', () => clearImmediate(id));
+}
