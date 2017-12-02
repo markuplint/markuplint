@@ -1,4 +1,5 @@
-# markuplint
+![markuplint](media/logo-v.svg)
+===
 
 [![npm version](https://badge.fury.io/js/markuplint.svg)](https://badge.fury.io/js/markuplint) [![Build Status](https://travis-ci.org/YusukeHirao/markuplint.svg?branch=master)](https://travis-ci.org/YusukeHirao/markuplint) [![Coverage Status](https://coveralls.io/repos/github/YusukeHirao/markuplint/badge.svg?branch=master)](https://coveralls.io/github/YusukeHirao/markuplint?branch=master)
 
@@ -27,6 +28,17 @@ Options
 
 Examples
   $ markuplint verifyee.html --ruleset path/to/.markuplintrc
+  $ cat verifyee.html | markuplint
+```
+
+### API
+
+```js
+import * as markuplint from 'markuplint';
+
+const reports = await markuplint.verify(html, ruleset, rules);
+// or
+const { html, reports } = await markuplint.verifyFile(globOrPath, ruleset, rules);
 ```
 
 ## Thanks
