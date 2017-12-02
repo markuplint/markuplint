@@ -35,8 +35,8 @@ if (cli.flags.h) {
 if (cli.input.length) {
 	(async () => {
 		for (const filePath of cli.input) {
-			const reports = await verifyFile(filePath, cli.flags.ruleset);
-			await standardReporter(filePath, reports);
+			const { html, reports } = await verifyFile(filePath, cli.flags.ruleset);
+			await standardReporter(filePath, reports, html);
 		}
 		console.log(`🎉 markuplint CLI done.`);
 	})();
@@ -55,7 +55,7 @@ else {
 		const ruleset = cli.flags.ruleset || await getRuleset(process.cwd());
 		const rules = await getRuleModules();
 		const reports = await verify(html, ruleset, rules);
-		await standardReporter('STDIN_DATA', reports);
+		await standardReporter('STDIN_DATA', reports, html);
 	});
 }
 

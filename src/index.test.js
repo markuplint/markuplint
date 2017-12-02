@@ -3,12 +3,12 @@ import * as markuplint from '../lib/';
 
 test('foo', async t => {
 	const r = await markuplint.verifyFile('./src/test/001.html');
-	t.deepEqual(r, []);
+	t.deepEqual(r.reports, []);
 });
 
 test('foo', async t => {
 	const r = await markuplint.verifyFile('./src/test/002.html');
-	t.deepEqual(r, [
+	t.deepEqual(r.reports, [
 		{
 			level: 'error',
 			message: 'Attribute value is must quote on double',

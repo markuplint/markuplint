@@ -20,10 +20,12 @@
     "cover": "nyc ava && nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
+    "cli-color": "^1.2.0",
     "meow": "^4.0.0",
     "parse5": "^3.0.3"
   },
   "devDependencies": {
+    "@types/cli-color": "^0.3.29",
     "@types/meow": "^3.6.2",
     "ava": "^0.24.0",
     "coveralls": "^3.0.0",

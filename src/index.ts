@@ -25,5 +25,9 @@ export async function verifyFile (filePath: string, ruleset?: Ruleset, rules?: R
 	ruleset = ruleset || await getRuleset(dir);
 	rules = rules || await getRuleModules();
 	const html = await readFile(filePath, 'utf-8');
-	return markuplint.verify(html, ruleset, rules);
+	const reports = markuplint.verify(html, ruleset, rules);
+	return {
+		html,
+		reports,
+	};
 }
