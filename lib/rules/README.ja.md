@@ -1,0 +1,76 @@
+# Rules
+
+- *Style コードスタイル*
+	- [🚧 WIP] [markuplint-rule-indentation](./markuplint-rule-indentation/README.ja.md) インデント
+		- mixed タブ・スペースの混在
+		- width インデント幅
+		- ignore-inline-element インライン要素の除外
+		- align-closing-tag 終了タグの位置
+	- [🚧 WIP] [markuplint-rule-self-closing-tag](./markuplint-rule-self-closing-tag/README.ja.md) タグの自己終了
+		- ignore-foreign-elements 外来要素の除外
+	- [🚧 WIP] [markuplint-rule-omitted-closing-tag](./markuplint-rule-omitted-closing-tag/README.ja.md) 終了タグの省略
+	- [🚧 WIP] [markuplint-rule-attr-value-quotes](./markuplint-rule-attr-value-quotes/README.ja.md) クォーテーションマーク
+	- [🚧 WIP] [markuplint-rule-case-sensitive-tag-name](./markuplint-rule-case-sensitive-tag-name/README.ja.md) タグ名の大文字小文字
+		- ignore-foreign-elements 外来要素の除外
+	- [🚧 WIP] [markuplint-rule-case-sensitive-attr-name](./markuplint-rule-case-sensitive-attr-name/README.ja.md) 属性名の大文字小文字
+		- ignore-foreign-elements 外来要素の除外
+	- [🚧 WIP] [markuplint-rule-attr-spasing](./markuplint-rule-attr-spasing/README.ja.md) 属性の前後のスペース
+	- [🚧 WIP] [markuplint-rule-attr-equal-spasing](./markuplint-rule-attr-equal-spasing/README.ja.md) 属性の=の前後のスペース
+	- [🚧 WIP] [markuplint-rule-multiline-tag](./markuplint-rule-multiline-tag/README.ja.md) タグ内の改行
+	- [🚧 WIP] [markuplint-rule-multiline-attr](./markuplint-rule-multiline-attr/README.ja.md) タグ内の属性の改行
+	- [🚧 WIP] [markuplint-rule-indentation-attr](./markuplint-rule-indentation-attr/README.ja.md)
+	- [🚧 WIP] [markuplint-rule-void-element-closing](./markuplint-rule-void-element-closing/README.ja.md) 空属性
+	- [🚧 WIP] [markuplint-rule-comment-spasing](./markuplint-rule-comment-spasing/README.ja.md) コメントのスペース
+	- [🚧 WIP] [markuplint-rule-path](./markuplint-rule-path/README.ja.md) パスの相対パス・ルート相対パス・絶対パス
+	- [🚧 WIP] [markuplint-rule-data-attr-naming](./markuplint-rule-data-attr-naming/README.ja.md) data-*属性名
+	- [🚧 WIP] [markuplint-rule-event-attr](./markuplint-rule-event-attr/README.ja.md) on*属性名
+- *Validation バリデーション*
+	- [🚧 WIP] [markuplint-rule-character-reference](./markuplint-rule-character-reference/README.ja.md) 文字参照
+		- character-entity-reference-whitelist
+		- character-entity-reference-blacklist
+		- numerical-character-references-whitelist
+		- numerical-character-references-blacklist
+	- [🚧 WIP] [markuplint-rule-doctype](./markuplint-rule-doctype/README.ja.md) ドキュメントタイプ
+	- [🚧 WIP] [markuplint-rule-required-element](./markuplint-rule-required-element/README.ja.md) 必須要素
+	- [🚧 WIP] [markuplint-rule-deprecated-element](./markuplint-rule-deprecated-element/README.ja.md) 非推奨要素
+	- [🚧 WIP] [markuplint-rule-permitted-contents](./markuplint-rule-permitted-contents/README.ja.md) 許可するコンテンツ
+	- [🚧 WIP] [markuplint-rule-permitted-role](./markuplint-rule-permitted-role/README.ja.md) 許可するロール
+	- [🚧 WIP] [markuplint-rule-attr-duprecation](./markuplint-rule-attr-duprecation/README.ja.md) 属性の重複
+	- [🚧 WIP] [markuplint-rule-required-attr](./markuplint-rule-required-attr/README.ja.md) 必須属性
+	- [🚧 WIP] [markuplint-rule-deprecated-attr](./markuplint-rule-deprecated-attr/README.ja.md) 非推奨属性
+	- [🚧 WIP] [markuplint-rule-deprecated-global-attr](./markuplint-rule-deprecated-global-attr/README.ja.md) 非推奨グローバル属性
+	- [🚧 WIP] [markuplint-rule-deprecated-aria-attr](./markuplint-rule-deprecated-aria-attr/README.ja.md) 非推奨aria属性
+	- [🚧 WIP] [markuplint-rule-id-duprecation](./markuplint-rule-id-duprecation/README.ja.md) idの重複
+	- [🚧 WIP] [markuplint-rule-comment](./markuplint-rule-comment/README.ja.md) コメント
+- *Usability ユーザビリティ*
+	- [🚧 WIP] [markuplint-rule-external-link](./markuplint-rule-external-link/README.ja.md) 外部リンク
+		- 外部リンクがtarget=_blankになっていない場合は警告
+- *Accessibility アクセシビリティ*
+	- [🚧 WIP] [markuplint-rule-required-h1](./markuplint-rule-required-h1/README.ja.md) h1
+	- [🚧 WIP] [markuplint-rule-heading-levels-skipping](./markuplint-rule-heading-levels-skipping/README.ja.md) レベルのスキップ
+	- [🚧 WIP] [markuplint-rule-heading-in-sectioning-content](./markuplint-rule-heading-in-sectioning-content/README.ja.md) セクショニング・コンテンツ
+		- required section/articleは必須
+		- nav/asideは任意
+	- [🚧 WIP] [markuplint-rule-heading-in-sectioning-root](./markuplint-rule-heading-in-sectioning-root/README.ja.md) セクショニング・ルート
+		- ignore-root body以外のセクショニング・ルート内に見出しがあると警告
+	- [🚧 WIP] [markuplint-rule-landmark-roles](./markuplint-rule-landmark-roles/README.ja.md) ランドマークロール
+	- [🚧 WIP] [markuplint-rule-labels](./markuplint-rule-labels/README.ja.md) aria-label/aria-labeledby
+		- require-elements
+	- [🚧 WIP] [markuplint-rule-empty-alt-attr](./markuplint-rule-empty-alt-attr/README.ja.md) 空のalt属性
+	- [🚧 WIP] [markuplint-rule-role-structure-tab](./markuplint-rule-role-structure-tab/README.ja.md) tabロールの構造
+- *Performance パフォーマンス*
+	- [🚧 WIP] [markuplint-rule-async-attr-in-script](./markuplint-rule-async-attr-in-script/README.ja.md) script要素のasync属性
+- *CSS Designing CSS設計*
+	- [🚧 WIP] [markuplint-rule-class-naming](./markuplint-rule-class-naming/README.ja.md) クラス名
+	- [🚧 WIP] [markuplint-rule-required-class-elements](./markuplint-rule-required-class-elements/README.ja.md) クラスの有無
+	- bem/markuplint-rule-bem-rule-nesting BEMの入れ子関係
+	- bem/markuplint-rule-bem-rule-block BEMのBlockの要素名/クラス名/属性
+	- bem/markuplint-rule-bem-rule-element BEMのElementのクラス名/属性
+	- bem/markuplint-rule-bem-rule-modifier BEMのModifierのクラス名/属性
+- *Custom Elements カスタム要素*
+	- [🚧 WIP] [markuplint-rule-custom-element-naming](./markuplint-rule-custom-element-naming/README.ja.md) 要素名
+- *AMP*
+	- amp/markuplint-rule-amp-validation AMP Validation by https://www.npmjs.com/package/amphtml-validator
+- *Template Engine テンプレートエンジン*
+	- php/markuplint-rule-ignore-php-code PHPコードの除外
+	- vuejs/markuplint-rule-vue-directive Vue.js ディレクティブ属性

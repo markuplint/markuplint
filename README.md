@@ -20,15 +20,16 @@ $ markuplint verifyee.html
 ```
 
 ```
-Usage
-  $ markuplint <input>
+$ markuplint --help
+    Usage
+      $ markuplint <input>
 
-Options
-  --ruleset, -r    Ruleset file path
+    Options
+      --ruleset, -r    Ruleset file path
 
-Examples
-  $ markuplint verifyee.html --ruleset path/to/.markuplintrc
-  $ cat verifyee.html | markuplint
+    Examples
+      $ markuplint verifyee.html --ruleset path/to/.markuplintrc
+      $ cat verifyee.html | markuplint
 ```
 
 ### API
@@ -40,6 +41,10 @@ const reports = await markuplint.verify(html, ruleset, rules);
 // or
 const { html, reports } = await markuplint.verifyFile(globOrPath, ruleset, rules);
 ```
+
+## Rules
+
+[Rule Documentation](./lib/rules/README.md)
 
 ## Thanks
 

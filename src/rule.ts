@@ -60,10 +60,19 @@ export async function getRuleModules (): Promise<Rule[]> {
 	const ruleDir = path.resolve(__dirname, './rules');
 	const ruleFiles = await readdir(ruleDir);
 	for (const filePath of ruleFiles) {
-		if (/^markuplint-rule-[a-z]+(?:-[a-z]+)*$/i.test(filePath)) {
-			const mod = await import(path.resolve(ruleDir, filePath));
-			const CustomRule /* Subclass of Rule */ = mod.default;
-			rules.push(new CustomRule());
+		if (/^markuplint-rule-[a-z]+(?:-[a-z]+)*(?:\.js)?$/i.test(filePath)) {
+			try {
+				const mod = await import(path.resolve(ruleDir, filePath));
+				const CustomRule /* Subclass of Rule */ = mod.default;
+				rules.push(new CustomRule());
+			} catch (err) {
+				// @ts-ignore
+				if (err instanceof Error && err.code === 'MODULE_NOT_FOUND') {
+					console.warn(`[markuplint] Cannot find rule module: ${filePath}`);
+				} else {
+					throw err;
+				}
+			}
 		}
 	}
 	return rules;

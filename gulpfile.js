@@ -16,8 +16,10 @@ gulp.task('watch', () => {
 	gulp.watch(['src/**/*.test.js', 'lib/**/*.js'], ['test']);
 });
 
+gulp.task('docs', (cb) => gulp.src('src/rules/**/*.md').pipe(gulp.dest('lib/rules/')));
+
 gulp.task('clean', (cb) => del(['lib/**/*'], cb));
 
-gulp.task('build', (cb) => runSequence('clean', 'ts', cb));
+gulp.task('build', (cb) => runSequence('clean', 'ts', ['docs'], cb));
 
 gulp.task('default', ['build']);
