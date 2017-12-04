@@ -1,5 +1,7 @@
 # Rules
 
+[English](./README.md) | **日本語**
+
 - *Style コードスタイル*
 	- [🚧 WIP] [markuplint-rule-indentation](./markuplint-rule-indentation/README.ja.md) インデント
 		- mixed タブ・スペースの混在
