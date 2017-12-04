@@ -1,6 +1,6 @@
 import test from 'ava';
-import * as markuplint from '../../lib/';
-import CustomRule from '../../lib/rules/markuplint-rule-tagname-lowercase';
+import * as markuplint from '../../../lib/';
+import CustomRule from '../../../lib/rules/markuplint-rule-tagname-lowercase';
 
 const rule = new CustomRule();
 

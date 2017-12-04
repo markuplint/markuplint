@@ -1,15 +1,15 @@
 import {
 	Document,
 	Element,
-} from '../parser';
+} from '../../parser';
 import Rule, {
 	RuleConfig,
 	VerifiedResult,
-} from '../rule';
+} from '../../rule';
 import {
 	PermittedContent,
 	Ruleset,
-} from '../ruleset';
+} from '../../ruleset';
 
 /**
  * `tagname-lowercase`

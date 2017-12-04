@@ -1,6 +1,6 @@
 import test from 'ava';
-import * as markuplint from '../../lib/';
-import CustomRule from '../../lib/rules/markuplint-rule-attr-no-duplication';
+import * as markuplint from '../../../lib/';
+import CustomRule from '../../../lib/rules/markuplint-rule-attr-no-duplication';
 
 const rule = new CustomRule();
 

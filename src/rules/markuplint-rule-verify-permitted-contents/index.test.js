@@ -1,9 +1,9 @@
 import test from 'ava';
-import * as markuplint from '../../lib/';
-import CustomRule from '../../lib/rules/markuplint-rule-verify-permitted-contents';
+import * as markuplint from '../../../lib/';
+import CustomRule from '../../../lib/rules/markuplint-rule-verify-permitted-contents';
 
 const rule = new CustomRule();
-const ruleset = require('../../rulesets/html-ls.json');
+const ruleset = require('../../../rulesets/html-ls.json');
 
 test('HTML Living Standard empty document', async t => {
 	const r = await markuplint.verify(``, ruleset, [rule]);
