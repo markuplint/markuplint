@@ -1,4 +1,7 @@
 {
+	"attr": [
+		"#global"
+	],
 	"categories": [
 		"Phrasing",
 		"flow"

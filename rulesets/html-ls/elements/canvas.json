@@ -1,4 +1,19 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "height",
+			"description": "The height of the coordinate space in CSS pixels. Defaults to 150."
+		},
+		{
+			"name": "moz-opaque",
+			"description": "Lets the canvas know whether or not translucency will be a factor. If the canvas knows there's no translucency, painting performance can be optimized. This is only supported by Mozilla-based browsers; use the standardized canvas.getContext('2d', { alpha: false }) instead."
+		},
+		{
+			"name": "width",
+			"description": "The width of the coordinate space in CSS pixels. Defaults to 300."
+		}
+	],
 	"categories": [
 		"Flow",
 		"phrasing",

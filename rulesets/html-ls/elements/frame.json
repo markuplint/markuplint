@@ -1,3 +1,34 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "src",
+			"description": "This attribute is specify document which will be displayed by frame."
+		},
+		{
+			"name": "name",
+			"description": "This attribute is used to labeling frames. Without labeling all links will open in the frame that they are in."
+		},
+		{
+			"name": "noresize",
+			"description": "This attribute avoid resizing of frames by users."
+		},
+		{
+			"name": "scrolling",
+			"description": "This attribute defines existence of scrollbar. If this attribute is not used, browser put a scrollbar when necessary. There are two choices; \"yes\" for showing a scrollbar even when it is not necessary and \"no\" for do not showing a scrollbar even when it is necessary."
+		},
+		{
+			"name": "marginheight",
+			"description": "This attribute defines how tall the margin between frames will be."
+		},
+		{
+			"name": "marginwidth",
+			"description": "This attribute defines how wide the margin between frames will be."
+		},
+		{
+			"name": "frameborder",
+			"description": "This attribute allows you to put borders for frames."
+		}
+	],
 	"obsolete": true
 }

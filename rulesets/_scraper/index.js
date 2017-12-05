@@ -23,7 +23,9 @@ const writeFile = util.promisify(fs.writeFile);
 async function getElementMetadata (url) {
 	const OUT_DIR = 'rulesets/html-ls/elements/';
 	const outDir = path.resolve(OUT_DIR);
-	const resultObj = {};
+	const resultObj = {
+		attr: [],
+	};
 	const document = await getDocumentfromURL(url);
 	const tagName = url.replace(/^.+\/([a-z][a-z0-1_-]*)\s*$/i, '$1');
 	const obsolete = document.querySelector('#wikiArticle .obsolete.obsoleteHeader');
@@ -74,6 +76,30 @@ async function getElementMetadata (url) {
 				}
 			}
 		}
+		const attrHeading = document.getElementById('Attributes');
+		let next = nextElementSibling(attrHeading);
+		if (next && next.nodeName === 'P') {
+			if (/global attributes/i.test(next.textContent)) {
+				resultObj.attr.push('#global');
+			}
+			next = nextElementSibling(next);
+		}
+		if (next && next.nodeName === 'DL') {
+			const dtList = next.querySelectorAll('dt');
+			for (const dt of dtList) {
+				const attrName = dt.querySelector('code').textContent;
+				const dd = nextElementSibling(dt);
+				if (dd) {
+					resultObj.attr.push({
+						name: attrName,
+						description: dd.textContent,
+					});
+				} else {
+					resultObj.attr.push(attrName);
+				}
+			}
+		}
+
 	}
 	await writeFile(`${outDir}/${tagName}.json`, JSON.stringify(resultObj, null, '\t'));
 	process.stdout.write(` => ${outDir}/${tagName}.json\n`);

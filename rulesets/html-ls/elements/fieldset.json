@@ -1,4 +1,19 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "disabled",
+			"description": "If this Boolean attribute is set, the form controls that are its descendants, except descendants of its first optional <legend> element, are disabled, i.e., not editable. They won't receive any browsing events, like mouse clicks or focus-related ones. Often browsers display such controls as gray."
+		},
+		{
+			"name": "form",
+			"description": "This attribute has the value of the id attribute of the <form> element it's related to. Its default value is the id of the nearest <form> element it is a descendant of."
+		},
+		{
+			"name": "name",
+			"description": "The name associated with the group.\n  \n The label for the field set is given by the first <legend> element that is a child of this field set.\n "
+		}
+	],
 	"categories": [
 		"Flow",
 		"palpable"

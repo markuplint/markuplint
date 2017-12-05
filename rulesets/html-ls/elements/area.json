@@ -1,4 +1,11 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "accesskey",
+			"description": "Specifies a keyboard navigation accelerator for the element. Pressing ALT or a similar key in association with the specified character selects the form control correlated with that key sequence. Page designers are forewarned to avoid key sequences already bound to browsers. This attribute is global since HTML5."
+		}
+	],
 	"categories": [
 		"Flow",
 		"phrasing"

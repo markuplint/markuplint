@@ -1,4 +1,7 @@
 {
+	"attr": [
+		"#global"
+	],
 	"content": "Phrasing content or one element of Heading content",
 	"omission": "None, both the start tag and the end tag are mandatory.",
 	"parents": "The <details> element.",

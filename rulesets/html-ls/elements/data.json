@@ -1,4 +1,11 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "value",
+			"description": "This attribute specifies the machine-readable translation of the content of the element."
+		}
+	],
 	"categories": [
 		"Flow",
 		"phrasing",

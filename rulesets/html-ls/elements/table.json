@@ -1,4 +1,11 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "align",
+			"description": "This enumerated attribute indicates how the table must be aligned inside the containing document. It may have the following values:\n \n  left: the table is displayed on the left side of the document;\n  center: the table is displayed in the center of the document;\n  right: the table is displayed on the right side of the document.\n \n\n Usage Note\n\n \n  Do not use this attribute, as it has been deprecated. The <table> element should be styled using CSS.  Set margin-left and margin-right to auto or margin to 0 auto to achieve an effect that is similar to the align attribute.\n  Prior to Firefox 4, Firefox also supported the middle, absmiddle, and abscenter values as synonyms of center, in quirks mode only.\n \n \n "
+		}
+	],
 	"categories": [
 		"Flow"
 	],

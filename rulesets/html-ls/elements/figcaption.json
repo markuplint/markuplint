@@ -1,4 +1,7 @@
 {
+	"attr": [
+		"#global"
+	],
 	"categories": [],
 	"content": "Flow content.",
 	"omission": "None, both the starting and ending tag are mandatory.",

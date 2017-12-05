@@ -1,4 +1,11 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "async",
+			"description": "This is a Boolean attribute indicating that the browser should, if possible, execute the script asynchronously."
+		}
+	],
 	"categories": [
 		"Metadata",
 		"Flow",

@@ -1,4 +1,55 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "autofocus",
+			"description": "This Boolean attribute lets you specify that the button should have input focus when the page loads, unless the user overrides it, for example by typing in a different control. Only one form-associated element in a document can have this attribute specified."
+		},
+		{
+			"name": "autocomplete",
+			"description": "The use of this attribute on a <button> is nonstandard and Firefox-specific. By default, unlike other browsers, Firefox persists the dynamic disabled state of a <button> across page loads. Setting the value of this attribute to off (i.e. autocomplete=\"off\") disables this feature. See bug 654072."
+		},
+		{
+			"name": "disabled",
+			"description": "\n This Boolean attribute indicates that the user cannot interact with the button. If this attribute is not specified, the button inherits its setting from the containing element, for example <fieldset>; if there is no containing element with the disabled attribute set, then the button is enabled.\n\n Firefox will, unlike other browsers, by default, persist the dynamic disabled state of a <button> across page loads. Use the autocomplete attribute to control this feature.\n "
+		},
+		{
+			"name": "form",
+			"description": "The form element that the button is associated with (its form owner). The value of the attribute must be the id attribute of a <form> element in the same document. If this attribute is not specified, the <button> element will be associated to an ancestor <form> element, if one exists. This attribute enables you to associate <button> elements to <form> elements anywhere within a document, not just as descendants of <form> elements."
+		},
+		{
+			"name": "formaction",
+			"description": "The URI of a program that processes the information submitted by the button. If specified, it overrides the action attribute of the button's form owner."
+		},
+		{
+			"name": "formenctype",
+			"description": "If the button is a submit button, this attribute specifies the type of content that is used to submit the form to the server. Possible values are:\n \n  application/x-www-form-urlencoded: The default value if the attribute is not specified.\n  multipart/form-data: Use this value if you are using an <input> element with the type attribute set to file.\n  text/plain\n \n\n If this attribute is specified, it overrides the enctype attribute of the button's form owner.\n "
+		},
+		{
+			"name": "formmethod",
+			"description": "If the button is a submit button, this attribute specifies the HTTP method that the browser uses to submit the form. Possible values are:\n \n  post: The data from the form are included in the body of the form and sent to the server.\n  get: The data from the form are appended to the form attribute URI, with a '?' as a separator, and the resulting URI is sent to the server. Use this method when the form has no side-effects and contains only ASCII characters.\n \n\n If specified, this attribute overrides the method attribute of the button's form owner.\n "
+		},
+		{
+			"name": "formnovalidate",
+			"description": "If the button is a submit button, this Boolean attribute specifies that the form is not to be validated when it is submitted. If this attribute is specified, it overrides the novalidate attribute of the button's form owner."
+		},
+		{
+			"name": "formtarget",
+			"description": "If the button is a submit button, this attribute is a name or keyword indicating where to display the response that is received after submitting the form. This is a name of, or keyword for, a browsing context (for example, tab, window, or inline frame). If this attribute is specified, it overrides the target attribute of the button's form owner. The following keywords have special meanings:\n \n  _self: Load the response into the same browsing context as the current one. This value is the default if the attribute is not specified.\n  _blank: Load the response into a new unnamed browsing context.\n  _parent: Load the response into the parent browsing context of the current one. If there is no parent, this option behaves the same way as _self.\n  _top: Load the response into the top-level browsing context (that is, the browsing context that is an ancestor of the current one, and has no parent). If there is no parent, this option behaves the same way as _self.\n \n "
+		},
+		{
+			"name": "name",
+			"description": "The name of the button, which is submitted with the form data."
+		},
+		{
+			"name": "type",
+			"description": "The type of the button. Possible values are:\n \n  submit: The button submits the form data to the server. This is the default if the attribute is not specified, or if the attribute is dynamically changed to an empty or invalid value.\n  reset: The button resets all the controls to their initial values.\n  button: The button has no default behavior. It can have client-side scripts associated with the element's events, which are triggered when the events occur.\n \n "
+		},
+		{
+			"name": "value",
+			"description": "The initial value of the button. It defines the value associated with the button which is submitted with the form data.  This value is passed to the server in params when the form is submitted."
+		}
+	],
 	"categories": [
 		"Flow",
 		"phrasing",

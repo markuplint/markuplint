@@ -1,4 +1,11 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "dir",
+			"description": "Text direction in this element. Possible values are:\n \n  ltr: Indicates that the text should go in a left-to-right direction.\n  rtl: Indicates that the text should go in a right-to-left direction.\n \n "
+		}
+	],
 	"categories": [
 		"Flow",
 		"phrasing",

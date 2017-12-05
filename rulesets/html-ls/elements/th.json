@@ -1,4 +1,23 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "abbr",
+			"description": "This attribute contains a short abbreviated description of the cell's content. A user-agent (e.g., a speech reader) may be present in front of the description.\n Usage Note: Do not use this attribute as it has become obsolete in the latest standard. Alternatively, you can put the abbreviated description inside the cell and place the long content in the title attribute.\n "
+		},
+		{
+			"name": "align",
+			"description": "This enumerated attribute specifies how the cell content's horizontal alignment will be handled. Possible values are:\n \n  left: The content is aligned to the left of the cell.\n  center: The content is centered in the cell.\n  right:  The content is aligned to the right of the cell.\n  justify (with text only): The content is stretched out inside the cell so that it covers its entire width.\n  char (with text only): The content is aligned to a character inside the <th> element with minimal offset. This character is defined by the char and charoff attributes.\n \n\n The default value when this attribute is not specified is left.\n\n Usage Note: Do not use this attribute as it is obsolete in the latest standard.\n\n \n  To achieve the same effect as the left, center, right or justify values, apply the CSS text-align property to the attribute.\n  To achieve the same effect as the char value, give the text-align property the same value you would use for the char.  Unimplemented in CSS3.\n \n \n "
+		},
+		{
+			"name": "axis",
+			"description": "This attribute contains a list of space-separated strings. Each string is the id of a group of cells that this header applies to.\n Usage Note: Do not use this attribute as it is obsolete in the latest standard: use the scope attribute instead.\n "
+		},
+		{
+			"name": "bgcolor",
+			"description": "This attribute defines the background color of each cell in a column. It consists of a 6-digit hexadecimal code as defined in sRGB and is prefixed by '#'. This attribute may be used with one of sixteen predefined color strings:\n \n  \n   \n     \n    black = \"#000000\"\n     \n    green = \"#008000\"\n   \n   \n     \n    silver = \"#C0C0C0\"\n     \n    lime = \"#00FF00\"\n   \n   \n     \n    gray = \"#808080\"\n     \n    olive = \"#808000\"\n   \n   \n     \n    white = \"#FFFFFF\"\n     \n    yellow = \"#FFFF00\"\n   \n   \n     \n    maroon = \"#800000\"\n     \n    navy = \"#000080\"\n   \n   \n     \n    red = \"#FF0000\"\n     \n    blue = \"#0000FF\"\n   \n   \n     \n    purple = \"#800080\"\n     \n    teal = \"#008080\"\n   \n   \n     \n    fuchsia = \"#FF00FF\"\n     \n    aqua = \"#00FFFF\"\n   \n  \n \n\n Usage note: Do not use this attribute, as it is non-standard and only implemented in some versions of Microsoft Internet Explorer: The <th> element should be styled using CSS. To create a similar effec use the background-color property in CSS.\n "
+		}
+	],
 	"categories": [],
 	"content": "Flow content, but with no header, footer, sectioning content, or heading content descendants.",
 	"omission": "The start tag is mandatory.\n    The end tag may be omitted, if it is immediately followed by a <th> or <td> element or if there are no more data in its parent element.",

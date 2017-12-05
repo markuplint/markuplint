@@ -1,4 +1,11 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "name",
+			"description": "The slot's name."
+		}
+	],
 	"categories": [
 		"Flow",
 		"phrasing"

@@ -1,4 +1,15 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "label",
+			"description": "The name of the menu as shown to the user. Used within nested menus, to provide a label through which the submenu can be accessed. Must only be specified when the parent element is a <menu> in the context menu state."
+		},
+		{
+			"name": "type",
+			"description": "This attribute indicates the kind of menu being declared, and can be one of two values.\n \n  context: Indicates the popup menu state, which represents a group of commands activated through another element. This might be as a button menu referenced by a menu attribute of a <button> element, or as context menu for an element with a contextmenu attribute. This value is the default if the attribute is missing and the parent element is also a <menu> element.\n  toolbar: Indicates the toolbar state, which represents a toolbar consisting of a series of commands for user interaction. This might be in the form of an unordered list of <li> elements, or, if the element has no <li> element children, flow content describing available commands. This value is the default if the attribute is missing.\n \n "
+		}
+	],
 	"categories": [
 		"Flow",
 		"palpable"

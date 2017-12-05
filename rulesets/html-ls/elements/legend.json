@@ -1,4 +1,7 @@
 {
+	"attr": [
+		"#global"
+	],
 	"categories": [],
 	"content": "Phrasing content.",
 	"omission": "None, both the starting and ending tag are mandatory.",

@@ -1,3 +1,56 @@
 {
-	"obsolete": true
+	"attr": [
+		"#global",
+		{
+			"name": "accept",
+			"description": "A comma-separated list of content types that the server accepts.\n Usage note: This attribute has been removed in HTML5 and should no longer be used. Instead, use the accept attribute of the specific <input> element.\n "
+		},
+		{
+			"name": "accept-charset",
+			"description": "A space- or comma-delimited list of character encodings that the server accepts. The browser uses them in the order in which they are listed. The default value, the reserved string \"UNKNOWN\", indicates the same encoding as that of the document containing the form element.\n In previous versions of HTML, the different character encodings could be delimited by spaces or commas. In HTML5, only spaces are allowed as delimiters."
+		},
+		{
+			"name": "action",
+			"description": "The URI of a program that processes the form information. This value can be overridden by a formaction attribute on a <button> or <input> element."
+		},
+		{
+			"name": "autocapitalize",
+			"description": "This is a nonstandard attribute used by iOS Safari Mobile which controls whether and how the text value for textual form control descendants should be automatically capitalized as it is entered/edited by the user. If the autocapitalize attribute is specified on an individual form control descendant, it trumps the form-wide autocapitalize setting. The non-deprecated values are available in iOS 5 and later. The default value is sentences. Possible values are:\n \n  none: Completely disables automatic capitalization\n  sentences: Automatically capitalize the first letter of sentences.\n  words: Automatically capitalize the first letter of words.\n  characters: Automatically capitalize all characters.\n  on:   Deprecated since iOS 5.\n  off:   Deprecated since iOS 5.\n \n "
+		},
+		{
+			"name": "autocomplete",
+			"description": "Indicates whether input elements can by default have their values automatically completed by the browser. This setting can be overridden by an autocomplete attribute on an element belonging to the form. Possible values are:\n \n  off: The user must explicitly enter a value into each field for every use, or the document provides its own auto-completion method; the browser does not automatically complete entries.\n  on: The browser can automatically complete values based on values that the user has previously entered in the form.\n \n For most modern browsers (including Firefox 38+, Google Chrome 34+, IE 11+) setting the autocomplete attribute will not prevent a browser's password manager from asking the user if they want to store login fields (username and password), if the user permits the storage the browser will autofill the login the next time the user visits the page. See The autocomplete attribute and login fields."
+		},
+		{
+			"name": "enctype",
+			"description": "When the value of the method attribute is post, enctype is the MIME type of content that is used to submit the form to the server. Possible values are:\n \n  application/x-www-form-urlencoded: The default value if the attribute is not specified.\n  multipart/form-data: The value used for an <input> element with the type attribute set to \"file\".\n  text/plain (HTML5)\n \n\n This value can be overridden by a formenctype attribute on a <button> or <input> element.\n "
+		},
+		{
+			"name": "method",
+			"description": "The HTTP method that the browser uses to submit the form. Possible values are:\n \n  post: Corresponds to the HTTP POST method ; form data are included in the body of the form and sent to the server.\n  get: Corresponds to the HTTP GET method; form data are appended to the action attribute URI with a '?' as separator, and the resulting URI is sent to the server. Use this method when the form has no side-effects and contains only ASCII characters.\n \n\n This value can be overridden by a formmethod attribute on a <button> or <input> element.\n "
+		},
+		{
+			"name": "name",
+			"description": "The name of the form. In HTML 4, its use is deprecated (id should be used instead). It must be unique among the forms in a document and not just an empty string in HTML 5."
+		},
+		{
+			"name": "novalidate",
+			"description": "This Boolean attribute indicates that the form is not to be validated when submitted. If this attribute is not specified (and therefore the form is validated), this default setting can be overridden by a formnovalidate attribute on a <button> or <input> element belonging to the form."
+		},
+		{
+			"name": "target",
+			"description": "A name or keyword indicating where to display the response that is received after submitting the form. In HTML 4, this is the name/keyword for a frame. In HTML5, it is a name/keyword for a browsing context (for example, tab, window, or inline frame). The following keywords have special meanings:\n \n  _self: Load the response into the same HTML 4 frame (or HTML5 browsing context) as the current one. This value is the default if the attribute is not specified.\n  _blank: Load the response into a new unnamed HTML 4 window or HTML5 browsing context.\n  _parent: Load the response into the HTML 4 frameset parent of the current frame, or HTML5 parent browsing context of the current one. If there is no parent, this option behaves the same way as _self.\n  _top: HTML 4: Load the response into the full original window, and cancel all other frames. HTML5: Load the response into the top-level browsing context (i.e., the browsing context that is an ancestor of the current one, and has no parent). If there is no parent, this option behaves the same way as _self.\n  iframename: The response is displayed in a named <iframe>.\n \n\n HTML5: This value can be overridden by a formtarget attribute on a <button> or <input> element.\n "
+		}
+	],
+	"categories": [
+		"Flow",
+		"palpable"
+	],
+	"content": "Flow content, but not containing <form> elements",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts flow content",
+	"roles": [
+		"group",
+		"presentation"
+	]
 }

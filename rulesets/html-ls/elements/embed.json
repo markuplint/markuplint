@@ -1,4 +1,23 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "height",
+			"description": "The displayed height of the resource, in CSS pixels.  -- (Absolute values only.  NO percentages)"
+		},
+		{
+			"name": "src",
+			"description": "The URL of the resource being embedded."
+		},
+		{
+			"name": "type",
+			"description": "The MIME type to use to select the plug-in to instantiate."
+		},
+		{
+			"name": "width",
+			"description": "The displayed width of the resource, in CSS pixels.  -- (Absolute values only.  NO percentages)"
+		}
+	],
 	"categories": [
 		"Flow",
 		"phrasing",

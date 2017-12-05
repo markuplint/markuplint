@@ -1,3 +1,14 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "cols",
+			"description": "This attribute specifies the number and size of horizontal spaces in a frameset."
+		},
+		{
+			"name": "rows",
+			"description": "This attribute specifies the number and size of vertical spaces in a frameset."
+		}
+	],
 	"obsolete": true
 }

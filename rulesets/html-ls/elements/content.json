@@ -1,4 +1,11 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "select",
+			"description": "A comma-separated list of selectors. These have the same syntax as CSS selectors. They select the content to insert in place of the <content> element."
+		}
+	],
 	"categories": [
 		"Transparent"
 	],

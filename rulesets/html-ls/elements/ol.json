@@ -1,4 +1,23 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "compact",
+			"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent and it doesn't work in all browsers. Note: Do not use this attribute, as it has been deprecated: the <ol> element should be styled using CSS. To give an effect similar to the compact attribute, the CSS property line-height can be used with a value of 80%."
+		},
+		{
+			"name": "reversed",
+			"description": "This Boolean attribute specifies that the items of the list are specified in reversed order."
+		},
+		{
+			"name": "start",
+			"description": "This integer attribute specifies the start value for numbering the individual list items. Although the ordering type of list elements might be Roman numerals, such as XXXI, or letters, the value of start is always represented as a number. To start numbering elements from the letter \"C\", use <ol start=\"3\">.\n Note: This attribute was deprecated in HTML4, but reintroduced in HTML5.\n "
+		},
+		{
+			"name": "type",
+			"description": "Indicates the numbering type:\n \n  'a' indicates lowercase letters,\n  'A' indicates uppercase letters,\n  'i' indicates lowercase Roman numerals,\n  'I' indicates uppercase Roman numerals,\n  and '1' indicates numbers (default).\n \n\n The type set is used for the entire list unless a different type attribute is used within an enclosed <li> element.\n\n Note: This attribute was deprecated in HTML4, but reintroduced in HTML5. Unless the value of the list number matters (e.g. in legal or technical documents where items are to be referenced by their number/letter), the CSS list-style-type property should be used instead.\n "
+		}
+	],
 	"categories": [
 		"Flow",
 		"palpable"

@@ -1,4 +1,119 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "alink",
+			"description": "Color of text for hyperlinks when selected. This method is non-conforming, use CSS color property in conjunction with the :active pseudo-class instead."
+		},
+		{
+			"name": "background",
+			"description": "URI of a image to use as a background. This method is non-conforming, use CSS background property on the element instead."
+		},
+		{
+			"name": "bgcolor",
+			"description": "Background color for the document. This method is non-conforming, use CSS background-color property on the element instead."
+		},
+		{
+			"name": "bottommargin",
+			"description": "The margin of the bottom of the body. This method is non-conforming, use CSS margin-bottom property on the element instead."
+		},
+		{
+			"name": "leftmargin",
+			"description": "The margin of the left of the body. This method is non-conforming, use CSS margin-left property on the element instead."
+		},
+		{
+			"name": "link",
+			"description": "Color of text for unvisited hypertext links. This method is non-conforming, use CSS color property in conjunction with the :link pseudo-class instead."
+		},
+		{
+			"name": "onafterprint",
+			"description": "Function to call after the user has printed the document."
+		},
+		{
+			"name": "onbeforeprint",
+			"description": "Function to call when the user requests printing of the document."
+		},
+		{
+			"name": "onbeforeunload",
+			"description": "Function to call when the document is about to be unloaded."
+		},
+		{
+			"name": "onblur",
+			"description": "Function to call when the document loses focus."
+		},
+		{
+			"name": "onerror",
+			"description": "Function to call when the document fails to load properly."
+		},
+		{
+			"name": "onfocus",
+			"description": "Function to call when the document receives focus."
+		},
+		{
+			"name": "onhashchange",
+			"description": "Function to call when the fragment identifier part (starting with the hash ('#') character) of the document's current address has changed."
+		},
+		{
+			"name": "onlanguagechange",
+			"description": "Function to call when the preferred languages changed."
+		},
+		{
+			"name": "onload",
+			"description": "Function to call when the document has finished loading."
+		},
+		{
+			"name": "onmessage",
+			"description": "Function to call when the document has received a message."
+		},
+		{
+			"name": "onoffline",
+			"description": "Function to call when network communication has failed."
+		},
+		{
+			"name": "ononline",
+			"description": "Function to call when network communication has been restored."
+		},
+		{
+			"name": "onpopstate",
+			"description": "Function to call when the user has navigated session history."
+		},
+		{
+			"name": "onredo",
+			"description": "Function to call when the user has moved forward in undo transaction history."
+		},
+		{
+			"name": "onresize",
+			"description": "Function to call when the document has been resized."
+		},
+		{
+			"name": "onstorage",
+			"description": "Function to call when the storage area has changed."
+		},
+		{
+			"name": "onundo",
+			"description": "Function to call when the user has moved backward in undo transaction history."
+		},
+		{
+			"name": "onunload",
+			"description": "Function to call when the document is going away."
+		},
+		{
+			"name": "rightmargin",
+			"description": "The margin of the right of the body. This method is non-conforming, use CSS margin-right property on the element instead."
+		},
+		{
+			"name": "text",
+			"description": "Foreground color of text. This method is non-conforming, use CSS color property on the element instead."
+		},
+		{
+			"name": "topmargin",
+			"description": "The margin of the top of the body. This method is non-conforming, use CSS margin-top property on the element instead."
+		},
+		{
+			"name": "vlink",
+			"description": "Color of text for visited hypertext links. This method is non-conforming, use CSS color property in conjunction with the :visited pseudo-class instead."
+		}
+	],
 	"categories": [],
 	"content": "Flow content.",
 	"omission": "The start tag may be omitted if the first thing inside it is not a space character, comment, <script> element or <style> element. The end tag may be omitted if the body element has contents or has a start tag, and is not immediately followed by a comment.",

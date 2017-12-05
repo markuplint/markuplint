@@ -1,4 +1,11 @@
 {
+	"attr": [
+		"#global",
+		{
+			"name": "clear",
+			"description": "Indicates where to begin the next line after the break.\n \n Usage note: This attribute is obsolete in HTML5 and should not be used by authors. Use the CSS clear property instead.\n \n "
+		}
+	],
 	"categories": [
 		"Flow",
 		"phrasing"
