@@ -13,9 +13,15 @@
 		}
 	],
 	"categories": [],
-	"content": "Flow content.",
-	"omission": "The end tag can be omitted if the list item is immediately followed by another <li> element, or if there is no more content in its parent element.",
-	"parents": "An <ul>, <ol>, or <menu> element. Though not a conforming usage, the obsolete <dir> can also be a parent.",
+	"content": {
+		"description": "Flow content."
+	},
+	"omission": {
+		"description": "The end tag can be omitted if the list item is immediately followed by another <li> element, or if there is no more content in its parent element."
+	},
+	"parents": {
+		"description": "An <ul>, <ol>, or <menu> element. Though not a conforming usage, the obsolete <dir> can also be a parent."
+	},
 	"roles": [
 		"menuitem",
 		"menuitemcheckbox",

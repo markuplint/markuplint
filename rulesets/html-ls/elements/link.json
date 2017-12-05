@@ -81,13 +81,19 @@
 		}
 	],
 	"categories": [
-		"Metadata",
-		"flow",
-		"phrasing"
+		"#Metadata",
+		"#flow",
+		"#phrasing"
 	],
-	"content": "None, it is an empty element.",
-	"omission": "As it is a void element, the start tag must be present and the end tag must not be present",
-	"parents": "Any element that accepts metadata elements. If itemprop is present: any element that accepts phrasing content.",
+	"content": {
+		"description": "None, it is an empty element."
+	},
+	"omission": {
+		"description": "As it is a void element, the start tag must be present and the end tag must not be present"
+	},
+	"parents": {
+		"description": "Any element that accepts metadata elements. If itemprop is present: any element that accepts phrasing content."
+	},
 	"roles": [
 		"None"
 	]

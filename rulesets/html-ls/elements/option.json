@@ -21,9 +21,15 @@
 		}
 	],
 	"categories": [],
-	"content": "Text, possibly with escaped characters (like &eacute;).",
-	"omission": "The start tag is mandatory. The end tag is optional if this element is immediately followed by another <option> element or an <optgroup>, or if the parent element has no more content.",
-	"parents": "A <select>, an <optgroup> or a <datalist> element.",
+	"content": {
+		"description": "Text, possibly with escaped characters (like &eacute;)."
+	},
+	"omission": {
+		"description": "The start tag is mandatory. The end tag is optional if this element is immediately followed by another <option> element or an <optgroup>, or if the parent element has no more content."
+	},
+	"parents": {
+		"description": "A <select>, an <optgroup> or a <datalist> element."
+	},
 	"roles": [
 		"None"
 	]

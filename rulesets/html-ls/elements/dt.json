@@ -5,9 +5,15 @@
 		"#global"
 	],
 	"categories": [],
-	"content": "Flow content, but with no <header>, <footer>, sectioning content or heading content descendants.",
-	"omission": "Must have a start tag. The end tag may be omitted if this element is immediately followed by another <dd> element, or if there is no more content in the parent element.",
-	"parents": "Before a <dt> or a <dd> element, inside a <dl> or (in WHATWG HTML) a <div> that is inside a <dl>.",
+	"content": {
+		"description": "Flow content, but with no <header>, <footer>, sectioning content or heading content descendants."
+	},
+	"omission": {
+		"description": "Must have a start tag. The end tag may be omitted if this element is immediately followed by another <dd> element, or if there is no more content in the parent element."
+	},
+	"parents": {
+		"description": "Before a <dt> or a <dd> element, inside a <dl> or (in WHATWG HTML) a <div> that is inside a <dl>."
+	},
 	"roles": [
 		"None"
 	]

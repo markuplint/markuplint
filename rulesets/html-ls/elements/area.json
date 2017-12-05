@@ -9,12 +9,18 @@
 		}
 	],
 	"categories": [
-		"Flow",
-		"phrasing"
+		"#Flow",
+		"#phrasing"
 	],
-	"content": "None, it is an empty element.",
-	"omission": "Must have a start tag and must not have an end tag.",
-	"parents": "Any element that accepts phrasing content. The <area> element must have an ancestor <map>, but it need not be a direct parent.",
+	"content": {
+		"description": "None, it is an empty element."
+	},
+	"omission": {
+		"description": "Must have a start tag and must not have an end tag."
+	},
+	"parents": {
+		"description": "Any element that accepts phrasing content. The <area> element must have an ancestor <map>, but it need not be a direct parent."
+	},
 	"roles": [
 		"None"
 	]

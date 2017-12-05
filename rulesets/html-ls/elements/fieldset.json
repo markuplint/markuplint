@@ -17,12 +17,18 @@
 		}
 	],
 	"categories": [
-		"Flow",
-		"palpable"
+		"#Flow",
+		"#palpable"
 	],
-	"content": "An optional <legend> element, followed by flow content.",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts flow content.",
+	"content": {
+		"description": "An optional <legend> element, followed by flow content."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts flow content."
+	},
 	"roles": [
 		"group",
 		"presentation"

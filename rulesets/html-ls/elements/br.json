@@ -9,12 +9,18 @@
 		}
 	],
 	"categories": [
-		"Flow",
-		"phrasing"
+		"#Flow",
+		"#phrasing"
 	],
-	"content": "None, it is an empty element.",
-	"omission": "Must have a start tag, and must not have an end tag. In XHTML documents, write this element as <br />.",
-	"parents": "Any element that accepts phrasing content.",
+	"content": {
+		"description": "None, it is an empty element."
+	},
+	"omission": {
+		"description": "Must have a start tag, and must not have an end tag. In XHTML documents, write this element as <br />."
+	},
+	"parents": {
+		"description": "Any element that accepts phrasing content."
+	},
 	"roles": [
 		"Any"
 	]

@@ -9,8 +9,12 @@
 		}
 	],
 	"categories": [
-		"Transparent"
+		"#Transparent"
 	],
-	"content": "Flow content.",
-	"omission": "None, both the starting and ending tag are mandatory."
+	"content": {
+		"description": "Flow content."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	}
 }

@@ -25,9 +25,15 @@
 		}
 	],
 	"categories": [],
-	"content": "None, it is an empty element.",
-	"omission": "It must have start tag, but must not have an end tag.",
-	"parents": "A media element—<audio> or <video>—and it must be placed before any flow content or <track> element.\n\n    A <picture> element, and it must be placed before the <img> element.",
+	"content": {
+		"description": "None, it is an empty element."
+	},
+	"omission": {
+		"description": "It must have start tag, but must not have an end tag."
+	},
+	"parents": {
+		"description": "A media element—<audio> or <video>—and it must be placed before any flow content or <track> element.\n\n    A <picture> element, and it must be placed before the <img> element."
+	},
 	"roles": [
 		"None"
 	]

@@ -13,9 +13,15 @@
 		}
 	],
 	"categories": [],
-	"content": "Flow content.",
-	"omission": "The start tag is mandatory.\n    The end tag may be omitted, if it is immediately followed by a <th> or <td> element or if there are no more data in its parent element.",
-	"parents": "A <tr> element.",
+	"content": {
+		"description": "Flow content."
+	},
+	"omission": {
+		"description": "The start tag is mandatory.\n    The end tag may be omitted, if it is immediately followed by a <th> or <td> element or if there are no more data in its parent element."
+	},
+	"parents": {
+		"description": "A <tr> element."
+	},
 	"roles": [
 		"Any"
 	]

@@ -5,11 +5,17 @@
 		"#global"
 	],
 	"categories": [
-		"Metadata"
+		"#Metadata"
 	],
-	"content": "Text that is not inter-element whitespace",
-	"omission": "Both opening and closing tags are required. Note that leaving off </title> should cause the browser to ignore the rest of the page",
-	"parents": "A <head> element that contains no other <title> element.",
+	"content": {
+		"description": "Text that is not inter-element whitespace"
+	},
+	"omission": {
+		"description": "Both opening and closing tags are required. Note that leaving off </title> should cause the browser to ignore the rest of the page"
+	},
+	"parents": {
+		"description": "A <head> element that contains no other <title> element."
+	},
 	"roles": [
 		"None"
 	]

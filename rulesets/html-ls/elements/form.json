@@ -45,12 +45,18 @@
 		}
 	],
 	"categories": [
-		"Flow",
-		"palpable"
+		"#Flow",
+		"#palpable"
 	],
-	"content": "Flow content, but not containing <form> elements",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts flow content",
+	"content": {
+		"description": "Flow content, but not containing <form> elements"
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts flow content"
+	},
 	"roles": [
 		"group",
 		"presentation"

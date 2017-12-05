@@ -9,13 +9,19 @@
 		}
 	],
 	"categories": [
-		"Flow",
-		"interactive",
-		"palpable"
+		"#Flow",
+		"#interactive",
+		"#palpable"
 	],
-	"content": "One <summary> element followed by flow content.",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts flow content.",
+	"content": {
+		"description": "One <summary> element followed by flow content."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts flow content."
+	},
 	"roles": [
 		"None"
 	]

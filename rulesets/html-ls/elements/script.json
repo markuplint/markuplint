@@ -9,13 +9,19 @@
 		}
 	],
 	"categories": [
-		"Metadata",
-		"Flow",
-		"Phrasing"
+		"#Metadata",
+		"#Flow",
+		"#Phrasing"
 	],
-	"content": "Dynamic script such as text/javascript.",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts metadata content, or any element that accepts phrasing content.",
+	"content": {
+		"description": "Dynamic script such as text/javascript."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts metadata content, or any element that accepts phrasing content."
+	},
 	"roles": [
 		"None"
 	]

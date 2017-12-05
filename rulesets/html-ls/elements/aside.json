@@ -5,13 +5,19 @@
 		"#global"
 	],
 	"categories": [
-		"Flow",
-		"sectioning",
-		"palpable"
+		"#Flow",
+		"#sectioning",
+		"#palpable"
 	],
-	"content": "Flow content.",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts flow content. Note that an <aside> element must not be a descendant of an <address> element.",
+	"content": {
+		"description": "Flow content."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts flow content. Note that an <aside> element must not be a descendant of an <address> element."
+	},
 	"roles": [
 		"feed",
 		"note",

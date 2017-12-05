@@ -9,11 +9,17 @@
 		}
 	],
 	"categories": [
-		"Flow"
+		"#Flow"
 	],
-	"content": "Flow content",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts flow content",
+	"content": {
+		"description": "Flow content"
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts flow content"
+	},
 	"roles": [
 		"alertdialog"
 	]

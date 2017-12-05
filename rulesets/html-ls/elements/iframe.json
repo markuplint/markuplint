@@ -73,15 +73,21 @@
 		}
 	],
 	"categories": [
-		"Flow",
-		"phrasing",
-		"embedded",
-		"interactive",
-		"palpable"
+		"#Flow",
+		"#phrasing",
+		"#embedded",
+		"#interactive",
+		"#palpable"
 	],
-	"content": "Special, see prose",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts embedded content.",
+	"content": {
+		"description": "Special, see prose"
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts embedded content."
+	},
 	"roles": [
 		"application",
 		"document",

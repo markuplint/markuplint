@@ -17,9 +17,15 @@
 		}
 	],
 	"categories": [],
-	"content": "One <head> element, followed by one <body> element.",
-	"omission": "The start tag may be omitted if the first thing inside the <html> element is not a comment.\n    The end tag may be omitted if the <html> element is not immediately followed by a comment, and it contains a <body> element either that is not empty or whose start tag is present.",
-	"parents": "As the root element of a document, or wherever a subdocument fragment is allowed in a compound document.",
+	"content": {
+		"description": "One <head> element, followed by one <body> element."
+	},
+	"omission": {
+		"description": "The start tag may be omitted if the first thing inside the <html> element is not a comment.\n    The end tag may be omitted if the <html> element is not immediately followed by a comment, and it contains a <body> element either that is not empty or whose start tag is present."
+	},
+	"parents": {
+		"description": "As the root element of a document, or wherever a subdocument fragment is allowed in a compound document."
+	},
 	"roles": [
 		"None"
 	]

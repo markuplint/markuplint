@@ -5,9 +5,15 @@
 		"#global"
 	],
 	"categories": [],
-	"content": "Phrasing content.",
-	"omission": "The end tag may be omitted if the <rt> element is immediately followed by an <rt> or <rp> element, or if there is no more content in the parent element",
-	"parents": "A <ruby> element.",
+	"content": {
+		"description": "Phrasing content."
+	},
+	"omission": {
+		"description": "The end tag may be omitted if the <rt> element is immediately followed by an <rt> or <rp> element, or if there is no more content in the parent element"
+	},
+	"parents": {
+		"description": "A <ruby> element."
+	},
 	"roles": [
 		"Any"
 	]

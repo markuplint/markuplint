@@ -5,9 +5,15 @@
 		"#global"
 	],
 	"categories": [],
-	"content": "Flow content.",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "A <figure> element; the <figcaption> element must be its first or last child.",
+	"content": {
+		"description": "Flow content."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "A <figure> element; the <figcaption> element must be its first or last child."
+	},
 	"roles": [
 		"group",
 		"presentation"

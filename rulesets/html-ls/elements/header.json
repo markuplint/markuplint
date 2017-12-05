@@ -5,12 +5,18 @@
 		"#global"
 	],
 	"categories": [
-		"Flow",
-		"palpable"
+		"#Flow",
+		"#palpable"
 	],
-	"content": "Flow content, but with no <header> or <footer> descendant.",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts flow content. Note that a <header> element must not be a descendant of an <address>, <footer> or another <header> element.",
+	"content": {
+		"description": "Flow content, but with no <header> or <footer> descendant."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts flow content. Note that a <header> element must not be a descendant of an <address>, <footer> or another <header> element."
+	},
 	"roles": [
 		"group",
 		"presentation"

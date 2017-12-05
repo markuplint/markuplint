@@ -5,12 +5,18 @@
 		"#global"
 	],
 	"categories": [
-		"Flow",
-		"phrasing"
+		"#Flow",
+		"#phrasing"
 	],
-	"content": "Phrasing content",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts phrasing content, or any element that accepts flow content.",
+	"content": {
+		"description": "Phrasing content"
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts phrasing content, or any element that accepts flow content."
+	},
 	"roles": [
 		"Any"
 	]

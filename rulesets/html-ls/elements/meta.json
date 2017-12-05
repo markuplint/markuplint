@@ -5,13 +5,19 @@
 		"#global"
 	],
 	"categories": [
-		"Metadata",
-		"flow",
-		"phrasing"
+		"#Metadata",
+		"#flow",
+		"#phrasing"
 	],
-	"content": "None, it is an empty element.",
-	"omission": "As it is a void element, the start tag must be present and the end tag must not be present.",
-	"parents": "<meta charset>, <meta http-equiv>: a <head> element. If the http-equiv is not an encoding declaration, it can also be inside a <noscript> element, itself inside a <head> element.",
+	"content": {
+		"description": "None, it is an empty element."
+	},
+	"omission": {
+		"description": "As it is a void element, the start tag must be present and the end tag must not be present."
+	},
+	"parents": {
+		"description": "<meta charset>, <meta http-equiv>: a <head> element. If the http-equiv is not an encoding declaration, it can also be inside a <noscript> element, itself inside a <head> element."
+	},
 	"roles": [
 		"None"
 	]

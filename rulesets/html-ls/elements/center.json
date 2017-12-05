@@ -1,3 +1,6 @@
 {
-	"obsolete": true
+	"obsolete": true,
+	"tagName": "center",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/center",
+	"attr": []
 }

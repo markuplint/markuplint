@@ -5,13 +5,19 @@
 		"#global"
 	],
 	"categories": [
-		"Flow",
-		"phrasing",
-		"embedded"
+		"#Flow",
+		"#phrasing",
+		"#embedded"
 	],
-	"content": "Zero or more <source> elements, followed by one <img> element, optionally intermixed with script-supporting elements.",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that allows embedded content.",
+	"content": {
+		"description": "Zero or more <source> elements, followed by one <img> element, optionally intermixed with script-supporting elements."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that allows embedded content."
+	},
 	"roles": [
 		"None"
 	]

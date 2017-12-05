@@ -5,9 +5,15 @@
 		"#global"
 	],
 	"categories": [],
-	"content": "Phrasing content or <rt> elements.",
-	"omission": "The closing tag can be omitted if it is immediately followed by a <rb>, <rtc> or <rt> element opening tag or by its parent closing tag.",
-	"parents": "A <ruby> element.",
+	"content": {
+		"description": "Phrasing content or <rt> elements."
+	},
+	"omission": {
+		"description": "The closing tag can be omitted if it is immediately followed by a <rb>, <rtc> or <rt> element opening tag or by its parent closing tag."
+	},
+	"parents": {
+		"description": "A <ruby> element."
+	},
 	"roles": [
 		"Any"
 	]

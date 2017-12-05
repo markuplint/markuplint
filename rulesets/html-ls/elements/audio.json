@@ -45,15 +45,21 @@
 		}
 	],
 	"categories": [
-		"Flow",
-		"phrasing",
-		"embedded",
-		"interactive",
-		"palpable"
+		"#Flow",
+		"#phrasing",
+		"#embedded",
+		"#interactive",
+		"#palpable"
 	],
-	"content": "If the element has a src attribute: zero or more <track> element, followed by transparent content that contains no media elements, that is no <audio> or <video>\n    Else: zero or more <source> element, followed by zero or more <track> element, followed by transparent content that contains no media elements, that is no <audio> or <video>.",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts embedded content.",
+	"content": {
+		"description": "If the element has a src attribute: zero or more <track> element, followed by transparent content that contains no media elements, that is no <audio> or <video>\n    Else: zero or more <source> element, followed by zero or more <track> element, followed by transparent content that contains no media elements, that is no <audio> or <video>."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts embedded content."
+	},
 	"roles": [
 		"application"
 	]

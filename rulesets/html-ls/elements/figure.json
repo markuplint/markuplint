@@ -5,12 +5,18 @@
 		"#global"
 	],
 	"categories": [
-		"Flow",
-		"palpable"
+		"#Flow",
+		"#palpable"
 	],
-	"content": "A <figcaption> element, followed by flow content; or flow content followed by a <figcaption> element; or flow content.",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts Flow content.",
+	"content": {
+		"description": "A <figcaption> element, followed by flow content; or flow content followed by a <figcaption> element; or flow content."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts Flow content."
+	},
 	"roles": [
 		"group",
 		"presentation"

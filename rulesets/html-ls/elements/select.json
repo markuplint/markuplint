@@ -33,13 +33,19 @@
 		}
 	],
 	"categories": [
-		"flow",
-		"phrasing",
-		"interactive"
+		"#flow",
+		"#phrasing",
+		"#interactive"
 	],
-	"content": "Zero or more <option> or <optgroup> elements.",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "any element that accepts phrasing content",
+	"content": {
+		"description": "Zero or more <option> or <optgroup> elements."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "any element that accepts phrasing content"
+	},
 	"roles": [
 		"menu"
 	]

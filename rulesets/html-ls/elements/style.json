@@ -25,12 +25,18 @@
 		}
 	],
 	"categories": [
-		"Metadata",
-		"flow"
+		"#Metadata",
+		"#flow"
 	],
-	"content": "Text content matching the type attribute, that is text/css.",
-	"omission": "Neither tag is omissible.",
-	"parents": "Any element that accepts metadata content.",
+	"content": {
+		"description": "Text content matching the type attribute, that is text/css."
+	},
+	"omission": {
+		"description": "Neither tag is omissible."
+	},
+	"parents": {
+		"description": "Any element that accepts metadata content."
+	},
 	"roles": [
 		"None"
 	]

@@ -16,6 +16,9 @@ const writeFile = util.promisify(fs.writeFile);
 		p.push(getElementMetadata(url));
 	}
 	await Promise.all(...p);
+	// for (const url of urlList) {
+	// 	await getElementMetadata(url);
+	// }
 	console.log(`🎉 DONE: Scraped.`);
 })();
 
@@ -85,47 +88,50 @@ async function getElementMetadata (url) {
 			}
 		}
 		const attrHeading = document.getElementById('Attributes');
-		let attrNextEl = nextElementSibling(attrHeading);
-		if (attrNextEl && attrNextEl.nodeName === 'P') {
-			if (/global attributes/i.test(attrNextEl.textContent)) {
-				resultObj.attr.push('#global');
+		if (attrHeading) {
+			let attrNextEl = nextElementSibling(attrHeading);
+			if (attrNextEl && attrNextEl.nodeName === 'P') {
+				if (/global attributes/i.test(attrNextEl.textContent)) {
+					resultObj.attr.push('#global');
+				}
+				attrNextEl = nextElementSibling(attrNextEl);
 			}
-			attrNextEl = nextElementSibling(attrNextEl);
-		}
-		if (attrNextEl && attrNextEl.nodeName === 'DL') {
-			const dtList = attrNextEl.querySelectorAll('dt');
-			for (const dt of dtList) {
-				const attrName = dt.querySelector('code').textContent;
-				const dd = nextElementSibling(dt);
-				if (dd) {
-					resultObj.attr.push({
-						name: attrName,
-						description: dd.textContent,
-					});
-				} else {
-					resultObj.attr.push(attrName);
+			if (attrNextEl && attrNextEl.nodeName === 'DL') {
+				const dtList = attrNextEl.querySelectorAll('dt');
+				for (const dt of dtList) {
+					const attrName = dt.querySelector('code').textContent;
+					const dd = nextElementSibling(dt);
+					if (dd) {
+						resultObj.attr.push({
+							name: attrName,
+							description: dd.textContent,
+						});
+					} else {
+						resultObj.attr.push(attrName);
+					}
 				}
 			}
 		}
 		const obsoleteAttrHeading = document.getElementById('Obsolete');
-		let obsoleteAttrNextEl = nextElementSibling(obsoleteAttrHeading);
-		if (obsoleteAttrNextEl && obsoleteAttrNextEl.nodeName === 'DL') {
-			const dtList = obsoleteAttrNextEl.querySelectorAll('dt');
-			for (const dt of dtList) {
-				const attrName = dt.querySelector('code').textContent;
-				const dd = nextElementSibling(dt);
-				if (dd) {
-					resultObj.attr.push({
-						name: attrName,
-						obsolete: true,
-						description: dd.textContent,
-					});
-				} else {
-					resultObj.attr.push(attrName);
+		if (obsoleteAttrHeading) {
+			let obsoleteAttrNextEl = nextElementSibling(obsoleteAttrHeading);
+			if (obsoleteAttrNextEl && obsoleteAttrNextEl.nodeName === 'DL') {
+				const dtList = obsoleteAttrNextEl.querySelectorAll('dt');
+				for (const dt of dtList) {
+					const attrName = dt.querySelector('code').textContent;
+					const dd = nextElementSibling(dt);
+					if (dd) {
+						resultObj.attr.push({
+							name: attrName,
+							obsolete: true,
+							description: dd.textContent,
+						});
+					} else {
+						resultObj.attr.push(attrName);
+					}
 				}
 			}
 		}
-
 	}
 	const jsonPath = `${outDir}/${tagName}.json`;
 	const current = require(jsonPath);
@@ -152,7 +158,7 @@ async function getDocumentfromURL (url) {
 	return dom.window.document;
 }
 
-function nextElementSibling(el) {
+function nextElementSibling (el) {
 	var e = el.nextSibling;
 	while (e && 1 !== e.nodeType)
 		e = e.nextSibling;

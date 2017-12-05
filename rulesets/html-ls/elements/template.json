@@ -5,13 +5,19 @@
 		"#global"
 	],
 	"categories": [
-		"Metadata",
-		"flow",
-		"phrasing"
+		"#Metadata",
+		"#flow",
+		"#phrasing"
 	],
-	"content": "No restrictions",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "<body>, <frameset>, <head>, <dl> and <colgroup> without a span attribute",
+	"content": {
+		"description": "No restrictions"
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "<body>, <frameset>, <head>, <dl> and <colgroup> without a span attribute"
+	},
 	"roles": [
 		"None"
 	]

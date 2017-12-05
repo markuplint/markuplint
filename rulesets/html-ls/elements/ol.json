@@ -21,12 +21,18 @@
 		}
 	],
 	"categories": [
-		"Flow",
-		"palpable"
+		"#Flow",
+		"#palpable"
 	],
-	"content": "Zero or more <li> elements, which in turn often contain nested <ol> or <ul> elements.",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts flow content.",
+	"content": {
+		"description": "Zero or more <li> elements, which in turn often contain nested <ol> or <ul> elements."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts flow content."
+	},
 	"roles": [
 		"directory",
 		"group",

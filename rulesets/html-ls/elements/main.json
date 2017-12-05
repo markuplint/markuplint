@@ -5,12 +5,18 @@
 		"#global"
 	],
 	"categories": [
-		"Flow",
-		"palpable"
+		"#Flow",
+		"#palpable"
 	],
-	"content": "Flow content.",
-	"omission": "None; both the starting and ending tags are mandatory.",
-	"parents": "Any element that accepts flow content (WHATWG). However, the W3C specification doesn't permit <main> to be used as a descendant of  <article>, <aside>, <footer>, <header>, or <nav>.",
+	"content": {
+		"description": "Flow content."
+	},
+	"omission": {
+		"description": "None; both the starting and ending tags are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts flow content (WHATWG). However, the W3C specification doesn't permit <main> to be used as a descendant of  <article>, <aside>, <footer>, <header>, or <nav>."
+	},
 	"roles": [
 		"The main role is applied to <main> by default",
 		"and the presentation role is permitted as well."

@@ -69,15 +69,21 @@
 		}
 	],
 	"categories": [
-		"Flow",
-		"phrasing",
-		"embedded",
-		"palpable",
-		"interactive"
+		"#Flow",
+		"#phrasing",
+		"#embedded",
+		"#palpable",
+		"#interactive"
 	],
-	"content": "zero or more <param> elements, then transparent.",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts embedded content.",
+	"content": {
+		"description": "zero or more <param> elements, then transparent."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts embedded content."
+	},
 	"roles": [
 		"application",
 		"document",

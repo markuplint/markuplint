@@ -5,9 +5,15 @@
 		"#global"
 	],
 	"categories": [],
-	"content": "Phrasing content.",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "A <fieldset> whose first child is this <legend> element",
+	"content": {
+		"description": "Phrasing content."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "A <fieldset> whose first child is this <legend> element"
+	},
 	"roles": [
 		"None"
 	]

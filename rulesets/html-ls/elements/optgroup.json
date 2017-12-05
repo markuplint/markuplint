@@ -13,9 +13,15 @@
 		}
 	],
 	"categories": [],
-	"content": "Zero or more <option> elements.",
-	"omission": "The start tag is mandatory. The end tag is optional if this element is immediately followed by another <optgroup> element, or if the parent element has no more content.",
-	"parents": "A <select> element.",
+	"content": {
+		"description": "Zero or more <option> elements."
+	},
+	"omission": {
+		"description": "The start tag is mandatory. The end tag is optional if this element is immediately followed by another <optgroup> element, or if the parent element has no more content."
+	},
+	"parents": {
+		"description": "A <select> element."
+	},
 	"roles": [
 		"None"
 	]
