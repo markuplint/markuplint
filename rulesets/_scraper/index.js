@@ -7,19 +7,24 @@ const deepAssign = require('deep-assign');
 
 const writeFile = util.promisify(fs.writeFile);
 
+const PARALLEL = false;
+
 // MAIN
 (async () => {
 	const URL_LIST_PAGE = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element';
 	const urlList = await getList(URL_LIST_PAGE);
 	process.stdout.write(`\nDone: Getting list.\n`);
-	const p = [];
-	for (const url of urlList) {
-		p.push(getElementMetadata(url));
+	if (PARALLEL) {
+		const p = [];
+		for (const url of urlList) {
+			p.push(getElementMetadata(url));
+		}
+		await Promise.all(...p);
+	} else {
+		for (const url of urlList) {
+			await getElementMetadata(url);
+		}
 	}
-	await Promise.all(...p);
-	// for (const url of urlList) {
-	// 	await getElementMetadata(url);
-	// }
 	console.log(`🎉 DONE: Scraped.`);
 })();
 
@@ -134,11 +139,14 @@ async function getElementMetadata (url) {
 			}
 		}
 	}
-	const jsonPath = `${outDir}/${tagName}.json`;
-	const current = require(jsonPath);
-	const outputObj = deepAssign(current, resultObj);
-	await writeFile(jsonPath, JSON.stringify(outputObj, null, '\t'));
-	process.stdout.write(` => ${jsonPath}\n`);
+	await mergeJSON(`${outDir}/${tagName}.json`, resultObj);
+	process.stdout.write(` => ${outDir}/${tagName}.json\n`);
+}
+
+async function mergeJSON (filepath, data) {
+	const current = require(filepath);
+	const outputObj = deepAssign(current, data);
+	await writeFile(filepath, JSON.stringify(outputObj, null, '\t'));
 }
 
 async function getList (url) {

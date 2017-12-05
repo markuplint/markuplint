@@ -18,7 +18,8 @@
     "build": "gulp",
     "dev": "gulp watch",
     "test": "nyc ava && nyc report --reporter=html",
-    "cover": "nyc ava && nyc report --reporter=text-lcov | coveralls"
+    "cover": "nyc ava && nyc report --reporter=text-lcov | coveralls",
+    "scrape": "node ./rulesets/_scraper/"
   },
   "dependencies": {
     "cli-color": "^1.2.0",
