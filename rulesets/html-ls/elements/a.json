@@ -68,9 +68,16 @@
 		"#palpable"
 	],
 	"content": {
+		"value": [
+			"#transparent",
+			"#flow",
+			"#phrasing",
+			"!#interactive"
+		],
 		"description": "Transparent, containing either flow content (excluding interactive content) or phrasing content."
 	},
 	"omission": {
+		"value": "none",
 		"description": "None, both the starting and ending tag are mandatory."
 	},
 	"parents": {

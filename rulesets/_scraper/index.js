@@ -3,6 +3,7 @@ const path = require('path');
 const util = require('util');
 const fetch = require('node-fetch');
 const jsdom = require('jsdom');
+const deepAssign = require('deep-assign');
 
 const writeFile = util.promisify(fs.writeFile);
 
@@ -135,9 +136,9 @@ async function getElementMetadata (url) {
 	}
 	const jsonPath = `${outDir}/${tagName}.json`;
 	const current = require(jsonPath);
-	const outputObj = Object.assign(current, resultObj);
+	const outputObj = deepAssign(current, resultObj);
 	await writeFile(jsonPath, JSON.stringify(outputObj, null, '\t'));
-	process.stdout.write(` => ${outDir}/${tagName}.json\n`);
+	process.stdout.write(` => ${jsonPath}\n`);
 }
 
 async function getList (url) {
