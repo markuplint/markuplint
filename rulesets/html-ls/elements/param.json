@@ -1,0 +1,9 @@
+{
+	"categories": [],
+	"content": "None, it is an empty element.",
+	"omission": "As it is a void element, the start tag must be present and the end tag must not be present.",
+	"parents": "An <object> before any flow content.",
+	"roles": [
+		"None"
+	]
+}

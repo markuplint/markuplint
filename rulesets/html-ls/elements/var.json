@@ -5,8 +5,8 @@
 		"palpable"
 	],
 	"content": "Phrasing content",
-	"omission": "None, both the starting and ending tag are mandatory.",
-	"parents": "Any element that accepts phrasing content",
+	"omission": "Both start and end tags are required",
+	"parents": "Any element that accepts phrasing content.",
 	"roles": [
 		"Any"
 	],

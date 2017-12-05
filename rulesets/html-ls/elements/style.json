@@ -1,0 +1,12 @@
+{
+	"categories": [
+		"Metadata",
+		"flow"
+	],
+	"content": "Text content matching the type attribute, that is text/css.",
+	"omission": "Neither tag is omissible.",
+	"parents": "Any element that accepts metadata content.",
+	"roles": [
+		"None"
+	]
+}

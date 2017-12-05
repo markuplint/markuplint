@@ -1,0 +1,9 @@
+{
+	"categories": [],
+	"content": "If the span attribute is present: none, it is an empty element.\n    If the attribute is not present: zero or more <col> element",
+	"omission": "The start tag may be omitted, if it has a <col> element as its first child and if it is not preceded by a <colgroup> whose end tag has been omitted.\n    The end tag may be omitted, if it is not followed by a space or a comment.",
+	"parents": "A <table> element. The <colgroup> must appear after any optional <caption> element but before any <thead>, <th>, <tbody>, <tfoot> and <tr> element.",
+	"roles": [
+		"None"
+	]
+}

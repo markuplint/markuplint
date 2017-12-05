@@ -1,0 +1,9 @@
+{
+	"categories": [],
+	"content": "Flow content.",
+	"omission": "The start tag may be omitted if the first thing inside it is not a space character, comment, <script> element or <style> element. The end tag may be omitted if the body element has contents or has a start tag, and is not immediately followed by a comment.",
+	"parents": "It must be the second element of an <html> element.",
+	"roles": [
+		"None"
+	]
+}

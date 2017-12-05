@@ -1,0 +1,12 @@
+{
+	"categories": [
+		"Flow",
+		"palpable"
+	],
+	"content": "Flow content.\n    Or (in WHATWG HTML): If the parent is a <dl> element: one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts flow content.\n    Or (in WHATWG HTML): <dl> element.",
+	"roles": [
+		"Any"
+	]
+}

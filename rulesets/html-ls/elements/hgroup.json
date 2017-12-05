@@ -1,0 +1,14 @@
+{
+	"categories": [
+		"Flow",
+		"heading",
+		"palpable"
+	],
+	"content": "One or more <h1>, <h2>, <h3>, <h4>, <h5>, and/or <h6>.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts flow content.",
+	"roles": [
+		"tab",
+		"presentation"
+	]
+}

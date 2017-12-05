@@ -1,0 +1,14 @@
+{
+	"categories": [
+		"Flow",
+		"phrasing",
+		"interactive",
+		"palpable"
+	],
+	"content": "Phrasing content, but no descendant label elements. No labelable elements other than the labeled control are allowed.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts phrasing content.",
+	"roles": [
+		"None"
+	]
+}

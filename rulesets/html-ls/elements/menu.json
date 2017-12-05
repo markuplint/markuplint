@@ -1,0 +1,12 @@
+{
+	"categories": [
+		"Flow",
+		"palpable"
+	],
+	"content": "If the element is in the list menu state: flow content, or alternatively, zero or more occurrences of <li>, <script>, and <template>.\n    If the element is in the context menu state: zero or more occurrences, in any order, of <menu> (context menu state only), <menuitem>, <hr>, <script>, and <template>.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts flow content.",
+	"roles": [
+		"None"
+	]
+}

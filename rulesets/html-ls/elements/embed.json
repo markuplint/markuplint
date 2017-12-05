@@ -1,0 +1,18 @@
+{
+	"categories": [
+		"Flow",
+		"phrasing",
+		"embedded",
+		"interactive",
+		"palpable"
+	],
+	"content": "None, it is an empty element.",
+	"omission": "Must have a start tag, and must not have an end tag.",
+	"parents": "Any element that accepts embedded content.",
+	"roles": [
+		"application",
+		"document",
+		"img",
+		"presentation"
+	]
+}

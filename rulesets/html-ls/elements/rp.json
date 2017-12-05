@@ -1,0 +1,9 @@
+{
+	"categories": [],
+	"content": "Text",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "A <ruby> element. <rp> must be positioned immediately before or after an <rt> element.",
+	"roles": [
+		"Any"
+	]
+}

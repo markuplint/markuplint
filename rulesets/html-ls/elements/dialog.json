@@ -1,0 +1,11 @@
+{
+	"categories": [
+		"Flow"
+	],
+	"content": "Flow content",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts flow content",
+	"roles": [
+		"alertdialog"
+	]
+}

@@ -1,0 +1,14 @@
+{
+	"categories": [
+		"Flow",
+		"phrasing",
+		"labelable",
+		"palpable"
+	],
+	"content": "Phrasing content, but there must be no <progress> element among its descendants.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts phrasing content.",
+	"roles": [
+		"None"
+	]
+}

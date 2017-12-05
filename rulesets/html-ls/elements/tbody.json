@@ -1,0 +1,9 @@
+{
+	"categories": [],
+	"content": "Zero or more <tr> elements.",
+	"omission": "The <tbody> element is not a required child element for a parent <table> element  to graphically render. However, it must not be present, if its parent <table> element  has a <tr> element as a child.",
+	"parents": "Within the required parent <table> element, the <tbody> element can be added after a <caption>, <colgroup>, <thead> and a <tfoot> element.",
+	"roles": [
+		"Any"
+	]
+}

@@ -1,0 +1,13 @@
+{
+	"categories": [
+		"Flow",
+		"phrasing",
+		"palpable"
+	],
+	"content": "Phrasing content.",
+	"omission": "None; both the starting and ending tags are mandatory.",
+	"parents": "Any element that accepts phrasing content.",
+	"roles": [
+		"Any"
+	]
+}

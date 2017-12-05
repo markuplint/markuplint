@@ -1,0 +1,14 @@
+{
+	"categories": [
+		"Flow",
+		"phrasing",
+		"embedded",
+		"palpable"
+	],
+	"content": "Transparent but with no interactive content descendants except for <a> elements, <button> elements, <input> elements whose type attribute is checkbox, radio, or button.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts phrasing content.",
+	"roles": [
+		"Any"
+	]
+}

@@ -1,0 +1,9 @@
+{
+	"categories": [],
+	"content": "Phrasing content.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "A <fieldset> whose first child is this <legend> element",
+	"roles": [
+		"None"
+	]
+}

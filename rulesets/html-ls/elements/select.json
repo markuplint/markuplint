@@ -1,0 +1,13 @@
+{
+	"categories": [
+		"flow",
+		"phrasing",
+		"interactive"
+	],
+	"content": "Zero or more <option> or <optgroup> elements.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "any element that accepts phrasing content",
+	"roles": [
+		"menu"
+	]
+}

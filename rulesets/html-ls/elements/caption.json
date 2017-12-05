@@ -1,0 +1,9 @@
+{
+	"categories": [],
+	"content": "Flow content.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "A <table> element, as its first descendant.",
+	"roles": [
+		"None"
+	]
+}

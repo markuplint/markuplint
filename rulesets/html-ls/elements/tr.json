@@ -1,0 +1,9 @@
+{
+	"categories": [],
+	"content": "Zero or more <td> and/or <th> elements; script-supporting elements (<script> and <template>) are also allowed",
+	"omission": "Start tag is mandatory. End tag may be omitted if the <tr> element is immediately followed by a <tr> element, or if the row is the last element in its parent table group (<thead>, <tbody> or <tfoot>) element",
+	"parents": "<table> (only if the table has no child <tbody> element, and even then only after any <caption>, <colgroup>, and <thead> elements); otherwise, the parent must be <thead>, <tbody> or <tfoot>",
+	"roles": [
+		"Any"
+	]
+}

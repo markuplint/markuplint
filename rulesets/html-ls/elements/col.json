@@ -1,0 +1,9 @@
+{
+	"categories": [],
+	"content": "None, it is an empty element.",
+	"omission": "The start tag is mandatory, but, as it is a void element, the use of an end tag is forbidden.",
+	"parents": "<colgroup> only, though it can be implicitly defined as its start tag is not mandatory. The <colgroup> must not have a span attribute.",
+	"roles": [
+		"None"
+	]
+}

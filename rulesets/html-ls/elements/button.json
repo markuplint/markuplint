@@ -1,0 +1,21 @@
+{
+	"categories": [
+		"Flow",
+		"phrasing",
+		"Interactive",
+		"palpable"
+	],
+	"content": "Phrasing content.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts phrasing content.",
+	"roles": [
+		"checkbox",
+		"link",
+		"menuitem",
+		"menuitemcheckbox",
+		"menuitemradio",
+		"radio",
+		"switch",
+		"tab"
+	]
+}

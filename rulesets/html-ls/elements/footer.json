@@ -1,0 +1,13 @@
+{
+	"categories": [
+		"Flow",
+		"palpable"
+	],
+	"content": "Flow content, but with no <footer> or <header> descendants.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts flow content. Note that a <footer> element must not be a descendant of an <address>, <header> or another <footer> element.",
+	"roles": [
+		"group",
+		"presentation"
+	]
+}

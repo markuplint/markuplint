@@ -1,0 +1,9 @@
+{
+	"categories": [],
+	"content": "Zero or more <tr> elements.",
+	"omission": "The start tag is mandatory. The end tag may be omitted if  there is no more content in the parent <table> element.",
+	"parents": "A <table> element. The <tfoot> must appear after any <caption>, <colgroup>, <thead>, <tbody>, or <tr> element.  Note that this is the requirement as of HTML5.\n    HTML 4 The <tfoot> element cannot be placed after any <tbody> and <tr> element. Note that this directly contradicts the above normative requirement from HTML5.",
+	"roles": [
+		"Any"
+	]
+}

@@ -1,0 +1,9 @@
+{
+	"categories": [],
+	"content": "Zero or more <tr> elements.",
+	"omission": "The start tag is mandatory. The end tag may be omitted if the <thead> element is immediately followed by a <tbody> or <tfoot> element.",
+	"parents": "A <table> element. The <thead> must appear after any <caption> or <colgroup> element, even implicitly defined, but before any <tbody>, <tfoot> and <tr> element.",
+	"roles": [
+		"Any"
+	]
+}

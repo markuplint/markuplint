@@ -1,44 +1,23 @@
 {
-  "nodeName": "a",
-  "contentCategories": [
-    "flowContent",
-    "phrasingContent",
-    "interactiveContent",
-    "palpableContent"
-  ],
-  "permittedContent": [
-    [
-      "#flowContent",
-      {
-        "excludes": [
-          "#interactiveContent"
-        ]
-      }
-    ],
-    "#phrasingContent",
-    "#transparentContent"
-  ],
-  "tagOmission": "none",
-  "permittedARIARoles": [
-    "button",
-    "checkbox",
-    "menuitem",
-    "menuitemcheckbox",
-    "menuitemradio",
-    "option",
-    "radio",
-    "switch",
-    "tab",
-    "treeitem"
-  ],
-  "attributes": [
-    "#global",
-    "download",
-    "href",
-    "hreflang",
-    "referrerpolicy",
-    "rel",
-    "target",
-    "type"
-  ]
+	"categories": [
+		"Flow",
+		"phrasing",
+		"interactive",
+		"palpable"
+	],
+	"content": "Transparent, containing either flow content (excluding interactive content) or phrasing content.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts phrasing content, or any element that accepts flow content, but always excluding <a> elements (according to the logical principle of symmetry, if <a> tag, as a parent, can not have interactive content, then the same <a> content can not have <a> tag as its parent).",
+	"roles": [
+		"button",
+		"checkbox",
+		"menuitem",
+		"menuitemcheckbox",
+		"menuitemradio",
+		"option",
+		"radio",
+		"switch",
+		"tab",
+		"treeitem"
+	]
 }

@@ -1,0 +1,11 @@
+{
+	"categories": [
+		"Metadata"
+	],
+	"content": "None, it is an empty element.",
+	"omission": "There must be no closing tag.",
+	"parents": "Any <head> that doesn't contain any other <base> element",
+	"roles": [
+		"None"
+	]
+}

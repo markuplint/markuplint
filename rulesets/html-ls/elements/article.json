@@ -1,0 +1,18 @@
+{
+	"categories": [
+		"Flow",
+		"sectioning",
+		"palpable"
+	],
+	"content": "Flow content.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts flow content. Note that an <article> element must not be a descendant of an <address> element.",
+	"roles": [
+		"application",
+		"document",
+		"feed",
+		"main",
+		"presentation",
+		"region"
+	]
+}

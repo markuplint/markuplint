@@ -1,0 +1,14 @@
+{
+	"categories": [
+		"Flow",
+		"heading",
+		"palpable"
+	],
+	"content": "Phrasing content.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts flow content; don't use as a child of <hgroup> element, it is now deprecated",
+	"roles": [
+		"tab",
+		"presentation"
+	]
+}

@@ -1,0 +1,13 @@
+{
+	"categories": [
+		"Metadata",
+		"flow",
+		"phrasing"
+	],
+	"content": "When scripting is disabled and when it is a descendant of the <head> element: in any order, zero or more <link> elements, zero or more <style> elements, and zero or more <meta> elements.\n    When scripting is disabled and when it isn't a descendant of the <head> element: any transparent content, but no <noscript> element must be among its descendants.\n    Otherwise: flow content or phrasing content.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts phrasing content, if there are no ancestor <noscript> element, or in a <head> element (but only for an HTML document), here again if there are no ancestor <noscript> element.",
+	"roles": [
+		"None"
+	]
+}

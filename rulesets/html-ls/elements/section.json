@@ -1,0 +1,28 @@
+{
+	"categories": [
+		"Flow",
+		"Sectioning",
+		"palpable"
+	],
+	"content": "Flow content.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "Any element that accepts flow content. Note that a <section> element must not be a descendant of an <address> element.",
+	"roles": [
+		"alert",
+		"alertdialog",
+		"application",
+		"banner",
+		"complementary",
+		"contentinfo",
+		"dialog",
+		"document",
+		"feed",
+		"log",
+		"main",
+		"marquee",
+		"navigation",
+		"search",
+		"status",
+		"tabpanel"
+	]
+}

@@ -1,0 +1,9 @@
+{
+	"categories": [],
+	"content": "None, it is an empty element.",
+	"omission": "Must have a start tag and must not have an end tag.",
+	"parents": "The <menu> element, where that element is in the popup menu state. (If specified, the type attribute of the <menu> element must be popup; if missing, the parent element of the <menu> must itself be a <menu> in the popup menu state.)",
+	"roles": [
+		"None"
+	]
+}

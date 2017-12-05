@@ -1,0 +1,11 @@
+{
+	"categories": [
+		"Flow"
+	],
+	"content": "None, it is an empty element.",
+	"omission": "It must have start tag, but must not have an end tag.",
+	"parents": "Any element that accepts flow content.",
+	"roles": [
+		"presentation"
+	]
+}

@@ -1,0 +1,9 @@
+{
+	"categories": [],
+	"content": "If the document is an <iframe> srcdoc document, or if title information is available from a higher level protocol, zero or more elements of metadata content.\n    Otherwise, one or more elements of metadata content where exactly one is a <title> element.",
+	"omission": "The start tag may be omitted if the first thing inside the head element is an element.\n    The end tag may be omitted if the first thing following the head element is not a space character or a comment.",
+	"parents": "An <html> element, as its first child.",
+	"roles": [
+		"None"
+	]
+}

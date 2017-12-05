@@ -1,0 +1,10 @@
+{
+	"categories": [],
+	"content": "Flow content.",
+	"omission": "None, both the starting and ending tag are mandatory.",
+	"parents": "A <figure> element; the <figcaption> element must be its first or last child.",
+	"roles": [
+		"group",
+		"presentation"
+	]
+}
