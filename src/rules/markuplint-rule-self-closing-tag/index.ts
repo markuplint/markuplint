@@ -13,7 +13,7 @@ export type DefaultValue = string;
 export interface Options {}
 
 export default class extends Rule<DefaultValue, Options> {
-	public name = 'indentation-attr';
+	public name = 'self-closing-tag';
 
 	public verify (document: Document, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset) {
 		const reports: VerifiedResult[] = [];

@@ -14,17 +14,17 @@ import {
 	Ruleset,
 } from '../../ruleset';
 
-type DefaultValue = 'tab' | number;
+export type DefaultValue = 'tab' | number;
 
 /**
  * `Indentation`
  *
  * *Core rule*
  */
-export default class extends Rule<'tab' | number> {
+export default class extends Rule<DefaultValue> {
 	public name = 'indentation';
 
-	public verify (document: Document, config: RuleConfig<'tab' | number>, ruleset: Ruleset) {
+	public verify (document: Document, config: RuleConfig<DefaultValue>, ruleset: Ruleset) {
 		const reports: VerifiedResult[] = [];
 		let lastNode: Node;
 		document.walk((node) => {

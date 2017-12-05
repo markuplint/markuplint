@@ -79,8 +79,7 @@
         ]
     },
     "rules": {
-        "verify-permitted-contents": true,
-        "indentation": "tab"
+        "permitted-contents": true
     },
     "nodeRules": [
         {
