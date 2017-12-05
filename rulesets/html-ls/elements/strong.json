@@ -1,4 +1,6 @@
 {
+	"tagName": "strong",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong",
 	"attr": [
 		"#global"
 	],

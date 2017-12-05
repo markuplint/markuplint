@@ -1,4 +1,6 @@
 {
+	"tagName": "base",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base",
 	"attr": [
 		"#global",
 		{

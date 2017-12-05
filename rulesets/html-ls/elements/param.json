@@ -1,4 +1,6 @@
 {
+	"tagName": "param",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param",
 	"attr": [
 		"#global",
 		{

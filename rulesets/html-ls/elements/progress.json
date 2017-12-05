@@ -1,4 +1,6 @@
 {
+	"tagName": "progress",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress",
 	"attr": [
 		"#global",
 		{

@@ -1,4 +1,6 @@
 {
+	"tagName": "video",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video",
 	"attr": [
 		"#global",
 		{

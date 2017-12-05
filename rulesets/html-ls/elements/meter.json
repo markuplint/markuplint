@@ -1,4 +1,6 @@
 {
+	"tagName": "meter",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter",
 	"attr": [
 		"#global",
 		{

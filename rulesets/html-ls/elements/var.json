@@ -1,4 +1,6 @@
 {
+	"tagName": "var",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var",
 	"attr": [
 		"#global"
 	],

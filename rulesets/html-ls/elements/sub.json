@@ -1,4 +1,6 @@
 {
+	"tagName": "sub",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub",
 	"attr": [
 		"#global"
 	],

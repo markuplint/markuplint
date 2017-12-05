@@ -1,4 +1,6 @@
 {
+	"tagName": "input",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input",
 	"attr": [],
 	"categories": [
 		"Flow",

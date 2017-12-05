@@ -1,4 +1,6 @@
 {
+	"tagName": "menu",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu",
 	"attr": [
 		"#global",
 		{

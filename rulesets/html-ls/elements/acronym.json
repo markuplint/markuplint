@@ -1,4 +1,6 @@
 {
+	"tagName": "acronym",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/acronym",
 	"attr": [],
 	"obsolete": true
 }

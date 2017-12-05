@@ -1,4 +1,6 @@
 {
+	"tagName": "figcaption",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption",
 	"attr": [
 		"#global"
 	],

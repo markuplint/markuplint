@@ -1,4 +1,6 @@
 {
+	"tagName": "style",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style",
 	"attr": [
 		"#global",
 		{

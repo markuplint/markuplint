@@ -1,4 +1,6 @@
 {
+	"tagName": "address",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address",
 	"attr": [
 		"#global"
 	],

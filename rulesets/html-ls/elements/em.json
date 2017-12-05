@@ -1,4 +1,6 @@
 {
+	"tagName": "em",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em",
 	"attr": [
 		"#global"
 	],

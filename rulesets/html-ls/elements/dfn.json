@@ -1,4 +1,6 @@
 {
+	"tagName": "dfn",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn",
 	"attr": [
 		"#global"
 	],

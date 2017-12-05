@@ -1,4 +1,6 @@
 {
+	"tagName": "aside",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside",
 	"attr": [
 		"#global"
 	],

@@ -1,7 +1,12 @@
 {
+	"tagName": "dialog",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
 	"attr": [
 		"#global",
-		"open"
+		{
+			"name": "open",
+			"description": "Indicates that the dialog is active and available for interaction. When the open attribute is not set, it shouldn't be shown to the user."
+		}
 	],
 	"categories": [
 		"Flow"

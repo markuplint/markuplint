@@ -1,4 +1,6 @@
 {
+	"tagName": "track",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track",
 	"attr": [
 		"#global",
 		{

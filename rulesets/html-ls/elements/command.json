@@ -1,4 +1,6 @@
 {
+	"tagName": "command",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/command",
 	"attr": [],
 	"obsolete": true
 }

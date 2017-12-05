@@ -1,4 +1,6 @@
 {
+	"tagName": "textarea",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
 	"attr": [
 		"#global",
 		{

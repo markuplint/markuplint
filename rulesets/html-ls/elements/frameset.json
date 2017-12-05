@@ -1,4 +1,6 @@
 {
+	"tagName": "frameset",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frameset",
 	"attr": [
 		"#global",
 		{

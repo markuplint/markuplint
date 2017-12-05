@@ -1,4 +1,6 @@
 {
+	"tagName": "image",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/image",
 	"attr": [],
 	"obsolete": true
 }

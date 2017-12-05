@@ -1,4 +1,6 @@
 {
+	"tagName": "applet",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/applet",
 	"attr": [],
 	"obsolete": true
 }

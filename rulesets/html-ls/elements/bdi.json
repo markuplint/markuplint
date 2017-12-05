@@ -1,4 +1,6 @@
 {
+	"tagName": "bdi",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi",
 	"attr": [
 		"#global"
 	],

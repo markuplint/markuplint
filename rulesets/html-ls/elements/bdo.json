@@ -1,4 +1,6 @@
 {
+	"tagName": "bdo",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo",
 	"attr": [
 		"#global",
 		{

@@ -1,4 +1,6 @@
 {
+	"tagName": "basefont",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/basefont",
 	"attr": [],
 	"obsolete": true
 }

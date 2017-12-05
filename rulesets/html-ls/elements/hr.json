@@ -1,4 +1,6 @@
 {
+	"tagName": "hr",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr",
 	"attr": [
 		"#global",
 		{

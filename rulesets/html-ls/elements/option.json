@@ -1,4 +1,6 @@
 {
+	"tagName": "option",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option",
 	"attr": [
 		"#global",
 		{

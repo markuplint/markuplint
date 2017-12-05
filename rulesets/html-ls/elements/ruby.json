@@ -1,4 +1,6 @@
 {
+	"tagName": "ruby",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ruby",
 	"attr": [
 		"#global"
 	],

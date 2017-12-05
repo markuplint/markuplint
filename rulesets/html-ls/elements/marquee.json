@@ -1,4 +1,6 @@
 {
+	"tagName": "marquee",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/marquee",
 	"attr": [],
 	"obsolete": true
 }

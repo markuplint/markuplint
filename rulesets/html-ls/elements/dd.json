@@ -1,4 +1,6 @@
 {
+	"tagName": "dd",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd",
 	"attr": [
 		"#global",
 		{

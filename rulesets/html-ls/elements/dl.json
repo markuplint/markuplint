@@ -1,4 +1,6 @@
 {
+	"tagName": "dl",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl",
 	"attr": [
 		"#global"
 	],

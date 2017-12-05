@@ -1,4 +1,6 @@
 {
+	"tagName": "code",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code",
 	"attr": [
 		"#global"
 	],

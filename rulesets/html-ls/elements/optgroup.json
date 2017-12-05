@@ -1,4 +1,6 @@
 {
+	"tagName": "optgroup",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup",
 	"attr": [
 		"#global",
 		{

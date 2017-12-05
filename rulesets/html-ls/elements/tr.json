@@ -1,4 +1,6 @@
 {
+	"tagName": "tr",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr",
 	"attr": [
 		"#global"
 	],

@@ -1,4 +1,6 @@
 {
+	"tagName": "keygen",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/keygen",
 	"attr": [
 		"#global",
 		{

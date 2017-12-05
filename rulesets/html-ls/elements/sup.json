@@ -1,4 +1,6 @@
 {
+	"tagName": "sup",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup",
 	"attr": [
 		"#global"
 	],

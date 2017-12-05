@@ -1,4 +1,6 @@
 {
+	"tagName": "img",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img",
 	"attr": [
 		"#global",
 		{

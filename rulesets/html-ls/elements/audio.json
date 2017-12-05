@@ -1,4 +1,6 @@
 {
+	"tagName": "audio",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio",
 	"attr": [
 		"#global",
 		{

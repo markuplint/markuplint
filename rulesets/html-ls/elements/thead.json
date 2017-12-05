@@ -1,4 +1,6 @@
 {
+	"tagName": "thead",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead",
 	"attr": [
 		"#global",
 		{

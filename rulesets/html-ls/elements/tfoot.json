@@ -1,4 +1,6 @@
 {
+	"tagName": "tfoot",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot",
 	"attr": [
 		"#global",
 		{

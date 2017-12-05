@@ -1,4 +1,6 @@
 {
+	"tagName": "canvas",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas",
 	"attr": [
 		"#global",
 		{

@@ -1,4 +1,6 @@
 {
+	"tagName": "caption",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption",
 	"attr": [
 		"#global",
 		{

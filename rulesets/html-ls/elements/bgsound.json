@@ -1,4 +1,6 @@
 {
+	"tagName": "bgsound",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bgsound",
 	"attr": [
 		{
 			"name": "balance",

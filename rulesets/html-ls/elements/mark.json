@@ -1,4 +1,6 @@
 {
+	"tagName": "mark",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark",
 	"attr": [
 		"#global"
 	],

@@ -1,4 +1,6 @@
 {
+	"tagName": "section",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section",
 	"attr": [
 		"#global"
 	],

@@ -1,4 +1,6 @@
 {
+	"tagName": "legend",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend",
 	"attr": [
 		"#global"
 	],

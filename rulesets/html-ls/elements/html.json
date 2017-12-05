@@ -1,4 +1,6 @@
 {
+	"tagName": "html",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html",
 	"attr": [
 		"#global",
 		{

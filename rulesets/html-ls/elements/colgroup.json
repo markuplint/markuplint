@@ -1,4 +1,6 @@
 {
+	"tagName": "colgroup",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup",
 	"attr": [
 		"#global",
 		{

@@ -1,4 +1,6 @@
 {
+	"tagName": "frame",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frame",
 	"attr": [
 		"#global",
 		{

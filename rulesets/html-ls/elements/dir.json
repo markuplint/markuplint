@@ -1,4 +1,6 @@
 {
+	"tagName": "dir",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dir",
 	"attr": [],
 	"obsolete": true
 }

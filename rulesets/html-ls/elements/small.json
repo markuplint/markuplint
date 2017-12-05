@@ -1,4 +1,6 @@
 {
+	"tagName": "small",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small",
 	"attr": [
 		"#global"
 	],

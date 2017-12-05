@@ -1,4 +1,6 @@
 {
+	"tagName": "br",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br",
 	"attr": [
 		"#global",
 		{

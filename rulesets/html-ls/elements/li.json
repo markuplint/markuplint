@@ -1,4 +1,6 @@
 {
+	"tagName": "li",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li",
 	"attr": [
 		"#global",
 		{

@@ -1,4 +1,6 @@
 {
+	"tagName": "label",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label",
 	"attr": [
 		"#global",
 		{

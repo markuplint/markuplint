@@ -1,4 +1,6 @@
 {
+	"tagName": "ul",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul",
 	"attr": [
 		"#global",
 		{

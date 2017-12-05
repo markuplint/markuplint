@@ -1,4 +1,6 @@
 {
+	"tagName": "td",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td",
 	"attr": [
 		"#global",
 		{

@@ -1,4 +1,6 @@
 {
+	"tagName": "noscript",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript",
 	"attr": [
 		"#global"
 	],

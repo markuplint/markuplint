@@ -23,11 +23,13 @@ const writeFile = util.promisify(fs.writeFile);
 async function getElementMetadata (url) {
 	const OUT_DIR = 'rulesets/html-ls/elements/';
 	const outDir = path.resolve(OUT_DIR);
-	const resultObj = {
-		attr: [],
-	};
 	const document = await getDocumentfromURL(url);
 	const tagName = url.replace(/^.+\/([a-z][a-z0-1_-]*)\s*$/i, '$1');
+	const resultObj = {
+		tagName,
+		citeFrom: url,
+		attr: [],
+	};
 	const obsolete = document.querySelector('#wikiArticle .obsolete.obsoleteHeader');
 	if (obsolete) {
 		resultObj.obsolete = true;
@@ -49,19 +51,25 @@ async function getElementMetadata (url) {
 					const text = td.textContent;
 					switch (th.textContent.trim()) {
 						case 'Content categories': {
-							resultObj.categories = Array.from(text.match(/[a-z]+\scontent/ig) || []).map(s => s.replace(' content', ''));
+							resultObj.categories = Array.from(text.match(/[a-z]+\scontent/ig) || []).map(s => '#' + s.replace(' content', ''));
 							break;
 						}
 						case 'Permitted content': {
-							resultObj.content = text.trim();
+							resultObj.content = {
+								description: text.trim(),
+							};
 							break;
 						}
 						case 'Tag omission': {
-							resultObj.omission = text.trim();
+							resultObj.omission = {
+								description: text.trim(),
+							};
 							break;
 						}
 						case 'Permitted parents': {
-							resultObj.parents = text.trim();
+							resultObj.parents = {
+								description: text.trim(),
+							};
 							break;
 						}
 						case 'Permitted ARIA roles': {
@@ -77,15 +85,15 @@ async function getElementMetadata (url) {
 			}
 		}
 		const attrHeading = document.getElementById('Attributes');
-		let next = nextElementSibling(attrHeading);
-		if (next && next.nodeName === 'P') {
-			if (/global attributes/i.test(next.textContent)) {
+		let attrNextEl = nextElementSibling(attrHeading);
+		if (attrNextEl && attrNextEl.nodeName === 'P') {
+			if (/global attributes/i.test(attrNextEl.textContent)) {
 				resultObj.attr.push('#global');
 			}
-			next = nextElementSibling(next);
+			attrNextEl = nextElementSibling(attrNextEl);
 		}
-		if (next && next.nodeName === 'DL') {
-			const dtList = next.querySelectorAll('dt');
+		if (attrNextEl && attrNextEl.nodeName === 'DL') {
+			const dtList = attrNextEl.querySelectorAll('dt');
 			for (const dt of dtList) {
 				const attrName = dt.querySelector('code').textContent;
 				const dd = nextElementSibling(dt);
@@ -99,9 +107,30 @@ async function getElementMetadata (url) {
 				}
 			}
 		}
+		const obsoleteAttrHeading = document.getElementById('Obsolete');
+		let obsoleteAttrNextEl = nextElementSibling(obsoleteAttrHeading);
+		if (obsoleteAttrNextEl && obsoleteAttrNextEl.nodeName === 'DL') {
+			const dtList = obsoleteAttrNextEl.querySelectorAll('dt');
+			for (const dt of dtList) {
+				const attrName = dt.querySelector('code').textContent;
+				const dd = nextElementSibling(dt);
+				if (dd) {
+					resultObj.attr.push({
+						name: attrName,
+						obsolete: true,
+						description: dd.textContent,
+					});
+				} else {
+					resultObj.attr.push(attrName);
+				}
+			}
+		}
 
 	}
-	await writeFile(`${outDir}/${tagName}.json`, JSON.stringify(resultObj, null, '\t'));
+	const jsonPath = `${outDir}/${tagName}.json`;
+	const current = require(jsonPath);
+	const outputObj = Object.assign(current, resultObj);
+	await writeFile(jsonPath, JSON.stringify(outputObj, null, '\t'));
 	process.stdout.write(` => ${outDir}/${tagName}.json\n`);
 }
 

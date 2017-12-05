@@ -1,4 +1,6 @@
 {
+	"tagName": "fieldset",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset",
 	"attr": [
 		"#global",
 		{
