@@ -1,10 +1,10 @@
 import test from 'ava';
 import * as markuplint from '../../../lib/';
-import CustomRule from '../../../lib/rules/markuplint-rule-attr-duprecation';
+import CustomRule from '../../../lib/rules/markuplint-rule-attr-duplication';
 
 const rule = new CustomRule();
 
-test('lower case', async t => {
+test('attr-duplication', async t => {
 	const r = await markuplint.verify(
 		`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
@@ -14,7 +14,7 @@ test('lower case', async t => {
 		`,
 		{
 			rules: {
-				"attr-duprecation": true,
+				"attr-duplication": true,
 			},
 		},
 		[rule]
@@ -37,7 +37,7 @@ test('lower case', async t => {
 	]);
 });
 
-test('lower case', async t => {
+test('attr-duplication', async t => {
 	const r = await markuplint.verify(
 		`
 		<div
@@ -50,7 +50,7 @@ test('lower case', async t => {
 		`,
 		{
 			rules: {
-				"attr-duprecation": true,
+				"attr-duplication": true,
 			},
 		},
 		[rule]

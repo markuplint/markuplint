@@ -11,13 +11,8 @@ import {
 	Ruleset,
 } from '../../ruleset';
 
-/**
- * `attr-value-double-quotes`
- *
- * *Core rule*
- */
 export default class extends Rule {
-	public name = 'attr-duprecation';
+	public name = 'attr-duplication';
 
 	public verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
 		const reports: VerifiedResult[] = [];
