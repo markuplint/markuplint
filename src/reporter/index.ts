@@ -1,4 +1,5 @@
 // tslint:disable:no-magic-numbers
+import * as path from 'path';
 
 import * as c from 'cli-color';
 
@@ -7,9 +8,11 @@ import {
 } from '../rule';
 
 export async function standardReporter (targetPath: string, results: VerifiedResult[], rawSource: string) {
+	targetPath = path.resolve(targetPath);
 	const out: string[] = [];
 	const loggerError = c.red;
 	const loggerWarning = c.xterm(208);
+	const markuplint = `markup${c.xterm(39)('lint')}`;
 
 	if (results.length) {
 		const lines = rawSource.split(/\r?\n/g);
@@ -22,7 +25,7 @@ export async function standardReporter (targetPath: string, results: VerifiedRes
 			const logger = result.level === 'error' ? loggerError : loggerWarning;
 
 			out.push(
-`${logger(`markuplint ${result.level}: ${result.message} [${targetPath}:${result.line}:${result.col}]`)}
+`<${markuplint}> ${logger(`${result.level}: ${result.message} [${targetPath}:${result.line}:${result.col}]`)}
 	${c.cyan(result.line - 1).padStart(5)}: ${space(prev)}
 	${c.cyan(result.line).padStart(5)}: ${space(before)}${c.bgRed(result.raw)}${space(after)}
 	${c.cyan(result.line + 1).padStart(5)}: ${space(next)}
@@ -30,7 +33,7 @@ export async function standardReporter (targetPath: string, results: VerifiedRes
 			);
 		}
 	} else {
-		out.push(`${c.green('markuplint passed')} [${targetPath}]`);
+		out.push(`<${markuplint}> ${c.green('passed')} [${targetPath}]`);
 	}
 
 	process.stdout.write(`${out.join('\n')}\n`);
