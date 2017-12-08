@@ -1,0 +1,9 @@
+{
+	"$schema": "./$schema.json#",
+	"keywords": {
+		"attribute": "属性",
+		"attributes": "属性",
+		"attribute name": "属性名"
+	},
+	"Duplicate {0}": "{0}が重複しています。"
+}

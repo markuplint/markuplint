@@ -10,13 +10,16 @@ import {
 	Ruleset,
 } from './ruleset';
 
-export async function verify (html: string, ruleset: Ruleset, rules: Rule[]) {
+export async function verify (html: string, ruleset: Ruleset, rules: Rule[], locale: string) {
+	if (!locale) {
+		locale = '';
+	}
 	const nodeTree = parser(html);
 	const reports: VerifiedResult[] = [];
 	for (const rule of rules) {
 		if (ruleset.rules && ruleset.rules[rule.name]) {
 			const config = rule.optimizeOption(ruleset.rules[rule.name]);
-			reports.push(...await rule.verify(nodeTree, config, ruleset));
+			reports.push(...await rule.verify(nodeTree, config, ruleset, locale));
 		}
 	}
 	return reports;
