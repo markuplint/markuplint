@@ -4,7 +4,7 @@
 
 ## ルールの詳細
 
-👎 間違ったコード例
+👎 間違ったコード例
 
 ```html
 <div data-attr=value></div>
@@ -18,7 +18,7 @@
 <div data-attr="value"></div>
 ```
 
-👍 正しいコード例
+👍 正しいコード例
 
 ```html
 <div data-attr="value"></div>
@@ -30,7 +30,7 @@
 <div data-attr='value'></div>
 ```
 
-### オプション
+### オプション
 
 設定値|デフォルト|解説
 ---|---|---
