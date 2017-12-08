@@ -29,8 +29,8 @@ export default class extends Rule {
 							reports.push({
 								level: this.defaultLevel,
 								message,
-								line: rawAttr.line + node.line,
-								col: rawAttr.line === 0 ? rawAttr.col + node.col - 1 : rawAttr.col,
+								line: rawAttr.line,
+								col: rawAttr.col,
 								raw: rawAttr.raw,
 							});
 						} else {

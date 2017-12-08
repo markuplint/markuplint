@@ -25,14 +25,14 @@ test('attr-duplication', async t => {
 			level: 'error',
 			message: 'Duplicate attribute name',
 			line: 2,
-			col: 25,
+			col: 26,
 			raw: 'data-Attr=\'db\'',
 		},
 		{
 			level: 'error',
 			message: 'Duplicate attribute name',
 			line: 2,
-			col: 40,
+			col: 41,
 			raw: 'data-attR=tr',
 		}
 	]);
@@ -62,14 +62,14 @@ test('attr-duplication', async t => {
 			level: 'error',
 			message: 'Duplicate attribute name',
 			line: 4,
-			col: 3,
+			col: 4,
 			raw: 'data-Attr=\'db\'',
 		},
 		{
 			level: 'error',
 			message: 'Duplicate attribute name',
 			line: 5,
-			col: 3,
+			col: 4,
 			raw: 'data-attR=tr',
 		}
 	]);

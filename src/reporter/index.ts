@@ -20,8 +20,8 @@ export async function standardReporter (targetPath: string, results: VerifiedRes
 			const prev = lines[result.line - 2] || '';
 			const line = lines[result.line - 1] || '';
 			const next = lines[result.line - 0] || '';
-			const before = line.substring(0, result.col);
-			const after = line.substring(result.col + result.raw.length);
+			const before = line.substring(0, result.col - 1);
+			const after = line.substring(result.col - 1 + result.raw.length);
 			const logger = result.level === 'error' ? loggerError : loggerWarning;
 
 			out.push(

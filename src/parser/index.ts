@@ -223,7 +223,7 @@ export class Document {
 				// And duplicated attribute will leave one.
 				//
 				if (node.raw) {
-					const rawTag = parseRawTag(node.raw);
+					const rawTag = parseRawTag(node.raw, node.line, node.col);
 					node.nodeName = rawTag.tagName;
 					for (const attr of node.attributes) {
 						for (const rawAttr of rawTag.attrs) {

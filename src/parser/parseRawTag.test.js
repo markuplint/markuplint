@@ -3,7 +3,7 @@ import { parseRawTag } from '../../lib/parser/parseRawTag';
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div>'),
+		parseRawTag('<div>', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [],
@@ -13,7 +13,7 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div >'),
+		parseRawTag('<div >', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [],
@@ -23,7 +23,7 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div >'),
+		parseRawTag('<div >', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [],
@@ -33,7 +33,7 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div  >'),
+		parseRawTag('<div  >', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [],
@@ -43,7 +43,7 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div a>'),
+		parseRawTag('<div a>', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [
@@ -62,7 +62,7 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div a a>'),
+		parseRawTag('<div a a>', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [
@@ -89,7 +89,7 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div a a a>'),
+		parseRawTag('<div a a a>', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [
@@ -124,7 +124,7 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div abc a>'),
+		parseRawTag('<div abc a>', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [
@@ -151,7 +151,7 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div abc abc>'),
+		parseRawTag('<div abc abc>', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [
@@ -178,7 +178,7 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div abc abc abc>'),
+		parseRawTag('<div abc abc abc>', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [
@@ -214,7 +214,7 @@ test('standard', t => {
 test('standard', t => {
 	t.deepEqual(
 		parseRawTag(`<div
-a>`),
+a>`, 0, 0),
 		{
 			tagName: 'div',
 			attrs: [
@@ -223,7 +223,7 @@ a>`),
 					value: null,
 					quote: null,
 					line: 1,
-					col: 0,
+					col: 1,
 					raw: 'a',
 				}
 			],
@@ -236,7 +236,7 @@ test('standard', t => {
 		parseRawTag(`<div
 
 
-			a>`),
+			a>`, 0, 0),
 		{
 			tagName: 'div',
 			attrs: [
@@ -245,7 +245,7 @@ test('standard', t => {
 					value: null,
 					quote: null,
 					line: 3,
-					col: 3,
+					col: 4,
 					raw: 'a',
 				}
 			],
@@ -261,7 +261,7 @@ test('standard', t => {
 
 a
   b
->`),
+>`, 0, 0),
 		{
 			tagName: 'div',
 			attrs: [
@@ -270,7 +270,7 @@ a
 					value: null,
 					quote: null,
 					line: 2,
-					col: 0,
+					col: 1,
 					raw: 'a',
 				},
 				{
@@ -278,7 +278,7 @@ a
 					value: null,
 					quote: null,
 					line: 3,
-					col: 2,
+					col: 3,
 					raw: 'b',
 				}
 			],
@@ -292,7 +292,7 @@ test('standard', t => {
      a
       b c
       d>
-		`),
+		`, 0, 0),
 		{
 			tagName: 'div',
 			attrs: [
@@ -301,7 +301,7 @@ test('standard', t => {
 					value: null,
 					quote: null,
 					line: 1,
-					col: 5,
+					col: 6,
 					raw: 'a',
 				},
 				{
@@ -309,7 +309,7 @@ test('standard', t => {
 					value: null,
 					quote: null,
 					line: 2,
-					col: 6,
+					col: 7,
 					raw: 'b',
 				},
 				{
@@ -317,7 +317,7 @@ test('standard', t => {
 					value: null,
 					quote: null,
 					line: 2,
-					col: 8,
+					col: 9,
 					raw: 'c',
 				},
 				{
@@ -325,7 +325,7 @@ test('standard', t => {
 					value: null,
 					quote: null,
 					line: 3,
-					col: 6,
+					col: 7,
 					raw: 'd',
 				}
 			],
@@ -335,7 +335,7 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div a=a>'),
+		parseRawTag('<div a=a>', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [
@@ -354,7 +354,7 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div a="a">'),
+		parseRawTag('<div a="a">', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [
@@ -373,7 +373,7 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div a=\'a\'>'),
+		parseRawTag('<div a=\'a\'>', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [
@@ -392,7 +392,7 @@ test('standard', t => {
 
 test('standard', t => {
 	t.deepEqual(
-		parseRawTag('<div a="1" b="2">'),
+		parseRawTag('<div a="1" b="2">', 0, 0),
 		{
 			tagName: 'div',
 			attrs: [

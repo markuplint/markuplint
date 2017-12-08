@@ -25,14 +25,14 @@ test('default', async t => {
 			level: 'warning',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
-			col: 25,
+			col: 26,
 			raw: 'data-Attr=\'db\'',
 		},
 		{
 			level: 'warning',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
-			col: 40,
+			col: 41,
 			raw: 'data-attR=tr',
 		}
 	]);
@@ -59,14 +59,14 @@ test('double', async t => {
 			level: 'warning',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
-			col: 25,
+			col: 26,
 			raw: 'data-Attr=\'db\'',
 		},
 		{
 			level: 'warning',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
-			col: 40,
+			col: 41,
 			raw: 'data-attR=tr',
 		}
 	]);
@@ -93,14 +93,14 @@ test('single', async t => {
 			level: 'warning',
 			message: 'Attribute value is must quote on single quotation mark',
 			line: 2,
-			col: 7,
+			col: 8,
 			raw: 'data-attr="value"',
 		},
 		{
 			level: 'warning',
 			message: 'Attribute value is must quote on single quotation mark',
 			line: 2,
-			col: 40,
+			col: 41,
 			raw: 'data-attR=tr',
 		}
 	]);

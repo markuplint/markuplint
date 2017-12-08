@@ -25,21 +25,32 @@ export default class extends Rule {
 			if (node instanceof Element && node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
 				if (node.attributes) {
 					for (const attr of node.attributes) {
-						const attrOffset = attr.startOffset - node.startOffset;
-						const distance = attr.endOffset - attr.startOffset;
-						const rawAttr = node.raw.substr(attrOffset, distance);
-						const rawAttrName = rawAttr.split('=')[0].trim();
-						if (/[A-Z]/.test(rawAttrName)) {
-							const line = node.line;
-							const col = node.col;
-							reports.push({
-								level: this.defaultLevel,
-								message: 'HTMLElement attribute name must be lowercase',
-								line: attr.line,
-								col: attr.col,
-								raw: rawAttr,
-							});
+						for (const rawAttr of attr.rawAttr) {
+							if (/[A-Z]/.test(rawAttr.name)) {
+								reports.push({
+									level: this.defaultLevel,
+									message: 'HTMLElement attribute name must be lowercase',
+									line: rawAttr.line,
+									col: rawAttr.col,
+									raw: rawAttr.raw,
+								});
+							}
 						}
+						// const attrOffset = attr.startOffset - node.startOffset;
+						// const distance = attr.endOffset - attr.startOffset;
+						// const rawAttr = node.raw.substr(attrOffset, distance);
+						// const rawAttrName = rawAttr.split('=')[0].trim();
+						// if (/[A-Z]/.test(rawAttrName)) {
+						// 	const line = node.line;
+						// 	const col = node.col;
+						// 	reports.push({
+						// 		level: this.defaultLevel,
+						// 		message: 'HTMLElement attribute name must be lowercase',
+						// 		line: attr.line,
+						// 		col: attr.col,
+						// 		raw: rawAttr,
+						// 	});
+						// }
 					}
 				}
 			}

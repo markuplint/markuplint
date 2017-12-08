@@ -7,7 +7,7 @@ export interface RawAttribute {
 	raw: string;
 }
 
-export function parseRawTag (rawStartTag: string) {
+export function parseRawTag (rawStartTag: string, nodeLine: number, nodeCol: number) {
 	let line = 0;
 	let col = 0;
 
@@ -63,8 +63,8 @@ export function parseRawTag (rawStartTag: string) {
 				name,
 				value,
 				quote,
-				line,
-				col,
+				line: line + nodeLine,
+				col: line === 0 ? col + nodeCol : col + 1,
 				raw,
 			});
 
