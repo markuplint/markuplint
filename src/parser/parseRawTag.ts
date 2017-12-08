@@ -29,7 +29,7 @@ export function parseRawTag (rawStartTag: string) {
 
 	col += tagName.length + 1;
 
-	const regAttr = /([^\x00-\x1f\x7f-\x9f "'>\/=]+)(?:\s*=\s*(?:("|')([^\2]*)\2|([^ "'=<>`]+)))?/;
+	const regAttr = /([^\x00-\x1f\x7f-\x9f "'>\/=]+)(?:\s*=\s*(?:(?:"([^"]*)")|(?:'([^']*)')|([^ "'=<>`]+)))?/;
 	const attrs: RawAttribute[] = [];
 
 	while (regAttr.test(attrString)) {
@@ -37,8 +37,8 @@ export function parseRawTag (rawStartTag: string) {
 		if (attrMatchedMap) {
 			const raw = attrMatchedMap[0];
 			const name = attrMatchedMap[1];
-			const quote = (attrMatchedMap[2] as '"' | "'" | void) || null; // tslint:disable-line:no-magic-numbers
-			const value = (quote ? attrMatchedMap[3] : attrMatchedMap[4]) || null; // tslint:disable-line:no-magic-numbers
+			const quote = attrMatchedMap[2] != null ? '"' : attrMatchedMap[3] != null ? "'" : null; // tslint:disable-line:no-magic-numbers
+			const value = attrMatchedMap[2] || attrMatchedMap[3] || attrMatchedMap[4] || null; // tslint:disable-line:no-magic-numbers
 			const index = attrMatchedMap.index!; // no global matches
 			const shaveLength = raw.length + index;
 			const shavedString = attrString.substr(0, shaveLength);

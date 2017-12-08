@@ -88,7 +88,6 @@ test('attr-duplication', async t => {
 	);
 	t.deepEqual(r.map(_ => _.message), [
 		'属性名が重複しています。',
-		'属性名が重複しています。',
 	]);
 });
 

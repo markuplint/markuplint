@@ -333,6 +333,90 @@ test('standard', t => {
 	);
 });
 
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div a=a>'),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: 'a',
+					quote: null,
+					line: 0,
+					col: 5,
+					raw: 'a=a',
+				}
+			],
+		}
+	);
+});
+
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div a="a">'),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: 'a',
+					quote: '"',
+					line: 0,
+					col: 5,
+					raw: 'a="a"',
+				}
+			],
+		}
+	);
+});
+
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div a=\'a\'>'),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: 'a',
+					quote: '\'',
+					line: 0,
+					col: 5,
+					raw: 'a=\'a\'',
+				}
+			],
+		}
+	);
+});
+
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div a="1" b="2">'),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: '1',
+					quote: '"',
+					line: 0,
+					col: 5,
+					raw: 'a="1"',
+				},
+				{
+					name: 'b',
+					value: '2',
+					quote: '"',
+					line: 0,
+					col: 11,
+					raw: 'b="2"',
+				}
+			],
+		}
+	);
+});
+
 test('error', t => {
 	t.is(t.throws(() => parseRawTag('<div'), SyntaxError).message, 'Invalid tag syntax');
 });
