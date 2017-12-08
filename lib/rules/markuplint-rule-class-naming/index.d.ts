@@ -6,5 +6,5 @@ export interface Options {
 }
 export default class  extends Rule<DefaultValue, Options> {
     name: string;
-    verify(document: Document, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset): VerifiedResult[];
+    verify(document: Document, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset): Promise<VerifiedResult[]>;
 }

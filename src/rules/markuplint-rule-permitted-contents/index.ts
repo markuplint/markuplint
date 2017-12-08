@@ -20,7 +20,7 @@ import {
 export default class extends Rule {
 	public name = 'permitted-contents';
 
-	public verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
+	public async verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
 		const reports: VerifiedResult[] = [];
 		if (ruleset && ruleset.nodeRules) {
 			for (const nodeRule of ruleset.nodeRules) {

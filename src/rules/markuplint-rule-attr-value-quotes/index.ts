@@ -20,7 +20,7 @@ export default class extends Rule<'double' | 'single'> {
 	public name = 'attr-value-quotes';
 	public defaultValue: 'double' | 'single' = 'double';
 
-	public verify (document: Document, config: RuleConfig<'double' | 'single'>, ruleset: Ruleset) {
+	public async verify (document: Document, config: RuleConfig<'double' | 'single'>, ruleset: Ruleset) {
 		const quote = {
 			double: '"',
 			single: "'",

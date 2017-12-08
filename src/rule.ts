@@ -35,7 +35,7 @@ export default abstract class Rule<T = null, O = {}> {
 	public readonly defaultLevel: RuleLevel = 'error';
 	public readonly defaultValue: T;
 
-	public abstract verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset): VerifiedResult[];
+	public abstract async verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset): Promise<VerifiedResult[]>;
 
 	public optimizeOption (option: RuleOption<T, O> | boolean): RuleConfig<T, O> {
 		if (typeof option === 'boolean') {

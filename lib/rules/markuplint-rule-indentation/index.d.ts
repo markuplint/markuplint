@@ -9,5 +9,5 @@ export declare type DefaultValue = 'tab' | number;
  */
 export default class  extends Rule<DefaultValue> {
     name: string;
-    verify(document: Document, config: RuleConfig<DefaultValue>, ruleset: Ruleset): VerifiedResult[];
+    verify(document: Document, config: RuleConfig<DefaultValue>, ruleset: Ruleset): Promise<VerifiedResult[]>;
 }

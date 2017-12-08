@@ -9,5 +9,5 @@ import { Ruleset } from '../../ruleset';
 export default class  extends Rule<'double' | 'single'> {
     name: string;
     defaultValue: 'double' | 'single';
-    verify(document: Document, config: RuleConfig<'double' | 'single'>, ruleset: Ruleset): VerifiedResult[];
+    verify(document: Document, config: RuleConfig<'double' | 'single'>, ruleset: Ruleset): Promise<VerifiedResult[]>;
 }

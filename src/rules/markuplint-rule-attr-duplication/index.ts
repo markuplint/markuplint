@@ -14,7 +14,7 @@ import {
 export default class extends Rule {
 	public name = 'attr-duplication';
 
-	public verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
+	public async verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
 		const reports: VerifiedResult[] = [];
 		document.walk((node) => {
 			if (node instanceof Element) {

@@ -15,7 +15,7 @@ export interface Options {}
 export default class extends Rule<DefaultValue, Options> {
 	public name = 'external-link';
 
-	public verify (document: Document, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset) {
+	public async verify (document: Document, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset) {
 		const reports: VerifiedResult[] = [];
 		// document.walk((node) => {});
 		return reports;

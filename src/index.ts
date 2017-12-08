@@ -15,7 +15,7 @@ import {
 const readFile = util.promisify(fs.readFile);
 
 export async function verify (html: string, ruleset: Ruleset, rules: Rule[]) {
-	return markuplint.verify(html, ruleset, rules);
+	return await markuplint.verify(html, ruleset, rules);
 }
 
 export async function verifyFile (filePath: string, ruleset?: Ruleset, rules?: Rule[]) {
@@ -25,7 +25,7 @@ export async function verifyFile (filePath: string, ruleset?: Ruleset, rules?: R
 	ruleset = ruleset || await getRuleset(dir);
 	rules = rules || await getRuleModules();
 	const html = await readFile(filePath, 'utf-8');
-	const reports = markuplint.verify(html, ruleset, rules);
+	const reports = await markuplint.verify(html, ruleset, rules);
 	return {
 		html,
 		reports,

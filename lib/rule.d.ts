@@ -19,7 +19,7 @@ export default abstract class Rule<T = null, O = {}> {
     readonly name: string;
     readonly defaultLevel: RuleLevel;
     readonly defaultValue: T;
-    abstract verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset): VerifiedResult[];
+    abstract verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset): Promise<VerifiedResult[]>;
     optimizeOption(option: RuleOption<T, O> | boolean): RuleConfig<T, O>;
 }
 export declare function getRuleModules(): Promise<Rule[]>;

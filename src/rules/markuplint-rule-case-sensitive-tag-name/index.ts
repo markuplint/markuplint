@@ -19,7 +19,7 @@ import {
 export default class extends Rule {
 	public name = 'case-sensitive-tag-name';
 
-	public verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
+	public async verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
 		const reports: VerifiedResult[] = [];
 		document.walk((node) => {
 			if (node instanceof Element && node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
