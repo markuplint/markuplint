@@ -7,8 +7,12 @@
 		"attribute value": "属性値",
 		"quote": "囲う",
 		"double quotation mark": "ダブルクオーテーション",
-		"single quotation mark": "シングルクォーテーション"
+		"single quotation mark": "シングルクォーテーション",
+		"lowercase": "小文字",
+		"uppercase": "大文字"
 	},
 	"Duplicate {0}": "{0}が重複しています。",
-	"{0} is must {1} on {2}": "{0}は{2}で{1}べきです。"
+  "{0} is must {1} on {2}": "{0}は{2}で{1}べきです。",
+  "{0} of {1} must be {2}": "{1}の{0}は{2}にするべきです。",
+  "{0} of {1} should be {2}": "{1}の{0}は{2}にしてください。"
 }

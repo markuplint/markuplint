@@ -4,18 +4,11 @@
 
 - *Style コードスタイル*
 	- [indentation](./markuplint-rule-indentation/README.ja.md) インデント (🚧 WIP)
-		- mixed タブ・スペースの混在
-		- width インデント幅
-		- ignore-inline-element インライン要素の除外
-		- align-closing-tag 終了タグの位置
 	- [self-closing-tag](./markuplint-rule-self-closing-tag/README.ja.md) タグの自己終了 (🚧 WIP)
-		- ignore-foreign-elements 外来要素の除外
 	- [omitted-closing-tag](./markuplint-rule-omitted-closing-tag/README.ja.md) 終了タグの省略 (🚧 WIP)
 	- [attr-value-quotes](./markuplint-rule-attr-value-quotes/README.ja.md) クォーテーションマーク (🚧 WIP)
 	- [case-sensitive-tag-name](./markuplint-rule-case-sensitive-tag-name/README.ja.md) タグ名の大文字小文字 (🚧 WIP)
-		- ignore-foreign-elements 外来要素の除外
-	- [case-sensitive-attr-name](./markuplint-rule-case-sensitive-attr-name/README.ja.md) 属性名の大文字小文字 (🚧 WIP)
-		- ignore-foreign-elements 外来要素の除外
+	- [case-sensitive-attr-name](./markuplint-rule-case-sensitive-attr-name/README.ja.md) 属性名の大文字小文字
 	- [attr-spasing](./markuplint-rule-attr-spasing/README.ja.md) 属性の前後のスペース (🚧 WIP)
 	- [attr-equal-spasing](./markuplint-rule-attr-equal-spasing/README.ja.md) 属性の=の前後のスペース (🚧 WIP)
 	- [multiline-tag](./markuplint-rule-multiline-tag/README.ja.md) タグ内の改行 (🚧 WIP)
@@ -28,10 +21,6 @@
 	- [event-attr](./markuplint-rule-event-attr/README.ja.md) on*属性名 (🚧 WIP)
 - *Validation バリデーション*
 	- [character-reference](./markuplint-rule-character-reference/README.ja.md) 文字参照 (🚧 WIP)
-		- character-entity-reference-whitelist
-		- character-entity-reference-blacklist
-		- numerical-character-references-whitelist
-		- numerical-character-references-blacklist
 	- [doctype](./markuplint-rule-doctype/README.ja.md) ドキュメントタイプ (🚧 WIP)
 	- [required-element](./markuplint-rule-required-element/README.ja.md) 必須要素 (🚧 WIP)
 	- [deprecated-element](./markuplint-rule-deprecated-element/README.ja.md) 非推奨要素 (🚧 WIP)
@@ -46,18 +35,13 @@
 	- [comment](./markuplint-rule-comment/README.ja.md) コメント (🚧 WIP)
 - *Usability ユーザビリティ*
 	- [external-link](./markuplint-rule-external-link/README.ja.md) 外部リンク (🚧 WIP)
-		- 外部リンクがtarget=_blankになっていない場合は警告
 - *Accessibility アクセシビリティ*
 	- [required-h1](./markuplint-rule-required-h1/README.ja.md) h1 (🚧 WIP)
 	- [heading-levels-skipping](./markuplint-rule-heading-levels-skipping/README.ja.md) レベルのスキップ (🚧 WIP)
 	- [heading-in-sectioning-content](./markuplint-rule-heading-in-sectioning-content/README.ja.md) セクショニング・コンテンツ (🚧 WIP)
-		- required section/articleは必須
-		- nav/asideは任意
 	- [heading-in-sectioning-root](./markuplint-rule-heading-in-sectioning-root/README.ja.md) セクショニング・ルート (🚧 WIP)
-		- ignore-root body以外のセクショニング・ルート内に見出しがあると警告
 	- [landmark-roles](./markuplint-rule-landmark-roles/README.ja.md) ランドマークロール (🚧 WIP)
 	- [labels](./markuplint-rule-labels/README.ja.md) aria-label/aria-labeledby (🚧 WIP)
-		- require-elements
 	- [empty-alt-attr](./markuplint-rule-empty-alt-attr/README.ja.md) 空のalt属性 (🚧 WIP)
 	- [role-structure-tab](./markuplint-rule-role-structure-tab/README.ja.md) tabロールの構造 (🚧 WIP)
 - *Performance パフォーマンス*

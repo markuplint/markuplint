@@ -20,20 +20,23 @@ export default class extends Rule<Value> {
 	public defaultLevel: RuleLevel = 'warning';
 	public defaultValue: Value = 'lower';
 
-	public async verify (document: Document, config: RuleConfig<Value>, ruleset: Ruleset) {
+	public async verify (document: Document, config: RuleConfig<Value>, ruleset: Ruleset, locale: string) {
 		const reports: VerifiedResult[] = [];
+		const ms = config.level === 'error' ? 'must' : 'should';
+		const deny = config.value === 'lower' ? /[A-Z]/ : /[a-z]/;
+		const message = await messages(locale, `{0} of {1} ${ms} be {2}`, 'Attribute name', 'HTML', `${config.value}case`);
 		document.walk((node) => {
 			if (node instanceof Element && node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
 				if (node.attributes) {
 					for (const attr of node.attributes) {
 						for (const rawAttr of attr.rawAttr) {
-							if (/[A-Z]/.test(rawAttr.name)) {
+							if (deny.test(rawAttr.name)) {
 								reports.push({
-									level: this.defaultLevel,
-									message: 'HTML attribute name must be lowercase',
+									level: config.level,
+									message,
 									line: rawAttr.line,
 									col: rawAttr.col,
-									raw: rawAttr.raw,
+									raw: rawAttr.name,
 								});
 							}
 						}
