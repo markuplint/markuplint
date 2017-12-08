@@ -4,22 +4,23 @@ import {
 } from '../../parser';
 import Rule, {
 	RuleConfig,
+	RuleLevel,
 	VerifiedResult,
 } from '../../rule';
 import {
 	PermittedContent,
 	Ruleset,
 } from '../../ruleset';
+import messages from '../messages';
 
-/**
- * `attr-lowercase`
- *
- * *Core rule*
- */
-export default class extends Rule {
+export type Value = 'lower' | 'upper';
+
+export default class extends Rule<Value> {
 	public name = 'case-sensitive-attr-name';
+	public defaultLevel: RuleLevel = 'warning';
+	public defaultValue: Value = 'lower';
 
-	public async verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
+	public async verify (document: Document, config: RuleConfig<Value>, ruleset: Ruleset) {
 		const reports: VerifiedResult[] = [];
 		document.walk((node) => {
 			if (node instanceof Element && node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
@@ -29,28 +30,13 @@ export default class extends Rule {
 							if (/[A-Z]/.test(rawAttr.name)) {
 								reports.push({
 									level: this.defaultLevel,
-									message: 'HTMLElement attribute name must be lowercase',
+									message: 'HTML attribute name must be lowercase',
 									line: rawAttr.line,
 									col: rawAttr.col,
 									raw: rawAttr.raw,
 								});
 							}
 						}
-						// const attrOffset = attr.startOffset - node.startOffset;
-						// const distance = attr.endOffset - attr.startOffset;
-						// const rawAttr = node.raw.substr(attrOffset, distance);
-						// const rawAttrName = rawAttr.split('=')[0].trim();
-						// if (/[A-Z]/.test(rawAttrName)) {
-						// 	const line = node.line;
-						// 	const col = node.col;
-						// 	reports.push({
-						// 		level: this.defaultLevel,
-						// 		message: 'HTMLElement attribute name must be lowercase',
-						// 		line: attr.line,
-						// 		col: attr.col,
-						// 		raw: rawAttr,
-						// 	});
-						// }
 					}
 				}
 			}

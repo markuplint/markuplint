@@ -1,12 +1,10 @@
 import { Document } from '../../parser';
-import Rule, { RuleConfig, VerifiedResult } from '../../rule';
+import Rule, { RuleConfig, RuleLevel, VerifiedResult } from '../../rule';
 import { Ruleset } from '../../ruleset';
-/**
- * `attr-lowercase`
- *
- * *Core rule*
- */
-export default class  extends Rule {
+export declare type Value = 'lower' | 'upper';
+export default class  extends Rule<Value> {
     name: string;
-    verify(document: Document, config: RuleConfig, ruleset: Ruleset): Promise<VerifiedResult[]>;
+    defaultLevel: RuleLevel;
+    defaultValue: Value;
+    verify(document: Document, config: RuleConfig<Value>, ruleset: Ruleset): Promise<VerifiedResult[]>;
 }
