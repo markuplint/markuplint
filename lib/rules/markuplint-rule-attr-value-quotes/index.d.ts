@@ -1,13 +1,10 @@
 import { Document } from '../../parser';
-import Rule, { RuleConfig, VerifiedResult } from '../../rule';
+import Rule, { RuleConfig, RuleLevel, VerifiedResult } from '../../rule';
 import { Ruleset } from '../../ruleset';
-/**
- * `attr-value-quotes`
- *
- * *Core rule*
- */
-export default class  extends Rule<'double' | 'single'> {
+export declare type Value = 'double' | 'single';
+export default class  extends Rule<Value> {
     name: string;
-    defaultValue: 'double' | 'single';
-    verify(document: Document, config: RuleConfig<'double' | 'single'>, ruleset: Ruleset): Promise<VerifiedResult[]>;
+    defaultLevel: RuleLevel;
+    defaultValue: Value;
+    verify(document: Document, config: RuleConfig<Value>, ruleset: Ruleset, locale: string): Promise<VerifiedResult[]>;
 }

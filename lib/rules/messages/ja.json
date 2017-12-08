@@ -3,7 +3,12 @@
 	"keywords": {
 		"attribute": "属性",
 		"attributes": "属性",
-		"attribute name": "属性名"
+		"attribute name": "属性名",
+		"attribute value": "属性値",
+		"quote": "囲う",
+		"double quotation mark": "ダブルクオーテーション",
+		"single quotation mark": "シングルクォーテーション"
 	},
-	"Duplicate {0}": "{0}が重複しています。"
+	"Duplicate {0}": "{0}が重複しています。",
+	"{0} is must {1} on {2}": "{0}は{2}で{1}べきです。"
 }

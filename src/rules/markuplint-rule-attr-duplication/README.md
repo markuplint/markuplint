@@ -26,5 +26,3 @@ none
 ### Default notification level
 
 `error`
-
-

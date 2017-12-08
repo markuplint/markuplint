@@ -31,7 +31,7 @@ export default async function (locale: string, messageTmpl: string, ...keywords:
 	message = messageTmpl.replace(/\{([0-9]+)\}/g, ($0, $1) => {
 		const keyword = keywords[+$1] || '';
 		if (localeSet) {
-			return localeSet.keywords[keyword] || keyword;
+			return localeSet.keywords[keyword.toLowerCase()] || keyword;
 		}
 		return keyword;
 	});

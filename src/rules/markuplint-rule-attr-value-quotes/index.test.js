@@ -17,19 +17,20 @@ test('default', async t => {
 				"attr-value-quotes": true,
 			},
 		},
-		[rule]
+		[rule],
+		'en',
 	);
 	t.deepEqual(r, [
 		{
-			level: 'error',
-			message: 'Attribute value is must quote on double',
+			level: 'warning',
+			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
 			col: 25,
 			raw: 'data-Attr=\'db\'',
 		},
 		{
-			level: 'error',
-			message: 'Attribute value is must quote on double',
+			level: 'warning',
+			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
 			col: 40,
 			raw: 'data-attR=tr',
@@ -50,19 +51,20 @@ test('double', async t => {
 				"attr-value-quotes": ['error', 'double'],
 			},
 		},
-		[rule]
+		[rule],
+		'en',
 	);
 	t.deepEqual(r, [
 		{
-			level: 'error',
-			message: 'Attribute value is must quote on double',
+			level: 'warning',
+			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
 			col: 25,
 			raw: 'data-Attr=\'db\'',
 		},
 		{
-			level: 'error',
-			message: 'Attribute value is must quote on double',
+			level: 'warning',
+			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
 			col: 40,
 			raw: 'data-attR=tr',
@@ -83,19 +85,20 @@ test('single', async t => {
 				"attr-value-quotes": ['error', 'single'],
 			},
 		},
-		[rule]
+		[rule],
+		'en',
 	);
 	t.deepEqual(r, [
 		{
-			level: 'error',
-			message: 'Attribute value is must quote on single',
+			level: 'warning',
+			message: 'Attribute value is must quote on single quotation mark',
 			line: 2,
 			col: 7,
 			raw: 'data-attr="value"',
 		},
 		{
-			level: 'error',
-			message: 'Attribute value is must quote on single',
+			level: 'warning',
+			message: 'Attribute value is must quote on single quotation mark',
 			line: 2,
 			col: 40,
 			raw: 'data-attR=tr',
