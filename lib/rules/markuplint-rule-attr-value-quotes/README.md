@@ -4,7 +4,7 @@ Warns if the attribute value is not **quoted**.
 
 ## Rule Details
 
-👎 Examples of **incorrect** code for this rule
+👎 Examples of **incorrect** code for this rule
 
 ```html
 <div data-attr=value></div>
@@ -18,7 +18,7 @@ Warns if the attribute value is not **quoted**.
 <div data-attr="value"></div>
 ```
 
-👍 Examples of **correct** code for this rule
+👍 Examples of **correct** code for this rule
 
 ```html
 <div data-attr="value"></div>

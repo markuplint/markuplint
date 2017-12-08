@@ -7,13 +7,13 @@ Warns that **attributes** were duplicated in one element. Capital letters and lo
 
 ## Rule Details
 
-👎 Examples of **incorrect** code for this rule
+👎 Examples of **incorrect** code for this rule
 
 ```html
 <div data-attr="value" data-Attr="db"></div>
 ```
 
-👍 Examples of **correct** code for this rule
+👍 Examples of **correct** code for this rule
 
 ```html
 <div data-attr="value" data-Attr2="db"></div>

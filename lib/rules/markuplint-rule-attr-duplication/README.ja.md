@@ -10,19 +10,19 @@
 
 ## ルールの詳細
 
-👎 間違ったコード例
+👎 間違ったコード例
 
 ```html
 <div data-attr="value" data-Attr="db"></div>
 ```
 
-👍正しいコード例
+👍 正しいコード例
 
 ```html
 <div data-attr="value" data-Attr2="db"></div>
 ```
 
-### オプション
+### オプション
 
 なし
 
