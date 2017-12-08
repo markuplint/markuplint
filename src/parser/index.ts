@@ -321,7 +321,7 @@ function nodeize (p5node: P5ParentNode, prev: Node | null, parent: Node | null):
 					if (!p5node.__location || !p5node.__location.attrs) {
 						throw new Error();
 					}
-					const location = p5node.__location.attrs[attr.name];
+					const location = p5node.__location.attrs[attr.name.toLowerCase()];
 					if (!location) {
 						throw new Error();
 					}
