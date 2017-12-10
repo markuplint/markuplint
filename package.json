@@ -14,7 +14,7 @@
     "url": "git@github.com:YusukeHirao/markuplint.git"
   },
   "scripts": {
-    "start": "node ./",
+    "cli": "node ./bin/",
     "build": "gulp",
     "dev": "gulp watch",
     "test": "nyc ava && nyc report --reporter=html",
