@@ -2,8 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
 
-import * as osLocale from 'os-locale';
-
 import * as markuplint from './core';
 import Rule, {
 	getRuleModules,
@@ -13,19 +11,20 @@ import {
 	getRuleset,
 	Ruleset,
 } from './ruleset';
+import osLocale from './util/osLocale';
 
 const readFile = util.promisify(fs.readFile);
 
 export async function verify (html: string, ruleset: Ruleset, rules: Rule[], locale?: string) {
 	if (!locale) {
-		locale = await osLocale({ spawn: true });
+		locale = await osLocale();
 	}
 	return await markuplint.verify(html, ruleset, rules, locale);
 }
 
 export async function verifyFile (filePath: string, ruleset?: Ruleset, rules?: Rule[], locale?: string) {
 	if (!locale) {
-		locale = await osLocale({ spawn: true });
+		locale = await osLocale();
 	}
 	const absFilePath = path.resolve(filePath);
 	const parsedPath = path.parse(absFilePath);
