@@ -39,7 +39,7 @@ import * as markuplint from 'markuplint';
 
 const reports = await markuplint.verify(html, ruleset, rules);
 // or
-const { html, reports } = await markuplint.verifyFile(globOrPath, ruleset, rules);
+const { html, reports } = await markuplint.verifyFile(htmlPath, ruleset, rules);
 ```
 
 ## Rules
