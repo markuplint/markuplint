@@ -39,6 +39,7 @@ export interface InvalidNodeProperties extends NodeProperties {
 }
 export interface EndTagNodeProperties extends NodeProperties {
     startTagNode: Node;
+    raw: string;
 }
 export interface Attribute extends NodeLocation {
     name: string;
@@ -55,6 +56,7 @@ export declare abstract class Node {
     prevNode: Node | null;
     nextNode: Node | null;
     readonly parentNode: Node | null;
+    raw: string;
     constructor(props: NodeProperties);
     toString(): string;
 }
@@ -66,9 +68,7 @@ export declare class Element extends Node {
     readonly startTagLocation: TagNodeLocation | null;
     readonly endTagLocation: TagNodeLocation | null;
     endTagNode: EndTagNode | null;
-    raw: string;
     constructor(props: ElementProperties);
-    toString(): string;
 }
 export declare class TextNode extends Node {
     readonly textContent: string;
@@ -81,6 +81,7 @@ export declare class Doctype extends Node {
 }
 export declare class EndTagNode extends Node {
     readonly startTagNode: Node;
+    endOffset: number | null;
     constructor(props: EndTagNodeProperties);
 }
 export declare class InvalidNode extends Node {

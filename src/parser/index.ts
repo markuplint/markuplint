@@ -53,6 +53,7 @@ export interface InvalidNodeProperties extends NodeProperties {
 
 export interface EndTagNodeProperties extends NodeProperties {
 	startTagNode: Node;
+	raw: string;
 }
 
 export interface Attribute extends NodeLocation {
@@ -72,6 +73,7 @@ export abstract class Node {
 	public prevNode: Node | null = null;
 	public nextNode: Node | null = null;
 	public readonly parentNode: Node | null = null;
+	public raw = '';
 
 	constructor (props: NodeProperties) {
 		this.nodeName = props.nodeName;
@@ -86,7 +88,7 @@ export abstract class Node {
 	}
 
 	public toString () {
-		return `<${this.nodeName}>`;
+		return this.raw;
 	}
 }
 
@@ -98,7 +100,6 @@ export class Element extends Node {
 	public readonly startTagLocation: TagNodeLocation | null;
 	public readonly endTagLocation: TagNodeLocation | null;
 	public endTagNode: EndTagNode | null;
-	public raw = '';
 
 	constructor (props: ElementProperties) {
 		super(props);
@@ -109,10 +110,6 @@ export class Element extends Node {
 		this.startTagLocation = props.location.startTag || null;
 		this.endTagLocation = props.location.endTag || null;
 	}
-
-	public toString () {
-		return `<${this.nodeName}>`;
-	}
 }
 
 export class TextNode extends Node {
@@ -121,6 +118,7 @@ export class TextNode extends Node {
 	constructor (props: TextNodeProperties) {
 		super(props);
 		this.textContent = props.textContent;
+		this.raw = props.textContent;
 	}
 }
 
@@ -137,9 +135,15 @@ export class Doctype extends Node {
 
 export class EndTagNode extends Node {
 	public readonly startTagNode: Node;
+	public endOffset: number | null;
+
 	constructor (props: EndTagNodeProperties) {
 		super(props);
 		this.startTagNode = props.startTagNode;
+		this.raw = props.raw;
+		if (props.location) {
+			this.endOffset = props.location.endOffset;
+		}
 	}
 }
 
@@ -195,8 +199,10 @@ export class Document {
 					node.raw = raw;
 
 					if (node.endTagLocation) {
+						const endTagRaw = rawHtml.slice(node.endTagLocation.startOffset, node.endTagLocation.endOffset);
+						const endTagName = endTagRaw.replace(/^<\/((?:[a-z]+:)?[a-z]+(?:-[a-z]+)*)\s*>/i, '$1');
 						const endTag = new EndTagNode({
-							nodeName: `/${node.nodeName}`,
+							nodeName: endTagName,
 							location: {
 								line: node.endTagLocation.line,
 								col: node.endTagLocation.col,
@@ -207,6 +213,7 @@ export class Document {
 							nextNode: null,
 							parentNode: node.parentNode,
 							startTagNode: node,
+							raw: endTagRaw,
 						});
 						pos.push({ pos: endTag.startOffset, node: endTag });
 					}

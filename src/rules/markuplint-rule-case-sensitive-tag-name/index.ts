@@ -1,37 +1,49 @@
 import {
 	Document,
 	Element,
+	EndTagNode,
 } from '../../parser';
 import Rule, {
 	RuleConfig,
+	RuleLevel,
 	VerifiedResult,
 } from '../../rule';
 import {
 	PermittedContent,
 	Ruleset,
 } from '../../ruleset';
+import messages from '../messages';
 
-/**
- * `case-sensitive-tag-name`
- *
- * *Core rule*
- */
-export default class extends Rule {
+export type Value = 'lower' | 'upper';
+
+export default class extends Rule<Value> {
 	public name = 'case-sensitive-tag-name';
+	public defaultLevel: RuleLevel = 'warning';
+	public defaultValue: Value = 'lower';
 
-	public async verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
+	public async verify (document: Document, config: RuleConfig<Value>, ruleset: Ruleset, locale: string) {
 		const reports: VerifiedResult[] = [];
+		const ms = config.level === 'error' ? 'must' : 'should';
+		const deny = config.value === 'lower' ? /[A-Z]/ : /[a-z]/;
+		const message = await messages(locale, `{0} of {1} ${ms} be {2}`, 'Tag name', 'HTML', `${config.value}case`);
 		document.walk((node) => {
-			if (node instanceof Element && node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
-				if (/[A-Z]/.test(node.nodeName)) {
-					const line = node.line;
-					const col = node.col;
+			if (
+				(node instanceof Element && node.namespaceURI === 'http://www.w3.org/1999/xhtml')
+				||
+				node instanceof EndTagNode
+			) {
+				if (deny.test(node.nodeName)) {
 					reports.push({
-						level: this.defaultLevel,
-						message: 'HTMLElement name must be lowercase',
+						level: config.level,
+						message,
 						line: node.line,
-						col: node.col,
-						raw: node.raw,
+						col:
+							node instanceof Element
+							?
+							node.col + 1 // remove "<" char.
+							:
+							node.col + 2, // remove "</" char.
+						raw: node.nodeName,
 					});
 				}
 			}
