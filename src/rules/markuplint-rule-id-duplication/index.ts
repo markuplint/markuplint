@@ -13,7 +13,7 @@ export type DefaultValue = string;
 export interface Options {}
 
 export default class extends Rule<DefaultValue, Options> {
-	public name = 'id-duprecation';
+	public name = 'id-duplication';
 
 	public async verify (document: Document, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset) {
 		const reports: VerifiedResult[] = [];
