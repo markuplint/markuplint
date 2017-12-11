@@ -23,7 +23,9 @@
   },
   "dependencies": {
     "cli-color": "^1.2.0",
+    "deep-assign": "^2.0.0",
     "meow": "^4.0.0",
+    "node-fetch": "^1.7.3",
     "os-locale": "^2.1.0",
     "parse5": "^3.0.3",
     "strip-json-comments": "^2.0.1"
@@ -36,13 +38,11 @@
     "@types/strip-json-comments": "^0.0.30",
     "ava": "^0.24.0",
     "coveralls": "^3.0.0",
-    "deep-assign": "^2.0.0",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-ava": "^0.18.0",
     "gulp-typescript": "^3.2.3",
     "jsdom": "^11.5.1",
-    "node-fetch": "^1.7.3",
     "nyc": "^11.3.0",
     "run-sequence": "^2.2.0",
     "tslint": "^5.8.0",
