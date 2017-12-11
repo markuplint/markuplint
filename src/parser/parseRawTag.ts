@@ -5,6 +5,7 @@ export interface RawAttribute {
 	line: number;
 	col: number;
 	raw: string;
+	invalid: boolean;
 }
 
 export function parseRawTag (rawStartTag: string, nodeLine: number, nodeCol: number) {
@@ -29,7 +30,7 @@ export function parseRawTag (rawStartTag: string, nodeLine: number, nodeCol: num
 
 	col += tagName.length + 1;
 
-	const regAttr = /([^\x00-\x1f\x7f-\x9f "'>\/=]+)(?:\s*=\s*(?:(?:"([^"]*)")|(?:'([^']*)')|([^ "'=<>`]+)))?/;
+	const regAttr = /([^\x00-\x1f\x7f-\x9f "'>\/=]+)(?:\s*=\s*(?:(?:"([^"]*)")|(?:'([^']*)')|([^\s]*)))?/;
 	const attrs: RawAttribute[] = [];
 
 	while (regAttr.test(attrString)) {
@@ -42,6 +43,7 @@ export function parseRawTag (rawStartTag: string, nodeLine: number, nodeCol: num
 			const index = attrMatchedMap.index!; // no global matches
 			const shaveLength = raw.length + index;
 			const shavedString = attrString.substr(0, shaveLength);
+			const invalid = !!(value && quote === null && /["'=<>`]/.test(value)) || (quote === null && value === null);
 			col += index;
 
 			if (/\r?\n/.test(shavedString)) {
@@ -66,6 +68,7 @@ export function parseRawTag (rawStartTag: string, nodeLine: number, nodeCol: num
 				line: line + nodeLine,
 				col: line === 0 ? col + nodeCol : col + 1,
 				raw,
+				invalid,
 			});
 
 			attrString = attrString.substring(shaveLength);
