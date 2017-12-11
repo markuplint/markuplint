@@ -31,16 +31,14 @@ export default class extends Rule<Value> {
 		document.walk((node) => {
 			if (node instanceof Element) {
 				for (const attr of node.attributes) {
-					for (const rawAttr of attr.rawAttr) {
-						if (rawAttr.quote !== quote[config.value]) {
-							reports.push({
-								level: this.defaultLevel,
-								message,
-								line: rawAttr.line,
-								col: rawAttr.col,
-								raw: rawAttr.raw,
-							});
-						}
+					if (attr.quote !== quote[config.value]) {
+						reports.push({
+							level: this.defaultLevel,
+							message,
+							line: attr.location.line,
+							col: attr.location.col,
+							raw: attr.raw,
+						});
 					}
 				}
 			}

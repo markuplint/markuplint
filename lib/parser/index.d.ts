@@ -1,4 +1,3 @@
-import { RawAttribute } from './parseRawTag';
 export interface NodeLocation {
     line: number;
     col: number;
@@ -24,6 +23,7 @@ export interface ElementProperties extends NodeProperties {
     attributes: Attribute[];
     childNodes: Node[];
     location: ElementLocation;
+    raw: string;
 }
 export interface TextNodeProperties extends NodeProperties {
     textContent: string;
@@ -41,11 +41,14 @@ export interface EndTagNodeProperties extends NodeProperties {
     startTagNode: Node;
     raw: string;
 }
-export interface Attribute extends NodeLocation {
+export interface Attribute {
     name: string;
-    value: string;
-    endOffset: number;
-    rawAttr: RawAttribute[];
+    value: string | null;
+    location: NodeLocation;
+    quote: '"' | "'" | null;
+    equal: string | null;
+    raw: string;
+    invalid: boolean;
 }
 export declare type Walker = (node: Node) => void;
 export declare abstract class Node {
@@ -69,8 +72,8 @@ export declare class Element extends Node {
     readonly endTagLocation: TagNodeLocation | null;
     endTagNode: EndTagNode | null;
     constructor(props: ElementProperties);
-    getAttribute(attrName: string): RawAttribute | undefined;
-    readonly id: RawAttribute | undefined;
+    getAttribute(attrName: string): Attribute | undefined;
+    readonly id: Attribute | undefined;
 }
 export declare class TextNode extends Node {
     readonly textContent: string;
@@ -98,6 +101,7 @@ export declare class Document {
     readonly root: {
         childNodes: Node[];
     };
+    readonly raw: string;
     walk(walker: Walker): void;
     getNode(index: number): Node | null;
 }

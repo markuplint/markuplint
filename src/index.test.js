@@ -49,7 +49,7 @@ test('foo', async t => {
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 6,
 			col: 35,
-			raw: 'content=ie',
+			raw: 'content=ie=edge',
 		},
 	]);
 });

@@ -21,21 +21,19 @@ export default class extends Rule {
 		const message = await messages(locale, 'Duplicate {0}', 'attribute name');
 		document.walk((node) => {
 			if (node instanceof Element) {
+				const attrNameStack: string[] = [];
 				for (const attr of node.attributes) {
-					const attrNameStack: string[] = [];
-					for (const rawAttr of attr.rawAttr) {
-						const attrName = rawAttr.name.toLowerCase();
-						if (attrNameStack.includes(attrName)) {
-							reports.push({
-								level: this.defaultLevel,
-								message,
-								line: rawAttr.line,
-								col: rawAttr.col,
-								raw: rawAttr.raw,
-							});
-						} else {
-							attrNameStack.push(attrName);
-						}
+					const attrName = attr.name.toLowerCase();
+					if (attrNameStack.includes(attrName)) {
+						reports.push({
+							level: this.defaultLevel,
+							message,
+							line: attr.location.line,
+							col: attr.location.col,
+							raw: attr.raw,
+						});
+					} else {
+						attrNameStack.push(attrName);
 					}
 				}
 			}

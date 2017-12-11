@@ -34,6 +34,7 @@ export interface ElementProperties extends NodeProperties {
 	attributes: Attribute[];
 	childNodes: Node[];
 	location: ElementLocation;
+	raw: string;
 }
 
 export interface TextNodeProperties extends NodeProperties {
@@ -56,11 +57,14 @@ export interface EndTagNodeProperties extends NodeProperties {
 	raw: string;
 }
 
-export interface Attribute extends NodeLocation {
+export interface Attribute {
 	name: string;
-	value: string;
-	endOffset: number;
-	rawAttr: RawAttribute[];
+	value: string | null;
+	location: NodeLocation;
+	quote: '"' | "'" | null;
+	equal: string | null;
+	raw: string;
+	invalid: boolean;
 }
 
 export type Walker = (node: Node) => void;
@@ -109,14 +113,13 @@ export class Element extends Node {
 		this.endOffset = props.location.endOffset || null;
 		this.startTagLocation = props.location.startTag || null;
 		this.endTagLocation = props.location.endTag || null;
+		this.raw = props.raw;
 	}
 
 	public getAttribute (attrName: string) {
 		for (const attr of this.attributes) {
-			for (const rawAttr of attr.rawAttr) {
-				if (rawAttr.name.toLowerCase() === attrName.toLowerCase()) {
-					return rawAttr;
-				}
+			if (attr.name.toLowerCase() === attrName.toLowerCase()) {
+				return attr;
 			}
 		}
 	}
@@ -209,9 +212,6 @@ export class Document {
 
 			if (node instanceof Element) {
 				if (node.startTagLocation) {
-					const raw = rawHtml.slice(node.startTagLocation.startOffset, node.startTagLocation.endOffset);
-					node.raw = raw;
-
 					if (node.endTagLocation) {
 						const endTagRaw = rawHtml.slice(node.endTagLocation.startOffset, node.endTagLocation.endOffset);
 						const endTagName = endTagRaw.replace(/^<\/((?:[a-z]+:)?[a-z]+(?:-[a-z]+)*)\s*>/i, '$1');
@@ -231,28 +231,6 @@ export class Document {
 						});
 						pos.push({ pos: endTag.startOffset, node: endTag });
 					}
-				} else {
-					// Self closing tag
-					const raw = rawHtml.slice(node.startOffset, node.endOffset || node.startOffset);
-					node.raw = raw;
-				}
-
-				// Get raw tag name and attributes
-				//
-				// NOTE:
-				// "parse5" parser will normalize the case of the tag and attribute name.
-				// And duplicated attribute will leave one.
-				//
-				if (node.raw) {
-					const rawTag = parseRawTag(node.raw, node.line, node.col);
-					node.nodeName = rawTag.tagName;
-					for (const attr of node.attributes) {
-						for (const rawAttr of rawTag.attrs) {
-							if (attr.name === rawAttr.name.toLowerCase()) {
-								attr.rawAttr.push(rawAttr);
-							}
-						}
-					}
 				}
 			}
 		});
@@ -266,6 +244,10 @@ export class Document {
 		return {
 			childNodes: this._tree,
 		};
+	}
+
+	public get raw () {
+		return this._raw;
 	}
 
 	public walk (walker: Walker) {
@@ -288,12 +270,12 @@ function walk (nodeList: Node[], walker: (node: Node) => void) {
 	}
 }
 
-function nodeize (p5node: P5ParentNode, prev: Node | null, parent: Node | null): Node {
+function nodeize (p5node: P5ParentNode, prev: Node | null, parent: Node | null, rawHtml: string): Node {
 	if (!p5node.__location) {
 		return new InvalidNode({
 			nodeName: '#invalid',
 			location: null,
-			childNodes: traverse(p5node, parent),
+			childNodes: traverse(p5node, parent, rawHtml),
 			prevNode: prev,
 			nextNode: null,
 			parentNode: parent,
@@ -335,27 +317,35 @@ function nodeize (p5node: P5ParentNode, prev: Node | null, parent: Node | null):
 			break;
 		}
 		default: {
+			const raw =
+				p5node.__location.startTag && p5node.__location.endTag
+				?
+				rawHtml.slice(p5node.__location.startTag.startOffset, p5node.__location.startTag.endOffset)
+				:
+				rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
+			const rawTag = parseRawTag(raw, p5node.__location.line, p5node.__location.col);
+			const nodeName = rawTag.tagName;
+			const attributes: Attribute[] = [];
+			for (const attr of rawTag.attrs) {
+				attributes.push({
+					name: attr.name,
+					value: attr.value,
+					location: {
+						line: attr.line,
+						col: attr.col,
+						startOffset: -1,
+						endOffset: null,
+					},
+					quote: attr.quote,
+					equal: attr.equal,
+					invalid: attr.invalid,
+					raw: attr.raw,
+				});
+			}
 			node = new Element({
-				nodeName: p5node.tagName,
+				nodeName,
 				namespaceURI: p5node.namespaceURI,
-				attributes: p5node.attrs ? p5node.attrs.map((attr) => {
-					if (!p5node.__location || !p5node.__location.attrs) {
-						throw new Error();
-					}
-					const location = p5node.__location.attrs[attr.name.toLowerCase()];
-					if (!location) {
-						throw new Error();
-					}
-					return {
-						name: attr.name,
-						value: attr.value,
-						col: location.col,
-						line: location.line,
-						startOffset: location.startOffset,
-						endOffset: location.endOffset,
-						rawAttr: [],
-					};
-				}) : [],
+				attributes,
 				location: {
 					line: p5node.__location.line,
 					col: p5node.__location.col,
@@ -367,18 +357,19 @@ function nodeize (p5node: P5ParentNode, prev: Node | null, parent: Node | null):
 				prevNode: prev,
 				nextNode: null,
 				parentNode: parent,
-				childNodes: traverse(p5node, parent),
+				childNodes: traverse(p5node, parent, rawHtml),
+				raw,
 			});
 		}
 	}
 	return node;
 }
 
-function traverse (rootNode: P5ParentNode, parentNode: Node | null = null): Node[] {
+function traverse (rootNode: P5ParentNode, parentNode: Node | null = null, rawHtml: string): Node[] {
 	const nodeList: Node[] = [];
 	let prev: Node | null = null;
 	for (const p5node of rootNode.childNodes) {
-		const node = nodeize(p5node, prev, parentNode);
+		const node = nodeize(p5node, prev, parentNode, rawHtml);
 		if (prev) {
 			prev.nextNode = node;
 		}
@@ -396,7 +387,7 @@ export default function parser (html: string) {
 		},
 	) as P5ParentNode;
 
-	const nodeList: Node[] = traverse(doc);
+	const nodeList: Node[] = traverse(doc, null, html);
 	return new Document(nodeList, html);
 }
 

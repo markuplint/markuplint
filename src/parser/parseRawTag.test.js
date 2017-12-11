@@ -550,12 +550,12 @@ test('error', t => {
 	t.is(t.throws(() => parseRawTag('<>'), SyntaxError).message, 'Invalid tag syntax');
 });
 
-// test('error', t => {
-// 	t.is(t.throws(() => parseRawTag('< >'), SyntaxError).message, 'Invalid tag name');
-// });
+test('error', t => {
+	t.is(t.throws(() => parseRawTag('< >'), SyntaxError).message, 'Invalid tag name');
+});
 
-// test('error', t => {
-// 	t.is(t.throws(() => parseRawTag('<要素>'), SyntaxError).message, 'Invalid tag name');
-// });
+test('error', t => {
+	t.is(t.throws(() => parseRawTag('<要素>'), SyntaxError).message, 'Invalid tag name');
+});
 
 test('noop', t => t.pass());

@@ -28,8 +28,8 @@ export default class extends Rule {
 						reports.push({
 							level: this.defaultLevel,
 							message,
-							line: id.line,
-							col: id.col,
+							line: id.location.line,
+							col: id.location.col,
 							raw: id.raw,
 						});
 					}

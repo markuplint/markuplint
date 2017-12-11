@@ -29,16 +29,14 @@ export default class extends Rule<Value> {
 			if (node instanceof Element && node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
 				if (node.attributes) {
 					for (const attr of node.attributes) {
-						for (const rawAttr of attr.rawAttr) {
-							if (deny.test(rawAttr.name)) {
-								reports.push({
-									level: config.level,
-									message,
-									line: rawAttr.line,
-									col: rawAttr.col,
-									raw: rawAttr.name,
-								});
-							}
+						if (deny.test(attr.name)) {
+							reports.push({
+								level: config.level,
+								message,
+								line: attr.location.line,
+								col: attr.location.col,
+								raw: attr.name,
+							});
 						}
 					}
 				}
