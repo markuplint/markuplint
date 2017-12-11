@@ -69,6 +69,8 @@ export declare class Element extends Node {
     readonly endTagLocation: TagNodeLocation | null;
     endTagNode: EndTagNode | null;
     constructor(props: ElementProperties);
+    getAttribute(attrName: string): RawAttribute | undefined;
+    readonly id: RawAttribute | undefined;
 }
 export declare class TextNode extends Node {
     readonly textContent: string;

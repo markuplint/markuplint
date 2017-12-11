@@ -110,6 +110,20 @@ export class Element extends Node {
 		this.startTagLocation = props.location.startTag || null;
 		this.endTagLocation = props.location.endTag || null;
 	}
+
+	public getAttribute (attrName: string) {
+		for (const attr of this.attributes) {
+			for (const rawAttr of attr.rawAttr) {
+				if (rawAttr.name.toLowerCase() === attrName.toLowerCase()) {
+					return rawAttr;
+				}
+			}
+		}
+	}
+
+	public get id () {
+		return this.getAttribute('id');
+	}
 }
 
 export class TextNode extends Node {

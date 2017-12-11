@@ -27,12 +27,12 @@
     "deprecated-element": true,
     "permitted-contents": true,
     "permitted-role": true,
-    "attr-duprecation": true,
+    "attr-duplication": true,
     "required-attr": true,
     "deprecated-attr": true,
     "deprecated-global-attr": true,
     "deprecated-aria-attr": true,
-    "id-duprecation": true,
+    "id-duplication": true,
     "comment": true,
 
     // Usability
