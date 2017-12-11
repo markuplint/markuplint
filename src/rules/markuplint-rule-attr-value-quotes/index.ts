@@ -33,7 +33,7 @@ export default class extends Rule<Value> {
 				for (const attr of node.attributes) {
 					if (attr.quote !== quote[config.value]) {
 						reports.push({
-							level: this.defaultLevel,
+							level: config.level,
 							message,
 							line: attr.location.line,
 							col: attr.location.col,

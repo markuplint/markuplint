@@ -26,7 +26,7 @@ export default class extends Rule {
 					const attrName = attr.name.toLowerCase();
 					if (attrNameStack.includes(attrName)) {
 						reports.push({
-							level: this.defaultLevel,
+							level: config.level,
 							message,
 							line: attr.location.line,
 							col: attr.location.col,

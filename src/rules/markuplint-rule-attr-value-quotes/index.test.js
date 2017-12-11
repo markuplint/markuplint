@@ -56,14 +56,14 @@ test('double', async t => {
 	);
 	t.deepEqual(r, [
 		{
-			level: 'warning',
+			level: 'error',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
 			col: 26,
 			raw: 'data-Attr=\'db\'',
 		},
 		{
-			level: 'warning',
+			level: 'error',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
 			col: 41,
@@ -90,14 +90,14 @@ test('single', async t => {
 	);
 	t.deepEqual(r, [
 		{
-			level: 'warning',
+			level: 'error',
 			message: 'Attribute value is must quote on single quotation mark',
 			line: 2,
 			col: 8,
 			raw: 'data-attr="value"',
 		},
 		{
-			level: 'warning',
+			level: 'error',
 			message: 'Attribute value is must quote on single quotation mark',
 			line: 2,
 			col: 41,

@@ -26,7 +26,7 @@ export default class extends Rule {
 				if (id) {
 					if (idStack.includes(id.name)) {
 						reports.push({
-							level: this.defaultLevel,
+							level: config.level,
 							message,
 							line: id.location.line,
 							col: id.location.col,
