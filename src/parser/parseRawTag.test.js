@@ -1,421 +1,473 @@
 import test from 'ava';
 import { parseRawTag } from '../../lib/parser/parseRawTag';
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div>', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div>', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div >', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div >', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div >', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div >', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div  >', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div  >', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div a>', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'a',
-// 					value: null,
-// 					quote: null,
-// 					line: 0,
-// 					col: 5,
-// 					raw: 'a',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div a>', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 0,
+					col: 5,
+					raw: 'a',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div a a>', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'a',
-// 					value: null,
-// 					quote: null,
-// 					line: 0,
-// 					col: 5,
-// 					raw: 'a',
-// 				},
-// 				{
-// 					name: 'a',
-// 					value: null,
-// 					quote: null,
-// 					line: 0,
-// 					col: 7,
-// 					raw: 'a',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div a a>', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 0,
+					col: 5,
+					raw: 'a',
+					invalid: false,
+				},
+				{
+					name: 'a',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 0,
+					col: 7,
+					raw: 'a',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div a a a>', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'a',
-// 					value: null,
-// 					quote: null,
-// 					line: 0,
-// 					col: 5,
-// 					raw: 'a',
-// 				},
-// 				{
-// 					name: 'a',
-// 					value: null,
-// 					quote: null,
-// 					line: 0,
-// 					col: 7,
-// 					raw: 'a',
-// 				},
-// 				{
-// 					name: 'a',
-// 					value: null,
-// 					quote: null,
-// 					line: 0,
-// 					col: 9,
-// 					raw: 'a',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div a a a>', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 0,
+					col: 5,
+					raw: 'a',
+					invalid: false,
+				},
+				{
+					name: 'a',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 0,
+					col: 7,
+					raw: 'a',
+					invalid: false,
+				},
+				{
+					name: 'a',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 0,
+					col: 9,
+					raw: 'a',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div abc a>', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'abc',
-// 					value: null,
-// 					quote: null,
-// 					line: 0,
-// 					col: 5,
-// 					raw: 'abc',
-// 				},
-// 				{
-// 					name: 'a',
-// 					value: null,
-// 					quote: null,
-// 					line: 0,
-// 					col: 9,
-// 					raw: 'a',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div abc a>', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'abc',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 0,
+					col: 5,
+					raw: 'abc',
+					invalid: false,
+				},
+				{
+					name: 'a',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 0,
+					col: 9,
+					raw: 'a',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div abc abc>', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'abc',
-// 					value: null,
-// 					quote: null,
-// 					line: 0,
-// 					col: 5,
-// 					raw: 'abc',
-// 				},
-// 				{
-// 					name: 'abc',
-// 					value: null,
-// 					quote: null,
-// 					line: 0,
-// 					col: 9,
-// 					raw: 'abc',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div abc abc>', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'abc',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 0,
+					col: 5,
+					raw: 'abc',
+					invalid: false,
+				},
+				{
+					name: 'abc',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 0,
+					col: 9,
+					raw: 'abc',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div abc abc abc>', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'abc',
-// 					value: null,
-// 					quote: null,
-// 					line: 0,
-// 					col: 5,
-// 					raw: 'abc',
-// 				},
-// 				{
-// 					name: 'abc',
-// 					value: null,
-// 					quote: null,
-// 					line: 0,
-// 					col: 9,
-// 					raw: 'abc',
-// 				},
-// 				{
-// 					name: 'abc',
-// 					value: null,
-// 					quote: null,
-// 					line: 0,
-// 					col: 13,
-// 					raw: 'abc',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div abc abc abc>', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'abc',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 0,
+					col: 5,
+					raw: 'abc',
+					invalid: false,
+				},
+				{
+					name: 'abc',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 0,
+					col: 9,
+					raw: 'abc',
+					invalid: false,
+				},
+				{
+					name: 'abc',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 0,
+					col: 13,
+					raw: 'abc',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag(`<div
-// a>`, 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'a',
-// 					value: null,
-// 					quote: null,
-// 					line: 1,
-// 					col: 1,
-// 					raw: 'a',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag(`<div
+a>`, 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 1,
+					col: 1,
+					raw: 'a',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag(`<div
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag(`<div
 
 
-// 			a>`, 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'a',
-// 					value: null,
-// 					quote: null,
-// 					line: 3,
-// 					col: 4,
-// 					raw: 'a',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+			a>`, 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 3,
+					col: 4,
+					raw: 'a',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag(`
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag(`
 
-// <div
+<div
 
-// a
-//   b
-// >`, 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'a',
-// 					value: null,
-// 					quote: null,
-// 					line: 2,
-// 					col: 1,
-// 					raw: 'a',
-// 				},
-// 				{
-// 					name: 'b',
-// 					value: null,
-// 					quote: null,
-// 					line: 3,
-// 					col: 3,
-// 					raw: 'b',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+a
+  b
+>`, 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 2,
+					col: 1,
+					raw: 'a',
+					invalid: false,
+				},
+				{
+					name: 'b',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 3,
+					col: 3,
+					raw: 'b',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag(`<div
-//      a
-//       b c
-//       d>
-// 		`, 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'a',
-// 					value: null,
-// 					quote: null,
-// 					line: 1,
-// 					col: 6,
-// 					raw: 'a',
-// 				},
-// 				{
-// 					name: 'b',
-// 					value: null,
-// 					quote: null,
-// 					line: 2,
-// 					col: 7,
-// 					raw: 'b',
-// 				},
-// 				{
-// 					name: 'c',
-// 					value: null,
-// 					quote: null,
-// 					line: 2,
-// 					col: 9,
-// 					raw: 'c',
-// 				},
-// 				{
-// 					name: 'd',
-// 					value: null,
-// 					quote: null,
-// 					line: 3,
-// 					col: 7,
-// 					raw: 'd',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag(`<div
+     a
+      b c
+      d>
+		`, 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 1,
+					col: 6,
+					raw: 'a',
+					invalid: false,
+				},
+				{
+					name: 'b',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 2,
+					col: 7,
+					raw: 'b',
+					invalid: false,
+				},
+				{
+					name: 'c',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 2,
+					col: 9,
+					raw: 'c',
+					invalid: false,
+				},
+				{
+					name: 'd',
+					value: null,
+					quote: null,
+					equal: null,
+					line: 3,
+					col: 7,
+					raw: 'd',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div a=a>', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'a',
-// 					value: 'a',
-// 					quote: null,
-// 					line: 0,
-// 					col: 5,
-// 					raw: 'a=a',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div a=a>', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: 'a',
+					quote: null,
+					equal: '=',
+					line: 0,
+					col: 5,
+					raw: 'a=a',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div a="a">', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'a',
-// 					value: 'a',
-// 					quote: '"',
-// 					line: 0,
-// 					col: 5,
-// 					raw: 'a="a"',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div a="a">', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: 'a',
+					quote: '"',
+					equal: '=',
+					line: 0,
+					col: 5,
+					raw: 'a="a"',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div a=\'a\'>', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'a',
-// 					value: 'a',
-// 					quote: '\'',
-// 					line: 0,
-// 					col: 5,
-// 					raw: 'a=\'a\'',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div a=\'a\'>', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: 'a',
+					quote: '\'',
+					equal: '=',
+					line: 0,
+					col: 5,
+					raw: 'a=\'a\'',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
-// test('standard', t => {
-// 	t.deepEqual(
-// 		parseRawTag('<div a="1" b="2">', 0, 0),
-// 		{
-// 			tagName: 'div',
-// 			attrs: [
-// 				{
-// 					name: 'a',
-// 					value: '1',
-// 					quote: '"',
-// 					line: 0,
-// 					col: 5,
-// 					raw: 'a="1"',
-// 				},
-// 				{
-// 					name: 'b',
-// 					value: '2',
-// 					quote: '"',
-// 					line: 0,
-// 					col: 11,
-// 					raw: 'b="2"',
-// 				}
-// 			],
-// 		}
-// 	);
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div a="1" b="2">', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: '1',
+					quote: '"',
+					equal: '=',
+					line: 0,
+					col: 5,
+					raw: 'a="1"',
+					invalid: false,
+				},
+				{
+					name: 'b',
+					value: '2',
+					quote: '"',
+					equal: '=',
+					line: 0,
+					col: 11,
+					raw: 'b="2"',
+					invalid: false,
+				}
+			],
+		}
+	);
+});
 
 test('standard', t => {
 	t.deepEqual(
@@ -427,6 +479,7 @@ test('standard', t => {
 					name: 'a',
 					value: '1',
 					quote: '"',
+					equal: '=',
 					line: 0,
 					col: 5,
 					raw: 'a="1"',
@@ -436,6 +489,7 @@ test('standard', t => {
 					name: 'b',
 					value: 'c=d',
 					quote: null,
+					equal: '=',
 					line: 0,
 					col: 11,
 					raw: 'b=c=d',
@@ -456,6 +510,7 @@ test('standard', t => {
 					name: 'a',
 					value: null,
 					quote: null,
+					equal: '=',
 					line: 0,
 					col: 5,
 					raw: 'a=',
@@ -466,13 +521,34 @@ test('standard', t => {
 	);
 });
 
-// test('error', t => {
-// 	t.is(t.throws(() => parseRawTag('<div'), SyntaxError).message, 'Invalid tag syntax');
-// });
+test('standard', t => {
+	t.deepEqual(
+		parseRawTag('<div a = "abc">', 0, 0),
+		{
+			tagName: 'div',
+			attrs: [
+				{
+					name: 'a',
+					value: 'abc',
+					quote: '"',
+					equal: ' = ',
+					line: 0,
+					col: 5,
+					raw: 'a = "abc"',
+					invalid: false,
+				},
+			],
+		}
+	);
+});
 
-// test('error', t => {
-// 	t.is(t.throws(() => parseRawTag('<>'), SyntaxError).message, 'Invalid tag syntax');
-// });
+test('error', t => {
+	t.is(t.throws(() => parseRawTag('<div'), SyntaxError).message, 'Invalid tag syntax');
+});
+
+test('error', t => {
+	t.is(t.throws(() => parseRawTag('<>'), SyntaxError).message, 'Invalid tag syntax');
+});
 
 // test('error', t => {
 // 	t.is(t.throws(() => parseRawTag('< >'), SyntaxError).message, 'Invalid tag name');

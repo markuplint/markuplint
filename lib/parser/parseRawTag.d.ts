@@ -2,6 +2,7 @@ export interface RawAttribute {
     name: string;
     value: string | null;
     quote: '"' | "'" | null;
+    equal: string | null;
     line: number;
     col: number;
     raw: string;
