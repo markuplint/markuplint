@@ -40,6 +40,7 @@ export interface ElementProperties extends NodeProperties {
 export interface TextNodeProperties extends NodeProperties {
 	textContent: string;
 	location: NodeLocation;
+	raw: string;
 }
 
 export interface DocTypeProperties extends NodeProperties {
@@ -135,7 +136,7 @@ export class TextNode extends Node {
 	constructor (props: TextNodeProperties) {
 		super(props);
 		this.textContent = props.textContent;
-		this.raw = props.textContent;
+		this.raw = props.raw;
 	}
 }
 
@@ -183,6 +184,7 @@ export class Document {
 		this._tree = nodes;
 
 		const pos: { pos: number; node: Node }[] = [];
+
 		walk(nodes, (node) => {
 			const i = pos.length;
 
@@ -190,6 +192,86 @@ export class Document {
 				return;
 			}
 
+			pos.push({ pos: node.startOffset, node });
+		});
+
+		{
+			const lastNode = pos.pop();
+			if (lastNode) {
+				const matched = lastNode.node.raw.match(/^([^<]+)(<\/body\s*>)+(\s*)(<\/html\s*>)+(\s*)$/i);
+				if (matched) {
+					const before = matched[1] || null;
+					const body = matched[2] || null;
+					const sep = matched[3] || null;
+					const html = matched[4] || null;
+					const after = matched[5] || null;
+
+					if (before) {
+						pos.push({
+							pos: lastNode.node.startOffset,
+							node: new TextNode({
+								nodeName: '#text',
+								location: {
+									line: lastNode.node.line,
+									col: lastNode.node.col,
+									startOffset: lastNode.node.startOffset,
+									endOffset: lastNode.node.startOffset + before.length,
+								},
+								prevNode: lastNode.node.prevNode,
+								nextNode: null,
+								parentNode: lastNode.node.parentNode,
+								textContent: before,
+								raw: before,
+							}),
+						});
+					}
+
+					// TODO: sep
+					// if (sep) {
+					// 	pos.push({
+					// 		pos: lastNode.node.startOffset,
+					// 		node: new TextNode({
+					// 			nodeName: '#text',
+					// 			location: {
+					// 				line: lastNode.node.line,
+					// 				col: lastNode.node.col,
+					// 				startOffset: lastNode.node.startOffset,
+					// 				endOffset: lastNode.node.startOffset + before.length,
+					// 			},
+					// 			prevNode: lastNode.node.prevNode,
+					// 			nextNode: null,
+					// 			parentNode: lastNode.node.parentNode,
+					// 			textContent: before,
+					// 			raw: before,
+					// 		}),
+					// 	});
+					// }
+
+					// TODO: after
+					// if (after) {
+					// 	pos.push({
+					// 		pos: lastNode.node.startOffset,
+					// 		node: new TextNode({
+					// 			nodeName: '#text',
+					// 			location: {
+					// 				line: lastNode.node.line,
+					// 				col: lastNode.node.col,
+					// 				startOffset: lastNode.node.startOffset,
+					// 				endOffset: lastNode.node.startOffset + before.length,
+					// 			},
+					// 			prevNode: lastNode.node.prevNode,
+					// 			nextNode: null,
+					// 			parentNode: lastNode.node.parentNode,
+					// 			textContent: before,
+					// 			raw: before,
+					// 		}),
+					// 	});
+					// }
+				}
+			}
+		}
+
+		pos.forEach(({node}, i) => {
 			if (i === 0 && node.startOffset > 0) {
 				const firstTextContent = rawHtml.slice(0, node.startOffset);
 				const firstTextNode = new TextNode({
@@ -204,11 +286,10 @@ export class Document {
 					nextNode: node,
 					parentNode: null,
 					textContent: firstTextContent,
+					raw: firstTextContent,
 				});
 				pos.push({ pos: 0, node: firstTextNode });
 			}
-
-			pos.push({ pos: node.startOffset, node });
 
 			if (node instanceof Element) {
 				if (node.startTagLocation) {
@@ -301,6 +382,7 @@ function nodeize (p5node: P5ParentNode, prev: Node | null, parent: Node | null, 
 			break;
 		}
 		case '#text': {
+			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
 			node = new TextNode({
 				nodeName: p5node.nodeName,
 				location: {
@@ -313,6 +395,7 @@ function nodeize (p5node: P5ParentNode, prev: Node | null, parent: Node | null, 
 				nextNode: null,
 				parentNode: parent,
 				textContent: p5node.value,
+				raw,
 			});
 			break;
 		}

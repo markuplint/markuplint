@@ -28,6 +28,7 @@ export interface ElementProperties extends NodeProperties {
 export interface TextNodeProperties extends NodeProperties {
     textContent: string;
     location: NodeLocation;
+    raw: string;
 }
 export interface DocTypeProperties extends NodeProperties {
     publicId: string | null;
