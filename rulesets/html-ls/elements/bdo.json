@@ -5,7 +5,7 @@
 		"#global",
 		{
 			"name": "dir",
-			"description": "Text direction in this element. Possible values are:\n \n  ltr: Indicates that the text should go in a left-to-right direction.\n  rtl: Indicates that the text should go in a right-to-left direction.\n \n "
+			"description": "The direction in which text should be rendered in this element's contents. Possible values are:\n \n  ltr: Indicates that the text should go in a left-to-right direction.\n  rtl: Indicates that the text should go in a right-to-left direction.\n \n "
 		}
 	],
 	"categories": [
