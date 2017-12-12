@@ -1,8 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as util from 'util';
 
-const exists = util.promisify(fs.exists);
+const exists = (p: string) => {
+	return new Promise<boolean>((r, e) => {
+		fs.exists(p, r);
+	});
+};
 
 export default async function fileSearch (fileList: string[], dir: string) {
 	const notfoundFiles: string[] = [];
