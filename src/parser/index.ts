@@ -195,81 +195,83 @@ export class Document {
 			pos.push({ pos: node.startOffset, node });
 		});
 
-		// {
-		// 	const lastNode = pos.pop();
-		// 	if (lastNode) {
-		// 		const matched = lastNode.node.raw.match(/^([^<]+)(<\/body\s*>)+(\s*)(<\/html\s*>)+(\s*)$/i);
-		// 		if (matched) {
-		// 			const before = matched[1] || null;
-		// 			const body = matched[2] || null;
-		// 			const sep = matched[3] || null;
-		// 			const html = matched[4] || null;
-		// 			const after = matched[5] || null;
+		{
+			const lastNode = pos.pop();
+			if (lastNode) {
+				const matched = lastNode.node.raw.match(/^([^<]+)(<\/body\s*>)+(\s*)(<\/html\s*>)+(\s*)$/i);
+				if (!matched) {
+					pos.push(lastNode);
+				} else {
+					const before = matched[1] || null;
+					const body = matched[2] || null;
+					const sep = matched[3] || null;
+					const html = matched[4] || null;
+					const after = matched[5] || null;
 
-		// 			if (before) {
-		// 				pos.push({
-		// 					pos: lastNode.node.startOffset,
-		// 					node: new TextNode({
-		// 						nodeName: '#text',
-		// 						location: {
-		// 							line: lastNode.node.line,
-		// 							col: lastNode.node.col,
-		// 							startOffset: lastNode.node.startOffset,
-		// 							endOffset: lastNode.node.startOffset + before.length,
-		// 						},
-		// 						prevNode: lastNode.node.prevNode,
-		// 						nextNode: null,
-		// 						parentNode: lastNode.node.parentNode,
-		// 						textContent: before,
-		// 						raw: before,
-		// 					}),
-		// 				});
-		// 			}
+					if (before) {
+						pos.push({
+							pos: lastNode.node.startOffset,
+							node: new TextNode({
+								nodeName: '#text',
+								location: {
+									line: lastNode.node.line,
+									col: lastNode.node.col,
+									startOffset: lastNode.node.startOffset,
+									endOffset: lastNode.node.startOffset + before.length,
+								},
+								prevNode: lastNode.node.prevNode,
+								nextNode: null,
+								parentNode: lastNode.node.parentNode,
+								textContent: before,
+								raw: before,
+							}),
+						});
+					}
 
-		// 			// TODO: sep
-		// 			// if (sep) {
-		// 			// 	pos.push({
-		// 			// 		pos: lastNode.node.startOffset,
-		// 			// 		node: new TextNode({
-		// 			// 			nodeName: '#text',
-		// 			// 			location: {
-		// 			// 				line: lastNode.node.line,
-		// 			// 				col: lastNode.node.col,
-		// 			// 				startOffset: lastNode.node.startOffset,
-		// 			// 				endOffset: lastNode.node.startOffset + before.length,
-		// 			// 			},
-		// 			// 			prevNode: lastNode.node.prevNode,
-		// 			// 			nextNode: null,
-		// 			// 			parentNode: lastNode.node.parentNode,
-		// 			// 			textContent: before,
-		// 			// 			raw: before,
-		// 			// 		}),
-		// 			// 	});
-		// 			// }
+					// TODO: sep
+					// if (sep) {
+					// 	pos.push({
+					// 		pos: lastNode.node.startOffset,
+					// 		node: new TextNode({
+					// 			nodeName: '#text',
+					// 			location: {
+					// 				line: lastNode.node.line,
+					// 				col: lastNode.node.col,
+					// 				startOffset: lastNode.node.startOffset,
+					// 				endOffset: lastNode.node.startOffset + before.length,
+					// 			},
+					// 			prevNode: lastNode.node.prevNode,
+					// 			nextNode: null,
+					// 			parentNode: lastNode.node.parentNode,
+					// 			textContent: before,
+					// 			raw: before,
+					// 		}),
+					// 	});
+					// }
 
-		// 			// TODO: after
-		// 			// if (after) {
-		// 			// 	pos.push({
-		// 			// 		pos: lastNode.node.startOffset,
-		// 			// 		node: new TextNode({
-		// 			// 			nodeName: '#text',
-		// 			// 			location: {
-		// 			// 				line: lastNode.node.line,
-		// 			// 				col: lastNode.node.col,
-		// 			// 				startOffset: lastNode.node.startOffset,
-		// 			// 				endOffset: lastNode.node.startOffset + before.length,
-		// 			// 			},
-		// 			// 			prevNode: lastNode.node.prevNode,
-		// 			// 			nextNode: null,
-		// 			// 			parentNode: lastNode.node.parentNode,
-		// 			// 			textContent: before,
-		// 			// 			raw: before,
-		// 			// 		}),
-		// 			// 	});
-		// 			// }
-		// 		}
-		// 	}
-		// }
+					// TODO: after
+					// if (after) {
+					// 	pos.push({
+					// 		pos: lastNode.node.startOffset,
+					// 		node: new TextNode({
+					// 			nodeName: '#text',
+					// 			location: {
+					// 				line: lastNode.node.line,
+					// 				col: lastNode.node.col,
+					// 				startOffset: lastNode.node.startOffset,
+					// 				endOffset: lastNode.node.startOffset + before.length,
+					// 			},
+					// 			prevNode: lastNode.node.prevNode,
+					// 			nextNode: null,
+					// 			parentNode: lastNode.node.parentNode,
+					// 			textContent: before,
+					// 			raw: before,
+					// 		}),
+					// 	});
+					// }
+				}
+			}
+		}
 
 		pos.forEach(({node}, i) => {
 			if (i === 0 && node.startOffset > 0) {

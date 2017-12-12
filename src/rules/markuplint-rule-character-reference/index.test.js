@@ -6,24 +6,41 @@ const rule = new CustomRule();
 
 test('character-reference', async t => {
 	const r = await markuplint.verify(
-		`<div id="a"> > < & " ' </div>`,
+		`<div id="a"> > < & " ' &amp;</div>`,
 		{rules: {"character-reference": true}},
 		[rule],
 		'en',
 	);
+	t.is(r.length, 4);
 	t.deepEqual(r[0], {
 		level: 'error',
-		message: 'Illegal characters in node or attribute value must be escape in character reference',
+		message: 'Illegal characters must escape in character reference',
 		line: 1,
-		col: 20,
-		raw: '"',
+		col: 14,
+		raw: '>',
 	});
-	t.is(r[1].col, 18);
-	t.is(r[1].raw, '&');
-	t.is(r[2].col, 16);
-	t.is(r[2].raw, '<');
-	t.is(r[3].col, 14);
-	t.is(r[3].raw, '>');
+	t.is(r[1].col, 16);
+	t.is(r[1].raw, '<');
+	t.is(r[2].col, 18);
+	t.is(r[2].raw, '&');
+	t.is(r[3].col, 20);
+	t.is(r[3].raw, '"');
+});
+
+test('character-reference', async t => {
+	const r = await markuplint.verify(
+		`<img src="path/to?a=b&c=d">`,
+		{rules: {"character-reference": true}},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, [{
+		level: 'error',
+		message: 'Illegal characters must escape in character reference',
+		line: 1,
+		col: 22,
+		raw: '&',
+	}]);
 });
 
 test('noop', t => t.pass());

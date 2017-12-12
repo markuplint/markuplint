@@ -12,10 +12,14 @@
 		"double quotation mark": "ダブルクオーテーション",
 		"single quotation mark": "シングルクォーテーション",
 		"lowercase": "小文字",
-		"uppercase": "大文字"
+		"uppercase": "大文字",
+		"illegal characters": "不正な文字",
+		"escape in character reference": "参照文字でエスケープ"
 	},
 	"Duplicate {0}": "{0}が重複しています。",
   "{0} is must {1} on {2}": "{0}は{2}で{1}べきです。",
+  "{0} must {1}": "{0}は{1}するべきです。",
+  "{0} should {1}": "{0}は{1}してください。",
   "{0} of {1} must be {2}": "{1}の{0}は{2}にするべきです。",
   "{0} of {1} should be {2}": "{1}の{0}は{2}にしてください。"
 }
