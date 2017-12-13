@@ -34,6 +34,10 @@ export default class extends Rule<Value, Options> {
 		document.walk((node) => {
 			const targetNodes: { line: number; col: number; raw: string }[] = [];
 			if (node instanceof TextNode) {
+				// TODO: text of raw-text-elements
+				if (node.parentNode && /^(?:script|style)$/i.test(node.parentNode.nodeName)) {
+					return;
+				}
 				targetNodes.push({
 					line: node.line,
 					col: node.col,

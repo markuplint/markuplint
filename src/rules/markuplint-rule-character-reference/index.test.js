@@ -43,4 +43,14 @@ test('character-reference', async t => {
 	}]);
 });
 
+test('character-reference', async t => {
+	const r = await markuplint.verify(
+		`<script>if (i < 0) console.log("<markuplint>");</script>`,
+		{rules: {"character-reference": true}},
+		[rule],
+		'en',
+	);
+	t.is(r.length, 0);
+});
+
 test('noop', t => t.pass());
