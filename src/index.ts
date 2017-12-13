@@ -22,6 +22,13 @@ export async function verify (html: string, ruleset: Ruleset, rules: Rule[], loc
 	return await markuplint.verify(html, ruleset, rules, locale);
 }
 
+export async function verifyOnWorkspace (html: string) {
+	const locale = await osLocale();
+	const ruleset = await getRuleset(process.cwd());
+	const rules = await getRuleModules();
+	return await markuplint.verify(html, ruleset, rules, locale);
+}
+
 export async function verifyFile (filePath: string, ruleset?: Ruleset, rules?: Rule[], locale?: string) {
 	if (!locale) {
 		locale = await osLocale();
