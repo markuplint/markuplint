@@ -32,7 +32,6 @@ export interface NodeProperties {
 export interface ElementProperties extends NodeProperties {
 	namespaceURI: string;
 	attributes: Attribute[];
-	childNodes: Node[];
 	location: ElementLocation;
 	raw: string;
 }
@@ -106,7 +105,7 @@ export abstract class Node {
 export class Element extends Node {
 	public readonly namespaceURI: string;
 	public readonly attributes: Attribute[];
-	public readonly childNodes: Node[];
+	public childNodes: Node[] = [];
 	public readonly endOffset: number | null;
 	public readonly startTagLocation: TagNodeLocation | null;
 	public readonly endTagLocation: TagNodeLocation | null;
@@ -116,7 +115,6 @@ export class Element extends Node {
 		super(props);
 		this.namespaceURI = props.namespaceURI;
 		this.attributes = props.attributes;
-		this.childNodes = props.childNodes;
 		this.endOffset = props.location.endOffset || null;
 		this.startTagLocation = props.location.startTag || null;
 		this.endTagLocation = props.location.endTag || null;
@@ -478,9 +476,9 @@ function nodeize (p5node: P5ParentNode, prev: Node | null, parent: Node | null, 
 				prevNode: prev,
 				nextNode: null,
 				parentNode: parent,
-				childNodes: traverse(p5node, parent, rawHtml),
 				raw,
 			});
+			(node as Element).childNodes =  traverse(p5node, node, rawHtml);
 		}
 	}
 	return node;

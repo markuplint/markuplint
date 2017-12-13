@@ -21,7 +21,6 @@ export interface NodeProperties {
 export interface ElementProperties extends NodeProperties {
     namespaceURI: string;
     attributes: Attribute[];
-    childNodes: Node[];
     location: ElementLocation;
     raw: string;
 }
@@ -72,7 +71,7 @@ export declare abstract class Node {
 export declare class Element extends Node {
     readonly namespaceURI: string;
     readonly attributes: Attribute[];
-    readonly childNodes: Node[];
+    childNodes: Node[];
     readonly endOffset: number | null;
     readonly startTagLocation: TagNodeLocation | null;
     readonly endTagLocation: TagNodeLocation | null;
