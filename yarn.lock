@@ -78,6 +78,10 @@
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@types/os-locale/-/os-locale-2.1.0.tgz#0ded736612a79e900fa76f02c6ad566d046ad17a"
 
+"@types/strip-ansi@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/strip-ansi/-/strip-ansi-3.0.0.tgz#9b63d453a6b54aa849182207711a08be8eea48ae"
+
 "@types/strip-json-comments@^0.0.30":
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/strip-json-comments/-/strip-json-comments-0.0.30.tgz#9aa30c04db212a9a0649d6ae6fd50accc40748a1"

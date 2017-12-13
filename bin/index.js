@@ -10,7 +10,8 @@ const cli = meow(`
 	  $ markuplint <input>
 
 	Options
-	  --ruleset, -r    Ruleset file path
+	  --ruleset,  -r    Ruleset file path
+	  --no-color, -c    output no color
 
 	Examples
 	  $ markuplint verifyee.html --ruleset path/to/.markuplintrc
@@ -20,6 +21,9 @@ const cli = meow(`
 		ruleset: {
 			type: 'string',
 			alias: 'r',
+		},
+		'no-color': {
+			alias: 'c',
 		},
 	},
 });
@@ -36,7 +40,7 @@ if (cli.input.length) {
 	(async () => {
 		for (const filePath of cli.input) {
 			const { html, reports } = await verifyFile(filePath, cli.flags.ruleset);
-			await standardReporter(filePath, reports, html);
+			await standardReporter(filePath, reports, html, !cli.flags.noColor);
 		}
 		console.log(`🎉 markuplint CLI done.`);
 	})();
