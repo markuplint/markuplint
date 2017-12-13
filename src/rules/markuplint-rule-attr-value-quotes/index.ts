@@ -31,7 +31,7 @@ export default class extends Rule<Value> {
 		document.walk((node) => {
 			if (node instanceof Element) {
 				for (const attr of node.attributes) {
-					if (attr.quote !== quote[config.value]) {
+					if (attr.value != null && attr.quote !== quote[config.value]) {
 						reports.push({
 							level: config.level,
 							message,

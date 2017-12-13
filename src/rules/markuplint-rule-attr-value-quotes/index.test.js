@@ -106,4 +106,23 @@ test('single', async t => {
 	]);
 });
 
+test('empty', async t => {
+	const r = await markuplint.verify(
+		`
+		<div data-attr>
+			lorem
+			<p>ipsam</p>
+		</div>
+		`,
+		{
+			rules: {
+				"attr-value-quotes": true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r.length, 0);
+});
+
 test('noop', t => t.pass());
