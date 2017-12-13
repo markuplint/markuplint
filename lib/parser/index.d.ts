@@ -30,6 +30,11 @@ export interface TextNodeProperties extends NodeProperties {
     location: NodeLocation;
     raw: string;
 }
+export interface CommentNodeProperties extends NodeProperties {
+    data: string;
+    location: NodeLocation;
+    raw: string;
+}
 export interface DocTypeProperties extends NodeProperties {
     publicId: string | null;
     systemId: string | null;
@@ -79,6 +84,10 @@ export declare class Element extends Node {
 export declare class TextNode extends Node {
     readonly textContent: string;
     constructor(props: TextNodeProperties);
+}
+export declare class CommentNode extends Node {
+    readonly data: string;
+    constructor(props: CommentNodeProperties);
 }
 export declare class Doctype extends Node {
     readonly publicId: string | null;

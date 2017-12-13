@@ -43,6 +43,12 @@ export interface TextNodeProperties extends NodeProperties {
 	raw: string;
 }
 
+export interface CommentNodeProperties extends NodeProperties {
+	data: string;
+	location: NodeLocation;
+	raw: string;
+}
+
 export interface DocTypeProperties extends NodeProperties {
 	publicId: string | null;
 	systemId: string | null;
@@ -136,6 +142,16 @@ export class TextNode extends Node {
 	constructor (props: TextNodeProperties) {
 		super(props);
 		this.textContent = props.textContent;
+		this.raw = props.raw;
+	}
+}
+
+export class CommentNode extends Node {
+	public readonly data: string;
+
+	constructor (props: CommentNodeProperties) {
+		super(props);
+		this.data = props.data;
 		this.raw = props.raw;
 	}
 }
@@ -397,6 +413,26 @@ function nodeize (p5node: P5ParentNode, prev: Node | null, parent: Node | null, 
 				nextNode: null,
 				parentNode: parent,
 				textContent: p5node.value,
+				raw,
+			});
+			break;
+		}
+		case '#comment': {
+			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
+			// @ts-ignore
+			node = new CommentNode({
+				nodeName: p5node.nodeName,
+				location: {
+					line: p5node.__location.line,
+					col: p5node.__location.col,
+					startOffset: p5node.__location.startOffset,
+					endOffset: p5node.__location.endOffset,
+				},
+				prevNode: prev,
+				nextNode: null,
+				parentNode: parent,
+				// @ts-ignore
+				data: p5node.data,
 				raw,
 			});
 			break;
