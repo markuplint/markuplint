@@ -1,5 +1,6 @@
 // tslint:disable:no-magic-numbers
 import * as path from 'path';
+import * as url from 'url';
 
 import * as c from 'cli-color';
 const stripAnsi = require('strip-ansi'); // tslint:disable-line
@@ -9,7 +10,9 @@ import {
 } from '../rule';
 
 export async function standardReporter (targetPath: string, results: VerifiedResult[], rawSource: string, color: boolean = true) {
-	targetPath = path.resolve(targetPath);
+	if (!url.parse(targetPath).host) {
+		targetPath = path.resolve(targetPath);
+	}
 	const out: string[] = [];
 	const loggerError = c.red;
 	const loggerWarning = c.xterm(208);
