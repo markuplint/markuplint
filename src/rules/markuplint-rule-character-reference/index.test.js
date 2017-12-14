@@ -18,6 +18,7 @@ test('character-reference', async t => {
 		line: 1,
 		col: 14,
 		raw: '>',
+		ruleId: 'character-reference',
 	});
 	t.is(r[1].col, 16);
 	t.is(r[1].raw, '<');
@@ -40,6 +41,7 @@ test('character-reference', async t => {
 		line: 1,
 		col: 22,
 		raw: '&',
+		ruleId: 'character-reference',
 	}]);
 });
 

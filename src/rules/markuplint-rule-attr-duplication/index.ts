@@ -4,7 +4,7 @@ import {
 } from '../../parser';
 import Rule, {
 	RuleConfig,
-	VerifiedResult,
+	VerifyReturn,
 } from '../../rule';
 import {
 	PermittedContent,
@@ -17,7 +17,7 @@ export default class extends Rule {
 	public name = 'attr-duplication';
 
 	public async verify (document: Document, config: RuleConfig, ruleset: Ruleset, locale: string) {
-		const reports: VerifiedResult[] = [];
+		const reports: VerifyReturn[] = [];
 		const message = await messages(locale, 'Duplicate {0}', 'attribute name');
 		document.walk((node) => {
 			if (node instanceof Element) {

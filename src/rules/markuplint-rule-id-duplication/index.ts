@@ -4,7 +4,7 @@ import {
 } from '../../parser';
 import Rule, {
 	RuleConfig,
-	VerifiedResult,
+	VerifyReturn,
 } from '../../rule';
 import {
 	PermittedContent,
@@ -12,12 +12,11 @@ import {
 } from '../../ruleset';
 import messages from '../messages';
 
-
 export default class extends Rule {
 	public name = 'id-duplication';
 
 	public async verify (document: Document, config: RuleConfig, ruleset: Ruleset, locale: string) {
-		const reports: VerifiedResult[] = [];
+		const reports: VerifyReturn[] = [];
 		const message = await messages(locale, 'Duplicate {0}', 'attribute id value');
 		const idStack: string[] = [];
 		document.walk((node) => {

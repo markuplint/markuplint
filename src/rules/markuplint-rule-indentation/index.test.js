@@ -45,6 +45,7 @@ test('tab', async t => {
 			col: 1,
 			raw: `
     <div>`,
+			ruleId: 'indentation',
 		},
 		{
 			level: 'error',
@@ -54,6 +55,7 @@ test('tab', async t => {
 			raw: `
         lorem
         <p>`,
+			ruleId: 'indentation',
 		},
 		{
 			level: 'error',
@@ -62,6 +64,7 @@ test('tab', async t => {
 			col: 1,
 			raw: `
     </div>`,
+			ruleId: 'indentation',
 		},
 	]);
 });
@@ -125,6 +128,7 @@ test('tab', async t => {
 			col: 1,
 			raw: `
 	<div>`,
+			ruleId: 'indentation',
 		},
 		{
 			level: 'error',
@@ -134,6 +138,7 @@ test('tab', async t => {
 			raw: `
 		lorem
 		<p>`,
+			ruleId: 'indentation',
 		},
 		{
 			level: 'error',
@@ -142,6 +147,7 @@ test('tab', async t => {
 			col: 1,
 			raw: `
 	</div>`,
+			ruleId: 'indentation',
 		},
 	]);
 });
@@ -169,6 +175,7 @@ test('tab', async t => {
 			col: 1,
 			raw: `
    <div>`,
+			ruleId: 'indentation',
 		},
 		{
 			level: 'error',
@@ -177,6 +184,7 @@ test('tab', async t => {
 			col: 1,
 			raw: `
    </div>`,
+			ruleId: 'indentation',
 		},
 	]);
 });

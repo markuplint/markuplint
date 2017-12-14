@@ -27,6 +27,7 @@ test('attr-duplication', async t => {
 			line: 2,
 			col: 26,
 			raw: 'data-Attr=\'db\'',
+			ruleId: 'attr-duplication',
 		},
 		{
 			level: 'error',
@@ -34,6 +35,7 @@ test('attr-duplication', async t => {
 			line: 2,
 			col: 41,
 			raw: 'data-attR=tr',
+			ruleId: 'attr-duplication',
 		}
 	]);
 });
@@ -64,6 +66,7 @@ test('attr-duplication', async t => {
 			line: 4,
 			col: 4,
 			raw: 'data-Attr=\'db\'',
+			ruleId: 'attr-duplication',
 		},
 		{
 			level: 'error',
@@ -71,6 +74,7 @@ test('attr-duplication', async t => {
 			line: 5,
 			col: 4,
 			raw: 'data-attR=tr',
+			ruleId: 'attr-duplication',
 		}
 	]);
 });

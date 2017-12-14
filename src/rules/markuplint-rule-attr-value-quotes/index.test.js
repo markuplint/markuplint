@@ -27,6 +27,7 @@ test('default', async t => {
 			line: 2,
 			col: 26,
 			raw: 'data-Attr=\'db\'',
+			ruleId: 'attr-value-quotes',
 		},
 		{
 			level: 'warning',
@@ -34,6 +35,7 @@ test('default', async t => {
 			line: 2,
 			col: 41,
 			raw: 'data-attR=tr',
+			ruleId: 'attr-value-quotes',
 		}
 	]);
 });
@@ -61,6 +63,7 @@ test('double', async t => {
 			line: 2,
 			col: 26,
 			raw: 'data-Attr=\'db\'',
+			ruleId: 'attr-value-quotes',
 		},
 		{
 			level: 'error',
@@ -68,6 +71,7 @@ test('double', async t => {
 			line: 2,
 			col: 41,
 			raw: 'data-attR=tr',
+			ruleId: 'attr-value-quotes',
 		}
 	]);
 });
@@ -95,6 +99,7 @@ test('single', async t => {
 			line: 2,
 			col: 8,
 			raw: 'data-attr="value"',
+			ruleId: 'attr-value-quotes',
 		},
 		{
 			level: 'error',
@@ -102,6 +107,7 @@ test('single', async t => {
 			line: 2,
 			col: 41,
 			raw: 'data-attR=tr',
+			ruleId: 'attr-value-quotes',
 		}
 	]);
 });

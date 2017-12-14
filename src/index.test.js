@@ -15,6 +15,7 @@ test('foo', async t => {
 			line: 2,
 			col: 7,
 			raw: 'lang=en',
+			ruleId: 'attr-value-quotes',
 		},
 		{
 			level: 'warning',
@@ -22,6 +23,7 @@ test('foo', async t => {
 			line: 4,
 			col: 8,
 			raw: 'charset=UTF-8',
+			ruleId: 'attr-value-quotes',
 		},
 		{
 			level: 'warning',
@@ -29,6 +31,7 @@ test('foo', async t => {
 			line: 5,
 			col: 8,
 			raw: 'name=viewport',
+			ruleId: 'attr-value-quotes',
 		},
 		{
 			level: 'warning',
@@ -36,6 +39,7 @@ test('foo', async t => {
 			line: 5,
 			col: 22,
 			raw: "content='width=device-width, initial-scale=1.0'",
+			ruleId: 'attr-value-quotes',
 		},
 		{
 			level: 'warning',
@@ -43,6 +47,7 @@ test('foo', async t => {
 			line: 6,
 			col: 8,
 			raw: 'http-equiv=X-UA-Compatible',
+			ruleId: 'attr-value-quotes',
 		},
 		{
 			level: 'warning',
@@ -50,6 +55,7 @@ test('foo', async t => {
 			line: 6,
 			col: 35,
 			raw: 'content=ie=edge',
+			ruleId: 'attr-value-quotes',
 		},
 	]);
 });

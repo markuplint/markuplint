@@ -5,7 +5,7 @@ import {
 import Rule, {
 	RuleConfig,
 	RuleLevel,
-	VerifiedResult,
+	VerifyReturn,
 } from '../../rule';
 import {
 	PermittedContent,
@@ -26,7 +26,7 @@ export default class extends Rule<Value> {
 	public defaultValue: Value = 'double';
 
 	public async verify (document: Document, config: RuleConfig<Value>, ruleset: Ruleset, locale: string) {
-		const reports: VerifiedResult[] = [];
+		const reports: VerifyReturn[] = [];
 		const message = await messages(locale, '{0} is must {1} on {2}', 'Attribute value', 'quote', `${config.value} quotation mark`);
 		document.walk((node) => {
 			if (node instanceof Element) {

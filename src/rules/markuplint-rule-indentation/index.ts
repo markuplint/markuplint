@@ -7,7 +7,7 @@ import {
 } from '../../parser';
 import Rule, {
 	RuleConfig,
-	VerifiedResult,
+	VerifyReturn,
 } from '../../rule';
 import {
 	PermittedContent,
@@ -25,7 +25,7 @@ export default class extends Rule<DefaultValue> {
 	public name = 'indentation';
 
 	public async verify (document: Document, config: RuleConfig<DefaultValue>, ruleset: Ruleset) {
-		const reports: VerifiedResult[] = [];
+		const reports: VerifyReturn[] = [];
 		let lastNode: Node;
 		document.walk((node) => {
 			if (lastNode instanceof TextNode) {

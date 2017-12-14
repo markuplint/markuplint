@@ -18,6 +18,7 @@ test('id-duplication', async t => {
 			line: 1,
 			col: 16,
 			raw: 'id="a"',
+			ruleId: 'id-duplication',
 		}
 	]);
 });

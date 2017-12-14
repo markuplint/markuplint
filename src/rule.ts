@@ -11,12 +11,16 @@ import {
 
 const readdir = util.promisify(fs.readdir);
 
-export interface VerifiedResult {
+export interface VerifyReturn {
 	level: RuleLevel;
 	message: string;
 	line: number;
 	col: number;
 	raw: string;
+}
+
+export interface VerifiedResult extends VerifyReturn {
+	ruleId: string;
 }
 
 export type RuleLevel = 'error' | 'warning';
@@ -35,7 +39,7 @@ export default abstract class Rule<T = null, O = {}> {
 	public readonly defaultLevel: RuleLevel = 'error';
 	public readonly defaultValue: T;
 
-	public abstract async verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifiedResult[]>;
+	public abstract async verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
 
 	public optimizeOption (option: RuleOption<T, O> | boolean): RuleConfig<T, O> {
 		if (typeof option === 'boolean') {

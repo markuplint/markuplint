@@ -14,6 +14,7 @@ test('HTML Living Standard empty document', async t => {
 			line: 0,
 			col: 0,
 			raw: '',
+			ruleId: 'permitted-contents',
 		},
 		{
 			level: 'error',
@@ -21,6 +22,7 @@ test('HTML Living Standard empty document', async t => {
 			line: 0,
 			col: 0,
 			raw: '',
+			ruleId: 'permitted-contents',
 		},
 	]);
 });
@@ -37,6 +39,7 @@ test('HTML Living Standard empty html', async t => {
 			line: 0,
 			col: 0,
 			raw: '',
+			ruleId: 'permitted-contents',
 		},
 		{
 			level: 'error',
@@ -44,6 +47,7 @@ test('HTML Living Standard empty html', async t => {
 			line: 0,
 			col: 0,
 			raw: '',
+			ruleId: 'permitted-contents',
 		},
 	]);
 });

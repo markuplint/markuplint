@@ -5,7 +5,7 @@ import {
 } from '../../parser';
 import Rule, {
 	RuleConfig,
-	VerifiedResult,
+	VerifyReturn,
 } from '../../rule';
 import {
 	Ruleset,
@@ -28,7 +28,7 @@ export default class extends Rule<Value, Options> {
 	public name = 'character-reference';
 
 	public async verify (document: Document, config: RuleConfig<Value, Options>, ruleset: Ruleset, locale: string) {
-		const reports: VerifiedResult[] = [];
+		const reports: VerifyReturn[] = [];
 		const ms = config.level === 'error' ? 'must' : 'should';
 		const message = await messages(locale, `{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 		document.walk((node) => {

@@ -5,7 +5,7 @@ import {
 } from '../../parser';
 import Rule, {
 	RuleConfig,
-	VerifiedResult,
+	VerifyReturn,
 } from '../../rule';
 import {
 	PermittedContent,
@@ -21,7 +21,7 @@ export default class extends Rule {
 	public name = 'permitted-contents';
 
 	public async verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
-		const reports: VerifiedResult[] = [];
+		const reports: VerifyReturn[] = [];
 		if (ruleset && ruleset.nodeRules) {
 			for (const nodeRule of ruleset.nodeRules) {
 				if (nodeRule.nodeType === '#root') {
@@ -43,7 +43,7 @@ export default class extends Rule {
 }
 
 function checkPermittedContent (permittedContents: PermittedContent[], nodes: Node[], parentName: string) {
-	const reports: VerifiedResult[] = [];
+	const reports: VerifyReturn[] = [];
 
 	for (const permittedContent of permittedContents) {
 		const nodeName = permittedContent[0];
