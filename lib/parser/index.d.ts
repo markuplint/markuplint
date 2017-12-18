@@ -55,7 +55,8 @@ export interface Attribute {
     raw: string;
     invalid: boolean;
 }
-export declare type Walker = (node: Node) => void;
+export declare type Walker = (node: Node) => Promise<void>;
+export declare type SyncWalker = (node: Node) => void;
 export declare abstract class Node {
     nodeName: string;
     readonly line: number;
@@ -111,7 +112,8 @@ export declare class Document {
         childNodes: Node[];
     };
     readonly raw: string;
-    walk(walker: Walker): void;
+    walk(walker: Walker): Promise<void>;
+    syncWalk(walker: SyncWalker): void;
     getNode(index: number): Node | null;
 }
 export default function parser(html: string): Document;

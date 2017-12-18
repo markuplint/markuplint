@@ -19,7 +19,7 @@ export default class extends Rule {
 	public async verify (document: Document, config: RuleConfig, ruleset: Ruleset, locale: string) {
 		const reports: VerifyReturn[] = [];
 		const message = await messages(locale, 'Duplicate {0}', 'attribute name');
-		document.walk((node) => {
+		await document.walk(async (node) => {
 			if (node instanceof Element) {
 				const attrNameStack: string[] = [];
 				for (const attr of node.attributes) {

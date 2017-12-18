@@ -19,7 +19,7 @@ export default class extends Rule {
 		const reports: VerifyReturn[] = [];
 		const message = await messages(locale, 'Duplicate {0}', 'attribute id value');
 		const idStack: string[] = [];
-		document.walk((node) => {
+		await document.walk(async (node) => {
 			if (node instanceof Element) {
 				const id = node.id;
 				if (id) {

@@ -67,7 +67,6 @@ export async function getRuleModules (): Promise<Rule[]> {
 	rules.push(...await resolveRuleModules(/^markuplint-rule-[a-z]+(?:-[a-z]+)*(?:\.js)?$/i, path.resolve(__dirname, './rules')));
 	rules.push(...await resolveRuleModules(/^markuplint-rule-[a-z]+(?:-[a-z]+)*(?:\.js)?$/i, path.resolve(process.cwd(), './rules')));
 	rules.push(...await resolveRuleModules(/^markuplint-plugin-[a-z]+(?:-[a-z]+)*(?:\.js)?$/i, nearNodeModules()));
-	rules.push(...await resolveRuleModules(/maruplint-plugin-textlint/, path.resolve(process.cwd(), './plugin')));
 	return rules;
 }
 
@@ -79,12 +78,13 @@ export async function resolveRuleModules (pattern: RegExp, ruleDir: string): Pro
 			if (pattern.test(filePath)) {
 				try {
 					const mod = await import(path.resolve(ruleDir, filePath));
-					const CustomRule /* Subclass of Rule */ = mod.default;
+					let CustomRule /* Subclass of Rule */ = mod.default;
+					CustomRule = CustomRule.rule || CustomRule;
 					rules.push(new CustomRule());
 				} catch (err) {
 					// @ts-ignore
 					if (err instanceof Error && err.code === 'MODULE_NOT_FOUND') {
-						console.warn(`[markuplint] Cannot find rule module: ${filePath}`);
+						console.warn(`[markuplint] Cannot find rule module: ${filePath} (${err.message})`);
 					} else {
 						throw err;
 					}

@@ -31,7 +31,7 @@ export default class extends Rule<Value, Options> {
 		const reports: VerifyReturn[] = [];
 		const ms = config.level === 'error' ? 'must' : 'should';
 		const message = await messages(locale, `{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
-		document.walk((node) => {
+		await document.walk(async (node) => {
 			const targetNodes: { line: number; col: number; raw: string }[] = [];
 			if (node instanceof TextNode) {
 				// TODO: text of raw-text-elements

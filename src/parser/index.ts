@@ -73,7 +73,8 @@ export interface Attribute {
 	invalid: boolean;
 }
 
-export type Walker = (node: Node) => void;
+export type Walker = (node: Node) => Promise<void>;
+export type SyncWalker = (node: Node) => void;
 
 export abstract class Node {
 	public nodeName: string;
@@ -199,7 +200,7 @@ export class Document {
 
 		const pos: { pos: number; node: Node }[] = [];
 
-		walk(nodes, (node) => {
+		syncWalk(nodes, (node) => {
 			const i = pos.length;
 
 			if (node instanceof InvalidNode) {
@@ -347,7 +348,13 @@ export class Document {
 		return this._raw;
 	}
 
-	public walk (walker: Walker) {
+	public async walk (walker: Walker) {
+		for (const node of this._list) {
+			await walker(node);
+		}
+	}
+
+	public syncWalk (walker: SyncWalker) {
 		for (const node of this._list) {
 			walker(node);
 		}
@@ -358,11 +365,20 @@ export class Document {
 	}
 }
 
-function walk (nodeList: Node[], walker: (node: Node) => void) {
+async function walk (nodeList: Node[], walker: Walker) {
+	for (const node of nodeList) {
+		await walker(node);
+		if (node instanceof Element || node instanceof InvalidNode) {
+			await walk(node.childNodes, walker);
+		}
+	}
+}
+
+function syncWalk (nodeList: Node[], walker: SyncWalker) {
 	for (const node of nodeList) {
 		walker(node);
 		if (node instanceof Element || node instanceof InvalidNode) {
-			walk(node.childNodes, walker);
+			syncWalk(node.childNodes, walker);
 		}
 	}
 }

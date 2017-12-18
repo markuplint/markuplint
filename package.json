@@ -47,6 +47,7 @@
     "gulp-ava": "^0.18.0",
     "gulp-typescript": "^3.2.3",
     "jsdom": "^11.5.1",
+    "markuplint-plugin-textlint": "^0.1.0",
     "nyc": "^11.3.0",
     "run-sequence": "^2.2.0",
     "textlint": "^9.1.1",
