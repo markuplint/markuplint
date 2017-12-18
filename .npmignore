@@ -15,3 +15,6 @@ yarn.lock
 coverage
 .nyc_output
 .coveralls.yml
+plugin
+.textlintrc
+prh.yml

@@ -26,3 +26,4 @@ export default abstract class Rule<T = null, O = {}> {
     optimizeOption(option: RuleOption<T, O> | boolean): RuleConfig<T, O>;
 }
 export declare function getRuleModules(): Promise<Rule[]>;
+export declare function resolveRuleModules(pattern: RegExp, ruleDir: string): Promise<Rule[]>;

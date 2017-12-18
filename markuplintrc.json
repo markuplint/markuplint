@@ -54,6 +54,9 @@
     // CSS Designing
     "class-naming": true,
     "required-class-elements": true,
-    "custom-element-naming": true
+    "custom-element-naming": true,
+
+    // Plugin
+    "textlint/textlint": true
   }
 }

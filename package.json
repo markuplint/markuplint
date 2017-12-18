@@ -24,6 +24,7 @@
   "dependencies": {
     "cli-color": "^1.2.0",
     "deep-assign": "^2.0.0",
+    "find-node-modules": "^1.0.4",
     "meow": "^4.0.0",
     "node-fetch": "^1.7.3",
     "os-locale": "^2.1.0",
@@ -48,6 +49,8 @@
     "jsdom": "^11.5.1",
     "nyc": "^11.3.0",
     "run-sequence": "^2.2.0",
+    "textlint": "^9.1.1",
+    "textlint-rule-preset-japanese": "^2.0.0",
     "tslint": "^5.8.0",
     "typescript": "^2.6.2"
   }

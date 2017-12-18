@@ -2,6 +2,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
 
+// @ts-ignore
+import * as  findNodeModules from 'find-node-modules';
+
 import {
 	Document,
 } from './parser';
@@ -61,23 +64,47 @@ export default abstract class Rule<T = null, O = {}> {
 
 export async function getRuleModules (): Promise<Rule[]> {
 	const rules: Rule[] = [];
-	const ruleDir = path.resolve(__dirname, './rules');
-	const ruleFiles = await readdir(ruleDir);
-	for (const filePath of ruleFiles) {
-		if (/^markuplint-rule-[a-z]+(?:-[a-z]+)*(?:\.js)?$/i.test(filePath)) {
-			try {
-				const mod = await import(path.resolve(ruleDir, filePath));
-				const CustomRule /* Subclass of Rule */ = mod.default;
-				rules.push(new CustomRule());
-			} catch (err) {
-				// @ts-ignore
-				if (err instanceof Error && err.code === 'MODULE_NOT_FOUND') {
-					console.warn(`[markuplint] Cannot find rule module: ${filePath}`);
-				} else {
-					throw err;
+	rules.push(...await resolveRuleModules(/^markuplint-rule-[a-z]+(?:-[a-z]+)*(?:\.js)?$/i, path.resolve(__dirname, './rules')));
+	rules.push(...await resolveRuleModules(/^markuplint-rule-[a-z]+(?:-[a-z]+)*(?:\.js)?$/i, path.resolve(process.cwd(), './rules')));
+	rules.push(...await resolveRuleModules(/^markuplint-plugin-[a-z]+(?:-[a-z]+)*(?:\.js)?$/i, nearNodeModules()));
+	rules.push(...await resolveRuleModules(/maruplint-plugin-textlint/, path.resolve(process.cwd(), './plugin')));
+	return rules;
+}
+
+export async function resolveRuleModules (pattern: RegExp, ruleDir: string): Promise<Rule[]> {
+	const rules: Rule[] = [];
+	try {
+		const ruleFiles = await readdir(ruleDir);
+		for (const filePath of ruleFiles) {
+			if (pattern.test(filePath)) {
+				try {
+					const mod = await import(path.resolve(ruleDir, filePath));
+					const CustomRule /* Subclass of Rule */ = mod.default;
+					rules.push(new CustomRule());
+				} catch (err) {
+					// @ts-ignore
+					if (err instanceof Error && err.code === 'MODULE_NOT_FOUND') {
+						console.warn(`[markuplint] Cannot find rule module: ${filePath}`);
+					} else {
+						throw err;
+					}
 				}
 			}
 		}
+	} catch (e) {
+		// @ts-ignore
+		if (!(e instanceof Error && e.code === 'ENOENT')) {
+			throw e;
+		}
 	}
 	return rules;
+}
+
+function nearNodeModules (): string {
+	const moduleDirs: string[] = findNodeModules({ cwd: process.cwd() }).map((dir: string) => path.resolve(dir));
+	const moduleDir = moduleDirs[0];
+	if (!moduleDir) {
+		throw new Error(`Directory node_module not found.`);
+	}
+	return moduleDir;
 }
