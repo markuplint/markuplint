@@ -1,6 +1,6 @@
 {
   "name": "markuplint",
-  "version": "0.7.0",
+  "version": "0.8.0-beta",
   "description": "HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -47,10 +47,10 @@
     "gulp-ava": "^0.18.0",
     "gulp-typescript": "^3.2.3",
     "jsdom": "^11.5.1",
-    "markuplint-plugin-textlint": "^0.1.0",
+    "markuplint-plugin-textlint": "^0.2.0",
     "nyc": "^11.3.0",
     "run-sequence": "^2.2.0",
-    "textlint": "^9.1.1",
+    "textlint": "^10.0.0",
     "textlint-rule-preset-japanese": "^2.0.0",
     "tslint": "^5.8.0",
     "typescript": "^2.6.2"

@@ -18,12 +18,22 @@ export interface RuleConfig<T = null, O = {}> {
     value: T;
     option: O | null;
 }
+export interface CustomRuleObject<T = null, O = {}> {
+    name: string;
+    verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
+}
 export default abstract class Rule<T = null, O = {}> {
     readonly name: string;
     readonly defaultLevel: RuleLevel;
     readonly defaultValue: T;
     abstract verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
     optimizeOption(option: RuleOption<T, O> | boolean): RuleConfig<T, O>;
+}
+export declare class CustomRule<T = null, O = {}> extends Rule<T, O> {
+    name: string;
+    _verify: (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string) => Promise<VerifyReturn[]>;
+    constructor(o: CustomRuleObject<T, O>);
+    verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
 }
 export declare function getRuleModules(): Promise<Rule[]>;
 export declare function resolveRuleModules(pattern: RegExp, ruleDir: string): Promise<Rule[]>;

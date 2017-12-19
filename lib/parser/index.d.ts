@@ -55,9 +55,11 @@ export interface Attribute {
     raw: string;
     invalid: boolean;
 }
-export declare type Walker = (node: Node) => Promise<void>;
+export declare type Walker<N = Node> = (node: N) => Promise<void>;
 export declare type SyncWalker = (node: Node) => void;
+export declare type NodeType = 'Element' | 'Text' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
 export declare abstract class Node {
+    readonly type: NodeType;
     nodeName: string;
     readonly line: number;
     readonly col: number;
@@ -68,8 +70,10 @@ export declare abstract class Node {
     raw: string;
     constructor(props: NodeProperties);
     toString(): string;
+    is(type: NodeType): boolean;
 }
 export declare class Element extends Node {
+    readonly type: NodeType;
     readonly namespaceURI: string;
     readonly attributes: Attribute[];
     childNodes: Node[];
@@ -82,24 +86,29 @@ export declare class Element extends Node {
     readonly id: Attribute | undefined;
 }
 export declare class TextNode extends Node {
+    readonly type: NodeType;
     readonly textContent: string;
     constructor(props: TextNodeProperties);
 }
 export declare class CommentNode extends Node {
+    readonly type: NodeType;
     readonly data: string;
     constructor(props: CommentNodeProperties);
 }
 export declare class Doctype extends Node {
+    readonly type: NodeType;
     readonly publicId: string | null;
     readonly dtd: string | null;
     constructor(props: DocTypeProperties);
 }
 export declare class EndTagNode extends Node {
+    readonly type: NodeType;
     readonly startTagNode: Node;
     endOffset: number | null;
     constructor(props: EndTagNodeProperties);
 }
 export declare class InvalidNode extends Node {
+    readonly type: NodeType;
     readonly childNodes: Node[];
     constructor(props: InvalidNodeProperties);
 }
@@ -113,6 +122,10 @@ export declare class Document {
     };
     readonly raw: string;
     walk(walker: Walker): Promise<void>;
+    walkOn(type: 'Element', walker: Walker<Element>): Promise<void>;
+    walkOn(type: 'Text', walker: Walker<TextNode>): Promise<void>;
+    walkOn(type: 'Comment', walker: Walker<CommentNode>): Promise<void>;
+    walkOn(type: 'EndTag', walker: Walker<EndTagNode>): Promise<void>;
     syncWalk(walker: SyncWalker): void;
     getNode(index: number): Node | null;
 }

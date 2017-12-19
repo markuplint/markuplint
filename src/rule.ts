@@ -37,6 +37,11 @@ export interface RuleConfig<T = null, O = {}> {
 	option: O | null;
 }
 
+export interface CustomRuleObject<T = null, O = {}> {
+	name: string;
+	verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
+}
+
 export default abstract class Rule<T = null, O = {}> {
 	public readonly name: string;
 	public readonly defaultLevel: RuleLevel = 'error';
@@ -47,18 +52,33 @@ export default abstract class Rule<T = null, O = {}> {
 	public optimizeOption (option: RuleOption<T, O> | boolean): RuleConfig<T, O> {
 		if (typeof option === 'boolean') {
 			return {
-				disabled: option,
+				disabled: !option,
 				level: this.defaultLevel,
 				value: this.defaultValue,
 				option: null,
 			};
 		}
 		return {
-			disabled: true,
+			disabled: false,
 			level: option[0],
 			value: option[1],
 			option: option[2], // tslint:disable-line:no-magic-numbers
 		};
+	}
+}
+
+export class CustomRule<T = null, O = {}> extends Rule<T, O> {
+	public name: string;
+	public _verify: (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string) => Promise<VerifyReturn[]>;
+
+	constructor (o: CustomRuleObject<T, O>) {
+		super();
+		this.name = o.name;
+		this._verify = o.verify;
+	}
+
+	public async verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string) {
+		return this._verify(document, config, ruleset, locale);
 	}
 }
 
@@ -78,9 +98,9 @@ export async function resolveRuleModules (pattern: RegExp, ruleDir: string): Pro
 			if (pattern.test(filePath)) {
 				try {
 					const mod = await import(path.resolve(ruleDir, filePath));
-					let CustomRule /* Subclass of Rule */ = mod.default;
-					CustomRule = CustomRule.rule || CustomRule;
-					rules.push(new CustomRule());
+					const ModuleRule /* Subclass of Rule */ = mod.default;
+					const rule = ModuleRule.rule ? new CustomRule(ModuleRule.rule) : new ModuleRule();
+					rules.push(rule);
 				} catch (err) {
 					// @ts-ignore
 					if (err instanceof Error && err.code === 'MODULE_NOT_FOUND') {
