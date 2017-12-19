@@ -4,10 +4,10 @@ import CustomRule from '../../../lib/rules/markuplint-rule-id-duplication';
 
 const rule = new CustomRule();
 
-test('id-duplication', async t => {
+test('id-duplication', async (t) => {
 	const r = await markuplint.verify(
-		`<div id="a"><p id="a"></p></div>`,
-		{rules: {"id-duplication": true}},
+		'<div id="a"><p id="a"></p></div>',
+		{rules: {'id-duplication': true}},
 		[rule],
 		'en',
 	);
@@ -19,8 +19,38 @@ test('id-duplication', async t => {
 			col: 16,
 			raw: 'id="a"',
 			ruleId: 'id-duplication',
-		}
+		},
 	]);
 });
 
-test('noop', t => t.pass());
+test('id-duplication', async (t) => {
+	const r = await markuplint.verify(
+		'<div id="a"></div>',
+		{rules: {'id-duplication': true}},
+		[rule],
+		'en',
+	);
+	t.is(r.length, 0);
+});
+
+test('id-duplication', async (t) => {
+	const r = await markuplint.verify(
+		'<div id="a"></div><div id="a"></div><div id="a"></div>',
+		{rules: {'id-duplication': true}},
+		[rule],
+		'en',
+	);
+	t.is(r.length, 2);
+});
+
+test('id-duplication', async (t) => {
+	const r = await markuplint.verify(
+		'<div id="a"></div><div id="b"></div><div id="c"></div>',
+		{rules: {'id-duplication': true}},
+		[rule],
+		'en',
+	);
+	t.is(r.length, 0);
+});
+
+test('noop', (t) => t.pass());
