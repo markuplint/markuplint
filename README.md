@@ -44,7 +44,7 @@ const { html, reports } = await markuplint.verifyFile(htmlPath, ruleset, rules);
 
 ## Rules
 
-[Rule Documentation](./lib/rules/README.md)
+[Rule Documentation](./lib/rules/README.md) ([日本語](./lib/rules/README.ja.md))
 
 ## Thanks
 

@@ -6,8 +6,8 @@
 	- [🚧 WIP] [indentation](./markuplint-rule-indentation/README.md)
 	- [🚧 WIP] [self-closing-tag](./markuplint-rule-self-closing-tag/README.md)
 	- [🚧 WIP] [omitted-closing-tag](./markuplint-rule-omitted-closing-tag/README.md)
-	- [🚧 WIP] [attr-value-quotes](./markuplint-rule-attr-value-quotes/README.md)
-	- [🚧 WIP] [case-sensitive-tag-name](./markuplint-rule-case-sensitive-tag-name/README.md)
+	- [attr-value-quotes](./markuplint-rule-attr-value-quotes/README.md)
+	- [case-sensitive-tag-name](./markuplint-rule-case-sensitive-tag-name/README.md)
 	- [case-sensitive-attr-name](./markuplint-rule-case-sensitive-attr-name/README.md)
 	- [🚧 WIP] [attr-spasing](./markuplint-rule-attr-spasing/README.md)
 	- [🚧 WIP] [attr-equal-spasing](./markuplint-rule-attr-equal-spasing/README.md)
@@ -31,7 +31,7 @@
 	- [🚧 WIP] [deprecated-attr](./markuplint-rule-deprecated-attr/README.md)
 	- [🚧 WIP] [deprecated-global-attr](./markuplint-rule-deprecated-global-attr/README.md)
 	- [🚧 WIP] [deprecated-aria-attr](./markuplint-rule-deprecated-aria-attr/README.md)
-	- [🚧 WIP] [id-duplication](./markuplint-rule-id-duplication/README.md)
+	- [id-duplication](./markuplint-rule-id-duplication/README.md)
 	- [🚧 WIP] [comment](./markuplint-rule-comment/README.md)
 - *Usability*
 	- [🚧 WIP] [external-link](./markuplint-rule-external-link/README.md)
@@ -49,14 +49,16 @@
 - *CSS Designing*
 	- [🚧 WIP] [class-naming](./markuplint-rule-class-naming/README.md)
 	- [🚧 WIP] [required-class-elements](./markuplint-rule-required-class-elements/README.md)
-	- bem/markuplint-rule-bem-rule-nesting
-	- bem/markuplint-rule-bem-rule-block
-	- bem/markuplint-rule-bem-rule-element
-	- bem/markuplint-rule-bem-rule-modifier
+	- [🚧 WIP] bem/markuplint-rule-bem-rule-nesting
+	- [🚧 WIP] bem/markuplint-rule-bem-rule-block
+	- [🚧 WIP] bem/markuplint-rule-bem-rule-element
+	- [🚧 WIP] bem/markuplint-rule-bem-rule-modifier
 - *Custom Elements*
 	- [🚧 WIP] [custom-element-naming](./markuplint-rule-custom-element-naming/README.md)
+- *Proofreading*
+	- [textlint/textlint](https://www.npmjs.com/package/markuplint-plugin-textlint)
 - *AMP*
-	- amp/markuplint-rule-amp-validation AMP Validation by https://www.npmjs.com/package/amphtml-validator
+	- [🚧 WIP] amp/markuplint-rule-amp-validation (by [amphtml-validator](https://www.npmjs.com/package/amphtml-validator))
 - *Template Engine*
-	- php/markuplint-rule-ignore-php-code
-	- vuejs/markuplint-rule-vue-directive
+	- [🚧 WIP] php/markuplint-rule-ignore-php-code
+	- [🚧 WIP] vuejs/markuplint-rule-vue-directive

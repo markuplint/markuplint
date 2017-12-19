@@ -6,8 +6,8 @@
 	- [indentation](./markuplint-rule-indentation/README.ja.md) インデント (🚧 WIP)
 	- [self-closing-tag](./markuplint-rule-self-closing-tag/README.ja.md) タグの自己終了 (🚧 WIP)
 	- [omitted-closing-tag](./markuplint-rule-omitted-closing-tag/README.ja.md) 終了タグの省略 (🚧 WIP)
-	- [attr-value-quotes](./markuplint-rule-attr-value-quotes/README.ja.md) クォーテーションマーク (🚧 WIP)
-	- [case-sensitive-tag-name](./markuplint-rule-case-sensitive-tag-name/README.ja.md) タグ名の大文字小文字 (🚧 WIP)
+	- [attr-value-quotes](./markuplint-rule-attr-value-quotes/README.ja.md) クォーテーションマーク
+	- [case-sensitive-tag-name](./markuplint-rule-case-sensitive-tag-name/README.ja.md) タグ名の大文字小文字
 	- [case-sensitive-attr-name](./markuplint-rule-case-sensitive-attr-name/README.ja.md) 属性名の大文字小文字
 	- [attr-spasing](./markuplint-rule-attr-spasing/README.ja.md) 属性の前後のスペース (🚧 WIP)
 	- [attr-equal-spasing](./markuplint-rule-attr-equal-spasing/README.ja.md) 属性の=の前後のスペース (🚧 WIP)
@@ -20,7 +20,7 @@
 	- [data-attr-naming](./markuplint-rule-data-attr-naming/README.ja.md) data-*属性名 (🚧 WIP)
 	- [event-attr](./markuplint-rule-event-attr/README.ja.md) on*属性名 (🚧 WIP)
 - *Validation バリデーション*
-	- [character-reference](./markuplint-rule-character-reference/README.ja.md) 文字参照 (🚧 WIP)
+	- [character-reference](./markuplint-rule-character-reference/README.ja.md) 文字参照
 	- [doctype](./markuplint-rule-doctype/README.ja.md) ドキュメントタイプ (🚧 WIP)
 	- [required-element](./markuplint-rule-required-element/README.ja.md) 必須要素 (🚧 WIP)
 	- [deprecated-element](./markuplint-rule-deprecated-element/README.ja.md) 非推奨要素 (🚧 WIP)
@@ -31,7 +31,7 @@
 	- [deprecated-attr](./markuplint-rule-deprecated-attr/README.ja.md) 非推奨属性 (🚧 WIP)
 	- [deprecated-global-attr](./markuplint-rule-deprecated-global-attr/README.ja.md) 非推奨グローバル属性 (🚧 WIP)
 	- [deprecated-aria-attr](./markuplint-rule-deprecated-aria-attr/README.ja.md) 非推奨aria属性 (🚧 WIP)
-	- [id-duplication](./markuplint-rule-id-duplication/README.ja.md) idの重複 (🚧 WIP)
+	- [id-duplication](./markuplint-rule-id-duplication/README.ja.md) idの重複
 	- [comment](./markuplint-rule-comment/README.ja.md) コメント (🚧 WIP)
 - *Usability ユーザビリティ*
 	- [external-link](./markuplint-rule-external-link/README.ja.md) 外部リンク (🚧 WIP)
@@ -49,14 +49,16 @@
 - *CSS Designing CSS設計*
 	- [class-naming](./markuplint-rule-class-naming/README.ja.md) クラス名 (🚧 WIP)
 	- [required-class-elements](./markuplint-rule-required-class-elements/README.ja.md) クラスの有無 (🚧 WIP)
-	- bem/markuplint-rule-bem-rule-nesting BEMの入れ子関係
-	- bem/markuplint-rule-bem-rule-block BEMのBlockの要素名/クラス名/属性
-	- bem/markuplint-rule-bem-rule-element BEMのElementのクラス名/属性
-	- bem/markuplint-rule-bem-rule-modifier BEMのModifierのクラス名/属性
+	- bem/markuplint-rule-bem-rule-nesting BEMの入れ子関係 (🚧 WIP)
+	- bem/markuplint-rule-bem-rule-block BEMのBlockの要素名/クラス名/属性 (🚧 WIP)
+	- bem/markuplint-rule-bem-rule-element BEMのElementのクラス名/属性 (🚧 WIP)
+	- bem/markuplint-rule-bem-rule-modifier BEMのModifierのクラス名/属性 (🚧 WIP)
 - *Custom Elements カスタム要素*
 	- [custom-element-naming](./markuplint-rule-custom-element-naming/README.ja.md) 要素名 (🚧 WIP)
+- *Proofreading 校正*
+	- [textlint/textlint](https://www.npmjs.com/package/markuplint-plugin-textlint)
 - *AMP*
-	- amp/markuplint-rule-amp-validation AMP Validation by https://www.npmjs.com/package/amphtml-validator
+	- amp/markuplint-rule-amp-validation (by [amphtml-validator](https://www.npmjs.com/package/amphtml-validator)) (🚧 WIP)
 - *Template Engine テンプレートエンジン*
-	- php/markuplint-rule-ignore-php-code PHPコードの除外
-	- vuejs/markuplint-rule-vue-directive Vue.js ディレクティブ属性
+	- php/markuplint-rule-ignore-php-code PHPコードの除外 (🚧 WIP)
+	- vuejs/markuplint-rule-vue-directive Vue.js ディレクティブ属性 (🚧 WIP)
