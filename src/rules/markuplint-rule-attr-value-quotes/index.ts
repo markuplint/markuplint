@@ -28,7 +28,7 @@ export default class extends Rule<Value> {
 	public async verify (document: Document, config: RuleConfig<Value>, ruleset: Ruleset, locale: string) {
 		const reports: VerifyReturn[] = [];
 		const message = await messages(locale, '{0} is must {1} on {2}', 'Attribute value', 'quote', `${config.value} quotation mark`);
-		document.walk((node) => {
+		await document.walk(async (node) => {
 			if (node instanceof Element) {
 				for (const attr of node.attributes) {
 					if (attr.value != null && attr.quote !== quote[config.value]) {

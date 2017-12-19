@@ -27,7 +27,7 @@ export default class extends Rule<DefaultValue> {
 	public async verify (document: Document, config: RuleConfig<DefaultValue>, ruleset: Ruleset) {
 		const reports: VerifyReturn[] = [];
 		let lastNode: Node;
-		document.walk((node) => {
+		await document.walk(async (node) => {
 			if (lastNode instanceof TextNode) {
 				const matched = lastNode.textContent.match(/\n(\s+$)/);
 				if (matched) {

@@ -29,7 +29,7 @@ export default class extends Rule {
 						reports.push(...checkPermittedContent(nodeRule.permittedContent, document.root.childNodes, nodeRule.nodeType));
 					}
 				}
-				document.walk((node) => {
+				await document.walk(async (node) => {
 					if (node instanceof Element && node.nodeName === nodeRule.nodeType) {
 						if (nodeRule.permittedContent) {
 							reports.push(...checkPermittedContent(nodeRule.permittedContent, node.childNodes, nodeRule.nodeType));

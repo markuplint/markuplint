@@ -73,9 +73,13 @@ export interface Attribute {
 	invalid: boolean;
 }
 
-export type Walker = (node: Node) => void;
+export type Walker<N = Node> = (node: N) => Promise<void>;
+export type SyncWalker = (node: Node) => void;
+
+export type NodeType = 'Element' | 'Text' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
 
 export abstract class Node {
+	public readonly type: NodeType = null;
 	public nodeName: string;
 	public readonly line: number;
 	public readonly col: number;
@@ -100,9 +104,14 @@ export abstract class Node {
 	public toString () {
 		return this.raw;
 	}
+
+	public is (type: NodeType) {
+		return this.type === type;
+	}
 }
 
 export class Element extends Node {
+	public readonly type: NodeType = 'Element';
 	public readonly namespaceURI: string;
 	public readonly attributes: Attribute[];
 	public childNodes: Node[] = [];
@@ -135,6 +144,7 @@ export class Element extends Node {
 }
 
 export class TextNode extends Node {
+	public readonly type: NodeType = 'Text';
 	public readonly textContent: string;
 
 	constructor (props: TextNodeProperties) {
@@ -145,6 +155,7 @@ export class TextNode extends Node {
 }
 
 export class CommentNode extends Node {
+	public readonly type: NodeType = 'Comment';
 	public readonly data: string;
 
 	constructor (props: CommentNodeProperties) {
@@ -155,6 +166,7 @@ export class CommentNode extends Node {
 }
 
 export class Doctype extends Node {
+	public readonly type: NodeType = 'Doctype';
 	public readonly publicId: string | null;
 	public readonly dtd: string | null;
 
@@ -166,6 +178,7 @@ export class Doctype extends Node {
 }
 
 export class EndTagNode extends Node {
+	public readonly type: NodeType = 'EndTag';
 	public readonly startTagNode: Node;
 	public endOffset: number | null;
 
@@ -180,6 +193,7 @@ export class EndTagNode extends Node {
 }
 
 export class InvalidNode extends Node {
+	public readonly type: NodeType = 'Invalid';
 	public readonly childNodes: Node[];
 
 	constructor (props: InvalidNodeProperties) {
@@ -199,7 +213,7 @@ export class Document {
 
 		const pos: { pos: number; node: Node }[] = [];
 
-		walk(nodes, (node) => {
+		syncWalk(nodes, (node) => {
 			const i = pos.length;
 
 			if (node instanceof InvalidNode) {
@@ -347,7 +361,25 @@ export class Document {
 		return this._raw;
 	}
 
-	public walk (walker: Walker) {
+	public async walk (walker: Walker) {
+		for (const node of this._list) {
+			await walker(node);
+		}
+	}
+
+	public async walkOn (type: 'Element', walker: Walker<Element>): Promise<void>;
+	public async walkOn (type: 'Text', walker: Walker<TextNode>): Promise<void>;
+	public async walkOn (type: 'Comment', walker: Walker<CommentNode>): Promise<void>;
+	public async walkOn (type: 'EndTag', walker: Walker<EndTagNode>): Promise<void>;
+	public async walkOn (type: NodeType, walker: Walker<any>): Promise<void> {
+		for (const node of this._list) {
+			if (node.is(type)) {
+				await walker(node);
+			}
+		}
+	}
+
+	public syncWalk (walker: SyncWalker) {
 		for (const node of this._list) {
 			walker(node);
 		}
@@ -358,11 +390,20 @@ export class Document {
 	}
 }
 
-function walk (nodeList: Node[], walker: (node: Node) => void) {
+async function walk (nodeList: Node[], walker: Walker) {
+	for (const node of nodeList) {
+		await walker(node);
+		if (node instanceof Element || node instanceof InvalidNode) {
+			await walk(node.childNodes, walker);
+		}
+	}
+}
+
+function syncWalk (nodeList: Node[], walker: SyncWalker) {
 	for (const node of nodeList) {
 		walker(node);
 		if (node instanceof Element || node instanceof InvalidNode) {
-			walk(node.childNodes, walker);
+			syncWalk(node.childNodes, walker);
 		}
 	}
 }
