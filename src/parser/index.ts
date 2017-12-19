@@ -76,7 +76,7 @@ export interface Attribute {
 export type Walker<N = Node> = (node: N) => Promise<void>;
 export type SyncWalker = (node: Node) => void;
 
-export type NodeType = 'Element' | 'Text' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
+export type NodeType = 'Element' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
 
 export abstract class Node {
 	public readonly type: NodeType = null;
@@ -145,6 +145,17 @@ export class Element extends Node {
 
 export class TextNode extends Node {
 	public readonly type: NodeType = 'Text';
+	public readonly textContent: string;
+
+	constructor (props: TextNodeProperties) {
+		super(props);
+		this.textContent = props.textContent;
+		this.raw = props.raw;
+	}
+}
+
+export class RawTextNode extends TextNode {
+	public readonly type: NodeType = 'RawText';
 	public readonly textContent: string;
 
 	constructor (props: TextNodeProperties) {
@@ -440,20 +451,37 @@ function nodeize (p5node: P5ParentNode, prev: Node | null, parent: Node | null, 
 		}
 		case '#text': {
 			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
-			node = new TextNode({
-				nodeName: p5node.nodeName,
-				location: {
-					line: p5node.__location.line,
-					col: p5node.__location.col,
-					startOffset: p5node.__location.startOffset,
-					endOffset: p5node.__location.endOffset,
-				},
-				prevNode: prev,
-				nextNode: null,
-				parentNode: parent,
-				textContent: p5node.value,
-				raw,
-			});
+			if (parent && /^(?:script|style)$/i.test(parent.nodeName)) {
+				node = new RawTextNode({
+					nodeName: p5node.nodeName,
+					location: {
+						line: p5node.__location.line,
+						col: p5node.__location.col,
+						startOffset: p5node.__location.startOffset,
+						endOffset: p5node.__location.endOffset,
+					},
+					prevNode: prev,
+					nextNode: null,
+					parentNode: parent,
+					textContent: p5node.value,
+					raw,
+				});
+			} else {
+				node = new TextNode({
+					nodeName: p5node.nodeName,
+					location: {
+						line: p5node.__location.line,
+						col: p5node.__location.col,
+						startOffset: p5node.__location.startOffset,
+						endOffset: p5node.__location.endOffset,
+					},
+					prevNode: prev,
+					nextNode: null,
+					parentNode: parent,
+					textContent: p5node.value,
+					raw,
+				});
+			}
 			break;
 		}
 		case '#comment': {
