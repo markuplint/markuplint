@@ -26,6 +26,10 @@ export interface VerifiedResult extends VerifyReturn {
 	ruleId: string;
 }
 
+export interface CustomVerifiedReturn extends VerifyReturn {
+	ruleId?: string;
+}
+
 export type RuleLevel = 'error' | 'warning';
 
 export type RuleOption<T, O> = [RuleLevel, T, O];
@@ -39,7 +43,7 @@ export interface RuleConfig<T = null, O = {}> {
 
 export interface CustomRuleObject<T = null, O = {}> {
 	name: string;
-	verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
+	verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<CustomVerifiedReturn[]>;
 }
 
 export default abstract class Rule<T = null, O = {}> {
@@ -69,7 +73,7 @@ export default abstract class Rule<T = null, O = {}> {
 
 export class CustomRule<T = null, O = {}> extends Rule<T, O> {
 	public name: string;
-	public _verify: (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string) => Promise<VerifyReturn[]>;
+	public _verify: (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string) => Promise<CustomVerifiedReturn[]>;
 
 	constructor (o: CustomRuleObject<T, O>) {
 		super();
@@ -77,8 +81,18 @@ export class CustomRule<T = null, O = {}> extends Rule<T, O> {
 		this._verify = o.verify;
 	}
 
-	public async verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string) {
-		return this._verify(document, config, ruleset, locale);
+	public async verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifiedResult[]> {
+		const results = await this._verify(document, config, ruleset, locale);
+		return results.map<VerifiedResult>((result) => {
+			return {
+				level: result.level,
+				message: result.message,
+				line: result.line,
+				col: result.col,
+				raw: result.raw,
+				ruleId: result.ruleId ? `${this.name}/${result.ruleId}` : `${this.name}/${this.name}`,
+			};
+		});
 	}
 }
 
@@ -90,24 +104,31 @@ export async function getRuleModules (): Promise<Rule[]> {
 	return rules;
 }
 
+export async function resolveRuleModule (modulePath: string) {
+	try {
+		const mod = await import(modulePath);
+		const ModuleRule /* Subclass of Rule */ = mod.default;
+		const rule: Rule = ModuleRule.rule ? new CustomRule(ModuleRule.rule) : new ModuleRule();
+		return rule;
+	} catch (err) {
+		// @ts-ignore
+		if (err instanceof Error && err.code === 'MODULE_NOT_FOUND') {
+			console.warn(`[markuplint] Cannot find rule module: ${modulePath} (${err.message})`);
+		} else {
+			throw err;
+		}
+	}
+}
+
 export async function resolveRuleModules (pattern: RegExp, ruleDir: string): Promise<Rule[]> {
 	const rules: Rule[] = [];
 	try {
 		const ruleFiles = await readdir(ruleDir);
 		for (const filePath of ruleFiles) {
 			if (pattern.test(filePath)) {
-				try {
-					const mod = await import(path.resolve(ruleDir, filePath));
-					const ModuleRule /* Subclass of Rule */ = mod.default;
-					const rule = ModuleRule.rule ? new CustomRule(ModuleRule.rule) : new ModuleRule();
+				const rule = await resolveRuleModule(path.resolve(ruleDir, filePath));
+				if (rule) {
 					rules.push(rule);
-				} catch (err) {
-					// @ts-ignore
-					if (err instanceof Error && err.code === 'MODULE_NOT_FOUND') {
-						console.warn(`[markuplint] Cannot find rule module: ${filePath} (${err.message})`);
-					} else {
-						throw err;
-					}
 				}
 			}
 		}

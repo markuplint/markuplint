@@ -10,6 +10,9 @@ export interface VerifyReturn {
 export interface VerifiedResult extends VerifyReturn {
     ruleId: string;
 }
+export interface CustomVerifiedReturn extends VerifyReturn {
+    ruleId?: string;
+}
 export declare type RuleLevel = 'error' | 'warning';
 export declare type RuleOption<T, O> = [RuleLevel, T, O];
 export interface RuleConfig<T = null, O = {}> {
@@ -20,7 +23,7 @@ export interface RuleConfig<T = null, O = {}> {
 }
 export interface CustomRuleObject<T = null, O = {}> {
     name: string;
-    verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
+    verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<CustomVerifiedReturn[]>;
 }
 export default abstract class Rule<T = null, O = {}> {
     readonly name: string;
@@ -31,9 +34,10 @@ export default abstract class Rule<T = null, O = {}> {
 }
 export declare class CustomRule<T = null, O = {}> extends Rule<T, O> {
     name: string;
-    _verify: (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string) => Promise<VerifyReturn[]>;
+    _verify: (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string) => Promise<CustomVerifiedReturn[]>;
     constructor(o: CustomRuleObject<T, O>);
-    verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
+    verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifiedResult[]>;
 }
 export declare function getRuleModules(): Promise<Rule[]>;
+export declare function resolveRuleModule(modulePath: string): Promise<Rule<null, {}> | undefined>;
 export declare function resolveRuleModules(pattern: RegExp, ruleDir: string): Promise<Rule[]>;
