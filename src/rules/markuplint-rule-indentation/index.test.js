@@ -4,7 +4,7 @@ import CustomRule from '../../../lib/rules/markuplint-rule-indentation';
 
 const rule = new CustomRule();
 
-test('tab', async t => {
+test('tab', async (t) => {
 	const r = await markuplint.verify(
 		`
 		<div>
@@ -22,7 +22,7 @@ test('tab', async t => {
 	t.deepEqual(r, []);
 });
 
-test('tab', async t => {
+test('tab', async (t) => {
 	const r = await markuplint.verify(
 		`
     <div>
@@ -69,7 +69,7 @@ test('tab', async t => {
 	]);
 });
 
-test('tab', async t => {
+test('tab', async (t) => {
 	const r = await markuplint.verify(
 		`
     <div>
@@ -87,7 +87,7 @@ test('tab', async t => {
 	t.deepEqual(r, []);
 });
 
-test('tab', async t => {
+test('tab', async (t) => {
 	const r = await markuplint.verify(
 		`
     <div>
@@ -105,7 +105,7 @@ test('tab', async t => {
 	t.deepEqual(r, []);
 });
 
-test('tab', async t => {
+test('tab', async (t) => {
 	const r = await markuplint.verify(
 		`
 	<div>
@@ -152,7 +152,7 @@ test('tab', async t => {
 	]);
 });
 
-test('tab', async t => {
+test('tab', async (t) => {
 	const r = await markuplint.verify(
 		`
    <div>
@@ -189,7 +189,7 @@ test('tab', async t => {
 	]);
 });
 
-test('tab', async t => {
+test('tab', async (t) => {
 	const r = await markuplint.verify(
 		`
    <div>
@@ -207,4 +207,4 @@ test('tab', async t => {
 	t.deepEqual(r, []);
 });
 
-test('noop', t => t.pass());
+test('noop', (t) => t.pass());

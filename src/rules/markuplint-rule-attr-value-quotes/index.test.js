@@ -4,7 +4,7 @@ import CustomRule from '../../../lib/rules/markuplint-rule-attr-value-quotes';
 
 const rule = new CustomRule();
 
-test('default', async t => {
+test('default', async (t) => {
 	const r = await markuplint.verify(
 		`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
@@ -14,7 +14,7 @@ test('default', async t => {
 		`,
 		{
 			rules: {
-				"attr-value-quotes": true,
+				'attr-value-quotes': true,
 			},
 		},
 		[rule],
@@ -36,11 +36,11 @@ test('default', async t => {
 			col: 41,
 			raw: 'data-attR=tr',
 			ruleId: 'attr-value-quotes',
-		}
+		},
 	]);
 });
 
-test('double', async t => {
+test('double', async (t) => {
 	const r = await markuplint.verify(
 		`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
@@ -50,7 +50,7 @@ test('double', async t => {
 		`,
 		{
 			rules: {
-				"attr-value-quotes": ['error', 'double'],
+				'attr-value-quotes': ['error', 'double'],
 			},
 		},
 		[rule],
@@ -72,11 +72,11 @@ test('double', async t => {
 			col: 41,
 			raw: 'data-attR=tr',
 			ruleId: 'attr-value-quotes',
-		}
+		},
 	]);
 });
 
-test('single', async t => {
+test('single', async (t) => {
 	const r = await markuplint.verify(
 		`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
@@ -86,7 +86,7 @@ test('single', async t => {
 		`,
 		{
 			rules: {
-				"attr-value-quotes": ['error', 'single'],
+				'attr-value-quotes': ['error', 'single'],
 			},
 		},
 		[rule],
@@ -108,11 +108,11 @@ test('single', async t => {
 			col: 41,
 			raw: 'data-attR=tr',
 			ruleId: 'attr-value-quotes',
-		}
+		},
 	]);
 });
 
-test('empty', async t => {
+test('empty', async (t) => {
 	const r = await markuplint.verify(
 		`
 		<div data-attr>
@@ -122,7 +122,7 @@ test('empty', async t => {
 		`,
 		{
 			rules: {
-				"attr-value-quotes": true,
+				'attr-value-quotes': true,
 			},
 		},
 		[rule],
@@ -131,4 +131,4 @@ test('empty', async t => {
 	t.is(r.length, 0);
 });
 
-test('noop', t => t.pass());
+test('noop', (t) => t.pass());

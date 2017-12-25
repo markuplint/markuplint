@@ -5,8 +5,8 @@ import CustomRule from '../../../lib/rules/markuplint-rule-permitted-contents';
 const rule = new CustomRule();
 const ruleset = require('../../../rulesets/html-ls.json');
 
-test('HTML Living Standard empty document', async t => {
-	const r = await markuplint.verify(``, ruleset, [rule]);
+test('HTML Living Standard empty document', async (t) => {
+	const r = await markuplint.verify('', ruleset, [rule]);
 	t.deepEqual(r, [
 		{
 			level: 'error',
@@ -27,7 +27,7 @@ test('HTML Living Standard empty document', async t => {
 	]);
 });
 
-test('HTML Living Standard empty html', async t => {
+test('HTML Living Standard empty html', async (t) => {
 	const r = await markuplint.verify(`
 		<!DOCTYPE html>
 		<html></html>
@@ -52,4 +52,4 @@ test('HTML Living Standard empty html', async t => {
 	]);
 });
 
-test('noop', t => t.pass());
+test('noop', (t) => t.pass());

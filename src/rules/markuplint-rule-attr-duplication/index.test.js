@@ -4,7 +4,7 @@ import CustomRule from '../../../lib/rules/markuplint-rule-attr-duplication';
 
 const rule = new CustomRule();
 
-test('attr-duplication', async t => {
+test('attr-duplication', async (t) => {
 	const r = await markuplint.verify(
 		`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
@@ -14,7 +14,7 @@ test('attr-duplication', async t => {
 		`,
 		{
 			rules: {
-				"attr-duplication": true,
+				'attr-duplication': true,
 			},
 		},
 		[rule],
@@ -36,11 +36,11 @@ test('attr-duplication', async t => {
 			col: 41,
 			raw: 'data-attR=tr',
 			ruleId: 'attr-duplication',
-		}
+		},
 	]);
 });
 
-test('attr-duplication', async t => {
+test('attr-duplication', async (t) => {
 	const r = await markuplint.verify(
 		`
 		<div
@@ -53,7 +53,7 @@ test('attr-duplication', async t => {
 		`,
 		{
 			rules: {
-				"attr-duplication": true,
+				'attr-duplication': true,
 			},
 		},
 		[rule],
@@ -75,24 +75,24 @@ test('attr-duplication', async t => {
 			col: 4,
 			raw: 'data-attR=tr',
 			ruleId: 'attr-duplication',
-		}
+		},
 	]);
 });
 
-test('attr-duplication', async t => {
+test('attr-duplication', async (t) => {
 	const r = await markuplint.verify(
-		`<img src="/" SRC="/" >`,
+		'<img src="/" SRC="/" >',
 		{
 			rules: {
-				"attr-duplication": true,
+				'attr-duplication': true,
 			},
 		},
 		[rule],
 		'ja',
 	);
-	t.deepEqual(r.map(_ => _.message), [
+	t.deepEqual(r.map((_) => _.message), [
 		'属性名が重複しています。',
 	]);
 });
 
-test('noop', t => t.pass());
+test('noop', (t) => t.pass());

@@ -4,10 +4,10 @@ import CustomRule from '../../../lib/rules/markuplint-rule-character-reference';
 
 const rule = new CustomRule();
 
-test('character-reference', async t => {
+test('character-reference', async (t) => {
 	const r = await markuplint.verify(
-		`<div id="a"> > < & " ' &amp;</div>`,
-		{rules: {"character-reference": true}},
+		'<div id="a"> > < & " \' &amp;</div>',
+		{rules: {'character-reference': true}},
 		[rule],
 		'en',
 	);
@@ -28,10 +28,10 @@ test('character-reference', async t => {
 	t.is(r[3].raw, '"');
 });
 
-test('character-reference', async t => {
+test('character-reference', async (t) => {
 	const r = await markuplint.verify(
-		`<img src="path/to?a=b&c=d">`,
-		{rules: {"character-reference": true}},
+		'<img src="path/to?a=b&c=d">',
+		{rules: {'character-reference': true}},
 		[rule],
 		'en',
 	);
@@ -45,14 +45,14 @@ test('character-reference', async t => {
 	}]);
 });
 
-test('character-reference', async t => {
+test('character-reference', async (t) => {
 	const r = await markuplint.verify(
-		`<script>if (i < 0) console.log("<markuplint>");</script>`,
-		{rules: {"character-reference": true}},
+		'<script>if (i < 0) console.log("<markuplint>");</script>',
+		{rules: {'character-reference': true}},
 		[rule],
 		'en',
 	);
 	t.is(r.length, 0);
 });
 
-test('noop', t => t.pass());
+test('noop', (t) => t.pass());
