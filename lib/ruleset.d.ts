@@ -24,6 +24,6 @@ export interface NodeRule {
 export declare class Ruleset {
     rules: ConfigureFileJSONRules;
     nodeRules?: NodeRule[];
-    constructor(json: ConfigureFileJSON, rules: Rule[]);
+    constructor(rules: Rule[]);
+    load(configDir: string): Promise<void>;
 }
-export declare function getRuleset(dir: string): Promise<Ruleset>;

@@ -2,7 +2,7 @@
   "$schema": "./markuplint.schema.json",
   "extends": "rulesets/html-ls",
   "rules": {
-    // Style
+    # Style
     "indentation": true,
     "self-closing-tag": true,
     "omitted-closing-tag": true,
@@ -20,7 +20,7 @@
     "data-attr-naming": true,
     "event-attr": true,
 
-    // Validation
+    # Validation
     "character-reference": true,
     "doctype": true,
     "required-element": true,
@@ -35,10 +35,10 @@
     "id-duplication": true,
     "comment": true,
 
-    // Usability
+    # Usability
     "external-link": true,
 
-    // Accessibility
+    # Accessibility
     "required-h1": true,
     "heading-levels-skipping": true,
     "heading-in-sectioning-content": true,
@@ -48,15 +48,15 @@
     "empty-alt-attr": true,
     "role-structure-tab": true,
 
-    // Performance
+    # Performance
     "async-attr-in-script": true,
 
-    // CSS Designing
+    # CSS Designing
     "class-naming": true,
     "required-class-elements": true,
     "custom-element-naming": true,
 
-    // Plugin
+    # Plugin
     "textlint/textlint": true
   }
 }

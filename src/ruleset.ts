@@ -1,7 +1,11 @@
 import * as fs from 'fs';
 import * as util from 'util';
 
-import * as stripJsonComments from 'strip-json-comments';
+// TODO: @types
+// @ts-ignore
+import * as cosmiconfig from 'cosmiconfig';
+
+const explorer = cosmiconfig('markuplint');
 
 import Rule, {
 	RuleLevel,
@@ -38,32 +42,17 @@ export interface NodeRule {
 }
 
 export class Ruleset {
+
 	public rules: ConfigureFileJSONRules;
 	public nodeRules?: NodeRule[];
 
-	constructor (json: ConfigureFileJSON, rules: Rule[]) {}
-}
+	constructor (rules: Rule[]) {
+	}
 
-export async function getRuleset (dir: string): Promise<Ruleset> {
-	const rulesetFileNameList = [
-		'.markuplintrc',
-		'markuplintrc.json',
-		'markuplint.config.json',
-		'markuplint.json',
-		'markuplint.config.js',
-	];
-	const rulesetFilePath = await fileSearch(rulesetFileNameList, dir);
-	const ruleset: ConfigureFileJSON = await importRulesetFile(rulesetFilePath);
-	return ruleset;
-}
-
-async function importRulesetFile (filePath: string): Promise<ConfigureFileJSON> {
-	try {
-		const text = await readFile(filePath, { encoding: 'utf-8' });
-		return JSON.parse(stripJsonComments(text)) as ConfigureFileJSON;
-	} catch (err) {
-		return {
-			rules: {},
-		};
+	public async load (configDir: string) {
+		const data = await explorer.load(configDir);
+		const cofing: ConfigureFileJSON = data.config;
+		const filepath: string = data.filepath;
+		console.log(`Loaded: ${filepath}`);
 	}
 }
