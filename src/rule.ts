@@ -9,6 +9,7 @@ import {
 	Document,
 } from './parser';
 import {
+	ConfigureFileJSONRuleOption,
 	Ruleset,
 } from './ruleset';
 
@@ -32,8 +33,6 @@ export interface CustomVerifiedReturn extends VerifyReturn {
 
 export type RuleLevel = 'error' | 'warning';
 
-export type RuleOption<T, O> = [RuleLevel, T, O];
-
 export interface RuleConfig<T = null, O = {}> {
 	disabled: boolean;
 	level: RuleLevel;
@@ -53,7 +52,7 @@ export default abstract class Rule<T = null, O = {}> {
 
 	public abstract async verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
 
-	public optimizeOption (option: RuleOption<T, O> | boolean): RuleConfig<T, O> {
+	public optimizeOption (option: ConfigureFileJSONRuleOption<T, O> | boolean): RuleConfig<T, O> {
 		if (typeof option === 'boolean') {
 			return {
 				disabled: !option,

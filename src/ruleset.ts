@@ -3,8 +3,8 @@ import * as util from 'util';
 
 import * as stripJsonComments from 'strip-json-comments';
 
-import {
-	RuleJSONOption,
+import Rule, {
+	RuleLevel,
 } from './rule';
 
 import fileSearch from './util/fileSearch';
@@ -16,6 +16,18 @@ export interface PermittedContentOptions {
 	times?: 'once' | 'zero or more' | 'one or more' | 'any';
 }
 
+export interface ConfigureFileJSON {
+	extends?: string | string[];
+	rules: ConfigureFileJSONRules;
+	nodeRules?: NodeRule[];
+}
+
+export interface ConfigureFileJSONRules {
+	[ruleName: string]: boolean | ConfigureFileJSONRuleOption<null, {}>;
+}
+
+export type ConfigureFileJSONRuleOption<T, O> = [RuleLevel, T, O];
+
 export type PermittedContent = [string, PermittedContentOptions | undefined];
 
 export interface NodeRule {
@@ -25,24 +37,11 @@ export interface NodeRule {
 	inheritance: boolean;
 }
 
-export interface RulesetJSON {
-	definitions?: {
-		[defId: string]: string[];
-	};
-	nodeRules?: NodeRule[];
-	rules: RuleCollection;
-}
-
-export interface RuleCollection {
-	[ruleName: string]: RuleJSONOption<null, {}> | boolean;
-}
-
 export class Ruleset {
-	public rules: RuleCollection = {};
+	public rules: ConfigureFileJSONRules;
+	public nodeRules?: NodeRule[];
 
-	constructor (json: RulesetJSON) {
-
-	}
+	constructor (json: ConfigureFileJSON, rules: Rule[]) {}
 }
 
 export async function getRuleset (dir: string): Promise<Ruleset> {
@@ -54,14 +53,14 @@ export async function getRuleset (dir: string): Promise<Ruleset> {
 		'markuplint.config.js',
 	];
 	const rulesetFilePath = await fileSearch(rulesetFileNameList, dir);
-	const ruleset: RulesetJSON = await importRulesetFile(rulesetFilePath);
+	const ruleset: ConfigureFileJSON = await importRulesetFile(rulesetFilePath);
 	return ruleset;
 }
 
-async function importRulesetFile (filePath: string): Promise<RulesetJSON> {
+async function importRulesetFile (filePath: string): Promise<ConfigureFileJSON> {
 	try {
 		const text = await readFile(filePath, { encoding: 'utf-8' });
-		return JSON.parse(stripJsonComments(text)) as RulesetJSON;
+		return JSON.parse(stripJsonComments(text)) as ConfigureFileJSON;
 	} catch (err) {
 		return {
 			rules: {},

@@ -1,5 +1,5 @@
 import { Document } from './parser';
-import { Ruleset } from './ruleset';
+import { ConfigureFileJSONRuleOption, Ruleset } from './ruleset';
 export interface VerifyReturn {
     level: RuleLevel;
     message: string;
@@ -14,7 +14,6 @@ export interface CustomVerifiedReturn extends VerifyReturn {
     ruleId?: string;
 }
 export declare type RuleLevel = 'error' | 'warning';
-export declare type RuleOption<T, O> = [RuleLevel, T, O];
 export interface RuleConfig<T = null, O = {}> {
     disabled: boolean;
     level: RuleLevel;
@@ -30,7 +29,7 @@ export default abstract class Rule<T = null, O = {}> {
     readonly defaultLevel: RuleLevel;
     readonly defaultValue: T;
     abstract verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
-    optimizeOption(option: RuleOption<T, O> | boolean): RuleConfig<T, O>;
+    optimizeOption(option: ConfigureFileJSONRuleOption<T, O> | boolean): RuleConfig<T, O>;
 }
 export declare class CustomRule<T = null, O = {}> extends Rule<T, O> {
     name: string;
