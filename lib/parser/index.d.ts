@@ -57,7 +57,7 @@ export interface Attribute {
 }
 export declare type Walker<N = Node> = (node: N) => Promise<void>;
 export declare type SyncWalker = (node: Node) => void;
-export declare type NodeType = 'Element' | 'Text' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
+export declare type NodeType = 'Element' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
 export declare abstract class Node {
     readonly type: NodeType;
     nodeName: string;
@@ -86,6 +86,11 @@ export declare class Element extends Node {
     readonly id: Attribute | undefined;
 }
 export declare class TextNode extends Node {
+    readonly type: NodeType;
+    readonly textContent: string;
+    constructor(props: TextNodeProperties);
+}
+export declare class RawTextNode extends TextNode {
     readonly type: NodeType;
     readonly textContent: string;
     constructor(props: TextNodeProperties);

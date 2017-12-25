@@ -22,8 +22,8 @@ export default class extends Rule {
 		await document.walk(async (node) => {
 			if (node instanceof Element) {
 				const id = node.id;
-				if (id) {
-					if (idStack.includes(id.name)) {
+				if (id && id.value) {
+					if (idStack.includes(id.value)) {
 						reports.push({
 							level: config.level,
 							message,
@@ -32,7 +32,7 @@ export default class extends Rule {
 							raw: id.raw,
 						});
 					}
-					idStack.push(id.name);
+					idStack.push(id.value);
 				}
 			}
 		});

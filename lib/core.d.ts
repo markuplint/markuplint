@@ -1,3 +1,3 @@
-import Rule, { VerifiedResult } from './rule';
+import Rule, { CustomRule, VerifiedResult } from './rule';
 import { Ruleset } from './ruleset';
-export declare function verify(html: string, ruleset: Ruleset, rules: Rule[], locale: string): Promise<VerifiedResult[]>;
+export declare function verify(html: string, ruleset: Ruleset, rules: (Rule | CustomRule)[], locale: string): Promise<VerifiedResult[]>;
