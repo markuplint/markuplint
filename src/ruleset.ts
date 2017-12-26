@@ -1,9 +1,12 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import * as util from 'util';
 
 // TODO: @types
 // @ts-ignore
 import * as cosmiconfig from 'cosmiconfig';
+
+import * as deepAssign from 'deep-assign';
 
 const explorer = cosmiconfig('markuplint');
 
@@ -40,13 +43,11 @@ export interface ConfigureFileJSONRules {
 
 export type ConfigureFileJSONRuleOption<T, O> = [RuleLevel, T, O];
 
-export type PermittedContent = [string, PermittedContentOptions | undefined];
-
 export interface NodeRule {
-	nodeType: string;
-	permittedContent: PermittedContent[];
-	attributes: {[attrName: string]: any }; // tslint:disable-line:no-any
-	inheritance: boolean;
+	tagName: string;
+	categories: string[];
+	roles: string[];
+	obsolete: boolean;
 }
 
 /**
@@ -57,27 +58,28 @@ export default class Ruleset {
 	public static async create (config: ConfigureFileJSON | string, rules: Rule[]) {
 		const ruleset = new Ruleset(rules);
 		if (typeof config === 'string') {
-			await ruleset.loadConfig(config);
+			await ruleset.loadRC(config);
 		} else {
 			await ruleset.setConfig(config);
 		}
 		return ruleset;
 	}
 
-	public rules: ConfigureFileJSONRules;
-	public nodeRules?: NodeRule[];
+	public rules: ConfigureFileJSONRules = {};
+	public nodeRules: NodeRule[] = [];
 
 	private _rules: Rule[];
 	private _rawConfig: ConfigureFileJSON | null = null;
+	private _configPath: string;
 
 	private constructor (rules: Rule[]) {
 		this._rules = rules;
 	}
 
-	public async loadConfig (configDir: string) {
+	public async loadRC (configDir: string) {
 		const data = await explorer.load(configDir);
 		const filepath: string = data.filepath;
-		console.log(`Loaded: ${filepath}`);
+		// console.log(`Loaded: ${filepath}`);
 		const config: ConfigureFileJSON = data.config;
 		if (config) {
 			await this.setConfig(config);
@@ -86,9 +88,36 @@ export default class Ruleset {
 		}
 	}
 
+	/**
+	 * TODO: Recursive fetch
+	 *
+	 * @param config JSON Data
+	 */
 	public async setConfig (config: ConfigureFileJSON) {
 		this._rawConfig = config;
-		this.rules = this._rawConfig.rules;
+		if (this._rawConfig.rules) {
+			this.rules = this._rawConfig.rules;
+		}
+		if (this._rawConfig.nodeRules) {
+			this.nodeRules = this._rawConfig.nodeRules;
+		}
+		if (this._rawConfig.extends) {
+			const extendRuleList = Array.isArray(this._rawConfig.extends) ? this._rawConfig.extends : [this._rawConfig.extends];
+			for (const extendRule of extendRuleList) {
+				if (!extendRule || !extendRule.trim()) {
+					continue;
+				}
+				const rulePath = path.resolve(`${extendRule}.json`);
+				const ruleJSON = await readFile(rulePath, 'utf-8');
+				const ruleConfig = JSON.parse(ruleJSON);
+				if (ruleConfig.rules) {
+					this.rules = deepAssign(this.rules, ruleConfig.rules);
+				}
+				if (ruleConfig.nodeRules) {
+					this.nodeRules = deepAssign(this.nodeRules, ruleConfig.nodeRules);
+				}
+			}
+		}
 	}
 
 	public async verify (nodeTree: Document, locale: string) {

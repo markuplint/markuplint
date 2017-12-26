@@ -86,6 +86,10 @@
   version "0.3.29"
   resolved "https://registry.yarnpkg.com/@types/cli-color/-/cli-color-0.3.29.tgz#c83a71fe02c8c7e1ccec048dd6a2458d1f6c96ea"
 
+"@types/deep-assign@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@types/deep-assign/-/deep-assign-0.1.0.tgz#fc32522f9611b6ddfbdf546841383d52db5254bf"
+
 "@types/events@*":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.1.0.tgz#93b1be91f63c184450385272c47b6496fd028e02"

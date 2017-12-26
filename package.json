@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@types/cli-color": "^0.3.29",
+    "@types/deep-assign": "^0.1.0",
     "@types/meow": "^3.6.2",
     "@types/node-fetch": "^1.6.7",
     "@types/os-locale": "^2.1.0",

@@ -13,23 +13,29 @@ export interface ConfigureFileJSONRules {
     [ruleName: string]: boolean | ConfigureFileJSONRuleOption<null, {}>;
 }
 export declare type ConfigureFileJSONRuleOption<T, O> = [RuleLevel, T, O];
-export declare type PermittedContent = [string, PermittedContentOptions | undefined];
 export interface NodeRule {
-    nodeType: string;
-    permittedContent: PermittedContent[];
-    attributes: {
-        [attrName: string]: any;
-    };
-    inheritance: boolean;
+    tagName: string;
+    categories: string[];
+    roles: string[];
+    obsolete: boolean;
 }
+/**
+ * TODO: Isolate API that between constractor and file I/O.
+ */
 export default class Ruleset {
     static create(config: ConfigureFileJSON | string, rules: Rule[]): Promise<Ruleset>;
     rules: ConfigureFileJSONRules;
-    nodeRules?: NodeRule[];
+    nodeRules: NodeRule[];
     private _rules;
     private _rawConfig;
+    private _configPath;
     private constructor();
-    loadConfig(configDir: string): Promise<void>;
+    loadRC(configDir: string): Promise<void>;
+    /**
+     * TODO: Recursive fetch
+     *
+     * @param config JSON Data
+     */
     setConfig(config: ConfigureFileJSON): Promise<void>;
     verify(nodeTree: Document, locale: string): Promise<VerifiedResult[]>;
 }
