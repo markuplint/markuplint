@@ -6,11 +6,8 @@ import Rule, {
 	RuleConfig,
 	VerifyReturn,
 } from '../../rule';
-import Ruleset, {
-	PermittedContent,
-} from '../../ruleset';
+import Ruleset from '../../ruleset';
 import messages from '../messages';
-
 
 export default class extends Rule {
 	public name = 'attr-duplication';

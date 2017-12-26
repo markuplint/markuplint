@@ -8,9 +8,7 @@ import Rule, {
 	RuleLevel,
 	VerifyReturn,
 } from '../../rule';
-import Ruleset, {
-	PermittedContent,
-} from '../../ruleset';
+import Ruleset from '../../ruleset';
 import messages from '../messages';
 
 export type Value = 'lower' | 'upper';
