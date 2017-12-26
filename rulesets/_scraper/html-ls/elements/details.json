@@ -1,0 +1,29 @@
+{
+	"tagName": "details",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details",
+	"attr": [
+		"#global",
+		{
+			"name": "open",
+			"description": "This Boolean attribute indicates whether or not the details — that is, the contents of the <details> element — are currently visible. The default, false, means the details are not visible.",
+			"obsolete": false
+		}
+	],
+	"categories": [
+		"#Flow",
+		"#interactive",
+		"#palpable"
+	],
+	"content": {
+		"description": "One <summary> element followed by flow content."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts flow content."
+	},
+	"roles": [
+		"None"
+	]
+}

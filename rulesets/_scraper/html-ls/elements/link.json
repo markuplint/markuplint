@@ -1,0 +1,119 @@
+{
+	"tagName": "link",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link",
+	"attr": [
+		"#global",
+		{
+			"name": "as",
+			"description": "This attribute is only used when rel=\"preload\" has been set on the <link> element. It specifies the type of content being loaded by the <link>,  which is necessary for content prioritization, request matching, application of correct content security policy, and setting of correct Accept request header.",
+			"obsolete": false
+		},
+		{
+			"name": "charset",
+			"description": "This attribute defines the character encoding of the linked resource. The value is a space- and/or comma-delimited list of character sets as defined in RFC 2045. The default value is iso-8859-1.\n Usage note: This attribute is obsolete and must not be used by authors. To achieve its effect, use the Content-Type HTTP header on the linked resource.\n ",
+			"obsolete": false
+		},
+		{
+			"name": "crossorigin",
+			"description": "This enumerated attribute indicates whether CORS must be used when fetching the related resource. CORS-enabled images can be reused in the <canvas> element without being tainted. The allowed values are:\n \n  \"anonymous\"\n  A cross-origin request (i.e. with Origin: HTTP header) is performed. But no credential is sent (i.e. no cookie, no X.509 certificate and no HTTP Basic authentication). If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header) the image will be tainted and its usage restricted.\n  \"use-credentials\"\n  A cross-origin request (i.e. with Origin: HTTP header) is performed with credential is sent (i.e. a cookie, a certificate and HTTP Basic authentication is performed). If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the image will be tainted and its usage restricted.\n \n When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted used in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information.",
+			"obsolete": false
+		},
+		{
+			"name": "\"anonymous\"",
+			"description": "A cross-origin request (i.e. with Origin: HTTP header) is performed. But no credential is sent (i.e. no cookie, no X.509 certificate and no HTTP Basic authentication). If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header) the image will be tainted and its usage restricted.",
+			"obsolete": false
+		},
+		{
+			"name": "\"use-credentials\"",
+			"description": "A cross-origin request (i.e. with Origin: HTTP header) is performed with credential is sent (i.e. a cookie, a certificate and HTTP Basic authentication is performed). If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the image will be tainted and its usage restricted.",
+			"obsolete": false
+		},
+		{
+			"name": "disabled",
+			"description": "This attribute is used to disable a link relationship. In conjunction with scripting, this attribute could be used to turn on and off various style sheet relationships.\n \n Note: While there is no disabled attribute in the HTML standard, there is a disabled attribute on the HTMLLinkElement DOM object.\n\n The use of disabled as an HTML attribute is non-standard and only used by some browsers (W3 #27677). Do not use it. To achieve a similar effect, use one of the following techniques:\n\n \n  If the disabled attribute has been added directly to the element on the page, do not include the <link> element instead;\n  Set the disabled property of the StyleSheet DOM object via scripting.\n \n \n ",
+			"obsolete": false
+		},
+		{
+			"name": "href",
+			"description": "This attribute specifies the URL of the linked resource. A URL might be absolute or relative.",
+			"obsolete": false
+		},
+		{
+			"name": "hreflang",
+			"description": "This attribute indicates the language of the linked resource. It is purely advisory. Allowed values are determined by BCP47. Use this attribute only if the href attribute is present.",
+			"obsolete": false
+		},
+		{
+			"name": "integrity",
+			"description": "Contains inline metadata, a base64-encoded cryptographic hash of a resource (file) you’re telling the browser to fetch, that a user agent can use to verify that a fetched resource has been delivered free of unexpected manipulation. See Subresource Integrity.",
+			"obsolete": false
+		},
+		{
+			"name": "media",
+			"description": "This attribute specifies the media which the linked resource applies to. Its value must be a media query. This attribute is mainly useful when linking to external stylesheets by allowing the user agent to pick the best adapted one for the device it runs on.\n Usage note: \n \n  In HTML 4, this can only be a simple white-space-separated list of media description literals, i.e., media types and groups, where defined and allowed as values for this attribute, such as print, screen, aural, braille. HTML5 extended this to any kind of media queries, which are a superset of the allowed values of HTML 4.\n  Browsers not supporting the CSS3 Media Queries won't necessarily recognize the adequate link; do not forget to set fallback links, the restricted set of media queries defined in HTML 4.\n \n \n ",
+			"obsolete": false
+		},
+		{
+			"name": "methods",
+			"description": "The value of this attribute provides information about the functions that might be performed on an object. The values generally are given by the HTTP protocol when it is used, but it might (for similar reasons as for the title attribute) be useful to include advisory information in advance in the link. For example, the browser might choose a different rendering of a link as a function of the methods specified; something that is searchable might get a different icon, or an outside link might render with an indication of leaving the current site. This attribute is not well understood nor supported, even by the defining browser, Internet Explorer 4. See Methods Property (MSDN).",
+			"obsolete": false
+		},
+		{
+			"name": "prefetch",
+			"description": "This attribute identifies a resource that might be required by the next navigation and that the user agent should retrieve it. This allows the user agent to respond faster when the resource is requested in the future.",
+			"obsolete": false
+		},
+		{
+			"name": "referrerpolicy",
+			"description": "A string indicating which referrer to use when fetching the resource:\n \n  'no-referrer' meaning that the Referer header will not be sent.\n  'no-referrer-when-downgrade' meaning that no Referer header will be sent when navigating to an origin without TLS (HTTPS). This is a user agent’s default behavior, if no policy is otherwise specified.\n  'origin' meaning that the referrer will be the origin of the page, that is roughly the scheme, the host and the port.\n  'origin-when-cross-origin' meaning that navigating to other origins will be limited to the scheme, the host and the port, while navigating on the same origin will include the referrer's path. \n  'unsafe-url' meaning that the referrer will include the origin and the path (but not the fragment, password, or username). This case is unsafe because it can leak origins and paths from TLS-protected resources to insecure origins.\n \n ",
+			"obsolete": false
+		},
+		{
+			"name": "rel",
+			"description": "This attribute names a relationship of the linked document to the current document. The attribute must be a space-separated list of the link types values. The most common use of this attribute is to specify a link to an external style sheet: the rel attribute is set to stylesheet, and the href attribute is set to the URL of an external style sheet to format the page. WebTV also supports the use of the value next for rel to preload the next page in a document series.",
+			"obsolete": false
+		},
+		{
+			"name": "rev",
+			"description": "The value of this attribute shows the relationship of the current document to the linked document, as defined by the href attribute. The attribute thus defines the reverse relationship compared to the value of the rel attribute. Link types values for the attribute are similar to the possible values for rel.\n Usage note: This attribute is obsolete in HTML5. Do not use it. To achieve its effect, use the rel attribute with the opposite link types values, e.g. made should be replaced by author. Also this attribute doesn't mean revision and must not be used with a version number, which is unfortunately the case on numerous sites.\n ",
+			"obsolete": false
+		},
+		{
+			"name": "sizes",
+			"description": "This attribute defines the sizes of the icons for visual media contained in the resource. It must be present only if the rel contains the icon link types value. It may have the following values:\n \n  any, meaning that the icon can be scaled to any size as it is in a vectorial format, like image/svg+xml.\n  a white-space separated list of sizes, each in the format <width in pixels>x<height in pixels> or <width in pixels>X<height in pixels>. Each of these sizes must be contained in the resource.\n \n\n Usage note: \n\n \n  Most icon format are only able to store one single icon; therefore most of the time the sizes contains only one entry. MS's ICO format does, as well as Apple's ICNS. ICO being more ubiquitous, you should use it.\n  Apple's iOS does not support this attribute, hence Apple's iPhone and iPad use special, non-standard link types values to define icon to be used as Web Clip or start-up placeholder: apple-touch-icon and apple-touch-startup-icon.\n \n \n ",
+			"obsolete": false
+		},
+		{
+			"name": "target",
+			"description": "Defines the frame or window name that has the defined linking relationship or that will show the rendering of any linked resource.",
+			"obsolete": false
+		},
+		{
+			"name": "title",
+			"description": "The title attribute has special semantics on the <link> element. When used on a <link rel=\"stylesheet\"> it defines a preferred or an alternate stylesheet. Incorrectly using it may cause the stylesheet to be ignored.",
+			"obsolete": false
+		},
+		{
+			"name": "type",
+			"description": "This attribute is used to define the type of the content linked to. The value of the attribute should be a MIME type such as text/html, text/css, and so on. The common use of this attribute is to define the type of style sheet linked and the most common current value is text/css, which indicates a Cascading Style Sheet format. It is also used on rel=\"preload\" link types, to make sure the browser only downloads file types that it supports.",
+			"obsolete": false
+		}
+	],
+	"categories": [
+		"#Metadata",
+		"#flow",
+		"#phrasing"
+	],
+	"content": {
+		"description": "None, it is an empty element."
+	},
+	"omission": {
+		"description": "As it is a void element, the start tag must be present and the end tag must not be present"
+	},
+	"parents": {
+		"description": "Any element that accepts metadata elements. If itemprop is present: any element that accepts phrasing content."
+	},
+	"roles": [
+		"None"
+	]
+}

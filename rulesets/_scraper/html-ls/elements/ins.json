@@ -1,0 +1,33 @@
+{
+	"tagName": "ins",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins",
+	"attr": [
+		"#global",
+		{
+			"name": "cite",
+			"description": "This attribute defines the URI of a resource that explains the change, such as a link to meeting minutes or a ticket in a troubleshooting sytem.",
+			"obsolete": false
+		},
+		{
+			"name": "datetime",
+			"description": "This attribute indicates the time and date of the change and must be a valid date with an optional time string. If the value cannot be parsed as a date with an optional time string, the element does not have an associated time stamp.",
+			"obsolete": false
+		}
+	],
+	"categories": [
+		"#Phrasing",
+		"#flow"
+	],
+	"content": {
+		"description": "Transparent."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts phrasing content."
+	},
+	"roles": [
+		"Any"
+	]
+}

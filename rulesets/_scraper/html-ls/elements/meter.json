@@ -1,0 +1,60 @@
+{
+	"tagName": "meter",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter",
+	"attr": [
+		"#global",
+		{
+			"name": "value",
+			"description": "The current numeric value. This must be between the minimum and maximum values (min attribute and max attribute) if they are specified. If unspecified or malformed, the value is 0. If specified, but not within the range given by the min attribute and max attribute, the value is equal to the nearest end of the range.\n Usage note: Unless the value attribute is between 0 and 1 (inclusive), the min and max attributes should define the range so that the value attribute's value is within it.\n ",
+			"obsolete": false
+		},
+		{
+			"name": "min",
+			"description": "The lower numeric bound of the measured range. This must be less than the maximum value (max attribute), if specified. If unspecified, the minimum value is 0.",
+			"obsolete": false
+		},
+		{
+			"name": "max",
+			"description": "The upper numeric bound of the measured range. This must be greater than the minimum value (min attribute), if specified. If unspecified, the maximum value is 1.",
+			"obsolete": false
+		},
+		{
+			"name": "low",
+			"description": "The upper numeric bound of the low end of the measured range. This must be greater than the minimum value (min attribute), and it also must be less than the high value and maximum value (high attribute and max attribute, respectively), if any are specified. If unspecified, or if less than the minimum value, the low value is equal to the minimum value.",
+			"obsolete": false
+		},
+		{
+			"name": "high",
+			"description": "The lower numeric bound of the high end of the measured range. This must be less than the maximum value (max attribute), and it also must be greater than the low value and minimum value (low attribute and min attribute, respectively), if any are specified. If unspecified, or if greater than the maximum value, the high value is equal to the maximum value.",
+			"obsolete": false
+		},
+		{
+			"name": "optimum",
+			"description": "This attribute indicates the optimal numeric value. It must be within the range (as defined by the min attribute and max attribute). When used with the low attribute and high attribute, it gives an indication where along the range is considered preferable. For example, if it is between the min attribute and the low attribute, then the lower range is considered preferred.",
+			"obsolete": false
+		},
+		{
+			"name": "form",
+			"description": "This attribute associates the element with a form element that has ownership of the meter element. For example, a meter might be displaying a range corresponding to an input element of type number. This attribute is only used if the meter element is being used as a form-associated element; even then, it may be omitted if the element appears as a descendant of a form element.",
+			"obsolete": false
+		}
+	],
+	"categories": [
+		"#Flow",
+		"#phrasing",
+		"#labelable",
+		"#palpable"
+	],
+	"content": {
+		"description": "Phrasing content, but there must be no <meter> element among its descendants."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts phrasing content."
+	},
+	"roles": [
+		"None"
+	]
+}

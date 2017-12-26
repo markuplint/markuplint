@@ -1,0 +1,35 @@
+{
+	"tagName": "html",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html",
+	"attr": [
+		"#global",
+		{
+			"name": "manifest",
+			"description": "Specifies the URI of a resource manifest indicating resources that should be cached locally. See Using the application cache for details.",
+			"obsolete": false
+		},
+		{
+			"name": "version",
+			"description": "Specifies the version of the HTML Document Type Definition that governs the current document. This attribute is not needed, because it is redundant with the version information in the document type declaration.",
+			"obsolete": false
+		},
+		{
+			"name": "xmlns",
+			"description": "Specifies the XML Namespace of the document. Default value is \"http://www.w3.org/1999/xhtml\". This is required in documents parsed with XML parsers, and optional in text/html documents.",
+			"obsolete": false
+		}
+	],
+	"categories": [],
+	"content": {
+		"description": "One <head> element, followed by one <body> element."
+	},
+	"omission": {
+		"description": "The start tag may be omitted if the first thing inside the <html> element is not a comment.\n    The end tag may be omitted if the <html> element is not immediately followed by a comment, and it contains a <body> element either that is not empty or whose start tag is present."
+	},
+	"parents": {
+		"description": "As the root element of a document, or wherever a subdocument fragment is allowed in a compound document."
+	},
+	"roles": [
+		"None"
+	]
+}

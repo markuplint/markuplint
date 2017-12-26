@@ -1,0 +1,18 @@
+{
+	"tagName": "frameset",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frameset",
+	"attr": [
+		"#global",
+		{
+			"name": "cols",
+			"description": "This attribute specifies the number and size of horizontal spaces in a frameset.",
+			"obsolete": false
+		},
+		{
+			"name": "rows",
+			"description": "This attribute specifies the number and size of vertical spaces in a frameset.",
+			"obsolete": false
+		}
+	],
+	"obsolete": true
+}

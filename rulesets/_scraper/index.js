@@ -5,35 +5,43 @@ const fetch = require('node-fetch');
 const jsdom = require('jsdom');
 const deepAssign = require('deep-assign');
 
+const cliColor = require('cli-color');
+
 const writeFile = util.promisify(fs.writeFile);
 
-const PARALLEL = false;
+const OUT_DIR = 'rulesets/_scraper/html-ls/elements';
+const PARALLEL = true;
 
-// MAIN
+/**
+ * main
+ */
 (async () => {
 	const URL_LIST_PAGE = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element';
 	const urlList = await getList(URL_LIST_PAGE);
-	process.stdout.write(`\nDone: Getting list.\n`);
+	process.stdout.write('\nDone: Getting list.\n');
 	if (PARALLEL) {
 		const p = [];
 		for (const url of urlList) {
 			p.push(getElementMetadata(url));
 		}
-		await Promise.all(...p);
+		await Promise.all(p);
 	} else {
 		for (const url of urlList) {
 			await getElementMetadata(url);
 		}
 	}
-	console.log(`🎉 DONE: Scraped.`);
+	process.stdout.write('🎉 DONE: Scraped.\n');
 })();
 
-// SUB
+/**
+ * sub
+ *
+ * @param {string} url
+ */
 async function getElementMetadata (url) {
-	const OUT_DIR = 'rulesets/html-ls/elements/';
 	const outDir = path.resolve(OUT_DIR);
-	const document = await getDocumentfromURL(url);
 	const tagName = url.replace(/^.+\/([a-z][a-z0-1_-]*)\s*$/i, '$1');
+	const document = await getDocumentfromURL(url);
 	const resultObj = {
 		tagName,
 		citeFrom: url,
@@ -42,15 +50,19 @@ async function getElementMetadata (url) {
 	const obsolete = document.querySelector('#wikiArticle .obsolete.obsoleteHeader');
 	if (obsolete) {
 		resultObj.obsolete = true;
+		process.stdout.write(cliColor.red(tagName) + '(');
 	} else {
 		const table = document.querySelector('.properties');
 		if (!table) {
 			resultObj.obsolete = true;
+			process.stdout.write(cliColor.red(tagName) + '(');
 		} else {
 			const rows = table.querySelectorAll('tr');
 			if (!rows) {
 				resultObj.obsolete = true;
+				process.stdout.write(cliColor.red(tagName) + '(');
 			} else {
+				process.stdout.write(cliColor.green(tagName) + '(');
 				for (const row of Array.from(rows)) {
 					const th = row.querySelector('th');
 					const td = row.querySelector('td');
@@ -60,7 +72,7 @@ async function getElementMetadata (url) {
 					const text = td.textContent;
 					switch (th.textContent.trim()) {
 						case 'Content categories': {
-							resultObj.categories = Array.from(text.match(/[a-z]+\scontent/ig) || []).map(s => '#' + s.replace(' content', ''));
+							resultObj.categories = Array.from(text.match(/[a-z]+\scontent/ig) || []).map((s) => '#' + s.replace(' content', ''));
 							break;
 						}
 						case 'Permitted content': {
@@ -82,7 +94,7 @@ async function getElementMetadata (url) {
 							break;
 						}
 						case 'Permitted ARIA roles': {
-							resultObj.roles = text.split(/\s*,\s*/).map(s => s.trim());
+							resultObj.roles = text.split(/\s*,\s*/).map((s) => s.trim());
 							break;
 						}
 						case 'DOM Interface': {
@@ -106,11 +118,18 @@ async function getElementMetadata (url) {
 				const dtList = attrNextEl.querySelectorAll('dt');
 				for (const dt of dtList) {
 					const attrName = dt.querySelector('code').textContent;
+					const obsolete = !!dt.querySelector('.obsoleteInline');
+					if (!obsolete) {
+						process.stdout.write(cliColor.cyan(attrName) + ' ');
+					} else {
+						process.stdout.write(cliColor.red(attrName) + ' ');
+					}
 					const dd = nextElementSibling(dt);
 					if (dd) {
 						resultObj.attr.push({
 							name: attrName,
 							description: dd.textContent,
+							obsolete,
 						});
 					} else {
 						resultObj.attr.push(attrName);
@@ -120,7 +139,7 @@ async function getElementMetadata (url) {
 		}
 		const obsoleteAttrHeading = document.getElementById('Obsolete');
 		if (obsoleteAttrHeading) {
-			let obsoleteAttrNextEl = nextElementSibling(obsoleteAttrHeading);
+			const obsoleteAttrNextEl = nextElementSibling(obsoleteAttrHeading);
 			if (obsoleteAttrNextEl && obsoleteAttrNextEl.nodeName === 'DL') {
 				const dtList = obsoleteAttrNextEl.querySelectorAll('dt');
 				for (const dt of dtList) {
@@ -139,16 +158,31 @@ async function getElementMetadata (url) {
 			}
 		}
 	}
+	process.stdout.write(') ');
 	await mergeJSON(`${outDir}/${tagName}.json`, resultObj);
-	process.stdout.write(` => ${outDir}/${tagName}.json\n`);
+	// process.stdout.write(` => ${outDir}/${tagName}.json\n`);
 }
 
+/**
+ *
+ * @param {string} filepath
+ * @param {Object} data
+ */
 async function mergeJSON (filepath, data) {
-	const current = require(filepath);
+	let current = {};
+	try {
+		current = require(filepath);
+	} catch (e) {
+		//
+	}
 	const outputObj = deepAssign(current, data);
 	await writeFile(filepath, JSON.stringify(outputObj, null, '\t'));
 }
 
+/**
+ *
+ * @param {string} url
+ */
 async function getList (url) {
 	const document = await getDocumentfromURL(url);
 	const listHeading = document.querySelector('li a[href="/en-US/docs/Web/HTML/Element"]');
@@ -157,16 +191,24 @@ async function getList (url) {
 	return linkList;
 }
 
+/**
+ *
+ * @param {string} url
+ */
 async function getDocumentfromURL (url) {
-	process.stdout.write(`🔗 ${url}`);
+	// process.stdout.write(`🔗 ${url}`);
 	const res = await fetch(url);
-	process.stdout.write(` resolve...`);
+	// process.stdout.write(' resolve...');
 	const html = await res.text();
-	process.stdout.write(` OK`);
+	// process.stdout.write(' OK');
 	const dom = new jsdom.JSDOM(html);
 	return dom.window.document;
 }
 
+/**
+ *
+ * @param {HTMLElement} el
+ */
 function nextElementSibling (el) {
 	var e = el.nextSibling;
 	while (e && 1 !== e.nodeType)

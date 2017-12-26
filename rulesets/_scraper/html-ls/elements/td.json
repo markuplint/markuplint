@@ -1,0 +1,30 @@
+{
+	"tagName": "td",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td",
+	"attr": [
+		"#global",
+		{
+			"name": "abbr",
+			"description": "This attribute contains a short abbreviated description of the content of the cell. Some user-agents, such as speech readers, may present this description before the content itself.\n Note: Do not use this attribute as it is obsolete in the latest standard: instead either consider starting the cell content by an independent abbreviated content itself or use the abbreviated content as the cell content and use the long content as the description of the cell by putting it in the title attribute.\n ",
+			"obsolete": true
+		},
+		{
+			"name": "align",
+			"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are:\n \n  left, aligning the content to the left of the cell\n  center, centering the content in the cell\n  right, aligning the content to the right of the cell\n  justify, inserting spaces into the textual content so that the content is justified in the cell\n  char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes Unimplemented (see bug 2212).\n \n\n If this attribute is not set, the left value is assumed.\n\n Note: Do not use this attribute as it is obsolete (not supported) in the latest standard.\n\n \n  To achieve the same effect as the left, center, right, or justify values, use the CSS text-align property on it.\n  To achieve the same effect as the char value, in CSS3, you can use the value of the char as the value of the text-align property Unimplemented.\n \n \n ",
+			"obsolete": true
+		}
+	],
+	"categories": [],
+	"content": {
+		"description": "Flow content."
+	},
+	"omission": {
+		"description": "The start tag is mandatory.\n    The end tag may be omitted, if it is immediately followed by a <th> or <td> element or if there are no more data in its parent element."
+	},
+	"parents": {
+		"description": "A <tr> element."
+	},
+	"roles": [
+		"Any"
+	]
+}

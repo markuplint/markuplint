@@ -1,0 +1,47 @@
+{
+	"tagName": "hr",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr",
+	"attr": [
+		"#global",
+		{
+			"name": "align",
+			"description": "Sets the alignment of the rule on the page. If no value is specified, the default value is left.",
+			"obsolete": false
+		},
+		{
+			"name": "color",
+			"description": "Sets the color of the rule through color name or hexadecimal value.",
+			"obsolete": false
+		},
+		{
+			"name": "noshade",
+			"description": "Sets the rule to have no shading.",
+			"obsolete": false
+		},
+		{
+			"name": "size",
+			"description": "Sets the height, in pixels, of the rule.",
+			"obsolete": false
+		},
+		{
+			"name": "width",
+			"description": "Sets the length of the rule on the page through a pixel or percentage value.",
+			"obsolete": false
+		}
+	],
+	"categories": [
+		"#Flow"
+	],
+	"content": {
+		"description": "None, it is an empty element."
+	},
+	"omission": {
+		"description": "It must have start tag, but must not have an end tag."
+	},
+	"parents": {
+		"description": "Any element that accepts flow content."
+	},
+	"roles": [
+		"presentation"
+	]
+}

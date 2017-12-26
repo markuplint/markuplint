@@ -1,0 +1,38 @@
+{
+	"tagName": "ul",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul",
+	"attr": [
+		"#global",
+		{
+			"name": "compact",
+			"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent and it doesn't work in all browsers.\n Usage note: Do not use this attribute, as it has been deprecated: the <ul> element should be styled using CSS. To give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.\n ",
+			"obsolete": false
+		}
+	],
+	"categories": [
+		"#Flow",
+		"#Palpable"
+	],
+	"content": {
+		"description": "zero or more <li> elements, which in turn often contain nested <ol> or <ul> elements."
+	},
+	"omission": {
+		"description": "None, both the starting and ending tag are mandatory."
+	},
+	"parents": {
+		"description": "Any element that accepts flow content."
+	},
+	"roles": [
+		"directory",
+		"group",
+		"listbox",
+		"menu",
+		"menubar",
+		"radiogroup",
+		"tablist",
+		"toolbar",
+		"tree",
+		"presentation"
+	],
+	"interface": "HTMLUListElement"
+}

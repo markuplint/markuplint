@@ -1,0 +1,25 @@
+{
+	"tagName": "colgroup",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup",
+	"attr": [
+		"#global",
+		{
+			"name": "align",
+			"description": "This enumerated attribute specifies how horizontal alignment of each column cell content will be handled. Possible values are:\n \n  left, aligning the content to the left of the cell\n  center, centering the content in the cell\n  right, aligning the content to the right of the cell\n  justify, inserting spaces into the textual content so that the content is justified in the cell\n  char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes Unimplemented (see bug 2212).\n \n\n If this attribute is not set, the left value is assumed. The descendant <col> elements may override this value using their own align attribute.\n\n Note: Do not use this attribute as it is obsolete (not supported) in the latest standard.\n\n \n  To achieve the same effect as the left, center, right or justify values:\n\n   \n    Do not try to set the text-align property on a selector giving a <colgroup> element. Because <td> elements are not descendant of the <colgroup> element, they won't inherit it.\n    If the table doesn't use a colspan attribute, use one td:nth-child(an+b) CSS selector per column, where a is the total number of the columns in the table and b is the ordinal position of this column in the table. Only after this selector the text-align property can be used.\n    If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.\n   \n  \n  To achieve the same effect as the char value, in CSS3, you can use the value of the char as the value of the text-align property Unimplemented.\n \n \n ",
+			"obsolete": true
+		}
+	],
+	"categories": [],
+	"content": {
+		"description": "If the span attribute is present: none, it is an empty element.\n    If the attribute is not present: zero or more <col> element"
+	},
+	"omission": {
+		"description": "The start tag may be omitted, if it has a <col> element as its first child and if it is not preceded by a <colgroup> whose end tag has been omitted.\n    The end tag may be omitted, if it is not followed by a space or a comment."
+	},
+	"parents": {
+		"description": "A <table> element. The <colgroup> must appear after any optional <caption> element but before any <thead>, <th>, <tbody>, <tfoot> and <tr> element."
+	},
+	"roles": [
+		"None"
+	]
+}

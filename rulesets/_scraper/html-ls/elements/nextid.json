@@ -1,0 +1,13 @@
+{
+	"tagName": "nextid",
+	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nextid",
+	"attr": [
+		"#global",
+		{
+			"name": "n",
+			"description": "Reference to anchor.",
+			"obsolete": false
+		}
+	],
+	"obsolete": true
+}
