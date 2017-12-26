@@ -23,7 +23,7 @@
 	- [character-reference](./markuplint-rule-character-reference/README.ja.md) 文字参照
 	- [doctype](./markuplint-rule-doctype/README.ja.md) ドキュメントタイプ (🚧 WIP)
 	- [required-element](./markuplint-rule-required-element/README.ja.md) 必須要素 (🚧 WIP)
-	- [deprecated-element](./markuplint-rule-deprecated-element/README.ja.md) 非推奨要素 (🚧 WIP)
+	- [deprecated-element](./markuplint-rule-deprecated-element/README.ja.md) 非推奨要素
 	- [permitted-contents](./markuplint-rule-permitted-contents/README.ja.md) 許可するコンテンツ (🚧 WIP)
 	- [permitted-role](./markuplint-rule-permitted-role/README.ja.md) 許可するロール (🚧 WIP)
 	- [attr-duplication](./markuplint-rule-attr-duplication/README.ja.md) 属性の重複

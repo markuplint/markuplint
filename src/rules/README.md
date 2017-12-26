@@ -23,7 +23,7 @@
 	- [🚧 WIP] [character-reference](./markuplint-rule-character-reference/README.md)
 	- [🚧 WIP] [doctype](./markuplint-rule-doctype/README.md)
 	- [🚧 WIP] [required-element](./markuplint-rule-required-element/README.md)
-	- [🚧 WIP] [deprecated-element](./markuplint-rule-deprecated-element/README.md)
+	- [deprecated-element](./markuplint-rule-deprecated-element/README.md)
 	- [🚧 WIP] [permitted-contents](./markuplint-rule-permitted-contents/README.md)
 	- [🚧 WIP] [permitted-role](./markuplint-rule-permitted-role/README.md)
 	- [attr-duplication](./markuplint-rule-attr-duplication/README.md)
