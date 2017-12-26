@@ -89,8 +89,6 @@ export default class Ruleset {
 	}
 
 	/**
-	 * TODO: Recursive fetch
-	 *
 	 * @param config JSON Data
 	 */
 	public async setConfig (config: ConfigureFileJSON) {
@@ -102,21 +100,7 @@ export default class Ruleset {
 			this.nodeRules = this._rawConfig.nodeRules;
 		}
 		if (this._rawConfig.extends) {
-			const extendRuleList = Array.isArray(this._rawConfig.extends) ? this._rawConfig.extends : [this._rawConfig.extends];
-			for (const extendRule of extendRuleList) {
-				if (!extendRule || !extendRule.trim()) {
-					continue;
-				}
-				const rulePath = path.resolve(`${extendRule}.json`);
-				const ruleJSON = await readFile(rulePath, 'utf-8');
-				const ruleConfig = JSON.parse(ruleJSON);
-				if (ruleConfig.rules) {
-					this.rules = deepAssign(this.rules, ruleConfig.rules);
-				}
-				if (ruleConfig.nodeRules) {
-					this.nodeRules = deepAssign(this.nodeRules, ruleConfig.nodeRules);
-				}
-			}
+			await extendsRules(this._rawConfig.extends, this);
 		}
 	}
 
@@ -138,4 +122,56 @@ export default class Ruleset {
 		}
 		return reports;
 	}
+}
+
+/**
+ * Recursive loading extends rules
+ *
+ * @param extendRules value of `extends` property
+ * @param ruleset Ruleset instance
+ */
+async function extendsRules (extendRules: string | string[], ruleset: Ruleset) {
+	const extendRuleList = Array.isArray(extendRules) ? extendRules : [extendRules];
+	for (const extendRule of extendRuleList) {
+		if (!extendRule || !extendRule.trim()) {
+			continue;
+		}
+		const ruleConfig = await extendsRuleResolver(extendRule);
+		if (ruleConfig.rules) {
+			ruleset.rules = deepAssign(ruleset.rules, ruleConfig.rules);
+		}
+		if (ruleConfig.nodeRules) {
+			ruleset.nodeRules = deepAssign(ruleset.nodeRules, ruleConfig.nodeRules);
+		}
+		if (ruleConfig.extends) {
+			await extendsRules(ruleConfig.extends, ruleset);
+		}
+	}
+}
+
+/**
+ * TODO: use cosmiconfig?
+ * TODO: support YAML
+ * TODO: fetch from internet
+ *
+ * @param extendRule extend rule file
+ */
+async function extendsRuleResolver (extendRule: string) {
+	let jsonStr: string;
+	if (/^markuplint\/[a-z0-9-]+$/.test(extendRule)) {
+		const matched = extendRule.match(/^markuplint\/([a-z0-9-]+)$/);
+		if (!matched || !matched[1]) {
+			throw new Error(`Invalid rule name set extends "${extendRule}" in markuplint`);
+		}
+		const id = matched[1];
+		jsonStr = await readFile(path.join(__dirname, '..', 'rulesets', `${id}.json`), 'utf-8');
+	} else if (/^(?:https?:)?\/\//.test(extendRule)) {
+		// TODO: fetch from internet
+		throw new Error(`Unsupported external network. Can not fetch ${extendRule}`);
+	} else {
+		jsonStr = await readFile(extendRule, 'utf-8');
+	}
+
+	const ruleConfig: ConfigureFileJSON = JSON.parse(jsonStr);
+	return ruleConfig;
 }

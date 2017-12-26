@@ -1,6 +1,6 @@
 {
   "$schema": "./markuplint.schema.json",
-  "extends": "rulesets/html-ls",
+  "extends": "rulesets/html-ls.json",
   "rules": {
     # Style
     "indentation": true,

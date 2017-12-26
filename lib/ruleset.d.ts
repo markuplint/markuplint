@@ -32,8 +32,6 @@ export default class Ruleset {
     private constructor();
     loadRC(configDir: string): Promise<void>;
     /**
-     * TODO: Recursive fetch
-     *
      * @param config JSON Data
      */
     setConfig(config: ConfigureFileJSON): Promise<void>;

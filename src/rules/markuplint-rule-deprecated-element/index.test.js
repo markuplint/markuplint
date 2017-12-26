@@ -27,7 +27,7 @@ test('deprecated', async (t) => {
 test('deprecated', async (t) => {
 	const r = await markuplint.verify(
 		'<font></font><big><blink></blink></big>',
-		{rules: {'deprecated-element': true}, extends: 'rulesets/html-ls'},
+		{rules: {'deprecated-element': true}, extends: 'markuplint/html-ls'},
 		[rule],
 		'en',
 	);
