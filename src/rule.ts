@@ -64,7 +64,7 @@ export default abstract class Rule<T = null, O = {}> {
 			disabled: false,
 			level: option[0],
 			value: option[1],
-			option: option[2], // tslint:disable-line:no-magic-numbers
+			option: option[2],
 		};
 	}
 }

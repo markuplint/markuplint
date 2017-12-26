@@ -13,6 +13,7 @@ import {
 
 import Rule, {
 	CustomRule,
+	RuleConfig,
 	RuleLevel,
 	VerifiedResult,
 	VerifyReturn,
@@ -90,17 +91,18 @@ export default class Ruleset {
 	public async verify (nodeTree: Document, locale: string) {
 		const reports: VerifiedResult[] = [];
 		for (const rule of this._rules) {
-			if (this.rules && this.rules[rule.name]) {
-				const config = rule.optimizeOption(this.rules[rule.name]);
-				let results: VerifiedResult[];
-				if (rule instanceof CustomRule) {
-					results = await rule.verify(nodeTree, config, this, locale);
-				} else {
-					const verifyReturns = await rule.verify(nodeTree, config, this, locale);
-					results = verifyReturns.map((v) => Object.assign(v, { ruleId: rule.name }));
-				}
-				reports.push(...results);
+			const config = rule.optimizeOption(this.rules[rule.name] || false);
+			if (config.disabled) {
+				continue;
 			}
+			let results: VerifiedResult[];
+			if (rule instanceof CustomRule) {
+				results = await rule.verify(nodeTree, config, this, locale);
+			} else {
+				const verifyReturns = await rule.verify(nodeTree, config, this, locale);
+				results = verifyReturns.map((v) => Object.assign(v, { ruleId: rule.name }));
+			}
+			reports.push(...results);
 		}
 		return reports;
 	}
