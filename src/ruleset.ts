@@ -49,6 +49,9 @@ export interface NodeRule {
 	inheritance: boolean;
 }
 
+/**
+ * TODO: Isolate API that between constractor and file I/O.
+ */
 export default class Ruleset {
 
 	public static async create (config: ConfigureFileJSON | string, rules: Rule[]) {
