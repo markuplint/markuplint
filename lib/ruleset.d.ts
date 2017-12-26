@@ -1,4 +1,5 @@
-import Rule, { RuleLevel } from './rule';
+import { Document } from './parser';
+import Rule, { RuleLevel, VerifiedResult } from './rule';
 export interface PermittedContentOptions {
     required?: boolean;
     times?: 'once' | 'zero or more' | 'one or more' | 'any';
@@ -21,9 +22,14 @@ export interface NodeRule {
     };
     inheritance: boolean;
 }
-export declare class Ruleset {
+export default class Ruleset {
+    static create(config: ConfigureFileJSON | string, rules: Rule[]): Promise<Ruleset>;
     rules: ConfigureFileJSONRules;
     nodeRules?: NodeRule[];
-    constructor(rules: Rule[]);
-    load(configDir: string): Promise<void>;
+    private _rules;
+    private _rawConfig;
+    private constructor();
+    loadConfig(configDir: string): Promise<void>;
+    setConfig(config: ConfigureFileJSON): Promise<void>;
+    verify(nodeTree: Document, locale: string): Promise<VerifiedResult[]>;
 }

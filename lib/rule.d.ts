@@ -1,5 +1,5 @@
 import { Document } from './parser';
-import { ConfigureFileJSONRuleOption, Ruleset } from './ruleset';
+import Ruleset, { ConfigureFileJSONRuleOption } from './ruleset';
 export interface VerifyReturn {
     level: RuleLevel;
     message: string;

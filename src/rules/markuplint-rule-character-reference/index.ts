@@ -7,9 +7,7 @@ import Rule, {
 	RuleConfig,
 	VerifyReturn,
 } from '../../rule';
-import {
-	Ruleset,
-} from '../../ruleset';
+import Ruleset from '../../ruleset';
 import findLocation from '../../util/findLocation';
 import messages from '../messages';
 

@@ -1,6 +1,6 @@
 import { Document } from '../../parser';
 import Rule, { RuleConfig, VerifiedResult } from '../../rule';
-import { Ruleset } from '../../ruleset';
+import Ruleset from '../../ruleset';
 export declare type DefaultValue = string;
 export interface Options {
 }

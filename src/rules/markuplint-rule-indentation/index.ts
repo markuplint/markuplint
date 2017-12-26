@@ -9,9 +9,8 @@ import Rule, {
 	RuleConfig,
 	VerifyReturn,
 } from '../../rule';
-import {
+import Ruleset, {
 	PermittedContent,
-	Ruleset,
 } from '../../ruleset';
 
 export type DefaultValue = 'tab' | number;

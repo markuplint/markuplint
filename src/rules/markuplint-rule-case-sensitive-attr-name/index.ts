@@ -7,9 +7,8 @@ import Rule, {
 	RuleLevel,
 	VerifyReturn,
 } from '../../rule';
-import {
+import Ruleset, {
 	PermittedContent,
-	Ruleset,
 } from '../../ruleset';
 import messages from '../messages';
 

@@ -1,6 +1,6 @@
 import { Document } from '../../parser';
 import Rule, { RuleConfig, RuleLevel, VerifyReturn } from '../../rule';
-import { Ruleset } from '../../ruleset';
+import Ruleset from '../../ruleset';
 export declare type Value = 'double' | 'single';
 export default class  extends Rule<Value> {
     name: string;

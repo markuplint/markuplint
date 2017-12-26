@@ -5,9 +5,7 @@ import Rule, {
 	RuleConfig,
 	VerifiedResult,
 } from '../../rule';
-import {
-	Ruleset,
-} from '../../ruleset';
+import Ruleset from '../../ruleset';
 
 export type DefaultValue = string;
 export interface Options {}

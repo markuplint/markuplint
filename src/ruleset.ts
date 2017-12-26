@@ -7,8 +7,15 @@ import * as cosmiconfig from 'cosmiconfig';
 
 const explorer = cosmiconfig('markuplint');
 
+import {
+	Document,
+} from './parser';
+
 import Rule, {
+	CustomRule,
 	RuleLevel,
+	VerifiedResult,
+	VerifyReturn,
 } from './rule';
 
 import fileSearch from './util/fileSearch';
@@ -41,18 +48,60 @@ export interface NodeRule {
 	inheritance: boolean;
 }
 
-export class Ruleset {
+export default class Ruleset {
+
+	public static async create (config: ConfigureFileJSON | string, rules: Rule[]) {
+		const ruleset = new Ruleset(rules);
+		if (typeof config === 'string') {
+			await ruleset.loadConfig(config);
+		} else {
+			await ruleset.setConfig(config);
+		}
+		return ruleset;
+	}
 
 	public rules: ConfigureFileJSONRules;
 	public nodeRules?: NodeRule[];
 
-	constructor (rules: Rule[]) {
+	private _rules: Rule[];
+	private _rawConfig: ConfigureFileJSON | null = null;
+
+	private constructor (rules: Rule[]) {
+		this._rules = rules;
 	}
 
-	public async load (configDir: string) {
+	public async loadConfig (configDir: string) {
 		const data = await explorer.load(configDir);
-		const cofing: ConfigureFileJSON = data.config;
 		const filepath: string = data.filepath;
 		console.log(`Loaded: ${filepath}`);
+		const config: ConfigureFileJSON = data.config;
+		if (config) {
+			await this.setConfig(config);
+		} else {
+			console.warn(`markuplint rc file not found.`);
+		}
+	}
+
+	public async setConfig (config: ConfigureFileJSON) {
+		this._rawConfig = config;
+		this.rules = this._rawConfig.rules;
+	}
+
+	public async verify (nodeTree: Document, locale: string) {
+		const reports: VerifiedResult[] = [];
+		for (const rule of this._rules) {
+			if (this.rules && this.rules[rule.name]) {
+				const config = rule.optimizeOption(this.rules[rule.name]);
+				let results: VerifiedResult[];
+				if (rule instanceof CustomRule) {
+					results = await rule.verify(nodeTree, config, this, locale);
+				} else {
+					const verifyReturns = await rule.verify(nodeTree, config, this, locale);
+					results = verifyReturns.map((v) => Object.assign(v, { ruleId: rule.name }));
+				}
+				reports.push(...results);
+			}
+		}
+		return reports;
 	}
 }
