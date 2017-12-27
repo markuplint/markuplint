@@ -23,6 +23,7 @@ export interface NodeRule {
  * TODO: Isolate API that between constractor and file I/O.
  */
 export default class Ruleset {
+    static readonly NOFILE: string;
     static create(config: ConfigureFileJSON | string, rules: Rule[]): Promise<Ruleset>;
     rules: ConfigureFileJSONRules;
     nodeRules: NodeRule[];
@@ -34,6 +35,6 @@ export default class Ruleset {
     /**
      * @param config JSON Data
      */
-    setConfig(config: ConfigureFileJSON): Promise<void>;
+    setConfig(config: ConfigureFileJSON, configFilePath: string): Promise<void>;
     verify(nodeTree: Document, locale: string): Promise<VerifiedResult[]>;
 }

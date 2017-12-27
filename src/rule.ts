@@ -102,24 +102,11 @@ export async function getRuleModules (): Promise<Rule[]> {
 	return rules;
 }
 
-export async function resolveRuleModule (modulePath: string) {
-	try {
-		const mod = await import(modulePath);
-		const ModuleRule /* Subclass of Rule */ = mod.default;
-		const rule: Rule = ModuleRule.rule ? new CustomRule(ModuleRule.rule) : new ModuleRule();
-		return rule;
-	} catch (err) {
-		// @ts-ignore
-		if (err instanceof Error && err.code === 'MODULE_NOT_FOUND') {
-			console.warn(`[markuplint] Cannot find rule module: ${modulePath} (${err.message})`);
-		} else {
-			throw err;
-		}
-	}
-}
-
-export async function resolveRuleModules (pattern: RegExp, ruleDir: string): Promise<Rule[]> {
+async function resolveRuleModules (pattern: RegExp, ruleDir: string): Promise<Rule[]> {
 	const rules: Rule[] = [];
+	if (!ruleDir) {
+		return rules;
+	}
 	try {
 		const ruleFiles = await readdir(ruleDir);
 		for (const filePath of ruleFiles) {
@@ -139,11 +126,24 @@ export async function resolveRuleModules (pattern: RegExp, ruleDir: string): Pro
 	return rules;
 }
 
+async function resolveRuleModule (modulePath: string) {
+	try {
+		const mod = await import(modulePath);
+		const ModuleRule /* Subclass of Rule */ = mod.default;
+		const rule: Rule = ModuleRule.rule ? new CustomRule(ModuleRule.rule) : new ModuleRule();
+		return rule;
+	} catch (err) {
+		// @ts-ignore
+		if (err instanceof Error && err.code === 'MODULE_NOT_FOUND') {
+			console.warn(`[markuplint] Cannot find rule module: ${modulePath} (${err.message})`);
+		} else {
+			throw err;
+		}
+	}
+}
+
 function nearNodeModules (): string {
 	const moduleDirs: string[] = findNodeModules({ cwd: process.cwd() }).map((dir: string) => path.resolve(dir));
 	const moduleDir = moduleDirs[0];
-	if (!moduleDir) {
-		throw new Error(`Directory node_module not found.`);
-	}
-	return moduleDir;
+	return moduleDir || '';
 }

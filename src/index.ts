@@ -22,10 +22,11 @@ export async function verify (html: string, config: ConfigureFileJSON, rules: Ru
 	return await core.verify(html, ruleset, locale);
 }
 
-export async function verifyOnWorkspace (html: string) {
+export async function verifyOnWorkspace (html: string, workspace?: string) {
+	workspace = workspace ? workspace : process.cwd();
 	const locale = await osLocale();
 	const rules = await getRuleModules();
-	const ruleset = await Ruleset.create(process.cwd(), rules);
+	const ruleset = await Ruleset.create(workspace, rules);
 	return await core.verify(html, ruleset, locale);
 }
 

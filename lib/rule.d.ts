@@ -38,5 +38,3 @@ export declare class CustomRule<T = null, O = {}> extends Rule<T, O> {
     verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifiedResult[]>;
 }
 export declare function getRuleModules(): Promise<Rule[]>;
-export declare function resolveRuleModule(modulePath: string): Promise<Rule<null, {}> | undefined>;
-export declare function resolveRuleModules(pattern: RegExp, ruleDir: string): Promise<Rule[]>;
