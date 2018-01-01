@@ -25,7 +25,7 @@
 	- [required-element](./markuplint-rule-required-element/README.ja.md) 必須要素 (🚧 WIP)
 	- [deprecated-element](./markuplint-rule-deprecated-element/README.ja.md) 非推奨要素
 	- [permitted-contents](./markuplint-rule-permitted-contents/README.ja.md) 許可するコンテンツ (🚧 WIP)
-	- [permitted-role](./markuplint-rule-permitted-role/README.ja.md) 許可するロール (🚧 WIP)
+	- [permitted-role](./markuplint-rule-permitted-role/README.ja.md) 許可するロール
 	- [attr-duplication](./markuplint-rule-attr-duplication/README.ja.md) 属性の重複
 	- [required-attr](./markuplint-rule-required-attr/README.ja.md) 必須属性 (🚧 WIP)
 	- [deprecated-attr](./markuplint-rule-deprecated-attr/README.ja.md) 非推奨属性 (🚧 WIP)

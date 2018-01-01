@@ -1,10 +1,10 @@
 import { Document } from '../../parser';
-import Rule, { RuleConfig, VerifiedResult } from '../../rule';
+import Rule, { RuleConfig, VerifyReturn } from '../../rule';
 import Ruleset from '../../ruleset';
-export declare type DefaultValue = string;
+export declare type DefaultValue = null;
 export interface Options {
 }
 export default class  extends Rule<DefaultValue, Options> {
     name: string;
-    verify(document: Document, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset): Promise<VerifiedResult[]>;
+    verify(document: Document, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
 }

@@ -25,7 +25,7 @@
 	- [🚧 WIP] [required-element](./markuplint-rule-required-element/README.md)
 	- [deprecated-element](./markuplint-rule-deprecated-element/README.md)
 	- [🚧 WIP] [permitted-contents](./markuplint-rule-permitted-contents/README.md)
-	- [🚧 WIP] [permitted-role](./markuplint-rule-permitted-role/README.md)
+	- [permitted-role](./markuplint-rule-permitted-role/README.md)
 	- [attr-duplication](./markuplint-rule-attr-duplication/README.md)
 	- [🚧 WIP] [required-attr](./markuplint-rule-required-attr/README.md)
 	- [🚧 WIP] [deprecated-attr](./markuplint-rule-deprecated-attr/README.md)

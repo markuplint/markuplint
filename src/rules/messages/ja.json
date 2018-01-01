@@ -16,7 +16,7 @@
 		"uppercase": "大文字",
 		"illegal characters": "不正な文字",
 		"escape in character reference": "参照文字でエスケープ",
-		"deprecated": "非推奨"
+    "deprecated": "非推奨"
 	},
 	"{0} is {1}": "{0}は{1}です。",
 	"Duplicate {0}": "{0}が重複しています。",
@@ -24,5 +24,6 @@
 	"{0} must {1}": "{0}は{1}するべきです。",
 	"{0} should {1}": "{0}は{1}してください。",
 	"{0} of {1} must be {2}": "{1}の{0}は{2}にするべきです。",
-	"{0} of {1} should be {2}": "{1}の{0}は{2}にしてください。"
+  "{0} of {1} should be {2}": "{1}の{0}は{2}にしてください。",
+  "This value of {0} attribute is not permitted": "その{0}属性値は許可されていません"
 }
