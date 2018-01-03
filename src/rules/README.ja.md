@@ -14,7 +14,7 @@
 	- [multiline-tag](./markuplint-rule-multiline-tag/README.ja.md) タグ内の改行 (🚧 WIP)
 	- [multiline-attr](./markuplint-rule-multiline-attr/README.ja.md) タグ内の属性の改行 (🚧 WIP)
 	- [indentation-attr](./markuplint-rule-indentation-attr/README.ja.md) (🚧 WIP)
-	- [void-element-closing](./markuplint-rule-void-element-closing/README.ja.md) 空属性 (🚧 WIP)
+	- [void-element-closing](./markuplint-rule-void-element-closing/README.ja.md) 空要素の閉じスラッシュ
 	- [comment-spasing](./markuplint-rule-comment-spasing/README.ja.md) コメントのスペース (🚧 WIP)
 	- [path](./markuplint-rule-path/README.ja.md) パスの相対パス・ルート相対パス・絶対パス (🚧 WIP)
 	- [data-attr-naming](./markuplint-rule-data-attr-naming/README.ja.md) data-*属性名 (🚧 WIP)

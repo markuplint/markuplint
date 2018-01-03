@@ -14,7 +14,7 @@
 	- [🚧 WIP] [multiline-tag](./markuplint-rule-multiline-tag/README.md)
 	- [🚧 WIP] [multiline-attr](./markuplint-rule-multiline-attr/README.md)
 	- [🚧 WIP] [indentation-attr](./markuplint-rule-indentation-attr/README.md)
-	- [🚧 WIP] [void-element-closing](./markuplint-rule-void-element-closing/README.md)
+	- [void-element-closing](./markuplint-rule-void-element-closing/README.md)
 	- [🚧 WIP] [comment-spasing](./markuplint-rule-comment-spasing/README.md)
 	- [🚧 WIP] [path](./markuplint-rule-path/README.md)
 	- [🚧 WIP] [data-attr-naming](./markuplint-rule-data-attr-naming/README.md)
