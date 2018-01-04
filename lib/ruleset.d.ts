@@ -16,8 +16,19 @@ export declare type ConfigureFileJSONRuleOption<T, O> = [RuleLevel, T, O];
 export interface NodeRule {
     tagName: string;
     categories: string[];
-    roles: string[];
+    roles: string[] | NodeRuleRoleConditions[] | null;
     obsolete: boolean;
+}
+export interface NodeRuleRoleConditions {
+    role: string;
+    attrConditions: NodeRuleAttrCondition[];
+}
+export interface NodeRuleAttrCondition {
+    attrName: string;
+    /**
+     * Enumerated values
+     */
+    values: string[];
 }
 /**
  * TODO: Isolate API that between constractor and file I/O.

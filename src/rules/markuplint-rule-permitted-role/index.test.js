@@ -3,7 +3,7 @@ import * as markuplint from '../../../lib/';
 import CustomRule from '../../../lib/rules/markuplint-rule-permitted-role';
 
 const rule = new CustomRule();
-test('lower case', async (t) => {
+test('', async (t) => {
 	const r = await markuplint.verify(
 		'<a role="button"></a>',
 		{rules: {'permitted-role': true}, extends: 'markuplint/html-ls'},
@@ -13,14 +13,34 @@ test('lower case', async (t) => {
 	t.deepEqual(r, []);
 });
 
-test('lower case', async (t) => {
+test('', async (t) => {
 	const r = await markuplint.verify(
 		'<a role="document"></a>',
 		{rules: {'permitted-role': true}, extends: 'markuplint/html-ls'},
 		[rule],
 		'en',
 	);
-	t.is(r[0].message, 'This value of "role" attribute is not permitted');
+	t.is(r[0].message, 'Values allowed for "role" attributes are "button", "checkbox", "menuitem", "menuitemcheckbox", "menuitemradio", "option", "radio", "switch", "tab", "treeitem"');
+});
+
+test('', async (t) => {
+	const r = await markuplint.verify(
+		'<input type="button" role="link">',
+		{rules: {'permitted-role': true}, extends: 'markuplint/html-ls'},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, []);
+});
+
+test('', async (t) => {
+	const r = await markuplint.verify(
+		'<input type="checkbox" role="tab">',
+		{rules: {'permitted-role': true}, extends: 'markuplint/html-ls'},
+		[rule],
+		'en',
+	);
+	t.is(r[0].message, 'Values allowed for "role" attributes are "button", "checkbox", "menuitem", "menuitemcheckbox", "menuitemradio", "option", "radio", "switch", "tab", "treeitem"');
 });
 
 test('noop', (t) => t.pass());

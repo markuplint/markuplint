@@ -17,20 +17,141 @@
 		"description": "Any element that accepts phrasing content."
 	},
 	"roles": [
-		"type=button: link",
-		"menuitem",
-		"menuitemcheckbox",
-		"menuitemradio",
-		"radio",
-		"switch",
-		"tab\n\t\t\t\ttype=checkbox: button",
-		"menuitemcheckbox",
-		"option",
-		"switch\n\t\t\t\ttype=image: link",
-		"menuitem",
-		"menuitemcheckbox",
-		"menuitemradio",
-		"radio",
-		"switch\n\t\t\t\ttype=radio: menuitemradio\n\t\t\t\ttype=color|date|datetime|datetime-local|email|file: None\n\t\t\t\ttype=hidden|month|number|password|range|research: None\n\t\t\t\ttype=search|submit|tel|text|url|week: None"
+		{
+			"role": "link",
+			"attrConditions": [
+				{
+					"attrName": "type",
+					"values": [
+						"button",
+						"image"
+					]
+				}
+			]
+		},
+		{
+			"role": "menuitem",
+			"attrConditions": [
+				{
+					"attrName": "type",
+					"values": [
+						"button",
+						"image"
+					]
+				}
+			]
+		},
+		{
+			"role": "menuitemcheckbox",
+			"attrConditions": [
+				{
+					"attrName": "type",
+					"values": [
+						"button",
+						"checkbox",
+						"image"
+					]
+				}
+			]
+		},
+		{
+			"role": "menuitemradio",
+			"attrConditions": [
+				{
+					"attrName": "type",
+					"values": [
+						"button",
+						"image",
+						"radio"
+					]
+				}
+			]
+		},
+		{
+			"role": "radio",
+			"attrConditions": [
+				{
+					"attrName": "type",
+					"values": [
+						"button",
+						"image"
+					]
+				}
+			]
+		},
+		{
+			"role": "switch",
+			"attrConditions": [
+				{
+					"attrName": "type",
+					"values": [
+						"button",
+						"checkbox",
+						"image"
+					]
+				}
+			]
+		},
+		{
+			"role": "tab",
+			"attrConditions": [
+				{
+					"attrName": "type",
+					"values": [
+						"button"
+					]
+				}
+			]
+		},
+		{
+			"role": "button",
+			"attrConditions": [
+				{
+					"attrName": "type",
+					"values": [
+						"checkbox"
+					]
+				}
+			]
+		},
+		{
+			"role": "option",
+			"attrConditions": [
+				{
+					"attrName": "type",
+					"values": [
+						"checkbox"
+					]
+				}
+			]
+		},
+		{
+			"role": "None",
+			"attrConditions": [
+				{
+					"attrName": "type",
+					"values": [
+						"color",
+						"date",
+						"datetime",
+						"datetime-local",
+						"email",
+						"file",
+						"hidden",
+						"month",
+						"number",
+						"password",
+						"range",
+						"research",
+						"search",
+						"submit",
+						"tel",
+						"text",
+						"url",
+						"week"
+					]
+				}
+			]
+		}
 	]
 }

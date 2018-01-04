@@ -16,7 +16,7 @@ export default class extends Rule<DefaultValue, Options> {
 
 	public async verify (document: Document, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset, locale: string) {
 		const reports: VerifyReturn[] = [];
-		const message = await messages(locale, `This value of {0} attribute is not permitted`, '"role"');
+		const message = await messages(locale, `Values allowed for {0} attributes are {$}`, '"role"');
 		await document.walkOn('Element', async (node) => {
 			if (!ruleset.nodeRules) {
 				return;
@@ -27,20 +27,57 @@ export default class extends Rule<DefaultValue, Options> {
 					if (roleAttr) {
 						const role = roleAttr.value || '';
 						const permittedRoles = nodeRule.roles;
-						if (permittedRoles[0] === 'None') {
+						if (!permittedRoles) {
+							continue;
+						}
+						let isError = false;
+						const permittedRolesStrings = [];
+						roleCheckLoop:
+						for (const permittedRole of permittedRoles) {
+							if (typeof permittedRole === 'string') {
+								permittedRolesStrings.push(permittedRole);
+								if (permittedRole === 'None') {
+									isError = true;
+								} else if (permittedRoles[0] === 'Any') {
+									isError = false;
+									break;
+								} else if (permittedRole === role.trim().toLowerCase()) {
+									break;
+								} else if (permittedRole !== role.trim().toLowerCase()) {
+									isError = true;
+								}
+							} else {
+								for (const attr of permittedRole.attrConditions) {
+									const nodeAttrValue = node.getAttribute(attr.attrName);
+									if (!nodeAttrValue) {
+										continue;
+									}
+									for (const value of attr.values) {
+										// tslint:disable-next-line:cyclomatic-complexity
+										if (nodeAttrValue.value === value) {
+											permittedRolesStrings.push(permittedRole.role);
+											if (permittedRole.role === 'None') {
+												isError = true;
+											} else if (permittedRoles[0] === 'Any') {
+												isError = false;
+												break;
+											} else if (permittedRole.role === role.trim().toLowerCase()) {
+												console.log(`✅ ${node.raw} cheking role: "${permittedRole.role}", type: "${value}"`);
+												isError = false;
+												break roleCheckLoop;
+											} else if (permittedRole.role !== role.trim().toLowerCase()) {
+												console.log(`❌ ${node.raw} cheking role: "${permittedRole.role}", type: "${value}"`);
+												isError = true;
+											}
+										}
+									}
+								}
+							}
+						}
+						if (isError) {
 							reports.push({
 								level: config.level,
-								message,
-								line: roleAttr.location.line,
-								col: roleAttr.location.col,
-								raw: roleAttr.raw,
-							});
-						} else if (permittedRoles[0] === 'Any') {
-							// no error
-						} else if (!nodeRule.roles.includes(role.trim().toLowerCase())) {
-							reports.push({
-								level: config.level,
-								message,
+								message: message.replace('{$}', permittedRolesStrings.map((s) => `"${s}"`).join(', ')),
 								line: roleAttr.location.line,
 								col: roleAttr.location.col,
 								raw: roleAttr.raw,

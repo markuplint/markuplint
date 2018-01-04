@@ -25,5 +25,5 @@
 	"{0} should {1}": "{0}は{1}してください。",
 	"{0} of {1} must be {2}": "{1}の{0}は{2}にするべきです。",
   "{0} of {1} should be {2}": "{1}の{0}は{2}にしてください。",
-  "This value of {0} attribute is not permitted": "その{0}属性値は許可されていません"
+  "Values allowed for {0} attributes are {$}": "{0}属性に許可される値は{$}です。"
 }

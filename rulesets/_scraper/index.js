@@ -94,7 +94,46 @@ async function getElementMetadata (url) {
 							break;
 						}
 						case 'Permitted ARIA roles': {
-							resultObj.roles = text.split(/\s*,\s*/).map((s) => s.trim());
+							switch (tagName) {
+								case 'input': {
+									const resultRoles = [];
+									const types = text.split(/\n/g).map((s) => s.trim()).filter((s) => s);
+									for (const type of types) {
+										const matches = type.match(/^type=([a-z|-]+):((?:\s*[a-z]+\s*,?\s*)+)$/i);
+										if (matches) {
+											const [, _typeValues, _roles] = matches;
+											if (!_typeValues || !_roles) {
+												continue;
+											}
+											const roles = _roles.split(',').map((s) => s.trim()).filter((s) => s);
+											const typeValues = _typeValues.split(/\|/);
+											for (const role of roles) {
+												if (!resultRoles[role]) {
+													resultRoles[role] = {
+														attrName: 'type',
+														values: [],
+													};
+												}
+												for (const typeValue of typeValues) {
+													resultRoles[role].values.push(typeValue);
+												}
+											}
+										}
+									}
+									const opt = [];
+									for (const resultRole in resultRoles) {
+										opt.push({
+											role: resultRole,
+											attrConditions: [resultRoles[resultRole]],
+										});
+									}
+									resultObj.roles = opt;
+									break;
+								}
+								default: {
+									resultObj.roles = text.split(/\s*,\s*/).map((s) => s.trim());
+								}
+							}
 							break;
 						}
 						case 'DOM Interface': {
@@ -171,7 +210,8 @@ async function getElementMetadata (url) {
 async function mergeJSON (filepath, data) {
 	let current = {};
 	try {
-		current = require(filepath);
+		current = {};
+		// current = require(filepath);
 	} catch (e) {
 		//
 	}
