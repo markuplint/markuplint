@@ -23,14 +23,14 @@
 		"menuitemradio",
 		"radio",
 		"switch",
-		"tab\n     type=checkbox: button",
+		"tab\n\t\t\t\ttype=checkbox: button",
 		"menuitemcheckbox",
 		"option",
-		"switch\n     type=image: link",
+		"switch\n\t\t\t\ttype=image: link",
 		"menuitem",
 		"menuitemcheckbox",
 		"menuitemradio",
 		"radio",
-		"switch\n     type=radio: menuitemradio\n     type=color|date|datetime|datetime-local|email|file: None\n     type=hidden|month|number|password|range|research: None\n     type=search|submit|tel|text|url|week: None"
+		"switch\n\t\t\t\ttype=radio: menuitemradio\n\t\t\t\ttype=color|date|datetime|datetime-local|email|file: None\n\t\t\t\ttype=hidden|month|number|password|range|research: None\n\t\t\t\ttype=search|submit|tel|text|url|week: None"
 	]
 }

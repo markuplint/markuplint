@@ -5,7 +5,7 @@
 		"#global",
 		{
 			"name": "abbr",
-			"description": "This attribute contains a short abbreviated description of the content of the cell. Some user-agents, such as speech readers, may present this description before the content itself.\n Note: Do not use this attribute as it is obsolete in the latest standard: instead either consider starting the cell content by an independent abbreviated content itself or use the abbreviated content as the cell content and use the long content as the description of the cell by putting it in the title attribute.\n ",
+			"description": "This attribute contains a short abbreviated description of the content of the cell. Some user-agents, such as speech readers, may present this description before the content itself.\n Note: Do not use this attribute as it is obsolete in the latest standard. Instead consider using the title attribute.\n ",
 			"obsolete": true
 		},
 		{
