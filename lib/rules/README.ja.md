@@ -14,7 +14,7 @@
 	- [multiline-tag](./markuplint-rule-multiline-tag/README.ja.md) タグ内の改行 (🚧 WIP)
 	- [multiline-attr](./markuplint-rule-multiline-attr/README.ja.md) タグ内の属性の改行 (🚧 WIP)
 	- [indentation-attr](./markuplint-rule-indentation-attr/README.ja.md) (🚧 WIP)
-	- [void-element-closing](./markuplint-rule-void-element-closing/README.ja.md) 空属性 (🚧 WIP)
+	- [void-element-closing](./markuplint-rule-void-element-closing/README.ja.md) 空要素の閉じスラッシュ
 	- [comment-spasing](./markuplint-rule-comment-spasing/README.ja.md) コメントのスペース (🚧 WIP)
 	- [path](./markuplint-rule-path/README.ja.md) パスの相対パス・ルート相対パス・絶対パス (🚧 WIP)
 	- [data-attr-naming](./markuplint-rule-data-attr-naming/README.ja.md) data-*属性名 (🚧 WIP)
@@ -25,7 +25,7 @@
 	- [required-element](./markuplint-rule-required-element/README.ja.md) 必須要素 (🚧 WIP)
 	- [deprecated-element](./markuplint-rule-deprecated-element/README.ja.md) 非推奨要素
 	- [permitted-contents](./markuplint-rule-permitted-contents/README.ja.md) 許可するコンテンツ (🚧 WIP)
-	- [permitted-role](./markuplint-rule-permitted-role/README.ja.md) 許可するロール (🚧 WIP)
+	- [permitted-role](./markuplint-rule-permitted-role/README.ja.md) 許可するロール
 	- [attr-duplication](./markuplint-rule-attr-duplication/README.ja.md) 属性の重複
 	- [required-attr](./markuplint-rule-required-attr/README.ja.md) 必須属性 (🚧 WIP)
 	- [deprecated-attr](./markuplint-rule-deprecated-attr/README.ja.md) 非推奨属性 (🚧 WIP)

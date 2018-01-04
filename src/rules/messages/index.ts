@@ -1,8 +1,6 @@
 import * as fs from 'fs';
 import * as util from 'util';
 
-import * as stripJsonComments from 'strip-json-comments';
-
 const readFile = util.promisify(fs.readFile);
 
 interface LocaleSet {
@@ -53,6 +51,6 @@ async function getLocaleSet (localeId: string) {
 		return null;
 	}
 
-	const localeSet: LocaleSet = await JSON.parse(stripJsonComments(json));
+	const localeSet: LocaleSet = await JSON.parse(json);
 	return localeSet;
 }
