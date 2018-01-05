@@ -51,7 +51,7 @@ export default abstract class Rule<T = null, O = {}> {
 
 	public abstract async verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
 
-	public optimizeOption (option: ConfigureFileJSONRuleOption<T, O> | boolean): RuleConfig<T, O> {
+	public optimizeOption (option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O> {
 		if (typeof option === 'boolean') {
 			return {
 				disabled: !option,
@@ -60,11 +60,19 @@ export default abstract class Rule<T = null, O = {}> {
 				option: null,
 			};
 		}
+		if (Array.isArray(option)) {
+			return {
+				disabled: false,
+				level: option[0],
+				value: option[1] || this.defaultValue,
+				option: option[2] || null,
+			};
+		}
 		return {
 			disabled: false,
-			level: option[0],
-			value: option[1],
-			option: option[2],
+			level: this.defaultLevel,
+			value: option == null ? this.defaultValue : option,
+			option: null,
 		};
 	}
 }

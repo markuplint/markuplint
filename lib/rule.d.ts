@@ -29,7 +29,7 @@ export default abstract class Rule<T = null, O = {}> {
     readonly defaultLevel: RuleLevel;
     readonly defaultValue: T;
     abstract verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
-    optimizeOption(option: ConfigureFileJSONRuleOption<T, O> | boolean): RuleConfig<T, O>;
+    optimizeOption(option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O>;
 }
 export declare class CustomRule<T = null, O = {}> extends Rule<T, O> {
     name: string;

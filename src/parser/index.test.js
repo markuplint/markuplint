@@ -246,4 +246,14 @@ test((t) => {
 	]);
 });
 
+// test((t) => {
+// 	const d = parser(`
+// 	<div>
+// 	   lorem
+// 	   <p>ipsam</p>
+// 	</div>`);
+// 	console.log(d.toDebugMap());
+// 	t.pass();
+// });
+
 test('noop', (t) => t.pass());

@@ -3,7 +3,7 @@
   "extends": "rulesets/html-ls.json",
   "rules": {
     # Style
-    "indentation": true,
+    "indentation": 'tab',
     "self-closing-tag": true,
     "omitted-closing-tag": true,
     "attr-value-quotes": true,
