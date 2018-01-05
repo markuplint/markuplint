@@ -1,25 +1,6 @@
 {
 	"tagName": "hgroup",
 	"citeFrom": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup",
-	"attr": [
-		"#global"
-	],
-	"categories": [
-		"#Flow",
-		"#heading",
-		"#palpable"
-	],
-	"content": {
-		"description": "One or more <h1>, <h2>, <h3>, <h4>, <h5>, and/or <h6>."
-	},
-	"omission": {
-		"description": "None, both the starting and ending tag are mandatory."
-	},
-	"parents": {
-		"description": "Any element that accepts flow content."
-	},
-	"roles": [
-		"tab",
-		"presentation"
-	]
+	"attr": [],
+	"obsolete": true
 }

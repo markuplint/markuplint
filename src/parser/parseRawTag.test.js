@@ -1,7 +1,7 @@
 import test from 'ava';
 import { parseRawTag } from '../../lib/parser/parseRawTag';
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div>', 0, 0),
 		{
@@ -11,7 +11,7 @@ test('standard', t => {
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div >', 0, 0),
 		{
@@ -21,7 +21,7 @@ test('standard', t => {
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div >', 0, 0),
 		{
@@ -31,7 +31,7 @@ test('standard', t => {
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div  >', 0, 0),
 		{
@@ -41,7 +41,7 @@ test('standard', t => {
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div a>', 0, 0),
 		{
@@ -56,13 +56,13 @@ test('standard', t => {
 					col: 5,
 					raw: 'a',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div a a>', 0, 0),
 		{
@@ -87,13 +87,13 @@ test('standard', t => {
 					col: 7,
 					raw: 'a',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div a a a>', 0, 0),
 		{
@@ -128,13 +128,13 @@ test('standard', t => {
 					col: 9,
 					raw: 'a',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div abc a>', 0, 0),
 		{
@@ -159,13 +159,13 @@ test('standard', t => {
 					col: 9,
 					raw: 'a',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div abc abc>', 0, 0),
 		{
@@ -190,13 +190,13 @@ test('standard', t => {
 					col: 9,
 					raw: 'abc',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div abc abc abc>', 0, 0),
 		{
@@ -231,13 +231,13 @@ test('standard', t => {
 					col: 13,
 					raw: 'abc',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag(`<div
 a>`, 0, 0),
@@ -253,13 +253,13 @@ a>`, 0, 0),
 					col: 1,
 					raw: 'a',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag(`<div
 
@@ -277,13 +277,13 @@ test('standard', t => {
 					col: 4,
 					raw: 'a',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag(`
 
@@ -314,13 +314,13 @@ a
 					col: 3,
 					raw: 'b',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag(`<div
      a
@@ -369,13 +369,13 @@ test('standard', t => {
 					col: 7,
 					raw: 'd',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div a=a>', 0, 0),
 		{
@@ -390,13 +390,13 @@ test('standard', t => {
 					col: 5,
 					raw: 'a=a',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div a="a">', 0, 0),
 		{
@@ -411,13 +411,13 @@ test('standard', t => {
 					col: 5,
 					raw: 'a="a"',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div a=\'a\'>', 0, 0),
 		{
@@ -432,13 +432,13 @@ test('standard', t => {
 					col: 5,
 					raw: 'a=\'a\'',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div a="1" b="2">', 0, 0),
 		{
@@ -463,13 +463,13 @@ test('standard', t => {
 					col: 11,
 					raw: 'b="2"',
 					invalid: false,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div a="1" b=c=d>', 0, 0),
 		{
@@ -494,13 +494,13 @@ test('standard', t => {
 					col: 11,
 					raw: 'b=c=d',
 					invalid: true,
-				}
+				},
 			],
 		}
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div a=>', 0, 0),
 		{
@@ -521,7 +521,7 @@ test('standard', t => {
 	);
 });
 
-test('standard', t => {
+test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div a = "abc">', 0, 0),
 		{
@@ -542,20 +542,20 @@ test('standard', t => {
 	);
 });
 
-test('error', t => {
+test('error', (t) => {
 	t.is(t.throws(() => parseRawTag('<div'), SyntaxError).message, 'Invalid tag syntax');
 });
 
-test('error', t => {
+test('error', (t) => {
 	t.is(t.throws(() => parseRawTag('<>'), SyntaxError).message, 'Invalid tag syntax');
 });
 
-test('error', t => {
+test('error', (t) => {
 	t.is(t.throws(() => parseRawTag('< >'), SyntaxError).message, 'Invalid tag name');
 });
 
-test('error', t => {
+test('error', (t) => {
 	t.is(t.throws(() => parseRawTag('<要素>'), SyntaxError).message, 'Invalid tag name');
 });
 
-test('noop', t => t.pass());
+test('noop', (t) => t.pass());

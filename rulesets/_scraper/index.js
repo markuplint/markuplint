@@ -24,7 +24,9 @@ const PARALLEL = true;
 		for (const url of urlList) {
 			p.push(getElementMetadata(url));
 		}
-		await Promise.all(p);
+		const o = await Promise.all(p);
+		console.log([...new Set(o)]);
+
 	} else {
 		for (const url of urlList) {
 			await getElementMetadata(url);
@@ -200,6 +202,7 @@ async function getElementMetadata (url) {
 	process.stdout.write(') ');
 	await mergeJSON(`${outDir}/${tagName}.json`, resultObj);
 	// process.stdout.write(` => ${outDir}/${tagName}.json\n`);
+	return resultObj.omission ? resultObj.omission.description : '';
 }
 
 /**

@@ -59,3 +59,5 @@ test('foo', async (t) => {
 		},
 	]);
 });
+
+test((t) => t.pass());
