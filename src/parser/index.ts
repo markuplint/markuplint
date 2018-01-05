@@ -16,11 +16,10 @@ export interface ExistentLocation {
 	line: number;
 	col: number;
 	startOffset: number;
-	endOffset: number | null;
+	endOffset: number;
 }
 
 export interface TagNodeLocation extends ExistentLocation {
-	endOffset: number | null;
 }
 
 export interface ElementLocation extends TagNodeLocation {
@@ -34,6 +33,7 @@ export interface NodeProperties {
 	prevNode: Node | GhostNode | null;
 	nextNode: Node | GhostNode | null;
 	parentNode: Node | GhostNode | null;
+	raw: string;
 }
 
 export interface GhostNodeProperties {
@@ -48,7 +48,6 @@ export interface ElementProperties extends NodeProperties {
 	namespaceURI: string;
 	attributes: Attribute[];
 	location: ElementLocation;
-	raw: string;
 }
 
 export interface OmittedElementProperties extends GhostNodeProperties {
@@ -56,21 +55,17 @@ export interface OmittedElementProperties extends GhostNodeProperties {
 }
 
 export interface TextNodeProperties extends NodeProperties {
-	textContent: string;
 	location: ExistentLocation;
-	raw: string;
 }
 
 export interface CommentNodeProperties extends NodeProperties {
 	data: string;
 	location: ExistentLocation;
-	raw: string;
 }
 
 export interface DocTypeProperties extends NodeProperties {
 	publicId: string | null;
 	systemId: string | null;
-	raw: string;
 }
 
 export interface EndTagNodeProperties extends NodeProperties {
@@ -93,12 +88,26 @@ export type SyncWalker = (node: Node | GhostNode) => void;
 
 export type NodeType = 'Element' | 'OmittedElement' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
 
+function getLine (html: string, line: number) {
+	return html.split(/\r?\n/).length - 1 + line;
+}
+
+function getCol (html: string, col: number) {
+	const lines = html.split(/\r?\n/);
+	const lineCount = lines.length;
+	const lastLine = lines.pop()!;
+	return lineCount > 1 ? lastLine.length : col + html.length;
+}
+
 export abstract class Node {
 	public readonly type: NodeType = null;
 	public nodeName: string;
 	public readonly line: number;
 	public readonly col: number;
+	public readonly endLine: number;
+	public readonly endCol: number;
 	public readonly startOffset: number;
+	public endOffset: number;
 	public prevNode: Node | GhostNode | null = null;
 	public nextNode: Node | GhostNode | null = null;
 	public readonly parentNode: Node | GhostNode | null = null;
@@ -106,14 +115,16 @@ export abstract class Node {
 
 	constructor (props: NodeProperties) {
 		this.nodeName = props.nodeName;
-		if (props.location) {
-			this.line = props.location.line;
-			this.col = props.location.col;
-			this.startOffset = props.location.startOffset;
-		}
+		this.line = props.location.line;
+		this.col = props.location.col;
+		this.endLine = getLine(props.raw, this.line);
+		this.endCol = getCol(props.raw, this.col);
+		this.startOffset = props.location.startOffset;
+		this.endOffset = props.location.endOffset;
 		this.prevNode = props.prevNode;
 		this.nextNode = props.nextNode;
 		this.parentNode = props.parentNode;
+		this.raw = props.raw;
 	}
 
 	public toString () {
@@ -165,24 +176,36 @@ export class Element extends Node {
 	public readonly namespaceURI: string;
 	public readonly attributes: Attribute[];
 	public childNodes: (Node | GhostNode)[] = [];
-	public readonly line: number;
-	public readonly col: number;
-	public readonly startOffset: number;
-	public readonly endOffset: number | null = null;
-	public readonly startTagLocation: TagNodeLocation | null = null;
+	public readonly startTagLocation: TagNodeLocation;
 	public readonly endTagLocation: TagNodeLocation | null = null;
-	public endTagNode: EndTagNode | null;
+	public endTagNode: EndTagNode | null = null;
 
-	constructor (props: ElementProperties) {
+	constructor (props: ElementProperties, rawHtml: string) {
 		super(props);
 		this.namespaceURI = props.namespaceURI;
 		this.attributes = props.attributes;
-		if (props.location) {
-			this.endOffset = props.location.endOffset || null;
-			this.startTagLocation = props.location.startTag || null;
-			this.endTagLocation = props.location.endTag || null;
+		this.startTagLocation = props.location.startTag;
+		this.endTagLocation = props.location.endTag || null;
+
+		if (this.endTagLocation && this.endTagLocation.startOffset != null && this.endTagLocation.endOffset != null) {
+			const endTagRaw = rawHtml.slice(this.endTagLocation.startOffset, this.endTagLocation.endOffset);
+			const endTagName = endTagRaw.replace(/^<\/((?:[a-z]+:)?[a-z]+(?:-[a-z]+)*)\s*>/i, '$1');
+			const endTag = new EndTagNode({
+				nodeName: endTagName,
+				location: {
+					line: this.endTagLocation.line,
+					col: this.endTagLocation.col,
+					startOffset: this.endTagLocation.startOffset,
+					endOffset: this.endTagLocation.endOffset,
+				},
+				prevNode: null,
+				nextNode: null,
+				parentNode: this.parentNode,
+				startTagNode: this,
+				raw: endTagRaw,
+			});
+			this.endTagNode = endTag;
 		}
-		this.raw = props.raw;
 	}
 
 	public getAttribute (attrName: string) {
@@ -219,15 +242,9 @@ export class OmittedElement extends GhostNode {
 
 export class TextNode extends Node {
 	public readonly type: NodeType = 'Text';
-	public readonly textContent: string;
-	public readonly line: number;
-	public readonly col: number;
-	public readonly startOffset: number;
 
 	constructor (props: TextNodeProperties) {
 		super(props);
-		this.textContent = props.textContent;
-		this.raw = props.raw;
 	}
 }
 
@@ -240,8 +257,6 @@ export class RawTextNode extends TextNode {
 
 	constructor (props: TextNodeProperties) {
 		super(props);
-		this.textContent = props.textContent;
-		this.raw = props.raw;
 	}
 }
 
@@ -255,7 +270,6 @@ export class CommentNode extends Node {
 	constructor (props: CommentNodeProperties) {
 		super(props);
 		this.data = props.data;
-		this.raw = props.raw;
 	}
 }
 
@@ -263,33 +277,21 @@ export class Doctype extends Node {
 	public readonly type: NodeType = 'Doctype';
 	public readonly publicId: string | null;
 	public readonly dtd: string | null;
-	public readonly line: number;
-	public readonly col: number;
-	public readonly startOffset: number;
 
 	constructor (props: DocTypeProperties) {
 		super(props);
 		this.publicId = props.publicId;
 		this.dtd = props.systemId;
-		this.raw = props.raw;
 	}
 }
 
 export class EndTagNode extends Node {
 	public readonly type: NodeType = 'EndTag';
 	public readonly startTagNode: Node | GhostNode;
-	public readonly line: number;
-	public readonly col: number;
-	public readonly startOffset: number;
-	public endOffset: number | null;
 
 	constructor (props: EndTagNodeProperties) {
 		super(props);
 		this.startTagNode = props.startTagNode;
-		this.raw = props.raw;
-		if (props.location) {
-			this.endOffset = props.location.endOffset;
-		}
 	}
 }
 
@@ -311,7 +313,17 @@ export class InvalidNode extends GhostNode {
 	}
 }
 
+interface SortableNode {
+	node: Node | GhostNode;
+	startOffset: number;
+	endOffset: number;
+}
+
 export class Document {
+	public readonly html: Node | GhostNode;
+	public readonly head: Node | GhostNode;
+	public readonly body: Node | GhostNode;
+
 	private _raw: string;
 	private _tree: (Node | GhostNode)[] = [];
 	private _list: (Node | GhostNode)[] = [];
@@ -320,151 +332,165 @@ export class Document {
 		this._raw = rawHtml;
 		this._tree = nodeTree;
 
-		const pos: { offset: number; node: Node | GhostNode }[] = [];
+		const pos: SortableNode[] = [];
 
-		let currentOffset = 0;
+		let prevLine = 1;
+		let prevCol = 1;
+		let currentStartOffset = 0;
+		let currentEndOffset = 0;
 		syncWalk(nodeTree, (node) => {
-			const i = pos.length;
-
 			if (node instanceof Node) {
-				currentOffset = node.startOffset != null ? node.startOffset : currentOffset;
-			}
+				currentStartOffset = node.startOffset;
 
-			pos.push({ offset: currentOffset, node });
-		});
+				const diff = currentStartOffset - currentEndOffset;
+				if (diff > 0) {
+					const html = rawHtml.slice(currentEndOffset, currentStartOffset);
+					// console.log(`diff: ${diff} => "${spaces.replace(/\n/g, '⏎').replace(/\t/g, '→').replace(/\s/g, '␣')}"`);
 
-		{
-			const lastNode = pos.pop();
-			if (lastNode) {
-				const matched = lastNode.node.raw.match(/^([^<]+)(<\/body\s*>)+(\s*)(<\/html\s*>)+(\s*)$/i);
-				if (!matched) {
-					pos.push(lastNode);
-				} else {
-					const before = matched[1] || null;
-					const body = matched[2] || null;
-					const sep = matched[3] || null;
-					const html = matched[4] || null;
-					const after = matched[5] || null;
-
-					if (before) {
-						pos.push({
-							offset: lastNode.offset,
-							node: new TextNode({
-								nodeName: '#text',
-								location: {
-									line: lastNode.node.line,
-									col: lastNode.node.col,
-									startOffset: lastNode.node.startOffset,
-									endOffset: (lastNode.node.startOffset || 0) + before.length,
-								},
-								prevNode: lastNode.node.prevNode,
-								nextNode: null,
-								parentNode: lastNode.node.parentNode,
-								textContent: before,
-								raw: before,
-							}),
+					if (/^\s+$/.test(html)) {
+						const spaces = html;
+						const textNode = new TextNode({
+							nodeName: '#ws',
+							location: {
+								line: prevLine,
+								col: prevCol,
+								startOffset: currentEndOffset,
+								endOffset: currentEndOffset + spaces.length,
+							},
+							prevNode: node.prevNode,
+							nextNode: node,
+							parentNode: node.parentNode,
+							raw: spaces,
 						});
+						node.prevNode = textNode;
+
+						pos.push({
+							node: textNode,
+							startOffset: currentEndOffset,
+							endOffset: currentEndOffset + spaces.length,
+						});
+					} else if (/^<\/[a-z0-9][a-z0-9:-]*>$/i) {
+						// close tag
+					} else {
+						throw new Error(`what?!`);
 					}
 
-					// TODO: sep
-					// if (sep) {
-					// 	pos.push({
-					// 		pos: lastNode.node.startOffset,
-					// 		node: new TextNode({
-					// 			nodeName: '#text',
-					// 			location: {
-					// 				line: lastNode.node.line,
-					// 				col: lastNode.node.col,
-					// 				startOffset: lastNode.node.startOffset,
-					// 				endOffset: lastNode.node.startOffset + before.length,
-					// 			},
-					// 			prevNode: lastNode.node.prevNode,
-					// 			nextNode: null,
-					// 			parentNode: lastNode.node.parentNode,
-					// 			textContent: before,
-					// 			raw: before,
-					// 		}),
-					// 	});
-					// }
+				}
 
-					// TODO: after
-					// if (after) {
-					// 	pos.push({
-					// 		pos: lastNode.node.startOffset,
-					// 		node: new TextNode({
-					// 			nodeName: '#text',
-					// 			location: {
-					// 				line: lastNode.node.line,
-					// 				col: lastNode.node.col,
-					// 				startOffset: lastNode.node.startOffset,
-					// 				endOffset: lastNode.node.startOffset + before.length,
-					// 			},
-					// 			prevNode: lastNode.node.prevNode,
-					// 			nextNode: null,
-					// 			parentNode: lastNode.node.parentNode,
-					// 			textContent: before,
-					// 			raw: before,
-					// 		}),
-					// 	});
-					// }
+				currentEndOffset = currentStartOffset + node.raw.length;
+
+				prevLine = node.endLine;
+				prevCol = node.endCol;
+			}
+
+			pos.push({
+				node,
+				startOffset: currentStartOffset,
+				endOffset: currentEndOffset,
+			});
+		});
+
+		// create EndTagNode
+		// pos.forEach(({node, startOffset, endOffset}) => {
+		// 	if (node instanceof Element) {
+		// 		if (node.startTagLocation) {
+		// 			if (node.endTagLocation && node.endTagLocation.startOffset != null && node.endTagLocation.endOffset != null) {
+		// 				const endTagRaw = rawHtml.slice(node.endTagLocation.startOffset, node.endTagLocation.endOffset);
+		// 				const endTagName = endTagRaw.replace(/^<\/((?:[a-z]+:)?[a-z]+(?:-[a-z]+)*)\s*>/i, '$1');
+		// 				const endTag = new EndTagNode({
+		// 					nodeName: endTagName,
+		// 					location: {
+		// 						line: node.endTagLocation.line,
+		// 						col: node.endTagLocation.col,
+		// 						startOffset: node.endTagLocation.startOffset,
+		// 						endOffset: node.endTagLocation.endOffset,
+		// 					},
+		// 					prevNode: null,
+		// 					nextNode: null,
+		// 					parentNode: node.parentNode,
+		// 					startTagNode: node,
+		// 					raw: endTagRaw,
+		// 				});
+		// 				node.endTagNode = endTag;
+		// 				pos.push({
+		// 					node: endTag,
+		// 					startOffset: node.endTagLocation.startOffset,
+		// 					endOffset: node.endTagLocation.startOffset + endTagRaw.length,
+		// 				});
+		// 			}
+		// 		}
+		// 	}
+		// });
+
+		pos.sort((a, b) => a.startOffset - b.startOffset);
+
+		// last child text node of body
+		let lastChildTextNode: TextNode | null = null;
+		let lastChildTextNodeEndOffset: number | null = null;
+		for (const {node, startOffset, endOffset} of pos) {
+			if (node.nodeName === 'body' && node instanceof Element || node instanceof OmittedElement) {
+				const child = node.childNodes[node.childNodes.length - 1];
+				if (child instanceof TextNode) {
+					lastChildTextNode = child;
 				}
 			}
 		}
+		for (const {node, startOffset, endOffset} of pos) {
+			if (lastChildTextNodeEndOffset != null) {
+				continue;
+			}
+			if (node.nodeName === 'body' && node instanceof Element && node.endTagNode) {
+				lastChildTextNodeEndOffset = node.endTagNode.startOffset;
+				break;
+			}
+		}
+		for (const {node, startOffset, endOffset} of pos) {
+			if (lastChildTextNodeEndOffset != null) {
+				continue;
+			}
+			if (node.nodeName === 'html' && node instanceof Element && node.endTagNode) {
+				lastChildTextNodeEndOffset = node.endTagNode.startOffset;
+				break;
+			}
+		}
+		if (lastChildTextNode && lastChildTextNodeEndOffset != null) {
+			lastChildTextNode.endOffset = lastChildTextNodeEndOffset;
+			const raw = rawHtml.slice(lastChildTextNode.startOffset, lastChildTextNode.endOffset);
+			lastChildTextNode.raw = raw;
+		}
 
-		pos.forEach(({node, offset}, i) => {
-			if (i === 0 && offset > 0) {
-				const firstTextContent = rawHtml.slice(0, offset);
-				const firstTextNode = new TextNode({
-					nodeName: '#text',
+		// create Last spaces
+		pos.forEach(({node, startOffset, endOffset}, i) => {
+			if (i === pos.length - 1) {
+				const lastTextContent = rawHtml.slice(endOffset);
+				if (!lastTextContent) {
+					return;
+				}
+				if (node instanceof GhostNode) {
+					return;
+				}
+				const lastTextNode = new TextNode({
+					nodeName: '#eof',
 					location: {
-						line: 0,
-						col: 0,
-						startOffset: 0,
-						endOffset: null,
+						line: node.endLine,
+						col: node.endCol,
+						startOffset: endOffset,
+						endOffset: endOffset + lastTextContent.length,
 					},
 					prevNode: null,
 					nextNode: node,
 					parentNode: null,
-					textContent: firstTextContent,
-					raw: firstTextContent,
+					raw: lastTextContent,
 				});
-				pos.push({ offset: 0, node: firstTextNode });
-			}
-
-			if (node instanceof Element) {
-				if (node.startTagLocation) {
-					if (node.endTagLocation && node.endTagLocation.startOffset != null && node.endTagLocation.endOffset != null) {
-						const endTagRaw = rawHtml.slice(node.endTagLocation.startOffset, node.endTagLocation.endOffset);
-						const endTagName = endTagRaw.replace(/^<\/((?:[a-z]+:)?[a-z]+(?:-[a-z]+)*)\s*>/i, '$1');
-						const endTag = new EndTagNode({
-							nodeName: endTagName,
-							location: {
-								line: node.endTagLocation.line,
-								col: node.endTagLocation.col,
-								startOffset: node.endTagLocation.startOffset,
-								endOffset: node.endTagLocation.endOffset,
-							},
-							prevNode: null,
-							nextNode: null,
-							parentNode: node.parentNode,
-							startTagNode: node,
-							raw: endTagRaw,
-						});
-						pos.push({ offset: node.endTagLocation.startOffset, node: endTag });
-					}
-				}
+				pos.push({
+					node: lastTextNode,
+					startOffset: endOffset,
+					endOffset: endOffset + lastTextContent.length,
+				});
 			}
 		});
 
-		pos.sort((a, b) => a.offset - b.offset);
-
 		this._list = pos.map(p => p.node);
-	}
-
-	public get root () {
-		return {
-			childNodes: this._tree,
-		};
 	}
 
 	public get raw () {
@@ -484,7 +510,17 @@ export class Document {
 	}
 
 	public toJSON () {
-		return JSON.parse(JSON.stringify(this._tree));
+		return JSON.parse(JSON.stringify(this._list));
+	}
+
+	public toDebugMap () {
+		return this.list.map((n) => {
+			if (n instanceof Node) {
+				return `[${n.line}:${n.col}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${n.nodeName}: ${n.toString().replace(/\n/g, '⏎').replace(/\t/g, '→').replace(/\s/g, '␣')}`;
+			} else {
+				return `[N/A]>[N/A](N/A)${n.nodeName}: ${n.toString()}`;
+			}
+		});
 	}
 
 	public async walk (walker: Walker) {
@@ -522,6 +558,9 @@ async function walk (nodeList: (Node | GhostNode)[], walker: Walker) {
 		if (node instanceof Element || node instanceof InvalidNode || node instanceof OmittedElement) {
 			await walk(node.childNodes, walker);
 		}
+		if (node instanceof Element && node.endTagNode) {
+			await walker(node.endTagNode);
+		}
 	}
 }
 
@@ -531,19 +570,10 @@ function syncWalk (nodeList: (Node | GhostNode)[], walker: SyncWalker) {
 		if (node instanceof Element || node instanceof InvalidNode || node instanceof OmittedElement) {
 			syncWalk(node.childNodes, walker);
 		}
+		if (node instanceof Element && node.endTagNode) {
+			walker(node.endTagNode);
+		}
 	}
-}
-
-function setLocation (location: P5ParentNode['__location'] | null) {
-	if (location == null) {
-		return null;
-	}
-	return {
-		line: location.line,
-		col: location.col,
-		startOffset: location.startOffset,
-		endOffset: location.endOffset,
-	};
 }
 
 // tslint:disable-next-line:cyclomatic-complexity
@@ -563,7 +593,12 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
 			node = new Doctype({
 				nodeName: '#doctype',
-				location: setLocation(p5node.__location)!,
+				location: {
+					line: p5node.__location.line,
+					col: p5node.__location.col,
+					startOffset: p5node.__location.startOffset,
+					endOffset: p5node.__location.startOffset + raw.length,
+				},
 				prevNode: prev,
 				nextNode: null,
 				parentNode: parent,
@@ -583,25 +618,34 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 					parentNode: parent,
 				});
 			}
+			// bodyの最後の子のテキストノードだけおかしい
 			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
 			if (parent && /^(?:script|style)$/i.test(parent.nodeName)) {
 				node = new RawTextNode({
 					nodeName: p5node.nodeName,
-					location: setLocation(p5node.__location)!,
+					location: {
+						line: p5node.__location.line,
+						col: p5node.__location.col,
+						startOffset: p5node.__location.startOffset,
+						endOffset: p5node.__location.startOffset + raw.length,
+					},
 					prevNode: prev,
 					nextNode: null,
 					parentNode: parent,
-					textContent: p5node.value,
 					raw,
 				});
 			} else {
 				node = new TextNode({
 					nodeName: p5node.nodeName,
-					location: setLocation(p5node.__location)!,
+					location: {
+						line: p5node.__location.line,
+						col: p5node.__location.col,
+						startOffset: p5node.__location.startOffset,
+						endOffset: p5node.__location.startOffset + raw.length,
+					},
 					prevNode: prev,
 					nextNode: null,
 					parentNode: parent,
-					textContent: p5node.value,
 					raw,
 				});
 			}
@@ -621,7 +665,12 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 			// @ts-ignore
 			node = new CommentNode({
 				nodeName: p5node.nodeName,
-				location: setLocation(p5node.__location)!,
+				location: {
+					line: p5node.__location.line,
+					col: p5node.__location.col,
+					startOffset: p5node.__location.startOffset,
+					endOffset: p5node.__location.startOffset + raw.length,
+				},
 				prevNode: prev,
 				nextNode: null,
 				parentNode: parent,
@@ -650,7 +699,7 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 							line: attr.line,
 							col: attr.col,
 							startOffset: -1,
-							endOffset: null,
+							endOffset: attr.raw.length - 1,
 						},
 						quote: attr.quote,
 						equal: attr.equal,
@@ -658,23 +707,26 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 						raw: attr.raw,
 					});
 				}
-				node = new Element({
-					nodeName,
-					namespaceURI: p5node.namespaceURI,
-					attributes,
-					location: {
-						line: p5node.__location.line,
-						col: p5node.__location.col,
-						startOffset: p5node.__location.startOffset,
-						endOffset: p5node.__location.endOffset,
-						startTag: p5node.__location.startTag!,
-						endTag: p5node.__location.endTag || null,
+				node = new Element(
+					{
+						nodeName,
+						namespaceURI: p5node.namespaceURI,
+						attributes,
+						location: {
+							line: p5node.__location.line,
+							col: p5node.__location.col,
+							startOffset: p5node.__location.startOffset,
+							endOffset: p5node.__location.startOffset + raw.length,
+							startTag: p5node.__location.startTag!,
+							endTag: p5node.__location.endTag || null,
+						},
+						prevNode: prev,
+						nextNode: null,
+						parentNode: parent,
+						raw,
 					},
-					prevNode: prev,
-					nextNode: null,
-					parentNode: parent,
-					raw,
-				});
+					rawHtml,
+				);
 			} else {
 				node = new OmittedElement({
 					nodeName: p5node.nodeName,
