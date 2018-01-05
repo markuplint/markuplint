@@ -40,7 +40,7 @@ test('', async (t) => {
 		[rule],
 		'en',
 	);
-	t.is(r[0].message, 'Values allowed for "role" attributes are "button", "checkbox", "menuitem", "menuitemcheckbox", "menuitemradio", "option", "radio", "switch", "tab", "treeitem"');
+	t.is(r[0].message, 'Values allowed for "role" attributes are "menuitemcheckbox", "switch", "button", "option"');
 });
 
 test('noop', (t) => t.pass());

@@ -62,11 +62,9 @@ export default class extends Rule<DefaultValue, Options> {
 												isError = false;
 												break;
 											} else if (permittedRole.role === role.trim().toLowerCase()) {
-												console.log(`✅ ${node.raw} cheking role: "${permittedRole.role}", type: "${value}"`);
 												isError = false;
 												break roleCheckLoop;
 											} else if (permittedRole.role !== role.trim().toLowerCase()) {
-												console.log(`❌ ${node.raw} cheking role: "${permittedRole.role}", type: "${value}"`);
 												isError = true;
 											}
 										}
