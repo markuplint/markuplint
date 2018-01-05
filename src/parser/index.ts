@@ -390,38 +390,6 @@ export class Document {
 			});
 		});
 
-		// create EndTagNode
-		// pos.forEach(({node, startOffset, endOffset}) => {
-		// 	if (node instanceof Element) {
-		// 		if (node.startTagLocation) {
-		// 			if (node.endTagLocation && node.endTagLocation.startOffset != null && node.endTagLocation.endOffset != null) {
-		// 				const endTagRaw = rawHtml.slice(node.endTagLocation.startOffset, node.endTagLocation.endOffset);
-		// 				const endTagName = endTagRaw.replace(/^<\/((?:[a-z]+:)?[a-z]+(?:-[a-z]+)*)\s*>/i, '$1');
-		// 				const endTag = new EndTagNode({
-		// 					nodeName: endTagName,
-		// 					location: {
-		// 						line: node.endTagLocation.line,
-		// 						col: node.endTagLocation.col,
-		// 						startOffset: node.endTagLocation.startOffset,
-		// 						endOffset: node.endTagLocation.endOffset,
-		// 					},
-		// 					prevNode: null,
-		// 					nextNode: null,
-		// 					parentNode: node.parentNode,
-		// 					startTagNode: node,
-		// 					raw: endTagRaw,
-		// 				});
-		// 				node.endTagNode = endTag;
-		// 				pos.push({
-		// 					node: endTag,
-		// 					startOffset: node.endTagLocation.startOffset,
-		// 					endOffset: node.endTagLocation.startOffset + endTagRaw.length,
-		// 				});
-		// 			}
-		// 		}
-		// 	}
-		// });
-
 		pos.sort((a, b) => a.startOffset - b.startOffset);
 
 		// last child text node of body
@@ -459,6 +427,14 @@ export class Document {
 			lastChildTextNode.raw = raw;
 		}
 
+		let lastNode: Node | null = null;
+		for (const {node, startOffset, endOffset} of pos) {
+			if (node instanceof GhostNode) {
+				continue;
+			}
+			lastNode = node;
+		}
+
 		// create Last spaces
 		pos.forEach(({node, startOffset, endOffset}, i) => {
 			if (i === pos.length - 1) {
@@ -466,22 +442,22 @@ export class Document {
 				if (!lastTextContent) {
 					return;
 				}
-				if (node instanceof GhostNode) {
-					return;
-				}
 				const lastTextNode = new TextNode({
 					nodeName: '#eof',
 					location: {
-						line: node.endLine,
-						col: node.endCol,
+						line: lastNode ? lastNode.endLine : 0,
+						col: lastNode ? lastNode.endCol : 0,
 						startOffset: endOffset,
 						endOffset: endOffset + lastTextContent.length,
 					},
-					prevNode: null,
+					prevNode: lastNode || null,
 					nextNode: node,
 					parentNode: null,
 					raw: lastTextContent,
 				});
+				if (lastNode) {
+					lastNode.nextNode = lastTextNode;
+				}
 				pos.push({
 					node: lastTextNode,
 					startOffset: endOffset,
@@ -510,7 +486,7 @@ export class Document {
 	}
 
 	public toJSON () {
-		return JSON.parse(JSON.stringify(this._list));
+		return JSON.parse(JSON.stringify(this._tree));
 	}
 
 	public toDebugMap () {
