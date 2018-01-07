@@ -22,6 +22,7 @@ export type DefaultValue = 'tab' | number;
 export default class extends Rule<DefaultValue> {
 	public name = 'indentation';
 	public defaultLevel: RuleLevel = 'warning';
+	public defaultValue: DefaultValue = 2;
 
 	public async verify (document: Document, config: RuleConfig<DefaultValue>, ruleset: Ruleset) {
 		const reports: VerifyReturn[] = [];

@@ -3,7 +3,7 @@
 [English](./README.md) | **日本語**
 
 - *Style コードスタイル*
-	- [indentation](./markuplint-rule-indentation/README.ja.md) インデント (🚧 WIP)
+	- [indentation](./markuplint-rule-indentation/README.ja.md) インデント
 	- [self-closing-tag](./markuplint-rule-self-closing-tag/README.ja.md) タグの自己終了 (🚧 WIP)
 	- [omitted-closing-tag](./markuplint-rule-omitted-closing-tag/README.ja.md) 終了タグの省略 (🚧 WIP)
 	- [attr-value-quotes](./markuplint-rule-attr-value-quotes/README.ja.md) クォーテーションマーク

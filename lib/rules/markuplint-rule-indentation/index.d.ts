@@ -10,5 +10,6 @@ export declare type DefaultValue = 'tab' | number;
 export default class  extends Rule<DefaultValue> {
     name: string;
     defaultLevel: RuleLevel;
+    defaultValue: DefaultValue;
     verify(document: Document, config: RuleConfig<DefaultValue>, ruleset: Ruleset): Promise<VerifyReturn[]>;
 }
