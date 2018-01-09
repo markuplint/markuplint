@@ -33,7 +33,16 @@
 	<img src="path/to" />
 	<div>
 	<div />
-               invalid-indent
+			   invalid-indent
+
+	<?template engine;
+		$var = '<html attr="value">text</html>'
+	?>
+
+	<%template engine;
+		$var = '<html attr="value">text</html>'
+	%>
+
 	EOD
 	</body>
 </html>

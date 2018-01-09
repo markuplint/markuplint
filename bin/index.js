@@ -5,7 +5,8 @@ const meow = require('meow');
 const { verify, verifyFile } = require('../lib/');
 const { standardReporter } = require('../lib/reporter/');
 
-const cli = meow(`
+const cli = meow(
+	`
 	Usage
 	  $ markuplint <input>
 
@@ -16,17 +17,19 @@ const cli = meow(`
 	Examples
 	  $ markuplint verifyee.html --ruleset path/to/.markuplintrc
 	  $ cat verifyee.html | markuplint
-`, {
-	flags: {
-		ruleset: {
-			type: 'string',
-			alias: 'r',
+`,
+	{
+		flags: {
+			ruleset: {
+				type: 'string',
+				alias: 'r',
+			},
+			'no-color': {
+				alias: 'c',
+			},
 		},
-		'no-color': {
-			alias: 'c',
-		},
-	},
-});
+	}
+);
 
 if (cli.flags.v) {
 	cli.showVersion();

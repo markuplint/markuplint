@@ -15,6 +15,7 @@
   },
   "scripts": {
     "cli": "node ./bin/",
+    "debugger": "node ./lib/debugger/",
     "build": "gulp",
     "dev": "gulp watch",
     "test": "nyc ava && nyc report --reporter=html",

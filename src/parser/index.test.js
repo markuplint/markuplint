@@ -205,7 +205,8 @@ test((t) => {
 	</body>
 	</html>
 	`);
-	t.deepEqual(d.toDebugMap(), [
+	const map = d.toDebugMap();
+	t.deepEqual(map, [
 		'[1:1]>[2:1](0,2)#ws: ⏎→',
 		'[2:2]>[2:17](2,17)#doctype: <!DOCTYPE␣html>',
 		'[2:17]>[3:1](17,19)#ws: ⏎→',
