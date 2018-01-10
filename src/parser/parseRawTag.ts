@@ -1,3 +1,9 @@
+import {
+	reAttrsInStartTag,
+	reStartTag,
+	reTagName,
+} from './const';
+
 export interface RawAttribute {
 	name: string;
 	value: string | null;
@@ -13,16 +19,13 @@ export function parseRawTag (rawStartTag: string, nodeLine: number, nodeCol: num
 	let line = 0;
 	let col = 0;
 
-	const matches = rawStartTag.match(/<([^>]+)>/);
+	const matches = rawStartTag.match(reStartTag);
 	if (!matches) {
 		throw new SyntaxError('Invalid tag syntax');
 	}
 	const tagWithAttrs = matches[1];
 
-	// HTML Standard elements /^[a-z0-9]+/
-	// HTML Custom elements /^[a-z0-9]+(-[a-z0-9]+)+/
-	// Namespaced element /^[a-z0-9]+:[a-z0-9]+/
-	const tagNameMatches = tagWithAttrs.match(/^(?:[a-z0-9]+:)?[a-z0-9]+(?:-[a-z0-9]+)*/i);
+	const tagNameMatches = tagWithAttrs.match(reTagName);
 	if (!tagNameMatches) {
 		throw new SyntaxError('Invalid tag name');
 	}
@@ -31,11 +34,10 @@ export function parseRawTag (rawStartTag: string, nodeLine: number, nodeCol: num
 
 	col += tagName.length + 1;
 
-	const regAttr = /([^\x00-\x1f\x7f-\x9f "'>\/=]+)(?:(\s*=\s*)(?:(?:"([^"]*)")|(?:'([^']*)')|([^\s]*)))?/;
 	const attrs: RawAttribute[] = [];
 
-	while (regAttr.test(attrString)) {
-		const attrMatchedMap = attrString.match(regAttr);
+	while (reAttrsInStartTag.test(attrString)) {
+		const attrMatchedMap = attrString.match(reAttrsInStartTag);
 		if (attrMatchedMap) {
 			const raw = attrMatchedMap[0];
 			const name = attrMatchedMap[1];

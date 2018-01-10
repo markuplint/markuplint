@@ -28,45 +28,44 @@ export default class extends Rule<DefaultValue> {
 		const reports: VerifyReturn[] = [];
 		let lastNode: Node | GhostNode;
 		await document.walk(async (node) => {
-			if (node instanceof GhostNode) {
-				return;
-			}
-			if (node instanceof TextNode) {
-				if (node instanceof RawTextNode) {
-					return;
-				}
-				const matched = node.raw.match(/(^\s*)([^\s]+)/);
-				if (matched) {
-					const spaces = matched[1];
-					if (!spaces) {
+			if (node instanceof Node) {
+				if (node instanceof TextNode) {
+					if (node instanceof RawTextNode) {
 						return;
 					}
-					const spaceLines = spaces.split(/\r?\n/);
-					const line = spaceLines.length + node.line - 1;
-					const lastSpace = spaceLines.pop();
-					if (!lastSpace) {
-						return;
-					}
-					const report = indent(lastSpace, node, `${lastSpace}`, line, config);
-					if (report) {
-						reports.push(report);
-					}
-				}
-			}
-			if (lastNode instanceof TextNode) {
-				const matched = lastNode.raw.match(/\r?\n([ \t]+$)/);
-				if (matched) {
-					const spaces = matched[1];
-					if (!spaces) {
-						throw new TypeError(`Expected error.`);
-					}
-					const report = indent(spaces, node, `${spaces}`, node.line, config);
-					if (report) {
-						reports.push(report);
+					const matched = node.raw.match(/(^\s*)([^\s]+)/);
+					if (matched) {
+						const spaces = matched[1];
+						if (!spaces) {
+							return;
+						}
+						const spaceLines = spaces.split(/\r?\n/);
+						const line = spaceLines.length + node.line - 1;
+						const lastSpace = spaceLines.pop();
+						if (!lastSpace) {
+							return;
+						}
+						const report = indent(lastSpace, node, `${lastSpace}`, line, config);
+						if (report) {
+							reports.push(report);
+						}
 					}
 				}
+				if (lastNode instanceof TextNode) {
+					const matched = lastNode.raw.match(/\r?\n([ \t]+$)/);
+					if (matched) {
+						const spaces = matched[1];
+						if (!spaces) {
+							throw new TypeError(`Expected error.`);
+						}
+						const report = indent(spaces, node, `${spaces}`, node.line, config);
+						if (report) {
+							reports.push(report);
+						}
+					}
+				}
+				lastNode = node;
 			}
-			lastNode = node;
 		});
 		return reports;
 	}

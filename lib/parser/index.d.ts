@@ -97,10 +97,6 @@ export declare abstract class GhostNode {
     raw: string;
     constructor(props: GhostNodeProperties);
     toString(): string;
-    toJSON(): {
-        nodeName: string;
-        isGhost: boolean;
-    };
 }
 export declare class Element extends Node {
     readonly type: NodeType;
@@ -113,12 +109,6 @@ export declare class Element extends Node {
     constructor(props: ElementProperties, rawHtml: string);
     getAttribute(attrName: string): Attribute | undefined;
     readonly id: Attribute | undefined;
-    toJSON(): {
-        nodeName: string;
-        line: number | null;
-        col: number | null;
-        childNodes: (Node | GhostNode)[];
-    };
 }
 export declare class OmittedElement extends GhostNode {
     readonly type: NodeType;
@@ -128,22 +118,13 @@ export declare class OmittedElement extends GhostNode {
 }
 export declare class TextNode extends Node {
     readonly type: NodeType;
-    constructor(props: TextNodeProperties);
 }
 export declare class RawTextNode extends TextNode {
     readonly type: NodeType;
-    readonly textContent: string;
-    readonly line: number;
-    readonly col: number;
-    readonly startOffset: number;
-    constructor(props: TextNodeProperties);
 }
 export declare class CommentNode extends Node {
     readonly type: NodeType;
     readonly data: string;
-    readonly line: number;
-    readonly col: number;
-    readonly startOffset: number;
     constructor(props: CommentNodeProperties);
 }
 export declare class Doctype extends Node {
@@ -157,15 +138,9 @@ export declare class EndTagNode extends Node {
     readonly startTagNode: Node | GhostNode;
     constructor(props: EndTagNodeProperties);
 }
-export declare class InvalidNode extends GhostNode {
+export declare class InvalidNode extends Node {
     readonly type: NodeType;
-    readonly childNodes: (Node | GhostNode)[];
-    constructor(props: GhostNodeProperties);
-    toJSON(): {
-        nodeName: string;
-        childNodes: (Node | GhostNode)[];
-        isGhost: boolean;
-    };
+    constructor(props: NodeProperties);
 }
 export declare class Document {
     readonly html: Node | GhostNode;

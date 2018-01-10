@@ -20,7 +20,7 @@ const readFile = util.promisify(fs.readFile);
 			switch (n.nodeName) {
 				case '#doctype': return c.bgBlue.black(n.raw);
 				case '#ws': return c.bgWhite.black(n.raw);
-				case '#invalid': return c.bgBlack.white(n.raw);
+				case '#invalid': return c.bgRed.white(n.raw);
 				case '#text': return n.raw;
 				case '#eof': return c.bgWhite.black(n.raw);
 				case '#comment': return c.bgYellow.black(n.raw);

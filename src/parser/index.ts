@@ -5,6 +5,11 @@ import {
 	RawAttribute,
 } from './parseRawTag';
 
+import getCol from './getCol';
+import getLine from './getLine';
+
+import tagSplitter from './tagSplitter';
+
 export interface Location {
 	line: number | null;
 	col: number | null;
@@ -88,17 +93,6 @@ export type SyncWalker = (node: Node | GhostNode) => void;
 
 export type NodeType = 'Element' | 'OmittedElement' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
 
-function getLine (html: string, line: number) {
-	return html.split(/\r?\n/).length - 1 + line;
-}
-
-function getCol (html: string, col: number) {
-	const lines = html.split(/\r?\n/);
-	const lineCount = lines.length;
-	const lastLine = lines.pop()!;
-	return lineCount > 1 ? lastLine.length : col + html.length;
-}
-
 export abstract class Node {
 	public readonly type: NodeType = null;
 	public nodeName: string;
@@ -162,13 +156,6 @@ export abstract class GhostNode {
 	public toString () {
 		return this.raw;
 	}
-
-	public toJSON () {
-		return {
-			nodeName: this.nodeName,
-			isGhost: true,
-		};
-	}
 }
 
 export class Element extends Node {
@@ -219,15 +206,6 @@ export class Element extends Node {
 	public get id () {
 		return this.getAttribute('id');
 	}
-
-	public toJSON () {
-		return {
-			nodeName: this.nodeName,
-			line: this.line || null,
-			col: this.col || null,
-			childNodes: this.childNodes,
-		};
-	}
 }
 
 export class OmittedElement extends GhostNode {
@@ -242,30 +220,15 @@ export class OmittedElement extends GhostNode {
 
 export class TextNode extends Node {
 	public readonly type: NodeType = 'Text';
-
-	constructor (props: TextNodeProperties) {
-		super(props);
-	}
 }
 
 export class RawTextNode extends TextNode {
 	public readonly type: NodeType = 'RawText';
-	public readonly textContent: string;
-	public readonly line: number;
-	public readonly col: number;
-	public readonly startOffset: number;
-
-	constructor (props: TextNodeProperties) {
-		super(props);
-	}
 }
 
 export class CommentNode extends Node {
 	public readonly type: NodeType = 'Comment';
 	public readonly data: string;
-	public readonly line: number;
-	public readonly col: number;
-	public readonly startOffset: number;
 
 	constructor (props: CommentNodeProperties) {
 		super(props);
@@ -295,21 +258,11 @@ export class EndTagNode extends Node {
 	}
 }
 
-export class InvalidNode extends GhostNode {
+export class InvalidNode extends Node {
 	public readonly type: NodeType = 'Invalid';
-	public readonly childNodes: (Node | GhostNode)[];
 
-	constructor (props: GhostNodeProperties) {
+	constructor (props: NodeProperties) {
 		super(props);
-		this.childNodes = props.childNodes || [];
-	}
-
-	public toJSON () {
-		return {
-			nodeName: this.nodeName,
-			childNodes: this.childNodes,
-			isGhost: true,
-		};
 	}
 }
 
@@ -328,6 +281,7 @@ export class Document {
 	private _tree: (Node | GhostNode)[] = [];
 	private _list: (Node | GhostNode)[] = [];
 
+	// tslint:disable-next-line:cyclomatic-complexity
 	constructor (nodeTree: (Node | GhostNode)[], rawHtml: string) {
 		this._raw = rawHtml;
 		this._tree = nodeTree;
@@ -392,47 +346,41 @@ export class Document {
 
 		pos.sort((a, b) => a.startOffset - b.startOffset);
 
-		// last child text node of body
-		let lastChildTextNode: TextNode | null = null;
-		let lastChildTextNodeEndOffset: number | null = null;
-		for (const {node, startOffset, endOffset} of pos) {
-			if (node.nodeName === 'body' && node instanceof Element || node instanceof OmittedElement) {
-				const child = node.childNodes[node.childNodes.length - 1];
-				if (child instanceof TextNode) {
-					lastChildTextNode = child;
-				}
-			}
-		}
-		for (const {node, startOffset, endOffset} of pos) {
-			if (lastChildTextNodeEndOffset != null) {
-				continue;
-			}
-			if (node.nodeName === 'body' && node instanceof Element && node.endTagNode) {
-				lastChildTextNodeEndOffset = node.endTagNode.startOffset;
-				break;
-			}
-		}
-		for (const {node, startOffset, endOffset} of pos) {
-			if (lastChildTextNodeEndOffset != null) {
-				continue;
-			}
-			if (node.nodeName === 'html' && node instanceof Element && node.endTagNode) {
-				lastChildTextNodeEndOffset = node.endTagNode.startOffset;
-				break;
-			}
-		}
-		if (lastChildTextNode && lastChildTextNodeEndOffset != null) {
-			lastChildTextNode.endOffset = lastChildTextNodeEndOffset;
-			const raw = rawHtml.slice(lastChildTextNode.startOffset, lastChildTextNode.endOffset);
-			lastChildTextNode.raw = raw;
-		}
-
 		let lastNode: Node | null = null;
 		for (const {node, startOffset, endOffset} of pos) {
 			if (node instanceof GhostNode) {
 				continue;
 			}
 			lastNode = node;
+		}
+
+		// remove duplicated node
+		const stack: {[pos: string]: number} = {};
+		const removeIndexes: number[] = [];
+		pos.forEach(({node, startOffset, endOffset}, i) => {
+			if (node instanceof Node) {
+				const id = `${node.line}:${node.col}:${node.endLine}:${node.endCol}`;
+				if (stack[id] != null) {
+					const iA = stack[id];
+					const iB = i;
+					const a = pos[iA].node;
+					const b = node;
+					if (a instanceof InvalidNode && b instanceof InvalidNode) {
+						removeIndexes.push(iB);
+					} else if (a instanceof InvalidNode) {
+						removeIndexes.push(iA);
+					} else {
+						removeIndexes.push(iB);
+					}
+				}
+				stack[id] = i;
+			}
+		});
+		let r = pos.length;
+		while (r--) {
+			if (removeIndexes.includes(r)) {
+				pos.splice(r, 1);
+			}
 		}
 
 		// create Last spaces
@@ -443,7 +391,7 @@ export class Document {
 					return;
 				}
 				const lastTextNode = new TextNode({
-					nodeName: '#eof',
+					nodeName: '#text',
 					location: {
 						line: lastNode ? lastNode.endLine : 0,
 						col: lastNode ? lastNode.endCol : 0,
@@ -492,7 +440,7 @@ export class Document {
 	public toDebugMap () {
 		return this.list.map((n) => {
 			if (n instanceof Node) {
-				return `[${n.line}:${n.col}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${n.nodeName}: ${n.toString().replace(/\n/g, '⏎').replace(/\t/g, '→').replace(/\s/g, '␣')}`;
+				return `[${n.line}:${n.col}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${n instanceof OmittedElement ? '???' : ''}${n.nodeName}: ${n.toString().replace(/\n/g, '⏎').replace(/\t/g, '→').replace(/\s/g, '␣')}`;
 			} else {
 				return `[N/A]>[N/A](N/A)${n.nodeName}: ${n.toString()}`;
 			}
@@ -531,7 +479,7 @@ export class Document {
 async function walk (nodeList: (Node | GhostNode)[], walker: Walker) {
 	for (const node of nodeList) {
 		await walker(node);
-		if (node instanceof Element || node instanceof InvalidNode || node instanceof OmittedElement) {
+		if (node instanceof Element || node instanceof OmittedElement) {
 			await walk(node.childNodes, walker);
 		}
 		if (node instanceof Element && node.endTagNode) {
@@ -543,7 +491,7 @@ async function walk (nodeList: (Node | GhostNode)[], walker: Walker) {
 function syncWalk (nodeList: (Node | GhostNode)[], walker: SyncWalker) {
 	for (const node of nodeList) {
 		walker(node);
-		if (node instanceof Element || node instanceof InvalidNode || node instanceof OmittedElement) {
+		if (node instanceof Element || node instanceof OmittedElement) {
 			syncWalk(node.childNodes, walker);
 		}
 		if (node instanceof Element && node.endTagNode) {
@@ -553,21 +501,15 @@ function syncWalk (nodeList: (Node | GhostNode)[], walker: SyncWalker) {
 }
 
 // tslint:disable-next-line:cyclomatic-complexity
-function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: Node | GhostNode | null, rawHtml: string): Node | GhostNode {
-	let node: Node | GhostNode;
+function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: Node | GhostNode | null, rawHtml: string): (Node | GhostNode)[] {
+	const nodes: (Node | GhostNode)[] = [];
 	switch (p5node.nodeName) {
 		case '#documentType': {
 			if (!p5node.__location) {
-				return new InvalidNode({
-					nodeName: '#invalid',
-					childNodes: traverse(p5node, parent, rawHtml),
-					prevNode: prev,
-					nextNode: null,
-					parentNode: parent,
-				});
+				throw new Error('Invalid Syntax');
 			}
 			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
-			node = new Doctype({
+			const node = new Doctype({
 				nodeName: '#doctype',
 				location: {
 					line: p5node.__location.line,
@@ -582,22 +524,16 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 				systemId: (p5node as P5DocumentType).systemId || null,
 				raw,
 			});
+			nodes.push(node);
 			break;
 		}
 		case '#text': {
 			if (!p5node.__location) {
-				return new InvalidNode({
-					nodeName: '#invalid',
-					childNodes: traverse(p5node, parent, rawHtml),
-					prevNode: prev,
-					nextNode: null,
-					parentNode: parent,
-				});
+				throw new Error('Invalid Syntax');
 			}
-			// bodyの最後の子のテキストノードだけおかしい
 			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
 			if (parent && /^(?:script|style)$/i.test(parent.nodeName)) {
-				node = new RawTextNode({
+				const node = new RawTextNode({
 					nodeName: p5node.nodeName,
 					location: {
 						line: p5node.__location.line,
@@ -610,36 +546,58 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 					parentNode: parent,
 					raw,
 				});
+				nodes.push(node);
 			} else {
-				node = new TextNode({
-					nodeName: p5node.nodeName,
-					location: {
-						line: p5node.__location.line,
-						col: p5node.__location.col,
-						startOffset: p5node.__location.startOffset,
-						endOffset: p5node.__location.startOffset + raw.length,
-					},
-					prevNode: prev,
-					nextNode: null,
-					parentNode: parent,
-					raw,
-				});
+				const tokens = tagSplitter(raw, p5node.__location.line, p5node.__location.col);
+				let startOffset = p5node.__location.startOffset;
+
+				for (const token of tokens) {
+					const endOffset = startOffset + token.raw.length;
+					if (token.type === 'text') {
+						const node = new TextNode({
+							nodeName: p5node.nodeName,
+							location: {
+								line: token.line,
+								col: token.col,
+								startOffset,
+								endOffset,
+							},
+							prevNode: prev,
+							nextNode: null,
+							parentNode: parent,
+							raw: token.raw,
+						});
+						prev = node;
+						startOffset = endOffset;
+						nodes.push(node);
+					} else {
+						const node = new InvalidNode({
+							nodeName: '#invalid',
+							location: {
+								line: token.line,
+								col: token.col,
+								startOffset,
+								endOffset,
+							},
+							prevNode: prev,
+							nextNode: null,
+							parentNode: parent,
+							raw: token.raw,
+						});
+						prev = node;
+						startOffset = endOffset;
+						nodes.push(node);
+					}
+				}
 			}
 			break;
 		}
 		case '#comment': {
 			if (!p5node.__location) {
-				return new InvalidNode({
-					nodeName: '#invalid',
-					childNodes: traverse(p5node, parent, rawHtml),
-					prevNode: prev,
-					nextNode: null,
-					parentNode: parent,
-				});
+				throw new Error('Invalid Syntax');
 			}
 			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
-			// @ts-ignore
-			node = new CommentNode({
+			const node = new CommentNode({
 				nodeName: p5node.nodeName,
 				location: {
 					line: p5node.__location.line,
@@ -654,9 +612,11 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 				data: p5node.data,
 				raw,
 			});
+			nodes.push(node);
 			break;
 		}
 		default: {
+			let node: Element | OmittedElement | null = null;
 			if (p5node.__location) {
 				const raw =
 					p5node.__location.startTag
@@ -712,22 +672,27 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 					parentNode: parent,
 				});
 			}
-			(node as (Element | OmittedElement)).childNodes =  traverse(p5node, node, rawHtml);
+			if (node) {
+				node.childNodes =  traverse(p5node, node, rawHtml);
+				nodes.push(node);
+			}
 		}
 	}
-	return node;
+	return nodes;
 }
 
 function traverse (rootNode: P5ParentNode, parentNode: Node | GhostNode | null = null, rawHtml: string): (Node | GhostNode)[] {
 	const nodeList: (Node | GhostNode)[] = [];
 	let prev: Node | GhostNode | null = null;
 	for (const p5node of rootNode.childNodes) {
-		const node = nodeize(p5node, prev, parentNode, rawHtml);
-		if (prev) {
-			prev.nextNode = node;
+		const nodes = nodeize(p5node, prev, parentNode, rawHtml);
+		for (const node of nodes) {
+			if (prev) {
+				prev.nextNode = node;
+			}
+			prev = node;
+			nodeList.push(node);
 		}
-		prev = node;
-		nodeList.push(node);
 	}
 	return nodeList;
 }
