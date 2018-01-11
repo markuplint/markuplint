@@ -21,6 +21,7 @@
     "event-attr": true,
 
     # Validation
+    "parse-error": true,
     "character-reference": true,
     "doctype": true,
     "required-element": true,
