@@ -178,8 +178,8 @@ async function extendsRules (extendRules: string | string[], baseRuleFilePath: s
 async function extendsRuleResolver (extendRule: string, baseRuleFilePath: string) {
 	let jsonStr: string;
 	let ruleFilePath: string;
-	if (/^markuplint\/[a-z0-9-]+$/.test(extendRule)) {
-		const matched = extendRule.match(/^markuplint\/([a-z0-9-]+)$/);
+	if (/^markuplint\/[a-z0-9-]+(?:\.json)?$/.test(extendRule)) {
+		const matched = extendRule.match(/^markuplint\/([a-z0-9-]+)(?:\.json)?$/);
 		if (!matched || !matched[1]) {
 			throw new Error(`Invalid rule name set extends "${extendRule}" in markuplint`);
 		}
