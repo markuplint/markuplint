@@ -1,6 +1,6 @@
 {
   "name": "markuplint",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -16,7 +16,7 @@
   "scripts": {
     "cli": "node ./bin/",
     "debugger": "node ./lib/debugger/",
-    "build": "gulp",
+    "build": "gulp build",
     "dev": "gulp watch",
     "test": "nyc ava && nyc report --reporter=html",
     "cover": "nyc ava && nyc report --reporter=text-lcov | coveralls",
@@ -44,17 +44,16 @@
     "ava": "^0.24.0",
     "coveralls": "^3.0.0",
     "del": "^3.0.0",
-    "eslint": "^4.14.0",
-    "gulp": "^3.9.1",
+    "eslint": "^4.15.0",
+    "gulp": "^4.0.0",
     "gulp-ava": "^0.18.0",
-    "gulp-typescript": "^3.2.3",
+    "gulp-typescript": "^4.0.0-alpha.1",
     "jsdom": "^11.5.1",
-    "markuplint-plugin-textlint": "^0.3.4",
+    "markuplint-plugin-textlint": "^0.4.0",
     "nyc": "^11.4.1",
-    "run-sequence": "^2.2.1",
-    "textlint": "^10.1.1",
+    "textlint": "^10.1.2",
     "textlint-rule-preset-japanese": "^4.0.0",
-    "tslint": "^5.8.0",
+    "tslint": "^5.9.1",
     "typescript": "^2.6.2"
   }
 }
