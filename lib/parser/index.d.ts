@@ -1,3 +1,4 @@
+import { NodeRule } from '../ruleset';
 export interface Location {
     line: number | null;
     col: number | null;
@@ -71,14 +72,15 @@ export declare abstract class Node {
     nodeName: string;
     readonly line: number;
     readonly col: number;
-    readonly endLine: number;
-    readonly endCol: number;
+    endLine: number;
+    endCol: number;
     readonly startOffset: number;
     endOffset: number;
     prevNode: Node | GhostNode | null;
     nextNode: Node | GhostNode | null;
     readonly parentNode: Node | GhostNode | null;
     raw: string;
+    prevSyntaxicalNode: Node | null;
     constructor(props: NodeProperties);
     toString(): string;
     toJSON(): {
@@ -149,7 +151,8 @@ export declare class Document {
     private _raw;
     private _tree;
     private _list;
-    constructor(nodeTree: (Node | GhostNode)[], rawHtml: string);
+    private _nodeRules;
+    constructor(nodeTree: (Node | GhostNode)[], rawHtml: string, nodeRules: NodeRule[]);
     readonly raw: string;
     readonly list: (Node | GhostNode)[];
     toString(): string;
@@ -163,4 +166,4 @@ export declare class Document {
     syncWalk(walker: SyncWalker): void;
     getNode(index: number): Node | GhostNode | null;
 }
-export default function parser(html: string): Document;
+export default function parser(html: string, nodeRules: NodeRule[]): Document;

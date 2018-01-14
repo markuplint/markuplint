@@ -35,7 +35,7 @@ export interface NodeRuleAttrCondition {
  */
 export default class Ruleset {
     static readonly NOFILE: string;
-    static _create(config: ConfigureFileJSON | string, rules: Rule[]): Promise<Ruleset>;
+    static create(config: ConfigureFileJSON | string, rules: Rule[]): Promise<Ruleset>;
     rules: ConfigureFileJSONRules;
     nodeRules: NodeRule[];
     private _rules;

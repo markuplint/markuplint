@@ -3,12 +3,13 @@ const ts = require('gulp-typescript');
 const tsc = require('typescript');
 const del = require('del');
 const ava = require('gulp-ava');
+const plumber = require('gulp-plumber');
 
 const project = ts.createProject('./tsconfig.json', {typescript: tsc});
 
 gulp.task('ts', () => project.src().pipe(project()).pipe(gulp.dest('./lib/')));
 
-gulp.task('test', () => gulp.src('src/**/*.test.js').pipe(ava()));
+gulp.task('test', () => gulp.src('src/**/*.test.js').pipe(plumber()).pipe(ava()));
 
 gulp.task('json', () => gulp.src('src/rules/**/*.json').pipe(gulp.dest('lib/rules/')));
 

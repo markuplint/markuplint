@@ -71,7 +71,7 @@ export default class Ruleset {
 
 	public static readonly NOFILE = '<no-file>';
 
-	public static async _create (config: ConfigureFileJSON | string, rules: Rule[]) {
+	public static async create (config: ConfigureFileJSON | string, rules: Rule[]) {
 		const ruleset = new Ruleset(rules);
 		if (typeof config === 'string') {
 			await ruleset.loadRC(config);

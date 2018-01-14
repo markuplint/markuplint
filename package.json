@@ -47,6 +47,7 @@
     "eslint": "^4.15.0",
     "gulp": "^4.0.0",
     "gulp-ava": "^0.18.0",
+    "gulp-plumber": "^1.2.0",
     "gulp-typescript": "^4.0.0-alpha.1",
     "jsdom": "^11.5.1",
     "markuplint-plugin-textlint": "^0.4.0",

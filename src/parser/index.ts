@@ -5,6 +5,8 @@ import {
 	RawAttribute,
 } from './parseRawTag';
 
+import { NodeRule } from '../ruleset';
+
 import getCol from './getCol';
 import getLine from './getLine';
 
@@ -98,14 +100,15 @@ export abstract class Node {
 	public nodeName: string;
 	public readonly line: number;
 	public readonly col: number;
-	public readonly endLine: number;
-	public readonly endCol: number;
+	public endLine: number;
+	public endCol: number;
 	public readonly startOffset: number;
 	public endOffset: number;
 	public prevNode: Node | GhostNode | null = null;
 	public nextNode: Node | GhostNode | null = null;
 	public readonly parentNode: Node | GhostNode | null = null;
 	public raw = '';
+	public prevSyntaxicalNode: Node | null;
 
 	constructor (props: NodeProperties) {
 		this.nodeName = props.nodeName;
@@ -280,11 +283,13 @@ export class Document {
 	private _raw: string;
 	private _tree: (Node | GhostNode)[] = [];
 	private _list: (Node | GhostNode)[] = [];
+	private _nodeRules: NodeRule[];
 
 	// tslint:disable-next-line:cyclomatic-complexity
-	constructor (nodeTree: (Node | GhostNode)[], rawHtml: string) {
+	constructor (nodeTree: (Node | GhostNode)[], rawHtml: string, nodeRules: NodeRule[]) {
 		this._raw = rawHtml;
 		this._tree = nodeTree;
+		this._nodeRules = nodeRules;
 
 		const pos: SortableNode[] = [];
 
@@ -414,7 +419,27 @@ export class Document {
 			}
 		});
 
-		this._list = pos.map(p => p.node);
+		this._list = [];
+
+		let prevSyntaxicalNode: Node | null = null;
+		pos.map(p => p.node).forEach((node) => {
+			if (node instanceof Node) {
+				node.prevSyntaxicalNode = prevSyntaxicalNode;
+				prevSyntaxicalNode = node;
+				if (node.prevSyntaxicalNode instanceof TextNode) {
+					const prevSyntaxTextNode = node.prevSyntaxicalNode;
+					if (node instanceof TextNode) {
+						prevSyntaxTextNode.endLine = node.endLine;
+						prevSyntaxTextNode.endCol = node.endCol;
+						prevSyntaxTextNode.endOffset = node.endOffset;
+						prevSyntaxTextNode.raw = prevSyntaxTextNode.raw + node.raw;
+						prevSyntaxicalNode = prevSyntaxTextNode;
+						return;
+					}
+				}
+			}
+			this._list.push(node);
+		});
 	}
 
 	public get raw () {
@@ -697,7 +722,7 @@ function traverse (rootNode: P5ParentNode, parentNode: Node | GhostNode | null =
 	return nodeList;
 }
 
-export default function parser (html: string) {
+export default function parser (html: string, nodeRules: NodeRule[]) {
 	const doc = parse5.parse(
 		html,
 		{
@@ -706,7 +731,7 @@ export default function parser (html: string) {
 	) as P5ParentNode;
 
 	const nodeTree: (Node | GhostNode)[] = traverse(doc, null, html);
-	return new Document(nodeTree, html);
+	return new Document(nodeTree, html, nodeRules);
 }
 
 type P5Document = parse5.AST.HtmlParser2.Document & parse5.AST.Document;

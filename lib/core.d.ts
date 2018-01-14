@@ -1,3 +1,10 @@
+import { Document } from './parser';
 import { VerifiedResult } from './rule';
 import Ruleset from './ruleset';
-export declare function verify(html: string, ruleset: Ruleset, locale: string): Promise<VerifiedResult[]>;
+export default class Markuplint {
+    document: Document;
+    ruleset: Ruleset;
+    locale: string;
+    constructor(html: string, ruleset: Ruleset, locale: string);
+    verify(): Promise<VerifiedResult[]>;
+}
