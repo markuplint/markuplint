@@ -9,11 +9,13 @@
       "es2016",
       "es2017",
       "esnext"
-    ]
+    ],
+    "outDir": "./lib/"
   },
   "exclude": [
     "node_modules",
     "plugin",
-    "_*"
+    "_*",
+    "./lib/"
   ]
 }
