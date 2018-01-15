@@ -90,6 +90,12 @@ export interface Attribute {
 	invalid: boolean;
 }
 
+export interface Indentation {
+	type: 'tab' | 'space' | 'mixed';
+	width: number;
+	raw: string;
+}
+
 export type Walker<N = (Node | GhostNode)> = (node: N) => Promise<void>;
 export type SyncWalker = (node: Node | GhostNode) => void;
 
@@ -109,6 +115,8 @@ export abstract class Node {
 	public readonly parentNode: Node | GhostNode | null = null;
 	public raw = '';
 	public prevSyntaxicalNode: Node | null;
+	public indentation: Indentation | null = null;
+	public depth = 0;
 
 	constructor (props: NodeProperties) {
 		this.nodeName = props.nodeName;
@@ -427,14 +435,50 @@ export class Document {
 				node.prevSyntaxicalNode = prevSyntaxicalNode;
 				prevSyntaxicalNode = node;
 				if (node.prevSyntaxicalNode instanceof TextNode) {
-					const prevSyntaxTextNode = node.prevSyntaxicalNode;
+					const prevSyntaxicalTextNode = node.prevSyntaxicalNode;
+
+					// concat contiguous textNodes
 					if (node instanceof TextNode) {
-						prevSyntaxTextNode.endLine = node.endLine;
-						prevSyntaxTextNode.endCol = node.endCol;
-						prevSyntaxTextNode.endOffset = node.endOffset;
-						prevSyntaxTextNode.raw = prevSyntaxTextNode.raw + node.raw;
-						prevSyntaxicalNode = prevSyntaxTextNode;
+						prevSyntaxicalTextNode.endLine = node.endLine;
+						prevSyntaxicalTextNode.endCol = node.endCol;
+						prevSyntaxicalTextNode.endOffset = node.endOffset;
+						prevSyntaxicalTextNode.raw = prevSyntaxicalTextNode.raw + node.raw;
+						prevSyntaxicalNode = prevSyntaxicalTextNode;
 						return;
+					}
+
+					// indentation meta-infomation
+					if (!(prevSyntaxicalTextNode instanceof RawTextNode)) {
+						const matched = prevSyntaxicalTextNode.raw.match(/\r?\n([ \t]+$)/);
+						if (matched) {
+							const spaces = matched[1];
+							if (spaces) {
+								node.indentation = {
+									type: /^\t+$/.test(spaces) ? 'tab' : /^[^\t]+$/.test(spaces) ? 'space' : 'mixed',
+									width: spaces.length,
+									raw: spaces,
+								};
+							}
+						}
+					}
+					if (node instanceof TextNode) {
+						console.log(node);
+						const matched = node.raw.match(/(^\s*)([^\s]+)/);
+						if (matched) {
+							const spaces = matched[1];
+							if (spaces) {
+								const spaceLines = spaces.split(/\r?\n/);
+								const line = spaceLines.length + node.line - 1;
+								const lastSpace = spaceLines.pop();
+								if (lastSpace) {
+									node.indentation = {
+										type: /^\t+$/.test(lastSpace) ? 'tab' : /^[^\t]+$/.test(lastSpace) ? 'space' : 'mixed',
+										width: lastSpace.length,
+										raw: lastSpace,
+									};
+								}
+							}
+						}
 					}
 				}
 			}

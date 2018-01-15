@@ -26,7 +26,6 @@ export default class extends Rule<DefaultValue> {
 
 	public async verify (document: Document, config: RuleConfig<DefaultValue>, ruleset: Ruleset) {
 		const reports: VerifyReturn[] = [];
-		let lastNode: Node | GhostNode;
 		await document.walk(async (node) => {
 			if (node instanceof Node) {
 				if (node instanceof TextNode) {
@@ -51,20 +50,12 @@ export default class extends Rule<DefaultValue> {
 						}
 					}
 				}
-				if (lastNode instanceof TextNode) {
-					const matched = lastNode.raw.match(/\r?\n([ \t]+$)/);
-					if (matched) {
-						const spaces = matched[1];
-						if (!spaces) {
-							throw new TypeError(`Expected error.`);
-						}
-						const report = indent(spaces, node, `${spaces}`, node.line, config);
-						if (report) {
-							reports.push(report);
-						}
+				if (node.indentation) {
+					const report = indent(node.indentation.raw, node, node.indentation.raw, node.line, config);
+					if (report) {
+						reports.push(report);
 					}
 				}
-				lastNode = node;
 			}
 		});
 		return reports;

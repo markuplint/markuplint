@@ -64,6 +64,11 @@ export interface Attribute {
     raw: string;
     invalid: boolean;
 }
+export interface Indentation {
+    type: 'tab' | 'space' | 'mixed';
+    width: number;
+    raw: string;
+}
 export declare type Walker<N = (Node | GhostNode)> = (node: N) => Promise<void>;
 export declare type SyncWalker = (node: Node | GhostNode) => void;
 export declare type NodeType = 'Element' | 'OmittedElement' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
@@ -81,6 +86,8 @@ export declare abstract class Node {
     readonly parentNode: Node | GhostNode | null;
     raw: string;
     prevSyntaxicalNode: Node | null;
+    indentation: Indentation | null;
+    depth: number;
     constructor(props: NodeProperties);
     toString(): string;
     toJSON(): {
