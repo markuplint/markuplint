@@ -55,36 +55,3 @@ export default class extends Rule<DefaultValue> {
 		return reports;
 	}
 }
-
-function indent (spaces: string, node: Node, raw: string, line: number, config: RuleConfig<DefaultValue>) {
-	if (config.value === 'tab') {
-		if (!/^\t*$/.test(spaces)) {
-			return {
-				level: config.level,
-				message: 'Expected spaces. Indentaion is required tabs.',
-				line,
-				col: 1,
-				raw,
-			};
-		}
-	}
-	if (typeof config.value === 'number') {
-		if (!/^ *$/.test(spaces)) {
-			return {
-				level: config.level,
-				message: 'Expected spaces. Indentaion is required spaces.',
-				line,
-				col: 1,
-				raw,
-			};
-		} else if (spaces.length % config.value) {
-			return {
-				level: config.level,
-				message: `Expected spaces. Indentaion is required ${config.value} width spaces.`,
-				line,
-				col: 1,
-				raw,
-			};
-		}
-	}
-}

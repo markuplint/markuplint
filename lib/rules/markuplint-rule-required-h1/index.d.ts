@@ -1,10 +1,14 @@
 import { Document } from '../../parser';
-import Rule, { RuleConfig, VerifiedResult } from '../../rule';
+import Rule, { RuleConfig, VerifyReturn } from '../../rule';
 import Ruleset from '../../ruleset';
-export declare type DefaultValue = string;
+export declare type Value = boolean;
 export interface Options {
+    'expected-once': boolean;
 }
-export default class  extends Rule<DefaultValue, Options> {
+export default class  extends Rule<Value, Options> {
     name: string;
-    verify(document: Document, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset): Promise<VerifiedResult[]>;
+    defaultOptions: {
+        'expected-once': boolean;
+    };
+    verify(document: Document, config: RuleConfig<Value, Options>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
 }

@@ -48,6 +48,7 @@ export default abstract class Rule<T = null, O = {}> {
 	public readonly name: string;
 	public readonly defaultLevel: RuleLevel = 'error';
 	public readonly defaultValue: T;
+	public readonly defaultOptions: O;
 
 	public abstract async verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
 
@@ -57,7 +58,7 @@ export default abstract class Rule<T = null, O = {}> {
 				disabled: !option,
 				level: this.defaultLevel,
 				value: this.defaultValue,
-				option: null,
+				option: this.defaultOptions || null,
 			};
 		}
 		if (Array.isArray(option)) {
@@ -65,14 +66,14 @@ export default abstract class Rule<T = null, O = {}> {
 				disabled: false,
 				level: option[0],
 				value: option[1] || this.defaultValue,
-				option: option[2] || null,
+				option: option[2] || this.defaultOptions || null,
 			};
 		}
 		return {
 			disabled: false,
 			level: this.defaultLevel,
 			value: option == null ? this.defaultValue : option,
-			option: null,
+			option: this.defaultOptions || null,
 		};
 	}
 }
