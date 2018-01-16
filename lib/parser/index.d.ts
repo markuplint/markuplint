@@ -68,6 +68,7 @@ export interface Indentation {
     type: 'tab' | 'space' | 'mixed';
     width: number;
     raw: string;
+    line: number;
 }
 export declare type Walker<N = (Node | GhostNode)> = (node: N) => Promise<void>;
 export declare type SyncWalker = (node: Node | GhostNode) => void;

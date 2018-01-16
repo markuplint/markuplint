@@ -17,7 +17,8 @@ test('tab', async (t) => {
 				indentation: ['error', 'tab'],
 			},
 		},
-		[rule]
+		[rule],
+		'en',
 	);
 	t.deepEqual(r, []);
 });
@@ -35,12 +36,13 @@ test('tab', async (t) => {
 				indentation: ['error', 'tab'],
 			},
 		},
-		[rule]
+		[rule],
+		'en',
 	);
 	t.deepEqual(r, [
 		{
 			level: 'error',
-			message: 'Expected spaces. Indentaion is required tabs.',
+			message: 'Indentation must be tab',
 			line: 2,
 			col: 1,
 			raw: '    ',
@@ -48,7 +50,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
-			message: 'Expected spaces. Indentaion is required tabs.',
+			message: 'Indentation must be tab',
 			line: 3,
 			col: 1,
 			raw: '        ',
@@ -56,7 +58,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
-			message: 'Expected spaces. Indentaion is required tabs.',
+			message: 'Indentation must be tab',
 			line: 4,
 			col: 1,
 			raw: '        ',
@@ -64,7 +66,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
-			message: 'Expected spaces. Indentaion is required tabs.',
+			message: 'Indentation must be tab',
 			line: 5,
 			col: 1,
 			raw: '    ',
@@ -87,12 +89,13 @@ test('tab', async (t) => {
 				indentation: ['error', 'tab'],
 			},
 		},
-		[rule]
+		[rule],
+		'en',
 	);
 	t.deepEqual(r, [
 		{
 			level: 'error',
-			message: 'Expected spaces. Indentaion is required tabs.',
+			message: 'Indentation must be tab',
 			line: 2,
 			col: 1,
 			raw: '    ',
@@ -100,7 +103,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
-			message: 'Expected spaces. Indentaion is required tabs.',
+			message: 'Indentation must be tab',
 			line: 4,
 			col: 1,
 			raw: '        ',
@@ -108,7 +111,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
-			message: 'Expected spaces. Indentaion is required tabs.',
+			message: 'Indentation must be tab',
 			line: 6,
 			col: 1,
 			raw: '    ',
@@ -130,7 +133,8 @@ test('tab', async (t) => {
 				indentation: 4,
 			},
 		},
-		[rule]
+		[rule],
+		'en',
 	);
 	t.deepEqual(r, []);
 });
@@ -148,7 +152,8 @@ test('tab', async (t) => {
 				indentation: ['error', 2],
 			},
 		},
-		[rule]
+		[rule],
+		'en',
 	);
 	t.deepEqual(r, []);
 });
@@ -166,12 +171,13 @@ test('tab', async (t) => {
 				indentation: ['error', 4],
 			},
 		},
-		[rule]
+		[rule],
+		'en',
 	);
 	t.deepEqual(r, [
 		{
 			level: 'error',
-			message: 'Expected spaces. Indentaion is required spaces.',
+			message: 'Indentation must be space',
 			line: 2,
 			col: 1,
 			raw: '	',
@@ -179,7 +185,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
-			message: 'Expected spaces. Indentaion is required spaces.',
+			message: 'Indentation must be space',
 			line: 3,
 			col: 1,
 			raw: '		',
@@ -187,7 +193,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
-			message: 'Expected spaces. Indentaion is required spaces.',
+			message: 'Indentation must be space',
 			line: 4,
 			col: 1,
 			raw: '		',
@@ -195,7 +201,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
-			message: 'Expected spaces. Indentaion is required spaces.',
+			message: 'Indentation must be space',
 			line: 5,
 			col: 1,
 			raw: '	',
@@ -217,12 +223,13 @@ test('tab', async (t) => {
 				indentation: ['error', 2],
 			},
 		},
-		[rule]
+		[rule],
+		'en',
 	);
 	t.deepEqual(r, [
 		{
 			level: 'error',
-			message: 'Expected spaces. Indentaion is required 2 width spaces.',
+			message: 'Indentation must be 2 width spaces',
 			line: 2,
 			col: 1,
 			raw: '   ',
@@ -230,7 +237,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
-			message: 'Expected spaces. Indentaion is required 2 width spaces.',
+			message: 'Indentation must be 2 width spaces',
 			line: 5,
 			col: 1,
 			raw: '   ',
@@ -252,7 +259,8 @@ test('tab', async (t) => {
 				indentation: ['error', 3],
 			},
 		},
-		[rule]
+		[rule],
+		'en',
 	);
 	t.deepEqual(r, []);
 });
@@ -270,14 +278,15 @@ test('tab', async (t) => {
 				indentation: 3,
 			},
 		},
-		[rule]
+		[rule],
+		'en',
 	);
 	t.deepEqual(r, [
 		{
 			level: 'warning',
 			line: 4,
 			col: 1,
-			message: 'Expected spaces. Indentaion is required 3 width spaces.',
+			message: 'Indentation should be 3 width spaces',
 			raw: '          ',
 			ruleId: 'indentation',
 		},
@@ -296,7 +305,8 @@ test('rawText', async (t) => {
 				indentation: 'tab',
 			},
 		},
-		[rule]
+		[rule],
+		'en',
 	);
 	t.deepEqual(r, []);
 });
