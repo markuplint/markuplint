@@ -22,7 +22,7 @@ export default class extends Rule<Value> {
 	public defaultLevel: RuleLevel = 'warning';
 	public defaultValue: Value = 'double';
 
-	public async verify (document: Document, config: RuleConfig<Value>, ruleset: Ruleset, locale: string) {
+	public async verify (document: Document<Value, {}>, config: RuleConfig<Value>, ruleset: Ruleset, locale: string) {
 		const reports: VerifyReturn[] = [];
 		const message = await messages(locale, '{0} is must {1} on {2}', 'Attribute value', 'quote', `${config.value} quotation mark`);
 		await document.walk(async (node) => {

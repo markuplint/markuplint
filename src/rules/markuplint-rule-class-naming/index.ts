@@ -1,28 +1,26 @@
-import {
-	Document,
-	Element,
-} from '../../parser';
 import Rule, {
-	RuleConfig,
-	RuleLevel,
+	CustomRule,
 	VerifyReturn,
 } from '../../rule';
-import Ruleset from '../../ruleset';
 import messages from '../messages';
 
 export type Value = string | string[] | null;
+export type Options = null;
 
-export default class extends Rule<Value> {
-	public name = 'class-naming';
-	public defaultLevel: RuleLevel = 'warning';
-	public defaultValue: Value = null;
-
-	public async verify (document: Document, config: RuleConfig<Value>, ruleset: Ruleset, locale: string) {
+export default CustomRule.create<Value, Options>({
+	name: 'class-naming',
+	defaultLevel: 'warning',
+	defaultValue: null,
+	defaultOptions: null,
+	async verify (document, locale) {
 		const reports: VerifyReturn[] = [];
 		// const message = await messages(locale, `{0} of {1} ${ms} be {2}`, 'Attribute name', 'HTML', `${config.value}case`);
 		await document.walkOn('Element', async (node) => {
-			if (config.value) {
-				const classPatterns = Array.isArray(config.value) ? config.value : [config.value];
+			if (!node.rule) {
+				return;
+			}
+			if (node.rule.value) {
+				const classPatterns = Array.isArray(node.rule.value) ? node.rule.value : [node.rule.value];
 				for (const classPattern of classPatterns) {
 					for (const className of node.classList) {
 						if (!match(className, classPattern)) {
@@ -31,7 +29,7 @@ export default class extends Rule<Value> {
 								continue;
 							}
 							reports.push({
-								level: config.level,
+								level: node.rule.level,
 								message: `"${className}" class name is unmatched pattern of "${classPattern}"`,
 								line: attr.location.line,
 								col: attr.location.col,
@@ -43,8 +41,8 @@ export default class extends Rule<Value> {
 			}
 		});
 		return reports;
-	}
-}
+	},
+});
 
 function match (needle: string, pattern: string) {
 	const matches = pattern.match(/^\/(.*)\/(i|g|m)*$/);

@@ -5,11 +5,20 @@ import {
 	RawAttribute,
 } from './parseRawTag';
 
-import { NodeRule } from '../ruleset';
+import Ruleset, {
+	ConfigureFileJSONRules,
+	ConfigureFileJSONRuleOption,
+	NodeRule,
+} from '../ruleset';
 
+import {
+	CustomRule,
+	RuleConfig,
+} from '../rule';
+
+import cssSelector from './cssSelector';
 import getCol from './getCol';
 import getLine from './getLine';
-
 import tagSplitter from './tagSplitter';
 
 export interface Location {
@@ -97,12 +106,12 @@ export interface Indentation {
 	line: number;
 }
 
-export type Walker<N = (Node | GhostNode)> = (node: N) => Promise<void>;
-export type SyncWalker = (node: Node | GhostNode) => void;
+export type Walker<T, O, N = (Node<T, O> | GhostNode<T, O>)> = (node: N) => Promise<void>;
+export type SyncWalker<T, O, N = (Node<T, O> | GhostNode<T, O>)> = (node: N) => void;
 
 export type NodeType = 'Element' | 'OmittedElement' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
 
-export abstract class Node {
+export abstract class Node<T = null, O = {}> {
 	public readonly type: NodeType = null;
 	public nodeName: string;
 	public readonly line: number;
@@ -111,12 +120,18 @@ export abstract class Node {
 	public endCol: number;
 	public readonly startOffset: number;
 	public endOffset: number;
-	public prevNode: Node | GhostNode | null = null;
-	public nextNode: Node | GhostNode | null = null;
-	public readonly parentNode: Node | GhostNode | null = null;
+	public prevNode: Node<T, O> | GhostNode<T, O> | null = null;
+	public nextNode: Node<T, O> | GhostNode<T, O> | null = null;
+	public readonly parentNode: Node<T, O> | GhostNode<T, O> | null = null;
 	public raw = '';
-	public prevSyntaxicalNode: Node | null;
+	public prevSyntaxicalNode: Node<T, O> | null;
 	public indentation: Indentation | null = null;
+	public rules: ConfigureFileJSONRules = {};
+	public document: Document<T, O>;
+
+	/**
+	 * @WIP
+	 */
 	public depth = 0;
 
 	constructor (props: NodeProperties) {
@@ -148,15 +163,29 @@ export abstract class Node {
 	public is (type: NodeType) {
 		return this.type === type;
 	}
+
+	public get rule () {
+		if (!this.document.rule) {
+			return null;
+		}
+		const name = this.document.rule.name;
+		// @ts-ignore
+		const rule: ConfigureFileJSONRuleOption<T, O> = this.rules[name];
+		if (rule == null) {
+			return null;
+		}
+		return this.document.rule.optimizeOption(rule);
+	}
 }
 
-export abstract class GhostNode {
+export abstract class GhostNode<T = null, O = {}> {
 	public readonly type: NodeType = null;
 	public nodeName: string;
-	public prevNode: Node | GhostNode | null = null;
-	public nextNode: Node | GhostNode | null = null;
-	public readonly parentNode: Node | GhostNode | null = null;
+	public prevNode: Node<T, O> | GhostNode<T, O> | null = null;
+	public nextNode: Node<T, O> | GhostNode<T, O> | null = null;
+	public readonly parentNode: Node<T, O> | GhostNode<T, O> | null = null;
 	public raw = '';
+	public rules: ConfigureFileJSONRules = {};
 
 	constructor (props: GhostNodeProperties) {
 		this.nodeName = props.nodeName;
@@ -170,14 +199,14 @@ export abstract class GhostNode {
 	}
 }
 
-export class Element extends Node {
+export class Element<T, O> extends Node<T, O> {
 	public readonly type: NodeType = 'Element';
 	public readonly namespaceURI: string;
 	public readonly attributes: Attribute[];
-	public childNodes: (Node | GhostNode)[] = [];
+	public childNodes: (Node<T, O> | GhostNode<T, O>)[] = [];
 	public readonly startTagLocation: TagNodeLocation;
 	public readonly endTagLocation: TagNodeLocation | null = null;
-	public endTagNode: EndTagNode | null = null;
+	public endTagNode: EndTagNode<T, O> | null = null;
 
 	constructor (props: ElementProperties, rawHtml: string) {
 		super(props);
@@ -189,7 +218,7 @@ export class Element extends Node {
 		if (this.endTagLocation && this.endTagLocation.startOffset != null && this.endTagLocation.endOffset != null) {
 			const endTagRaw = rawHtml.slice(this.endTagLocation.startOffset, this.endTagLocation.endOffset);
 			const endTagName = endTagRaw.replace(/^<\/((?:[a-z]+:)?[a-z]+(?:-[a-z]+)*)\s*>/i, '$1');
-			const endTag = new EndTagNode({
+			const endTag = new EndTagNode<T, O>({
 				nodeName: endTagName,
 				location: {
 					line: this.endTagLocation.line,
@@ -215,6 +244,10 @@ export class Element extends Node {
 		}
 	}
 
+	public hasAttribute (attrName: string) {
+		return !!this.getAttribute(attrName);
+	}
+
 	public get id () {
 		return this.getAttribute('id');
 	}
@@ -228,25 +261,25 @@ export class Element extends Node {
 	}
 }
 
-export class OmittedElement extends GhostNode {
+export class OmittedElement<T, O> extends GhostNode<T, O> {
 	public readonly type: NodeType = 'OmittedElement';
 	public readonly attributes: never[] = [];
-	public childNodes: (Node | GhostNode)[] = [];
+	public childNodes: (Node<T, O> | GhostNode)[] = [];
 
 	constructor (props: OmittedElementProperties) {
 		super(props);
 	}
 }
 
-export class TextNode extends Node {
+export class TextNode<T, O> extends Node<T, O> {
 	public readonly type: NodeType = 'Text';
 }
 
-export class RawTextNode extends TextNode {
+export class RawTextNode<T, O> extends TextNode<T, O> {
 	public readonly type: NodeType = 'RawText';
 }
 
-export class CommentNode extends Node {
+export class CommentNode<T, O> extends Node<T, O> {
 	public readonly type: NodeType = 'Comment';
 	public readonly data: string;
 
@@ -256,7 +289,7 @@ export class CommentNode extends Node {
 	}
 }
 
-export class Doctype extends Node {
+export class Doctype<T, O> extends Node<T, O> {
 	public readonly type: NodeType = 'Doctype';
 	public readonly publicId: string | null;
 	public readonly dtd: string | null;
@@ -268,9 +301,9 @@ export class Doctype extends Node {
 	}
 }
 
-export class EndTagNode extends Node {
+export class EndTagNode<T, O> extends Node<T, O> {
 	public readonly type: NodeType = 'EndTag';
-	public readonly startTagNode: Node | GhostNode;
+	public readonly startTagNode: Node<T, O> | GhostNode<T, O>;
 
 	constructor (props: EndTagNodeProperties) {
 		super(props);
@@ -278,7 +311,7 @@ export class EndTagNode extends Node {
 	}
 }
 
-export class InvalidNode extends Node {
+export class InvalidNode<T, O> extends Node<T, O> {
 	public readonly type: NodeType = 'Invalid';
 
 	constructor (props: NodeProperties) {
@@ -286,36 +319,40 @@ export class InvalidNode extends Node {
 	}
 }
 
-interface SortableNode {
-	node: Node | GhostNode;
+interface SortableNode<T, O> {
+	node: Node<T, O> | GhostNode<T, O>;
 	startOffset: number;
 	endOffset: number;
 }
 
-export class Document {
-	public readonly html: Node | GhostNode;
-	public readonly head: Node | GhostNode;
-	public readonly body: Node | GhostNode;
+export class Document<T, O> {
+	public readonly html: Node<T, O> | GhostNode<T, O>;
+	public readonly head: Node<T, O> | GhostNode<T, O>;
+	public readonly body: Node<T, O> | GhostNode<T, O>;
+	public rule: CustomRule<T, O> | null = null;
 
 	private _raw: string;
-	private _tree: (Node | GhostNode)[] = [];
-	private _list: (Node | GhostNode)[] = [];
-	private _nodeRules: NodeRule[];
+	private _tree: (Node<T, O> | GhostNode<T, O>)[] = [];
+	private _list: (Node<T, O> | GhostNode<T, O>)[] = [];
+	private _ruleset: Ruleset | null = null;
 
 	// tslint:disable-next-line:cyclomatic-complexity
-	constructor (nodeTree: (Node | GhostNode)[], rawHtml: string, nodeRules: NodeRule[]) {
+	constructor (nodeTree: (Node<T, O> | GhostNode<T, O>)[], rawHtml: string, ruleset?: Ruleset) {
 		this._raw = rawHtml;
 		this._tree = nodeTree;
-		this._nodeRules = nodeRules;
+		this._ruleset = ruleset || null;
 
-		const pos: SortableNode[] = [];
+		const pos: SortableNode<T, O>[] = [];
 
 		let prevLine = 1;
 		let prevCol = 1;
 		let currentStartOffset = 0;
 		let currentEndOffset = 0;
-		syncWalk(nodeTree, (node) => {
+		syncWalk<T, O>(nodeTree, (node) => {
 			if (node instanceof Node) {
+				// set self
+				node.document = this;
+
 				currentStartOffset = node.startOffset;
 
 				const diff = currentStartOffset - currentEndOffset;
@@ -438,7 +475,7 @@ export class Document {
 
 		this._list = [];
 
-		let prevSyntaxicalNode: Node | null = null;
+		let prevSyntaxicalNode: Node<T, O> | null = null;
 		pos.map(p => p.node).forEach((node) => {
 			if (node instanceof Node) {
 				node.prevSyntaxicalNode = prevSyntaxicalNode;
@@ -462,10 +499,11 @@ export class Document {
 
 		for (const node of this._list) {
 			if (node instanceof Node) {
+
+				// indentation meta-infomation
 				if (node.prevSyntaxicalNode instanceof TextNode) {
 					const prevSyntaxicalTextNode = node.prevSyntaxicalNode;
 
-					// indentation meta-infomation
 					if (!(prevSyntaxicalTextNode instanceof RawTextNode)) {
 						const matched = prevSyntaxicalTextNode.raw.match(/\r?\n([ \t]+$)/);
 						if (matched) {
@@ -500,7 +538,70 @@ export class Document {
 						}
 					}
 				}
+
 			}
+		}
+
+		if (this._ruleset) {
+			// nodeRules
+			const _ruleset = this._ruleset;
+			// tslint:disable-next-line:cyclomatic-complexity
+			this.syncWalk((node) => {
+				for (const ruleName in _ruleset.rules) {
+					if (_ruleset.rules.hasOwnProperty(ruleName)) {
+						const rule = _ruleset.rules[ruleName];
+						node.rules[ruleName] = rule;
+					}
+				}
+				for (const nodeRule of _ruleset.nodeRules) {
+					if (nodeRule.rules) {
+						for (const ruleName in nodeRule.rules) {
+							if (nodeRule.rules.hasOwnProperty(ruleName)) {
+								const rule = nodeRule.rules[ruleName];
+								if (nodeRule.tagName || nodeRule.selector) {
+									if (nodeRule.tagName === node.nodeName) {
+										node.rules[ruleName] = rule;
+									} else if (nodeRule.selector && node instanceof Element) {
+										const selector = cssSelector(nodeRule.selector);
+										// console.log({ m: selector.match(node), s: nodeRule.selector, n: node.raw });
+										if (selector.match(node)) {
+											node.rules[ruleName] = rule;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+			// childNodeRules
+			this.syncWalk((node) => {
+				if (node instanceof Element || node instanceof OmittedElement) {
+					for (const nodeRule of _ruleset.childNodeRules) {
+						if (nodeRule.rules) {
+							for (const ruleName in nodeRule.rules) {
+								if (nodeRule.rules.hasOwnProperty(ruleName)) {
+									const rule = nodeRule.rules[ruleName];
+									if (nodeRule.tagName || nodeRule.selector) {
+										if (nodeRule.tagName === node.nodeName) {
+											for (const childNode of node.childNodes) {
+												childNode.rules[ruleName] = rule;
+											}
+										} else if (nodeRule.selector && node instanceof Element) {
+											const selector = cssSelector(nodeRule.selector);
+											if (selector.match(node)) {
+												for (const childNode of node.childNodes) {
+													childNode.rules[ruleName] = rule;
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			});
 		}
 	}
 
@@ -534,17 +635,17 @@ export class Document {
 		});
 	}
 
-	public async walk (walker: Walker) {
+	public async walk (walker: Walker<T, O>) {
 		for (const node of this._list) {
 			await walker(node);
 		}
 	}
 
-	public async walkOn (type: 'Element', walker: Walker<Element>): Promise<void>;
-	public async walkOn (type: 'Text', walker: Walker<TextNode>): Promise<void>;
-	public async walkOn (type: 'Comment', walker: Walker<CommentNode>): Promise<void>;
-	public async walkOn (type: 'EndTag', walker: Walker<EndTagNode>): Promise<void>;
-	public async walkOn (type: NodeType, walker: Walker<any>): Promise<void> { // tslint:disable-line:no-any
+	public async walkOn (type: 'Element', walker: Walker<T, O, Element<T, O>>): Promise<void>;
+	public async walkOn (type: 'Text', walker: Walker<T, O, TextNode<T, O>>): Promise<void>;
+	public async walkOn (type: 'Comment', walker: Walker<T, O, CommentNode<T, O>>): Promise<void>;
+	public async walkOn (type: 'EndTag', walker: Walker<T, O, EndTagNode<T, O>>): Promise<void>;
+	public async walkOn (type: NodeType, walker: Walker<T, O, any>): Promise<void> { // tslint:disable-line:no-any
 		for (const node of this._list) {
 			if (node instanceof Node && node.is(type)) {
 				await walker(node);
@@ -552,18 +653,35 @@ export class Document {
 		}
 	}
 
-	public syncWalk (walker: SyncWalker) {
+	public syncWalk (walker: SyncWalker<T, O>) {
 		for (const node of this._list) {
 			walker(node);
 		}
 	}
 
-	public getNode (index: number): Node | GhostNode | null {
+	public syncWalkOn (type: 'Element', walker: SyncWalker<T, O, Element<T, O>>): void;
+	public syncWalkOn (type: 'Text', walker: SyncWalker<T, O, TextNode<T, O>>): void;
+	public syncWalkOn (type: 'Comment', walker: SyncWalker<T, O, CommentNode<T, O>>): void;
+	public syncWalkOn (type: 'EndTag', walker: SyncWalker<T, O, EndTagNode<T, O>>): void;
+	public syncWalkOn (type: NodeType, walker: SyncWalker<T, O, any>): void { // tslint:disable-line:no-any
+		for (const node of this._list) {
+			if (node instanceof Node && node.is(type)) {
+				walker(node);
+			}
+		}
+	}
+
+	public getNode (index: number): Node<T, O> | GhostNode<T, O> | null {
 		return this._tree[index];
+	}
+
+	public setRule (rule: CustomRule<T, O> | null) {
+		// @ts-ignore
+		this.rule = rule;
 	}
 }
 
-async function walk (nodeList: (Node | GhostNode)[], walker: Walker) {
+async function walk<T, O> (nodeList: (Node | GhostNode)[], walker: Walker<T, O>) {
 	for (const node of nodeList) {
 		await walker(node);
 		if (node instanceof Element || node instanceof OmittedElement) {
@@ -575,7 +693,7 @@ async function walk (nodeList: (Node | GhostNode)[], walker: Walker) {
 	}
 }
 
-function syncWalk (nodeList: (Node | GhostNode)[], walker: SyncWalker) {
+function syncWalk<T, O> (nodeList: (Node<T, O> | GhostNode<T, O>)[], walker: SyncWalker<T, O>) {
 	for (const node of nodeList) {
 		walker(node);
 		if (node instanceof Element || node instanceof OmittedElement) {
@@ -588,8 +706,8 @@ function syncWalk (nodeList: (Node | GhostNode)[], walker: SyncWalker) {
 }
 
 // tslint:disable-next-line:cyclomatic-complexity
-function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: Node | GhostNode | null, rawHtml: string): (Node | GhostNode)[] {
-	const nodes: (Node | GhostNode)[] = [];
+function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O> | null, parent: Node<T, O> | GhostNode<T, O> | null, rawHtml: string): (Node<T, O> | GhostNode<T, O>)[] {
+	const nodes: (Node<T, O> | GhostNode<T, O>)[] = [];
 	switch (p5node.nodeName) {
 		case '#documentType': {
 			if (!p5node.__location) {
@@ -620,7 +738,7 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 			}
 			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
 			if (parent && /^(?:script|style)$/i.test(parent.nodeName)) {
-				const node = new RawTextNode({
+				const node = new RawTextNode<T, O>({
 					nodeName: p5node.nodeName,
 					location: {
 						line: p5node.__location.line,
@@ -641,7 +759,7 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 				for (const token of tokens) {
 					const endOffset = startOffset + token.raw.length;
 					if (token.type === 'text') {
-						const node = new TextNode({
+						const node = new TextNode<T, O>({
 							nodeName: p5node.nodeName,
 							location: {
 								line: token.line,
@@ -658,7 +776,7 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 						startOffset = endOffset;
 						nodes.push(node);
 					} else {
-						const node = new InvalidNode({
+						const node = new InvalidNode<T, O>({
 							nodeName: '#invalid',
 							location: {
 								line: token.line,
@@ -684,7 +802,7 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 				throw new Error('Invalid Syntax');
 			}
 			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
-			const node = new CommentNode({
+			const node = new CommentNode<T, O>({
 				nodeName: p5node.nodeName,
 				location: {
 					line: p5node.__location.line,
@@ -703,7 +821,7 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 			break;
 		}
 		default: {
-			let node: Element | OmittedElement | null = null;
+			let node: Element<T, O> | OmittedElement<T, O> | null = null;
 			if (p5node.__location) {
 				const raw =
 					p5node.__location.startTag
@@ -730,7 +848,7 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 						raw: attr.raw,
 					});
 				}
-				node = new Element(
+				node = new Element<T, O>(
 					{
 						nodeName,
 						namespaceURI: p5node.namespaceURI,
@@ -751,7 +869,7 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 					rawHtml,
 				);
 			} else {
-				node = new OmittedElement({
+				node = new OmittedElement<T, O>({
 					nodeName: p5node.nodeName,
 					namespaceURI: p5node.namespaceURI,
 					prevNode: prev,
@@ -768,11 +886,11 @@ function nodeize (p5node: P5ParentNode, prev: Node | GhostNode | null, parent: N
 	return nodes;
 }
 
-function traverse (rootNode: P5ParentNode, parentNode: Node | GhostNode | null = null, rawHtml: string): (Node | GhostNode)[] {
-	const nodeList: (Node | GhostNode)[] = [];
-	let prev: Node | GhostNode | null = null;
+function traverse<T, O> (rootNode: P5ParentNode, parentNode: Node<T, O> | GhostNode<T, O> | null = null, rawHtml: string): (Node<T, O> | GhostNode<T, O>)[] {
+	const nodeList: (Node<T, O> | GhostNode<T, O>)[] = [];
+	let prev: Node<T, O> | GhostNode<T, O> | null = null;
 	for (const p5node of rootNode.childNodes) {
-		const nodes = nodeize(p5node, prev, parentNode, rawHtml);
+		const nodes: (Node<T, O> | GhostNode<T, O>)[] = nodeize(p5node, prev, parentNode, rawHtml);
 		for (const node of nodes) {
 			if (prev) {
 				prev.nextNode = node;
@@ -784,7 +902,7 @@ function traverse (rootNode: P5ParentNode, parentNode: Node | GhostNode | null =
 	return nodeList;
 }
 
-export default function parser (html: string, nodeRules: NodeRule[]) {
+export default function parser (html: string, ruleset?: Ruleset) {
 	const doc = parse5.parse(
 		html,
 		{
@@ -793,7 +911,7 @@ export default function parser (html: string, nodeRules: NodeRule[]) {
 	) as P5ParentNode;
 
 	const nodeTree: (Node | GhostNode)[] = traverse(doc, null, html);
-	return new Document(nodeTree, html, nodeRules);
+	return new Document(nodeTree, html, ruleset);
 }
 
 type P5Document = parse5.AST.HtmlParser2.Document & parse5.AST.Document;

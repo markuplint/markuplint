@@ -19,9 +19,9 @@ export default class extends Rule<Value, Options> {
 	public name = 'required-h1';
 	public defaultOptions = { 'expected-once': true };
 
-	public async verify (document: Document, config: RuleConfig<Value, Options>, ruleset: Ruleset, locale: string) {
+	public async verify (document: Document<Value, Options>, config: RuleConfig<Value, Options>, ruleset: Ruleset, locale: string) {
 		const reports: VerifyReturn[] = [];
-		const h1Stack: Element[] = [];
+		const h1Stack: Element<Value, Options>[] = [];
 		document.syncWalk((node) => {
 			if (node instanceof Element) {
 				if (node.nodeName.toLowerCase() === 'h1') {

@@ -1,4 +1,5 @@
-import { NodeRule } from '../ruleset';
+import Ruleset, { ConfigureFileJSONRules } from '../ruleset';
+import { CustomRule, RuleConfig } from '../rule';
 export interface Location {
     line: number | null;
     col: number | null;
@@ -70,10 +71,10 @@ export interface Indentation {
     raw: string;
     line: number;
 }
-export declare type Walker<N = (Node | GhostNode)> = (node: N) => Promise<void>;
-export declare type SyncWalker = (node: Node | GhostNode) => void;
+export declare type Walker<T, O, N = (Node<T, O> | GhostNode<T, O>)> = (node: N) => Promise<void>;
+export declare type SyncWalker<T, O, N = (Node<T, O> | GhostNode<T, O>)> = (node: N) => void;
 export declare type NodeType = 'Element' | 'OmittedElement' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
-export declare abstract class Node {
+export declare abstract class Node<T = null, O = {}> {
     readonly type: NodeType;
     nodeName: string;
     readonly line: number;
@@ -82,12 +83,17 @@ export declare abstract class Node {
     endCol: number;
     readonly startOffset: number;
     endOffset: number;
-    prevNode: Node | GhostNode | null;
-    nextNode: Node | GhostNode | null;
-    readonly parentNode: Node | GhostNode | null;
+    prevNode: Node<T, O> | GhostNode<T, O> | null;
+    nextNode: Node<T, O> | GhostNode<T, O> | null;
+    readonly parentNode: Node<T, O> | GhostNode<T, O> | null;
     raw: string;
-    prevSyntaxicalNode: Node | null;
+    prevSyntaxicalNode: Node<T, O> | null;
     indentation: Indentation | null;
+    rules: ConfigureFileJSONRules;
+    document: Document<T, O>;
+    /**
+     * @WIP
+     */
     depth: number;
     constructor(props: NodeProperties);
     toString(): string;
@@ -97,82 +103,91 @@ export declare abstract class Node {
         col: number | null;
     };
     is(type: NodeType): boolean;
+    readonly rule: RuleConfig<T, O> | null;
 }
-export declare abstract class GhostNode {
+export declare abstract class GhostNode<T = null, O = {}> {
     readonly type: NodeType;
     nodeName: string;
-    prevNode: Node | GhostNode | null;
-    nextNode: Node | GhostNode | null;
-    readonly parentNode: Node | GhostNode | null;
+    prevNode: Node<T, O> | GhostNode<T, O> | null;
+    nextNode: Node<T, O> | GhostNode<T, O> | null;
+    readonly parentNode: Node<T, O> | GhostNode<T, O> | null;
     raw: string;
+    rules: ConfigureFileJSONRules;
     constructor(props: GhostNodeProperties);
     toString(): string;
 }
-export declare class Element extends Node {
+export declare class Element<T, O> extends Node<T, O> {
     readonly type: NodeType;
     readonly namespaceURI: string;
     readonly attributes: Attribute[];
-    childNodes: (Node | GhostNode)[];
+    childNodes: (Node<T, O> | GhostNode<T, O>)[];
     readonly startTagLocation: TagNodeLocation;
     readonly endTagLocation: TagNodeLocation | null;
-    endTagNode: EndTagNode | null;
+    endTagNode: EndTagNode<T, O> | null;
     constructor(props: ElementProperties, rawHtml: string);
     getAttribute(attrName: string): Attribute | undefined;
+    hasAttribute(attrName: string): boolean;
     readonly id: Attribute | undefined;
     readonly classList: string[];
 }
-export declare class OmittedElement extends GhostNode {
+export declare class OmittedElement<T, O> extends GhostNode<T, O> {
     readonly type: NodeType;
     readonly attributes: never[];
-    childNodes: (Node | GhostNode)[];
+    childNodes: (Node<T, O> | GhostNode)[];
     constructor(props: OmittedElementProperties);
 }
-export declare class TextNode extends Node {
+export declare class TextNode<T, O> extends Node<T, O> {
     readonly type: NodeType;
 }
-export declare class RawTextNode extends TextNode {
+export declare class RawTextNode<T, O> extends TextNode<T, O> {
     readonly type: NodeType;
 }
-export declare class CommentNode extends Node {
+export declare class CommentNode<T, O> extends Node<T, O> {
     readonly type: NodeType;
     readonly data: string;
     constructor(props: CommentNodeProperties);
 }
-export declare class Doctype extends Node {
+export declare class Doctype<T, O> extends Node<T, O> {
     readonly type: NodeType;
     readonly publicId: string | null;
     readonly dtd: string | null;
     constructor(props: DocTypeProperties);
 }
-export declare class EndTagNode extends Node {
+export declare class EndTagNode<T, O> extends Node<T, O> {
     readonly type: NodeType;
-    readonly startTagNode: Node | GhostNode;
+    readonly startTagNode: Node<T, O> | GhostNode<T, O>;
     constructor(props: EndTagNodeProperties);
 }
-export declare class InvalidNode extends Node {
+export declare class InvalidNode<T, O> extends Node<T, O> {
     readonly type: NodeType;
     constructor(props: NodeProperties);
 }
-export declare class Document {
-    readonly html: Node | GhostNode;
-    readonly head: Node | GhostNode;
-    readonly body: Node | GhostNode;
+export declare class Document<T, O> {
+    readonly html: Node<T, O> | GhostNode<T, O>;
+    readonly head: Node<T, O> | GhostNode<T, O>;
+    readonly body: Node<T, O> | GhostNode<T, O>;
+    rule: CustomRule<T, O> | null;
     private _raw;
     private _tree;
     private _list;
-    private _nodeRules;
-    constructor(nodeTree: (Node | GhostNode)[], rawHtml: string, nodeRules: NodeRule[]);
+    private _ruleset;
+    constructor(nodeTree: (Node<T, O> | GhostNode<T, O>)[], rawHtml: string, ruleset?: Ruleset);
     readonly raw: string;
-    readonly list: (Node | GhostNode)[];
+    readonly list: (Node<T, O> | GhostNode<T, O>)[];
     toString(): string;
     toJSON(): any;
     toDebugMap(): string[];
-    walk(walker: Walker): Promise<void>;
-    walkOn(type: 'Element', walker: Walker<Element>): Promise<void>;
-    walkOn(type: 'Text', walker: Walker<TextNode>): Promise<void>;
-    walkOn(type: 'Comment', walker: Walker<CommentNode>): Promise<void>;
-    walkOn(type: 'EndTag', walker: Walker<EndTagNode>): Promise<void>;
-    syncWalk(walker: SyncWalker): void;
-    getNode(index: number): Node | GhostNode | null;
+    walk(walker: Walker<T, O>): Promise<void>;
+    walkOn(type: 'Element', walker: Walker<T, O, Element<T, O>>): Promise<void>;
+    walkOn(type: 'Text', walker: Walker<T, O, TextNode<T, O>>): Promise<void>;
+    walkOn(type: 'Comment', walker: Walker<T, O, CommentNode<T, O>>): Promise<void>;
+    walkOn(type: 'EndTag', walker: Walker<T, O, EndTagNode<T, O>>): Promise<void>;
+    syncWalk(walker: SyncWalker<T, O>): void;
+    syncWalkOn(type: 'Element', walker: SyncWalker<T, O, Element<T, O>>): void;
+    syncWalkOn(type: 'Text', walker: SyncWalker<T, O, TextNode<T, O>>): void;
+    syncWalkOn(type: 'Comment', walker: SyncWalker<T, O, CommentNode<T, O>>): void;
+    syncWalkOn(type: 'EndTag', walker: SyncWalker<T, O, EndTagNode<T, O>>): void;
+    getNode(index: number): Node<T, O> | GhostNode<T, O> | null;
+    setRule(rule: CustomRule<T, O> | null): void;
 }
-export default function parser(html: string, nodeRules: NodeRule[]): Document;
+export default function parser(html: string, ruleset?: Ruleset): Document<null, {}>;

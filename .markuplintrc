@@ -58,6 +58,6 @@
     "custom-element-naming": true,
 
     # Plugin
-    "textlint/textlint": true
+    "textlint/textlint": false
   }
 }

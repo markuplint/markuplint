@@ -35,6 +35,7 @@ export interface ConfigureFileJSON {
 	extends?: string | string[];
 	rules: ConfigureFileJSONRules;
 	nodeRules?: NodeRule[];
+	childNodeRules?: NodeRule[];
 }
 
 export interface ConfigureFileJSONRules {
@@ -44,10 +45,13 @@ export interface ConfigureFileJSONRules {
 export type ConfigureFileJSONRuleOption<T, O> = [RuleLevel, T, O];
 
 export interface NodeRule {
-	tagName: string;
-	categories: string[];
-	roles: string[] | NodeRuleRoleConditions[] | null;
-	obsolete: boolean;
+	tagName?: string;
+	categories?: string[];
+	roles?: string[] | NodeRuleRoleConditions[] | null;
+	obsolete?: boolean;
+	selector?: string;
+	rules?: ConfigureFileJSONRules;
+	inheritance?: boolean;
 }
 
 export interface NodeRuleRoleConditions {
@@ -83,6 +87,7 @@ export default class Ruleset {
 
 	public rules: ConfigureFileJSONRules = {};
 	public nodeRules: NodeRule[] = [];
+	public childNodeRules: NodeRule[] = [];
 
 	private _rules: Rule[];
 	private _rawConfig: ConfigureFileJSON | null = null;
@@ -115,12 +120,15 @@ export default class Ruleset {
 		if (this._rawConfig.nodeRules) {
 			this.nodeRules = this._rawConfig.nodeRules;
 		}
+		if (this._rawConfig.childNodeRules) {
+			this.childNodeRules = this._rawConfig.childNodeRules;
+		}
 		if (this._rawConfig.extends) {
 			await extendsRules(this._rawConfig.extends, configFilePath, this);
 		}
 	}
 
-	public async verify (nodeTree: Document, locale: string) {
+	public async verify (nodeTree: Document<null, {}>, locale: string) {
 		const reports: VerifiedResult[] = [];
 		for (const rule of this._rules) {
 			const config = rule.optimizeOption(this.rules[rule.name] || false);

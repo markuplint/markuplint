@@ -3,12 +3,12 @@ import { VerifiedResult } from './rule';
 import Ruleset from './ruleset';
 
 export default class Markuplint {
-	public document: Document;
+	public document: Document<null, {}>;
 	public ruleset: Ruleset;
 	public locale: string;
 
 	constructor (html: string, ruleset: Ruleset, locale: string) {
-		this.document = parser(html, ruleset.nodeRules);
+		this.document = parser(html, ruleset);
 		this.ruleset = ruleset;
 		this.locale = locale;
 	}

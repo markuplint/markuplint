@@ -17,7 +17,7 @@ import Ruleset from '../../ruleset';
 export default class extends Rule {
 	public name = 'permitted-contents';
 
-	public async verify (document: Document, config: RuleConfig, ruleset: Ruleset) {
+	public async verify (document: Document<null, {}>, config: RuleConfig, ruleset: Ruleset) {
 		const reports: VerifyReturn[] = [];
 		// if (ruleset && ruleset.nodeRules) {
 		// 	for (const nodeRule of ruleset.nodeRules) {

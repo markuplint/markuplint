@@ -22,20 +22,28 @@ export interface RuleConfig<T = null, O = {}> {
 }
 export interface CustomRuleObject<T = null, O = {}> {
     name: string;
-    verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<CustomVerifiedReturn[]>;
+    defaultLevel?: RuleLevel;
+    defaultValue: T;
+    defaultOptions: O;
+    verify(document: Document<T, O>, locale: string): Promise<CustomVerifiedReturn[]>;
 }
 export default abstract class Rule<T = null, O = {}> {
     readonly name: string;
     readonly defaultLevel: RuleLevel;
     readonly defaultValue: T;
     readonly defaultOptions: O;
-    abstract verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
+    abstract verify(document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
     optimizeOption(option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O>;
 }
-export declare class CustomRule<T = null, O = {}> extends Rule<T, O> {
+export declare class CustomRule<T = null, O = {}> {
+    static create<T = null, O = {}>(options: CustomRuleObject<T, O>): CustomRule<T, O>;
     name: string;
-    _verify: (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string) => Promise<CustomVerifiedReturn[]>;
+    defaultLevel: RuleLevel;
+    defaultValue: T;
+    defaultOptions: O;
+    _v: (document: Document<T, O>, locale: string) => Promise<CustomVerifiedReturn[]>;
     constructor(o: CustomRuleObject<T, O>);
-    verify(document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifiedResult[]>;
+    verify(document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifiedResult[]>;
+    optimizeOption(option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O>;
 }
 export declare function getRuleModules(): Promise<Rule[]>;

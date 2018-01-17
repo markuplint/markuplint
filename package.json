@@ -1,6 +1,6 @@
 {
   "name": "markuplint",
-  "version": "0.15.1",
+  "version": "0.16.0",
   "description": "HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -26,6 +26,7 @@
   "dependencies": {
     "cli-color": "^1.2.0",
     "cosmiconfig": "^4.0.0",
+    "css-what": "^2.1.0",
     "deep-assign": "^2.0.0",
     "find-node-modules": "^1.0.4",
     "meow": "^4.0.0",

@@ -13,7 +13,7 @@ export interface Options {}
 export default class extends Rule<DefaultValue, Options> {
 	public name = 'deprecated-attr';
 
-	public async verify (document: Document, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset) {
+	public async verify (document: Document<DefaultValue, Options>, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset) {
 		const reports: VerifiedResult[] = [];
 		// document.walk((node) => {});
 		return reports;

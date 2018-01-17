@@ -1,10 +1,5 @@
-import { Document } from '../../parser';
-import Rule, { RuleConfig, RuleLevel, VerifyReturn } from '../../rule';
-import Ruleset from '../../ruleset';
+import { CustomRule } from '../../rule';
 export declare type Value = string | string[] | null;
-export default class  extends Rule<Value> {
-    name: string;
-    defaultLevel: RuleLevel;
-    defaultValue: Value;
-    verify(document: Document, config: RuleConfig<Value>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
-}
+export declare type Options = null;
+declare const _default: CustomRule<Value, null>;
+export default _default;

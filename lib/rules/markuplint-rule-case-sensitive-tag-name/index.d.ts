@@ -6,5 +6,5 @@ export default class  extends Rule<Value> {
     name: string;
     defaultLevel: RuleLevel;
     defaultValue: Value;
-    verify(document: Document, config: RuleConfig<Value>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
+    verify(document: Document<Value, {}>, config: RuleConfig<Value>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
 }

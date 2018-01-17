@@ -12,7 +12,7 @@ const readFile = util.promisify(fs.readFile);
 (async () => {
 
 	const html = await readFile('src/test/003.html', 'utf-8');
-	const d = parser(html, []);
+	const d = parser(html);
 
 	// process.stdout.write(d.toDebugMap().join('\n'));
 	const coloredNodes = d.list.map((n) => {

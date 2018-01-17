@@ -14,7 +14,7 @@
     "baseUrl": ".",
     "paths": {
       "parse5": ["./node_modules/parse5/lib/index.d.ts"]
-    },
+    }
   },
   "exclude": [
     "node_modules",

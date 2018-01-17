@@ -12,7 +12,7 @@ import messages from '../messages';
 export default class extends Rule {
 	public name = 'id-duplication';
 
-	public async verify (document: Document, config: RuleConfig, ruleset: Ruleset, locale: string) {
+	public async verify (document: Document<null, {}>, config: RuleConfig, ruleset: Ruleset, locale: string) {
 		const reports: VerifyReturn[] = [];
 		const message = await messages(locale, 'Duplicate {0}', 'attribute id value');
 		const idStack: string[] = [];

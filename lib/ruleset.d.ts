@@ -8,16 +8,20 @@ export interface ConfigureFileJSON {
     extends?: string | string[];
     rules: ConfigureFileJSONRules;
     nodeRules?: NodeRule[];
+    childNodeRules?: NodeRule[];
 }
 export interface ConfigureFileJSONRules {
     [ruleName: string]: boolean | ConfigureFileJSONRuleOption<null, {}>;
 }
 export declare type ConfigureFileJSONRuleOption<T, O> = [RuleLevel, T, O];
 export interface NodeRule {
-    tagName: string;
-    categories: string[];
-    roles: string[] | NodeRuleRoleConditions[] | null;
-    obsolete: boolean;
+    tagName?: string;
+    categories?: string[];
+    roles?: string[] | NodeRuleRoleConditions[] | null;
+    obsolete?: boolean;
+    selector?: string;
+    rules?: ConfigureFileJSONRules;
+    inheritance?: boolean;
 }
 export interface NodeRuleRoleConditions {
     role: string;
@@ -38,6 +42,7 @@ export default class Ruleset {
     static create(config: ConfigureFileJSON | string, rules: Rule[]): Promise<Ruleset>;
     rules: ConfigureFileJSONRules;
     nodeRules: NodeRule[];
+    childNodeRules: NodeRule[];
     private _rules;
     private _rawConfig;
     private _configPath;
@@ -47,5 +52,5 @@ export default class Ruleset {
      * @param config JSON Data
      */
     setConfig(config: ConfigureFileJSON, configFilePath: string): Promise<void>;
-    verify(nodeTree: Document, locale: string): Promise<VerifiedResult[]>;
+    verify(nodeTree: Document<null, {}>, locale: string): Promise<VerifiedResult[]>;
 }

@@ -14,7 +14,7 @@ export interface Options {}
 export default class extends Rule<DefaultValue, Options> {
 	public name = 'permitted-role';
 
-	public async verify (document: Document, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset, locale: string) {
+	public async verify (document: Document<DefaultValue, Options>, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset, locale: string) {
 		const reports: VerifyReturn[] = [];
 		const message = await messages(locale, `Values allowed for {0} attributes are {$}`, '"role"');
 		await document.walkOn('Element', async (node) => {

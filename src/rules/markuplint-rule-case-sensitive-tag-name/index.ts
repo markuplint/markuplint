@@ -18,7 +18,7 @@ export default class extends Rule<Value> {
 	public defaultLevel: RuleLevel = 'warning';
 	public defaultValue: Value = 'lower';
 
-	public async verify (document: Document, config: RuleConfig<Value>, ruleset: Ruleset, locale: string) {
+	public async verify (document: Document<Value, {}>, config: RuleConfig<Value>, ruleset: Ruleset, locale: string) {
 		const reports: VerifyReturn[] = [];
 		const ms = config.level === 'error' ? 'must' : 'should';
 		const deny = config.value === 'lower' ? /[A-Z]/ : /[a-z]/;

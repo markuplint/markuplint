@@ -41,7 +41,10 @@ export interface RuleConfig<T = null, O = {}> {
 
 export interface CustomRuleObject<T = null, O = {}> {
 	name: string;
-	verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<CustomVerifiedReturn[]>;
+	defaultLevel?: RuleLevel;
+	defaultValue: T;
+	defaultOptions: O;
+	verify (document: Document<T, O>, locale: string): Promise<CustomVerifiedReturn[]>;
 }
 
 export default abstract class Rule<T = null, O = {}> {
@@ -50,7 +53,7 @@ export default abstract class Rule<T = null, O = {}> {
 	public readonly defaultValue: T;
 	public readonly defaultOptions: O;
 
-	public abstract async verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
+	public abstract async verify (document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
 
 	public optimizeOption (option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O> {
 		if (typeof option === 'boolean') {
@@ -78,18 +81,34 @@ export default abstract class Rule<T = null, O = {}> {
 	}
 }
 
-export class CustomRule<T = null, O = {}> extends Rule<T, O> {
-	public name: string;
-	public _verify: (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string) => Promise<CustomVerifiedReturn[]>;
-
-	constructor (o: CustomRuleObject<T, O>) {
-		super();
-		this.name = o.name;
-		this._verify = o.verify;
+export class CustomRule<T = null, O = {}> {
+	public static create<T = null, O = {}> (options: CustomRuleObject<T, O>) {
+		return new CustomRule<T, O>(options);
 	}
 
-	public async verify (document: Document, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifiedResult[]> {
-		const results = await this._verify(document, config, ruleset, locale);
+	public name: string;
+	public defaultLevel: RuleLevel;
+	public defaultValue: T;
+	public defaultOptions: O;
+	public _v: (document: Document<T, O>, locale: string) => Promise<CustomVerifiedReturn[]>;
+
+	constructor (o: CustomRuleObject<T, O>) {
+		this.name = o.name;
+		this.defaultLevel = o.defaultLevel || 'error';
+		this.defaultValue = o.defaultValue;
+		this.defaultOptions = o.defaultOptions;
+		this._v = o.verify;
+	}
+
+	public async verify (document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifiedResult[]> {
+		if (!this._v) {
+			return [];
+		}
+
+		document.setRule(this);
+		const results = await this._v(document, locale);
+		document.setRule(null);
+
 		return results.map<VerifiedResult>((result) => {
 			return {
 				level: result.level,
@@ -97,9 +116,34 @@ export class CustomRule<T = null, O = {}> extends Rule<T, O> {
 				line: result.line,
 				col: result.col,
 				raw: result.raw,
-				ruleId: result.ruleId ? `${this.name}/${result.ruleId}` : `${this.name}/${this.name}`,
+				ruleId: result.ruleId ? `${this.name}/${result.ruleId}` : `${this.name}`,
 			};
 		});
+	}
+
+	public optimizeOption (option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O> {
+		if (typeof option === 'boolean') {
+			return {
+				disabled: !option,
+				level: this.defaultLevel,
+				value: this.defaultValue,
+				option: this.defaultOptions || null,
+			};
+		}
+		if (Array.isArray(option)) {
+			return {
+				disabled: false,
+				level: option[0],
+				value: option[1] || this.defaultValue,
+				option: option[2] || this.defaultOptions || null,
+			};
+		}
+		return {
+			disabled: false,
+			level: this.defaultLevel,
+			value: option == null ? this.defaultValue : option,
+			option: this.defaultOptions || null,
+		};
 	}
 }
 
@@ -139,7 +183,7 @@ async function resolveRuleModule (modulePath: string) {
 	try {
 		const mod = await import(modulePath);
 		const ModuleRule /* Subclass of Rule */ = mod.default;
-		const rule: Rule = ModuleRule.rule ? new CustomRule(ModuleRule.rule) : new ModuleRule();
+		const rule: Rule = ModuleRule instanceof CustomRule ? ModuleRule : ModuleRule.rule ? new CustomRule(ModuleRule.rule) : new ModuleRule();
 		return rule;
 	} catch (err) {
 		// @ts-ignore

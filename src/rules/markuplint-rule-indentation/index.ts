@@ -25,7 +25,7 @@ export default class extends Rule<DefaultValue> {
 	public defaultLevel: RuleLevel = 'warning';
 	public defaultValue: DefaultValue = 2;
 
-	public async verify (document: Document, config: RuleConfig<DefaultValue>, ruleset: Ruleset, locale: string) {
+	public async verify (document: Document<DefaultValue, {}>, config: RuleConfig<DefaultValue>, ruleset: Ruleset, locale: string) {
 		const reports: VerifyReturn[] = [];
 		const ms = config.level === 'error' ? 'must' : 'should';
 		await document.walk(async (node) => {

@@ -15,7 +15,7 @@ export default class extends Rule<DefaultValue, Options> {
 	public name = 'void-element-closing';
 	public defaultLevel: 'error' | 'warning' = 'warning';
 
-	public async verify (document: Document, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset, locale: string) {
+	public async verify (document: Document<DefaultValue, Options>, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset, locale: string) {
 		const reports: VerifyReturn[] = [];
 		const message = await messages(locale, `空要素に閉じスラッシュがあります`);
 		await document.walkOn('Element', async (node) => {
