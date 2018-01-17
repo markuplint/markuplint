@@ -119,6 +119,7 @@ export declare class Element extends Node {
     constructor(props: ElementProperties, rawHtml: string);
     getAttribute(attrName: string): Attribute | undefined;
     readonly id: Attribute | undefined;
+    readonly classList: string[];
 }
 export declare class OmittedElement extends GhostNode {
     readonly type: NodeType;

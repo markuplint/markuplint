@@ -218,6 +218,14 @@ export class Element extends Node {
 	public get id () {
 		return this.getAttribute('id');
 	}
+
+	public get classList () {
+		const classAttr = this.getAttribute('class');
+		if (!classAttr || !classAttr.value) {
+			return [''];
+		}
+		return classAttr.value.split(/\s+/).map(c => c.trim()).filter(c => c);
+	}
 }
 
 export class OmittedElement extends GhostNode {
