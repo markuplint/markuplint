@@ -1,23 +1,21 @@
 import {
-	Document,
 	Element,
 	InvalidNode,
 	OmittedElement,
-} from '../../parser';
-import Rule, {
-	RuleConfig,
+} from '../../parser/';
+import {
+	CustomRule,
 	VerifyReturn,
 } from '../../rule';
-import Ruleset from '../../ruleset';
 import messages from '../messages';
 
-export type DefaultValue = string;
-export interface Options {}
+export type Value = 'tab' | number;
 
-export default class extends Rule<DefaultValue, Options> {
-	public name = 'parse-error';
-
-	public async verify (document: Document<DefaultValue, Options>, config: RuleConfig<DefaultValue, Options>, ruleset: Ruleset, locale: string) {
+export default CustomRule.create({
+	name: 'parse-error',
+	defaultValue: null,
+	defaultOptions: null,
+	async verify (document, locale) {
 		const reports: VerifyReturn[] = [];
 		// const message = await messages(locale, `Values allowed for {0} attributes are {$}`, '"role"');
 		let hasBody = false;
@@ -28,9 +26,12 @@ export default class extends Rule<DefaultValue, Options> {
 				}
 			}
 			if (node instanceof InvalidNode) {
+				if (!node.rule) {
+					return;
+				}
 				if (hasBody && node.raw.indexOf('<body') === 0) {
 					reports.push({
-						level: config.level,
+						level: node.rule.level,
 						message: '"body"要素はDOMツリー上に既に暗黙的に生成されています。',
 						line: node.line,
 						col: node.col,
@@ -38,7 +39,7 @@ export default class extends Rule<DefaultValue, Options> {
 					});
 				} else {
 					reports.push({
-						level: config.level,
+						level: node.rule.level,
 						message: 'パースできない不正なノードです。',
 						line: node.line,
 						col: node.col,
@@ -48,5 +49,5 @@ export default class extends Rule<DefaultValue, Options> {
 			}
 		});
 		return reports;
-	}
-}
+	},
+});

@@ -73,7 +73,7 @@ export interface Indentation {
 }
 export declare type Walker<T, O, N = (Node<T, O> | GhostNode<T, O>)> = (node: N) => Promise<void>;
 export declare type SyncWalker<T, O, N = (Node<T, O> | GhostNode<T, O>)> = (node: N) => void;
-export declare type NodeType = 'Element' | 'OmittedElement' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
+export declare type NodeType = 'Node' | 'Element' | 'OmittedElement' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
 export declare abstract class Node<T = null, O = {}> {
     readonly type: NodeType;
     nodeName: string;
@@ -90,7 +90,7 @@ export declare abstract class Node<T = null, O = {}> {
     prevSyntaxicalNode: Node<T, O> | null;
     indentation: Indentation | null;
     rules: ConfigureFileJSONRules;
-    document: Document<T, O>;
+    document: Document<T, O> | null;
     /**
      * @WIP
      */
@@ -163,9 +163,6 @@ export declare class InvalidNode<T, O> extends Node<T, O> {
     constructor(props: NodeProperties);
 }
 export declare class Document<T, O> {
-    readonly html: Node<T, O> | GhostNode<T, O>;
-    readonly head: Node<T, O> | GhostNode<T, O>;
-    readonly body: Node<T, O> | GhostNode<T, O>;
     rule: CustomRule<T, O> | null;
     private _raw;
     private _tree;
@@ -178,11 +175,13 @@ export declare class Document<T, O> {
     toJSON(): any;
     toDebugMap(): string[];
     walk(walker: Walker<T, O>): Promise<void>;
+    walkOn(type: 'Node', walker: Walker<T, O, Node<T, O>>): Promise<void>;
     walkOn(type: 'Element', walker: Walker<T, O, Element<T, O>>): Promise<void>;
     walkOn(type: 'Text', walker: Walker<T, O, TextNode<T, O>>): Promise<void>;
     walkOn(type: 'Comment', walker: Walker<T, O, CommentNode<T, O>>): Promise<void>;
     walkOn(type: 'EndTag', walker: Walker<T, O, EndTagNode<T, O>>): Promise<void>;
     syncWalk(walker: SyncWalker<T, O>): void;
+    syncWalkOn(type: 'Node', walker: SyncWalker<T, O, Node<T, O>>): void;
     syncWalkOn(type: 'Element', walker: SyncWalker<T, O, Element<T, O>>): void;
     syncWalkOn(type: 'Text', walker: SyncWalker<T, O, TextNode<T, O>>): void;
     syncWalkOn(type: 'Comment', walker: SyncWalker<T, O, CommentNode<T, O>>): void;

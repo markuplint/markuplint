@@ -47,40 +47,6 @@ export interface CustomRuleObject<T = null, O = {}> {
 	verify (document: Document<T, O>, locale: string): Promise<CustomVerifiedReturn[]>;
 }
 
-export default abstract class Rule<T = null, O = {}> {
-	public readonly name: string;
-	public readonly defaultLevel: RuleLevel = 'error';
-	public readonly defaultValue: T;
-	public readonly defaultOptions: O;
-
-	public abstract async verify (document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
-
-	public optimizeOption (option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O> {
-		if (typeof option === 'boolean') {
-			return {
-				disabled: !option,
-				level: this.defaultLevel,
-				value: this.defaultValue,
-				option: this.defaultOptions || null,
-			};
-		}
-		if (Array.isArray(option)) {
-			return {
-				disabled: false,
-				level: option[0],
-				value: option[1] || this.defaultValue,
-				option: option[2] || this.defaultOptions || null,
-			};
-		}
-		return {
-			disabled: false,
-			level: this.defaultLevel,
-			value: option == null ? this.defaultValue : option,
-			option: this.defaultOptions || null,
-		};
-	}
-}
-
 export class CustomRule<T = null, O = {}> {
 	public static create<T = null, O = {}> (options: CustomRuleObject<T, O>) {
 		return new CustomRule<T, O>(options);
@@ -147,16 +113,16 @@ export class CustomRule<T = null, O = {}> {
 	}
 }
 
-export async function getRuleModules (): Promise<Rule[]> {
-	const rules: Rule[] = [];
+export async function getRuleModules (): Promise<CustomRule[]> {
+	const rules: CustomRule[] = [];
 	rules.push(...await resolveRuleModules(/^markuplint-rule-[a-z]+(?:-[a-z]+)*(?:\.js)?$/i, path.resolve(__dirname, './rules')));
 	rules.push(...await resolveRuleModules(/^markuplint-rule-[a-z]+(?:-[a-z]+)*(?:\.js)?$/i, path.resolve(process.cwd(), './rules')));
 	rules.push(...await resolveRuleModules(/^markuplint-plugin-[a-z]+(?:-[a-z]+)*(?:\.js)?$/i, nearNodeModules()));
 	return rules;
 }
 
-async function resolveRuleModules (pattern: RegExp, ruleDir: string): Promise<Rule[]> {
-	const rules: Rule[] = [];
+async function resolveRuleModules (pattern: RegExp, ruleDir: string): Promise<CustomRule[]> {
+	const rules: CustomRule[] = [];
 	if (!ruleDir) {
 		return rules;
 	}
@@ -182,8 +148,8 @@ async function resolveRuleModules (pattern: RegExp, ruleDir: string): Promise<Ru
 async function resolveRuleModule (modulePath: string) {
 	try {
 		const mod = await import(modulePath);
-		const ModuleRule /* Subclass of Rule */ = mod.default;
-		const rule: Rule = ModuleRule instanceof CustomRule ? ModuleRule : ModuleRule.rule ? new CustomRule(ModuleRule.rule) : new ModuleRule();
+		const modRule /* Subclass of Rule */ = mod.default;
+		const rule: CustomRule = modRule.rule ? new CustomRule(modRule.rule) : modRule;
 		return rule;
 	} catch (err) {
 		// @ts-ignore

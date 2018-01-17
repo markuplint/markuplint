@@ -109,10 +109,10 @@ export interface Indentation {
 export type Walker<T, O, N = (Node<T, O> | GhostNode<T, O>)> = (node: N) => Promise<void>;
 export type SyncWalker<T, O, N = (Node<T, O> | GhostNode<T, O>)> = (node: N) => void;
 
-export type NodeType = 'Element' | 'OmittedElement' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
+export type NodeType = 'Node' | 'Element' | 'OmittedElement' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
 
 export abstract class Node<T = null, O = {}> {
-	public readonly type: NodeType = null;
+	public readonly type: NodeType = 'Node';
 	public nodeName: string;
 	public readonly line: number;
 	public readonly col: number;
@@ -124,10 +124,10 @@ export abstract class Node<T = null, O = {}> {
 	public nextNode: Node<T, O> | GhostNode<T, O> | null = null;
 	public readonly parentNode: Node<T, O> | GhostNode<T, O> | null = null;
 	public raw = '';
-	public prevSyntaxicalNode: Node<T, O> | null;
+	public prevSyntaxicalNode: Node<T, O> | null = null;
 	public indentation: Indentation | null = null;
 	public rules: ConfigureFileJSONRules = {};
-	public document: Document<T, O>;
+	public document: Document<T, O> | null = null;
 
 	/**
 	 * @WIP
@@ -165,6 +165,9 @@ export abstract class Node<T = null, O = {}> {
 	}
 
 	public get rule () {
+		if (!this.document) {
+			return null;
+		}
 		if (!this.document.rule) {
 			return null;
 		}
@@ -326,9 +329,6 @@ interface SortableNode<T, O> {
 }
 
 export class Document<T, O> {
-	public readonly html: Node<T, O> | GhostNode<T, O>;
-	public readonly head: Node<T, O> | GhostNode<T, O>;
-	public readonly body: Node<T, O> | GhostNode<T, O>;
 	public rule: CustomRule<T, O> | null = null;
 
 	private _raw: string;
@@ -350,8 +350,6 @@ export class Document<T, O> {
 		let currentEndOffset = 0;
 		syncWalk<T, O>(nodeTree, (node) => {
 			if (node instanceof Node) {
-				// set self
-				node.document = this;
 
 				currentStartOffset = node.startOffset;
 
@@ -405,7 +403,7 @@ export class Document<T, O> {
 
 		pos.sort((a, b) => a.startOffset - b.startOffset);
 
-		let lastNode: Node | null = null;
+		let lastNode: Node<T, O> | null = null;
 		for (const {node, startOffset, endOffset} of pos) {
 			if (node instanceof GhostNode) {
 				continue;
@@ -499,10 +497,12 @@ export class Document<T, O> {
 
 		for (const node of this._list) {
 			if (node instanceof Node) {
+				// set self
+				node.document = this;
 
 				// indentation meta-infomation
 				if (node.prevSyntaxicalNode instanceof TextNode) {
-					const prevSyntaxicalTextNode = node.prevSyntaxicalNode;
+					const prevSyntaxicalTextNode: TextNode<T, O> = node.prevSyntaxicalNode;
 
 					if (!(prevSyntaxicalTextNode instanceof RawTextNode)) {
 						const matched = prevSyntaxicalTextNode.raw.match(/\r?\n([ \t]+$)/);
@@ -653,14 +653,19 @@ export class Document<T, O> {
 		}
 	}
 
+	public async walkOn (type: 'Node', walker: Walker<T, O, Node<T, O>>): Promise<void>;
 	public async walkOn (type: 'Element', walker: Walker<T, O, Element<T, O>>): Promise<void>;
 	public async walkOn (type: 'Text', walker: Walker<T, O, TextNode<T, O>>): Promise<void>;
 	public async walkOn (type: 'Comment', walker: Walker<T, O, CommentNode<T, O>>): Promise<void>;
 	public async walkOn (type: 'EndTag', walker: Walker<T, O, EndTagNode<T, O>>): Promise<void>;
 	public async walkOn (type: NodeType, walker: Walker<T, O, any>): Promise<void> { // tslint:disable-line:no-any
 		for (const node of this._list) {
-			if (node instanceof Node && node.is(type)) {
-				await walker(node);
+			if (node instanceof Node) {
+				if (type === 'Node') {
+					walker(node);
+				} else if (node.is(type)) {
+					walker(node);
+				}
 			}
 		}
 	}
@@ -671,14 +676,19 @@ export class Document<T, O> {
 		}
 	}
 
+	public syncWalkOn (type: 'Node', walker: SyncWalker<T, O, Node<T, O>>): void;
 	public syncWalkOn (type: 'Element', walker: SyncWalker<T, O, Element<T, O>>): void;
 	public syncWalkOn (type: 'Text', walker: SyncWalker<T, O, TextNode<T, O>>): void;
 	public syncWalkOn (type: 'Comment', walker: SyncWalker<T, O, CommentNode<T, O>>): void;
 	public syncWalkOn (type: 'EndTag', walker: SyncWalker<T, O, EndTagNode<T, O>>): void;
 	public syncWalkOn (type: NodeType, walker: SyncWalker<T, O, any>): void { // tslint:disable-line:no-any
 		for (const node of this._list) {
-			if (node instanceof Node && node.is(type)) {
-				walker(node);
+			if (node instanceof Node) {
+				if (type === 'Node') {
+					walker(node);
+				} else if (node.is(type)) {
+					walker(node);
+				}
 			}
 		}
 	}
@@ -688,7 +698,6 @@ export class Document<T, O> {
 	}
 
 	public setRule (rule: CustomRule<T, O> | null) {
-		// @ts-ignore
 		this.rule = rule;
 	}
 }

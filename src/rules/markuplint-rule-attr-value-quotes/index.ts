@@ -1,10 +1,5 @@
 import {
-	Document,
-	Element,
-} from '../../parser';
-import Rule, {
-	RuleConfig,
-	RuleLevel,
+	CustomRule,
 	VerifyReturn,
 } from '../../rule';
 import Ruleset from '../../ruleset';
@@ -17,29 +12,30 @@ const quote = {
 	single: "'",
 };
 
-export default class extends Rule<Value> {
-	public name = 'attr-value-quotes';
-	public defaultLevel: RuleLevel = 'warning';
-	public defaultValue: Value = 'double';
-
-	public async verify (document: Document<Value, {}>, config: RuleConfig<Value>, ruleset: Ruleset, locale: string) {
+export default CustomRule.create<Value, null>({
+	name: 'attr-value-quotes',
+	defaultLevel: 'warning',
+	defaultValue: 'double',
+	defaultOptions: null,
+	async verify (document, locale) {
 		const reports: VerifyReturn[] = [];
-		const message = await messages(locale, '{0} is must {1} on {2}', 'Attribute value', 'quote', `${config.value} quotation mark`);
-		await document.walk(async (node) => {
-			if (node instanceof Element) {
-				for (const attr of node.attributes) {
-					if (attr.value != null && attr.quote !== quote[config.value]) {
-						reports.push({
-							level: config.level,
-							message,
-							line: attr.location.line,
-							col: attr.location.col,
-							raw: attr.raw,
-						});
-					}
+		await document.walkOn('Element', async (node) => {
+			if (!node.rule) {
+				return;
+			}
+			const message = await messages(locale, '{0} is must {1} on {2}', 'Attribute value', 'quote', `${node.rule.value} quotation mark`);
+			for (const attr of node.attributes) {
+				if (attr.value != null && attr.quote !== quote[node.rule.value]) {
+					reports.push({
+						level: node.rule.level,
+						message,
+						line: attr.location.line,
+						col: attr.location.col,
+						raw: attr.raw,
+					});
 				}
 			}
 		});
 		return reports;
-	}
-}
+	},
+});

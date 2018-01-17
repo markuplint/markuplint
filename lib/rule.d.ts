@@ -27,14 +27,6 @@ export interface CustomRuleObject<T = null, O = {}> {
     defaultOptions: O;
     verify(document: Document<T, O>, locale: string): Promise<CustomVerifiedReturn[]>;
 }
-export default abstract class Rule<T = null, O = {}> {
-    readonly name: string;
-    readonly defaultLevel: RuleLevel;
-    readonly defaultValue: T;
-    readonly defaultOptions: O;
-    abstract verify(document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifyReturn[]>;
-    optimizeOption(option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O>;
-}
 export declare class CustomRule<T = null, O = {}> {
     static create<T = null, O = {}>(options: CustomRuleObject<T, O>): CustomRule<T, O>;
     name: string;
@@ -46,4 +38,4 @@ export declare class CustomRule<T = null, O = {}> {
     verify(document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifiedResult[]>;
     optimizeOption(option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O>;
 }
-export declare function getRuleModules(): Promise<Rule[]>;
+export declare function getRuleModules(): Promise<CustomRule[]>;

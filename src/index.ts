@@ -3,8 +3,9 @@ import * as path from 'path';
 import * as util from 'util';
 
 import Markuplint from './core';
-import Rule, {
+import {
 	getRuleModules,
+	CustomRule,
 	VerifiedResult,
 } from './rule';
 import Ruleset, {
@@ -14,7 +15,7 @@ import osLocale from './util/osLocale';
 
 const readFile = util.promisify(fs.readFile);
 
-export async function verify (html: string, config: ConfigureFileJSON, rules: Rule[], locale?: string) {
+export async function verify (html: string, config: ConfigureFileJSON, rules: CustomRule[], locale?: string) {
 	if (!locale) {
 		locale = await osLocale();
 	}
@@ -32,7 +33,7 @@ export async function verifyOnWorkspace (html: string, workspace?: string) {
 	return await core.verify();
 }
 
-export async function verifyFile (filePath: string, rules?: Rule[], locale?: string) {
+export async function verifyFile (filePath: string, rules?: CustomRule[], locale?: string) {
 	if (!locale) {
 		locale = await osLocale();
 	}

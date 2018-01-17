@@ -1,8 +1,7 @@
 import test from 'ava';
 import * as markuplint from '../../../lib/';
-import CustomRule from '../../../lib/rules/markuplint-rule-case-sensitive-tag-name';
+import rule from '../../../lib/rules/markuplint-rule-case-sensitive-tag-name';
 
-const rule = new CustomRule();
 test('lower case', async (t) => {
 	const r = await markuplint.verify(
 		'<div data-lowercase></div>',

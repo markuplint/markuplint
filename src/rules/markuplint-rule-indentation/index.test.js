@@ -1,8 +1,6 @@
 import test from 'ava';
 import * as markuplint from '../../../lib/';
-import CustomRule from '../../../lib/rules/markuplint-rule-indentation';
-
-const rule = new CustomRule();
+import rule from '../../../lib/rules/markuplint-rule-indentation';
 
 test('tab', async (t) => {
 	const r = await markuplint.verify(

@@ -1,8 +1,6 @@
 import test from 'ava';
 import * as markuplint from '../../../lib/';
-import CustomRule from '../../../lib/rules/markuplint-rule-character-reference';
-
-const rule = new CustomRule();
+import rule from '../../../lib/rules/markuplint-rule-character-reference';
 
 test('character-reference', async (t) => {
 	const r = await markuplint.verify(

@@ -1,4 +1,4 @@
-import Rule, {
+import {
 	CustomRule,
 	VerifyReturn,
 } from '../../rule';

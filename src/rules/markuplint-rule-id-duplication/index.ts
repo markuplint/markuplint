@@ -1,38 +1,35 @@
 import {
-	Document,
-	Element,
-} from '../../parser';
-import Rule, {
-	RuleConfig,
+	CustomRule,
 	VerifyReturn,
 } from '../../rule';
-import Ruleset from '../../ruleset';
 import messages from '../messages';
 
-export default class extends Rule {
-	public name = 'id-duplication';
-
-	public async verify (document: Document<null, {}>, config: RuleConfig, ruleset: Ruleset, locale: string) {
+export default CustomRule.create({
+	name: 'id-duplication',
+	defaultValue: null,
+	defaultOptions: null,
+	async verify (document, locale) {
 		const reports: VerifyReturn[] = [];
 		const message = await messages(locale, 'Duplicate {0}', 'attribute id value');
 		const idStack: string[] = [];
-		await document.walk(async (node) => {
-			if (node instanceof Element) {
-				const id = node.id;
-				if (id && id.value) {
-					if (idStack.includes(id.value)) {
-						reports.push({
-							level: config.level,
-							message,
-							line: id.location.line,
-							col: id.location.col,
-							raw: id.raw,
-						});
-					}
-					idStack.push(id.value);
+		await document.walkOn('Element', async (node) => {
+			if (!node.rule) {
+				return;
+			}
+			const id = node.id;
+			if (id && id.value) {
+				if (idStack.includes(id.value)) {
+					reports.push({
+						level: node.rule.level,
+						message,
+						line: id.location.line,
+						col: id.location.col,
+						raw: id.raw,
+					});
 				}
+				idStack.push(id.value);
 			}
 		});
 		return reports;
-	}
-}
+	},
+});

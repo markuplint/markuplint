@@ -1,5 +1,5 @@
 import { Document } from './parser';
-import Rule, { RuleLevel, VerifiedResult } from './rule';
+import { CustomRule, RuleLevel, VerifiedResult } from './rule';
 export interface PermittedContentOptions {
     required?: boolean;
     times?: 'once' | 'zero or more' | 'one or more' | 'any';
@@ -39,13 +39,12 @@ export interface NodeRuleAttrCondition {
  */
 export default class Ruleset {
     static readonly NOFILE: string;
-    static create(config: ConfigureFileJSON | string, rules: Rule[]): Promise<Ruleset>;
+    static create(config: ConfigureFileJSON | string, rules: CustomRule[]): Promise<Ruleset>;
     rules: ConfigureFileJSONRules;
     nodeRules: NodeRule[];
     childNodeRules: NodeRule[];
     private _rules;
     private _rawConfig;
-    private _configPath;
     private constructor();
     loadRC(configDir: string): Promise<void>;
     /**

@@ -1,3 +1,0 @@
-# markuplint-rule-labels
-
-WIP

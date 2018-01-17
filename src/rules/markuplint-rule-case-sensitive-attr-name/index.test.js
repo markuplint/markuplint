@@ -1,8 +1,6 @@
 import test from 'ava';
 import * as markuplint from '../../../lib/';
-import CustomRule from '../../../lib/rules/markuplint-rule-case-sensitive-attr-name';
-
-const rule = new CustomRule();
+import rule from '../../../lib/rules/markuplint-rule-case-sensitive-attr-name';
 
 test('lower case', async (t) => {
 	const r = await markuplint.verify(

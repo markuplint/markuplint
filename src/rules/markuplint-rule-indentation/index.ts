@@ -1,57 +1,50 @@
 import {
-	Document,
-	GhostNode,
-	Node,
-	RawTextNode,
-	TextNode,
-} from '../../parser';
-import Rule, {
-	RuleConfig,
-	RuleLevel,
+	CustomRule,
 	VerifyReturn,
 } from '../../rule';
-import Ruleset from '../../ruleset';
 import messages from '../messages';
 
-export type DefaultValue = 'tab' | number;
+export type Value = 'tab' | number;
 
-/**
- * `Indentation`
- *
- * *Core rule*
- */
-export default class extends Rule<DefaultValue> {
-	public name = 'indentation';
-	public defaultLevel: RuleLevel = 'warning';
-	public defaultValue: DefaultValue = 2;
-
-	public async verify (document: Document<DefaultValue, {}>, config: RuleConfig<DefaultValue>, ruleset: Ruleset, locale: string) {
+export default CustomRule.create<Value, null>({
+	name: 'indentation',
+	defaultLevel: 'warning',
+	defaultValue: 2,
+	defaultOptions: null,
+	async verify (document, locale) {
 		const reports: VerifyReturn[] = [];
-		const ms = config.level === 'error' ? 'must' : 'should';
-		await document.walk(async (node) => {
-			if (node instanceof Node) {
-				if (node.indentation) {
-					let spec: string | null = null;
-					if (config.value === 'tab' && node.indentation.type !== 'tab') {
-						spec = 'tab';
-					} else if (typeof config.value === 'number' && node.indentation.type !== 'space') {
-						spec = 'space';
-					} else if (typeof config.value === 'number' && node.indentation.type === 'space' && node.indentation.width % config.value) {
-						spec = await messages(locale, `{0} width spaces`, `${config.value}`);
+		await document.walkOn('Node', async (node) => {
+			if (!node.rule) {
+				return;
+			}
+			const ms = node.rule.level === 'error' ? 'must' : 'should';
+			console.log(node.rule, node.indentation);
+			if (node.indentation) {
+				let spec: string | null = null;
+				if (node.rule.value === 'tab' && node.indentation.type !== 'tab') {
+					spec = 'tab';
+				} else if (typeof node.rule.value === 'number' && node.indentation.type !== 'space') {
+					spec = 'space';
+				} else if (typeof node.rule.value === 'number' && node.indentation.type === 'space' && node.indentation.width % node.rule.value) {
+					spec = await messages(locale, `{0} width spaces`, `${node.rule.value}`);
+				}
+				if (spec) {
+					const message = await messages(locale, `{0} ${ms} be {1}`, 'Indentation', spec);
+					if (node.rule == null) {
+						console.log(node.raw);
+						console.trace(123);
+						throw new Error('node.rule is never????');
 					}
-					if (spec) {
-						const message = await messages(locale, `{0} ${ms} be {1}`, 'Indentation', spec);
-						reports.push({
-							level: config.level,
-							message,
-							line: node.indentation.line,
-							col: 1,
-							raw: node.indentation.raw,
-						});
-					}
+					reports.push({
+						level: node.rule.level,
+						message,
+						line: node.indentation.line,
+						col: 1,
+						raw: node.indentation.raw,
+					});
 				}
 			}
 		});
 		return reports;
-	}
-}
+	},
+});

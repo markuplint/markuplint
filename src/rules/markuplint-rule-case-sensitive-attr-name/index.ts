@@ -1,10 +1,5 @@
 import {
-	Document,
-	Element,
-} from '../../parser';
-import Rule, {
-	RuleConfig,
-	RuleLevel,
+	CustomRule,
 	VerifyReturn,
 } from '../../rule';
 import Ruleset from '../../ruleset';
@@ -12,23 +7,26 @@ import messages from '../messages';
 
 export type Value = 'lower' | 'upper';
 
-export default class extends Rule<Value> {
-	public name = 'case-sensitive-attr-name';
-	public defaultLevel: RuleLevel = 'warning';
-	public defaultValue: Value = 'lower';
-
-	public async verify (document: Document<Value, {}>, config: RuleConfig<Value>, ruleset: Ruleset, locale: string) {
+export default CustomRule.create<Value, null>({
+	name: 'case-sensitive-attr-name',
+	defaultLevel: 'warning',
+	defaultValue: 'lower',
+	defaultOptions: null,
+	async verify (document, locale) {
 		const reports: VerifyReturn[] = [];
-		const ms = config.level === 'error' ? 'must' : 'should';
-		const deny = config.value === 'lower' ? /[A-Z]/ : /[a-z]/;
-		const message = await messages(locale, `{0} of {1} ${ms} be {2}`, 'Attribute name', 'HTML', `${config.value}case`);
-		await document.walk(async (node) => {
-			if (node instanceof Element && node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
+		await document.walkOn('Element', async (node) => {
+			if (!node.rule) {
+				return;
+			}
+			const ms = node.rule.level === 'error' ? 'must' : 'should';
+			const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
+			const message = await messages(locale, `{0} of {1} ${ms} be {2}`, 'Attribute name', 'HTML', `${node.rule.value}case`);
+			if (node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
 				if (node.attributes) {
 					for (const attr of node.attributes) {
 						if (deny.test(attr.name)) {
 							reports.push({
-								level: config.level,
+								level: node.rule.level,
 								message,
 								line: attr.location.line,
 								col: attr.location.col,
@@ -40,5 +38,5 @@ export default class extends Rule<Value> {
 			}
 		});
 		return reports;
-	}
-}
+	},
+});

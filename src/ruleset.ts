@@ -14,7 +14,7 @@ import {
 	Document,
 } from './parser';
 
-import Rule, {
+import {
 	CustomRule,
 	RuleConfig,
 	RuleLevel,
@@ -75,7 +75,7 @@ export default class Ruleset {
 
 	public static readonly NOFILE = '<no-file>';
 
-	public static async create (config: ConfigureFileJSON | string, rules: Rule[]) {
+	public static async create (config: ConfigureFileJSON | string, rules: CustomRule[]) {
 		const ruleset = new Ruleset(rules);
 		if (typeof config === 'string') {
 			await ruleset.loadRC(config);
@@ -89,11 +89,10 @@ export default class Ruleset {
 	public nodeRules: NodeRule[] = [];
 	public childNodeRules: NodeRule[] = [];
 
-	private _rules: Rule[];
+	private _rules: CustomRule[];
 	private _rawConfig: ConfigureFileJSON | null = null;
-	private _configPath: string;
 
-	private constructor (rules: Rule[]) {
+	private constructor (rules: CustomRule[]) {
 		this._rules = rules;
 	}
 
@@ -135,13 +134,7 @@ export default class Ruleset {
 			if (config.disabled) {
 				continue;
 			}
-			let results: VerifiedResult[];
-			if (rule instanceof CustomRule) {
-				results = await rule.verify(nodeTree, config, this, locale);
-			} else {
-				const verifyReturns = await rule.verify(nodeTree, config, this, locale);
-				results = verifyReturns.map((v) => Object.assign(v, { ruleId: rule.name }));
-			}
+			const results = await rule.verify(nodeTree, config, this, locale);
 			reports.push(...results);
 		}
 		return reports;

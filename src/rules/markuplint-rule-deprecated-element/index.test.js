@@ -1,8 +1,6 @@
 import test from 'ava';
 import * as markuplint from '../../../lib/';
-import CustomRule from '../../../lib/rules/markuplint-rule-deprecated-element';
-
-const rule = new CustomRule();
+import rule from '../../../lib/rules/markuplint-rule-deprecated-element';
 
 test('normal', async (t) => {
 	const r = await markuplint.verify(
