@@ -575,6 +575,7 @@ export class Document<T, O> {
 				}
 			});
 			// childNodeRules
+			const stackNodes: [(Element<T, O> | OmittedElement<T, O>), string, boolean | ConfigureFileJSONRuleOption<null, {}>, boolean][] = [];
 			this.syncWalk((node) => {
 				if (node instanceof Element || node instanceof OmittedElement) {
 					for (const nodeRule of _ruleset.childNodeRules) {
@@ -584,15 +585,11 @@ export class Document<T, O> {
 									const rule = nodeRule.rules[ruleName];
 									if (nodeRule.tagName || nodeRule.selector) {
 										if (nodeRule.tagName === node.nodeName) {
-											for (const childNode of node.childNodes) {
-												childNode.rules[ruleName] = rule;
-											}
+											stackNodes.push([node, ruleName, rule, !!nodeRule.inheritance]);
 										} else if (nodeRule.selector && node instanceof Element) {
 											const selector = cssSelector(nodeRule.selector);
 											if (selector.match(node)) {
-												for (const childNode of node.childNodes) {
-													childNode.rules[ruleName] = rule;
-												}
+												stackNodes.push([node, ruleName, rule, !!nodeRule.inheritance]);
 											}
 										}
 									}
@@ -602,6 +599,21 @@ export class Document<T, O> {
 					}
 				}
 			});
+			for (const stackNode of stackNodes) {
+				const node = stackNode[0];
+				const ruleName = stackNode[1];
+				const rule = stackNode[2];
+				const inheritance = stackNode[3];
+				if (inheritance) {
+					syncWalk(node.childNodes, (childNode) => {
+						childNode.rules[ruleName] = rule;
+					});
+				} else {
+					for (const childNode of node.childNodes) {
+						childNode.rules[ruleName] = rule;
+					}
+				}
+			}
 		}
 	}
 
