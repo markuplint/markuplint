@@ -210,6 +210,7 @@ export class Element<T, O> extends Node<T, O> {
 	public readonly startTagLocation: TagNodeLocation;
 	public readonly endTagLocation: TagNodeLocation | null = null;
 	public endTagNode: EndTagNode<T, O> | null = null;
+	public obsolete = false;
 
 	constructor (props: ElementProperties, rawHtml: string) {
 		super(props);
@@ -572,6 +573,11 @@ export class Document<T, O> {
 							}
 						}
 					}
+					if (node instanceof Element) {
+						if (node.nodeName.toLowerCase() === nodeRule.tagName) {
+							node.obsolete = !!nodeRule.obsolete;
+						}
+					}
 				}
 			});
 			// childNodeRules
@@ -662,9 +668,9 @@ export class Document<T, O> {
 		for (const node of this._list) {
 			if (node instanceof Node) {
 				if (type === 'Node') {
-					walker(node);
+					await walker(node);
 				} else if (node.is(type)) {
-					walker(node);
+					await walker(node);
 				}
 			}
 		}

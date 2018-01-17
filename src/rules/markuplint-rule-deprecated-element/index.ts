@@ -15,7 +15,6 @@ export default CustomRule.create({
 			if (!node.rule) {
 				return;
 			}
-			// @ts-ignore TODO
 			if (node.obsolete) {
 				reports.push({
 					level: node.rule.level,

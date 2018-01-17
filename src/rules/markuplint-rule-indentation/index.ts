@@ -18,7 +18,6 @@ export default CustomRule.create<Value, null>({
 				return;
 			}
 			const ms = node.rule.level === 'error' ? 'must' : 'should';
-			console.log(node.rule, node.indentation);
 			if (node.indentation) {
 				let spec: string | null = null;
 				if (node.rule.value === 'tab' && node.indentation.type !== 'tab') {
@@ -30,11 +29,6 @@ export default CustomRule.create<Value, null>({
 				}
 				if (spec) {
 					const message = await messages(locale, `{0} ${ms} be {1}`, 'Indentation', spec);
-					if (node.rule == null) {
-						console.log(node.raw);
-						console.trace(123);
-						throw new Error('node.rule is never????');
-					}
 					reports.push({
 						level: node.rule.level,
 						message,

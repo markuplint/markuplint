@@ -2,7 +2,6 @@ import {
 	CustomRule,
 	VerifyReturn,
 } from '../../rule';
-import Ruleset from '../../ruleset';
 import messages from '../messages';
 
 export type Value = 'lower' | 'upper';

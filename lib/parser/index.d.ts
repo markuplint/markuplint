@@ -124,6 +124,7 @@ export declare class Element<T, O> extends Node<T, O> {
     readonly startTagLocation: TagNodeLocation;
     readonly endTagLocation: TagNodeLocation | null;
     endTagNode: EndTagNode<T, O> | null;
+    obsolete: boolean;
     constructor(props: ElementProperties, rawHtml: string);
     getAttribute(attrName: string): Attribute | undefined;
     hasAttribute(attrName: string): boolean;

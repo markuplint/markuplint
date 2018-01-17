@@ -3,7 +3,6 @@ import {
 	RuleLevel,
 	VerifyReturn,
 } from '../../rule';
-import Ruleset from '../../ruleset';
 import messages from '../messages';
 
 import findLocation from '../../util/findLocation';
@@ -19,7 +18,6 @@ const defaultChars = [
 
 export default CustomRule.create<Value, null>({
 	name: 'character-reference',
-	defaultLevel: 'warning',
 	defaultValue: true,
 	defaultOptions: null,
 	async verify (document, locale) {
