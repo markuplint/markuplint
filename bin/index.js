@@ -5,18 +5,18 @@ const meow = require('meow');
 const { verify, verifyFile } = require('../lib/');
 const { standardReporter } = require('../lib/reporter/');
 
-const cli = meow(
-	`
-	Usage
-	  $ markuplint <input>
+const cli = meow(`
+Usage
+	$ markuplint <HTML file>
+	$ <stdout> | markuplint
 
-	Options
-	  --ruleset,  -r    Ruleset file path
-	  --no-color, -c    output no color
+Options
+	--ruleset,  -r    Ruleset file path
+	--no-color, -c    output no color
 
-	Examples
-	  $ markuplint verifyee.html --ruleset path/to/.markuplintrc
-	  $ cat verifyee.html | markuplint
+Examples
+	$ markuplint verifyee.html --ruleset path/to/.markuplintrc
+	$ cat verifyee.html | markuplint
 `,
 	{
 		flags: {
@@ -45,11 +45,9 @@ if (cli.input.length) {
 			const { html, reports } = await verifyFile(filePath, cli.flags.ruleset);
 			await standardReporter(filePath, reports, html, !cli.flags.noColor);
 		}
-		console.log(`🎉 markuplint CLI done.`);
+		process.stdout.write('🎉 markuplint CLI done.');
 	})();
-}
-
-else {
+} else {
 	stdinStopWhenEmpty();
 	const readline = require('readline');
 	const { getRuleset } = require('../lib/ruleset');
@@ -66,6 +64,7 @@ else {
 	});
 }
 
+/** */
 function stdinStopWhenEmpty () {
 	const id = setImmediate(() => cli.showHelp());
 	process.stdin.on('data', () => clearImmediate(id));
