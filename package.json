@@ -1,6 +1,6 @@
 {
   "name": "markuplint",
-  "version": "0.16.1",
+  "version": "0.16.2",
   "description": "HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
