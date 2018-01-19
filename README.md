@@ -21,15 +21,18 @@ $ markuplint verifyee.html
 
 ```
 $ markuplint --help
-    Usage
-      $ markuplint <input>
 
-    Options
-      --ruleset, -r    Ruleset file path
+  Usage
+    $ markuplint <HTML file>
+    $ <stdout> | markuplint
 
-    Examples
-      $ markuplint verifyee.html --ruleset path/to/.markuplintrc
-      $ cat verifyee.html | markuplint
+  Options
+    --ruleset,  -r    Ruleset file path
+    --no-color, -c    output no color
+
+  Examples
+    $ markuplint verifyee.html --ruleset path/to/.markuplintrc
+    $ cat verifyee.html | markuplint
 ```
 
 ### API
@@ -40,6 +43,39 @@ import * as markuplint from 'markuplint';
 const reports = await markuplint.verify(html, ruleset, rules);
 // or
 const { html, reports } = await markuplint.verifyFile(htmlPath, ruleset, rules);
+```
+
+## Configuration
+
+`.markuplintrc` JSON or YAML format
+
+```json
+{
+  "extends": "markuplint/html-ls",
+  "rules": {
+    "rule-name": true,
+    "rule-name2": false,
+    "rule-name3": ["error", "VALUE"],
+    "rule-name4": ["warning", "VALUE", { "OPTIONAL_PROP": "OPTIONAL_VALUE" }]
+  },
+  "nodeRules": [
+    {
+      "tagName": "div",
+      "rules": {
+        "rule-name": false,
+      }
+    }
+  ],
+  "childNodeRules": [
+    {
+      "selector": "[data-attr^=\"value\"]",
+      "inheritance": true,
+      "rules": {
+        "rule-name3": ["warning", "ANOTHER_VALUE"],
+      }
+    }
+  ]
+}
 ```
 
 ## Rules
