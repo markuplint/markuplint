@@ -48,7 +48,6 @@
 	- [async-attr-in-script](./markuplint-rule-async-attr-in-script/README.ja.md) script要素のasync属性 (🚧 WIP)
 - *CSS Designing CSS設計*
 	- [class-naming](./markuplint-rule-class-naming/README.ja.md) クラス名 (🚧 WIP)
-	- [required-class-elements](./markuplint-rule-required-class-elements/README.ja.md) クラスの有無 (🚧 WIP)
 	- bem/markuplint-rule-bem-rule-nesting BEMの入れ子関係 (🚧 WIP)
 	- bem/markuplint-rule-bem-rule-block BEMのBlockの要素名/クラス名/属性 (🚧 WIP)
 	- bem/markuplint-rule-bem-rule-element BEMのElementのクラス名/属性 (🚧 WIP)

@@ -48,7 +48,6 @@
 	- [🚧 WIP] [async-attr-in-script](./markuplint-rule-async-attr-in-script/README.md)
 - *CSS Designing*
 	- [🚧 WIP] [class-naming](./markuplint-rule-class-naming/README.md)
-	- [🚧 WIP] [required-class-elements](./markuplint-rule-required-class-elements/README.md)
 	- [🚧 WIP] bem/markuplint-rule-bem-rule-nesting
 	- [🚧 WIP] bem/markuplint-rule-bem-rule-block
 	- [🚧 WIP] bem/markuplint-rule-bem-rule-element
