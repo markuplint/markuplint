@@ -1,3 +1,4 @@
 import { CustomRule } from '../../rule';
-declare const _default: CustomRule<null, null>;
+export declare type Value = 'always' | 'never';
+declare const _default: CustomRule<Value, null>;
 export default _default;
