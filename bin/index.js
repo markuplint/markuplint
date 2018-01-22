@@ -50,16 +50,19 @@ if (cli.flags.h) {
 if (cli.input.length) {
 	(async () => {
 		for (const filePath of cli.input) {
-			const { html, reports } = await verifyFile(filePath, cli.flags.ruleset);
+			const { html, reports } = await verifyFile(filePath, null, cli.flags.ruleset);
 			await output(filePath, reports, html, cli.flags);
 		}
 	})();
 }
 
 getStdin().then(async (stdin) => {
-	const Ruleset = require('../lib/ruleset').default;
+	const Ruleset = require('../lib/ruleset/').default;
 	const { getRuleModules } = require('../lib/rule');
 	const html = stdin;
+	if (!html) {
+		return;
+	}
 	const rules = await getRuleModules();
 	const ruleset = await Ruleset.create(cli.flags.ruleset || process.cwd(), rules);
 	const reports = await verify(html, ruleset, rules);
@@ -85,27 +88,3 @@ async function output (filePath, reports, html, flags) {
 		await standardReporter(filePath, reports, html, !flags.noColor);
 	}
 }
-
-
-// } else {
-// stdinStopWhenEmpty();
-// const readline = require('readline');
-// const { getRuleset } = require('../lib/ruleset');
-// const { getRuleModules } = require('../lib/rule');
-// const lines = [];
-// const reader = readline.createInterface({ input: process.stdin });
-// reader.on('line', lines.push);
-// reader.on('close', async () => {
-// 	const html = lines.join('\n');
-// 	const ruleset = cli.flags.ruleset || await getRuleset(process.cwd());
-// 	const rules = await getRuleModules();
-// 	const reports = await verify(html, ruleset, rules);
-// 	await standardReporter('STDIN_DATA', reports, html);
-// });
-// }
-
-// /** */
-// function stdinStopWhenEmpty () {
-// 	const id = setImmediate(() => cli.showHelp());
-// 	process.stdin.on('data', () => clearImmediate(id));
-// }

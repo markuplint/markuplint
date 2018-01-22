@@ -32,15 +32,20 @@ export async function verifyOnWorkspace (html: string, workspace?: string) {
 	return await core.verify();
 }
 
-export async function verifyFile (filePath: string, rules?: CustomRule[], locale?: string) {
+export async function verifyFile (filePath: string, rules?: CustomRule[], configFileOrDir?: string, locale?: string) {
 	if (!locale) {
 		locale = await osLocale();
 	}
-	const absFilePath = path.resolve(filePath);
-	const parsedPath = path.parse(absFilePath);
-	const dir = path.dirname(absFilePath);
 	rules = rules || await getRuleModules();
-	const ruleset = await Ruleset.create(dir, rules);
+	let ruleset: Ruleset;
+	if (configFileOrDir) {
+		ruleset = await Ruleset.create(configFileOrDir, rules);
+	} else {
+		const absFilePath = path.resolve(filePath);
+		const parsedPath = path.parse(absFilePath);
+		const dir = path.dirname(absFilePath);
+		ruleset = await Ruleset.create(dir, rules);
+	}
 	const html = await readFile(filePath, 'utf-8');
 	const core = new Markuplint(html, ruleset, locale);
 	const reports = await core.verify();

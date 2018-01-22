@@ -6,7 +6,7 @@ import * as deepAssign from 'deep-assign';
 
 import {
 	Document,
-} from './parser';
+} from '../parser';
 
 import {
 	CustomRule,
@@ -14,17 +14,17 @@ import {
 	RuleLevel,
 	VerifiedResult,
 	VerifyReturn,
-} from './rule';
+} from '../rule';
 
 import {
 	ConfigureFileJSON,
 	ConfigureFileJSONRules,
 	NodeRule,
-} from './ruleset/JSONInterface';
+} from './JSONInterface';
 
-import { searchAndLoad } from './ruleset/loader';
+import { searchAndLoad } from './loader';
 
-import fileSearch from './util/fileSearch';
+import fileSearch from '../util/fileSearch';
 
 const readFile = util.promisify(fs.readFile);
 
@@ -138,7 +138,7 @@ async function extendsRuleResolver (extendRule: string, baseRuleFilePath: string
 			throw new Error(`Invalid rule name set extends "${extendRule}" in markuplint`);
 		}
 		const id = matched[1];
-		const filePath = path.join(__dirname, '..', 'rulesets', `${id}.json`);
+		const filePath = path.join(__dirname, '..', '..', 'rulesets', `${id}.json`);
 		jsonStr = await readFile(filePath, 'utf-8');
 		ruleFilePath = filePath;
 	} else if (/^(?:https?:)?\/\//.test(extendRule)) {

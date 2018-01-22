@@ -1,6 +1,6 @@
-import { Document } from './parser';
-import { CustomRule, VerifiedResult } from './rule';
-import { ConfigureFileJSON, ConfigureFileJSONRules, NodeRule } from './ruleset/JSONInterface';
+import { Document } from '../parser';
+import { CustomRule, VerifiedResult } from '../rule';
+import { ConfigureFileJSON, ConfigureFileJSONRules, NodeRule } from './JSONInterface';
 /**
  * TODO: Isolate API that between constractor and file I/O.
  */
