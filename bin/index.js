@@ -11,8 +11,12 @@ Usage
 	$ <stdout> | markuplint
 
 Options
-	--ruleset,  -r    Ruleset file path
-	--no-color, -c    output no color
+	--ruleset,  -r          Ruleset file path.
+	--no-color, -c          Output no color.
+	--format,   -f FORMAT   Output format. Support "JSON" only. Default "JSON".
+
+	--help,     -h          Show help.
+	--version,  -v          Show version.
 
 Examples
 	$ markuplint verifyee.html --ruleset path/to/.markuplintrc
@@ -26,6 +30,9 @@ Examples
 			},
 			'no-color': {
 				alias: 'c',
+			},
+			format: {
+				alias: 'f',
 			},
 		},
 	}
@@ -41,11 +48,33 @@ if (cli.flags.h) {
 
 if (cli.input.length) {
 	(async () => {
-		for (const filePath of cli.input) {
-			const { html, reports } = await verifyFile(filePath, cli.flags.ruleset);
-			await standardReporter(filePath, reports, html, !cli.flags.noColor);
+		if (cli.flags.format) {
+			const format = cli.flags.format === true ? 'json' : cli.flags.format;
+			switch (format.toLowerCase()) {
+				case 'json': {
+					const out = [];
+					for (const filePath of cli.input) {
+						const { html, reports } = await verifyFile(filePath, cli.flags.ruleset);
+						out.push({
+							path: filePath,
+							reports,
+							raw: html,
+						});
+					}
+					process.stdout.write(JSON.stringify(out, null, 2));
+					break;
+				}
+				default: {
+					throw new Error(`Unsupported output format "${cli.flags.format}"`);
+				}
+			}
+		} else {
+			for (const filePath of cli.input) {
+				const { html, reports } = await verifyFile(filePath, cli.flags.ruleset);
+				await standardReporter(filePath, reports, html, !cli.flags.noColor);
+			}
+			process.stdout.write('🎉 markuplint CLI done.');
 		}
-		process.stdout.write('🎉 markuplint CLI done.');
 	})();
 } else {
 	stdinStopWhenEmpty();
