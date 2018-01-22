@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const meow = require('meow');
+const getStdin = require('get-stdin');
 
 const { verify, verifyFile } = require('../lib/');
 const { standardReporter } = require('../lib/reporter/');
@@ -46,6 +47,8 @@ if (cli.flags.h) {
 	cli.showHelp();
 }
 
+console.log(cli);
+
 if (cli.input.length) {
 	(async () => {
 		if (cli.flags.format) {
@@ -76,25 +79,39 @@ if (cli.input.length) {
 			process.stdout.write('🎉 markuplint CLI done.');
 		}
 	})();
-} else {
-	stdinStopWhenEmpty();
-	const readline = require('readline');
-	const { getRuleset } = require('../lib/ruleset');
-	const { getRuleModules } = require('../lib/rule');
-	const lines = [];
-	const reader = readline.createInterface({ input: process.stdin });
-	reader.on('line', lines.push);
-	reader.on('close', async () => {
-		const html = lines.join('\n');
-		const ruleset = cli.flags.ruleset || await getRuleset(process.cwd());
-		const rules = await getRuleModules();
-		const reports = await verify(html, ruleset, rules);
-		await standardReporter('STDIN_DATA', reports, html);
-	});
 }
 
-/** */
-function stdinStopWhenEmpty () {
-	const id = setImmediate(() => cli.showHelp());
-	process.stdin.on('data', () => clearImmediate(id));
-}
+getStdin().then(async (stdin) => {
+	// console.log(stdin, cli);
+	const { getRuleset } = require('../lib/ruleset');
+	const { getRuleModules } = require('../lib/rule');
+	const html = stdin;
+	const ruleset = cli.flags.ruleset || await getRuleset(process.cwd());
+	const rules = await getRuleModules();
+	const reports = await verify(html, ruleset, rules);
+	await standardReporter('STDIN_DATA', reports, html);
+});
+
+
+// } else {
+// stdinStopWhenEmpty();
+// const readline = require('readline');
+// const { getRuleset } = require('../lib/ruleset');
+// const { getRuleModules } = require('../lib/rule');
+// const lines = [];
+// const reader = readline.createInterface({ input: process.stdin });
+// reader.on('line', lines.push);
+// reader.on('close', async () => {
+// 	const html = lines.join('\n');
+// 	const ruleset = cli.flags.ruleset || await getRuleset(process.cwd());
+// 	const rules = await getRuleModules();
+// 	const reports = await verify(html, ruleset, rules);
+// 	await standardReporter('STDIN_DATA', reports, html);
+// });
+// }
+
+// /** */
+// function stdinStopWhenEmpty () {
+// 	const id = setImmediate(() => cli.showHelp());
+// 	process.stdin.on('data', () => clearImmediate(id));
+// }

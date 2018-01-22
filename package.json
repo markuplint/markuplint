@@ -29,6 +29,7 @@
     "css-what": "^2.1.0",
     "deep-assign": "^2.0.0",
     "find-node-modules": "^1.0.4",
+    "get-stdin": "^5.0.1",
     "meow": "^4.0.0",
     "os-locale": "^2.1.0",
     "parse5": "^4.0.0",
