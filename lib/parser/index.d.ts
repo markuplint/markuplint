@@ -1,4 +1,5 @@
-import Ruleset, { ConfigureFileJSONRules } from '../ruleset';
+import Ruleset from '../ruleset';
+import { ConfigureFileJSONRules } from '../ruleset/JSONInterface';
 import { CustomRule, RuleConfig } from '../rule';
 export interface Location {
     line: number | null;

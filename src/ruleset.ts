@@ -2,13 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
 
-// TODO: @types
-// @ts-ignore
-import * as cosmiconfig from 'cosmiconfig';
-
 import * as deepAssign from 'deep-assign';
-
-const explorer = cosmiconfig('markuplint');
 
 import {
 	Document,
@@ -22,51 +16,17 @@ import {
 	VerifyReturn,
 } from './rule';
 
+import {
+	ConfigureFileJSON,
+	ConfigureFileJSONRules,
+	NodeRule,
+} from './ruleset/JSONInterface';
+
+import { searchAndLoad } from './ruleset/loader';
+
 import fileSearch from './util/fileSearch';
 
 const readFile = util.promisify(fs.readFile);
-
-export interface PermittedContentOptions {
-	required?: boolean;
-	times?: 'once' | 'zero or more' | 'one or more' | 'any';
-}
-
-export interface ConfigureFileJSON {
-	extends?: string | string[];
-	rules: ConfigureFileJSONRules;
-	nodeRules?: NodeRule[];
-	childNodeRules?: NodeRule[];
-}
-
-export interface ConfigureFileJSONRules {
-	[ruleName: string]: boolean | ConfigureFileJSONRuleOption<null, {}>;
-}
-
-export type ConfigureFileJSONRuleOption<T, O> = [RuleLevel, T, O];
-
-export interface NodeRule {
-	tagName?: string;
-	categories?: string[];
-	roles?: string[] | NodeRuleRoleConditions[] | null;
-	obsolete?: boolean;
-	selector?: string;
-	rules?: ConfigureFileJSONRules;
-	inheritance?: boolean;
-}
-
-export interface NodeRuleRoleConditions {
-	role: string;
-	attrConditions: NodeRuleAttrCondition[];
-}
-
-export interface NodeRuleAttrCondition {
-	attrName: string;
-
-	/**
-	 * Enumerated values
-	 */
-	values: string[];
-}
 
 /**
  * TODO: Isolate API that between constractor and file I/O.
@@ -96,16 +56,9 @@ export default class Ruleset {
 		this._rules = rules;
 	}
 
-	public async loadRC (configDir: string) {
-		// console.log(`search rc file on "${configDir}"`);
-		const data = await explorer.load(configDir);
-		if (!data || !data.config) {
-			throw new Error('markuplint rc file not found');
-		}
-		const filepath: string = data.filepath;
-		// console.log(`Loaded: ${filepath}`);
-		const config: ConfigureFileJSON = data.config;
-		await this.setConfig(config, filepath);
+	public async loadRC (fileOrDir: string) {
+		const { filePath, config } = await searchAndLoad(fileOrDir);
+		await this.setConfig(config, filePath);
 	}
 
 	/**

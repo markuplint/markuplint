@@ -23,20 +23,20 @@ Examples
 	$ markuplint verifyee.html --ruleset path/to/.markuplintrc
 	$ cat verifyee.html | markuplint
 `,
-	{
-		flags: {
-			ruleset: {
-				type: 'string',
-				alias: 'r',
-			},
-			'no-color': {
-				alias: 'c',
-			},
-			format: {
-				alias: 'f',
-			},
+{
+	flags: {
+		ruleset: {
+			type: 'string',
+			alias: 'r',
 		},
-	}
+		'no-color': {
+			alias: 'c',
+		},
+		format: {
+			alias: 'f',
+		},
+	},
+}
 );
 
 if (cli.flags.v) {
@@ -47,50 +47,44 @@ if (cli.flags.h) {
 	cli.showHelp();
 }
 
-console.log(cli);
-
 if (cli.input.length) {
 	(async () => {
-		if (cli.flags.format) {
-			const format = cli.flags.format === true ? 'json' : cli.flags.format;
-			switch (format.toLowerCase()) {
-				case 'json': {
-					const out = [];
-					for (const filePath of cli.input) {
-						const { html, reports } = await verifyFile(filePath, cli.flags.ruleset);
-						out.push({
-							path: filePath,
-							reports,
-							raw: html,
-						});
-					}
-					process.stdout.write(JSON.stringify(out, null, 2));
-					break;
-				}
-				default: {
-					throw new Error(`Unsupported output format "${cli.flags.format}"`);
-				}
-			}
-		} else {
-			for (const filePath of cli.input) {
-				const { html, reports } = await verifyFile(filePath, cli.flags.ruleset);
-				await standardReporter(filePath, reports, html, !cli.flags.noColor);
-			}
-			process.stdout.write('🎉 markuplint CLI done.');
+		for (const filePath of cli.input) {
+			const { html, reports } = await verifyFile(filePath, cli.flags.ruleset);
+			await output(filePath, reports, html, cli.flags);
 		}
 	})();
 }
 
 getStdin().then(async (stdin) => {
-	// console.log(stdin, cli);
-	const { getRuleset } = require('../lib/ruleset');
+	const Ruleset = require('../lib/ruleset').default;
 	const { getRuleModules } = require('../lib/rule');
 	const html = stdin;
-	const ruleset = cli.flags.ruleset || await getRuleset(process.cwd());
 	const rules = await getRuleModules();
+	const ruleset = await Ruleset.create(cli.flags.ruleset || process.cwd(), rules);
 	const reports = await verify(html, ruleset, rules);
-	await standardReporter('STDIN_DATA', reports, html);
+	await output('STDIN_DATA', reports, html, cli.flags);
 });
+
+/**
+ *
+ */
+async function output (filePath, reports, html, flags) {
+	if (flags.format) {
+		const format = flags.format === true ? 'json' : flags.format;
+		switch (format.toLowerCase()) {
+			case 'json': {
+				process.stdout.write(JSON.stringify(reports, null, 2));
+				break;
+			}
+			default: {
+				throw new Error(`Unsupported output format "${cli.flags.format}"`);
+			}
+		}
+	} else {
+		await standardReporter(filePath, reports, html, !flags.noColor);
+	}
+}
 
 
 // } else {

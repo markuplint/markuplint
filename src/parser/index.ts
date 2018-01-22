@@ -5,11 +5,12 @@ import {
 	RawAttribute,
 } from './parseRawTag';
 
-import Ruleset, {
+import Ruleset from '../ruleset';
+import {
 	ConfigureFileJSONRules,
 	ConfigureFileJSONRuleOption,
 	NodeRule,
-} from '../ruleset';
+} from '../ruleset/JSONInterface';
 
 import {
 	CustomRule,

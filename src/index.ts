@@ -8,9 +8,8 @@ import {
 	CustomRule,
 	VerifiedResult,
 } from './rule';
-import Ruleset, {
-	ConfigureFileJSON,
-} from './ruleset';
+import Ruleset from './ruleset';
+import { ConfigureFileJSON } from './ruleset/JSONInterface';
 import osLocale from './util/osLocale';
 
 const readFile = util.promisify(fs.readFile);

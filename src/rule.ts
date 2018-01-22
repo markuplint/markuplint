@@ -8,9 +8,10 @@ import * as  findNodeModules from 'find-node-modules';
 import {
 	Document,
 } from './parser';
-import Ruleset, {
+import Ruleset from './ruleset';
+import {
 	ConfigureFileJSONRuleOption,
-} from './ruleset';
+} from './ruleset/JSONInterface';
 
 const readdir = util.promisify(fs.readdir);
 
