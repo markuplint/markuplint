@@ -22,17 +22,21 @@ $ markuplint verifyee.html
 ```
 $ markuplint --help
 
-  Usage
-    $ markuplint <HTML file>
-    $ <stdout> | markuplint
+Usage
+	$ markuplint <HTML file>
+	$ <stdout> | markuplint
 
-  Options
-    --ruleset,  -r    Ruleset file path
-    --no-color, -c    output no color
+Options
+	--ruleset,  -r          Ruleset file path.
+	--no-color, -c          Output no color.
+	--format,   -f FORMAT   Output format. Support "JSON" only. Default "JSON".
 
-  Examples
-    $ markuplint verifyee.html --ruleset path/to/.markuplintrc
-    $ cat verifyee.html | markuplint
+	--help,     -h          Show help.
+	--version,  -v          Show version.
+
+Examples
+	$ markuplint verifyee.html --ruleset path/to/.markuplintrc
+	$ cat verifyee.html | markuplint
 ```
 
 ### API
