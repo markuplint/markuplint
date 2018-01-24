@@ -86,6 +86,10 @@ const { html, reports } = await markuplint.verifyFile(htmlPath, ruleset, rules);
 
 [Rule Documentation](./lib/rules/README.md) ([日本語](./lib/rules/README.ja.md))
 
+## Editor Extensions
+
+- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint)
+
 ## Thanks
 
 This linter is inspired by
