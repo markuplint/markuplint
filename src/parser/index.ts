@@ -253,6 +253,10 @@ export class Element<T, O> extends Node<T, O> {
 		return !!this.getAttribute(attrName);
 	}
 
+	public matches (selector: string): boolean {
+		return cssSelector(selector).match(this);
+	}
+
 	public get id () {
 		return this.getAttribute('id');
 	}
@@ -564,9 +568,7 @@ export class Document<T, O> {
 									if (nodeRule.tagName === node.nodeName) {
 										node.rules[ruleName] = rule;
 									} else if (nodeRule.selector && node instanceof Element) {
-										const selector = cssSelector(nodeRule.selector);
-										// console.log({ m: selector.match(node), s: nodeRule.selector, n: node.raw });
-										if (selector.match(node)) {
+										if (node.matches(nodeRule.selector)) {
 											node.rules[ruleName] = rule;
 										}
 									}
@@ -594,8 +596,7 @@ export class Document<T, O> {
 										if (nodeRule.tagName === node.nodeName) {
 											stackNodes.push([node, ruleName, rule, !!nodeRule.inheritance]);
 										} else if (nodeRule.selector && node instanceof Element) {
-											const selector = cssSelector(nodeRule.selector);
-											if (selector.match(node)) {
+											if (node.matches(nodeRule.selector)) {
 												stackNodes.push([node, ruleName, rule, !!nodeRule.inheritance]);
 											}
 										}

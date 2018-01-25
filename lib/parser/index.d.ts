@@ -129,6 +129,7 @@ export declare class Element<T, O> extends Node<T, O> {
     constructor(props: ElementProperties, rawHtml: string);
     getAttribute(attrName: string): Attribute | undefined;
     hasAttribute(attrName: string): boolean;
+    matches(selector: string): boolean;
     readonly id: Attribute | undefined;
     readonly classList: string[];
 }
