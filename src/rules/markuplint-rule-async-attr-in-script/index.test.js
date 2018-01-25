@@ -67,6 +67,8 @@ test(async (t) => {
 		`
 		<script src="jquery"></script>
 		<script async src="main.js"></script>
+		<div>lorem</div>
+		<img src="path/to">
 		`,
 		{
 			rules: {
@@ -92,6 +94,8 @@ test(async (t) => {
 		`
 		<script async src="jquery"></script>
 		<script src="main.js"></script>
+		<div>lorem</div>
+		<img src="path/to">
 		`,
 		{
 			rules: {
