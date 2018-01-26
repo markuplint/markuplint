@@ -4,7 +4,7 @@
 
 **Recommended to develop with TypeScript**
 
-```typescript
+```js
 import { CustomRule, VerifyReturn } from 'markuplint/lib/rule';
 
 export default CustomRule.create({
@@ -27,13 +27,13 @@ export default CustomRule.create({
 
 ### Require module
 
-```typescript
+```js
 import { CustomRule, VerifyReturn } from 'markuplint/lib/rule';
 ```
 
 ### Types
 
-```typescript
+```js
 export default CustomRule.create<T, O>({
 	name: string,
 	defaultValue: T,
