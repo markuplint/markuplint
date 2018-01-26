@@ -18,7 +18,7 @@ export default CustomRule.create<Value, null>({
 			if (!node.rule) {
 				return;
 			}
-			if (!node.hasAttribute('src')) {
+			if (!node.matches('script[src]')) {
 				return;
 			}
 			const hasAsyncAttr = !node.hasAttribute('async');
