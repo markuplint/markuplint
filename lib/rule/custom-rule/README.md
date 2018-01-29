@@ -52,4 +52,14 @@ export default CustomRule.create<T, O>({
 });
 ```
 
+## Basic
+
+1. [MUST] Default exporting CustomRule instance.
+2. [MUST] Set paramater as Object.
+3. [MUST] Set name property.
+4. [MUST] Set defaultValue property.
+5. [MUST] Set defaultOptions property.
+6. [OPTINAL] Set defaltLevel property.
+7. [MUST] Define async verify method that return array of VerifyReturn as Promise.
+
 WIP
