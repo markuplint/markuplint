@@ -12,15 +12,20 @@ export default CustomRule.create({
 	defaultValue: null,
 	defaultOptions: null,
 	async verify (document, locale) {
-		return [
-			{
-				level: [ERROR_LEVEL],
-				message: [ERROR_MESSAGE],
-				line: [LOCATION_LINE_NUMBER],
-				col: [LOCATION_COLUMN_NUMBER],
-				raw: [CODE_RAW_STRING],
-			}
-		];
+
+		/* verfiy... */
+
+		if (/* result is bad */) {
+			return [
+				{
+					level: [ERROR_LEVEL],
+					message: [ERROR_MESSAGE],
+					line: [LOCATION_LINE_NUMBER],
+					col: [LOCATION_COLUMN_NUMBER],
+					raw: [CODE_RAW_STRING],
+				}
+			];
+		}
 	},
 });
 ```
@@ -28,7 +33,8 @@ export default CustomRule.create({
 ### Require module
 
 ```js
-import { CustomRule, VerifyReturn } from 'markuplint/lib/rule';
+import CustomRule from 'markuplint/lib/rule/custom-rule';
+import { VerifyReturn } from 'markuplint/lib/rule';
 ```
 
 `CustomRule` is a **Class** that has static main method `create` and static helper methods.
@@ -38,11 +44,11 @@ import { CustomRule, VerifyReturn } from 'markuplint/lib/rule';
 ### Types
 
 ```js
-export default CustomRule.create<T, O>({
+CustomRule.create<T = null, O = {}>({
 	name: string,
 	defaultValue: T,
 	defaultOptions: O,
-	async verify (document: MarkuplintDocument, locale: string): Promise<VerifyReturn[]> {
+	async verify (document: Document<T, O>, locale: string): Promise<VerifyReturn[]> {
 		return [
 			{
 				level: 'error' | 'warning',
@@ -56,14 +62,17 @@ export default CustomRule.create<T, O>({
 });
 ```
 
-## Basic
+1. [must] Default exporting `CustomRule` class.
+2. [must] Set paramater as Object.
+3. [must] Set `name` property.
+4. [must] Set `defaultValue` property.
+5. [must] Set `defaultOptions` property.
+6. [optional] `"error"` or `"warning"` set to `defaltLevel` property.
+7. [must] Define async `verify` method that return Array of `VerifyReturn` in Promise.
 
-1. [MUST] Default exporting CustomRule instance.
-2. [MUST] Set paramater as Object.
-3. [MUST] Set name property.
-4. [MUST] Set defaultValue property.
-5. [MUST] Set defaultOptions property.
-6. [OPTINAL] Set defaltLevel property.
-7. [MUST] Define async verify method that return array of VerifyReturn as Promise.
+
+`T` and `O` are generic. `T` is the type of the base setting value, and `O` is the type of the optional settings. Each defaults are `null` and `{}`.
+
+`document` that 1st argument on `verify` method is `Document` class instance. `Document` is not `Document` on HTML standard DOM API. It is Node tree for find to  location at source code that had created by HTML parser of markuplint.
 
 WIP
