@@ -1,6 +1,7 @@
 import Document from './dom/document';
 import Ruleset from './ruleset';
 import { ConfigureFileJSONRuleOption } from './ruleset/JSONInterface';
+import { Location } from './parser/charLocator';
 export interface VerifyReturn {
     level: RuleLevel;
     message: string;
@@ -30,6 +31,7 @@ export interface CustomRuleObject<T = null, O = {}> {
 }
 export declare class CustomRule<T = null, O = {}> {
     static create<T = null, O = {}>(options: CustomRuleObject<T, O>): CustomRule<T, O>;
+    static charLocator(searches: string[], text: string, currentLine: number, currentCol: number): Location[];
     name: string;
     defaultLevel: RuleLevel;
     defaultValue: T;

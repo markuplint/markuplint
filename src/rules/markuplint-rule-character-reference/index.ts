@@ -5,8 +5,6 @@ import {
 } from '../../rule';
 import messages from '../messages';
 
-import findLocation from '../../util/findLocation';
-
 export type Value = boolean;
 
 const defaultChars = [
@@ -59,13 +57,13 @@ export default CustomRule.create<Value, null>({
 
 		for (const targetNode of targetNodes) {
 			const escapedText = targetNode.raw.replace(/&(?:[a-z]+|#[0-9]+|x[0-9]);/ig, ($0) => '*'.repeat($0.length));
-			findLocation(defaultChars, escapedText, targetNode.line, targetNode.col).forEach((foundLocation) => {
+			CustomRule.charLocator(defaultChars, escapedText, targetNode.line, targetNode.col).forEach((location) => {
 				reports.push({
 					level: targetNode.level,
 					message: targetNode.message,
-					line: foundLocation.line,
-					col: foundLocation.col,
-					raw: foundLocation.raw,
+					line: location.line,
+					col: location.col,
+					raw: location.raw,
 				});
 			});
 		}

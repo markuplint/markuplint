@@ -1,6 +1,6 @@
 import test from 'ava';
-import * as markuplint from '../../../lib/';
-import rule from '../../../lib/rules/markuplint-rule-required-h1';
+// import * as markuplint from '../../../lib/';
+// import rule from '../../../lib/rules/markuplint-rule-required-h1';
 
 // test(async (t) => {
 // 	const r = await markuplint.verify(

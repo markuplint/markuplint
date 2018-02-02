@@ -11,6 +11,8 @@ import {
 	ConfigureFileJSONRuleOption,
 } from './ruleset/JSONInterface';
 
+import charLocator, { Location } from './parser/charLocator';
+
 const readdir = util.promisify(fs.readdir);
 
 export interface VerifyReturn {
@@ -49,6 +51,10 @@ export interface CustomRuleObject<T = null, O = {}> {
 export class CustomRule<T = null, O = {}> {
 	public static create<T = null, O = {}> (options: CustomRuleObject<T, O>) {
 		return new CustomRule<T, O>(options);
+	}
+
+	public static charLocator (searches: string[], text: string, currentLine: number, currentCol: number) {
+		return charLocator(searches, text, currentLine, currentCol);
 	}
 
 	public name: string;
