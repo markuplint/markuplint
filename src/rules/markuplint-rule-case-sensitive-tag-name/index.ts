@@ -1,7 +1,6 @@
-import {
-	Element,
-	EndTagNode,
-} from '../../parser/';
+import Element from '../../dom/element';
+import EndTagNode from '../../dom/end-tag-node';
+
 import {
 	CustomRule,
 	VerifyReturn,

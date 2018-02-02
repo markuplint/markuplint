@@ -1,4 +1,4 @@
-import { Document } from '../parser';
+import Document from '../dom/document';
 import { CustomRule, VerifiedResult } from '../rule';
 import { ConfigureFileJSON, ConfigureFileJSONRules, NodeRule } from './JSONInterface';
 /**

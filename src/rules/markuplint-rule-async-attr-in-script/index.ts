@@ -1,4 +1,4 @@
-import cssSelector from '../../parser/cssSelector';
+import cssSelector from '../../dom/css-selector';
 import {
 	CustomRule,
 	VerifyReturn,

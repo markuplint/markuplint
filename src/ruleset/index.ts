@@ -4,9 +4,7 @@ import * as util from 'util';
 
 import * as deepAssign from 'deep-assign';
 
-import {
-	Document,
-} from '../parser';
+import Document from '../dom/document';
 
 import {
 	CustomRule,

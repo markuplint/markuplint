@@ -1,6 +1,5 @@
-import {
-	Element,
-} from '../../parser/';
+import Element from '../../dom/element';
+
 import {
 	CustomRule,
 	VerifyReturn,

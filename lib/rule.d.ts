@@ -1,4 +1,4 @@
-import { Document } from './parser';
+import Document from './dom/document';
 import Ruleset from './ruleset';
 import { ConfigureFileJSONRuleOption } from './ruleset/JSONInterface';
 export interface VerifyReturn {

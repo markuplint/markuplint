@@ -1,8 +1,7 @@
-import {
-	Element,
-	InvalidNode,
-	OmittedElement,
-} from '../../parser/';
+import Element from '../../dom/element';
+import InvalidNode from '../../dom/invalid-node';
+import OmittedElement from '../../dom/omitted-element';
+
 import {
 	CustomRule,
 	VerifyReturn,

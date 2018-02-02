@@ -3,8 +3,8 @@ import {
 	reTagName,
 } from './const';
 
-import getCol from './getCol';
-import getLine from './getLine';
+import getCol from './get-col';
+import getLine from './get-line';
 
 export interface N {
 	type: 'text' | 'starttag' | 'endtag' | 'comment' | 'boguscomment';

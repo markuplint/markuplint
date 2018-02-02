@@ -5,9 +5,7 @@ import * as util from 'util';
 // @ts-ignore
 import * as  findNodeModules from 'find-node-modules';
 
-import {
-	Document,
-} from './parser';
+import Document from './dom/document';
 import Ruleset from './ruleset';
 import {
 	ConfigureFileJSONRuleOption,

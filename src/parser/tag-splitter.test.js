@@ -1,5 +1,5 @@
 import test from 'ava';
-import tagSplitter from '../../lib/parser/tagSplitter';
+import tagSplitter from '../../lib/parser/tag-splitter';
 
 test((t) => {
 	const s = tagSplitter('<a>b</c> d<e>  f   \n\ng<?h       \n>i\nj', 1, 1);
@@ -31,7 +31,8 @@ test((t) => {
 });
 
 test((t) => {
-	const s = tagSplitter(`
+	// const s =
+	tagSplitter(`
 	<!DOCTYPE html>
 	<html lang="en">
 	<head>

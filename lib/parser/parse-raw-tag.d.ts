@@ -8,7 +8,7 @@ export interface RawAttribute {
     raw: string;
     invalid: boolean;
 }
-export declare function parseRawTag(rawStartTag: string, nodeLine: number, nodeCol: number): {
+export default function parseRawTag(rawStartTag: string, nodeLine: number, nodeCol: number): {
     tagName: string;
     attrs: RawAttribute[];
 };

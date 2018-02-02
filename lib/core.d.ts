@@ -1,4 +1,4 @@
-import { Document } from './parser';
+import Document from './dom/document';
 import { VerifiedResult } from './rule';
 import Ruleset from './ruleset';
 export default class Markuplint {

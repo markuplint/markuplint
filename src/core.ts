@@ -1,4 +1,5 @@
-import parser, { Document } from './parser';
+import Document from './dom/document';
+import parser from './parser';
 import { VerifiedResult } from './rule';
 import Ruleset from './ruleset';
 

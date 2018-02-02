@@ -1,7 +1,7 @@
 // @ts-ignore
 import * as cssWhat from 'css-what';
 
-import { Element } from './';
+import Element from './element';
 
 export interface CSSUniversalSelectorRule {
 	type: 'universal';

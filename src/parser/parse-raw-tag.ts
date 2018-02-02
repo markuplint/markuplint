@@ -15,7 +15,7 @@ export interface RawAttribute {
 	invalid: boolean;
 }
 
-export function parseRawTag (rawStartTag: string, nodeLine: number, nodeCol: number) {
+export default function parseRawTag (rawStartTag: string, nodeLine: number, nodeCol: number) {
 	let line = 0;
 	let col = 0;
 
