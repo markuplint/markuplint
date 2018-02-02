@@ -58,12 +58,12 @@ if (cli.input.length) {
 
 getStdin().then(async (stdin) => {
 	const Ruleset = require('../lib/ruleset/').default;
-	const { getRuleModules } = require('../lib/rule');
+	const ruleModulesLoader = require('../lib/rule/loader').default;
 	const html = stdin;
 	if (!html) {
 		return;
 	}
-	const rules = await getRuleModules();
+	const rules = await ruleModulesLoader();
 	const ruleset = await Ruleset.create(cli.flags.ruleset || process.cwd(), rules);
 	const reports = await verify(html, ruleset, rules);
 	await output('STDIN_DATA', reports, html, cli.flags);
