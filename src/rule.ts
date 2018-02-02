@@ -61,7 +61,8 @@ export class CustomRule<T = null, O = {}> {
 	public defaultLevel: RuleLevel;
 	public defaultValue: T;
 	public defaultOptions: O;
-	public _v: (document: Document<T, O>, locale: string) => Promise<CustomVerifiedReturn[]>;
+
+	private  _v: (document: Document<T, O>, locale: string) => Promise<CustomVerifiedReturn[]>;
 
 	constructor (o: CustomRuleObject<T, O>) {
 		this.name = o.name;
