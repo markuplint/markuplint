@@ -1,6 +1,4 @@
-import {
-	CustomRule,
-} from '../rule';
+import CustomRule from '../rule/custom-rule';
 
 import {
 	ConfigureFileJSONRuleOption,

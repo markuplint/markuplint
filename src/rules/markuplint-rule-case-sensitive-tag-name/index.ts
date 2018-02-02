@@ -1,10 +1,8 @@
 import Element from '../../dom/element';
 import EndTagNode from '../../dom/end-tag-node';
 
-import {
-	CustomRule,
-	VerifyReturn,
-} from '../../rule';
+import { VerifyReturn } from '../../rule';
+import CustomRule from '../../rule/custom-rule';
 import messages from '../messages';
 
 export type Value = 'lower' | 'upper';

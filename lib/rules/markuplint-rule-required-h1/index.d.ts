@@ -1,4 +1,4 @@
-import { CustomRule } from '../../rule';
+import CustomRule from '../../rule/custom-rule';
 export declare type Value = boolean;
 export interface Options {
     'expected-once': boolean;

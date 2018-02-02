@@ -5,9 +5,9 @@ import * as util from 'util';
 import * as deepAssign from 'deep-assign';
 
 import Document from '../dom/document';
+import CustomRule from '../rule/custom-rule';
 
 import {
-	CustomRule,
 	RuleConfig,
 	RuleLevel,
 	VerifiedResult,

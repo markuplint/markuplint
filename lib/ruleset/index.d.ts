@@ -1,5 +1,6 @@
 import Document from '../dom/document';
-import { CustomRule, VerifiedResult } from '../rule';
+import CustomRule from '../rule/custom-rule';
+import { VerifiedResult } from '../rule';
 import { ConfigureFileJSON, ConfigureFileJSONRules, NodeRule } from './JSONInterface';
 /**
  * TODO: Isolate API that between constractor and file I/O.

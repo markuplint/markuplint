@@ -31,6 +31,10 @@ export default CustomRule.create({
 import { CustomRule, VerifyReturn } from 'markuplint/lib/rule';
 ```
 
+`CustomRule` is a **Class** that has static main method `create` and static helper methods.
+
+`VerifyReturn` is a **Interface** on _TypeScript_.
+
 ### Types
 
 ```js

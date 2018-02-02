@@ -1,4 +1,4 @@
-import { CustomRule } from '../rule';
+import CustomRule from '../rule/custom-rule';
 import Ruleset from '../ruleset';
 import CommentNode from './comment-node';
 import Element from './element';

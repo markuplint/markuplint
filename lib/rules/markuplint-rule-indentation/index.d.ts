@@ -1,4 +1,4 @@
-import { CustomRule } from '../../rule';
+import CustomRule from '../../rule/custom-rule';
 export declare type Value = 'tab' | number;
 declare const _default: CustomRule<Value, null>;
 export default _default;

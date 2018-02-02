@@ -1,8 +1,8 @@
+import CustomRule from '../../rule/custom-rule';
+
 import {
-	CustomRule,
 	RuleLevel,
-	VerifyReturn,
-} from '../../rule';
+	VerifyReturn } from '../../rule';
 import messages from '../messages';
 
 export type Value = boolean;

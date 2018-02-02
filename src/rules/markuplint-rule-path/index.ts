@@ -1,7 +1,5 @@
-import {
-	CustomRule,
-	VerifyReturn,
-} from '../../rule';
+import { VerifyReturn } from '../../rule';
+import CustomRule from '../../rule/custom-rule';
 import messages from '../messages';
 
 export default CustomRule.create({

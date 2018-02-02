@@ -2,10 +2,8 @@ import Element from '../../dom/element';
 import InvalidNode from '../../dom/invalid-node';
 import OmittedElement from '../../dom/omitted-element';
 
-import {
-	CustomRule,
-	VerifyReturn,
-} from '../../rule';
+import { VerifyReturn } from '../../rule';
+import CustomRule from '../../rule/custom-rule';
 import messages from '../messages';
 
 export type Value = 'tab' | number;

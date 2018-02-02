@@ -1,4 +1,5 @@
-import { CustomRule, VerifiedResult } from './rule';
+import CustomRule from './rule/custom-rule';
+import { VerifiedResult } from './rule';
 import { ConfigureFileJSON } from './ruleset/JSONInterface';
 export declare function verify(html: string, config: ConfigureFileJSON, rules: CustomRule[], locale?: string): Promise<VerifiedResult[]>;
 export declare function verifyOnWorkspace(html: string, workspace?: string): Promise<VerifiedResult[]>;

@@ -3,11 +3,11 @@ import * as path from 'path';
 import * as util from 'util';
 
 import Markuplint from './core';
-import {
-	getRuleModules,
-	CustomRule,
-	VerifiedResult,
-} from './rule';
+import CustomRule from './rule/custom-rule';
+
+import { VerifiedResult } from './rule';
+import ruleModulesLoader from './rule/loader';
+
 import Ruleset from './ruleset';
 import { ConfigureFileJSON } from './ruleset/JSONInterface';
 import osLocale from './util/osLocale';
@@ -26,7 +26,7 @@ export async function verify (html: string, config: ConfigureFileJSON, rules: Cu
 export async function verifyOnWorkspace (html: string, workspace?: string) {
 	workspace = workspace ? workspace : process.cwd();
 	const locale = await osLocale();
-	const rules = await getRuleModules();
+	const rules = await ruleModulesLoader();
 	const ruleset = await Ruleset.create(workspace, rules);
 	const core = new Markuplint(html, ruleset, locale);
 	return await core.verify();
@@ -36,7 +36,7 @@ export async function verifyFile (filePath: string, rules?: CustomRule[], config
 	if (!locale) {
 		locale = await osLocale();
 	}
-	rules = rules || await getRuleModules();
+	rules = rules || await ruleModulesLoader();
 	let ruleset: Ruleset;
 	if (configFileOrDir) {
 		ruleset = await Ruleset.create(configFileOrDir, rules);
