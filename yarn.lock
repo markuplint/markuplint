@@ -241,9 +241,15 @@
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@types/deep-assign/-/deep-assign-0.1.1.tgz#c10aa2d6202774015f5820ed303b82ab3b0bde9b"
 
-"@types/meow@^3.6.2":
-  version "3.6.2"
-  resolved "https://registry.yarnpkg.com/@types/meow/-/meow-3.6.2.tgz#d13867f97d8b258200e14f59c6ed07f08b34280e"
+"@types/meow@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/meow/-/meow-4.0.0.tgz#3fe859c984774734fad4009b123b7a0a9c27523f"
+  dependencies:
+    "@types/minimist-options" "*"
+
+"@types/minimist-options@*":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/minimist-options/-/minimist-options-3.0.0.tgz#0dabe91d07e21c9b3fe9614ca862aab202566eb5"
   dependencies:
     "@types/minimist" "*"
 
@@ -6087,9 +6093,9 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@^2.7.0-rc:
-  version "2.7.0-rc"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.0-rc.tgz#bf86a065a3a0be1e072c3fb7d64e8976f33b8365"
+typescript@^2.7.1:
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.1.tgz#bb3682c2c791ac90e7c6210b26478a8da085c359"
 
 uglify-js@^2.6:
   version "2.8.29"
