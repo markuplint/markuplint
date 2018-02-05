@@ -84,9 +84,11 @@ const { html, reports } = await markuplint.verifyFile(htmlPath, ruleset, rules);
 
 ## Rules
 
-[Rule Documentation](./lib/rules/README.md) ([日本語](./lib/rules/README.ja.md))
+- [Rule Documentation - English](./lib/rules/README.md)
+- [Rule Documentation - 日本語](./lib/rules/README.ja.md)
 
-[Custom Rule Documentation](./src/rule/custom-rule/README.md)
+### Rule Customization
+- [Rule Customization - English](./src/rule/custom-rule/README.md)
 
 ## Editor Extensions
 
@@ -94,7 +96,7 @@ const { html, reports } = await markuplint.verifyFile(htmlPath, ruleset, rules);
 
 ## Thanks
 
-This linter is inspired by
+This linter is inspired by:
 
 - [HTMLHint](http://htmlhint.com/)
 - [ESLint](https://eslint.org/)
