@@ -1,8 +1,8 @@
-# Custom Rule
+# Rule Customization
 
 ## Creation
 
-**Recommended to develop with TypeScript**
+**Recommended to develop in TypeScript**
 
 ```js
 import CustomRule from 'markuplint/lib/rule/custom-rule';
@@ -33,15 +33,17 @@ export default CustomRule.create({
 
 ### Steps
 
-1. [must] Default exporting `CustomRule` class.
-2. [must] Set paramater as Object.
-3. [must] Set `name` property.
-4. [must] Set `defaultValue` property.
-5. [must] Set `defaultOptions` property.
-6. [optional] `"error"` or `"warning"` set to `defaltLevel` property.
-7. [must] Define async `verify` method that return Array of `VerifyReturn` in Promise.
+1. [required] Default import `CustomRule` class*.
+2. [optional] If using _TypeScript_, import `VerifyReturn` interface**.
+3. [required] Set paramater as `Object`.
+4. [required] Set `name` property.
+5. [required] Set `defaultValue` property.
+6. [required] Set `defaultOptions` property.
+7. [optional] Set `defaultLevel` property to `"error"` or `"warning"`.
+8. [required] Define async `verify` method to return Promise of `VerifyReturn`** array.
 
-Import modules. `CustomRule` is a **Class** that has static main method `create` and static helper methods. `VerifyReturn` is a **Interface** on _TypeScript_.
+- *`CustomRule` is a **class** that has the static main method `create` and other static helper methods.
+- **`VerifyReturn` is an **interface** in _TypeScript_.
 
 ### Types
 
