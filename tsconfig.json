@@ -4,6 +4,7 @@
     "module": "commonjs",
     "declaration":  true,
     "strict": true,
+    "esModuleInterop": true,
     "lib": [
       "es2015",
       "es2016",

@@ -1,8 +1,8 @@
 // tslint:disable:no-magic-numbers
-import * as path from 'path';
-import * as url from 'url';
+import path from 'path';
+import url from 'url';
 
-import * as c from 'cli-color';
+import c from 'cli-color';
 const stripAnsi = require('strip-ansi'); // tslint:disable-line
 
 import {

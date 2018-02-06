@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'fs';
+import path from 'path';
 
 const exists = (p: string) => {
 	return new Promise<boolean>((r, e) => {

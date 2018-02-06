@@ -1,4 +1,4 @@
-import * as osLocale from 'os-locale';
+import osLocale from 'os-locale';
 
 let cachedLocale: string | null = null;
 

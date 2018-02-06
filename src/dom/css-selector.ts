@@ -1,5 +1,5 @@
 // @ts-ignore
-import * as cssWhat from 'css-what';
+import cssWhat from 'css-what';
 
 import Element from './element';
 

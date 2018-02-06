@@ -1,6 +1,6 @@
 // TODO: @types
 // @ts-ignore
-import * as cosmiconfig from 'cosmiconfig';
+import cosmiconfig from 'cosmiconfig';
 
 import {
 	ConfigureFileJSON,

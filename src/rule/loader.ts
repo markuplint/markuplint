@@ -1,8 +1,8 @@
 // @ts-ignore
-import * as  findNodeModules from 'find-node-modules';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as util from 'util';
+import findNodeModules from 'find-node-modules';
+import fs from 'fs';
+import path from 'path';
+import util from 'util';
 
 import CustomRule from './custom-rule';
 

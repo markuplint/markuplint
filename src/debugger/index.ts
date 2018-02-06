@@ -1,9 +1,9 @@
 // tslint:disable:no-magic-numbers
-import * as fs from 'fs';
-import * as path from 'path';
-import * as util from 'util';
+import fs from 'fs';
+import path from 'path';
+import util from 'util';
 
-import * as c from 'cli-color';
+import c from 'cli-color';
 
 import Node from '../dom/node';
 import parser from '../parser/';

@@ -1,8 +1,8 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as util from 'util';
+import fs from 'fs';
+import path from 'path';
+import util from 'util';
 
-import * as deepAssign from 'deep-assign';
+import deepAssign from 'deep-assign';
 
 import Document from '../dom/document';
 import CustomRule from '../rule/custom-rule';
