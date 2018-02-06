@@ -18,7 +18,7 @@ export default CustomRule.create({
 			if (id && id.value) {
 				if (idStack.includes(id.value)) {
 					reports.push({
-						level: node.rule.level,
+						severity: node.rule.severity,
 						message,
 						line: id.location.line,
 						col: id.location.col,

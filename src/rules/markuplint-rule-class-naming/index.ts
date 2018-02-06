@@ -27,7 +27,7 @@ export default CustomRule.create<Value, Options>({
 								continue;
 							}
 							reports.push({
-								level: node.rule.level,
+								severity: node.rule.severity,
 								message: `"${className}" class name is unmatched pattern of "${classPattern}"`,
 								line: attr.location.line,
 								col: attr.location.col,

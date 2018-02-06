@@ -21,6 +21,7 @@ test('default', async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'warning',
+			severity: 'warning',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
 			col: 26,
@@ -29,6 +30,7 @@ test('default', async (t) => {
 		},
 		{
 			level: 'warning',
+			severity: 'warning',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
 			col: 41,
@@ -57,6 +59,7 @@ test('double', async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
 			col: 26,
@@ -65,6 +68,7 @@ test('double', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
 			col: 41,
@@ -93,6 +97,7 @@ test('single', async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Attribute value is must quote on single quotation mark',
 			line: 2,
 			col: 8,
@@ -101,6 +106,7 @@ test('single', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Attribute value is must quote on single quotation mark',
 			line: 2,
 			col: 41,

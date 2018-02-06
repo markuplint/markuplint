@@ -11,6 +11,7 @@ test(async (t) => {
 	t.deepEqual(r.reports, [
 		{
 			level: 'warning',
+			severity: 'warning',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 2,
 			col: 7,
@@ -19,6 +20,7 @@ test(async (t) => {
 		},
 		{
 			level: 'warning',
+			severity: 'warning',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 4,
 			col: 8,
@@ -27,6 +29,7 @@ test(async (t) => {
 		},
 		{
 			level: 'warning',
+			severity: 'warning',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 5,
 			col: 8,
@@ -35,6 +38,7 @@ test(async (t) => {
 		},
 		{
 			level: 'warning',
+			severity: 'warning',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 5,
 			col: 22,
@@ -43,6 +47,7 @@ test(async (t) => {
 		},
 		{
 			level: 'warning',
+			severity: 'warning',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 6,
 			col: 8,
@@ -51,6 +56,7 @@ test(async (t) => {
 		},
 		{
 			level: 'warning',
+			severity: 'warning',
 			message: 'Attribute value is must quote on double quotation mark',
 			line: 6,
 			col: 35,

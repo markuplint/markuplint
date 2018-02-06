@@ -1,5 +1,9 @@
 export interface VerifyReturn {
-    level: RuleLevel;
+    severity: Severity;
+    /**
+     * @deprecated
+     */
+    level?: Severity;
     message: string;
     line: number;
     col: number;
@@ -11,10 +15,10 @@ export interface VerifiedResult extends VerifyReturn {
 export interface CustomVerifiedReturn extends VerifyReturn {
     ruleId?: string;
 }
-export declare type RuleLevel = 'error' | 'warning';
+export declare type Severity = 'error' | 'warning';
 export interface RuleConfig<T = null, O = {}> {
     disabled: boolean;
-    level: RuleLevel;
+    severity: Severity;
     value: T;
     option: O | null;
 }

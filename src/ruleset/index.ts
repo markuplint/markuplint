@@ -9,7 +9,7 @@ import CustomRule from '../rule/custom-rule';
 
 import {
 	RuleConfig,
-	RuleLevel,
+	Severity,
 	VerifiedResult,
 	VerifyReturn,
 } from '../rule';

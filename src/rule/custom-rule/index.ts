@@ -7,7 +7,7 @@ import charLocator, { Location } from '../../parser/charLocator';
 import {
 	CustomVerifiedReturn,
 	RuleConfig,
-	RuleLevel,
+	Severity,
 	VerifiedResult,
 } from '../';
 import Options from './options';
@@ -23,7 +23,7 @@ export default class CustomRule<T = null, O = {}> {
 	}
 
 	public name: string;
-	public defaultLevel: RuleLevel;
+	public defaultLevel: Severity;
 	public defaultValue: T;
 	public defaultOptions: O;
 
@@ -49,7 +49,8 @@ export default class CustomRule<T = null, O = {}> {
 
 		return results.map<VerifiedResult>((result) => {
 			return {
-				level: result.level,
+				severity: result.severity,
+				level: result.severity, // TODO: remove for v1.0.0, Backward compatibility
 				message: result.message,
 				line: result.line,
 				col: result.col,
@@ -63,7 +64,7 @@ export default class CustomRule<T = null, O = {}> {
 		if (typeof option === 'boolean') {
 			return {
 				disabled: !option,
-				level: this.defaultLevel,
+				severity: this.defaultLevel,
 				value: this.defaultValue,
 				option: this.defaultOptions || null,
 			};
@@ -71,14 +72,14 @@ export default class CustomRule<T = null, O = {}> {
 		if (Array.isArray(option)) {
 			return {
 				disabled: false,
-				level: option[0],
+				severity: option[0],
 				value: option[1] || this.defaultValue,
 				option: option[2] || this.defaultOptions || null,
 			};
 		}
 		return {
 			disabled: false,
-			level: this.defaultLevel,
+			severity: this.defaultLevel,
 			value: option == null ? this.defaultValue : option,
 			option: this.defaultOptions || null,
 		};

@@ -23,12 +23,12 @@ export default CustomRule.create<Value, null>({
 				if (!node.rule) {
 					return;
 				}
-				const ms = node.rule.level === 'error' ? 'must' : 'should';
+				const ms = node.rule.severity === 'error' ? 'must' : 'should';
 				const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
 				const message = await messages(locale, `{0} of {1} ${ms} be {2}`, 'Tag name', 'HTML', `${node.rule.value}case`);
 				if (deny.test(node.nodeName)) {
 					reports.push({
-						level: node.rule.level,
+						severity: node.rule.severity,
 						message,
 						line: node.line,
 						col:

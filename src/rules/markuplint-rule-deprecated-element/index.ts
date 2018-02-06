@@ -15,7 +15,7 @@ export default CustomRule.create({
 			}
 			if (node.obsolete) {
 				reports.push({
-					level: node.rule.level,
+					severity: node.rule.severity,
 					message,
 					line: node.line,
 					col: node.col + 1,

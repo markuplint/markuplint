@@ -21,6 +21,7 @@ test('attr-duplication', async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Duplicate attribute name',
 			line: 2,
 			col: 26,
@@ -29,6 +30,7 @@ test('attr-duplication', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Duplicate attribute name',
 			line: 2,
 			col: 41,
@@ -60,6 +62,7 @@ test('attr-duplication', async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Duplicate attribute name',
 			line: 4,
 			col: 4,
@@ -68,6 +71,7 @@ test('attr-duplication', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Duplicate attribute name',
 			line: 5,
 			col: 4,

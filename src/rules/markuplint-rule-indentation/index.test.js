@@ -40,6 +40,7 @@ test('tab', async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 2,
 			col: 1,
@@ -48,6 +49,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 3,
 			col: 1,
@@ -56,6 +58,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 4,
 			col: 1,
@@ -64,6 +67,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 5,
 			col: 1,
@@ -93,6 +97,7 @@ test('tab', async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 2,
 			col: 1,
@@ -101,6 +106,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 4,
 			col: 1,
@@ -109,6 +115,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 6,
 			col: 1,
@@ -175,6 +182,7 @@ test('tab', async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Indentation must be space',
 			line: 2,
 			col: 1,
@@ -183,6 +191,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Indentation must be space',
 			line: 3,
 			col: 1,
@@ -191,6 +200,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Indentation must be space',
 			line: 4,
 			col: 1,
@@ -199,6 +209,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Indentation must be space',
 			line: 5,
 			col: 1,
@@ -227,6 +238,7 @@ test('tab', async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Indentation must be 2 width spaces',
 			line: 2,
 			col: 1,
@@ -235,6 +247,7 @@ test('tab', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Indentation must be 2 width spaces',
 			line: 5,
 			col: 1,
@@ -282,6 +295,7 @@ test('tab', async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'warning',
+			severity: 'warning',
 			line: 4,
 			col: 1,
 			message: 'Indentation should be 3 width spaces',

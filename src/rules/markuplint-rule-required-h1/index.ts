@@ -27,7 +27,7 @@ export default CustomRule.create<Value, Options>({
 		if (h1Stack.length === 0) {
 			const message = await messages(locale, 'Missing {0}', 'h1 element');
 			reports.push({
-				level: config.level,
+				severity: config.level,
 				message,
 				line: 1,
 				col: 1,
@@ -36,7 +36,7 @@ export default CustomRule.create<Value, Options>({
 		} else if (config.option && config.option['expected-once'] && h1Stack.length > 1) {
 			const message = await messages(locale, 'Duplicate {0}', 'h1 element');
 			reports.push({
-				level: config.level,
+				severity: config.level,
 				message,
 				line: h1Stack[1].line,
 				col: h1Stack[1].col,

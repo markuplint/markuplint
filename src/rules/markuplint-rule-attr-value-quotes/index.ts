@@ -24,7 +24,7 @@ export default CustomRule.create<Value, null>({
 			for (const attr of node.attributes) {
 				if (attr.value != null && attr.quote !== quote[node.rule.value]) {
 					reports.push({
-						level: node.rule.level,
+						severity: node.rule.severity,
 						message,
 						line: attr.location.line,
 						col: attr.location.col,

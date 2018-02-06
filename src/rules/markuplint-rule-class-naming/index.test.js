@@ -59,6 +59,7 @@ test(async (t) => {
 		[
 			{
 				level: 'error',
+				severity: 'error',
 				message: '"c-root" class name is unmatched pattern of "/^c-[a-z]+__[a-z0-9]+/"',
 				line: 2,
 				col: 8,
@@ -103,6 +104,7 @@ test(async (t) => {
 		[
 			{
 				level: 'error',
+				severity: 'error',
 				message: '"c-root_x" class name is unmatched pattern of "/^c-[a-z]+__[a-z0-9]+/"',
 				line: 3,
 				col: 9,
@@ -139,6 +141,7 @@ test(async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: '"hoge" class name is unmatched pattern of "/^c-[a-z]+/"',
 			line: 6,
 			col: 11,
@@ -196,6 +199,7 @@ test(async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: '"hoge" class name is unmatched pattern of "hoge2"',
 			line: 6,
 			col: 11,

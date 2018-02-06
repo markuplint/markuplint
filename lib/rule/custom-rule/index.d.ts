@@ -2,13 +2,13 @@ import Document from '../../dom/document';
 import Ruleset from '../../ruleset';
 import { ConfigureFileJSONRuleOption } from '../../ruleset/JSONInterface';
 import { Location } from '../../parser/charLocator';
-import { RuleConfig, RuleLevel, VerifiedResult } from '../';
+import { RuleConfig, Severity, VerifiedResult } from '../';
 import Options from './options';
 export default class CustomRule<T = null, O = {}> {
     static create<T = null, O = {}>(options: Options<T, O>): CustomRule<T, O>;
     static charLocator(searches: string[], text: string, currentLine: number, currentCol: number): Location[];
     name: string;
-    defaultLevel: RuleLevel;
+    defaultLevel: Severity;
     defaultValue: T;
     defaultOptions: O;
     private _v;

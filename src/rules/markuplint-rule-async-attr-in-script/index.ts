@@ -42,7 +42,7 @@ export default CustomRule.create<Value, null>({
 			if (bad) {
 				const message = await messages(locale, necessary, '{$} attribute');
 				reports.push({
-					level: node.rule.level,
+					severity: node.rule.severity,
 					message: message.replace('{$}', 'async'),
 					line: node.line,
 					col: node.col,

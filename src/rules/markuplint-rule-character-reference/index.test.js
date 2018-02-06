@@ -12,6 +12,7 @@ test('character-reference', async (t) => {
 	t.is(r.length, 4);
 	t.deepEqual(r[0], {
 		level: 'error',
+		severity: 'error',
 		message: 'Illegal characters must escape in character reference',
 		line: 1,
 		col: 14,
@@ -35,6 +36,7 @@ test('character-reference', async (t) => {
 	);
 	t.deepEqual(r, [{
 		level: 'error',
+		severity: 'error',
 		message: 'Illegal characters must escape in character reference',
 		line: 1,
 		col: 22,

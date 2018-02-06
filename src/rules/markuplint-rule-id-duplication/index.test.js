@@ -12,6 +12,7 @@ test('id-duplication', async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Duplicate attribute id value',
 			line: 1,
 			col: 16,

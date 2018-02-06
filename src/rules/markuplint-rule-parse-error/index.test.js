@@ -61,6 +61,7 @@ test(async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'パースできない不正なノードです。',
 			line: 38,
 			col: 36,
@@ -69,6 +70,7 @@ test(async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'パースできない不正なノードです。',
 			line: 42,
 			col: 36,
@@ -77,6 +79,7 @@ test(async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'パースできない不正なノードです。',
 			line: 45,
 			col: 4,
@@ -95,6 +98,7 @@ test(async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: '"body"要素はDOMツリー上に既に暗黙的に生成されています。',
 			line: 1,
 			col: 26,
@@ -103,6 +107,7 @@ test(async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'パースできない不正なノードです。',
 			line: 1,
 			col: 36,

@@ -28,7 +28,7 @@ export default CustomRule.create({
 				}
 				if (hasBody && node.raw.indexOf('<body') === 0) {
 					reports.push({
-						level: node.rule.level,
+						severity: node.rule.severity,
 						message: '"body"要素はDOMツリー上に既に暗黙的に生成されています。',
 						line: node.line,
 						col: node.col,
@@ -36,7 +36,7 @@ export default CustomRule.create({
 					});
 				} else {
 					reports.push({
-						level: node.rule.level,
+						severity: node.rule.severity,
 						message: 'パースできない不正なノードです。',
 						line: node.line,
 						col: node.col,

@@ -16,6 +16,7 @@ test(async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'warning',
+			severity: 'warning',
 			message: 'Required async attribute',
 			line: 1,
 			col: 1,
@@ -53,6 +54,7 @@ test(async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'warning',
+			severity: 'warning',
 			message: 'Not required async attribute',
 			line: 1,
 			col: 1,
@@ -116,6 +118,7 @@ test(async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'warning',
+			severity: 'warning',
 			message: 'Not required async attribute',
 			line: 2,
 			col: 3,
@@ -124,6 +127,7 @@ test(async (t) => {
 		},
 		{
 			level: 'warning',
+			severity: 'warning',
 			message: 'Required async attribute',
 			line: 3,
 			col: 3,

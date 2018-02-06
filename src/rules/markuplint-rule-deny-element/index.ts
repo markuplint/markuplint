@@ -15,7 +15,7 @@ export default CustomRule.create({
 			}
 			const message = await messages(locale, '{0} は許可されていません');
 			reports.push({
-				level: node.rule.level,
+				severity: node.rule.severity,
 				message,
 				line: node.line,
 				col: node.col,

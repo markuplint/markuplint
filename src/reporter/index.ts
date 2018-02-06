@@ -26,9 +26,9 @@ export async function standardReporter (targetPath: string, results: VerifiedRes
 			const next = lines[result.line - 0] || '';
 			const before = line.substring(0, result.col - 1);
 			const after = line.substring(result.col - 1 + result.raw.length);
-			const logger = result.level === 'error' ? loggerError : loggerWarning;
+			const logger = result.severity === 'error' ? loggerError : loggerWarning;
 
-			out.push(`<${markuplint}> ${logger(`${result.level}: ${result.message} [${targetPath}:${result.line}:${result.col}]`)}`);
+			out.push(`<${markuplint}> ${logger(`${result.severity}: ${result.message} [${targetPath}:${result.line}:${result.col}]`)}`);
 			if (result.line - 1 > 0) {
 				out.push(`	${c.cyan(`${result.line - 1}`.padStart(5))}: ${space(prev)}`);
 			}

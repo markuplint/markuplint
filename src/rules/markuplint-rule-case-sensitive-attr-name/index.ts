@@ -15,7 +15,7 @@ export default CustomRule.create<Value, null>({
 			if (!node.rule) {
 				return;
 			}
-			const ms = node.rule.level === 'error' ? 'must' : 'should';
+			const ms = node.rule.severity === 'error' ? 'must' : 'should';
 			const deny = node.rule.value === 'no-upper' ? /[A-Z]/ : /[a-z]/;
 			const cases = node.rule.value === 'no-upper' ? 'lower' : 'upper';
 			const message = await messages(locale, `{0} of {1} ${ms} be {2}`, 'Attribute name', 'HTML', `${cases}case`);
@@ -24,7 +24,7 @@ export default CustomRule.create<Value, null>({
 					for (const attr of node.attributes) {
 						if (deny.test(attr.name)) {
 							reports.push({
-								level: node.rule.level,
+								severity: node.rule.severity,
 								message,
 								line: attr.location.line,
 								col: attr.location.col,

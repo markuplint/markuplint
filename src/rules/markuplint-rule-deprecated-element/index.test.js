@@ -32,6 +32,7 @@ test('deprecated', async (t) => {
 	t.deepEqual(r, [
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Element is deprecated',
 			line: 1,
 			col: 2,
@@ -40,6 +41,7 @@ test('deprecated', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Element is deprecated',
 			line: 1,
 			col: 15,
@@ -48,6 +50,7 @@ test('deprecated', async (t) => {
 		},
 		{
 			level: 'error',
+			severity: 'error',
 			message: 'Element is deprecated',
 			line: 1,
 			col: 20,
