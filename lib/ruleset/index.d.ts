@@ -7,7 +7,7 @@ import { ConfigureFileJSON, ConfigureFileJSONRules, NodeRule } from './JSONInter
  */
 export default class Ruleset {
     static readonly NOFILE: string;
-    static create(config: ConfigureFileJSON | string, rules: CustomRule[]): Promise<default>;
+    static create(config: ConfigureFileJSON | string, rules: CustomRule[]): Promise<Ruleset>;
     rules: ConfigureFileJSONRules;
     nodeRules: NodeRule[];
     childNodeRules: NodeRule[];
