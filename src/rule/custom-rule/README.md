@@ -33,17 +33,17 @@ export default CustomRule.create({
 
 ### Steps
 
-1. [required] Default import `CustomRule` class*.
-2. [optional] If using _TypeScript_, import `VerifyReturn` interface**.
+1. [required] Default import `CustomRule` class<sup>[*](#custom-rule)</sup>.
+2. [optional] If using _TypeScript_, import `VerifyReturn` interface<sup>[*](#verify-return)</sup>.
 3. [required] Set paramater as `Object`.
 4. [required] Set `name` property.
 5. [required] Set `defaultValue` property.
 6. [required] Set `defaultOptions` property.
 7. [optional] Set `defaultLevel` property to `"error"` or `"warning"`.
-8. [required] Define async `verify` method to return Promise of `VerifyReturn`** array.
+8. [required] Define async `verify` method to return Promise of `VerifyReturn`<sup>[*](#verify-return)</sup> array.
 
-- *`CustomRule` is a **class** that has the static main method `create` and other static helper methods.
-- **`VerifyReturn` is an **interface** in _TypeScript_.
+<a id="custom-rule">*</a> `CustomRule` is a **class** that has the static main method `create` and other static helper methods.  
+<a id="verify-return">**</a> `VerifyReturn` is an **interface** in _TypeScript_.
 
 ### Types
 
