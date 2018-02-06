@@ -1,4 +1,4 @@
 import CustomRule from '../../rule/custom-rule';
-export declare type Value = 'lower' | 'upper';
+export declare type Value = 'no-upper' | 'no-lower';
 declare const _default: CustomRule<Value, null>;
 export default _default;
