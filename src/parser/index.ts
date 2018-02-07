@@ -154,13 +154,13 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 					rawHtml.slice(p5node.__location.startTag.startOffset, p5node.__location.startTag.endOffset)
 					:
 					rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
-				const rawTag = parseRawTag(raw, p5node.__location.line, p5node.__location.col);
+				const rawTag = parseRawTag(raw, p5node.__location.line, p5node.__location.col, p5node.__location.startOffset);
 				const nodeName = rawTag.tagName;
 				const attributes: Attribute[] = [];
 				for (const attr of rawTag.attrs) {
 					attributes.push({
-						name: attr.name,
-						value: attr.value,
+						name: attr.name.raw,
+						value: attr.value ? attr.value.raw : null,
 						location: {
 							line: attr.line,
 							col: attr.col,
@@ -168,7 +168,7 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 							endOffset: attr.raw.length - 1,
 						},
 						quote: attr.quote,
-						equal: attr.equal,
+						equal: attr.equal ? attr.equal.raw : null,
 						invalid: attr.invalid,
 						raw: attr.raw,
 					});

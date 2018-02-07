@@ -4,7 +4,7 @@ import Location from './location';
 import getCol from '../parser/get-col';
 import getLine from '../parser/get-line';
 
-export default abstract class Token {
+export default class Token {
 	public readonly raw: string;
 	public location: Location;
 	public indentation: Indentation | null = null;

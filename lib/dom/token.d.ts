@@ -1,6 +1,6 @@
 import { Indentation } from './';
 import Location from './location';
-export default abstract class Token {
+export default class Token {
     readonly raw: string;
     location: Location;
     indentation: Indentation | null;

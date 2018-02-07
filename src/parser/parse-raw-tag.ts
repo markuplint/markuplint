@@ -4,18 +4,9 @@ import {
 	reTagName,
 } from './const';
 
-export interface RawAttribute {
-	name: string;
-	value: string | null;
-	quote: '"' | "'" | null;
-	equal: string | null;
-	line: number;
-	col: number;
-	raw: string;
-	invalid: boolean;
-}
+import Attribute from '../dom/attribute';
 
-export default function parseRawTag (rawStartTag: string, nodeLine: number, nodeCol: number) {
+export default function parseRawTag (rawStartTag: string, nodeLine: number, nodeCol: number, startOffset: number) {
 	let line = 0;
 	let col = 0;
 
@@ -34,20 +25,20 @@ export default function parseRawTag (rawStartTag: string, nodeLine: number, node
 
 	col += tagName.length + 1;
 
-	const attrs: RawAttribute[] = [];
+	const attrs: Attribute[] = [];
 
 	while (reAttrsInStartTag.test(attrString)) {
 		const attrMatchedMap = attrString.match(reAttrsInStartTag);
 		if (attrMatchedMap) {
-			const raw = attrMatchedMap[0];
 			const name = attrMatchedMap[1];
 			const equal = attrMatchedMap[2] || null;
 			const quote = attrMatchedMap[3] != null ? '"' : attrMatchedMap[4] != null ? "'" : null;
 			const value = attrMatchedMap[3] || attrMatchedMap[4] || attrMatchedMap[5] || null;
 			const index = attrMatchedMap.index!; // no global matches
-			const shaveLength = raw.length + index;
-			const shavedString = attrString.substr(0, shaveLength);
 			const invalid = !!(value && quote === null && /["'=<>`]/.test(value)) || !!(equal && quote === null && value === null);
+
+			const shaveLength = attrString.length + index;
+			const shavedString = attrString.substr(0, shaveLength);
 			col += index;
 
 			if (/\r?\n/.test(shavedString)) {
@@ -65,24 +56,32 @@ export default function parseRawTag (rawStartTag: string, nodeLine: number, node
 			// console.log({ shavedString: shavedString.replace(/\r?\n/g, '⏎').replace(/\t/g, '→'), col, line });
 			// console.log('\n\n');
 
-			attrs.push({
-				name,
-				value,
-				quote,
-				equal,
-				line: line + nodeLine,
-				col: line === 0 ? col + nodeCol : col + 1,
-				raw,
-				invalid,
-			});
+			const attr = new Attribute(attrString, line, col, startOffset);
+			attrs.push(attr);
+			// attrs.push({
+			// 	name,
+			// 	value,
+			// 	quote,
+			// 	equal,
+			// 	line: line + nodeLine,
+			// 	col: line === 0 ? col + nodeCol : col + 1,
+			// 	raw,
+			// 	invalid,
+			// });
 
 			attrString = attrString.substring(shaveLength);
 
-			col += raw.length;
+			col += attr.raw.length;
 		}
 	}
 	return {
 		tagName,
 		attrs,
+		toJSON () {
+			return {
+				tagName: this.tagName,
+				attrs: this.attrs.map(attr => attr.toJSON()),
+			};
+		},
 	};
 }

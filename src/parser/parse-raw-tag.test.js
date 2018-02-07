@@ -3,7 +3,7 @@ import parseRawTag from '../../lib/parser/parse-raw-tag';
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div>', 0, 0),
+		parseRawTag('<div>', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [],
@@ -13,7 +13,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div >', 0, 0),
+		parseRawTag('<div >', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [],
@@ -23,7 +23,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div >', 0, 0),
+		parseRawTag('<div >', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [],
@@ -33,7 +33,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div  >', 0, 0),
+		parseRawTag('<div  >', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [],
@@ -43,7 +43,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div a>', 0, 0),
+		parseRawTag('<div a>', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -64,7 +64,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div a a>', 0, 0),
+		parseRawTag('<div a a>', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -95,7 +95,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div a a a>', 0, 0),
+		parseRawTag('<div a a a>', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -136,7 +136,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div abc a>', 0, 0),
+		parseRawTag('<div abc a>', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -167,7 +167,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div abc abc>', 0, 0),
+		parseRawTag('<div abc abc>', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -198,7 +198,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div abc abc abc>', 0, 0),
+		parseRawTag('<div abc abc abc>', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -240,7 +240,7 @@ test('standard', (t) => {
 test('standard', (t) => {
 	t.deepEqual(
 		parseRawTag(`<div
-a>`, 0, 0),
+a>`, 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -264,7 +264,7 @@ test('standard', (t) => {
 		parseRawTag(`<div
 
 
-			a>`, 0, 0),
+			a>`, 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -291,7 +291,7 @@ test('standard', (t) => {
 
 a
   b
->`, 0, 0),
+>`, 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -326,7 +326,7 @@ test('standard', (t) => {
      a
       b c
       d>
-		`, 0, 0),
+		`, 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -377,7 +377,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div a=a>', 0, 0),
+		parseRawTag('<div a=a>', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -398,7 +398,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div a="a">', 0, 0),
+		parseRawTag('<div a="a">', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -419,7 +419,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div a=\'a\'>', 0, 0),
+		parseRawTag('<div a=\'a\'>', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -440,7 +440,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div a="1" b="2">', 0, 0),
+		parseRawTag('<div a="1" b="2">', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -471,7 +471,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div a="1" b=c=d>', 0, 0),
+		parseRawTag('<div a="1" b=c=d>', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -502,7 +502,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div a=>', 0, 0),
+		parseRawTag('<div a=>', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -523,7 +523,7 @@ test('standard', (t) => {
 
 test('standard', (t) => {
 	t.deepEqual(
-		parseRawTag('<div a = "abc">', 0, 0),
+		parseRawTag('<div a = "abc">', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
@@ -543,19 +543,19 @@ test('standard', (t) => {
 });
 
 test('error', (t) => {
-	t.is(t.throws(() => parseRawTag('<div'), SyntaxError).message, 'Invalid tag syntax');
+	t.is(t.throws(() => parseRawTag('<div').toJSON(), SyntaxError).message, 'Invalid tag syntax');
 });
 
 test('error', (t) => {
-	t.is(t.throws(() => parseRawTag('<>'), SyntaxError).message, 'Invalid tag syntax');
+	t.is(t.throws(() => parseRawTag('<>').toJSON(), SyntaxError).message, 'Invalid tag syntax');
 });
 
 test('error', (t) => {
-	t.is(t.throws(() => parseRawTag('< >'), SyntaxError).message, 'Invalid tag name');
+	t.is(t.throws(() => parseRawTag('< >').toJSON(), SyntaxError).message, 'Invalid tag name');
 });
 
 test('error', (t) => {
-	t.is(t.throws(() => parseRawTag('<要素>'), SyntaxError).message, 'Invalid tag name');
+	t.is(t.throws(() => parseRawTag('<要素>').toJSON(), SyntaxError).message, 'Invalid tag name');
 });
 
 test('noop', (t) => t.pass());
