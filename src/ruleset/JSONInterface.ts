@@ -14,9 +14,9 @@ export interface ConfigureFileJSONRules {
 	[ruleName: string]: boolean | ConfigureFileJSONRuleOption<null, {}>;
 }
 
-export type RuleLevel = 'error' | 'warning';
+export type Severity = 'error' | 'warning';
 
-export type ConfigureFileJSONRuleOption<T, O> = [RuleLevel, T, O];
+export type ConfigureFileJSONRuleOption<T, O> = [Severity, T, O];
 
 export interface NodeRule {
 	tagName?: string;
