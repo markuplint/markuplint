@@ -51,7 +51,7 @@ export default class Document<T, O> {
 		syncWalk<T, O>(nodeTree, (node) => {
 			if (node instanceof Node) {
 
-				currentStartOffset = node.startOffset;
+				currentStartOffset = node.location.startOffset;
 
 				const diff = currentStartOffset - currentEndOffset;
 				if (diff > 0) {
@@ -62,15 +62,10 @@ export default class Document<T, O> {
 						const spaces = html;
 						const textNode = new TextNode(
 							'#ws',
-							{
-								line: prevLine,
-								col: prevCol,
-								startOffset: currentEndOffset,
-								endOffset: currentEndOffset + spaces.length,
-								endLine: getLine(spaces, prevLine),
-								endCol: getCol(spaces, prevCol),
-							},
 							spaces,
+							prevLine,
+							prevCol,
+							currentEndOffset,
 							node.prevNode,
 							node,
 							node.parentNode,
@@ -92,8 +87,8 @@ export default class Document<T, O> {
 
 				currentEndOffset = currentStartOffset + node.raw.length;
 
-				prevLine = node.endLine;
-				prevCol = node.endCol;
+				prevLine = node.location.endLine;
+				prevCol = node.location.endCol;
 			}
 
 			pos.push({
@@ -118,7 +113,7 @@ export default class Document<T, O> {
 		const removeIndexes: number[] = [];
 		pos.forEach(({node, startOffset, endOffset}, i) => {
 			if (node instanceof Node) {
-				const id = `${node.line}:${node.col}:${node.endLine}:${node.endCol}`;
+				const id = `${node.line}:${node.col}:${node.location.endLine}:${node.location.endCol}`;
 				if (stack[id] != null) {
 					const iA = stack[id];
 					const iB = i;
@@ -149,19 +144,14 @@ export default class Document<T, O> {
 				if (!lastTextContent) {
 					return;
 				}
-				const line = lastNode ? lastNode.endLine : 0;
-				const col = lastNode ? lastNode.endCol : 0;
+				const line = lastNode ? lastNode.location.endLine : 0;
+				const col = lastNode ? lastNode.location.endCol : 0;
 				const lastTextNode = new TextNode(
 					'#text',
-					{
-						line,
-						col,
-						startOffset: endOffset,
-						endOffset: endOffset + lastTextContent.length,
-						endLine: getLine(lastTextContent, line),
-						endCol: getCol(lastTextContent, col),
-					},
 					lastTextContent,
+					line,
+					col,
+					endOffset,
 					lastNode || null,
 					node,
 					null,
@@ -189,9 +179,13 @@ export default class Document<T, O> {
 
 					// concat contiguous textNodes
 					if (node instanceof TextNode) {
-						prevSyntaxicalTextNode.endLine = node.endLine;
-						prevSyntaxicalTextNode.endCol = node.endCol;
-						prevSyntaxicalTextNode.endOffset = node.endOffset;
+						// @ts-ignore
+						prevSyntaxicalTextNode.location.endLine = node.location.endLine;
+						// @ts-ignore
+						prevSyntaxicalTextNode.location.endCol = node.location.endCol;
+						// @ts-ignore
+						prevSyntaxicalTextNode.location.endOffset = node.location.endOffset;
+						// @ts-ignore
 						prevSyntaxicalTextNode.raw = prevSyntaxicalTextNode.raw + node.raw;
 						prevSyntaxicalNode = prevSyntaxicalTextNode;
 						return;
@@ -348,7 +342,7 @@ export default class Document<T, O> {
 	public toDebugMap () {
 		return this.list.map((n) => {
 			if (n instanceof Node) {
-				return `[${n.line}:${n.col}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${n instanceof OmittedElement ? '???' : ''}${n.nodeName}: ${n.toString().replace(/\n/g, '⏎').replace(/\t/g, '→').replace(/\s/g, '␣')}`;
+				return `[${n.line}:${n.col}]>[${n.location.endLine}:${n.location.endCol}](${n.location.startOffset},${n.location.endOffset})${n instanceof OmittedElement ? '???' : ''}${n.nodeName}: ${n.toString().replace(/\n/g, '⏎').replace(/\t/g, '→').replace(/\s/g, '␣')}`;
 			} else {
 				return `[N/A]>[N/A](N/A)${n.nodeName}: ${n.toString()}`;
 			}

@@ -56,15 +56,10 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
 			const node = new Doctype(
 				'#doctype',
-				{
-					line: p5node.__location.line,
-					col: p5node.__location.col,
-					startOffset: p5node.__location.startOffset,
-					endOffset: p5node.__location.startOffset + raw.length,
-					endLine: getLine(raw, p5node.__location.line),
-					endCol: getCol(raw, p5node.__location.col),
-				},
 				raw,
+				p5node.__location.line,
+				p5node.__location.col,
+				p5node.__location.startOffset,
 				prev,
 				null,
 				parent,
@@ -82,15 +77,10 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 			if (parent && /^(?:script|style)$/i.test(parent.nodeName)) {
 				const node = new RawText<T, O>(
 					p5node.nodeName,
-					{
-						line: p5node.__location.line,
-						col: p5node.__location.col,
-						startOffset: p5node.__location.startOffset,
-						endOffset: p5node.__location.startOffset + raw.length,
-						endLine: getLine(raw, p5node.__location.line),
-						endCol: getCol(raw, p5node.__location.col),
-					},
 					raw,
+					p5node.__location.line,
+					p5node.__location.col,
+					p5node.__location.startOffset,
 					prev,
 					null,
 					parent,
@@ -105,15 +95,10 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 					if (token.type === 'text') {
 						const node = new TextNode<T, O>(
 							p5node.nodeName,
-							{
-								line: token.line,
-								col: token.col,
-								startOffset,
-								endOffset,
-								endLine: getLine(token.raw, token.line),
-								endCol: getCol(token.raw, token.col),
-							},
 							token.raw,
+							token.line,
+							token.col,
+							startOffset,
 							prev,
 							null,
 							parent,
@@ -124,15 +109,10 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 					} else {
 						const node = new InvalidNode<T, O>(
 							'#invalid',
-							{
-								line: token.line,
-								col: token.col,
-								startOffset,
-								endOffset,
-								endLine: getLine(token.raw, token.line),
-								endCol: getCol(token.raw, token.col),
-							},
 							token.raw,
+							token.line,
+							token.col,
+							startOffset,
 							prev,
 							null,
 							parent,
@@ -152,15 +132,10 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
 			const node = new CommentNode<T, O>(
 				p5node.nodeName,
-				{
-					line: p5node.__location.line,
-					col: p5node.__location.col,
-					startOffset: p5node.__location.startOffset,
-					endOffset: p5node.__location.startOffset + raw.length,
-					endLine: getLine(raw, p5node.__location.line),
-					endCol: getCol(raw, p5node.__location.col),
-				},
 				raw,
+				p5node.__location.line,
+				p5node.__location.col,
+				p5node.__location.startOffset,
 				prev,
 				null,
 				parent,
@@ -205,15 +180,10 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 					const endTagName = endTagRaw.replace(/^<\/((?:[a-z]+:)?[a-z]+(?:-[a-z]+)*)\s*>/i, '$1');
 					endTag = new EndTagNode<T, O>(
 						endTagName,
-						{
-							line: endTagLocation.line,
-							col: endTagLocation.col,
-							startOffset: endTagLocation.startOffset,
-							endOffset: endTagLocation.endOffset,
-							endLine: getLine(endTagRaw, endTagLocation.line),
-							endCol: getCol(endTagRaw, endTagLocation.col),
-						},
 						endTagRaw,
+						endTagLocation.line,
+						endTagLocation.col,
+						endTagLocation.startOffset,
 						null,
 						null,
 						parent,
@@ -222,15 +192,10 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 
 				node = new Element<T, O>(
 					nodeName,
-					{
-						line: p5node.__location.line,
-						col: p5node.__location.col,
-						startOffset: p5node.__location.startOffset,
-						endOffset: p5node.__location.startOffset + raw.length,
-						endLine: getLine(raw, p5node.__location.line),
-						endCol: getCol(raw, p5node.__location.col),
-					},
 					raw,
+					p5node.__location.line,
+					p5node.__location.col,
+					p5node.__location.startOffset,
 					prev,
 					null,
 					parent,

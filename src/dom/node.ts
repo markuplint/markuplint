@@ -7,6 +7,7 @@ import {
 
 import Document from './document';
 import GhostNode from './ghost-node';
+import Token from './token';
 
 import {
 	RuleConfig,
@@ -16,19 +17,12 @@ import {
 	ConfigureFileJSONRules,
 } from '../ruleset/JSONInterface';
 
-export default abstract class Node<T = null, O = {}> {
+export default abstract class Node<T = null, O = {}> extends Token {
 	public readonly type: NodeType = 'Node';
 	public nodeName: string;
-	public readonly line: number;
-	public readonly col: number;
-	public endLine: number;
-	public endCol: number;
-	public readonly startOffset: number;
-	public endOffset: number;
 	public prevNode: AmbiguousNode<T, O> = null;
 	public nextNode: AmbiguousNode<T, O> = null;
 	public readonly parentNode: AmbiguousNode<T, O> = null;
-	public raw = '';
 	public prevSyntaxicalNode: Node<T, O> | null = null;
 	public indentation: Indentation | null = null;
 	public rules: ConfigureFileJSONRules = {};
@@ -39,15 +33,9 @@ export default abstract class Node<T = null, O = {}> {
 	 */
 	public depth = 0;
 
-	constructor (nodeName: string, location: NuLocation, raw: string, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: AmbiguousNode<T, O>) {
+	constructor (nodeName: string, raw: string, line: number, col: number, startOffset: number, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: AmbiguousNode<T, O>) {
+		super(raw, line, col, startOffset);
 		this.nodeName = nodeName;
-		this.line = location.line;
-		this.col = location.col;
-		this.endLine = location.endLine;
-		this.endCol = location.endCol;
-		this.startOffset = location.startOffset;
-		this.endOffset = location.endOffset;
-		this.raw = raw;
 		this.prevNode = prevNode;
 		this.nextNode = nextNode;
 		this.parentNode = parentNode;
@@ -60,8 +48,8 @@ export default abstract class Node<T = null, O = {}> {
 	public toJSON () {
 		return {
 			nodeName: this.nodeName,
-			line: this.line || null,
-			col: this.col || null,
+			line: this.location.line || null,
+			col: this.location.col || null,
 		};
 	}
 

@@ -11,8 +11,8 @@ export default class Doctype<T, O> extends Node<T, O> {
 	public readonly publicId: string | null;
 	public readonly dtd: string | null;
 
-	constructor (nodeName: string, location: NuLocation, raw: string, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: AmbiguousNode<T, O>, publicId: string | null, systemId: string | null) {
-		super(nodeName, location, raw, prevNode, nextNode, parentNode);
+	constructor (nodeName: string, raw: string, line: number, col: number, startOffset: number, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: AmbiguousNode<T, O>, publicId: string | null, systemId: string | null) {
+		super(nodeName, raw, line, col, startOffset, prevNode, nextNode, parentNode);
 		this.publicId = publicId;
 		this.dtd = systemId;
 	}

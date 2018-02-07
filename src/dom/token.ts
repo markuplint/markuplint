@@ -6,7 +6,7 @@ import getLine from '../parser/get-line';
 
 export default abstract class Token {
 	public readonly raw: string;
-	public readonly location: Location;
+	public location: Location;
 	public indentation: Indentation | null = null;
 
 	constructor (raw: string, line: number, col: number, startOffset: number) {
@@ -19,5 +19,13 @@ export default abstract class Token {
 			startOffset,
 			startOffset + raw.length,
 		);
+	}
+
+	public get line () {
+		return this.location.line;
+	}
+
+	public get col () {
+		return this.location.col;
 	}
 }

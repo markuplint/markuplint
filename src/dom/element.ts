@@ -20,8 +20,8 @@ export default class Element<T, O> extends Node<T, O> {
 	public endTagNode: EndTagNode<T, O> | null = null;
 	public obsolete = false;
 
-	constructor (nodeName: string, location: NuLocation, raw: string, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: AmbiguousNode<T, O>, attributes: Attribute[], namespaceURI: string, endTag: EndTagNode<T, O> | null) {
-		super(nodeName, location, raw, prevNode, nextNode, parentNode);
+	constructor (nodeName: string, raw: string, line: number, col: number, startOffset: number, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: AmbiguousNode<T, O>, attributes: Attribute[], namespaceURI: string, endTag: EndTagNode<T, O> | null) {
+		super(nodeName, raw, line, col, startOffset, prevNode, nextNode, parentNode);
 		this.attributes = attributes;
 		this.namespaceURI = namespaceURI;
 		this.endTagNode = endTag;
