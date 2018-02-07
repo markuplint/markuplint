@@ -25,14 +25,6 @@ export interface ElementLocation extends TagNodeLocation {
     startTag: TagNodeLocation;
     endTag: TagNodeLocation | null;
 }
-export interface NuLocation {
-    line: number;
-    col: number;
-    endLine: number;
-    endCol: number;
-    startOffset: number;
-    endOffset: number;
-}
 export declare type AmbiguousNode<T, O> = Node<T, O> | GhostNode<T, O> | null;
 export interface Attribute {
     name: string;

@@ -2,7 +2,6 @@ import {
 	AmbiguousNode,
 	Indentation,
 	NodeType,
-	NuLocation,
 } from '../dom';
 
 import Document from './document';

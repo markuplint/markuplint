@@ -2,7 +2,6 @@ import {
 	AmbiguousNode,
 	Attribute,
 	NodeType,
-	NuLocation,
 	TagNodeLocation,
 } from '../dom';
 

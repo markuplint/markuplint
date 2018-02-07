@@ -1,7 +1,6 @@
 import {
 	AmbiguousNode,
 	NodeType,
-	NuLocation,
 } from '../dom';
 
 import Node from './node';
