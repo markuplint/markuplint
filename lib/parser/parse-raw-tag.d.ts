@@ -5,14 +5,58 @@ export default function parseRawTag(rawStartTag: string, nodeLine: number, nodeC
     toJSON(): {
         tagName: string;
         attrs: {
-            name: string;
-            value: string | null;
+            name: {
+                raw: string;
+                beforeSpaces: {
+                    raw: string;
+                    style: "tab" | "space" | "mixed" | "none";
+                };
+                line: number;
+                col: number;
+                endLine: number;
+                endCol: number;
+                startOffset: number;
+                endOffset: number;
+            };
+            value: {
+                raw: string;
+                beforeSpaces: {
+                    raw: string;
+                    style: "tab" | "space" | "mixed" | "none";
+                };
+                line: number;
+                col: number;
+                endLine: number;
+                endCol: number;
+                startOffset: number;
+                endOffset: number;
+            } | null;
             quote: "\"" | "'" | null;
-            col: number;
-            line: number;
-            equal: string | null;
-            raw: string;
+            equal: {
+                raw: string;
+                beforeSpaces: {
+                    raw: string;
+                    style: "tab" | "space" | "mixed" | "none";
+                };
+                line: number;
+                col: number;
+                endLine: number;
+                endCol: number;
+                startOffset: number;
+                endOffset: number;
+            } | null;
             invalid: boolean;
+            raw: string;
+            beforeSpaces: {
+                raw: string;
+                style: "tab" | "space" | "mixed" | "none";
+            };
+            line: number;
+            col: number;
+            endLine: number;
+            endCol: number;
+            startOffset: number;
+            endOffset: number;
         }[];
     };
 };

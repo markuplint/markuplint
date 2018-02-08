@@ -41,12 +41,12 @@ export default function parseRawTag (rawStartTag: string, nodeLine: number, node
 			const shavedString = attrString.substr(0, shaveLength);
 			col += index;
 
-			if (/\r?\n/.test(shavedString)) {
-				const lineSplited = shavedString.split(/\r?\n/g);
-				line += lineSplited.length - 1;
-				const lastLine = lineSplited.slice(-1)[0];
-				col = lastLine.indexOf(name);
-			}
+			// if (/\r?\n/.test(shavedString)) {
+			// 	const lineSplited = shavedString.split(/\r?\n/g);
+			// 	line += lineSplited.length - 1;
+			// 	const lastLine = lineSplited.slice(-1)[0];
+			// 	col = lastLine.indexOf(name);
+			// }
 
 			// Debug Log
 			// console.log(rawStartTag.replace(/\r?\n/g, '⏎').replace(/\t/g, '→'));
@@ -56,7 +56,7 @@ export default function parseRawTag (rawStartTag: string, nodeLine: number, node
 			// console.log({ shavedString: shavedString.replace(/\r?\n/g, '⏎').replace(/\t/g, '→'), col, line });
 			// console.log('\n\n');
 
-			const attr = new Attribute(attrString, line, col, startOffset);
+			const attr = new Attribute(attrString, line, col, col);
 			attrs.push(attr);
 			// attrs.push({
 			// 	name,

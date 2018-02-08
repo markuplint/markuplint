@@ -5,15 +5,59 @@ export default class Attribute extends Token {
     readonly quote: '"' | "'" | null;
     readonly equal: Token | null;
     readonly invalid: boolean;
-    constructor(attrString: string, line: number, col: number, startOffset: number);
+    constructor(raw: string, line: number, col: number, startOffset: number);
     toJSON(): {
-        name: string;
-        value: string | null;
+        name: {
+            raw: string;
+            beforeSpaces: {
+                raw: string;
+                style: "tab" | "space" | "mixed" | "none";
+            };
+            line: number;
+            col: number;
+            endLine: number;
+            endCol: number;
+            startOffset: number;
+            endOffset: number;
+        };
+        value: {
+            raw: string;
+            beforeSpaces: {
+                raw: string;
+                style: "tab" | "space" | "mixed" | "none";
+            };
+            line: number;
+            col: number;
+            endLine: number;
+            endCol: number;
+            startOffset: number;
+            endOffset: number;
+        } | null;
         quote: "\"" | "'" | null;
-        col: number;
-        line: number;
-        equal: string | null;
-        raw: string;
+        equal: {
+            raw: string;
+            beforeSpaces: {
+                raw: string;
+                style: "tab" | "space" | "mixed" | "none";
+            };
+            line: number;
+            col: number;
+            endLine: number;
+            endCol: number;
+            startOffset: number;
+            endOffset: number;
+        } | null;
         invalid: boolean;
+        raw: string;
+        beforeSpaces: {
+            raw: string;
+            style: "tab" | "space" | "mixed" | "none";
+        };
+        line: number;
+        col: number;
+        endLine: number;
+        endCol: number;
+        startOffset: number;
+        endOffset: number;
     };
 }

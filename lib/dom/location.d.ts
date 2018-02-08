@@ -6,4 +6,12 @@ export default class Location {
     readonly startOffset: number;
     readonly endOffset: number;
     constructor(line: number, col: number, endLine: number, endCol: number, startOffset: number, endOffset: number);
+    toJSON(): {
+        line: number;
+        col: number;
+        endLine: number;
+        endCol: number;
+        startOffset: number;
+        endOffset: number;
+    };
 }

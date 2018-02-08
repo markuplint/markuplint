@@ -14,6 +14,7 @@ import {
 
 import {
 	ConfigureFileJSONRules,
+	ConfigureFileJSONRuleOption,
 } from '../ruleset/JSONInterface';
 
 export default abstract class Node<T = null, O = {}> extends Token {
@@ -47,8 +48,14 @@ export default abstract class Node<T = null, O = {}> extends Token {
 	public toJSON () {
 		return {
 			nodeName: this.nodeName,
-			line: this.location.line || null,
-			col: this.location.col || null,
+			raw: this.raw,
+			beforeSpaces: this.beforeSpaces.toJSON(),
+			line: this.line,
+			col: this.col,
+			endLine: this.location.endLine,
+			endCol: this.location.endCol,
+			startOffset: this.location.startOffset,
+			endOffset: this.location.endOffset,
 		};
 	}
 

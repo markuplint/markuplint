@@ -396,21 +396,61 @@ test('standard', (t) => {
 	);
 });
 
-test('standard', (t) => {
+test.only('standard', (t) => {
 	t.deepEqual(
 		parseRawTag('<div a="a">', 0, 0).toJSON(),
 		{
 			tagName: 'div',
 			attrs: [
 				{
-					name: 'a',
-					value: 'a',
+					name: {
+						raw: 'a',
+						line: 0,
+						col: 6,
+						endLine: 0,
+						endCol: 7,
+						startOffset: 6,
+						endOffset: 7,
+						beforeSpaces: {
+							raw: ' ',
+							style: 'space',
+						},
+					},
+					equal: {
+						raw: '=',
+						line: 1,
+						col: 1,
+						endLine: 1,
+						endCol: 1,
+						startOffset: 1,
+						endOffset: 1,
+						beforeSpaces: {
+							raw: '',
+							style: 'none',
+						},
+					},
 					quote: '"',
-					equal: '=',
+					value: {
+						raw: 'a',
+						line: 1,
+						col: 1,
+						endLine: 1,
+						endCol: 1,
+						startOffset: 1,
+						endOffset: 1,
+						beforeSpaces: {
+							raw: '',
+							style: 'none',
+						},
+					},
 					line: 0,
 					col: 5,
 					raw: 'a="a"',
 					invalid: false,
+					beforeSpaces: {
+						raw: '',
+						style: 'none',
+					},
 				},
 			],
 		}

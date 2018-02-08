@@ -14,4 +14,15 @@ export default class Location {
 		this.startOffset = startOffset;
 		this.endOffset = endOffset;
 	}
+
+	public toJSON () {
+		return {
+			line: this.line,
+			col: this.col,
+			endLine: this.endLine,
+			endCol: this.endCol,
+			startOffset: this.startOffset,
+			endOffset: this.endOffset,
+		};
+	}
 }

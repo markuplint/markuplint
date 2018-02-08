@@ -21,8 +21,17 @@ export default abstract class Node<T = null, O = {}> extends Token {
     toString(): string;
     toJSON(): {
         nodeName: string;
-        line: number | null;
-        col: number | null;
+        raw: string;
+        beforeSpaces: {
+            raw: string;
+            style: "tab" | "space" | "mixed" | "none";
+        };
+        line: number;
+        col: number;
+        endLine: number;
+        endCol: number;
+        startOffset: number;
+        endOffset: number;
     };
     is(type: NodeType): boolean;
     readonly rule: RuleConfig<T, O> | null;
