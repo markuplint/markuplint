@@ -1,14 +1,13 @@
 import { VerifyReturn } from '../../rule';
 import CustomRule from '../../rule/custom-rule';
-import messages from '../messages';
 
 export default CustomRule.create({
 	name: 'attr-duplication',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify (document, locale) {
+	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
-		const message = await messages(locale, 'Duplicate {0}', 'attribute name');
+		const message = messages('Duplicate {0}', 'attribute name');
 		await document.walkOn('Element', async (node) => {
 			if (!node.rule) {
 				return;

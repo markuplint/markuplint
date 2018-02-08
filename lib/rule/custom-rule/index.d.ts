@@ -1,4 +1,5 @@
 import Document from '../../dom/document';
+import Messenger from '../../locale/messenger';
 import Ruleset from '../../ruleset';
 import { ConfigureFileJSONRuleOption } from '../../ruleset/JSONInterface';
 import { Location } from '../../parser/charLocator';
@@ -13,6 +14,6 @@ export default class CustomRule<T = null, O = {}> {
     defaultOptions: O;
     private _v;
     constructor(o: Options<T, O>);
-    verify(document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifiedResult[]>;
+    verify(document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, messenger: Messenger): Promise<VerifiedResult[]>;
     optimizeOption(option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O>;
 }

@@ -1,14 +1,13 @@
 import { VerifyReturn } from '../../rule';
 import CustomRule from '../../rule/custom-rule';
-import messages from '../messages';
 
 export default CustomRule.create({
 	name: 'permitted-role',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify (document, locale) {
+	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
-		// const message = await messages(locale, `Values allowed for {0} attributes are {$}`, '"role"');
+		// const message = messages(`Values allowed for {0} attributes are {$}`, '"role"');
 		// await document.walkOn('Element', async (node) => {
 		// 	if (!node.rule) {
 		// 		return;

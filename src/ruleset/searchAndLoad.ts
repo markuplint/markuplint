@@ -8,7 +8,7 @@ import {
 
 const explorer = cosmiconfig('markuplint');
 
-export async function searchAndLoad (fileOrDir: string) {
+export default async function searchAndLoad (fileOrDir: string) {
 	let data;
 
 	// load as file

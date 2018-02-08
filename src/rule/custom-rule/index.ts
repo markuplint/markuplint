@@ -1,4 +1,5 @@
 import Document from '../../dom/document';
+import Messenger, { Message } from '../../locale/messenger';
 import Ruleset from '../../ruleset';
 import { ConfigureFileJSONRuleOption } from '../../ruleset/JSONInterface';
 
@@ -27,7 +28,7 @@ export default class CustomRule<T = null, O = {}> {
 	public defaultValue: T;
 	public defaultOptions: O;
 
-	private  _v: (document: Document<T, O>, locale: string) => Promise<CustomVerifiedReturn[]>;
+	private _v: (document: Document<T, O>, message: Message) => Promise<CustomVerifiedReturn[]>;
 
 	constructor (o: Options<T, O>) {
 		this.name = o.name;
@@ -37,14 +38,13 @@ export default class CustomRule<T = null, O = {}> {
 		this._v = o.verify;
 	}
 
-	public async verify (document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, locale: string): Promise<VerifiedResult[]> {
+	public async verify (document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, messenger: Messenger): Promise<VerifiedResult[]> {
 		if (!this._v) {
 			return [];
 		}
 
-		// @ts-ignore
 		document.setRule(this);
-		const results = await this._v(document, locale);
+		const results = await this._v(document, messenger.message());
 		document.setRule(null);
 
 		return results.map<VerifiedResult>((result) => {

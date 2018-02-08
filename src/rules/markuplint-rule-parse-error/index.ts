@@ -4,7 +4,6 @@ import OmittedElement from '../../dom/omitted-element';
 
 import { VerifyReturn } from '../../rule';
 import CustomRule from '../../rule/custom-rule';
-import messages from '../messages';
 
 export type Value = 'tab' | number;
 
@@ -12,9 +11,9 @@ export default CustomRule.create({
 	name: 'parse-error',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify (document, locale) {
+	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
-		// const message = await messages(locale, `Values allowed for {0} attributes are {$}`, '"role"');
+		// const message = await messages(`Values allowed for {0} attributes are {$}`, '"role"');
 		let hasBody = false;
 		await document.walk(async (node) => {
 			if (node instanceof Element || node instanceof OmittedElement) {

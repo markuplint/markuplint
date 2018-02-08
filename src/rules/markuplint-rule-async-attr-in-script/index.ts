@@ -1,7 +1,6 @@
 import cssSelector from '../../dom/css-selector';
 import { VerifyReturn } from '../../rule';
 import CustomRule from '../../rule/custom-rule';
-import messages from '../messages';
 
 export type Value = 'always' | 'never';
 
@@ -10,7 +9,7 @@ export default CustomRule.create<Value, null>({
 	defaultLevel: 'warning',
 	defaultValue: 'always',
 	defaultOptions: null,
-	async verify (document, locale) {
+	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
 		await document.walkOn('Element', async (node) => {
 			if (!node.rule) {
@@ -40,7 +39,7 @@ export default CustomRule.create<Value, null>({
 			}
 
 			if (bad) {
-				const message = await messages(locale, necessary, '{$} attribute');
+				const message = messages(necessary, '{$} attribute');
 				reports.push({
 					severity: node.rule.severity,
 					message: message.replace('{$}', 'async'),
