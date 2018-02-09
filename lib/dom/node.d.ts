@@ -22,7 +22,6 @@ export default abstract class Node<T = null, O = {}> extends Token {
     toJSON(): {
         nodeName: string;
         raw: string;
-        beforeSpaces: any;
         line: number;
         col: number;
         endLine: number;

@@ -10,12 +10,10 @@ export default class Attribute extends Token {
 	public readonly spacesBeforeEqual: Token | null;
 	public readonly spacesAfterEqual: Token | null;
 	public readonly beforeSpaces: Token;
-	public readonly afterSpaces: Token;
+	// public readonly afterSpaces: Token; TODO
 	public readonly invalid: boolean;
 
-	// tslint:disable-next-line:cyclomatic-complexity
 	constructor (raw: string, line: number, col: number, startOffset: number) {
-		super(raw, line, col, startOffset);
 
 		const attrMatchedMap = raw.match(reAttrsInStartTag);
 		if (!attrMatchedMap) {
@@ -32,27 +30,26 @@ export default class Attribute extends Token {
 		const index = attrMatchedMap.index!; // no global matches
 		const invalid = !!(value && quote === null && /["'=<>`]/.test(value)) || !!(equal && quote === null && value === null);
 
-		let shavedString = raw;
 		let offset = startOffset;
 
-		this.beforeSpaces = Token.create(beforeSpaces, line, col, offset);
-		line = this.beforeSpaces.location.endLine;
-		col = this.beforeSpaces.location.endCol;
-		offset = this.beforeSpaces.location.endOffset;
-		shavedString = shavedString.substr(offset);
+		const beforeSpacesToken = Token.create(beforeSpaces, line, col, offset);
+		line = beforeSpacesToken.location.endLine;
+		col = beforeSpacesToken.location.endCol;
+		offset = beforeSpacesToken.location.endOffset;
+
+		super(raw.substr(beforeSpaces.length), line, col, offset);
+		this.beforeSpaces = beforeSpacesToken;
 
 		this.name = Token.create(name, line, col, offset);
 		line = this.name.location.endLine;
 		col = this.name.location.endCol;
 		offset = this.name.location.endOffset;
-		shavedString = shavedString.substr(offset);
 
 		this.spacesBeforeEqual = Token.create(spacesBeforeEqual, line, col, offset);
 		if (this.spacesBeforeEqual) {
 			line = this.spacesBeforeEqual.location.endLine;
 			col = this.spacesBeforeEqual.location.endCol;
 			offset = this.spacesBeforeEqual.location.endOffset;
-			shavedString = shavedString.substr(offset);
 		}
 
 		this.equal = Token.create(equal, line, col, offset);
@@ -60,7 +57,6 @@ export default class Attribute extends Token {
 			line = this.equal.location.endLine;
 			col = this.equal.location.endCol;
 			offset = this.equal.location.endOffset;
-			shavedString = shavedString.substr(offset);
 		}
 
 		this.spacesAfterEqual = Token.create(spacesAfterEqual, line, col, offset);
@@ -68,7 +64,6 @@ export default class Attribute extends Token {
 			line = this.spacesAfterEqual.location.endLine;
 			col = this.spacesAfterEqual.location.endCol;
 			offset = this.spacesAfterEqual.location.endOffset;
-			shavedString = shavedString.substr(offset);
 		}
 
 		if (value) {
@@ -76,15 +71,15 @@ export default class Attribute extends Token {
 			line = this.value.location.endLine;
 			col = this.value.location.endCol;
 			offset = this.value.location.endOffset;
-			shavedString = shavedString.substr(offset);
 		} else {
 			this.value = null;
 		}
 
-		this.afterSpaces = Token.create(shavedString, line, col, offset);
-		line = this.afterSpaces.location.endLine;
-		col = this.afterSpaces.location.endCol;
-		offset = this.afterSpaces.location.endOffset;
+		// TODO:
+		// this.afterSpaces = Token.create(raw, line, col, offset);
+		// line = this.afterSpaces.location.endLine;
+		// col = this.afterSpaces.location.endCol;
+		// offset = this.afterSpaces.location.endOffset;
 
 		this.invalid = invalid;
 	}

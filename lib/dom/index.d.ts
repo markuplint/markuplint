@@ -26,12 +26,3 @@ export interface ElementLocation extends TagNodeLocation {
     endTag: TagNodeLocation | null;
 }
 export declare type AmbiguousNode<T, O> = Node<T, O> | GhostNode<T, O> | null;
-export interface Attribute {
-    name: string;
-    value: string | null;
-    location: ExistentLocation;
-    quote: '"' | "'" | null;
-    equal: string | null;
-    raw: string;
-    invalid: boolean;
-}

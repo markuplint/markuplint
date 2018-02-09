@@ -15,7 +15,7 @@ export default CustomRule.create({
 			}
 			const id = node.id;
 			if (id && id.value) {
-				if (idStack.includes(id.value)) {
+				if (idStack.includes(id.value.value)) {
 					reports.push({
 						severity: node.rule.severity,
 						message,
@@ -24,7 +24,7 @@ export default CustomRule.create({
 						raw: id.raw,
 					});
 				}
-				idStack.push(id.value);
+				idStack.push(id.value.value);
 			}
 		});
 		return reports;

@@ -1,10 +1,10 @@
 import {
 	AmbiguousNode,
-	Attribute,
 	NodeType,
 	TagNodeLocation,
 } from './';
 
+import Attribute from './attribute';
 import EndTagNode from './end-tag-node';
 import GhostNode from './ghost-node';
 import Node from './node';
@@ -28,7 +28,7 @@ export default class Element<T, O> extends Node<T, O> {
 
 	public getAttribute (attrName: string) {
 		for (const attr of this.attributes) {
-			if (attr.name.toLowerCase() === attrName.toLowerCase()) {
+			if (attr.name.raw.toLowerCase() === attrName.toLowerCase()) {
 				return attr;
 			}
 		}
@@ -51,6 +51,6 @@ export default class Element<T, O> extends Node<T, O> {
 		if (!classAttr || !classAttr.value) {
 			return [''];
 		}
-		return classAttr.value.split(/\s+/).map(c => c.trim()).filter(c => c);
+		return classAttr.value.value.split(/\s+/).map(c => c.trim()).filter(c => c);
 	}
 }

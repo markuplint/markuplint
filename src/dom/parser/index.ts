@@ -14,7 +14,6 @@ import parseRawTag from './parse-raw-tag';
 import tagSplitter from './tag-splitter';
 
 import {
-	Attribute,
 	ElementLocation,
 	ExistentLocation,
 	NodeType,
@@ -22,6 +21,7 @@ import {
 
 import Document from '../document';
 
+import Attribute from '../attribute';
 import CommentNode from '../comment-node';
 import Doctype from '../doctype';
 import Element from '../element';
@@ -155,24 +155,10 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 					:
 					rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
 				const rawTag = parseRawTag(raw, p5node.__location.line, p5node.__location.col, p5node.__location.startOffset);
+
 				const nodeName = rawTag.tagName;
-				const attributes: Attribute[] = [];
-				for (const attr of rawTag.attrs) {
-					attributes.push({
-						name: attr.name.raw,
-						value: attr.value ? attr.value.raw : null,
-						location: {
-							line: attr.line,
-							col: attr.col,
-							startOffset: -1,
-							endOffset: attr.raw.length - 1,
-						},
-						quote: attr.quote,
-						equal: attr.equal ? attr.equal.raw : null,
-						invalid: attr.invalid,
-						raw: attr.raw,
-					});
-				}
+				const attributes: Attribute[] = rawTag.attrs;
+
 				let endTag: EndTagNode<T, O> | null = null;
 				const endTagLocation = p5node.__location.endTag;
 				if (endTagLocation) {

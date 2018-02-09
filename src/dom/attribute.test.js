@@ -7,11 +7,11 @@ test('normal', (t) => {
 		{
 			line: 1,
 			endLine: 1,
-			col: 1,
+			col: 2,
 			endCol: 11,
-			startOffset: 0,
+			startOffset: 1,
 			endOffset: 10,
-			raw: ' abc="123"',
+			raw: 'abc="123"',
 			invalid: false,
 			name: {
 				raw: 'abc',
@@ -52,11 +52,11 @@ test('single quote', (t) => {
 		{
 			line: 1,
 			endLine: 1,
-			col: 1,
+			col: 3,
 			endCol: 8,
-			startOffset: 0,
+			startOffset: 2,
 			endOffset: 7,
-			raw: '  q=\'a\'',
+			raw: 'q=\'a\'',
 			invalid: false,
 			name: {
 				raw: 'q',
@@ -256,13 +256,13 @@ test('line break', (t) => {
 
 "`, 1, 1, 0).toJSON(),
 		{
-			line: 1,
+			line: 2,
 			endLine: 10,
-			col: 1,
+			col: 2,
 			endCol: 2,
-			startOffset: 0,
+			startOffset: 2,
 			endOffset: 29,
-			raw: '\n abc\n\n   =\n\n  "e\n\n     fg\n\n"',
+			raw: 'abc\n\n   =\n\n  "e\n\n     fg\n\n"',
 			invalid: false,
 			name: {
 				raw: 'abc',

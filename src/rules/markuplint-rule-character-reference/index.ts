@@ -47,8 +47,8 @@ export default CustomRule.create<Value, null>({
 				return {
 					level,
 					line: attr.location.line,
-					col: attr.location.col + attr.name.length + (attr.equal || '').length + 1,
-					raw: attr.value || '',
+					col: attr.location.col,
+					raw: attr.value ? attr.value.raw : '',
 					message,
 				};
 			}));

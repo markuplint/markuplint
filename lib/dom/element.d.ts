@@ -1,4 +1,5 @@
-import { AmbiguousNode, Attribute, NodeType } from './';
+import { AmbiguousNode, NodeType } from './';
+import Attribute from './attribute';
 import EndTagNode from './end-tag-node';
 import GhostNode from './ghost-node';
 import Node from './node';

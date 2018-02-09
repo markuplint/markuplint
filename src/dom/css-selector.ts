@@ -127,7 +127,7 @@ function match<T, O> (element: Element<T, O>, ruleset: CSSSelectorRuleSet[], raw
 						andMatch.push(false);
 						continue;
 					}
-					const value = attr.value || '';
+					const value = attr.value ? attr.value.value : '';
 					switch (selectorRule.action) {
 						case 'exists': {
 							andMatch.push(true);

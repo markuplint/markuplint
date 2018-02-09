@@ -1,16 +1,20 @@
 import {
-	reAttrsInStartTag,
 	reStartTag,
 	reTagName,
 } from './const';
 
+const reAttrsInStartTag = /\s*[^\x00-\x1f\x7f-\x9f "'>\/=]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]*))?/;
+
 import Attribute from '../attribute';
 
-export default function parseRawTag (rawStartTag: string, nodeLine: number, nodeCol: number, startOffset: number) {
-	let line = 0;
-	let col = 0;
+export default function parseRawTag (raw: string, nodeLine: number, nodeCol: number, startOffset: number) {
+	let line = nodeLine;
+	let col = nodeCol;
+	let offset = startOffset;
 
-	const matches = rawStartTag.match(reStartTag);
+	// console.log({raw});
+
+	const matches = raw.match(reStartTag);
 	if (!matches) {
 		throw new SyntaxError('Invalid tag syntax');
 	}
@@ -21,65 +25,35 @@ export default function parseRawTag (rawStartTag: string, nodeLine: number, node
 		throw new SyntaxError('Invalid tag name');
 	}
 	const tagName = tagNameMatches[0];
-	let attrString = tagWithAttrs.substring(tagName.length);
+	let rawAttrs = tagWithAttrs.substring(tagName.length);
 
 	col += tagName.length + 1;
+	offset += tagName.length + 1;
 
 	const attrs: Attribute[] = [];
 
-	while (reAttrsInStartTag.test(attrString)) {
-		const attrMatchedMap = attrString.match(reAttrsInStartTag);
-		if (attrMatchedMap) {
-			const name = attrMatchedMap[1];
-			const equal = attrMatchedMap[2] || null;
-			const quote = attrMatchedMap[3] != null ? '"' : attrMatchedMap[4] != null ? "'" : null;
-			const value = attrMatchedMap[3] || attrMatchedMap[4] || attrMatchedMap[5] || null;
-			const index = attrMatchedMap.index!; // no global matches
-			const invalid = !!(value && quote === null && /["'=<>`]/.test(value)) || !!(equal && quote === null && value === null);
-
-			const shaveLength = attrString.length + index;
-			const shavedString = attrString.substr(0, shaveLength);
-			col += index;
-
-			// if (/\r?\n/.test(shavedString)) {
-			// 	const lineSplited = shavedString.split(/\r?\n/g);
-			// 	line += lineSplited.length - 1;
-			// 	const lastLine = lineSplited.slice(-1)[0];
-			// 	col = lastLine.indexOf(name);
-			// }
-
-			// Debug Log
-			// console.log(rawStartTag.replace(/\r?\n/g, '⏎').replace(/\t/g, '→'));
-			// console.log(rawStartTag.replace(/\t/g, '→'));
-			// console.log(`${'_'.repeat(col)}${raw}`);
-			// console.log({ name, equal, quote, value, col, line });
-			// console.log({ shavedString: shavedString.replace(/\r?\n/g, '⏎').replace(/\t/g, '→'), col, line });
-			// console.log('\n\n');
-
-			const attr = new Attribute(attrString, line, col, col);
+	while (reAttrsInStartTag.test(rawAttrs)) {
+		const attrMatchedMap = rawAttrs.match(reAttrsInStartTag);
+		if (attrMatchedMap && attrMatchedMap[0]) {
+			const rawAttr = attrMatchedMap[0];
+			const attr = new Attribute(rawAttr, line, col, offset);
+			line = attr.location.endLine;
+			col = attr.location.endCol;
+			offset = attr.location.endOffset;
+			rawAttrs = rawAttrs.substr(rawAttr.length);
 			attrs.push(attr);
-			// attrs.push({
-			// 	name,
-			// 	value,
-			// 	quote,
-			// 	equal,
-			// 	line: line + nodeLine,
-			// 	col: line === 0 ? col + nodeCol : col + 1,
-			// 	raw,
-			// 	invalid,
-			// });
-
-			attrString = attrString.substring(shaveLength);
-
-			col += attr.raw.length;
 		}
 	}
+
 	return {
 		tagName,
 		attrs,
-		toJSON () {
+		// tslint:disable-next-line:only-arrow-functions object-literal-shorthand
+		toJSON: function () {
 			return {
+				// tslint:disable-next-line:no-invalid-this
 				tagName: this.tagName,
+				// tslint:disable-next-line:no-invalid-this
 				attrs: this.attrs.map(attr => attr.toJSON()),
 			};
 		},

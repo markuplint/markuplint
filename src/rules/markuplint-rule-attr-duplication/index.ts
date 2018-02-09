@@ -14,7 +14,7 @@ export default CustomRule.create({
 			}
 			const attrNameStack: string[] = [];
 			for (const attr of node.attributes) {
-				const attrName = attr.name.toLowerCase();
+				const attrName = attr.name.raw.toLowerCase();
 				if (attrNameStack.includes(attrName)) {
 					reports.push({
 						severity: node.rule.severity,

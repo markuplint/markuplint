@@ -1,8 +1,8 @@
 import Attribute from '../attribute';
-export default function parseRawTag(rawStartTag: string, nodeLine: number, nodeCol: number, startOffset: number): {
+export default function parseRawTag(raw: string, nodeLine: number, nodeCol: number, startOffset: number): {
     tagName: string;
     attrs: Attribute[];
-    toJSON(): {
+    toJSON: () => {
         tagName: string;
         attrs: {
             raw: string;

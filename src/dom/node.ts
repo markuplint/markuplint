@@ -49,7 +49,6 @@ export default abstract class Node<T = null, O = {}> extends Token {
 		return {
 			nodeName: this.nodeName,
 			raw: this.raw,
-			beforeSpaces: this.beforeSpaces.toJSON(),
 			line: this.line,
 			col: this.col,
 			endLine: this.location.endLine,

@@ -33,13 +33,3 @@ export interface ElementLocation extends TagNodeLocation {
 }
 
 export type AmbiguousNode<T, O> = Node<T, O> | GhostNode<T, O> | null;
-
-export interface Attribute {
-	name: string;
-	value: string | null;
-	location: ExistentLocation;
-	quote: '"' | "'" | null;
-	equal: string | null;
-	raw: string;
-	invalid: boolean;
-}

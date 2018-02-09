@@ -21,13 +21,13 @@ export default CustomRule.create<Value, null>({
 			if (node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
 				if (node.attributes) {
 					for (const attr of node.attributes) {
-						if (deny.test(attr.name)) {
+						if (deny.test(attr.name.raw)) {
 							reports.push({
 								severity: node.rule.severity,
 								message,
 								line: attr.location.line,
 								col: attr.location.col,
-								raw: attr.name,
+								raw: attr.name.raw,
 							});
 						}
 					}
