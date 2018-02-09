@@ -4,7 +4,7 @@ import {
 	reTagName,
 } from './const';
 
-import Attribute from '../dom/attribute';
+import Attribute from '../attribute';
 
 export default function parseRawTag (rawStartTag: string, nodeLine: number, nodeCol: number, startOffset: number) {
 	let line = 0;

@@ -1,37 +1,25 @@
 import { Indentation } from './';
 import Location from './location';
 export default class Token {
+    static create(token: string, line: number, col: number, offset: number): Token;
+    static create(token: null, line: number, col: number, offset: number): null;
+    static create(token: string | null, line: number, col: number, offset: number): Token | null;
     readonly raw: string;
     location: Location;
-    beforeSpaces: BeforeSpaces;
     /**
      * @deprecated
      */
     indentation: Indentation | null;
-    constructor(raw: string, line: number, col: number, startOffset: number, indentRaw?: string);
+    constructor(raw: string, line: number, col: number, startOffset: number);
     readonly line: number;
     readonly col: number;
     toJSON(): {
         raw: string;
-        beforeSpaces: {
-            raw: string;
-            style: "tab" | "space" | "mixed" | "none";
-        };
         line: number;
         col: number;
         endLine: number;
         endCol: number;
         startOffset: number;
         endOffset: number;
-    };
-}
-export declare class BeforeSpaces {
-    readonly raw: string;
-    readonly style: 'tab' | 'space' | 'mixed' | 'none';
-    constructor(raw: string);
-    isIndentSpace(): boolean;
-    toJSON(): {
-        raw: string;
-        style: "tab" | "space" | "mixed" | "none";
     };
 }
