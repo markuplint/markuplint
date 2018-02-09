@@ -2,9 +2,7 @@ import CustomRule from '../rule/custom-rule';
 
 import { ConfigureFileJSON } from './JSONInterface';
 
-import searchAndLoad from './searchAndLoad';
-
-import Ruleset from './';
+import Ruleset from './remote';
 
 export default async function createRuleset (config: ConfigureFileJSON | string, rules: CustomRule[]) {
 	const ruleset = new Ruleset(rules);
@@ -17,6 +15,8 @@ export default async function createRuleset (config: ConfigureFileJSON | string,
 }
 
 async function loadRC (ruleset: Ruleset, fileOrDir: string) {
-	const { filePath, config } = await searchAndLoad(fileOrDir);
-	await ruleset.setConfig(config, filePath);
+	const { ruleConfig, ruleFilePath } = await ruleset.resolver(fileOrDir, location.href);
+	if (ruleConfig) {
+		await ruleset.setConfig(ruleConfig, ruleFilePath);
+	}
 }

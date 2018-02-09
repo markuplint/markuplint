@@ -1,7 +1,7 @@
 import Document from '../../dom/document';
 import Messenger, { Message } from '../../locale/messenger';
-import Ruleset from '../../ruleset';
 import { ConfigureFileJSONRuleOption } from '../../ruleset/JSONInterface';
+import Ruleset from '../../ruleset/core';
 
 import charLocator, { Location } from '../../dom/parser/charLocator';
 
