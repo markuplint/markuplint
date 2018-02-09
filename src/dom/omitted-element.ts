@@ -1,7 +1,7 @@
 import {
 	AmbiguousNode,
 	NodeType,
-} from '../dom';
+} from './';
 
 import GhostNode from './ghost-node';
 import Node from './node';

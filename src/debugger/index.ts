@@ -6,7 +6,7 @@ import util from 'util';
 import c from 'cli-color';
 
 import Node from '../dom/node';
-import parser from '../parser/';
+import parser from '../dom/parser/';
 
 const readFile = util.promisify(fs.readFile);
 

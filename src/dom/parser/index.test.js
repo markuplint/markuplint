@@ -1,5 +1,5 @@
 import test from 'ava';
-import parser from '../../lib/parser';
+import parser from '../../../lib/dom/parser';
 
 test((t) => {
 	const d = parser('<!DOCTYPE html>');

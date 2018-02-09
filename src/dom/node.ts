@@ -2,7 +2,7 @@ import {
 	AmbiguousNode,
 	Indentation,
 	NodeType,
-} from '../dom';
+} from './';
 
 import Document from './document';
 import GhostNode from './ghost-node';

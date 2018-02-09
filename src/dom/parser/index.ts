@@ -1,12 +1,12 @@
 import parse5 from 'parse5';
 
-import Ruleset from '../ruleset';
+import Ruleset from '../../ruleset';
 
 import {
 	ConfigureFileJSONRules,
 	ConfigureFileJSONRuleOption,
 	NodeRule,
-} from '../ruleset/JSONInterface';
+} from '../../ruleset/JSONInterface';
 
 import getCol from './get-col';
 import getLine from './get-line';
@@ -18,20 +18,20 @@ import {
 	ElementLocation,
 	ExistentLocation,
 	NodeType,
-} from '../dom';
+} from '../';
 
-import Document from '../dom/document';
+import Document from '../document';
 
-import CommentNode from '../dom/comment-node';
-import Doctype from '../dom/doctype';
-import Element from '../dom/element';
-import EndTagNode from '../dom/end-tag-node';
-import GhostNode from '../dom/ghost-node';
-import InvalidNode from '../dom/invalid-node';
-import Node from '../dom/node';
-import OmittedElement from '../dom/omitted-element';
-import RawText from '../dom/raw-text';
-import TextNode from '../dom/text-node';
+import CommentNode from '../comment-node';
+import Doctype from '../doctype';
+import Element from '../element';
+import EndTagNode from '../end-tag-node';
+import GhostNode from '../ghost-node';
+import InvalidNode from '../invalid-node';
+import Node from '../node';
+import OmittedElement from '../omitted-element';
+import RawText from '../raw-text';
+import TextNode from '../text-node';
 
 export default function parser (html: string, ruleset?: Ruleset) {
 	const doc = parse5.parse(

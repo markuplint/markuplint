@@ -1,7 +1,7 @@
-import Element from '../dom/element';
-import GhostNode from '../dom/ghost-node';
-import Node from '../dom/node';
-import OmittedElement from '../dom/omitted-element';
+import Element from './element';
+import GhostNode from './ghost-node';
+import Node from './node';
+import OmittedElement from './omitted-element';
 
 export type SyncWalker<T, O, N = (Node<T, O> | GhostNode<T, O>)> = (node: N) => void;
 

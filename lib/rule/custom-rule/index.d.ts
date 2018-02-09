@@ -2,7 +2,7 @@ import Document from '../../dom/document';
 import Messenger from '../../locale/messenger';
 import Ruleset from '../../ruleset';
 import { ConfigureFileJSONRuleOption } from '../../ruleset/JSONInterface';
-import { Location } from '../../parser/charLocator';
+import { Location } from '../../dom/parser/charLocator';
 import { RuleConfig, Severity, VerifiedResult } from '../';
 import Options from './options';
 export default class CustomRule<T = null, O = {}> {

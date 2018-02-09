@@ -1,5 +1,5 @@
 import test from 'ava';
-import parseRawTag from '../../lib/parser/parse-raw-tag';
+import parseRawTag from '../../../lib/dom/parser/parse-raw-tag';
 
 test('standard', (t) => {
 	t.deepEqual(

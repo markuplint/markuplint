@@ -1,6 +1,6 @@
 import Document from './dom/document';
+import parser from './dom/parser';
 import Messenger from './locale/messenger';
-import parser from './parser';
 import { VerifiedResult } from './rule';
 import Ruleset from './ruleset';
 

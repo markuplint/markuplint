@@ -3,7 +3,7 @@ import Messenger, { Message } from '../../locale/messenger';
 import Ruleset from '../../ruleset';
 import { ConfigureFileJSONRuleOption } from '../../ruleset/JSONInterface';
 
-import charLocator, { Location } from '../../parser/charLocator';
+import charLocator, { Location } from '../../dom/parser/charLocator';
 
 import {
 	CustomVerifiedReturn,
