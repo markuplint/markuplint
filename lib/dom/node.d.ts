@@ -1,4 +1,4 @@
-import { AmbiguousNode, Indentation, NodeType } from '../dom';
+import { AmbiguousNode, Indentation, NodeType } from './';
 import Document from './document';
 import Token from './token';
 import { RuleConfig } from '../rule';

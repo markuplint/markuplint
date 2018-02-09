@@ -1,6 +1,5 @@
 import { VerifyReturn } from '../../rule';
 import CustomRule from '../../rule/custom-rule';
-import messages from '../messages';
 
 type Value = 'always' | 'never' | 'always-single-line' | 'never-single-line';
 
@@ -9,9 +8,9 @@ export default CustomRule.create<Value, null>({
 	defaultLevel: 'warning',
 	defaultValue: 'never',
 	defaultOptions: null,
-	async verify (document, locale) {
+	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
-		const message = await messages(locale, 'error');
+		const message = messages('error');
 		await document.walkOn('Element', async (node) => {
 			if (!node.rule) {
 				return;

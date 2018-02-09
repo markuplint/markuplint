@@ -3,7 +3,6 @@ import CustomRule from '../../rule/custom-rule';
 import {
 	Severity,
 	VerifyReturn } from '../../rule';
-import messages from '../messages';
 
 export type Value = boolean;
 
@@ -18,7 +17,7 @@ export default CustomRule.create<Value, null>({
 	name: 'character-reference',
 	defaultValue: true,
 	defaultOptions: null,
-	async verify (document, locale) {
+	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
 		const targetNodes: { level: Severity; line: number; col: number; raw: string; message: string }[] = [];
 
@@ -27,7 +26,7 @@ export default CustomRule.create<Value, null>({
 				return;
 			}
 			const ms = node.rule.severity === 'error' ? 'must' : 'should';
-			const message = await messages(locale, `{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
+			const message = messages(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			targetNodes.push({
 				level: node.rule.severity,
 				line: node.line,
@@ -43,7 +42,7 @@ export default CustomRule.create<Value, null>({
 			}
 			const level = node.rule.severity;
 			const ms = level === 'error' ? 'must' : 'should';
-			const message = await messages(locale, `{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
+			const message = messages(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			targetNodes.push(...node.attributes.map((attr) => {
 				return {
 					level,

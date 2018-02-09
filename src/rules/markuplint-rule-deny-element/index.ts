@@ -1,19 +1,18 @@
 import { VerifyReturn } from '../../rule';
 import CustomRule from '../../rule/custom-rule';
-import messages from '../messages';
 
 export default CustomRule.create({
 	name: 'deny-element',
 	defaultLevel: 'warning',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify (document, locale) {
+	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
 		await document.walkOn('Element', async (node) => {
 			if (!node.rule) {
 				return;
 			}
-			const message = await messages(locale, '{0} は許可されていません');
+			const message = messages('{0} は許可されていません');
 			reports.push({
 				severity: node.rule.severity,
 				message,

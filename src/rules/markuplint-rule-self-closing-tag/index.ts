@@ -1,14 +1,13 @@
 import { VerifyReturn } from '../../rule';
 import CustomRule from '../../rule/custom-rule';
-import messages from '../messages';
 
 export default CustomRule.create({
 	name: 'name',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify (document, locale) {
+	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
-		const message = await messages(locale, 'error');
+		const message = messages('error');
 		await document.walkOn('Node', async (node) => {
 			if (!node.rule) {
 				return;

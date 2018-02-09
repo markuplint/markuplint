@@ -2,12 +2,12 @@ import test from 'ava';
 import * as markuplint from '../lib/';
 
 test(async (t) => {
-	const r = await markuplint.verifyFile('./src/test/001.html');
+	const r = await markuplint.verifyFile('./test/001.html');
 	t.deepEqual(r.reports, []);
 });
 
 test(async (t) => {
-	const r = await markuplint.verifyFile('./src/test/002.html', null, null, 'en');
+	const r = await markuplint.verifyFile('./test/002.html', null, null, 'en');
 	t.deepEqual(r.reports, [
 		{
 			level: 'warning',

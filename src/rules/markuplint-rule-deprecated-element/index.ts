@@ -1,14 +1,13 @@
 import { VerifyReturn } from '../../rule';
 import CustomRule from '../../rule/custom-rule';
-import messages from '../messages';
 
 export default CustomRule.create({
 	name: 'deprecated-element',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify (document, locale) {
+	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
-		const message = await messages(locale, `{0} is {1}`, 'Element', 'deprecated');
+		const message = messages(`{0} is {1}`, 'Element', 'deprecated');
 		await document.walkOn('Element', async (node) => {
 			if (!node.rule) {
 				return;

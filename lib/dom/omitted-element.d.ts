@@ -1,4 +1,4 @@
-import { AmbiguousNode, NodeType } from '../dom';
+import { AmbiguousNode, NodeType } from './';
 import GhostNode from './ghost-node';
 import Node from './node';
 export default class OmittedElement<T, O> extends GhostNode<T, O> {

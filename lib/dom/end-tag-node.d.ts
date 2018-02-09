@@ -1,4 +1,4 @@
-import { NodeType } from '../dom';
+import { NodeType } from './';
 import GhostNode from './ghost-node';
 import Node from './node';
 export default class EndTagNode<T, O> extends Node<T, O> {

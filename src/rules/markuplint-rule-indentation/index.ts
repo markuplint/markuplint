@@ -1,6 +1,5 @@
 import { VerifyReturn } from '../../rule';
 import CustomRule from '../../rule/custom-rule';
-import messages from '../messages';
 
 export type Value = 'tab' | number;
 
@@ -9,7 +8,7 @@ export default CustomRule.create<Value, null>({
 	defaultLevel: 'warning',
 	defaultValue: 2,
 	defaultOptions: null,
-	async verify (document, locale) {
+	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
 		await document.walkOn('Node', async (node) => {
 			if (!node.rule) {
@@ -23,10 +22,10 @@ export default CustomRule.create<Value, null>({
 				} else if (typeof node.rule.value === 'number' && node.indentation.type !== 'space') {
 					spec = 'space';
 				} else if (typeof node.rule.value === 'number' && node.indentation.type === 'space' && node.indentation.width % node.rule.value) {
-					spec = await messages(locale, `{0} width spaces`, `${node.rule.value}`);
+					spec = messages(`{0} width spaces`, `${node.rule.value}`);
 				}
 				if (spec) {
-					const message = await messages(locale, `{0} ${ms} be {1}`, 'Indentation', spec);
+					const message = messages(`{0} ${ms} be {1}`, 'Indentation', spec);
 					reports.push({
 						severity: node.rule.severity,
 						message,

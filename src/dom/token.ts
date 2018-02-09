@@ -1,8 +1,8 @@
 import { Indentation } from './';
 import Location from './location';
 
-import getCol from '../parser/get-col';
-import getLine from '../parser/get-line';
+import getCol from './parser/get-col';
+import getLine from './parser/get-line';
 
 export default class Token {
 	public readonly raw: string;

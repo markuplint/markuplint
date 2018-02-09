@@ -24,8 +24,8 @@ import TextNode from './text-node';
 import { syncWalk, SyncWalker } from './sync-walk';
 import { walk, Walker } from './walk';
 
-import getCol from '../parser/get-col';
-import getLine from '../parser/get-line';
+import getCol from './parser/get-col';
+import getLine from './parser/get-line';
 
 export default class Document<T, O> {
 	public rule: CustomRule<T, O> | null = null;

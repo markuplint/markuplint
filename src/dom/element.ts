@@ -3,7 +3,7 @@ import {
 	Attribute,
 	NodeType,
 	TagNodeLocation,
-} from '../dom';
+} from './';
 
 import EndTagNode from './end-tag-node';
 import GhostNode from './ghost-node';

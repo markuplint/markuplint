@@ -21,6 +21,8 @@
     "node_modules",
     "plugin",
     "_*",
-    "./lib/"
+    "lib",
+    "**/remote.ts",
+    "**/*.remote.ts"
   ]
 }

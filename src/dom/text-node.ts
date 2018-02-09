@@ -1,6 +1,6 @@
 import {
 	NodeType,
-} from '../dom';
+} from './';
 
 import Node from './node';
 
