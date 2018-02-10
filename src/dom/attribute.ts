@@ -7,8 +7,8 @@ export default class Attribute extends Token {
 	public readonly name: Token;
 	public readonly value: AttributeValue | null;
 	public readonly equal: Token | null;
-	public readonly spacesBeforeEqual: Token | null;
-	public readonly spacesAfterEqual: Token | null;
+	public readonly spacesBeforeEqual: Token;
+	public readonly spacesAfterEqual: Token;
 	public readonly beforeSpaces: Token;
 	// public readonly afterSpaces: Token; TODO
 	public readonly invalid: boolean;
@@ -46,11 +46,9 @@ export default class Attribute extends Token {
 		offset = this.name.location.endOffset;
 
 		this.spacesBeforeEqual = Token.create(spacesBeforeEqual, line, col, offset);
-		if (this.spacesBeforeEqual) {
-			line = this.spacesBeforeEqual.location.endLine;
-			col = this.spacesBeforeEqual.location.endCol;
-			offset = this.spacesBeforeEqual.location.endOffset;
-		}
+		line = this.spacesBeforeEqual.location.endLine;
+		col = this.spacesBeforeEqual.location.endCol;
+		offset = this.spacesBeforeEqual.location.endOffset;
 
 		this.equal = Token.create(equal, line, col, offset);
 		if (this.equal) {
@@ -60,11 +58,9 @@ export default class Attribute extends Token {
 		}
 
 		this.spacesAfterEqual = Token.create(spacesAfterEqual, line, col, offset);
-		if (this.spacesAfterEqual) {
-			line = this.spacesAfterEqual.location.endLine;
-			col = this.spacesAfterEqual.location.endCol;
-			offset = this.spacesAfterEqual.location.endOffset;
-		}
+		line = this.spacesAfterEqual.location.endLine;
+		col = this.spacesAfterEqual.location.endCol;
+		offset = this.spacesAfterEqual.location.endOffset;
 
 		if (value) {
 			this.value = new AttributeValue(value, quote, line, col, offset);

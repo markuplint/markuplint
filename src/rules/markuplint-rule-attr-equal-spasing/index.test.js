@@ -2,7 +2,7 @@ import test from 'ava';
 import * as markuplint from '../../../lib/';
 import rule from '../../../lib/rules/markuplint-rule-attr-equal-spasing';
 
-test('attr-equal-spasing', async (t) => {
+test('default: never', async (t) => {
 	const r = await markuplint.verify(
 		`
 		<img src = "path/to">
@@ -21,8 +21,8 @@ test('attr-equal-spasing', async (t) => {
 			severity: 'warning',
 			message: 'never',
 			line: 2,
-			col: 8,
-			raw: 'src = "path/to"',
+			col: 11,
+			raw: ' = ',
 			ruleId: 'attr-equal-spasing',
 		},
 	]);
@@ -41,20 +41,10 @@ test('attr-equal-spasing', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
-		{
-			level: 'warning',
-			severity: 'warning',
-			message: 'never',
-			line: 2,
-			col: 8,
-			raw: 'src= "path/to"',
-			ruleId: 'attr-equal-spasing',
-		},
-	]);
+	t.deepEqual(r, []);
 });
 
-test('attr-equal-spasing', async (t) => {
+test.only('attr-equal-spasing', async (t) => {
 	const r = await markuplint.verify(
 		`
 		<img src ="path/to">
@@ -209,8 +199,8 @@ test('attr-equal-spasing', async (t) => {
 			level: 'warning',
 			severity: 'warning',
 			message: 'always',
-			line: 2,
-			col: 6,
+			line: 3,
+			col: 1,
 			raw: 'src\n="path/to"',
 			ruleId: 'attr-equal-spasing',
 		},

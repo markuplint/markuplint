@@ -4,8 +4,8 @@ export default class Attribute extends Token {
     readonly name: Token;
     readonly value: AttributeValue | null;
     readonly equal: Token | null;
-    readonly spacesBeforeEqual: Token | null;
-    readonly spacesAfterEqual: Token | null;
+    readonly spacesBeforeEqual: Token;
+    readonly spacesAfterEqual: Token;
     readonly beforeSpaces: Token;
     readonly invalid: boolean;
     constructor(raw: string, line: number, col: number, startOffset: number);

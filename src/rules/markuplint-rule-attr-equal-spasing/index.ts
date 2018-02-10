@@ -19,28 +19,26 @@ export default CustomRule.create<Value, null>({
 				if (!attr.equal) {
 					continue;
 				}
-				const hasSpaceBefore = !!attr.spacesBeforeEqual;
-				const hasSpaceAfter = !!attr.spacesAfterEqual;
-				const beforeNewLine = attr.spacesBeforeEqual ? /^\s*\r?\n\s*=/.test(attr.spacesBeforeEqual.raw) : false;
-				const afterNewLine = attr.spacesAfterEqual ? /^\s*\r?\n\s*=/.test(attr.spacesAfterEqual.raw) : false;
-				// console.log({ hasSpaceBefore, hasSpaceAfter, beforeNewLine, afterNewLine, raw: attr.raw });
+				const hasSpace = !!attr.spacesBeforeEqual.raw;
+				const hasLineBreak = /\r?\n/.test(attr.spacesBeforeEqual.raw);
+				console.log({ hasSpace, hasLineBreak, raw: attr.raw });
 				let isBad = false;
 				switch (node.rule.value) {
 					case 'always': {
-						isBad = !(hasSpaceBefore && hasSpaceAfter);
+						isBad = !hasSpace;
 						break;
 					}
 					case 'never': {
-						isBad = hasSpaceBefore || hasSpaceAfter;
+						isBad = hasSpace;
 						break;
 					}
 					case 'always-single-line': {
 						// or 'no-newline'
-						isBad = beforeNewLine || afterNewLine;
+						isBad = !hasSpace && hasLineBreak;
 						break;
 					}
 					case 'never-single-line': {
-						isBad = (hasSpaceBefore && !beforeNewLine) || (hasSpaceAfter && !afterNewLine);
+						isBad = hasSpace && !hasLineBreak;
 						break;
 					}
 				}
@@ -49,9 +47,9 @@ export default CustomRule.create<Value, null>({
 						severity: node.rule.severity,
 						level: node.rule.severity,
 						message: node.rule.value,
-						line: attr.location.line,
-						col: attr.location.col,
-						raw: attr.raw,
+						line: attr.spacesBeforeEqual.line,
+						col: attr.spacesBeforeEqual.col,
+						raw: attr.spacesBeforeEqual.raw + attr.equal.raw + attr.spacesAfterEqual.raw,
 					});
 				}
 			}
