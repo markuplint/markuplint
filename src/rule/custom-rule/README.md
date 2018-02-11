@@ -12,7 +12,7 @@ export default CustomRule.create({
 	name: 'rule-name',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify (document, locale) {
+	async verify (document, message) {
 
 		/* verfiy... */
 
@@ -52,7 +52,7 @@ CustomRule.create<T = null, O = {}>({
 	name: string,
 	defaultValue: T,
 	defaultOptions: O,
-	async verify (document: Document<T, O>, locale: string): Promise<VerifyReturn[]> {
+	async verify (document: Document<T, O>, massage: MassageTransraterFunction): Promise<VerifyReturn[]> {
 		return [
 			{
 				level: 'error' | 'warning',
@@ -70,7 +70,7 @@ CustomRule.create<T = null, O = {}>({
 
 `document` that 1st argument on `verify` method is `Document` class instance. `Document` is not `Document` on HTML standard DOM API. It is Node tree for find to  location at source code that had created by HTML parser of markuplint.
 
-`locale` is locale language ID on user's OS.
+message is a function that transrate in locale on user's OS.
 
 `VerifyReturn` is structed by `level`, `message`, `line`, `col` and `raw`.
 
