@@ -19,7 +19,7 @@ export default CustomRule.create({
 		if (/* result is bad */) {
 			return [
 				{
-					level: [ERROR_LEVEL],
+					severity: [ERROR_LEVEL],
 					message: [ERROR_MESSAGE],
 					line: [LOCATION_LINE_NUMBER],
 					col: [LOCATION_COLUMN_NUMBER],
@@ -55,7 +55,7 @@ CustomRule.create<T = null, O = {}>({
 	async verify (document: Document<T, O>, massage: MassageTransraterFunction): Promise<VerifyReturn[]> {
 		return [
 			{
-				level: 'error' | 'warning',
+				severity: 'error' | 'warning',
 				message: string,
 				line: number,
 				col: number,
