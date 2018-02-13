@@ -53,6 +53,6 @@
     "textlint": "^10.1.4",
     "textlint-rule-preset-japanese": "^4.0.0",
     "tslint": "^5.9.1",
-    "typescript": "2.8.0-dev.20180206"
+    "typescript": "2.8.0-dev.20180211"
   }
 }
