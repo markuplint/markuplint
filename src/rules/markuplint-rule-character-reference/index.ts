@@ -19,7 +19,7 @@ export default CustomRule.create<Value, null>({
 	defaultOptions: null,
 	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
-		const targetNodes: { level: Severity; line: number; col: number; raw: string; message: string }[] = [];
+		const targetNodes: { severity: Severity; line: number; col: number; raw: string; message: string }[] = [];
 
 		await document.walkOn('Text', async (node) => {
 			if (!node.rule) {
@@ -28,7 +28,7 @@ export default CustomRule.create<Value, null>({
 			const ms = node.rule.severity === 'error' ? 'must' : 'should';
 			const message = messages(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			targetNodes.push({
-				level: node.rule.severity,
+				severity: node.rule.severity,
 				line: node.line,
 				col: node.col,
 				raw: node.raw,
@@ -40,25 +40,28 @@ export default CustomRule.create<Value, null>({
 			if (!node.rule) {
 				return;
 			}
-			const level = node.rule.severity;
-			const ms = level === 'error' ? 'must' : 'should';
+			const severity = node.rule.severity;
+			const ms = severity === 'error' ? 'must' : 'should';
 			const message = messages(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
-			targetNodes.push(...node.attributes.map((attr) => {
-				return {
-					level,
-					line: attr.location.line,
-					col: attr.location.col,
-					raw: attr.value ? attr.value.raw : '',
+			for (const attr of node.attributes) {
+				if (!attr.value) {
+					continue;
+				}
+				targetNodes.push({
+					severity,
+					line: attr.value.line,
+					col: attr.value.col + (attr.value.quote ? 1 : 0),
+					raw: attr.value.value,
 					message,
-				};
-			}));
+				});
+			}
 		});
 
 		for (const targetNode of targetNodes) {
 			const escapedText = targetNode.raw.replace(/&(?:[a-z]+|#[0-9]+|x[0-9]);/ig, ($0) => '*'.repeat($0.length));
 			CustomRule.charLocator(defaultChars, escapedText, targetNode.line, targetNode.col).forEach((location) => {
 				reports.push({
-					severity: targetNode.level,
+					severity: targetNode.severity,
 					message: targetNode.message,
 					line: location.line,
 					col: location.col,
