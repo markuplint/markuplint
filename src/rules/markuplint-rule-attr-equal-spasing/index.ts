@@ -21,7 +21,6 @@ export default CustomRule.create<Value, null>({
 				}
 				const hasSpace = !!attr.spacesBeforeEqual.raw;
 				const hasLineBreak = /\r?\n/.test(attr.spacesBeforeEqual.raw);
-				console.log({ hasSpace, hasLineBreak, raw: attr.raw });
 				let isBad = false;
 				switch (node.rule.value) {
 					case 'always': {

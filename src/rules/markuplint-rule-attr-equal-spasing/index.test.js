@@ -402,4 +402,125 @@ test('always: line break after', async (t) => {
 	]);
 });
 
+test('never-single-line: no-space', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img src="path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'never-single-line',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, [
+	]);
+});
+
+test('never-single-line: space before and after', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img src = "path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'never-single-line',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, [
+		{
+			level: 'warning',
+			severity: 'warning',
+			message: 'never-single-line',
+			line: 2,
+			col: 11,
+			raw: ' = ',
+			ruleId: 'attr-equal-spasing',
+		},
+	]);
+});
+
+test('never-single-line: space before', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img src ="path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'never-single-line',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, [
+		{
+			level: 'warning',
+			severity: 'warning',
+			message: 'never-single-line',
+			line: 2,
+			col: 11,
+			raw: ' =',
+			ruleId: 'attr-equal-spasing',
+		},
+	]);
+});
+
+test('never-single-line: space after', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img src= "path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'never-single-line',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, []);
+});
+
+test('never-single-line: line break before', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img
+		src
+		="path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'never-single-line',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, []);
+});
+
+test('never-single-line: line break after', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img
+		src=
+		"path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'never-single-line',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, []);
+});
+
 test('noop', (t) => t.pass());
