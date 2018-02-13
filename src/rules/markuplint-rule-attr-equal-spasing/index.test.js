@@ -234,7 +234,7 @@ test('always: line break before', async (t) => {
 	t.deepEqual(r, []);
 });
 
-test.only('always: line break after', async (t) => {
+test('always: line break after', async (t) => {
 	const r = await markuplint.verify(
 		`
 		<img
@@ -254,6 +254,146 @@ test.only('always: line break after', async (t) => {
 			level: 'warning',
 			severity: 'warning',
 			message: 'always',
+			line: 3,
+			col: 6,
+			raw: '=\n\t\t',
+			ruleId: 'attr-equal-spasing',
+		},
+	]);
+});
+
+test('always-single-line: no-space', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img src="path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'always-single-line',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, [
+		{
+			level: 'warning',
+			severity: 'warning',
+			message: 'always-single-line',
+			line: 2,
+			col: 11,
+			raw: '=',
+			ruleId: 'attr-equal-spasing',
+		},
+	]);
+});
+
+test('always-single-line: space before and after', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img src = "path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'always-single-line',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, []);
+});
+
+test('always-single-line: space before', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img src ="path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'always-single-line',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, []);
+});
+
+test('always-single-line: space after', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img src= "path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'always-single-line',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, [
+		{
+			level: 'warning',
+			severity: 'warning',
+			message: 'always-single-line',
+			line: 2,
+			col: 11,
+			raw: '= ',
+			ruleId: 'attr-equal-spasing',
+		},
+	]);
+});
+
+test('always-single-line: line break before', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img
+		src
+		="path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'always-single-line',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, [
+		{
+			level: 'warning',
+			severity: 'warning',
+			message: 'always-single-line',
+			line: 3,
+			col: 6,
+			raw: '\n\t\t=',
+			ruleId: 'attr-equal-spasing',
+		},
+	]);
+});
+
+test('always: line break after', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img
+		src=
+		"path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'always-single-line',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, [
+		{
+			level: 'warning',
+			severity: 'warning',
+			message: 'always-single-line',
 			line: 3,
 			col: 6,
 			raw: '=\n\t\t',

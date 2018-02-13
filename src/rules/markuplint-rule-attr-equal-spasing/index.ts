@@ -34,7 +34,7 @@ export default CustomRule.create<Value, null>({
 					}
 					case 'always-single-line': {
 						// or 'no-newline'
-						isBad = !hasSpace && hasLineBreak;
+						isBad = !hasSpace || hasLineBreak;
 						break;
 					}
 					case 'never-single-line': {
