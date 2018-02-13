@@ -1,6 +1,33 @@
 import test from 'ava';
 import Attribute from '../../lib/dom/attribute';
 
+test('void attribute', (t) => {
+	t.deepEqual(
+		new Attribute(' abc', 1, 1, 0).toJSON(),
+		{
+			line: 1,
+			endLine: 1,
+			col: 2,
+			endCol: 5,
+			startOffset: 1,
+			endOffset: 4,
+			raw: 'abc',
+			invalid: false,
+			name: {
+				raw: 'abc',
+				line: 1,
+				endLine: 1,
+				col: 2,
+				endCol: 5,
+				startOffset: 1,
+				endOffset: 4,
+			},
+			equal: null,
+			value: null,
+		}
+	);
+});
+
 test('normal', (t) => {
 	t.deepEqual(
 		new Attribute(' abc="123"', 1, 1, 0).toJSON(),
