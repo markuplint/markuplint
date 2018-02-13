@@ -132,4 +132,134 @@ test('line break after', async (t) => {
 	t.deepEqual(r, []);
 });
 
+test('always: no-space', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img src="path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'always',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, [
+		{
+			level: 'warning',
+			severity: 'warning',
+			message: 'always',
+			line: 2,
+			col: 11,
+			raw: '=',
+			ruleId: 'attr-equal-spasing',
+		},
+	]);
+});
+
+test('always: space before and after', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img src = "path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'always',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, []);
+});
+
+test('always: space before', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img src ="path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'always',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, []);
+});
+
+test('always: space after', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img src= "path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'always',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, [
+		{
+			level: 'warning',
+			severity: 'warning',
+			message: 'always',
+			line: 2,
+			col: 11,
+			raw: '= ',
+			ruleId: 'attr-equal-spasing',
+		},
+	]);
+});
+
+test('always: line break before', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img
+		src
+		="path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'always',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, []);
+});
+
+test.only('always: line break after', async (t) => {
+	const r = await markuplint.verify(
+		`
+		<img
+		src=
+		"path/to">
+		`,
+		{
+			rules: {
+				'attr-equal-spasing': 'always',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, [
+		{
+			level: 'warning',
+			severity: 'warning',
+			message: 'always',
+			line: 3,
+			col: 6,
+			raw: '=\n\t\t',
+			ruleId: 'attr-equal-spasing',
+		},
+	]);
+});
+
 test('noop', (t) => t.pass());
