@@ -10,7 +10,8 @@
 	- [case-sensitive-tag-name](./markuplint-rule-case-sensitive-tag-name/README.ja.md) タグ名の大文字小文字
 	- [case-sensitive-attr-name](./markuplint-rule-case-sensitive-attr-name/README.ja.md) 属性名の大文字小文字
 	- [attr-spasing](./markuplint-rule-attr-spasing/README.ja.md) 属性の前後のスペース (🚧 WIP)
-	- [attr-equal-spasing](./markuplint-rule-attr-equal-spasing/README.ja.md) 属性の=の前後のスペース (🚧 WIP)
+	- [attr-equal-spase-before](./markuplint-rule-attr-equal-spasing/README.ja.md) 属性の`=`の前のスペース
+	- [attr-equal-spase-after](./markuplint-rule-attr-equal-spasing/README.ja.md) 属性の`=`の後のスペース
 	- [multiline-tag](./markuplint-rule-multiline-tag/README.ja.md) タグ内の改行 (🚧 WIP)
 	- [multiline-attr](./markuplint-rule-multiline-attr/README.ja.md) タグ内の属性の改行 (🚧 WIP)
 	- [indentation-attr](./markuplint-rule-indentation-attr/README.ja.md) (🚧 WIP)

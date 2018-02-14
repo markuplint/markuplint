@@ -1,6 +1,6 @@
 import test from 'ava';
 import * as markuplint from '../../../lib/';
-import rule from '../../../lib/rules/markuplint-rule-attr-equal-spasing';
+import rule from '../../../lib/rules/markuplint-rule-attr-equal-space-before';
 
 test('no-space', async (t) => {
 	const r = await markuplint.verify(
@@ -9,7 +9,7 @@ test('no-space', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': true,
+				'attr-equal-space-before': true,
 			},
 		},
 		[rule],
@@ -25,7 +25,7 @@ test('space before and after', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': true,
+				'attr-equal-space-before': true,
 			},
 		},
 		[rule],
@@ -39,7 +39,7 @@ test('space before and after', async (t) => {
 			line: 2,
 			col: 11,
 			raw: ' = ',
-			ruleId: 'attr-equal-spasing',
+			ruleId: 'attr-equal-space-before',
 		},
 	]);
 });
@@ -51,7 +51,7 @@ test('space before', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': true,
+				'attr-equal-space-before': true,
 			},
 		},
 		[rule],
@@ -65,7 +65,7 @@ test('space before', async (t) => {
 			line: 2,
 			col: 11,
 			raw: ' =',
-			ruleId: 'attr-equal-spasing',
+			ruleId: 'attr-equal-space-before',
 		},
 	]);
 });
@@ -77,7 +77,7 @@ test('space after', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': true,
+				'attr-equal-space-before': true,
 			},
 		},
 		[rule],
@@ -95,7 +95,7 @@ test('line break before', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': true,
+				'attr-equal-space-before': true,
 			},
 		},
 		[rule],
@@ -109,7 +109,7 @@ test('line break before', async (t) => {
 			line: 3,
 			col: 6,
 			raw: '\n\t\t=',
-			ruleId: 'attr-equal-spasing',
+			ruleId: 'attr-equal-space-before',
 		},
 	]);
 });
@@ -123,7 +123,7 @@ test('line break after', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': true,
+				'attr-equal-space-before': true,
 			},
 		},
 		[rule],
@@ -139,7 +139,7 @@ test('always: no-space', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'always',
+				'attr-equal-space-before': 'always',
 			},
 		},
 		[rule],
@@ -153,7 +153,7 @@ test('always: no-space', async (t) => {
 			line: 2,
 			col: 11,
 			raw: '=',
-			ruleId: 'attr-equal-spasing',
+			ruleId: 'attr-equal-space-before',
 		},
 	]);
 });
@@ -165,7 +165,7 @@ test('always: space before and after', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'always',
+				'attr-equal-space-before': 'always',
 			},
 		},
 		[rule],
@@ -181,7 +181,7 @@ test('always: space before', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'always',
+				'attr-equal-space-before': 'always',
 			},
 		},
 		[rule],
@@ -197,7 +197,7 @@ test('always: space after', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'always',
+				'attr-equal-space-before': 'always',
 			},
 		},
 		[rule],
@@ -211,7 +211,7 @@ test('always: space after', async (t) => {
 			line: 2,
 			col: 11,
 			raw: '= ',
-			ruleId: 'attr-equal-spasing',
+			ruleId: 'attr-equal-space-before',
 		},
 	]);
 });
@@ -225,7 +225,7 @@ test('always: line break before', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'always',
+				'attr-equal-space-before': 'always',
 			},
 		},
 		[rule],
@@ -243,7 +243,7 @@ test('always: line break after', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'always',
+				'attr-equal-space-before': 'always',
 			},
 		},
 		[rule],
@@ -257,7 +257,7 @@ test('always: line break after', async (t) => {
 			line: 3,
 			col: 6,
 			raw: '=\n\t\t',
-			ruleId: 'attr-equal-spasing',
+			ruleId: 'attr-equal-space-before',
 		},
 	]);
 });
@@ -269,7 +269,7 @@ test('always-single-line: no-space', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'always-single-line',
+				'attr-equal-space-before': 'always-single-line',
 			},
 		},
 		[rule],
@@ -283,7 +283,7 @@ test('always-single-line: no-space', async (t) => {
 			line: 2,
 			col: 11,
 			raw: '=',
-			ruleId: 'attr-equal-spasing',
+			ruleId: 'attr-equal-space-before',
 		},
 	]);
 });
@@ -295,7 +295,7 @@ test('always-single-line: space before and after', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'always-single-line',
+				'attr-equal-space-before': 'always-single-line',
 			},
 		},
 		[rule],
@@ -311,7 +311,7 @@ test('always-single-line: space before', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'always-single-line',
+				'attr-equal-space-before': 'always-single-line',
 			},
 		},
 		[rule],
@@ -327,7 +327,7 @@ test('always-single-line: space after', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'always-single-line',
+				'attr-equal-space-before': 'always-single-line',
 			},
 		},
 		[rule],
@@ -341,7 +341,7 @@ test('always-single-line: space after', async (t) => {
 			line: 2,
 			col: 11,
 			raw: '= ',
-			ruleId: 'attr-equal-spasing',
+			ruleId: 'attr-equal-space-before',
 		},
 	]);
 });
@@ -355,7 +355,7 @@ test('always-single-line: line break before', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'always-single-line',
+				'attr-equal-space-before': 'always-single-line',
 			},
 		},
 		[rule],
@@ -369,7 +369,7 @@ test('always-single-line: line break before', async (t) => {
 			line: 3,
 			col: 6,
 			raw: '\n\t\t=',
-			ruleId: 'attr-equal-spasing',
+			ruleId: 'attr-equal-space-before',
 		},
 	]);
 });
@@ -383,7 +383,7 @@ test('always: line break after', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'always-single-line',
+				'attr-equal-space-before': 'always-single-line',
 			},
 		},
 		[rule],
@@ -397,7 +397,7 @@ test('always: line break after', async (t) => {
 			line: 3,
 			col: 6,
 			raw: '=\n\t\t',
-			ruleId: 'attr-equal-spasing',
+			ruleId: 'attr-equal-space-before',
 		},
 	]);
 });
@@ -409,7 +409,7 @@ test('never-single-line: no-space', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'never-single-line',
+				'attr-equal-space-before': 'never-single-line',
 			},
 		},
 		[rule],
@@ -426,7 +426,7 @@ test('never-single-line: space before and after', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'never-single-line',
+				'attr-equal-space-before': 'never-single-line',
 			},
 		},
 		[rule],
@@ -440,7 +440,7 @@ test('never-single-line: space before and after', async (t) => {
 			line: 2,
 			col: 11,
 			raw: ' = ',
-			ruleId: 'attr-equal-spasing',
+			ruleId: 'attr-equal-space-before',
 		},
 	]);
 });
@@ -452,7 +452,7 @@ test('never-single-line: space before', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'never-single-line',
+				'attr-equal-space-before': 'never-single-line',
 			},
 		},
 		[rule],
@@ -466,7 +466,7 @@ test('never-single-line: space before', async (t) => {
 			line: 2,
 			col: 11,
 			raw: ' =',
-			ruleId: 'attr-equal-spasing',
+			ruleId: 'attr-equal-space-before',
 		},
 	]);
 });
@@ -478,7 +478,7 @@ test('never-single-line: space after', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'never-single-line',
+				'attr-equal-space-before': 'never-single-line',
 			},
 		},
 		[rule],
@@ -496,7 +496,7 @@ test('never-single-line: line break before', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'never-single-line',
+				'attr-equal-space-before': 'never-single-line',
 			},
 		},
 		[rule],
@@ -514,7 +514,7 @@ test('never-single-line: line break after', async (t) => {
 		`,
 		{
 			rules: {
-				'attr-equal-spasing': 'never-single-line',
+				'attr-equal-space-before': 'never-single-line',
 			},
 		},
 		[rule],

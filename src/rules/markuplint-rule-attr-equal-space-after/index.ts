@@ -4,7 +4,7 @@ import CustomRule from '../../rule/custom-rule';
 type Value = 'always' | 'never' | 'always-single-line' | 'never-single-line';
 
 export default CustomRule.create<Value, null>({
-	name: 'attr-equal-spasing',
+	name: 'attr-equal-space-after',
 	defaultLevel: 'warning',
 	defaultValue: 'never',
 	defaultOptions: null,
@@ -19,8 +19,8 @@ export default CustomRule.create<Value, null>({
 				if (!attr.equal) {
 					continue;
 				}
-				const hasSpace = !!attr.spacesBeforeEqual.raw;
-				const hasLineBreak = /\r?\n/.test(attr.spacesBeforeEqual.raw);
+				const hasSpace = !!attr.spacesAfterEqual.raw;
+				const hasLineBreak = /\r?\n/.test(attr.spacesAfterEqual.raw);
 				let isBad = false;
 				switch (node.rule.value) {
 					case 'always': {

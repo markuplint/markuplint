@@ -1,7 +1,8 @@
 import CustomRule from '../rule/custom-rule';
 import asyncAttrInScript from './markuplint-rule-async-attr-in-script';
 import attrDuplication from './markuplint-rule-attr-duplication';
-import attrEqualSpasing from './markuplint-rule-attr-equal-spasing';
+import attrEqualSpaceAfter from './markuplint-rule-attr-equal-space-after';
+import attrEqualSpaceBefore from './markuplint-rule-attr-equal-space-before';
 import attrSpasing from './markuplint-rule-attr-spasing';
 import attrValueQuotes from './markuplint-rule-attr-value-quotes';
 import caseSensitiveAttrName from './markuplint-rule-case-sensitive-attr-name';
@@ -46,7 +47,8 @@ import voidElementClosing from './markuplint-rule-void-element-closing';
 export default [
 	asyncAttrInScript,
 	attrDuplication,
-	attrEqualSpasing,
+	attrEqualSpaceAfter,
+	attrEqualSpaceBefore,
 	attrSpasing,
 	attrValueQuotes,
 	caseSensitiveAttrName,
