@@ -34,15 +34,31 @@ import RawText from '../raw-text';
 import TextNode from '../text-node';
 
 export default function parser (html: string, ruleset?: Ruleset) {
-	const doc = parse5.parse(
-		html,
-		{
-			locationInfo: true,
-		},
-	) as P5ParentNode;
+	let doc: P5ParentNode;
+	const isFragment = isDocumentFragment(html);
+
+	if (isFragment) {
+		doc = parse5.parseFragment(
+			html,
+			{
+				locationInfo: true,
+			},
+		) as P5ParentNode;
+	} else {
+		doc = parse5.parse(
+			html,
+			{
+				locationInfo: true,
+			},
+		) as P5ParentNode;
+	}
 
 	const nodeTree: (Node | GhostNode)[] = traverse(doc, null, html);
-	return new Document(nodeTree, html, ruleset);
+	return new Document(nodeTree, html, isFragment, ruleset);
+}
+
+export function isDocumentFragment (html: string) {
+	return !/^\s*(<!doctype html(?:\s*.+)?>|<html(?:\s|>))/im.test(html);
 }
 
 // tslint:disable-next-line:cyclomatic-complexity
@@ -215,7 +231,14 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 function traverse<T, O> (rootNode: P5ParentNode, parentNode: Node<T, O> | GhostNode<T, O> | null = null, rawHtml: string): (Node<T, O> | GhostNode<T, O>)[] {
 	const nodeList: (Node<T, O> | GhostNode<T, O>)[] = [];
 	let prev: Node<T, O> | GhostNode<T, O> | null = null;
-	for (const p5node of rootNode.childNodes) {
+	let childNodes: P5ParentNode[] = rootNode.childNodes;
+	// @ts-ignore
+	if (childNodes.length === 0 && rootNode.content && rootNode.content.nodeName === '#document-fragment') {
+		// @ts-ignore
+		childNodes = rootNode.content.childNodes;
+	}
+
+	for (const p5node of childNodes) {
 		const nodes: (Node<T, O> | GhostNode<T, O>)[] = nodeize(p5node, prev, parentNode, rawHtml);
 		for (const node of nodes) {
 			if (prev) {

@@ -1,5 +1,34 @@
 import test from 'ava';
-import parser from '../../../lib/dom/parser';
+import parser, { isDocumentFragment } from '../../../lib/dom/parser';
+
+test('isDocumentFragment', (t) => {
+	t.false(isDocumentFragment('<!DOCTYPE html>'));
+});
+
+test('isDocumentFragment', (t) => {
+	t.false(isDocumentFragment(`
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+	`));
+});
+
+test('isDocumentFragment', (t) => {
+	t.false(isDocumentFragment(`
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+	<html>
+	`));
+});
+
+test('isDocumentFragment', (t) => {
+	t.false(isDocumentFragment(`
+	<html lang="ja">
+	`));
+});
+
+test('isDocumentFragment', (t) => {
+	t.true(isDocumentFragment(`
+	<body>
+	`));
+});
 
 test((t) => {
 	const d = parser('<!DOCTYPE html>');
@@ -126,10 +155,7 @@ test((t) => {
 
 test((t) => {
 	const d = parser('');
-	t.is(d.list[0].nodeName, 'html');
-	t.is(d.list[1].nodeName, 'head');
-	t.is(d.list[2].nodeName, 'body');
-	t.is(d.list.length, 3);
+	t.deepEqual(d.list, []);
 	t.is(d.toString(), '');
 });
 
@@ -155,10 +181,7 @@ test((t) => {
 
 test((t) => {
 	const d = parser('text');
-	t.is(d.list[0].nodeName, 'html');
-	t.is(d.list[1].nodeName, 'head');
-	t.is(d.list[2].nodeName, 'body');
-	t.is(d.list[3].nodeName, '#text');
+	t.is(d.list[0].nodeName, '#text');
 	t.is(d.toString(), 'text');
 });
 
@@ -316,6 +339,119 @@ test((t) => {
 		'[47:9]>[48:2](759,761)#text: ⏎→',
 		'[48:2]>[48:9](761,768)html: </html>',
 		'[48:9]>[49:2](768,770)#text: ⏎→',
+	]);
+});
+
+test((t) => {
+	const d = parser(`
+	<template>
+		<script>
+			const i = 0;
+		</script>
+		<!comment-node>
+		<!-- html-comment -->
+		<div>
+			text&amp;div
+		</div>
+		<table>
+			<tr>
+				<th>header</th>
+				<td>cell</td>
+			</tr>
+		</table>
+		<table>
+			<tbody>
+				<tr>
+					<th>header</th>
+					<td>cell</td>
+				</tr>
+			</tbody>
+		</table>
+		<img src="path/to" />
+				invalid-indent
+
+		<?template engine;
+			$var = '<html attr="value">text</html>'
+		?>
+
+		<%template engine;
+			$var = '<html attr="value">text</html>'
+		%>
+
+		</expected>
+		<div>
+	text-node
+	</template>
+	`);
+	const map = d.toDebugMap();
+	// console.log(map.map((v, i) => `${i}:: ${v}`));
+	t.deepEqual(map, [
+		'[1:1]>[2:2](0,2)#text: ⏎→',
+		'[2:2]>[2:12](2,12)template: <template>',
+		'[2:12]>[3:3](12,15)#text: ⏎→→',
+		'[3:3]>[3:11](15,23)script: <script>',
+		'[3:11]>[5:3](23,42)#text: ⏎→→→const␣i␣=␣0;⏎→→',
+		'[5:3]>[5:12](42,51)script: </script>',
+		'[5:12]>[6:3](51,54)#text: ⏎→→',
+		'[6:3]>[6:18](54,69)#comment: <!comment-node>',
+		'[6:18]>[7:3](69,72)#text: ⏎→→',
+		'[7:3]>[7:24](72,93)#comment: <!--␣html-comment␣-->',
+		'[7:24]>[8:3](93,96)#text: ⏎→→',
+		'[8:3]>[8:8](96,101)div: <div>',
+		'[8:8]>[10:3](101,120)#text: ⏎→→→text&amp;div⏎→→',
+		'[10:3]>[10:9](120,126)div: </div>',
+		'[10:9]>[11:3](126,129)#text: ⏎→→',
+		'[11:3]>[11:10](129,136)table: <table>',
+		'[11:10]>[12:4](136,140)#text: ⏎→→→',
+		'[N/A]>[N/A](N/A)tbody: ',
+		'[12:4]>[12:8](140,144)tr: <tr>',
+		'[12:8]>[13:5](144,149)#text: ⏎→→→→',
+		'[13:5]>[13:9](149,153)th: <th>',
+		'[13:9]>[13:15](153,159)#text: header',
+		'[13:15]>[13:20](159,164)th: </th>',
+		'[13:20]>[14:5](164,169)#text: ⏎→→→→',
+		'[14:5]>[14:9](169,173)td: <td>',
+		'[14:9]>[14:13](173,177)#text: cell',
+		'[14:13]>[14:18](177,182)td: </td>',
+		'[14:18]>[15:4](182,186)#text: ⏎→→→',
+		'[15:4]>[15:9](186,191)tr: </tr>',
+		'[15:9]>[16:3](191,194)#text: ⏎→→',
+		'[16:3]>[16:11](194,202)table: </table>',
+		'[16:11]>[17:3](202,205)#text: ⏎→→',
+		'[17:3]>[17:10](205,212)table: <table>',
+		'[17:10]>[18:4](212,216)#text: ⏎→→→',
+		'[18:4]>[18:11](216,223)tbody: <tbody>',
+		'[18:11]>[19:5](223,228)#text: ⏎→→→→',
+		'[19:5]>[19:9](228,232)tr: <tr>',
+		'[19:9]>[20:6](232,238)#text: ⏎→→→→→',
+		'[20:6]>[20:10](238,242)th: <th>',
+		'[20:10]>[20:16](242,248)#text: header',
+		'[20:16]>[20:21](248,253)th: </th>',
+		'[20:21]>[21:6](253,259)#text: ⏎→→→→→',
+		'[21:6]>[21:10](259,263)td: <td>',
+		'[21:10]>[21:14](263,267)#text: cell',
+		'[21:14]>[21:19](267,272)td: </td>',
+		'[21:19]>[22:5](272,277)#text: ⏎→→→→',
+		'[22:5]>[22:10](277,282)tr: </tr>',
+		'[22:10]>[23:4](282,286)#text: ⏎→→→',
+		'[23:4]>[23:12](286,294)tbody: </tbody>',
+		'[23:12]>[24:3](294,297)#text: ⏎→→',
+		'[24:3]>[24:11](297,305)table: </table>',
+		'[24:11]>[25:3](305,308)#text: ⏎→→',
+		'[25:3]>[25:24](308,329)img: <img␣src="path/to"␣/>',
+		'[25:24]>[28:3](329,352)#text: ⏎→→→→invalid-indent⏎⏎→→',
+		'[28:3]>[29:31](352,401)#comment: <?template␣engine;⏎→→→$var␣=␣\'<html␣attr="value">',
+		'[29:31]>[29:35](401,405)#text: text',
+		'[29:35]>[29:42](405,412)#invalid: </html>',
+		'[29:42]>[33:35](412,475)#text: \'⏎→→?>⏎⏎→→<%template␣engine;⏎→→→$var␣=␣\'<html␣attr="value">text',
+		'[33:35]>[33:42](475,482)#invalid: </html>',
+		'[33:42]>[36:3](482,492)#text: \'⏎→→%>⏎⏎→→',
+		'[36:3]>[36:14](492,503)#invalid: </expected>',
+		'[36:14]>[37:3](503,506)#text: ⏎→→',
+		'[37:3]>[37:8](506,511)div: <div>',
+		'[37:8]>[39:2](511,524)#text: ⏎→text-node⏎→',
+		'[39:2]>[39:13](524,535)template: </template>',
+		'[39:13]>[40:2](535,537)#text: ⏎→',
 	]);
 });
 

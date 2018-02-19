@@ -13,8 +13,9 @@ export default class Document<T, O> {
     private _raw;
     private _tree;
     private _list;
+    private _isFragment;
     private _ruleset;
-    constructor(nodeTree: (Node<T, O> | GhostNode<T, O>)[], rawHtml: string, ruleset?: Ruleset);
+    constructor(nodeTree: (Node<T, O> | GhostNode<T, O>)[], rawHtml: string, isFragment: boolean, ruleset?: Ruleset);
     readonly raw: string;
     readonly list: (Node<T, O> | GhostNode<T, O>)[];
     toString(): string;

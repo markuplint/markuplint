@@ -33,12 +33,14 @@ export default class Document<T, O> {
 	private _raw: string;
 	private _tree: (Node<T, O> | GhostNode<T, O>)[] = [];
 	private _list: (Node<T, O> | GhostNode<T, O>)[] = [];
+	private _isFragment: boolean;
 	private _ruleset: Ruleset | null = null;
 
 	// tslint:disable-next-line:cyclomatic-complexity
-	constructor (nodeTree: (Node<T, O> | GhostNode<T, O>)[], rawHtml: string, ruleset?: Ruleset) {
+	constructor (nodeTree: (Node<T, O> | GhostNode<T, O>)[], rawHtml: string, isFragment: boolean, ruleset?: Ruleset) {
 		this._raw = rawHtml;
 		this._tree = nodeTree;
+		this._isFragment = isFragment;
 		this._ruleset = ruleset || null;
 
 		const pos: SortableNode<T, O>[] = [];
