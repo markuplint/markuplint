@@ -31,8 +31,7 @@ export default class RulesetForClient extends Ruleset {
 					ruleFilePath: Ruleset.NOFILE,
 				};
 			}
-			const dir = path.dirname(baseRuleFilePath);
-			url = path.resolve(path.join(dir, extendRule));
+			url = new URL(extendRule, baseRuleFilePath).toString();
 		}
 		const res = await fetch(url.toString(), { mode: 'cors' });
 		const ruleConfig: ConfigureFileJSON = await res.json();
