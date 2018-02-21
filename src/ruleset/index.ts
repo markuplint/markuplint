@@ -1,14 +1,12 @@
-import fs from 'fs';
 import path from 'path';
-import util from 'util';
-
-const readFile = util.promisify(fs.readFile);
 
 import Ruleset, { ResultResolver } from './core';
 
 import {
 	ConfigureFileJSON,
 } from './JSONInterface';
+
+import readTextFile from '../util/readTextFile';
 
 export default class RulesetForNodeJS extends Ruleset {
 
@@ -24,7 +22,7 @@ export default class RulesetForNodeJS extends Ruleset {
 			}
 			const id = matched[1];
 			const filePath = path.join(__dirname, '..', '..', 'rulesets', `${id}.json`);
-			jsonStr = await readFile(filePath, 'utf-8');
+			jsonStr = await readTextFile(filePath);
 			ruleFilePath = filePath;
 		} else if (/^(?:https?:)?\/\//.test(extendRule)) {
 			// TODO: fetch from internet
@@ -39,7 +37,7 @@ export default class RulesetForNodeJS extends Ruleset {
 			const dir = path.dirname(baseRuleFilePath);
 			const filePath = path.resolve(path.join(dir, extendRule));
 			try {
-				jsonStr = await readFile(filePath, 'utf-8');
+				jsonStr = await readTextFile(filePath);
 				ruleFilePath = filePath;
 			} catch (err) {
 				throw new Error(`Extended rc file "${filePath}" is not found`);

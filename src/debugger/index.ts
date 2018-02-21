@@ -1,18 +1,16 @@
 // tslint:disable:no-magic-numbers
-import fs from 'fs';
 import path from 'path';
-import util from 'util';
 
 import c from 'cli-color';
 
 import Node from '../dom/node';
 import parser from '../dom/parser/';
 
-const readFile = util.promisify(fs.readFile);
+import readTextFile from '../util/readTextFile';
 
 (async () => {
 
-	const html = await readFile('src/test/003.html', 'utf-8');
+	const html = await readTextFile('src/test/003.html');
 	const d = parser(html);
 
 	// process.stdout.write(d.toDebugMap().join('\n'));

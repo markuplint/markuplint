@@ -1,6 +1,4 @@
-import fs from 'fs';
 import path from 'path';
-import util from 'util';
 
 import Markuplint from './core';
 import CustomRule from './rule/custom-rule';
@@ -14,7 +12,7 @@ import Ruleset from './ruleset';
 import { ConfigureFileJSON } from './ruleset/JSONInterface';
 import createRuleset from './ruleset/createRuleset';
 
-const readFile = util.promisify(fs.readFile);
+import readTextFile from './util/readTextFile';
 
 export async function verify (html: string, config: ConfigureFileJSON, rules: CustomRule[], locale?: string) {
 	const ruleset = await createRuleset(config, rules);
@@ -41,7 +39,7 @@ export async function verifyFile (filePath: string, rules?: CustomRule[], config
 		const dir = path.dirname(absFilePath);
 		ruleset = await createRuleset(dir, rules);
 	}
-	const html = await readFile(filePath, 'utf-8');
+	const html = await readTextFile(filePath);
 	const core = new Markuplint(html, ruleset, await messenger(locale));
 	const reports = await core.verify();
 	return {
