@@ -1,12 +1,12 @@
 import fs from 'fs';
 import path from 'path';
-import util from 'util';
+
 
 import osLocale from '../osLocale';
 
 import Messenger, { LocaleSet } from './';
 
-const readFile = util.promisify(fs.readFile);
+import readTextFile from '../../util/readTextFile';
 
 export default async function (locale?: string) {
 	if (!locale) {
@@ -22,7 +22,7 @@ export default async function (locale?: string) {
 	let json = '{}';
 	try {
 		const filePath = path.join(__dirname, '..', 'i18n', `${localeId}.json`);
-		json = await readFile(filePath, 'utf-8');
+		json = await readTextFile(filePath);
 	} catch (err) {
 		console.warn(`⚠ [markuplint] Missing locale message file ${localeId}.json`);
 	}

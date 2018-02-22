@@ -1,12 +1,10 @@
 // @ts-ignore
 import findNodeModules from 'find-node-modules';
-import fs from 'fs';
 import path from 'path';
-import util from 'util';
 
 import CustomRule from './custom-rule';
 
-const readdir = util.promisify(fs.readdir);
+import readdir from '../util/readdir';
 
 export default async function ruleModulesLoader (): Promise<CustomRule[]> {
 	const rules: CustomRule[] = [];
