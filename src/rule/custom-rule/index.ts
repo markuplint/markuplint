@@ -24,6 +24,10 @@ export default class CustomRule<T = null, O = {}> {
 	}
 
 	public name: string;
+
+	/**
+	 * TODO: change name to `defaultSeverity`
+	 */
 	public defaultLevel: Severity;
 	public defaultValue: T;
 	public defaultOptions: O;
@@ -66,7 +70,7 @@ export default class CustomRule<T = null, O = {}> {
 				disabled: !option,
 				severity: this.defaultLevel,
 				value: this.defaultValue,
-				option: this.defaultOptions || null,
+				option: this.defaultOptions,
 			};
 		}
 		if (Array.isArray(option)) {
@@ -74,14 +78,19 @@ export default class CustomRule<T = null, O = {}> {
 				disabled: false,
 				severity: option[0],
 				value: option[1] || this.defaultValue,
-				option: option[2] || this.defaultOptions || null,
+				option:
+					(this.defaultOptions !== null && typeof this.defaultOptions === 'object')
+					?
+					Object.assign(this.defaultOptions, option[2] || {})
+					:
+					option[2] || this.defaultOptions,
 			};
 		}
 		return {
 			disabled: false,
 			severity: this.defaultLevel,
 			value: option == null ? this.defaultValue : option,
-			option: this.defaultOptions || null,
+			option: this.defaultOptions,
 		};
 	}
 }

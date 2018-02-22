@@ -9,6 +9,9 @@ export default class CustomRule<T = null, O = {}> {
     static create<T = null, O = {}>(options: Options<T, O>): CustomRule<T, O>;
     static charLocator(searches: string[], text: string, currentLine: number, currentCol: number): Location[];
     name: string;
+    /**
+     * TODO: change name to `defaultSeverity`
+     */
     defaultLevel: Severity;
     defaultValue: T;
     defaultOptions: O;
