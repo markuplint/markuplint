@@ -90,7 +90,10 @@ export default abstract class Ruleset {
 				this.rules = deepAssign(this.rules, ruleConfig.rules);
 			}
 			if (ruleConfig.nodeRules) {
-				this.nodeRules = deepAssign(this.nodeRules, ruleConfig.nodeRules);
+				this.nodeRules = [...this.nodeRules, ...ruleConfig.nodeRules];
+			}
+			if (ruleConfig.childNodeRules) {
+				this.childNodeRules = [...this.childNodeRules, ...ruleConfig.childNodeRules];
 			}
 			if (ruleConfig.extends) {
 				await this._extendsRules(ruleConfig.extends, ruleFilePath);
