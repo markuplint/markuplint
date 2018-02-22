@@ -2,6 +2,7 @@ import {
 	AmbiguousNode,
 	Indentation,
 	NodeType,
+	ParentNode,
 } from './';
 
 import Document from './document';
@@ -22,7 +23,7 @@ export default abstract class Node<T = null, O = {}> extends Token {
 	public nodeName: string;
 	public prevNode: AmbiguousNode<T, O> = null;
 	public nextNode: AmbiguousNode<T, O> = null;
-	public readonly parentNode: AmbiguousNode<T, O> = null;
+	public readonly parentNode: ParentNode<T, O> | null = null;
 	public prevSyntaxicalNode: Node<T, O> | null = null;
 	public indentation: Indentation | null = null;
 	public rules: ConfigureFileJSONRules = {};
@@ -33,7 +34,7 @@ export default abstract class Node<T = null, O = {}> extends Token {
 	 */
 	public depth = 0;
 
-	constructor (nodeName: string, raw: string, line: number, col: number, startOffset: number, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: AmbiguousNode<T, O>) {
+	constructor (nodeName: string, raw: string, line: number, col: number, startOffset: number, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: ParentNode<T, O> | null) {
 		super(raw, line, col, startOffset);
 		this.nodeName = nodeName;
 		this.prevNode = prevNode;
@@ -76,5 +77,13 @@ export default abstract class Node<T = null, O = {}> extends Token {
 			return null;
 		}
 		return this.document.rule.optimizeOption(rule);
+	}
+
+	public get syntaxicalParentNode (): Node<T, O> | null {
+		let node: Node<T, O> | GhostNode<T, O> = this;
+		while (node.parentNode && node.parentNode instanceof GhostNode) {
+			node = node.parentNode;
+		}
+		return node.parentNode;
 	}
 }

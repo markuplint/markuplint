@@ -62,7 +62,7 @@ export default class Document<T, O> {
 
 					if (/^\s+$/.test(html)) {
 						const spaces = html;
-						const textNode = new TextNode(
+						const textNode = new TextNode<T, O>(
 							'#ws',
 							spaces,
 							prevLine,
@@ -148,7 +148,7 @@ export default class Document<T, O> {
 				}
 				const line = lastNode ? lastNode.location.endLine : 0;
 				const col = lastNode ? lastNode.location.endCol : 0;
-				const lastTextNode = new TextNode(
+				const lastTextNode = new TextNode<T, O>(
 					'#text',
 					lastTextContent,
 					line,
@@ -202,36 +202,20 @@ export default class Document<T, O> {
 				// set self
 				node.document = this;
 
-				// indentation meta-infomation
-				if (node.prevSyntaxicalNode instanceof TextNode) {
-					const prevSyntaxicalTextNode: TextNode<T, O> = node.prevSyntaxicalNode;
-
-					if (!(prevSyntaxicalTextNode instanceof RawText)) {
-						const matched = prevSyntaxicalTextNode.raw.match(/\r?\n([ \t]+$)/);
-						if (matched) {
-							const spaces = matched[1];
-							if (spaces) {
-								node.indentation = {
-									type: /^\t+$/.test(spaces) ? 'tab' : /^[^\t]+$/.test(spaces) ? 'space' : 'mixed',
-									width: spaces.length,
-									raw: spaces,
-									line: node.line,
-								};
-							}
-						}
-					}
-				}
+				/**
+				 * Indentation of TextNode
+				 */
 				if (node instanceof TextNode && !(node instanceof RawText)) {
-					const matched = node.raw.match(/(^\s*)([^\s]+)/);
+					const matched = node.raw.match(/^(\s*(?:\r?\n)+\s*)(?:[^\s]+)/);
 					if (matched) {
 						const spaces = matched[1];
 						if (spaces) {
 							const spaceLines = spaces.split(/\r?\n/);
 							const line = spaceLines.length + node.line - 1;
 							const lastSpace = spaceLines.pop();
-							if (lastSpace) {
+							if (lastSpace != null) {
 								node.indentation = {
-									type: /^\t+$/.test(lastSpace) ? 'tab' : /^[^\t]+$/.test(lastSpace) ? 'space' : 'mixed',
+									type: lastSpace === '' ? 'none' : /^\t+$/.test(lastSpace) ? 'tab' : /^[^\t]+$/.test(lastSpace) ? 'space' : 'mixed',
 									width: lastSpace.length,
 									raw: lastSpace,
 									line,
@@ -239,8 +223,42 @@ export default class Document<T, O> {
 							}
 						}
 					}
-				}
+				/**
+				 * Indentation of Element etc.
+				 */
+				} else if (node.prevSyntaxicalNode instanceof TextNode) {
+					const prevSyntaxicalTextNode: TextNode<T, O> = node.prevSyntaxicalNode;
 
+					if (!(prevSyntaxicalTextNode instanceof RawText)) {
+						const matched = prevSyntaxicalTextNode.raw.match(/\r?\n([ \t]*)$/);
+						if (matched) {
+							const spaces = matched[1];
+							if (spaces != null) {
+								node.indentation = {
+									type: spaces === '' ? 'none' : /^\t+$/.test(spaces) ? 'tab' : /^[^\t]+$/.test(spaces) ? 'space' : 'mixed',
+									width: spaces.length,
+									raw: spaces,
+									line: node.line,
+								};
+							}
+						} else if (node.prevNode && node.prevNode instanceof Node && node.prevNode.location.startOffset === 0) {
+							const spaces = node.prevNode.raw;
+							node.indentation = {
+								type: spaces === '' ? 'none' : /^\t+$/.test(spaces) ? 'tab' : /^[^\t]+$/.test(spaces) ? 'space' : 'mixed',
+								width: spaces.length,
+								raw: spaces,
+								line: node.line,
+							};
+						}
+					}
+				} else if (node.location.startOffset === 0) {
+					node.indentation = {
+						type: 'none',
+						width: 0,
+						raw: '',
+						line: node.line,
+					};
+				}
 			}
 		}
 

@@ -455,13 +455,10 @@ test((t) => {
 	]);
 });
 
-// test((t) => {
-// 	const d = parser(`
-// 	<div>
-// 	   lorem
-// 	   <p>ipsam</p>
-// 	</div>`);
+// test.only((t) => {
+// 	const d = parser('<html>');
 // 	console.log(d.toDebugMap());
+// 	console.log(d.list[1].indentation);
 // 	t.pass();
 // });
 

@@ -17,6 +17,7 @@ import {
 	ElementLocation,
 	ExistentLocation,
 	NodeType,
+	ParentNode,
 } from '../';
 
 import Document from '../document';
@@ -62,7 +63,7 @@ export function isDocumentFragment (html: string) {
 }
 
 // tslint:disable-next-line:cyclomatic-complexity
-function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O> | null, parent: Node<T, O> | GhostNode<T, O> | null, rawHtml: string): (Node<T, O> | GhostNode<T, O>)[] {
+function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O> | null, parent: ParentNode<T, O> | null, rawHtml: string): (Node<T, O> | GhostNode<T, O>)[] {
 	const nodes: (Node<T, O> | GhostNode<T, O>)[] = [];
 	switch (p5node.nodeName) {
 		case '#documentType': {
@@ -78,7 +79,6 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 				p5node.__location.startOffset,
 				prev,
 				null,
-				parent,
 				(p5node as P5DocumentType).publicId || null,
 				(p5node as P5DocumentType).systemId || null,
 			);
@@ -228,9 +228,9 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 	return nodes;
 }
 
-function traverse<T, O> (rootNode: P5ParentNode, parentNode: Node<T, O> | GhostNode<T, O> | null = null, rawHtml: string): (Node<T, O> | GhostNode<T, O>)[] {
+function traverse<T, O> (rootNode: P5ParentNode, parentNode: ParentNode<T, O> | null = null, rawHtml: string): (Node<T, O> | GhostNode<T, O>)[] {
 	const nodeList: (Node<T, O> | GhostNode<T, O>)[] = [];
-	let prev: Node<T, O> | GhostNode<T, O> | null = null;
+
 	let childNodes: P5ParentNode[] = rootNode.childNodes;
 	// @ts-ignore
 	if (childNodes.length === 0 && rootNode.content && rootNode.content.nodeName === '#document-fragment') {
@@ -238,6 +238,7 @@ function traverse<T, O> (rootNode: P5ParentNode, parentNode: Node<T, O> | GhostN
 		childNodes = rootNode.content.childNodes;
 	}
 
+	let prev: Node<T, O> | GhostNode<T, O> | null = null;
 	for (const p5node of childNodes) {
 		const nodes: (Node<T, O> | GhostNode<T, O>)[] = nodeize(p5node, prev, parentNode, rawHtml);
 		for (const node of nodes) {

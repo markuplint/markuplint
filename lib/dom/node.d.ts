@@ -1,4 +1,4 @@
-import { AmbiguousNode, Indentation, NodeType } from './';
+import { AmbiguousNode, Indentation, NodeType, ParentNode } from './';
 import Document from './document';
 import Token from './token';
 import { RuleConfig } from '../rule';
@@ -8,7 +8,7 @@ export default abstract class Node<T = null, O = {}> extends Token {
     nodeName: string;
     prevNode: AmbiguousNode<T, O>;
     nextNode: AmbiguousNode<T, O>;
-    readonly parentNode: AmbiguousNode<T, O>;
+    readonly parentNode: ParentNode<T, O> | null;
     prevSyntaxicalNode: Node<T, O> | null;
     indentation: Indentation | null;
     rules: ConfigureFileJSONRules;
@@ -17,7 +17,7 @@ export default abstract class Node<T = null, O = {}> extends Token {
      * @WIP
      */
     depth: number;
-    constructor(nodeName: string, raw: string, line: number, col: number, startOffset: number, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: AmbiguousNode<T, O>);
+    constructor(nodeName: string, raw: string, line: number, col: number, startOffset: number, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: ParentNode<T, O> | null);
     toString(): string;
     toJSON(): {
         nodeName: string;
@@ -31,4 +31,5 @@ export default abstract class Node<T = null, O = {}> extends Token {
     };
     is(type: NodeType): boolean;
     readonly rule: RuleConfig<T, O> | null;
+    readonly syntaxicalParentNode: Node<T, O> | null;
 }
