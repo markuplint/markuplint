@@ -31,5 +31,5 @@ export interface RuleConfig<T = null, O = {}> {
 	disabled: boolean;
 	severity: Severity;
 	value: T;
-	option: O | null;
+	option: O;
 }
