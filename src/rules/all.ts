@@ -26,7 +26,7 @@ import headingInSectioningContent from './markuplint-rule-heading-in-sectioning-
 import headingInSectioningRoot from './markuplint-rule-heading-in-sectioning-root';
 import headingLevelsSkipping from './markuplint-rule-heading-levels-skipping';
 import idDuplication from './markuplint-rule-id-duplication';
-import indentation from './markuplint-rule-indentation';
+import indentation, { IndentationOptions } from './markuplint-rule-indentation';
 import indentationAttr from './markuplint-rule-indentation-attr';
 import labels from './markuplint-rule-labels';
 import landmarkRoles from './markuplint-rule-landmark-roles';
@@ -39,7 +39,7 @@ import permittedContents from './markuplint-rule-permitted-contents';
 import permittedRole from './markuplint-rule-permitted-role';
 import requiredAttr from './markuplint-rule-required-attr';
 import requiredElement from './markuplint-rule-required-element';
-import requiredH1, { Options } from './markuplint-rule-required-h1';
+import requiredH1, { RequiredH1Options } from './markuplint-rule-required-h1';
 import roleStructureTab from './markuplint-rule-role-structure-tab';
 import selfClosingTag from './markuplint-rule-self-closing-tag';
 import voidElementClosing from './markuplint-rule-void-element-closing';

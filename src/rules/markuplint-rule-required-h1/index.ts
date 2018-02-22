@@ -5,19 +5,21 @@ import CustomRule from '../../rule/custom-rule';
 
 export type Value = boolean;
 
-export interface Options {
+export interface RequiredH1Options {
 	'expected-once': boolean;
 }
 
-export default CustomRule.create<Value, Options>({
+export default CustomRule.create<Value, RequiredH1Options>({
 	name: 'required-h1',
 	defaultValue: true,
-	defaultOptions: { 'expected-once': true },
+	defaultOptions: {
+		'expected-once': true,
+	},
 	async verify (document, messages) {
 		// @ts-ignore TODO
 		const config = document.ruleConfig || {};
 		const reports: VerifyReturn[] = [];
-		const h1Stack: Element<Value, Options>[] = [];
+		const h1Stack: Element<Value, RequiredH1Options>[] = [];
 		document.syncWalkOn('Element', (node) => {
 			if (node.nodeName.toLowerCase() === 'h1') {
 				h1Stack.push(node);
@@ -32,7 +34,7 @@ export default CustomRule.create<Value, Options>({
 				col: 1,
 				raw: document.raw.slice(0, 1),
 			});
-		} else if (config.option && config.option['expected-once'] && h1Stack.length > 1) {
+		} else if (config.option['expected-once'] && h1Stack.length > 1) {
 			const message = messages('Duplicate {0}', 'h1 element');
 			reports.push({
 				severity: config.level,
