@@ -3,7 +3,7 @@
   "extends": "markuplint/html-ls",
   "rules": {
     # Style
-    "indentation": 'tab',
+    "indentation": "tab",
     "self-closing-tag": true,
     "omitted-closing-tag": true,
     "attr-value-quotes": true,
@@ -60,5 +60,19 @@
 
     # Plugin
     "textlint/textlint": false
-  }
+  },
+  "nodeRules": [
+    {
+      "tagName": "head",
+      "rules": {
+        "indentation": ["warning", "tab", { "align": true, "indent-nested-nodes": false }]
+      }
+    },
+    {
+      "tagName": "body",
+      "rules": {
+        "indentation": false
+      }
+    }
+  ]
 }
