@@ -4,7 +4,10 @@ const meow = require('meow');
 const getStdin = require('get-stdin');
 
 const { verify, verifyFile } = require('../lib/');
-const { standardReporter } = require('../lib/reporter/');
+const {
+	standardReporter,
+	simpleReporter,
+} = require('../lib/reporter/');
 
 const cli = meow(`
 Usage
@@ -12,12 +15,13 @@ Usage
 	$ <stdout> | markuplint
 
 Options
-	--ruleset,  -r          Ruleset file path.
-	--no-color, -c          Output no color.
-	--format,   -f FORMAT   Output format. Support "JSON" only. Default "JSON".
+	--ruleset,      -r FILE_PATH  Ruleset file path.
+	--no-color,     -c            Output no color.
+	--format,       -f FORMAT     Output format. Support "JSON" or "Simple". Default "JSON".
+	--problem-only, -p            Output only problems, without passeds.
 
-	--help,     -h          Show help.
-	--version,  -v          Show version.
+	--help,         -h            Show help.
+	--version,      -v            Show version.
 
 Examples
 	$ markuplint verifyee.html --ruleset path/to/.markuplintrc
@@ -34,6 +38,9 @@ Examples
 		},
 		format: {
 			alias: 'f',
+		},
+		'problem-only': {
+			alias: 'p',
 		},
 	},
 }
@@ -57,14 +64,14 @@ if (cli.input.length) {
 }
 
 getStdin().then(async (stdin) => {
-	const Ruleset = require('../lib/ruleset/').default;
+	const createRuleset = require('../lib/ruleset/createRuleset').default;
 	const ruleModulesLoader = require('../lib/rule/loader').default;
 	const html = stdin;
 	if (!html) {
 		return;
 	}
 	const rules = await ruleModulesLoader();
-	const ruleset = await Ruleset.create(cli.flags.ruleset || process.cwd(), rules);
+	const ruleset = await createRuleset(cli.flags.ruleset || process.cwd(), rules);
 	const reports = await verify(html, ruleset, rules);
 	await output('STDIN_DATA', reports, html, cli.flags);
 });
@@ -80,11 +87,23 @@ async function output (filePath, reports, html, flags) {
 				process.stdout.write(JSON.stringify(reports, null, 2));
 				break;
 			}
+			case 'simple': {
+				await simpleReporter(filePath, reports, html, {
+					color: !flags.noColor,
+					noStdOut: false,
+					problemOnly: cli.flags.problemOnly,
+				});
+				break;
+			}
 			default: {
 				throw new Error(`Unsupported output format "${cli.flags.format}"`);
 			}
 		}
 	} else {
-		await standardReporter(filePath, reports, html, !flags.noColor);
+		await standardReporter(filePath, reports, html, {
+			color: !flags.noColor,
+			noStdOut: false,
+			problemOnly: cli.flags.problemOnly,
+		});
 	}
 }
