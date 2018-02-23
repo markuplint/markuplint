@@ -81,7 +81,7 @@ export default class CustomRule<T = null, O = {}> {
 				option:
 					(this.defaultOptions !== null && typeof this.defaultOptions === 'object')
 					?
-					Object.assign(this.defaultOptions, option[2] || {})
+					Object.assign({}, this.defaultOptions, option[2] || {})
 					:
 					option[2] || this.defaultOptions,
 			};
