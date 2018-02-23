@@ -29,6 +29,7 @@
     "cosmiconfig": "^4.0.0",
     "css-what": "^2.1.0",
     "deep-assign": "^2.0.0",
+    "eastasianwidth": "^0.2.0",
     "find-node-modules": "^1.0.4",
     "get-stdin": "^5.0.1",
     "meow": "^4.0.0",
