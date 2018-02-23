@@ -564,17 +564,20 @@ test('options - indent-nested-nodes: true', async (t) => {
 test('options - indent-nested-nodes: true', async (t) => {
 	const r = await markuplint.verify(
 		`<html>
-<body></body>
+<body>
+	<div>text
+	</div>
+</body>
 </html>`,
 		{
 			rules: {
-				indentation: true,
+				indentation: 'tab',
 			},
 			nodeRules: [
 				{
 					tagName: 'body',
 					rules: {
-						indentation: false,
+						indentation: ['warning', 'tab', { 'indent-nested-nodes': false }],
 					},
 				},
 			],
@@ -585,5 +588,150 @@ test('options - indent-nested-nodes: true', async (t) => {
 	t.deepEqual(r, []);
 });
 
+test('options - indent-nested-nodes: true', async (t) => {
+	const r = await markuplint.verify(
+		`<html>
+	<body>
+		<div>text
+		</div>
+	</body>
+</html>`,
+		{
+			rules: {
+				indentation: 'tab',
+			},
+			nodeRules: [
+				{
+					tagName: 'body',
+					rules: {
+						indentation: ['warning', 'tab', { 'indent-nested-nodes': false }],
+					},
+				},
+			],
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, []);
+});
+
+test('options - indent-nested-nodes: true', async (t) => {
+	const r = await markuplint.verify(
+		`<html>
+	<body>
+		<div>text
+		</div>
+	</body>
+</html>`,
+		{
+			rules: {
+				indentation: 'tab',
+			},
+			nodeRules: [
+				{
+					tagName: 'body',
+					rules: {
+						indentation: ['warning', 'tab', { 'indent-nested-nodes': 'never' }],
+					},
+				},
+			],
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, [
+		{
+			level: 'warning',
+			severity: 'warning',
+			line: 2,
+			col: 1,
+			message: 'インデントを上げてください',
+			raw: '\t',
+			ruleId: 'indentation',
+		},
+		{
+			level: 'warning',
+			severity: 'warning',
+			line: 5,
+			col: 1,
+			message: 'インデントを上げてください',
+			raw: '\t',
+			ruleId: 'indentation',
+		},
+	]);
+});
+
+test('options - indent-nested-nodes: true', async (t) => {
+	const r = await markuplint.verify(
+		`\t<html>
+<body>
+	<div>text
+	</div>
+</body>
+	</html>`,
+		{
+			rules: {
+				indentation: 'tab',
+			},
+			nodeRules: [
+				{
+					tagName: 'body',
+					rules: {
+						indentation: ['warning', 'tab', { 'indent-nested-nodes': 'never' }],
+					},
+				},
+			],
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, [
+		{
+			level: 'warning',
+			severity: 'warning',
+			line: 2,
+			col: 1,
+			message: 'インデントを下げてください',
+			raw: '',
+			ruleId: 'indentation',
+		},
+		{
+			level: 'warning',
+			severity: 'warning',
+			line: 5,
+			col: 1,
+			message: 'インデントを下げてください',
+			raw: '',
+			ruleId: 'indentation',
+		},
+	]);
+});
+
+test('options - indent-nested-nodes: true', async (t) => {
+	const r = await markuplint.verify(
+		`\t<html>
+	<body>
+		<div>text
+		</div>
+	</body>
+	</html>`,
+		{
+			rules: {
+				indentation: 'tab',
+			},
+			nodeRules: [
+				{
+					tagName: 'body',
+					rules: {
+						indentation: ['warning', 'tab', { 'indent-nested-nodes': 'never' }],
+					},
+				},
+			],
+		},
+		[rule],
+		'en',
+	);
+	t.deepEqual(r, []);
+});
 
 test('noop', (t) => t.pass());

@@ -4,7 +4,7 @@ import CustomRule from '../../rule/custom-rule';
 export type Value = 'tab' | number;
 export interface IndentationOptions {
 	alignment: boolean;
-	'indent-nested-nodes': boolean;
+	'indent-nested-nodes': boolean | 'always' | 'never';
 }
 
 export default CustomRule.create<Value, IndentationOptions>({
@@ -19,7 +19,7 @@ export default CustomRule.create<Value, IndentationOptions>({
 		const reports: VerifyReturn[] = [];
 		// tslint:disable-next-line:cyclomatic-complexity
 		await document.walkOn('Node', async (node) => {
-			// console.log(node.nodeName, node.rule);
+			// console.log(node.raw, node.rule);
 			if (!node.rule || node.rule.disabled) {
 				return;
 			}
@@ -53,7 +53,8 @@ export default CustomRule.create<Value, IndentationOptions>({
 				/**
 				 * Validate nested parent-children nodes.
 				 */
-				if (!node.rule.option['indent-nested-nodes']) {
+				const nested = node.rule.option['indent-nested-nodes'];
+				if (!nested) {
 					return;
 				}
 				if (node.parentNode) {
@@ -65,15 +66,28 @@ export default CustomRule.create<Value, IndentationOptions>({
 						const exportWidth = node.rule.value === 'tab' ? 1 : node.rule.value;
 						const diff = childIndentWidth - parentIndentWidth;
 						// console.log({ parentIndentWidth, childIndentWidth, exportWidth });
-						if (diff !== exportWidth) {
-							const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
-							reports.push({
-								severity: node.rule.severity,
-								message,
-								line: node.indentation.line,
-								col: 1,
-								raw: node.indentation.raw,
-							});
+						if (nested === 'never') {
+							if (diff !== 0) {
+								const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
+								reports.push({
+									severity: node.rule.severity,
+									message,
+									line: node.indentation.line,
+									col: 1,
+									raw: node.indentation.raw,
+								});
+							}
+						} else {
+							if (diff !== exportWidth) {
+								const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
+								reports.push({
+									severity: node.rule.severity,
+									message,
+									line: node.indentation.line,
+									col: 1,
+									raw: node.indentation.raw,
+								});
+							}
 						}
 					}
 				}
