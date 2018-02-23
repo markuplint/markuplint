@@ -1,9 +1,13 @@
+<center>
+
 ![markuplint](https://cdn.rawgit.com/YusukeHirao/markuplint/HEAD/media/logo-v.svg)
 ===
 
 [![npm version](https://badge.fury.io/js/markuplint.svg)](https://badge.fury.io/js/markuplint) [![Build Status](https://travis-ci.org/YusukeHirao/markuplint.svg?branch=master)](https://travis-ci.org/YusukeHirao/markuplint) [![Coverage Status](https://coveralls.io/repos/github/YusukeHirao/markuplint/badge.svg?branch=master)](https://coveralls.io/github/YusukeHirao/markuplint?branch=master)
 
 HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.
+
+</center>
 
 ## Install
 
@@ -27,17 +31,20 @@ Usage
 	$ <stdout> | markuplint
 
 Options
-	--ruleset,  -r          Ruleset file path.
-	--no-color, -c          Output no color.
-	--format,   -f FORMAT   Output format. Support "JSON" only. Default "JSON".
+	--ruleset,      -r FILE_PATH  Ruleset file path.
+	--no-color,     -c            Output no color.
+	--format,       -f FORMAT     Output format. Support "JSON" or "Simple". Default "JSON".
+	--problem-only, -p            Output only problems, without passeds.
 
-	--help,     -h          Show help.
-	--version,  -v          Show version.
+	--help,         -h            Show help.
+	--version,      -v            Show version.
 
 Examples
 	$ markuplint verifyee.html --ruleset path/to/.markuplintrc
 	$ cat verifyee.html | markuplint
 ```
+
+![Screen shot](media/screenshot01.png)
 
 ### API
 
@@ -92,7 +99,11 @@ const { html, reports } = await markuplint.verifyFile(htmlPath, ruleset, rules);
 
 ## Editor Extensions
 
-- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint)
+Editor|Page|Author
+---|---|---
+<a href="https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint"><img src="media/vscode.png" width="75"></a>|[Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint)|[@YusukeHirao](https://github.com/YusukeHirao)
+<a href="https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint"><img src="media/atom.png" width="75"></a>|[Atom](https://atom.io/packages/linter-markuplint)|[@YusukeHirao](https://github.com/YusukeHirao)
+<a href="https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint"><img src="media/vim.png" width="75"></a>|[Vim](https://github.com/heavenshell/vim-markuplint)|[@heavenshell](https://github.com/heavenshell)
 
 ## Thanks
 
