@@ -91,8 +91,8 @@ const { html, reports } = await markuplint.verifyFile(htmlPath, ruleset, rules);
 
 ## Rules
 
-- [Rule Documentation - English](./lib/rules/README.md)
-- [Rule Documentation - 日本語](./lib/rules/README.ja.md)
+- [Rule Documentation - English](./src/rules/README.md)
+- [Rule Documentation - 日本語](./src/rules/README.ja.md)
 
 ### Rule Customization
 - [Rule Customization - English](./src/rule/custom-rule/README.md)
