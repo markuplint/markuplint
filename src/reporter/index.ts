@@ -122,7 +122,7 @@ export async function simpleReporter (targetPath: string, results: VerifiedResul
 function p (s: number | string, pad: number, start = false) {
 	const l = w(`${s}`.trim());
 	const d = pad - l;
-	const _ = ' '.repeat(d);
+	const _ = ' '.repeat(d < 0 ? 0 : d);
 	return start ? `${_}${s}` : `${s}${_}`;
 }
 
