@@ -16,9 +16,6 @@ export default CustomRule.create<Value, null>({
 	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
 		await document.walkOn('Element', async (node) => {
-			if (!node.rule) {
-				return;
-			}
 			const message = messages('{0} is must {1} on {2}', 'Attribute value', 'quote', `${node.rule.value} quotation mark`);
 			for (const attr of node.attributes) {
 				if (attr.value != null && attr.value.quote !== quote[node.rule.value]) {

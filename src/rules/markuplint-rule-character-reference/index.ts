@@ -22,9 +22,6 @@ export default CustomRule.create<Value, null>({
 		const targetNodes: { severity: Severity; line: number; col: number; raw: string; message: string }[] = [];
 
 		await document.walkOn('Text', async (node) => {
-			if (!node.rule) {
-				return;
-			}
 			const ms = node.rule.severity === 'error' ? 'must' : 'should';
 			const message = messages(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			targetNodes.push({
@@ -37,9 +34,6 @@ export default CustomRule.create<Value, null>({
 		});
 
 		await document.walkOn('Element', async (node) => {
-			if (!node.rule) {
-				return;
-			}
 			const severity = node.rule.severity;
 			const ms = severity === 'error' ? 'must' : 'should';
 			const message = messages(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');

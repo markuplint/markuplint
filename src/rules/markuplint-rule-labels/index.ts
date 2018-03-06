@@ -9,9 +9,6 @@ export default CustomRule.create({
 		const reports: VerifyReturn[] = [];
 		const message = messages('error');
 		await document.walkOn('Node', async (node) => {
-			if (!node.rule) {
-				return;
-			}
 			if (true) {
 				// reports.push({
 				// 	level: node.rule.level,

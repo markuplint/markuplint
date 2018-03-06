@@ -9,9 +9,6 @@ export default CustomRule.create({
 		const reports: VerifyReturn[] = [];
 		const message = messages('Duplicate {0}', 'attribute name');
 		await document.walkOn('Element', async (node) => {
-			if (!node.rule) {
-				return;
-			}
 			const attrNameStack: string[] = [];
 			for (const attr of node.attributes) {
 				const attrName = attr.name.raw.toLowerCase();

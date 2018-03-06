@@ -9,9 +9,6 @@ export default CustomRule.create({
 		const reports: VerifyReturn[] = [];
 		// const message = messages(`Values allowed for {0} attributes are {$}`, '"role"');
 		// await document.walkOn('Element', async (node) => {
-		// 	if (!node.rule) {
-		// 		return;
-		// 	}
 		// 	const roleAttr = node.getAttribute('role');
 		// 	if (roleAttr) {
 		// 		const role = roleAttr.value || '';

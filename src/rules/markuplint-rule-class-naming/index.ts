@@ -13,9 +13,6 @@ export default CustomRule.create<Value, Options>({
 		const reports: VerifyReturn[] = [];
 		// const message = messages(`{0} of {1} ${ms} be {2}`, 'Attribute name', 'HTML', `${config.value}case`);
 		await document.walkOn('Element', async (node) => {
-			if (!node.rule) {
-				return;
-			}
 			if (node.rule.value) {
 				const classPatterns = Array.isArray(node.rule.value) ? node.rule.value : [node.rule.value];
 				for (const classPattern of classPatterns) {

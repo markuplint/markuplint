@@ -9,9 +9,6 @@ export default CustomRule.create({
 	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
 		await document.walkOn('Element', async (node) => {
-			if (!node.rule) {
-				return;
-			}
 			const message = messages('{0} は許可されていません');
 			reports.push({
 				severity: node.rule.severity,

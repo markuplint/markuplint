@@ -20,7 +20,7 @@ export default CustomRule.create<Value, IndentationOptions>({
 		// tslint:disable-next-line:cyclomatic-complexity
 		await document.walkOn('Node', async (node) => {
 			// console.log(node.raw, node.rule);
-			if (!node.rule || node.rule.disabled) {
+			if (node.rule.disabled) {
 				return;
 			}
 			if (node.indentation) {

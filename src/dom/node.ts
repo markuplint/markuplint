@@ -26,7 +26,7 @@ export default abstract class Node<T = null, O = {}> extends Token {
 	public readonly parentNode: ParentNode<T, O> | null = null;
 	public prevSyntaxicalNode: Node<T, O> | null = null;
 	public indentation: Indentation | null = null;
-	public rules: ConfigureFileJSONRules = {};
+	public readonly rules: ConfigureFileJSONRules = {};
 	public document: Document<T, O> | null = null;
 
 	/**
@@ -65,16 +65,17 @@ export default abstract class Node<T = null, O = {}> extends Token {
 
 	public get rule () {
 		if (!this.document) {
-			return null;
+			throw new Error('Invalid construction.');
 		}
 		if (!this.document.rule) {
-			return null;
+			throw new Error('Invalid construction.');
 		}
 		const name = this.document.rule.name;
+
 		// @ts-ignore
 		const rule: ConfigureFileJSONRuleOption<T, O> = this.rules[name];
 		if (rule == null) {
-			return null;
+			throw new Error('Invalid call "rule" property.');
 		}
 		return this.document.rule.optimizeOption(rule);
 	}

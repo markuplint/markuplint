@@ -12,9 +12,6 @@ export default CustomRule.create<Value, null>({
 		const reports: VerifyReturn[] = [];
 		const message = messages('error');
 		await document.walkOn('Element', async (node) => {
-			if (!node.rule) {
-				return;
-			}
 			for (const attr of node.attributes) {
 				if (!attr.equal) {
 					continue;

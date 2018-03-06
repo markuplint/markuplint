@@ -10,9 +10,6 @@ export default CustomRule.create({
 		const message = messages('Duplicate {0}', 'attribute id value');
 		const idStack: string[] = [];
 		await document.walkOn('Element', async (node) => {
-			if (!node.rule) {
-				return;
-			}
 			const id = node.id;
 			if (id && id.value) {
 				if (idStack.includes(id.value.value)) {

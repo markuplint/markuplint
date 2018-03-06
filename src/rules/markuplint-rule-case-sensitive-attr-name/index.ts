@@ -11,9 +11,6 @@ export default CustomRule.create<Value, null>({
 	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
 		await document.walkOn('Element', async (node) => {
-			if (!node.rule) {
-				return;
-			}
 			const ms = node.rule.severity === 'error' ? 'must' : 'should';
 			const deny = node.rule.value === 'no-upper' ? /[A-Z]/ : /[a-z]/;
 			const cases = node.rule.value === 'no-upper' ? 'lower' : 'upper';

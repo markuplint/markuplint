@@ -11,7 +11,7 @@ export default abstract class Node<T = null, O = {}> extends Token {
     readonly parentNode: ParentNode<T, O> | null;
     prevSyntaxicalNode: Node<T, O> | null;
     indentation: Indentation | null;
-    rules: ConfigureFileJSONRules;
+    readonly rules: ConfigureFileJSONRules;
     document: Document<T, O> | null;
     /**
      * @WIP
@@ -30,6 +30,6 @@ export default abstract class Node<T = null, O = {}> extends Token {
         endOffset: number;
     };
     is(type: NodeType): boolean;
-    readonly rule: RuleConfig<T, O> | null;
+    readonly rule: RuleConfig<T, O>;
     readonly syntaxicalParentNode: Node<T, O> | null;
 }

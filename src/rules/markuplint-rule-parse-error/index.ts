@@ -22,9 +22,6 @@ export default CustomRule.create({
 				}
 			}
 			if (node instanceof InvalidNode) {
-				if (!node.rule) {
-					return;
-				}
 				if (hasBody && node.raw.indexOf('<body') === 0) {
 					reports.push({
 						severity: node.rule.severity,

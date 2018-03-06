@@ -19,9 +19,6 @@ export default CustomRule.create<Value, null>({
 				||
 				node instanceof EndTagNode
 			) {
-				if (!node.rule) {
-					return;
-				}
 				const ms = node.rule.severity === 'error' ? 'must' : 'should';
 				const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
 				const message = messages(`{0} of {1} ${ms} be {2}`, 'Tag name', 'HTML', `${node.rule.value}case`);
