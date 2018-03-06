@@ -734,4 +734,73 @@ test('options - indent-nested-nodes: true', async (t) => {
 	t.deepEqual(r, []);
 });
 
+test('tab', async (t) => {
+	const fixture = `
+	<div>
+		lorem
+		<p>ipsam</p>
+	</div>
+	`;
+	const fixed = await markuplint.fix(
+		fixture,
+		{
+			rules: {
+				indentation: ['error', 'tab'],
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(fixed, fixture);
+});
+
+test('tab', async (t) => {
+	const fixture = `
+    <div>
+        lorem
+        <p>ipsam</p>
+    </div>
+	`;
+	const fixed = await markuplint.fix(
+		fixture,
+		{
+			rules: {
+				indentation: ['error', 'tab'],
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(fixed, `
+	<div>
+		lorem
+		<p>ipsam</p>
+	</div>
+	`);
+});
+
+test.only('tab', async (t) => {
+	const fixed = await markuplint.fix(
+		`
+		<div>
+			lorem
+			<p>ipsam</p>
+		</div>
+		`,
+		{
+			rules: {
+				indentation: ['error', 4],
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(fixed, `
+        <div>
+            lorem
+            <p>ipsam</p>
+        </div>
+		`);
+});
+
 test('noop', (t) => t.pass());

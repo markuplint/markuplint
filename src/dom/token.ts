@@ -17,15 +17,17 @@ export default class Token {
 	}
 
 	public readonly raw: string;
+	public fixed: string;
 	public location: Location;
 
-	/**
-	 * @deprecated
-	 */
-	public indentation: Indentation | null = null;
+	// /**
+	//  * @deprecated
+	//  */
+	// public indentation: Indentation | null = null;
 
 	constructor (raw: string, line: number, col: number, startOffset: number) {
 		this.raw = raw;
+		this.fixed = raw;
 		this.location = new Location(
 			line,
 			col,

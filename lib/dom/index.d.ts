@@ -2,12 +2,18 @@ import Element from './element';
 import GhostNode from './ghost-node';
 import Node from './node';
 import OmittedElement from './omitted-element';
+import TextNode from './text-node';
 export declare type NodeType = 'Node' | 'Element' | 'OmittedElement' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
-export interface Indentation {
+export declare class Indentation<T, O> {
+    private static set<T, O>(ind, raw);
     type: 'tab' | 'space' | 'mixed' | 'none';
     width: number;
     raw: string;
-    line: number;
+    readonly line: number;
+    readonly parentTextNode: TextNode<T, O> | null;
+    private _fix;
+    constructor(parentTextNode: TextNode<T, O> | null, raw: string, line: number);
+    fix: string;
 }
 export interface Location {
     line: number | null;

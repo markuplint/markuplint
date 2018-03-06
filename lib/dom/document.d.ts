@@ -20,6 +20,7 @@ export default class Document<T, O> {
     readonly raw: string;
     readonly list: (Node<T, O> | GhostNode<T, O>)[];
     toString(): string;
+    fix(): string;
     toJSON(): any;
     toDebugMap(): string[];
     walk(walker: Walker<T, O>): Promise<void>;

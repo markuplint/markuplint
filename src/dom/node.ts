@@ -25,7 +25,7 @@ export default abstract class Node<T = null, O = {}> extends Token {
 	public nextNode: AmbiguousNode<T, O> = null;
 	public readonly parentNode: ParentNode<T, O> | null = null;
 	public prevSyntaxicalNode: Node<T, O> | null = null;
-	public indentation: Indentation | null = null;
+	public indentation: Indentation<T, O> | null = null;
 	public readonly rules: ConfigureFileJSONRules = {};
 	public document: Document<T, O> | null = null;
 

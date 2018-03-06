@@ -19,7 +19,8 @@ export default abstract class Ruleset {
      * @param config JSON Data
      */
     setConfig(config: ConfigureFileJSON, configFilePath: string): Promise<void>;
-    verify(nodeTree: Document<null, {}>, messenger: Messenger): Promise<VerifiedResult[]>;
+    verify(document: Document<null, {}>, messenger: Messenger): Promise<VerifiedResult[]>;
+    fix(document: Document<null, {}>): Promise<string>;
     abstract resolver(extendRule: string, baseRuleFilePath: string): Promise<ResultResolver>;
     /**
      * Recursive loading extends rules

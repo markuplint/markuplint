@@ -8,4 +8,5 @@ export default class Markuplint {
     messenger: Messenger;
     constructor(html: string, ruleset: Ruleset, messenger: Messenger);
     verify(): Promise<VerifiedResult[]>;
+    fix(): Promise<string>;
 }

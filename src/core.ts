@@ -19,5 +19,9 @@ export default class Markuplint {
 		const reports = this.ruleset.verify(this.document, this.messenger);
 		return reports;
 	}
+
+	public async fix  () {
+		return this.ruleset.fix(this.document);
+	}
 }
 

@@ -20,6 +20,12 @@ export async function verify (html: string, config: ConfigureFileJSON, rules: Cu
 	return await core.verify();
 }
 
+export async function fix (html: string, config: ConfigureFileJSON, rules: CustomRule[], locale?: string) {
+	const ruleset = await createRuleset(config, rules);
+	const core = new Markuplint(html, ruleset, await messenger(locale));
+	return await core.fix();
+}
+
 export async function verifyOnWorkspace (html: string, workspace?: string) {
 	workspace = workspace ? workspace : process.cwd();
 	const rules = await ruleModulesLoader();

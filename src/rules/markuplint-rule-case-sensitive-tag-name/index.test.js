@@ -65,4 +65,14 @@ test('foreign elements', async (t) => {
 	t.is(r.length, 0);
 });
 
+// test.only('fix - upper case', async (t) => {
+// 	const fixed = await markuplint.fix(
+// 		'<DIV data-lowercase></DIV>',
+// 		{rules: {'case-sensitive-tag-name': true}},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(fixed, '<div data-lowercase></div>');
+// });
+
 test('noop', (t) => t.pass());

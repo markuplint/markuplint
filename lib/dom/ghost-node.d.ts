@@ -6,7 +6,8 @@ export default abstract class GhostNode<T = null, O = {}> {
     prevNode: AmbiguousNode<T, O>;
     nextNode: AmbiguousNode<T, O>;
     readonly parentNode: ParentNode<T, O> | null;
-    raw: string;
+    readonly raw: string;
+    fixed: string;
     rules: ConfigureFileJSONRules;
     constructor(nodeName: string, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: ParentNode<T, O> | null);
     toString(): string;

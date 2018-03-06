@@ -32,7 +32,8 @@ export default class CustomRule<T = null, O = {}> {
 	public defaultValue: T;
 	public defaultOptions: O;
 
-	private _v: (document: Document<T, O>, message: Message) => Promise<CustomVerifiedReturn[]>;
+	private _v: Options<T, O>['verify'];
+	private _f: Options<T, O>['fix'];
 
 	constructor (o: Options<T, O>) {
 		this.name = o.name;
@@ -40,6 +41,7 @@ export default class CustomRule<T = null, O = {}> {
 		this.defaultValue = o.defaultValue;
 		this.defaultOptions = o.defaultOptions;
 		this._v = o.verify;
+		this._f = o.fix;
 	}
 
 	public async verify (document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, messenger: Messenger): Promise<VerifiedResult[]> {
@@ -62,6 +64,16 @@ export default class CustomRule<T = null, O = {}> {
 				ruleId: result.ruleId ? `${this.name}/${result.ruleId}` : `${this.name}`,
 			};
 		});
+	}
+
+	public async fix (document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset): Promise<void> {
+		if (!this._f) {
+			return;
+		}
+
+		document.setRule(this);
+		const results = await this._f(document);
+		document.setRule(null);
 	}
 
 	public optimizeOption (option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O> {

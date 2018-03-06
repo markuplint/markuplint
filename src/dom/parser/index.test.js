@@ -492,10 +492,16 @@ test((t) => {
 	]);
 });
 
-// test.only((t) => {
-// 	const d = parser('<div></div>');
-// 	console.log(d.globalRule);
-// 	t.pass();
-// });
+test((t) => {
+	const origin = '<div></div>';
+	const d = parser(origin);
+	t.is(d.toString(), origin);
+});
+
+test((t) => {
+	const origin = '<div></div>';
+	const d = parser(origin);
+	t.is(d.fix(), origin);
+});
 
 test('noop', (t) => t.pass());

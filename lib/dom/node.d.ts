@@ -10,7 +10,7 @@ export default abstract class Node<T = null, O = {}> extends Token {
     nextNode: AmbiguousNode<T, O>;
     readonly parentNode: ParentNode<T, O> | null;
     prevSyntaxicalNode: Node<T, O> | null;
-    indentation: Indentation | null;
+    indentation: Indentation<T, O> | null;
     readonly rules: ConfigureFileJSONRules;
     document: Document<T, O> | null;
     /**

@@ -56,17 +56,28 @@ export default abstract class Ruleset {
 		}
 	}
 
-	public async verify (nodeTree: Document<null, {}>, messenger: Messenger) {
+	public async verify (document: Document<null, {}>, messenger: Messenger) {
 		const reports: VerifiedResult[] = [];
 		for (const rule of this._rules) {
 			const config = rule.optimizeOption(this.rules[rule.name] || false);
 			if (config.disabled) {
 				continue;
 			}
-			const results = await rule.verify(nodeTree, config, this, messenger);
+			const results = await rule.verify(document, config, this, messenger);
 			reports.push(...results);
 		}
 		return reports;
+	}
+
+	public async fix (document: Document<null, {}>) {
+		for (const rule of this._rules) {
+			const config = rule.optimizeOption(this.rules[rule.name] || false);
+			if (config.disabled) {
+				continue;
+			}
+			await rule.fix(document, config, this);
+		}
+		return document.fix();
 	}
 
 	public abstract async resolver (extendRule: string, baseRuleFilePath: string): Promise<ResultResolver>;

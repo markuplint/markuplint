@@ -16,7 +16,9 @@ export default class CustomRule<T = null, O = {}> {
     defaultValue: T;
     defaultOptions: O;
     private _v;
+    private _f;
     constructor(o: Options<T, O>);
     verify(document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, messenger: Messenger): Promise<VerifiedResult[]>;
+    fix(document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset): Promise<void>;
     optimizeOption(option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O>;
 }
