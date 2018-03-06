@@ -22,7 +22,7 @@
 	- (🚧 WIP) [event-attr](./markuplint-rule-event-attr/README.ja.md) on*属性名
 - *Validation バリデーション*
 	- [character-reference](./markuplint-rule-character-reference/README.ja.md) 文字参照
-	- (🚧 WIP) [doctype](./markuplint-rule-doctype/README.ja.md) ドキュメントタイプ
+	- [doctype](./markuplint-rule-doctype/README.ja.md) ドキュメントタイプ
 	- (🚧 WIP) [required-element](./markuplint-rule-required-element/README.ja.md) 必須要素
 	- [deprecated-element](./markuplint-rule-deprecated-element/README.ja.md) 非推奨要素
 	- (🚧 WIP) [permitted-contents](./markuplint-rule-permitted-contents/README.ja.md) 許可するコンテンツ

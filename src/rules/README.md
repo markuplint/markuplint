@@ -3,7 +3,7 @@
 **English** | [日本語](./README.ja.md)
 
 - *Style*
-	- [🚧 WIP] [indentation](./markuplint-rule-indentation/README.md)
+	- [indentation](./markuplint-rule-indentation/README.md)
 	- [🚧 WIP] [self-closing-tag](./markuplint-rule-self-closing-tag/README.md)
 	- [🚧 WIP] [omitted-closing-tag](./markuplint-rule-omitted-closing-tag/README.md)
 	- [attr-value-quotes](./markuplint-rule-attr-value-quotes/README.md)
@@ -15,14 +15,14 @@
 	- [🚧 WIP] [multiline-tag](./markuplint-rule-multiline-tag/README.md)
 	- [🚧 WIP] [multiline-attr](./markuplint-rule-multiline-attr/README.md)
 	- [🚧 WIP] [indentation-attr](./markuplint-rule-indentation-attr/README.md)
-	- [void-element-closing](./markuplint-rule-void-element-closing/README.md)
+	- [🚧 WIP] [void-element-closing](./markuplint-rule-void-element-closing/README.md)
 	- [🚧 WIP] [comment-spasing](./markuplint-rule-comment-spasing/README.md)
 	- [🚧 WIP] [path](./markuplint-rule-path/README.md)
 	- [🚧 WIP] [data-attr-naming](./markuplint-rule-data-attr-naming/README.md)
 	- [🚧 WIP] [event-attr](./markuplint-rule-event-attr/README.md)
 - *Validation*
-	- [🚧 WIP] [character-reference](./markuplint-rule-character-reference/README.md)
-	- [🚧 WIP] [doctype](./markuplint-rule-doctype/README.md)
+	- [character-reference](./markuplint-rule-character-reference/README.md)
+	- [doctype](./markuplint-rule-doctype/README.md)
 	- [🚧 WIP] [required-element](./markuplint-rule-required-element/README.md)
 	- [deprecated-element](./markuplint-rule-deprecated-element/README.md)
 	- [🚧 WIP] [permitted-contents](./markuplint-rule-permitted-contents/README.md)
@@ -46,9 +46,9 @@
 	- [🚧 WIP] [empty-alt-attr](./markuplint-rule-empty-alt-attr/README.md)
 	- [🚧 WIP] [role-structure-tab](./markuplint-rule-role-structure-tab/README.md)
 - *Performance*
-	- [🚧 WIP] [async-attr-in-script](./markuplint-rule-async-attr-in-script/README.md)
+	- [async-attr-in-script](./markuplint-rule-async-attr-in-script/README.md)
 - *CSS Designing*
-	- [🚧 WIP] [class-naming](./markuplint-rule-class-naming/README.md)
+	- [class-naming](./markuplint-rule-class-naming/README.md)
 	- [🚧 WIP] bem/markuplint-rule-bem-rule-nesting
 	- [🚧 WIP] bem/markuplint-rule-bem-rule-block
 	- [🚧 WIP] bem/markuplint-rule-bem-rule-element

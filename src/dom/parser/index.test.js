@@ -20,14 +20,51 @@ test('isDocumentFragment', (t) => {
 
 test('isDocumentFragment', (t) => {
 	t.false(isDocumentFragment(`
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+	<html></html>
+	`));
+});
+
+test('isDocumentFragment', (t) => {
+	t.false(isDocumentFragment(`
 	<html lang="ja">
 	`));
+});
+
+test('isDocumentFragment', (t) => {
+	t.false(isDocumentFragment(`
+	<html lang="ja"></html>
+	`));
+});
+
+test('isDocumentFragment', (t) => {
+	t.false(isDocumentFragment('<html lang="ja"></html>'));
+});
+
+test('isDocumentFragment', (t) => {
+	t.false(isDocumentFragment('<html></html>'));
 });
 
 test('isDocumentFragment', (t) => {
 	t.true(isDocumentFragment(`
 	<body>
 	`));
+});
+
+test('isDocumentFragment', (t) => {
+	t.true(isDocumentFragment('<body></body>'));
+});
+
+test('isDocumentFragment', (t) => {
+	t.true(isDocumentFragment('<div></div>'));
+});
+
+test('isDocumentFragment', (t) => {
+	t.true(isDocumentFragment('<template></template>'));
+});
+
+test('isDocumentFragment', (t) => {
+	t.true(isDocumentFragment('<head></head>'));
 });
 
 test((t) => {
@@ -456,9 +493,8 @@ test((t) => {
 });
 
 // test.only((t) => {
-// 	const d = parser('<html>');
-// 	console.log(d.toDebugMap());
-// 	console.log(d.list[1].indentation);
+// 	const d = parser('<div></div>');
+// 	console.log(d.globalRule);
 // 	t.pass();
 // });
 
