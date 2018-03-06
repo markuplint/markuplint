@@ -4,6 +4,10 @@ import {
 	ConfigureFileJSONRuleOption,
 } from '../ruleset/JSONInterface';
 
+import {
+	RuleConfig,
+} from '../rule';
+
 import Ruleset from '../ruleset';
 
 import {
@@ -29,18 +33,18 @@ import getLine from './parser/get-line';
 
 export default class Document<T, O> {
 	public rule: CustomRule<T, O> | null = null;
+	public readonly isFragment: boolean;
 
 	private _raw: string;
 	private _tree: (Node<T, O> | GhostNode<T, O>)[] = [];
 	private _list: (Node<T, O> | GhostNode<T, O>)[] = [];
-	private _isFragment: boolean;
 	private _ruleset: Ruleset | null = null;
 
 	// tslint:disable-next-line:cyclomatic-complexity
 	constructor (nodeTree: (Node<T, O> | GhostNode<T, O>)[], rawHtml: string, isFragment: boolean, ruleset?: Ruleset) {
 		this._raw = rawHtml;
 		this._tree = nodeTree;
-		this._isFragment = isFragment;
+		this.isFragment = isFragment;
 		this._ruleset = ruleset || null;
 
 		const pos: SortableNode<T, O>[] = [];
@@ -421,6 +425,25 @@ export default class Document<T, O> {
 
 	public setRule (rule: CustomRule<T, O> | null) {
 		this.rule = rule;
+	}
+
+	public get globalRule () {
+		if (!this.rule) {
+			throw new Error('Invalid call');
+		}
+
+		if (!this._ruleset) {
+			throw new Error('Invalid call');
+		}
+
+		const name = this.rule.name;
+
+		// @ts-ignore
+		const rule: ConfigureFileJSONRuleOption<T, O> = this._ruleset.rules[name];
+		if (rule == null) {
+			throw new Error('Invalid call "rule" property.');
+		}
+		return this.rule.optimizeOption(rule);
 	}
 }
 

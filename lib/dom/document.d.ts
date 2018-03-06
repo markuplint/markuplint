@@ -1,4 +1,5 @@
 import CustomRule from '../rule/custom-rule';
+import { RuleConfig } from '../rule';
 import Ruleset from '../ruleset';
 import CommentNode from './comment-node';
 import Element from './element';
@@ -10,10 +11,10 @@ import { SyncWalker } from './sync-walk';
 import { Walker } from './walk';
 export default class Document<T, O> {
     rule: CustomRule<T, O> | null;
+    readonly isFragment: boolean;
     private _raw;
     private _tree;
     private _list;
-    private _isFragment;
     private _ruleset;
     constructor(nodeTree: (Node<T, O> | GhostNode<T, O>)[], rawHtml: string, isFragment: boolean, ruleset?: Ruleset);
     readonly raw: string;
@@ -35,4 +36,5 @@ export default class Document<T, O> {
     syncWalkOn(type: 'EndTag', walker: SyncWalker<T, O, EndTagNode<T, O>>): void;
     getNode(index: number): Node<T, O> | GhostNode<T, O> | null;
     setRule(rule: CustomRule<T, O> | null): void;
+    readonly globalRule: RuleConfig<T, O>;
 }
