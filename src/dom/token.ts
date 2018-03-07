@@ -16,8 +16,8 @@ export default class Token {
 		return new Token(token, line, col, offset);
 	}
 
-	public readonly raw: string;
-	public fixed: string;
+	public readonly _originRaw: string;
+	public _fixed: string;
 	public location: Location;
 
 	// /**
@@ -26,8 +26,8 @@ export default class Token {
 	// public indentation: Indentation | null = null;
 
 	constructor (raw: string, line: number, col: number, startOffset: number) {
-		this.raw = raw;
-		this.fixed = raw;
+		this._originRaw = raw;
+		this._fixed = raw;
 		this.location = new Location(
 			line,
 			col,
@@ -36,6 +36,10 @@ export default class Token {
 			startOffset,
 			startOffset + raw.length,
 		);
+	}
+
+	public get raw () {
+		return this._fixed;
 	}
 
 	public get line () {
@@ -56,6 +60,10 @@ export default class Token {
 			startOffset: this.location.startOffset,
 			endOffset: this.location.endOffset,
 		};
+	}
+
+	public fix (raw: string) {
+		this._fixed = raw;
 	}
 }
 

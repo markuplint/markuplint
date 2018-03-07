@@ -757,7 +757,7 @@ test('tab', async (t) => {
 test('tab', async (t) => {
 	const fixture = `
     <div>
-        lorem
+    lorem
         <p>ipsam</p>
     </div>
 	`;
@@ -779,7 +779,7 @@ test('tab', async (t) => {
 	`);
 });
 
-test.only('tab', async (t) => {
+test('tab', async (t) => {
 	const fixed = await markuplint.fix(
 		`
 		<div>
@@ -800,6 +800,78 @@ test.only('tab', async (t) => {
             lorem
             <p>ipsam</p>
         </div>
+		`);
+});
+
+test('tab', async (t) => {
+	const fixed = await markuplint.fix(
+		`
+  <div>
+    lorem
+    <p>ipsam</p>
+  </div>
+		`,
+		{
+			rules: {
+				indentation: ['error', 'tab'],
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(fixed, `
+	<div>
+		lorem
+		<p>ipsam</p>
+	</div>
+		`);
+});
+
+test('tab', async (t) => {
+	const fixed = await markuplint.fix(
+		`
+  <div>
+    lorem
+<p>ipsam</p>
+</div>
+		`,
+		{
+			rules: {
+				indentation: ['error', 3],
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(fixed, `
+   <div>
+      lorem
+      <p>ipsam</p>
+   </div>
+		`);
+});
+
+test('tab', async (t) => {
+	const fixed = await markuplint.fix(
+		`
+  <div>
+    lorem
+			<p>ipsam</p>
+</div>
+		`,
+		{
+			rules: {
+				indentation: ['error', 'tab', { 'indent-nested-nodes': 'never' }],
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(fixed, `
+	<div>
+	lorem
+	<p>ipsam</p>
+	</div>
 		`);
 });
 

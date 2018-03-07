@@ -25,7 +25,7 @@ export default CustomRule.create<Value, IndentationOptions>({
 			}
 			if (node.indentation) {
 				/**
-				 * Validate tab type and length.
+				 * Validate indent type and length.
 				 */
 				if (node.indentation.type !== 'none') {
 					const ms = node.rule.severity === 'error' ? 'must' : 'should';
@@ -63,7 +63,7 @@ export default CustomRule.create<Value, IndentationOptions>({
 					if (parent && parent.indentation) {
 						const parentIndentWidth = parent.indentation.width;
 						const childIndentWidth = node.indentation.width;
-						const exportWidth = node.rule.value === 'tab' ? 1 : node.rule.value;
+						const expectedWidth = node.rule.value === 'tab' ? 1 : node.rule.value;
 						const diff = childIndentWidth - parentIndentWidth;
 						// console.log({ parentIndentWidth, childIndentWidth, exportWidth });
 						if (nested === 'never') {
@@ -78,7 +78,7 @@ export default CustomRule.create<Value, IndentationOptions>({
 								});
 							}
 						} else {
-							if (diff !== exportWidth) {
+							if (diff !== expectedWidth) {
 								const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
 								reports.push({
 									severity: node.rule.severity,
@@ -128,31 +128,39 @@ export default CustomRule.create<Value, IndentationOptions>({
 		return reports;
 	},
 	async fix (document) {
-		// tslint:disable-next-line:cyclomatic-complexity
+		/**
+		 * Validate indent type and length.
+		 */
+		document.syncWalkOn('Node', (node) => {
+			if (!node.rule.disabled && node.indentation) {
+				if (node.indentation.type !== 'none') {
+					const spec = node.rule.value === 'tab' ? '\t' : ' ';
+					const baseWidth = node.rule.value === 'tab' ? 4 : node.rule.value;
+					let width: number;
+					if (node.rule.value === 'tab') {
+						width = node.indentation.type === 'tab' ? node.indentation.width : Math.ceil(node.indentation.width / baseWidth);
+					} else {
+						width = node.indentation.type === 'tab' ? node.indentation.width * baseWidth : Math.ceil(node.indentation.width / baseWidth) * baseWidth;
+					}
+					const raw = node.indentation.raw;
+					const fixed = spec.repeat(width);
+					// console.log({spec, width});
+					if (raw !== fixed) {
+						// console.log('step1', {
+						// 	raw: space(raw),
+						// 	fix: space(fixed),
+						// });
+						node.indentation.fix(fixed);
+					}
+				}
+			}
+		});
+
 		await document.walkOn('Node', async (node) => {
-			// console.log(node.raw, node.rule);
 			if (node.rule.disabled) {
 				return;
 			}
 			if (node.indentation) {
-				/**
-				 * Validate tab type and length.
-				 */
-				if (node.indentation.type !== 'none') {
-					const spec = node.rule.value === 'tab' ? '\t' : ' ';
-					const width = node.rule.value === 'tab' ? Math.floor(node.indentation.width / 4) : node.indentation.width * node.rule.value;
-					const raw = node.indentation.raw;
-					const fix = spec.repeat(width);
-					if (raw !== fix) {
-						// console.log({
-						// 	raw: space(raw),
-						// 	fix: space(fix),
-						// });
-						node.indentation.fix = fix;
-						return;
-					}
-				}
-
 				/**
 				 * Validate nested parent-children nodes.
 				 */
@@ -166,28 +174,30 @@ export default CustomRule.create<Value, IndentationOptions>({
 					if (parent && parent.indentation) {
 						const parentIndentWidth = parent.indentation.width;
 						const childIndentWidth = node.indentation.width;
-						const exportWidth = node.rule.value === 'tab' ? 1 : node.rule.value;
+						const expectedWidth = node.rule.value === 'tab' ? 1 : node.rule.value;
 						const diff = childIndentWidth - parentIndentWidth;
-						console.log({ parentIndentWidth, childIndentWidth, exportWidth });
+						// console.log({ parentIndentWidth, childIndentWidth, expectedWidth, diff });
 						if (nested === 'never') {
 							if (diff !== 0) {
 								// const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
 								const raw = node.indentation.raw;
-								const fix = raw;
-								console.log({
-									raw: space(raw),
-									fix: space(fix),
-								});
+								const fixed = parent.indentation.raw;
+								// console.log('step2-A', {
+								// 	raw: space(raw),
+								// 	fix: space(fixed),
+								// });
+								node.indentation.fix(fixed);
 							}
 						} else {
-							if (diff !== exportWidth) {
+							if (diff !== expectedWidth) {
 								// const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
 								const raw = node.indentation.raw;
-								const fix = (node.rule.value === 'tab' ? '\t' : '').repeat(exportWidth * diff);
-								console.log({
-									raw: space(raw),
-									fix: space(fix),
-								});
+								const fixed = (node.rule.value === 'tab' ? '\t' : ' ').repeat(parentIndentWidth + expectedWidth);
+								// console.log('step2-B', {
+								// 	raw: space(raw),
+								// 	fix: space(fixed),
+								// });
+								node.indentation.fix(fixed);
 							}
 						}
 					}
@@ -195,6 +205,9 @@ export default CustomRule.create<Value, IndentationOptions>({
 			}
 		});
 
+		/**
+		 * Validate alignment end-tags.
+		 */
 		await document.walkOn('EndTag', async (endTag) => {
 			if (!endTag.rule || !endTag.rule.option) {
 				return;
@@ -202,26 +215,17 @@ export default CustomRule.create<Value, IndentationOptions>({
 			if (!endTag.rule.option.alignment) {
 				return;
 			}
-
-			/**
-			 * Validate alignment end-tags.
-			 */
 			if (endTag.indentation && endTag.startTagNode.indentation) {
-				// console.log(
-				// 	endTag.startTagNode.indentation,
-				// 	endTag.indentation,
-				// );
 				const endTagIndentationWidth = endTag.indentation.width;
 				const startTagIndentationWidth = endTag.startTagNode.indentation.width;
 				if (startTagIndentationWidth !== endTagIndentationWidth) {
-					// const message = messages(`終了タグと開始タグのインデント位置が揃っていません。`);
-					// reports.push({
-					// 	severity: endTag.rule.severity,
-					// 	message,
-					// 	line: endTag.indentation.line,
-					// 	col: 1,
-					// 	raw: endTag.indentation.raw,
+					const raw = endTag.indentation.raw;
+					const fixed = endTag.startTagNode.indentation.raw;
+					// console.log('step3', {
+					// 	raw: space(raw),
+					// 	fix: space(fixed),
 					// });
+					endTag.indentation.fix(fixed);
 				}
 			}
 		});

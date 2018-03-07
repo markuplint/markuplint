@@ -6,53 +6,48 @@ import TextNode from './text-node';
 
 export type NodeType = 'Node' | 'Element' | 'OmittedElement' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
 
-// export interface Indentation {
-// 	type: 'tab' | 'space' | 'mixed' | 'none';
-// 	width: number;
-// 	raw: string;
-// 	line: number;
-// }
-
 export class Indentation<T, O> {
 
-	private static set<T, O> (ind: Indentation<T, O>, raw: string) {
-		ind.type = raw === '' ? 'none' : /^\t+$/.test(raw) ? 'tab' : /^[^\t]+$/.test(raw) ? 'space' : 'mixed',
-		ind.width = raw.length;
-		ind.raw = raw;
-	}
-
-	public type!: 'tab' | 'space' | 'mixed' | 'none';
-	public width!: number;
-	public raw!: string;
 	public readonly line: number;
-	public readonly parentTextNode: TextNode<T, O> | null;
+	public readonly node: TextNode<T, O> | null;
 
-	private _fix: string;
+	private readonly _originRaw: string;
+	private _fixed: string;
 
 	constructor (parentTextNode: TextNode<T, O> | null, raw: string, line: number) {
-		Indentation.set(this, raw);
-		this.parentTextNode = parentTextNode;
+		this.node = parentTextNode;
 		this.line = line;
-		this._fix = raw;
+		this._originRaw = raw;
+		this._fixed = raw;
 	}
 
-	public set fix (ind: string) {
-		this._fix = ind;
-		if (this.parentTextNode) {
-			const node = this.parentTextNode;
+	public get type (): 'tab' | 'space' | 'mixed' | 'none' {
+		const raw = this._fixed;
+		return raw === '' ? 'none' : /^\t+$/.test(raw) ? 'tab' : /^[^\t]+$/.test(raw) ? 'space' : 'mixed';
+	}
+
+	public get width () {
+		return this._fixed.length;
+	}
+
+	public get raw () {
+		return this._fixed;
+	}
+
+	public fix (raw: string) {
+		const current = this._fixed;
+		this._fixed = raw;
+		if (this.node) {
+			const node = this.node;
 			const line = node.line;
-			const lines = node.fixed.split(/\r?\n/);
+			const lines = node.raw.split(/\r?\n/);
 			const index = this.line - line;
 			if (lines[index] != null) {
-				lines[index] = lines[index].replace(this.raw, this._fix);
+				lines[index] = lines[index].replace(current, this._fixed);
 			}
-			// console.log({line, lines, index});
-			node.fixed = lines.join('\n');
+			// console.log({ori: this._originRaw, raw, line, lines, index});
+			node.fix(lines.join('\n'));
 		}
-	}
-
-	public get fix () {
-		return this._fix;
 	}
 }
 

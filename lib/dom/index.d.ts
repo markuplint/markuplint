@@ -5,15 +5,15 @@ import OmittedElement from './omitted-element';
 import TextNode from './text-node';
 export declare type NodeType = 'Node' | 'Element' | 'OmittedElement' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
 export declare class Indentation<T, O> {
-    private static set<T, O>(ind, raw);
-    type: 'tab' | 'space' | 'mixed' | 'none';
-    width: number;
-    raw: string;
     readonly line: number;
-    readonly parentTextNode: TextNode<T, O> | null;
-    private _fix;
+    readonly node: TextNode<T, O> | null;
+    private readonly _originRaw;
+    private _fixed;
     constructor(parentTextNode: TextNode<T, O> | null, raw: string, line: number);
-    fix: string;
+    readonly type: 'tab' | 'space' | 'mixed' | 'none';
+    readonly width: number;
+    readonly raw: string;
+    fix(raw: string): void;
 }
 export interface Location {
     line: number | null;

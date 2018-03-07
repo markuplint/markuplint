@@ -20,6 +20,9 @@ export default class Document<T, O> {
     readonly raw: string;
     readonly list: (Node<T, O> | GhostNode<T, O>)[];
     toString(): string;
+    /**
+     * @deprecated
+     */
     fix(): string;
     toJSON(): any;
     toDebugMap(): string[];

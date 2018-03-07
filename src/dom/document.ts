@@ -11,7 +11,8 @@ import {
 import Ruleset from '../ruleset';
 
 import {
-	NodeType, Indentation,
+	Indentation,
+	NodeType,
 } from './';
 
 import CommentNode from './comment-node';
@@ -191,8 +192,7 @@ export default class Document<T, O> {
 						prevSyntaxicalTextNode.location.endCol = node.location.endCol;
 						// @ts-ignore
 						prevSyntaxicalTextNode.location.endOffset = node.location.endOffset;
-						// @ts-ignore
-						prevSyntaxicalTextNode.raw = prevSyntaxicalTextNode.raw + node.raw;
+						prevSyntaxicalTextNode.fix(prevSyntaxicalTextNode.raw + node.raw);
 						prevSyntaxicalNode = prevSyntaxicalTextNode;
 						return;
 					}
@@ -221,12 +221,6 @@ export default class Document<T, O> {
 								const lastSpace = spaceLines.pop();
 								if (lastSpace != null) {
 									node.indentation = new Indentation(node, lastSpace, line);
-									// node.indentation = {
-									// 	type: lastSpace === '' ? 'none' : /^\t+$/.test(lastSpace) ? 'tab' : /^[^\t]+$/.test(lastSpace) ? 'space' : 'mixed',
-									// 	width: lastSpace.length,
-									// 	raw: lastSpace,
-									// 	line,
-									// };
 								}
 							}
 						}
@@ -243,22 +237,10 @@ export default class Document<T, O> {
 							const spaces = matched[1];
 							if (spaces != null) {
 								node.indentation = new Indentation(prevSyntaxicalTextNode, spaces, node.line);
-								// node.indentation = {
-								// 	type: spaces === '' ? 'none' : /^\t+$/.test(spaces) ? 'tab' : /^[^\t]+$/.test(spaces) ? 'space' : 'mixed',
-								// 	width: spaces.length,
-								// 	raw: spaces,
-								// 	line: node.line,
-								// };
 							}
 						} else if (node.prevNode && node.prevNode instanceof Node && node.prevNode.location.startOffset === 0) {
 							const spaces = node.prevNode.raw;
 							node.indentation = new Indentation(prevSyntaxicalTextNode, spaces, node.line);
-							// node.indentation = {
-							// 	type: spaces === '' ? 'none' : /^\t+$/.test(spaces) ? 'tab' : /^[^\t]+$/.test(spaces) ? 'space' : 'mixed',
-							// 	width: spaces.length,
-							// 	raw: spaces,
-							// 	line: node.line,
-							// };
 						}
 					}
 				} else if (node.location.startOffset === 0) {
@@ -366,10 +348,13 @@ export default class Document<T, O> {
 		return s.join('');
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public fix () {
 		const s: string[] = [];
 		this.syncWalk((node) => {
-			s.push(node.fixed);
+			s.push(node.raw);
 		});
 		return s.join('');
 	}
