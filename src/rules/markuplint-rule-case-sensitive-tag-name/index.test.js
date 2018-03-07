@@ -55,6 +55,16 @@ test('upper case', async (t) => {
 	t.is(r.length, 1);
 });
 
+test('upper case', async (t) => {
+	const r = await markuplint.verify(
+		'<div DATA-UPPERCASE="value"></DIV>',
+		{rules: {'case-sensitive-tag-name': ['error', 'upper']}},
+		[rule],
+		'en',
+	);
+	t.is(r.length, 1);
+});
+
 test('foreign elements', async (t) => {
 	const r = await markuplint.verify(
 		'<svg viewBox="0 0 100 100"><textPath></textPath></svg>',
@@ -65,14 +75,14 @@ test('foreign elements', async (t) => {
 	t.is(r.length, 0);
 });
 
-// test.only('fix - upper case', async (t) => {
-// 	const fixed = await markuplint.fix(
-// 		'<DIV data-lowercase></DIV>',
-// 		{rules: {'case-sensitive-tag-name': true}},
-// 		[rule],
-// 		'en',
-// 	);
-// 	t.is(fixed, '<div data-lowercase></div>');
-// });
+test('fix - upper case', async (t) => {
+	const fixed = await markuplint.fix(
+		'<DIV data-lowercase></DIV>',
+		{rules: {'case-sensitive-tag-name': true}},
+		[rule],
+		'en',
+	);
+	t.is(fixed, '<div data-lowercase></div>');
+});
 
 test('noop', (t) => t.pass());

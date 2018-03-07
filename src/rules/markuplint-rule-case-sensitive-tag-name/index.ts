@@ -40,19 +40,23 @@ export default CustomRule.create<Value, null>({
 		});
 		return reports;
 	},
-	// async fix (document) {
-	// 	await document.walk(async (node) => {
-	// 		if (
-	// 			(node instanceof Element && node.namespaceURI === 'http://www.w3.org/1999/xhtml')
-	// 			||
-	// 			node instanceof EndTagNode
-	// 		) {
-	// 			const ms = node.rule.severity === 'error' ? 'must' : 'should';
-	// 			const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
-	// 			if (deny.test(node.nodeName)) {
-	// 				console.log(node.raw);
-	// 			}
-	// 		}
-	// 	});
-	// },
+	async fix (document) {
+		await document.walk(async (node) => {
+			if (
+				(node instanceof Element && node.namespaceURI === 'http://www.w3.org/1999/xhtml')
+				||
+				node instanceof EndTagNode
+			) {
+				const ms = node.rule.severity === 'error' ? 'must' : 'should';
+				const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
+				if (deny.test(node.nodeName)) {
+					if (node.rule.value === 'lower') {
+						node.nodeName = node.nodeName.toLowerCase();
+					} else {
+						node.nodeName = node.nodeName.toUpperCase();
+					}
+				}
+			}
+		});
+	},
 });
