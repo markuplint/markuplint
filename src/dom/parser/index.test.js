@@ -499,7 +499,7 @@ test((t) => {
 });
 
 test((t) => {
-	const origin = '<div></div>';
+	const origin = '<div a="123" b><img src = "path/to" /></div>';
 	const d = parser(origin);
 	t.is(d.fix(), origin);
 });

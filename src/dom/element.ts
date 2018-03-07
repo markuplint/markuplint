@@ -9,6 +9,7 @@ import Attribute from './attribute';
 import EndTagNode from './end-tag-node';
 import GhostNode from './ghost-node';
 import Node from './node';
+import Token from './token';
 
 import cssSelector from './css-selector';
 
@@ -16,6 +17,7 @@ export default class Element<T, O> extends Node<T, O> {
 	public readonly type: NodeType = 'Element';
 	public readonly attributes: Attribute[];
 	public readonly namespaceURI: string;
+	public readonly closeToken: Token;
 	public childNodes: (Node<T, O> | GhostNode<T, O>)[] = [];
 	public endTagNode: EndTagNode<T, O> | null = null;
 	public obsolete = false;
@@ -25,6 +27,32 @@ export default class Element<T, O> extends Node<T, O> {
 		this.attributes = attributes;
 		this.namespaceURI = namespaceURI;
 		this.endTagNode = endTag;
+
+		const ct = this._parseCloseToken();
+		// TODO: line, col
+		this.closeToken = new Token(`${ct.beforeSpaces}${ct.solidus}>`, 0, 0, 0);
+	}
+
+	public get raw () {
+		const raw: string[] = [];
+		raw.push(`<${this.nodeName}`);
+		for (const attr of this.attributes) {
+			raw.push(`${attr.beforeSpaces.raw}${attr.raw}`);
+		}
+		raw.push(this.closeToken.raw);
+		return raw.join('');
+	}
+
+	public get id () {
+		return this.getAttribute('id');
+	}
+
+	public get classList (): string[] {
+		const classAttr = this.getAttribute('class');
+		if (!classAttr || !classAttr.value) {
+			return [];
+		}
+		return classAttr.value.value.split(/\s+/).map(c => c.trim()).filter(c => c);
 	}
 
 	public getAttribute (attrName: string) {
@@ -43,15 +71,21 @@ export default class Element<T, O> extends Node<T, O> {
 		return cssSelector(selector).match(this);
 	}
 
-	public get id () {
-		return this.getAttribute('id');
-	}
-
-	public get classList () {
-		const classAttr = this.getAttribute('class');
-		if (!classAttr || !classAttr.value) {
-			return [''];
+	private _parseCloseToken () {
+		const result: ParsedCloseTokenData = {
+			beforeSpaces: '',
+			solidus: '',
+		};
+		const matches = /(\s*)(\/)?>$/.exec(this._fixed);
+		if (matches) {
+			result.beforeSpaces = matches[1] || '';
+			result.solidus = (matches[2] as '' | '/')  || '';
 		}
-		return classAttr.value.value.split(/\s+/).map(c => c.trim()).filter(c => c);
+		return result;
 	}
+}
+
+interface ParsedCloseTokenData {
+	beforeSpaces: string;
+	solidus: '' | '/';
 }
