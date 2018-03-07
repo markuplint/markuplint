@@ -27,7 +27,7 @@ test('upper case', async (t) => {
 test('upper case', async (t) => {
 	const r = await markuplint.verify(
 		'<div data-UPPERCASE="value"></div>',
-		{rules: {'case-sensitive-attr-name': ['error', 'upper']}},
+		{rules: {'case-sensitive-attr-name': ['error', 'no-lower']}},
 		[rule],
 		'en',
 	);
@@ -38,7 +38,7 @@ test('upper case', async (t) => {
 test('upper case', async (t) => {
 	const r = await markuplint.verify(
 		'<div data-uppercase="value"></div>',
-		{rules: {'case-sensitive-attr-name': ['error', 'upper']}},
+		{rules: {'case-sensitive-attr-name': ['error', 'no-lower']}},
 		[rule],
 		'en',
 	);
@@ -49,7 +49,7 @@ test('upper case', async (t) => {
 test('upper case', async (t) => {
 	const r = await markuplint.verify(
 		'<div DATA-UPPERCASE="value"></div>',
-		{rules: {'case-sensitive-attr-name': ['error', 'upper']}},
+		{rules: {'case-sensitive-attr-name': ['error', 'no-lower']}},
 		[rule],
 		'en',
 	);
@@ -64,6 +64,26 @@ test('foreign elements', async (t) => {
 		'en',
 	);
 	t.is(r.length, 0);
+});
+
+test('fix - upper case', async (t) => {
+	const fixed = await markuplint.fix(
+		'<DIV DATA-LOWERCASE></DIV>',
+		{rules: {'case-sensitive-attr-name': true}},
+		[rule],
+		'en',
+	);
+	t.is(fixed, '<DIV data-lowercase></DIV>');
+});
+
+test('fix - upper case', async (t) => {
+	const fixed = await markuplint.fix(
+		'<DIV data-lowercase></DIV>',
+		{rules: {'case-sensitive-attr-name': 'no-lower'}},
+		[rule],
+		'en',
+	);
+	t.is(fixed, '<DIV DATA-LOWERCASE></DIV>');
 });
 
 test('noop', (t) => t.pass());

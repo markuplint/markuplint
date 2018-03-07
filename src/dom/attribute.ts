@@ -73,13 +73,21 @@ export default class Attribute extends Token {
 			this.value = null;
 		}
 
-		// TODO:
-		// this.afterSpaces = Token.create(raw, line, col, offset);
-		// line = this.afterSpaces.location.endLine;
-		// col = this.afterSpaces.location.endCol;
-		// offset = this.afterSpaces.location.endOffset;
-
 		this.invalid = invalid;
+	}
+
+	public get raw () {
+		const raw: string[] = [];
+		raw.push(this.name.raw);
+		raw.push(this.spacesBeforeEqual.raw);
+		if (this.equal) {
+			raw.push(this.equal.raw);
+		}
+		raw.push(this.spacesAfterEqual.raw);
+		if (this.value) {
+			raw.push(this.value.raw);
+		}
+		return raw.join('');
 	}
 
 	public toJSON () {

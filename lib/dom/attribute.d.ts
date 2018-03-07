@@ -9,6 +9,7 @@ export default class Attribute extends Token {
     readonly beforeSpaces: Token;
     readonly invalid: boolean;
     constructor(raw: string, line: number, col: number, startOffset: number);
+    readonly raw: string;
     toJSON(): {
         raw: string;
         line: number;

@@ -33,4 +33,19 @@ export default CustomRule.create<Value, null>({
 		});
 		return reports;
 	},
+	async fix (document) {
+		await document.walkOn('Element', async (node) => {
+			if (node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
+				if (node.attributes) {
+					for (const attr of node.attributes) {
+						if (node.rule.value === 'no-upper') {
+							attr.name.fix(attr.name.raw.toLowerCase());
+						} else {
+							attr.name.fix(attr.name.raw.toUpperCase());
+						}
+					}
+				}
+			}
+		});
+	},
 });
