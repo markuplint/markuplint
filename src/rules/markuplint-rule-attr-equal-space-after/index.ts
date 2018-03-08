@@ -11,7 +11,7 @@ export default CustomRule.create<Value, null>({
 	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
 		const message = messages('error');
-		await document.walkOn('Element', async (node) => {
+		document.syncWalkOn('Element', (node) => {
 			for (const attr of node.attributes) {
 				if (!attr.equal) {
 					continue;
@@ -51,5 +51,41 @@ export default CustomRule.create<Value, null>({
 			}
 		});
 		return reports;
+	},
+	async fix (document) {
+		document.syncWalkOn('Element', (node) => {
+			for (const attr of node.attributes) {
+				if (!attr.equal) {
+					continue;
+				}
+				const hasSpace = !!attr.spacesAfterEqual.raw;
+				const hasLineBreak = /\r?\n/.test(attr.spacesAfterEqual.raw);
+				switch (node.rule.value) {
+					case 'always': {
+						if (!hasSpace) {
+							attr.spacesAfterEqual.fix(' ');
+						}
+						break;
+					}
+					case 'never': {
+						attr.spacesAfterEqual.fix('');
+						break;
+					}
+					case 'always-single-line': {
+						// or 'no-newline'
+						if (!hasSpace || hasLineBreak) {
+							attr.spacesAfterEqual.fix(' ');
+						}
+						break;
+					}
+					case 'never-single-line': {
+						if (hasSpace && !hasLineBreak) {
+							attr.spacesAfterEqual.fix('');
+						}
+						break;
+					}
+				}
+			}
+		});
 	},
 });
