@@ -9,6 +9,7 @@ export type Value = 'tab' | number;
 
 export default CustomRule.create({
 	name: 'parse-error',
+	defaultLevel: 'error',
 	defaultValue: null,
 	defaultOptions: null,
 	async verify (document, messages) {
