@@ -504,4 +504,19 @@ test((t) => {
 	t.is(d.fix(), origin);
 });
 
+test((t) => {
+	const origin = `
+	<div a="123" b>
+		<h1 id="">
+			<span title="hoge">hoge</span>
+		</h1>
+		<img src = "path/to" alt="" data-hoge />
+		<a>
+			<div></div></a>
+	</div>
+		`;
+	const d = parser(origin);
+	t.is(d.fix(), origin);
+});
+
 test('noop', (t) => t.pass());

@@ -179,7 +179,7 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 				const endTagLocation = p5node.__location.endTag;
 				if (endTagLocation) {
 					const endTagRaw = rawHtml.slice(endTagLocation.startOffset, endTagLocation.endOffset);
-					const endTagName = endTagRaw.replace(/^<\/((?:[a-z]+:)?[a-z]+(?:-[a-z]+)*)\s*>/i, '$1');
+					const endTagName = endTagRaw.replace(/^<\/((?:[a-z]+:)?[a-z0-9]+(?:-[a-z0-9]+)*)\s*>/i, '$1');
 					endTag = new EndTagNode<T, O>(
 						endTagName,
 						endTagRaw,

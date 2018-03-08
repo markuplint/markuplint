@@ -26,7 +26,7 @@ export default class Attribute extends Token {
 		const equal = attrMatchedMap[4] || null;
 		const spacesAfterEqual = attrMatchedMap[5] || '';
 		const quote = attrMatchedMap[6] != null ? '"' : attrMatchedMap[7] != null ? "'" : null;
-		const value = attrMatchedMap[6] || attrMatchedMap[7] || attrMatchedMap[8] || null;
+		const value = attrMatchedMap[6] || attrMatchedMap[7] || attrMatchedMap[8] || (quote ? '' : null);
 		const index = attrMatchedMap.index!; // no global matches
 		const invalid = !!(value && quote === null && /["'=<>`]/.test(value)) || !!(equal && quote === null && value === null);
 
@@ -64,7 +64,7 @@ export default class Attribute extends Token {
 		col = this.spacesAfterEqual.location.endCol;
 		offset = this.spacesAfterEqual.location.endOffset;
 
-		if (value) {
+		if (value != null) {
 			this.value = new AttributeValue(value, quote, line, col, offset);
 			line = this.value.location.endLine;
 			col = this.value.location.endCol;
