@@ -1,14 +1,45 @@
 import Token from './token';
 
 export default class AttributeValue extends Token {
-	public readonly value: string;
-	public readonly quote: '"' | "'" | null;
+	private _value: string;
+	private _quote: '"' | "'" | null;
 
 	constructor (value: string, quote: '"' | "'" | null, line: number, col: number, startOffset: number) {
 		const quoteStr = quote || '';
 		super(`${quoteStr}${value}${quoteStr}`, line, col, startOffset);
-		this.value = value;
-		this.quote = quote;
+		this._value = value;
+		this._quote = quote;
+	}
+
+	public get value () {
+		return this._value;
+	}
+
+	public get quote () {
+		return this._quote;
+	}
+
+	public get raw () {
+		const raw: string[] = [];
+		if (this._quote) {
+			raw.push(this._quote);
+		}
+		if (this._value) {
+			raw.push(this._value);
+		}
+		if (this._quote) {
+			raw.push(this._quote);
+		}
+		return raw.join('');
+	}
+
+	public fix (fixedValue: string | null, fixedQuote?: '"' | "'" | null) {
+		if (fixedValue != null) {
+			this._value = fixedValue;
+		}
+		if (fixedQuote !== undefined) {
+			this._quote = fixedQuote;
+		}
 	}
 
 	public toJSON () {

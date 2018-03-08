@@ -135,4 +135,32 @@ test('empty', async (t) => {
 	t.is(r.length, 0);
 });
 
+test('empty', async (t) => {
+	const r = await markuplint.fix(
+		'<div attr noop=noop foo="bar" hoge=\'fuga\'>',
+		{
+			rules: {
+				'attr-value-quotes': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r, '<div attr noop="noop" foo="bar" hoge="fuga">');
+});
+
+test('empty', async (t) => {
+	const r = await markuplint.fix(
+		'<div attr noop=noop foo="bar" hoge=\'fuga\'>',
+		{
+			rules: {
+				'attr-value-quotes': 'single',
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r, "<div attr noop='noop' foo='bar' hoge='fuga'>");
+});
+
 test('noop', (t) => t.pass());
