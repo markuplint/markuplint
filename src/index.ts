@@ -34,6 +34,14 @@ export async function verifyOnWorkspace (html: string, workspace?: string) {
 	return await core.verify();
 }
 
+export async function fixOnWorkspace (html: string, workspace?: string) {
+	workspace = workspace ? workspace : process.cwd();
+	const rules = await ruleModulesLoader();
+	const ruleset = await createRuleset(workspace, rules);
+	const core = new Markuplint(html, ruleset, await messenger());
+	return await core.fix();
+}
+
 export async function verifyFile (filePath: string, rules?: CustomRule[], configFileOrDir?: string, locale?: string) {
 	rules = rules || await ruleModulesLoader();
 	let ruleset: Ruleset;
