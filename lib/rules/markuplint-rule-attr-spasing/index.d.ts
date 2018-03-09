@@ -1,3 +1,7 @@
 import CustomRule from '../../rule/custom-rule';
-declare const _default: CustomRule<null, null>;
+export interface Options {
+    lineBreak: 'either' | 'always' | 'never';
+    width: number | false;
+}
+declare const _default: CustomRule<boolean, Options>;
 export default _default;

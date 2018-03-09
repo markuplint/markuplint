@@ -1,4 +1,4 @@
-export declare type Message = (messageTmpl: string, ...keywords: string[]) => string;
+export declare type Message = (messageTmpl: string, ...keywords: (string | number | boolean)[]) => string;
 export interface LocaleSet {
     locale: string;
     keywords: LocalesKeywords;

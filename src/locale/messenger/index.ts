@@ -1,4 +1,4 @@
-export type Message = (messageTmpl: string, ...keywords: string[]) => string;
+export type Message = (messageTmpl: string, ...keywords: (string | number | boolean)[]) => string;
 
 export interface LocaleSet {
 	locale: string;
@@ -30,7 +30,7 @@ export default class Messenger {
 
 	public message (): Message {
 		const localeSet = this.localeSet;
-		return (messageTmpl: string, ...keywords: string[]) => {
+		return (messageTmpl: string, ...keywords: (string | number | boolean)[]) => {
 			let message = messageTmpl;
 			if (localeSet) {
 				const t = localeSet[messageTmpl];
@@ -40,7 +40,7 @@ export default class Messenger {
 			}
 
 			message = messageTmpl.replace(/\{([0-9]+)\}/g, ($0, $1) => {
-				const keyword = keywords[+$1] || '';
+				const keyword = `${keywords[+$1]}` || '';
 				if (localeSet) {
 					return localeSet.keywords[keyword.toLowerCase()] || keyword;
 				}
