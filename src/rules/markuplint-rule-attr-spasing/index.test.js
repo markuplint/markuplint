@@ -234,4 +234,226 @@ test('no-space', async (t) => {
 	t.deepEqual(r, []);
 });
 
+test('no-space', async (t) => {
+	const r = await markuplint.fix(
+		`
+		<img src="path/to" src="path/to2">
+		`,
+		{
+			rules: {
+				'attr-spasing': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r,
+		`
+		<img src="path/to" src="path/to2">
+		`);
+});
+
+test('no-space', async (t) => {
+	const r = await markuplint.fix(
+		`
+		<img src="path/to"src="path/to2">
+		`,
+		{
+			rules: {
+				'attr-spasing': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r,
+		`
+		<img src="path/to" src="path/to2">
+		`);
+});
+
+test('no-space', async (t) => {
+	const r = await markuplint.fix(
+		`
+		<img src="path/to"src="path/to2">
+		`,
+		{
+			rules: {
+				'attr-spasing': false,
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r,
+		`
+		<img src="path/to"src="path/to2">
+		`);
+});
+
+test('no-space', async (t) => {
+	const r = await markuplint.fix(
+		`
+		<img src="path/to"
+		src="path/to2">
+		`,
+		{
+			rules: {
+				'attr-spasing': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r,
+		`
+		<img src="path/to"
+		src="path/to2">
+		`);
+});
+
+test('no-space', async (t) => {
+	const r = await markuplint.fix(
+		`
+		<img src="path/to"
+		src="path/to2">
+		`,
+		{
+			rules: {
+				'attr-spasing': ['error', true, { lineBreak: 'never' }],
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r,
+		`
+		<img src="path/to" src="path/to2">
+		`);
+});
+
+test('no-space', async (t) => {
+	const r = await markuplint.fix(
+		`
+		<img src="path/to" src="path/to2">
+		`,
+		{
+			rules: {
+				'attr-spasing': ['error', true, { lineBreak: 'never' }],
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r,
+		`
+		<img src="path/to" src="path/to2">
+		`);
+});
+
+test('no-space', async (t) => {
+	const r = await markuplint.fix(
+		`
+		<img src="path/to"
+		src="path/to2">
+		`,
+		{
+			rules: {
+				'attr-spasing': ['error', true, { lineBreak: 'always' }],
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r,
+		`
+		<img
+		src="path/to"
+		src="path/to2">
+		`);
+});
+
+test('no-space', async (t) => {
+	const r = await markuplint.fix(
+		`
+		<img
+		src="path/to"
+		src="path/to2">
+		`,
+		{
+			rules: {
+				'attr-spasing': ['error', true, { lineBreak: 'always' }],
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r,
+		`
+		<img
+		src="path/to"
+		src="path/to2">
+		`);
+});
+
+test('no-space', async (t) => {
+	const r = await markuplint.fix(
+		`
+		<img src="path/to"  src="path/to2">
+		`,
+		{
+			rules: {
+				'attr-spasing': ['error', true, { width: 1 }],
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r,
+		`
+		<img src="path/to" src="path/to2">
+		`);
+});
+
+test('no-space', async (t) => {
+	const r = await markuplint.fix(
+		`
+		<img src="path/to"  src="path/to2">
+		`,
+		{
+			rules: {
+				'attr-spasing': ['error', true, { width: 2 }],
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r,
+		`
+		<img  src="path/to"  src="path/to2">
+		`);
+});
+
+test('no-space', async (t) => {
+	const r = await markuplint.fix(
+		`
+		<img
+		src="path/to"   src="path/to2">
+		`,
+		{
+			rules: {
+				'attr-spasing': ['error', true, { width: 3 }],
+			},
+		},
+		[rule],
+		'en',
+	);
+	t.is(r,
+		`
+		<img
+		src="path/to"   src="path/to2">
+		`);
+});
+
+
 test('noop', (t) => t.pass());
