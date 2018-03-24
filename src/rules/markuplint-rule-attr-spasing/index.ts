@@ -1,12 +1,12 @@
 import { VerifyReturn } from '../../rule';
 import CustomRule from '../../rule/custom-rule';
 
-export interface Options {
+export interface AttrSpasingOptions {
 	lineBreak: 'either' | 'always' | 'never';
 	width: number | false;
 }
 
-export default CustomRule.create<boolean, Options>({
+export default CustomRule.create<boolean, AttrSpasingOptions>({
 	name: 'attr-spasing',
 	defaultLevel: 'warning',
 	defaultValue: true,

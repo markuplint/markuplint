@@ -1,7 +1,7 @@
 import CustomRule from '../../rule/custom-rule';
-export interface Options {
+export interface AttrSpasingOptions {
     lineBreak: 'either' | 'always' | 'never';
     width: number | false;
 }
-declare const _default: CustomRule<boolean, Options>;
+declare const _default: CustomRule<boolean, AttrSpasingOptions>;
 export default _default;

@@ -2,9 +2,9 @@ import { VerifyReturn } from '../../rule';
 import CustomRule from '../../rule/custom-rule';
 
 export type Value = string | string[] | null;
-export type Options = null;
+export type ClassNamingOptions = null;
 
-export default CustomRule.create<Value, Options>({
+export default CustomRule.create<Value, ClassNamingOptions>({
 	name: 'class-naming',
 	defaultLevel: 'warning',
 	defaultValue: null,
