@@ -61,9 +61,9 @@ if (cli.flags.h) {
 
 if (cli.input.length) {
 	(async () => {
-		for (const filePath of cli.input) {
-			const { html, reports } = await verifyFile(filePath, void 0, cli.flags.ruleset);
-			await output(filePath, reports, html, cli.flags);
+		for (const address of cli.input) {
+			const { html, reports } = await verifyFile(address, void 0, cli.flags.ruleset);
+			await output(address, reports, html, cli.flags);
 		}
 	})();
 }

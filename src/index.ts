@@ -12,7 +12,8 @@ import Ruleset from './ruleset';
 import { ConfigureFileJSON } from './ruleset/JSONInterface';
 import createRuleset from './ruleset/createRuleset';
 
-import readTextFile from './util/readTextFile';
+import { resolveFile } from './util/resolve-file';
+import isRemoteFile from './util/is-remote-file';
 
 export async function verify (html: string, config: ConfigureFileJSON, rules: CustomRule[], locale?: string) {
 	const ruleset = await createRuleset(config, rules);
@@ -48,12 +49,17 @@ export async function verifyFile (filePath: string, rules?: CustomRule[], config
 	if (configFileOrDir) {
 		ruleset = await createRuleset(configFileOrDir, rules);
 	} else {
-		const absFilePath = path.resolve(filePath);
-		const parsedPath = path.parse(absFilePath);
-		const dir = path.dirname(absFilePath);
+		let dir: string;
+		if (isRemoteFile(filePath)) {
+			dir = process.cwd();
+		} else {
+			const absFilePath = path.resolve(filePath);
+			const parsedPath = path.parse(absFilePath);
+			dir = path.dirname(absFilePath);
+		}
 		ruleset = await createRuleset(dir, rules);
 	}
-	const html = await readTextFile(filePath);
+	const html = await resolveFile(filePath);
 	const core = new Markuplint(html, ruleset, await messenger(locale));
 	const reports = await core.verify();
 	return {
