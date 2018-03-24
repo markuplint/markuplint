@@ -6,7 +6,7 @@ import c from 'cli-color';
 import Node from '../dom/node';
 import parser from '../dom/parser/';
 
-import readTextFile from '../util/readTextFile';
+import readTextFile from '../util/read-text-file';
 
 (async () => {
 

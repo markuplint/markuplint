@@ -6,7 +6,7 @@ import {
 	ConfigureFileJSON,
 } from './JSONInterface';
 
-import readTextFile from '../util/readTextFile';
+import readTextFile from '../util/read-text-file';
 
 export default class RulesetForNodeJS extends Ruleset {
 

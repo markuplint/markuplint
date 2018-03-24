@@ -6,7 +6,7 @@ import osLocale from '../osLocale';
 
 import Messenger, { LocaleSet } from './';
 
-import readTextFile from '../../util/readTextFile';
+import readTextFile from '../../util/read-text-file';
 
 export default async function (locale?: string) {
 	if (!locale) {
