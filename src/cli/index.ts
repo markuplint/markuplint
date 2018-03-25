@@ -1,7 +1,7 @@
 import getStdin from 'get-stdin';
 import meow from 'meow';
 
-import { verify, verifyFile } from '../';
+import { fixFile, verify, verifyFile } from '../';
 import {
 	simpleReporter,
 	standardReporter,
@@ -21,6 +21,7 @@ Options
 	--no-color,     -c            Output no color.
 	--format,       -f FORMAT     Output format. Support "JSON" or "Simple". Default "JSON".
 	--problem-only, -p            Output only problems, without passeds.
+	--fix                         Output fixed HTML.
 
 	--help,         -h            Show help.
 	--version,      -v            Show version.
@@ -39,13 +40,19 @@ const cli = meow(
 				alias: 'r',
 			},
 			'no-color': {
+				type: 'boolean',
 				alias: 'c',
 			},
 			format: {
+				type: 'string',
 				alias: 'f',
 			},
 			'problem-only': {
+				type: 'boolean',
 				alias: 'p',
+			},
+			fix: {
+				type: 'boolean',
 			},
 		},
 	},
@@ -62,8 +69,13 @@ if (cli.flags.h) {
 if (cli.input.length) {
 	(async () => {
 		for (const address of cli.input) {
-			const { html, reports } = await verifyFile(address, void 0, cli.flags.ruleset);
-			await output(address, reports, html, cli.flags);
+			if (cli.flags.fix) {
+				const { origin, fixed } = await fixFile(address, void 0, cli.flags.ruleset);
+				process.stdout.write(fixed);
+			} else {
+				const { html, reports } = await verifyFile(address, void 0, cli.flags.ruleset);
+				await output(address, reports, html, cli.flags);
+			}
 		}
 	})();
 }

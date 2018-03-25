@@ -9,3 +9,7 @@ export declare function verifyFile(filePath: string, rules?: CustomRule[], confi
     html: string;
     reports: VerifiedResult[];
 }>;
+export declare function fixFile(filePath: string, rules?: CustomRule[], configFileOrDir?: string, locale?: string): Promise<{
+    origin: string;
+    fixed: string;
+}>;

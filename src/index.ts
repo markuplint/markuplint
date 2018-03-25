@@ -12,8 +12,8 @@ import Ruleset from './ruleset';
 import { ConfigureFileJSON } from './ruleset/JSONInterface';
 import createRuleset from './ruleset/createRuleset';
 
-import { resolveFile } from './util/resolve-file';
 import isRemoteFile from './util/is-remote-file';
+import { resolveFile } from './util/resolve-file';
 
 export async function verify (html: string, config: ConfigureFileJSON, rules: CustomRule[], locale?: string) {
 	const ruleset = await createRuleset(config, rules);
@@ -44,6 +44,24 @@ export async function fixOnWorkspace (html: string, workspace?: string) {
 }
 
 export async function verifyFile (filePath: string, rules?: CustomRule[], configFileOrDir?: string, locale?: string) {
+	const core = await resolveLinter(filePath, rules, configFileOrDir, locale);
+	const reports = await core.verify();
+	return {
+		html: core.rawHTML,
+		reports,
+	};
+}
+
+export async function fixFile (filePath: string, rules?: CustomRule[], configFileOrDir?: string, locale?: string) {
+	const core = await resolveLinter(filePath, rules, configFileOrDir, locale);
+	const fixed = await core.fix();
+	return {
+		origin: core.rawHTML,
+		fixed,
+	};
+}
+
+async function resolveLinter (filePath: string, rules?: CustomRule[], configFileOrDir?: string, locale?: string) {
 	rules = rules || await ruleModulesLoader();
 	let ruleset: Ruleset;
 	if (configFileOrDir) {
@@ -61,9 +79,5 @@ export async function verifyFile (filePath: string, rules?: CustomRule[], config
 	}
 	const html = await resolveFile(filePath);
 	const core = new Markuplint(html, ruleset, await messenger(locale));
-	const reports = await core.verify();
-	return {
-		html,
-		reports,
-	};
+	return core;
 }

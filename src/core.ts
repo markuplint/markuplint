@@ -5,11 +5,13 @@ import { VerifiedResult } from './rule';
 import Ruleset from './ruleset';
 
 export default class Markuplint {
+	public readonly rawHTML: string;
 	public document: Document<null, {}>;
 	public ruleset: Ruleset;
 	public messenger: Messenger;
 
 	constructor (html: string, ruleset: Ruleset, messenger: Messenger) {
+		this.rawHTML = html;
 		this.document = parser(html, ruleset);
 		this.ruleset = ruleset;
 		this.messenger = messenger;
