@@ -90,7 +90,7 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 				throw new Error('Invalid Syntax');
 			}
 			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
-			if (parent && /^(?:script|style)$/i.test(parent.nodeName)) {
+			if (parent && /^(?:script|noscript|style)$/i.test(parent.nodeName)) {
 				const node = new RawText<T, O>(
 					p5node.nodeName,
 					raw,

@@ -117,4 +117,13 @@ test(async (t) => {
 	]);
 });
 
+test(async (t) => {
+	const r = await markuplint.verify(
+		'<noscript><hoge></noscript>',
+		{rules: {'parse-error': true}},
+		[rule]
+	);
+	t.deepEqual(r, []);
+});
+
 test('noop', (t) => t.pass());

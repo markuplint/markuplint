@@ -19,5 +19,5 @@ export default class Element<T, O> extends Node<T, O> {
     getAttribute(attrName: string): Attribute | undefined;
     hasAttribute(attrName: string): boolean;
     matches(selector: string): boolean;
-    private _parseCloseToken;
+    private _parseCloseToken();
 }
