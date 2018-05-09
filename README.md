@@ -27,7 +27,7 @@ $ markuplint verifyee.html
 $ markuplint --help
 
 Usage
-	$ markuplint <HTML file>
+	$ markuplint <HTML file pathes (glob format)>
 	$ <stdout> | markuplint
 
 Options

@@ -20,6 +20,7 @@
     "dev": "tsc --watch & ts --watch -p tsconfig.remote.json & ava --verbose --watch",
     "dev-c": "tsc --watch",
     "test": "nyc ava && nyc report --reporter=html",
+    "test-bin": "node ./bin/ './test/*'",
     "cover": "nyc ava && nyc report --reporter=text-lcov | coveralls",
     "scrape": "node ./rulesets/_scraper/",
     "ruleset": "node ./rulesets/resolver.js"
@@ -32,6 +33,7 @@
     "eastasianwidth": "^0.2.0",
     "find-node-modules": "^1.0.4",
     "get-stdin": "^6.0.0",
+    "glob": "^7.1.2",
     "meow": "^4.0.0",
     "node-fetch": "^2.1.2",
     "os-locale": "^2.1.0",
@@ -43,6 +45,7 @@
     "@types/cli-color": "^0.3.29",
     "@types/deep-assign": "^0.1.1",
     "@types/get-stdin": "^5.0.1",
+    "@types/glob": "^5.0.35",
     "@types/meow": "^4.0.1",
     "@types/node-fetch": "^1.6.8",
     "@types/os-locale": "^2.1.0",

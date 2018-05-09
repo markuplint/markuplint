@@ -1,5 +1,9 @@
 import getStdin from 'get-stdin';
+import glob from 'glob';
 import meow from 'meow';
+
+// @ts-ignore
+import promisify from 'util.promisify';
 
 import { fixFile, verify, verifyFile } from '../';
 import {
@@ -11,9 +15,11 @@ import { VerifiedResult } from '../rule';
 import ruleModulesLoader from '../rule/loader';
 import createRuleset from '../ruleset/createRuleset';
 
+const asyncGlob: (pattern: string) => Promise<string[]> = promisify(glob);
+
 const help = `
 Usage
-	$ markuplint <HTML file>
+	$ markuplint <HTML file pathes (glob format)>
 	$ <stdout> | markuplint
 
 Options
@@ -68,13 +74,16 @@ if (cli.flags.h) {
 
 if (cli.input.length) {
 	(async () => {
-		for (const address of cli.input) {
-			if (cli.flags.fix) {
-				const { origin, fixed } = await fixFile(address, void 0, cli.flags.ruleset);
-				process.stdout.write(fixed);
-			} else {
-				const { html, reports } = await verifyFile(address, void 0, cli.flags.ruleset);
-				await output(address, reports, html, cli.flags);
+		for (const pattern of cli.input) {
+			const fileList = await asyncGlob(pattern);
+			for (const filePath of fileList) {
+				if (cli.flags.fix) {
+					const { origin, fixed } = await fixFile(filePath, void 0, cli.flags.ruleset);
+					process.stdout.write(fixed);
+				} else {
+					const { html, reports } = await verifyFile(filePath, void 0, cli.flags.ruleset);
+					await output(filePath, reports, html, cli.flags);
+				}
 			}
 		}
 	})();
