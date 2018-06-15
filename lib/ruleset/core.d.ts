@@ -27,5 +27,5 @@ export default abstract class Ruleset {
      *
      * @param extendRules value of `extends` property
      */
-    private _extendsRules(extendRules, baseRuleFilePath);
+    private _extendsRules;
 }

@@ -42,14 +42,14 @@ export default function parser (html: string, ruleset?: Ruleset) {
 		doc = parse5.parseFragment(
 			html,
 			{
-				locationInfo: true,
+				sourceCodeLocationInfo: true,
 			},
 		) as P5ParentNode;
 	} else {
 		doc = parse5.parse(
 			html,
 			{
-				locationInfo: true,
+				sourceCodeLocationInfo: true,
 			},
 		) as P5ParentNode;
 	}
@@ -252,9 +252,8 @@ function traverse<T, O> (rootNode: P5ParentNode, parentNode: ParentNode<T, O> | 
 	return nodeList;
 }
 
-type P5Document = parse5.AST.HtmlParser2.Document & parse5.AST.Document;
-interface P5Node extends parse5.AST.HtmlParser2.Node, parse5.AST.Default.Node {}
-interface P5ParentNode extends P5Node, parse5.AST.HtmlParser2.ParentNode {
+interface P5Node extends parse5.DefaultTreeNode {}
+interface P5ParentNode extends P5Node, parse5.DefaultTreeParentNode {
 	tagName: string;
 	value: string;
 	attrs: {
