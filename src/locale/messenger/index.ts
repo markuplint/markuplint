@@ -1,4 +1,6 @@
-export type Message = (messageTmpl: string, ...keywords: (string | number | boolean)[]) => string;
+export type Primitive = string | number | boolean;
+
+export type Message = (messageTmpl: string, ...keywords: Primitive[]) => string;
 
 export interface LocaleSet {
 	locale: string;
@@ -13,7 +15,7 @@ export interface LocalesKeywords {
 export default class Messenger {
 	private static _singleton: Messenger | null = null;
 
-	public static async create (localeSet: LocaleSet | null) {
+	public static async create(localeSet: LocaleSet | null) {
 		if (!Messenger._singleton) {
 			Messenger._singleton = new Messenger(localeSet);
 		} else {
@@ -24,13 +26,13 @@ export default class Messenger {
 
 	public localeSet: LocaleSet | null;
 
-	private constructor (localeSet: LocaleSet | null) {
+	private constructor(localeSet: LocaleSet | null) {
 		this.localeSet = localeSet;
 	}
 
-	public message (): Message {
+	public message(): Message {
 		const localeSet = this.localeSet;
-		return (messageTmpl: string, ...keywords: (string | number | boolean)[]) => {
+		return (messageTmpl: string, ...keywords: Primitive[]) => {
 			let message = messageTmpl;
 			if (localeSet) {
 				const t = localeSet[messageTmpl];
@@ -48,6 +50,5 @@ export default class Messenger {
 			});
 			return message;
 		};
-
 	}
 }

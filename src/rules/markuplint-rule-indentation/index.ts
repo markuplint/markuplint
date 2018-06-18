@@ -15,10 +15,10 @@ export default CustomRule.create<Value, IndentationOptions>({
 		alignment: true,
 		'indent-nested-nodes': true,
 	},
-	async verify (document, messages) {
+	async verify(document, messages) {
 		const reports: VerifyReturn[] = [];
 		// tslint:disable-next-line:cyclomatic-complexity
-		await document.walkOn('Node', async (node) => {
+		await document.walkOn('Node', async node => {
 			// console.log(node.raw, node.rule);
 			if (node.rule.disabled) {
 				return;
@@ -28,17 +28,35 @@ export default CustomRule.create<Value, IndentationOptions>({
 				 * Validate indent type and length.
 				 */
 				if (node.indentation.type !== 'none') {
-					const ms = node.rule.severity === 'error' ? 'must' : 'should';
+					const ms =
+						node.rule.severity === 'error' ? 'must' : 'should';
 					let spec: string | null = null;
-					if (node.rule.value === 'tab' && node.indentation.type !== 'tab') {
+					if (
+						node.rule.value === 'tab' &&
+						node.indentation.type !== 'tab'
+					) {
 						spec = 'tab';
-					} else if (typeof node.rule.value === 'number' && node.indentation.type !== 'space') {
+					} else if (
+						typeof node.rule.value === 'number' &&
+						node.indentation.type !== 'space'
+					) {
 						spec = 'space';
-					} else if (typeof node.rule.value === 'number' && node.indentation.type === 'space' && node.indentation.width % node.rule.value) {
-						spec = messages(`{0} width spaces`, `${node.rule.value}`);
+					} else if (
+						typeof node.rule.value === 'number' &&
+						node.indentation.type === 'space' &&
+						node.indentation.width % node.rule.value
+					) {
+						spec = messages(
+							`{0} width spaces`,
+							`${node.rule.value}`,
+						);
 					}
 					if (spec) {
-						const message = messages(`{0} ${ms} be {1}`, 'Indentation', spec);
+						const message = messages(
+							`{0} ${ms} be {1}`,
+							'Indentation',
+							spec,
+						);
 						reports.push({
 							severity: node.rule.severity,
 							message,
@@ -63,12 +81,17 @@ export default CustomRule.create<Value, IndentationOptions>({
 					if (parent && parent.indentation) {
 						const parentIndentWidth = parent.indentation.width;
 						const childIndentWidth = node.indentation.width;
-						const expectedWidth = node.rule.value === 'tab' ? 1 : node.rule.value;
+						const expectedWidth =
+							node.rule.value === 'tab' ? 1 : node.rule.value;
 						const diff = childIndentWidth - parentIndentWidth;
 						// console.log({ parentIndentWidth, childIndentWidth, exportWidth });
 						if (nested === 'never') {
 							if (diff !== 0) {
-								const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
+								const message = messages(
+									diff < 1
+										? `インデントを下げてください`
+										: `インデントを上げてください`,
+								);
 								reports.push({
 									severity: node.rule.severity,
 									message,
@@ -79,7 +102,11 @@ export default CustomRule.create<Value, IndentationOptions>({
 							}
 						} else {
 							if (diff !== expectedWidth) {
-								const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
+								const message = messages(
+									diff < 1
+										? `インデントを下げてください`
+										: `インデントを上げてください`,
+								);
 								reports.push({
 									severity: node.rule.severity,
 									message,
@@ -94,7 +121,7 @@ export default CustomRule.create<Value, IndentationOptions>({
 			}
 		});
 
-		await document.walkOn('EndTag', async (endTag) => {
+		await document.walkOn('EndTag', async endTag => {
 			if (!endTag.rule || !endTag.rule.option) {
 				return;
 			}
@@ -111,9 +138,12 @@ export default CustomRule.create<Value, IndentationOptions>({
 				// 	endTag.indentation,
 				// );
 				const endTagIndentationWidth = endTag.indentation.width;
-				const startTagIndentationWidth = endTag.startTagNode.indentation.width;
+				const startTagIndentationWidth =
+					endTag.startTagNode.indentation.width;
 				if (startTagIndentationWidth !== endTagIndentationWidth) {
-					const message = messages(`終了タグと開始タグのインデント位置が揃っていません。`);
+					const message = messages(
+						`終了タグと開始タグのインデント位置が揃っていません。`,
+					);
 					reports.push({
 						severity: endTag.rule.severity,
 						message,
@@ -127,20 +157,29 @@ export default CustomRule.create<Value, IndentationOptions>({
 
 		return reports;
 	},
-	async fix (document) {
+	async fix(document) {
 		/**
 		 * Validate indent type and length.
 		 */
-		document.syncWalkOn('Node', (node) => {
+		document.syncWalkOn('Node', node => {
 			if (!node.rule.disabled && node.indentation) {
 				if (node.indentation.type !== 'none') {
 					const spec = node.rule.value === 'tab' ? '\t' : ' ';
-					const baseWidth = node.rule.value === 'tab' ? 4 : node.rule.value;
+					const baseWidth =
+						node.rule.value === 'tab' ? 4 : node.rule.value;
 					let width: number;
 					if (node.rule.value === 'tab') {
-						width = node.indentation.type === 'tab' ? node.indentation.width : Math.ceil(node.indentation.width / baseWidth);
+						width =
+							node.indentation.type === 'tab'
+								? node.indentation.width
+								: Math.ceil(node.indentation.width / baseWidth);
 					} else {
-						width = node.indentation.type === 'tab' ? node.indentation.width * baseWidth : Math.ceil(node.indentation.width / baseWidth) * baseWidth;
+						width =
+							node.indentation.type === 'tab'
+								? node.indentation.width * baseWidth
+								: Math.ceil(
+										node.indentation.width / baseWidth,
+								  ) * baseWidth;
 					}
 					const raw = node.indentation.raw;
 					const fixed = spec.repeat(width);
@@ -156,7 +195,7 @@ export default CustomRule.create<Value, IndentationOptions>({
 			}
 		});
 
-		await document.walkOn('Node', async (node) => {
+		await document.walkOn('Node', async node => {
 			if (node.rule.disabled) {
 				return;
 			}
@@ -174,7 +213,8 @@ export default CustomRule.create<Value, IndentationOptions>({
 					if (parent && parent.indentation) {
 						const parentIndentWidth = parent.indentation.width;
 						const childIndentWidth = node.indentation.width;
-						const expectedWidth = node.rule.value === 'tab' ? 1 : node.rule.value;
+						const expectedWidth =
+							node.rule.value === 'tab' ? 1 : node.rule.value;
 						const diff = childIndentWidth - parentIndentWidth;
 						// console.log({ parentIndentWidth, childIndentWidth, expectedWidth, diff });
 						if (nested === 'never') {
@@ -192,7 +232,10 @@ export default CustomRule.create<Value, IndentationOptions>({
 							if (diff !== expectedWidth) {
 								// const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
 								const raw = node.indentation.raw;
-								const fixed = (node.rule.value === 'tab' ? '\t' : ' ').repeat(parentIndentWidth + expectedWidth);
+								const fixed = (node.rule.value === 'tab'
+									? '\t'
+									: ' '
+								).repeat(parentIndentWidth + expectedWidth);
 								// console.log('step2-B', {
 								// 	raw: space(raw),
 								// 	fix: space(fixed),
@@ -208,7 +251,7 @@ export default CustomRule.create<Value, IndentationOptions>({
 		/**
 		 * Validate alignment end-tags.
 		 */
-		await document.walkOn('EndTag', async (endTag) => {
+		await document.walkOn('EndTag', async endTag => {
 			if (!endTag.rule || !endTag.rule.option) {
 				return;
 			}
@@ -217,7 +260,8 @@ export default CustomRule.create<Value, IndentationOptions>({
 			}
 			if (endTag.indentation && endTag.startTagNode.indentation) {
 				const endTagIndentationWidth = endTag.indentation.width;
-				const startTagIndentationWidth = endTag.startTagNode.indentation.width;
+				const startTagIndentationWidth =
+					endTag.startTagNode.indentation.width;
 				if (startTagIndentationWidth !== endTagIndentationWidth) {
 					const raw = endTag.indentation.raw;
 					const fixed = endTag.startTagNode.indentation.raw;
@@ -232,10 +276,6 @@ export default CustomRule.create<Value, IndentationOptions>({
 	},
 });
 
-function space (str: string) {
-	return str.replace(/ /g, ($0) =>
-		`•`,
-	).replace(/\t/g, ($0) =>
-		`→   `,
-	);
+function space(str: string) {
+	return str.replace(/ /g, $0 => `•`).replace(/\t/g, $0 => `→   `);
 }

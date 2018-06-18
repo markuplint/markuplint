@@ -6,7 +6,7 @@ import Messenger, { LocaleSet } from '.';
 
 import readTextFile from '../../util/read-text-file';
 
-export default async function (locale?: string) {
+export default async function(locale?: string) {
 	if (!locale) {
 		locale = await osLocale();
 	}
@@ -22,7 +22,9 @@ export default async function (locale?: string) {
 		const filePath = path.join(__dirname, '..', 'i18n', `${localeId}.json`);
 		json = await readTextFile(filePath);
 	} catch (err) {
-		console.warn(`⚠ [markuplint] Missing locale message file ${localeId}.json`);
+		console.warn(
+			`⚠ [markuplint] Missing locale message file ${localeId}.json`,
+		);
 	}
 
 	const localeSet: LocaleSet = await JSON.parse(json);

@@ -15,12 +15,12 @@ export default CustomRule.create<Value, RequiredH1Options>({
 	defaultOptions: {
 		'expected-once': true,
 	},
-	async verify (document, messages) {
+	async verify(document, messages) {
 		// @ts-ignore TODO
 		const config = document.ruleConfig || {};
 		const reports: VerifyReturn[] = [];
 		const h1Stack: Element<Value, RequiredH1Options>[] = [];
-		document.syncWalkOn('Element', (node) => {
+		document.syncWalkOn('Element', node => {
 			if (node.nodeName.toLowerCase() === 'h1') {
 				h1Stack.push(node);
 			}

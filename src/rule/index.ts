@@ -1,9 +1,3 @@
-import Document from '../dom/document';
-import Ruleset from '../ruleset';
-import { ConfigureFileJSONRuleOption } from '../ruleset/JSONInterface';
-
-import CustomRule from './custom-rule';
-
 export interface VerifyReturn {
 	severity: Severity;
 

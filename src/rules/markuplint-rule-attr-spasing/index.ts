@@ -14,10 +14,10 @@ export default CustomRule.create<boolean, AttrSpasingOptions>({
 		lineBreak: 'either',
 		width: 1,
 	},
-	async verify (document, messages) {
+	async verify(document, messages) {
 		const reports: VerifyReturn[] = [];
 		const message = messages('error');
-		document.syncWalkOn('Element', (node) => {
+		document.syncWalkOn('Element', node => {
 			const attrs = node.attributes;
 			for (const attr of attrs) {
 				const hasSpace = !!attr.beforeSpaces.raw;
@@ -52,10 +52,17 @@ export default CustomRule.create<boolean, AttrSpasingOptions>({
 								raw: attr.beforeSpaces.raw,
 							});
 						}
-						if (node.rule.option.width && node.rule.option.width !== attr.beforeSpaces.raw.length) {
+						if (
+							node.rule.option.width &&
+							node.rule.option.width !==
+								attr.beforeSpaces.raw.length
+						) {
 							reports.push({
 								severity: node.rule.severity,
-								message: messages('スペースは{0}つにしてください', node.rule.option.width),
+								message: messages(
+									'スペースは{0}つにしてください',
+									node.rule.option.width,
+								),
 								line: attr.beforeSpaces.line,
 								col: attr.beforeSpaces.col,
 								raw: attr.beforeSpaces.raw,
@@ -67,8 +74,8 @@ export default CustomRule.create<boolean, AttrSpasingOptions>({
 		});
 		return reports;
 	},
-	async fix (document) {
-		document.syncWalkOn('Element', (node) => {
+	async fix(document) {
+		document.syncWalkOn('Element', node => {
 			const attrs = node.attributes;
 			for (const attr of attrs) {
 				const hasSpace = !!attr.beforeSpaces.raw;
@@ -81,14 +88,22 @@ export default CustomRule.create<boolean, AttrSpasingOptions>({
 				} else {
 					if (hasLineBreak) {
 						if (node.rule.option.lineBreak === 'never') {
-							const fixed = attr.beforeSpaces.raw.replace(/\r?\n/g, '') || expectSpaces;
+							const fixed =
+								attr.beforeSpaces.raw.replace(/\r?\n/g, '') ||
+								expectSpaces;
 							attr.beforeSpaces.fix(expectSpaces);
 						}
 					} else {
 						if (node.rule.option.lineBreak === 'always') {
-							const expectIndent = node.indentation ? node.indentation.raw : '';
+							const expectIndent = node.indentation
+								? node.indentation.raw
+								: '';
 							attr.beforeSpaces.fix(`\n${expectIndent}`);
-						} else if (node.rule.option.width && node.rule.option.width !== attr.beforeSpaces.raw.length) {
+						} else if (
+							node.rule.option.width &&
+							node.rule.option.width !==
+								attr.beforeSpaces.raw.length
+						) {
 							attr.beforeSpaces.fix(expectSpaces);
 						}
 					}

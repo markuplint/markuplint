@@ -5,11 +5,11 @@ export default CustomRule.create({
 	name: 'id-duplication',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify (document, messages) {
+	async verify(document, messages) {
 		const reports: VerifyReturn[] = [];
 		const message = messages('Duplicate {0}', 'attribute id value');
 		const idStack: string[] = [];
-		await document.walkOn('Element', async (node) => {
+		await document.walkOn('Element', async node => {
 			const id = node.id;
 			if (id && id.value) {
 				if (idStack.includes(id.value.value)) {

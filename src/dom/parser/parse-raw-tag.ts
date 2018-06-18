@@ -1,14 +1,15 @@
-import {
-	rePCEN,
-	reStartTag,
-	reTagName,
-} from './const';
+import { rePCEN, reStartTag, reTagName } from './const';
 
 const reAttrsInStartTag = /\s*[^\x00-\x1f\x7f-\x9f "'>\/=]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]*))?/;
 
 import Attribute from '../attribute';
 
-export default function parseRawTag (raw: string, nodeLine: number, nodeCol: number, startOffset: number) {
+export default function parseRawTag(
+	raw: string,
+	nodeLine: number,
+	nodeCol: number,
+	startOffset: number,
+) {
 	let line = nodeLine;
 	let col = nodeCol;
 	let offset = startOffset;
@@ -22,8 +23,10 @@ export default function parseRawTag (raw: string, nodeLine: number, nodeCol: num
 	const tagWithAttrs = matches[1];
 
 	const tagName = tagWithAttrs.split(/\s+/)[0];
-	if (!tagName || !reTagName.test(tagName) && !rePCEN.test(tagName)) {
-		throw new SyntaxError(`Invalid tag name: "${tagName}" in <${tagWithAttrs}>`);
+	if (!tagName || (!reTagName.test(tagName) && !rePCEN.test(tagName))) {
+		throw new SyntaxError(
+			`Invalid tag name: "${tagName}" in <${tagWithAttrs}>`,
+		);
 	}
 	let rawAttrs = tagWithAttrs.substring(tagName.length);
 
@@ -49,11 +52,9 @@ export default function parseRawTag (raw: string, nodeLine: number, nodeCol: num
 		tagName,
 		attrs,
 		// tslint:disable-next-line:only-arrow-functions object-literal-shorthand
-		toJSON: function () {
+		toJSON: function() {
 			return {
-				// tslint:disable-next-line:no-invalid-this
 				tagName: this.tagName,
-				// tslint:disable-next-line:no-invalid-this
 				attrs: this.attrs.map(attr => attr.toJSON()),
 			};
 		},

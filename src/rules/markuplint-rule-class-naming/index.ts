@@ -9,12 +9,14 @@ export default CustomRule.create<Value, ClassNamingOptions>({
 	defaultLevel: 'warning',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify (document, messages) {
+	async verify(document, messages) {
 		const reports: VerifyReturn[] = [];
 		// const message = messages(`{0} of {1} ${ms} be {2}`, 'Attribute name', 'HTML', `${config.value}case`);
-		await document.walkOn('Element', async (node) => {
+		await document.walkOn('Element', async node => {
 			if (node.rule.value) {
-				const classPatterns = Array.isArray(node.rule.value) ? node.rule.value : [node.rule.value];
+				const classPatterns = Array.isArray(node.rule.value)
+					? node.rule.value
+					: [node.rule.value];
 				for (const classPattern of classPatterns) {
 					for (const className of node.classList) {
 						if (!match(className, classPattern)) {
@@ -38,7 +40,7 @@ export default CustomRule.create<Value, ClassNamingOptions>({
 	},
 });
 
-function match (needle: string, pattern: string) {
+function match(needle: string, pattern: string) {
 	const matches = pattern.match(/^\/(.*)\/(i|g|m)*$/);
 	if (matches && matches[1]) {
 		const re = matches[1];

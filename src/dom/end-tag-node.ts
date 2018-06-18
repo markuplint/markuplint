@@ -1,6 +1,4 @@
-import {
-	NodeType,
-} from '.';
+import { NodeType } from '.';
 
 import Element from './element';
 import Node from './node';
@@ -17,7 +15,7 @@ export default class EndTagNode<T, O> extends Node<T, O> {
 	// define when created instance frin parser/index.ts
 	public readonly isPotentialCustomElement!: boolean;
 
-	public get raw () {
+	public get raw() {
 		return `</${this.nodeName}>`;
 	}
 }

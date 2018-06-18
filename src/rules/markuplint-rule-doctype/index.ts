@@ -8,12 +8,12 @@ export default CustomRule.create<DoctypeValue, null>({
 	name: 'doctype',
 	defaultValue: 'always',
 	defaultOptions: null,
-	async verify (document, messages) {
+	async verify(document, messages) {
 		const reports: VerifyReturn[] = [];
 		const message = messages('error');
 		let has = false;
 		if (document.globalRule && !document.isFragment) {
-			await document.walkOn('Node', async (node) => {
+			await document.walkOn('Node', async node => {
 				if (node instanceof Doctype) {
 					has = true;
 				}

@@ -4,7 +4,12 @@ export interface Location {
 	raw: string;
 }
 
-export default function (searches: string[], text: string, currentLine: number, currentCol: number) {
+export default function(
+	searches: string[],
+	text: string,
+	currentLine: number,
+	currentCol: number,
+) {
 	const lines = text.split(/\r?\n/g);
 	const foundLocations: Location[] = [];
 	lines.forEach((lineText, i) => {
@@ -27,7 +32,6 @@ export default function (searches: string[], text: string, currentLine: number, 
 			}
 			offset++;
 		}
-
 	});
 	return foundLocations;
 }

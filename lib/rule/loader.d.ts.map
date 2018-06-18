@@ -1,1 +1,1 @@
-{"version":3,"file":"loader.d.ts","sourceRoot":"","sources":["../../src/rule/loader.ts"],"names":[],"mappings":"AAIA,OAAO,UAAU,MAAM,eAAe,CAAC;AAIvC,6CAAoD,OAAO,CAAC,UAAU,EAAE,CAAC,CAMxE"}
+{"version":3,"file":"loader.d.ts","sourceRoot":"","sources":["../../src/rule/loader.ts"],"names":[],"mappings":"AAIA,OAAO,UAAU,MAAM,eAAe,CAAC;AAIvC,6CAAmD,OAAO,CAAC,UAAU,EAAE,CAAC,CAqBvE"}

@@ -2,22 +2,27 @@ import path from 'path';
 
 import Ruleset, { ResultResolver } from './core';
 
-import {
-	ConfigureFileJSON,
-} from './JSONInterface';
+import { ConfigureFileJSON } from './JSONInterface';
 
-const originRoot = 'https://raw.githubusercontent.com/YusukeHirao/markuplint/master/';
+const originRoot =
+	'https://raw.githubusercontent.com/YusukeHirao/markuplint/master/';
 
 export default class RulesetForClient extends Ruleset {
-
 	public static readonly NOFILE = '<no-file>';
 
-	public async resolver (extendRule: string, baseRuleFilePath: string): Promise<ResultResolver> {
+	public async resolver(
+		extendRule: string,
+		baseRuleFilePath: string,
+	): Promise<ResultResolver> {
 		let url: string;
 		if (/^markuplint\/[a-z0-9-]+(?:\.json)?$/.test(extendRule)) {
-			const matched = extendRule.match(/^markuplint\/([a-z0-9-]+)(?:\.json)?$/);
+			const matched = extendRule.match(
+				/^markuplint\/([a-z0-9-]+)(?:\.json)?$/,
+			);
 			if (!matched || !matched[1]) {
-				throw new Error(`Invalid rule name set extends "${extendRule}" in markuplint`);
+				throw new Error(
+					`Invalid rule name set extends "${extendRule}" in markuplint`,
+				);
 			}
 			const id = matched[1];
 			const filePath = path.join(originRoot, 'rulesets', `${id}.json`);
@@ -37,5 +42,4 @@ export default class RulesetForClient extends Ruleset {
 		const ruleConfig: ConfigureFileJSON = await res.json();
 		return { ruleConfig, ruleFilePath: url };
 	}
-
 }

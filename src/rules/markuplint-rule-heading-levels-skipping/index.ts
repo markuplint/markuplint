@@ -5,10 +5,10 @@ export default CustomRule.create({
 	name: 'name',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify (document, messages) {
+	async verify(document, messages) {
 		const reports: VerifyReturn[] = [];
 		const message = messages('error');
-		await document.walkOn('Node', async (node) => {
+		await document.walkOn('Node', async node => {
 			if (true) {
 				// reports.push({
 				// 	level: node.rule.level,

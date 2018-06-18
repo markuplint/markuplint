@@ -1,12 +1,6 @@
-import {
-	AmbiguousNode,
-	NodeType,
-	ParentNode,
-} from '.';
+import { AmbiguousNode, NodeType, ParentNode } from '.';
 
-import {
-	ConfigureFileJSONRules,
-} from '../ruleset/JSONInterface';
+import { ConfigureFileJSONRules } from '../ruleset/JSONInterface';
 
 export default abstract class GhostNode<T = null, O = {}> {
 	public readonly type: NodeType = null;
@@ -18,14 +12,19 @@ export default abstract class GhostNode<T = null, O = {}> {
 	public fixed = '';
 	public rules: ConfigureFileJSONRules = {};
 
-	constructor (nodeName: string, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: ParentNode<T, O> | null) {
+	constructor(
+		nodeName: string,
+		prevNode: AmbiguousNode<T, O>,
+		nextNode: AmbiguousNode<T, O>,
+		parentNode: ParentNode<T, O> | null,
+	) {
 		this.nodeName = nodeName;
 		this.prevNode = prevNode;
 		this.nextNode = nextNode;
 		this.parentNode = parentNode;
 	}
 
-	public toString () {
+	public toString() {
 		return this.raw;
 	}
 }

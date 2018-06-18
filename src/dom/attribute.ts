@@ -13,8 +13,7 @@ export default class Attribute extends Token {
 	// public readonly afterSpaces: Token; TODO
 	public readonly invalid: boolean;
 
-	constructor (raw: string, line: number, col: number, startOffset: number) {
-
+	constructor(raw: string, line: number, col: number, startOffset: number) {
 		const attrMatchedMap = raw.match(reAttrsInStartTag);
 		if (!attrMatchedMap) {
 			throw new SyntaxError('Illegal attribute token');
@@ -25,10 +24,21 @@ export default class Attribute extends Token {
 		const spacesBeforeEqual = attrMatchedMap[3] || '';
 		const equal = attrMatchedMap[4] || null;
 		const spacesAfterEqual = attrMatchedMap[5] || '';
-		const quote = attrMatchedMap[6] != null ? '"' : attrMatchedMap[7] != null ? "'" : null;
-		const value = attrMatchedMap[6] || attrMatchedMap[7] || attrMatchedMap[8] || (quote ? '' : null);
+		const quote =
+			attrMatchedMap[6] != null
+				? '"'
+				: attrMatchedMap[7] != null
+					? "'"
+					: null;
+		const value =
+			attrMatchedMap[6] ||
+			attrMatchedMap[7] ||
+			attrMatchedMap[8] ||
+			(quote ? '' : null);
 		const index = attrMatchedMap.index!; // no global matches
-		const invalid = !!(value && quote === null && /["'=<>`]/.test(value)) || !!(equal && quote === null && value === null);
+		const invalid =
+			!!(value && quote === null && /["'=<>`]/.test(value)) ||
+			!!(equal && quote === null && value === null);
 
 		// console.log({beforeSpaces, name, spacesBeforeEqual, equal, spacesAfterEqual, quote, value});
 
@@ -47,7 +57,12 @@ export default class Attribute extends Token {
 		col = this.name.location.endCol;
 		offset = this.name.location.endOffset;
 
-		this.spacesBeforeEqual = Token.create(spacesBeforeEqual, line, col, offset);
+		this.spacesBeforeEqual = Token.create(
+			spacesBeforeEqual,
+			line,
+			col,
+			offset,
+		);
 		line = this.spacesBeforeEqual.location.endLine;
 		col = this.spacesBeforeEqual.location.endCol;
 		offset = this.spacesBeforeEqual.location.endOffset;
@@ -59,7 +74,12 @@ export default class Attribute extends Token {
 			offset = this.equal.location.endOffset;
 		}
 
-		this.spacesAfterEqual = Token.create(spacesAfterEqual, line, col, offset);
+		this.spacesAfterEqual = Token.create(
+			spacesAfterEqual,
+			line,
+			col,
+			offset,
+		);
 		line = this.spacesAfterEqual.location.endLine;
 		col = this.spacesAfterEqual.location.endCol;
 		offset = this.spacesAfterEqual.location.endOffset;
@@ -76,7 +96,7 @@ export default class Attribute extends Token {
 		this.invalid = invalid;
 	}
 
-	public get raw () {
+	public get raw() {
 		const raw: string[] = [];
 		raw.push(this.name.raw);
 		raw.push(this.spacesBeforeEqual.raw);
@@ -90,7 +110,7 @@ export default class Attribute extends Token {
 		return raw.join('');
 	}
 
-	public toJSON () {
+	public toJSON() {
 		return {
 			raw: this.raw,
 			line: this.line,

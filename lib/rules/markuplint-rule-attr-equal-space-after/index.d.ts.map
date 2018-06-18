@@ -1,1 +1,1 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/rules/markuplint-rule-attr-equal-space-after/index.ts"],"names":[],"mappings":"AACA,OAAO,UAAU,MAAM,wBAAwB,CAAC;AAEhD,aAAK,KAAK,GAAG,QAAQ,GAAG,OAAO,GAAG,oBAAoB,GAAG,mBAAmB,CAAC;;AAE7E,wBAqFG"}
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/rules/markuplint-rule-attr-equal-space-after/index.ts"],"names":[],"mappings":"AACA,OAAO,UAAU,MAAM,wBAAwB,CAAC;AAEhD,aAAK,KAAK,GAAG,QAAQ,GAAG,OAAO,GAAG,oBAAoB,GAAG,mBAAmB,CAAC;;AAE7E,wBAwFG"}

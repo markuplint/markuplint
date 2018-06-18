@@ -1,15 +1,33 @@
-import { Indentation } from '.';
 import Location from './location';
 
 import getCol from './parser/get-col';
 import getLine from './parser/get-line';
 
 export default class Token {
-
-	public static create (token: string, line: number, col: number, offset: number): Token;
-	public static create (token: null, line: number, col: number, offset: number): null;
-	public static create (token: string | null, line: number, col: number, offset: number): Token | null;
-	public static create (token: string | null, line: number, col: number, offset: number): Token | null {
+	public static create(
+		token: string,
+		line: number,
+		col: number,
+		offset: number,
+	): Token;
+	public static create(
+		token: null,
+		line: number,
+		col: number,
+		offset: number,
+	): null;
+	public static create(
+		token: string | null,
+		line: number,
+		col: number,
+		offset: number,
+	): Token | null;
+	public static create(
+		token: string | null,
+		line: number,
+		col: number,
+		offset: number,
+	): Token | null {
 		if (token == null) {
 			return null;
 		}
@@ -20,12 +38,7 @@ export default class Token {
 	public _fixed: string;
 	public location: Location;
 
-	// /**
-	//  * @deprecated
-	//  */
-	// public indentation: Indentation | null = null;
-
-	constructor (raw: string, line: number, col: number, startOffset: number) {
+	constructor(raw: string, line: number, col: number, startOffset: number) {
 		this._originRaw = raw;
 		this._fixed = raw;
 		this.location = new Location(
@@ -38,19 +51,19 @@ export default class Token {
 		);
 	}
 
-	public get raw () {
+	public get raw() {
 		return this._fixed;
 	}
 
-	public get line () {
+	public get line() {
 		return this.location.line;
 	}
 
-	public get col () {
+	public get col() {
 		return this.location.col;
 	}
 
-	public toJSON () {
+	public toJSON() {
 		return {
 			raw: this.raw,
 			line: this.line,
@@ -62,8 +75,7 @@ export default class Token {
 		};
 	}
 
-	public fix (raw: string) {
+	public fix(raw: string) {
 		this._fixed = raw;
 	}
 }
-

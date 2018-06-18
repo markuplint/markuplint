@@ -1,8 +1,11 @@
+
 {
   "rulesDirectory": [
     "tslint-plugin-prettier"
   ],
   "rules": {
+
+    // prettier
     "prettier": [
       true,
       {
@@ -13,9 +16,9 @@
         "bracketSpacing": true
       }
     ],
+
     // TypeScript Specific
     "adjacent-overload-signatures": true,
-    "ban-types": [false],
     "member-access": [
       true,
       "check-accessor"
@@ -41,24 +44,15 @@
       }
     ],
     "no-any": true,
-    "no-empty-interface": false,
-    "no-import-side-effect": [false],
     "no-inferrable-types": [true, "ignore-params"],
     "no-internal-module": true,
-    "no-magic-numbers": [true, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    "no-namespace": [false],
-    "no-non-null-assertion": false,
+    "no-namespace": [true, "allow-declarations"],
     "no-reference": true,
-    "no-unnecessary-type-assertion": [
-      true
-    ],
     "no-var-requires": true,
     "only-arrow-functions": [
       true,
       "allow-declarations"
     ],
-    "prefer-for-of": true,
-    "promise-function-async": true,
     "typedef": [
       true,
       // "call-signature",
@@ -67,9 +61,7 @@
       // "arrow-parameter",
       "property-declaration"
       // "variable-declaration",
-      // "member-variable-declaration",
-      // "object-destructuring", // ⚠️ invalid schema
-      // "array-destructuring" // ⚠️ invalid schema
+      // "member-variable-declaration"
     ],
     "typedef-whitespace": [
       true,
@@ -88,10 +80,8 @@
         "variable-declaration": "onespace"
       }
     ],
-    "unified-signatures": true,
 
     // Functionality
-    "await-promise": true,
     "ban": [
       true,
       [
@@ -106,7 +96,6 @@
     ],
     "curly": true,
     "forin": true,
-    "import-blacklist": [false],
     "label-position": true,
     "no-arg": true,
     "no-bitwise": true,
@@ -119,62 +108,35 @@
     ],
     "no-construct": true,
     "no-debugger": true,
-    "no-duplicate-super": true,
     "no-duplicate-variable": true,
     "no-empty": true,
     "no-eval": true,
-    "no-floating-promises": [
-      true,
-      "JQueryPromise"
-    ],
-    "no-for-in-array": true,
-    "no-inferred-empty-object-type": true,
-    "no-invalid-template-strings": true,
-    "no-invalid-this": [
-      true,
-      "check-function-in-method"
-    ],
-    "no-misused-new": true,
+    // "no-for-in-array": true,
+    "no-invalid-this": false,
     "no-null-keyword": false,
-    "no-object-literal-type-assertion": false,
     "no-shadowed-variable": true,
-    "no-sparse-arrays": true,
     "no-string-literal": true,
-    "no-string-throw": true,
     "no-switch-case-fall-through": true,
-    "no-unbound-method": true,
-    "no-unsafe-any": true,
+    "no-unreachable": true,
     "no-unsafe-finally": true,
-    "no-unused-expression": true,
+    "no-unused-expression": false,
+    "no-unused-new": true,
     "no-unused-variable": [
       true,
       "react"
     ],
     "no-use-before-declare": true,
-    "no-unused-new": true,
     "no-var-keyword": true,
-    "no-void-expression": true,
-    "prefer-conditional-expression": false,
-    "prefer-object-spread": false,
     "radix": true,
-    "restrict-plus-operands": true,
-    "strict-boolean-expressions": true,
-    "strict-type-predicates": true,
+    // "restrict-plus-operands": true,
     "switch-default": false,
     "triple-equals": [
       true,
       "allow-null-check"
     ],
-    "typeof-compare": true,
-    "use-default-type-parameter": true,
     "use-isnan": true,
 
-
-
-
     // Maintainability
-    "cyclomatic-complexity": [true, 20],
-    "deprecation": true,
     "eofline": true,
     "indent": [
       true,
@@ -186,16 +148,17 @@
     ],
     "max-file-line-count": [
       true,
-      1000
+      600
     ],
     "max-line-length": [
-      false
+      true,
+      180
     ],
     "no-default-export": false,
     "no-mergeable-namespace": true,
     "no-require-imports": true,
+    "no-trailing-whitespace": true,
     "object-literal-sort-keys": false,
-    "prefer-const": true,
     "trailing-comma": [
       true,
       {
@@ -211,53 +174,25 @@
       "arguments",
       "statements"
     ],
-    "array-type": [
-      true,
-      "array"
-    ],
     "arrow-parens": false,
-    "arrow-return-shorthand": true,
-    "binary-expression-operand-order": true,
-    "callable-types": true,
     "class-name": true,
+    // "file-header": true,
     "comment-format": [
       true,
       "check-space"
     ],
-    "completed-docs": [
-      true,
-      // ⚠️ unsupported detail rules
-      "classes",
-      "functions",
-      "methods",
-      "properties"
-    ],
-    "encoding": true,
-    "file-header": [false],
-    "import-spacing": true,
     "interface-name": [
       false,
       "always-prefix"
     ],
-    "interface-over-type-literal": true,
     "jsdoc-format": true,
-    "match-default-export-name": true,
-    "newline-before-return": false,
     "new-parens": true,
     "no-angle-bracket-type-assertion": true,
-    "no-boolean-literal-compare": true,
     "no-consecutive-blank-lines": [
       true,
       2
     ],
-    "no-irregular-whitespace": true,
-    "no-parameter-properties": true,
-    "no-reference-import": true,
-    "no-trailing-whitespace": true,
-    "no-unnecessary-callback-wrapper": true,
-    "no-unnecessary-initializer": true,
-    "no-unnecessary-qualifier": true,
-    "number-literal-format": true,
+    "no-constructor-vars": true,
     "object-literal-key-quotes": [
       true,
       "as-needed"
@@ -270,46 +205,20 @@
       "check-else",
       "check-whitespace"
     ],
-    "one-variable-per-declaration": [
-      true,
-      "ignore-for-loop"
-    ],
+    "one-variable-per-declaration": [true, "ignore-for-loop"],
     "ordered-imports": [
       true, {
         "import-sources-order": "lowercase-last",
         "named-imports-order": "lowercase-first"
       }
     ],
-    "prefer-function-over-method": false,
-    "prefer-method-signature": true,
-    "prefer-switch": [
-      true,
-      {
-        "min-cases": 2
-      }
-    ],
-    "prefer-template": true,
     "quotemark": [
       true,
       "single",
-      // "double",
-      // "jsx-single",
       "jsx-double",
       "avoid-escape"
     ],
-    "return-undefined": true,
-    "semicolon": [
-      true,
-      "always"
-      // "ignore-interfaces"
-      // "ignore-bound-class-methods"
-    ],
-    "space-before-function-paren": [
-      true,
-      "always"
-    ],
-    "switch-final-break": [false],
-    "type-literal-delimiter": true,
+    "semicolon": false,
     "variable-name": [
       true,
       "check-format",

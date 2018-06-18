@@ -4,37 +4,56 @@ import Node from './node';
 import OmittedElement from './omitted-element';
 import TextNode from './text-node';
 
-export type NodeType = 'Node' | 'Element' | 'OmittedElement' | 'Text' | 'RawText' | 'Comment' | 'EndTag' | 'Doctype' | 'Invalid' | null;
+export type NodeType =
+	| 'Node'
+	| 'Element'
+	| 'OmittedElement'
+	| 'Text'
+	| 'RawText'
+	| 'Comment'
+	| 'EndTag'
+	| 'Doctype'
+	| 'Invalid'
+	| null;
 
 export class Indentation<T, O> {
-
 	public readonly line: number;
 	public readonly node: TextNode<T, O> | null;
 
 	private readonly _originRaw: string;
 	private _fixed: string;
 
-	constructor (parentTextNode: TextNode<T, O> | null, raw: string, line: number) {
+	constructor(
+		parentTextNode: TextNode<T, O> | null,
+		raw: string,
+		line: number,
+	) {
 		this.node = parentTextNode;
 		this.line = line;
 		this._originRaw = raw;
 		this._fixed = raw;
 	}
 
-	public get type (): 'tab' | 'space' | 'mixed' | 'none' {
+	public get type(): 'tab' | 'space' | 'mixed' | 'none' {
 		const raw = this._fixed;
-		return raw === '' ? 'none' : /^\t+$/.test(raw) ? 'tab' : /^[^\t]+$/.test(raw) ? 'space' : 'mixed';
+		return raw === ''
+			? 'none'
+			: /^\t+$/.test(raw)
+				? 'tab'
+				: /^[^\t]+$/.test(raw)
+					? 'space'
+					: 'mixed';
 	}
 
-	public get width () {
+	public get width() {
 		return this._fixed.length;
 	}
 
-	public get raw () {
+	public get raw() {
 		return this._fixed;
 	}
 
-	public fix (raw: string) {
+	public fix(raw: string) {
 		const current = this._fixed;
 		this._fixed = raw;
 		if (this.node) {
@@ -51,7 +70,6 @@ export class Indentation<T, O> {
 	}
 }
 
-
 // TODO: Refactoring for interfaces of location
 export interface Location {
 	line: number | null;
@@ -67,8 +85,7 @@ export interface ExistentLocation {
 	endOffset: number;
 }
 
-export interface TagNodeLocation extends ExistentLocation {
-}
+export interface TagNodeLocation extends ExistentLocation {}
 
 export interface ElementLocation extends TagNodeLocation {
 	startTag: TagNodeLocation;

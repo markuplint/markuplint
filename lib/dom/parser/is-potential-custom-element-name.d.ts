@@ -14,7 +14,8 @@
  * >   - font-face-name
  * >   - missing-glyph
  *
- * ASCII-case-insensitively. Originally, it is not possible to define a name including ASCII upper alphas in the custom element, but it is not treated as illegal by the HTML parser.
+ * ASCII-case-insensitively.
+ * Originally, it is not possible to define a name including ASCII upper alphas in the custom element, but it is not treated as illegal by the HTML parser.
  *
  * @param tagName
  */

@@ -50,7 +50,15 @@ export interface CSSAttrSelectorRule {
 	 * - `[attr!=val]` => `"not"`
 	 * - `[attr|=val]` => `"hyphen"`
 	 */
-	action: 'exists' | 'equals' | 'element' | 'start' | 'end' | 'any' | 'not' | 'hyphen';
+	action:
+		| 'exists'
+		| 'equals'
+		| 'element'
+		| 'start'
+		| 'end'
+		| 'any'
+		| 'not'
+		| 'hyphen';
 
 	/**
 	 * Attribute value
@@ -69,7 +77,12 @@ export interface UnsupportSelectorRule {
 	type: 'descendant' | 'child' | 'parent' | 'sibling' | 'adjacent';
 }
 
-export type CSSSelectorRule = CSSTagSelectorRule | CSSUniversalSelectorRule | CSSPseudoSelectorRule | CSSAttrSelectorRule | UnsupportSelectorRule;
+export type CSSSelectorRule =
+	| CSSTagSelectorRule
+	| CSSUniversalSelectorRule
+	| CSSPseudoSelectorRule
+	| CSSAttrSelectorRule
+	| UnsupportSelectorRule;
 
 export type CSSSelectorRuleSet = CSSSelectorRule[];
 
@@ -77,19 +90,23 @@ export class CSSSelector {
 	private _rawSelector: string;
 	private _ruleset: CSSSelectorRuleSet[];
 
-	constructor (selector: string) {
+	constructor(selector: string) {
 		this._rawSelector = selector;
 		this._ruleset = cssWhat(selector) || [];
 		// console.log(JSON.stringify(this._ruleset, null, 2));
 	}
 
-	public match<T, O> (element: Element<T, O>) {
+	public match<T, O>(element: Element<T, O>) {
 		return match(element, this._ruleset, this._rawSelector);
 	}
 }
 
 // tslint:disable-next-line:cyclomatic-complexity
-function match<T, O> (element: Element<T, O>, ruleset: CSSSelectorRuleSet[], rawSelector: string) {
+function match<T, O>(
+	element: Element<T, O>,
+	ruleset: CSSSelectorRuleSet[],
+	rawSelector: string,
+) {
 	const orMatch: boolean[] = [];
 	for (const selectorRules of ruleset) {
 		const andMatch: boolean[] = [];
@@ -101,7 +118,9 @@ function match<T, O> (element: Element<T, O>, ruleset: CSSSelectorRuleSet[], raw
 					break;
 				}
 				case 'tag': {
-					const matched = element.nodeName.toLowerCase() === selectorRule.name.toLowerCase();
+					const matched =
+						element.nodeName.toLowerCase() ===
+						selectorRule.name.toLowerCase();
 					// console.log(`${matched} <= "${selectorRule.name}" in ${element.raw}`);
 					andMatch.push(matched);
 					break;
@@ -109,14 +128,25 @@ function match<T, O> (element: Element<T, O>, ruleset: CSSSelectorRuleSet[], raw
 				case 'pseudo': {
 					switch (selectorRule.name) {
 						case 'not': {
-							if (!selectorRule.data || typeof selectorRule.data === 'string') {
-								throw new Error(`Unexpected parameters in "not" pseudo selector in "${rawSelector}"`);
+							if (
+								!selectorRule.data ||
+								typeof selectorRule.data === 'string'
+							) {
+								throw new Error(
+									`Unexpected parameters in "not" pseudo selector in "${rawSelector}"`,
+								);
 							}
-							andMatch.push(!match(element, selectorRule.data, rawSelector));
+							andMatch.push(
+								!match(element, selectorRule.data, rawSelector),
+							);
 							break;
 						}
 						default: {
-							throw new Error(`Unsupport "${selectorRule.name}" pseudo selector in "${rawSelector}"`);
+							throw new Error(
+								`Unsupport "${
+									selectorRule.name
+								}" pseudo selector in "${rawSelector}"`,
+							);
 						}
 					}
 					break;
@@ -137,39 +167,61 @@ function match<T, O> (element: Element<T, O>, ruleset: CSSSelectorRuleSet[], raw
 							if (selectorRule.ignoreCase) {
 								andMatch.push(value === selectorRule.value);
 							} else {
-								andMatch.push(value.toLowerCase() === selectorRule.value.toLowerCase());
+								andMatch.push(
+									value.toLowerCase() ===
+										selectorRule.value.toLowerCase(),
+								);
 							}
 							break;
 						}
 						case 'element': {
-							throw new Error(`Unsupport "[attr~=val]" attribute selector in "${rawSelector}"`);
+							throw new Error(
+								`Unsupport "[attr~=val]" attribute selector in "${rawSelector}"`,
+							);
 						}
 						case 'start': {
-							const re = new RegExp(`^${selectorRule.value}`, selectorRule.ignoreCase ? 'i' : undefined);
+							const re = new RegExp(
+								`^${selectorRule.value}`,
+								selectorRule.ignoreCase ? 'i' : undefined,
+							);
 							andMatch.push(re.test(value));
 							break;
 						}
 						case 'end': {
-							const re = new RegExp(`${selectorRule.value}$`, selectorRule.ignoreCase ? 'i' : undefined);
+							const re = new RegExp(
+								`${selectorRule.value}$`,
+								selectorRule.ignoreCase ? 'i' : undefined,
+							);
 							andMatch.push(re.test(value));
 							break;
 						}
 						case 'any': {
-							const re = new RegExp(selectorRule.value, selectorRule.ignoreCase ? 'i' : undefined);
+							const re = new RegExp(
+								selectorRule.value,
+								selectorRule.ignoreCase ? 'i' : undefined,
+							);
 							andMatch.push(re.test(value));
 							break;
 						}
 						case 'not': {
-							throw new Error(`Unsupport "[attr!=val]" attribute selector in "${rawSelector}"`);
+							throw new Error(
+								`Unsupport "[attr!=val]" attribute selector in "${rawSelector}"`,
+							);
 						}
 						case 'hyphen': {
-							throw new Error(`Unsupport "[attr|=val]" attribute selector in "${rawSelector}"`);
+							throw new Error(
+								`Unsupport "[attr|=val]" attribute selector in "${rawSelector}"`,
+							);
 						}
 					}
 					break;
 				}
 				default: {
-					throw new Error(`Unsupport ${selectorRule.type} selector in "${rawSelector}"`);
+					throw new Error(
+						`Unsupport ${
+							selectorRule.type
+						} selector in "${rawSelector}"`,
+					);
 				}
 			}
 		}
@@ -178,6 +230,6 @@ function match<T, O> (element: Element<T, O>, ruleset: CSSSelectorRuleSet[], raw
 	return orMatch.some(b => b);
 }
 
-export default function (selector: string) {
+export default function(selector: string) {
 	return new CSSSelector(selector);
 }

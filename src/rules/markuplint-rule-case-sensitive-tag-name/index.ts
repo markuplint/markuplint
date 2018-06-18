@@ -11,16 +11,21 @@ export default CustomRule.create<Value, null>({
 	defaultLevel: 'warning',
 	defaultValue: 'lower',
 	defaultOptions: null,
-	async verify (document, messages) {
+	async verify(document, messages) {
 		const reports: VerifyReturn[] = [];
-		await document.walk(async (node) => {
+		await document.walk(async node => {
 			if (node instanceof Element || node instanceof EndTagNode) {
 				if (node.isForeignElement) {
 					return;
 				}
 				const ms = node.rule.severity === 'error' ? 'must' : 'should';
 				const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
-				const message = messages(`{0} of {1} ${ms} be {2}`, 'Tag name', 'HTML element', `${node.rule.value}case`);
+				const message = messages(
+					`{0} of {1} ${ms} be {2}`,
+					'Tag name',
+					'HTML element',
+					`${node.rule.value}case`,
+				);
 				if (deny.test(node.nodeName)) {
 					reports.push({
 						severity: node.rule.severity,
@@ -28,10 +33,8 @@ export default CustomRule.create<Value, null>({
 						line: node.line,
 						col:
 							node instanceof Element
-							?
-							node.col + 1 // remove "<" char.
-							:
-							node.col + 2, // remove "</" char.
+								? node.col + 1 // remove "<" char.
+								: node.col + 2, // remove "</" char.
 						raw: node.nodeName,
 					});
 				}
@@ -39,8 +42,8 @@ export default CustomRule.create<Value, null>({
 		});
 		return reports;
 	},
-	async fix (document) {
-		await document.walk(async (node) => {
+	async fix(document) {
+		await document.walk(async node => {
 			if (node instanceof Element || node instanceof EndTagNode) {
 				if (node.isForeignElement) {
 					return;

@@ -6,7 +6,14 @@ export default class Location {
 	public readonly startOffset: number;
 	public readonly endOffset: number;
 
-	constructor (line: number, col: number, endLine: number, endCol: number, startOffset: number, endOffset: number) {
+	constructor(
+		line: number,
+		col: number,
+		endLine: number,
+		endCol: number,
+		startOffset: number,
+		endOffset: number,
+	) {
 		this.line = line;
 		this.col = col;
 		this.endLine = endLine;
@@ -15,7 +22,7 @@ export default class Location {
 		this.endOffset = endOffset;
 	}
 
-	public toJSON () {
+	public toJSON() {
 		return {
 			line: this.line,
 			col: this.col,

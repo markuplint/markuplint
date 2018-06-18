@@ -4,22 +4,28 @@ export default class AttributeValue extends Token {
 	private _value: string;
 	private _quote: '"' | "'" | null;
 
-	constructor (value: string, quote: '"' | "'" | null, line: number, col: number, startOffset: number) {
+	constructor(
+		value: string,
+		quote: '"' | "'" | null,
+		line: number,
+		col: number,
+		startOffset: number,
+	) {
 		const quoteStr = quote || '';
 		super(`${quoteStr}${value}${quoteStr}`, line, col, startOffset);
 		this._value = value;
 		this._quote = quote;
 	}
 
-	public get value () {
+	public get value() {
 		return this._value;
 	}
 
-	public get quote () {
+	public get quote() {
 		return this._quote;
 	}
 
-	public get raw () {
+	public get raw() {
 		const raw: string[] = [];
 		if (this._quote) {
 			raw.push(this._quote);
@@ -33,7 +39,7 @@ export default class AttributeValue extends Token {
 		return raw.join('');
 	}
 
-	public fix (fixedValue: string | null, fixedQuote?: '"' | "'" | null) {
+	public fix(fixedValue: string | null, fixedQuote?: '"' | "'" | null) {
 		if (fixedValue != null) {
 			this._value = fixedValue;
 		}
@@ -42,7 +48,7 @@ export default class AttributeValue extends Token {
 		}
 	}
 
-	public toJSON () {
+	public toJSON() {
 		return {
 			raw: this.raw,
 			line: this.line,

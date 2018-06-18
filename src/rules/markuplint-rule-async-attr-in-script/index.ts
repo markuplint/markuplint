@@ -9,9 +9,9 @@ export default CustomRule.create<Value, null>({
 	defaultLevel: 'warning',
 	defaultValue: 'always',
 	defaultOptions: null,
-	async verify (document, messages) {
+	async verify(document, messages) {
 		const reports: VerifyReturn[] = [];
-		await document.walkOn('Element', async (node) => {
+		await document.walkOn('Element', async node => {
 			if (!node.matches('script[src]')) {
 				return;
 			}

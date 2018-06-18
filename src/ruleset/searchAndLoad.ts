@@ -1,12 +1,10 @@
 import cosmiconfig from 'cosmiconfig';
 
-import {
-	ConfigureFileJSON,
-} from './JSONInterface';
+import { ConfigureFileJSON } from './JSONInterface';
 
 const explorer = cosmiconfig('markuplint');
 
-export default async function searchAndLoad (fileOrDir: string) {
+export default async function searchAndLoad(fileOrDir: string) {
 	const data = await explorer.search(fileOrDir);
 
 	// console.log(`search rc file on "${configDir}"`);
@@ -22,4 +20,3 @@ export default async function searchAndLoad (fileOrDir: string) {
 		config,
 	};
 }
-

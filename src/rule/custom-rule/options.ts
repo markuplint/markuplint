@@ -8,6 +8,9 @@ export default interface Options<T = null, O = {}> {
 	defaultLevel?: Severity;
 	defaultValue: T;
 	defaultOptions: O;
-	verify (document: Document<T, O>, message: Message): Promise<CustomVerifiedReturn[]>;
-	fix? (document: Document<T, O>): Promise<void>;
+	verify(
+		document: Document<T, O>,
+		message: Message,
+	): Promise<CustomVerifiedReturn[]>;
+	fix?(document: Document<T, O>): Promise<void>;
 }

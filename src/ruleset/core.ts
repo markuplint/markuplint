@@ -4,12 +4,7 @@ import Document from '../dom/document';
 import Messenger from '../locale/messenger';
 import CustomRule from '../rule/custom-rule';
 
-import {
-	RuleConfig,
-	Severity,
-	VerifiedResult,
-	VerifyReturn,
-} from '../rule';
+import { VerifiedResult } from '../rule';
 
 import {
 	ConfigureFileJSON,
@@ -23,7 +18,6 @@ export interface ResultResolver {
 }
 
 export default abstract class Ruleset {
-
 	public static readonly NOFILE = '<no-file>';
 
 	public rules: ConfigureFileJSONRules = {};
@@ -33,14 +27,14 @@ export default abstract class Ruleset {
 	private _rules: CustomRule[];
 	private _rawConfig: ConfigureFileJSON | null = null;
 
-	constructor (rules: CustomRule[]) {
+	constructor(rules: CustomRule[]) {
 		this._rules = rules;
 	}
 
 	/**
 	 * @param config JSON Data
 	 */
-	public async setConfig (config: ConfigureFileJSON, configFilePath: string) {
+	public async setConfig(config: ConfigureFileJSON, configFilePath: string) {
 		this._rawConfig = config;
 		if (this._rawConfig.rules) {
 			this.rules = this._rawConfig.rules;
@@ -56,20 +50,25 @@ export default abstract class Ruleset {
 		}
 	}
 
-	public async verify (document: Document<null, {}>, messenger: Messenger) {
+	public async verify(document: Document<null, {}>, messenger: Messenger) {
 		const reports: VerifiedResult[] = [];
 		for (const rule of this._rules) {
 			const config = rule.optimizeOption(this.rules[rule.name] || false);
 			if (config.disabled) {
 				continue;
 			}
-			const results = await rule.verify(document, config, this, messenger);
+			const results = await rule.verify(
+				document,
+				config,
+				this,
+				messenger,
+			);
 			reports.push(...results);
 		}
 		return reports;
 	}
 
-	public async fix (document: Document<null, {}>) {
+	public async fix(document: Document<null, {}>) {
 		for (const rule of this._rules) {
 			const config = rule.optimizeOption(this.rules[rule.name] || false);
 			if (config.disabled) {
@@ -80,20 +79,31 @@ export default abstract class Ruleset {
 		return document.fix();
 	}
 
-	public abstract async resolver (extendRule: string, baseRuleFilePath: string): Promise<ResultResolver>;
+	public abstract async resolver(
+		extendRule: string,
+		baseRuleFilePath: string,
+	): Promise<ResultResolver>;
 
 	/**
 	 * Recursive loading extends rules
 	 *
 	 * @param extendRules value of `extends` property
 	 */
-	private async _extendsRules (extendRules: string | string[], baseRuleFilePath: string) {
-		const extendRuleList = Array.isArray(extendRules) ? extendRules : [extendRules];
+	private async _extendsRules(
+		extendRules: string | string[],
+		baseRuleFilePath: string,
+	) {
+		const extendRuleList = Array.isArray(extendRules)
+			? extendRules
+			: [extendRules];
 		for (const extendRule of extendRuleList) {
 			if (!extendRule || !extendRule.trim()) {
 				continue;
 			}
-			const { ruleConfig, ruleFilePath } = await this.resolver(extendRule, baseRuleFilePath);
+			const { ruleConfig, ruleFilePath } = await this.resolver(
+				extendRule,
+				baseRuleFilePath,
+			);
 			if (!ruleConfig) {
 				return;
 			}
@@ -104,7 +114,10 @@ export default abstract class Ruleset {
 				this.nodeRules = [...this.nodeRules, ...ruleConfig.nodeRules];
 			}
 			if (ruleConfig.childNodeRules) {
-				this.childNodeRules = [...this.childNodeRules, ...ruleConfig.childNodeRules];
+				this.childNodeRules = [
+					...this.childNodeRules,
+					...ruleConfig.childNodeRules,
+				];
 			}
 			if (ruleConfig.extends) {
 				await this._extendsRules(ruleConfig.extends, ruleFilePath);

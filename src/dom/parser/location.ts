@@ -2,7 +2,7 @@
 // 	return raw.indexOf(token) + offset;
 // }
 
-export function getLine (token: string, line: number) {
+export function getLine(token: string, line: number) {
 	const hasBr = hasLineBroke(token);
 	if (!hasBr) {
 		return line;
@@ -13,7 +13,7 @@ export function getLine (token: string, line: number) {
 	return token.split(/\r?\n/).length - 1 + line;
 }
 
-export function getCol (token: string, col: number) {
+export function getCol(token: string, col: number) {
 	const hasBr = hasLineBroke(token);
 	if (!hasBr) {
 		return col;
@@ -23,17 +23,17 @@ export function getCol (token: string, col: number) {
 	return col;
 }
 
-export function getEndLine (token: string, line: number) {
+export function getEndLine(token: string, line: number) {
 	return token.split(/\r?\n/).length - 1 + line;
 }
 
-export function getEndCol (token: string, col: number) {
+export function getEndCol(token: string, col: number) {
 	const lines = token.split(/\r?\n/);
 	const lineCount = lines.length;
 	const lastLine = lines.pop()!;
 	return lineCount > 1 ? lastLine.length + 1 : col + token.length;
 }
 
-function hasLineBroke (token: string) {
+function hasLineBroke(token: string) {
 	return /\r?\n/.test(token);
 }

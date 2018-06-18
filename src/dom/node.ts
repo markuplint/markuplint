@@ -1,9 +1,4 @@
-import {
-	AmbiguousNode,
-	Indentation,
-	NodeType,
-	ParentNode,
-} from '.';
+import { AmbiguousNode, Indentation, NodeType, ParentNode } from '.';
 
 import Document from './document';
 import GhostNode from './ghost-node';
@@ -30,7 +25,16 @@ export default abstract class Node<T = null, O = {}> extends Token {
 	 */
 	public depth = 0;
 
-	constructor (nodeName: string, raw: string, line: number, col: number, startOffset: number, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: ParentNode<T, O> | null) {
+	constructor(
+		nodeName: string,
+		raw: string,
+		line: number,
+		col: number,
+		startOffset: number,
+		prevNode: AmbiguousNode<T, O>,
+		nextNode: AmbiguousNode<T, O>,
+		parentNode: ParentNode<T, O> | null,
+	) {
 		super(raw, line, col, startOffset);
 		this.nodeName = nodeName;
 		this.prevNode = prevNode;
@@ -38,11 +42,11 @@ export default abstract class Node<T = null, O = {}> extends Token {
 		this.parentNode = parentNode;
 	}
 
-	public toString () {
+	public toString() {
 		return this.raw;
 	}
 
-	public toJSON () {
+	public toJSON() {
 		return {
 			nodeName: this.nodeName,
 			raw: this.raw,
@@ -55,11 +59,11 @@ export default abstract class Node<T = null, O = {}> extends Token {
 		};
 	}
 
-	public is (type: NodeType) {
+	public is(type: NodeType) {
 		return this.type === type;
 	}
 
-	public get rule () {
+	public get rule() {
 		if (!this.document) {
 			throw new Error('Invalid construction.');
 		}
@@ -76,7 +80,7 @@ export default abstract class Node<T = null, O = {}> extends Token {
 		return this.document.rule.optimizeOption(rule);
 	}
 
-	public get syntaxicalParentNode (): Node<T, O> | null {
+	public get syntaxicalParentNode(): Node<T, O> | null {
 		let node: Node<T, O> | GhostNode<T, O> = this;
 		while (node.parentNode && node.parentNode instanceof GhostNode) {
 			node = node.parentNode;

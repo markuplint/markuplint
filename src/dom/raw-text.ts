@@ -1,6 +1,4 @@
-import {
-	NodeType,
-} from '.';
+import { NodeType } from '.';
 
 import TextNode from './text-node';
 

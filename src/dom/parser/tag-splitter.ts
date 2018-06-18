@@ -1,7 +1,4 @@
-import {
-	reSplitterTag,
-	reTagName,
-} from './const';
+import { reSplitterTag, reTagName } from './const';
 
 import getCol from './get-col';
 import getLine from './get-line';
@@ -13,11 +10,15 @@ export interface N {
 	col: number;
 }
 
-export default function tagSplitter (raw: string, line: number, col: number): N[] {
+export default function tagSplitter(
+	raw: string,
+	line: number,
+	col: number,
+): N[] {
 	return withLocation(tagSplitterAsString(raw), line, col);
 }
 
-function tagSplitterAsString (raw: string): string[] {
+function tagSplitterAsString(raw: string): string[] {
 	const tagMatches = raw.match(reSplitterTag);
 	if (!tagMatches) {
 		return [raw];
@@ -46,7 +47,7 @@ function tagSplitterAsString (raw: string): string[] {
 	return nodes;
 }
 
-function withLocation (nodes: string[], line: number, col: number): N[] {
+function withLocation(nodes: string[], line: number, col: number): N[] {
 	const result: N[] = [];
 
 	for (const node of nodes) {

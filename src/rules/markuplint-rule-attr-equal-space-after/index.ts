@@ -8,10 +8,10 @@ export default CustomRule.create<Value, null>({
 	defaultLevel: 'warning',
 	defaultValue: 'never',
 	defaultOptions: null,
-	async verify (document, messages) {
+	async verify(document, messages) {
 		const reports: VerifyReturn[] = [];
 		const message = messages('error');
-		document.syncWalkOn('Element', (node) => {
+		document.syncWalkOn('Element', node => {
 			for (const attr of node.attributes) {
 				if (!attr.equal) {
 					continue;
@@ -45,15 +45,18 @@ export default CustomRule.create<Value, null>({
 						message: node.rule.value,
 						line: attr.spacesBeforeEqual.line,
 						col: attr.spacesBeforeEqual.col,
-						raw: attr.spacesBeforeEqual.raw + attr.equal.raw + attr.spacesAfterEqual.raw,
+						raw:
+							attr.spacesBeforeEqual.raw +
+							attr.equal.raw +
+							attr.spacesAfterEqual.raw,
 					});
 				}
 			}
 		});
 		return reports;
 	},
-	async fix (document) {
-		document.syncWalkOn('Element', (node) => {
+	async fix(document) {
+		document.syncWalkOn('Element', node => {
 			for (const attr of node.attributes) {
 				if (!attr.equal) {
 					continue;

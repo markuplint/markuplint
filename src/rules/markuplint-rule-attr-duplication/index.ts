@@ -5,10 +5,10 @@ export default CustomRule.create({
 	name: 'attr-duplication',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify (document, messages) {
+	async verify(document, messages) {
 		const reports: VerifyReturn[] = [];
 		const message = messages('Duplicate {0}', 'attribute name');
-		await document.walkOn('Element', async (node) => {
+		await document.walkOn('Element', async node => {
 			const attrNameStack: string[] = [];
 			for (const attr of node.attributes) {
 				const attrName = attr.name.raw.toLowerCase();

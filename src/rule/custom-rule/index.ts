@@ -5,20 +5,20 @@ import Ruleset from '../../ruleset/core';
 
 import charLocator from '../../dom/parser/charLocator';
 
-import {
-	RuleConfig,
-	Severity,
-	VerifiedResult,
-} from '..';
+import { RuleConfig, Severity, VerifiedResult } from '..';
 import Options from './options';
 
 export default class CustomRule<T = null, O = {}> {
-
-	public static create<T = null, O = {}> (options: Options<T, O>) {
+	public static create<T = null, O = {}>(options: Options<T, O>) {
 		return new CustomRule<T, O>(options);
 	}
 
-	public static charLocator (searches: string[], text: string, currentLine: number, currentCol: number) {
+	public static charLocator(
+		searches: string[],
+		text: string,
+		currentLine: number,
+		currentCol: number,
+	) {
 		return charLocator(searches, text, currentLine, currentCol);
 	}
 
@@ -34,7 +34,7 @@ export default class CustomRule<T = null, O = {}> {
 	private _v: Options<T, O>['verify'];
 	private _f: Options<T, O>['fix'];
 
-	constructor (o: Options<T, O>) {
+	constructor(o: Options<T, O>) {
 		this.name = o.name;
 		this.defaultLevel = o.defaultLevel || 'error';
 		this.defaultValue = o.defaultValue;
@@ -43,7 +43,12 @@ export default class CustomRule<T = null, O = {}> {
 		this._f = o.fix;
 	}
 
-	public async verify (document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset, messenger: Messenger): Promise<VerifiedResult[]> {
+	public async verify(
+		document: Document<T, O>,
+		config: RuleConfig<T, O>,
+		ruleset: Ruleset,
+		messenger: Messenger,
+	): Promise<VerifiedResult[]> {
 		if (!this._v) {
 			return [];
 		}
@@ -52,7 +57,7 @@ export default class CustomRule<T = null, O = {}> {
 		const results = await this._v(document, messenger.message());
 		document.setRule(null);
 
-		return results.map<VerifiedResult>((result) => {
+		return results.map<VerifiedResult>(result => {
 			return {
 				severity: result.severity,
 				level: result.severity, // TODO: remove for v1.0.0, Backward compatibility
@@ -60,12 +65,18 @@ export default class CustomRule<T = null, O = {}> {
 				line: result.line,
 				col: result.col,
 				raw: result.raw,
-				ruleId: result.ruleId ? `${this.name}/${result.ruleId}` : `${this.name}`,
+				ruleId: result.ruleId
+					? `${this.name}/${result.ruleId}`
+					: `${this.name}`,
 			};
 		});
 	}
 
-	public async fix (document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset): Promise<void> {
+	public async fix(
+		document: Document<T, O>,
+		config: RuleConfig<T, O>,
+		ruleset: Ruleset,
+	): Promise<void> {
 		if (!this._f) {
 			return;
 		}
@@ -75,7 +86,9 @@ export default class CustomRule<T = null, O = {}> {
 		document.setRule(null);
 	}
 
-	public optimizeOption (option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O> {
+	public optimizeOption(
+		option: ConfigureFileJSONRuleOption<T, O> | T | boolean,
+	): RuleConfig<T, O> {
 		if (typeof option === 'boolean') {
 			return {
 				disabled: !option,
@@ -90,11 +103,14 @@ export default class CustomRule<T = null, O = {}> {
 				severity: option[0],
 				value: option[1] || this.defaultValue,
 				option:
-					(this.defaultOptions !== null && typeof this.defaultOptions === 'object')
-					?
-					Object.assign({}, this.defaultOptions, option[2] || {})
-					:
-					option[2] || this.defaultOptions,
+					this.defaultOptions !== null &&
+					typeof this.defaultOptions === 'object'
+						? Object.assign(
+								{},
+								this.defaultOptions,
+								option[2] || {},
+						  )
+						: option[2] || this.defaultOptions,
 			};
 		}
 		return {
