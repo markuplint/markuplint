@@ -1,73 +1,73 @@
 import test from 'ava';
 import parser, { isDocumentFragment } from '../../../lib/dom/parser';
 
-test('isDocumentFragment', (t) => {
+test('isDocumentFragment <!doctype>', (t) => {
 	t.false(isDocumentFragment('<!DOCTYPE html>'));
 });
 
-test('isDocumentFragment', (t) => {
+test('isDocumentFragment <!doctype> - 2', (t) => {
 	t.false(isDocumentFragment(`
 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
 	`));
 });
 
-test('isDocumentFragment', (t) => {
+test('isDocumentFragment <!doctype> + <html>', (t) => {
 	t.false(isDocumentFragment(`
 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
 	<html>
 	`));
 });
 
-test('isDocumentFragment', (t) => {
+test('isDocumentFragment <!doctype> + <html></html>', (t) => {
 	t.false(isDocumentFragment(`
 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
 	<html></html>
 	`));
 });
 
-test('isDocumentFragment', (t) => {
+test('isDocumentFragment <!doctype> + <html> - 2', (t) => {
 	t.false(isDocumentFragment(`
 	<html lang="ja">
 	`));
 });
 
-test('isDocumentFragment', (t) => {
+test('isDocumentFragment <!doctype> + <html></html> - 2', (t) => {
 	t.false(isDocumentFragment(`
 	<html lang="ja"></html>
 	`));
 });
 
-test('isDocumentFragment', (t) => {
+test('isDocumentFragment <html></html>', (t) => {
 	t.false(isDocumentFragment('<html lang="ja"></html>'));
 });
 
-test('isDocumentFragment', (t) => {
+test('isDocumentFragment <html></html> - 2', (t) => {
 	t.false(isDocumentFragment('<html></html>'));
 });
 
-test('isDocumentFragment', (t) => {
+test('isDocumentFragment <body>', (t) => {
 	t.true(isDocumentFragment(`
 	<body>
 	`));
 });
 
-test('isDocumentFragment', (t) => {
+test('isDocumentFragment <body></body>', (t) => {
 	t.true(isDocumentFragment('<body></body>'));
 });
 
-test('isDocumentFragment', (t) => {
+test('isDocumentFragment <div></div>', (t) => {
 	t.true(isDocumentFragment('<div></div>'));
 });
 
-test('isDocumentFragment', (t) => {
+test('isDocumentFragment <template></template>', (t) => {
 	t.true(isDocumentFragment('<template></template>'));
 });
 
-test('isDocumentFragment', (t) => {
+test('isDocumentFragment <head></head>', (t) => {
 	t.true(isDocumentFragment('<head></head>'));
 });
 
-test((t) => {
+test('<!DOCTYPE html>', (t) => {
 	const d = parser('<!DOCTYPE html>');
 	t.is(d.list[0].type, 'Doctype');
 	t.is(d.list[1].nodeName, 'html');
@@ -76,7 +76,7 @@ test((t) => {
 	t.is(d.list.length, 4);
 });
 
-test((t) => {
+test('<!DOCTYPE html> ', (t) => {
 	const d = parser('<!DOCTYPE html> ');
 	t.is(d.list[0].type, 'Doctype');
 	t.is(d.list[1].nodeName, 'html');
@@ -86,7 +86,7 @@ test((t) => {
 	t.is(d.list.length, 5);
 });
 
-test((t) => {
+test('<!DOCTYPE html>\\n', (t) => {
 	const d = parser('<!DOCTYPE html>\n');
 	t.is(d.list[0].type, 'Doctype');
 	t.is(d.list[1].nodeName, 'html');
@@ -97,7 +97,7 @@ test((t) => {
 	t.is(d.list.length, 5);
 });
 
-test((t) => {
+test('<!DOCTYPE html>text', (t) => {
 	const d = parser('<!DOCTYPE html>text');
 	t.is(d.list[0].type, 'Doctype');
 	t.is(d.list[1].nodeName, 'html');
@@ -108,7 +108,7 @@ test((t) => {
 	t.is(d.list.length, 5);
 });
 
-test((t) => {
+test('<!DOCTYPE html> text', (t) => {
 	const d = parser('<!DOCTYPE html> text');
 	t.is(d.list[0].type, 'Doctype');
 	t.is(d.list[1].nodeName, 'html');
@@ -121,7 +121,7 @@ test((t) => {
 	t.is(d.toString(), '<!DOCTYPE html> text');
 });
 
-test((t) => {
+test('<!DOCTYPE html>\\ntext', (t) => {
 	const d = parser('<!DOCTYPE html>\ntext');
 	t.is(d.list[0].type, 'Doctype');
 	t.is(d.list[1].nodeName, 'html');
@@ -134,7 +134,7 @@ test((t) => {
 	t.is(d.toString(), '<!DOCTYPE html>\ntext');
 });
 
-test((t) => {
+test('<!DOCTYPE html>\\n<p>text', (t) => {
 	const d = parser('<!DOCTYPE html>\n<p>text');
 	t.is(d.list[0].type, 'Doctype');
 	t.is(d.list[1].nodeName, 'html');
@@ -149,7 +149,7 @@ test((t) => {
 	t.is(d.toString(), '<!DOCTYPE html>\n<p>text');
 });
 
-test((t) => {
+test('<!DOCTYPE html><p>\\ntext', (t) => {
 	const d = parser('<!DOCTYPE html><p>\ntext');
 	t.is(d.list[0].type, 'Doctype');
 	t.is(d.list[1].nodeName, 'html');
@@ -163,7 +163,7 @@ test((t) => {
 	t.is(d.toString(), '<!DOCTYPE html><p>\ntext');
 });
 
-test((t) => {
+test('<!DOCTYPE html>\\n<html>text', (t) => {
 	const d = parser('<!DOCTYPE html>\n<html>text');
 	t.is(d.list[0].type, 'Doctype');
 	t.is(d.list[1].nodeName, '#ws');
@@ -177,7 +177,7 @@ test((t) => {
 	t.is(d.toString(), '<!DOCTYPE html>\n<html>text');
 });
 
-test((t) => {
+test('<!DOCTYPE html><html>\\ntext', (t) => {
 	const d = parser('<!DOCTYPE html><html>\ntext');
 	t.is(d.list[0].type, 'Doctype');
 	t.is(d.list[1].nodeName, 'html');
@@ -190,13 +190,13 @@ test((t) => {
 	t.is(d.toString(), '<!DOCTYPE html><html>\ntext');
 });
 
-test((t) => {
+test('empty code', (t) => {
 	const d = parser('');
 	t.deepEqual(d.list, []);
 	t.is(d.toString(), '');
 });
 
-test((t) => {
+test('<html>', (t) => {
 	const d = parser('<html>');
 	t.is(d.list[0].nodeName, 'html');
 	t.is(d.list[1].nodeName, 'head');
@@ -205,7 +205,7 @@ test((t) => {
 	t.is(d.toString(), '<html>');
 });
 
-test((t) => {
+test('<html></body>', (t) => {
 	const d = parser('<html></body>');
 	t.is(d.list[0].nodeName, 'html');
 	t.is(d.list[1].nodeName, 'head');
@@ -216,13 +216,13 @@ test((t) => {
 	t.is(d.toString(), '<html></body>');
 });
 
-test((t) => {
+test('text only', (t) => {
 	const d = parser('text');
 	t.is(d.list[0].nodeName, '#text');
 	t.is(d.toString(), 'text');
 });
 
-test((t) => {
+test('<html>invalid-before-text<body>text</body>invalid-after-text</html>', (t) => {
 	const d = parser('<html>invalid-before-text<body>text</body>invalid-after-text</html>');
 	t.is(d.list[0].nodeName, 'html');
 	t.is(d.list[1].nodeName, 'head');
@@ -237,7 +237,7 @@ test((t) => {
 	t.is(d.toString(), '<html>invalid-before-text<body>text</body>invalid-after-text</html>');
 });
 
-test((t) => {
+test('standard code', (t) => {
 	const d = parser(`
 	<!DOCTYPE html>
 	<html lang="en">
@@ -379,7 +379,7 @@ test((t) => {
 	]);
 });
 
-test((t) => {
+test('template code', (t) => {
 	const d = parser(`
 	<template>
 		<script>
@@ -492,19 +492,19 @@ test((t) => {
 	]);
 });
 
-test((t) => {
+test('<div></div>', (t) => {
 	const origin = '<div></div>';
 	const d = parser(origin);
 	t.is(d.toString(), origin);
 });
 
-test((t) => {
+test('fix 1', (t) => {
 	const origin = '<div a="123" b><img src = "path/to" /></div>';
 	const d = parser(origin);
 	t.is(d.fix(), origin);
 });
 
-test((t) => {
+test('fix 2', (t) => {
 	const origin = `
 	<div a="123" b>
 		<h1 id="">

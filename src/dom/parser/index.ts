@@ -35,26 +35,15 @@ import RawText from '../raw-text';
 import TextNode from '../text-node';
 
 export default function parser (html: string, ruleset?: Ruleset) {
-	let doc: P5ParentNode;
 	const isFragment = isDocumentFragment(html);
 
-	if (isFragment) {
-		doc = parse5.parseFragment(
-			html,
-			{
-				sourceCodeLocationInfo: true,
-			},
-		) as P5ParentNode;
-	} else {
-		doc = parse5.parse(
-			html,
-			{
-				sourceCodeLocationInfo: true,
-			},
-		) as P5ParentNode;
-	}
+	const doc = isFragment ?
+		parse5.parseFragment(html, { sourceCodeLocationInfo: true }) as P5Fragment
+		:
+		parse5.parse(html, { sourceCodeLocationInfo: true }) as P5Document;
 
 	const nodeTree: (Node | GhostNode)[] = traverse(doc, null, html);
+
 	return new Document(nodeTree, html, isFragment, ruleset);
 }
 
@@ -63,48 +52,52 @@ export function isDocumentFragment (html: string) {
 }
 
 // tslint:disable-next-line:cyclomatic-complexity
-function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O> | null, parent: ParentNode<T, O> | null, rawHtml: string): (Node<T, O> | GhostNode<T, O>)[] {
+function nodeize<T, O> (p5node: P5Node, prev: Node<T, O> | GhostNode<T, O> | null, parent: ParentNode<T, O> | null, rawHtml: string): (Node<T, O> | GhostNode<T, O>)[] {
 	const nodes: (Node<T, O> | GhostNode<T, O>)[] = [];
 	switch (p5node.nodeName) {
 		case '#documentType': {
-			if (!p5node.__location) {
+			if (!p5node.sourceCodeLocation) {
 				throw new Error('Invalid Syntax');
 			}
-			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
+			const raw = rawHtml.slice(p5node.sourceCodeLocation.startOffset, p5node.sourceCodeLocation.endOffset || p5node.sourceCodeLocation.startOffset);
 			const node = new Doctype(
 				'#doctype',
 				raw,
-				p5node.__location.line,
-				p5node.__location.col,
-				p5node.__location.startOffset,
+				p5node.sourceCodeLocation.startLine,
+				p5node.sourceCodeLocation.startCol,
+				p5node.sourceCodeLocation.startOffset,
 				prev,
 				null,
+
+				// @ts-ignore
 				(p5node as P5DocumentType).publicId || null,
+
+				// @ts-ignore
 				(p5node as P5DocumentType).systemId || null,
 			);
 			nodes.push(node);
 			break;
 		}
 		case '#text': {
-			if (!p5node.__location) {
+			if (!p5node.sourceCodeLocation) {
 				throw new Error('Invalid Syntax');
 			}
-			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
+			const raw = rawHtml.slice(p5node.sourceCodeLocation.startOffset, p5node.sourceCodeLocation.endOffset || p5node.sourceCodeLocation.startOffset);
 			if (parent && /^(?:script|noscript|style)$/i.test(parent.nodeName)) {
 				const node = new RawText<T, O>(
 					p5node.nodeName,
 					raw,
-					p5node.__location.line,
-					p5node.__location.col,
-					p5node.__location.startOffset,
+					p5node.sourceCodeLocation.startLine,
+					p5node.sourceCodeLocation.startCol,
+					p5node.sourceCodeLocation.startOffset,
 					prev,
 					null,
 					parent,
 				);
 				nodes.push(node);
 			} else {
-				const tokens = tagSplitter(raw, p5node.__location.line, p5node.__location.col);
-				let startOffset = p5node.__location.startOffset;
+				const tokens = tagSplitter(raw, p5node.sourceCodeLocation.startLine, p5node.sourceCodeLocation.startCol);
+				let startOffset = p5node.sourceCodeLocation.startOffset;
 
 				for (const token of tokens) {
 					const endOffset = startOffset + token.raw.length;
@@ -142,16 +135,16 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 			break;
 		}
 		case '#comment': {
-			if (!p5node.__location) {
+			if (!p5node.sourceCodeLocation) {
 				throw new Error('Invalid Syntax');
 			}
-			const raw = rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
+			const raw = rawHtml.slice(p5node.sourceCodeLocation.startOffset, p5node.sourceCodeLocation.endOffset || p5node.sourceCodeLocation.startOffset);
 			const node = new CommentNode<T, O>(
 				p5node.nodeName,
 				raw,
-				p5node.__location.line,
-				p5node.__location.col,
-				p5node.__location.startOffset,
+				p5node.sourceCodeLocation.startLine,
+				p5node.sourceCodeLocation.startCol,
+				p5node.sourceCodeLocation.startOffset,
 				prev,
 				null,
 				parent,
@@ -163,28 +156,28 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 		}
 		default: {
 			let node: Element<T, O> | OmittedElement<T, O> | null = null;
-			if (p5node.__location) {
+			if (p5node.sourceCodeLocation) {
 				const raw =
-					p5node.__location.startTag
+					p5node.sourceCodeLocation.startTag
 					?
-					rawHtml.slice(p5node.__location.startTag.startOffset, p5node.__location.startTag.endOffset)
+					rawHtml.slice(p5node.sourceCodeLocation.startTag.startOffset, p5node.sourceCodeLocation.startTag.endOffset)
 					:
-					rawHtml.slice(p5node.__location.startOffset, p5node.__location.endOffset || p5node.__location.startOffset);
-				const rawTag = parseRawTag(raw, p5node.__location.line, p5node.__location.col, p5node.__location.startOffset);
+					rawHtml.slice(p5node.sourceCodeLocation.startOffset, p5node.sourceCodeLocation.endOffset || p5node.sourceCodeLocation.startOffset);
+				const rawTag = parseRawTag(raw, p5node.sourceCodeLocation.startLine, p5node.sourceCodeLocation.startCol, p5node.sourceCodeLocation.startOffset);
 
 				const nodeName = rawTag.tagName;
 				const attributes: Attribute[] = rawTag.attrs;
 
 				let endTag: EndTagNode<T, O> | null = null;
-				const endTagLocation = p5node.__location.endTag;
+				const endTagLocation = p5node.sourceCodeLocation.endTag;
 				if (endTagLocation) {
 					const endTagRaw = rawHtml.slice(endTagLocation.startOffset, endTagLocation.endOffset);
 					const endTagName = endTagRaw.replace(/^<\/((?:[a-z]+:)?[a-z0-9]+(?:-[a-z0-9]+)*)\s*>/i, '$1');
 					endTag = new EndTagNode<T, O>(
 						endTagName,
 						endTagRaw,
-						endTagLocation.line,
-						endTagLocation.col,
+						endTagLocation.startLine,
+						endTagLocation.startCol,
 						endTagLocation.startOffset,
 						null,
 						null,
@@ -195,9 +188,9 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 				node = new Element<T, O>(
 					nodeName,
 					raw,
-					p5node.__location.line,
-					p5node.__location.col,
-					p5node.__location.startOffset,
+					p5node.sourceCodeLocation.startLine,
+					p5node.sourceCodeLocation.startCol,
+					p5node.sourceCodeLocation.startOffset,
 					prev,
 					null,
 					parent,
@@ -228,15 +221,13 @@ function nodeize<T, O> (p5node: P5ParentNode, prev: Node<T, O> | GhostNode<T, O>
 	return nodes;
 }
 
-function traverse<T, O> (rootNode: P5ParentNode, parentNode: ParentNode<T, O> | null = null, rawHtml: string): (Node<T, O> | GhostNode<T, O>)[] {
+function traverse<T, O> (rootNode: P5Node | P5Document | P5Fragment, parentNode: ParentNode<T, O> | null = null, rawHtml: string): (Node<T, O> | GhostNode<T, O>)[] {
 	const nodeList: (Node<T, O> | GhostNode<T, O>)[] = [];
 
-	let childNodes: P5ParentNode[] = rootNode.childNodes;
-	// @ts-ignore
-	if (childNodes.length === 0 && rootNode.content && rootNode.content.nodeName === '#document-fragment') {
-		// @ts-ignore
-		childNodes = rootNode.content.childNodes;
-	}
+	const childNodes: P5Node[] = rootNode.content ?
+		rootNode.content.childNodes
+		:
+		rootNode.childNodes;
 
 	let prev: Node<T, O> | GhostNode<T, O> | null = null;
 	for (const p5node of childNodes) {
@@ -252,45 +243,12 @@ function traverse<T, O> (rootNode: P5ParentNode, parentNode: ParentNode<T, O> | 
 	return nodeList;
 }
 
-interface P5Node extends parse5.DefaultTreeNode {}
-interface P5ParentNode extends P5Node, parse5.DefaultTreeParentNode {
-	tagName: string;
-	value: string;
-	attrs: {
-		name: string;
-		value: string;
-	}[];
-	namespaceURI: string;
-	childNodes: P5ParentNode[];
-	__location: {
-		line: number;
-		col: number;
-		startOffset: number;
-		endOffset: number | null;
-		startTag: {
-			line: number;
-			col: number;
-			startOffset: number;
-			endOffset: number;
-		} | null;
-		endTag: {
-			line: number;
-			col: number;
-			startOffset: number;
-			endOffset: number;
-		} | null;
-		attrs?: {
-			[attrName: string]: {
-				line: number;
-				col: number;
-				startOffset: number;
-				endOffset: number;
-			};
-		};
-	} | null;
+interface TraversalNode {
+	childNodes?: P5Node[];
+	content?: P5Fragment;
 }
 
-interface P5DocumentType extends P5ParentNode {
-	publicId: string | null;
-	systemId: string | null;
-}
+type P5Node = parse5.DefaultTreeElement & TraversalNode;
+type P5Document = parse5.DefaultTreeDocument & TraversalNode;
+type P5Fragment = parse5.DefaultTreeDocumentFragment & TraversalNode;
+type P5DocumentType = parse5.DefaultTreeDocumentType;
