@@ -516,11 +516,11 @@ test('error', (t) => {
 });
 
 test('error', (t) => {
-	t.is(t.throws(() => parseRawTag('< >').toJSON(), SyntaxError).message, 'Invalid tag name: < >');
+	t.is(t.throws(() => parseRawTag('< >').toJSON(), SyntaxError).message, 'Invalid tag name: "" in < >');
 });
 
 test('error', (t) => {
-	t.is(t.throws(() => parseRawTag('<要素>').toJSON(), SyntaxError).message, 'Invalid tag name: <要素>');
+	t.is(t.throws(() => parseRawTag('<要素>').toJSON(), SyntaxError).message, 'Invalid tag name: "要素" in <要素>');
 });
 
 test('noop', (t) => t.pass());

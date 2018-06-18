@@ -1,5 +1,5 @@
 import test from 'ava';
-import isPotentialCustomElementName from '../../../lib/dom/parser/potential-custom-element-name';
+import isPotentialCustomElementName from '../../../lib/dom/parser/is-potential-custom-element-name';
 
 test('div', (t) => t.false(isPotentialCustomElementName('div')));
 test('html', (t) => t.false(isPotentialCustomElementName('html')));

@@ -1,4 +1,5 @@
 import {
+	rePCEN,
 	reStartTag,
 	reTagName,
 } from './const';
@@ -20,11 +21,10 @@ export default function parseRawTag (raw: string, nodeLine: number, nodeCol: num
 	}
 	const tagWithAttrs = matches[1];
 
-	const tagNameMatches = tagWithAttrs.match(reTagName);
-	if (!tagNameMatches) {
-		throw new SyntaxError(`Invalid tag name: <${tagWithAttrs}>`);
+	const tagName = tagWithAttrs.split(/\s+/)[0];
+	if (!tagName || !reTagName.test(tagName) && !rePCEN.test(tagName)) {
+		throw new SyntaxError(`Invalid tag name: "${tagName}" in <${tagWithAttrs}>`);
 	}
-	const tagName = tagNameMatches[0];
 	let rawAttrs = tagWithAttrs.substring(tagName.length);
 
 	col += tagName.length + 1;
