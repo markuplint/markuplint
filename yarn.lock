@@ -323,6 +323,12 @@
   version "0.3.29"
   resolved "https://registry.yarnpkg.com/@types/cli-color/-/cli-color-0.3.29.tgz#c83a71fe02c8c7e1ccec048dd6a2458d1f6c96ea"
 
+"@types/cosmiconfig@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@types/cosmiconfig/-/cosmiconfig-5.0.2.tgz#84f8374b75c656d150e3f804b537aeca1b5eed80"
+  dependencies:
+    "@types/node" "*"
+
 "@types/deep-assign@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@types/deep-assign/-/deep-assign-0.1.1.tgz#c10aa2d6202774015f5820ed303b82ab3b0bde9b"

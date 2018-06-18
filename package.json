@@ -44,6 +44,7 @@
   },
   "devDependencies": {
     "@types/cli-color": "^0.3.29",
+    "@types/cosmiconfig": "^5.0.2",
     "@types/deep-assign": "^0.1.1",
     "@types/get-stdin": "^5.0.1",
     "@types/glob": "^5.0.35",
