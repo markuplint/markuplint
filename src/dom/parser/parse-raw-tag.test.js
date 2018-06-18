@@ -488,19 +488,19 @@ c"
 });
 
 test('error', (t) => {
-	t.is(t.throws(() => parseRawTag('<div').toJSON(), SyntaxError).message, 'Invalid tag syntax');
+	t.is(t.throws(() => parseRawTag('<div').toJSON(), SyntaxError).message, 'Invalid tag syntax: <div');
 });
 
 test('error', (t) => {
-	t.is(t.throws(() => parseRawTag('<>').toJSON(), SyntaxError).message, 'Invalid tag syntax');
+	t.is(t.throws(() => parseRawTag('<>').toJSON(), SyntaxError).message, 'Invalid tag syntax: <>');
 });
 
 test('error', (t) => {
-	t.is(t.throws(() => parseRawTag('< >').toJSON(), SyntaxError).message, 'Invalid tag name');
+	t.is(t.throws(() => parseRawTag('< >').toJSON(), SyntaxError).message, 'Invalid tag name: < >');
 });
 
 test('error', (t) => {
-	t.is(t.throws(() => parseRawTag('<要素>').toJSON(), SyntaxError).message, 'Invalid tag name');
+	t.is(t.throws(() => parseRawTag('<要素>').toJSON(), SyntaxError).message, 'Invalid tag name: <要素>');
 });
 
 test('noop', (t) => t.pass());

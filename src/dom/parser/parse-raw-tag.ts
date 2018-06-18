@@ -16,13 +16,13 @@ export default function parseRawTag (raw: string, nodeLine: number, nodeCol: num
 
 	const matches = raw.match(reStartTag);
 	if (!matches) {
-		throw new SyntaxError('Invalid tag syntax');
+		throw new SyntaxError(`Invalid tag syntax: ${raw}`);
 	}
 	const tagWithAttrs = matches[1];
 
 	const tagNameMatches = tagWithAttrs.match(reTagName);
 	if (!tagNameMatches) {
-		throw new SyntaxError('Invalid tag name');
+		throw new SyntaxError(`Invalid tag name: <${tagWithAttrs}>`);
 	}
 	const tagName = tagNameMatches[0];
 	let rawAttrs = tagWithAttrs.substring(tagName.length);
