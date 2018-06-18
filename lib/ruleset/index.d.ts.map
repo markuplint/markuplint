@@ -1,1 +1,0 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../src/ruleset/index.ts"],"names":[],"mappings":"AAEA,OAAO,OAAO,EAAE,EAAE,cAAc,EAAE,MAAM,QAAQ,CAAC;AAMjD,MAAM,CAAC,OAAO,uBAAwB,SAAQ,OAAO;IACpD,gBAAuB,MAAM,SAAe;IAE/B,QAAQ,CACpB,UAAU,EAAE,MAAM,EAClB,gBAAgB,EAAE,MAAM,GACtB,OAAO,CAAC,cAAc,CAAC;CA8C1B"}

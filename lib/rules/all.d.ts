@@ -1,3 +1,0 @@
-declare const _default: (import("src/rule/custom-rule").default<boolean, import("src/rules/markuplint-rule-attr-spasing").AttrSpasingOptions> | import("src/rule/custom-rule").default<boolean, null> | import("src/rule/custom-rule").default<import("src/rules/markuplint-rule-class-naming").Value, null> | import("src/rule/custom-rule").default<import("src/rules/markuplint-rule-indentation").Value, import("src/rules/markuplint-rule-indentation").IndentationOptions> | import("src/rule/custom-rule").default<boolean, import("src/rules/markuplint-rule-required-h1").RequiredH1Options>)[];
-export default _default;
-//# sourceMappingURL=all.d.ts.map

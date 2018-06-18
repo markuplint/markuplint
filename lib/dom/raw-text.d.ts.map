@@ -1,1 +1,0 @@
-{"version":3,"file":"raw-text.d.ts","sourceRoot":"","sources":["../../src/dom/raw-text.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAE,MAAM,GAAG,CAAC;AAE7B,OAAO,QAAQ,MAAM,aAAa,CAAC;AAEnC,MAAM,CAAC,OAAO,eAAe,CAAC,EAAE,CAAC,CAAE,SAAQ,QAAQ,CAAC,CAAC,EAAE,CAAC,CAAC;IACxD,SAAgB,IAAI,EAAE,QAAQ,CAAa;CAC3C"}

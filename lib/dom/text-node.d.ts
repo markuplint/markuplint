@@ -1,6 +1,0 @@
-import { NodeType } from '.';
-import Node from './node';
-export default class TextNode<T, O> extends Node<T, O> {
-    readonly type: NodeType;
-}
-//# sourceMappingURL=text-node.d.ts.map

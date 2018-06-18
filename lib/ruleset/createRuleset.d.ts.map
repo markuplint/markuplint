@@ -1,1 +1,0 @@
-{"version":3,"file":"createRuleset.d.ts","sourceRoot":"","sources":["../../src/ruleset/createRuleset.ts"],"names":[],"mappings":"AAAA,OAAO,UAAU,MAAM,qBAAqB,CAAC;AAE7C,OAAO,EAAE,iBAAiB,EAAE,MAAM,iBAAiB,CAAC;AAIpD,OAAO,OAAO,MAAM,GAAG,CAAC;AAExB,sCACC,MAAM,EAAE,iBAAiB,GAAG,MAAM,EAClC,KAAK,EAAE,UAAU,EAAE,oBASnB"}
