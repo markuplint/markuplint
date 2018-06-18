@@ -16,6 +16,7 @@
   "scripts": {
     "cli": "node ./bin/",
     "debugger": "node ./lib/debugger/",
+    "prepublish": "find ./lib -name '*.ts' | xargs rm -f & find ./lib -name '*.js' | xargs rm -f && tsc & tsc -p tsconfig.remote.json",
     "build": "find ./lib -name '*.ts' | xargs rm -f & find ./lib -name '*.js' | xargs rm -f && tsc & tsc -p tsconfig.remote.json",
     "dev": "tsc --watch & ts --watch -p tsconfig.remote.json & ava --verbose --watch",
     "dev:watch": "tsc --watch & ts --watch -p tsconfig.remote.json",
