@@ -1,5 +1,5 @@
 import test from 'ava';
-import * as markuplint from '../../../lib/';
+import * as markuplint from '../../../lib';
 import rule from '../../../lib/rules/markuplint-rule-case-sensitive-tag-name';
 
 test('lower case', async (t) => {
@@ -20,7 +20,7 @@ test('upper case', async (t) => {
 		'en',
 	);
 	t.is(r[0].level, 'warning');
-	t.is(r[0].message, 'Tag name of HTML should be lowercase');
+	t.is(r[0].message, 'Tag name of HTML element should be lowercase');
 	t.is(r[0].raw, 'DIV');
 });
 
@@ -32,7 +32,7 @@ test('upper case', async (t) => {
 		'en',
 	);
 	t.is(r[0].level, 'error');
-	t.is(r[0].message, 'Tag name of HTML must be uppercase');
+	t.is(r[0].message, 'Tag name of HTML element must be uppercase');
 });
 
 test('upper case', async (t) => {
@@ -73,6 +73,26 @@ test('foreign elements', async (t) => {
 		'en',
 	);
 	t.is(r.length, 0);
+});
+
+test('custom elements', async (t) => {
+	const r = await markuplint.verify(
+		'<xxx-hoge>lorem</xxx-hoge>',
+		{rules: {'case-sensitive-tag-name': true}},
+		[rule],
+		'en',
+	);
+	t.is(r.length, 0);
+});
+
+test('custom elements', async (t) => {
+	const r = await markuplint.verify(
+		'<XXX-hoge>lorem</XXX-hoge>',
+		{rules: {'case-sensitive-tag-name': true}},
+		[rule],
+		'en',
+	);
+	t.is(r[0].message, 'Tag name of HTML element should be lowercase');
 });
 
 test('fix - upper case', async (t) => {

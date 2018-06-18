@@ -1,6 +1,6 @@
 import {
 	NodeType,
-} from './';
+} from '.';
 
 import TextNode from './text-node';
 

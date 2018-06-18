@@ -1,5 +1,5 @@
 import test from 'ava';
-import * as markuplint from '../../../lib/';
+import * as markuplint from '../../../lib';
 import rule from '../../../lib/rules/markuplint-rule-parse-error';
 
 test(async (t) => {

@@ -5,11 +5,11 @@ import meow from 'meow';
 // @ts-ignore
 import promisify from 'util.promisify';
 
-import { fixFile, verify, verifyFile } from '../';
+import { fixFile, verify, verifyFile } from '..';
 import {
 	simpleReporter,
 	standardReporter,
-} from '../reporter/';
+} from '../reporter';
 
 import { VerifiedResult } from '../rule';
 import ruleModulesLoader from '../rule/loader';

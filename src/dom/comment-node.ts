@@ -2,7 +2,7 @@ import {
 	AmbiguousNode,
 	NodeType,
 	ParentNode,
-} from './';
+} from '.';
 
 import Node from './node';
 

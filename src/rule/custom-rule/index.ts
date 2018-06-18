@@ -1,16 +1,15 @@
 import Document from '../../dom/document';
-import Messenger, { Message } from '../../locale/messenger';
+import Messenger from '../../locale/messenger';
 import { ConfigureFileJSONRuleOption } from '../../ruleset/JSONInterface';
 import Ruleset from '../../ruleset/core';
 
-import charLocator, { Location } from '../../dom/parser/charLocator';
+import charLocator from '../../dom/parser/charLocator';
 
 import {
-	CustomVerifiedReturn,
 	RuleConfig,
 	Severity,
 	VerifiedResult,
-} from '../';
+} from '..';
 import Options from './options';
 
 export default class CustomRule<T = null, O = {}> {

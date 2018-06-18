@@ -1,7 +1,7 @@
 import {
 	AmbiguousNode,
 	NodeType,
-} from './';
+} from '.';
 
 import Node from './node';
 

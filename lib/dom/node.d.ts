@@ -1,7 +1,6 @@
-import { AmbiguousNode, Indentation, NodeType, ParentNode } from './';
+import { AmbiguousNode, Indentation, NodeType, ParentNode } from '.';
 import Document from './document';
 import Token from './token';
-import { RuleConfig } from '../rule';
 import { ConfigureFileJSONRules } from '../ruleset/JSONInterface';
 export default abstract class Node<T = null, O = {}> extends Token {
     readonly type: NodeType;
@@ -30,6 +29,6 @@ export default abstract class Node<T = null, O = {}> extends Token {
         endOffset: number;
     };
     is(type: NodeType): boolean;
-    readonly rule: RuleConfig<T, O>;
+    readonly rule: import("src/rule").RuleConfig<T, O>;
     readonly syntaxicalParentNode: Node<T, O> | null;
 }

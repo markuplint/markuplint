@@ -487,6 +487,26 @@ c"
 	);
 });
 
+test('namespace', (t) => {
+	t.deepEqual(
+		parseRawTag('<ns:div>', 1, 1, 0).toJSON(),
+		{
+			tagName: 'ns:div',
+			attrs: [],
+		}
+	);
+});
+
+test('custom element', (t) => {
+	t.deepEqual(
+		parseRawTag('<a😁-element>', 1, 1, 0).toJSON(),
+		{
+			tagName: 'a😁-element',
+			attrs: [],
+		}
+	);
+});
+
 test('error', (t) => {
 	t.is(t.throws(() => parseRawTag('<div').toJSON(), SyntaxError).message, 'Invalid tag syntax: <div');
 });

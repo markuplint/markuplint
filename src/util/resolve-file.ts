@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
-import readTextFile from '../util/read-text-file';
 import isRemoteFile from './is-remote-file';
+import readTextFile from './read-text-file';
 
 export async function resolveFile (address: string) {
 	if (isRemoteFile(address)) {

@@ -1,4 +1,4 @@
-import { AmbiguousNode, NodeType, ParentNode } from './';
+import { AmbiguousNode, NodeType, ParentNode } from '.';
 import { ConfigureFileJSONRules } from '../ruleset/JSONInterface';
 export default abstract class GhostNode<T = null, O = {}> {
     readonly type: NodeType;

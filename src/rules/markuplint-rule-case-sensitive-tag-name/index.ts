@@ -14,14 +14,13 @@ export default CustomRule.create<Value, null>({
 	async verify (document, messages) {
 		const reports: VerifyReturn[] = [];
 		await document.walk(async (node) => {
-			if (
-				(node instanceof Element && node.namespaceURI === 'http://www.w3.org/1999/xhtml')
-				||
-				node instanceof EndTagNode
-			) {
+			if (node instanceof Element || node instanceof EndTagNode) {
+				if (node.isForeignElement) {
+					return;
+				}
 				const ms = node.rule.severity === 'error' ? 'must' : 'should';
 				const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
-				const message = messages(`{0} of {1} ${ms} be {2}`, 'Tag name', 'HTML', `${node.rule.value}case`);
+				const message = messages(`{0} of {1} ${ms} be {2}`, 'Tag name', 'HTML element', `${node.rule.value}case`);
 				if (deny.test(node.nodeName)) {
 					reports.push({
 						severity: node.rule.severity,
@@ -42,12 +41,10 @@ export default CustomRule.create<Value, null>({
 	},
 	async fix (document) {
 		await document.walk(async (node) => {
-			if (
-				(node instanceof Element && node.namespaceURI === 'http://www.w3.org/1999/xhtml')
-				||
-				node instanceof EndTagNode
-			) {
-				const ms = node.rule.severity === 'error' ? 'must' : 'should';
+			if (node instanceof Element || node instanceof EndTagNode) {
+				if (node.isForeignElement) {
+					return;
+				}
 				const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
 				if (deny.test(node.nodeName)) {
 					if (node.rule.value === 'lower') {

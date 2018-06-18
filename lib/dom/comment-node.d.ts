@@ -1,4 +1,4 @@
-import { AmbiguousNode, NodeType, ParentNode } from './';
+import { AmbiguousNode, NodeType, ParentNode } from '.';
 import Node from './node';
 export default class CommentNode<T, O> extends Node<T, O> {
     readonly type: NodeType;

@@ -1,10 +1,7 @@
-// tslint:disable:no-magic-numbers
-import path from 'path';
-
 import c from 'cli-color';
 
 import Node from '../dom/node';
-import parser from '../dom/parser/';
+import parser from '../dom/parser';
 
 import readTextFile from '../util/read-text-file';
 

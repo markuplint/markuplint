@@ -1,5 +1,4 @@
 import CustomRule from '../rule/custom-rule';
-import { RuleConfig } from '../rule';
 import Ruleset from '../ruleset';
 import CommentNode from './comment-node';
 import Element from './element';
@@ -40,5 +39,5 @@ export default class Document<T, O> {
     syncWalkOn(type: 'EndTag', walker: SyncWalker<T, O, EndTagNode<T, O>>): void;
     getNode(index: number): Node<T, O> | GhostNode<T, O> | null;
     setRule(rule: CustomRule<T, O> | null): void;
-    readonly globalRule: RuleConfig<T, O>;
+    readonly globalRule: import("src/rule").RuleConfig<T, O>;
 }

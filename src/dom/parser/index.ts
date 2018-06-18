@@ -18,7 +18,7 @@ import {
 	ExistentLocation,
 	NodeType,
 	ParentNode,
-} from '../';
+} from '..';
 
 import Document from '../document';
 
@@ -201,6 +201,10 @@ function nodeize<T, O> (p5node: P5Node, prev: Node<T, O> | GhostNode<T, O> | nul
 				if (endTag) {
 					// @ts-ignore
 					endTag.startTagNode = node;
+					// @ts-ignore
+					endTag.isForeignElement = node.isForeignElement;
+					// @ts-ignore
+					endTag.isPotentialCustomElement = node.isPotentialCustomElement;
 				}
 
 			} else {

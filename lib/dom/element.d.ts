@@ -1,4 +1,4 @@
-import { AmbiguousNode, NodeType, ParentNode } from './';
+import { AmbiguousNode, NodeType, ParentNode } from '.';
 import Attribute from './attribute';
 import EndTagNode from './end-tag-node';
 import GhostNode from './ghost-node';
@@ -8,6 +8,8 @@ export default class Element<T, O> extends Node<T, O> {
     readonly type: NodeType;
     readonly attributes: Attribute[];
     readonly namespaceURI: string;
+    readonly isForeignElement: boolean;
+    readonly isPotentialCustomElement: boolean;
     readonly closeToken: Token;
     childNodes: (Node<T, O> | GhostNode<T, O>)[];
     endTagNode: EndTagNode<T, O> | null;

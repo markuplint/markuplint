@@ -1,10 +1,8 @@
-import fs from 'fs';
 import path from 'path';
-
 
 import osLocale from '../osLocale';
 
-import Messenger, { LocaleSet } from './';
+import Messenger, { LocaleSet } from '.';
 
 import readTextFile from '../../util/read-text-file';
 

@@ -2,9 +2,7 @@ import {
 	AmbiguousNode,
 	NodeType,
 	ParentNode,
-} from './';
-
-import Node from './node';
+} from '.';
 
 import {
 	ConfigureFileJSONRules,

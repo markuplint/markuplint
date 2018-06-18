@@ -3,15 +3,11 @@ import {
 	Indentation,
 	NodeType,
 	ParentNode,
-} from './';
+} from '.';
 
 import Document from './document';
 import GhostNode from './ghost-node';
 import Token from './token';
-
-import {
-	RuleConfig,
-} from '../rule';
 
 import {
 	ConfigureFileJSONRules,

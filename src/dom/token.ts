@@ -1,4 +1,4 @@
-import { Indentation } from './';
+import { Indentation } from '.';
 import Location from './location';
 
 import getCol from './parser/get-col';

@@ -4,7 +4,7 @@ import { ConfigureFileJSON } from './JSONInterface';
 
 import searchAndLoad from './searchAndLoad';
 
-import Ruleset from './';
+import Ruleset from '.';
 
 export default async function createRuleset (config: ConfigureFileJSON | string, rules: CustomRule[]) {
 	const ruleset = new Ruleset(rules);

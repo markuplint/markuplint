@@ -4,16 +4,12 @@ import {
 	ConfigureFileJSONRuleOption,
 } from '../ruleset/JSONInterface';
 
-import {
-	RuleConfig,
-} from '../rule';
-
 import Ruleset from '../ruleset';
 
 import {
 	Indentation,
 	NodeType,
-} from './';
+} from '.';
 
 import CommentNode from './comment-node';
 import Doctype from './doctype';
@@ -27,10 +23,7 @@ import RawText from './raw-text';
 import TextNode from './text-node';
 
 import { syncWalk, SyncWalker } from './sync-walk';
-import { walk, Walker } from './walk';
-
-import getCol from './parser/get-col';
-import getLine from './parser/get-line';
+import { Walker } from './walk';
 
 export default class Document<T, O> {
 	public rule: CustomRule<T, O> | null = null;

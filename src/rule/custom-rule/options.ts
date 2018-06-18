@@ -1,7 +1,7 @@
 import Document from '../../dom/document';
 import { Message } from '../../locale/messenger';
 
-import { CustomVerifiedReturn, Severity } from '../';
+import { CustomVerifiedReturn, Severity } from '..';
 
 export default interface Options<T = null, O = {}> {
 	name: string;

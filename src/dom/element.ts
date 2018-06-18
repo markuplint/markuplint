@@ -3,7 +3,7 @@ import {
 	NodeType,
 	ParentNode,
 	TagNodeLocation,
-} from './';
+} from '.';
 
 import Attribute from './attribute';
 import EndTagNode from './end-tag-node';
@@ -11,12 +11,16 @@ import GhostNode from './ghost-node';
 import Node from './node';
 import Token from './token';
 
+import isPotentialCustomElementName from './parser/is-potential-custom-element-name';
+
 import cssSelector from './css-selector';
 
 export default class Element<T, O> extends Node<T, O> {
 	public readonly type: NodeType = 'Element';
 	public readonly attributes: Attribute[];
 	public readonly namespaceURI: string;
+	public readonly isForeignElement: boolean;
+	public readonly isPotentialCustomElement: boolean;
 	public readonly closeToken: Token;
 	public childNodes: (Node<T, O> | GhostNode<T, O>)[] = [];
 	public endTagNode: EndTagNode<T, O> | null = null;
@@ -26,6 +30,8 @@ export default class Element<T, O> extends Node<T, O> {
 		super(nodeName, raw, line, col, startOffset, prevNode, nextNode, parentNode);
 		this.attributes = attributes;
 		this.namespaceURI = namespaceURI;
+		this.isForeignElement = namespaceURI !== 'http://www.w3.org/1999/xhtml';
+		this.isPotentialCustomElement = isPotentialCustomElementName(nodeName);
 		this.endTagNode = endTag;
 
 		const ct = this._parseCloseToken();
