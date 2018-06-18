@@ -5,3 +5,4 @@ export interface AttrSpasingOptions {
 }
 declare const _default: CustomRule<boolean, AttrSpasingOptions>;
 export default _default;
+//# sourceMappingURL=index.d.ts.map

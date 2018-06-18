@@ -5,3 +5,4 @@ export interface RequiredH1Options {
 }
 declare const _default: CustomRule<boolean, RequiredH1Options>;
 export default _default;
+//# sourceMappingURL=index.d.ts.map

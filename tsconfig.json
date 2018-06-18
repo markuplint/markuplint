@@ -2,9 +2,15 @@
   "compilerOptions": {
     "target": "es2017",
     "module": "commonjs",
-    "declaration":  true,
     "strict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
     "esModuleInterop": true,
+    "noImplicitAny": true,
+    "declaration": true,
+    "declarationMap": true,
     "lib": [
       "es2015",
       "es2016",
@@ -12,10 +18,7 @@
       "esnext"
     ],
     "outDir": "./lib/",
-    "baseUrl": ".",
-    "paths": {
-      "parse5": ["./node_modules/parse5/lib/index.d.ts"]
-    }
+    "baseUrl": "."
   },
   "exclude": [
     "node_modules",

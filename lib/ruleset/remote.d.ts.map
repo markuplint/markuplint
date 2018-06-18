@@ -1,0 +1,1 @@
+{"version":3,"file":"remote.d.ts","sourceRoot":"","sources":["../../src/ruleset/remote.ts"],"names":[],"mappings":"AAEA,OAAO,OAAO,EAAE,EAAE,cAAc,EAAE,MAAM,QAAQ,CAAC;AAQjD,MAAM,CAAC,OAAO,uBAAwB,SAAQ,OAAO;IAEpD,gBAAuB,MAAM,SAAe;IAE/B,QAAQ,CAAE,UAAU,EAAE,MAAM,EAAE,gBAAgB,EAAE,MAAM,GAAG,OAAO,CAAC,cAAc,CAAC;CA0B7F"}

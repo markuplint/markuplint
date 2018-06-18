@@ -1,0 +1,1 @@
+{"version":3,"file":"createRuleset.remote.d.ts","sourceRoot":"","sources":["../../src/ruleset/createRuleset.remote.ts"],"names":[],"mappings":"AAAA,OAAO,UAAU,MAAM,qBAAqB,CAAC;AAE7C,OAAO,EAAE,iBAAiB,EAAE,MAAM,iBAAiB,CAAC;AAEpD,OAAO,OAAO,MAAM,UAAU,CAAC;AAE/B,sCAA6C,MAAM,EAAE,iBAAiB,GAAG,MAAM,EAAE,KAAK,EAAE,UAAU,EAAE,oBAQnG"}

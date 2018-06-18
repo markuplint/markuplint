@@ -13,3 +13,4 @@ export declare function fixFile(filePath: string, rules?: CustomRule[], configFi
     origin: string;
     fixed: string;
 }>;
+//# sourceMappingURL=index.d.ts.map

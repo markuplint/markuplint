@@ -35,3 +35,4 @@ export interface ElementLocation extends TagNodeLocation {
 }
 export declare type AmbiguousNode<T, O> = Node<T, O> | GhostNode<T, O> | null;
 export declare type ParentNode<T, O> = Element<T, O> | OmittedElement<T, O>;
+//# sourceMappingURL=index.d.ts.map

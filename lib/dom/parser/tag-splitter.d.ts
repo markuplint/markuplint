@@ -5,3 +5,4 @@ export interface N {
     col: number;
 }
 export default function tagSplitter(raw: string, line: number, col: number): N[];
+//# sourceMappingURL=tag-splitter.d.ts.map

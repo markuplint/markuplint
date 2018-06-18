@@ -12,3 +12,4 @@ export default abstract class GhostNode<T = null, O = {}> {
     constructor(nodeName: string, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: ParentNode<T, O> | null);
     toString(): string;
 }
+//# sourceMappingURL=ghost-node.d.ts.map

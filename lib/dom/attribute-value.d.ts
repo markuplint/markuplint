@@ -19,3 +19,4 @@ export default class AttributeValue extends Token {
         quote: "\"" | "'" | null;
     };
 }
+//# sourceMappingURL=attribute-value.d.ts.map

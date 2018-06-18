@@ -29,3 +29,4 @@ export default abstract class Ruleset {
      */
     private _extendsRules;
 }
+//# sourceMappingURL=core.d.ts.map

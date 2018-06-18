@@ -50,3 +50,4 @@ export default class Attribute extends Token {
         invalid: boolean;
     };
 }
+//# sourceMappingURL=attribute.d.ts.map

@@ -6,3 +6,4 @@ export interface IndentationOptions {
 }
 declare const _default: CustomRule<Value, IndentationOptions>;
 export default _default;
+//# sourceMappingURL=index.d.ts.map

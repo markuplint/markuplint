@@ -8,3 +8,4 @@ export default class EndTagNode<T, O> extends Node<T, O> {
     readonly isPotentialCustomElement: boolean;
     readonly raw: string;
 }
+//# sourceMappingURL=end-tag-node.d.ts.map

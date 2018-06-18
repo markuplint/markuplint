@@ -21,3 +21,4 @@ export default class CustomRule<T = null, O = {}> {
     fix(document: Document<T, O>, config: RuleConfig<T, O>, ruleset: Ruleset): Promise<void>;
     optimizeOption(option: ConfigureFileJSONRuleOption<T, O> | T | boolean): RuleConfig<T, O>;
 }
+//# sourceMappingURL=index.d.ts.map

@@ -6,3 +6,4 @@ export declare type QuoteMap = {
 };
 declare const _default: CustomRule<Type, null>;
 export default _default;
+//# sourceMappingURL=index.d.ts.map

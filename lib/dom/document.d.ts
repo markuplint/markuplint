@@ -41,3 +41,4 @@ export default class Document<T, O> {
     setRule(rule: CustomRule<T, O> | null): void;
     readonly globalRule: import("src/rule").RuleConfig<T, O>;
 }
+//# sourceMappingURL=document.d.ts.map

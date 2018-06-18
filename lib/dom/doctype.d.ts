@@ -6,3 +6,4 @@ export default class Doctype<T, O> extends Node<T, O> {
     readonly dtd: string | null;
     constructor(nodeName: string, raw: string, line: number, col: number, startOffset: number, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, publicId: string | null, systemId: string | null);
 }
+//# sourceMappingURL=doctype.d.ts.map

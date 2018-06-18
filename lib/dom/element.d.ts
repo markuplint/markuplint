@@ -23,3 +23,4 @@ export default class Element<T, O> extends Node<T, O> {
     matches(selector: string): boolean;
     private _parseCloseToken;
 }
+//# sourceMappingURL=element.d.ts.map

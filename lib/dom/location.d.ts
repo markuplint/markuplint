@@ -15,3 +15,4 @@ export default class Location {
         endOffset: number;
     };
 }
+//# sourceMappingURL=location.d.ts.map

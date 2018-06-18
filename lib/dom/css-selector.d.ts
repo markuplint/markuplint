@@ -62,3 +62,4 @@ export declare class CSSSelector {
     match<T, O>(element: Element<T, O>): boolean;
 }
 export default function (selector: string): CSSSelector;
+//# sourceMappingURL=css-selector.d.ts.map

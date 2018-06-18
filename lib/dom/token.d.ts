@@ -21,3 +21,4 @@ export default class Token {
     };
     fix(raw: string): void;
 }
+//# sourceMappingURL=token.d.ts.map

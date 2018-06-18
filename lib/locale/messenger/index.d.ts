@@ -14,3 +14,4 @@ export default class Messenger {
     private constructor();
     message(): Message;
 }
+//# sourceMappingURL=index.d.ts.map

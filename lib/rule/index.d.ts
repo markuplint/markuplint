@@ -22,3 +22,4 @@ export interface RuleConfig<T = null, O = {}> {
     value: T;
     option: O;
 }
+//# sourceMappingURL=index.d.ts.map

@@ -8,3 +8,4 @@ export default class OmittedElement<T, O> extends GhostNode<T, O> {
     childNodes: (Node<T, O> | GhostNode<T, O>)[];
     constructor(nodeName: string, prevNode: AmbiguousNode<T, O>, nextNode: AmbiguousNode<T, O>, parentNode: ParentNode<T, O> | null, namespaceURI: string);
 }
+//# sourceMappingURL=omitted-element.d.ts.map

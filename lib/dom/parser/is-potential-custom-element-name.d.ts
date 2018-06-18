@@ -19,3 +19,4 @@
  * @param tagName
  */
 export default function isPotentialCustomElementName(tagName: string): boolean;
+//# sourceMappingURL=is-potential-custom-element-name.d.ts.map

@@ -9,3 +9,4 @@ export default interface Options<T = null, O = {}> {
     verify(document: Document<T, O>, message: Message): Promise<CustomVerifiedReturn[]>;
     fix?(document: Document<T, O>): Promise<void>;
 }
+//# sourceMappingURL=options.d.ts.map

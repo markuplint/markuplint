@@ -33,3 +33,4 @@ export interface NodeRuleAttrCondition {
      */
     values: string[];
 }
+//# sourceMappingURL=JSONInterface.d.ts.map

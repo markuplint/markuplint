@@ -32,3 +32,4 @@ export default abstract class Node<T = null, O = {}> extends Token {
     readonly rule: import("src/rule").RuleConfig<T, O>;
     readonly syntaxicalParentNode: Node<T, O> | null;
 }
+//# sourceMappingURL=node.d.ts.map

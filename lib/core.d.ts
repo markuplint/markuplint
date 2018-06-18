@@ -11,3 +11,4 @@ export default class Markuplint {
     verify(): Promise<VerifiedResult[]>;
     fix(): Promise<string>;
 }
+//# sourceMappingURL=core.d.ts.map

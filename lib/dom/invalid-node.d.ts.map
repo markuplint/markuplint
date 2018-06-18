@@ -1,0 +1,1 @@
+{"version":3,"file":"invalid-node.d.ts","sourceRoot":"","sources":["../../src/dom/invalid-node.ts"],"names":[],"mappings":"AAAA,OAAO,EACN,QAAQ,EACR,MAAM,GAAG,CAAC;AAEX,OAAO,IAAI,MAAM,QAAQ,CAAC;AAE1B,MAAM,CAAC,OAAO,mBAAmB,CAAC,EAAE,CAAC,CAAE,SAAQ,IAAI,CAAC,CAAC,EAAE,CAAC,CAAC;IACxD,SAAgB,IAAI,EAAE,QAAQ,CAAa;CAC3C"}
