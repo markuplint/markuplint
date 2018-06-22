@@ -17,17 +17,21 @@ export default async function(locale?: string) {
 		return Messenger.create(null);
 	}
 
-	let json = '{}';
+	let localeSet: LocaleSet;
+	const filePath = path.join(__dirname, '..', '..', '..', 'i18n', `${localeId}.json`);
+
 	try {
-		const filePath = path.join(__dirname, '..', 'i18n', `${localeId}.json`);
-		json = await readTextFile(filePath);
+		const json = await readTextFile(filePath);
+		localeSet = await JSON.parse(json);
 	} catch (err) {
+		localeSet = {
+			locale: '',
+			keywords: {},
+		};
 		console.warn(
-			`⚠ [markuplint] Missing locale message file ${localeId}.json`,
+			`⚠ [markuplint] Missing locale message file ${filePath}`,
 		);
 	}
-
-	const localeSet: LocaleSet = await JSON.parse(json);
 
 	return Messenger.create(localeSet);
 }
