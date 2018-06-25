@@ -22,7 +22,7 @@ export default function parseRawTag(
 	}
 	const tagWithAttrs = matches[1];
 
-	const tagName = tagWithAttrs.split(/\s+/)[0];
+	const tagName = tagWithAttrs.split(/[\u0009\u000A\u000C\u0020\/]/)[0];
 	if (!tagName || (!reTagName.test(tagName) && !rePCEN.test(tagName))) {
 		throw new SyntaxError(
 			`Invalid tag name: "${tagName}" in <${tagWithAttrs}>`,

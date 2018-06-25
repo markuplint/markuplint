@@ -1,6 +1,6 @@
 export const reStartTag = /<([^>]+)>/;
 
-export const reTagName = /^(?:[a-z][a-z0-9]*:)?[a-z0-9]+/i;
+export const reTagName = /^(?:[a-z][^\u0000\u0009\u000A\u000C\u0020\/>]*)/i;
 
 /**
  * PotentialCustomElementName

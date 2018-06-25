@@ -487,6 +487,26 @@ c"
 	);
 });
 
+test('void element', (t) => {
+	t.deepEqual(
+		parseRawTag('<img/>', 1, 1, 0).toJSON(),
+		{
+			tagName: 'img',
+			attrs: [],
+		}
+	);
+});
+
+test('void element', (t) => {
+	t.deepEqual(
+		parseRawTag('<void />', 1, 1, 0).toJSON(),
+		{
+			tagName: 'void',
+			attrs: [],
+		}
+	);
+});
+
 test('namespace', (t) => {
 	t.deepEqual(
 		parseRawTag('<ns:div>', 1, 1, 0).toJSON(),
@@ -502,6 +522,16 @@ test('custom element', (t) => {
 		parseRawTag('<a😁-element>', 1, 1, 0).toJSON(),
 		{
 			tagName: 'a😁-element',
+			attrs: [],
+		}
+	);
+});
+
+test('custom element with full-width space', (t) => {
+	t.deepEqual(
+		parseRawTag('<a　-element>', 1, 1, 0).toJSON(),
+		{
+			tagName: 'a　-element',
 			attrs: [],
 		}
 	);
