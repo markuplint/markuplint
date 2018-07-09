@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es5",
+    "strict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "lib": [
+      "dom",
+      "es2015",
+      "es2016",
+      "es2017",
+      "esnext"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@markuplint/*": [
+        "./packages/@markuplint/*/src"
+      ],
+      "*": [
+        "./packages/*/src"
+      ]
+    },
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
