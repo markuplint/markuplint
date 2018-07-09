@@ -1,6 +1,8 @@
 // import test from 'ava';
 import parser from './';
 
+import { MLASTNodeType } from '@markuplint/ml-ast';
+
 // describe('isDocumentFragment', () => {
 // 	test('<!doctype>', () => {
 // 		t.false(isDocumentFragment('<!DOCTYPE html>'));
@@ -72,7 +74,8 @@ import parser from './';
 describe('parser', () => {
 	it('<!DOCTYPE html>', () => {
 		const d = parser('<!DOCTYPE html>');
-		expect(d[0].type).toBe('Doctype');
+		console.dir(d);
+		expect(d[0].type).toBe(MLASTNodeType.Doctype);
 		expect(d[1].nodeName).toBe('html');
 		expect(d[2].nodeName).toBe('head');
 		expect(d[3].nodeName).toBe('body');

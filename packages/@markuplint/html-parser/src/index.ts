@@ -12,6 +12,8 @@ export default function parser(html: string) {
 		? (parse5.parseFragment(html, p5options) as P5Fragment)
 		: (parse5.parse(html, p5options) as P5Document);
 
+	console.log(doc);
+
 	const nodeTree: MLASTNode[] = traverse(doc, null, html);
 
 	return nodeTree;
@@ -29,13 +31,26 @@ function nodeize(
 ): MLASTNode[] {
 	const nodes: MLASTNode[] = [];
 	if (!p5node.sourceCodeLocation) {
-		// node = new OmittedElement<T, O>(
-		// 	p5node.nodeName,
-		// 	prev,
-		// 	null,
-		// 	parent,
-		// 	p5node.namespaceURI,
-		// );
+		const node: MLASTTag = {
+			raw: '',
+			startOffset: 0,
+			endOffset: 0,
+			startLine: 0,
+			endLine: 0,
+			startCol: 0,
+			endCol: 0,
+			nodeName: p5node.nodeName,
+			type: MLASTNodeType.OmittedTag,
+			namespace: p5node.namespaceURI,
+			attributes: [],
+			parentNode,
+			prevNode,
+			nextNode: null,
+			pearNode: null,
+			isFragment: false,
+			isGhost: true,
+		};
+		nodes.push(node);
 		return nodes;
 	}
 	const {

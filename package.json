@@ -3,9 +3,10 @@
 	"scripts": {
 		"build": "lerna run build",
 		"dev": "lerna run dev",
-		"test": "jest"
+		"test": "jest --coverage"
 	},
 	"jest": {
+		"verbose": true,
 		"transform": {
 			"^.+\\.tsx?$": "ts-jest"
 		},
