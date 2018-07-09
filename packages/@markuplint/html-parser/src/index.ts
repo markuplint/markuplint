@@ -1,274 +1,253 @@
 import parse5 from 'parse5';
 
-import Ruleset from '../../ruleset';
+import { MLASTNode, MLASTNodeType, MLASTTag } from '@markuplint/ml-ast';
 
 import parseRawTag from './parse-raw-tag';
 import tagSplitter from './tag-splitter';
 
-import { ParentNode } from '..';
-
-import Document from '../document';
-
-import Attribute from '../attribute';
-import CommentNode from '../comment-node';
-import Doctype from '../doctype';
-import Element from '../element';
-import EndTagNode from '../end-tag-node';
-import GhostNode from '../ghost-node';
-import InvalidNode from '../invalid-node';
-import Node from '../node';
-import OmittedElement from '../omitted-element';
-import RawText from '../raw-text';
-import TextNode from '../text-node';
-
-export default function parser(html: string, ruleset?: Ruleset) {
+export default function parser(html: string) {
 	const isFragment = isDocumentFragment(html);
 	const p5options = { sourceCodeLocationInfo: true };
 	const doc = isFragment
 		? (parse5.parseFragment(html, p5options) as P5Fragment)
 		: (parse5.parse(html, p5options) as P5Document);
 
-	const nodeTree: (Node | GhostNode)[] = traverse(doc, null, html);
+	const nodeTree: MLASTNode[] = traverse(doc, null, html);
 
-	return new Document(nodeTree, html, isFragment, ruleset);
+	return nodeTree;
 }
 
 export function isDocumentFragment(html: string) {
 	return !/^\s*(<!doctype html(?:\s*.+)?>|<html(?:\s|>))/im.test(html);
 }
 
-// tslint:disable-next-line:cyclomatic-complexity
-function nodeize<T, O>(
+function nodeize(
 	p5node: P5Node,
-	prev: Node<T, O> | GhostNode<T, O> | null,
-	parent: ParentNode<T, O> | null,
+	prevNode: MLASTNode | null,
+	parentNode: MLASTNode | null,
 	rawHtml: string,
-): (Node<T, O> | GhostNode<T, O>)[] {
-	const nodes: (Node<T, O> | GhostNode<T, O>)[] = [];
+): MLASTNode[] {
+	const nodes: MLASTNode[] = [];
+	if (!p5node.sourceCodeLocation) {
+		// node = new OmittedElement<T, O>(
+		// 	p5node.nodeName,
+		// 	prev,
+		// 	null,
+		// 	parent,
+		// 	p5node.namespaceURI,
+		// );
+		return nodes;
+	}
+	const {
+		startOffset,
+		endOffset,
+		startLine,
+		endLine,
+		startCol,
+		endCol,
+	} = p5node.sourceCodeLocation;
+	const raw = rawHtml.slice(startOffset, endOffset || startOffset);
+	const nextNode = null;
 	switch (p5node.nodeName) {
 		case '#documentType': {
-			if (!p5node.sourceCodeLocation) {
-				throw new Error('Invalid Syntax');
-			}
-			const raw = rawHtml.slice(
-				p5node.sourceCodeLocation.startOffset,
-				p5node.sourceCodeLocation.endOffset ||
-					p5node.sourceCodeLocation.startOffset,
-			);
-			const node = new Doctype(
-				'#doctype',
+			nodes.push({
 				raw,
-				p5node.sourceCodeLocation.startLine,
-				p5node.sourceCodeLocation.startCol,
-				p5node.sourceCodeLocation.startOffset,
-				prev,
-				null,
-
-				// @ts-ignore
-				(p5node as P5DocumentType).publicId || null,
-
-				// @ts-ignore
-				(p5node as P5DocumentType).systemId || null,
-			);
-			nodes.push(node);
+				startOffset,
+				endOffset,
+				startLine,
+				endLine,
+				startCol,
+				endCol,
+				nodeName: 'doctype',
+				type: MLASTNodeType.Doctype,
+				parentNode,
+				prevNode,
+				nextNode,
+				isFragment: false,
+				isGhost: false,
+			});
 			break;
 		}
 		case '#text': {
-			if (!p5node.sourceCodeLocation) {
-				throw new Error('Invalid Syntax');
-			}
-			const raw = rawHtml.slice(
-				p5node.sourceCodeLocation.startOffset,
-				p5node.sourceCodeLocation.endOffset ||
-					p5node.sourceCodeLocation.startOffset,
-			);
-			if (
-				parent &&
-				/^(?:script|noscript|style)$/i.test(parent.nodeName)
-			) {
-				const node = new RawText<T, O>(
-					p5node.nodeName,
+			if (parentNode && /^(?:script|style)$/i.test(parentNode.nodeName)) {
+				nodes.push({
 					raw,
-					p5node.sourceCodeLocation.startLine,
-					p5node.sourceCodeLocation.startCol,
-					p5node.sourceCodeLocation.startOffset,
-					prev,
-					null,
-					parent,
-				);
-				nodes.push(node);
+					startOffset,
+					endOffset,
+					startLine,
+					endLine,
+					startCol,
+					endCol,
+					nodeName: 'text',
+					type: MLASTNodeType.Text,
+					parentNode,
+					prevNode,
+					nextNode,
+					isFragment: false,
+					isGhost: false,
+				});
 			} else {
 				const tokens = tagSplitter(
 					raw,
 					p5node.sourceCodeLocation.startLine,
 					p5node.sourceCodeLocation.startCol,
 				);
-				let startOffset = p5node.sourceCodeLocation.startOffset;
-
+				let tokenStartOffset = startOffset;
 				for (const token of tokens) {
-					const endOffset = startOffset + token.raw.length;
+					const tokenEndOffset = tokenStartOffset + token.raw.length;
 					if (token.type === 'text') {
-						const node = new TextNode<T, O>(
-							p5node.nodeName,
-							token.raw,
-							token.line,
-							token.col,
+						const node: MLASTNode = {
+							raw,
 							startOffset,
-							prev,
-							null,
-							parent,
-						);
-						prev = node;
-						startOffset = endOffset;
+							endOffset,
+							startLine,
+							endLine,
+							startCol,
+							endCol,
+							nodeName: 'text',
+							type: MLASTNodeType.Text,
+							parentNode,
+							prevNode,
+							nextNode,
+							isFragment: false,
+							isGhost: false,
+						};
 						nodes.push(node);
+						prevNode = node;
+						tokenStartOffset = tokenEndOffset;
 					} else {
-						const node = new InvalidNode<T, O>(
-							'#invalid',
-							token.raw,
-							token.line,
-							token.col,
+						const node: MLASTNode = {
+							raw,
 							startOffset,
-							prev,
-							null,
-							parent,
-						);
-						prev = node;
-						startOffset = endOffset;
+							endOffset,
+							startLine,
+							endLine,
+							startCol,
+							endCol,
+							nodeName: 'invalidNode',
+							type: MLASTNodeType.InvalidNode,
+							parentNode,
+							prevNode,
+							nextNode,
+							isFragment: false,
+							isGhost: false,
+						};
 						nodes.push(node);
+						prevNode = node;
+						tokenStartOffset = tokenEndOffset;
 					}
 				}
 			}
 			break;
 		}
 		case '#comment': {
-			if (!p5node.sourceCodeLocation) {
-				throw new Error('Invalid Syntax');
-			}
-			const raw = rawHtml.slice(
-				p5node.sourceCodeLocation.startOffset,
-				p5node.sourceCodeLocation.endOffset ||
-					p5node.sourceCodeLocation.startOffset,
-			);
-			const node = new CommentNode<T, O>(
-				p5node.nodeName,
+			nodes.push({
 				raw,
-				p5node.sourceCodeLocation.startLine,
-				p5node.sourceCodeLocation.startCol,
-				p5node.sourceCodeLocation.startOffset,
-				prev,
-				null,
-				parent,
-				// @ts-ignore
-				p5node.data,
-			);
-			nodes.push(node);
+				startOffset,
+				endOffset,
+				startLine,
+				endLine,
+				startCol,
+				endCol,
+				nodeName: 'comment',
+				type: MLASTNodeType.Comment,
+				parentNode,
+				prevNode,
+				nextNode,
+				isFragment: false,
+				isGhost: false,
+			});
 			break;
 		}
 		default: {
-			let node: Element<T, O> | OmittedElement<T, O> | null = null;
-			if (p5node.sourceCodeLocation) {
-				const raw = p5node.sourceCodeLocation.startTag
-					? rawHtml.slice(
-							p5node.sourceCodeLocation.startTag.startOffset,
-							p5node.sourceCodeLocation.startTag.endOffset,
-					  )
-					: rawHtml.slice(
-							p5node.sourceCodeLocation.startOffset,
-							p5node.sourceCodeLocation.endOffset ||
-								p5node.sourceCodeLocation.startOffset,
-					  );
-				const rawTag = parseRawTag(
-					raw,
-					p5node.sourceCodeLocation.startLine,
-					p5node.sourceCodeLocation.startCol,
-					p5node.sourceCodeLocation.startOffset,
+			const tagLoc = p5node.sourceCodeLocation.startTag;
+			const startTagRaw = p5node.sourceCodeLocation.startTag
+				? rawHtml.slice(tagLoc.startOffset, tagLoc.endOffset)
+				: rawHtml.slice(startOffset, endOffset || startOffset);
+			const tagTokens = parseRawTag(
+				startTagRaw,
+				p5node.sourceCodeLocation.startLine,
+				p5node.sourceCodeLocation.startCol,
+				p5node.sourceCodeLocation.startOffset,
+			);
+			const tagName = tagTokens.tagName;
+			let endTag: MLASTTag | null = null;
+			const endTagLoc = p5node.sourceCodeLocation.endTag;
+			if (endTagLoc) {
+				const endTagRaw = rawHtml.slice(
+					endTagLoc.startOffset,
+					endTagLoc.endOffset,
 				);
-
-				const nodeName = rawTag.tagName;
-				const attributes: Attribute[] = rawTag.attrs;
-
-				let endTag: EndTagNode<T, O> | null = null;
-				const endTagLocation = p5node.sourceCodeLocation.endTag;
-				if (endTagLocation) {
-					const endTagRaw = rawHtml.slice(
-						endTagLocation.startOffset,
-						endTagLocation.endOffset,
-					);
-					const endTagName = endTagRaw.replace(
-						/^<\/((?:[a-z]+:)?[a-z0-9]+(?:-[a-z0-9]+)*)\s*>/i,
-						'$1',
-					);
-					endTag = new EndTagNode<T, O>(
-						endTagName,
-						endTagRaw,
-						endTagLocation.startLine,
-						endTagLocation.startCol,
-						endTagLocation.startOffset,
-						null,
-						null,
-						parent,
-					);
-				}
-
-				node = new Element<T, O>(
-					nodeName,
-					raw,
-					p5node.sourceCodeLocation.startLine,
-					p5node.sourceCodeLocation.startCol,
-					p5node.sourceCodeLocation.startOffset,
-					prev,
-					null,
-					parent,
-					attributes,
-					p5node.namespaceURI,
-					endTag,
+				const endTagTokens = parseRawTag(
+					endTagRaw,
+					endTagLoc.startLine,
+					endTagLoc.startCol,
+					endTagLoc.startOffset,
 				);
-				if (endTag) {
-					// @ts-ignore
-					endTag.startTagNode = node;
-					// @ts-ignore
-					endTag.isForeignElement = node.isForeignElement;
-					// @ts-ignore
-					endTag.isPotentialCustomElement =
-						node.isPotentialCustomElement;
-				}
-			} else {
-				node = new OmittedElement<T, O>(
-					p5node.nodeName,
-					prev,
-					null,
-					parent,
-					p5node.namespaceURI,
-				);
+				const endTagName = endTagTokens.tagName;
+				endTag = {
+					raw: endTagRaw,
+					startOffset: endTagLoc.startOffset,
+					endOffset: endTagLoc.endOffset,
+					startLine: endTagLoc.startLine,
+					endLine: endTagLoc.endLine,
+					startCol: endTagLoc.startCol,
+					endCol: endTagLoc.endCol,
+					nodeName: endTagName,
+					type: MLASTNodeType.EndTag,
+					namespace: p5node.namespaceURI,
+					attributes: endTagTokens.attrs,
+					parentNode,
+					prevNode,
+					nextNode,
+					pearNode: null,
+					isFragment: false,
+					isGhost: false,
+				};
 			}
-			if (node) {
-				node.childNodes = traverse(p5node, node, rawHtml);
-				nodes.push(node);
+			const startTag: MLASTTag = {
+				raw: startTagRaw,
+				startOffset: endTagLoc.startOffset,
+				endOffset: endTagLoc.endOffset,
+				startLine: endTagLoc.startLine,
+				endLine: endTagLoc.endLine,
+				startCol: endTagLoc.startCol,
+				endCol: endTagLoc.endCol,
+				nodeName: tagName,
+				type: MLASTNodeType.StartTag,
+				namespace: p5node.namespaceURI,
+				attributes: tagTokens.attrs,
+				parentNode,
+				prevNode,
+				nextNode,
+				pearNode: endTag,
+				isFragment: false,
+				isGhost: false,
+			};
+			if (endTag) {
+				endTag.pearNode = startTag;
 			}
+			startTag.childNodes = traverse(p5node, startTag, rawHtml);
+			nodes.push(startTag);
 		}
 	}
 	return nodes;
 }
 
-function traverse<T, O>(
+function traverse(
 	rootNode: P5Node | P5Document | P5Fragment,
-	parentNode: ParentNode<T, O> | null = null,
+	parentNode: MLASTNode | null = null,
 	rawHtml: string,
-): (Node<T, O> | GhostNode<T, O>)[] {
-	const nodeList: (Node<T, O> | GhostNode<T, O>)[] = [];
+): MLASTNode[] {
+	const nodeList: MLASTNode[] = [];
 
 	const childNodes: P5Node[] = rootNode.content
 		? rootNode.content.childNodes
 		: rootNode.childNodes;
 
-	let prev: Node<T, O> | GhostNode<T, O> | null = null;
+	let prev: MLASTNode | null = null;
 	for (const p5node of childNodes) {
-		const nodes: (Node<T, O> | GhostNode<T, O>)[] = nodeize(
-			p5node,
-			prev,
-			parentNode,
-			rawHtml,
-		);
+		const nodes: MLASTNode[] = nodeize(p5node, prev, parentNode, rawHtml);
 		for (const node of nodes) {
 			if (prev) {
 				prev.nextNode = node;
