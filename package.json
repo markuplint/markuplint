@@ -21,7 +21,7 @@
 		]
 	},
 	"prettier": {
-		"printWidth": 200
+		"printWidth": 120
 	},
 	"workspaces": [
 		"packages/*",
