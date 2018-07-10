@@ -29,10 +29,7 @@ export interface MLASTNode extends MLToken {
 }
 
 export interface MLASTTag extends MLASTNode {
-	type:
-		| MLASTNodeType.StartTag
-		| MLASTNodeType.EndTag
-		| MLASTNodeType.OmittedTag;
+	type: MLASTNodeType.StartTag | MLASTNodeType.EndTag | MLASTNodeType.OmittedTag;
 	namespace: string;
 	attributes: MLASTAttr[];
 	childNodes?: MLASTNode[];

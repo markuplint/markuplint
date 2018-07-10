@@ -6,8 +6,8 @@
   "author": "Yusuke Hirao <yusukehirao@me.com>",
   "license": "MIT",
   "private": false,
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "lib/html-parser/src/index.js",
+  "types": "lib/html-parser/src/index.d.ts",
   "scripts": {
     "prepublish": "tsc -p .",
     "build": "tsc -p .",
