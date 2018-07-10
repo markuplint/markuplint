@@ -1,7 +1,7 @@
 import { reSplitterTag, reTagName } from './const';
 
-import getCol from './get-col';
-import getLine from './get-line';
+import getEndCol from './get-end-col';
+import getEndLine from './get-end-line';
 
 export interface N {
 	type: 'text' | 'starttag' | 'endtag' | 'comment' | 'boguscomment';
@@ -10,11 +10,7 @@ export interface N {
 	col: number;
 }
 
-export default function tagSplitter(
-	raw: string,
-	line: number,
-	col: number,
-): N[] {
+export default function tagSplitter(raw: string, line: number, col: number): N[] {
 	return withLocation(tagSplitterAsString(raw), line, col);
 }
 
@@ -98,8 +94,8 @@ function withLocation(nodes: string[], line: number, col: number): N[] {
 				});
 			}
 		}
-		line = getLine(node, line);
-		col = getCol(node, col);
+		line = getEndLine(node, line);
+		col = getEndCol(node, col);
 	}
 
 	return result;

@@ -1,4 +1,4 @@
-export default function getCol(html: string, col: number) {
+export default function getEndCol(html: string, col: number) {
 	const lines = html.split(/\r?\n/);
 	const lineCount = lines.length;
 	const lastLine = lines.pop()!;

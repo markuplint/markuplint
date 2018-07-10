@@ -2,17 +2,12 @@ import { rePCEN, reStartTag, reTagName } from './const';
 
 const reAttrsInStartTag = /\s*[^\x00-\x1f\x7f-\x9f "'>\/=]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]*))?/;
 
-import { MLASTAttr, MLToken } from '@markuplint/ml-ast';
+import { MLASTAttr, MLToken } from '@markuplint/ml-ast/src';
 
-import getCol from './get-col';
-import getLine from './get-line';
+import getEndCol from './get-end-col';
+import getEndLine from './get-end-line';
 
-export default function parseRawTag(
-	raw: string,
-	nodeLine: number,
-	nodeCol: number,
-	startOffset: number,
-) {
+export default function parseRawTag(raw: string, nodeLine: number, nodeCol: number, startOffset: number) {
 	let line = nodeLine;
 	let col = nodeCol;
 	let offset = startOffset;
@@ -25,9 +20,7 @@ export default function parseRawTag(
 
 	const tagName = tagWithAttrs.split(/[\u0009\u000A\u000C\u0020\/]/)[0];
 	if (!tagName || (!reTagName.test(tagName) && !rePCEN.test(tagName))) {
-		throw new SyntaxError(
-			`Invalid tag name: "${tagName}" in <${tagWithAttrs}>`,
-		);
+		throw new SyntaxError(`Invalid tag name: "${tagName}" in <${tagWithAttrs}>`);
 	}
 	let rawAttrs = tagWithAttrs.substring(tagName.length);
 
@@ -55,12 +48,7 @@ export default function parseRawTag(
 	};
 }
 
-function attrTokenizer(
-	raw: string,
-	line: number,
-	col: number,
-	startOffset: number,
-): MLASTAttr {
+function attrTokenizer(raw: string, line: number, col: number, startOffset: number): MLASTAttr {
 	const attrMatchedMap = raw.match(reAttrsInStartTag);
 	if (!attrMatchedMap) {
 		throw new SyntaxError('Illegal attribute token');
@@ -71,21 +59,11 @@ function attrTokenizer(
 	const spacesBeforeEqual = attrMatchedMap[3] || '';
 	const equal = attrMatchedMap[4] || null;
 	const spacesAfterEqual = attrMatchedMap[5] || '';
-	const quote =
-		attrMatchedMap[6] != null
-			? '"'
-			: attrMatchedMap[7] != null
-				? "'"
-				: null;
-	const value =
-		attrMatchedMap[6] ||
-		attrMatchedMap[7] ||
-		attrMatchedMap[8] ||
-		(quote ? '' : null);
+	const quote = attrMatchedMap[6] != null ? '"' : attrMatchedMap[7] != null ? "'" : null;
+	const value = attrMatchedMap[6] || attrMatchedMap[7] || attrMatchedMap[8] || (quote ? '' : null);
 	const index = attrMatchedMap.index!; // no global matches
 	const invalid =
-		!!(value && quote === null && /["'=<>`]/.test(value)) ||
-		!!(equal && quote === null && value === null);
+		!!(value && quote === null && /["'=<>`]/.test(value)) || !!(equal && quote === null && value === null);
 
 	// console.log({beforeSpaces, name, spacesBeforeEqual, equal, spacesAfterEqual, quote, value});
 
@@ -162,18 +140,13 @@ function attrTokenizer(
 	};
 }
 
-function tokenizer(
-	raw: string,
-	line: number,
-	col: number,
-	startOffset: number,
-): MLToken {
+function tokenizer(raw: string, line: number, col: number, startOffset: number): MLToken {
 	return {
 		raw,
 		startLine: line,
-		endLine: getLine(raw, line),
+		endLine: getEndLine(raw, line),
 		startCol: col,
-		endCol: getCol(raw, col),
+		endCol: getEndCol(raw, col),
 		startOffset,
 		endOffset: startOffset + raw.length,
 	};
