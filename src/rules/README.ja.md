@@ -28,7 +28,7 @@
 	- (🚧 WIP) [permitted-contents](./markuplint-rule-permitted-contents/README.ja.md) 許可するコンテンツ
 	- [permitted-role](./markuplint-rule-permitted-role/README.ja.md) 許可するロール
 	- [attr-duplication](./markuplint-rule-attr-duplication/README.ja.md) 属性の重複
-	- (🚧 WIP) [required-attr](./markuplint-rule-required-attr/README.ja.md) 必須属性
+	- [required-attr](./markuplint-rule-required-attr/README.ja.md) 必須属性
 	- (🚧 WIP) [deprecated-attr](./markuplint-rule-deprecated-attr/README.ja.md) 非推奨属性
 	- (🚧 WIP) [deprecated-global-attr](./markuplint-rule-deprecated-global-attr/README.ja.md) 非推奨グローバル属性
 	- (🚧 WIP) [deprecated-aria-attr](./markuplint-rule-deprecated-aria-attr/README.ja.md) 非推奨aria属性
