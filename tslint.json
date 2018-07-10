@@ -8,6 +8,7 @@
     "prettier": [
       true,
       {
+        "printWidth": 120,
         "tabWidth": 4,
         "useTabs": true,
         "singleQuote": true,
@@ -45,7 +46,7 @@
     "no-any": true,
     "no-inferrable-types": [true, "ignore-params"],
     "no-internal-module": true,
-    "no-namespace": [true, "allow-declarations"],
+    "no-namespace": false,
     "no-reference": true,
     "no-var-requires": true,
     "only-arrow-functions": [
