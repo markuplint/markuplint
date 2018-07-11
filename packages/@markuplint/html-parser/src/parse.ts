@@ -1,6 +1,6 @@
 import parse5 from 'parse5';
 
-import { MLASTNode, MLASTNodeType, MLASTTag } from '@markuplint/ml-ast/src';
+import { MLASTNode, MLASTNodeType, MLASTTag } from '@markuplint/ml-ast/';
 
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';

@@ -47,3 +47,7 @@ export interface MLASTAttr extends MLToken {
 	tokenAfterValue: MLToken | null;
 	isInvalid: boolean;
 }
+
+export interface MLMarkupLanguageParser {
+	(sourceCode: string): MLASTNode[];
+}

@@ -1,4 +1,4 @@
-import { MLASTNode } from '@markuplint/ml-ast/src';
+import { MLASTNode } from '@markuplint/ml-ast/';
 
 export default function(nodeList: MLASTNode[]) {
 	return nodeList.map(n => {
