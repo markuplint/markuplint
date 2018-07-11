@@ -1,4 +1,4 @@
-export const reStartTag = /<([^>]+)>/;
+export const reTag = /<([^>]+)>/;
 
 export const reTagName = /^(?:[a-z][^\u0000\u0009\u000A\u000C\u0020\/>]*)/i;
 
@@ -37,9 +37,6 @@ const rePCENChar = [
 	'[\uFDF0-\uFFFD]',
 	'[\uD800-\uDBFF][\uDC00-\uDFFF]',
 ].join('|');
-export const rePCEN = new RegExp(
-	`^[a-z](?:${rePCENChar})*\\-(?:${rePCENChar})*$`,
-	'i',
-);
+export const rePCEN = new RegExp(`^[a-z](?:${rePCENChar})*\\-(?:${rePCENChar})*$`, 'i');
 
 export const reSplitterTag = /<[^>]+>/g;

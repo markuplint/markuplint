@@ -105,42 +105,26 @@ function nodeize(
 				);
 				let tokenStartOffset = startOffset;
 				for (const token of tokens) {
-					let node: MLASTNode;
 					const tokenEndOffset = tokenStartOffset + token.raw.length;
-					if (token.type === 'text') {
-						node = {
-							raw: token.raw,
-							startOffset: tokenStartOffset,
-							endOffset: tokenEndOffset,
-							startLine: token.line,
-							endLine: getEndLine(token.raw, token.line), // TODO
-							startCol: token.col, // TODO
-							endCol: getEndCol(token.raw, token.col), // TODO
-							nodeName: '#text',
-							type: MLASTNodeType.Text,
-							parentNode,
-							prevNode,
-							nextNode,
-							isFragment: false,
-							isGhost: false,
-						};
-					} else {
-						node = {
-							raw,
-							startOffset,
-							endOffset,
-							startLine,
-							endLine,
-							startCol,
-							endCol,
-							nodeName: '#invalid-node',
-							type: MLASTNodeType.InvalidNode,
-							parentNode,
-							prevNode,
-							nextNode,
-							isFragment: false,
-							isGhost: false,
-						};
+					const node: MLASTNode = {
+						raw: token.raw,
+						startOffset: tokenStartOffset,
+						endOffset: tokenEndOffset,
+						startLine: token.line,
+						endLine: getEndLine(token.raw, token.line),
+						startCol: token.col,
+						endCol: getEndCol(token.raw, token.col),
+						nodeName: '#text',
+						type: MLASTNodeType.Text,
+						parentNode,
+						prevNode,
+						nextNode,
+						isFragment: false,
+						isGhost: false,
+					};
+					if (token.type !== 'text') {
+						node.nodeName = '#invalid';
+						node.type = MLASTNodeType.InvalidNode;
 					}
 					nodes.push(node);
 					prevNode = node;
@@ -216,9 +200,9 @@ function nodeize(
 				startOffset,
 				endOffset: startOffset + startTagRaw.length,
 				startLine,
-				endLine,
+				endLine: getEndLine(startTagRaw, startLine),
 				startCol,
-				endCol,
+				endCol: getEndCol(startTagRaw, startCol),
 				nodeName: tagName,
 				type: MLASTNodeType.StartTag,
 				namespace: p5node.namespaceURI,
@@ -307,9 +291,9 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 					startOffset: currentEndOffset,
 					endOffset: currentEndOffset + spaces.length,
 					startLine: prevLine,
-					endLine: prevLine /* TODO: ??? */,
+					endLine: getEndLine(spaces, prevLine),
 					startCol: prevCol,
-					endCol: prevCol /* TODO: ??? */,
+					endCol: getEndCol(spaces, prevCol),
 					nodeName: '#text',
 					type: MLASTNodeType.Text,
 					parentNode: node.prevNode,
@@ -343,7 +327,17 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 	/**
 	 * sorting
 	 */
-	nodeOrders.sort((a, b) => a.startOffset - b.startOffset);
+	nodeOrders.sort((a, b) => {
+		if (a.startOffset === b.startOffset) {
+			if (a.isGhost) {
+				return -1;
+			}
+			if (b.isGhost) {
+				return 1;
+			}
+		}
+		return a.startOffset - b.startOffset;
+	});
 
 	/**
 	 * getting last node
@@ -359,31 +353,34 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 	/**
 	 * remove duplicated node
 	 */
-	// const stack: { [pos: string]: number } = {};
-	// const removeIndexes: number[] = [];
-	// nodeOrders.forEach((node, i) => {
-	// 	const id = `${node.startLine}:${node.startCol}:${node.endLine}:${node.endCol}`;
-	// 	if (stack[id] != null) {
-	// 		const iA = stack[id];
-	// 		const iB = i;
-	// 		const a = nodeOrders[iA];
-	// 		const b = node;
-	// 		if (isInvalidNode(a) && isInvalidNode(b)) {
-	// 			removeIndexes.push(iB);
-	// 		} else if (isInvalidNode(a)) {
-	// 			removeIndexes.push(iA);
-	// 		} else {
-	// 			removeIndexes.push(iB);
-	// 		}
-	// 	}
-	// 	stack[id] = i;
-	// });
-	// let r = nodeOrders.length;
-	// while (r--) {
-	// 	if (removeIndexes.includes(r)) {
-	// 		nodeOrders.splice(r, 1);
-	// 	}
-	// }
+	const stack: { [pos: string]: number } = {};
+	const removeIndexes: number[] = [];
+	nodeOrders.forEach((node, i) => {
+		if (node.isGhost) {
+			return;
+		}
+		const id = `${node.startLine}:${node.startCol}:${node.endLine}:${node.endCol}`;
+		if (stack[id] != null) {
+			const iA = stack[id];
+			const iB = i;
+			const a = nodeOrders[iA];
+			const b = node;
+			if (isInvalidNode(a) && isInvalidNode(b)) {
+				removeIndexes.push(iB);
+			} else if (isInvalidNode(a)) {
+				removeIndexes.push(iA);
+			} else {
+				removeIndexes.push(iB);
+			}
+		}
+		stack[id] = i;
+	});
+	let r = nodeOrders.length;
+	while (r--) {
+		if (removeIndexes.includes(r)) {
+			nodeOrders.splice(r, 1);
+		}
+	}
 
 	/**
 	 * create Last spaces
@@ -401,9 +398,9 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 				startOffset: node.endOffset,
 				endOffset: node.endOffset + lastTextContent.length,
 				startLine: line,
-				endLine: line /* TODO: ??? */,
+				endLine: getEndLine(lastTextContent, line),
 				startCol: col,
-				endCol: col /* TODO: ??? */,
+				endCol: getEndCol(lastTextContent, col),
 				nodeName: '#text',
 				type: MLASTNodeType.Text,
 				parentNode: lastNode || null,

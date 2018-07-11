@@ -38,9 +38,10 @@ export interface MLASTTag extends MLASTNode {
 
 export interface MLASTAttr extends MLToken {
 	name: MLToken;
-	spacesBeforeEqual: MLToken;
+	// beforeSpaces: MLToken | null;
+	spacesBeforeEqual: MLToken | null;
 	equal: MLToken | null;
-	spacesAfterEqual: MLToken;
+	spacesAfterEqual: MLToken | null;
 	tokenBeforeValue: MLToken | null;
 	value: MLToken | null;
 	tokenAfterValue: MLToken | null;

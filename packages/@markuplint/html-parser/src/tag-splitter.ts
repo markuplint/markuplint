@@ -20,6 +20,7 @@ function tagSplitterAsString(raw: string): string[] {
 		return [raw];
 	}
 	const tokens = Array.from(tagMatches);
+
 	tokens.unshift(); // remove all match
 
 	const nodes: string[] = [];
