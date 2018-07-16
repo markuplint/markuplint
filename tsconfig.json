@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "moduleResolution": "node",
     "target": "es5",
     "strict": true,
     "strictNullChecks": true,

@@ -1,8 +1,9 @@
 {
 	"private": true,
 	"scripts": {
+		"bootstrap": "lerna bootstrap",
 		"build": "lerna run build",
-		"dev": "lerna run dev",
+		"dev": "lerna run --parallel dev & jest --watch",
 		"test": "jest --coverage"
 	},
 	"jest": {
@@ -28,8 +29,8 @@
 		"packages/@markuplint/*"
 	],
 	"devDependencies": {
-		"@types/jest": "^23.1.4",
-		"jest": "^23.3.0",
+		"@types/jest": "^23.1.6",
+		"jest": "^23.4.1",
 		"lerna": "^2.11.0",
 		"prettier": "^1.13.7",
 		"ts-jest": "^23.0.0",
