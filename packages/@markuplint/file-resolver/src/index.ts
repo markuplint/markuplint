@@ -2,7 +2,7 @@ import deepAssgin from 'deep-assign';
 import fs from 'fs';
 import path from 'path';
 
-import { Config } from '@markuplint/ml-config/src';
+import { Config } from '@markuplint/ml-config/';
 
 import { load, search } from './loader';
 

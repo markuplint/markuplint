@@ -11,14 +11,12 @@
   "scripts": {
     "prepublish": "tsc -p .",
     "build": "tsc -p .",
-    "dev": "tsc -w -p .",
-    "test": "jest"
+    "dev": "tsc -w -p ."
   },
   "devDependencies": {
     "@types/cosmiconfig": "^5.0.3",
     "@types/deep-assign": "^0.1.1",
-    "@types/node": "^10.5.2",
-    "eslint": "^5.1.0"
+    "@types/node": "^10.5.2"
   },
   "dependencies": {
     "cosmiconfig": "^5.0.5",
