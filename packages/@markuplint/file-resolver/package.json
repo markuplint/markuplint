@@ -1,0 +1,27 @@
+{
+  "name": "@markuplint/file-resoliver",
+  "version": "1.0.0-alpha",
+  "description": "The file resolver of markuplint",
+  "repository": "git@github.com:markuplint/markuplint.git",
+  "author": "Yusuke Hirao <yusukehirao@me.com>",
+  "license": "MIT",
+  "private": false,
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "prepublish": "tsc -p .",
+    "build": "tsc -p .",
+    "dev": "tsc -w -p .",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/cosmiconfig": "^5.0.3",
+    "@types/deep-assign": "^0.1.1",
+    "@types/node": "^10.5.2",
+    "eslint": "^5.1.0"
+  },
+  "dependencies": {
+    "cosmiconfig": "^5.0.5",
+    "deep-assign": "^2.0.0"
+  }
+}

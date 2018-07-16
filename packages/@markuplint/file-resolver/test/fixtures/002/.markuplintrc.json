@@ -1,0 +1,4 @@
+{
+	"extends": "../001/package.json",
+	"dummy2": false
+}
