@@ -2,6 +2,7 @@
 	"private": true,
 	"scripts": {
 		"bootstrap": "lerna bootstrap",
+		"rm": "rm ./node_modules/parse5/lib/index.d.ts",
 		"build": "lerna run build",
 		"dev": "lerna run --parallel dev & jest --watch",
 		"test": "jest --coverage"
