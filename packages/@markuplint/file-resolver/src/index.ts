@@ -41,7 +41,7 @@ namespace FileResolver {
 	/**
 	 * Asynchronously search configuration file from linting target file.
 	 *
-	 * @param lintTargetFilePath A path of linting target file. To be base directory for searching. (ex. `"path/to/target.html"`)
+	 * @param baseDir A path of linting target file. To be base directory for searching. (ex. `"path/to/target.html"`)
 	 * @param recursiveExtends Recursive load by extends options.
 	 * @param cacheClear Clear cache when loading.
 	 */
