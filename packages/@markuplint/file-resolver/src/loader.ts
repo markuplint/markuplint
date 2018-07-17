@@ -2,7 +2,7 @@ import cosmiconfig from 'cosmiconfig';
 
 const explorer = cosmiconfig('markuplint');
 
-export async function search(dir: string, cacheClear: boolean) {
+export async function search<T extends cosmiconfig.Config>(dir: string, cacheClear: boolean) {
 	if (!cacheClear) {
 		explorer.clearCaches();
 	}
@@ -12,11 +12,11 @@ export async function search(dir: string, cacheClear: boolean) {
 	}
 	return {
 		filePath: result.filepath,
-		config: result.config,
+		config: result.config as T,
 	};
 }
 
-export async function load(filePath: string, cacheClear: boolean) {
+export async function load<T extends cosmiconfig.Config>(filePath: string, cacheClear: boolean) {
 	if (!cacheClear) {
 		explorer.clearCaches();
 	}
@@ -26,6 +26,6 @@ export async function load(filePath: string, cacheClear: boolean) {
 	}
 	return {
 		filePath: result.filepath,
-		config: result.config,
+		config: result.config as T,
 	};
 }
