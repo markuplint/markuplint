@@ -4,7 +4,7 @@ import path from 'path';
 import util from 'util';
 
 import { Config } from '@markuplint/ml-config/';
-import { load, search } from './loader';
+import { load, search } from './helper';
 
 const stat = util.promisify(fs.stat);
 
@@ -41,16 +41,16 @@ namespace FileResolver {
 	/**
 	 * Asynchronously search configuration file from linting target file.
 	 *
-	 * @param baseDir A path of linting target file. To be base directory for searching. (ex. `"path/to/target.html"`)
+	 * @param baseDirOrTargetFilePath A path of linting target file. To be base directory for searching. (ex. `"path/to/target.html"`)
 	 * @param recursiveExtends Recursive load by extends options.
 	 * @param cacheClear Clear cache when loading.
 	 */
 	export async function searchConfigFile(
-		baseDir: string,
+		baseDirOrTargetFilePath: string,
 		recursiveExtends: boolean = true,
 		cacheClear: boolean = false,
 	) {
-		const result = await search<Config>(baseDir, cacheClear);
+		const result = await search<Config>(baseDirOrTargetFilePath, cacheClear);
 		if (!result) {
 			return null;
 		}
