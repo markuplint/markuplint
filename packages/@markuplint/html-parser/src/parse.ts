@@ -1,6 +1,16 @@
 import parse5 from 'parse5';
 
-import { MLASTNode, MLASTNodeType, MLASTTag } from '@markuplint/ml-ast/';
+import {
+	MLASTAbstructNode,
+	MLASTElement,
+	MLASTInvalidNode,
+	MLASTNode,
+	MLASTNodeType,
+	MLASTOmittedElement,
+	MLASTParentNode,
+	MLASTTag,
+	MLASTText,
+} from '@markuplint/ml-ast/';
 
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
@@ -27,13 +37,13 @@ export default function parse(html: string) {
 function nodeize(
 	p5node: P5Node,
 	prevNode: MLASTNode | null,
-	parentNode: MLASTNode | null,
+	parentNode: MLASTParentNode | null,
 	rawHtml: string,
 ): MLASTNode[] {
 	const nodes: MLASTNode[] = [];
 	prevNode = prevNode || parentNode;
 	if (!p5node.sourceCodeLocation) {
-		const node: MLASTTag = {
+		const node: MLASTOmittedElement = {
 			raw: '',
 			startOffset: prevNode ? prevNode.endOffset : 0,
 			endOffset: prevNode ? prevNode.endOffset : 0,
@@ -44,11 +54,9 @@ function nodeize(
 			nodeName: p5node.nodeName,
 			type: MLASTNodeType.OmittedTag,
 			namespace: p5node.namespaceURI,
-			attributes: [],
 			parentNode,
 			prevNode,
 			nextNode: null,
-			pearNode: null,
 			isFragment: false,
 			isGhost: true,
 		};
@@ -106,28 +114,46 @@ function nodeize(
 				let tokenStartOffset = startOffset;
 				for (const token of tokens) {
 					const tokenEndOffset = tokenStartOffset + token.raw.length;
-					const node: MLASTNode = {
-						raw: token.raw,
-						startOffset: tokenStartOffset,
-						endOffset: tokenEndOffset,
-						startLine: token.line,
-						endLine: getEndLine(token.raw, token.line),
-						startCol: token.col,
-						endCol: getEndCol(token.raw, token.col),
-						nodeName: '#text',
-						type: MLASTNodeType.Text,
-						parentNode,
-						prevNode,
-						nextNode,
-						isFragment: false,
-						isGhost: false,
-					};
-					if (token.type !== 'text') {
-						node.nodeName = '#invalid';
-						node.type = MLASTNodeType.InvalidNode;
+
+					if (token.type === 'text') {
+						const node: MLASTText = {
+							raw: token.raw,
+							startOffset: tokenStartOffset,
+							endOffset: tokenEndOffset,
+							startLine: token.line,
+							endLine: getEndLine(token.raw, token.line),
+							startCol: token.col,
+							endCol: getEndCol(token.raw, token.col),
+							nodeName: '#text',
+							type: MLASTNodeType.Text,
+							parentNode,
+							prevNode,
+							nextNode,
+							isFragment: false,
+							isGhost: false,
+						};
+						nodes.push(node);
+						prevNode = node;
+					} else {
+						const node: MLASTInvalidNode = {
+							raw: token.raw,
+							startOffset: tokenStartOffset,
+							endOffset: tokenEndOffset,
+							startLine: token.line,
+							endLine: getEndLine(token.raw, token.line),
+							startCol: token.col,
+							endCol: getEndCol(token.raw, token.col),
+							nodeName: '#invalid',
+							type: MLASTNodeType.InvalidNode,
+							parentNode,
+							prevNode,
+							nextNode,
+							isFragment: false,
+							isGhost: false,
+						};
+						nodes.push(node);
+						prevNode = node;
 					}
-					nodes.push(node);
-					prevNode = node;
 					tokenStartOffset = tokenEndOffset;
 				}
 			}
@@ -226,7 +252,7 @@ function nodeize(
 
 function traverse(
 	rootNode: P5Node | P5Document | P5Fragment,
-	parentNode: MLASTNode | null = null,
+	parentNode: MLASTParentNode | null = null,
 	rawHtml: string,
 ): MLASTNode[] {
 	const nodeList: MLASTNode[] = [];
@@ -252,7 +278,7 @@ export type Walker = (node: MLASTNode) => void;
 export function walk(nodeList: MLASTNode[], walker: Walker) {
 	for (const node of nodeList) {
 		walker(node);
-		const tag = node as MLASTTag;
+		const tag = node as MLASTElement;
 		if (tag.childNodes && tag.childNodes.length) {
 			walk(tag.childNodes, walker);
 		}
@@ -286,7 +312,7 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 			 */
 			if (/^\s+$/.test(html)) {
 				const spaces = html;
-				const textNode: MLASTNode = {
+				const textNode: MLASTText = {
 					raw: spaces,
 					startOffset: currentEndOffset,
 					endOffset: currentEndOffset + spaces.length,
@@ -296,7 +322,7 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 					endCol: getEndCol(spaces, prevCol),
 					nodeName: '#text',
 					type: MLASTNodeType.Text,
-					parentNode: node.prevNode,
+					parentNode: node.parentNode,
 					prevNode: node.prevNode,
 					nextNode: node,
 					isFragment: false,
@@ -342,7 +368,7 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 	/**
 	 * getting last node
 	 */
-	let lastNode: MLASTNode | null = null;
+	let lastNode: MLASTAbstructNode | null = null;
 	for (const node of nodeOrders) {
 		if (node.isGhost) {
 			continue;
@@ -393,7 +419,7 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 			}
 			const line = lastNode ? lastNode.endLine : 0;
 			const col = lastNode ? lastNode.endCol : 0;
-			const lastTextNode: MLASTNode = {
+			const lastTextNode: MLASTText = {
 				raw: lastTextContent,
 				startOffset: node.endOffset,
 				endOffset: node.endOffset + lastTextContent.length,
@@ -403,7 +429,7 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 				endCol: getEndCol(lastTextContent, col),
 				nodeName: '#text',
 				type: MLASTNodeType.Text,
-				parentNode: lastNode || null,
+				parentNode: node.parentNode || null,
 				prevNode: node,
 				nextNode: null,
 				isFragment: false,
@@ -416,7 +442,7 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 		}
 	});
 
-	const result: MLASTNode[] = [];
+	const result: MLASTAbstructNode[] = [];
 
 	/**
 	 * concat text nodes
@@ -447,7 +473,7 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 	return result;
 }
 
-function isInvalidNode(node: MLASTNode) {
+function isInvalidNode(node: MLASTAbstructNode) {
 	return node.type === MLASTNodeType.InvalidNode;
 }
 
@@ -462,7 +488,7 @@ type P5Fragment = parse5.DefaultTreeDocumentFragment & TraversalNode;
 type P5DocumentType = parse5.DefaultTreeDocumentType;
 
 interface SortableNode {
-	node: MLASTNode;
+	node: MLASTAbstructNode;
 	startOffset: number;
 	endOffset: number;
 }
