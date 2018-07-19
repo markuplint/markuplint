@@ -442,7 +442,7 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 		}
 	});
 
-	const result: MLASTAbstructNode[] = [];
+	const result: MLASTNode[] = [];
 
 	/**
 	 * concat text nodes
