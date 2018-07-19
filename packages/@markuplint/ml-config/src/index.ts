@@ -4,7 +4,7 @@ export interface Config {
 	extends?: string | string[];
 	rules?: Rules;
 	nodeRules?: NodeRule[];
-	childNodeRule?: ChildNodeRule[];
+	childNodeRules?: ChildNodeRule[];
 	ignore?: string | string[];
 }
 
