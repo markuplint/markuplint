@@ -30,3 +30,7 @@
 // 		this.data = data;
 // 	}
 // }
+
+import Node from './node';
+
+export default class Comment<T, O> extends Node<T, O> {}

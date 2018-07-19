@@ -1,4 +1,4 @@
-import { MLASTNode } from '@markuplint/ml-ast/';
+import { MLToken } from '@markuplint/ml-ast/src';
 
 export default class Token {
 	public readonly startLine: number;
@@ -8,18 +8,21 @@ export default class Token {
 	public readonly startOffset: number;
 	public readonly endOffset: number;
 
+	protected readonly _astToken: MLToken;
+
 	private readonly _originRaw: string;
 	private _fixed: string;
 
-	constructor(astNode: MLASTNode) {
-		this._originRaw = astNode.raw;
-		this._fixed = astNode.raw;
-		this.startLine = astNode.startLine;
-		this.endLine = astNode.endLine;
-		this.startCol = astNode.startCol;
-		this.endCol = astNode.endCol;
-		this.startOffset = astNode.startOffset;
-		this.endOffset = astNode.endOffset;
+	constructor(astToken: MLToken) {
+		this._astToken = astToken;
+		this._originRaw = astToken.raw;
+		this._fixed = astToken.raw;
+		this.startLine = astToken.startLine;
+		this.endLine = astToken.endLine;
+		this.startCol = astToken.startCol;
+		this.endCol = astToken.endCol;
+		this.startOffset = astToken.startOffset;
+		this.endOffset = astToken.endOffset;
 	}
 
 	public get raw() {

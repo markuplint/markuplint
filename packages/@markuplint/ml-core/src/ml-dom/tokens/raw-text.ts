@@ -1,7 +1,3 @@
-// import { NodeType } from '.';
+import Text from './text';
 
-// import TextNode from './text-node';
-
-// export default class RawText<T, O> extends TextNode<T, O> {
-// 	public readonly type: NodeType = 'RawText';
-// }
+export default class RawText<T, O> extends Text<T, O> {}
