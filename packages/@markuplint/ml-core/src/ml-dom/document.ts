@@ -1,4 +1,6 @@
+import CustomRule from '@markuplint/custom-rule';
 import { MLASTNode } from '@markuplint/ml-ast/';
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
 import Ruleset from '../ruleset/core';
 
 import createNode from './helper/create-node';
@@ -24,11 +26,16 @@ export type AnonymousNode<T, O> =
 /**
  * markuplint DOM Document
  */
-export default class MLDOMDocument<T = null, O = {}> {
+export default class MLDOMDocument<T extends RuleConfigValue = null, O extends RuleConfigOptions = {}> {
 	/**
 	 * An array of markuplint DOM nodes
 	 */
 	public nodeList: AnonymousNode<T, O>[];
+
+	/**
+	 *
+	 */
+	public currentRule: CustomRule<T, O> | null = null;
 
 	/**
 	 *
@@ -116,5 +123,9 @@ export default class MLDOMDocument<T = null, O = {}> {
 		// 		}
 		// 	}
 		// }
+	}
+
+	public setRule(rule: CustomRule<T, O> | null) {
+		this.currentRule = rule;
 	}
 }

@@ -1,3 +1,5 @@
+// tslint:disable:no-any
+
 export interface Config {
 	$schema?: string;
 	parser?: ParserConfig;
@@ -13,17 +15,17 @@ export interface ParserConfig {
 }
 
 export interface Rules {
-	[ruleName: string]: RuleConfig | RuleSettingValue;
+	[ruleName: string]: RuleConfig<any /* unknown for TS3.0 */, any> | RuleConfigValue;
 }
 
-export type RuleConfig = [Severity, RuleSettingValue, RuleSettingOptions | undefined];
+export type RuleConfig<T extends RuleConfigValue, O extends RuleConfigOptions> = [Severity, T, O | undefined];
 
 export type Severity = 'error' | 'warning' | 'info';
 
-export type RuleSettingValue = string | number | boolean | null;
+export type RuleConfigValue = string | number | boolean | null;
 
-export interface RuleSettingOptions {
-	[optionName: string]: RuleSettingValue;
+export interface RuleConfigOptions {
+	[optionName: string]: RuleConfigValue;
 }
 
 export interface NodeRule {
