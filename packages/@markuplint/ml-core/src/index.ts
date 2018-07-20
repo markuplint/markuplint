@@ -1,17 +1,18 @@
 import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
 
 import Messenger from './locale/messenger';
-import MLDOMDocument from './ml-dom/document';
+import Document from './ml-dom/document';
 import Ruleset from './ruleset/core';
 
-export default class Markuplint {
-	public document: MLDOMDocument;
+export default class MLEngine {
+	public document: Document<RuleConfigValue, RuleConfigOptions>;
 	public ruleset: Ruleset;
 	public messenger: Messenger;
 
 	constructor(parser: MLMarkupLanguageParser, sourceCode: string, ruleset: Ruleset, messenger: Messenger) {
 		const ast = parser(sourceCode);
-		this.document = new MLDOMDocument(ast, ruleset);
+		this.document = new Document(ast, ruleset);
 		this.ruleset = ruleset;
 		this.messenger = messenger;
 	}

@@ -145,4 +145,6 @@ export default class MLDOMDocument<T extends RuleConfigValue, O extends RuleConf
 	}
 }
 
-export type Walker<T, O, N = AnonymousNode<T, O>> = (node: N) => Promise<void>;
+export type Walker<T extends RuleConfigValue, O extends RuleConfigOptions, N = AnonymousNode<T, O>> = (
+	node: N,
+) => Promise<void>;

@@ -21,9 +21,9 @@ export default abstract class Node<
 
 	protected _astToken: A;
 
-	private _doc: Document;
+	private _doc: Document<T, O>;
 
-	constructor(astNode: A, document: Document) {
+	constructor(astNode: A, document: Document<T, O>) {
 		super(astNode);
 		this._astToken = astNode;
 		this._doc = document;

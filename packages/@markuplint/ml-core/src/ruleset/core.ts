@@ -1,5 +1,13 @@
 // import deepAssign from 'deep-assign';
-import { ChildNodeRule, Config, NodeRule, Rules, RuleConfig } from '@markuplint/ml-config';
+import {
+	ChildNodeRule,
+	Config,
+	NodeRule,
+	Rules,
+	RuleConfig,
+	RuleConfigOptions,
+	RuleConfigValue,
+} from '@markuplint/ml-config';
 
 // import Document from '../dom/document';
 // import Messenger from '../locale/messenger';
@@ -48,7 +56,7 @@ export default class Ruleset {
 	// 			await this._extendsRules(this._rawConfig.extends, configFilePath);
 	// 		}
 	// 	}
-	public async verify(document: Document, messenger: Messenger) {
+	public async verify(document: Document<RuleConfigValue, RuleConfigOptions>, messenger: Messenger) {
 		// const reports: VerifiedResult[] = [];
 		// for (const rule of this._rules) {
 		// 	const config = rule.optimizeOption(this.rules[rule.name] || false);
@@ -61,7 +69,7 @@ export default class Ruleset {
 		// return reports;
 	}
 
-	public async fix(document: Document) {
+	public async fix(document: Document<RuleConfigValue, RuleConfigOptions>) {
 		// for (const rule of this._rules) {
 		// 	const config = rule.optimizeOption(this.rules[rule.name] || false);
 		// 	if (config.disabled) {
