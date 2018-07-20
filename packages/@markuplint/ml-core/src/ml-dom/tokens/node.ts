@@ -1,21 +1,26 @@
-import { MLASTAbstructNode, MLASTParentNode } from '@markuplint/ml-ast/src';
+import { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast/';
 
 import { getNode, setNode } from '../helper/dom-traverser';
 
 import Indentation from '../indentation';
+import { AnonymousNode, NodeType } from '../types';
 import Element from './element';
 import OmittedElement from './omitted-element';
 import Token from './token';
 
-export default abstract class Node<T = null, O = {}> extends Token {
-	public prevSyntaxicalNode: Node<T, O> | null = null;
+export default abstract class Node<T, O, A extends MLASTAbstructNode> extends Token<A> {
+	public readonly type: NodeType = 'Node';
+	public prevSyntaxicalNode: Node<T, O, A> | null = null;
 	public indentation: Indentation<T, O> | null = null;
 
-	protected _astToken: MLASTAbstructNode;
+	protected _astToken: A;
 
-	constructor(astNode: MLASTAbstructNode) {
+	constructor(astNode: A) {
 		super(astNode);
 		this._astToken = astNode;
+
+		// TODO: type
+		// @ts-ignore
 		setNode(astNode, this);
 	}
 
@@ -23,12 +28,12 @@ export default abstract class Node<T = null, O = {}> extends Token {
 		return this._astToken.parentNode ? getNode<MLASTParentNode, T, O>(this._astToken.parentNode) : null;
 	}
 
-	public get prevNode(): Node<T, O> | null {
-		return this._astToken.prevNode ? getNode<MLASTAbstructNode, T, O>(this._astToken.prevNode) : null;
+	public get prevNode(): AnonymousNode<T, O> | null {
+		return this._astToken.prevNode ? getNode<MLASTNode, T, O>(this._astToken.prevNode) : null;
 	}
 
-	public get nextNode(): Node<T, O> | null {
-		return this._astToken.nextNode ? getNode<MLASTAbstructNode, T, O>(this._astToken.nextNode) : null;
+	public get nextNode(): AnonymousNode<T, O> | null {
+		return this._astToken.nextNode ? getNode<MLASTNode, T, O>(this._astToken.nextNode) : null;
 	}
 
 	public toString() {
@@ -46,9 +51,11 @@ export default abstract class Node<T = null, O = {}> extends Token {
 	// 			endOffset: this.location.endOffset,
 	// 		};
 	// 	}
-	// 	public is(type: NodeType) {
-	// 		return this.type === type;
-	// 	}
+
+	public is(type: NodeType) {
+		return this.type === type;
+	}
+
 	// 	public get rule() {
 	// 		if (!this.document) {
 	// 			throw new Error('Invalid construction.');

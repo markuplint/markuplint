@@ -1,6 +1,6 @@
 import { MLToken } from '@markuplint/ml-ast/src';
 
-export default class Token {
+export default class Token<A extends MLToken> {
 	public readonly startLine: number;
 	public readonly endLine: number;
 	public readonly startCol: number;
@@ -13,7 +13,7 @@ export default class Token {
 	private readonly _originRaw: string;
 	private _fixed: string;
 
-	constructor(astToken: MLToken) {
+	constructor(astToken: A) {
 		this._astToken = astToken;
 		this._originRaw = astToken.raw;
 		this._fixed = astToken.raw;

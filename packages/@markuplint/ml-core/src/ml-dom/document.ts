@@ -13,15 +13,7 @@ import Node from './tokens/node';
 import OmittedElement from './tokens/omitted-element';
 import Text from './tokens/text';
 
-export type AnonymousNode<T, O> =
-	| Doctype<T, O>
-	| Element<T, O>
-	| ElementCloseTag<T, O>
-	| OmittedElement<T, O>
-	| Comment<T, O>
-	| Text<T, O>
-	| InvalidNode<T, O>
-	| Node<T, O>;
+import { AnonymousNode, NodeType } from './types';
 
 /**
  * markuplint DOM Document
@@ -125,7 +117,32 @@ export default class MLDOMDocument<T extends RuleConfigValue = null, O extends R
 		// }
 	}
 
+	public async walk(walker: Walker<T, O>) {
+		for (const node of this.nodeList) {
+			await walker(node);
+		}
+	}
+
+	public async walkOn(type: 'Element', walker: Walker<T, O, Element<T, O>>): Promise<void>;
+	public async walkOn(type: 'Text', walker: Walker<T, O, Text<T, O>>): Promise<void>;
+	public async walkOn(type: 'Comment', walker: Walker<T, O, Comment<T, O>>): Promise<void>;
+	public async walkOn(type: 'ElementCloseTag', walker: Walker<T, O, ElementCloseTag<T, O>>): Promise<void>;
+	// tslint:disable-next-line:no-any
+	public async walkOn(type: NodeType, walker: Walker<T, O, any>): Promise<void> {
+		for (const node of this.nodeList) {
+			if (node instanceof Node) {
+				if (type === 'Node') {
+					await walker(node);
+				} else if (node.is(type)) {
+					await walker(node);
+				}
+			}
+		}
+	}
+
 	public setRule(rule: CustomRule<T, O> | null) {
 		this.currentRule = rule;
 	}
 }
+
+export type Walker<T, O, N = AnonymousNode<T, O>> = (node: N) => Promise<void>;

@@ -1,19 +1,13 @@
-// import { AmbiguousNode, NodeType, ParentNode } from '.';
-import { MLASTElement } from '@markuplint/ml-ast/src';
+import { MLASTElement } from '@markuplint/ml-ast/';
 
+import { getNode } from '../helper/dom-traverser';
+import { AnonymousNode, NodeType } from '../types';
 import Attribute from './attribute';
 import ElementCloseTag from './element-close-tag';
-import { AmbiguousNode, ParentNode } from './interfaces';
 import Node from './node';
-// import EndTagNode from './end-tag-node';
-// import GhostNode from './ghost-node';
-// import Token from './token';
 
-// import isPotentialCustomElementName from './parser/is-potential-custom-element-name';
-
-// import cssSelector from './css-selector';
-
-export default class Element<T, O> extends Node<T, O> {
+export default class Element<T, O> extends Node<T, O, MLASTElement> {
+	public readonly type: NodeType = 'Element';
 	public readonly nodeName: string;
 	public readonly attributes: Attribute[];
 	public readonly namespaceURI: string;
@@ -40,6 +34,11 @@ export default class Element<T, O> extends Node<T, O> {
 		// 			0,
 		// 			0,
 		// 		);
+	}
+
+	public get childNodes(): AnonymousNode<T, O>[] {
+		const astChildren = this._astToken.childNodes || [];
+		return astChildren.map(node => getNode<typeof node, T, O>(node));
 	}
 	// 	public get raw() {
 	// 		const raw: string[] = [];

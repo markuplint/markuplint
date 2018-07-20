@@ -39,7 +39,7 @@ export interface MLASTElement extends MLASTAbstructNode {
 	namespace: string;
 	attributes: MLASTAttr[];
 	childNodes?: MLASTNode[];
-	pearNode: MLASTTag | null;
+	pearNode: MLASTElementCloseTag | null;
 }
 
 export interface MLASTElementCloseTag extends MLASTAbstructNode {

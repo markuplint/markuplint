@@ -33,8 +33,8 @@ export type MappedNode<N, T, O>
 	: N extends MLASTText ? Text<T, O>
 	: N extends MLASTInvalidNode ? InvalidNode<T, O>
 	: N extends MLASTDoctype ? Doctype<T, O>
-	: N extends MLASTNode ? Node<T, O>
-	: N extends MLASTAbstructNode ? Node<T, O>
+	: N extends MLASTNode ? Node<T, O, MLASTNode>
+	: N extends MLASTAbstructNode ? Node<T, O, MLASTAbstructNode>
 	: N extends MLASTAttr ? Attribute
-	: N extends MLToken ? Token
+	: N extends MLToken ? Token<MLToken>
 	: never;

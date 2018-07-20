@@ -1,12 +1,10 @@
-// import { NodeType } from '.';
-
-// import Element from './element';
-import { MLToken } from '@markuplint/ml-ast/src';
+import { MLASTElementCloseTag } from '@markuplint/ml-ast/';
+import { NodeType } from '../types';
 import Element from './element';
 import Token from './token';
 
-export default class ElementCloseTag<T, O> extends Token {
-	// 	public readonly type: NodeType = 'EndTag';
+export default class ElementCloseTag<T, O> extends Token<MLASTElementCloseTag> {
+	public readonly type: NodeType = 'ElementCloseTag';
 	// 	// define when created instance frin parser/index.ts
 	public readonly startTag: Element<T, O>;
 	// 	// define when created instance frin parser/index.ts
@@ -16,7 +14,7 @@ export default class ElementCloseTag<T, O> extends Token {
 	// 	public get raw() {
 	// 		return `</${this.nodeName}>`;
 	// 	}
-	constructor(astNode: MLToken, startTag: Element<T, O>) {
+	constructor(astNode: MLASTElementCloseTag, startTag: Element<T, O>) {
 		super(astNode);
 		this.startTag = startTag;
 	}

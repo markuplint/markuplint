@@ -1,6 +1,7 @@
+import { MLASTAttr } from '@markuplint/ml-ast/';
 import Token from './token';
 
-export default class Attribute extends Token {}
+export default class Attribute extends Token<MLASTAttr> {}
 
 // export default class AttributeValue extends Token {
 // 	private _value: string;

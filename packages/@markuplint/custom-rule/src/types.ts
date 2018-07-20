@@ -1,4 +1,4 @@
-import { Severity } from '@markuplint/ml-config';
+import { RuleConfigOptions, RuleConfigValue, Severity } from '@markuplint/ml-config';
 import Messenger, { Message } from '@markuplint/ml-core/src/locale/messenger';
 import Document from '@markuplint/ml-core/src/ml-dom/document';
 
@@ -16,14 +16,14 @@ export interface VerifiedResult extends Result {
 	ruleId: string;
 }
 
-export interface RuleInfo<T, O> {
+export interface RuleInfo<T extends RuleConfigValue, O extends RuleConfigOptions> {
 	disabled: boolean;
 	severity: Severity;
 	value: T;
 	option: O;
 }
 
-export interface Options<T, O> {
+export interface Options<T extends RuleConfigValue, O extends RuleConfigOptions> {
 	name: string;
 	defaultLevel?: Severity;
 	defaultValue: T;

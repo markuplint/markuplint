@@ -1,7 +1,10 @@
-// import { AmbiguousNode, NodeType } from '.';
+import { MLASTNode } from '@markuplint/ml-ast/';
+import { NodeType } from '../types';
 import Node from './node';
 
-export default class Doctype<T, O> extends Node<T, O> {}
+export default class Doctype<T, O> extends Node<T, O, MLASTNode> {
+	public readonly type: NodeType = 'Doctype';
+}
 
 // import Node from './node';
 

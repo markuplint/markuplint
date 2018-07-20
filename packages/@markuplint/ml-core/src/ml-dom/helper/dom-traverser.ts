@@ -2,7 +2,8 @@ import { MLASTAbstructNode } from '@markuplint/ml-ast/src';
 import Node from '../tokens/node';
 import { MappedNode } from './mapped-nodes';
 
-const store = new WeakMap<MLASTAbstructNode, Node>();
+// tslint:disable-next-line:no-any
+const store = new WeakMap<MLASTAbstructNode, Node<any, any, any>>();
 
 export function setNode<N extends MLASTAbstructNode, T, O>(astNode: N, node: MappedNode<N, T, O>) {
 	store.set(astNode, node);
