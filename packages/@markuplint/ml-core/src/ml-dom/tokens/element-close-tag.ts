@@ -1,9 +1,13 @@
 import { MLASTElementCloseTag } from '@markuplint/ml-ast/';
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+
 import { NodeType } from '../types';
 import Element from './element';
 import Token from './token';
 
-export default class ElementCloseTag<T, O> extends Token<MLASTElementCloseTag> {
+export default class ElementCloseTag<T extends RuleConfigValue, O extends RuleConfigOptions> extends Token<
+	MLASTElementCloseTag
+> {
 	public readonly type: NodeType = 'ElementCloseTag';
 	// 	// define when created instance frin parser/index.ts
 	public readonly startTag: Element<T, O>;

@@ -1,23 +1,32 @@
+import { RuleInfo } from '@markuplint/custom-rule';
 import { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast/';
+import { RuleConfig, RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
 
+import Document from '../document';
 import { getNode, setNode } from '../helper/dom-traverser';
-
 import Indentation from '../indentation';
 import { AnonymousNode, NodeType } from '../types';
 import Element from './element';
 import OmittedElement from './omitted-element';
 import Token from './token';
 
-export default abstract class Node<T, O, A extends MLASTAbstructNode> extends Token<A> {
+export default abstract class Node<
+	T extends RuleConfigValue,
+	O extends RuleConfigOptions,
+	A extends MLASTAbstructNode
+> extends Token<A> {
 	public readonly type: NodeType = 'Node';
 	public prevSyntaxicalNode: Node<T, O, A> | null = null;
 	public indentation: Indentation<T, O> | null = null;
 
 	protected _astToken: A;
 
-	constructor(astNode: A) {
+	private _doc: Document;
+
+	constructor(astNode: A, document: Document) {
 		super(astNode);
 		this._astToken = astNode;
+		this._doc = document;
 
 		// TODO: type
 		// @ts-ignore
@@ -56,21 +65,21 @@ export default abstract class Node<T, O, A extends MLASTAbstructNode> extends To
 		return this.type === type;
 	}
 
-	// 	public get rule() {
-	// 		if (!this.document) {
-	// 			throw new Error('Invalid construction.');
-	// 		}
-	// 		if (!this.document.rule) {
-	// 			throw new Error('Invalid construction.');
-	// 		}
-	// 		const name = this.document.rule.name;
-	// 		// @ts-ignore
-	// 		const rule: ConfigureFileJSONRuleOption<T, O> = this.rules[name];
-	// 		if (rule == null) {
-	// 			throw new Error('Invalid call "rule" property.');
-	// 		}
-	// 		return this.document.rule.optimizeOption(rule);
-	// 	}
+	public get rule(): RuleInfo<T, O> {
+		if (!this._doc.currentRule) {
+			throw new Error('Invalid call.');
+		}
+		const name = this._doc.currentRule.name;
+
+		// TODO:
+		const ruleConfig: RuleConfig<T, O> | T | boolean = false;
+		// const rule = this.rules[name];
+		// if (rule == null) {
+		// throw new Error('Invalid call "rule" property.');
+		// }
+		return this._doc.currentRule.optimizeOption(ruleConfig);
+	}
+
 	// 	public get syntaxicalParentNode(): Node<T, O> | null {
 	// 		let node: Node<T, O> | GhostNode<T, O> = this;
 	// 		while (node.parentNode && node.parentNode instanceof GhostNode) {

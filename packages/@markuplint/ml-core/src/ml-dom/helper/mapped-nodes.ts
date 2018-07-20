@@ -1,3 +1,5 @@
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+
 import {
 	MLASTAbstructNode,
 	MLASTAttr,
@@ -24,7 +26,7 @@ import Text from '../tokens/text';
 import Token from '../tokens/token';
 
 // prettier-ignore
-export type MappedNode<N, T, O>
+export type MappedNode<N, T extends RuleConfigValue, O extends RuleConfigOptions>
 	= N extends MLASTElement ? Element<T, O>
 	: N extends MLASTElementCloseTag ? ElementCloseTag<T, O>
 	: N extends MLASTOmittedElement ? OmittedElement<T, O>

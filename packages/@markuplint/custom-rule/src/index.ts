@@ -95,3 +95,8 @@ export default class CustomRule<T extends RuleConfigValue, O extends RuleConfigO
 		};
 	}
 }
+
+export type Options<T extends RuleConfigValue, O extends RuleConfigOptions> = Options<T, O>;
+export type RuleInfo<T extends RuleConfigValue, O extends RuleConfigOptions> = RuleInfo<T, O>;
+export type Severity = Severity;
+export type VerifiedResult = VerifiedResult;

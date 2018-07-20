@@ -18,7 +18,7 @@ import { AnonymousNode, NodeType } from './types';
 /**
  * markuplint DOM Document
  */
-export default class MLDOMDocument<T extends RuleConfigValue = null, O extends RuleConfigOptions = {}> {
+export default class MLDOMDocument<T extends RuleConfigValue, O extends RuleConfigOptions> {
 	/**
 	 * An array of markuplint DOM nodes
 	 */
@@ -35,7 +35,7 @@ export default class MLDOMDocument<T extends RuleConfigValue = null, O extends R
 	 * @param ruleset ruleset object
 	 */
 	constructor(astNodeList: MLASTNode[], ruleset: Ruleset) {
-		this.nodeList = astNodeList.map(astNode => createNode<MLASTNode, T, O>(astNode));
+		this.nodeList = astNodeList.map(astNode => createNode<MLASTNode, T, O>(astNode, this));
 
 		// for (const node of this.nodeList) {
 		// 	for (const ruleName in ruleset.rules) {

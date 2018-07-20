@@ -1,4 +1,5 @@
 import { MLToken } from '@markuplint/ml-ast/src';
+import Document from '../document';
 
 export default class Token<A extends MLToken> {
 	public readonly startLine: number;
@@ -8,7 +9,7 @@ export default class Token<A extends MLToken> {
 	public readonly startOffset: number;
 	public readonly endOffset: number;
 
-	protected readonly _astToken: MLToken;
+	protected readonly _astToken: A;
 
 	private readonly _originRaw: string;
 	private _fixed: string;
@@ -29,17 +30,17 @@ export default class Token<A extends MLToken> {
 		return this._fixed;
 	}
 
-	public toJSON() {
-		return {
-			raw: this.raw,
-			startLine: this.startLine,
-			endLine: this.endLine,
-			startCol: this.startCol,
-			endCol: this.endCol,
-			startOffset: this.startOffset,
-			endOffset: this.endOffset,
-		};
-	}
+	// public toJSON() {
+	// 	return {
+	// 		raw: this.raw,
+	// 		startLine: this.startLine,
+	// 		endLine: this.endLine,
+	// 		startCol: this.startCol,
+	// 		endCol: this.endCol,
+	// 		startOffset: this.startOffset,
+	// 		endOffset: this.endOffset,
+	// 	};
+	// }
 
 	public fix(raw: string) {
 		this._fixed = raw;
