@@ -1,5 +1,5 @@
-import CustomRule from '@markuplint/custom-rule';
-import { Result } from '@markuplint/custom-rule/src/types';
+import CustomRule from '@markuplint/ml-core/lib/ml-core/src/ml-rule';
+import { Result } from '@markuplint/ml-core/lib/ml-core/src/ml-rule/types';
 
 export type Value = 'always' | 'never';
 

@@ -1,4 +1,4 @@
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config/';
 
 import {
 	MLASTAbstructNode,
@@ -13,7 +13,8 @@ import {
 	MLASTParentNode,
 	MLASTText,
 	MLToken,
-} from '@markuplint/ml-ast/src';
+} from '@markuplint/ml-ast/';
+
 import Attribute from '../tokens/attribute';
 import Comment from '../tokens/comment';
 import Doctype from '../tokens/doctype';

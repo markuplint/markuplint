@@ -1,5 +1,5 @@
 import { MLASTAbstructNode, MLASTElementCloseTag, MLASTNode, MLASTNodeType } from '@markuplint/ml-ast/';
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config/';
 
 import Document from '../document';
 // import Attribute from '../tokens/attribute';

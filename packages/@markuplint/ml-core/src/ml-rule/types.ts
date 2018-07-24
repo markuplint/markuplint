@@ -1,6 +1,6 @@
 import { RuleConfigOptions, RuleConfigValue, Severity } from '@markuplint/ml-config';
-import Messenger, { Message } from '@markuplint/ml-core/src/locale/messenger';
-import Document from '@markuplint/ml-core/src/ml-dom/document';
+import { Message } from '../locale/messenger';
+import Document from '../ml-dom/document';
 
 export type Severity = Severity;
 

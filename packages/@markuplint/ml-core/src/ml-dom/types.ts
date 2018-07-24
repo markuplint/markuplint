@@ -1,5 +1,5 @@
 import { MLASTNode } from '@markuplint/ml-ast/';
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config/';
 
 import Comment from './tokens/comment';
 import Doctype from './tokens/doctype';

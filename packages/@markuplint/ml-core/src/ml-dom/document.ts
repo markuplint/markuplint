@@ -1,8 +1,8 @@
-import CustomRule from '@markuplint/custom-rule';
 import { MLASTNode } from '@markuplint/ml-ast/';
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config/';
 import Ruleset from '../ruleset/core';
 
+import MLRule from '../ml-rule';
 import createNode from './helper/create-node';
 import Comment from './tokens/comment';
 import Doctype from './tokens/doctype';
@@ -27,7 +27,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O extends RuleConf
 	/**
 	 *
 	 */
-	public currentRule: CustomRule<T, O> | null = null;
+	public currentRule: MLRule<T, O> | null = null;
 
 	/**
 	 *
@@ -140,7 +140,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O extends RuleConf
 		}
 	}
 
-	public setRule(rule: CustomRule<T, O> | null) {
+	public setRule(rule: MLRule<T, O> | null) {
 		this.currentRule = rule;
 	}
 }

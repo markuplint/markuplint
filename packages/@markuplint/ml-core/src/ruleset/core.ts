@@ -7,7 +7,7 @@ import {
 	RuleConfig,
 	RuleConfigOptions,
 	RuleConfigValue,
-} from '@markuplint/ml-config';
+} from '@markuplint/ml-config/';
 
 // import Document from '../dom/document';
 // import Messenger from '../locale/messenger';

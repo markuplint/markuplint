@@ -1,13 +1,13 @@
 import { RuleConfig, RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
-import Messenger from '@markuplint/ml-core/src/locale/messenger';
-import Document from '@markuplint/ml-core/src/ml-dom/document';
-import Ruleset from '@markuplint/ml-core/src/ruleset/core';
+import Messenger from '../locale/messenger';
+import Document from '../ml-dom/document';
+import Ruleset from '../ruleset/core';
 
 import { Options, RuleInfo, Severity, VerifiedResult } from './types';
 
-export default class CustomRule<T extends RuleConfigValue, O extends RuleConfigOptions> {
+export default class MLRule<T extends RuleConfigValue, O extends RuleConfigOptions> {
 	public static create<T extends RuleConfigValue, O extends RuleConfigOptions>(options: Options<T, O>) {
-		return new CustomRule<T, O>(options);
+		return new MLRule<T, O>(options);
 	}
 
 	// public static charLocator(searches: string[], text: string, currentLine: number, currentCol: number) {

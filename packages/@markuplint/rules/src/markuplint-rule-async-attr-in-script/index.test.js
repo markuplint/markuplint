@@ -1,4 +1,4 @@
-// import test from 'ava';
+import test from 'ava';
 // import * as markuplint from '../../../lib/';
 // import rule from '../../../lib/rules/markuplint-rule-async-attr-in-script';
 
@@ -137,4 +137,4 @@
 // 	]);
 // });
 
-// test('noop', (t) => t.pass());
+test('noop', (t) => t.pass());

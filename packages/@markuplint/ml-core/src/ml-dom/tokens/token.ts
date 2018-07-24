@@ -1,4 +1,4 @@
-import { MLToken } from '@markuplint/ml-ast/src';
+import { MLToken } from '@markuplint/ml-ast/';
 import Document from '../document';
 
 export default class Token<A extends MLToken> {
