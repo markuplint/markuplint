@@ -28,6 +28,6 @@ export interface Options<T extends RuleConfigValue, O extends RuleConfigOptions>
 	defaultLevel?: Severity;
 	defaultValue: T;
 	defaultOptions: O;
-	verify(document: Document<T, O>, message: Message): Promise<Result[]>;
+	verify(reports: Result[], document: Document<T, O>, message: Message): Promise<void>;
 	fix?(document: Document<T, O>): Promise<void>;
 }

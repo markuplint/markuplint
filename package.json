@@ -5,7 +5,8 @@
 		"rm": "rm ./node_modules/parse5/lib/index.d.ts",
 		"build": "lerna run build",
 		"dev": "lerna run --parallel dev & jest --watch",
-		"test": "jest --coverage"
+		"test": "jest --coverage",
+		"test:rules": "ava **/src/**/*.test.js !**/lib/**/*.test.js"
 	},
 	"jest": {
 		"verbose": true,
@@ -31,6 +32,7 @@
 	],
 	"devDependencies": {
 		"@types/jest": "^23.1.6",
+		"ava": "^0.25.0",
 		"jest": "^23.4.1",
 		"lerna": "^2.11.0",
 		"prettier": "^1.13.7",

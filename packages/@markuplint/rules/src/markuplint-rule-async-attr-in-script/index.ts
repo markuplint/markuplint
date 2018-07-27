@@ -1,15 +1,11 @@
-import CustomRule from '@markuplint/ml-core/lib/ml-core/src/ml-rule';
-import { Result } from '@markuplint/ml-core/lib/ml-core/src/ml-rule/types';
+import { createRule } from '@markuplint/ml-core/';
 
-export type Value = 'always' | 'never';
-
-export default CustomRule.create<Value, null>({
+export default createRule<'always' | 'never', null>({
 	name: 'async-attr-in-script',
 	defaultLevel: 'warning',
 	defaultValue: 'always',
 	defaultOptions: null,
-	async verify(document, messages) {
-		const reports: Result[] = [];
+	async verify(reports, document, messages) {
 		await document.walkOn('Element', async elem => {
 			if (!elem.matches('script[src]')) {
 				return;
@@ -43,6 +39,5 @@ export default CustomRule.create<Value, null>({
 				});
 			}
 		});
-		return reports;
 	},
 });

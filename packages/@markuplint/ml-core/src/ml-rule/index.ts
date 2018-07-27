@@ -3,7 +3,7 @@ import Messenger from '../locale/messenger';
 import Document from '../ml-dom/document';
 import Ruleset from '../ruleset/core';
 
-import { Options, RuleInfo, Severity, VerifiedResult } from './types';
+import { Options, Result, RuleInfo, Severity, VerifiedResult } from './types';
 
 export default class MLRule<T extends RuleConfigValue, O extends RuleConfigOptions> {
 	public static create<T extends RuleConfigValue, O extends RuleConfigOptions>(options: Options<T, O>) {
@@ -22,7 +22,7 @@ export default class MLRule<T extends RuleConfigValue, O extends RuleConfigOptio
 	private _v: Options<T, O>['verify'];
 	private _f: Options<T, O>['fix'];
 
-	constructor(o: Options<T, O>) {
+	private constructor(o: Options<T, O>) {
 		this.name = o.name;
 		this.defaultServerity = o.defaultLevel || 'error';
 		this.defaultValue = o.defaultValue;
@@ -42,7 +42,8 @@ export default class MLRule<T extends RuleConfigValue, O extends RuleConfigOptio
 		}
 
 		document.setRule(this);
-		const results = await this._v(document, messenger.message());
+		const results: Result[] = [];
+		await this._v(results, document, messenger.message());
 		document.setRule(null);
 
 		return results.map<VerifiedResult>(result => {
