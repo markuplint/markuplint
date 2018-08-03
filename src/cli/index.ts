@@ -58,6 +58,8 @@ const cli = meow(help, {
 	},
 });
 
+let exitCode = 0;
+
 if (cli.flags.v) {
 	cli.showVersion();
 }
@@ -88,6 +90,7 @@ if (cli.input.length) {
 				}
 			}
 		}
+		process.exit(exitCode);
 	})();
 }
 
@@ -103,6 +106,7 @@ getStdin().then(async stdin => {
 	);
 	const reports = await verify(html, ruleset, rules);
 	await output('STDIN_DATA', reports, html, cli.flags);
+	process.exit(exitCode);
 });
 
 /**
@@ -114,6 +118,7 @@ async function output(
 	html: string,
 	flags: { [type: string]: string | boolean },
 ) {
+	if (reports.length) exitCode = 1;
 	if (flags.format) {
 		const format = flags.format === true ? 'json' : flags.format;
 		switch (format.toLowerCase()) {
