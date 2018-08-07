@@ -21,6 +21,10 @@
 			"jsx",
 			"json",
 			"node"
+		],
+		"collectCoverageFrom": [
+			"packages/markuplint/src/**/*.ts",
+			"packages/@markuplint/*/src/**/*.ts"
 		]
 	},
 	"prettier": {
