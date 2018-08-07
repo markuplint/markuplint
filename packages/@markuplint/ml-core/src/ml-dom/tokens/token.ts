@@ -31,18 +31,6 @@ export default class Token<A extends MLToken> {
 		return this._fixed;
 	}
 
-	// public toJSON() {
-	// 	return {
-	// 		raw: this.raw,
-	// 		startLine: this.startLine,
-	// 		endLine: this.endLine,
-	// 		startCol: this.startCol,
-	// 		endCol: this.endCol,
-	// 		startOffset: this.startOffset,
-	// 		endOffset: this.endOffset,
-	// 	};
-	// }
-
 	public fix(raw: string) {
 		this._fixed = raw;
 	}

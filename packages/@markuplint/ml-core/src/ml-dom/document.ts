@@ -61,60 +61,8 @@ export default class MLDOMDocument<T extends RuleConfigValue, O extends RuleConf
 						}
 					}
 				}
-				// if (node instanceof Element) {
-				// 	if (node.nodeName.toLowerCase() === nodeRule.tagName) {
-				// 		node.obsolete = !!nodeRule.obsolete;
-				// 	}
-				// }
 			}
 		}
-
-		// // childNodeRules
-		// const stackNodes: [
-		// 	(Element<T, O> | OmittedElement<T, O>),
-		// 	string,
-		// 	boolean | ConfigureFileJSONRuleOption<null, {}>,
-		// 	boolean
-		// ][] = [];
-
-		// for (const node of this.nodeList) {
-		// 	if (node instanceof Element || node instanceof OmittedElement) {
-		// 		for (const nodeRule of _ruleset.childNodeRules) {
-		// 			if (nodeRule.rules) {
-		// 				for (const ruleName in nodeRule.rules) {
-		// 					if (nodeRule.rules.hasOwnProperty(ruleName)) {
-		// 						const rule = nodeRule.rules[ruleName];
-		// 						if (nodeRule.tagName || nodeRule.selector) {
-		// 							if (nodeRule.tagName === node.nodeName) {
-		// 								stackNodes.push([node, ruleName, rule, !!nodeRule.inheritance]);
-		// 							} else if (nodeRule.selector && node instanceof Element) {
-		// 								if (node.matches(nodeRule.selector)) {
-		// 									stackNodes.push([node, ruleName, rule, !!nodeRule.inheritance]);
-		// 								}
-		// 							}
-		// 						}
-		// 					}
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }
-
-		// for (const stackNode of stackNodes) {
-		// 	const node = stackNode[0];
-		// 	const ruleName = stackNode[1];
-		// 	const rule = stackNode[2];
-		// 	const inheritance = stackNode[3];
-		// 	if (inheritance) {
-		// 		syncWalk(node.childNodes, childNode => {
-		// 			childNode.rules[ruleName] = rule;
-		// 		});
-		// 	} else {
-		// 		for (const childNode of node.childNodes) {
-		// 			childNode.rules[ruleName] = rule;
-		// 		}
-		// 	}
-		// }
 	}
 
 	public async walk(walker: Walker<T, O>) {

@@ -48,18 +48,6 @@ export default abstract class Node<
 	public toString() {
 		return this.raw;
 	}
-	// 	public toJSON() {
-	// 		return {
-	// 			nodeName: this.nodeName,
-	// 			raw: this.raw,
-	// 			line: this.line,
-	// 			col: this.col,
-	// 			endLine: this.location.endLine,
-	// 			endCol: this.location.endCol,
-	// 			startOffset: this.location.startOffset,
-	// 			endOffset: this.location.endOffset,
-	// 		};
-	// 	}
 
 	public is(type: NodeType) {
 		return this.type === type;
@@ -79,12 +67,4 @@ export default abstract class Node<
 		// }
 		return this._doc.currentRule.optimizeOption(ruleConfig);
 	}
-
-	// 	public get syntaxicalParentNode(): Node<T, O> | null {
-	// 		let node: Node<T, O> | GhostNode<T, O> = this;
-	// 		while (node.parentNode && node.parentNode instanceof GhostNode) {
-	// 			node = node.parentNode;
-	// 		}
-	// 		return node.parentNode;
-	// 	}
 }

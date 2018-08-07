@@ -17,10 +17,6 @@ export default class MLRule<T extends RuleConfigValue, O extends RuleConfigOptio
 		return new MLRule<T, O>(options);
 	}
 
-	// public static charLocator(searches: string[], text: string, currentLine: number, currentCol: number) {
-	// 	return charLocator(searches, text, currentLine, currentCol);
-	// }
-
 	public readonly name: string;
 	public readonly defaultServerity: Severity;
 	public readonly defaultValue: T;

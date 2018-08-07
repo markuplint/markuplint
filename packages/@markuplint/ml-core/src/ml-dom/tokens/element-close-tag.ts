@@ -10,15 +10,8 @@ export default class ElementCloseTag<T extends RuleConfigValue, O extends RuleCo
 	MLASTElementCloseTag
 > {
 	public readonly type: NodeType = 'ElementCloseTag';
-	// 	// define when created instance frin parser/index.ts
 	public readonly startTag: Element<T, O>;
-	// 	// define when created instance frin parser/index.ts
-	// 	public readonly isForeignElement!: boolean;
-	// 	// define when created instance frin parser/index.ts
-	// 	public readonly isPotentialCustomElement!: boolean;
-	// 	public get raw() {
-	// 		return `</${this.nodeName}>`;
-	// 	}
+
 	constructor(astNode: MLASTElementCloseTag, startTag: Element<T, O>) {
 		super(astNode);
 		this.startTag = startTag;

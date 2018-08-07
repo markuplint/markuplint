@@ -2,7 +2,6 @@ import { MLASTAbstructNode, MLASTElementCloseTag, MLASTNode, MLASTNodeType } fro
 import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
 
 import Document from '../document';
-// import Attribute from '../tokens/attribute';
 import Comment from '../tokens/comment';
 import Doctype from '../tokens/doctype';
 import Element from '../tokens/element';
