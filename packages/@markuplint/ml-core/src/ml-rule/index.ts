@@ -1,9 +1,16 @@
-import { RuleConfig, RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+import {
+	Result,
+	RuleConfig,
+	RuleConfigOptions,
+	RuleConfigValue,
+	RuleInfo,
+	Severity,
+	VerifiedResult,
+} from '@markuplint/ml-config';
 import Messenger from '../locale/messenger';
 import Document from '../ml-dom/document';
-import Ruleset from '../ruleset/core';
 
-import { Options, Result, RuleInfo, Severity, VerifiedResult } from './types';
+import { Options } from './types';
 
 export default class MLRule<T extends RuleConfigValue, O extends RuleConfigOptions> {
 	public static create<T extends RuleConfigValue, O extends RuleConfigOptions>(options: Options<T, O>) {
@@ -31,12 +38,7 @@ export default class MLRule<T extends RuleConfigValue, O extends RuleConfigOptio
 		this._f = o.fix;
 	}
 
-	public async verify(
-		document: Document<T, O>,
-		config: RuleInfo<T, O>,
-		ruleset: Ruleset,
-		messenger: Messenger,
-	): Promise<VerifiedResult[]> {
+	public async verify(document: Document<T, O>, messenger: Messenger): Promise<VerifiedResult[]> {
 		if (!this._v) {
 			return [];
 		}
@@ -58,7 +60,7 @@ export default class MLRule<T extends RuleConfigValue, O extends RuleConfigOptio
 		});
 	}
 
-	public async fix(document: Document<T, O>, config: RuleInfo<T, O>, ruleset: Ruleset): Promise<void> {
+	public async fix(document: Document<T, O>): Promise<void> {
 		if (!this._f) {
 			return;
 		}
@@ -99,5 +101,3 @@ export default class MLRule<T extends RuleConfigValue, O extends RuleConfigOptio
 
 export type Options<T extends RuleConfigValue, O extends RuleConfigOptions> = Options<T, O>;
 export type RuleInfo<T extends RuleConfigValue, O extends RuleConfigOptions> = RuleInfo<T, O>;
-export type Severity = Severity;
-export type VerifiedResult = VerifiedResult;

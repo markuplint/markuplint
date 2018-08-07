@@ -1,5 +1,4 @@
-// import test from 'ava';
-import HTMLParser from './';
+import * as HTMLParser from './';
 
 import { MLASTNodeType } from '@markuplint/ml-ast';
 

@@ -1,8 +1,9 @@
 import { MLASTNode } from '@markuplint/ml-ast/';
 import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config/';
-import Ruleset from '../ruleset/core';
 
+import Messenger from '../locale/messenger';
 import MLRule from '../ml-rule';
+import Ruleset from '../ruleset/core';
 import createNode from './helper/create-node';
 import Comment from './tokens/comment';
 import Doctype from './tokens/doctype';
@@ -37,37 +38,36 @@ export default class MLDOMDocument<T extends RuleConfigValue, O extends RuleConf
 	constructor(astNodeList: MLASTNode[], ruleset: Ruleset) {
 		this.nodeList = astNodeList.map(astNode => createNode<MLASTNode, T, O>(astNode, this));
 
-		// for (const node of this.nodeList) {
-		// 	for (const ruleName in ruleset.rules) {
-		// 		if (ruleset.rules.hasOwnProperty(ruleName)) {
-		// 			const rule = ruleset.rules[ruleName];
-		// 			node.rules[ruleName] = rule;
-		// 		}
-		// 	}
-		// 	for (const nodeRule of ruleset.nodeRules) {
-		// 		if (nodeRule.rules) {
-		// 			for (const ruleName in nodeRule.rules) {
-		// 				if (nodeRule.rules.hasOwnProperty(ruleName)) {
-		// 					const rule = nodeRule.rules[ruleName];
-		// 					if (nodeRule.tagName || nodeRule.selector) {
-		// 						if (nodeRule.tagName === node.nodeName) {
-		// 							node.rules[ruleName] = rule;
-		// 						} else if (nodeRule.selector && node instanceof Element) {
-		// 							if (node.matches(nodeRule.selector)) {
-		// 								node.rules[ruleName] = rule;
-		// 							}
-		// 						}
-		// 					}
-		// 				}
-		// 			}
-		// 		}
-		// 		if (node instanceof Element) {
-		// 			if (node.nodeName.toLowerCase() === nodeRule.tagName) {
-		// 				node.obsolete = !!nodeRule.obsolete;
-		// 			}
-		// 		}
-		// 	}
-		// }
+		for (const node of this.nodeList) {
+			for (const ruleName in ruleset.rules) {
+				if (ruleset.rules.hasOwnProperty(ruleName)) {
+					const rule = ruleset.rules[ruleName];
+					node.rules[ruleName] = rule;
+				}
+			}
+			for (const nodeRule of ruleset.nodeRules) {
+				if (nodeRule.rules) {
+					for (const ruleName in nodeRule.rules) {
+						if (nodeRule.rules.hasOwnProperty(ruleName)) {
+							const rule = nodeRule.rules[ruleName];
+							node.rules[ruleName] = rule;
+							if (nodeRule.tagName || nodeRule.selector) {
+								if (nodeRule.selector && node instanceof Element) {
+									if (node.matches(nodeRule.selector)) {
+										node.rules[ruleName] = rule;
+									}
+								}
+							}
+						}
+					}
+				}
+				// if (node instanceof Element) {
+				// 	if (node.nodeName.toLowerCase() === nodeRule.tagName) {
+				// 		node.obsolete = !!nodeRule.obsolete;
+				// 	}
+				// }
+			}
+		}
 
 		// // childNodeRules
 		// const stackNodes: [

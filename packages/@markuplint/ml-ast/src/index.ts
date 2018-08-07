@@ -85,5 +85,5 @@ export interface MLASTAttr extends MLToken {
 }
 
 export interface MLMarkupLanguageParser {
-	(sourceCode: string): MLASTNode[];
+	parse(sourceCode: string): MLASTNode[];
 }

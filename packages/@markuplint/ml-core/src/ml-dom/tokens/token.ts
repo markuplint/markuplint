@@ -1,5 +1,5 @@
 import { MLToken } from '@markuplint/ml-ast/';
-import Document from '../document';
+import { Rules } from '@markuplint/ml-config/';
 
 export default class Token<A extends MLToken> {
 	public readonly startLine: number;
@@ -8,6 +8,7 @@ export default class Token<A extends MLToken> {
 	public readonly endCol: number;
 	public readonly startOffset: number;
 	public readonly endOffset: number;
+	public readonly rules: Rules = {};
 
 	protected readonly _astToken: A;
 

@@ -6,8 +6,8 @@
   "author": "Yusuke Hirao <yusukehirao@me.com>",
   "license": "MIT",
   "private": false,
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "lib/file-resolver/src/index.js",
+  "types": "lib/file-resolver/src/index.d.ts",
   "scripts": {
     "prepublish": "tsc -p .",
     "build": "tsc -p .",
@@ -16,10 +16,12 @@
   "devDependencies": {
     "@types/cosmiconfig": "^5.0.3",
     "@types/deep-assign": "^0.1.1",
-    "@types/node": "^10.5.2"
+    "@types/glob": "^5.0.35",
+    "@types/node": "^10.5.7"
   },
   "dependencies": {
     "cosmiconfig": "^5.0.5",
-    "deep-assign": "^2.0.0"
+    "deep-assign": "^2.0.0",
+    "glob": "^7.1.2"
   }
 }

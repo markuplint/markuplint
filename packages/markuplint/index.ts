@@ -1,6 +1,5 @@
 // import path from 'path';
 
-// import Markuplint from './core';
 // import CustomRule from './rule/custom-rule';
 
 // import ruleModulesLoader from './rule/loader';
