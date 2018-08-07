@@ -1,6 +1,6 @@
-import * as HTMLParser from './';
-
 import { MLASTNodeType } from '@markuplint/ml-ast';
+
+import * as HTMLParser from './';
 
 describe('isDocumentFragment', () => {
 	it('<!doctype>', () => {

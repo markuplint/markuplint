@@ -7,9 +7,9 @@ import {
 	Severity,
 	VerifiedResult,
 } from '@markuplint/ml-config';
+
 import Messenger from '../locale/messenger';
 import Document from '../ml-dom/document';
-
 import { Options } from './types';
 
 export default class MLRule<T extends RuleConfigValue, O extends RuleConfigOptions> {

@@ -1,5 +1,5 @@
-import { MLASTElement } from '@markuplint/ml-ast/';
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config/';
+import { MLASTElement } from '@markuplint/ml-ast';
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
 
 import Document from '../document';
 import { getNode } from '../helper/dom-traverser';

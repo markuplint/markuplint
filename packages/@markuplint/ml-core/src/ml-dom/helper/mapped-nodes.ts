@@ -1,4 +1,4 @@
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config/';
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
 
 import {
 	MLASTAbstructNode,

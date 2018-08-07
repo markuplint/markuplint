@@ -1,7 +1,7 @@
 // @ts-ignore
 import cssWhat from 'css-what';
 
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config/';
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
 
 import Element from './tokens/element';
 

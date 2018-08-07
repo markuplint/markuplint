@@ -1,5 +1,5 @@
-import { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast/';
-import { RuleConfig, RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config/';
+import { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
+import { RuleConfig, RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
 
 import { RuleInfo } from '../../ml-rule';
 import Document from '../document';

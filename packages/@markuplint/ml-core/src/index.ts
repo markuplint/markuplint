@@ -1,11 +1,11 @@
-import { MLASTNode, MLMarkupLanguageParser } from '@markuplint/ml-ast/';
-import { Config, RuleConfigOptions, RuleConfigValue, VerifiedResult } from '@markuplint/ml-config/';
+import { MLASTNode, MLMarkupLanguageParser } from '@markuplint/ml-ast';
+import { Config, RuleConfigOptions, RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
 
 import Messenger from './locale/messenger';
 import Document from './ml-dom/document';
 import MLRule from './ml-rule';
 import { Options } from './ml-rule/types';
-import Ruleset from './ruleset/core';
+import Ruleset from './ruleset';
 
 export default class MLCore {
 	private _parser: MLMarkupLanguageParser;

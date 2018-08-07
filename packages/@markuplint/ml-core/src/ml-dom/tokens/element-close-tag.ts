@@ -1,5 +1,5 @@
-import { MLASTElementCloseTag } from '@markuplint/ml-ast/';
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config/';
+import { MLASTElementCloseTag } from '@markuplint/ml-ast';
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
 
 import { setNode } from '../helper/dom-traverser';
 import { NodeType } from '../types';

@@ -1,9 +1,9 @@
-import { MLASTNode } from '@markuplint/ml-ast/';
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config/';
+import { MLASTNode } from '@markuplint/ml-ast';
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
 
 import Messenger from '../locale/messenger';
 import MLRule from '../ml-rule';
-import Ruleset from '../ruleset/core';
+import Ruleset from '../ruleset';
 import createNode from './helper/create-node';
 import Comment from './tokens/comment';
 import Doctype from './tokens/doctype';

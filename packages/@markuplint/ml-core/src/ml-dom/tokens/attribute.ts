@@ -1,4 +1,4 @@
-import { MLASTAttr, MLToken } from '@markuplint/ml-ast/';
+import { MLASTAttr, MLToken } from '@markuplint/ml-ast';
 import Token from './token';
 
 export default class Attribute extends Token<MLASTAttr> {

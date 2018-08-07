@@ -6,15 +6,16 @@
   "author": "Yusuke Hirao <yusukehirao@me.com>",
   "license": "MIT",
   "private": false,
-  "main": "lib/rules/src/index.js",
-  "types": "lib/rules/src/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "prepublish": "tsc -p .",
-    "build": "tsc -p .",
-    "dev": "tsc -w -p ."
+    "build": "tsc --build"
   },
   "devDependencies": {
   },
   "dependencies": {
+  },
+  "peerDependencies": {
+    "@markuplint/ml-core": "1.0.0-alpha"
   }
 }

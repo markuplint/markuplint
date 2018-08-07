@@ -1,4 +1,4 @@
-import { createRule } from '@markuplint/ml-core/';
+import { createRule } from '@markuplint/ml-core';
 
 export default createRule<'always' | 'never', null>({
 	name: 'async-attr-in-script',

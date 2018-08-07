@@ -1,5 +1,5 @@
-import { MLToken } from '@markuplint/ml-ast/';
-import { Rules } from '@markuplint/ml-config/';
+import { MLToken } from '@markuplint/ml-ast';
+import { Rules } from '@markuplint/ml-config';
 
 export default class Token<A extends MLToken> {
 	public readonly startLine: number;

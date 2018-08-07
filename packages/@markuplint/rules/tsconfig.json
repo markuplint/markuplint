@@ -1,8 +1,21 @@
 {
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./lib"
+    "composite": true,
+    "outDir": "./lib",
+    "rootDir": "./src"
   },
+  "references": [
+    {
+      "path": "../ml-ast"
+    },
+    {
+      "path": "../ml-config"
+    },
+    {
+      "path": "../ml-core"
+    }
+  ],
   "include": [
     "./src/**/*"
   ],

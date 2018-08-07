@@ -9,9 +9,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "prepublish": "tsc -p .",
-    "build": "tsc -p .",
-    "dev": "tsc -w -p ."
+    "build": "tsc --build"
   },
   "devDependencies": {},
   "dependencies": {}
