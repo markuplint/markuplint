@@ -17,5 +17,9 @@ export function setNode<N extends MLASTAbstructNode, T extends RuleConfigValue, 
 export function getNode<N extends MLASTAbstructNode, T extends RuleConfigValue, O extends RuleConfigOptions>(
 	astNode: N,
 ) {
-	return store.get(astNode) as MappedNode<N, T, O>;
+	const node = store.get(astNode);
+	if (!node) {
+		throw new Error(`Can not store node from "${astNode.raw}"`);
+	}
+	return node as MappedNode<N, T, O>;
 }

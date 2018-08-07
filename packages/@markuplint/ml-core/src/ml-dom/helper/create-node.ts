@@ -29,19 +29,16 @@ export default function createNode<N extends MLASTAbstructNode, T extends RuleCo
 		}
 		case MLASTNodeType.Comment: {
 			return new Comment<T, O>(_astNode, document) as MappedNode<N, T, O>;
-			break;
 		}
 		case MLASTNodeType.Text: {
 			return new Text<T, O>(_astNode, document) as MappedNode<N, T, O>;
-			break;
 		}
 		case MLASTNodeType.InvalidNode: {
 			return new InvalidNode<T, O>(_astNode, document) as MappedNode<N, T, O>;
-			break;
 		}
 		case MLASTNodeType.OmittedTag: {
 			return new OmittedElement<T, O>(_astNode, document) as MappedNode<N, T, O>;
-			break;
 		}
 	}
+	throw new TypeError(`Invalid AST node typs "${astNode.type}"`);
 }
