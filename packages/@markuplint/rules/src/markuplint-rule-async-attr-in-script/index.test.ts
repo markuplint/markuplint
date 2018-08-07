@@ -1,10 +1,11 @@
-import test from 'ava';
-// import * as markuplint from '../../../lib/';
-// import rule from '../../../lib/rules/markuplint-rule-async-attr-in-script';
+import * as markuplint from 'markuplint';
+// import rule from './';
 
-// test(async (t) => {
-// 	const r = await markuplint.verify(
-// 		'<script src="path/to"></script>',
+// it('is test', async t => {
+// 	const r = await markuplint.verify({
+// 		sourceCodes: '<script src="path/to"></script>',
+// 		rulese:
+// 	}
 // 		{
 // 			rules: {
 // 				'async-attr-in-script': true,
@@ -136,5 +137,3 @@ import test from 'ava';
 // 		},
 // 	]);
 // });
-
-test('noop', (t) => t.pass());

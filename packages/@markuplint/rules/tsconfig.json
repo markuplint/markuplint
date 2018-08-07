@@ -3,19 +3,14 @@
   "compilerOptions": {
     "composite": true,
     "outDir": "./lib",
-    "rootDir": "./src"
-  },
-  "references": [
-    {
-      "path": "../ml-ast"
-    },
-    {
-      "path": "../ml-config"
-    },
-    {
-      "path": "../ml-core"
+    "rootDir": "./src",
+    "paths": {
+      "@markuplint/*": [],
+      "*": [
+        "./packages/*/src"
+      ]
     }
-  ],
+  },
   "include": [
     "./src/**/*"
   ],

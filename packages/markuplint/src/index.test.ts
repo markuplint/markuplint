@@ -1,4 +1,4 @@
-import * as markuplint from './ml-engine';
+import * as markuplint from './';
 
 describe('basic test', async () => {
 	it('is empty result of 001.html', async () => {
