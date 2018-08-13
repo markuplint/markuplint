@@ -1,23 +1,10 @@
-import {
-	ChildNodeRule,
-	Config,
-	NodeRule,
-	Rules,
-	RuleConfig,
-	RuleConfigOptions,
-	RuleConfigValue,
-} from '@markuplint/ml-config/';
-
-import Messenger from '../locale/messenger';
-import Document from '../ml-dom/document';
+import { ChildNodeRule, Config, NodeRule, Rule, Rules } from '@markuplint/ml-config/';
 
 export default class Ruleset {
-	// 	public static readonly NOFILE = '<no-file>';
 	public readonly rules: Readonly<Rules>;
 	public readonly nodeRules: ReadonlyArray<NodeRule>;
 	public readonly childNodeRules: ReadonlyArray<ChildNodeRule>;
-	// 	private _rules: CustomRule[];
-	// 	private _rawConfig: ConfigureFileJSON | null = null;
+
 	constructor(config: Config) {
 		// TODO: deep freeze
 		this.rules = Object.freeze(config.rules || {});
@@ -25,27 +12,40 @@ export default class Ruleset {
 		this.childNodeRules = Object.freeze(config.childNodeRules || []);
 	}
 
-	public async verify(document: Document<RuleConfigValue, RuleConfigOptions>, messenger: Messenger) {
-		// const reports: VerifiedResult[] = [];
-		// for (const rule of this._rules) {
-		// 	const config = rule.optimizeOption(this.rules[rule.name] || false);
-		// 	if (config.disabled) {
-		// 		continue;
-		// 	}
-		// 	const results = await rule.verify(document, config, this, messenger);
-		// 	reports.push(...results);
-		// }
-		// return reports;
+	public eachRules(callback: (ruleName: string, rule: Rule) => void) {
+		for (const ruleName in this.rules) {
+			if (this.rules.hasOwnProperty(ruleName)) {
+				const rule = this.rules[ruleName];
+				callback(ruleName, rule);
+			}
+		}
 	}
 
-	public async fix(document: Document<RuleConfigValue, RuleConfigOptions>) {
-		// for (const rule of this._rules) {
-		// 	const config = rule.optimizeOption(this.rules[rule.name] || false);
-		// 	if (config.disabled) {
-		// 		continue;
-		// 	}
-		// 	await rule.fix(document, config, this);
-		// }
-		// return document.fix();
+	public eachNodeRules(callback: (selector: string, ruleName: string, rule: Rule) => void) {
+		for (const nodeRule of this.nodeRules) {
+			if (!nodeRule.rules || !nodeRule.selector) {
+				return;
+			}
+			for (const ruleName of Object.keys(nodeRule.rules)) {
+				const rule = nodeRule.rules[ruleName];
+				callback(nodeRule.selector, ruleName, rule);
+			}
+		}
+	}
+
+	public eachChildNodeRules(
+		callback: (selector: string, ruleName: string, rule: Rule, inheritance: boolean) => void,
+	) {
+		for (const nodeRule of this.childNodeRules) {
+			if (!nodeRule.rules || !nodeRule.selector) {
+				return;
+			}
+			for (const ruleName in nodeRule.rules) {
+				if (nodeRule.hasOwnProperty(ruleName)) {
+					const rule = nodeRule.rules[ruleName];
+					callback(nodeRule.selector, ruleName, rule, !!nodeRule.inheritance);
+				}
+			}
+		}
 	}
 }

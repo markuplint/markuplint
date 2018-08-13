@@ -12,8 +12,10 @@ export interface ParserConfig {
 	[extensionPattern: string]: string /* module name or path */;
 }
 
+export type Rule = RuleConfig<RuleConfigValue, RuleConfigOptions> | RuleConfigValue;
+
 export interface Rules {
-	[ruleName: string]: RuleConfig<RuleConfigValue, RuleConfigOptions> | RuleConfigValue;
+	[ruleName: string]: Rule;
 }
 
 export type RuleConfig<T extends RuleConfigValue, O extends RuleConfigOptions> = [Severity, T, O];
@@ -31,14 +33,14 @@ export type RuleConfigOptions = RuleConfigOptionsStructure | null;
 export interface NodeRule {
 	tagName?: string;
 	selector?: string;
-	rules: Rules;
+	rules?: Rules;
 }
 
 export interface ChildNodeRule {
 	tagName?: string;
 	selector?: string;
-	inheritance: boolean;
-	rules: Rules;
+	inheritance?: boolean;
+	rules?: Rules;
 }
 
 export interface Result {

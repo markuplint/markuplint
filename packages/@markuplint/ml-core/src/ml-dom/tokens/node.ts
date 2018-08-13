@@ -1,7 +1,7 @@
 import { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
 import { RuleConfig, RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
 
-import { RuleInfo } from '../../ml-rule';
+import { RuleInfo } from '../../';
 import Document from '../document';
 import { getNode, setNode } from '../helper/dom-traverser';
 import Indentation from '../indentation';
@@ -59,12 +59,12 @@ export default abstract class Node<
 		}
 		const name = this._doc.currentRule.name;
 
-		// TODO:
-		const ruleConfig: RuleConfig<T, O> | T | boolean = false;
-		// const rule = this.rules[name];
-		// if (rule == null) {
-		// throw new Error('Invalid call "rule" property.');
-		// }
+		// @ts-ignore
+		const ruleConfig: RuleConfig<T, O> | T = this.rules[name];
+
+		if (ruleConfig == null) {
+			throw new Error('Invalid call "rule" property.');
+		}
 		return this._doc.currentRule.optimizeOption(ruleConfig);
 	}
 }

@@ -91,8 +91,8 @@ import {
 	MLFile,
 } from '@markuplint/file-resoliver';
 import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
-import { VerifiedResult } from '@markuplint/ml-config';
-import MLCore, { convertRuleset, getMessenger } from '@markuplint/ml-core';
+import { Config, RuleConfigOptions, RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
+import { convertRuleset, getMessenger, MLCore, MLRule } from '@markuplint/ml-core';
 import coreRules from '@markuplint/rules';
 
 import { toRegxp } from './util';
@@ -100,7 +100,9 @@ import { toRegxp } from './util';
 export interface MLCLIOption {
 	files?: string;
 	sourceCodes?: string | string[];
-	config?: string;
+	config?: string | Config;
+	rules?: MLRule<RuleConfigValue, RuleConfigOptions>[];
+	addRules?: MLRule<RuleConfigValue, RuleConfigOptions>[];
 	// noConfig?: boolean;
 	// ext?: string;
 	// parser?: string;
@@ -132,9 +134,20 @@ export async function verify(options: MLCLIOption) {
 	// Resolve configuration data
 	const configs = new Map<MLFile, ConfigSet>();
 	if (options.config) {
-		const configSet = await loadConfigFile(options.config);
+		let configSet: ConfigSet | void;
+		if (typeof options.config === 'string') {
+			configSet = await loadConfigFile(options.config);
+		} else {
+			configSet = {
+				config: options.config,
+				files: new Set('<no-file>'),
+				errs: [],
+			};
+		}
 		if (configSet) {
-			files.forEach(file => configs.set(file, configSet));
+			for (const file of files) {
+				configs.set(file, configSet);
+			}
 		}
 	} else {
 		let configSetNearbyCWD: ConfigSet | void;
@@ -151,6 +164,16 @@ export async function verify(options: MLCLIOption) {
 				}
 			}
 		}
+	}
+
+	let rules: MLRule<RuleConfigValue, RuleConfigOptions>[];
+	if (options.rules) {
+		rules = options.rules;
+	} else {
+		rules = coreRules;
+	}
+	if (options.addRules) {
+		rules = rules.concat(options.addRules);
 	}
 
 	const results: VerifiedResult[] = [];
