@@ -28,7 +28,12 @@
     ]
   },
   "prettier": {
-    "printWidth": 120
+    "printWidth": 120,
+    "tabWidth": 4,
+    "useTabs": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": true
   },
   "workspaces": [
     "packages/*",
