@@ -1,17 +1,13 @@
 import { MLASTNode } from '@markuplint/ml-ast';
 import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
 
-import Messenger from '../locale/messenger';
-import MLRule from '../ml-rule';
+import { MLRule } from '../';
 import Ruleset from '../ruleset';
 import createNode from './helper/create-node';
 import Comment from './tokens/comment';
-import Doctype from './tokens/doctype';
 import Element from './tokens/element';
 import ElementCloseTag from './tokens/element-close-tag';
-import InvalidNode from './tokens/invalid-node';
 import Node from './tokens/node';
-import OmittedElement from './tokens/omitted-element';
 import Text from './tokens/text';
 
 import { AnonymousNode, NodeType } from './types';
@@ -39,29 +35,34 @@ export default class MLDOMDocument<T extends RuleConfigValue, O extends RuleConf
 		this.nodeList = astNodeList.map(astNode => createNode<MLASTNode, T, O>(astNode, this));
 
 		for (const node of this.nodeList) {
-			for (const ruleName in ruleset.rules) {
-				if (ruleset.rules.hasOwnProperty(ruleName)) {
-					const rule = ruleset.rules[ruleName];
+			ruleset.eachRules((ruleName, rule) => {
+				node.rules[ruleName] = rule;
+			});
+
+			if (!(node instanceof Element)) {
+				continue;
+			}
+
+			ruleset.eachNodeRules((selector, ruleName, rule) => {
+				if (node.matches(selector)) {
 					node.rules[ruleName] = rule;
 				}
-			}
-			for (const nodeRule of ruleset.nodeRules) {
-				if (nodeRule.rules) {
-					for (const ruleName in nodeRule.rules) {
-						if (nodeRule.rules.hasOwnProperty(ruleName)) {
-							const rule = nodeRule.rules[ruleName];
-							node.rules[ruleName] = rule;
-							if (nodeRule.tagName || nodeRule.selector) {
-								if (nodeRule.selector && node instanceof Element) {
-									if (node.matches(nodeRule.selector)) {
-										node.rules[ruleName] = rule;
-									}
-								}
-							}
+			});
+
+			// childNodeRules
+			ruleset.eachChildNodeRules((selector, ruleName, rule, inheritance) => {
+				if (node.matches(selector)) {
+					if (inheritance) {
+						syncWalk(node.childNodes, childNode => {
+							childNode.rules[ruleName] = rule;
+						});
+					} else {
+						for (const childNode of node.childNodes) {
+							childNode.rules[ruleName] = rule;
 						}
 					}
 				}
-			}
+			});
 		}
 	}
 
@@ -96,3 +97,16 @@ export default class MLDOMDocument<T extends RuleConfigValue, O extends RuleConf
 export type Walker<T extends RuleConfigValue, O extends RuleConfigOptions, N = AnonymousNode<T, O>> = (
 	node: N,
 ) => Promise<void>;
+
+export type SyncWalker<T extends RuleConfigValue, O extends RuleConfigOptions, N = AnonymousNode<T, O>> = (
+	node: N,
+) => void;
+
+function syncWalk<T extends RuleConfigValue, O extends RuleConfigOptions>(
+	nodeList: AnonymousNode<T, O>[],
+	walker: SyncWalker<T, O>,
+) {
+	for (const node of nodeList) {
+		walker(node);
+	}
+}
