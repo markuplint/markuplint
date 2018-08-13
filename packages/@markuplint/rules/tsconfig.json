@@ -5,18 +5,24 @@
     "outDir": "./lib",
     "rootDir": "./src",
     "paths": {
-      "@markuplint/*": [],
-      "*": [
-        "./packages/*/src"
-      ]
+      "@markuplint/*": ["../../../node_modules"],
+      "*": ["../../../node_modules"]
     }
   },
-  "include": [
-    "./src/**/*"
+  "references": [
+    {
+      "path": "../file-resolver"
+    },
+    {
+      "path": "../ml-ast"
+    },
+    {
+      "path": "../ml-config"
+    },
+    {
+      "path": "../ml-core"
+    }
   ],
-  "exclude": [
-    "node_modules",
-    "lib",
-    "./src/**/*.test.ts"
-  ]
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "lib", "./src/**/*.test.ts"]
 }
