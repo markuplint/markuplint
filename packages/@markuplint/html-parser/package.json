@@ -16,6 +16,6 @@
   },
   "dependencies": {
     "@markuplint/ml-ast": "^1.0.0-alpha",
-    "parse5": "^5.0.0"
+    "parse5": "^5.1.0"
   }
 }

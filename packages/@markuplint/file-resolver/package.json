@@ -1,26 +1,26 @@
 {
-  "name": "@markuplint/file-resoliver",
-  "version": "1.0.0-alpha",
-  "description": "The file resolver of markuplint",
-  "repository": "git@github.com:markuplint/markuplint.git",
-  "author": "Yusuke Hirao <yusukehirao@me.com>",
-  "license": "MIT",
-  "private": false,
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "scripts": {
-    "build": "tsc --build"
-  },
-  "devDependencies": {
-    "@types/cosmiconfig": "^5.0.3",
-    "@types/deep-assign": "^0.1.1",
-    "@types/glob": "^5.0.35",
-    "@types/node": "^10.5.8"
-  },
-  "dependencies": {
-    "@markuplint/ml-config": "1.0.0-alpha",
-    "cosmiconfig": "^5.0.6",
-    "deep-assign": "^2.0.0",
-    "glob": "^7.1.2"
-  }
+	"name": "@markuplint/file-resoliver",
+	"version": "1.0.0-alpha",
+	"description": "The file resolver of markuplint",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"private": false,
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"scripts": {
+		"build": "tsc --build"
+	},
+	"devDependencies": {
+		"@types/cosmiconfig": "^5.0.3",
+		"@types/deep-assign": "^0.1.1",
+		"@types/glob": "^5.0.35",
+		"@types/node": "^10.7.1"
+	},
+	"dependencies": {
+		"@markuplint/ml-config": "1.0.0-alpha",
+		"cosmiconfig": "^5.0.6",
+		"deep-assign": "^2.0.0",
+		"glob": "^7.1.2"
+	}
 }
