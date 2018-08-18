@@ -23,21 +23,22 @@ $ markuplint verifyee.html
 $ markuplint --help
 
 Usage
-	$ markuplint <HTML file pathes (glob format)>
-	$ <stdout> | markuplint
+  $ markuplint <HTML file pathes (glob format)>
+  $ <stdout> | markuplint
 
 Options
-	--ruleset,      -r FILE_PATH  Ruleset file path.
-	--no-color,     -c            Output no color.
-	--format,       -f FORMAT     Output format. Support "JSON" or "Simple". Default "JSON".
-	--problem-only, -p            Output only problems, without passeds.
+  --ruleset,      -r FILE_PATH  Ruleset file path.
+  --no-color,     -c            Output no color.
+  --format,       -f FORMAT     Output format. Support "JSON" or "Simple". Default "JSON".
+  --problem-only, -p            Output only problems, without passeds.
+  --fix                         Output fixed HTML.
 
-	--help,         -h            Show help.
-	--version,      -v            Show version.
+  --help,         -h            Show help.
+  --version,      -v            Show version.
 
 Examples
-	$ markuplint verifyee.html --ruleset path/to/.markuplintrc
-	$ cat verifyee.html | markuplint
+  $ markuplint verifyee.html --ruleset path/to/.markuplintrc
+  $ cat verifyee.html | markuplint
 ```
 
 ![Screen shot](media/screenshot01.png)
