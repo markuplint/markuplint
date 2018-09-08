@@ -1,5 +1,3 @@
-import parse5 from 'parse5';
-
 import {
 	MLASTAbstructNode,
 	MLASTElement,
@@ -11,7 +9,7 @@ import {
 	MLASTTag,
 	MLASTText,
 } from '@markuplint/ml-ast/';
-
+import parse5 from 'parse5';
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
 import isDocumentFragment from './is-document-fragment';

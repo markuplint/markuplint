@@ -1,6 +1,5 @@
 import { MLASTAbstructNode } from '@markuplint/ml-ast';
 import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
-
 import Node from '../tokens/node';
 import { MappedNode } from './mapped-nodes';
 

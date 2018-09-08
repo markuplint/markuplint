@@ -80,8 +80,6 @@
 // 	return core;
 // }
 
-import path from 'path';
-
 import {
 	getAnonymousFile,
 	getFiles,
@@ -94,7 +92,7 @@ import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { Config, RuleConfigOptions, RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
 import { convertRuleset, getMessenger, MLCore, MLRule } from '@markuplint/ml-core';
 import coreRules from '@markuplint/rules';
-
+import path from 'path';
 import { toRegxp } from './util';
 
 export interface MLCLIOption {

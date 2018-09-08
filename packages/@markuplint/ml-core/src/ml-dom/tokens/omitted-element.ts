@@ -1,6 +1,5 @@
 import { MLASTOmittedElement } from '@markuplint/ml-ast';
 import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
-
 import Document from '../document';
 import { NodeType } from '../types';
 import Node from './node';

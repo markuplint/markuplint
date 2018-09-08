@@ -1,17 +1,11 @@
 import { MLASTAbstructNode, MLASTElementCloseTag, MLASTNode, MLASTNodeType } from '@markuplint/ml-ast';
 import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
-
-import Document from '../document';
-import Comment from '../tokens/comment';
-import Doctype from '../tokens/doctype';
-import Element from '../tokens/element';
-import InvalidNode from '../tokens/invalid-node';
-import OmittedElement from '../tokens/omitted-element';
-import Text from '../tokens/text';
+import { Document } from '../';
+import { Comment, Doctype, Element, InvalidNode, OmittedElement, Text } from '../tokens';
 import { getNode } from './dom-traverser';
 import { MappedNode } from './mapped-nodes';
 
-export default function createNode<N extends MLASTAbstructNode, T extends RuleConfigValue, O extends RuleConfigOptions>(
+export function createNode<N extends MLASTAbstructNode, T extends RuleConfigValue, O extends RuleConfigOptions>(
 	astNode: N,
 	document: Document<T, O>,
 ): MappedNode<N, T, O> {

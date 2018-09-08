@@ -3,7 +3,7 @@ import { Result, RuleConfigOptions, RuleConfigValue, Severity } from '@markuplin
 import { Message } from '../locale/messenger';
 import Document from '../ml-dom/document';
 
-export interface Options<T extends RuleConfigValue, O extends RuleConfigOptions> {
+export interface MLRuleOptions<T extends RuleConfigValue, O extends RuleConfigOptions> {
 	name: string;
 	defaultLevel?: Severity;
 	defaultValue: T;

@@ -1,13 +1,8 @@
 import { MLASTElement } from '@markuplint/ml-ast';
 import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
-
-import Document from '../document';
-import { getNode } from '../helper/dom-traverser';
-import Selector from '../selector';
-import { AnonymousNode, NodeType } from '../types';
-import Attribute from './attribute';
-import ElementCloseTag from './element-close-tag';
-import Node from './node';
+import { AnonymousNode, Document, NodeType } from '../';
+import { createSelector, getNode } from '../helper';
+import { Attribute, ElementCloseTag, Node } from './';
 
 export default class Element<T extends RuleConfigValue, O extends RuleConfigOptions> extends Node<T, O, MLASTElement> {
 	public readonly type: NodeType = 'Element';
@@ -45,6 +40,6 @@ export default class Element<T extends RuleConfigValue, O extends RuleConfigOpti
 	}
 
 	public matches(selector: string): boolean {
-		return Selector(selector).match(this);
+		return createSelector(selector).match(this);
 	}
 }

@@ -1,28 +1,28 @@
 {
-  "extends": "../../../tsconfig.json",
-  "compilerOptions": {
-    "composite": true,
-    "outDir": "./lib",
-    "rootDir": "./src",
-    "paths": {
-      "@markuplint/*": ["../../../node_modules"],
-      "*": ["../../../node_modules"]
-    }
-  },
-  "references": [
-    {
-      "path": "../file-resolver"
-    },
-    {
-      "path": "../ml-ast"
-    },
-    {
-      "path": "../ml-config"
-    },
-    {
-      "path": "../ml-core"
-    }
-  ],
-  "include": ["./src/**/*"],
-  "exclude": ["node_modules", "lib", "./src/**/*.test.ts"]
+	"extends": "../../../tsconfig.json",
+	"compilerOptions": {
+		"composite": true,
+		"outDir": "./lib",
+		"rootDir": "./src",
+		"paths": {
+			"@markuplint/*": ["../../../node_modules"],
+			"*": ["../../../node_modules"]
+		}
+	},
+	"references": [
+		{
+			"path": "../file-resolver"
+		},
+		{
+			"path": "../ml-ast"
+		},
+		{
+			"path": "../ml-config"
+		},
+		{
+			"path": "../ml-core"
+		}
+	],
+	"include": ["./src/**/*"],
+	"exclude": ["node_modules", "lib", "./src/**/*.test.ts"]
 }

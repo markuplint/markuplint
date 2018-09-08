@@ -1,5 +1,3 @@
-import isDocumentFragment from './is-document-fragment';
-import nodeListToDebugMaps from './node-list-to-debug-maps';
-import parse from './parse';
-
-export { parse, isDocumentFragment, nodeListToDebugMaps };
+export { default as isDocumentFragment } from './is-document-fragment';
+export { default as nodeListToDebugMaps } from './node-list-to-debug-maps';
+export { default as parse } from './parse';

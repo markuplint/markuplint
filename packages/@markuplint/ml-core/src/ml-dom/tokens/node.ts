@@ -1,6 +1,5 @@
 import { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
 import { RuleConfig, RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
-
 import { RuleInfo } from '../../';
 import Document from '../document';
 import { getNode, setNode } from '../helper/dom-traverser';

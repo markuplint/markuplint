@@ -1,5 +1,4 @@
 import { reSplitterTag, reTagName } from './const';
-
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
 

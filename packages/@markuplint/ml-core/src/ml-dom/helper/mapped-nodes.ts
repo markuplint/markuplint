@@ -1,5 +1,3 @@
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
-
 import {
 	MLASTAbstructNode,
 	MLASTAttr,
@@ -14,17 +12,19 @@ import {
 	MLASTText,
 	MLToken,
 } from '@markuplint/ml-ast/';
-
-import Attribute from '../tokens/attribute';
-import Comment from '../tokens/comment';
-import Doctype from '../tokens/doctype';
-import Element from '../tokens/element';
-import ElementCloseTag from '../tokens/element-close-tag';
-import InvalidNode from '../tokens/invalid-node';
-import Node from '../tokens/node';
-import OmittedElement from '../tokens/omitted-element';
-import Text from '../tokens/text';
-import Token from '../tokens/token';
+import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+import {
+	Attribute,
+	Comment,
+	Doctype,
+	Element,
+	ElementCloseTag,
+	InvalidNode,
+	Node,
+	OmittedElement,
+	Text,
+	Token,
+} from '../tokens';
 
 // prettier-ignore
 export type MappedNode<N, T extends RuleConfigValue, O extends RuleConfigOptions>

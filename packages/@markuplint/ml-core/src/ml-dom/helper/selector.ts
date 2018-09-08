@@ -2,8 +2,7 @@
 import cssWhat from 'css-what';
 
 import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
-
-import Element from './tokens/element';
+import { Element } from '../tokens';
 
 export interface UniversalSelectorRule {
 	type: 'universal';
@@ -188,6 +187,6 @@ function match<T extends RuleConfigValue, O extends RuleConfigOptions>(
 	return orMatch.some(b => b);
 }
 
-export default function(selector: string) {
+export function createSelector(selector: string) {
 	return new Selector(selector);
 }

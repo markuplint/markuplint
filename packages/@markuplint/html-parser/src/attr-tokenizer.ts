@@ -1,5 +1,4 @@
 import { MLASTAttr, MLToken } from '@markuplint/ml-ast';
-
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
 

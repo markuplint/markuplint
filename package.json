@@ -9,6 +9,11 @@
 		"test:rules": "ava **/src/**/*.test.js !**/lib/**/*.test.js"
 	},
 	"jest": {
+		"globals": {
+			"ts-jest": {
+				"tsConfigFile": "tsconfig.json"
+			}
+		},
 		"verbose": true,
 		"transform": {
 			"^.+\\.tsx?$": "ts-jest"
@@ -40,7 +45,7 @@
 		"packages/@markuplint/*"
 	],
 	"devDependencies": {
-		"@types/jest": "^23.3.1",
+		"@types/jest": "^23.3.2",
 		"jest": "^23.5.0",
 		"lerna": "^3.3.0",
 		"prettier": "^1.14.2",

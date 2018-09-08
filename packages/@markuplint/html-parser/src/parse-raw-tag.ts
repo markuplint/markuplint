@@ -1,5 +1,4 @@
 import { MLASTAttr } from '@markuplint/ml-ast';
-
 import attrTokenizer from './attr-tokenizer';
 import { rePCEN, reTag, reTagName } from './const';
 

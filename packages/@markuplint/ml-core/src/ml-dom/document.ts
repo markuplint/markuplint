@@ -1,15 +1,9 @@
 import { MLASTNode } from '@markuplint/ml-ast';
 import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
-
 import { MLRule } from '../';
 import Ruleset from '../ruleset';
-import createNode from './helper/create-node';
-import Comment from './tokens/comment';
-import Element from './tokens/element';
-import ElementCloseTag from './tokens/element-close-tag';
-import Node from './tokens/node';
-import Text from './tokens/text';
-
+import { createNode } from './helper';
+import { Comment, Element, ElementCloseTag, Node, Text } from './tokens';
 import { AnonymousNode, NodeType } from './types';
 
 /**
