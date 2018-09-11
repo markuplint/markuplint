@@ -1,11 +1,12 @@
-import { createRule } from '@markuplint/ml-core';
+import { createRule, Result } from '@markuplint/ml-core';
 
 export default createRule<'always' | 'never', null>({
 	name: 'async-attr-in-script',
 	defaultLevel: 'warning',
 	defaultValue: 'always',
 	defaultOptions: null,
-	async verify(reports, document, messages) {
+	async verify(document, messages) {
+		const results: Result[] = [];
 		await document.walkOn('Element', async elem => {
 			if (!elem.matches('script[src]')) {
 				return;
@@ -30,7 +31,7 @@ export default createRule<'always' | 'never', null>({
 			}
 			if (bad) {
 				const message = messages(necessary, '{$} attribute');
-				reports.push({
+				results.push({
 					severity: elem.rule.severity,
 					message: message.replace('{$}', 'async'),
 					line: elem.startLine,
@@ -39,5 +40,6 @@ export default createRule<'always' | 'never', null>({
 				});
 			}
 		});
+		return results;
 	},
 });

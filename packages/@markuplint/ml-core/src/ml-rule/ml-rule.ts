@@ -1,5 +1,4 @@
 import {
-	Result,
 	RuleConfig,
 	RuleConfigOptions,
 	RuleConfigValue,
@@ -7,7 +6,6 @@ import {
 	Severity,
 	VerifiedResult,
 } from '@markuplint/ml-config';
-
 import Messenger from '../locale/messenger';
 import Document from '../ml-dom/document';
 import { MLRuleOptions } from './types';
@@ -41,8 +39,7 @@ export class MLRule<T extends RuleConfigValue, O extends RuleConfigOptions> {
 
 		// @ts-ignore
 		document.setRule(this);
-		const results: Result[] = [];
-		await this._v(results, document, messenger.message());
+		const results = await this._v(document, messenger.message());
 		document.setRule(null);
 
 		return results.map<VerifiedResult>(result => {

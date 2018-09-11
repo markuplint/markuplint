@@ -8,6 +8,6 @@ export interface MLRuleOptions<T extends RuleConfigValue, O extends RuleConfigOp
 	defaultLevel?: Severity;
 	defaultValue: T;
 	defaultOptions: O;
-	verify(reports: Result[], document: Document<T, O>, message: Message): Promise<void>;
+	verify(document: Document<T, O>, message: Message): Promise<Result[]>;
 	fix?(document: Document<T, O>): Promise<void>;
 }
