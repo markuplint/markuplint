@@ -1,10 +1,10 @@
 import { MLASTElement } from '@markuplint/ml-ast';
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+import { RuleConfigValue } from '@markuplint/ml-config';
 import { AnonymousNode, Document, NodeType } from '../';
 import { createSelector, getNode } from '../helper';
 import { Attribute, ElementCloseTag, Node } from './';
 
-export default class Element<T extends RuleConfigValue, O extends RuleConfigOptions> extends Node<T, O, MLASTElement> {
+export default class Element<T extends RuleConfigValue, O = null> extends Node<T, O, MLASTElement> {
 	public readonly type: NodeType = 'Element';
 	public readonly nodeName: string;
 	public readonly attributes: Attribute[];

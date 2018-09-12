@@ -1,6 +1,6 @@
 import { createRule, Result } from '@markuplint/ml-core';
 
-export default createRule<'always' | 'never', null>({
+export default createRule<'always' | 'never'>({
 	name: 'async-attr-in-script',
 	defaultLevel: 'warning',
 	defaultValue: 'always',

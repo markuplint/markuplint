@@ -1,8 +1,8 @@
 import { MLASTNode } from '@markuplint/ml-ast';
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+import { RuleConfigValue } from '@markuplint/ml-config';
 import { Comment, Doctype, Element, ElementCloseTag, InvalidNode, Node, OmittedElement, Text } from './tokens';
 
-export type AnonymousNode<T extends RuleConfigValue, O extends RuleConfigOptions> =
+export type AnonymousNode<T extends RuleConfigValue, O = null> =
 	| Doctype<T, O>
 	| Element<T, O>
 	| ElementCloseTag<T, O>

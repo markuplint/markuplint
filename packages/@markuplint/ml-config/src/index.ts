@@ -12,23 +12,21 @@ export interface ParserConfig {
 	[extensionPattern: string]: string /* module name or path */;
 }
 
-export type Rule = RuleConfig<RuleConfigValue, RuleConfigOptions> | RuleConfigValue;
+export type Rule = RuleConfig<RuleConfigValue, unknown> | RuleConfigValue;
 
 export interface Rules {
 	[ruleName: string]: Rule;
 }
 
-export type RuleConfig<T extends RuleConfigValue, O extends RuleConfigOptions> = [Severity, T, O];
+export type RuleConfig<T extends RuleConfigValue, O = void> = {
+	severity: Severity;
+	value: T;
+	option: O;
+};
 
 export type Severity = 'error' | 'warning' | 'info';
 
-export type RuleConfigValue = string | number | boolean | null;
-
-export interface RuleConfigOptionsStructure {
-	[optionName: string]: RuleConfigValue;
-}
-
-export type RuleConfigOptions = RuleConfigOptionsStructure | null;
+export type RuleConfigValue = string | number | boolean | string[] | number[] | boolean[] | null;
 
 export interface NodeRule {
 	tagName?: string;
@@ -55,7 +53,7 @@ export interface VerifiedResult extends Result {
 	ruleId: string;
 }
 
-export interface RuleInfo<T extends RuleConfigValue, O extends RuleConfigOptions> {
+export interface RuleInfo<T extends RuleConfigValue, O = null> {
 	disabled: boolean;
 	severity: Severity;
 	value: T;

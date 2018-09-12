@@ -1,7 +1,6 @@
+import { RuleConfigValue } from '@markuplint/ml-config';
 // @ts-ignore
 import cssWhat from 'css-what';
-
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
 import { Element } from '../tokens';
 
 export interface UniversalSelectorRule {
@@ -89,12 +88,12 @@ export class Selector {
 		// console.log(JSON.stringify(this._ruleset, null, 2));
 	}
 
-	public match<T extends RuleConfigValue, O extends RuleConfigOptions>(element: Element<T, O>) {
+	public match<T extends RuleConfigValue, O = null>(element: Element<T, O>) {
 		return match(element, this._ruleset, this._rawSelector);
 	}
 }
 
-function match<T extends RuleConfigValue, O extends RuleConfigOptions>(
+function match<T extends RuleConfigValue, O = null>(
 	element: Element<T, O>,
 	ruleset: SelectorRuleSet[],
 	rawSelector: string,

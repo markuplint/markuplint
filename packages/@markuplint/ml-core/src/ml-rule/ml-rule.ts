@@ -1,17 +1,10 @@
-import {
-	RuleConfig,
-	RuleConfigOptions,
-	RuleConfigValue,
-	RuleInfo,
-	Severity,
-	VerifiedResult,
-} from '@markuplint/ml-config';
+import { RuleConfig, RuleConfigValue, RuleInfo, Severity, VerifiedResult } from '@markuplint/ml-config';
 import Messenger from '../locale/messenger';
 import Document from '../ml-dom/document';
 import { MLRuleOptions } from './types';
 
-export class MLRule<T extends RuleConfigValue, O extends RuleConfigOptions> {
-	public static create<T extends RuleConfigValue, O extends RuleConfigOptions>(options: MLRuleOptions<T, O>) {
+export class MLRule<T extends RuleConfigValue, O = null> {
+	public static create<T extends RuleConfigValue, O = null>(options: MLRuleOptions<T, O>) {
 		return new MLRule<T, O>(options);
 	}
 
@@ -65,7 +58,7 @@ export class MLRule<T extends RuleConfigValue, O extends RuleConfigOptions> {
 		document.setRule(null);
 	}
 
-	public optimizeOption(option: RuleConfig<T, O> | T | boolean): RuleInfo<T, O> {
+	public optimizeOption(option: T | RuleConfig<T, O>): RuleInfo<T, O> {
 		if (typeof option === 'boolean') {
 			return {
 				disabled: !option,
@@ -74,20 +67,21 @@ export class MLRule<T extends RuleConfigValue, O extends RuleConfigOptions> {
 				option: this.defaultOptions,
 			};
 		}
-		if (Array.isArray(option)) {
+		if (!Array.isArray(option) && typeof option === 'object' && option !== null) {
 			return {
 				disabled: false,
-				severity: option[0],
-				value: option[1] || this.defaultValue,
+				severity: option.severity,
+				value: option.value !== undefined ? option.value : this.defaultValue,
 				option:
 					this.defaultOptions !== null && typeof this.defaultOptions === 'object'
-						? Object.assign({}, this.defaultOptions, option[2] || {})
-						: option[2] || this.defaultOptions,
+						? Object.assign({}, this.defaultOptions, option.option || {})
+						: option.option || this.defaultOptions,
 			};
 		}
 		return {
 			disabled: false,
 			severity: this.defaultServerity,
+			// @ts-ignore TODO: Wait for fix to bug of type guards in TypeScript
 			value: option == null ? this.defaultValue : option,
 			option: this.defaultOptions,
 		};

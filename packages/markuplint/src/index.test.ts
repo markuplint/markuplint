@@ -2,14 +2,14 @@ import * as markuplint from './';
 
 describe('basic test', async () => {
 	it('is empty result of 001.html', async () => {
-		const r = await markuplint.verify({
+		const r = await markuplint.exec({
 			files: 'test/fixture/001.html',
 		});
 		expect(r.length).toBe(0);
 	});
 
 	it('is reported from 003.html', async () => {
-		const r = await markuplint.verify({
+		const r = await markuplint.exec({
 			files: 'test/fixture/003.html',
 		});
 		expect(r).toEqual([

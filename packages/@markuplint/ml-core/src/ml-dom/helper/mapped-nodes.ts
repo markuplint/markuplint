@@ -12,7 +12,7 @@ import {
 	MLASTText,
 	MLToken,
 } from '@markuplint/ml-ast/';
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+import { RuleConfigValue } from '@markuplint/ml-config';
 import {
 	Attribute,
 	Comment,
@@ -27,7 +27,7 @@ import {
 } from '../tokens';
 
 // prettier-ignore
-export type MappedNode<N, T extends RuleConfigValue, O extends RuleConfigOptions>
+export type MappedNode<N, T extends RuleConfigValue, O = null>
 	= N extends MLASTElement ? Element<T, O>
 	: N extends MLASTElementCloseTag ? ElementCloseTag<T, O>
 	: N extends MLASTOmittedElement ? OmittedElement<T, O>

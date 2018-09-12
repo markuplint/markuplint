@@ -1,5 +1,5 @@
 import { MLASTNode } from '@markuplint/ml-ast';
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+import { RuleConfigValue } from '@markuplint/ml-config';
 import { MLRule } from '../';
 import Ruleset from '../ruleset';
 import { createNode } from './helper';
@@ -9,7 +9,7 @@ import { AnonymousNode, NodeType } from './types';
 /**
  * markuplint DOM Document
  */
-export default class MLDOMDocument<T extends RuleConfigValue, O extends RuleConfigOptions> {
+export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	/**
 	 * An array of markuplint DOM nodes
 	 */
@@ -88,18 +88,11 @@ export default class MLDOMDocument<T extends RuleConfigValue, O extends RuleConf
 	}
 }
 
-export type Walker<T extends RuleConfigValue, O extends RuleConfigOptions, N = AnonymousNode<T, O>> = (
-	node: N,
-) => Promise<void>;
+export type Walker<T extends RuleConfigValue, O = null, N = AnonymousNode<T, O>> = (node: N) => Promise<void>;
 
-export type SyncWalker<T extends RuleConfigValue, O extends RuleConfigOptions, N = AnonymousNode<T, O>> = (
-	node: N,
-) => void;
+export type SyncWalker<T extends RuleConfigValue, O = null, N = AnonymousNode<T, O>> = (node: N) => void;
 
-function syncWalk<T extends RuleConfigValue, O extends RuleConfigOptions>(
-	nodeList: AnonymousNode<T, O>[],
-	walker: SyncWalker<T, O>,
-) {
+function syncWalk<T extends RuleConfigValue, O = null>(nodeList: AnonymousNode<T, O>[], walker: SyncWalker<T, O>) {
 	for (const node of nodeList) {
 		walker(node);
 	}

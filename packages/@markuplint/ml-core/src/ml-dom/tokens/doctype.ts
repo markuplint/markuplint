@@ -1,8 +1,8 @@
 import { MLASTNode } from '@markuplint/ml-ast';
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+import { RuleConfigValue } from '@markuplint/ml-config';
 import { NodeType } from '../types';
 import Node from './node';
 
-export default class Doctype<T extends RuleConfigValue, O extends RuleConfigOptions> extends Node<T, O, MLASTNode> {
+export default class Doctype<T extends RuleConfigValue, O = null> extends Node<T, O, MLASTNode> {
 	public readonly type: NodeType = 'Doctype';
 }

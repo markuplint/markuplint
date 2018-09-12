@@ -1,9 +1,9 @@
-import { Result, RuleConfigOptions, RuleConfigValue, Severity } from '@markuplint/ml-config';
+import { Result, RuleConfigValue, Severity } from '@markuplint/ml-config';
 
 import { Message } from '../locale/messenger';
 import Document from '../ml-dom/document';
 
-export interface MLRuleOptions<T extends RuleConfigValue, O extends RuleConfigOptions> {
+export interface MLRuleOptions<T extends RuleConfigValue, O = null> {
 	name: string;
 	defaultLevel?: Severity;
 	defaultValue: T;

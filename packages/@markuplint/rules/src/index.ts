@@ -1,3 +1,3 @@
-import asyncAttrInScript from './markuplint-rule-async-attr-in-script';
+import asyncAttrInScript from './async-attr-in-script';
 
 export default [asyncAttrInScript];

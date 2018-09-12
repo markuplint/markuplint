@@ -1,23 +1,25 @@
-// import path from 'path';
+import {
+	getAnonymousFile,
+	getFiles,
+	loadConfigFile,
+	searchConfigFile,
+	ConfigSet,
+	MLFile,
+} from '@markuplint/file-resoliver';
+import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
+import { Config, RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
+import { convertRuleset, getMessenger, MLCore, MLRule } from '@markuplint/ml-core';
+import coreRules from '@markuplint/rules';
+import path from 'path';
+import { toRegxp } from './util';
 
-// import CustomRule from './rule/custom-rule';
-
-// import ruleModulesLoader from './rule/loader';
-
-// import messenger from './locale/messenger/node';
-
-// import Ruleset from './ruleset';
-// import { ConfigureFileJSON } from './ruleset/JSONInterface';
-// import createRuleset from './ruleset/createRuleset';
-
-// import isRemoteFile from './util/is-remote-file';
-// import { resolveFile } from './util/resolve-file';
-
-// export async function verify(html: string, config: ConfigureFileJSON, rules: CustomRule[], locale?: string) {
-// 	const ruleset = await createRuleset(config, rules);
-// 	const core = new Markuplint(html, ruleset, await messenger(locale));
-// 	return await core.verify();
-// }
+export async function verify(html: string, config: Config, rules: MLRule<RuleConfigValue, unknown>[], locale?: string) {
+	return exec({
+		sourceCodes: html,
+		config,
+		rules,
+	});
+}
 
 // export async function fix(html: string, config: ConfigureFileJSON, rules: CustomRule[], locale?: string) {
 // 	const ruleset = await createRuleset(config, rules);
@@ -80,27 +82,12 @@
 // 	return core;
 // }
 
-import {
-	getAnonymousFile,
-	getFiles,
-	loadConfigFile,
-	searchConfigFile,
-	ConfigSet,
-	MLFile,
-} from '@markuplint/file-resoliver';
-import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
-import { Config, RuleConfigOptions, RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
-import { convertRuleset, getMessenger, MLCore, MLRule } from '@markuplint/ml-core';
-import coreRules from '@markuplint/rules';
-import path from 'path';
-import { toRegxp } from './util';
-
 export interface MLCLIOption {
 	files?: string;
 	sourceCodes?: string | string[];
 	config?: string | Config;
-	rules?: MLRule<RuleConfigValue, RuleConfigOptions>[];
-	addRules?: MLRule<RuleConfigValue, RuleConfigOptions>[];
+	rules?: MLRule<RuleConfigValue, unknown>[];
+	addRules?: MLRule<RuleConfigValue, unknown>[];
 	// noConfig?: boolean;
 	// ext?: string;
 	// parser?: string;
@@ -119,7 +106,7 @@ export interface MLCLIOption {
 	// noColor?: string;
 }
 
-export async function verify(options: MLCLIOption) {
+export async function exec(options: MLCLIOption) {
 	// Resolve files
 	const files: MLFile[] = [];
 	if (options.files) {
@@ -164,11 +151,12 @@ export async function verify(options: MLCLIOption) {
 		}
 	}
 
-	let rules: MLRule<RuleConfigValue, RuleConfigOptions>[];
+	let rules: MLRule<RuleConfigValue, unknown>[];
 	if (options.rules) {
 		rules = options.rules;
 	} else {
-		rules = coreRules;
+		const r = await import('@markuplint/rules');
+		rules = r.default;
 	}
 	if (options.addRules) {
 		rules = rules.concat(options.addRules);
@@ -176,10 +164,11 @@ export async function verify(options: MLCLIOption) {
 
 	const results: VerifiedResult[] = [];
 	for (const file of files) {
-		const configSet = configs.get(file);
-		if (!configSet) {
-			throw new Error();
-		}
+		const configSet: ConfigSet = configs.get(file) || {
+			config: {},
+			files: new Set(),
+			errs: [],
+		};
 
 		// Get parser
 		let parserModName = '@markuplint/html-parser';
@@ -196,7 +185,7 @@ export async function verify(options: MLCLIOption) {
 		const sourceCode = await file.getContext();
 		const ruleset = convertRuleset(configSet.config);
 		const messenger = await getMessenger();
-		const core = new MLCore(parser, sourceCode, ruleset, coreRules, messenger);
+		const core = new MLCore(parser, sourceCode, ruleset, rules, messenger);
 
 		const result = await core.verify();
 		results.push(...result);

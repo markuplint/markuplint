@@ -1,5 +1,5 @@
 import { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
-import { RuleConfig, RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+import { RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
 import { RuleInfo } from '../../';
 import Document from '../document';
 import { getNode, setNode } from '../helper/dom-traverser';
@@ -11,8 +11,8 @@ import Token from './token';
 
 export default abstract class Node<
 	T extends RuleConfigValue,
-	O extends RuleConfigOptions,
-	A extends MLASTAbstructNode
+	O = null,
+	A extends MLASTAbstructNode = MLASTAbstructNode
 > extends Token<A> {
 	public readonly type: NodeType = 'Node';
 	public prevSyntaxicalNode: Node<T, O, A> | null = null;

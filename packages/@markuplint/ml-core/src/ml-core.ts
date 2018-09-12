@@ -1,5 +1,5 @@
 import { MLASTNode, MLMarkupLanguageParser } from '@markuplint/ml-ast';
-import { RuleConfigOptions, RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
+import { RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
 import { Messenger } from './locale';
 import { Document } from './ml-dom';
 import { MLRule } from './ml-rule';
@@ -9,16 +9,16 @@ export class MLCore {
 	private _parser: MLMarkupLanguageParser;
 	private _sourceCode: string;
 	private _ast: MLASTNode[];
-	private _document: Document<RuleConfigValue, RuleConfigOptions>;
+	private _document: Document<RuleConfigValue, unknown>;
 	private _ruleset: Ruleset;
 	private _messenger: Messenger;
-	private _rules: MLRule<RuleConfigValue, RuleConfigOptions>[];
+	private _rules: MLRule<RuleConfigValue, unknown>[];
 
 	constructor(
 		parser: MLMarkupLanguageParser,
 		sourceCode: string,
 		ruleset: Ruleset,
-		rules: MLRule<RuleConfigValue, RuleConfigOptions>[],
+		rules: MLRule<RuleConfigValue, unknown>[],
 		messenger: Messenger,
 	) {
 		this._parser = parser;

@@ -1,3 +1,3 @@
-import { RuleConfigOptions, RuleConfigValue } from '@markuplint/ml-config';
+import { RuleConfigValue } from '@markuplint/ml-config';
 
-export default class Indentation<T extends RuleConfigValue, O extends RuleConfigOptions> {}
+export default class Indentation<T extends RuleConfigValue, O = null> {}

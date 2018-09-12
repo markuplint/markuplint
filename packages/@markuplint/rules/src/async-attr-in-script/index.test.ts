@@ -1,16 +1,16 @@
 import * as markuplint from 'markuplint';
 import rule from './';
 
-it('is test', async () => {
-	const r = await markuplint.verify({
-		sourceCodes: '<script src="path/to"></script>',
-		config: {
+test('is test', async () => {
+	const r = await markuplint.verify(
+		'<script src="path/to"></script>',
+		{
 			rules: {
 				'async-attr-in-script': true,
 			},
 		},
-		rules: [rule],
-	});
+		[rule],
+	);
 
 	expect(r).toStrictEqual([
 		{
@@ -24,29 +24,37 @@ it('is test', async () => {
 	]);
 });
 
-it('is test2', async () => {
-	const r = await markuplint.verify({
-		sourceCodes: '<script src="path/to"></script>',
-		config: {
+test('is test2', async () => {
+	const r = await markuplint.verify(
+		'<script src="path/to"></script>',
+		{
 			rules: {
-				'async-attr-in-script': ['warning', 'never', null],
+				'async-attr-in-script': {
+					severity: 'warning',
+					value: 'never',
+					option: null,
+				},
 			},
 		},
-		rules: [rule],
-	});
+		[rule],
+	);
 	expect(r).toStrictEqual([]);
 });
 
-it('is test3', async () => {
-	const r = await markuplint.verify({
-		sourceCodes: '<script async src="path/to"></script>',
-		config: {
+test('is test3', async () => {
+	const r = await markuplint.verify(
+		'<script async src="path/to"></script>',
+		{
 			rules: {
-				'async-attr-in-script': ['warning', 'never', null],
+				'async-attr-in-script': {
+					severity: 'warning',
+					value: 'never',
+					option: null,
+				},
 			},
 		},
-		rules: [rule],
-	});
+		[rule],
+	);
 	expect(r).toStrictEqual([
 		{
 			severity: 'warning',
@@ -59,15 +67,15 @@ it('is test3', async () => {
 	]);
 });
 
-it('is test4', async () => {
-	const r = await markuplint.verify({
-		sourceCodes: `
+test('is test4', async () => {
+	const r = await markuplint.verify(
+		`
 		<script src="jquery"></script>
 		<script async src="main.js"></script>
 		<div>lorem</div>
 		<img src="path/to">
 		`,
-		config: {
+		{
 			rules: {
 				'async-attr-in-script': 'always',
 			},
@@ -80,22 +88,26 @@ it('is test4', async () => {
 				},
 			],
 		},
-		rules: [rule],
-	});
+		[rule],
+	);
 	expect(r).toStrictEqual([]);
 });
 
-it('is test 5', async () => {
-	const r = await markuplint.verify({
-		sourceCodes: `
+test('is test 5', async () => {
+	const r = await markuplint.verify(
+		`
 		<script async src="jquery"></script>
 		<script src="main.js"></script>
 		<div>lorem</div>
 		<img src="path/to">
 		`,
-		config: {
+		{
 			rules: {
-				'async-attr-in-script': ['warning', 'always', null],
+				'async-attr-in-script': {
+					severity: 'warning',
+					value: 'never',
+					option: null,
+				},
 			},
 			nodeRules: [
 				{
@@ -106,8 +118,8 @@ it('is test 5', async () => {
 				},
 			],
 		},
-		rules: [rule],
-	});
+		[rule],
+	);
 	expect(r).toStrictEqual([
 		{
 			severity: 'warning',
