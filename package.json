@@ -46,8 +46,8 @@
 	],
 	"devDependencies": {
 		"@types/jest": "^23.3.2",
-		"jest": "^23.5.0",
-		"lerna": "^3.3.0",
+		"jest": "^23.6.0",
+		"lerna": "^3.3.2",
 		"prettier": "^1.14.2",
 		"ts-jest": "^23.1.4",
 		"tslint": "^5.11.0",
