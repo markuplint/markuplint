@@ -103,11 +103,7 @@ test('is test 5', async () => {
 		`,
 		{
 			rules: {
-				'async-attr-in-script': {
-					severity: 'warning',
-					value: 'never',
-					option: null,
-				},
+				'async-attr-in-script': 'always',
 			},
 			nodeRules: [
 				{
