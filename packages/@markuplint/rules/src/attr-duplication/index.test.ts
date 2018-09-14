@@ -1,7 +1,7 @@
 import * as markuplint from 'markuplint';
 import rule from './';
 
-test('attr-duplication', async t => {
+test('is test 1', async () => {
 	const r = await markuplint.verify(
 		`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
@@ -17,9 +17,9 @@ test('attr-duplication', async t => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+
+	expect(r).toStrictEqual([
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Duplicate attribute name',
 			line: 2,
@@ -28,7 +28,6 @@ test('attr-duplication', async t => {
 			ruleId: 'attr-duplication',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Duplicate attribute name',
 			line: 2,
@@ -39,7 +38,7 @@ test('attr-duplication', async t => {
 	]);
 });
 
-test('attr-duplication', async t => {
+test('is test 2', async () => {
 	const r = await markuplint.verify(
 		`
 		<div
@@ -58,9 +57,9 @@ test('attr-duplication', async t => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+
+	expect(r).toStrictEqual([
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Duplicate attribute name',
 			line: 4,
@@ -69,7 +68,6 @@ test('attr-duplication', async t => {
 			ruleId: 'attr-duplication',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Duplicate attribute name',
 			line: 5,
@@ -80,7 +78,7 @@ test('attr-duplication', async t => {
 	]);
 });
 
-test('attr-duplication', async t => {
+test('is test 3', async () => {
 	const r = await markuplint.verify(
 		'<img src="/" SRC="/" >',
 		{
@@ -91,7 +89,6 @@ test('attr-duplication', async t => {
 		[rule],
 		'ja',
 	);
-	t.deepEqual(r.map(_ => _.message), ['属性名が重複しています。']);
-});
 
-test('noop', t => t.pass());
+	expect(r.map(_ => _.message)).toStrictEqual(['属性名が重複しています。']);
+});

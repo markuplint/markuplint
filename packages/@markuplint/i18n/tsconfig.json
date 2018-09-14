@@ -8,12 +8,6 @@
 	"references": [
 		{
 			"path": "../ml-ast"
-		},
-		{
-			"path": "../ml-config"
-		},
-		{
-			"path": "../i18n"
 		}
 	],
 	"include": ["./src/**/*"],

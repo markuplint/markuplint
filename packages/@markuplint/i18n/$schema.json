@@ -1,0 +1,48 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"additionalProperties": false,
+	"properties": {
+		"$schema": { "type": "string" },
+		"keywords": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"tag": { "type": "string" },
+				"tag name": { "type": "string" },
+				"attribute": { "type": "string" },
+				"attributes": { "type": "string" },
+				"attribute name": { "type": "string" },
+				"attribute value": { "type": "string" },
+				"attribute id value": { "type": "string" },
+				"{$} attribute": { "type": "string" },
+				"element": { "type": "string" },
+				"quote": { "type": "string" },
+				"double quotation mark": { "type": "string" },
+				"single quotation mark": { "type": "string" },
+				"lowercase": { "type": "string" },
+				"uppercase": { "type": "string" },
+				"illegal characters": { "type": "string" },
+				"escape in character reference": { "type": "string" },
+				"deprecated": { "type": "string" },
+				"indentation": { "type": "string" },
+				"tab": { "type": "string" },
+				"space": { "type": "string" }
+			}
+		},
+		"{0} is {1}": { "type": "string" },
+		"Required {0}": { "type": "string" },
+		"Required {0} on {1}": { "type": "string" },
+		"Not required {0}": { "type": "string" },
+		"Not required {0} on {1}": { "type": "string" },
+		"Duplicate {0}": { "type": "string" },
+		"{0} is must {1} on {2}": { "type": "string" },
+		"{0} must {1}": { "type": "string" },
+		"{0} should {1}": { "type": "string" },
+		"{0} must be {1}": { "type": "string" },
+		"{0} should be {1}": { "type": "string" },
+		"{0} of {1} must be {2}": { "type": "string" },
+		"{0} of {1} should be {2}": { "type": "string" },
+		"Values allowed for {0} attributes are {$}": { "type": "string" },
+		"{0} width spaces": { "type": "string" }
+	}
+}

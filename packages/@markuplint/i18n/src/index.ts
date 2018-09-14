@@ -3,7 +3,6 @@ export type Primitive = string | number | boolean;
 export type Message = (messageTmpl: string, ...keywords: Primitive[]) => string;
 
 export interface LocaleSet {
-	locale: string;
 	keywords: LocalesKeywords;
 	[messageId: string]: string | void | LocalesKeywords;
 }
@@ -12,7 +11,7 @@ export interface LocalesKeywords {
 	[messageId: string]: string | void;
 }
 
-export default class Messenger {
+export class Messenger {
 	private static _singleton: Messenger | null = null;
 
 	public static async create(localeSet: LocaleSet | null) {

@@ -20,6 +20,9 @@
 		},
 		{
 			"path": "../@markuplint/rules"
+		},
+		{
+			"path": "../@markuplint/i18n"
 		}
 	],
 	"include": ["./src/**/*"],

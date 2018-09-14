@@ -1,6 +1,6 @@
+import { Messenger } from '@markuplint/i18n';
 import { MLASTNode, MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
-import { Messenger } from './locale';
 import { Document } from './ml-dom';
 import { MLRule } from './ml-rule';
 import Ruleset from './ruleset';

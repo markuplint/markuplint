@@ -1,5 +1,5 @@
+import { Messenger } from '@markuplint/i18n';
 import { RuleConfig, RuleConfigValue, RuleInfo, Severity, VerifiedResult } from '@markuplint/ml-config';
-import Messenger from '../locale/messenger';
 import Document from '../ml-dom/document';
 import { MLRuleOptions } from './types';
 
