@@ -1,14 +1,13 @@
 {
-  "name": "@markuplint/html-ls",
-  "version": "1.0.0-alpha",
-  "description": "A Ruleset of HTML Living Standard for markuplint",
-  "repository": "git@github.com:markuplint/markuplint.git",
-  "author": "Yusuke Hirao <yusukehirao@me.com>",
-  "license": "MIT",
-  "private": false,
-  "main": "index.json",
-  "scripts": {
-  },
-  "devDependencies": {},
-  "dependencies": {}
+	"name": "@markuplint/html-ls",
+	"version": "1.0.0-alpha",
+	"description": "A Ruleset of HTML Living Standard for markuplint",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"private": false,
+	"main": "index.json",
+	"scripts": {},
+	"devDependencies": {},
+	"dependencies": {}
 }

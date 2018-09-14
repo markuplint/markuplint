@@ -1,24 +1,18 @@
 {
-  "extends": "../../../tsconfig.json",
-  "compilerOptions": {
-    "composite": true,
-    "outDir": "./lib",
-    "rootDir": "./src"
-  },
-  "references": [
-    {
-      "path": "../ml-ast"
-    },
-    {
-      "path": "../ml-config"
-    }
-  ],
-  "include": [
-    "./src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "lib",
-    "./src/**/*.test.ts"
-  ]
+	"extends": "../../../tsconfig.json",
+	"compilerOptions": {
+		"composite": true,
+		"outDir": "./lib",
+		"rootDir": "./src"
+	},
+	"references": [
+		{
+			"path": "../ml-ast"
+		},
+		{
+			"path": "../ml-config"
+		}
+	],
+	"include": ["./src/**/*"],
+	"exclude": ["node_modules", "lib", "./src/**/*.test.ts"]
 }

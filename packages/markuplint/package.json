@@ -1,27 +1,27 @@
 {
-  "name": "markuplint",
-  "version": "1.0.0-alpha",
-  "description": "HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.",
-  "author": "Yusuke Hirao",
-  "license": "MIT",
-  "private": false,
-  "repository": {
-    "url": "git@github.com:YusukeHirao/markuplint.git"
-  },
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "bin": {
-    "markuplint": "bin/index.js"
-  },
-  "scripts": {
-    "build": "tsc --build"
-  },
-  "devDependencies": {},
-  "dependencies": {
-    "@markuplint/file-resoliver": "1.0.0-alpha",
-    "@markuplint/ml-ast": "1.0.0-alpha",
-    "@markuplint/ml-config": "1.0.0-alpha",
-    "@markuplint/ml-core": "1.0.0-alpha",
-    "@markuplint/rules": "1.0.0-alpha"
-  }
+	"name": "markuplint",
+	"version": "1.0.0-alpha",
+	"description": "HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.",
+	"author": "Yusuke Hirao",
+	"license": "MIT",
+	"private": false,
+	"repository": {
+		"url": "git@github.com:YusukeHirao/markuplint.git"
+	},
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"bin": {
+		"markuplint": "bin/index.js"
+	},
+	"scripts": {
+		"build": "tsc --build"
+	},
+	"devDependencies": {},
+	"dependencies": {
+		"@markuplint/file-resoliver": "1.0.0-alpha",
+		"@markuplint/ml-ast": "1.0.0-alpha",
+		"@markuplint/ml-config": "1.0.0-alpha",
+		"@markuplint/ml-core": "1.0.0-alpha",
+		"@markuplint/rules": "1.0.0-alpha"
+	}
 }

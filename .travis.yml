@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "stable"
+    - 'stable'
 script:
-  - yarn build
-  - yarn cover
+    - yarn build
+    - yarn cover

@@ -1,7 +1,7 @@
 {
-  "lerna": "3.0.3",
-  "version": "independent",
-  "npmClient": "yarn",
-  "useWorkspaces": true,
-  "packages": ["packages/*", "packages/@markuplint/*"]
+	"lerna": "3.0.3",
+	"version": "independent",
+	"npmClient": "yarn",
+	"useWorkspaces": true,
+	"packages": ["packages/*", "packages/@markuplint/*"]
 }

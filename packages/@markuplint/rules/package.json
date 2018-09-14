@@ -1,21 +1,19 @@
 {
-  "name": "@markuplint/rules",
-  "version": "1.0.0-alpha",
-  "description": "Rules for markuplint",
-  "repository": "git@github.com:markuplint/markuplint.git",
-  "author": "Yusuke Hirao <yusukehirao@me.com>",
-  "license": "MIT",
-  "private": false,
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "scripts": {
-    "build": "tsc --build"
-  },
-  "devDependencies": {
-  },
-  "dependencies": {
-  },
-  "peerDependencies": {
-    "@markuplint/ml-core": "1.0.0-alpha"
-  }
+	"name": "@markuplint/rules",
+	"version": "1.0.0-alpha",
+	"description": "Rules for markuplint",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"private": false,
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"scripts": {
+		"build": "tsc --build"
+	},
+	"devDependencies": {},
+	"dependencies": {},
+	"peerDependencies": {
+		"@markuplint/ml-core": "1.0.0-alpha"
+	}
 }

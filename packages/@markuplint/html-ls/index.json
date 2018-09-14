@@ -1,1530 +1,952 @@
 {
-  "nodeRules": [
-    {
-      "tagName": "Heading_Elements",
-      "categories": [
-        "#Flow",
-        "#heading",
-        "#palpable"
-      ],
-      "roles": [
-        "tab",
-        "presentation"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "Shadow",
-      "obsolete": true
-    },
-    {
-      "tagName": "a",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#interactive",
-        "#palpable"
-      ],
-      "roles": [
-        "button",
-        "checkbox",
-        "menuitem",
-        "menuitemcheckbox",
-        "menuitemradio",
-        "option",
-        "radio",
-        "switch",
-        "tab",
-        "treeitem"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "abbr",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "acronym",
-      "obsolete": true
-    },
-    {
-      "tagName": "address",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "applet",
-      "obsolete": true
-    },
-    {
-      "tagName": "area",
-      "categories": [
-        "#Flow",
-        "#phrasing"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "article",
-      "categories": [
-        "#Flow",
-        "#sectioning",
-        "#palpable"
-      ],
-      "roles": [
-        "application",
-        "document",
-        "feed",
-        "main",
-        "presentation",
-        "region"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "aside",
-      "categories": [
-        "#Flow",
-        "#sectioning",
-        "#palpable"
-      ],
-      "roles": [
-        "feed",
-        "note",
-        "presentation",
-        "region",
-        "search"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "audio",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#embedded",
-        "#interactive",
-        "#palpable"
-      ],
-      "roles": [
-        "application"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "b",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "base",
-      "categories": [
-        "#Metadata"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "basefont",
-      "obsolete": true
-    },
-    {
-      "tagName": "bdi",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "bdo",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "bgsound",
-      "obsolete": true
-    },
-    {
-      "tagName": "big",
-      "obsolete": true
-    },
-    {
-      "tagName": "blink",
-      "obsolete": true
-    },
-    {
-      "tagName": "blockquote",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "body",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "br",
-      "categories": [
-        "#Flow",
-        "#phrasing"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "button",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#Interactive",
-        "#palpable"
-      ],
-      "roles": [
-        "checkbox",
-        "link",
-        "menuitem",
-        "menuitemcheckbox",
-        "menuitemradio",
-        "radio",
-        "switch",
-        "tab"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "canvas",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#embedded",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "caption",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "center",
-      "obsolete": true
-    },
-    {
-      "tagName": "cite",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "code",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "col",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "colgroup",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "command",
-      "obsolete": true
-    },
-    {
-      "tagName": "content",
-      "categories": [
-        "#Transparent"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "data",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "datalist",
-      "categories": [
-        "#Flow",
-        "#phrasing"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "dd",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "del",
-      "categories": [
-        "#Phrasing",
-        "#flow"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "details",
-      "categories": [
-        "#Flow",
-        "#interactive",
-        "#palpable"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "dfn",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "dialog",
-      "categories": [
-        "#Flow"
-      ],
-      "roles": [
-        "alertdialog"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "dir",
-      "obsolete": true
-    },
-    {
-      "tagName": "div",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "dl",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "group",
-        "presentation"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "dt",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "element",
-      "obsolete": true
-    },
-    {
-      "tagName": "em",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "embed",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#embedded",
-        "#interactive",
-        "#palpable"
-      ],
-      "roles": [
-        "application",
-        "document",
-        "img",
-        "presentation"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "fieldset",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "group",
-        "presentation"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "figcaption",
-      "categories": [],
-      "roles": [
-        "group",
-        "presentation"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "figure",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "group",
-        "presentation"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "font",
-      "obsolete": true
-    },
-    {
-      "tagName": "footer",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "group",
-        "presentation"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "form",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "group",
-        "presentation"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "frame",
-      "obsolete": true
-    },
-    {
-      "tagName": "frameset",
-      "obsolete": true
-    },
-    {
-      "tagName": "head",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "header",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "group",
-        "presentation"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "hgroup",
-      "categories": [
-        "#Flow",
-        "#heading",
-        "#palpable"
-      ],
-      "roles": [
-        "tab",
-        "presentation"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "hr",
-      "categories": [
-        "#Flow"
-      ],
-      "roles": [
-        "presentation"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "html",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "i",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "iframe",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#embedded",
-        "#interactive",
-        "#palpable"
-      ],
-      "roles": [
-        "application",
-        "document",
-        "img"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "image",
-      "obsolete": true
-    },
-    {
-      "tagName": "img",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#embedded",
-        "#palpable",
-        "#interactive"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "input",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        {
-          "role": "link",
-          "attrConditions": [
-            {
-              "attrName": "type",
-              "values": [
-                "button",
-                "image"
-              ]
-            }
-          ]
-        },
-        {
-          "role": "menuitem",
-          "attrConditions": [
-            {
-              "attrName": "type",
-              "values": [
-                "button",
-                "image"
-              ]
-            }
-          ]
-        },
-        {
-          "role": "menuitemcheckbox",
-          "attrConditions": [
-            {
-              "attrName": "type",
-              "values": [
-                "button",
-                "checkbox",
-                "image"
-              ]
-            }
-          ]
-        },
-        {
-          "role": "menuitemradio",
-          "attrConditions": [
-            {
-              "attrName": "type",
-              "values": [
-                "button",
-                "image",
-                "radio"
-              ]
-            }
-          ]
-        },
-        {
-          "role": "radio",
-          "attrConditions": [
-            {
-              "attrName": "type",
-              "values": [
-                "button",
-                "image"
-              ]
-            }
-          ]
-        },
-        {
-          "role": "switch",
-          "attrConditions": [
-            {
-              "attrName": "type",
-              "values": [
-                "button",
-                "checkbox",
-                "image"
-              ]
-            }
-          ]
-        },
-        {
-          "role": "tab",
-          "attrConditions": [
-            {
-              "attrName": "type",
-              "values": [
-                "button"
-              ]
-            }
-          ]
-        },
-        {
-          "role": "button",
-          "attrConditions": [
-            {
-              "attrName": "type",
-              "values": [
-                "checkbox"
-              ]
-            }
-          ]
-        },
-        {
-          "role": "option",
-          "attrConditions": [
-            {
-              "attrName": "type",
-              "values": [
-                "checkbox"
-              ]
-            }
-          ]
-        },
-        {
-          "role": "None",
-          "attrConditions": [
-            {
-              "attrName": "type",
-              "values": [
-                "color",
-                "date",
-                "datetime",
-                "datetime-local",
-                "email",
-                "file",
-                "hidden",
-                "month",
-                "number",
-                "password",
-                "range",
-                "research",
-                "search",
-                "submit",
-                "tel",
-                "text",
-                "url",
-                "week"
-              ]
-            }
-          ]
-        }
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "ins",
-      "categories": [
-        "#Phrasing",
-        "#flow"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "isindex",
-      "obsolete": true
-    },
-    {
-      "tagName": "kbd",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "keygen",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#interactive",
-        "#palpable"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "label",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#interactive",
-        "#palpable"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "legend",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "li",
-      "categories": [],
-      "roles": [
-        "menuitem",
-        "menuitemcheckbox",
-        "menuitemradio",
-        "option",
-        "presentation",
-        "radio",
-        "separator",
-        "tab",
-        "treeitem"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "link",
-      "categories": [
-        "#Metadata",
-        "#flow",
-        "#phrasing"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "listing",
-      "obsolete": true
-    },
-    {
-      "tagName": "main",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "The main role is applied to <main> by default",
-        "and the presentation role is permitted as well."
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "map",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "mark",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "marquee",
-      "obsolete": true
-    },
-    {
-      "tagName": "menu",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "menuitem",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "meta",
-      "categories": [
-        "#Metadata",
-        "#flow",
-        "#phrasing"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "meter",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#labelable",
-        "#palpable"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "multicol",
-      "obsolete": true
-    },
-    {
-      "tagName": "nav",
-      "categories": [
-        "#Flow",
-        "#sectioning",
-        "#palpable"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "nextid",
-      "obsolete": true
-    },
-    {
-      "tagName": "nobr",
-      "obsolete": true
-    },
-    {
-      "tagName": "noembed",
-      "obsolete": true
-    },
-    {
-      "tagName": "noframes",
-      "obsolete": true
-    },
-    {
-      "tagName": "noscript",
-      "categories": [
-        "#Metadata",
-        "#flow",
-        "#phrasing"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "object",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#embedded",
-        "#palpable",
-        "#interactive"
-      ],
-      "roles": [
-        "application",
-        "document",
-        "image"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "ol",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "directory",
-        "group",
-        "listbox",
-        "menu",
-        "menubar",
-        "radiogroup",
-        "tablist",
-        "toolbar",
-        "tree",
-        "presentation"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "optgroup",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "option",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "output",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "p",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "param",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "picture",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#embedded"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "plaintext",
-      "obsolete": true
-    },
-    {
-      "tagName": "pre",
-      "categories": [
-        "#Flow",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "progress",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#labelable",
-        "#palpable"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "q",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "rp",
-      "categories": [],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "rt",
-      "categories": [],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "rtc",
-      "categories": [],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "ruby",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "s",
-      "categories": [
-        "#Phrasing",
-        "#flow"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "samp",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "script",
-      "categories": [
-        "#Metadata",
-        "#Flow",
-        "#Phrasing"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "section",
-      "categories": [
-        "#Flow",
-        "#Sectioning",
-        "#palpable"
-      ],
-      "roles": [
-        "alert",
-        "alertdialog",
-        "application",
-        "banner",
-        "complementary",
-        "contentinfo",
-        "dialog",
-        "document",
-        "feed",
-        "log",
-        "main",
-        "marquee",
-        "navigation",
-        "search",
-        "status",
-        "tabpanel"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "select",
-      "categories": [
-        "#flow",
-        "#phrasing",
-        "#interactive"
-      ],
-      "roles": [
-        "menu"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "slot",
-      "categories": [
-        "#Flow",
-        "#phrasing"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "small",
-      "categories": [
-        "#Flow",
-        "#phrasing"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "source",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "spacer",
-      "obsolete": true
-    },
-    {
-      "tagName": "span",
-      "categories": [
-        "#Flow",
-        "#phrasing"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "strike",
-      "obsolete": true
-    },
-    {
-      "tagName": "strong",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "style",
-      "categories": [
-        "#Metadata",
-        "#flow"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "sub",
-      "categories": [
-        "#Flow",
-        "#phrasing"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "summary",
-      "roles": [
-        "button"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "sup",
-      "categories": [
-        "#Flow",
-        "#phrasing"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "table",
-      "categories": [
-        "#Flow"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "tbody",
-      "categories": [],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "td",
-      "categories": [],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "template",
-      "categories": [
-        "#Metadata",
-        "#flow",
-        "#phrasing"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "textarea",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#Interactive"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "tfoot",
-      "categories": [],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "th",
-      "categories": [],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "thead",
-      "categories": [],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "time",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "title",
-      "categories": [
-        "#Metadata"
-      ],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "tr",
-      "categories": [],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "track",
-      "categories": [],
-      "roles": [
-        "None"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "tt",
-      "obsolete": true
-    },
-    {
-      "tagName": "u",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "ul",
-      "categories": [
-        "#Flow",
-        "#Palpable"
-      ],
-      "roles": [
-        "directory",
-        "group",
-        "listbox",
-        "menu",
-        "menubar",
-        "radiogroup",
-        "tablist",
-        "toolbar",
-        "tree",
-        "presentation"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "var",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#palpable"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "video",
-      "categories": [
-        "#Flow",
-        "#phrasing",
-        "#embedded",
-        "#interactive",
-        "#palpable"
-      ],
-      "roles": [
-        "application"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "wbr",
-      "categories": [
-        "#Flow",
-        "#phrasing"
-      ],
-      "roles": [
-        "Any"
-      ],
-      "obsolete": false
-    },
-    {
-      "tagName": "xmp",
-      "obsolete": true
-    }
-  ]
+	"nodeRules": [
+		{
+			"tagName": "Heading_Elements",
+			"categories": ["#Flow", "#heading", "#palpable"],
+			"roles": ["tab", "presentation"],
+			"obsolete": false
+		},
+		{
+			"tagName": "Shadow",
+			"obsolete": true
+		},
+		{
+			"tagName": "a",
+			"categories": ["#Flow", "#phrasing", "#interactive", "#palpable"],
+			"roles": [
+				"button",
+				"checkbox",
+				"menuitem",
+				"menuitemcheckbox",
+				"menuitemradio",
+				"option",
+				"radio",
+				"switch",
+				"tab",
+				"treeitem"
+			],
+			"obsolete": false
+		},
+		{
+			"tagName": "abbr",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "acronym",
+			"obsolete": true
+		},
+		{
+			"tagName": "address",
+			"categories": ["#Flow", "#palpable"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "applet",
+			"obsolete": true
+		},
+		{
+			"tagName": "area",
+			"categories": ["#Flow", "#phrasing"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "article",
+			"categories": ["#Flow", "#sectioning", "#palpable"],
+			"roles": ["application", "document", "feed", "main", "presentation", "region"],
+			"obsolete": false
+		},
+		{
+			"tagName": "aside",
+			"categories": ["#Flow", "#sectioning", "#palpable"],
+			"roles": ["feed", "note", "presentation", "region", "search"],
+			"obsolete": false
+		},
+		{
+			"tagName": "audio",
+			"categories": ["#Flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"roles": ["application"],
+			"obsolete": false
+		},
+		{
+			"tagName": "b",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "base",
+			"categories": ["#Metadata"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "basefont",
+			"obsolete": true
+		},
+		{
+			"tagName": "bdi",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "bdo",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "bgsound",
+			"obsolete": true
+		},
+		{
+			"tagName": "big",
+			"obsolete": true
+		},
+		{
+			"tagName": "blink",
+			"obsolete": true
+		},
+		{
+			"tagName": "blockquote",
+			"categories": ["#Flow", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "body",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "br",
+			"categories": ["#Flow", "#phrasing"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "button",
+			"categories": ["#Flow", "#phrasing", "#Interactive", "#palpable"],
+			"roles": ["checkbox", "link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch", "tab"],
+			"obsolete": false
+		},
+		{
+			"tagName": "canvas",
+			"categories": ["#Flow", "#phrasing", "#embedded", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "caption",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "center",
+			"obsolete": true
+		},
+		{
+			"tagName": "cite",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "code",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "col",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "colgroup",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "command",
+			"obsolete": true
+		},
+		{
+			"tagName": "content",
+			"categories": ["#Transparent"],
+			"obsolete": false
+		},
+		{
+			"tagName": "data",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"obsolete": false
+		},
+		{
+			"tagName": "datalist",
+			"categories": ["#Flow", "#phrasing"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "dd",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "del",
+			"categories": ["#Phrasing", "#flow"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "details",
+			"categories": ["#Flow", "#interactive", "#palpable"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "dfn",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "dialog",
+			"categories": ["#Flow"],
+			"roles": ["alertdialog"],
+			"obsolete": false
+		},
+		{
+			"tagName": "dir",
+			"obsolete": true
+		},
+		{
+			"tagName": "div",
+			"categories": ["#Flow", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "dl",
+			"categories": ["#Flow", "#palpable"],
+			"roles": ["group", "presentation"],
+			"obsolete": false
+		},
+		{
+			"tagName": "dt",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "element",
+			"obsolete": true
+		},
+		{
+			"tagName": "em",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "embed",
+			"categories": ["#Flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"roles": ["application", "document", "img", "presentation"],
+			"obsolete": false
+		},
+		{
+			"tagName": "fieldset",
+			"categories": ["#Flow", "#palpable"],
+			"roles": ["group", "presentation"],
+			"obsolete": false
+		},
+		{
+			"tagName": "figcaption",
+			"categories": [],
+			"roles": ["group", "presentation"],
+			"obsolete": false
+		},
+		{
+			"tagName": "figure",
+			"categories": ["#Flow", "#palpable"],
+			"roles": ["group", "presentation"],
+			"obsolete": false
+		},
+		{
+			"tagName": "font",
+			"obsolete": true
+		},
+		{
+			"tagName": "footer",
+			"categories": ["#Flow", "#palpable"],
+			"roles": ["group", "presentation"],
+			"obsolete": false
+		},
+		{
+			"tagName": "form",
+			"categories": ["#Flow", "#palpable"],
+			"roles": ["group", "presentation"],
+			"obsolete": false
+		},
+		{
+			"tagName": "frame",
+			"obsolete": true
+		},
+		{
+			"tagName": "frameset",
+			"obsolete": true
+		},
+		{
+			"tagName": "head",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "header",
+			"categories": ["#Flow", "#palpable"],
+			"roles": ["group", "presentation"],
+			"obsolete": false
+		},
+		{
+			"tagName": "hgroup",
+			"categories": ["#Flow", "#heading", "#palpable"],
+			"roles": ["tab", "presentation"],
+			"obsolete": false
+		},
+		{
+			"tagName": "hr",
+			"categories": ["#Flow"],
+			"roles": ["presentation"],
+			"obsolete": false
+		},
+		{
+			"tagName": "html",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "i",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "iframe",
+			"categories": ["#Flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"roles": ["application", "document", "img"],
+			"obsolete": false
+		},
+		{
+			"tagName": "image",
+			"obsolete": true
+		},
+		{
+			"tagName": "img",
+			"categories": ["#Flow", "#phrasing", "#embedded", "#palpable", "#interactive"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "input",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": [
+				{
+					"role": "link",
+					"attrConditions": [
+						{
+							"attrName": "type",
+							"values": ["button", "image"]
+						}
+					]
+				},
+				{
+					"role": "menuitem",
+					"attrConditions": [
+						{
+							"attrName": "type",
+							"values": ["button", "image"]
+						}
+					]
+				},
+				{
+					"role": "menuitemcheckbox",
+					"attrConditions": [
+						{
+							"attrName": "type",
+							"values": ["button", "checkbox", "image"]
+						}
+					]
+				},
+				{
+					"role": "menuitemradio",
+					"attrConditions": [
+						{
+							"attrName": "type",
+							"values": ["button", "image", "radio"]
+						}
+					]
+				},
+				{
+					"role": "radio",
+					"attrConditions": [
+						{
+							"attrName": "type",
+							"values": ["button", "image"]
+						}
+					]
+				},
+				{
+					"role": "switch",
+					"attrConditions": [
+						{
+							"attrName": "type",
+							"values": ["button", "checkbox", "image"]
+						}
+					]
+				},
+				{
+					"role": "tab",
+					"attrConditions": [
+						{
+							"attrName": "type",
+							"values": ["button"]
+						}
+					]
+				},
+				{
+					"role": "button",
+					"attrConditions": [
+						{
+							"attrName": "type",
+							"values": ["checkbox"]
+						}
+					]
+				},
+				{
+					"role": "option",
+					"attrConditions": [
+						{
+							"attrName": "type",
+							"values": ["checkbox"]
+						}
+					]
+				},
+				{
+					"role": "None",
+					"attrConditions": [
+						{
+							"attrName": "type",
+							"values": [
+								"color",
+								"date",
+								"datetime",
+								"datetime-local",
+								"email",
+								"file",
+								"hidden",
+								"month",
+								"number",
+								"password",
+								"range",
+								"research",
+								"search",
+								"submit",
+								"tel",
+								"text",
+								"url",
+								"week"
+							]
+						}
+					]
+				}
+			],
+			"obsolete": false
+		},
+		{
+			"tagName": "ins",
+			"categories": ["#Phrasing", "#flow"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "isindex",
+			"obsolete": true
+		},
+		{
+			"tagName": "kbd",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "keygen",
+			"categories": ["#Flow", "#phrasing", "#interactive", "#palpable"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "label",
+			"categories": ["#Flow", "#phrasing", "#interactive", "#palpable"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "legend",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "li",
+			"categories": [],
+			"roles": [
+				"menuitem",
+				"menuitemcheckbox",
+				"menuitemradio",
+				"option",
+				"presentation",
+				"radio",
+				"separator",
+				"tab",
+				"treeitem"
+			],
+			"obsolete": false
+		},
+		{
+			"tagName": "link",
+			"categories": ["#Metadata", "#flow", "#phrasing"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "listing",
+			"obsolete": true
+		},
+		{
+			"tagName": "main",
+			"categories": ["#Flow", "#palpable"],
+			"roles": [
+				"The main role is applied to <main> by default",
+				"and the presentation role is permitted as well."
+			],
+			"obsolete": false
+		},
+		{
+			"tagName": "map",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "mark",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "marquee",
+			"obsolete": true
+		},
+		{
+			"tagName": "menu",
+			"categories": ["#Flow", "#palpable"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "menuitem",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "meta",
+			"categories": ["#Metadata", "#flow", "#phrasing"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "meter",
+			"categories": ["#Flow", "#phrasing", "#labelable", "#palpable"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "multicol",
+			"obsolete": true
+		},
+		{
+			"tagName": "nav",
+			"categories": ["#Flow", "#sectioning", "#palpable"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "nextid",
+			"obsolete": true
+		},
+		{
+			"tagName": "nobr",
+			"obsolete": true
+		},
+		{
+			"tagName": "noembed",
+			"obsolete": true
+		},
+		{
+			"tagName": "noframes",
+			"obsolete": true
+		},
+		{
+			"tagName": "noscript",
+			"categories": ["#Metadata", "#flow", "#phrasing"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "object",
+			"categories": ["#Flow", "#phrasing", "#embedded", "#palpable", "#interactive"],
+			"roles": ["application", "document", "image"],
+			"obsolete": false
+		},
+		{
+			"tagName": "ol",
+			"categories": ["#Flow", "#palpable"],
+			"roles": [
+				"directory",
+				"group",
+				"listbox",
+				"menu",
+				"menubar",
+				"radiogroup",
+				"tablist",
+				"toolbar",
+				"tree",
+				"presentation"
+			],
+			"obsolete": false
+		},
+		{
+			"tagName": "optgroup",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "option",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "output",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "p",
+			"categories": ["#Flow", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "param",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "picture",
+			"categories": ["#Flow", "#phrasing", "#embedded"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "plaintext",
+			"obsolete": true
+		},
+		{
+			"tagName": "pre",
+			"categories": ["#Flow", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "progress",
+			"categories": ["#Flow", "#phrasing", "#labelable", "#palpable"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "q",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "rp",
+			"categories": [],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "rt",
+			"categories": [],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "rtc",
+			"categories": [],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "ruby",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "s",
+			"categories": ["#Phrasing", "#flow"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "samp",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "script",
+			"categories": ["#Metadata", "#Flow", "#Phrasing"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "section",
+			"categories": ["#Flow", "#Sectioning", "#palpable"],
+			"roles": [
+				"alert",
+				"alertdialog",
+				"application",
+				"banner",
+				"complementary",
+				"contentinfo",
+				"dialog",
+				"document",
+				"feed",
+				"log",
+				"main",
+				"marquee",
+				"navigation",
+				"search",
+				"status",
+				"tabpanel"
+			],
+			"obsolete": false
+		},
+		{
+			"tagName": "select",
+			"categories": ["#flow", "#phrasing", "#interactive"],
+			"roles": ["menu"],
+			"obsolete": false
+		},
+		{
+			"tagName": "slot",
+			"categories": ["#Flow", "#phrasing"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "small",
+			"categories": ["#Flow", "#phrasing"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "source",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "spacer",
+			"obsolete": true
+		},
+		{
+			"tagName": "span",
+			"categories": ["#Flow", "#phrasing"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "strike",
+			"obsolete": true
+		},
+		{
+			"tagName": "strong",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "style",
+			"categories": ["#Metadata", "#flow"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "sub",
+			"categories": ["#Flow", "#phrasing"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "summary",
+			"roles": ["button"],
+			"obsolete": false
+		},
+		{
+			"tagName": "sup",
+			"categories": ["#Flow", "#phrasing"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "table",
+			"categories": ["#Flow"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "tbody",
+			"categories": [],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "td",
+			"categories": [],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "template",
+			"categories": ["#Metadata", "#flow", "#phrasing"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "textarea",
+			"categories": ["#Flow", "#phrasing", "#Interactive"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "tfoot",
+			"categories": [],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "th",
+			"categories": [],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "thead",
+			"categories": [],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "time",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "title",
+			"categories": ["#Metadata"],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "tr",
+			"categories": [],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "track",
+			"categories": [],
+			"roles": ["None"],
+			"obsolete": false
+		},
+		{
+			"tagName": "tt",
+			"obsolete": true
+		},
+		{
+			"tagName": "u",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "ul",
+			"categories": ["#Flow", "#Palpable"],
+			"roles": [
+				"directory",
+				"group",
+				"listbox",
+				"menu",
+				"menubar",
+				"radiogroup",
+				"tablist",
+				"toolbar",
+				"tree",
+				"presentation"
+			],
+			"obsolete": false
+		},
+		{
+			"tagName": "var",
+			"categories": ["#Flow", "#phrasing", "#palpable"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "video",
+			"categories": ["#Flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"roles": ["application"],
+			"obsolete": false
+		},
+		{
+			"tagName": "wbr",
+			"categories": ["#Flow", "#phrasing"],
+			"roles": ["Any"],
+			"obsolete": false
+		},
+		{
+			"tagName": "xmp",
+			"obsolete": true
+		}
+	]
 }

@@ -1,20 +1,20 @@
 {
-  "name": "@markuplint/ml-core",
-  "version": "1.0.0-alpha",
-  "description": "The core module of markuplint",
-  "repository": "git@github.com:markuplint/markuplint.git",
-  "author": "Yusuke Hirao <yusukehirao@me.com>",
-  "license": "MIT",
-  "private": false,
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "scripts": {
-    "build": "tsc --build"
-  },
-  "devDependencies": {},
-  "dependencies": {
-    "@markuplint/ml-ast": "1.0.0-alpha",
-    "@markuplint/ml-config": "1.0.0-alpha",
-    "css-what": "^2.1.0"
-  }
+	"name": "@markuplint/ml-core",
+	"version": "1.0.0-alpha",
+	"description": "The core module of markuplint",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"private": false,
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"scripts": {
+		"build": "tsc --build"
+	},
+	"devDependencies": {},
+	"dependencies": {
+		"@markuplint/ml-ast": "1.0.0-alpha",
+		"@markuplint/ml-config": "1.0.0-alpha",
+		"css-what": "^2.1.0"
+	}
 }
