@@ -24,7 +24,13 @@ export default createRule<Type>({
 				`${node.rule.value} quotation mark`,
 			);
 			for (const attr of node.attributes) {
-				if (attr.value != null && attr.value.quote !== quoteList[node.rule.value]) {
+				let quote: string | void;
+				if (attr.tokenBeforeValue) {
+					quote = attr.tokenBeforeValue.raw;
+				} else if (attr.equal) {
+					quote = '';
+				}
+				if (quote != null && quote !== quoteList[node.rule.value]) {
 					reports.push({
 						severity: node.rule.severity,
 						message,
@@ -37,14 +43,14 @@ export default createRule<Type>({
 		});
 		return reports;
 	},
-	async fix(document) {
-		await document.walkOn('Element', async node => {
-			for (const attr of node.attributes) {
-				const quote = quoteList[node.rule.value];
-				if (attr.value != null && attr.value.quote !== quote) {
-					attr.value.fix(null, quoteList[node.rule.value]);
-				}
-			}
-		});
-	},
+	// async fix(document) {
+	// 	await document.walkOn('Element', async node => {
+	// 		for (const attr of node.attributes) {
+	// 			const quote = quoteList[node.rule.value];
+	// 			if (attr.value != null && attr.value.quote !== quote) {
+	// 				attr.value.fix(null, quoteList[node.rule.value]);
+	// 			}
+	// 		}
+	// 	});
+	// },
 });
