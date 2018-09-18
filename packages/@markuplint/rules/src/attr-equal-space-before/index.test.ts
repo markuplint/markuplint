@@ -1,8 +1,7 @@
-import test from 'ava';
-import * as markuplint from '../../../lib/';
-import rule from '../../../lib/rules/markuplint-rule-attr-equal-space-before';
+import * as markuplint from 'markuplint';
+import rule from './';
 
-test('no-space', async (t) => {
+test('no-space', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src="path/to">
@@ -15,10 +14,10 @@ test('no-space', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('space before and after', async (t) => {
+test('space before and after', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src = "path/to">
@@ -31,9 +30,8 @@ test('space before and after', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			message: 'never',
 			line: 2,
@@ -44,7 +42,7 @@ test('space before and after', async (t) => {
 	]);
 });
 
-test('space before', async (t) => {
+test('space before', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src ="path/to">
@@ -57,9 +55,8 @@ test('space before', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			message: 'never',
 			line: 2,
@@ -70,7 +67,7 @@ test('space before', async (t) => {
 	]);
 });
 
-test('space after', async (t) => {
+test('space after', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src= "path/to">
@@ -83,10 +80,10 @@ test('space after', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('line break before', async (t) => {
+test('line break before', async () => {
 	const r = await markuplint.verify(
 		`
 		<img
@@ -101,9 +98,8 @@ test('line break before', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			message: 'never',
 			line: 3,
@@ -114,7 +110,7 @@ test('line break before', async (t) => {
 	]);
 });
 
-test('line break after', async (t) => {
+test('line break after', async () => {
 	const r = await markuplint.verify(
 		`
 		<img
@@ -129,10 +125,10 @@ test('line break after', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('always: no-space', async (t) => {
+test('always: no-space', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src="path/to">
@@ -145,9 +141,8 @@ test('always: no-space', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			message: 'always',
 			line: 2,
@@ -158,7 +153,7 @@ test('always: no-space', async (t) => {
 	]);
 });
 
-test('always: space before and after', async (t) => {
+test('always: space before and after', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src = "path/to">
@@ -171,10 +166,10 @@ test('always: space before and after', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('always: space before', async (t) => {
+test('always: space before', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src ="path/to">
@@ -187,10 +182,10 @@ test('always: space before', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('always: space after', async (t) => {
+test('always: space after', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src= "path/to">
@@ -203,9 +198,8 @@ test('always: space after', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			message: 'always',
 			line: 2,
@@ -216,7 +210,7 @@ test('always: space after', async (t) => {
 	]);
 });
 
-test('always: line break before', async (t) => {
+test('always: line break before', async () => {
 	const r = await markuplint.verify(
 		`
 		<img
@@ -231,10 +225,10 @@ test('always: line break before', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('always: line break after', async (t) => {
+test('always: line break after', async () => {
 	const r = await markuplint.verify(
 		`
 		<img
@@ -249,9 +243,8 @@ test('always: line break after', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			message: 'always',
 			line: 3,
@@ -262,7 +255,7 @@ test('always: line break after', async (t) => {
 	]);
 });
 
-test('always-single-line: no-space', async (t) => {
+test('always-single-line: no-space', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src="path/to">
@@ -275,9 +268,8 @@ test('always-single-line: no-space', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			message: 'always-single-line',
 			line: 2,
@@ -288,7 +280,7 @@ test('always-single-line: no-space', async (t) => {
 	]);
 });
 
-test('always-single-line: space before and after', async (t) => {
+test('always-single-line: space before and after', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src = "path/to">
@@ -301,10 +293,10 @@ test('always-single-line: space before and after', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('always-single-line: space before', async (t) => {
+test('always-single-line: space before', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src ="path/to">
@@ -317,10 +309,10 @@ test('always-single-line: space before', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('always-single-line: space after', async (t) => {
+test('always-single-line: space after', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src= "path/to">
@@ -333,9 +325,8 @@ test('always-single-line: space after', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			message: 'always-single-line',
 			line: 2,
@@ -346,7 +337,7 @@ test('always-single-line: space after', async (t) => {
 	]);
 });
 
-test('always-single-line: line break before', async (t) => {
+test('always-single-line: line break before', async () => {
 	const r = await markuplint.verify(
 		`
 		<img
@@ -361,9 +352,8 @@ test('always-single-line: line break before', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			message: 'always-single-line',
 			line: 3,
@@ -374,7 +364,7 @@ test('always-single-line: line break before', async (t) => {
 	]);
 });
 
-test('always: line break after', async (t) => {
+test('always: line break after', async () => {
 	const r = await markuplint.verify(
 		`
 		<img
@@ -389,9 +379,8 @@ test('always: line break after', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			message: 'always-single-line',
 			line: 3,
@@ -402,7 +391,7 @@ test('always: line break after', async (t) => {
 	]);
 });
 
-test('never-single-line: no-space', async (t) => {
+test('never-single-line: no-space', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src="path/to">
@@ -415,11 +404,10 @@ test('never-single-line: no-space', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
-	]);
+	expect(r).toStrictEqual([]);
 });
 
-test('never-single-line: space before and after', async (t) => {
+test('never-single-line: space before and after', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src = "path/to">
@@ -432,9 +420,8 @@ test('never-single-line: space before and after', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			message: 'never-single-line',
 			line: 2,
@@ -445,7 +432,7 @@ test('never-single-line: space before and after', async (t) => {
 	]);
 });
 
-test('never-single-line: space before', async (t) => {
+test('never-single-line: space before', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src ="path/to">
@@ -458,9 +445,8 @@ test('never-single-line: space before', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			message: 'never-single-line',
 			line: 2,
@@ -471,7 +457,7 @@ test('never-single-line: space before', async (t) => {
 	]);
 });
 
-test('never-single-line: space after', async (t) => {
+test('never-single-line: space after', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src= "path/to">
@@ -484,10 +470,10 @@ test('never-single-line: space after', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('never-single-line: line break before', async (t) => {
+test('never-single-line: line break before', async () => {
 	const r = await markuplint.verify(
 		`
 		<img
@@ -502,10 +488,10 @@ test('never-single-line: line break before', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('never-single-line: line break after', async (t) => {
+test('never-single-line: line break after', async () => {
 	const r = await markuplint.verify(
 		`
 		<img
@@ -520,493 +506,539 @@ test('never-single-line: line break after', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('no-space', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src="path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src="path/to">
-		`);
-});
+// test('no-space', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src="path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': true,
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src="path/to">
+// 		`,
+// 	);
+// });
 
-test('space before and after', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src = "path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src= "path/to">
-		`);
-});
+// test('space before and after', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src = "path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': true,
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src= "path/to">
+// 		`,
+// 	);
+// });
 
-test('space before', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src ="path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src="path/to">
-		`);
-});
+// test('space before', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src ="path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': true,
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src="path/to">
+// 		`,
+// 	);
+// });
 
-test('space after', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src= "path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src= "path/to">
-		`);
-});
+// test('space after', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src= "path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': true,
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src= "path/to">
+// 		`,
+// 	);
+// });
 
-test('line break before', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img
-		src
-		="path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img
-		src="path/to">
-		`);
-});
+// test('line break before', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img
+// 		src
+// 		="path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': true,
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img
+// 		src="path/to">
+// 		`,
+// 	);
+// });
 
-test('line break after', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img
-		src=
-		"path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img
-		src=
-		"path/to">
-		`);
-});
+// test('line break after', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img
+// 		src=
+// 		"path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': true,
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img
+// 		src=
+// 		"path/to">
+// 		`,
+// 	);
+// });
 
-test('always: no-space', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src="path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'always',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src ="path/to">
-		`);
-});
+// test('always: no-space', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src="path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'always',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src ="path/to">
+// 		`,
+// 	);
+// });
 
-test('always: space before and after', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src = "path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'always',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src = "path/to">
-		`);
-});
+// test('always: space before and after', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src = "path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'always',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src = "path/to">
+// 		`,
+// 	);
+// });
 
-test('always: space before', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src ="path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'always',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src ="path/to">
-		`);
-});
+// test('always: space before', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src ="path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'always',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src ="path/to">
+// 		`,
+// 	);
+// });
 
-test('always: space after', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src= "path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'always',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src = "path/to">
-		`);
-});
+// test('always: space after', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src= "path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'always',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src = "path/to">
+// 		`,
+// 	);
+// });
 
-test('always: line break before', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img
-		src
-		="path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'always',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img
-		src
-		="path/to">
-		`);
-});
+// test('always: line break before', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img
+// 		src
+// 		="path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'always',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img
+// 		src
+// 		="path/to">
+// 		`,
+// 	);
+// });
 
-test('always: line break after', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img
-		src=
-		"path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'always',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img
-		src =
-		"path/to">
-		`);
-});
+// test('always: line break after', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img
+// 		src=
+// 		"path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'always',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img
+// 		src =
+// 		"path/to">
+// 		`,
+// 	);
+// });
 
-test('always-single-line: no-space', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src="path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'always-single-line',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src ="path/to">
-		`);
-});
+// test('always-single-line: no-space', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src="path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'always-single-line',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src ="path/to">
+// 		`,
+// 	);
+// });
 
-test('always-single-line: space before and after', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src = "path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'always-single-line',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src = "path/to">
-		`);
-});
+// test('always-single-line: space before and after', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src = "path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'always-single-line',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src = "path/to">
+// 		`,
+// 	);
+// });
 
-test('always-single-line: space before', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src ="path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'always-single-line',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src ="path/to">
-		`);
-});
+// test('always-single-line: space before', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src ="path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'always-single-line',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src ="path/to">
+// 		`,
+// 	);
+// });
 
-test('always-single-line: space after', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src= "path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'always-single-line',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src = "path/to">
-		`);
-});
+// test('always-single-line: space after', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src= "path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'always-single-line',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src = "path/to">
+// 		`,
+// 	);
+// });
 
-test('always-single-line: line break before', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img
-		src
-		="path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'always-single-line',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img
-		src ="path/to">
-		`);
-});
+// test('always-single-line: line break before', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img
+// 		src
+// 		="path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'always-single-line',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img
+// 		src ="path/to">
+// 		`,
+// 	);
+// });
 
-test('always: line break after', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img
-		src=
-		"path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'always-single-line',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img
-		src =
-		"path/to">
-		`);
-});
+// test('always: line break after', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img
+// 		src=
+// 		"path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'always-single-line',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img
+// 		src =
+// 		"path/to">
+// 		`,
+// 	);
+// });
 
-test('never-single-line: no-space', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src="path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'never-single-line',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src="path/to">
-		`);
-});
+// test('never-single-line: no-space', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src="path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'never-single-line',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src="path/to">
+// 		`,
+// 	);
+// });
 
-test('never-single-line: space before and after', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src = "path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'never-single-line',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src= "path/to">
-		`);
-});
+// test('never-single-line: space before and after', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src = "path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'never-single-line',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src= "path/to">
+// 		`,
+// 	);
+// });
 
-test('never-single-line: space before', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src ="path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'never-single-line',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src="path/to">
-		`);
-});
+// test('never-single-line: space before', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src ="path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'never-single-line',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src="path/to">
+// 		`,
+// 	);
+// });
 
-test('never-single-line: space after', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img src= "path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'never-single-line',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img src= "path/to">
-		`);
-});
+// test('never-single-line: space after', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img src= "path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'never-single-line',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img src= "path/to">
+// 		`,
+// 	);
+// });
 
-test('never-single-line: line break before', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img
-		src
-		="path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'never-single-line',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img
-		src
-		="path/to">
-		`);
-});
+// test('never-single-line: line break before', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img
+// 		src
+// 		="path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'never-single-line',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img
+// 		src
+// 		="path/to">
+// 		`,
+// 	);
+// });
 
-test('never-single-line: line break after', async (t) => {
-	const r = await markuplint.fix(
-		`
-		<img
-		src=
-		"path/to">
-		`,
-		{
-			rules: {
-				'attr-equal-space-before': 'never-single-line',
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(r,
-		`
-		<img
-		src=
-		"path/to">
-		`);
-});
-
-test('noop', (t) => t.pass());
+// test('never-single-line: line break after', async () => {
+// 	const r = await markuplint.fix(
+// 		`
+// 		<img
+// 		src=
+// 		"path/to">
+// 		`,
+// 		{
+// 			rules: {
+// 				'attr-equal-space-before': 'never-single-line',
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		r,
+// 		`
+// 		<img
+// 		src=
+// 		"path/to">
+// 		`,
+// 	);
+// });

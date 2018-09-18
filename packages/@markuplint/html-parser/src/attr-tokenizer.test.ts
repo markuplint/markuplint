@@ -11,6 +11,15 @@ describe('attrTokenizer', () => {
 			startOffset: 1,
 			endOffset: 4,
 			isInvalid: false,
+			beforeSpaces: {
+				raw: ' ',
+				startLine: 1,
+				endLine: 1,
+				startCol: 1,
+				endCol: 2,
+				startOffset: 0,
+				endOffset: 1,
+			},
 			name: {
 				raw: 'abc',
 				startLine: 1,

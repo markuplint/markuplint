@@ -74,7 +74,7 @@ export interface MLASTInvalidNode extends MLASTAbstructNode {
 
 export interface MLASTAttr extends MLToken {
 	name: MLToken;
-	// beforeSpaces: MLToken | null;
+	beforeSpaces: MLToken;
 	spacesBeforeEqual: MLToken | null;
 	equal: MLToken | null;
 	spacesAfterEqual: MLToken | null;

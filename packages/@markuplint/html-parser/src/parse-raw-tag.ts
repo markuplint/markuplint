@@ -20,10 +20,14 @@ export default function parseRawTag(raw: string, nodeLine: number, nodeCol: numb
 	if (!tagName || (!reTagName.test(tagName) && !rePCEN.test(tagName))) {
 		throw new SyntaxError(`Invalid tag name: "${tagName}" in <${tagWithAttrs}>`);
 	}
-	let rawAttrs = tagWithAttrs.substring(tagName.length);
 
-	col += tagName.length + 1;
-	offset += tagName.length + 1;
+	const tagStartPos = tagWithAttrs.indexOf(tagName);
+	let rawAttrs = tagWithAttrs.substring(tagStartPos + tagName.length);
+
+	// console.log({ raw, tagStartPos, tagName, rawAttrs });
+
+	col += tagName.length + 1 + tagStartPos;
+	offset += tagName.length + 1 + tagStartPos;
 
 	const attrs: MLASTAttr[] = [];
 

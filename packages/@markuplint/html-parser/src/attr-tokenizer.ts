@@ -21,27 +21,26 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 		!!(valueChars && quoteChars === null && /["'=<>`]/.test(valueChars)) ||
 		!!(equalChars && quoteChars === null && valueChars === null);
 
-	// console.log({
-	// 	raw,
-	// 	offset: startOffset,
-	// 	endOffset: startOffset + raw.length,
-	// 	beforeSpacesChars,
-	// 	nameChars,
-	// 	spacesBeforeEqualChars,
-	// 	equalChars,
-	// 	spacesAfterEqualChars,
-	// 	quoteChars,
-	// 	valueChars,
-	// });
-
 	let offset = startOffset;
 
-	const beforeSpaces = tokenizer(beforeSpacesChars, line, col, offset);
-	if (beforeSpaces) {
-		line = beforeSpaces.endLine;
-		col = beforeSpaces.endCol;
-		offset = beforeSpaces.endOffset;
+	const beforeSpaces = tokenizer(beforeSpacesChars, line, col, offset)!;
+	if (!beforeSpaces) {
+		console.log({
+			raw,
+			offset: startOffset,
+			endOffset: startOffset + raw.length,
+			beforeSpacesChars,
+			nameChars,
+			spacesBeforeEqualChars,
+			equalChars,
+			spacesAfterEqualChars,
+			quoteChars,
+			valueChars,
+		});
 	}
+	line = beforeSpaces.endLine;
+	col = beforeSpaces.endCol;
+	offset = beforeSpaces.endOffset;
 
 	const attrToken = tokenizer(raw.substr(beforeSpacesChars.length), line, col, offset)!;
 
@@ -52,7 +51,7 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 		offset = name.endOffset;
 	}
 
-	const spacesBeforeEqual = tokenizer(spacesBeforeEqualChars, line, col, offset);
+	const spacesBeforeEqual = equalChars ? tokenizer(spacesBeforeEqualChars, line, col, offset) : null;
 	if (spacesBeforeEqual) {
 		line = spacesBeforeEqual.endLine;
 		col = spacesBeforeEqual.endCol;
@@ -66,7 +65,7 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 		offset = equal.endOffset;
 	}
 
-	const spacesAfterEqual = tokenizer(spacesAfterEqualChars, line, col, offset);
+	const spacesAfterEqual = equalChars ? tokenizer(spacesAfterEqualChars, line, col, offset) : null;
 	if (spacesAfterEqual) {
 		line = spacesAfterEqual.endLine;
 		col = spacesAfterEqual.endCol;
@@ -102,6 +101,7 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 		endLine: attrToken.endLine,
 		startCol: attrToken.startCol,
 		endCol: attrToken.endCol,
+		beforeSpaces,
 		name,
 		spacesBeforeEqual,
 		equal,
@@ -114,7 +114,7 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 }
 
 function tokenizer(raw: string | null, line: number, col: number, startOffset: number): MLToken | null {
-	if (raw) {
+	if (raw != null) {
 		return {
 			raw,
 			startLine: line,

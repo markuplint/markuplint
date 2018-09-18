@@ -15,8 +15,8 @@ export default createRule<Value>({
 				if (!attr.equal) {
 					continue;
 				}
-				const hasSpace = !!attr.spacesBeforeEqual.raw;
-				const hasLineBreak = /\r?\n/.test(attr.spacesBeforeEqual.raw);
+				const hasSpace = !!attr.spacesBeforeEqual;
+				const hasLineBreak = attr.spacesBeforeEqual ? /\r?\n/.test(attr.spacesBeforeEqual.raw) : false;
 				let isBad = false;
 				switch (node.rule.value) {
 					case 'always': {
@@ -40,51 +40,53 @@ export default createRule<Value>({
 				if (isBad) {
 					reports.push({
 						severity: node.rule.severity,
-						level: node.rule.severity,
 						message: node.rule.value,
-						line: attr.spacesBeforeEqual.line,
-						col: attr.spacesBeforeEqual.col,
-						raw: attr.spacesBeforeEqual.raw + attr.equal.raw + attr.spacesAfterEqual.raw,
+						line: attr.spacesBeforeEqual ? attr.spacesBeforeEqual.startLine : attr.equal.startLine,
+						col: attr.spacesBeforeEqual ? attr.spacesBeforeEqual.startCol : attr.equal.startCol,
+						raw:
+							(attr.spacesBeforeEqual ? attr.spacesBeforeEqual.raw : '') +
+							attr.equal.raw +
+							(attr.spacesAfterEqual ? attr.spacesAfterEqual.raw : ''),
 					});
 				}
 			}
 		});
 		return reports;
 	},
-	async fix(document) {
-		document.syncWalkOn('Element', node => {
-			for (const attr of node.attributes) {
-				if (!attr.equal) {
-					continue;
-				}
-				const hasSpace = !!attr.spacesBeforeEqual.raw;
-				const hasLineBreak = /\r?\n/.test(attr.spacesBeforeEqual.raw);
-				switch (node.rule.value) {
-					case 'always': {
-						if (!hasSpace) {
-							attr.spacesBeforeEqual.fix(' ');
-						}
-						break;
-					}
-					case 'never': {
-						attr.spacesBeforeEqual.fix('');
-						break;
-					}
-					case 'always-single-line': {
-						// or 'no-newline'
-						if (!hasSpace || hasLineBreak) {
-							attr.spacesBeforeEqual.fix(' ');
-						}
-						break;
-					}
-					case 'never-single-line': {
-						if (hasSpace && !hasLineBreak) {
-							attr.spacesBeforeEqual.fix('');
-						}
-						break;
-					}
-				}
-			}
-		});
-	},
+	// async fix(document) {
+	// 	document.syncWalkOn('Element', node => {
+	// 		for (const attr of node.attributes) {
+	// 			if (!attr.equal) {
+	// 				continue;
+	// 			}
+	// 			const hasSpace = !!attr.spacesBeforeEqual.raw;
+	// 			const hasLineBreak = /\r?\n/.test(attr.spacesBeforeEqual.raw);
+	// 			switch (node.rule.value) {
+	// 				case 'always': {
+	// 					if (!hasSpace) {
+	// 						attr.spacesBeforeEqual.fix(' ');
+	// 					}
+	// 					break;
+	// 				}
+	// 				case 'never': {
+	// 					attr.spacesBeforeEqual.fix('');
+	// 					break;
+	// 				}
+	// 				case 'always-single-line': {
+	// 					// or 'no-newline'
+	// 					if (!hasSpace || hasLineBreak) {
+	// 						attr.spacesBeforeEqual.fix(' ');
+	// 					}
+	// 					break;
+	// 				}
+	// 				case 'never-single-line': {
+	// 					if (hasSpace && !hasLineBreak) {
+	// 						attr.spacesBeforeEqual.fix('');
+	// 					}
+	// 					break;
+	// 				}
+	// 			}
+	// 		}
+	// 	});
+	// },
 });

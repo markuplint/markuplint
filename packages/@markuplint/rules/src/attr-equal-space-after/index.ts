@@ -15,8 +15,8 @@ export default createRule<Value>({
 				if (!attr.equal) {
 					continue;
 				}
-				const hasSpace = !!attr.spacesAfterEqual.raw;
-				const hasLineBreak = /\r?\n/.test(attr.spacesAfterEqual.raw);
+				const hasSpace = !!attr.spacesAfterEqual;
+				const hasLineBreak = attr.spacesAfterEqual ? /\r?\n/.test(attr.spacesAfterEqual.raw) : false;
 				let isBad = false;
 				switch (node.rule.value) {
 					case 'always': {
@@ -41,49 +41,52 @@ export default createRule<Value>({
 					reports.push({
 						severity: node.rule.severity,
 						message: node.rule.value,
-						line: attr.spacesBeforeEqual.line,
-						col: attr.spacesBeforeEqual.col,
-						raw: attr.spacesBeforeEqual.raw + attr.equal.raw + attr.spacesAfterEqual.raw,
+						line: attr.spacesBeforeEqual ? attr.spacesBeforeEqual.startLine : attr.equal.startLine,
+						col: attr.spacesBeforeEqual ? attr.spacesBeforeEqual.startCol : attr.equal.startCol,
+						raw:
+							(attr.spacesBeforeEqual ? attr.spacesBeforeEqual.raw : '') +
+							attr.equal.raw +
+							(attr.spacesAfterEqual ? attr.spacesAfterEqual.raw : ''),
 					});
 				}
 			}
 		});
 		return reports;
 	},
-	async fix(document) {
-		document.walkOn('Element', node => {
-			for (const attr of node.attributes) {
-				if (!attr.equal) {
-					continue;
-				}
-				const hasSpace = !!attr.spacesAfterEqual.raw;
-				const hasLineBreak = /\r?\n/.test(attr.spacesAfterEqual.raw);
-				switch (node.rule.value) {
-					case 'always': {
-						if (!hasSpace) {
-							attr.spacesAfterEqual.fix(' ');
-						}
-						break;
-					}
-					case 'never': {
-						attr.spacesAfterEqual.fix('');
-						break;
-					}
-					case 'always-single-line': {
-						// or 'no-newline'
-						if (!hasSpace || hasLineBreak) {
-							attr.spacesAfterEqual.fix(' ');
-						}
-						break;
-					}
-					case 'never-single-line': {
-						if (hasSpace && !hasLineBreak) {
-							attr.spacesAfterEqual.fix('');
-						}
-						break;
-					}
-				}
-			}
-		});
-	},
+	// async fix(document) {
+	// 	await document.walkOn('Element', async node => {
+	// 		for (const attr of node.attributes) {
+	// 			if (!attr.equal) {
+	// 				continue;
+	// 			}
+	// 			const hasSpace = !!attr.spacesAfterEqual.raw;
+	// 			const hasLineBreak = /\r?\n/.test(attr.spacesAfterEqual.raw);
+	// 			switch (node.rule.value) {
+	// 				case 'always': {
+	// 					if (!hasSpace) {
+	// 						attr.spacesAfterEqual.fix(' ');
+	// 					}
+	// 					break;
+	// 				}
+	// 				case 'never': {
+	// 					attr.spacesAfterEqual.fix('');
+	// 					break;
+	// 				}
+	// 				case 'always-single-line': {
+	// 					// or 'no-newline'
+	// 					if (!hasSpace || hasLineBreak) {
+	// 						attr.spacesAfterEqual.fix(' ');
+	// 					}
+	// 					break;
+	// 				}
+	// 				case 'never-single-line': {
+	// 					if (hasSpace && !hasLineBreak) {
+	// 						attr.spacesAfterEqual.fix('');
+	// 					}
+	// 					break;
+	// 				}
+	// 			}
+	// 		}
+	// 	});
+	// },
 });
