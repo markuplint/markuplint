@@ -21,8 +21,8 @@ export default createRule<Value, null>({
 							reports.push({
 								severity: node.rule.severity,
 								message,
-								line: attr.location.line,
-								col: attr.location.col,
+								line: attr.startLine,
+								col: attr.startCol,
 								raw: attr.name.raw,
 							});
 						}
@@ -32,19 +32,19 @@ export default createRule<Value, null>({
 		});
 		return reports;
 	},
-	async fix(document) {
-		await document.walkOn('Element', async node => {
-			if (node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
-				if (node.attributes) {
-					for (const attr of node.attributes) {
-						if (node.rule.value === 'no-upper') {
-							attr.name.fix(attr.name.raw.toLowerCase());
-						} else {
-							attr.name.fix(attr.name.raw.toUpperCase());
-						}
-					}
-				}
-			}
-		});
-	},
+	// async fix(document) {
+	// 	await document.walkOn('Element', async node => {
+	// 		if (node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
+	// 			if (node.attributes) {
+	// 				for (const attr of node.attributes) {
+	// 					if (node.rule.value === 'no-upper') {
+	// 						attr.name.fix(attr.name.raw.toLowerCase());
+	// 					} else {
+	// 						attr.name.fix(attr.name.raw.toUpperCase());
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	});
+	// },
 });
