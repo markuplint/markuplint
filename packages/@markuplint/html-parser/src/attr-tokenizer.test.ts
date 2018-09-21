@@ -1,6 +1,6 @@
 import attrTokenizer from './attr-tokenizer';
 
-describe('attrTokenizer', () => {
+describe('attrTokenizer', async () => {
 	it('void attribute', () => {
 		expect(attrTokenizer(' abc', 1, 1, 0)).toStrictEqual({
 			raw: 'abc',
@@ -39,47 +39,189 @@ describe('attrTokenizer', () => {
 	});
 });
 
-// test('normal', t => {
-// 	expect(attrTokenizer(' abc="123"', 1, 1, 0)).toStrictEqual({
-// 		startLine: 1,
-// 		endLine: 1,
-// 		startCol: 2,
-// 		endCol: 11,
-// 		startOffset: 1,
-// 		endOffset: 10,
-// 		raw: 'abc="123"',
-// 		isInvalid: false,
-// 		name: {
-// 			raw: 'abc',
-// 			startLine: 1,
-// 			endLine: 1,
-// 			startCol: 2,
-// 			endCol: 5,
-// 			startOffset: 1,
-// 			endOffset: 4,
-// 		},
-// 		equal: {
-// 			raw: '=',
-// 			startLine: 1,
-// 			endLine: 1,
-// 			startCol: 5,
-// 			endCol: 6,
-// 			startOffset: 4,
-// 			endOffset: 5,
-// 		},
-// 		value: {
-// 			value: '123',
-// 			quote: '"',
-// 			raw: '"123"',
-// 			startLine: 1,
-// 			endLine: 1,
-// 			startCol: 6,
-// 			endCol: 11,
-// 			startOffset: 5,
-// 			endOffset: 10,
-// 		},
-// 	});
-// });
+test('normal', async () => {
+	expect(attrTokenizer(' abc="123"', 1, 1, 0)).toStrictEqual({
+		startLine: 1,
+		endLine: 1,
+		startCol: 2,
+		endCol: 11,
+		startOffset: 1,
+		endOffset: 10,
+		raw: 'abc="123"',
+		isInvalid: false,
+		beforeSpaces: {
+			raw: ' ',
+			startLine: 1,
+			endLine: 1,
+			startCol: 1,
+			endCol: 2,
+			startOffset: 0,
+			endOffset: 1,
+		},
+		name: {
+			raw: 'abc',
+			startLine: 1,
+			endLine: 1,
+			startCol: 2,
+			endCol: 5,
+			startOffset: 1,
+			endOffset: 4,
+		},
+		spacesBeforeEqual: {
+			raw: '',
+			startLine: 1,
+			endLine: 1,
+			startCol: 5,
+			endCol: 5,
+			startOffset: 4,
+			endOffset: 4,
+		},
+		equal: {
+			raw: '=',
+			startLine: 1,
+			endLine: 1,
+			startCol: 5,
+			endCol: 6,
+			startOffset: 4,
+			endOffset: 5,
+		},
+		spacesAfterEqual: {
+			raw: '',
+			startLine: 1,
+			endLine: 1,
+			startCol: 6,
+			endCol: 6,
+			startOffset: 5,
+			endOffset: 5,
+		},
+		tokenBeforeValue: {
+			raw: '"',
+			startLine: 1,
+			endLine: 1,
+			startCol: 6,
+			endCol: 7,
+			startOffset: 5,
+			endOffset: 6,
+		},
+		value: {
+			raw: '123',
+			startLine: 1,
+			endLine: 1,
+			startCol: 7,
+			endCol: 10,
+			startOffset: 6,
+			endOffset: 9,
+		},
+		tokenAfterValue: {
+			endCol: 11,
+			endLine: 1,
+			endOffset: 10,
+			raw: '"',
+			startCol: 10,
+			startLine: 1,
+			startOffset: 9,
+		},
+	});
+});
+
+test('after line break', async () => {
+	expect(attrTokenizer('\n abc="123"', 1, 1, 0)).toStrictEqual({
+		startLine: 2,
+		endLine: 2,
+		startCol: 2,
+		endCol: 11,
+		startOffset: 2,
+		endOffset: 11,
+		raw: 'abc="123"',
+		isInvalid: false,
+		beforeSpaces: {
+			raw: '\n ',
+			startLine: 1,
+			endLine: 2,
+			startCol: 1,
+			endCol: 2,
+			startOffset: 0,
+			endOffset: 2,
+		},
+		name: {
+			raw: 'abc',
+			startLine: 2,
+			endLine: 2,
+			startCol: 2,
+			endCol: 5,
+			startOffset: 2,
+			endOffset: 5,
+		},
+		spacesBeforeEqual: {
+			raw: '',
+			startLine: 2,
+			endLine: 2,
+			startCol: 5,
+			endCol: 5,
+			startOffset: 5,
+			endOffset: 5,
+		},
+		equal: {
+			raw: '=',
+			startLine: 2,
+			endLine: 2,
+			startCol: 5,
+			endCol: 6,
+			startOffset: 5,
+			endOffset: 6,
+		},
+		spacesAfterEqual: {
+			raw: '',
+			startLine: 2,
+			endLine: 2,
+			startCol: 6,
+			endCol: 6,
+			startOffset: 6,
+			endOffset: 6,
+		},
+		tokenBeforeValue: {
+			raw: '"',
+			startLine: 2,
+			endLine: 2,
+			startCol: 6,
+			endCol: 7,
+			startOffset: 6,
+			endOffset: 7,
+		},
+		value: {
+			raw: '123',
+			startLine: 2,
+			endLine: 2,
+			startCol: 7,
+			endCol: 10,
+			startOffset: 7,
+			endOffset: 10,
+		},
+		tokenAfterValue: {
+			raw: '"',
+			startLine: 2,
+			endLine: 2,
+			startCol: 10,
+			endCol: 11,
+			startOffset: 10,
+			endOffset: 11,
+		},
+	});
+});
+
+test('after line break', async () => {
+	expect(attrTokenizer('\n abc="123"', 1, 3, 0)).toMatchObject({
+		beforeSpaces: {
+			raw: '\n ',
+			startLine: 1,
+			endLine: 2,
+			startCol: 3,
+			endCol: 2,
+			startOffset: 0,
+			endOffset: 2,
+		},
+	});
+});
 
 // test('single quote', t => {
 // 	expect(attrTokenizer("  q='a'", 1, 1, 0)).toStrictEqual({

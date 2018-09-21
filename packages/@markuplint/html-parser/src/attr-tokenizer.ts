@@ -24,20 +24,6 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 	let offset = startOffset;
 
 	const beforeSpaces = tokenizer(beforeSpacesChars, line, col, offset)!;
-	if (!beforeSpaces) {
-		console.log({
-			raw,
-			offset: startOffset,
-			endOffset: startOffset + raw.length,
-			beforeSpacesChars,
-			nameChars,
-			spacesBeforeEqualChars,
-			equalChars,
-			spacesAfterEqualChars,
-			quoteChars,
-			valueChars,
-		});
-	}
 	line = beforeSpaces.endLine;
 	col = beforeSpaces.endCol;
 	offset = beforeSpaces.endOffset;
