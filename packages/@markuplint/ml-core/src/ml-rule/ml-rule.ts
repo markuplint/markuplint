@@ -70,7 +70,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		if (!Array.isArray(option) && typeof option === 'object' && option !== null) {
 			return {
 				disabled: false,
-				severity: option.severity,
+				severity: option.severity || this.defaultServerity,
 				value: option.value !== undefined ? option.value : this.defaultValue,
 				option:
 					this.defaultOptions !== null && typeof this.defaultOptions === 'object'

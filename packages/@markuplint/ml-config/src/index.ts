@@ -19,9 +19,9 @@ export interface Rules {
 }
 
 export type RuleConfig<T extends RuleConfigValue, O = void> = {
-	severity: Severity;
-	value: T;
-	option: O;
+	severity?: Severity;
+	value?: T;
+	option?: O;
 };
 
 export type Severity = 'error' | 'warning' | 'info';
