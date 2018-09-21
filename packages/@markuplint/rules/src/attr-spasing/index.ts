@@ -19,9 +19,9 @@ export default createRule<boolean, AttrSpasingOptions>({
 		await document.walkOn('Element', async node => {
 			const attrs = node.attributes;
 			for (const attr of attrs) {
-				const hasSpace = !!attr.beforeSpaces;
-				const hasLineBreak = attr.beforeSpaces ? /\r?\n/.test(attr.beforeSpaces.raw) : false;
-				// console.log({ attr: `${attr.beforeSpaces.raw}${attr.raw}`,  hasSpace, hasLineBreak });
+				const hasSpace = !!attr.beforeSpaces.raw;
+				const hasLineBreak = /\r?\n/.test(attr.beforeSpaces.raw);
+				// console.log({ attr: `${attr.beforeSpaces.raw}${attr.raw}`, hasSpace, hasLineBreak });
 				if (!hasSpace) {
 					reports.push({
 						severity: node.rule.severity,
@@ -37,7 +37,7 @@ export default createRule<boolean, AttrSpasingOptions>({
 								severity: node.rule.severity,
 								message: messages('改行はしないでください'),
 								line: attr.beforeSpaces.startLine,
-								col: attr.beforeSpaces.endCol,
+								col: attr.beforeSpaces.startCol,
 								raw: attr.beforeSpaces.raw,
 							});
 						}

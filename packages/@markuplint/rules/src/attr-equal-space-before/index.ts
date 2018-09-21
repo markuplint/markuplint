@@ -12,11 +12,11 @@ export default createRule<Value>({
 		const message = messages('error');
 		await document.walkOn('Element', async node => {
 			for (const attr of node.attributes) {
-				if (!attr.equal) {
+				if (!(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {
 					continue;
 				}
-				const hasSpace = !!attr.spacesBeforeEqual;
-				const hasLineBreak = attr.spacesBeforeEqual ? /\r?\n/.test(attr.spacesBeforeEqual.raw) : false;
+				const hasSpace = !!attr.spacesBeforeEqual.raw;
+				const hasLineBreak = /\r?\n/.test(attr.spacesBeforeEqual.raw);
 				let isBad = false;
 				switch (node.rule.value) {
 					case 'always': {
@@ -41,12 +41,9 @@ export default createRule<Value>({
 					reports.push({
 						severity: node.rule.severity,
 						message: node.rule.value,
-						line: attr.spacesBeforeEqual ? attr.spacesBeforeEqual.startLine : attr.equal.startLine,
-						col: attr.spacesBeforeEqual ? attr.spacesBeforeEqual.startCol : attr.equal.startCol,
-						raw:
-							(attr.spacesBeforeEqual ? attr.spacesBeforeEqual.raw : '') +
-							attr.equal.raw +
-							(attr.spacesAfterEqual ? attr.spacesAfterEqual.raw : ''),
+						line: attr.spacesBeforeEqual.startLine,
+						col: attr.spacesBeforeEqual.startCol,
+						raw: attr.spacesBeforeEqual.raw + attr.equal.raw + attr.spacesAfterEqual.raw,
 					});
 				}
 			}

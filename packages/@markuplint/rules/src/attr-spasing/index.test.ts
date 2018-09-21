@@ -75,7 +75,7 @@ test('no-space', async () => {
 	expect(r).toStrictEqual([]);
 });
 
-test('no-space', async () => {
+test('Never line break', async () => {
 	const r = await markuplint.verify(
 		`
 		<img src="path/to"
