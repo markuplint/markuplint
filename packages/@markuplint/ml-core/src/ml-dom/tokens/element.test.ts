@@ -7,7 +7,9 @@ describe('new Element', () => {
 		const sourceCode = `<div>text</div>`;
 		const ast = parse(sourceCode);
 		const astNode = ast[0] as MLASTElement;
-		const element = new Element(astNode, null);
+		// @ts-ignore
+		const documentDummyForTest: MLDOMDocument = {};
+		const element = new Element(astNode, documentDummyForTest);
 		expect(element.type).toBe('Element');
 		expect(element.nodeName).toBe('div');
 	});

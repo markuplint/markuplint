@@ -1,4 +1,5 @@
 import { parse } from '@markuplint/html-parser';
+import MLDOMDocument from '../document';
 import { createNode } from './create-node';
 
 describe('create Node', () => {
@@ -6,7 +7,9 @@ describe('create Node', () => {
 		const sourceCode = `<div>text</div>`;
 		const ast = parse(sourceCode);
 		const astNode = ast[0];
-		const node = createNode(astNode, null);
+		// @ts-ignore
+		const documentDummyForTest: MLDOMDocument = {};
+		const node = createNode(astNode, documentDummyForTest);
 		expect(node.type).toBe('Element');
 	});
 });
