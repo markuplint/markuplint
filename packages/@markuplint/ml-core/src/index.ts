@@ -14,3 +14,4 @@ export {
 	OmittedElement,
 	Text,
 } from './ml-dom';
+export { getLocationFromChars } from './utils';
