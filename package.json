@@ -2,11 +2,9 @@
 	"private": true,
 	"scripts": {
 		"bootstrap": "lerna bootstrap",
-		"clean": "rm ./node_modules/parse5/lib/index.d.ts",
 		"build": "lerna run build",
 		"dev": "lerna run --parallel dev & jest --watch",
-		"test": "jest --coverage",
-		"test:rules": "ava **/src/**/*.test.js !**/lib/**/*.test.js"
+		"test": "jest --coverage"
 	},
 	"jest": {
 		"globals": {
