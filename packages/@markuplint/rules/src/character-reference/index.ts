@@ -1,9 +1,9 @@
-import { Severity } from '@markuplint/ml-config';
-import { createRule, Result } from '@markuplint/ml-core';
+import { createRule, getLocationFromChars, Result } from '@markuplint/ml-core';
 
 export type Value = boolean;
 
 const defaultChars = ['"', '&', '<', '>'];
+const ignoreParentElement = ['script', 'style'];
 
 export default createRule<Value>({
 	name: 'character-reference',
@@ -11,21 +11,19 @@ export default createRule<Value>({
 	defaultOptions: null,
 	async verify(document, messages) {
 		const reports: Result[] = [];
-		const targetNodes: {
-			severity: Severity;
-			line: number;
-			col: number;
-			raw: string;
-			message: string;
-		}[] = [];
+		const targetNodes: Result[] = [];
 
 		await document.walkOn('Text', async node => {
-			const ms = node.rule.severity === 'error' ? 'must' : 'should';
+			if (node.parentNode && ignoreParentElement.includes(node.parentNode.nodeName.toLowerCase())) {
+				return;
+			}
+			const severity = node.rule.severity;
+			const ms = severity === 'error' ? 'must' : 'should';
 			const message = messages(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			targetNodes.push({
-				severity: node.rule.severity,
-				line: node.line,
-				col: node.col,
+				severity,
+				line: node.startLine,
+				col: node.startCol,
 				raw: node.raw,
 				message,
 			});
@@ -41,9 +39,9 @@ export default createRule<Value>({
 				}
 				targetNodes.push({
 					severity,
-					line: attr.value.line,
-					col: attr.value.col + (attr.value.quote ? 1 : 0),
-					raw: attr.value.value,
+					line: attr.value.startLine,
+					col: attr.value.startCol,
+					raw: attr.value.raw,
 					message,
 				});
 			}
@@ -51,16 +49,15 @@ export default createRule<Value>({
 
 		for (const targetNode of targetNodes) {
 			const escapedText = targetNode.raw.replace(/&(?:[a-z]+|#[0-9]+|x[0-9]);/gi, $0 => '*'.repeat($0.length));
-			CustomRule.charLocator(defaultChars, escapedText, targetNode.line, targetNode.col).forEach(location => {
+			getLocationFromChars(defaultChars, escapedText, targetNode.line, targetNode.col).forEach(location => {
 				reports.push({
 					severity: targetNode.severity,
 					message: targetNode.message,
-					line: location.line,
-					col: location.col,
-					raw: location.raw,
+					...location,
 				});
 			});
 		}
+
 		return reports;
 	},
 });
