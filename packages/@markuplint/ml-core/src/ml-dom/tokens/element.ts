@@ -42,4 +42,15 @@ export default class Element<T extends RuleConfigValue, O = null> extends Node<T
 	public matches(selector: string): boolean {
 		return createSelector(selector).match(this);
 	}
+
+	public get classList() {
+		const classAttr = this.getAttribute('class');
+		if (classAttr && classAttr.value) {
+			return classAttr.value.raw
+				.split(/\s+/g)
+				.map(c => c.trim())
+				.filter(c => c);
+		}
+		return [];
+	}
 }
