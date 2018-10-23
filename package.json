@@ -9,7 +9,7 @@
 	"jest": {
 		"globals": {
 			"ts-jest": {
-				"tsConfigFile": "tsconfig.json"
+				"tsConfig": "tsconfig.json"
 			}
 		},
 		"verbose": true,
