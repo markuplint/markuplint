@@ -27,11 +27,11 @@ export default createRule<Value, null>({
 					reports.push({
 						severity: node.rule.severity,
 						message,
-						line: node.line,
+						line: node.startLine,
 						col:
 							node instanceof Element
-								? node.col + 1 // remove "<" char.
-								: node.col + 2, // remove "</" char.
+								? node.startCol + 1 // remove "<" char.
+								: node.startCol + 2, // remove "</" char.
 						raw: node.nodeName,
 					});
 				}
@@ -39,21 +39,21 @@ export default createRule<Value, null>({
 		});
 		return reports;
 	},
-	async fix(document) {
-		await document.walk(async node => {
-			if (node instanceof Element || node instanceof EndTagNode) {
-				if (node.isForeignElement) {
-					return;
-				}
-				const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
-				if (deny.test(node.nodeName)) {
-					if (node.rule.value === 'lower') {
-						node.nodeName = node.nodeName.toLowerCase();
-					} else {
-						node.nodeName = node.nodeName.toUpperCase();
-					}
-				}
-			}
-		});
-	},
+	// async fix(document) {
+	// 	await document.walk(async node => {
+	// 		if (node instanceof Element || node instanceof ElementCloseTag) {
+	// 			if (node.isForeignElement) {
+	// 				return;
+	// 			}
+	// 			const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
+	// 			if (deny.test(node.nodeName)) {
+	// 				if (node.rule.value === 'lower') {
+	// 					node.nodeName = node.nodeName.toLowerCase();
+	// 				} else {
+	// 					node.nodeName = node.nodeName.toUpperCase();
+	// 				}
+	// 			}
+	// 		}
+	// 	});
+	// },
 });

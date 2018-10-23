@@ -1,108 +1,153 @@
-import test from 'ava';
-import * as markuplint from '../../../lib';
-import rule from '../../../lib/rules/markuplint-rule-case-sensitive-tag-name';
+import * as markuplint from 'markuplint';
+import rule from './';
 
-test('lower case', async (t) => {
+test('lower case', async () => {
 	const r = await markuplint.verify(
 		'<div data-lowercase></div>',
-		{rules: {'case-sensitive-tag-name': true}},
+		{
+			rules: {
+				'case-sensitive-tag-name': true,
+			},
+		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('upper case', async (t) => {
+test('upper case', async () => {
 	const r = await markuplint.verify(
 		'<DIV data-lowercase></DIV>',
-		{rules: {'case-sensitive-tag-name': true}},
+		{
+			rules: {
+				'case-sensitive-tag-name': true,
+			},
+		},
 		[rule],
 		'en',
 	);
-	t.is(r[0].level, 'warning');
-	t.is(r[0].message, 'Tag name of HTML element should be lowercase');
-	t.is(r[0].raw, 'DIV');
+	expect(r[0].severity).toBe('warning');
+	expect(r[0].message).toBe('Tag name of HTML element should be lowercase');
+	expect(r[0].raw).toBe('DIV');
 });
 
-test('upper case', async (t) => {
+test('upper case', async () => {
 	const r = await markuplint.verify(
 		'<div data-UPPERCASE="value"></div>',
-		{rules: {'case-sensitive-tag-name': ['error', 'upper']}},
+		{
+			rules: {
+				'case-sensitive-tag-name': {
+					severity: 'error',
+					value: 'upper',
+				},
+			},
+		},
 		[rule],
 		'en',
 	);
-	t.is(r[0].level, 'error');
-	t.is(r[0].message, 'Tag name of HTML element must be uppercase');
+	expect(r[0].severity).toBe('error');
+	expect(r[0].message).toBe('Tag name of HTML element must be uppercase');
 });
 
-test('upper case', async (t) => {
+test('upper case', async () => {
 	const r = await markuplint.verify(
 		'<DIV data-uppercase="value"></DIV>',
-		{rules: {'case-sensitive-tag-name': ['error', 'upper']}},
+		{
+			rules: {
+				'case-sensitive-tag-name': {
+					severity: 'error',
+					value: 'upper',
+				},
+			},
+		},
 		[rule],
 		'en',
 	);
-	t.is(r.length, 0);
+	expect(r.length).toBe(0);
 });
 
-test('upper case', async (t) => {
+test('upper case', async () => {
 	const r = await markuplint.verify(
 		'<DIV DATA-UPPERCASE="value"></div>',
-		{rules: {'case-sensitive-tag-name': ['error', 'upper']}},
+		{
+			rules: {
+				'case-sensitive-tag-name': {
+					severity: 'error',
+					value: 'upper',
+				},
+			},
+		},
 		[rule],
 		'en',
 	);
-	t.is(r.length, 1);
+	expect(r.length).toBe(1);
 });
 
-test('upper case', async (t) => {
+test('upper case', async () => {
 	const r = await markuplint.verify(
 		'<div DATA-UPPERCASE="value"></DIV>',
-		{rules: {'case-sensitive-tag-name': ['error', 'upper']}},
+		{
+			rules: {
+				'case-sensitive-tag-name': {
+					severity: 'error',
+					value: 'upper',
+				},
+			},
+		},
 		[rule],
 		'en',
 	);
-	t.is(r.length, 1);
+	expect(r.length).toBe(1);
 });
 
-test('foreign elements', async (t) => {
+test('foreign elements', async () => {
 	const r = await markuplint.verify(
 		'<svg viewBox="0 0 100 100"><textPath></textPath></svg>',
-		{rules: {'case-sensitive-tag-name': true}},
+		{
+			rules: {
+				'case-sensitive-tag-name': true,
+			},
+		},
 		[rule],
 		'en',
 	);
-	t.is(r.length, 0);
+	expect(r.length).toBe(0);
 });
 
-test('custom elements', async (t) => {
+test('custom elements', async () => {
 	const r = await markuplint.verify(
 		'<xxx-hoge>lorem</xxx-hoge>',
-		{rules: {'case-sensitive-tag-name': true}},
+		{
+			rules: {
+				'case-sensitive-tag-name': true,
+			},
+		},
 		[rule],
 		'en',
 	);
-	t.is(r.length, 0);
+	expect(r.length).toBe(0);
 });
 
-test('custom elements', async (t) => {
+test('custom elements', async () => {
 	const r = await markuplint.verify(
 		'<XXX-hoge>lorem</XXX-hoge>',
-		{rules: {'case-sensitive-tag-name': true}},
+		{
+			rules: {
+				'case-sensitive-tag-name': true,
+			},
+		},
 		[rule],
 		'en',
 	);
-	t.is(r[0].message, 'Tag name of HTML element should be lowercase');
+	expect(r[0].message).toBe('Tag name of HTML element should be lowercase');
 });
 
-test('fix - upper case', async (t) => {
-	const fixed = await markuplint.fix(
-		'<DIV data-lowercase></DIV>',
-		{rules: {'case-sensitive-tag-name': true}},
-		[rule],
-		'en',
-	);
-	t.is(fixed, '<div data-lowercase></div>');
-});
-
-test('noop', (t) => t.pass());
+// test('fix - upper case', async () => {
+// 	const fixed = await markuplint.fix(
+// 		'<DIV data-lowercase></DIV>',
+// 		{ rules: { 'case-sensitive-tag-name': true } },
+// 		[rule],
+// 		'en',
+// 	);
+// 	expect(fixed).toBe('<div data-lowercase></div>');
+// });
