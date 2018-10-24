@@ -1,21 +1,25 @@
 import { createRule, Result } from '@markuplint/ml-core';
 
 export default createRule({
-	name: 'name',
+	name: 'deprecated-element',
 	defaultValue: null,
 	defaultOptions: null,
 	async verify(document, messages) {
 		const reports: Result[] = [];
 		const message = messages('error');
 		await document.walkOn('Element', async node => {
-			if (true) {
-				// reports.push({
-				// 	level: node.rule.level,
-				// 	message,
-				// 	line: node.line,
-				// 	col: node.col,
-				// 	raw: node.raw,
-				// });
+			console.log({
+				node: node.raw,
+				obsolete: node.obsolete,
+			});
+			if (node.obsolete) {
+				reports.push({
+					severity: node.rule.severity,
+					message,
+					line: node.startLine,
+					col: node.startCol + 1,
+					raw: node.nodeName,
+				});
 			}
 		});
 		return reports;

@@ -1,35 +1,47 @@
-import test from 'ava';
-import * as markuplint from '../../../lib/';
-import rule from '../../../lib/rules/markuplint-rule-deprecated-element';
+import * as markuplint from 'markuplint';
+import rule from './';
 
-test('normal', async (t) => {
+test('normal', async () => {
 	const r = await markuplint.verify(
 		'<div></div><p><span></span></p>',
-		{rules: {'deprecated-element': true}},
+		{
+			rules: {
+				'deprecated-element': true,
+			},
+		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('deprecated', async (t) => {
+test('deprecated', async () => {
 	const r = await markuplint.verify(
 		'<font></font><big><blink></blink></big>',
-		{rules: {'deprecated-element': true}},
+		{
+			rules: {
+				'deprecated-element': true,
+			},
+		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('deprecated', async (t) => {
+test('deprecated', async () => {
 	const r = await markuplint.verify(
 		'<font></font><big><blink></blink></big>',
-		{rules: {'deprecated-element': true}, extends: 'markuplint/html-ls'},
+		{
+			rules: {
+				'deprecated-element': true,
+			},
+			extends: '@markuplint/html-ls',
+		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
 			level: 'error',
 			severity: 'error',
@@ -59,5 +71,3 @@ test('deprecated', async (t) => {
 		},
 	]);
 });
-
-test('noop', (t) => t.pass());
