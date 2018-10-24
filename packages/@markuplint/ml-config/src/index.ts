@@ -31,6 +31,9 @@ export type RuleConfigValue = string | number | boolean | string[] | number[] | 
 export interface NodeRule {
 	tagName?: string;
 	selector?: string;
+	categories?: string[];
+	roles?: string[];
+	obsolete?: boolean;
 	rules?: Rules;
 }
 

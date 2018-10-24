@@ -11,6 +11,8 @@ export default class Element<T extends RuleConfigValue, O = null> extends Node<T
 	public readonly namespaceURI: string;
 	public readonly isForeignElement: boolean;
 	public readonly closeTag: ElementCloseTag<T, O> | null;
+	public categories: string[] = [];
+	public roles: string[] = [];
 	public obsolete = false;
 
 	constructor(astNode: MLASTElement, document: Document<T, O>) {
