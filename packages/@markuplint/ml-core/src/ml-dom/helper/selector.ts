@@ -1,90 +1,73 @@
-import { RuleConfigValue } from '@markuplint/ml-config';
 // @ts-ignore
-import cssWhat from 'css-what';
+import { CssSelectorParser } from 'css-selector-parser';
+
+import { RuleConfigValue } from '@markuplint/ml-config';
 import { Element } from '../tokens';
 
-export interface UniversalSelectorRule {
-	type: 'universal';
+const selectorParser = new CssSelectorParser();
+selectorParser.registerSelectorPseudos('not');
+selectorParser.registerNestingOperators('>', '+', '~');
+selectorParser.registerAttrEqualityMods('~', '^', '$', '*', '|');
+selectorParser.enableSubstitutes();
+
+type CssSelectorParserResult = CssSelectorParserResultRuleset | CssSelectorParserResultSelectors;
+
+interface CssSelectorParserResultSelectors {
+	type: 'selectors';
+	selectors: CssSelectorParserRule[];
 }
 
-export interface TagSelectorRule {
-	type: 'tag';
+interface CssSelectorParserResultRuleset {
+	type: 'ruleSet';
+	rule: CssSelectorParserRule;
+}
 
-	/**
-	 * Tag name
-	 */
+interface CssSelectorParserRule {
+	type: 'rule';
+	nestingOperator?: string | null;
+	tagName?: string;
+	id?: string;
+	classNames?: string[];
+	attrs?: CssSelectorParserRuleAttr[];
+	pseudos?: CssSelectorParserRulePseudo[];
+	rule: CssSelectorParserRule;
+}
+
+interface CssSelectorParserRuleAttr {
 	name: string;
+	operator?: string;
+	valueType?: 'string';
+	value?: string;
 }
 
-export interface PseudoSelectorRule {
-	type: 'pseudo';
+type CssSelectorParserRulePseudo = CssSelectorParserRulePseudoNormal | CssSelectorParserRulePseudoHasSelectors;
 
-	/**
-	 * Pseudo selector name
-	 */
+interface CssSelectorParserRulePseudoNormal {
 	name: string;
-
-	/**
-	 * Pseudo selector parameters
-	 */
-	data: string | SelectorRuleSet[] | null;
+	valueType?: 'string';
+	value?: string;
 }
 
-export interface AttrSelectorRule {
-	type: 'attribute';
-
-	/**
-	 * Attribute name
-	 */
+interface CssSelectorParserRulePseudoHasSelectors {
 	name: string;
-
-	/**
-	 * Attribute operator
-	 *
-	 * - `[attr]` => `"exists"`
-	 * - `[attr=val]` => ` "equals"`
-	 * - `[attr~=val]` => `"element"`
-	 * - `[attr^=val]` => `"start"`
-	 * - `[attr$=val]` => `"end"`
-	 * - `[attr*=val]` => `"any"`
-	 * - `[attr!=val]` => `"not"`
-	 * - `[attr|=val]` => `"hyphen"`
-	 */
-	action: 'exists' | 'equals' | 'element' | 'start' | 'end' | 'any' | 'not' | 'hyphen';
-
-	/**
-	 * Attribute value
-	 *
-	 * Return empty string when value is empty.
-	 */
-	value: string;
-
-	/**
-	 * case-insensitively
-	 */
-	ignoreCase: boolean;
+	valueType: 'selector';
+	value: CssSelectorParserResult;
 }
 
-export interface UnsupportSelectorRule {
-	type: 'descendant' | 'child' | 'parent' | 'sibling' | 'adjacent';
+interface ElementLikeObject {
+	nodeName: string;
+	id: string;
+	classList: string[] | DOMTokenList;
+	getAttribute(attrName: string): string | null;
 }
-
-export type SelectorRule =
-	| TagSelectorRule
-	| UniversalSelectorRule
-	| PseudoSelectorRule
-	| AttrSelectorRule
-	| UnsupportSelectorRule;
-
-export type SelectorRuleSet = SelectorRule[];
 
 export class Selector {
 	private _rawSelector: string;
-	private _ruleset: SelectorRuleSet[];
+	private _ruleset: CssSelectorParserResult;
 
 	constructor(selector: string) {
 		this._rawSelector = selector;
-		this._ruleset = cssWhat(selector) || [];
+		this._ruleset = selectorParser.parse(selector);
 		// console.log(JSON.stringify(this._ruleset, null, 2));
 	}
 
@@ -93,96 +76,111 @@ export class Selector {
 	}
 }
 
-function match<T extends RuleConfigValue, O = null>(
-	element: Element<T, O>,
-	ruleset: SelectorRuleSet[],
-	rawSelector: string,
-) {
+function match(element: ElementLikeObject, ruleset: CssSelectorParserResult, rawSelector: string) {
+	const rules: CssSelectorParserRule[] = ruleset.type === 'selectors' ? ruleset.selectors : [ruleset.rule];
 	const orMatch: boolean[] = [];
-	for (const selectorRules of ruleset) {
+
+	for (const rule of rules) {
 		const andMatch: boolean[] = [];
-		for (const selectorRule of selectorRules) {
-			switch (selectorRule.type) {
-				case 'universal': {
-					// console.log(`true <= "*" in ${element.raw}`);
+
+		if (rule.id) {
+			andMatch.push(rule.id === element.id);
+		}
+
+		if (rule.classNames) {
+			andMatch.push(
+				rule.classNames.every(
+					className =>
+						Array.isArray(element.classList)
+							? element.classList.includes(className)
+							: element.classList.contains(className),
+				),
+			);
+		}
+
+		if (rule.tagName) {
+			if (rule.tagName === '*') {
+				andMatch.push(true);
+			} else {
+				andMatch.push(rule.tagName.toLowerCase() === element.nodeName.toLowerCase());
+			}
+		}
+
+		if (rule.attrs) {
+			for (const ruleAttr of rule.attrs) {
+				const value = element.getAttribute(ruleAttr.name);
+				if (value == null) {
+					andMatch.push(false);
+					continue;
+				}
+
+				if (ruleAttr.value == null) {
 					andMatch.push(true);
-					break;
+					continue;
 				}
-				case 'tag': {
-					const matched = element.nodeName.toLowerCase() === selectorRule.name.toLowerCase();
-					// console.log(`${matched} <= "${selectorRule.name}" in ${element.raw}`);
-					andMatch.push(matched);
-					break;
-				}
-				case 'pseudo': {
-					switch (selectorRule.name) {
-						case 'not': {
-							if (!selectorRule.data || typeof selectorRule.data === 'string') {
-								throw new Error(`Unexpected parameters in "not" pseudo selector in "${rawSelector}"`);
-							}
-							andMatch.push(!match(element, selectorRule.data, rawSelector));
-							break;
-						}
-						default: {
-							throw new Error(`Unsupport "${selectorRule.name}" pseudo selector in "${rawSelector}"`);
-						}
+
+				switch (ruleAttr.operator) {
+					case '=': {
+						// if (ruleAttr.ignoreCase) {
+						// 	andMatch.push(value === ruleAttr.value);
+						// } else {
+						// 	andMatch.push(value.toLowerCase() === ruleAttr.value.toLowerCase());
+						// }
+						andMatch.push(value === ruleAttr.value);
+						break;
 					}
-					break;
-				}
-				case 'attribute': {
-					const attr = element.getAttribute(selectorRule.name);
-					if (!attr) {
-						andMatch.push(false);
-						continue;
+					case '~=': {
+						throw new Error(`Unsupport "[attr~=val]" attribute selector in "${rawSelector}"`);
 					}
-					const value = attr.value ? attr.value.raw : '';
-					switch (selectorRule.action) {
-						case 'exists': {
-							andMatch.push(true);
-							break;
-						}
-						case 'equals': {
-							if (selectorRule.ignoreCase) {
-								andMatch.push(value === selectorRule.value);
-							} else {
-								andMatch.push(value.toLowerCase() === selectorRule.value.toLowerCase());
-							}
-							break;
-						}
-						case 'element': {
-							throw new Error(`Unsupport "[attr~=val]" attribute selector in "${rawSelector}"`);
-						}
-						case 'start': {
-							const re = new RegExp(`^${selectorRule.value}`, selectorRule.ignoreCase ? 'i' : undefined);
-							andMatch.push(re.test(value));
-							break;
-						}
-						case 'end': {
-							const re = new RegExp(`${selectorRule.value}$`, selectorRule.ignoreCase ? 'i' : undefined);
-							andMatch.push(re.test(value));
-							break;
-						}
-						case 'any': {
-							const re = new RegExp(selectorRule.value, selectorRule.ignoreCase ? 'i' : undefined);
-							andMatch.push(re.test(value));
-							break;
-						}
-						case 'not': {
-							throw new Error(`Unsupport "[attr!=val]" attribute selector in "${rawSelector}"`);
-						}
-						case 'hyphen': {
-							throw new Error(`Unsupport "[attr|=val]" attribute selector in "${rawSelector}"`);
-						}
+					case '^=': {
+						// const re = new RegExp(`^${ruleAttr.value}`, ruleAttr.ignoreCase ? 'i' : undefined);
+						const re = new RegExp(`^${ruleAttr.value}`);
+						andMatch.push(re.test(value));
+						break;
 					}
-					break;
+					case '$=': {
+						// const re = new RegExp(`${ruleAttr.value}$`, ruleAttr.ignoreCase ? 'i' : undefined);
+						const re = new RegExp(`${ruleAttr.value}$`);
+						andMatch.push(re.test(value));
+						break;
+					}
+					case '*=': {
+						// const re = new RegExp(ruleAttr.value, ruleAttr.ignoreCase ? 'i' : undefined);
+						const re = new RegExp(ruleAttr.value);
+						andMatch.push(re.test(value));
+						break;
+					}
+					// case '!=': {
+					// 	throw new Error(`Unsupport "[attr!=val]" attribute selector in "${rawSelector}"`);
+					// }
+					case '|=': {
+						throw new Error(`Unsupport "[attr|=val]" attribute selector in "${rawSelector}"`);
+					}
 				}
-				default: {
-					throw new Error(`Unsupport ${selectorRule.type} selector in "${rawSelector}"`);
+				break;
+			}
+		}
+
+		if (rule.pseudos) {
+			for (const pseudo of rule.pseudos) {
+				switch (pseudo.name) {
+					case 'not': {
+						if (pseudo.valueType !== 'selector') {
+							throw new Error(`Unexpected parameters in "not" pseudo selector in "${rawSelector}"`);
+						}
+						andMatch.push(!match(element, pseudo.value, rawSelector));
+						break;
+					}
+					default: {
+						throw new Error(`Unsupport "${pseudo.name}" pseudo selector in "${rawSelector}"`);
+					}
 				}
 			}
 		}
-		orMatch.push(andMatch.every(b => b));
+
+		orMatch.push(andMatch.length ? andMatch.every(b => b) : false);
 	}
+
 	return orMatch.some(b => b);
 }
 
