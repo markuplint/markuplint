@@ -27,7 +27,7 @@ export default class Element<T extends RuleConfigValue, O = null> extends Node<T
 		return astChildren.map(node => getNode<typeof node, T, O>(node));
 	}
 
-	public getAttribute(attrName: string) {
+	public getAttributeToken(attrName: string) {
 		for (const attr of this.attributes) {
 			if (attr.name.raw.toLowerCase() === attrName.toLowerCase()) {
 				return attr;
@@ -35,8 +35,17 @@ export default class Element<T extends RuleConfigValue, O = null> extends Node<T
 		}
 	}
 
+	public getAttribute(attrName: string) {
+		for (const attr of this.attributes) {
+			if (attr.name.raw.toLowerCase() === attrName.toLowerCase()) {
+				return attr.value ? attr.value.raw : null;
+			}
+		}
+		return null;
+	}
+
 	public hasAttribute(attrName: string) {
-		return !!this.getAttribute(attrName);
+		return !!this.getAttributeToken(attrName);
 	}
 
 	public matches(selector: string): boolean {
@@ -44,7 +53,7 @@ export default class Element<T extends RuleConfigValue, O = null> extends Node<T
 	}
 
 	public get classList() {
-		const classAttr = this.getAttribute('class');
+		const classAttr = this.getAttributeToken('class');
 		if (classAttr && classAttr.value) {
 			return classAttr.value.raw
 				.split(/\s+/g)
@@ -52,5 +61,13 @@ export default class Element<T extends RuleConfigValue, O = null> extends Node<T
 				.filter(c => c);
 		}
 		return [];
+	}
+
+	public get id() {
+		const idAttr = this.getAttributeToken('id');
+		if (idAttr && idAttr.value) {
+			return idAttr.value.raw;
+		}
+		return '';
 	}
 }
