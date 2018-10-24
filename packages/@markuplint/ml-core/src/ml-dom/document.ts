@@ -40,7 +40,6 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 
 			ruleset.eachNodeRules((selector, ruleName, rule) => {
 				const matched = node.matches(selector);
-				console.log({ node: node.raw, selector, matched });
 				if (matched) {
 					node.rules[ruleName] = rule;
 				}
@@ -53,9 +52,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				if (!(node instanceof Element)) {
 					continue;
 				}
-				console.log({ node: node.raw, selector, ruleName, rule, inheritance });
 				if (node.matches(selector)) {
-					console.log({ node: node.raw, selector });
 					if (inheritance) {
 						syncWalk(node.childNodes, childNode => {
 							childNode.rules[ruleName] = rule;
