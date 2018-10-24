@@ -1,8 +1,7 @@
-import test from 'ava';
-import * as markuplint from '../../../lib/';
-import rule from '../../../lib/rules/markuplint-rule-class-naming';
+import * as markuplint from 'markuplint';
+import rule from './';
 
-test(async (t) => {
+test('pass class name', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
@@ -12,19 +11,19 @@ test(async (t) => {
 		`,
 		{
 			rules: {
-				'class-naming': [
-					'error',
-					'/^c-[a-z]+/',
-				],
+				'class-naming': {
+					severity: 'error',
+					value: '/^c-[a-z]+/',
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.is(r.length, 0);
+	expect(r.length).toBe(0);
 });
 
-test(async (t) => {
+test('unmatched class name', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
@@ -34,19 +33,19 @@ test(async (t) => {
 		`,
 		{
 			rules: {
-				'class-naming': [
-					'error',
-					'/^c-[a-z]+/',
-				],
+				'class-naming': {
+					severity: 'error',
+					value: '/^c-[a-z]+/',
+				},
 			},
 			nodeRules: [
 				{
 					selector: '[class^="c-"]:not([class*="__"])',
 					rules: {
-						'class-naming': [
-							'error',
-							'/^c-[a-z]+__[a-z0-9]+/',
-						],
+						'class-naming': {
+							severity: 'error',
+							value: '/^c-[a-z]+__[a-z0-9]+/',
+						},
 					},
 				},
 			],
@@ -54,23 +53,19 @@ test(async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(
-		r,
-		[
-			{
-				level: 'error',
-				severity: 'error',
-				message: '"c-root" class name is unmatched pattern of "/^c-[a-z]+__[a-z0-9]+/"',
-				line: 2,
-				col: 8,
-				raw: 'class="c-root"',
-				ruleId: 'class-naming',
-			},
-		]
-	);
+	expect(r).toStrictEqual([
+		{
+			severity: 'error',
+			message: '"c-root" class name is unmatched pattern of "/^c-[a-z]+__[a-z0-9]+/"',
+			line: 2,
+			col: 8,
+			raw: 'class="c-root"',
+			ruleId: 'class-naming',
+		},
+	]);
 });
 
-test(async (t) => {
+test('test-name', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
@@ -79,19 +74,19 @@ test(async (t) => {
 		`,
 		{
 			rules: {
-				'class-naming': [
-					'error',
-					'/^c-[a-z]+/',
-				],
+				'class-naming': {
+					severity: 'error',
+					value: '/^c-[a-z]+/',
+				},
 			},
 			childNodeRules: [
 				{
 					selector: '[class^="c-"]:not([class*="__"])',
 					rules: {
-						'class-naming': [
-							'error',
-							'/^c-[a-z]+__[a-z0-9]+/',
-						],
+						'class-naming': {
+							severity: 'error',
+							value: '/^c-[a-z]+__[a-z0-9]+/',
+						},
 					},
 				},
 			],
@@ -99,23 +94,19 @@ test(async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(
-		r,
-		[
-			{
-				level: 'error',
-				severity: 'error',
-				message: '"c-root_x" class name is unmatched pattern of "/^c-[a-z]+__[a-z0-9]+/"',
-				line: 3,
-				col: 9,
-				raw: 'class="c-root_x"',
-				ruleId: 'class-naming',
-			},
-		]
-	);
+	expect(r).toStrictEqual([
+		{
+			severity: 'error',
+			message: '"c-root_x" class name is unmatched pattern of "/^c-[a-z]+__[a-z0-9]+/"',
+			line: 3,
+			col: 9,
+			raw: 'class="c-root_x"',
+			ruleId: 'class-naming',
+		},
+	]);
 });
 
-test(async (t) => {
+test('test-name', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
@@ -129,18 +120,17 @@ test(async (t) => {
 		`,
 		{
 			rules: {
-				'class-naming': [
-					'error',
-					'/^c-[a-z]+/',
-				],
+				'class-naming': {
+					severity: 'error',
+					value: '/^c-[a-z]+/',
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'error',
 			severity: 'error',
 			message: '"hoge" class name is unmatched pattern of "/^c-[a-z]+/"',
 			line: 6,
@@ -151,7 +141,7 @@ test(async (t) => {
 	]);
 });
 
-test(async (t) => {
+test('test-name', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
@@ -165,29 +155,29 @@ test(async (t) => {
 		`,
 		{
 			rules: {
-				'class-naming': [
-					'error',
-					'/^c-[a-z]+/',
-				],
+				'class-naming': {
+					severity: 'error',
+					value: '/^c-[a-z]+/',
+				},
 			},
 			childNodeRules: [
 				{
 					selector: '[class^="c-"]:not([class*="__"])',
 					rules: {
-						'class-naming': [
-							'error',
-							'/^c-[a-z]+__[a-z0-9]+/',
-						],
+						'class-naming': {
+							severity: 'error',
+							value: '/^c-[a-z]+__[a-z0-9]+/',
+						},
 					},
 					inheritance: true,
 				},
 				{
 					selector: 'main',
 					rules: {
-						'class-naming': [
-							'error',
-							'hoge2',
-						],
+						'class-naming': {
+							severity: 'error',
+							value: 'hoge2',
+						},
 					},
 					inheritance: true,
 				},
@@ -196,9 +186,8 @@ test(async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'error',
 			severity: 'error',
 			message: '"hoge" class name is unmatched pattern of "hoge2"',
 			line: 6,
@@ -209,7 +198,7 @@ test(async (t) => {
 	]);
 });
 
-test(async (t) => {
+test('test-name', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
@@ -223,29 +212,29 @@ test(async (t) => {
 		`,
 		{
 			rules: {
-				'class-naming': [
-					'error',
-					'/^c-[a-z]+/',
-				],
+				'class-naming': {
+					severity: 'error',
+					value: '/^c-[a-z]+/',
+				},
 			},
 			childNodeRules: [
 				{
 					selector: '[class^="c-"]:not([class*="__"])',
 					rules: {
-						'class-naming': [
-							'error',
-							'/^c-[a-z]+__[a-z0-9]+/',
-						],
+						'class-naming': {
+							severity: 'error',
+							value: '/^c-[a-z]+__[a-z0-9]+/',
+						},
 					},
 					inheritance: true,
 				},
 				{
 					selector: 'main',
 					rules: {
-						'class-naming': [
-							'error',
-							'/^(?!c-).+$/',
-						],
+						'class-naming': {
+							severity: 'error',
+							value: '/^(?!c-).+$/',
+						},
 					},
 					inheritance: true,
 				},
@@ -254,7 +243,5 @@ test(async (t) => {
 		[rule],
 		'en',
 	);
-	t.is(r.length, 0);
+	expect(r.length).toBe(0);
 });
-
-test('noop', (t) => t.pass());

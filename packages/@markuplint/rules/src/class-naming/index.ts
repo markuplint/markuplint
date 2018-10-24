@@ -16,7 +16,7 @@ export default createRule<Value>({
 				for (const classPattern of classPatterns) {
 					for (const className of node.classList) {
 						if (!match(className, classPattern)) {
-							const attr = node.getAttribute('class');
+							const attr = node.getAttributeToken('class');
 							if (!attr) {
 								continue;
 							}
