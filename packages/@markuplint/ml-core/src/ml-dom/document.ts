@@ -28,6 +28,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	constructor(astNodeList: MLASTNode[], ruleset: Ruleset) {
 		this.nodeList = astNodeList.map(astNode => createNode<MLASTNode, T, O>(astNode, this));
 
+		// add rules to node
 		for (const node of this.nodeList) {
 			ruleset.eachRules((ruleName, rule) => {
 				node.rules[ruleName] = rule;
@@ -38,14 +39,23 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 			}
 
 			ruleset.eachNodeRules((selector, ruleName, rule) => {
-				if (node.matches(selector)) {
+				const matched = node.matches(selector);
+				console.log({ node: node.raw, selector, matched });
+				if (matched) {
 					node.rules[ruleName] = rule;
 				}
 			});
+		}
 
-			// childNodeRules
-			ruleset.eachChildNodeRules((selector, ruleName, rule, inheritance) => {
+		// overwrite rule to child node
+		ruleset.eachChildNodeRules((selector, ruleName, rule, inheritance) => {
+			for (const node of this.nodeList) {
+				if (!(node instanceof Element)) {
+					continue;
+				}
+				console.log({ node: node.raw, selector, ruleName, rule, inheritance });
 				if (node.matches(selector)) {
+					console.log({ node: node.raw, selector });
 					if (inheritance) {
 						syncWalk(node.childNodes, childNode => {
 							childNode.rules[ruleName] = rule;
@@ -56,8 +66,8 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 						}
 					}
 				}
-			});
-		}
+			}
+		});
 	}
 
 	public async walk(walker: Walker<T, O>) {

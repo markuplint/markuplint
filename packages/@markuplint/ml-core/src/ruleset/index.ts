@@ -40,11 +40,9 @@ export default class Ruleset {
 			if (!nodeRule.rules || !nodeRule.selector) {
 				return;
 			}
-			for (const ruleName in nodeRule.rules) {
-				if (nodeRule.hasOwnProperty(ruleName)) {
-					const rule = nodeRule.rules[ruleName];
-					callback(nodeRule.selector, ruleName, rule, !!nodeRule.inheritance);
-				}
+			for (const ruleName of Object.keys(nodeRule.rules)) {
+				const rule = nodeRule.rules[ruleName];
+				callback(nodeRule.selector, ruleName, rule, !!nodeRule.inheritance);
 			}
 		}
 	}
