@@ -11,39 +11,4 @@ export default class Ruleset {
 		this.nodeRules = Object.freeze(config.nodeRules || []);
 		this.childNodeRules = Object.freeze(config.childNodeRules || []);
 	}
-
-	public eachRules(callback: (ruleName: string, rule: Rule) => void) {
-		for (const ruleName in this.rules) {
-			if (this.rules.hasOwnProperty(ruleName)) {
-				const rule = this.rules[ruleName];
-				callback(ruleName, rule);
-			}
-		}
-	}
-
-	public eachNodeRules(callback: (selector: string, ruleName: string, rule: Rule) => void) {
-		for (const nodeRule of this.nodeRules) {
-			if (!nodeRule.rules || !nodeRule.selector) {
-				return;
-			}
-			for (const ruleName of Object.keys(nodeRule.rules)) {
-				const rule = nodeRule.rules[ruleName];
-				callback(nodeRule.selector, ruleName, rule);
-			}
-		}
-	}
-
-	public eachChildNodeRules(
-		callback: (selector: string, ruleName: string, rule: Rule, inheritance: boolean) => void,
-	) {
-		for (const nodeRule of this.childNodeRules) {
-			if (!nodeRule.rules || !nodeRule.selector) {
-				return;
-			}
-			for (const ruleName of Object.keys(nodeRule.rules)) {
-				const rule = nodeRule.rules[ruleName];
-				callback(nodeRule.selector, ruleName, rule, !!nodeRule.inheritance);
-			}
-		}
-	}
 }

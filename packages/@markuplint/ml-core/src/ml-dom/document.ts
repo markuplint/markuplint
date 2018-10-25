@@ -30,41 +30,73 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 
 		// add rules to node
 		for (const node of this.nodeList) {
-			ruleset.eachRules((ruleName, rule) => {
+			// global rules
+			for (const ruleName of Object.keys(ruleset.rules)) {
+				const rule = ruleset.rules[ruleName];
 				node.rules[ruleName] = rule;
-			});
+			}
 
 			if (!(node instanceof Element)) {
 				continue;
 			}
 
-			ruleset.eachNodeRules((selector, ruleName, rule) => {
-				const matched = node.matches(selector);
-				if (matched) {
-					node.rules[ruleName] = rule;
+			// node specs and special rules for node by selector
+			for (const nodeRule of ruleset.nodeRules) {
+				const selector = nodeRule.selector || nodeRule.tagName;
+				if (!selector) {
+					continue;
 				}
-			});
+
+				const matched = node.matches(selector);
+
+				if (!matched) {
+					continue;
+				}
+
+				// specs
+				node.categories = nodeRule.categories || [];
+				node.roles = nodeRule.roles || [];
+				node.obsolete = !!nodeRule.obsolete;
+
+				if (!nodeRule.rules) {
+					continue;
+				}
+
+				// special rules
+				for (const ruleName of Object.keys(nodeRule.rules)) {
+					const rule = nodeRule.rules[ruleName];
+					if (rule) {
+						node.rules[ruleName] = rule;
+					}
+				}
+			}
 		}
 
 		// overwrite rule to child node
-		ruleset.eachChildNodeRules((selector, ruleName, rule, inheritance) => {
-			for (const node of this.nodeList) {
-				if (!(node instanceof Element)) {
-					continue;
-				}
-				if (node.matches(selector)) {
-					if (inheritance) {
-						syncWalk(node.childNodes, childNode => {
-							childNode.rules[ruleName] = rule;
-						});
-					} else {
-						for (const childNode of node.childNodes) {
-							childNode.rules[ruleName] = rule;
+		for (const nodeRule of ruleset.childNodeRules) {
+			if (!nodeRule.rules || !nodeRule.selector) {
+				return;
+			}
+			for (const ruleName of Object.keys(nodeRule.rules)) {
+				const rule = nodeRule.rules[ruleName];
+				for (const node of this.nodeList) {
+					if (!(node instanceof Element)) {
+						continue;
+					}
+					if (node.matches(nodeRule.selector)) {
+						if (nodeRule.inheritance) {
+							syncWalk(node.childNodes, childNode => {
+								childNode.rules[ruleName] = rule;
+							});
+						} else {
+							for (const childNode of node.childNodes) {
+								childNode.rules[ruleName] = rule;
+							}
 						}
 					}
 				}
 			}
-		});
+		}
 	}
 
 	public async walk(walker: Walker<T, O>) {

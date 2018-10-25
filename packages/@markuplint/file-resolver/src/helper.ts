@@ -58,6 +58,8 @@ export async function recursiveLoad(
 			} else {
 				try {
 					const mod: Config = await import(_file);
+					// @ts-ignore
+					delete mod.default;
 					files.add(_file);
 					config = deepAssgin(config, mod);
 				} catch (err) {
