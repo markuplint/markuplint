@@ -1,5 +1,5 @@
 import { Message } from '@markuplint/i18n';
-import { Result, RuleConfigValue, Severity } from '@markuplint/ml-config';
+import { Result, RuleConfigValue, RuleInfo, Severity } from '@markuplint/ml-config';
 import Document from '../ml-dom/document';
 
 export interface MLRuleOptions<T extends RuleConfigValue, O = null> {
@@ -7,6 +7,6 @@ export interface MLRuleOptions<T extends RuleConfigValue, O = null> {
 	defaultLevel?: Severity;
 	defaultValue: T;
 	defaultOptions: O;
-	verify(document: Document<T, O>, message: Message): Promise<Result[]>;
-	fix?(document: Document<T, O>): Promise<void>;
+	verify(document: Document<T, O>, message: Message, globalRule: RuleInfo<T, O>): Promise<Result[]>;
+	fix?(document: Document<T, O>, globalRule: RuleInfo<T, O>): Promise<void>;
 }

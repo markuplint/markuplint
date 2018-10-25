@@ -25,14 +25,18 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		this._f = o.fix;
 	}
 
-	public async verify(document: Document<T, O>, messenger: Messenger): Promise<VerifiedResult[]> {
+	public async verify(
+		document: Document<T, O>,
+		messenger: Messenger,
+		rule: RuleInfo<T, O>,
+	): Promise<VerifiedResult[]> {
 		if (!this._v) {
 			return [];
 		}
 
 		// @ts-ignore
 		document.setRule(this);
-		const results = await this._v(document, messenger.message());
+		const results = await this._v(document, messenger.message(), rule);
 		document.setRule(null);
 
 		return results.map<VerifiedResult>(result => {
@@ -47,14 +51,14 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		});
 	}
 
-	public async fix(document: Document<T, O>): Promise<void> {
+	public async fix(document: Document<T, O>, rule: RuleInfo<T, O>): Promise<void> {
 		if (!this._f) {
 			return;
 		}
 
 		// @ts-ignore
 		document.setRule(this);
-		await this._f(document);
+		await this._f(document, rule);
 		document.setRule(null);
 	}
 

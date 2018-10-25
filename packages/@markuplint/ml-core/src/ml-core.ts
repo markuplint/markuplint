@@ -37,7 +37,7 @@ export class MLCore {
 			if (ruleInfo.disabled) {
 				continue;
 			}
-			const results = await rule.verify(this._document, this._messenger);
+			const results = await rule.verify(this._document, this._messenger, ruleInfo);
 			reports.push(...results);
 		}
 		return reports;
