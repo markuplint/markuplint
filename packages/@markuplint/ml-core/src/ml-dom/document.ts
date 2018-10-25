@@ -22,11 +22,17 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 
 	/**
 	 *
-	 * @param astNodeList node list of markuplint AST
+	 */
+	public isFragment: boolean;
+
+	/**
+	 *
+	 * @param ast node list of markuplint AST
 	 * @param ruleset ruleset object
 	 */
-	constructor(astNodeList: MLASTNode[], ruleset: Ruleset) {
-		this.nodeList = astNodeList.map(astNode => createNode<MLASTNode, T, O>(astNode, this));
+	constructor(ast: MLASTDocument, ruleset: Ruleset) {
+		this.nodeList = ast.nodeList.map(astNode => createNode<MLASTNode, T, O>(astNode, this));
+		this.isFragment = ast.isFragment;
 
 		// add rules to node
 		for (const node of this.nodeList) {
