@@ -84,6 +84,11 @@ export interface MLASTAttr extends MLToken {
 	isInvalid: boolean;
 }
 
+export interface MLASTDocument {
+	nodeList: MLASTNode[];
+	isFragment: boolean;
+}
+
 export interface MLMarkupLanguageParser {
-	parse(sourceCode: string): MLASTNode[];
+	parse(sourceCode: string): MLASTDocument;
 }

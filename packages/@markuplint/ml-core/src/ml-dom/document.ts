@@ -1,4 +1,4 @@
-import { MLASTNode } from '@markuplint/ml-ast';
+import { MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import { MLRule } from '../';
 import Ruleset from '../ruleset';

@@ -1,5 +1,6 @@
 import {
 	MLASTAbstructNode,
+	MLASTDocument,
 	MLASTElement,
 	MLASTInvalidNode,
 	MLASTNode,
@@ -29,7 +30,12 @@ export default function parse(html: string) {
 	const nodeList = flattenNodes(nodeTree, html);
 	// console.dir(nodeList);
 
-	return nodeList;
+	const parsedDoc: MLASTDocument = {
+		nodeList,
+		isFragment,
+	};
+
+	return parsedDoc;
 }
 
 function nodeize(

@@ -83,169 +83,169 @@ describe('isDocumentFragment', () => {
 
 describe('parser', () => {
 	it('<!DOCTYPE html>', () => {
-		const nodeList = HTMLParser.parse('<!DOCTYPE html>');
-		expect(nodeList[0].type).toBe(MLASTNodeType.Doctype);
-		expect(nodeList[1].nodeName).toBe('html');
-		expect(nodeList[2].nodeName).toBe('head');
-		expect(nodeList[3].nodeName).toBe('body');
-		expect(nodeList.length).toBe(4);
+		const doc = HTMLParser.parse('<!DOCTYPE html>');
+		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[1].nodeName).toBe('html');
+		expect(doc.nodeList[2].nodeName).toBe('head');
+		expect(doc.nodeList[3].nodeName).toBe('body');
+		expect(doc.nodeList.length).toBe(4);
 	});
 
 	it('<!DOCTYPE html> ', () => {
-		const nodeList = HTMLParser.parse('<!DOCTYPE html> ');
-		expect(nodeList[0].type).toBe(MLASTNodeType.Doctype);
-		expect(nodeList[1].nodeName).toBe('html');
-		expect(nodeList[2].nodeName).toBe('head');
-		expect(nodeList[3].nodeName).toBe('body');
-		expect(nodeList[4].nodeName).toBe('#text');
-		expect(nodeList.length).toBe(5);
+		const doc = HTMLParser.parse('<!DOCTYPE html> ');
+		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[1].nodeName).toBe('html');
+		expect(doc.nodeList[2].nodeName).toBe('head');
+		expect(doc.nodeList[3].nodeName).toBe('body');
+		expect(doc.nodeList[4].nodeName).toBe('#text');
+		expect(doc.nodeList.length).toBe(5);
 	});
 
 	it('<!DOCTYPE html>\\n', () => {
-		const nodeList = HTMLParser.parse('<!DOCTYPE html>\n');
-		expect(nodeList[0].type).toBe(MLASTNodeType.Doctype);
-		expect(nodeList[1].nodeName).toBe('html');
-		expect(nodeList[2].nodeName).toBe('head');
-		expect(nodeList[3].nodeName).toBe('body');
-		expect(nodeList[4].nodeName).toBe('#text');
-		expect(nodeList[4].raw).toBe('\n');
-		expect(nodeList.length).toBe(5);
+		const doc = HTMLParser.parse('<!DOCTYPE html>\n');
+		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[1].nodeName).toBe('html');
+		expect(doc.nodeList[2].nodeName).toBe('head');
+		expect(doc.nodeList[3].nodeName).toBe('body');
+		expect(doc.nodeList[4].nodeName).toBe('#text');
+		expect(doc.nodeList[4].raw).toBe('\n');
+		expect(doc.nodeList.length).toBe(5);
 	});
 
 	it('<!DOCTYPE html>text', () => {
-		const nodeList = HTMLParser.parse('<!DOCTYPE html>text');
-		expect(nodeList[0].type).toBe(MLASTNodeType.Doctype);
-		expect(nodeList[1].nodeName).toBe('html');
-		expect(nodeList[2].nodeName).toBe('head');
-		expect(nodeList[3].nodeName).toBe('body');
-		expect(nodeList[4].type).toBe(MLASTNodeType.Text);
-		expect(nodeList[4].startCol).toBe(16);
-		expect(nodeList.length).toBe(5);
+		const doc = HTMLParser.parse('<!DOCTYPE html>text');
+		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[1].nodeName).toBe('html');
+		expect(doc.nodeList[2].nodeName).toBe('head');
+		expect(doc.nodeList[3].nodeName).toBe('body');
+		expect(doc.nodeList[4].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[4].startCol).toBe(16);
+		expect(doc.nodeList.length).toBe(5);
 	});
 
 	it('<!DOCTYPE html> text', () => {
-		const nodeList = HTMLParser.parse('<!DOCTYPE html> text');
-		expect(nodeList[0].type).toBe(MLASTNodeType.Doctype);
-		expect(nodeList[1].nodeName).toBe('html');
-		expect(nodeList[2].nodeName).toBe('head');
-		expect(nodeList[3].nodeName).toBe('body');
-		expect(nodeList[4].type).toBe(MLASTNodeType.Text);
-		expect(nodeList[4].raw).toBe(' text');
-		expect(nodeList[4].startCol).toBe(16);
-		expect(nodeList.length).toBe(5);
+		const doc = HTMLParser.parse('<!DOCTYPE html> text');
+		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[1].nodeName).toBe('html');
+		expect(doc.nodeList[2].nodeName).toBe('head');
+		expect(doc.nodeList[3].nodeName).toBe('body');
+		expect(doc.nodeList[4].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[4].raw).toBe(' text');
+		expect(doc.nodeList[4].startCol).toBe(16);
+		expect(doc.nodeList.length).toBe(5);
 	});
 
 	it('<!DOCTYPE html>\\ntext', () => {
-		const nodeList = HTMLParser.parse('<!DOCTYPE html>\ntext');
-		expect(nodeList[0].type).toBe(MLASTNodeType.Doctype);
-		expect(nodeList[1].nodeName).toBe('html');
-		expect(nodeList[2].nodeName).toBe('head');
-		expect(nodeList[3].nodeName).toBe('body');
-		expect(nodeList[4].type).toBe(MLASTNodeType.Text);
-		expect(nodeList[4].raw).toBe('\ntext');
-		expect(nodeList[4].startCol).toBe(16);
-		expect(nodeList.length).toBe(5);
+		const doc = HTMLParser.parse('<!DOCTYPE html>\ntext');
+		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[1].nodeName).toBe('html');
+		expect(doc.nodeList[2].nodeName).toBe('head');
+		expect(doc.nodeList[3].nodeName).toBe('body');
+		expect(doc.nodeList[4].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[4].raw).toBe('\ntext');
+		expect(doc.nodeList[4].startCol).toBe(16);
+		expect(doc.nodeList.length).toBe(5);
 	});
 
 	it('<!DOCTYPE html>\\n<p>text', () => {
-		const nodeList = HTMLParser.parse('<!DOCTYPE html>\n<p>text');
-		expect(nodeList[0].type).toBe(MLASTNodeType.Doctype);
-		expect(nodeList[1].nodeName).toBe('html');
-		expect(nodeList[2].nodeName).toBe('head');
-		expect(nodeList[3].nodeName).toBe('body');
-		expect(nodeList[4].nodeName).toBe('#text');
-		expect(nodeList[5].nodeName).toBe('p');
-		expect(nodeList[6].type).toBe(MLASTNodeType.Text);
-		expect(nodeList[6].raw).toBe('text');
-		expect(nodeList[6].startCol).toBe(4);
-		expect(nodeList.length).toBe(7);
+		const doc = HTMLParser.parse('<!DOCTYPE html>\n<p>text');
+		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[1].nodeName).toBe('html');
+		expect(doc.nodeList[2].nodeName).toBe('head');
+		expect(doc.nodeList[3].nodeName).toBe('body');
+		expect(doc.nodeList[4].nodeName).toBe('#text');
+		expect(doc.nodeList[5].nodeName).toBe('p');
+		expect(doc.nodeList[6].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[6].raw).toBe('text');
+		expect(doc.nodeList[6].startCol).toBe(4);
+		expect(doc.nodeList.length).toBe(7);
 	});
 
 	it('<!DOCTYPE html><p>\\ntext', () => {
-		const nodeList = HTMLParser.parse('<!DOCTYPE html><p>\ntext');
-		expect(nodeList[0].type).toBe(MLASTNodeType.Doctype);
-		expect(nodeList[1].nodeName).toBe('html');
-		expect(nodeList[2].nodeName).toBe('head');
-		expect(nodeList[3].nodeName).toBe('body');
-		expect(nodeList[4].nodeName).toBe('p');
-		expect(nodeList[5].type).toBe(MLASTNodeType.Text);
-		expect(nodeList[5].raw).toBe('\ntext');
-		expect(nodeList[5].startCol).toBe(19);
-		expect(nodeList.length).toBe(6);
+		const doc = HTMLParser.parse('<!DOCTYPE html><p>\ntext');
+		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[1].nodeName).toBe('html');
+		expect(doc.nodeList[2].nodeName).toBe('head');
+		expect(doc.nodeList[3].nodeName).toBe('body');
+		expect(doc.nodeList[4].nodeName).toBe('p');
+		expect(doc.nodeList[5].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[5].raw).toBe('\ntext');
+		expect(doc.nodeList[5].startCol).toBe(19);
+		expect(doc.nodeList.length).toBe(6);
 	});
 
 	it('<!DOCTYPE html>\\n<html>text', () => {
-		const nodeList = HTMLParser.parse('<!DOCTYPE html>\n<html>text');
-		expect(nodeList[0].type).toBe(MLASTNodeType.Doctype);
-		expect(nodeList[1].nodeName).toBe('#text');
-		expect(nodeList[2].nodeName).toBe('html');
-		expect(nodeList[3].nodeName).toBe('head');
-		expect(nodeList[4].nodeName).toBe('body');
-		expect(nodeList[5].type).toBe(MLASTNodeType.Text);
-		expect(nodeList[5].raw).toBe('text');
-		expect(nodeList[5].startCol).toBe(7);
-		expect(nodeList.length).toBe(6);
+		const doc = HTMLParser.parse('<!DOCTYPE html>\n<html>text');
+		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[1].nodeName).toBe('#text');
+		expect(doc.nodeList[2].nodeName).toBe('html');
+		expect(doc.nodeList[3].nodeName).toBe('head');
+		expect(doc.nodeList[4].nodeName).toBe('body');
+		expect(doc.nodeList[5].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[5].raw).toBe('text');
+		expect(doc.nodeList[5].startCol).toBe(7);
+		expect(doc.nodeList.length).toBe(6);
 	});
 
 	it('<!DOCTYPE html><html>\\ntext', () => {
-		const nodeList = HTMLParser.parse('<!DOCTYPE html><html>\ntext');
-		expect(nodeList[0].type).toBe(MLASTNodeType.Doctype);
-		expect(nodeList[1].nodeName).toBe('html');
-		expect(nodeList[2].nodeName).toBe('head');
-		expect(nodeList[3].nodeName).toBe('body');
-		expect(nodeList[4].type).toBe(MLASTNodeType.Text);
-		expect(nodeList[4].raw).toBe('\ntext');
-		expect(nodeList[4].startCol).toBe(22);
-		expect(nodeList.length).toBe(5);
+		const doc = HTMLParser.parse('<!DOCTYPE html><html>\ntext');
+		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[1].nodeName).toBe('html');
+		expect(doc.nodeList[2].nodeName).toBe('head');
+		expect(doc.nodeList[3].nodeName).toBe('body');
+		expect(doc.nodeList[4].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[4].raw).toBe('\ntext');
+		expect(doc.nodeList[4].startCol).toBe(22);
+		expect(doc.nodeList.length).toBe(5);
 	});
 
 	it('empty code', () => {
-		const nodeList = HTMLParser.parse('');
-		expect(nodeList).toStrictEqual([]);
-		expect(nodeList.length).toBe(0);
+		const doc = HTMLParser.parse('');
+		expect(doc.nodeList).toStrictEqual([]);
+		expect(doc.nodeList.length).toBe(0);
 	});
 
 	it('<html>', () => {
-		const nodeList = HTMLParser.parse('<html>');
-		expect(nodeList[0].nodeName).toBe('html');
-		expect(nodeList[1].nodeName).toBe('head');
-		expect(nodeList[2].nodeName).toBe('body');
-		expect(nodeList.length).toBe(3);
+		const doc = HTMLParser.parse('<html>');
+		expect(doc.nodeList[0].nodeName).toBe('html');
+		expect(doc.nodeList[1].nodeName).toBe('head');
+		expect(doc.nodeList[2].nodeName).toBe('body');
+		expect(doc.nodeList.length).toBe(3);
 	});
 
 	it('<html></body>', () => {
-		const nodeList = HTMLParser.parse('<html></body>');
-		expect(nodeList[0].nodeName).toBe('html');
-		expect(nodeList[1].nodeName).toBe('head');
-		expect(nodeList[2].nodeName).toBe('body');
-		expect(nodeList[3].nodeName).toBe('#text');
-		expect(nodeList[3].raw).toBe('</body>');
-		expect(nodeList.length).toBe(4);
+		const doc = HTMLParser.parse('<html></body>');
+		expect(doc.nodeList[0].nodeName).toBe('html');
+		expect(doc.nodeList[1].nodeName).toBe('head');
+		expect(doc.nodeList[2].nodeName).toBe('body');
+		expect(doc.nodeList[3].nodeName).toBe('#text');
+		expect(doc.nodeList[3].raw).toBe('</body>');
+		expect(doc.nodeList.length).toBe(4);
 	});
 
 	it('text only', () => {
-		const nodeList = HTMLParser.parse('text');
-		expect(nodeList[0].nodeName).toBe('#text');
-		expect(nodeList[0].raw).toBe('text');
-		expect(nodeList.length).toBe(1);
+		const doc = HTMLParser.parse('text');
+		expect(doc.nodeList[0].nodeName).toBe('#text');
+		expect(doc.nodeList[0].raw).toBe('text');
+		expect(doc.nodeList.length).toBe(1);
 	});
 
 	it('<html>invalid-before-text<body>text</body>invalid-after-text</html>', () => {
-		const nodeList = HTMLParser.parse('<html>invalid-before-text<body>text</body>invalid-after-text</html>');
-		expect(nodeList[0].nodeName).toBe('html');
-		expect(nodeList[1].nodeName).toBe('head');
-		expect(nodeList[2].nodeName).toBe('body');
-		expect(nodeList[3].nodeName).toBe('#text');
-		expect(nodeList[4].nodeName).toBe('#invalid');
-		expect(nodeList[5].nodeName).toBe('#text');
-		expect(nodeList[6].nodeName).toBe('#invalid');
-		expect(nodeList[7].nodeName).toBe('#text');
-		expect(nodeList[8].nodeName).toBe('html');
-		expect(nodeList.length).toBe(9);
+		const doc = HTMLParser.parse('<html>invalid-before-text<body>text</body>invalid-after-text</html>');
+		expect(doc.nodeList[0].nodeName).toBe('html');
+		expect(doc.nodeList[1].nodeName).toBe('head');
+		expect(doc.nodeList[2].nodeName).toBe('body');
+		expect(doc.nodeList[3].nodeName).toBe('#text');
+		expect(doc.nodeList[4].nodeName).toBe('#invalid');
+		expect(doc.nodeList[5].nodeName).toBe('#text');
+		expect(doc.nodeList[6].nodeName).toBe('#invalid');
+		expect(doc.nodeList[7].nodeName).toBe('#text');
+		expect(doc.nodeList[8].nodeName).toBe('html');
+		expect(doc.nodeList.length).toBe(9);
 	});
 
 	it('standard code', () => {
-		const nodeList = HTMLParser.parse(`
+		const doc = HTMLParser.parse(`
 	<!DOCTYPE html>
 	<html lang="en">
 	<head>
@@ -294,7 +294,7 @@ describe('parser', () => {
 	</body>
 	</html>
 	`);
-		const map = HTMLParser.nodeListToDebugMaps(nodeList);
+		const map = HTMLParser.nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[1:1]>[2:2](0,2)#text: ⏎→',
 			'[2:2]>[2:17](2,17)#doctype: <!DOCTYPE␣html>',
@@ -386,7 +386,7 @@ describe('parser', () => {
 	});
 
 	it('standard code', () => {
-		const nodeList = HTMLParser.parse(`
+		const doc = HTMLParser.parse(`
 	<template>
 		<script>
 			const i = 0;
@@ -426,7 +426,7 @@ describe('parser', () => {
 	text-node
 	</template>
 	`);
-		const map = HTMLParser.nodeListToDebugMaps(nodeList);
+		const map = HTMLParser.nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[1:1]>[2:2](0,2)#text: ⏎→',
 			'[2:2]>[2:12](2,12)template: <template>',

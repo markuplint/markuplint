@@ -1,5 +1,5 @@
 import { Messenger } from '@markuplint/i18n';
-import { MLASTNode, MLMarkupLanguageParser } from '@markuplint/ml-ast';
+import { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
 import { Document } from './ml-dom';
 import { MLRule } from './ml-rule';
@@ -8,7 +8,7 @@ import Ruleset from './ruleset';
 export class MLCore {
 	private _parser: MLMarkupLanguageParser;
 	private _sourceCode: string;
-	private _ast: MLASTNode[];
+	private _ast: MLASTDocument;
 	private _document: Document<RuleConfigValue, unknown>;
 	private _ruleset: Ruleset;
 	private _messenger: Messenger;
