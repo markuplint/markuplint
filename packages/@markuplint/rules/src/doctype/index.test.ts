@@ -1,8 +1,7 @@
-import test from 'ava';
-import * as markuplint from '../../../lib/';
-import rule from '../../../lib/rules/markuplint-rule-doctype';
+import * as markuplint from 'markuplint';
+import rule from './';
 
-test(async (t) => {
+test('valid', async () => {
 	const r = await markuplint.verify(
 		`
 		<!doctype html>
@@ -10,29 +9,28 @@ test(async (t) => {
 		`,
 		{
 			rules: {
-				'doctype': true,
+				doctype: true,
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.is(r.length, 0);
+	expect(r.length).toBe(0);
 });
 
-test(async (t) => {
+test('missing doctype', async () => {
 	const r = await markuplint.verify(
 		'<html></html>',
 		{
 			rules: {
-				'doctype': true,
+				doctype: true,
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'error',
 			line: 1,
@@ -43,21 +41,21 @@ test(async (t) => {
 	]);
 });
 
-test(async (t) => {
+test('document fragment', async () => {
 	const r = await markuplint.verify(
 		'<div></div>',
 		{
 			rules: {
-				'doctype': true,
+				doctype: true,
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.is(r.length, 0);
+	expect(r.length).toBe(0);
 });
 
-test(async (t) => {
+test('test', async () => {
 	const r = await markuplint.verify(
 		`
 		<!doctype html>
@@ -65,15 +63,14 @@ test(async (t) => {
 		`,
 		{
 			rules: {
-				'doctype': 'never',
+				doctype: 'never',
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'error',
 			line: 1,
@@ -84,32 +81,30 @@ test(async (t) => {
 	]);
 });
 
-test(async (t) => {
+test('"never"', async () => {
 	const r = await markuplint.verify(
 		'<html></html>',
 		{
 			rules: {
-				'doctype': 'never',
+				doctype: 'never',
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.is(r.length, 0);
+	expect(r.length).toBe(0);
 });
 
-test(async (t) => {
+test('"never" in document fragment', async () => {
 	const r = await markuplint.verify(
 		'<div></div>',
 		{
 			rules: {
-				'doctype': 'never',
+				doctype: 'never',
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.is(r.length, 0);
+	expect(r.length).toBe(0);
 });
-
-test('noop', (t) => t.pass());

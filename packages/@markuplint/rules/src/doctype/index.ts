@@ -6,22 +6,23 @@ export default createRule<Value>({
 	name: 'doctype',
 	defaultValue: 'always',
 	defaultOptions: null,
-	async verify(document, messages) {
+	async verify(document, messages, rule) {
 		const reports: Result[] = [];
 		const message = messages('error');
 		let has = false;
-		if (document.globalRule && !document.isFragment) {
-			await document.walkOn('Node', async node => {
+
+		if (!document.isFragment) {
+			await document.walk(async node => {
 				if (node instanceof Doctype) {
 					has = true;
 				}
 			});
-			if (document.globalRule.value === 'never') {
+			if (rule.value === 'never') {
 				has = !has;
 			}
 			if (!has) {
 				reports.push({
-					severity: document.globalRule.severity,
+					severity: rule.severity,
 					message,
 					line: 1,
 					col: 1,
