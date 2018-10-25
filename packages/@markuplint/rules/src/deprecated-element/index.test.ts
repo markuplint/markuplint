@@ -43,7 +43,6 @@ test('deprecated', async () => {
 	);
 	expect(r).toStrictEqual([
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Element is deprecated',
 			line: 1,
@@ -52,7 +51,6 @@ test('deprecated', async () => {
 			ruleId: 'deprecated-element',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Element is deprecated',
 			line: 1,
@@ -61,7 +59,6 @@ test('deprecated', async () => {
 			ruleId: 'deprecated-element',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Element is deprecated',
 			line: 1,
