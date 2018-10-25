@@ -2,6 +2,7 @@ import {
 	getAnonymousFile,
 	getFiles,
 	loadConfigFile,
+	recursiveLoad,
 	searchConfigFile,
 	ConfigSet,
 	MLFile,
@@ -125,11 +126,9 @@ export async function exec(options: MLCLIOption) {
 		if (typeof options.config === 'string') {
 			configSet = await loadConfigFile(options.config);
 		} else {
-			configSet = {
-				config: options.config,
-				files: new Set('<no-file>'),
-				errs: [],
-			};
+			const filePath = `${process.cwd()}/__NO_FILE__`;
+			const _files = new Set([filePath]);
+			configSet = await recursiveLoad(options.config, filePath, _files, true);
 		}
 		if (configSet) {
 			for (const file of files) {
