@@ -6,7 +6,7 @@ describe('new Element', () => {
 	it('<div>', async () => {
 		const sourceCode = `<div>text</div>`;
 		const ast = parse(sourceCode);
-		const astNode = ast[0] as MLASTElement;
+		const astNode = ast.nodeList[0] as MLASTElement;
 		// @ts-ignore
 		const documentDummyForTest: MLDOMDocument = {};
 		const element = new Element(astNode, documentDummyForTest);

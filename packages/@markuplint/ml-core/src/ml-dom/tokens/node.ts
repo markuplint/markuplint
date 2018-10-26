@@ -3,10 +3,11 @@ import { RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
 import { RuleInfo } from '../../';
 import Document from '../document';
 import { getNode, setNode } from '../helper/dom-traverser';
-import Indentation from '../indentation';
 import { AnonymousNode, NodeType } from '../types';
 import Element from './element';
+import Indentation from './indentation';
 import OmittedElement from './omitted-element';
+import Text from './text';
 import Token from './token';
 
 export default abstract class Node<
@@ -15,8 +16,6 @@ export default abstract class Node<
 	A extends MLASTAbstructNode = MLASTAbstructNode
 > extends Token<A> {
 	public readonly type: NodeType = 'Node';
-	public prevSyntaxicalNode: Node<T, O, A> | null = null;
-	public indentation: Indentation<T, O> | null = null;
 
 	protected _astToken: A;
 
@@ -44,12 +43,62 @@ export default abstract class Node<
 		return this._astToken.nextNode ? getNode<MLASTNode, T, O>(this._astToken.nextNode) : null;
 	}
 
+	public get syntaxicalParentNode(): Element<T, O> | null {
+		let parentNode: Element<T, O> | OmittedElement<T, O> | null = this.parentNode;
+		while (parentNode && parentNode.type === 'OmittedElement') {
+			parentNode = parentNode.parentNode;
+		}
+		return parentNode as Element<T, O> | null;
+	}
+
+	public get prevToken(): AnonymousNode<T, O> | null {
+		let index = -1;
+		for (let i = 0; i < this._doc.nodeList.length; i++) {
+			const node = this._doc.nodeList[i];
+			if (node && node.type === 'OmittedElement') {
+				continue;
+			}
+			if (node.uuid === this.uuid) {
+				index = i;
+				break;
+			}
+		}
+		if (index === -1) {
+			return null;
+		}
+		const prevToken = this._doc.nodeList[index - 1] || null;
+		return prevToken || null;
+	}
+
 	public toString() {
 		return this.raw;
 	}
 
 	public is(type: NodeType) {
 		return this.type === type;
+	}
+
+	public get indentation(): Indentation<T, O> | null {
+		const prevToken = this.prevToken;
+		if (!prevToken || prevToken.type !== 'Text') {
+			return null;
+		}
+		// @ts-ignore force casting
+		const textNode: Text<T, O> = prevToken;
+
+		if (textNode.isRawText) {
+			return null;
+		}
+
+		const matched = textNode.raw.match(/\r?\n([ \t]*)$/);
+		if (matched) {
+			const spaces = matched[1];
+			if (spaces != null) {
+				return new Indentation(textNode, spaces, this.startLine);
+			}
+		}
+
+		return null;
 	}
 
 	public get rule(): RuleInfo<T, O> {

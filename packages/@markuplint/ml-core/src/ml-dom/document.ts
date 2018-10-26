@@ -13,7 +13,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	/**
 	 * An array of markuplint DOM nodes
 	 */
-	public nodeList: AnonymousNode<T, O>[];
+	public nodeList: ReadonlyArray<AnonymousNode<T, O>>;
 
 	/**
 	 *
@@ -31,7 +31,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	 * @param ruleset ruleset object
 	 */
 	constructor(ast: MLASTDocument, ruleset: Ruleset) {
-		this.nodeList = ast.nodeList.map(astNode => createNode<MLASTNode, T, O>(astNode, this));
+		this.nodeList = Object.freeze(ast.nodeList.map(astNode => createNode<MLASTNode, T, O>(astNode, this)));
 		this.isFragment = ast.isFragment;
 
 		// add rules to node

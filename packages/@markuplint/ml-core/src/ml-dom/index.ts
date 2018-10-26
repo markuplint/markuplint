@@ -1,5 +1,4 @@
 export { default as Document } from './document';
-export { default as Indentation } from './indentation';
 export { AnonymousNode, NodeType } from './types';
 export {
 	Attribute,
@@ -11,4 +10,5 @@ export {
 	Node,
 	OmittedElement,
 	Text,
+	Indentation,
 } from './tokens';

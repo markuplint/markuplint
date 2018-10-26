@@ -8,3 +8,4 @@ export { default as Text } from './text';
 export { default as OmittedElement } from './omitted-element';
 export { default as Element } from './element';
 export { default as ElementCloseTag } from './element-close-tag';
+export { default as Indentation } from './indentation';
