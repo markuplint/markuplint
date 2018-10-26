@@ -11,6 +11,7 @@ import {
 	MLASTText,
 } from '@markuplint/ml-ast/';
 import parse5 from 'parse5';
+import UUID from 'uuid';
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
 import isDocumentFragment from './is-document-fragment';
@@ -48,6 +49,7 @@ function nodeize(
 	prevNode = prevNode || parentNode;
 	if (!p5node.sourceCodeLocation) {
 		const node: MLASTOmittedElement = {
+			uuid: UUID.v4(),
 			raw: '',
 			startOffset: prevNode ? prevNode.endOffset : 0,
 			endOffset: prevNode ? prevNode.endOffset : 0,
@@ -74,6 +76,7 @@ function nodeize(
 	switch (p5node.nodeName) {
 		case '#documentType': {
 			nodes.push({
+				uuid: UUID.v4(),
 				raw,
 				startOffset,
 				endOffset,
@@ -94,6 +97,7 @@ function nodeize(
 		case '#text': {
 			if (parentNode && /^(?:script|style)$/i.test(parentNode.nodeName)) {
 				nodes.push({
+					uuid: UUID.v4(),
 					raw,
 					startOffset,
 					endOffset,
@@ -121,6 +125,7 @@ function nodeize(
 
 					if (token.type === 'text') {
 						const node: MLASTText = {
+							uuid: UUID.v4(),
 							raw: token.raw,
 							startOffset: tokenStartOffset,
 							endOffset: tokenEndOffset,
@@ -140,6 +145,7 @@ function nodeize(
 						prevNode = node;
 					} else {
 						const node: MLASTInvalidNode = {
+							uuid: UUID.v4(),
 							raw: token.raw,
 							startOffset: tokenStartOffset,
 							endOffset: tokenEndOffset,
@@ -165,6 +171,7 @@ function nodeize(
 		}
 		case '#comment': {
 			nodes.push({
+				uuid: UUID.v4(),
 				raw,
 				startOffset,
 				endOffset,
@@ -206,6 +213,7 @@ function nodeize(
 				);
 				const endTagName = endTagTokens.tagName;
 				endTag = {
+					uuid: UUID.v4(),
 					raw: endTagRaw,
 					startOffset: endTagLoc.startOffset,
 					endOffset: endTagLoc.endOffset,
@@ -226,6 +234,7 @@ function nodeize(
 				};
 			}
 			const startTag: MLASTTag = {
+				uuid: UUID.v4(),
 				raw: startTagRaw,
 				startOffset,
 				endOffset: startOffset + startTagRaw.length,
@@ -315,8 +324,10 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 			 * first white spaces
 			 */
 			if (/^\s+$/.test(html)) {
+				const uuid = UUID.v4();
 				const spaces = html;
 				const textNode: MLASTText = {
+					uuid,
 					raw: spaces,
 					startOffset: currentEndOffset,
 					endOffset: currentEndOffset + spaces.length,
@@ -421,9 +432,11 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 			if (!lastTextContent) {
 				return;
 			}
+			const uuid = UUID.v4();
 			const line = lastNode ? lastNode.endLine : 0;
 			const col = lastNode ? lastNode.endCol : 0;
 			const lastTextNode: MLASTText = {
+				uuid,
 				raw: lastTextContent,
 				startOffset: node.endOffset,
 				endOffset: node.endOffset + lastTextContent.length,

@@ -12,10 +12,12 @@
 		"build": "tsc --build"
 	},
 	"devDependencies": {
-		"@types/parse5": "^5.0.0"
+		"@types/parse5": "^5.0.0",
+		"@types/uuid": "^3.4.4"
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "^1.0.0-alpha",
-		"parse5": "^5.1.0"
+		"parse5": "^5.1.0",
+		"uuid": "^3.3.2"
 	}
 }

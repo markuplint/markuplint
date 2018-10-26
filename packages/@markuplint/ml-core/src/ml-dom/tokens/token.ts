@@ -2,6 +2,7 @@ import { MLToken } from '@markuplint/ml-ast';
 import { Rules } from '@markuplint/ml-config';
 
 export default class Token<A extends MLToken> {
+	public readonly uuid: string;
 	public readonly startLine: number;
 	public readonly endLine: number;
 	public readonly startCol: number;
@@ -19,6 +20,7 @@ export default class Token<A extends MLToken> {
 		this._astToken = astToken;
 		this._originRaw = astToken.raw;
 		this._fixed = astToken.raw;
+		this.uuid = astToken.uuid;
 		this.startLine = astToken.startLine;
 		this.endLine = astToken.endLine;
 		this.startCol = astToken.startCol;

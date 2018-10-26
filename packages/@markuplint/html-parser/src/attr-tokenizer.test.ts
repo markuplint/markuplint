@@ -2,7 +2,7 @@ import attrTokenizer from './attr-tokenizer';
 
 describe('attrTokenizer', async () => {
 	it('void attribute', () => {
-		expect(attrTokenizer(' abc', 1, 1, 0)).toStrictEqual({
+		expect(attrTokenizer(' abc', 1, 1, 0)).toMatchObject({
 			raw: 'abc',
 			startLine: 1,
 			endLine: 1,
@@ -40,7 +40,7 @@ describe('attrTokenizer', async () => {
 });
 
 test('normal', async () => {
-	expect(attrTokenizer(' abc="123"', 1, 1, 0)).toStrictEqual({
+	expect(attrTokenizer(' abc="123"', 1, 1, 0)).toMatchObject({
 		startLine: 1,
 		endLine: 1,
 		startCol: 2,
@@ -125,7 +125,7 @@ test('normal', async () => {
 });
 
 test('after line break', async () => {
-	expect(attrTokenizer('\n abc="123"', 1, 1, 0)).toStrictEqual({
+	expect(attrTokenizer('\n abc="123"', 1, 1, 0)).toMatchObject({
 		startLine: 2,
 		endLine: 2,
 		startCol: 2,
@@ -224,7 +224,7 @@ test('after line break', async () => {
 });
 
 // test('single quote', t => {
-// 	expect(attrTokenizer("  q='a'", 1, 1, 0)).toStrictEqual({
+// 	expect(attrTokenizer("  q='a'", 1, 1, 0)).toMatchObject({
 // 		startLine: 1,
 // 		endLine: 1,
 // 		startCol: 3,
@@ -266,7 +266,7 @@ test('after line break', async () => {
 // });
 
 // test('no quote', t => {
-// 	expect(attrTokenizer('q=a', 1, 1, 0)).toStrictEqual({
+// 	expect(attrTokenizer('q=a', 1, 1, 0)).toMatchObject({
 // 		startLine: 1,
 // 		endLine: 1,
 // 		startCol: 1,
@@ -308,7 +308,7 @@ test('after line break', async () => {
 // });
 
 // test('empty', t => {
-// 	expect(attrTokenizer('q', 1, 1, 0)).toStrictEqual({
+// 	expect(attrTokenizer('q', 1, 1, 0)).toMatchObject({
 // 		startLine: 1,
 // 		endLine: 1,
 // 		startCol: 1,
@@ -332,7 +332,7 @@ test('after line break', async () => {
 // });
 
 // test('invalid: no value', t => {
-// 	expect(attrTokenizer('q=', 1, 1, 0)).toStrictEqual({
+// 	expect(attrTokenizer('q=', 1, 1, 0)).toMatchObject({
 // 		startLine: 1,
 // 		endLine: 1,
 // 		startCol: 1,
@@ -364,7 +364,7 @@ test('after line break', async () => {
 // });
 
 // test('spaces', t => {
-// 	expect(attrTokenizer('abc  =  "efg"', 1, 1, 0)).toStrictEqual({
+// 	expect(attrTokenizer('abc  =  "efg"', 1, 1, 0)).toMatchObject({
 // 		startLine: 1,
 // 		endLine: 1,
 // 		startCol: 1,
@@ -422,7 +422,7 @@ test('after line break', async () => {
 // 			1,
 // 			0,
 // 		),
-// 	).toStrictEqual({
+// 	).toMatchObject({
 // 		startLine: 2,
 // 		endLine: 10,
 // 		startCol: 2,

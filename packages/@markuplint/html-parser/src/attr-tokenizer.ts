@@ -1,4 +1,5 @@
 import { MLASTAttr, MLToken } from '@markuplint/ml-ast';
+import UUID from 'uuid';
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
 
@@ -80,6 +81,7 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 	}
 
 	return {
+		uuid: UUID.v4(),
 		raw: attrToken.raw,
 		startOffset: attrToken.startOffset,
 		endOffset: attrToken.endOffset,
@@ -102,6 +104,7 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 function tokenizer(raw: string | null, line: number, col: number, startOffset: number): MLToken | null {
 	if (raw != null) {
 		return {
+			uuid: UUID.v4(),
 			raw,
 			startLine: line,
 			endLine: getEndLine(raw, line),

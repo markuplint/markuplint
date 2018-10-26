@@ -1,4 +1,5 @@
 export interface MLToken {
+	uuid: string;
 	raw: string;
 	startOffset: number;
 	endOffset: number;

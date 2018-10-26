@@ -1,28 +1,28 @@
 import parseRawTag from './parse-raw-tag';
 
 test('tag only', () => {
-	expect(parseRawTag('<div>', 1, 1, 0)).toStrictEqual({
+	expect(parseRawTag('<div>', 1, 1, 0)).toMatchObject({
 		tagName: 'div',
 		attrs: [],
 	});
 });
 
 test('tag only has space', () => {
-	expect(parseRawTag('<div >', 1, 1, 0)).toStrictEqual({
+	expect(parseRawTag('<div >', 1, 1, 0)).toMatchObject({
 		tagName: 'div',
 		attrs: [],
 	});
 });
 
 test('tag only has spaces', () => {
-	expect(parseRawTag('<div  >', 1, 1, 0)).toStrictEqual({
+	expect(parseRawTag('<div  >', 1, 1, 0)).toMatchObject({
 		tagName: 'div',
 		attrs: [],
 	});
 });
 
 test('has attribute', () => {
-	expect(parseRawTag('<div a>', 1, 1, 0)).toStrictEqual({
+	expect(parseRawTag('<div a>', 1, 1, 0)).toMatchObject({
 		tagName: 'div',
 		attrs: [
 			{
@@ -64,7 +64,7 @@ test('has attribute', () => {
 });
 
 test('2 attributes', () => {
-	expect(parseRawTag('<div b c>', 1, 1, 0)).toStrictEqual({
+	expect(parseRawTag('<div b c>', 1, 1, 0)).toMatchObject({
 		tagName: 'div',
 		attrs: [
 			{
@@ -152,7 +152,7 @@ a>`,
 			1,
 			0,
 		),
-	).toStrictEqual({
+	).toMatchObject({
 		tagName: 'div',
 		attrs: [
 			{
@@ -204,7 +204,7 @@ test('has multiple line breaks', () => {
 			1,
 			0,
 		),
-	).toStrictEqual({
+	).toMatchObject({
 		tagName: 'div',
 		attrs: [
 			{
@@ -280,7 +280,7 @@ test('after line break', async () => {
 // 			1,
 // 			0,
 // 		),
-// 	).toStrictEqual({
+// 	).toMatchObject({
 // 		tagName: 'div',
 // 		attrs: [
 // 			{
@@ -526,7 +526,7 @@ c"
 			1,
 			0,
 		),
-	).toStrictEqual({
+	).toMatchObject({
 		tagName: 'div',
 		attrs: [
 			{
@@ -616,35 +616,35 @@ c"
 });
 
 test('void element', () => {
-	expect(parseRawTag('<img/>', 1, 1, 0)).toStrictEqual({
+	expect(parseRawTag('<img/>', 1, 1, 0)).toMatchObject({
 		tagName: 'img',
 		attrs: [],
 	});
 });
 
 test('void element', () => {
-	expect(parseRawTag('<void />', 1, 1, 0)).toStrictEqual({
+	expect(parseRawTag('<void />', 1, 1, 0)).toMatchObject({
 		tagName: 'void',
 		attrs: [],
 	});
 });
 
 test('namespace', () => {
-	expect(parseRawTag('<ns:div>', 1, 1, 0)).toStrictEqual({
+	expect(parseRawTag('<ns:div>', 1, 1, 0)).toMatchObject({
 		tagName: 'ns:div',
 		attrs: [],
 	});
 });
 
 test('custom element', () => {
-	expect(parseRawTag('<a😁-element>', 1, 1, 0)).toStrictEqual({
+	expect(parseRawTag('<a😁-element>', 1, 1, 0)).toMatchObject({
 		tagName: 'a😁-element',
 		attrs: [],
 	});
 });
 
 test('custom element with full-width space', () => {
-	expect(parseRawTag('<a　-element>', 1, 1, 0)).toStrictEqual({
+	expect(parseRawTag('<a　-element>', 1, 1, 0)).toMatchObject({
 		tagName: 'a　-element',
 		attrs: [],
 	});
