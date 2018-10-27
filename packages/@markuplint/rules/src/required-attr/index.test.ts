@@ -1,8 +1,7 @@
-import test from 'ava';
-import * as markuplint from '../../../lib/';
-import rule from '../../../lib/rules/markuplint-rule-required-attr';
+import * as markuplint from 'markuplint';
+import rule from './';
 
-test('warns if specified attribute is not appeared', async (t) => {
+test('warns if specified attribute is not appeared', async () => {
 	const r = await markuplint.verify(
 		'<img src="/path/to/image.png">',
 		{
@@ -13,7 +12,10 @@ test('warns if specified attribute is not appeared', async (t) => {
 				{
 					tagName: 'img',
 					rules: {
-						'required-attr': ['error', 'alt'],
+						'required-attr': {
+							severity: 'error',
+							value: 'alt',
+						},
 					},
 				},
 			],
@@ -22,12 +24,11 @@ test('warns if specified attribute is not appeared', async (t) => {
 		'en',
 	);
 
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
 			col: 1,
-			level: 'error',
 			line: 1,
-			message: 'Required \'alt\' on \'<img>\'',
+			message: "Required 'alt' on '<img>'",
 			raw: '<img src="/path/to/image.png">',
 			ruleId: 'required-attr',
 			severity: 'error',
@@ -35,7 +36,7 @@ test('warns if specified attribute is not appeared', async (t) => {
 	]);
 });
 
-test('multiple required attributes', async (t) => {
+test('multiple required attributes', async () => {
 	const r = await markuplint.verify(
 		'<img src="/path/to/image.png">',
 		{
@@ -46,10 +47,10 @@ test('multiple required attributes', async (t) => {
 				{
 					tagName: 'img',
 					rules: {
-						'required-attr': [
-							'error',
-							['width', 'height', 'alt'],
-						],
+						'required-attr': {
+							severity: 'error',
+							value: ['width', 'height', 'alt'],
+						},
 					},
 				},
 			],
@@ -58,11 +59,10 @@ test('multiple required attributes', async (t) => {
 		'en',
 	);
 
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
 			severity: 'error',
-			level: 'error',
-			message: 'Required \'width\' on \'<img>\'',
+			message: "Required 'width' on '<img>'",
 			line: 1,
 			col: 1,
 			raw: '<img src="/path/to/image.png">',
@@ -70,8 +70,7 @@ test('multiple required attributes', async (t) => {
 		},
 		{
 			severity: 'error',
-			level: 'error',
-			message: 'Required \'height\' on \'<img>\'',
+			message: "Required 'height' on '<img>'",
 			line: 1,
 			col: 1,
 			raw: '<img src="/path/to/image.png">',
@@ -79,8 +78,7 @@ test('multiple required attributes', async (t) => {
 		},
 		{
 			severity: 'error',
-			level: 'error',
-			message: 'Required \'alt\' on \'<img>\'',
+			message: "Required 'alt' on '<img>'",
 			line: 1,
 			col: 1,
 			raw: '<img src="/path/to/image.png">',
