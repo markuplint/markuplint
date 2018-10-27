@@ -1,6 +1,9 @@
-import test from 'ava';
-// import * as markuplint from '../../../lib/';
-// import rule from '../../../lib/rules/markuplint-rule-permitted-role';
+import * as markuplint from 'markuplint';
+import rule from './';
+
+test('no-test', () => {
+	expect(true);
+});
 
 // test('', async (t) => {
 // 	const r = await markuplint.verify(
@@ -41,5 +44,3 @@ import test from 'ava';
 // 	);
 // 	t.is(r[0].message, 'Values allowed for "role" attributes are "menuitemcheckbox", "switch", "button", "option"');
 // });
-
-test('noop', (t) => t.pass());
