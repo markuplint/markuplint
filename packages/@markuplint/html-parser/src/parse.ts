@@ -18,12 +18,13 @@ import isDocumentFragment from './is-document-fragment';
 import parseRawTag from './parse-raw-tag';
 import tagSplitter from './tag-splitter';
 
+const P5_OPTIONS = { sourceCodeLocationInfo: true };
+
 export default function parse(html: string) {
 	const isFragment = isDocumentFragment(html);
-	const p5options = { sourceCodeLocationInfo: true };
 	const doc = isFragment
-		? (parse5.parseFragment(html, p5options) as P5Fragment)
-		: (parse5.parse(html, p5options) as P5Document);
+		? (parse5.parseFragment(html, P5_OPTIONS) as P5Fragment)
+		: (parse5.parse(html, P5_OPTIONS) as P5Document);
 
 	const nodeTree: MLASTNode[] = traverse(doc, null, html);
 	// console.dir(nodeTree);
@@ -73,6 +74,7 @@ function nodeize(
 	const { startOffset, endOffset, startLine, endLine, startCol, endCol } = p5node.sourceCodeLocation;
 	const raw = rawHtml.slice(startOffset, endOffset || startOffset);
 	const nextNode = null;
+	// console.log({ name: p5node.nodeName, raw, l: endOffset - startOffset });
 	switch (p5node.nodeName) {
 		case '#documentType': {
 			nodes.push({
@@ -270,7 +272,7 @@ function traverse(
 ): MLASTNode[] {
 	const nodeList: MLASTNode[] = [];
 
-	const childNodes: P5Node[] = rootNode.content ? rootNode.content.childNodes : rootNode.childNodes;
+	const childNodes: P5Node[] = getChildNodes(rootNode);
 
 	let prev: MLASTNode | null = null;
 	for (const p5node of childNodes) {
@@ -488,6 +490,39 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 	});
 
 	return result;
+}
+
+/**
+ * getChildNodes
+ *
+ * - If node has "content" property then parse as document fragment.
+ * - If node is <noscript> then that childNodes is a TextNode. But parse as document fragment it for disabled script.
+ */
+function getChildNodes(rootNode: P5Node | P5Document | P5Fragment): P5Node[] {
+	if (rootNode.nodeName === 'noscript') {
+		const textNode = rootNode.childNodes[0];
+		if (!textNode || textNode.nodeName !== '#text') {
+			return [];
+		}
+		// @ts-ignore
+		const html: string = textNode.value;
+
+		// @ts-ignore
+		const { startOffset, startLine, startCol } = rootNode.sourceCodeLocation;
+
+		const breakCount = startLine - 1;
+		const indentWidth = startCol - 1;
+		const spaces =
+			' '.repeat(startOffset - Math.max(breakCount, 0) - Math.max(indentWidth, 0)) +
+			'\n'.repeat(breakCount) +
+			' '.repeat(indentWidth);
+
+		const fragment = parse5.parseFragment(`${spaces}<x-script>${html}</x-script>`, P5_OPTIONS) as P5Fragment;
+		const childNodes = fragment.childNodes[spaces ? 1 : 0].childNodes;
+
+		return childNodes;
+	}
+	return rootNode.content ? rootNode.content.childNodes : rootNode.childNodes;
 }
 
 function isInvalidNode(node: MLASTAbstructNode) {

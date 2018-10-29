@@ -1,8 +1,7 @@
-import test from 'ava';
-import * as markuplint from '../../../lib';
-import rule from '../../../lib/rules/markuplint-rule-parse-error';
+import * as markuplint from 'markuplint';
+import rule from './';
 
-test(async (t) => {
+test('test', async () => {
 	const r = await markuplint.verify(
 		`
 		<!doctype html>
@@ -55,12 +54,15 @@ test(async (t) => {
 			</body>
 		</html>
 		`,
-		{rules: {'parse-error': true}},
-		[rule]
-	);
-	t.deepEqual(r, [
 		{
-			level: 'error',
+			rules: {
+				'parse-error': true,
+			},
+		},
+		[rule],
+	);
+	expect(r).toStrictEqual([
+		{
 			severity: 'error',
 			message: 'パースできない不正なノードです。',
 			line: 38,
@@ -69,7 +71,6 @@ test(async (t) => {
 			ruleId: 'parse-error',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'パースできない不正なノードです。',
 			line: 42,
@@ -78,7 +79,6 @@ test(async (t) => {
 			ruleId: 'parse-error',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'パースできない不正なノードです。',
 			line: 45,
@@ -89,15 +89,18 @@ test(async (t) => {
 	]);
 });
 
-test(async (t) => {
+test('test', async () => {
 	const r = await markuplint.verify(
 		'<html>invalid-before-text<body>text</body>invalid-after-text</html>',
-		{rules: {'parse-error': true}},
-		[rule]
-	);
-	t.deepEqual(r, [
 		{
-			level: 'error',
+			rules: {
+				'parse-error': true,
+			},
+		},
+		[rule],
+	);
+	expect(r).toStrictEqual([
+		{
 			severity: 'error',
 			message: '"body"要素はDOMツリー上に既に暗黙的に生成されています。',
 			line: 1,
@@ -106,7 +109,6 @@ test(async (t) => {
 			ruleId: 'parse-error',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'パースできない不正なノードです。',
 			line: 1,
@@ -117,13 +119,15 @@ test(async (t) => {
 	]);
 });
 
-test(async (t) => {
+test('test', async () => {
 	const r = await markuplint.verify(
 		'<noscript><hoge></noscript>',
-		{rules: {'parse-error': true}},
-		[rule]
+		{
+			rules: {
+				'parse-error': true,
+			},
+		},
+		[rule],
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
-
-test('noop', (t) => t.pass());

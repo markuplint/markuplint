@@ -385,7 +385,7 @@ describe('parser', () => {
 		]);
 	});
 
-	it('standard code', () => {
+	it('<template>', () => {
 		const doc = HTMLParser.parse(`
 	<template>
 		<script>
@@ -494,6 +494,32 @@ describe('parser', () => {
 			'[37:8]>[39:2](511,524)#text: ⏎→text-node⏎→',
 			'[39:2]>[39:13](524,535)template: </template>',
 			'[39:13]>[40:2](535,537)#text: ⏎→',
+		]);
+	});
+
+	it('<noscript>', () => {
+		const doc = HTMLParser.parse(`
+	<noscript>
+		<div>test</div>
+		<expected>
+		</expected2>
+	</noscript>
+	`);
+		const map = HTMLParser.nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[2:2](0,2)#text: ⏎→',
+			'[2:2]>[2:12](2,12)noscript: <noscript>',
+			'[2:12]>[3:3](12,15)#text: ⏎→→',
+			'[3:3]>[3:8](15,20)div: <div>',
+			'[3:8]>[3:12](20,24)#text: test',
+			'[3:12]>[3:18](24,30)div: </div>',
+			'[3:18]>[4:3](30,33)#text: ⏎→→',
+			'[4:3]>[4:13](33,43)expected: <expected>',
+			'[4:13]>[5:3](43,46)#text: ⏎→→',
+			'[5:3]>[5:15](46,58)#invalid: </expected2>',
+			'[5:15]>[6:2](58,60)#text: ⏎→',
+			'[6:2]>[6:13](60,71)noscript: </noscript>',
+			'[6:13]>[7:2](71,73)#text: ⏎→',
 		]);
 	});
 });
