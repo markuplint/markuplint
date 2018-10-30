@@ -22,4 +22,8 @@ export default class ElementCloseTag<T extends RuleConfigValue, O = null> extend
 		// @ts-ignore
 		setNode(astNode, this);
 	}
+
+	public get rule() {
+		return this.startTag.rule;
+	}
 }
