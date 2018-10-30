@@ -1,8 +1,7 @@
-import test from 'ava';
-import * as markuplint from '../../../lib/';
-import rule from '../../../lib/rules/markuplint-rule-indentation';
+import * as markuplint from 'markuplint';
+import rule from './';
 
-test('tab', async (t) => {
+test('tab', async () => {
 	const r = await markuplint.verify(
 		`
 		<div>
@@ -12,16 +11,19 @@ test('tab', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['error', 'tab'],
+				indentation: {
+					severity: 'error',
+					value: 'tab',
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('tab', async (t) => {
+test('tab', async () => {
 	const r = await markuplint.verify(
 		`
     <div>
@@ -31,15 +33,17 @@ test('tab', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['error', 'tab'],
+				indentation: {
+					severity: 'error',
+					value: 'tab',
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 2,
@@ -48,7 +52,6 @@ test('tab', async (t) => {
 			ruleId: 'indentation',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 3,
@@ -57,7 +60,6 @@ test('tab', async (t) => {
 			ruleId: 'indentation',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 4,
@@ -66,7 +68,6 @@ test('tab', async (t) => {
 			ruleId: 'indentation',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 5,
@@ -77,7 +78,7 @@ test('tab', async (t) => {
 	]);
 });
 
-test('tab', async (t) => {
+test('tab', async () => {
 	const r = await markuplint.verify(
 		`
     <div>
@@ -88,15 +89,17 @@ test('tab', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['error', 'tab'],
+				indentation: {
+					severity: 'error',
+					value: 'tab',
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 2,
@@ -105,7 +108,6 @@ test('tab', async (t) => {
 			ruleId: 'indentation',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 4,
@@ -114,7 +116,6 @@ test('tab', async (t) => {
 			ruleId: 'indentation',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Indentation must be tab',
 			line: 6,
@@ -125,7 +126,7 @@ test('tab', async (t) => {
 	]);
 });
 
-test('tab', async (t) => {
+test('tab', async () => {
 	const r = await markuplint.verify(
 		`
     <div>
@@ -141,10 +142,10 @@ test('tab', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('tab', async (t) => {
+test('tab', async () => {
 	const r = await markuplint.verify(
 		`
     <div>
@@ -154,16 +155,19 @@ test('tab', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['error', 2],
+				indentation: {
+					severity: 'error',
+					value: 2,
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('tab', async (t) => {
+test('tab', async () => {
 	const r = await markuplint.verify(
 		`
 	<div>
@@ -173,15 +177,17 @@ test('tab', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['error', 4],
+				indentation: {
+					severity: 'error',
+					value: 4,
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Indentation must be space',
 			line: 2,
@@ -190,7 +196,6 @@ test('tab', async (t) => {
 			ruleId: 'indentation',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Indentation must be space',
 			line: 3,
@@ -199,7 +204,6 @@ test('tab', async (t) => {
 			ruleId: 'indentation',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Indentation must be space',
 			line: 4,
@@ -208,7 +212,6 @@ test('tab', async (t) => {
 			ruleId: 'indentation',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Indentation must be space',
 			line: 5,
@@ -219,7 +222,7 @@ test('tab', async (t) => {
 	]);
 });
 
-test('tab', async (t) => {
+test('tab', async () => {
 	const r = await markuplint.verify(
 		`
    <div>
@@ -229,15 +232,20 @@ test('tab', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['error', 2, { 'indent-nested-nodes': false }],
+				indentation: {
+					severity: 'error',
+					value: 2,
+					option: {
+						'indent-nested-nodes': false,
+					},
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Indentation must be 2 width spaces',
 			line: 2,
@@ -246,7 +254,6 @@ test('tab', async (t) => {
 			ruleId: 'indentation',
 		},
 		{
-			level: 'error',
 			severity: 'error',
 			message: 'Indentation must be 2 width spaces',
 			line: 5,
@@ -257,7 +264,7 @@ test('tab', async (t) => {
 	]);
 });
 
-test('tab', async (t) => {
+test('tab', async () => {
 	const r = await markuplint.verify(
 		`
    <div>
@@ -267,16 +274,19 @@ test('tab', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['error', 3],
+				indentation: {
+					severity: 'error',
+					value: 3,
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('tab', async (t) => {
+test('tab', async () => {
 	const r = await markuplint.verify(
 		`
    <div>
@@ -286,15 +296,20 @@ test('tab', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['warning', 3, { 'indent-nested-nodes': false }],
+				indentation: {
+					severity: 'warning',
+					value: 3,
+					option: {
+						'indent-nested-nodes': false,
+					},
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			line: 4,
 			col: 1,
@@ -305,7 +320,7 @@ test('tab', async (t) => {
 	]);
 });
 
-test('rawText', async (t) => {
+test('rawText', async () => {
 	const r = await markuplint.verify(
 		`
 	<script>
@@ -320,10 +335,10 @@ test('rawText', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('options - align: false', async (t) => {
+test('options - align: false', async () => {
 	const r = await markuplint.verify(
 		`
 	<div>
@@ -331,16 +346,22 @@ test('options - align: false', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['warning', 'tab', { alignment: false }],
+				indentation: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						alignment: false,
+					},
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('options - align: true', async (t) => {
+test('options - align: true', async () => {
 	const r = await markuplint.verify(
 		`
 	<div>
@@ -348,15 +369,20 @@ test('options - align: true', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['warning', 'tab', { alignment: true }],
+				indentation: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						alignment: true,
+					},
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			line: 3,
 			col: 1,
@@ -367,7 +393,7 @@ test('options - align: true', async (t) => {
 	]);
 });
 
-test('options - align: true', async (t) => {
+test('options - align: true', async () => {
 	const r = await markuplint.verify(
 		`
 	<div>
@@ -375,15 +401,20 @@ test('options - align: true', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['warning', 'tab', { alignment: true }],
+				indentation: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						alignment: true,
+					},
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			line: 3,
 			col: 1,
@@ -394,55 +425,73 @@ test('options - align: true', async (t) => {
 	]);
 });
 
-test('options - align: true', async (t) => {
+test('options - align: true', async () => {
 	const r = await markuplint.verify(
 		`
 	<div>	</div>
 		`,
 		{
 			rules: {
-				indentation: ['warning', 'tab', { alignment: true }],
+				indentation: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						alignment: true,
+					},
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('options - align: true', async (t) => {
+test('options - align: true', async () => {
 	const r = await markuplint.verify(
 		`
 	<div> </div>
 		`,
 		{
 			rules: {
-				indentation: ['warning', 'tab', { alignment: true }],
+				indentation: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						alignment: true,
+					},
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('options - align: true', async (t) => {
+test('options - align: true', async () => {
 	const r = await markuplint.verify(
 		`
 		<div> text </div>
 		`,
 		{
 			rules: {
-				indentation: ['warning', 'tab', { alignment: true }],
+				indentation: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						alignment: true,
+					},
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('options - indent-nested-nodes: true', async (t) => {
+test('options - indent-nested-nodes: true', async () => {
 	const r = await markuplint.verify(
 		`
 		<div>
@@ -451,15 +500,20 @@ test('options - indent-nested-nodes: true', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['warning', 'tab', { 'indent-nested-nodes': true }],
+				indentation: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						'indent-nested-nodes': true,
+					},
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			line: 3,
 			col: 1,
@@ -468,7 +522,6 @@ test('options - indent-nested-nodes: true', async (t) => {
 			ruleId: 'indentation',
 		},
 		{
-			level: 'warning',
 			severity: 'warning',
 			line: 4,
 			col: 1,
@@ -479,7 +532,7 @@ test('options - indent-nested-nodes: true', async (t) => {
 	]);
 });
 
-test('options - indent-nested-nodes: true', async (t) => {
+test('options - indent-nested-nodes: true', async () => {
 	const r = await markuplint.verify(
 		`
 		<div>
@@ -488,15 +541,20 @@ test('options - indent-nested-nodes: true', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['warning', 'tab', { 'indent-nested-nodes': true }],
+				indentation: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						'indent-nested-nodes': true,
+					},
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			line: 3,
 			col: 1,
@@ -507,7 +565,7 @@ test('options - indent-nested-nodes: true', async (t) => {
 	]);
 });
 
-test('options - indent-nested-nodes: true', async (t) => {
+test('options - indent-nested-nodes: true', async () => {
 	const r = await markuplint.verify(
 		`
 		<div>
@@ -516,15 +574,20 @@ test('options - indent-nested-nodes: true', async (t) => {
 		`,
 		{
 			rules: {
-				indentation: ['warning', 'tab', { 'indent-nested-nodes': true }],
+				indentation: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						'indent-nested-nodes': true,
+					},
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			line: 3,
 			col: 1,
@@ -535,7 +598,7 @@ test('options - indent-nested-nodes: true', async (t) => {
 	]);
 });
 
-test('options - indent-nested-nodes: true', async (t) => {
+test('options - indent-nested-nodes: true', async () => {
 	const r = await markuplint.verify(
 		`<html>
 <body></body>
@@ -548,9 +611,8 @@ test('options - indent-nested-nodes: true', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			line: 2,
 			col: 1,
@@ -561,7 +623,7 @@ test('options - indent-nested-nodes: true', async (t) => {
 	]);
 });
 
-test('options - indent-nested-nodes: true', async (t) => {
+test('options - indent-nested-nodes: true', async () => {
 	const r = await markuplint.verify(
 		`<html>
 <body>
@@ -577,7 +639,13 @@ test('options - indent-nested-nodes: true', async (t) => {
 				{
 					tagName: 'body',
 					rules: {
-						indentation: ['warning', 'tab', { 'indent-nested-nodes': false }],
+						indentation: {
+							severity: 'warning',
+							value: 'tab',
+							option: {
+								'indent-nested-nodes': false,
+							},
+						},
 					},
 				},
 			],
@@ -585,10 +653,10 @@ test('options - indent-nested-nodes: true', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('options - indent-nested-nodes: true', async (t) => {
+test('options - indent-nested-nodes: true', async () => {
 	const r = await markuplint.verify(
 		`<html>
 	<body>
@@ -604,7 +672,13 @@ test('options - indent-nested-nodes: true', async (t) => {
 				{
 					tagName: 'body',
 					rules: {
-						indentation: ['warning', 'tab', { 'indent-nested-nodes': false }],
+						indentation: {
+							severity: 'warning',
+							value: 'tab',
+							option: {
+								'indent-nested-nodes': false,
+							},
+						},
 					},
 				},
 			],
@@ -612,10 +686,10 @@ test('options - indent-nested-nodes: true', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('options - indent-nested-nodes: true', async (t) => {
+test('options - indent-nested-nodes: true', async () => {
 	const r = await markuplint.verify(
 		`<html>
 	<body>
@@ -631,7 +705,13 @@ test('options - indent-nested-nodes: true', async (t) => {
 				{
 					tagName: 'body',
 					rules: {
-						indentation: ['warning', 'tab', { 'indent-nested-nodes': 'never' }],
+						indentation: {
+							severity: 'warning',
+							value: 'tab',
+							option: {
+								'indent-nested-nodes': 'never',
+							},
+						},
 					},
 				},
 			],
@@ -639,9 +719,8 @@ test('options - indent-nested-nodes: true', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			line: 2,
 			col: 1,
@@ -650,7 +729,6 @@ test('options - indent-nested-nodes: true', async (t) => {
 			ruleId: 'indentation',
 		},
 		{
-			level: 'warning',
 			severity: 'warning',
 			line: 5,
 			col: 1,
@@ -661,7 +739,7 @@ test('options - indent-nested-nodes: true', async (t) => {
 	]);
 });
 
-test('options - indent-nested-nodes: true', async (t) => {
+test('options - indent-nested-nodes: true', async () => {
 	const r = await markuplint.verify(
 		`\t<html>
 <body>
@@ -677,7 +755,13 @@ test('options - indent-nested-nodes: true', async (t) => {
 				{
 					tagName: 'body',
 					rules: {
-						indentation: ['warning', 'tab', { 'indent-nested-nodes': 'never' }],
+						indentation: {
+							severity: 'warning',
+							value: 'tab',
+							option: {
+								'indent-nested-nodes': 'never',
+							},
+						},
 					},
 				},
 			],
@@ -685,9 +769,8 @@ test('options - indent-nested-nodes: true', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, [
+	expect(r).toStrictEqual([
 		{
-			level: 'warning',
 			severity: 'warning',
 			line: 2,
 			col: 1,
@@ -696,7 +779,6 @@ test('options - indent-nested-nodes: true', async (t) => {
 			ruleId: 'indentation',
 		},
 		{
-			level: 'warning',
 			severity: 'warning',
 			line: 5,
 			col: 1,
@@ -707,7 +789,7 @@ test('options - indent-nested-nodes: true', async (t) => {
 	]);
 });
 
-test('options - indent-nested-nodes: true', async (t) => {
+test('options - indent-nested-nodes: true', async () => {
 	const r = await markuplint.verify(
 		`\t<html>
 	<body>
@@ -723,7 +805,13 @@ test('options - indent-nested-nodes: true', async (t) => {
 				{
 					tagName: 'body',
 					rules: {
-						indentation: ['warning', 'tab', { 'indent-nested-nodes': 'never' }],
+						indentation: {
+							severity: 'warning',
+							value: 'tab',
+							option: {
+								'indent-nested-nodes': 'never',
+							},
+						},
 					},
 				},
 			],
@@ -731,148 +819,193 @@ test('options - indent-nested-nodes: true', async (t) => {
 		[rule],
 		'en',
 	);
-	t.deepEqual(r, []);
+	expect(r).toStrictEqual([]);
 });
 
-test('tab', async (t) => {
-	const fixture = `
-	<div>
-		lorem
-		<p>ipsam</p>
-	</div>
-	`;
-	const fixed = await markuplint.fix(
-		fixture,
-		{
-			rules: {
-				indentation: ['error', 'tab'],
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(fixed, fixture);
-});
-
-test('tab', async (t) => {
-	const fixture = `
-    <div>
-    lorem
-        <p>ipsam</p>
-    </div>
-	`;
-	const fixed = await markuplint.fix(
-		fixture,
-		{
-			rules: {
-				indentation: ['error', 'tab'],
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(fixed, `
-	<div>
-		lorem
-		<p>ipsam</p>
-	</div>
-	`);
-});
-
-test('tab', async (t) => {
-	const fixed = await markuplint.fix(
+test('no indent', async () => {
+	const r = await markuplint.verify(
 		`
 		<div>
-			lorem
-			<p>ipsam</p>
+			<p> ipsam </p>
+			<p> ipsam
+			lorem </p>
 		</div>
 		`,
 		{
 			rules: {
-				indentation: ['error', 4],
+				indentation: {
+					severity: 'error',
+					value: 'tab',
+				},
 			},
 		},
 		[rule],
 		'en',
 	);
-	t.is(fixed, `
-        <div>
-            lorem
-            <p>ipsam</p>
-        </div>
-		`);
+	expect(r).toStrictEqual([]);
 });
 
-test('tab', async (t) => {
-	const fixed = await markuplint.fix(
-		`
-  <div>
-    lorem
-    <p>ipsam</p>
-  </div>
-		`,
-		{
-			rules: {
-				indentation: ['error', 'tab'],
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(fixed, `
-	<div>
-		lorem
-		<p>ipsam</p>
-	</div>
-		`);
-});
+// test('tab', async () => {
+// 	const fixture = `
+// 	<div>
+// 		lorem
+// 		<p>ipsam</p>
+// 	</div>
+// 	`;
+// 	const fixed = await markuplint.fix(
+// 		fixture,
+// 		{
+// 			rules: {
+// 				indentation: {
+// 					severity: 'error',
+// 					value: 'tab',
+// 				},
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(fixed, fixture);
+// });
 
-test('tab', async (t) => {
-	const fixed = await markuplint.fix(
-		`
-  <div>
-    lorem
-<p>ipsam</p>
-</div>
-		`,
-		{
-			rules: {
-				indentation: ['error', 3],
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(fixed, `
-   <div>
-      lorem
-      <p>ipsam</p>
-   </div>
-		`);
-});
+// test('tab', async () => {
+// 	const fixture = `
+//     <div>
+//     lorem
+//         <p>ipsam</p>
+//     </div>
+// 	`;
+// 	const fixed = await markuplint.fix(
+// 		fixture,
+// 		{
+// 			rules: {
+// 				indentation: {
+// 					severity: 'error',
+// 					value: 'tab',
+// 				},
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		fixed,
+// 		`
+// 	<div>
+// 		lorem
+// 		<p>ipsam</p>
+// 	</div>
+// 	`,
+// 	);
+// });
 
-test('tab', async (t) => {
-	const fixed = await markuplint.fix(
-		`
-  <div>
-    lorem
-			<p>ipsam</p>
-</div>
-		`,
-		{
-			rules: {
-				indentation: ['error', 'tab', { 'indent-nested-nodes': 'never' }],
-			},
-		},
-		[rule],
-		'en',
-	);
-	t.is(fixed, `
-	<div>
-	lorem
-	<p>ipsam</p>
-	</div>
-		`);
-});
+// test('tab', async () => {
+// 	const fixed = await markuplint.fix(
+// 		`
+// 		<div>
+// 			lorem
+// 			<p>ipsam</p>
+// 		</div>
+// 		`,
+// 		{
+// 			rules: {
+// 				indentation: ['error', 4],
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		fixed,
+// 		`
+//         <div>
+//             lorem
+//             <p>ipsam</p>
+//         </div>
+// 		`,
+// 	);
+// });
 
-test('noop', (t) => t.pass());
+// test('tab', async () => {
+// 	const fixed = await markuplint.fix(
+// 		`
+//   <div>
+//     lorem
+//     <p>ipsam</p>
+//   </div>
+// 		`,
+// 		{
+// 			rules: {
+// 				indentation: {
+// 					severity: 'error',
+// 					value: 'tab',
+// 				},
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		fixed,
+// 		`
+// 	<div>
+// 		lorem
+// 		<p>ipsam</p>
+// 	</div>
+// 		`,
+// 	);
+// });
+
+// test('tab', async () => {
+// 	const fixed = await markuplint.fix(
+// 		`
+//   <div>
+//     lorem
+// <p>ipsam</p>
+// </div>
+// 		`,
+// 		{
+// 			rules: {
+// 				indentation: ['error', 3],
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		fixed,
+// 		`
+//    <div>
+//       lorem
+//       <p>ipsam</p>
+//    </div>
+// 		`,
+// 	);
+// });
+
+// test('tab', async () => {
+// 	const fixed = await markuplint.fix(
+// 		`
+//   <div>
+//     lorem
+// 			<p>ipsam</p>
+// </div>
+// 		`,
+// 		{
+// 			rules: {
+// 				indentation: ['error', 'tab', { 'indent-nested-nodes': 'never' }],
+// 			},
+// 		},
+// 		[rule],
+// 		'en',
+// 	);
+// 	t.is(
+// 		fixed,
+// 		`
+// 	<div>
+// 	lorem
+// 	<p>ipsam</p>
+// 	</div>
+// 		`,
+// 	);
+// });
