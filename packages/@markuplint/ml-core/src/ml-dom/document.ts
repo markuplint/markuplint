@@ -119,9 +119,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	public async walkOn(type: NodeType, walker: Walker<T, O, any>): Promise<void> {
 		for (const node of this.nodeList) {
 			if (node instanceof Node) {
-				if (type === 'Node') {
-					await walker(node);
-				} else if (node.is(type)) {
+				if (node.is(type)) {
 					await walker(node);
 				}
 			}
