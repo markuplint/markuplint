@@ -15,12 +15,13 @@ import { getMessenger } from './get-messenger';
 import { toRegxp } from './util';
 
 export async function verify(html: string, config: Config, rules: MLRule<RuleConfigValue, unknown>[], locale?: string) {
-	return exec({
+	const results = await exec({
 		sourceCodes: html,
 		config,
 		rules,
 		locale,
 	});
+	return results[0] ? results[0].results : [];
 }
 
 export interface MLCLIOption {
