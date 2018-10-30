@@ -21,6 +21,16 @@ export default abstract class Node<
 
 	private _doc: Document<T, O>;
 
+	/**
+	 * prevToken cache props
+	 */
+	private _prevToken: AnonymousNode<T, O> | null | undefined;
+
+	/**
+	 * indentation cache props
+	 */
+	private _indentaion: Indentation<T, O> | null | undefined;
+
 	constructor(astNode: A, document: Document<T, O>) {
 		super(astNode);
 		this._astToken = astNode;
@@ -52,6 +62,10 @@ export default abstract class Node<
 	}
 
 	public get prevToken(): AnonymousNode<T, O> | null {
+		if (this._prevToken !== undefined) {
+			return this._prevToken;
+		}
+
 		let index = -1;
 		for (let i = 0; i < this._doc.nodeList.length; i++) {
 			const node = this._doc.nodeList[i];
@@ -64,10 +78,11 @@ export default abstract class Node<
 			}
 		}
 		if (index === -1) {
-			return null;
+			this._prevToken = null;
+			return this._prevToken;
 		}
-		const prevToken = this._doc.nodeList[index - 1] || null;
-		return prevToken || null;
+		this._prevToken = this._doc.nodeList[index - 1] || null;
+		return this._prevToken;
 	}
 
 	public toString() {
@@ -79,6 +94,10 @@ export default abstract class Node<
 	}
 
 	public get indentation(): Indentation<T, O> | null {
+		if (this._indentaion !== undefined) {
+			return this._indentaion;
+		}
+
 		const prevToken = this.prevToken;
 		if (!prevToken || prevToken.type !== 'Text') {
 			return null;
@@ -86,19 +105,23 @@ export default abstract class Node<
 		// @ts-ignore force casting
 		const textNode: Text<T, O> = prevToken;
 
-		if (textNode.isRawText) {
-			return null;
-		}
-
-		const matched = textNode.raw.match(/\r?\n([ \t]*)$/);
+		// One or more newlines and zero or more spaces or tabs.
+		// Or, If textNode is first token and that is filled spaces, tabs and newlines only.
+		const matched = textNode._isFirstToken()
+			? textNode.raw.match(/^(?:[ \t]*\r?\n)*([ \t]*)$/)
+			: textNode.raw.match(/\r?\n([ \t]*)$/);
+		// console.log({ [`${this}`]: matched, _: textNode.raw, f: textNode._isFirstToken() });
 		if (matched) {
+			// Spaces will include empty string.
 			const spaces = matched[1];
 			if (spaces != null) {
-				return new Indentation(textNode, spaces, this.startLine);
+				this._indentaion = new Indentation(textNode, spaces, this.startLine);
+				return this._indentaion;
 			}
 		}
 
-		return null;
+		this._indentaion = null;
+		return this._indentaion;
 	}
 
 	public get rule(): RuleInfo<T, O> {
@@ -114,5 +137,9 @@ export default abstract class Node<
 			throw new Error('Invalid call "rule" property.');
 		}
 		return this._doc.currentRule.optimizeOption(ruleConfig);
+	}
+
+	private _isFirstToken() {
+		return !this.prevToken;
 	}
 }
