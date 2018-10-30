@@ -17,7 +17,11 @@
 		"build": "tsc --build"
 	},
 	"devDependencies": {
-		"@types/os-locale": "^2.1.0"
+		"@types/cli-color": "^0.3.29",
+		"@types/get-stdin": "^5.0.1",
+		"@types/meow": "^5.0.0",
+		"@types/os-locale": "^2.1.0",
+		"@types/strip-ansi": "^3.0.0"
 	},
 	"dependencies": {
 		"@markuplint/file-resoliver": "1.0.0-alpha",
@@ -26,6 +30,11 @@
 		"@markuplint/ml-config": "1.0.0-alpha",
 		"@markuplint/ml-core": "1.0.0-alpha",
 		"@markuplint/rules": "1.0.0-alpha",
-		"os-locale": "^3.0.1"
+		"cli-color": "^1.4.0",
+		"eastasianwidth": "^0.2.0",
+		"get-stdin": "^6.0.0",
+		"meow": "^5.0.0",
+		"os-locale": "^3.0.1",
+		"strip-ansi": "^5.0.0"
 	}
 }

@@ -4,7 +4,8 @@
 		"bootstrap": "lerna bootstrap",
 		"build": "lerna run build",
 		"dev": "lerna run --parallel dev & jest --watch",
-		"test": "jest --coverage"
+		"test": "jest --coverage",
+		"cli": "ts-node packages/markuplint/src/cli/index.ts"
 	},
 	"jest": {
 		"globals": {
@@ -48,6 +49,7 @@
 		"lerna": "^3.4.3",
 		"prettier": "^1.14.3",
 		"ts-jest": "^23.10.4",
+		"ts-node": "^7.0.1",
 		"tslint": "^5.11.0",
 		"tslint-config-prettier": "^1.15.0",
 		"tslint-plugin-prettier": "^2.0.1",

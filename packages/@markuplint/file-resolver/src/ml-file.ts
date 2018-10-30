@@ -39,7 +39,7 @@ export class MLFile {
 	}
 
 	private async _fetch() {
-		const context = await readFile(this._filePath, { encoding: 'utf-8' }).catch(() => '');
+		const context = await readFile(this._filePath, { encoding: 'utf-8' });
 		fileCaches.set(this, context);
 		return context;
 	}

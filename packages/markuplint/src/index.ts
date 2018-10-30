@@ -23,67 +23,6 @@ export async function verify(html: string, config: Config, rules: MLRule<RuleCon
 	});
 }
 
-// export async function fix(html: string, config: ConfigureFileJSON, rules: CustomRule[], locale?: string) {
-// 	const ruleset = await createRuleset(config, rules);
-// 	const core = new Markuplint(html, ruleset, await messenger(locale));
-// 	return await core.fix();
-// }
-
-// export async function verifyOnWorkspace(html: string, workspace?: string) {
-// 	workspace = workspace ? workspace : process.cwd();
-// 	const rules = await ruleModulesLoader();
-// 	const ruleset = await createRuleset(workspace, rules);
-// 	const core = new Markuplint(html, ruleset, await messenger());
-// 	return await core.verify();
-// }
-
-// export async function fixOnWorkspace(html: string, workspace?: string) {
-// 	workspace = workspace ? workspace : process.cwd();
-// 	const rules = await ruleModulesLoader();
-// 	const ruleset = await createRuleset(workspace, rules);
-// 	const core = new Markuplint(html, ruleset, await messenger());
-// 	return await core.fix();
-// }
-
-// export async function verifyFile(filePath: string, rules?: CustomRule[], configFileOrDir?: string, locale?: string) {
-// 	const core = await resolveLinter(filePath, rules, configFileOrDir, locale);
-// 	const reports = await core.verify();
-// 	return {
-// 		html: core.rawHTML,
-// 		reports,
-// 	};
-// }
-
-// export async function fixFile(filePath: string, rules?: CustomRule[], configFileOrDir?: string, locale?: string) {
-// 	const core = await resolveLinter(filePath, rules, configFileOrDir, locale);
-// 	const fixed = await core.fix();
-// 	return {
-// 		origin: core.rawHTML,
-// 		fixed,
-// 	};
-// }
-
-// async function resolveLinter(filePath: string, rules?: CustomRule[], configFileOrDir?: string, locale?: string) {
-// 	rules = rules || (await ruleModulesLoader());
-// 	let ruleset: Ruleset;
-// 	if (configFileOrDir) {
-// 		ruleset = await createRuleset(configFileOrDir, rules);
-// 	} else {
-// 		let dir: string;
-// 		if (isRemoteFile(filePath)) {
-// 			dir = process.cwd();
-// 		} else {
-// 			const absFilePath = path.resolve(filePath);
-// 			const parsedPath = path.parse(absFilePath);
-// 			dir = path.dirname(absFilePath);
-// 		}
-// 		ruleset = await createRuleset(dir, rules);
-// 	}
-// 	const html = await resolveFile(filePath);
-// 	const core = new Markuplint(html, ruleset, await messenger(locale));
-// 	return core;
-// }
-
 export interface MLCLIOption {
 	files?: string;
 	sourceCodes?: string | string[];
@@ -114,6 +53,9 @@ export async function exec(options: MLCLIOption) {
 	const files: MLFile[] = [];
 	if (options.files) {
 		files.push(...(await getFiles(options.files)));
+		if (!files.length) {
+			throw new Error(`"${options.files}" is not found.`);
+		}
 	} else if (options.sourceCodes) {
 		const codes = Array.isArray(options.sourceCodes) ? options.sourceCodes : [options.sourceCodes];
 		files.push(...codes.map(code => getAnonymousFile(code)));
@@ -163,7 +105,8 @@ export async function exec(options: MLCLIOption) {
 		rules = rules.concat(options.addRules);
 	}
 
-	const results: VerifiedResult[] = [];
+	const totalResults: MLResultInfo[] = [];
+
 	for (const file of files) {
 		const configSet: ConfigSet = configs.get(file) || {
 			config: {},
@@ -188,9 +131,33 @@ export async function exec(options: MLCLIOption) {
 		const messenger = await getMessenger(options.locale);
 		const core = new MLCore(parser, sourceCode, ruleset, rules, messenger);
 
-		const result = await core.verify();
-		results.push(...result);
+		const results = await core.verify();
+		totalResults.push({
+			results,
+			filePath: file.path,
+			sourceCode,
+			parser: parserModName,
+			locale: options.locale,
+			configSet: {
+				config: configSet.config,
+				files: Array.from(configSet.files),
+				error: configSet.errs.map(e => `${e}`),
+			},
+		});
 	}
 
-	return results;
+	return totalResults;
+}
+
+interface MLResultInfo {
+	results: VerifiedResult[];
+	filePath: string;
+	sourceCode: string;
+	parser: string;
+	locale?: string;
+	configSet: {
+		config: Config;
+		files: string[];
+		error: string[];
+	};
 }
