@@ -13,14 +13,12 @@
 	},
 	"devDependencies": {
 		"@types/cosmiconfig": "^5.0.3",
-		"@types/deep-assign": "^0.1.1",
 		"@types/glob": "^7.1.1",
 		"@types/node": "^10.12.1"
 	},
 	"dependencies": {
 		"@markuplint/ml-config": "1.0.0-alpha",
 		"cosmiconfig": "^5.0.6",
-		"deep-assign": "^2.0.0",
 		"glob": "^7.1.3"
 	}
 }

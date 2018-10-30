@@ -1,5 +1,4 @@
 import cosmiconfig from 'cosmiconfig';
-import deepAssgin from 'deep-assign';
 import path from 'path';
 import { loadConfigFile, Config, ConfigSet } from './';
 
@@ -54,14 +53,14 @@ export async function recursiveLoad(
 					continue;
 				}
 				files = new Set(files).add(file);
-				config = deepAssgin(config, extendFileResult.config);
+				config = margeConfig(config, extendFileResult.config);
 			} else {
 				try {
 					const mod: Config = await import(_file);
 					// @ts-ignore
 					delete mod.default;
 					files.add(_file);
-					config = deepAssgin(config, mod);
+					config = margeConfig(config, mod);
 				} catch (err) {
 					errs.push(err);
 				}
@@ -73,5 +72,18 @@ export async function recursiveLoad(
 		files,
 		config,
 		errs,
+	};
+}
+
+function margeConfig(a: Config, b: Config): Config {
+	return {
+		...a,
+		...b,
+		rules: {
+			...a.rules,
+			...b.rules,
+		},
+		nodeRules: [...(a.nodeRules || []), ...(b.nodeRules || [])],
+		childNodeRules: [...(a.childNodeRules || []), ...(b.childNodeRules || [])],
 	};
 }

@@ -602,11 +602,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/deep-assign@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@types/deep-assign/-/deep-assign-0.1.1.tgz#c10aa2d6202774015f5820ed303b82ab3b0bde9b"
-  integrity sha512-88jktQ7RJ96bJ4S8I2oeRylMXGeaZt/QBG0k8PiQ5UXCIliUQm0Pzlv3zcN1ZvEIuaLBgMkP0ynr8fAkwChgOQ==
-
 "@types/events@*":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
@@ -1814,13 +1809,6 @@ dedent@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/dedent/-/dedent-0.7.0.tgz#2495ddbaf6eb874abb0e1be9df22d2e5a544326c"
   integrity sha1-JJXduvbrh0q7Dhvp3yLS5aVEMmw=
-
-deep-assign@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/deep-assign/-/deep-assign-2.0.0.tgz#ebe06b1f07f08dae597620e3dd1622f371a1c572"
-  integrity sha1-6+BrHwfwja5ZdiDj3RYi83GhxXI=
-  dependencies:
-    is-obj "^1.0.0"
 
 deep-extend@^0.6.0:
   version "0.6.0"

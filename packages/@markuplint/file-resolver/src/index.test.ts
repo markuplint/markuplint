@@ -25,6 +25,12 @@ describe('FileResolver', () => {
 		if (!file) {
 			throw new Error();
 		}
-		expect(file.config).toEqual({ dummy: true, dummy2: false });
+		expect(file.config).toEqual({
+			dummy: true,
+			dummy2: false,
+			rules: {},
+			nodeRules: [],
+			childNodeRules: [],
+		});
 	});
 });
