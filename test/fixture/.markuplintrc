@@ -53,11 +53,8 @@
 			"tagName": "head",
 			"rules": {
 				"indentation": {
-					"severity": "warning",
-					"value": "tab",
 					"option": {
-						"align": true,
-						"indent-nested-nodes": false
+						"indent-nested-nodes": "never"
 					}
 				}
 			}
@@ -65,7 +62,11 @@
 		{
 			"tagName": "body",
 			"rules": {
-				"indentation": false
+				"indentation": {
+					"option": {
+						"indent-nested-nodes": "never"
+					}
+				}
 			}
 		}
 	]

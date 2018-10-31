@@ -18,7 +18,7 @@ export async function verify(
 			});
 			for (const result of reports) {
 				await output(result.filePath, result.results, result.sourceCode, format, noColor, problemOnly);
-				console.log(result);
+				// console.log(result);
 			}
 		}
 	}

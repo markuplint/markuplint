@@ -5,14 +5,14 @@ describe('basic test', async () => {
 		const r = await markuplint.exec({
 			files: 'test/fixture/001.html',
 		});
-		expect(r.length).toBe(0);
+		expect(r[0].results.length).toBe(0);
 	});
 
 	it('is reported from 002.html', async () => {
 		const r = await markuplint.exec({
 			files: 'test/fixture/002.html',
 		});
-		expect(r).toEqual([
+		expect(r[0].results).toEqual([
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
@@ -61,21 +61,13 @@ describe('basic test', async () => {
 				raw: 'content=ie=edge',
 				ruleId: 'attr-value-quotes',
 			},
-		]);
-	});
-
-	it('is reported from 003.html', async () => {
-		const r = await markuplint.exec({
-			files: 'test/fixture/003.html',
-		});
-		expect(r).toEqual([
 			{
-				severity: 'warning',
-				message: 'Required async attribute',
-				line: 12,
-				col: 2,
-				raw: '<script src="/path/to/js/lib/jquery.min.js">',
-				ruleId: 'async-attr-in-script',
+				severity: 'error',
+				message: 'Missing h1 element',
+				line: 1,
+				col: 1,
+				raw: '<',
+				ruleId: 'required-h1',
 			},
 		]);
 	});
