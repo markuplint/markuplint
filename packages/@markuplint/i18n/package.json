@@ -9,7 +9,7 @@
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
 	"scripts": {
-		"build": "tsc --build",
+		"build": "tsc",
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {},

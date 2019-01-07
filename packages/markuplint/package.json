@@ -14,7 +14,7 @@
 		"markuplint": "bin/index.js"
 	},
 	"scripts": {
-		"build": "tsc --build",
+		"build": "tsc",
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {

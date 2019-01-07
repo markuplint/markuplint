@@ -9,10 +9,12 @@
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
 	"scripts": {
-		"build": "tsc --build",
+		"build": "tsc",
 		"clean": "tsc --build --clean"
 	},
-	"devDependencies": {},
+	"devDependencies": {
+		"@markuplint/ml-core": "1.0.0-alpha"
+	},
 	"dependencies": {},
 	"peerDependencies": {
 		"@markuplint/ml-core": "1.0.0-alpha"
