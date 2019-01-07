@@ -14,7 +14,8 @@
 		"markuplint": "bin/index.js"
 	},
 	"scripts": {
-		"build": "tsc --build"
+		"build": "tsc --build",
+		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
 		"@types/cli-color": "^0.3.29",

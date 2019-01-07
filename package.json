@@ -3,6 +3,7 @@
 	"scripts": {
 		"bootstrap": "lerna bootstrap",
 		"build": "lerna run build",
+		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev & jest --watch",
 		"test": "jest --coverage",
 		"cli": "ts-node packages/markuplint/src/cli/index.ts"
