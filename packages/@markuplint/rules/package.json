@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/rules",
-	"version": "1.0.0-alpha",
+	"version": "1.0.0-alpha.0",
 	"description": "Rules for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -16,9 +16,8 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@markuplint/ml-core": "1.0.0-alpha"
+		"@markuplint/ml-core": "^1.0.0-alpha.0"
 	},
-	"dependencies": {},
 	"peerDependencies": {
 		"@markuplint/ml-core": "1.0.0-alpha"
 	}
