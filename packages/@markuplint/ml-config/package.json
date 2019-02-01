@@ -8,6 +8,9 @@
 	"private": false,
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
+	"publishConfig": {
+		"access": "public"
+	},
 	"scripts": {
 		"build": "tsc",
 		"clean": "tsc --build --clean"
