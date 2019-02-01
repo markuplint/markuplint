@@ -1,14 +1,17 @@
-![markuplint](https://cdn.rawgit.com/YusukeHirao/markuplint/HEAD/media/logo-v.svg)
-===
+# ![markuplint](https://cdn.rawgit.com/YusukeHirao/markuplint/HEAD/media/logo-v.svg)
 
-[![npm version](https://badge.fury.io/js/markuplint.svg)](https://badge.fury.io/js/markuplint) [![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=master)](https://travis-ci.org/markuplint/markuplint) [![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=master)](https://coveralls.io/github/markuplint/markuplint?branch=master)
+<!-- [![npm version](https://badge.fury.io/js/markuplint.svg)](https://badge.fury.io/js/markuplint)  -->
+
+[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=next)](https://travis-ci.org/markuplint/markuplint) [![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=next)](https://coveralls.io/github/markuplint/markuplint?branch=next)
 
 HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.
 
 ## Install
 
+Version `1.0.0-alpha` in development.
+
 ```
-$ yarn add markuplint
+$ yarn add -D markuplint@next
 ```
 
 ## Usage
@@ -44,68 +47,31 @@ Examples
 
 ### API
 
-```js
-import * as markuplint from 'markuplint';
-
-const reports = await markuplint.verify(html, ruleset, rules);
-// or
-const { html, reports } = await markuplint.verifyFile(htmlPath, ruleset, rules);
-```
+**WIP**
 
 ## Configuration
 
 `.markuplintrc` JSON or YAML format
 
-```json
-{
-  "extends": "markuplint/html-ls",
-  "rules": {
-    "rule-name": true,
-    "rule-name2": false,
-    "rule-name3": ["error", "VALUE"],
-    "rule-name4": ["warning", "VALUE", { "OPTIONAL_PROP": "OPTIONAL_VALUE" }]
-  },
-  "nodeRules": [
-    {
-      "tagName": "div",
-      "rules": {
-        "rule-name": false,
-      }
-    }
-  ],
-  "childNodeRules": [
-    {
-      "selector": "[data-attr^=\"value\"]",
-      "inheritance": true,
-      "rules": {
-        "rule-name3": ["warning", "ANOTHER_VALUE"],
-      }
-    }
-  ]
-}
-```
+**WIP**
 
 ## Rules
 
-- [Rule Documentation - English](./src/rules/README.md)
-- [Rule Documentation - 日本語](./src/rules/README.ja.md)
+**WIP**
 
 ### Rule Customization
-- [Rule Customization - English](./src/rule/custom-rule/README.md)
+
+**WIP**
 
 ## Editor Extensions
 
-Editor|Page|Author
----|---|---
-<a href="https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint"><img src="media/vscode.png" width="75"></a>|[Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint)|[@YusukeHirao](https://github.com/YusukeHirao)
-<a href="https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint"><img src="media/atom.png" width="75"></a>|[Atom](https://atom.io/packages/linter-markuplint)|[@YusukeHirao](https://github.com/YusukeHirao)
-<a href="https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint"><img src="media/vim.png" width="75"></a>|[Vim](https://github.com/heavenshell/vim-markuplint)|[@heavenshell](https://github.com/heavenshell)
+**No supported in this development version.**
 
 ## Thanks
 
 This linter is inspired by:
 
-- [HTMLHint](http://htmlhint.com/)
-- [ESLint](https://eslint.org/)
-- [stylelint](https://stylelint.io/)
-- [textlint](https://textlint.github.io/)
+-   [HTMLHint](http://htmlhint.com/)
+-   [ESLint](https://eslint.org/)
+-   [stylelint](https://stylelint.io/)
+-   [textlint](https://textlint.github.io/)
