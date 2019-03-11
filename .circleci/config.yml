@@ -3,7 +3,7 @@ jobs:
     build:
         working_directory: ~/workspace
         docker:
-            - image: node:8.15.0
+            - image: node:10.15.3
 
         steps:
             - checkout
@@ -17,7 +17,7 @@ jobs:
                   command: yarn
             - run:
                   name: Build
-                  command: yarn run build
+                  command: yarn build
             - run:
                   name: Test
                   command: yarn test
