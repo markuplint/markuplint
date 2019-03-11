@@ -1,6 +1,6 @@
 import * as markuplint from './';
 
-describe('basic test', async () => {
+describe('basic test', () => {
 	it('is empty result of 001.html', async () => {
 		const r = await markuplint.exec({
 			files: 'test/fixture/001.html',

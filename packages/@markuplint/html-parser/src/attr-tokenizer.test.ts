@@ -1,7 +1,7 @@
 import attrTokenizer from './attr-tokenizer';
 
-describe('attrTokenizer', async () => {
-	it('void attribute', () => {
+describe('attrTokenizer', () => {
+	it('void attribute', async () => {
 		expect(attrTokenizer(' abc', 1, 1, 0)).toMatchObject({
 			raw: 'abc',
 			startLine: 1,
