@@ -2,7 +2,7 @@
 import { CssSelectorParser } from 'css-selector-parser';
 
 import { RuleConfigValue } from '@markuplint/ml-config';
-import { Element } from '../tokens';
+import { MLDOMElement } from '../tokens';
 
 const selectorParser = new CssSelectorParser();
 selectorParser.registerSelectorPseudos('not');
@@ -71,7 +71,7 @@ export class Selector {
 		// console.log(JSON.stringify(this._ruleset, null, 2));
 	}
 
-	public match<T extends RuleConfigValue, O = null>(element: Element<T, O>) {
+	public match<T extends RuleConfigValue, O = null>(element: MLDOMElement<T, O>) {
 		return match(element, this._ruleset, this._rawSelector);
 	}
 }
@@ -89,11 +89,10 @@ function match(element: ElementLikeObject, ruleset: CssSelectorParserResult, raw
 
 		if (rule.classNames) {
 			andMatch.push(
-				rule.classNames.every(
-					className =>
-						Array.isArray(element.classList)
-							? element.classList.includes(className)
-							: element.classList.contains(className),
+				rule.classNames.every(className =>
+					Array.isArray(element.classList)
+						? element.classList.includes(className)
+						: element.classList.contains(className),
 				),
 			);
 		}

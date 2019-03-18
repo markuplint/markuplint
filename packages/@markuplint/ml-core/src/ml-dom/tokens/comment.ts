@@ -1,8 +1,8 @@
 import { MLASTComment } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import { NodeType } from '../types';
-import Node from './node';
+import MLDOMNode from './node';
 
-export default class Comment<T extends RuleConfigValue, O = null> extends Node<T, O, MLASTComment> {
+export default class MLDOMComment<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTComment> {
 	public readonly type: NodeType = 'Comment';
 }

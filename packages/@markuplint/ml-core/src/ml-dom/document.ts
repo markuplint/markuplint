@@ -3,7 +3,7 @@ import { RuleConfigValue } from '@markuplint/ml-config';
 import { MLRule } from '../';
 import Ruleset from '../ruleset';
 import { createNode } from './helper';
-import { Comment, Element, ElementCloseTag, Node, Text } from './tokens';
+import { MLDOMComment, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
 import { AnonymousNode, NodeType } from './types';
 
 /**
@@ -42,7 +42,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				node.rules[ruleName] = rule;
 			}
 
-			if (!(node instanceof Element)) {
+			if (!(node instanceof MLDOMElement)) {
 				continue;
 			}
 
@@ -86,7 +86,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 			for (const ruleName of Object.keys(nodeRule.rules)) {
 				const rule = nodeRule.rules[ruleName];
 				for (const node of this.nodeList) {
-					if (!(node instanceof Element)) {
+					if (!(node instanceof MLDOMElement)) {
 						continue;
 					}
 					if (node.matches(nodeRule.selector)) {
@@ -111,14 +111,14 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		}
 	}
 
-	public async walkOn(type: 'Element', walker: Walker<T, O, Element<T, O>>): Promise<void>;
-	public async walkOn(type: 'Text', walker: Walker<T, O, Text<T, O>>): Promise<void>;
-	public async walkOn(type: 'Comment', walker: Walker<T, O, Comment<T, O>>): Promise<void>;
-	public async walkOn(type: 'ElementCloseTag', walker: Walker<T, O, ElementCloseTag<T, O>>): Promise<void>;
+	public async walkOn(type: 'Element', walker: Walker<T, O, MLDOMElement<T, O>>): Promise<void>;
+	public async walkOn(type: 'Text', walker: Walker<T, O, MLDOMText<T, O>>): Promise<void>;
+	public async walkOn(type: 'Comment', walker: Walker<T, O, MLDOMComment<T, O>>): Promise<void>;
+	public async walkOn(type: 'ElementCloseTag', walker: Walker<T, O, MLDOMElementCloseTag<T, O>>): Promise<void>;
 	// tslint:disable-next-line:no-any
 	public async walkOn(type: NodeType, walker: Walker<T, O, any>): Promise<void> {
 		for (const node of this.nodeList) {
-			if (node instanceof Node) {
+			if (node instanceof MLDOMNode) {
 				if (node.is(type)) {
 					await walker(node);
 				}

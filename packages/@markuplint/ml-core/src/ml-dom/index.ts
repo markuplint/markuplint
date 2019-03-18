@@ -1,14 +1,14 @@
 export { default as Document } from './document';
 export { AnonymousNode, NodeType } from './types';
 export {
-	Attribute,
-	Comment,
-	Doctype,
-	Element,
-	ElementCloseTag,
-	InvalidNode,
-	Node,
-	OmittedElement,
-	Text,
-	Indentation,
+	MLDOMAttribute as Attribute,
+	MLDOMComment as Comment,
+	MLDOMDoctype as Doctype,
+	MLDOMElement as Element,
+	MLDOMElementCloseTag as ElementCloseTag,
+	MLDOMInvalidNode as InvalidNode,
+	MLDOMNode as Node,
+	MLDOMOmittedElement as OmittedElement,
+	MLDOMText as Text,
+	MLDOMIndentation as Indentation,
 } from './tokens';

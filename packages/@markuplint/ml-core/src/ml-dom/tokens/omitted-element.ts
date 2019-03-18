@@ -2,9 +2,13 @@ import { MLASTOmittedElement } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import Document from '../document';
 import { NodeType } from '../types';
-import Node from './node';
+import MLDOMNode from './node';
 
-export default class OmittedElement<T extends RuleConfigValue, O = null> extends Node<T, O, MLASTOmittedElement> {
+export default class MLDOMOmittedElement<T extends RuleConfigValue, O = null> extends MLDOMNode<
+	T,
+	O,
+	MLASTOmittedElement
+> {
 	public readonly type: NodeType = 'OmittedElement';
 	public readonly nodeName: string;
 	public readonly namespaceURI: string;

@@ -1,8 +1,8 @@
 import { MLASTInvalidNode } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import { NodeType } from '../types';
-import Node from './node';
+import MLDOMNode from './node';
 
-export default class InvalidNode<T extends RuleConfigValue, O = null> extends Node<T, O, MLASTInvalidNode> {
+export default class MLDOMInvalidNode<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTInvalidNode> {
 	public readonly type: NodeType = 'InvalidNode';
 }

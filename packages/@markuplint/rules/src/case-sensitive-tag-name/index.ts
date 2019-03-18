@@ -1,5 +1,5 @@
 import { createRule, Result } from '@markuplint/ml-core';
-import { Element, ElementCloseTag } from '@markuplint/ml-core/lib/ml-dom/tokens';
+import { MLDOMElement, MLDOMElementCloseTag } from '@markuplint/ml-core/lib/ml-dom/tokens';
 
 export type Value = 'lower' | 'upper';
 
@@ -11,7 +11,7 @@ export default createRule<Value, null>({
 	async verify(document, messages) {
 		const reports: Result[] = [];
 		await document.walk(async node => {
-			if (node instanceof Element || node instanceof ElementCloseTag) {
+			if (node instanceof MLDOMElement || node instanceof MLDOMElementCloseTag) {
 				if (node.isForeignElement) {
 					return;
 				}
@@ -29,7 +29,7 @@ export default createRule<Value, null>({
 						message,
 						line: node.startLine,
 						col:
-							node instanceof Element
+							node instanceof MLDOMElement
 								? node.startCol + 1 // remove "<" char.
 								: node.startCol + 2, // remove "</" char.
 						raw: node.nodeName,

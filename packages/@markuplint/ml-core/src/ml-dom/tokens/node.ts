@@ -7,18 +7,18 @@ import { AnonymousNode, NodeType } from '../types';
 import Element from './element';
 import Indentation from './indentation';
 import OmittedElement from './omitted-element';
-import Text from './text';
-import Token from './token';
+import MLDOMText from './text';
+import MLDOMToken from './token';
 import Doctype from './doctype';
 import ElementCloseTag from './element-close-tag';
 import Comment from './comment';
 import InvalidNode from './invalid-node';
 
-export default abstract class Node<
+export default abstract class MLDOMNode<
 	T extends RuleConfigValue,
 	O = null,
 	A extends MLASTAbstructNode = MLASTAbstructNode
-> extends Token<A> {
+> extends MLDOMToken<A> {
 	public readonly type: NodeType = 'Node';
 
 	protected _astToken: A;
@@ -82,9 +82,9 @@ export default abstract class Node<
 				| Element<T, O>
 				| ElementCloseTag<T, O>
 				| Comment<T, O>
-				| Text<T, O>
+				| MLDOMText<T, O>
 				| InvalidNode<T, O>
-				| Node<T, O, MLASTNode> = node;
+				| MLDOMNode<T, O, MLASTNode> = node;
 			if (exitNode.uuid === this.uuid) {
 				index = i;
 				break;
@@ -116,7 +116,7 @@ export default abstract class Node<
 			return null;
 		}
 		// @ts-ignore force casting
-		const textNode: Text<T, O> = prevToken;
+		const textNode: MLDOMText<T, O> = prevToken;
 
 		// One or more newlines and zero or more spaces or tabs.
 		// Or, If textNode is first token and that is filled spaces, tabs and newlines only.

@@ -1,14 +1,14 @@
 import { RuleConfigValue } from '@markuplint/ml-config';
-import Text from './text';
+import MLDOMText from './text';
 
-export default class Indentation<T extends RuleConfigValue, O = null> {
+export default class MLDOMIndentation<T extends RuleConfigValue, O = null> {
 	public readonly line: number;
-	public readonly node: Text<T, O>;
+	public readonly node: MLDOMText<T, O>;
 
 	private readonly _originRaw: string;
 	private _fixed: string;
 
-	constructor(parentTextNode: Text<T, O>, raw: string, line: number) {
+	constructor(parentTextNode: MLDOMText<T, O>, raw: string, line: number) {
 		this.node = parentTextNode;
 		this.line = line;
 		this._originRaw = raw;

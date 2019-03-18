@@ -1,8 +1,8 @@
 import { MLASTText } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import { Document, NodeType } from '../';
-import Indentation from './indentation';
-import Node from './node';
+import MLDOMIndentation from './indentation';
+import MLDOMNode from './node';
 
 /**
  * Raw text elements
@@ -11,7 +11,7 @@ import Node from './node';
  */
 const rawTextElements = ['script', 'style'];
 
-export default class Text<T extends RuleConfigValue, O = null> extends Node<T, O, MLASTText> {
+export default class MLDOMText<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTText> {
 	public readonly type: NodeType = 'Text';
 	public readonly isRawText: boolean;
 
@@ -23,7 +23,7 @@ export default class Text<T extends RuleConfigValue, O = null> extends Node<T, O
 	/**
 	 * @override
 	 */
-	public get indentation(): Indentation<T, O> | null {
+	public get indentation(): MLDOMIndentation<T, O> | null {
 		if (this.isRawText) {
 			return null;
 		}
@@ -36,7 +36,7 @@ export default class Text<T extends RuleConfigValue, O = null> extends Node<T, O
 				const line = spaceLines.length + this.startLine - 1;
 				const lastSpace = spaceLines.pop();
 				if (lastSpace != null) {
-					return new Indentation(this, lastSpace, line);
+					return new MLDOMIndentation(this, lastSpace, line);
 				}
 			}
 		}

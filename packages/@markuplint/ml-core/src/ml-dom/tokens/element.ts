@@ -2,15 +2,15 @@ import { MLASTElement } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import { AnonymousNode, Document, NodeType } from '../';
 import { createSelector, getNode } from '../helper';
-import { Attribute, ElementCloseTag, Node } from './';
+import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode } from './';
 
-export default class Element<T extends RuleConfigValue, O = null> extends Node<T, O, MLASTElement> {
+export default class MLDOMElement<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTElement> {
 	public readonly type: NodeType = 'Element';
 	public readonly nodeName: string;
-	public readonly attributes: Attribute[];
+	public readonly attributes: MLDOMAttribute[];
 	public readonly namespaceURI: string;
 	public readonly isForeignElement: boolean;
-	public readonly closeTag: ElementCloseTag<T, O> | null;
+	public readonly closeTag: MLDOMElementCloseTag<T, O> | null;
 	public categories: string[] = [];
 	public roles: string[] = [];
 	public obsolete = false;
@@ -18,10 +18,10 @@ export default class Element<T extends RuleConfigValue, O = null> extends Node<T
 	constructor(astNode: MLASTElement, document: Document<T, O>) {
 		super(astNode, document);
 		this.nodeName = astNode.nodeName;
-		this.attributes = astNode.attributes.map(attr => new Attribute(attr));
+		this.attributes = astNode.attributes.map(attr => new MLDOMAttribute(attr));
 		this.namespaceURI = astNode.namespace;
 		this.isForeignElement = this.namespaceURI !== 'http://www.w3.org/1999/xhtml';
-		this.closeTag = astNode.pearNode ? new ElementCloseTag<T, O>(astNode.pearNode, document, this) : null;
+		this.closeTag = astNode.pearNode ? new MLDOMElementCloseTag<T, O>(astNode.pearNode, document, this) : null;
 	}
 
 	public get childNodes(): AnonymousNode<T, O>[] {
