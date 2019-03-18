@@ -4,15 +4,15 @@ import { RuleInfo } from '../../';
 import Document from '../document';
 import { getNode, setNode } from '../helper/dom-traverser';
 import { AnonymousNode, NodeType } from '../types';
-import Element from './element';
-import Indentation from './indentation';
-import OmittedElement from './omitted-element';
+import MLDOMElement from './element';
+import MLDOMIndentation from './indentation';
+import MLDOMOmittedElement from './omitted-element';
 import MLDOMText from './text';
 import MLDOMToken from './token';
-import Doctype from './doctype';
-import ElementCloseTag from './element-close-tag';
-import Comment from './comment';
-import InvalidNode from './invalid-node';
+import MLDOMDoctype from './doctype';
+import MLDOMElementCloseTag from './element-close-tag';
+import MLDOMComment from './comment';
+import MLDOMInvalidNode from './invalid-node';
 
 export default abstract class MLDOMNode<
 	T extends RuleConfigValue,
@@ -33,19 +33,17 @@ export default abstract class MLDOMNode<
 	/**
 	 * indentation cache props
 	 */
-	private _indentaion: Indentation<T, O> | null | undefined;
+	private _indentaion: MLDOMIndentation<T, O> | null | undefined;
 
 	constructor(astNode: A, document: Document<T, O>) {
 		super(astNode);
 		this._astToken = astNode;
 		this._doc = document;
 
-		// TODO: type
-		// @ts-ignore
 		setNode(astNode, this);
 	}
 
-	public get parentNode(): Element<T, O> | OmittedElement<T, O> | null {
+	public get parentNode(): MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null {
 		return this._astToken.parentNode ? getNode<MLASTParentNode, T, O>(this._astToken.parentNode) : null;
 	}
 
@@ -57,12 +55,12 @@ export default abstract class MLDOMNode<
 		return this._astToken.nextNode ? getNode<MLASTNode, T, O>(this._astToken.nextNode) : null;
 	}
 
-	public get syntaxicalParentNode(): Element<T, O> | null {
-		let parentNode: Element<T, O> | OmittedElement<T, O> | null = this.parentNode;
+	public get syntaxicalParentNode(): MLDOMElement<T, O> | null {
+		let parentNode: MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null = this.parentNode;
 		while (parentNode && parentNode.type === 'OmittedElement') {
 			parentNode = parentNode.parentNode;
 		}
-		return parentNode as Element<T, O> | null;
+		return parentNode as MLDOMElement<T, O> | null;
 	}
 
 	public get prevToken(): AnonymousNode<T, O> | null {
@@ -73,19 +71,13 @@ export default abstract class MLDOMNode<
 		let index = -1;
 		for (let i = 0; i < this._doc.nodeList.length; i++) {
 			const node = this._doc.nodeList[i];
+			if (!node) {
+				continue;
+			}
 			if (node.type === 'OmittedElement') {
 				continue;
 			}
-			// TODO: Error for Type inference on CI Server
-			const exitNode:
-				| Doctype<T, O>
-				| Element<T, O>
-				| ElementCloseTag<T, O>
-				| Comment<T, O>
-				| MLDOMText<T, O>
-				| InvalidNode<T, O>
-				| MLDOMNode<T, O, MLASTNode> = node;
-			if (exitNode.uuid === this.uuid) {
+			if (node.uuid === this.uuid) {
 				index = i;
 				break;
 			}
@@ -106,7 +98,7 @@ export default abstract class MLDOMNode<
 		return this.type === type;
 	}
 
-	public get indentation(): Indentation<T, O> | null {
+	public get indentation(): MLDOMIndentation<T, O> | null {
 		if (this._indentaion !== undefined) {
 			return this._indentaion;
 		}
@@ -128,7 +120,7 @@ export default abstract class MLDOMNode<
 			// Spaces will include empty string.
 			const spaces = matched[1];
 			if (spaces != null) {
-				this._indentaion = new Indentation(textNode, spaces, this.startLine);
+				this._indentaion = new MLDOMIndentation(textNode, spaces, this.startLine);
 				return this._indentaion;
 			}
 		}

@@ -3,12 +3,11 @@ import { RuleConfigValue } from '@markuplint/ml-config';
 import MLDOMNode from '../tokens/node';
 import { MappedNode } from './mapped-nodes';
 
-// tslint:disable-next-line:no-any
 const store = new WeakMap<MLASTAbstructNode, MLDOMNode<any, any, any>>();
 
-export function setNode<N extends MLASTAbstructNode, T extends RuleConfigValue, O = null>(
-	astNode: N,
-	node: MappedNode<N, T, O>,
+export function setNode<A extends MLASTAbstructNode, T extends RuleConfigValue, O = null>(
+	astNode: A,
+	node: MLDOMNode<T, O, A>,
 ) {
 	store.set(astNode, node);
 }
