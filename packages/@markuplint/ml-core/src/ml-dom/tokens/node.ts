@@ -9,6 +9,10 @@ import Indentation from './indentation';
 import OmittedElement from './omitted-element';
 import Text from './text';
 import Token from './token';
+import Doctype from './doctype';
+import ElementCloseTag from './element-close-tag';
+import Comment from './comment';
+import InvalidNode from './invalid-node';
 
 export default abstract class Node<
 	T extends RuleConfigValue,
@@ -69,10 +73,19 @@ export default abstract class Node<
 		let index = -1;
 		for (let i = 0; i < this._doc.nodeList.length; i++) {
 			const node = this._doc.nodeList[i];
-			if (node && node.type === 'OmittedElement') {
+			if (node.type === 'OmittedElement') {
 				continue;
 			}
-			if (node.uuid === this.uuid) {
+			// TODO: Error for Type inference on CI Server
+			const exitNode:
+				| Doctype<T, O>
+				| Element<T, O>
+				| ElementCloseTag<T, O>
+				| Comment<T, O>
+				| Text<T, O>
+				| InvalidNode<T, O>
+				| Node<T, O, MLASTNode> = node;
+			if (exitNode.uuid === this.uuid) {
 				index = i;
 				break;
 			}
