@@ -2,16 +2,14 @@ import { MLASTElementCloseTag } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import Document from '../document';
 import { setNode } from '../helper/dom-traverser';
-import { NodeType } from '../types';
+import { NodeType, IMLDOMElementCloseTag } from '../types';
 import MLDOMNode from './Node';
 import MLDOMElement from './element';
 
-export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null> extends MLDOMNode<
-	T,
-	O,
-	MLASTElementCloseTag
-> {
-	public readonly type: NodeType = 'ElementCloseTag';
+export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
+	extends MLDOMNode<T, O, MLASTElementCloseTag>
+	implements IMLDOMElementCloseTag {
+	public readonly type = 'ElementCloseTag';
 	public readonly nodeName: string;
 	public readonly startTag: MLDOMElement<T, O>;
 	public readonly isForeignElement: boolean;
@@ -21,9 +19,6 @@ export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null> e
 		this.nodeName = astNode.nodeName;
 		this.startTag = startTag;
 		this.isForeignElement = startTag.isForeignElement;
-
-		// TODO: type
-		// @ts-ignore
 		setNode(astNode, this);
 	}
 

@@ -3,22 +3,18 @@ import { RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
 import { RuleInfo } from '../../';
 import Document from '../document';
 import { getNode, setNode } from '../helper/dom-traverser';
-import { AnonymousNode, NodeType } from '../types';
+import { AnonymousNode, NodeType, IMLDOMNode } from '../types';
 import MLDOMElement from './element';
 import MLDOMIndentation from './indentation';
 import MLDOMOmittedElement from './omitted-element';
 import MLDOMText from './text';
 import MLDOMToken from './token';
-import MLDOMDoctype from './doctype';
-import MLDOMElementCloseTag from './element-close-tag';
-import MLDOMComment from './comment';
-import MLDOMInvalidNode from './invalid-node';
 
 export default abstract class MLDOMNode<
 	T extends RuleConfigValue,
 	O = null,
 	A extends MLASTAbstructNode = MLASTAbstructNode
-> extends MLDOMToken<A> {
+> extends MLDOMToken<A> implements IMLDOMNode {
 	public readonly type: NodeType = 'Node';
 
 	protected _astToken: A;
@@ -104,23 +100,24 @@ export default abstract class MLDOMNode<
 		}
 
 		const prevToken = this.prevToken;
-		if (!prevToken || prevToken.type !== 'Text') {
+		if (!prevToken) {
 			return null;
 		}
-		// @ts-ignore force casting
-		const textNode: MLDOMText<T, O> = prevToken;
+		if (prevToken.type !== 'Text') {
+			return null;
+		}
 
 		// One or more newlines and zero or more spaces or tabs.
 		// Or, If textNode is first token and that is filled spaces, tabs and newlines only.
-		const matched = textNode._isFirstToken()
-			? textNode.raw.match(/^(?:[ \t]*\r?\n)*([ \t]*)$/)
-			: textNode.raw.match(/\r?\n([ \t]*)$/);
-		// console.log({ [`${this}`]: matched, _: textNode.raw, f: textNode._isFirstToken() });
+		const matched = prevToken._isFirstToken()
+			? prevToken.raw.match(/^(?:[ \t]*\r?\n)*([ \t]*)$/)
+			: prevToken.raw.match(/\r?\n([ \t]*)$/);
+		// console.log({ [`${this}`]: matched, _: prevToken.raw, f: prevToken._isFirstToken() });
 		if (matched) {
 			// Spaces will include empty string.
 			const spaces = matched[1];
 			if (spaces != null) {
-				this._indentaion = new MLDOMIndentation(textNode, spaces, this.startLine);
+				this._indentaion = new MLDOMIndentation(prevToken, spaces, this.startLine);
 				return this._indentaion;
 			}
 		}

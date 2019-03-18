@@ -3,9 +3,11 @@ import { RuleConfigValue } from '@markuplint/ml-config';
 import { AnonymousNode, Document, NodeType } from '../';
 import { createSelector, getNode } from '../helper';
 import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode } from './';
+import { IMLDOMElement } from '../types';
 
-export default class MLDOMElement<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTElement> {
-	public readonly type: NodeType = 'Element';
+export default class MLDOMElement<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTElement>
+	implements IMLDOMElement {
+	public readonly type = 'Element';
 	public readonly nodeName: string;
 	public readonly attributes: MLDOMAttribute[];
 	public readonly namespaceURI: string;

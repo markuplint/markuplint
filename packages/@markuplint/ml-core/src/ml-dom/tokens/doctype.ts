@@ -1,8 +1,9 @@
 import { MLASTNode } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
-import { NodeType } from '../types';
+import { NodeType, IMLDOMDoctype } from '../types';
 import MLDOMNode from './node';
 
-export default class MLDOMDoctype<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTNode> {
-	public readonly type: NodeType = 'Doctype';
+export default class MLDOMDoctype<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTNode>
+	implements IMLDOMDoctype {
+	public readonly type = 'Doctype';
 }

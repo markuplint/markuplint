@@ -3,6 +3,7 @@ import { RuleConfigValue } from '@markuplint/ml-config';
 import { Document, NodeType } from '../';
 import MLDOMIndentation from './indentation';
 import MLDOMNode from './node';
+import { IMLDOMText } from '../types';
 
 /**
  * Raw text elements
@@ -11,8 +12,9 @@ import MLDOMNode from './node';
  */
 const rawTextElements = ['script', 'style'];
 
-export default class MLDOMText<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTText> {
-	public readonly type: NodeType = 'Text';
+export default class MLDOMText<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTText>
+	implements IMLDOMText {
+	public readonly type = 'Text';
 	public readonly isRawText: boolean;
 
 	constructor(astNode: MLASTText, document: Document<T, O>) {
