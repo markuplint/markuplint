@@ -34,7 +34,6 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 			return [];
 		}
 
-		// @ts-ignore
 		document.setRule(this);
 		const results = await this._v(document, messenger.message(), rule);
 		document.setRule(null);
@@ -56,7 +55,6 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 			return;
 		}
 
-		// @ts-ignore
 		document.setRule(this);
 		await this._f(document, rule);
 		document.setRule(null);
