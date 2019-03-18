@@ -1,6 +1,6 @@
 import { MLASTText } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
-import { Document, NodeType } from '../';
+import { Document } from '../';
 import MLDOMIndentation from './indentation';
 import MLDOMNode from './node';
 import { IMLDOMText } from '../types';

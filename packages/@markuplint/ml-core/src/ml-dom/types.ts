@@ -1,4 +1,3 @@
-import { MLASTNode } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import {
 	MLDOMComment,
@@ -6,7 +5,6 @@ import {
 	MLDOMElement,
 	MLDOMElementCloseTag,
 	MLDOMInvalidNode,
-	MLDOMNode,
 	MLDOMOmittedElement,
 	MLDOMText,
 } from './tokens';

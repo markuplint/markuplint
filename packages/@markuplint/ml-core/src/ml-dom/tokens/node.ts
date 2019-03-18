@@ -7,7 +7,6 @@ import { AnonymousNode, NodeType, IMLDOMNode } from '../types';
 import MLDOMElement from './element';
 import MLDOMIndentation from './indentation';
 import MLDOMOmittedElement from './omitted-element';
-import MLDOMText from './text';
 import MLDOMToken from './token';
 
 export default abstract class MLDOMNode<

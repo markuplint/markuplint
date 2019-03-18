@@ -1,6 +1,6 @@
 import { MLASTElement } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
-import { AnonymousNode, Document, NodeType } from '../';
+import { AnonymousNode, Document } from '../';
 import { createSelector, getNode } from '../helper';
 import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode } from './';
 import { IMLDOMElement } from '../types';

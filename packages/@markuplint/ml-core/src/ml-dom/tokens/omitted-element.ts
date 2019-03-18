@@ -1,7 +1,7 @@
 import { MLASTOmittedElement } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import Document from '../document';
-import { NodeType, IMLDOMOmittedElement } from '../types';
+import { IMLDOMOmittedElement } from '../types';
 import MLDOMNode from './node';
 
 export default class MLDOMOmittedElement<T extends RuleConfigValue, O = null>
