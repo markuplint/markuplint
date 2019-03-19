@@ -1,6 +1,6 @@
 {
 	"name": "markuplint",
-	"version": "1.0.0-alpha.2",
+	"version": "1.0.0-alpha.3",
 	"description": "HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
@@ -25,12 +25,12 @@
 		"@types/strip-ansi": "^3.0.0"
 	},
 	"dependencies": {
-		"@markuplint/file-resoliver": "^1.0.0-alpha.2",
+		"@markuplint/file-resoliver": "^1.0.0-alpha.3",
 		"@markuplint/i18n": "^1.0.0-alpha.0",
 		"@markuplint/ml-ast": "^1.0.0-alpha.0",
 		"@markuplint/ml-config": "^1.0.0-alpha.0",
-		"@markuplint/ml-core": "^1.0.0-alpha.0",
-		"@markuplint/rules": "^1.0.0-alpha.0",
+		"@markuplint/ml-core": "^1.0.0-alpha.1",
+		"@markuplint/rules": "^1.0.0-alpha.1",
 		"cli-color": "^1.4.0",
 		"eastasianwidth": "^0.2.0",
 		"get-stdin": "^6.0.0",
