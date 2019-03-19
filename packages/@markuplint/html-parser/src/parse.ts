@@ -372,6 +372,9 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 	 */
 	nodeOrders.sort((a, b) => {
 		if (a.startOffset === b.startOffset) {
+			if (a.isGhost && b.isGhost) {
+				return 0;
+			}
 			if (a.isGhost) {
 				return -1;
 			}
