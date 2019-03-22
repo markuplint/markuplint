@@ -11,9 +11,15 @@ interface RuleTmplProps {
 				title: string;
 			};
 		};
-		allSitePage: {
+		allMarkdownRemark: {
 			edges: {
-				node: { path: string; id: string };
+				node: {
+					id: string;
+					frontmatter: {
+						title: string;
+					};
+					fields: { rule: string; page: string };
+				};
 			}[];
 		};
 	};
@@ -28,11 +34,17 @@ export const query = graphql`
 			}
 		}
 
-		allSitePage(filter: { path: { regex: "/^/rules//i" } }) {
+		allMarkdownRemark(filter: { fields: { page: { regex: "/^/rules//i" } } }) {
 			edges {
 				node {
-					path
 					id
+					frontmatter {
+						title
+					}
+					fields {
+						rule
+						page
+					}
 				}
 			}
 		}
@@ -40,10 +52,10 @@ export const query = graphql`
 `;
 
 const Rule: React.FunctionComponent<RuleTmplProps> = ({ data }) => {
-	const { markdownRemark, allSitePage } = data;
+	const { markdownRemark, allMarkdownRemark } = data;
 	const { html, frontmatter } = markdownRemark;
 	const { title } = frontmatter;
-	const { edges } = allSitePage;
+	const { edges } = allMarkdownRemark;
 	return (
 		<>
 			<Helmet>
@@ -52,20 +64,20 @@ const Rule: React.FunctionComponent<RuleTmplProps> = ({ data }) => {
 			<Layout
 				side={
 					<nav role="navigation">
+						<h2>
+							<Link to="/rules/">Rules</Link>
+						</h2>
 						<ul>
 							{edges.map(edge => (
 								<li key={edge.node.id}>
-									<Link to={edge.node.path}>{edge.node.path}</Link>
+									<Link to={edge.node.fields.page}>{edge.node.frontmatter.title}</Link>
 								</li>
 							))}
 						</ul>
 					</nav>
 				}
 			>
-				<div>
-					<h1>{title}</h1>
-					<div dangerouslySetInnerHTML={{ __html: html }} />
-				</div>
+				<div dangerouslySetInnerHTML={{ __html: html }} />
 			</Layout>
 		</>
 	);

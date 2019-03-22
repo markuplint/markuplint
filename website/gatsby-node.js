@@ -5,10 +5,17 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
 	const { createNodeField } = actions;
 	if (node.internal.type === `MarkdownRemark`) {
 		const filePath = createFilePath({ node, getNode, basePath: `pages` });
+		const [_, ruleName, lang] = filePath.match(/\/?([a-z0-9_-]+)\/readme(?:\.([a-z-]+))?/i) || [];
+		const pagePath = (lang ? `/${lang}` : '') + `/rules/${ruleName}/`;
 		createNodeField({
 			node,
 			name: `rule`,
 			value: filePath,
+		});
+		createNodeField({
+			node,
+			name: `page`,
+			value: pagePath,
 		});
 	}
 };
@@ -22,6 +29,7 @@ exports.createPages = ({ graphql, actions }) => {
 					node {
 						fields {
 							rule
+							page
 						}
 					}
 				}
@@ -29,11 +37,9 @@ exports.createPages = ({ graphql, actions }) => {
 		}
 	`).then(result => {
 		result.data.allMarkdownRemark.edges.forEach(({ node }) => {
-			const rule = node.fields.rule;
-			const [_, ruleName, lang] = rule.match(/\/?([a-z0-9_-]+)\/readme(?:\.([a-z-]+))?/i) || [];
-			const pagePath = (lang ? `/${lang}` : '') + `/rules/${ruleName}/`;
+			const { rule, page } = node.fields;
 			createPage({
-				path: pagePath,
+				path: page,
 				component: path.resolve(__dirname, `src/templates/rule.tsx`),
 				context: {
 					rule,

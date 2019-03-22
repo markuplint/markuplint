@@ -1,3 +1,7 @@
+---
+title: id-duplication
+---
+
 # The "id" attribute value duplication (`id-duplication`)
 
 Warns that **id** attribute value were duplicated in one document.
@@ -11,14 +15,14 @@ Warns that **id** attribute value were duplicated in one document.
 
 ```html
 <html>
-<body>
-	<div id="a">
-		<p id="a">lorem</p>
-	</div>
+	<body>
+		<div id="a">
+			<p id="a">lorem</p>
+		</div>
 
-	<div id="a"></div>
-	<img id="a" src="path/to">
-</body>
+		<div id="a"></div>
+		<img id="a" src="path/to" />
+	</body>
 </html>
 ```
 
@@ -26,14 +30,14 @@ Warns that **id** attribute value were duplicated in one document.
 
 ```html
 <html>
-<body>
-	<div id="a">
-		<p id="b">lorem</p>
-	</div>
+	<body>
+		<div id="a">
+			<p id="b">lorem</p>
+		</div>
 
-	<div id="c"></div>
-	<img id="d" src="path/to">
-</body>
+		<div id="c"></div>
+		<img id="d" src="path/to" />
+	</body>
 </html>
 ```
 

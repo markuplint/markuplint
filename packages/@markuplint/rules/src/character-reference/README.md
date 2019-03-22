@@ -1,3 +1,7 @@
+---
+title: character-reference
+---
+
 # Character reference (`character-reference`)
 
 Warns when unauthorized illegal characters are not escaped with character reference in the text node or attribute value.
@@ -10,15 +14,15 @@ Warns when unauthorized illegal characters are not escaped with character refere
 👎 Examples of **incorrect** code for this rule
 
 ```html
-<div id="a"> > < & " </div>
-<img src="path/to?a=b&c=d">
+<div id="a">> < & "</div>
+<img src="path/to?a=b&c=d" />
 ```
 
 👍 Examples of **correct** code for this rule
 
 ```html
-<div id="a"> &gt; &lt; &amp; &quot; </div>
-<img src="path/to?a=b&amp;c=d">
+<div id="a">&gt; &lt; &amp; &quot;</div>
+<img src="path/to?a=b&amp;c=d" />
 ```
 
 ### Options

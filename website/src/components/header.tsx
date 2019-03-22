@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'gatsby';
 import styled from 'styled-components';
 
 const Style = styled.div`
@@ -13,7 +14,9 @@ const Header: React.FunctionComponent = () => {
 		<Style>
 			<header role="banner">
 				<div>
-					<img src="" alt="markuplint" />
+					<Link to="/">
+						<img src="" alt="markuplint" />
+					</Link>
 				</div>
 			</header>
 		</Style>

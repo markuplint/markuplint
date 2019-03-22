@@ -1,3 +1,7 @@
+---
+title: case-sensitive-attr-name
+---
+
 # Tag name case-sensitive (`case-sensitive-attr-name`)
 
 Warns that the tag name is not in one of uppercase or lowercase letters. Unlike HTML, foreign elements (SVG or MathML) are case sensitive, so they are not subject to this rule.
@@ -12,8 +16,8 @@ Also, markuplint's HTML parser does not distinguish case of custom element tag n
 👎 Examples of **incorrect** code for this rule
 
 ```html
-<DIV><p>lorem</p></DIV>
-<IMG src="path/to">
+<div><p>lorem</p></div>
+<img src="path/to" />
 ```
 
 👍 Examples of **correct** code for this rule
@@ -25,10 +29,10 @@ Also, markuplint's HTML parser does not distinguish case of custom element tag n
 
 ### Options
 
-value|default|description
----|---|---
-`"lower"`|✓|Warns that the tag name is not in lowercase.
-`"upper"`||Warns that the tag name is not in uppercase.
+| value     | default | description                                  |
+| --------- | ------- | -------------------------------------------- |
+| `"lower"` | ✓       | Warns that the tag name is not in lowercase. |
+| `"upper"` |         | Warns that the tag name is not in uppercase. |
 
 ### Default notification level
 

@@ -1,3 +1,7 @@
+---
+title: required-attr
+---
+
 # Required attributes (`required-attr`)
 
 Warns if specified attributes are not appeared on an element.
@@ -9,7 +13,7 @@ Warns if specified attributes are not appeared on an element.
 `{ "required-attr": "alt" }`
 
 ```html
-<img src="/path/to/image.png">
+<img src="/path/to/image.png" />
 ```
 
 :+1: Example of **correct** code for this rule
@@ -17,14 +21,14 @@ Warns if specified attributes are not appeared on an element.
 `{ "required-attr": "alt" }`
 
 ```html
-<img src="/path/to/image.png" alt="alternative text">
+<img src="/path/to/image.png" alt="alternative text" />
 ```
 
 ### Options
 
-value|default|description
----|---|---
-`"attribute-name"`| [] |Attribute name string or array of attribute names to warn if they are not appeared.
+| value              | default | description                                                                         |
+| ------------------ | ------- | ----------------------------------------------------------------------------------- |
+| `"attribute-name"` | []      | Attribute name string or array of attribute names to warn if they are not appeared. |
 
 ## Configuration Example
 

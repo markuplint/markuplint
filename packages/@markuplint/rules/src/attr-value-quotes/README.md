@@ -1,3 +1,7 @@
+---
+title: attr-value-quotes
+---
+
 # Attribute quotes (`attr-value-quotes`)
 
 Warns if the attribute value is not **quoted**.
@@ -7,14 +11,14 @@ Warns if the attribute value is not **quoted**.
 👎 Examples of **incorrect** code for this rule
 
 ```html
-<div data-attr=value></div>
-<div data-attr='value'></div>
+<div data-attr="value"></div>
+<div data-attr="value"></div>
 ```
 
 `{ attr-value-quotes: ['warning', 'single'] }`
 
 ```html
-<div data-attr=value></div>
+<div data-attr="value"></div>
 <div data-attr="value"></div>
 ```
 
@@ -27,15 +31,15 @@ Warns if the attribute value is not **quoted**.
 `{ attr-value-quotes: ['warning', 'single'] }`
 
 ```html
-<div data-attr='value'></div>
+<div data-attr="value"></div>
 ```
 
 ### Options
 
-value|default|description
----|---|---
-`"double"`|✓|Warns if the attribute value is not quoted on double quotation mark.
-`"single"`||Warns if the attribute value is not quoted on single quotation mark.
+| value      | default | description                                                          |
+| ---------- | ------- | -------------------------------------------------------------------- |
+| `"double"` | ✓       | Warns if the attribute value is not quoted on double quotation mark. |
+| `"single"` |         | Warns if the attribute value is not quoted on single quotation mark. |
 
 ### Default notification level
 

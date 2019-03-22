@@ -36,6 +36,9 @@ export default React.memo((props: IndexPageProps) => {
 					<li>
 						<Link to="/playground">Playground</Link>
 					</li>
+					<li>
+						<Link to="/rules">Rules</Link>
+					</li>
 				</ul>
 			</Layout>
 		</>
