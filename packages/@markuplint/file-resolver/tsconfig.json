@@ -11,5 +11,5 @@
 		}
 	],
 	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "lib", "./src/**/*.test.ts"]
+	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
 }
