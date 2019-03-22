@@ -6,7 +6,9 @@
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev & jest --watch",
 		"test": "jest --coverage",
-		"cli": "ts-node packages/markuplint/src/cli/index.ts"
+		"cli": "ts-node packages/markuplint/src/cli/index.ts",
+		"site:dev": "cd website; yarn dev",
+		"site:build": "cd website; yarn build"
 	},
 	"jest": {
 		"globals": {
@@ -42,7 +44,8 @@
 	},
 	"workspaces": [
 		"packages/*",
-		"packages/@markuplint/*"
+		"packages/@markuplint/*",
+		"website/"
 	],
 	"devDependencies": {
 		"@types/jest": "^24.0.11",

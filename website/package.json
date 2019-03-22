@@ -1,0 +1,29 @@
+{
+	"name": "@markuplint/website",
+	"description": "https://markuplint.dev",
+	"version": "1.0.0-alpha",
+	"private": true,
+	"scripts": {
+		"dev": "gatsby develop",
+		"build": "gatsby build",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@types/node": "^11.11.5",
+		"@types/react": "^16.8.8",
+		"@types/react-dom": "16.8.3",
+		"gatsby": "^2.2.6",
+		"gatsby-plugin-react-helmet": "^3.0.10",
+		"gatsby-plugin-typescript": "^2.0.11",
+		"gatsby-source-filesystem": "^2.0.27",
+		"gatsby-transformer-remark": "^2.3.8",
+		"react": "^16.8.4",
+		"react-dom": "^16.8.4",
+		"react-helmet": "^5.2.0",
+		"styled-components": "^4.1.3"
+	},
+	"devDependencies": {
+		"@types/react-helmet": "^5.0.8",
+		"@types/styled-components": "^4.1.12"
+	}
+}
