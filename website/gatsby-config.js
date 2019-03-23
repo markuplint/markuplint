@@ -5,8 +5,24 @@ module.exports = {
 		siteName: `markuplint`,
 	},
 	plugins: [
+		// typescript
 		`gatsby-plugin-typescript`,
+
+		// Meta header
 		`gatsby-plugin-react-helmet`,
+
+		// Images
+		{
+			resolve: `gatsby-source-filesystem`,
+			options: {
+				name: `images`,
+				path: path.resolve(__dirname, '..', 'media'),
+			},
+		},
+		`gatsby-plugin-sharp`,
+		`gatsby-transformer-sharp`,
+
+		// Rules Pages
 		{
 			resolve: `gatsby-source-filesystem`,
 			options: {
@@ -17,15 +33,10 @@ module.exports = {
 		{
 			resolve: `gatsby-transformer-remark`,
 			options: {
-				// CommonMark mode (default: true)
 				commonmark: true,
-				// Footnotes mode (default: true)
 				footnotes: true,
-				// Pedantic mode (default: true)
 				pedantic: true,
-				// GitHub Flavored Markdown mode (default: true)
 				gfm: true,
-				// Plugins configs
 				plugins: [],
 			},
 		},

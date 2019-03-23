@@ -1,0 +1,26 @@
+:root {
+	--lightest-color: #fff;
+	--darkest-color: #333;
+	--primary-color: #0071bc;
+	--primary-text-color: var(--darkest-color);
+	--header-color: #f0f0f5;
+}
+
+body {
+	font-family: Helvetica, Arial, sans-serif;
+	color: var(--primary-text-color);
+}
+
+a {
+	color: var(--primary-color);
+}
+
+blockquote {
+	background: #f5f5f5;
+	margin: 1em 0;
+	padding: 0.1em 1em;
+}
+
+code {
+	font-family: Courier, monospace;
+}

@@ -2,6 +2,7 @@ import React from 'react';
 import { graphql, Link } from 'gatsby';
 import { Helmet } from 'react-helmet';
 import Layout from '../layouts';
+import Editor from '../components/editor';
 
 interface PageProps {
 	data: {
@@ -31,7 +32,7 @@ export default React.memo((props: PageProps) => {
 			</Helmet>
 			<Layout>
 				<h1>Playground</h1>
-				<p>🚧 Work in progress</p>
+				<Editor />
 			</Layout>
 		</>
 	);
