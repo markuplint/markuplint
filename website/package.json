@@ -30,6 +30,7 @@
 	},
 	"devDependencies": {
 		"@types/react-helmet": "^5.0.8",
-		"@types/styled-components": "^4.1.12"
+		"@types/styled-components": "^4.1.12",
+		"monaco-editor-webpack-plugin": "^1.7.0"
 	}
 }
