@@ -16,8 +16,8 @@ Also, markuplint's HTML parser does not distinguish case of custom element tag n
 👎 Examples of **incorrect** code for this rule
 
 ```html
-<div><p>lorem</p></div>
-<img src="path/to" />
+<DIV><p>lorem</p></DIV>
+<IMG src="path/to">
 ```
 
 👍 Examples of **correct** code for this rule

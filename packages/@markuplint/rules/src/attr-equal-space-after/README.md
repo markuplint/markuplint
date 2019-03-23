@@ -15,18 +15,25 @@ Warns that there is spaces **after** `=` of attribute.
 👎 Examples of **incorrect** code for this rule
 
 ```html
-<img src="path/to" />
-<img src="path/to" />
-<img src="path/to" />
-<img src="path/to" />
+<img src= "path/to">
+<img src = "path/to">
+<img
+	src=
+	"path/to">
+<img
+	src
+	=
+	"path/to">
 ```
 
 👍 Examples of **correct** code for this rule
 
 ```html
-<img src="path/to" />
-<img src="path/to" />
-<img src="path/to" />
+<img src="path/to">
+<img src ="path/to">
+<img
+	src
+	="path/to">
 ```
 
 ### `"always"`
@@ -36,16 +43,24 @@ Warns that there is not spaces **after** `=` of attribute. Line breaks are inclu
 👎 Examples of **incorrect** code for this rule
 
 ```html
-<img src="path/to" /> <img src="path/to" />
+<img src="path/to">
+<img
+	src
+	="path/to">
 ```
 
 👍 Examples of **correct** code for this rule
 
 ```html
-<img src="path/to" />
-<img src="path/to" />
-<img src="path/to" />
-<img src="path/to" />
+<img src= "path/to">
+<img src = "path/to">
+<img
+	src=
+	"path/to">
+<img
+	src
+	=
+	"path/to">
 ```
 
 ### `"never-single-line"`
@@ -55,17 +70,25 @@ Warns that there is not spaces **after** `=` of attribute. Line breaks are inclu
 👎 Examples of **incorrect** code for this rule
 
 ```html
-<img src="path/to" /> <img src="path/to" />
+<img src= "path/to">
+<img src = "path/to">
 ```
 
 👍 Examples of **correct** code for this rule
 
 ```html
-<img src="path/to" />
-<img src="path/to" />
-<img src="path/to" />
-<img src="path/to" />
-<img src="path/to" />
+<img src="path/to">
+<img src ="path/to">
+<img
+	src
+	="path/to">
+<img
+	src=
+	"path/to">
+<img
+	src
+	=
+	"path/to">
 ```
 
 ### `"always-single-line"`
@@ -75,15 +98,20 @@ Warns that there is not spaces **after** `=` of attribute. But warns if there is
 👎 Examples of **incorrect** code for this rule
 
 ```html
-<img src="path/to" />
-<img src="path/to" />
-<img src="path/to" />
+<img src="path/to">
+<img
+	src
+	="path/to">
+<img
+	src=
+	"path/to">
 ```
 
 👍 Examples of **correct** code for this rule
 
 ```html
-<img src="path/to" /> <img src="path/to" />
+<img src= "path/to">
+<img src = "path/to">
 ```
 
 ### Options

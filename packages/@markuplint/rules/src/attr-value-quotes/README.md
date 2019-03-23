@@ -11,14 +11,14 @@ Warns if the attribute value is not **quoted**.
 👎 Examples of **incorrect** code for this rule
 
 ```html
-<div data-attr="value"></div>
-<div data-attr="value"></div>
+<div data-attr=value></div>
+<div data-attr='value'></div>
 ```
 
 `{ attr-value-quotes: ['warning', 'single'] }`
 
 ```html
-<div data-attr="value"></div>
+<div data-attr=value></div>
 <div data-attr="value"></div>
 ```
 
@@ -31,7 +31,7 @@ Warns if the attribute value is not **quoted**.
 `{ attr-value-quotes: ['warning', 'single'] }`
 
 ```html
-<div data-attr="value"></div>
+<div data-attr='value'></div>
 ```
 
 ### Options

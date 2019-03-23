@@ -62,7 +62,7 @@ When using external libraries, problems may arise if you specify the `async` att
 ```json
 {
 	"rules": {
-		"async-attr-in-script": "always"
+		"async-attr-in-script": "always",
 	},
 	"nodeRules": [
 		{

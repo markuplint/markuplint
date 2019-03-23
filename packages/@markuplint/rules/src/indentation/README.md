@@ -12,9 +12,9 @@ Warns that indentation is not unified.
 
 ```html
 <div>
-	<span>lorem</span>
+  <span>lorem</span>
 	ipsam
-</div>
+   </div>
 ```
 
 👍 Examples of **correct** code for this rule
