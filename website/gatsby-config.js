@@ -1,8 +1,9 @@
 const path = require('path');
+const package = require('../package.json');
 
 module.exports = {
 	siteMetadata: {
-		siteName: `markuplint`,
+		siteName: `${package.name} - ${package.description}`,
 	},
 	plugins: [
 		// typescript
