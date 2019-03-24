@@ -2,6 +2,22 @@ import React from 'react';
 import { graphql, Link } from 'gatsby';
 import { Helmet } from 'react-helmet';
 import Layout from '../layouts';
+import styled from 'styled-components';
+import loadable from '@loadable/component';
+
+const Editor = loadable(() => import('../components/editor'));
+
+const EditorFallback = styled.div`
+	height: 500px;
+	margin: 0 0 2em;
+	/* monaco editor */
+	background: #1e1e1e;
+	color: #fff;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'HelveticaNeue-Light', 'Ubuntu',
+		'Droid Sans', sans-serif;
+	font-size: 12px;
+	padding: 1em;
+`;
 
 interface PageProps {
 	data: {
@@ -23,33 +39,6 @@ export const pageQuery = graphql`
 	}
 `;
 
-interface S {
-	loaded: boolean;
-}
-
-class E extends React.Component<{}, S> {
-	state: S = {
-		loaded: false,
-	};
-
-	e = null;
-
-	componentDidMount() {
-		import('../components/editor').then(e => {
-			// @ts-ignore
-			this.e = e;
-			this.setState({ loaded: true });
-		});
-	}
-
-	render() {
-		// @ts-ignore
-		const Editor = this.e && this.e.default;
-		// @ts-ignore
-		return Editor ? <Editor /> : null;
-	}
-}
-
 export default React.memo((props: PageProps) => {
 	return (
 		<>
@@ -58,7 +47,7 @@ export default React.memo((props: PageProps) => {
 			</Helmet>
 			<Layout>
 				<h1>Playground</h1>
-				<E />
+				<Editor fallback={<EditorFallback>Editor is booting...</EditorFallback>} />
 			</Layout>
 		</>
 	);

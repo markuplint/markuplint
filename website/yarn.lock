@@ -802,6 +802,13 @@
     signedsource "^1.0.0"
     yargs "^9.0.0"
 
+"@loadable/component@^5.7.0":
+  version "5.7.0"
+  resolved "https://registry.yarnpkg.com/@loadable/component/-/component-5.7.0.tgz#6d6b5afc2c18b9bbcb2adf1b581621e5291feecf"
+  integrity sha512-yHe2WrqUqw2zyS5MnHziVfhMONFe7Pd8oMO2UB/G9XxkXLZkSvFZQIpNouHNNE1Kc29asIYXnR42vMD5IjruSQ==
+  dependencies:
+    hoist-non-react-statics "^3.3.0"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -879,6 +886,13 @@
   version "4.7.2"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.2.tgz#0e670ea254d559241b6eeb3894f8754991e73220"
   integrity sha512-ui3WwXmjTaY73fOQ3/m3nnajU/Orhi6cEu5rzX+BrAAJxa3eITXZ5ch9suPqtM03OWhAHhPSyBGCN4UKoxO20Q==
+
+"@types/loadable__component@^5.6.0":
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/@types/loadable__component/-/loadable__component-5.6.0.tgz#e8fac4ff03400b6cd1aef69a40dc66f06a72ac0d"
+  integrity sha512-Jq6jf8l4O0iVIELUizjm4YbUSN+LekhF0ZDaZ781OGygczE72dCYQ+CEaSMKKwMrDTzMY+c9xJIZ3vgyhMbNSA==
+  dependencies:
+    "@types/react" "*"
 
 "@types/minimatch@*":
   version "3.0.3"
