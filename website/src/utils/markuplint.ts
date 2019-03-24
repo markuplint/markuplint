@@ -3,6 +3,9 @@ import * as Parser from '@markuplint/html-parser';
 import { Config } from '@markuplint/ml-config';
 import rules from '@markuplint/rules';
 import { LocaleSet, Messenger } from '@markuplint/i18n';
+import * as monaco from 'monaco-editor';
+import getEndLine from '@markuplint/html-parser/lib/get-end-line';
+import getEndCol from '@markuplint/html-parser/lib/get-end-col';
 
 const defaultConfig: Config = {
 	rules: {
@@ -76,8 +79,19 @@ export default async function lint(code: string) {
 	const ruleset = convertRuleset(defaultConfig);
 	const messenger = await getMessenger(navigator.language);
 	const ml = new MLCore(Parser, code, ruleset, rules, messenger);
-	const result = await ml.verify();
-	return result;
+	const reports = await ml.verify();
+	const diagnotics = [];
+	for (const report of reports) {
+		diagnotics.push({
+			severity: report.severity === 'warning' ? monaco.MarkerSeverity.Warning : monaco.MarkerSeverity.Error,
+			startLineNumber: report.line,
+			startColumn: report.col,
+			endLineNumber: getEndLine(report.raw, report.line),
+			endColumn: getEndCol(report.raw, report.col),
+			message: `<markuplint> ${report.message} (${report.ruleId})`,
+		});
+	}
+	return diagnotics;
 }
 
 export async function getMessenger(locale?: string) {

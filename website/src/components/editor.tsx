@@ -1,32 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import MonacoEditor, { EditorDidMount } from 'react-monaco-editor';
-import * as monaco from 'monaco-editor';
-import markuplint from '../utils/markuplint';
-import getEndLine from '@markuplint/html-parser/src/get-end-line';
-import getEndCol from '@markuplint/html-parser/src/get-end-col';
+import lint from '../utils/markuplint';
 
 const Style = styled.div`
 	width: 100%;
 	height: 500px;
 	margin: 0 0 2em;
 `;
-
-async function lint(code: string) {
-	const reports = await markuplint(code);
-	const diagnotics = [];
-	for (const report of reports) {
-		diagnotics.push({
-			severity: report.severity === 'warning' ? monaco.MarkerSeverity.Warning : monaco.MarkerSeverity.Error,
-			startLineNumber: report.line,
-			startColumn: report.col,
-			endLineNumber: getEndLine(report.raw, report.line),
-			endColumn: getEndCol(report.raw, report.col),
-			message: `<markuplint> ${report.message} (${report.ruleId})`,
-		});
-	}
-	return diagnotics;
-}
 
 type EditorDidMountParams = Parameters<EditorDidMount>;
 type IStandaloneCodeEditor = EditorDidMountParams[0];
