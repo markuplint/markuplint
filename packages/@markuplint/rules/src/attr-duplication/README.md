@@ -1,3 +1,7 @@
+---
+title: attr-duplication
+---
+
 # Attributes duplication (`attr-duplication`)
 
 Warns that **attributes** were duplicated in one element. Capital letters and lower case letters are not distinguished.

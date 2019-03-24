@@ -1,3 +1,7 @@
+---
+title: attr-value-quotes
+---
+
 # Attribute quotes (`attr-value-quotes`)
 
 Warns if the attribute value is not **quoted**.
@@ -32,10 +36,10 @@ Warns if the attribute value is not **quoted**.
 
 ### Options
 
-value|default|description
----|---|---
-`"double"`|✓|Warns if the attribute value is not quoted on double quotation mark.
-`"single"`||Warns if the attribute value is not quoted on single quotation mark.
+| value      | default | description                                                          |
+| ---------- | ------- | -------------------------------------------------------------------- |
+| `"double"` | ✓       | Warns if the attribute value is not quoted on double quotation mark. |
+| `"single"` |         | Warns if the attribute value is not quoted on single quotation mark. |
 
 ### Default notification level
 

@@ -1,4 +1,8 @@
-# "async" attribute in script tag  (`async-attr-in-script`)
+---
+title: async-attr-in-script
+---
+
+# "async" attribute in script tag (`async-attr-in-script`)
 
 Warn about setting / non-setting of **async attribute** in script tag.
 
@@ -37,10 +41,10 @@ Warn about setting / non-setting of **async attribute** in script tag.
 
 ### Options
 
-value|default|description
----|---|---
-`"always"`|✓|Warns that "async" attribute is unset.
-`"never"`||Warns that "async" attribute is set.
+| value      | default | description                            |
+| ---------- | ------- | -------------------------------------- |
+| `"always"` | ✓       | Warns that "async" attribute is unset. |
+| `"never"`  |         | Warns that "async" attribute is set.   |
 
 ### Default notification level
 

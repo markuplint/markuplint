@@ -1,3 +1,7 @@
+---
+title: id-duplication
+---
+
 # The "id" attribute value duplication (`id-duplication`)
 
 Warns that **id** attribute value were duplicated in one document.

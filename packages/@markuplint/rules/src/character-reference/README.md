@@ -1,3 +1,7 @@
+---
+title: character-reference
+---
+
 # Character reference (`character-reference`)
 
 Warns when unauthorized illegal characters are not escaped with character reference in the text node or attribute value.

@@ -1,0 +1,46 @@
+* {
+	box-sizing: border-box;
+}
+
+:root {
+	--lightest-color: #fff;
+	--darkest-color: #333;
+	--primary-color: #0071bc;
+	--primary-color-dark: #08588c;
+	--primary-text-color: var(--darkest-color);
+	--primary-text-color-pale: #999;
+	--primary-border-color: #f3f3f9;
+	--header-color: #f0f0f5;
+
+	font-size: 16px;
+}
+
+body {
+	font-family: Helvetica, Arial, sans-serif;
+	color: var(--primary-text-color);
+	font-size: 1rem;
+}
+
+a {
+	color: var(--primary-color);
+}
+
+a:visited {
+	color: var(--primary-color-dark);
+}
+
+p,
+ul,
+ol {
+	line-height: 1.6;
+}
+
+blockquote {
+	background: #f5f5f5;
+	margin: 1em 0;
+	padding: 0.1em 1em;
+}
+
+code {
+	font-family: Courier, monospace;
+}

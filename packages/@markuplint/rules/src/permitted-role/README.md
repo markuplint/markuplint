@@ -1,3 +1,7 @@
+---
+title: permitted-role
+---
+
 # Permitted "role" attribute (`permitted-role`)
 
 Warns when there is an unpermitted value of "role" attribute defined.

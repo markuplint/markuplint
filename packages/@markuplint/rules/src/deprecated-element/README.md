@@ -1,3 +1,7 @@
+---
+title: deprecated-element
+---
+
 # Deprecated elements (`deprecated-element`)
 
 Warns when there is an element defined as deprecated in `nodeRules` in the configuration file.

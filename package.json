@@ -1,4 +1,6 @@
 {
+	"name": "markuplint",
+	"description": "Linter for All Markup Languages.",
 	"private": true,
 	"scripts": {
 		"bootstrap": "lerna bootstrap",
@@ -6,7 +8,9 @@
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev & jest --watch",
 		"test": "jest --coverage",
-		"cli": "ts-node packages/markuplint/src/cli/index.ts"
+		"cli": "ts-node packages/markuplint/src/cli/index.ts",
+		"site:dev": "cd website; yarn site:dev",
+		"site:build": "cd website; yarn site:build"
 	},
 	"jest": {
 		"globals": {
@@ -42,7 +46,8 @@
 	},
 	"workspaces": [
 		"packages/*",
-		"packages/@markuplint/*"
+		"packages/@markuplint/*",
+		"website"
 	],
 	"devDependencies": {
 		"@types/jest": "^24.0.11",
@@ -54,6 +59,6 @@
 		"tslint": "^5.14.0",
 		"tslint-config-prettier": "^1.18.0",
 		"tslint-plugin-prettier": "^2.0.1",
-		"typescript": "^3.4.0-dev.20190316"
+		"typescript": "^3.4.0-dev.20190321"
 	}
 }

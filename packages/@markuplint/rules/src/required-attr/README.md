@@ -1,3 +1,7 @@
+---
+title: required-attr
+---
+
 # Required attributes (`required-attr`)
 
 Warns if specified attributes are not appeared on an element.
@@ -22,9 +26,9 @@ Warns if specified attributes are not appeared on an element.
 
 ### Options
 
-value|default|description
----|---|---
-`"attribute-name"`| [] |Attribute name string or array of attribute names to warn if they are not appeared.
+| value              | default | description                                                                         |
+| ------------------ | ------- | ----------------------------------------------------------------------------------- |
+| `"attribute-name"` | []      | Attribute name string or array of attribute names to warn if they are not appeared. |
 
 ## Configuration Example
 

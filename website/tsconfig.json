@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es5",
+		"strict": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
+		"allowSyntheticDefaultImports": true,
+		"experimentalDecorators": true,
+		"esModuleInterop": true,
+		"noImplicitAny": true,
+		"declaration": true,
+		"lib": ["dom", "es2015", "es2016", "es2017", "esnext"],
+		"baseUrl": ".",
+		"jsx": "react"
+	},
+	"include": ["./src/**/*"]
+}
