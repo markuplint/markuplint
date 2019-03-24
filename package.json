@@ -47,7 +47,7 @@
 	"workspaces": [
 		"packages/*",
 		"packages/@markuplint/*",
-		"website/"
+		"website"
 	],
 	"devDependencies": {
 		"@types/jest": "^24.0.11",
