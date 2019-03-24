@@ -1,18 +1,32 @@
+* {
+	box-sizing: border-box;
+}
+
 :root {
 	--lightest-color: #fff;
 	--darkest-color: #333;
 	--primary-color: #0071bc;
 	--primary-text-color: var(--darkest-color);
+	--primary-border-color: #f3f3f9;
 	--header-color: #f0f0f5;
+
+	font-size: 16px;
 }
 
 body {
 	font-family: Helvetica, Arial, sans-serif;
 	color: var(--primary-text-color);
+	font-size: 1rem;
 }
 
 a {
 	color: var(--primary-color);
+}
+
+p,
+ul,
+ol {
+	line-height: 1.6;
 }
 
 blockquote {

@@ -22,7 +22,7 @@ const GridHeader = styled.div`
 
 const GridSide = styled.div`
 	grid-area: side;
-	padding: 0 0 0 2em;
+	padding: 0;
 `;
 
 const GridMain = styled.div`

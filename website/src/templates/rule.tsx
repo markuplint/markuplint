@@ -2,6 +2,7 @@ import React from 'react';
 import { graphql, Link } from 'gatsby';
 import Layout from '../layouts';
 import { Helmet } from 'react-helmet';
+import NavSide from '../components/nav-side';
 
 interface RuleTmplProps {
 	data: {
@@ -63,18 +64,18 @@ const Rule: React.FunctionComponent<RuleTmplProps> = ({ data }) => {
 			</Helmet>
 			<Layout
 				side={
-					<nav role="navigation">
-						<h2>
-							<Link to="/rules/">Rules</Link>
-						</h2>
-						<ul>
-							{edges.map(edge => (
-								<li key={edge.node.id}>
-									<Link to={edge.node.fields.page}>{edge.node.frontmatter.title}</Link>
-								</li>
-							))}
-						</ul>
-					</nav>
+					<NavSide
+						heading={{
+							id: 'rule',
+							path: '/rules',
+							title: 'Rules',
+						}}
+						links={edges.map(edge => ({
+							id: edge.node.id,
+							path: edge.node.fields.page,
+							title: edge.node.frontmatter.title,
+						}))}
+					/>
 				}
 			>
 				<div dangerouslySetInnerHTML={{ __html: html }} />
