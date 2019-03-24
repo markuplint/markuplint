@@ -6,7 +6,9 @@
 	--lightest-color: #fff;
 	--darkest-color: #333;
 	--primary-color: #0071bc;
+	--primary-color-dark: #08588c;
 	--primary-text-color: var(--darkest-color);
+	--primary-text-color-pale: #999;
 	--primary-border-color: #f3f3f9;
 	--header-color: #f0f0f5;
 
@@ -21,6 +23,10 @@ body {
 
 a {
 	color: var(--primary-color);
+}
+
+a:visited {
+	color: var(--primary-color-dark);
 }
 
 p,
