@@ -4,9 +4,8 @@
 	"version": "1.0.0-alpha",
 	"private": true,
 	"scripts": {
-		"dev": "gatsby develop",
-		"build": "gatsby build",
-		"type-check": "tsc --noEmit"
+		"site:dev": "gatsby develop",
+		"site:build": "gatsby build"
 	},
 	"dependencies": {
 		"@loadable/component": "^5.7.0",
