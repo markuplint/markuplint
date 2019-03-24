@@ -3,6 +3,8 @@ const package = require('../package.json');
 
 module.exports = {
 	siteMetadata: {
+		name: package.name,
+		description: package.description,
 		siteName: `${package.name} - ${package.description}`,
 	},
 	plugins: [
