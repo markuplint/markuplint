@@ -809,6 +809,45 @@
   dependencies:
     hoist-non-react-statics "^3.3.0"
 
+"@markuplint/html-parser@^1.0.0-alpha.1":
+  version "1.0.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@markuplint/html-parser/-/html-parser-1.0.0-alpha.1.tgz#83161d69763a6726a07cecb4f7541fcc352fc41f"
+  integrity sha512-twp/YEbpgwEXs+SVtrPvppZfC6FQ75f1e9vUdNBD36nbIbgBiRG9SR5sKBYDb9lK/K98VmUYhxubFVMC7wEcpg==
+  dependencies:
+    "@markuplint/ml-ast" "^1.0.0-alpha.0"
+    parse5 "^5.1.0"
+    uuid "^3.3.2"
+
+"@markuplint/i18n@^1.0.0-alpha.0":
+  version "1.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/i18n/-/i18n-1.0.0-alpha.0.tgz#a635c657f98acc8738e5f1f98220524e3b90eb42"
+  integrity sha512-ws4lw3zRfJhHAL0dP6Rxks90mEGyByQv8Y7Y5ltT0iL+1SDWykzBI2MyrppYn0RQH/l7EX8Iqpmdx8wDRC/Iiw==
+
+"@markuplint/ml-ast@^1.0.0-alpha.0":
+  version "1.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-ast/-/ml-ast-1.0.0-alpha.0.tgz#80b1da844aae323c978ba53dd62d6a575142dc34"
+  integrity sha512-JyTUMDX2Tuj3NsnlP+Lyv/nHpxIclGxJryWolZsejLltXBeLTLSWImYT0nVHw71zeOad6S7ThWyiJPQgRrI+FQ==
+
+"@markuplint/ml-config@^1.0.0-alpha.0":
+  version "1.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-config/-/ml-config-1.0.0-alpha.0.tgz#513e1d7284c069f1f164d6f4f17dd541ff9d80a6"
+  integrity sha512-j/EfDyjABfGyDPvyFfFD98kgrunHkwpEqEgvgkFKPUZF3e8DpGA58C46aNmFizUSRDElSNnBkaYg6jG//wXGPg==
+
+"@markuplint/ml-core@^1.0.0-alpha.0":
+  version "1.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-core/-/ml-core-1.0.0-alpha.0.tgz#f76b8cdb58d9668f813af56975e95f1ec24b5640"
+  integrity sha512-VNoLbBDl3fNnhXFzj8e7AsI/GGSI7FcMXPFZtDVjtFHZYY9lLZLgaVD5+DcwyHTMTUy3ya40RKroqrpvr2sAaQ==
+  dependencies:
+    "@markuplint/i18n" "^1.0.0-alpha.0"
+    "@markuplint/ml-ast" "^1.0.0-alpha.0"
+    "@markuplint/ml-config" "^1.0.0-alpha.0"
+    css-selector-parser "^1.3.0"
+
+"@markuplint/rules@^1.0.0-alpha.0":
+  version "1.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/rules/-/rules-1.0.0-alpha.0.tgz#e6b907ef84cf24c8c654f9f1fbe3bb29f8b259c2"
+  integrity sha512-f3R9Dm6lqnvlJo4NxkQ49nAhujAuPa6OMTv2c+kHvR/Nh+7h6hiLHKE1CLxSaZCwOsFcF7r2Ua1L9BN5XwvVMQ==
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -2945,7 +2984,7 @@ css-select@^2.0.0:
     domutils "^1.7.0"
     nth-check "^1.0.2"
 
-css-selector-parser@^1.1.0:
+css-selector-parser@^1.1.0, css-selector-parser@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/css-selector-parser/-/css-selector-parser-1.3.0.tgz#5f1ad43e2d8eefbfdc304fcd39a521664943e3eb"
   integrity sha1-XxrUPi2O77/cME/NOaUhZklD4+s=
@@ -8159,7 +8198,7 @@ parse-passwd@^1.0.0:
   resolved "https://registry.yarnpkg.com/parse-passwd/-/parse-passwd-1.0.0.tgz#6d5b934a456993b23d37f40a382d6f1666a8e5c6"
   integrity sha1-bVuTSkVpk7I9N/QKOC1vFmao5cY=
 
-parse5@^5.0.0:
+parse5@^5.0.0, parse5@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/parse5/-/parse5-5.1.0.tgz#c59341c9723f414c452975564c7c00a68d58acd2"
   integrity sha512-fxNG2sQjHvlVAYmzBZS9YlDp6PTSSDwa98vkD4QgVDDCAo84z5X1t5XyJQ62ImdLXx5NdIIfihey6xpum9/gRQ==

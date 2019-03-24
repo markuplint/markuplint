@@ -1,8 +1,8 @@
-import { MLCore, convertRuleset } from '../../../packages/@markuplint/ml-core/src';
-import * as Parser from '../../../packages/@markuplint/html-parser/src';
-import { Config } from '../../../packages/@markuplint/ml-config/src';
-import rules from '../../../packages/@markuplint/rules/src';
-import { LocaleSet, Messenger } from '../../../packages/@markuplint/i18n/src';
+import { MLCore, convertRuleset } from '@markuplint/ml-core';
+import * as Parser from '@markuplint/html-parser';
+import { Config } from '@markuplint/ml-config';
+import rules from '@markuplint/rules';
+import { LocaleSet, Messenger } from '@markuplint/i18n';
 
 const defaultConfig: Config = {
 	rules: {

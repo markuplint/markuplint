@@ -9,6 +9,11 @@
 	},
 	"dependencies": {
 		"@loadable/component": "^5.7.0",
+		"@markuplint/html-parser": "^1.0.0-alpha.1",
+		"@markuplint/i18n": "^1.0.0-alpha.0",
+		"@markuplint/ml-config": "^1.0.0-alpha.0",
+		"@markuplint/ml-core": "^1.0.0-alpha.0",
+		"@markuplint/rules": "^1.0.0-alpha.0",
 		"@types/node": "^11.11.5",
 		"@types/react": "^16.8.8",
 		"@types/react-dom": "16.8.3",
