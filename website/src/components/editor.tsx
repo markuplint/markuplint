@@ -1,6 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import MonacoEditor, { EditorDidMount } from 'react-monaco-editor';
+import * as monaco from 'monaco-editor';
+import markuplint from '../utils/markuplint';
+import getEndLine from '@markuplint/html-parser/src/get-end-line';
+import getEndCol from '@markuplint/html-parser/src/get-end-col';
 
 const Style = styled.div`
 	width: 100%;
@@ -9,8 +13,19 @@ const Style = styled.div`
 `;
 
 async function lint(code: string) {
-	console.log('do lint');
-	return [];
+	const reports = await markuplint(code);
+	const diagnotics = [];
+	for (const report of reports) {
+		diagnotics.push({
+			severity: report.severity === 'warning' ? monaco.MarkerSeverity.Warning : monaco.MarkerSeverity.Error,
+			startLineNumber: report.line,
+			startColumn: report.col,
+			endLineNumber: getEndLine(report.raw, report.line),
+			endColumn: getEndCol(report.raw, report.col),
+			message: `<markuplint> ${report.message} (${report.ruleId})`,
+		});
+	}
+	return diagnotics;
 }
 
 type EditorDidMountParams = Parameters<EditorDidMount>;
@@ -42,11 +57,9 @@ class Editor extends React.Component {
 		this.editor = editor;
 		this.monaco = monaco;
 		editor.focus();
-
-		// editor.onDidBlurEditor(onChange);
 		editor.onDidBlurEditorText(this.onChange);
 		editor.onKeyUp(this.onChange);
-		// editor.onDidPaste(onChange);
+		this.onChange();
 	};
 
 	render() {

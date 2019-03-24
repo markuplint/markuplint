@@ -3,5 +3,22 @@
 	"compilerOptions": {
 		"jsx": "react"
 	},
+	"references": [
+		{
+			"path": "../packages/@markuplint/ml-ast"
+		},
+		{
+			"path": "../packages/@markuplint/ml-config"
+		},
+		{
+			"path": "../packages/@markuplint/ml-core"
+		},
+		{
+			"path": "../packages/@markuplint/rules"
+		},
+		{
+			"path": "../packages/@markuplint/i18n"
+		}
+	],
 	"include": ["./src/**/*"]
 }
