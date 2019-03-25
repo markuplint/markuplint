@@ -1,5 +1,5 @@
 const path = require('path');
-const package = require('../package.json');
+const package = require('../packages/markuplint/package.json');
 
 module.exports = {
 	siteMetadata: {
