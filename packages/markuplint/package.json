@@ -1,7 +1,7 @@
 {
 	"name": "markuplint",
 	"version": "1.0.0-alpha.4",
-	"description": "HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.",
+	"description": "A Linter for All Markup Languages.",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
 	"private": false,

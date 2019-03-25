@@ -4,7 +4,7 @@
 
 [![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=next)](https://travis-ci.org/markuplint/markuplint) [![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=next)](https://coveralls.io/github/markuplint/markuplint?branch=next)
 
-HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.
+A Linter for All Markup Languages (for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more).
 
 ## Install
 
