@@ -6,6 +6,7 @@
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev & jest --watch",
 		"test": "jest --coverage",
+		"test:clear": "jest --clearCache",
 		"cli": "ts-node packages/markuplint/src/cli/index.ts",
 		"site:dev": "cd website; yarn site:dev",
 		"site:build": "cd website; yarn site:build"
