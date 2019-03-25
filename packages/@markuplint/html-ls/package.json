@@ -10,5 +10,13 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"scripts": {}
+	"scripts": {
+		"gen": "ts-node gen/index.ts"
+	},
+	"devDependencies": {
+		"@types/cheerio": "^0.22.11",
+		"@types/node-fetch": "^2.1.7",
+		"cheerio": "^1.0.0-rc.2",
+		"node-fetch": "^2.3.0"
+	}
 }
