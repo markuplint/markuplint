@@ -16,6 +16,7 @@
 		"@markuplint/rules": "^1.0.0-alpha.2",
 		"gatsby": "^2.2.6",
 		"gatsby-image": "^2.0.34",
+		"gatsby-plugin-favicon": "^3.1.5",
 		"gatsby-plugin-react-helmet": "^3.0.10",
 		"gatsby-plugin-sharp": "^2.0.30",
 		"gatsby-plugin-typescript": "^2.0.11",

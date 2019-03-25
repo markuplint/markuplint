@@ -14,6 +14,29 @@ module.exports = {
 		// Meta header
 		`gatsby-plugin-react-helmet`,
 
+		// Favicon
+		{
+			resolve: `gatsby-plugin-favicon`,
+			options: {
+				logo: path.resolve(__dirname, '..', 'media/favicon.png'),
+				appName: package.name,
+				appDescription: package.description,
+				version: package.version,
+				icons: {
+					android: true,
+					appleIcon: true,
+					appleStartup: true,
+					coast: false,
+					favicons: true,
+					firefox: true,
+					opengraph: true,
+					twitter: true,
+					yandex: false,
+					windows: true,
+				},
+			},
+		},
+
 		// Images
 		{
 			resolve: `gatsby-source-filesystem`,
