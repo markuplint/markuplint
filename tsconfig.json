@@ -11,6 +11,7 @@
 		"noImplicitAny": true,
 		"declaration": true,
 		"lib": ["dom", "es2015", "es2016", "es2017", "esnext"],
+		"skipLibCheck": true,
 		"baseUrl": ".",
 		"paths": {
 			"@markuplint/*": ["./packages/@markuplint/*/src"],
