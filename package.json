@@ -58,6 +58,6 @@
 		"tslint": "^5.14.0",
 		"tslint-config-prettier": "^1.18.0",
 		"tslint-plugin-prettier": "^2.0.1",
-		"typescript": "^3.4.0-dev.20190321"
+		"typescript": "^3.4.0-dev.20190323"
 	}
 }

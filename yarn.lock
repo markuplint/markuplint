@@ -14029,10 +14029,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.4.0-dev.20190321:
-  version "3.4.0-rc"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.0-rc.tgz#bc4026c3c517a30fa514b896f2684c6ba92caadb"
-  integrity sha512-wtm2GwuV0Yy2zvmpFaMDtWHnRbzfERi9FLpL+K+JqGkHoclgEQ6TmD1AMxMIjs80NWRIq0Xp1veQyuZbGsUYsg==
+typescript@^3.4.0-dev.20190323:
+  version "3.4.0-dev.20190323"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.0-dev.20190323.tgz#044b7f85a5349c3e7b421e8b7712e393c52ed78c"
+  integrity sha512-fMhSnWPbHHDiXZ3+YoKgjFsp9YyETddNLeSjKE4CsnFFTTc5uA9GNipN1pDvnPmvimTCyLbOWNmuCy6uqGV8QQ==
 
 ua-parser-js@^0.7.18:
   version "0.7.19"
