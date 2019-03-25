@@ -1,6 +1,4 @@
 {
-	"name": "markuplint",
-	"description": "Linter for All Markup Languages.",
 	"private": true,
 	"scripts": {
 		"bootstrap": "lerna bootstrap",
