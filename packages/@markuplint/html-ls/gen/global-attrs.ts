@@ -1,4 +1,4 @@
-import { Attribute } from './types';
+import { Attribute, AttributeValue } from './types';
 import fetch from './fetch';
 
 export async function getGlobalAttrs() {
@@ -16,15 +16,30 @@ export async function getGlobalAttrs() {
 		if (/^aria-/i.test(name)) {
 			return;
 		}
-		const type: Attribute['type'] = /^xml/i.test(name)
-			? 'xml'
-			: /^on[a-z]+$/i.test(name)
-			? 'eventhandler'
-			: 'global';
+
+		const category = /^xml/i.test(name) ? 'xml' : /^on[a-z]+$/i.test(name) ? 'eventhandler' : null;
+
+		if (!category) {
+			return;
+		}
+
+		let value: AttributeValue = 'string';
+		switch (category) {
+			case 'xml': {
+				value = 'string';
+				break;
+			}
+			case 'eventhandler': {
+				value = 'function-body';
+				break;
+			}
+		}
+
 		const attr: Attribute = {
 			name,
-			type,
-			value: {},
+			description: 'WIP',
+			category,
+			value,
 		};
 		attrs.push(attr);
 	});

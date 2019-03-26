@@ -1,952 +1,5699 @@
 {
-	"nodeRules": [
-		{
-			"tagName": "Heading_Elements",
-			"categories": ["#Flow", "#heading", "#palpable"],
-			"roles": ["tab", "presentation"],
-			"obsolete": false
-		},
-		{
-			"tagName": "Shadow",
-			"obsolete": true
-		},
-		{
-			"tagName": "a",
-			"categories": ["#Flow", "#phrasing", "#interactive", "#palpable"],
-			"roles": [
-				"button",
-				"checkbox",
-				"menuitem",
-				"menuitemcheckbox",
-				"menuitemradio",
-				"option",
-				"radio",
-				"switch",
-				"tab",
-				"treeitem"
-			],
-			"obsolete": false
-		},
-		{
-			"tagName": "abbr",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "acronym",
-			"obsolete": true
-		},
-		{
-			"tagName": "address",
-			"categories": ["#Flow", "#palpable"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "applet",
-			"obsolete": true
-		},
-		{
-			"tagName": "area",
-			"categories": ["#Flow", "#phrasing"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "article",
-			"categories": ["#Flow", "#sectioning", "#palpable"],
-			"roles": ["application", "document", "feed", "main", "presentation", "region"],
-			"obsolete": false
-		},
-		{
-			"tagName": "aside",
-			"categories": ["#Flow", "#sectioning", "#palpable"],
-			"roles": ["feed", "note", "presentation", "region", "search"],
-			"obsolete": false
-		},
-		{
-			"tagName": "audio",
-			"categories": ["#Flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
-			"roles": ["application"],
-			"obsolete": false
-		},
-		{
-			"tagName": "b",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "base",
-			"categories": ["#Metadata"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "basefont",
-			"obsolete": true
-		},
-		{
-			"tagName": "bdi",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "bdo",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "bgsound",
-			"obsolete": true
-		},
-		{
-			"tagName": "big",
-			"obsolete": true
-		},
-		{
-			"tagName": "blink",
-			"obsolete": true
-		},
-		{
-			"tagName": "blockquote",
-			"categories": ["#Flow", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "body",
-			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "br",
-			"categories": ["#Flow", "#phrasing"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "button",
-			"categories": ["#Flow", "#phrasing", "#Interactive", "#palpable"],
-			"roles": ["checkbox", "link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch", "tab"],
-			"obsolete": false
-		},
-		{
-			"tagName": "canvas",
-			"categories": ["#Flow", "#phrasing", "#embedded", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "caption",
-			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "center",
-			"obsolete": true
-		},
-		{
-			"tagName": "cite",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "code",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "col",
-			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "colgroup",
-			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "command",
-			"obsolete": true
-		},
-		{
-			"tagName": "content",
-			"categories": ["#Transparent"],
-			"obsolete": false
-		},
-		{
-			"tagName": "data",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"obsolete": false
-		},
-		{
-			"tagName": "datalist",
-			"categories": ["#Flow", "#phrasing"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "dd",
-			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "del",
-			"categories": ["#Phrasing", "#flow"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "details",
-			"categories": ["#Flow", "#interactive", "#palpable"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "dfn",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "dialog",
-			"categories": ["#Flow"],
-			"roles": ["alertdialog"],
-			"obsolete": false
-		},
-		{
-			"tagName": "dir",
-			"obsolete": true
-		},
-		{
-			"tagName": "div",
-			"categories": ["#Flow", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "dl",
-			"categories": ["#Flow", "#palpable"],
-			"roles": ["group", "presentation"],
-			"obsolete": false
-		},
-		{
-			"tagName": "dt",
-			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "element",
-			"obsolete": true
-		},
-		{
-			"tagName": "em",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "embed",
-			"categories": ["#Flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
-			"roles": ["application", "document", "img", "presentation"],
-			"obsolete": false
-		},
-		{
-			"tagName": "fieldset",
-			"categories": ["#Flow", "#palpable"],
-			"roles": ["group", "presentation"],
-			"obsolete": false
-		},
-		{
-			"tagName": "figcaption",
-			"categories": [],
-			"roles": ["group", "presentation"],
-			"obsolete": false
-		},
-		{
-			"tagName": "figure",
-			"categories": ["#Flow", "#palpable"],
-			"roles": ["group", "presentation"],
-			"obsolete": false
-		},
-		{
-			"tagName": "font",
-			"obsolete": true
-		},
-		{
-			"tagName": "footer",
-			"categories": ["#Flow", "#palpable"],
-			"roles": ["group", "presentation"],
-			"obsolete": false
-		},
-		{
-			"tagName": "form",
-			"categories": ["#Flow", "#palpable"],
-			"roles": ["group", "presentation"],
-			"obsolete": false
-		},
-		{
-			"tagName": "frame",
-			"obsolete": true
-		},
-		{
-			"tagName": "frameset",
-			"obsolete": true
-		},
-		{
-			"tagName": "head",
-			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "header",
-			"categories": ["#Flow", "#palpable"],
-			"roles": ["group", "presentation"],
-			"obsolete": false
-		},
-		{
-			"tagName": "hgroup",
-			"categories": ["#Flow", "#heading", "#palpable"],
-			"roles": ["tab", "presentation"],
-			"obsolete": false
-		},
-		{
-			"tagName": "hr",
-			"categories": ["#Flow"],
-			"roles": ["presentation"],
-			"obsolete": false
-		},
-		{
-			"tagName": "html",
-			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "i",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "iframe",
-			"categories": ["#Flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
-			"roles": ["application", "document", "img"],
-			"obsolete": false
-		},
-		{
-			"tagName": "image",
-			"obsolete": true
-		},
-		{
-			"tagName": "img",
-			"categories": ["#Flow", "#phrasing", "#embedded", "#palpable", "#interactive"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "input",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": [
+	"$schema": "./ml-specs.schema.json",
+	"cites": [
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/acronym",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/applet",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/basefont",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bgsound",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/big",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blink",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/center",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/command",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/content",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dir",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/element",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/font",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frame",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frameset",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/image",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/isindex",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/keygen",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/listing",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/marquee",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/multicol",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nextid",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nobr",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noembed",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noframes",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/plaintext",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rb",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ruby",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/shadow",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/spacer",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strike",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tt",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/xmp",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes",
+		"https://www.w3.org/TR/wai-aria-1.1/",
+		"https://www.w3.org/WAI/ARIA/schemata/aria-1.uml"
+	],
+	"def": {
+		"#globalAttrs": [
+			{
+				"name": "xml:lang",
+				"description": "WIP",
+				"category": "xml",
+				"value": "string"
+			},
+			{
+				"name": "xml:base",
+				"description": "WIP",
+				"category": "xml",
+				"value": "string"
+			},
+			{
+				"name": "onabort",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onautocomplete",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onautocompleteerror",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onblur",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "oncancel",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "oncanplay",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "oncanplaythrough",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onchange",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onclick",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onclose",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "oncontextmenu",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "oncuechange",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "ondblclick",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "ondrag",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "ondragend",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "ondragenter",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "ondragexit",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "ondragleave",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "ondragover",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "ondragstart",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "ondrop",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "ondurationchange",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onemptied",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onended",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onerror",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onfocus",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "oninput",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "oninvalid",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onkeydown",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onkeypress",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onkeyup",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onload",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onloadeddata",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onloadedmetadata",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onloadstart",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onmousedown",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onmouseenter",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onmouseleave",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onmousemove",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onmouseout",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onmouseover",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onmouseup",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onmousewheel",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onpause",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onplay",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onplaying",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onprogress",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onratechange",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onreset",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onresize",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onscroll",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onseeked",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onseeking",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onselect",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onshow",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onsort",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onstalled",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onsubmit",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onsuspend",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "ontimeupdate",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "ontoggle",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onvolumechange",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			},
+			{
+				"name": "onwaiting",
+				"description": "WIP",
+				"category": "eventhandler",
+				"value": "function-body"
+			}
+		],
+		"#roles": [
+			{
+				"name": "alert",
+				"description": "A type of live region with important, and usually time-sensitive, information. See related alertdialog and status.",
+				"generalization": ["region"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "alertdialog",
+				"description": "A type of dialog that contains an alert message, where initial focus goes to an element within the dialog. See related alert and dialog.",
+				"generalization": ["alert", "dialog"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "application",
+				"description": "A structure containing one or more focusable elements requiring user input, such as keyboard or gesture events, that do not follow a standard interaction pattern supported by a widget role.",
+				"generalization": ["landmark"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "article",
+				"description": "A section of a page that consists of a composition that forms an independent part of a document, page, or site.",
+				"generalization": ["document", "region"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "banner",
+				"description": "A region that contains mostly site-oriented content, rather than page-specific content.",
+				"generalization": ["landmark"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "button",
+				"description": "An input that allows for user-triggered actions when clicked or pressed. See related link.",
+				"generalization": ["command"],
+				"ownedAttribute": ["aria-expanded", "aria-pressed"]
+			},
+			{
+				"name": "checkbox",
+				"description": "A checkable input that has three possible values: true, false, or mixed.",
+				"generalization": ["input"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "columnheader",
+				"description": "A cell containing header information for a column.",
+				"generalization": ["gridcell", "sectionhead", "widget"],
+				"ownedAttribute": ["aria-sort"]
+			},
+			{
+				"name": "combobox",
+				"description": "A composite widget containing a single-line textbox and another element, such as a listbox or grid, that can dynamically pop up to help the user set the value of the textbox.",
+				"generalization": ["select"],
+				"ownedAttribute": ["aria-autocomplete", "aria-required"]
+			},
+			{
+				"name": "command",
+				"description": "A form of widget that performs an action but does not receive input data.",
+				"isAbstract": true,
+				"generalization": ["widget"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "complementary",
+				"description": "A supporting section of the document, designed to be complementary to the main content at a similar level in the DOM hierarchy, but remains meaningful when separated from the main content.",
+				"generalization": ["landmark"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "composite",
+				"description": "A widget that may contain navigable descendants or owned children.",
+				"isAbstract": true,
+				"generalization": ["widget"],
+				"ownedAttribute": ["aria-activedescendant"]
+			},
+			{
+				"name": "contentinfo",
+				"description": "A large perceivable region that contains information about the parent document.",
+				"generalization": ["landmark"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "definition",
+				"description": "A definition of a term or concept. See related term.",
+				"generalization": ["section"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "dialog",
+				"description": "A dialog is a descendant window of the primary window of a web application. For HTML pages, the primary application window is the entire web document, i.e., the body element.",
+				"generalization": ["window"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "directory",
+				"description": "A list of references to members of a group, such as a static table of contents.",
+				"generalization": ["list"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "document",
+				"description": "An element containing content that assistive technology users may want to browse in a reading mode.",
+				"generalization": ["structure"],
+				"ownedAttribute": ["aria-expanded"]
+			},
+			{
+				"name": "form",
+				"description": "A landmark region that contains a collection of items and objects that, as a whole, combine to create a form. See related search.",
+				"generalization": ["landmark"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "grid",
+				"description": "A composite widget containing a collection of one or more rows with one or more cells where some or all cells in the grid are focusable by using methods of two-dimensional navigation, such as directional arrow keys.",
+				"generalization": ["composite", "region"],
+				"ownedAttribute": ["aria-level", "aria-multiselectable", "aria-readonly"]
+			},
+			{
+				"name": "gridcell",
+				"description": "A cell in a grid or treegrid.",
+				"generalization": ["section", "widget"],
+				"ownedAttribute": ["aria-readonly", "aria-required", "aria-selected"]
+			},
+			{
+				"name": "group",
+				"description": "A set of user interface objects which are not intended to be included in a page summary or table of contents by assistive technologies.",
+				"generalization": ["section"],
+				"ownedAttribute": ["aria-activedescendant"]
+			},
+			{
+				"name": "heading",
+				"description": "A heading for a section of the page.",
+				"generalization": ["sectionhead"],
+				"ownedAttribute": ["aria-level"]
+			},
+			{
+				"name": "img",
+				"description": "A container for a collection of elements that form an image.",
+				"generalization": ["section"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "input",
+				"description": "A generic type of widget that allows user input.",
+				"isAbstract": true,
+				"generalization": ["widget"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "landmark",
+				"description": "A perceivable section containing content that is relevant to a specific, author-specified  purpose and sufficiently important that users will likely want to be able to navigate to the section easily and to have it listed in a summary of the page. Such a page summary could be generated dynamically by a user agent or assistive technology.",
+				"isAbstract": true,
+				"generalization": ["region"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "link",
+				"description": "An interactive reference to an internal or external resource that, when activated, causes the user agent to navigate to that resource. See related button.",
+				"generalization": ["command"],
+				"ownedAttribute": ["aria-expanded"]
+			},
+			{
+				"name": "list",
+				"description": "A section containing listitem elements. See related listbox.",
+				"generalization": ["region"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "listbox",
+				"description": "A widget that allows the user to select one or more items from a list of choices. See related combobox and list.",
+				"generalization": ["list", "select"],
+				"ownedAttribute": ["aria-multiselectable", "aria-required"]
+			},
+			{
+				"name": "listitem",
+				"description": "A single item in a list or directory.",
+				"generalization": ["section"],
+				"ownedAttribute": ["aria-level", "aria-posinset", "aria-setsize"]
+			},
+			{
+				"name": "log",
+				"description": "A type of live region where new information is added in meaningful order and old information may disappear. See related marquee.",
+				"generalization": ["region"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "main",
+				"description": "The main content of a document.",
+				"generalization": ["landmark"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "marquee",
+				"description": "A type of live region where non-essential information changes frequently. See related log.",
+				"generalization": ["section"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "math",
+				"description": "Content that represents a mathematical expression.",
+				"generalization": ["section"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "menu",
+				"description": "A type of widget that offers a list of choices to the user.",
+				"generalization": ["list", "select"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "menubar",
+				"description": "A presentation of menu that usually remains visible and is usually presented horizontally.",
+				"generalization": ["menu"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "menuitem",
+				"description": "An option in a set of choices contained by a menu or menubar.",
+				"generalization": ["command"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "menuitemcheckbox",
+				"description": "A menuitem with a checkable state whose possible values are true, false, or mixed.",
+				"generalization": ["checkbox", "menuitem"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "menuitemradio",
+				"description": "A checkable menuitem in a set of elements with the same role, only one of which can be checked at a time.",
+				"generalization": ["menuitemcheckbox", "radio"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "navigation",
+				"description": "A collection of navigational elements (usually links) for navigating the document or related documents.",
+				"generalization": ["landmark"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "note",
+				"description": "A section whose content is parenthetic or ancillary to the main content of the resource.",
+				"generalization": ["section"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "option",
+				"description": "A selectable item in a select list.",
+				"generalization": ["input"],
+				"ownedAttribute": ["aria-checked", "aria-posinset", "aria-selected", "aria-setsize"]
+			},
+			{
+				"name": "presentation",
+				"description": "An element whose implicit native role semantics will not be mapped to the accessibility API. See synonym none.",
+				"generalization": ["structure"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "progressbar",
+				"description": "An element that displays the progress status for tasks that take a long time.",
+				"generalization": ["range"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "radio",
+				"description": "A checkable input in a group of elements with the same role, only one of which can be checked at a time.",
+				"generalization": ["checkbox", "option"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "radiogroup",
+				"description": "A group of radio buttons.",
+				"generalization": ["select"],
+				"ownedAttribute": ["aria-required"]
+			},
+			{
+				"name": "range",
+				"description": "An input representing a range of values that can be set by the user.",
+				"isAbstract": true,
+				"generalization": ["widget"],
+				"ownedAttribute": ["aria-valuemax", "aria-valuemin", "aria-valuenow", "aria-valuetext"]
+			},
+			{
+				"name": "region",
+				"description": "A perceivable section containing content that is relevant to a specific, author-specified  purpose and sufficiently important that users will likely want to be able to navigate to the section easily and to have it listed in a summary of the page. Such a page summary could be generated dynamically by a user agent or assistive technology.",
+				"generalization": ["section"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "roletype",
+				"description": "The base role from which all other roles in this taxonomy inherit.",
+				"isAbstract": true,
+				"generalization": [],
+				"ownedAttribute": [
+					"aria-atomic",
+					"aria-busy",
+					"aria-controls",
+					"aria-describedby",
+					"aria-disabled",
+					"aria-dropeffect",
+					"aria-flowto",
+					"aria-grabbed",
+					"aria-haspopup",
+					"aria-hidden",
+					"aria-invalid",
+					"aria-label",
+					"aria-labelledby",
+					"aria-live",
+					"aria-owns",
+					"aria-relevant"
+				]
+			},
+			{
+				"name": "row",
+				"description": "A row of cells in a tabular container.",
+				"generalization": ["group", "widget"],
+				"ownedAttribute": ["aria-level", "aria-selected"]
+			},
+			{
+				"name": "rowgroup",
+				"description": "A structure containing one or more row elements in a tabular container.",
+				"generalization": ["group"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "rowheader",
+				"description": "A cell containing header information for a row in a grid.",
+				"generalization": ["gridcell", "sectionhead", "widget"],
+				"ownedAttribute": ["aria-sort"]
+			},
+			{
+				"name": "search",
+				"description": "A landmark region that contains a collection of items and objects that, as a whole, combine to create a search facility. See related form and searchbox.",
+				"generalization": ["landmark"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "section",
+				"description": "A renderable structural containment unit in a document or application.",
+				"isAbstract": true,
+				"generalization": ["structure"],
+				"ownedAttribute": ["aria-expanded"]
+			},
+			{
+				"name": "sectionhead",
+				"description": "A structure that labels or summarizes the topic of its related section.",
+				"isAbstract": true,
+				"generalization": ["structure"],
+				"ownedAttribute": ["aria-expanded"]
+			},
+			{
+				"name": "select",
+				"description": "A form widget that allows the user to make selections from a set of choices.",
+				"isAbstract": true,
+				"generalization": ["composite", "group", "input"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "separator",
+				"description": "A divider that separates and distinguishes sections of content or groups of menuitems.",
+				"generalization": ["structure"],
+				"ownedAttribute": ["aria-expanded", "aria-orientation"]
+			},
+			{
+				"name": "scrollbar",
+				"description": "A graphical object that controls the scrolling of content within a viewing area, regardless of whether the content is fully displayed within the viewing area.",
+				"generalization": ["input", "range"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "slider",
+				"description": "A user input where the user selects a value from within a given range.",
+				"generalization": ["input", "range"],
+				"ownedAttribute": ["aria-orientation"]
+			},
+			{
+				"name": "spinbutton",
+				"description": "A form of range that expects the user to select from among discrete choices.",
+				"generalization": ["input", "range"],
+				"ownedAttribute": ["aria-required"]
+			},
+			{
+				"name": "status",
+				"description": "A type of live region whose content is advisory information for the user but is not important enough to justify an alert, often but not necessarily presented as a status bar.",
+				"generalization": ["region"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "structure",
+				"description": "A document structural element.",
+				"isAbstract": true,
+				"generalization": ["roletype"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "tab",
+				"description": "A grouping label providing a mechanism for selecting the tab content that is to be rendered to the user.",
+				"generalization": ["sectionhead", "widget"],
+				"ownedAttribute": ["aria-selected"]
+			},
+			{
+				"name": "tablist",
+				"description": "A list of tab elements, which are references to tabpanel elements.",
+				"generalization": ["composite", "directory"],
+				"ownedAttribute": ["aria-level"]
+			},
+			{
+				"name": "tabpanel",
+				"description": "A container for the resources associated with a tab, where each tab is contained in a tablist.",
+				"generalization": ["region"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "textbox",
+				"description": "A type of input that allows free-form text as its value.",
+				"generalization": ["input"],
+				"ownedAttribute": [
+					"aria-activedescendant",
+					"aria-autocomplete",
+					"aria-multiline",
+					"aria-readonly",
+					"aria-required"
+				]
+			},
+			{
+				"name": "timer",
+				"description": "A type of live region containing a numerical counter which indicates an amount of elapsed time from a start point, or the time remaining until an end point.",
+				"generalization": ["status"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "toolbar",
+				"description": "A collection of commonly used function buttons or controls represented in compact visual form.",
+				"generalization": ["group"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "tooltip",
+				"description": "A contextual popup that displays a description for an element.",
+				"generalization": ["section"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "tree",
+				"description": "A type of list that may contain sub-level nested groups that can be collapsed and expanded.",
+				"generalization": ["select"],
+				"ownedAttribute": ["aria-multiselectable", "aria-required"]
+			},
+			{
+				"name": "treegrid",
+				"description": "A grid whose rows can be expanded and collapsed in the same manner as for a tree.",
+				"generalization": ["grid", "tree"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "treeitem",
+				"description": "An option item of a tree. This is an element within a tree that may be expanded or collapsed if it contains a sub-level group of tree item elements.",
+				"generalization": ["listitem", "option"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "widget",
+				"description": "An interactive component of a graphical user interface (GUI).",
+				"isAbstract": true,
+				"generalization": ["roletype"],
+				"ownedAttribute": []
+			},
+			{
+				"name": "window",
+				"description": "A browser or application window.",
+				"isAbstract": true,
+				"generalization": ["roletype"],
+				"ownedAttribute": ["aria-expanded"]
+			}
+		],
+		"#ariaAttrs": [
+			{
+				"name": "aria-expanded",
+				"type": "state",
+				"value": "true/false/undefined",
+				"defaultValue": "undefined"
+			},
+			{
+				"name": "aria-pressed",
+				"type": "state",
+				"value": "tristate",
+				"defaultValue": "undefined"
+			},
+			{
+				"name": "aria-sort",
+				"type": "property",
+				"value": "token",
+				"defaultValue": "none"
+			},
+			{
+				"name": "aria-autocomplete",
+				"type": "property",
+				"value": "token",
+				"defaultValue": "none"
+			},
+			{
+				"name": "aria-required",
+				"type": "property",
+				"value": "true/false",
+				"defaultValue": "false"
+			},
+			{
+				"name": "aria-activedescendant",
+				"type": "property",
+				"value": "ID reference"
+			},
+			{
+				"name": "aria-level",
+				"type": "property",
+				"value": "integer"
+			},
+			{
+				"name": "aria-multiselectable",
+				"type": "property",
+				"value": "true/false",
+				"defaultValue": "false"
+			},
+			{
+				"name": "aria-readonly",
+				"type": "property",
+				"value": "true/false",
+				"defaultValue": "false"
+			},
+			{
+				"name": "aria-selected",
+				"type": "state",
+				"value": "true/false/undefined",
+				"defaultValue": "undefined"
+			},
+			{
+				"name": "aria-posinset",
+				"type": "property",
+				"value": "integer"
+			},
+			{
+				"name": "aria-setsize",
+				"type": "property",
+				"value": "integer"
+			},
+			{
+				"name": "aria-checked",
+				"type": "state",
+				"value": "tristate",
+				"defaultValue": "undefined"
+			},
+			{
+				"name": "aria-valuemax",
+				"type": "property",
+				"value": "number"
+			},
+			{
+				"name": "aria-valuemin",
+				"type": "property",
+				"value": "number"
+			},
+			{
+				"name": "aria-valuenow",
+				"type": "property",
+				"value": "number"
+			},
+			{
+				"name": "aria-valuetext",
+				"type": "property",
+				"value": "string"
+			},
+			{
+				"name": "aria-atomic",
+				"type": "property",
+				"value": "true/false",
+				"defaultValue": "false"
+			},
+			{
+				"name": "aria-busy",
+				"type": "state",
+				"value": "true/false",
+				"defaultValue": "false"
+			},
+			{
+				"name": "aria-controls",
+				"type": "property",
+				"value": "ID reference list"
+			},
+			{
+				"name": "aria-describedby",
+				"type": "property",
+				"value": "ID reference list"
+			},
+			{
+				"name": "aria-disabled",
+				"type": "state",
+				"value": "true/false",
+				"defaultValue": "false"
+			},
+			{
+				"name": "aria-dropeffect",
+				"type": "property",
+				"deprecated": true,
+				"value": "token list",
+				"defaultValue": "none"
+			},
+			{
+				"name": "aria-flowto",
+				"type": "property",
+				"value": "ID reference list"
+			},
+			{
+				"name": "aria-grabbed",
+				"type": "state",
+				"deprecated": true,
+				"value": "true/false/undefined",
+				"defaultValue": "undefined"
+			},
+			{
+				"name": "aria-haspopup",
+				"type": "property",
+				"value": "token",
+				"defaultValue": "false"
+			},
+			{
+				"name": "aria-hidden",
+				"type": "state",
+				"value": "true/false/undefined",
+				"defaultValue": "undefined"
+			},
+			{
+				"name": "aria-invalid",
+				"type": "state",
+				"value": "token",
+				"defaultValue": "false"
+			},
+			{
+				"name": "aria-label",
+				"type": "property",
+				"value": "string"
+			},
+			{
+				"name": "aria-labelledby",
+				"type": "property",
+				"value": "ID reference list"
+			},
+			{
+				"name": "aria-live",
+				"type": "property",
+				"value": "token",
+				"defaultValue": "off"
+			},
+			{
+				"name": "aria-owns",
+				"type": "property",
+				"value": "ID reference list"
+			},
+			{
+				"name": "aria-relevant",
+				"type": "property",
+				"value": "token list",
+				"defaultValue": "additions text"
+			},
+			{
+				"name": "aria-orientation",
+				"type": "property",
+				"value": "token",
+				"defaultValue": "undefined"
+			},
+			{
+				"name": "aria-multiline",
+				"type": "property",
+				"value": "true/false",
+				"defaultValue": "false"
+			}
+		]
+	},
+	"specs": [
+		{
+			"name": "a",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a",
+			"description": "The HTML <a> element (or anchor element) creates a hyperlink to other web pages, files, locations within the same page, email addresses, or any other URL.",
+			"categories": ["flow", "phrasing", "interactive", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
 				{
-					"role": "link",
-					"attrConditions": [
-						{
-							"attrName": "type",
-							"values": ["button", "image"]
-						}
-					]
+					"name": "download",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
 				},
 				{
-					"role": "menuitem",
-					"attrConditions": [
-						{
-							"attrName": "type",
-							"values": ["button", "image"]
-						}
-					]
+					"name": "href",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
 				},
 				{
-					"role": "menuitemcheckbox",
-					"attrConditions": [
-						{
-							"attrName": "type",
-							"values": ["button", "checkbox", "image"]
-						}
-					]
+					"name": "hreflang",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
 				},
 				{
-					"role": "menuitemradio",
-					"attrConditions": [
-						{
-							"attrName": "type",
-							"values": ["button", "image", "radio"]
-						}
-					]
+					"name": "ping",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
 				},
 				{
-					"role": "radio",
-					"attrConditions": [
-						{
-							"attrName": "type",
-							"values": ["button", "image"]
-						}
-					]
+					"name": "referrerpolicy",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
 				},
 				{
-					"role": "switch",
-					"attrConditions": [
-						{
-							"attrName": "type",
-							"values": ["button", "checkbox", "image"]
-						}
-					]
+					"name": "rel",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
 				},
 				{
-					"role": "tab",
-					"attrConditions": [
-						{
-							"attrName": "type",
-							"values": ["button"]
-						}
-					]
+					"name": "target",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
 				},
 				{
-					"role": "button",
-					"attrConditions": [
-						{
-							"attrName": "type",
-							"values": ["checkbox"]
-						}
-					]
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
 				},
 				{
-					"role": "option",
-					"attrConditions": [
-						{
-							"attrName": "type",
-							"values": ["checkbox"]
-						}
-					]
+					"name": "charset",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
 				},
 				{
-					"role": "None",
-					"attrConditions": [
-						{
-							"attrName": "type",
-							"values": [
-								"color",
-								"date",
-								"datetime",
-								"datetime-local",
-								"email",
-								"file",
-								"hidden",
-								"month",
-								"number",
-								"password",
-								"range",
-								"research",
-								"search",
-								"submit",
-								"tel",
-								"text",
-								"url",
-								"week"
-							]
-						}
-					]
+					"name": "coords",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rev",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "shape",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "download",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "href",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "hreflang",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "ping",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "referrerpolicy",
+					"experimental": true,
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rel",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "target",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charset",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "coords",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rev",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "shape",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
 				}
-			],
-			"obsolete": false
+			]
 		},
 		{
-			"tagName": "ins",
-			"categories": ["#Phrasing", "#flow"],
-			"roles": ["Any"],
-			"obsolete": false
+			"name": "abbr",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr",
+			"description": "The HTML Abbreviation element (<abbr>) represents an abbreviation or acronym; the optional title attribute can provide an expansion or description for the abbreviation. If present, title must contain this full description and nothing else.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "isindex",
-			"obsolete": true
-		},
-		{
-			"tagName": "kbd",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "keygen",
-			"categories": ["#Flow", "#phrasing", "#interactive", "#palpable"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "label",
-			"categories": ["#Flow", "#phrasing", "#interactive", "#palpable"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "legend",
+			"name": "acronym",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/acronym",
+			"description": "",
 			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "li",
+			"name": "address",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address",
+			"description": "The HTML <address> element indicates that the enclosed HTML provides contact information for a person or people, or for an organization.",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "applet",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/applet",
+			"description": "The obsolete HTML Applet Element (<applet>) embeds a Java applet into the document; this element has been deprecated in favor of <object>.",
+			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "alt",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "archive",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "code",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "codebase",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "datafld",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "datasrc",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "height",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "hspace",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "mayscript",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "object",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "src",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "vspace",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "area",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area",
+			"description": "",
+			"categories": ["flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "accesskey",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "alt",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "coords",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "download",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "href",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "hreflang",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "nohref",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "ping",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "referrerpolicy",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rel",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "shape",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "tabindex",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "target",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "article",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article",
+			"description": "",
+			"categories": ["flow", "sectioning", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "aside",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside",
+			"description": "The HTML <aside> element represents a portion of a document whose content is only indirectly related to the document's main content. Asides are frequently presented as sidebars or call-out boxes.",
+			"categories": ["flow", "sectioning", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "audio",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio",
+			"description": "The HTML <audio> element is used to embed sound content in documents. It may contain one or more audio sources, represented using the src attribute or the <source> element: the browser will choose the most suitable one. It can also be the destination for streamed media, using a MediaStream.",
+			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "autoplay",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "controls",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "crossorigin",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "loop",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "muted",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "preload",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "src",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "b",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b",
+			"description": "The HTML Bring Attention To element (<b>)  is used to draw the reader's attention to the element's contents, which are not otherwise granted special importance. This was formerly known as the Boldface element, and most browsers still draw the text in boldface. However, you should not use <b> for styling text; instead, you should use the CSS font-weight property to create boldface text, or the <strong> element to indicate that text is of special importance.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "base",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base",
+			"description": "",
+			"categories": ["metadata"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "href",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "target",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "basefont",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/basefont",
+			"description": "The obsolete HTML Base Font element (<basefont>) sets a default font face, size, and color for the other elements which are descended from its parent element. With this set, the font's size can then be varied relative to the base size using the <font> element.",
 			"categories": [],
-			"roles": [
-				"menuitem",
-				"menuitemcheckbox",
-				"menuitemradio",
-				"option",
-				"presentation",
-				"radio",
-				"separator",
-				"tab",
-				"treeitem"
-			],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "color",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "face",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "size",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "link",
-			"categories": ["#Metadata", "#flow", "#phrasing"],
-			"roles": ["None"],
-			"obsolete": false
+			"name": "bdi",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi",
+			"description": "The HTML Bidirectional Isolate element (<bdi>)  tells the browser's bidirectional algorithm to treat the text it contains in isolation from its surrounding text. It's particularly useful when a website dynamically inserts some text and doesn't know the directionality of the text being inserted.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "listing",
-			"obsolete": true
+			"name": "bdo",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo",
+			"description": "The HTML Bidirectional Text Override element (<bdo>) overrides the current directionality of text, so that the text within is rendered in a different direction.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "dir",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "main",
-			"categories": ["#Flow", "#palpable"],
-			"roles": [
-				"The main role is applied to <main> by default",
-				"and the presentation role is permitted as well."
-			],
-			"obsolete": false
-		},
-		{
-			"tagName": "map",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "mark",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "marquee",
-			"obsolete": true
-		},
-		{
-			"tagName": "menu",
-			"categories": ["#Flow", "#palpable"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "menuitem",
+			"name": "bgsound",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bgsound",
+			"description": "The Internet Explorer only HTML Background Sound element (<bgsound>) sets up a sound file to play in the background while the page is used; use <audio> instead.",
 			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "balance",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "loop",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "src",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "volume",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "meta",
-			"categories": ["#Metadata", "#flow", "#phrasing"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "meter",
-			"categories": ["#Flow", "#phrasing", "#labelable", "#palpable"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "multicol",
-			"obsolete": true
-		},
-		{
-			"tagName": "nav",
-			"categories": ["#Flow", "#sectioning", "#palpable"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "nextid",
-			"obsolete": true
-		},
-		{
-			"tagName": "nobr",
-			"obsolete": true
-		},
-		{
-			"tagName": "noembed",
-			"obsolete": true
-		},
-		{
-			"tagName": "noframes",
-			"obsolete": true
-		},
-		{
-			"tagName": "noscript",
-			"categories": ["#Metadata", "#flow", "#phrasing"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "object",
-			"categories": ["#Flow", "#phrasing", "#embedded", "#palpable", "#interactive"],
-			"roles": ["application", "document", "image"],
-			"obsolete": false
-		},
-		{
-			"tagName": "ol",
-			"categories": ["#Flow", "#palpable"],
-			"roles": [
-				"directory",
-				"group",
-				"listbox",
-				"menu",
-				"menubar",
-				"radiogroup",
-				"tablist",
-				"toolbar",
-				"tree",
-				"presentation"
-			],
-			"obsolete": false
-		},
-		{
-			"tagName": "optgroup",
+			"name": "big",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/big",
+			"description": "The obsolete HTML Big Element (<big>) renders the enclosed text at a font size one level larger than the surrounding text (medium becomes large, for example). The size is capped at the browser's maximum permitted font size.",
 			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "option",
+			"name": "blink",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blink",
+			"description": "The HTML Blink Element (<blink>) is a non-standard element which causes the enclosed text to flash slowly.",
 			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "output",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
+			"name": "blockquote",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote",
+			"description": "",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "cite",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "p",
-			"categories": ["#Flow", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "param",
+			"name": "body",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body",
+			"description": "",
 			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "alink",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "background",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bottommargin",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "leftmargin",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "link",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onafterprint",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onbeforeprint",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onbeforeunload",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onblur",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onerror",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onfocus",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onhashchange",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onlanguagechange",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onload",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onmessage",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onoffline",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "ononline",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onpopstate",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onredo",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onresize",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onstorage",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onundo",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "onunload",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rightmargin",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "text",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "topmargin",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "vlink",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "picture",
-			"categories": ["#Flow", "#phrasing", "#embedded"],
-			"roles": ["None"],
-			"obsolete": false
+			"name": "br",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br",
+			"description": "",
+			"categories": ["flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "clear",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "plaintext",
-			"obsolete": true
+			"name": "button",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button",
+			"description": "The HTML <button> element represents a clickable button, which can be used in forms or anywhere in a document that needs simple, standard button functionality. By default, HTML buttons are typically presented in a style similar to that of the host platform the user agent is running on, but you can change the appearance of the button using CSS.",
+			"categories": ["flow", "phrasing", "interactive", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "autofocus",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "autocomplete",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "disabled",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "form",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "formaction",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "formenctype",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "formmethod",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "formnovalidate",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "formtarget",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "value",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "pre",
-			"categories": ["#Flow", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
+			"name": "canvas",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas",
+			"description": "",
+			"categories": ["flow", "phrasing", "embedded", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "height",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "moz-opaque",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "progress",
-			"categories": ["#Flow", "#phrasing", "#labelable", "#palpable"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "q",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "rp",
+			"name": "caption",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption",
+			"description": "The HTML Table Caption element (<caption>) specifies the caption (or title) of a table, and if used is always the first child of a <table>. Its styling and physical position relative to the table may be changed using the CSS caption-side and text-align properties.",
 			"categories": [],
-			"roles": ["Any"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "left",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "top",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "right",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bottom",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "align",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "left",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "top",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "right",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bottom",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "rt",
+			"name": "center",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/center",
+			"description": "The obsolete HTML Center Element (<center>) is a block-level element that displays its block-level or inline contents centered horizontally within its containing element. The container is usually, but isn't required to be, <body>.",
 			"categories": [],
-			"roles": ["Any"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "rtc",
+			"name": "cite",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite",
+			"description": "The HTML Citation element (<cite>) is used to describe a reference to a cited creative work, and must include the title of that work. The reference may be in an abbreviated form according to context-appropriate conventions related to citation metadata.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "code",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code",
+			"description": "The HTML <code> element displays its contents styled in a fashion intended to indicate that the text is a short fragment of computer code. By default, the content text is displayed using the user agent's default monospace font.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "col",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col",
+			"description": "",
 			"categories": [],
-			"roles": ["Any"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "char",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charoff",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "span",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "valign",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "ruby",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "s",
-			"categories": ["#Phrasing", "#flow"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "samp",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "script",
-			"categories": ["#Metadata", "#Flow", "#Phrasing"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "section",
-			"categories": ["#Flow", "#Sectioning", "#palpable"],
-			"roles": [
-				"alert",
-				"alertdialog",
-				"application",
-				"banner",
-				"complementary",
-				"contentinfo",
-				"dialog",
-				"document",
-				"feed",
-				"log",
-				"main",
-				"marquee",
-				"navigation",
-				"search",
-				"status",
-				"tabpanel"
-			],
-			"obsolete": false
-		},
-		{
-			"tagName": "select",
-			"categories": ["#flow", "#phrasing", "#interactive"],
-			"roles": ["menu"],
-			"obsolete": false
-		},
-		{
-			"tagName": "slot",
-			"categories": ["#Flow", "#phrasing"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "small",
-			"categories": ["#Flow", "#phrasing"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "source",
+			"name": "colgroup",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup",
+			"description": "",
 			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "char",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charoff",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "span",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "valign",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "spacer",
-			"obsolete": true
+			"name": "command",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/command",
+			"description": "The HTML Command element (<command>) represents a command which the user can invoke. Commands are often used as part of a context menu or toolbar. However, they can be used anywhere on the page.",
+			"categories": ["metadata", "flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "checked",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "disabled",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "icon",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "label",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "radiogroup",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "span",
-			"categories": ["#Flow", "#phrasing"],
-			"roles": ["Any"],
-			"obsolete": false
+			"name": "content",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/content",
+			"description": "The HTML <content> element—an obsolete part of the Web Components suite of technologies—was used inside of Shadow DOM as an insertion point, and wasn't meant to be used in ordinary HTML. It has now been replaced by the <slot> element, which creates a point in the DOM at which a shadow DOM can be inserted.",
+			"categories": ["transparent"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "select",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "strike",
-			"obsolete": true
+			"name": "data",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data",
+			"description": "",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "value",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "strong",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
+			"name": "datalist",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist",
+			"description": "",
+			"categories": ["flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "style",
-			"categories": ["#Metadata", "#flow"],
-			"roles": ["None"],
-			"obsolete": false
-		},
-		{
-			"tagName": "sub",
-			"categories": ["#Flow", "#phrasing"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "summary",
-			"roles": ["button"],
-			"obsolete": false
-		},
-		{
-			"tagName": "sup",
-			"categories": ["#Flow", "#phrasing"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "table",
-			"categories": ["#Flow"],
-			"roles": ["Any"],
-			"obsolete": false
-		},
-		{
-			"tagName": "tbody",
+			"name": "dd",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd",
+			"description": "The HTML <dd> element provides the details about or the definition of the preceding term (<dt>) in a description list (<dl>).",
 			"categories": [],
-			"roles": ["Any"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "nowrap",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "td",
+			"name": "del",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del",
+			"description": "The HTML <del> element represents a range of text that has been deleted from a document. This can be used when rendering \"track changes\" or source code diff information, for example. The <ins> element can be used for the opposite purpose: to indicate text that has been added to the document.",
+			"categories": ["flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "cite",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "datetime",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "details",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details",
+			"description": "The HTML Details Element (<details>) creates a disclosure widget in which information is visible only when the widget is toggled into an \"open\" state. A summary or label can be provided using the <summary> element.",
+			"categories": ["flow", "interactive", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "open",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "dfn",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn",
+			"description": "The HTML Definition element (<dfn>) is used to indicate the term being defined within the context of a definition phrase or sentence. The <p> element, the <dt>/<dd> pairing, or the <section> element which is the nearest ancestor of the <dfn> is considered to be the definition of the term.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "dialog",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
+			"description": "",
+			"categories": ["flow"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "open",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "dir",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dir",
+			"description": "The obsolete HTML Directory element (<dir>) is used as a container for a directory of files and/or folders, potentially with styles and icons applied by the user agent. Do not use this obsolete element; instead, you should use the <ul> element for lists, including lists of files.",
 			"categories": [],
-			"roles": ["Any"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "template",
-			"categories": ["#Metadata", "#flow", "#phrasing"],
-			"roles": ["None"],
-			"obsolete": false
+			"name": "div",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+			"description": "The HTML Content Division element (<div>) is the generic container for flow content. It has no effect on the content or layout until styled using CSS.",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "textarea",
-			"categories": ["#Flow", "#phrasing", "#Interactive"],
-			"roles": ["None"],
-			"obsolete": false
+			"name": "dl",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl",
+			"description": "",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "tfoot",
+			"name": "dt",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt",
+			"description": "The HTML <dt> element specifies a term in a description or definition list, and as such must be used inside a <dl> element. It is usually followed by a <dd> element; however, multiple <dt> elements in a row indicate several terms that are all defined by the immediate next <dd> element.",
 			"categories": [],
-			"roles": ["Any"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "th",
+			"name": "element",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/element",
+			"description": "The obsolete HTML <element> element was part of the Web Components specification; it was intended to be used to define new custom DOM elements. It was removed in favor of a JavaScript-driven approach for creating new custom elements; however, that technology is not mature and no browers fully implement it.",
+			"categories": ["transparent"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "em",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em",
+			"description": "",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "embed",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed",
+			"description": "",
+			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "height",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "src",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "fieldset",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset",
+			"description": "",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "disabled",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "form",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "figcaption",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption",
+			"description": "The HTML <figcaption> or Figure Caption element represents a caption or legend describing the rest of the contents of its parent <figure> element.",
 			"categories": [],
-			"roles": ["Any"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "thead",
+			"name": "figure",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure",
+			"description": "The HTML <figure> (Figure With Optional Caption) element represents self-contained content, potentially with an optional caption, which is specified using the (<figcaption>) element. The figure, its caption, and its contents are referenced as a single unit.",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "font",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/font",
+			"description": "",
 			"categories": [],
-			"roles": ["Any"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "time",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
+			"name": "footer",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer",
+			"description": "",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "title",
-			"categories": ["#Metadata"],
-			"roles": ["None"],
-			"obsolete": false
+			"name": "form",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form",
+			"description": "",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "accept",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "accept-charset",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "action",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "autocapitalize",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "autocomplete",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "enctype",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "method",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "novalidate",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "target",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "tr",
+			"name": "frame",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frame",
+			"description": "",
 			"categories": [],
-			"roles": ["Any"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "src",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "noresize",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "scrolling",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "marginheight",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "marginwidth",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "frameborder",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "track",
+			"name": "frameset",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frameset",
+			"description": "",
 			"categories": [],
-			"roles": ["None"],
-			"obsolete": false
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "cols",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rows",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "tt",
-			"obsolete": true
+			"name": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
+			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"categories": ["flow", "heading", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "u",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
+			"name": "head",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head",
+			"description": "The HTML <head> element contains machine-readable information (metadata) about the document, like its title, scripts, and style sheets.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "profile",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "ul",
-			"categories": ["#Flow", "#Palpable"],
-			"roles": [
-				"directory",
-				"group",
-				"listbox",
-				"menu",
-				"menubar",
-				"radiogroup",
-				"tablist",
-				"toolbar",
-				"tree",
-				"presentation"
-			],
-			"obsolete": false
+			"name": "header",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header",
+			"description": "",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "var",
-			"categories": ["#Flow", "#phrasing", "#palpable"],
-			"roles": ["Any"],
-			"obsolete": false
+			"name": "hgroup",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup",
+			"description": "",
+			"categories": ["flow", "heading", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
-			"tagName": "video",
-			"categories": ["#Flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
-			"roles": ["application"],
-			"obsolete": false
+			"name": "hr",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr",
+			"description": "The HTML <hr> element represents a thematic break between paragraph-level elements: for example, a change of scene in a story, or a shift of topic within a section.",
+			"categories": ["flow"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "color",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "noshade",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "size",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "wbr",
-			"categories": ["#Flow", "#phrasing"],
-			"roles": ["Any"],
-			"obsolete": false
+			"name": "html",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "manifest",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "version",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "xmlns",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
 		},
 		{
-			"tagName": "xmp",
-			"obsolete": true
+			"name": "i",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i",
+			"description": "",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "iframe",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe",
+			"description": "The HTML Inline Frame element (<iframe>) represents a nested browsing context, embedding another HTML page into the current one.",
+			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "allow",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "allowfullscreen",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "allowpaymentrequest",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "csp",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "height",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "importance",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "auto",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "high",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "low",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "referrerpolicy",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "sandbox",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "src",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "srcdoc",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "frameborder",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "longdesc",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "marginheight",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "marginwidth",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "scrolling",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "mozbrowser",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "image",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/image",
+			"description": "The obsolete HTML Image element (<image>) is an obsolete remnant of an ancient version of HTML lost in the mists of time; use the standard <img> element instead. Seriously, the specification even literally uses the words \"Don't ask\" when describing this element.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "img",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img",
+			"description": "The HTML <img> element embeds an image into the document. It is a replaced element.",
+			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "input",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input",
+			"description": "The HTML <input> element is used to create interactive controls for web-based forms in order to accept data from the user; a wide variety of types of input data and control widgets are available, depending on the device and user agent.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "ins",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins",
+			"description": "The HTML <ins> element represents a range of text that has been added to a document. You can use the <del> element to similarly represent a range of text that has been deleted from the document.",
+			"categories": ["flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "cite",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "datetime",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "isindex",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/isindex",
+			"description": "<isindex> is an obsolete HTML element that puts a text field in a page for querying the document. <isindex> was providing a single line text input for entering a query string. When sent, the server would return a list of pages matching the query. Its supports depended on both the browser and the server to react to the query.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "kbd",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd",
+			"description": "The HTML Keyboard Input element (<kbd>) represents a span of inline text denoting textual user input from a keyboard, voice input, or any other text entry device. By convention, the user agent defaults to rendering the contents of a <kbd> element using its default monospace font, although this is not mandated by the HTML standard.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "keygen",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/keygen",
+			"description": "",
+			"categories": ["flow", "phrasing", "interactive", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "autofocus",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "challenge",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "disabled",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "form",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "keytype",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "label",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label",
+			"description": "",
+			"categories": ["flow", "phrasing", "interactive", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "for",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "form",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "legend",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "li",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "value",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "link",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link",
+			"description": "",
+			"categories": ["metadata", "flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "as",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "crossorigin",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "anonymous",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "use-credentials",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "href",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "hreflang",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "importance",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "integrity",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "media",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "referrerpolicy",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rel",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "sizes",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "title",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "disabled",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "methods",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "prefetch",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "target",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charset",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rev",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "as",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "crossorigin",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "anonymous",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "use-credentials",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "href",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "hreflang",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "importance",
+					"experimental": true,
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "integrity",
+					"experimental": true,
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "media",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "referrerpolicy",
+					"experimental": true,
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rel",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "sizes",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "title",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charset",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rev",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "listing",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/listing",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "main",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main",
+			"description": "",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "map",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map",
+			"description": "",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "mark",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark",
+			"description": "The HTML Mark Text element (<mark>) represents text which is marked or highlighted for reference or notation purposes, due to the marked passage's relevance or importance in the enclosing context.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "marquee",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/marquee",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "behavior",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "direction",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "height",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "hspace",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "loop",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "scrollamount",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "scrolldelay",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "truespeed",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "vspace",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "menu",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu",
+			"description": "",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "label",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "menuitem",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "checked",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "command",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "default",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "disabled",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "icon",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "label",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "radiogroup",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "meta",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta",
+			"description": "",
+			"categories": ["metadata", "flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "charset",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "content",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "http-equiv",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "scheme",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "meter",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter",
+			"description": "",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "value",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "min",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "max",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "low",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "high",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "optimum",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "form",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "multicol",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/multicol",
+			"description": "The HTML Multi-Column Layout element (<multicol>) was an experimental element designed to allow multi-column layouts and must not be used. It never got any significant traction and is not implemented in any major browsers. It's covered here only to warn you off in case you stumble on it in any other documentation.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "nav",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav",
+			"description": "The HTML <nav> element represents a section of a page whose purpose is to provide navigation links, either within the current document or to other documents. Common examples of navigation sections are menus, tables of contents, and indexes.",
+			"categories": ["flow", "sectioning", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "nextid",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nextid",
+			"description": "<nextid> is an obsolete HTML element that served to enable the NeXT web designing tool to generate automatic NAME labels for its anchors. It was generated by that web editing tool automatically and was not to be adjusted or entered by hand. This element has the distinction of being the first element to become one of the \"Lost Tags\" by being eliminated from the official public DTD's of the HTML versions. It is also probably one of the least understood of all of the early HTML elements.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "n",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "nobr",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nobr",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "noembed",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noembed",
+			"description": "The <noembed> element is an obsolete, non-standard way to provide alternative, or \"fallback\", content for browsers that do not support the <embed> element or do not support the type of embedded content an author wishes to use. This element was deprecated in HTML 4.01 and above in favor of placing fallback content between the opening and closing tags of an <object> element.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "noframes",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noframes",
+			"description": "The obsolete HTML No Frames or frame fallback element, <noframes>, provides content to be presented in browsers that don't support (or have disabled support for) the <frame> element. Although most commonly-used browsers support frames, there are exceptions, including certain special-use browsers including some mobile browsers, as well as text-mode browsers.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "noscript",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript",
+			"description": "",
+			"categories": ["metadata", "flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "object",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object",
+			"description": "",
+			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "archive",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "border",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "classid",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "codebase",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "codetype",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "data",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "declare",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "form",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "height",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "standby",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "tabindex",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "typemustmatch",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "usemap",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "ol",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol",
+			"description": "",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "compact",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "reversed",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "start",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "optgroup",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "disabled",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "label",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "option",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option",
+			"description": "The HTML <option> element is used to define an item contained in a <select>, an <optgroup>, or a <datalist> element. As such, <option> can represent menu items in popups and other lists of items in an HTML document.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "disabled",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "label",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "selected",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "value",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "output",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output",
+			"description": "The HTML Output element (<output>) is a container element into which a site or app can inject the results of a calculation or the outcome of a user action.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "for",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "form",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "p",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p",
+			"description": "The HTML <p> element represents a paragraph. Paragraphs are usually represented in visual media as blocks of text separated from adjacent blocks by blank lines and/or first-line indentation, but HTML paragraphs can be any structural grouping of related content, such as images or form fields.",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "param",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "value",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "valuetype",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "picture",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture",
+			"description": "The HTML <picture> element contains zero or more <source> elements and one <img> element to provide versions of an image for different display/device scenarios. The browser will consider each child <source> element and choose the best match among them; if no matches are found, the URL of the <img> element's src attribute is selected. The selected image is then presented in the space occupied by the <img> element.",
+			"categories": ["flow", "phrasing", "embedded"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "plaintext",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/plaintext",
+			"description": "The HTML Plaintext Element (<plaintext>) renders everything following the start tag as raw text, ignoring any following HTML. There is no closing tag, since everything after it is considered raw text.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "pre",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre",
+			"description": "The HTML <pre> element represents preformatted text which is to be presented exactly as written in the HTML file. The text is typically rendered using a non-proportional (\"monospace\") font. Whitespace inside this element is displayed as written.",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "cols",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "wrap",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "progress",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress",
+			"description": "",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "max",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "value",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "q",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q",
+			"description": "The HTML <q> element  indicates that the enclosed text is a short inline quotation. Most modern browsers implement this by surrounding the text in quotation marks. This element is intended for short quotations that don't require paragraph breaks; for long quotations use the <blockquote> element.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "cite",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "rb",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rb",
+			"description": "The HTML Ruby Base (<rb>) element is used to delimit the base text component of a  <ruby> annotation, i.e. the text that is being annotated. One <rb> element should wrap each separate atomic segment of the base text.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "rp",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp",
+			"description": "The HTML Ruby Fallback Parenthesis (<rp>) element is used to provide fall-back parentheses for browsers that do not support display of ruby annotations using the <ruby> element. One <rp> element should enclose each of the opening and closing parentheses that wrap the <rt> element that contains the annotation's text.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "rt",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "rtc",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "ruby",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ruby",
+			"description": "",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "s",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s",
+			"description": "",
+			"categories": ["flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "samp",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp",
+			"description": "The HTML Sample Element (<samp>) is used to enclose inline text which represents sample (or quoted) output from a computer program. Its contents are typically rendered using the browser's default monospaced font (such as Courier or Lucida Console).",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "script",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script",
+			"description": "The HTML <script> element is used to embed or reference executable code; this is typically used to embed or refer to JavaScript code. The <script> element can also be used with other languages, such as WebGL's GLSL shader programming language.",
+			"categories": ["metadata", "flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "async",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "crossorigin",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "defer",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "integrity",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "nomodule",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "nonce",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "referrerpolicy",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "src",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charset",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "language",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "section",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section",
+			"description": "The HTML <section> element represents a standalone section — which doesn't have a more specific semantic element to represent it — contained within an HTML document. Typically, but not always, sections have a heading.",
+			"categories": ["flow", "sectioning", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "select",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select",
+			"description": "The HTML <select> element represents a control that provides a menu of options:",
+			"categories": ["flow", "phrasing", "interactive"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "autocomplete",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "autofocus",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "disabled",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "form",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "multiple",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "required",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "size",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "shadow",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/shadow",
+			"description": "The HTML <shadow> element—an obsolete part of the Web Components technology suite—was intended to be used as a shadow DOM insertion point. You might have used it if you have created multiple shadow roots under a shadow host. It is not useful in ordinary HTML.",
+			"categories": ["transparent"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "slot",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot",
+			"description": "The HTML <slot> element—part of the Web Components technology suite—is a placeholder inside a web component that you can fill with your own markup, which lets you create separate DOM trees and present them together.",
+			"categories": ["flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "small",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small",
+			"description": "",
+			"categories": ["flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "source",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source",
+			"description": "The HTML <source> element specifies multiple media resources for the <picture>, the <audio> element, or the <video> element. It is an empty element, meaning that it has no content and does not have a closing tag. It is commonly used to serve the same media content in multiple formats supported by different browsers.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "sizes",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "src",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "srcset",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "media",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "spacer",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/spacer",
+			"description": "<spacer> is an obsolete HTML element which allowed insertion of empty spaces on pages. It was devised by Netscape to accomplish the same effect as a single-pixel layout image, which was something web designers used to use to add white spaces to web pages without actually using an image. However, <spacer> no longer supported by any major browser and the same effects can now be achieved using simple CSS.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "size",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "height",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "span",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span",
+			"description": "The HTML <span> element is a generic inline container for phrasing content, which does not inherently represent anything. It can be used to group elements for styling purposes (using the class or id attributes), or because they share attribute values, such as lang. It should be used only when no other semantic element is appropriate. <span> is very much like a <div> element, but <div> is a block-level element whereas a <span> is an inline element.",
+			"categories": ["flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "strike",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strike",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "strong",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong",
+			"description": "The HTML Strong Importance Element (<strong>) indicates that its contents have strong importance, seriousness, or urgency. Browsers typically render the contents in bold type.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "style",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style",
+			"description": "The HTML <style> element contains style information for a document, or part of a document. It contains CSS, which is applied to the contents of the document containing the <style> element.",
+			"categories": ["metadata", "flow"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "media",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "nonce",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "title",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "scoped",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "sub",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub",
+			"description": "The HTML Subscript element (<sub>) specifies inline text which should be displayed as subscript for solely typographical reasons. Subscripts are typically rendered with a lowered baseline using smaller text.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "summary",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary",
+			"description": "The HTML Disclosure Summary element (<summary>) element specifies a summary, caption, or legend for a <details> element's disclosure box. Clicking the <summary> element toggles the state of the parent <details> element open and closed.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "sup",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup",
+			"description": "The HTML Superscript element (<sup>) specifies inline text which is to be displayed as superscript for solely typographical reasons. Superscripts are usually rendered with a raised baseline using smaller text.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "table",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table",
+			"description": "The HTML <table> element represents tabular data — that is, information presented in a two-dimensional table comprised of rows and columns of cells containing data.",
+			"categories": ["flow"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "border",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "cellpadding",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "cellspacing",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "frame",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rules",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "summary",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "tbody",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody",
+			"description": "The HTML Table Body element (<tbody>) encapsulates a set of table row (<tr> elements), indicating that they comprise the body of the table (<table>).",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "char",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charoff",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "valign",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "align",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "char",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charoff",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "valign",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "td",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "abbr",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "axis",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "char",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charoff",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "colspan",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "headers",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "height",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rowspan",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "scope",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "valign",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "template",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template",
+			"description": "The HTML Content Template (<template>) element is a mechanism for holding client-side content that is not to be rendered when a page is loaded but may subsequently be instantiated during runtime using JavaScript.",
+			"categories": ["metadata", "flow", "phrasing", "script-supporting"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "textarea",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
+			"description": "",
+			"categories": ["flow", "phrasing", "interactive"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "autocapitalize",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "autocomplete",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "autofocus",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "cols",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "disabled",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "form",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "maxlength",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "minlength",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "placeholder",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "readonly",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "required",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rows",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "spellcheck",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "wrap",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "tfoot",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "char",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charoff",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "valign",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "th",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th",
+			"description": "The HTML <th> element defines a cell as header of a group of table cells. The exact nature of this group is defined by the scope and headers attributes.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "abbr",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "axis",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "char",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charoff",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "colspan",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "headers",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "height",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rowspan",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "scope",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "valign",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "thead",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "char",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charoff",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "valign",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "time",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time",
+			"description": "The HTML <time> element represents a specific period in time. It may include the datetime attribute to translate dates into machine-readable format, allowing for better search engine results or custom features such as reminders.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "datetime",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "title",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title",
+			"description": "The HTML Title element (<title>) defines the document's title that is shown in a browser's title bar or a page's tab. It only contains text and tags within the element are ignored.",
+			"categories": ["metadata"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "tr",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr",
+			"description": "The HTML <tr> element defines a row of cells in a table. The row's cells can then be established using a mix of <td> (data cell) and <th> (header cell) elements.The HTML <tr> element specifies that the markup contained inside the <tr> block comprises one row of a table, inside which the <th> and <td> elements create header and data cells, respectively, within the row. Each cell is placed into its own column; the user agent follows specific rules to determine how the cells in each row are placed into columns with those coming from other rows.",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "left",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "center",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "right",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "justify",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "char",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "char",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charoff",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "valign",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "baseline",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bottom",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "middle",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "top",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "track",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "default",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "kind",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "label",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "src",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "srclang",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "tt",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tt",
+			"description": "The obsolete HTML Teletype Text element (<tt>) creates inline text which is presented using the user agent's default monospace font face. This element was created for the purpose of rendering text as it would be displayed on a fixed-width display such as a teletype, text-only screen, or line printer.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "u",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u",
+			"description": "The HTML Unarticulated Annotation Element (<u>) represents a span of inline text which should be rendered in a way that indicates that it has a non-textual annotation. This is rendered by default as a simple solid underline, but may be altered using CSS.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "ul",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul",
+			"description": "",
+			"categories": ["flow", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "compact",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "var",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var",
+			"description": "The HTML Variable element (<var>) represents the name of a variable in a mathematical expression or a programming context. It's typically presented using an italicized version of the current typeface, although that behavior is browser-dependent.",
+			"categories": ["flow", "phrasing", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "video",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video",
+			"description": "The HTML Video element (<video>) embeds a media player which supports video playback into the document. You can use <video> for audio content as well, but the <audio> element may provide a more appropriate user experience.",
+			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "autoplay",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "buffered",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "controls",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "crossorigin",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "anonymous",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "use-credentials",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "height",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "intrinsicsize",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "loop",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "muted",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "preload",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "playsinline",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "poster",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "src",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				}
+			]
+		},
+		{
+			"name": "wbr",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr",
+			"description": "",
+			"categories": ["flow", "phrasing"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "xmp",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/xmp",
+			"description": "",
+			"categories": [],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		}
 	]
 }

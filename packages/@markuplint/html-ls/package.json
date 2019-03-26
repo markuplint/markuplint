@@ -11,12 +11,16 @@
 		"access": "public"
 	},
 	"scripts": {
-		"gen": "ts-node gen/index.ts"
+		"gen": "ts-node gen/index.ts; prettier --write index.json",
+		"schema": "typescript-json-schema -o ml-specs.schema.json --ignoreErrors gen/types.ts MLMLSpecJSON; prettier --write ml-specs.schema.json"
 	},
 	"devDependencies": {
 		"@types/cheerio": "^0.22.11",
 		"@types/node-fetch": "^2.1.7",
 		"cheerio": "^1.0.0-rc.2",
-		"node-fetch": "^2.3.0"
-	}
+		"fast-xml-parser": "^3.12.16",
+		"node-fetch": "^2.3.0",
+		"typescript-json-schema": "^0.36.0"
+	},
+	"dependencies": {}
 }

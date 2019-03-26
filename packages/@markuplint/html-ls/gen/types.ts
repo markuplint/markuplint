@@ -1,36 +1,148 @@
+/**
+ * markuplit Markup-language spec
+ */
+export interface MLMLSpecJSON {
+	$schema?: string;
+
+	/**
+	 * Reference URLs
+	 */
+	cites?: string[];
+	def?: {
+		'#globalAttrs'?: Attribute[];
+		'#roles'?: ARIRRoleAttribute[];
+		'#ariaAttrs'?: ARIAAttribute[];
+	};
+	specs: ElementSpec[];
+}
+
+/**
+ * Element spec
+ */
 export type ElementSpec = {
+	/**
+	 * Tag name
+	 */
 	name: string;
-	categories: string[];
+
+	/**
+	 * Reference URL
+	 */
+	cite: string;
+
+	/**
+	 * Description
+	 */
+	description?: string;
+
+	/**
+	 * If element is obsolete then defined alternate element name.
+	 */
+	obsolete?: {
+		alt: string;
+	};
+
+	/**
+	 * Element cateogries
+	 */
+	categories: ElementCategories;
+
+	/**
+	 * Permitted content model
+	 */
 	contentModel: {
 		exists: 'required' | 'any';
 		models: string[];
 	}[];
+
+	/**
+	 * Tag omittion
+	 */
 	omittion: ElementSpecOmittion;
-	attributes: AttributeSpec[];
+
+	/**
+	 * Attributes
+	 */
+	attributes: (AttributeSpec | string)[];
 };
 
-export type _ElementSpecOmittion<A extends boolean> = {
-	isAllow: A;
+export type ElementCategories = (
+	| ElementCategory
+	| {
+			category: ElementCategory;
+			condition: ElementCondition;
+	  })[];
+
+/**
+ * Element Category
+ *
+ * @cite https://html.spec.whatwg.org/multipage/dom.html#kinds-of-content
+ */
+export type ElementCategory =
+	| 'transparent'
+	| 'metadata'
+	| 'flow'
+	| 'sectioning'
+	| 'heading'
+	| 'phrasing'
+	| 'embedded'
+	| 'interactive'
+	| 'palpable'
+	| 'script-supporting';
+
+export type ElementSpecOmittion = false | ElementSpecOmittionTags;
+
+type ElementSpecOmittionTags = {
+	startTag: boolean | ElementCondition;
+	endTag: boolean | ElementCondition;
 };
 
-export type ElementSpecOmittion<A extends boolean = boolean> = A extends true
-	? _ElementSpecOmittion<true> & {
-			condition: ElementSpecOmittionCondition;
-	  }
-	: _ElementSpecOmittion<false>;
-
-export type ElementSpecOmittionCondition = {
+export type ElementCondition = {
 	__WIP__: 'WORK_IN_PROGRESS';
 };
 
 export type Attribute = {
 	name: string;
-	type: 'global' | 'xml' | 'aria' | 'eventhandler' | 'form' | 'particular';
+	description: string;
+	category: AttributeCtegory;
+	experimental?: true;
+	obsolete?: true;
 	value: AttributeValue;
 };
 
-export type AttributeValue = {};
-
 export type AttributeSpec = Attribute & {
-	required: boolean;
+	required?: true;
 };
+
+export type AttributeCtegory = 'global' | 'xml' | 'aria' | 'eventhandler' | 'form' | 'particular';
+
+export type AttributeValue = 'string' | 'space-separated-tokens' | 'function-body' | 'uint' | 'int' | 'float';
+
+export type ARIRRoleAttribute = {
+	name: string;
+	description: string;
+	isAbstract?: true;
+	generalization: string[];
+	ownedAttribute: string[];
+};
+
+export type ARIAAttribute = {
+	name: string;
+	type: 'property' | 'state';
+	deprecated?: true;
+	value: ARIAAttributeValue;
+	defaultValue?: string;
+};
+
+export type ARIAAttributeValue =
+	| 'true/false'
+	| 'tristate'
+	| 'true/false/undefined'
+	| 'ID reference'
+	| 'ID reference list'
+	| 'integer'
+	| 'number'
+	| 'string'
+	| 'token'
+	| 'token list'
+	| 'URI';
