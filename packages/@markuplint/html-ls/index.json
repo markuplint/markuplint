@@ -1230,7 +1230,7 @@
 							"category": "#flow",
 							"ignore": ["#interactive"]
 						},
-						"phrasing"
+						"#phrasing"
 					]
 				}
 			},
