@@ -13,6 +13,9 @@
 			"path": "../ml-config"
 		},
 		{
+			"path": "../ml-spec"
+		},
+		{
 			"path": "../i18n"
 		}
 	],

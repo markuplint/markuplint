@@ -14,7 +14,7 @@
 	"scripts": {
 		"build": "tsc",
 		"clean": "tsc --build --clean",
-		"schema": "typescript-json-schema -o schema.json --ignoreErrors gen/types.ts MLMLSpecJSON; prettier --write schema.json"
+		"schema": "typescript-json-schema -o schema.json --ignoreErrors src/index.ts MLMLSpec; prettier --write schema.json"
 	},
 	"devDependencies": {
 		"typescript-json-schema": "^0.36.0"

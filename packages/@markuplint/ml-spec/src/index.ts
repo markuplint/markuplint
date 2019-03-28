@@ -1,9 +1,7 @@
-import { string } from 'prop-types';
-
 /**
  * markuplit Markup-language spec
  */
-export interface MLMLSpecJSON {
+export interface MLMLSpec {
 	$schema?: string;
 
 	/**
