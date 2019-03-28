@@ -6256,7 +6256,9 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "zero or more <li> elements, which in turn often contain nested <ol> or <ul> elements.",
-				"content": false
+				"content": {
+					"zeroOrMore": "li"
+				}
 			},
 			"permittedRoles": {
 				"summary": "directory, group, listbox, menu, menubar, radiogroup, tablist, toolbar, tree, presentation",
