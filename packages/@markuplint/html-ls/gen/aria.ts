@@ -1,4 +1,4 @@
-import { ARIRRoleAttribute, ARIAAttribute, ARIAAttributeValue } from './types';
+import { ARIRRoleAttribute, ARIAAttribute, ARIAAttributeValue } from '@markuplint/ml-spec';
 import fetch, { fetchText } from './fetch';
 import xml from 'fast-xml-parser';
 import { nameCompare } from './utils';

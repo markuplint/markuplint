@@ -11,8 +11,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"gen": "ts-node gen/index.ts; prettier --write index.json",
-		"schema": "typescript-json-schema -o ml-specs.schema.json --ignoreErrors gen/types.ts MLMLSpecJSON; prettier --write ml-specs.schema.json"
+		"gen": "ts-node gen/index.ts; prettier --write index.json"
 	},
 	"devDependencies": {
 		"@types/cheerio": "^0.22.11",
@@ -21,8 +20,9 @@
 		"cheerio": "^1.0.0-rc.2",
 		"cli-progress": "^2.1.1",
 		"fast-xml-parser": "^3.12.16",
-		"node-fetch": "^2.3.0",
-		"typescript-json-schema": "^0.36.0"
+		"node-fetch": "^2.3.0"
 	},
-	"dependencies": {}
+	"dependencies": {
+		"@markuplint/ml-spec": "^1.0.0-alpha"
+	}
 }

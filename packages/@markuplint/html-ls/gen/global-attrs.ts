@@ -1,4 +1,4 @@
-import { Attribute, AttributeValue } from './types';
+import { Attribute, AttributeValue } from '@markuplint/ml-spec';
 import fetch from './fetch';
 import { nameCompare } from './utils';
 

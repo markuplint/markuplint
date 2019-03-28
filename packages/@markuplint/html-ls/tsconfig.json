@@ -1,5 +1,10 @@
 {
 	"extends": "../../../tsconfig.json",
 	"compilerOptions": {},
+	"references": [
+		{
+			"path": "../ml-spec"
+		}
+	],
 	"exclude": ["node_modules", "./test/**/*.spec.ts"]
 }

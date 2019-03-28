@@ -1,8 +1,8 @@
+import { MLMLSpecJSON } from '@markuplint/ml-spec';
 import fs from 'fs';
 import path from 'path';
 import util from 'util';
-import fetch, { getReferences } from './fetch';
-import { ElementSpec, MLMLSpecJSON } from './types';
+import { getReferences } from './fetch';
 import { getGlobalAttrs } from './global-attrs';
 import { getHTMLElements } from './html-elements';
 import { getAria } from './aria';

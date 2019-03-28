@@ -1,4 +1,4 @@
-import { ElementSpec, ElementCategories, AttributeSpec, AttributeValue } from './types';
+import { ElementSpec, ElementCategories, AttributeSpec, AttributeValue } from '@markuplint/ml-spec';
 import fetch from './fetch';
 import { nameCompare } from './utils';
 

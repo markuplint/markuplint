@@ -1,0 +1,23 @@
+{
+	"name": "@markuplint/ml-spec",
+	"version": "1.0.0-alpha",
+	"description": "Types and schema that specs of the Markup languages for markuplint",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"private": false,
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsc",
+		"clean": "tsc --build --clean",
+		"schema": "typescript-json-schema -o schema.json --ignoreErrors gen/types.ts MLMLSpecJSON; prettier --write schema.json"
+	},
+	"devDependencies": {
+		"typescript-json-schema": "^0.36.0"
+	},
+	"dependencies": {}
+}
