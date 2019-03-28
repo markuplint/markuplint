@@ -13,9 +13,6 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 	public readonly namespaceURI: string;
 	public readonly isForeignElement: boolean;
 	public readonly closeTag: MLDOMElementCloseTag<T, O> | null;
-	public categories: string[] = [];
-	public roles: string[] = [];
-	public obsolete = false;
 
 	constructor(astNode: MLASTElement, document: Document<T, O>) {
 		super(astNode, document);
