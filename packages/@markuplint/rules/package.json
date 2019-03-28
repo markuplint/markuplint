@@ -13,7 +13,11 @@
 	},
 	"scripts": {
 		"build": "tsc",
+		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean"
+	},
+	"dependencies": {
+		"@markuplint/ml-spec": "^1.0.0-alpha"
 	},
 	"devDependencies": {
 		"@markuplint/ml-core": "^1.0.0-alpha.3"

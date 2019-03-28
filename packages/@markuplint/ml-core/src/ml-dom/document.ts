@@ -1,5 +1,6 @@
 import { MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
+import { SpecOM } from '@markuplint/ml-spec';
 import { MLRule } from '../';
 import Ruleset from '../ruleset';
 import { createNode } from './helper';
@@ -16,6 +17,11 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	public nodeList: ReadonlyArray<AnonymousNode<T, O>>;
 
 	/**
+	 * Specs
+	 */
+	public specs: SpecOM;
+
+	/**
 	 *
 	 */
 	public currentRule: MLRule<T, O> | null = null;
@@ -30,8 +36,9 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	 * @param ast node list of markuplint AST
 	 * @param ruleset ruleset object
 	 */
-	constructor(ast: MLASTDocument, ruleset: Ruleset) {
+	constructor(ast: MLASTDocument, specs: SpecOM, ruleset: Ruleset) {
 		this.nodeList = Object.freeze(ast.nodeList.map(astNode => createNode<MLASTNode, T, O>(astNode, this)));
+		this.specs = specs;
 		this.isFragment = ast.isFragment;
 
 		// add rules to node
@@ -58,11 +65,6 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				if (!matched) {
 					continue;
 				}
-
-				// specs
-				node.categories = nodeRule.categories || [];
-				node.roles = nodeRule.roles || [];
-				node.obsolete = !!nodeRule.obsolete;
 
 				if (!nodeRule.rules) {
 					continue;

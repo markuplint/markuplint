@@ -26,21 +26,6 @@ test('deprecated', async () => {
 		[rule],
 		'en',
 	);
-	expect(r).toStrictEqual([]);
-});
-
-test('deprecated', async () => {
-	const r = await markuplint.verify(
-		'<font></font><big><blink></blink></big>',
-		{
-			rules: {
-				'deprecated-element': true,
-			},
-			extends: '@markuplint/html-ls',
-		},
-		[rule],
-		'en',
-	);
 	expect(r).toStrictEqual([
 		{
 			severity: 'error',

@@ -10,6 +10,6 @@ describe('standard verify', () => {
 			locale: 'en',
 			keywords: {},
 		});
-		const core = new MLCore(parser, sourceCode, ruleset, [], messenger);
+		const core = new MLCore(parser, sourceCode, { specs: [] }, ruleset, [], messenger);
 	});
 });

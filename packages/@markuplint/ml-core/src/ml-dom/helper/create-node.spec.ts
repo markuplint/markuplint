@@ -9,7 +9,7 @@ describe('create Node', () => {
 		const ast = parse(sourceCode);
 		const astNode = ast.nodeList[0];
 		const ruleset = convertRuleset({});
-		const document = new Document(ast, ruleset);
+		const document = new Document(ast, {}, ruleset);
 		const node = createNode(astNode, document);
 		expect(node.raw).toBe('<div>');
 	});

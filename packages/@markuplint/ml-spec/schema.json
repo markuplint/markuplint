@@ -1,0 +1,658 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"ARIAAttributeValue": {
+			"enum": [
+				"ID reference",
+				"ID reference list",
+				"URI",
+				"integer",
+				"number",
+				"string",
+				"token",
+				"token list",
+				"tristate",
+				"true/false",
+				"true/false/undefined"
+			],
+			"type": "string"
+		},
+		"AttributeCtegory": {
+			"enum": ["aria", "eventhandler", "form", "global", "particular", "xml"],
+			"type": "string"
+		},
+		"AttributeValue": {
+			"enum": ["float", "function-body", "int", "space-separated-tokens", "string", "uint"],
+			"type": "string"
+		},
+		"ElementCategory": {
+			"description": "Element Category",
+			"enum": [
+				"embedded",
+				"flow",
+				"heading",
+				"interactive",
+				"metadata",
+				"palpable",
+				"phrasing",
+				"script-supporting",
+				"sectioning",
+				"transparent"
+			],
+			"type": "string"
+		}
+	},
+	"description": "markuplit Markup-language spec",
+	"properties": {
+		"$schema": {
+			"type": "string"
+		},
+		"cites": {
+			"description": "Reference URLs",
+			"items": {
+				"type": "string"
+			},
+			"type": "array"
+		},
+		"def": {
+			"properties": {
+				"#ariaAttrs": {
+					"items": {
+						"properties": {
+							"defaultValue": {
+								"type": "string"
+							},
+							"deprecated": {
+								"enum": [true],
+								"type": "boolean"
+							},
+							"name": {
+								"type": "string"
+							},
+							"type": {
+								"enum": ["property", "state"],
+								"type": "string"
+							},
+							"value": {
+								"$ref": "#/definitions/ARIAAttributeValue"
+							}
+						},
+						"type": "object"
+					},
+					"type": "array"
+				},
+				"#globalAttrs": {
+					"items": {
+						"properties": {
+							"category": {
+								"$ref": "#/definitions/AttributeCtegory"
+							},
+							"deprecated": {
+								"enum": [true],
+								"type": "boolean"
+							},
+							"description": {
+								"type": "string"
+							},
+							"experimental": {
+								"enum": [true],
+								"type": "boolean"
+							},
+							"name": {
+								"type": "string"
+							},
+							"nonStandard": {
+								"enum": [true],
+								"type": "boolean"
+							},
+							"obsolete": {
+								"enum": [true],
+								"type": "boolean"
+							},
+							"value": {
+								"$ref": "#/definitions/AttributeValue"
+							}
+						},
+						"type": "object"
+					},
+					"type": "array"
+				},
+				"#roles": {
+					"items": {
+						"properties": {
+							"description": {
+								"type": "string"
+							},
+							"generalization": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							"isAbstract": {
+								"enum": [true],
+								"type": "boolean"
+							},
+							"name": {
+								"type": "string"
+							},
+							"ownedAttribute": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							}
+						},
+						"type": "object"
+					},
+					"type": "array"
+				}
+			},
+			"type": "object"
+		},
+		"specs": {
+			"items": {
+				"properties": {
+					"attributes": {
+						"description": "Attributes",
+						"items": {
+							"anyOf": [
+								{
+									"allOf": [
+										{
+											"properties": {
+												"category": {
+													"$ref": "#/definitions/AttributeCtegory"
+												},
+												"deprecated": {
+													"enum": [true],
+													"type": "boolean"
+												},
+												"description": {
+													"type": "string"
+												},
+												"experimental": {
+													"enum": [true],
+													"type": "boolean"
+												},
+												"name": {
+													"type": "string"
+												},
+												"nonStandard": {
+													"enum": [true],
+													"type": "boolean"
+												},
+												"obsolete": {
+													"enum": [true],
+													"type": "boolean"
+												},
+												"value": {
+													"$ref": "#/definitions/AttributeValue"
+												}
+											},
+											"type": "object"
+										},
+										{
+											"properties": {
+												"required": {
+													"enum": [true],
+													"type": "boolean"
+												}
+											},
+											"type": "object"
+										}
+									]
+								},
+								{
+									"type": "string"
+								}
+							]
+						},
+						"type": "array"
+					},
+					"categories": {
+						"description": "Element cateogries",
+						"items": {
+							"anyOf": [
+								{
+									"properties": {
+										"category": {
+											"$ref": "#/definitions/ElementCategory"
+										},
+										"condition": {
+											"properties": {
+												"__WIP__": {
+													"enum": ["WORK_IN_PROGRESS"],
+													"type": "string"
+												}
+											},
+											"type": "object"
+										}
+									},
+									"type": "object"
+								},
+								{
+									"enum": [
+										"embedded",
+										"flow",
+										"heading",
+										"interactive",
+										"metadata",
+										"palpable",
+										"phrasing",
+										"script-supporting",
+										"sectioning",
+										"transparent"
+									],
+									"type": "string"
+								}
+							]
+						},
+						"type": "array"
+					},
+					"cite": {
+						"description": "Reference URL",
+						"type": "string"
+					},
+					"deprecated": {
+						"description": "Deprecated",
+						"enum": [true],
+						"type": "boolean"
+					},
+					"description": {
+						"description": "Description",
+						"type": "string"
+					},
+					"experimental": {
+						"description": "Experimental technology",
+						"enum": [true],
+						"type": "boolean"
+					},
+					"name": {
+						"description": "Tag name",
+						"type": "string"
+					},
+					"nonStandard": {
+						"description": "Non-standard",
+						"enum": [true],
+						"type": "boolean"
+					},
+					"obsolete": {
+						"anyOf": [
+							{
+								"properties": {
+									"alt": {
+										"type": "string"
+									}
+								},
+								"type": "object"
+							},
+							{
+								"enum": [true],
+								"type": "boolean"
+							}
+						],
+						"description": "Obsolete or alternative elements"
+					},
+					"omittion": {
+						"anyOf": [
+							{
+								"properties": {
+									"endTag": {
+										"anyOf": [
+											{
+												"properties": {
+													"__WIP__": {
+														"enum": ["WORK_IN_PROGRESS"],
+														"type": "string"
+													}
+												},
+												"type": "object"
+											},
+											{
+												"type": "boolean"
+											}
+										]
+									},
+									"startTag": {
+										"anyOf": [
+											{
+												"properties": {
+													"__WIP__": {
+														"enum": ["WORK_IN_PROGRESS"],
+														"type": "string"
+													}
+												},
+												"type": "object"
+											},
+											{
+												"type": "boolean"
+											}
+										]
+									}
+								},
+								"type": "object"
+							},
+							{
+								"enum": [false],
+								"type": "boolean"
+							}
+						],
+						"description": "Tag omittion"
+					},
+					"permittedContent": {
+						"description": "Permitted content",
+						"properties": {
+							"content": {
+								"anyOf": [
+									{
+										"properties": {
+											"either": {
+												"items": {
+													"anyOf": [
+														{
+															"properties": {
+																"category": {
+																	"$ref": "#/definitions/ElementCategory"
+																},
+																"ignore": {
+																	"items": {
+																		"type": "string"
+																	},
+																	"type": "array"
+																}
+															},
+															"type": "object"
+														},
+														{
+															"type": "string"
+														}
+													]
+												},
+												"type": "array"
+											}
+										},
+										"type": "object"
+									},
+									{
+										"properties": {
+											"only": {
+												"type": "string"
+											}
+										},
+										"type": "object"
+									},
+									{
+										"properties": {
+											"then": {
+												"properties": {
+													"either": {
+														"items": {
+															"anyOf": [
+																{
+																	"properties": {
+																		"category": {
+																			"$ref": "#/definitions/ElementCategory"
+																		},
+																		"ignore": {
+																			"items": {
+																				"type": "string"
+																			},
+																			"type": "array"
+																		}
+																	},
+																	"type": "object"
+																},
+																{
+																	"type": "string"
+																}
+															]
+														},
+														"type": "array"
+													}
+												},
+												"type": "object"
+											},
+											"zeroOrMore": {
+												"anyOf": [
+													{
+														"items": {
+															"type": "string"
+														},
+														"type": "array"
+													},
+													{
+														"type": "string"
+													}
+												]
+											}
+										},
+										"type": "object"
+									},
+									{
+										"properties": {
+											"else": {
+												"anyOf": [
+													{
+														"properties": {
+															"either": {
+																"items": {
+																	"anyOf": [
+																		{
+																			"properties": {
+																				"category": {
+																					"$ref": "#/definitions/ElementCategory"
+																				},
+																				"ignore": {
+																					"items": {
+																						"type": "string"
+																					},
+																					"type": "array"
+																				}
+																			},
+																			"type": "object"
+																		},
+																		{
+																			"type": "string"
+																		}
+																	]
+																},
+																"type": "array"
+															}
+														},
+														"type": "object"
+													},
+													{
+														"properties": {
+															"only": {
+																"type": "string"
+															}
+														},
+														"type": "object"
+													},
+													{
+														"properties": {
+															"then": {
+																"properties": {
+																	"either": {
+																		"items": {
+																			"anyOf": [
+																				{
+																					"properties": {
+																						"category": {
+																							"$ref": "#/definitions/ElementCategory"
+																						},
+																						"ignore": {
+																							"items": {
+																								"type": "string"
+																							},
+																							"type": "array"
+																						}
+																					},
+																					"type": "object"
+																				},
+																				{
+																					"type": "string"
+																				}
+																			]
+																		},
+																		"type": "array"
+																	}
+																},
+																"type": "object"
+															},
+															"zeroOrMore": {
+																"anyOf": [
+																	{
+																		"items": {
+																			"type": "string"
+																		},
+																		"type": "array"
+																	},
+																	{
+																		"type": "string"
+																	}
+																]
+															}
+														},
+														"type": "object"
+													},
+													{
+														"type": "boolean"
+													}
+												]
+											},
+											"if": {
+												"properties": {
+													"hasAttr": {
+														"type": "string"
+													}
+												},
+												"type": "object"
+											},
+											"then": {
+												"anyOf": [
+													{
+														"properties": {
+															"either": {
+																"items": {
+																	"anyOf": [
+																		{
+																			"properties": {
+																				"category": {
+																					"$ref": "#/definitions/ElementCategory"
+																				},
+																				"ignore": {
+																					"items": {
+																						"type": "string"
+																					},
+																					"type": "array"
+																				}
+																			},
+																			"type": "object"
+																		},
+																		{
+																			"type": "string"
+																		}
+																	]
+																},
+																"type": "array"
+															}
+														},
+														"type": "object"
+													},
+													{
+														"properties": {
+															"only": {
+																"type": "string"
+															}
+														},
+														"type": "object"
+													},
+													{
+														"properties": {
+															"then": {
+																"properties": {
+																	"either": {
+																		"items": {
+																			"anyOf": [
+																				{
+																					"properties": {
+																						"category": {
+																							"$ref": "#/definitions/ElementCategory"
+																						},
+																						"ignore": {
+																							"items": {
+																								"type": "string"
+																							},
+																							"type": "array"
+																						}
+																					},
+																					"type": "object"
+																				},
+																				{
+																					"type": "string"
+																				}
+																			]
+																		},
+																		"type": "array"
+																	}
+																},
+																"type": "object"
+															},
+															"zeroOrMore": {
+																"anyOf": [
+																	{
+																		"items": {
+																			"type": "string"
+																		},
+																		"type": "array"
+																	},
+																	{
+																		"type": "string"
+																	}
+																]
+															}
+														},
+														"type": "object"
+													},
+													{
+														"type": "boolean"
+													}
+												]
+											}
+										},
+										"type": "object"
+									},
+									{
+										"type": "boolean"
+									}
+								]
+							},
+							"summary": {
+								"type": "string"
+							}
+						},
+						"type": "object"
+					},
+					"permittedRoles": {
+						"description": "Permitted ARIA roles",
+						"properties": {
+							"roles": {
+								"properties": {},
+								"type": "object"
+							},
+							"summary": {
+								"type": "string"
+							}
+						},
+						"type": "object"
+					}
+				},
+				"type": "object"
+			},
+			"type": "array"
+		}
+	},
+	"type": "object"
+}
