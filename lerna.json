@@ -1,6 +1,6 @@
 {
 	"lerna": "3.13.1",
-	"version": "fixed",
+	"version": "independent",
 	"npmClient": "yarn",
 	"useWorkspaces": true,
 	"packages": ["packages/*", "packages/@markuplint/*"]
