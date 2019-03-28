@@ -122,7 +122,7 @@ export type PermittedContentSpec = {
 export type PermittedContent =
 	| boolean
 	| {
-			either: (string | { category: string; ignore: string[] })[];
+			either: (string | { category: ElementCategory; ignore: string[] })[];
 	  }
 	| {
 			only: string;

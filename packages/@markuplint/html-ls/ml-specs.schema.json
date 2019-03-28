@@ -353,7 +353,7 @@
 														{
 															"properties": {
 																"category": {
-																	"type": "string"
+																	"$ref": "#/definitions/ElementCategory"
 																},
 																"ignore": {
 																	"items": {

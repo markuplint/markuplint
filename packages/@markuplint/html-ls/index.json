@@ -1227,7 +1227,7 @@
 					"either": [
 						"#transparent",
 						{
-							"category": "#flow",
+							"category": "flow",
 							"ignore": ["#interactive"]
 						},
 						"#phrasing"
@@ -1368,7 +1368,14 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "Flow content, but with no nested <address> element, no heading content (<hgroup>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6>), no sectioning content (<article>, <aside>, <section>, <nav>), and no <header> or <footer> element.",
-				"content": false
+				"content": {
+					"either": [
+						{
+							"category": "flow",
+							"ignore": ["address", "#heading", "#sectioning", "header", "footer"]
+						}
+					]
+				}
 			},
 			"permittedRoles": {
 				"summary": "None",
