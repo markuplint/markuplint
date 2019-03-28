@@ -383,6 +383,43 @@
 										"type": "object"
 									},
 									{
+										"properties": {
+											"then": {
+												"properties": {
+													"either": {
+														"items": {
+															"anyOf": [
+																{
+																	"properties": {
+																		"category": {
+																			"$ref": "#/definitions/ElementCategory"
+																		},
+																		"ignore": {
+																			"items": {
+																				"type": "string"
+																			},
+																			"type": "array"
+																		}
+																	},
+																	"type": "object"
+																},
+																{
+																	"type": "string"
+																}
+															]
+														},
+														"type": "array"
+													}
+												},
+												"type": "object"
+											},
+											"zeroOrMore": {
+												"type": "string"
+											}
+										},
+										"type": "object"
+									},
+									{
 										"type": "boolean"
 									}
 								]

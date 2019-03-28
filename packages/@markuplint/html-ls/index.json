@@ -1392,7 +1392,12 @@
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
 			"permittedContent": {
 				"summary": "Zero or more <param> elements, then transparent.",
-				"content": false
+				"content": {
+					"zeroOrMore": "param",
+					"then": {
+						"either": ["#transparent"]
+					}
+				}
 			},
 			"permittedRoles": {
 				"summary": "",

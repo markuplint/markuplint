@@ -121,12 +121,18 @@ export type PermittedContentSpec = {
 
 export type PermittedContent =
 	| boolean
-	| {
-			either: (string | { category: ElementCategory; ignore: string[] })[];
-	  }
+	| PermittedContentEitherElements
 	| {
 			only: string;
+	  }
+	| {
+			zeroOrMore: string;
+			then?: PermittedContentEitherElements;
 	  };
+
+export type PermittedContentEitherElements = {
+	either: (string | { category: ElementCategory; ignore: string[] })[];
+};
 
 export type PermittedRolesSpec = {};
 
