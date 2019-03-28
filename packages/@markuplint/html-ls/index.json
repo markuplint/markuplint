@@ -1639,7 +1639,9 @@
 			"categories": ["flow", "sectioning", "palpable"],
 			"permittedContent": {
 				"summary": "Flow content.",
-				"content": false
+				"content": {
+					"either": ["#flow"]
+				}
 			},
 			"permittedRoles": {
 				"summary": "feed, note, presentation, region, search",
