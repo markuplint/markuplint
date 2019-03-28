@@ -1,4 +1,4 @@
-import { MLMLSpecJSON } from '@markuplint/ml-spec';
+import { MLMLSpec } from '@markuplint/ml-spec';
 import fs from 'fs';
 import path from 'path';
 import util from 'util';
@@ -20,7 +20,7 @@ async function main() {
 
 	const cites = getReferences();
 
-	const json: MLMLSpecJSON = {
+	const json: MLMLSpec = {
 		$schema: './ml-specs.schema.json',
 		cites,
 		def: {

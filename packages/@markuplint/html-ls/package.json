@@ -6,7 +6,7 @@
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"private": false,
-	"main": "index.json",
+	"main": "index.js",
 	"publishConfig": {
 		"access": "public"
 	},
