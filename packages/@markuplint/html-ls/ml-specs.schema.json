@@ -344,8 +344,41 @@
 						"description": "Permitted content",
 						"properties": {
 							"content": {
-								"properties": {},
-								"type": "object"
+								"anyOf": [
+									{
+										"properties": {
+											"either": {
+												"items": {
+													"anyOf": [
+														{
+															"properties": {
+																"category": {
+																	"type": "string"
+																},
+																"ignore": {
+																	"items": {
+																		"type": "string"
+																	},
+																	"type": "array"
+																}
+															},
+															"type": "object"
+														},
+														{
+															"type": "string"
+														}
+													]
+												},
+												"type": "array"
+											}
+										},
+										"type": "object"
+									},
+									{
+										"enum": [false],
+										"type": "boolean"
+									}
+								]
 							},
 							"summary": {
 								"type": "string"

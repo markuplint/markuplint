@@ -115,7 +115,11 @@ export type ElementCategory =
 	| 'palpable'
 	| 'script-supporting';
 
-export type PermittedContentSpec = {};
+export type PermittedContentSpec =
+	| false
+	| {
+			either: (string | { category: string; ignore: string[] })[];
+	  };
 
 export type PermittedRolesSpec = {};
 

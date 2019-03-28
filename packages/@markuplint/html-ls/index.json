@@ -1223,7 +1223,16 @@
 			"categories": ["flow", "phrasing", "interactive", "palpable"],
 			"permittedContent": {
 				"summary": "Transparent, containing either flow content (excluding interactive content) or phrasing content.",
-				"content": false
+				"content": {
+					"either": [
+						"#transparent",
+						{
+							"category": "#flow",
+							"ignore": ["#interactive"]
+						},
+						"phrasing"
+					]
+				}
 			},
 			"permittedRoles": {
 				"summary": "button, checkbox, menuitem, menuitemcheckbox, menuitemradio, option, radio, switch, tab, treeitem",
