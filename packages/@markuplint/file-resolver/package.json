@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/file-resolver",
-	"version": "1.0.0-alpha.4",
+	"version": "1.0.0-alpha.5",
 	"description": "The file resolver of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -21,7 +21,7 @@
 		"@types/node": "^11.11.3"
 	},
 	"dependencies": {
-		"@markuplint/ml-config": "^1.0.0-alpha.1",
+		"@markuplint/ml-config": "^1.0.0-alpha.2",
 		"cosmiconfig": "^5.1.0",
 		"glob": "^7.1.3"
 	}
