@@ -2903,6 +2903,15 @@
 			]
 		},
 		{
+			"name": "h1-h6",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
+			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"categories": ["flow", "heading", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
 			"name": "head",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head",
 			"description": "The HTML <head> element contains machine-readable information (metadata) about the document, like its title, scripts, and style sheets.",
@@ -3009,15 +3018,6 @@
 					"value": "WIP"
 				}
 			]
-		},
-		{
-			"name": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
-			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
-			"categories": ["flow", "heading", "palpable"],
-			"contentModel": [],
-			"omittion": false,
-			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
 			"name": "i",

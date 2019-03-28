@@ -10,7 +10,10 @@ export async function getHTMLElements() {
 
 export async function getHTMLElement(link: string) {
 	const $ = await fetch(link);
-	const name = link.replace(/.+\/([a-z0-9-]+)$/i, '$1');
+	let name = link.replace(/.+\/([a-z0-9_-]+)$/i, '$1').toLowerCase();
+	if (name === 'heading_elements') {
+		name = 'h1-h6';
+	}
 	const $article = $('#wikiArticle');
 	const description = $article
 		.find('.seoSummary')
