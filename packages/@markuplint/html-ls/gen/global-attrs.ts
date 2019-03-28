@@ -1,5 +1,6 @@
 import { Attribute, AttributeValue } from './types';
 import fetch from './fetch';
+import { nameCompare } from './utils';
 
 export async function getGlobalAttrs() {
 	const $ = await fetch('https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
@@ -43,6 +44,8 @@ export async function getGlobalAttrs() {
 		};
 		attrs.push(attr);
 	});
+
+	attrs.sort(nameCompare);
 
 	return attrs;
 }

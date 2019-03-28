@@ -149,18 +149,6 @@
 	"def": {
 		"#globalAttrs": [
 			{
-				"name": "xml:lang",
-				"description": "WIP",
-				"category": "xml",
-				"value": "string"
-			},
-			{
-				"name": "xml:base",
-				"description": "WIP",
-				"category": "xml",
-				"value": "string"
-			},
-			{
 				"name": "onabort",
 				"description": "WIP",
 				"category": "eventhandler",
@@ -537,6 +525,18 @@
 				"description": "WIP",
 				"category": "eventhandler",
 				"value": "function-body"
+			},
+			{
+				"name": "xml:base",
+				"description": "WIP",
+				"category": "xml",
+				"value": "string"
+			},
+			{
+				"name": "xml:lang",
+				"description": "WIP",
+				"category": "xml",
+				"value": "string"
 			}
 		],
 		"#roles": [
@@ -870,6 +870,12 @@
 				"ownedAttribute": ["aria-sort"]
 			},
 			{
+				"name": "scrollbar",
+				"description": "A graphical object that controls the scrolling of content within a viewing area, regardless of whether the content is fully displayed within the viewing area.",
+				"generalization": ["input", "range"],
+				"ownedAttribute": []
+			},
+			{
 				"name": "search",
 				"description": "A landmark region that contains a collection of items and objects that, as a whole, combine to create a search facility. See related form and searchbox.",
 				"generalization": ["landmark"],
@@ -901,12 +907,6 @@
 				"description": "A divider that separates and distinguishes sections of content or groups of menuitems.",
 				"generalization": ["structure"],
 				"ownedAttribute": ["aria-expanded", "aria-orientation"]
-			},
-			{
-				"name": "scrollbar",
-				"description": "A graphical object that controls the scrolling of content within a viewing area, regardless of whether the content is fully displayed within the viewing area.",
-				"generalization": ["input", "range"],
-				"ownedAttribute": []
 			},
 			{
 				"name": "slider",
@@ -1016,98 +1016,9 @@
 		],
 		"#ariaAttrs": [
 			{
-				"name": "aria-expanded",
-				"type": "state",
-				"value": "true/false/undefined",
-				"defaultValue": "undefined"
-			},
-			{
-				"name": "aria-pressed",
-				"type": "state",
-				"value": "tristate",
-				"defaultValue": "undefined"
-			},
-			{
-				"name": "aria-sort",
-				"type": "property",
-				"value": "token",
-				"defaultValue": "none"
-			},
-			{
-				"name": "aria-autocomplete",
-				"type": "property",
-				"value": "token",
-				"defaultValue": "none"
-			},
-			{
-				"name": "aria-required",
-				"type": "property",
-				"value": "true/false",
-				"defaultValue": "false"
-			},
-			{
 				"name": "aria-activedescendant",
 				"type": "property",
 				"value": "ID reference"
-			},
-			{
-				"name": "aria-level",
-				"type": "property",
-				"value": "integer"
-			},
-			{
-				"name": "aria-multiselectable",
-				"type": "property",
-				"value": "true/false",
-				"defaultValue": "false"
-			},
-			{
-				"name": "aria-readonly",
-				"type": "property",
-				"value": "true/false",
-				"defaultValue": "false"
-			},
-			{
-				"name": "aria-selected",
-				"type": "state",
-				"value": "true/false/undefined",
-				"defaultValue": "undefined"
-			},
-			{
-				"name": "aria-posinset",
-				"type": "property",
-				"value": "integer"
-			},
-			{
-				"name": "aria-setsize",
-				"type": "property",
-				"value": "integer"
-			},
-			{
-				"name": "aria-checked",
-				"type": "state",
-				"value": "tristate",
-				"defaultValue": "undefined"
-			},
-			{
-				"name": "aria-valuemax",
-				"type": "property",
-				"value": "number"
-			},
-			{
-				"name": "aria-valuemin",
-				"type": "property",
-				"value": "number"
-			},
-			{
-				"name": "aria-valuenow",
-				"type": "property",
-				"value": "number"
-			},
-			{
-				"name": "aria-valuetext",
-				"type": "property",
-				"value": "string"
 			},
 			{
 				"name": "aria-atomic",
@@ -1116,10 +1027,22 @@
 				"defaultValue": "false"
 			},
 			{
+				"name": "aria-autocomplete",
+				"type": "property",
+				"value": "token",
+				"defaultValue": "none"
+			},
+			{
 				"name": "aria-busy",
 				"type": "state",
 				"value": "true/false",
 				"defaultValue": "false"
+			},
+			{
+				"name": "aria-checked",
+				"type": "state",
+				"value": "tristate",
+				"defaultValue": "undefined"
 			},
 			{
 				"name": "aria-controls",
@@ -1143,6 +1066,12 @@
 				"deprecated": true,
 				"value": "token list",
 				"defaultValue": "none"
+			},
+			{
+				"name": "aria-expanded",
+				"type": "state",
+				"value": "true/false/undefined",
+				"defaultValue": "undefined"
 			},
 			{
 				"name": "aria-flowto",
@@ -1185,21 +1114,27 @@
 				"value": "ID reference list"
 			},
 			{
+				"name": "aria-level",
+				"type": "property",
+				"value": "integer"
+			},
+			{
 				"name": "aria-live",
 				"type": "property",
 				"value": "token",
 				"defaultValue": "off"
 			},
 			{
-				"name": "aria-owns",
+				"name": "aria-multiline",
 				"type": "property",
-				"value": "ID reference list"
+				"value": "true/false",
+				"defaultValue": "false"
 			},
 			{
-				"name": "aria-relevant",
+				"name": "aria-multiselectable",
 				"type": "property",
-				"value": "token list",
-				"defaultValue": "additions text"
+				"value": "true/false",
+				"defaultValue": "false"
 			},
 			{
 				"name": "aria-orientation",
@@ -1208,10 +1143,75 @@
 				"defaultValue": "undefined"
 			},
 			{
-				"name": "aria-multiline",
+				"name": "aria-owns",
+				"type": "property",
+				"value": "ID reference list"
+			},
+			{
+				"name": "aria-posinset",
+				"type": "property",
+				"value": "integer"
+			},
+			{
+				"name": "aria-pressed",
+				"type": "state",
+				"value": "tristate",
+				"defaultValue": "undefined"
+			},
+			{
+				"name": "aria-readonly",
 				"type": "property",
 				"value": "true/false",
 				"defaultValue": "false"
+			},
+			{
+				"name": "aria-relevant",
+				"type": "property",
+				"value": "token list",
+				"defaultValue": "additions text"
+			},
+			{
+				"name": "aria-required",
+				"type": "property",
+				"value": "true/false",
+				"defaultValue": "false"
+			},
+			{
+				"name": "aria-selected",
+				"type": "state",
+				"value": "true/false/undefined",
+				"defaultValue": "undefined"
+			},
+			{
+				"name": "aria-setsize",
+				"type": "property",
+				"value": "integer"
+			},
+			{
+				"name": "aria-sort",
+				"type": "property",
+				"value": "token",
+				"defaultValue": "none"
+			},
+			{
+				"name": "aria-valuemax",
+				"type": "property",
+				"value": "number"
+			},
+			{
+				"name": "aria-valuemin",
+				"type": "property",
+				"value": "number"
+			},
+			{
+				"name": "aria-valuenow",
+				"type": "property",
+				"value": "number"
+			},
+			{
+				"name": "aria-valuetext",
+				"type": "property",
+				"value": "string"
 			}
 		]
 	},
@@ -1227,51 +1227,9 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
-					"name": "download",
+					"name": "charset",
 					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "href",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "hreflang",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "ping",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "referrerpolicy",
-					"experimental": true,
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "rel",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "target",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "type",
-					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -1284,23 +1242,12 @@
 				{
 					"name": "coords",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
-					"name": "name",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "rev",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "shape",
+					"name": "coords",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -1309,6 +1256,18 @@
 					"name": "download",
 					"description": "WIP",
 					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "download",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "href",
+					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -1327,9 +1286,34 @@
 					"value": "WIP"
 				},
 				{
+					"name": "hreflang",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "name",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "ping",
 					"description": "WIP",
 					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "ping",
+					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -1342,42 +1326,20 @@
 					"value": "WIP"
 				},
 				{
+					"name": "referrerpolicy",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "rel",
 					"description": "WIP",
-					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
-					"name": "target",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "type",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "charset",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "coords",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "name",
+					"name": "rel",
 					"description": "WIP",
 					"obsolete": true,
 					"category": "particular",
@@ -1391,9 +1353,47 @@
 					"value": "WIP"
 				},
 				{
+					"name": "rev",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "shape",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "shape",
 					"description": "WIP",
 					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "target",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "target",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -1660,6 +1660,18 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "autoplay",
 					"description": "WIP",
 					"category": "particular",
@@ -1673,18 +1685,6 @@
 				},
 				{
 					"name": "crossorigin",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -2087,13 +2087,13 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
-					"name": "autofocus",
+					"name": "autocomplete",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
-					"name": "autocomplete",
+					"name": "autofocus",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -2201,31 +2201,21 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
+					"name": "",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "align",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "left",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "top",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "right",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "bottom",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -2238,7 +2228,39 @@
 					"value": "WIP"
 				},
 				{
+					"name": "bottom",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bottom",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "left",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "left",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "right",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "right",
 					"description": "WIP",
 					"obsolete": true,
 					"category": "particular",
@@ -2252,30 +2274,8 @@
 					"value": "WIP"
 				},
 				{
-					"name": "right",
+					"name": "top",
 					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "bottom",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -2835,7 +2835,19 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
-					"name": "src",
+					"name": "frameborder",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "marginheight",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "marginwidth",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -2859,19 +2871,7 @@
 					"value": "WIP"
 				},
 				{
-					"name": "marginheight",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "marginwidth",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "frameborder",
+					"name": "src",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -2901,15 +2901,6 @@
 					"value": "WIP"
 				}
 			]
-		},
-		{
-			"name": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
-			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
-			"categories": ["flow", "heading", "palpable"],
-			"contentModel": [],
-			"omittion": false,
-			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
 			"name": "head",
@@ -3020,6 +3011,15 @@
 			]
 		},
 		{
+			"name": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
+			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"categories": ["flow", "heading", "palpable"],
+			"contentModel": [],
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
 			"name": "i",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i",
 			"description": "",
@@ -3039,6 +3039,12 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
+					"name": "align",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "allow",
 					"description": "WIP",
 					"category": "particular",
@@ -3057,6 +3063,12 @@
 					"value": "WIP"
 				},
 				{
+					"name": "auto",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "csp",
 					"experimental": true,
 					"description": "WIP",
@@ -3064,7 +3076,19 @@
 					"value": "WIP"
 				},
 				{
+					"name": "frameborder",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "height",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "high",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -3077,19 +3101,31 @@
 					"value": "WIP"
 				},
 				{
-					"name": "auto",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "high",
+					"name": "longdesc",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "low",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "marginheight",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "marginwidth",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "mozbrowser",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -3113,6 +3149,12 @@
 					"value": "WIP"
 				},
 				{
+					"name": "scrolling",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "src",
 					"description": "WIP",
 					"category": "particular",
@@ -3126,48 +3168,6 @@
 				},
 				{
 					"name": "width",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "align",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "frameborder",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "longdesc",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "marginheight",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "marginwidth",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "scrolling",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "mozbrowser",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -3335,13 +3335,13 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
-					"name": "value",
+					"name": "type",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
-					"name": "type",
+					"name": "value",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -3359,8 +3359,48 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
+					"name": "anonymous",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "anonymous",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "as",
 					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "as",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charset",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charset",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "crossorigin",
+					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3371,13 +3411,7 @@
 					"value": "WIP"
 				},
 				{
-					"name": "anonymous",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "use-credentials",
+					"name": "disabled",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -3385,6 +3419,20 @@
 				{
 					"name": "href",
 					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "href",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "hreflang",
+					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3402,6 +3450,22 @@
 					"value": "WIP"
 				},
 				{
+					"name": "importance",
+					"experimental": true,
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "integrity",
+					"experimental": true,
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "integrity",
 					"experimental": true,
 					"description": "WIP",
@@ -3411,42 +3475,12 @@
 				{
 					"name": "media",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
-					"name": "referrerpolicy",
-					"experimental": true,
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "rel",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "sizes",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "title",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "type",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "disabled",
+					"name": "media",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -3464,83 +3498,8 @@
 					"value": "WIP"
 				},
 				{
-					"name": "target",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "charset",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "rev",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "as",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "crossorigin",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "anonymous",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "use-credentials",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "href",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "hreflang",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "importance",
+					"name": "referrerpolicy",
 					"experimental": true,
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "integrity",
-					"experimental": true,
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "media",
 					"description": "WIP",
 					"obsolete": true,
 					"category": "particular",
@@ -3550,7 +3509,6 @@
 					"name": "referrerpolicy",
 					"experimental": true,
 					"description": "WIP",
-					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3562,9 +3520,46 @@
 					"value": "WIP"
 				},
 				{
+					"name": "rel",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rev",
+					"description": "WIP",
+					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "rev",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "sizes",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "sizes",
 					"description": "WIP",
 					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "target",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "title",
+					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3578,19 +3573,24 @@
 				{
 					"name": "type",
 					"description": "WIP",
-					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
-					"name": "charset",
+					"name": "type",
 					"description": "WIP",
 					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
-					"name": "rev",
+					"name": "use-credentials",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "use-credentials",
 					"description": "WIP",
 					"obsolete": true,
 					"category": "particular",
@@ -3858,25 +3858,7 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
-					"name": "value",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "min",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "max",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "low",
+					"name": "form",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -3888,13 +3870,31 @@
 					"value": "WIP"
 				},
 				{
+					"name": "low",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "max",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "min",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "optimum",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
-					"name": "form",
+					"name": "value",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -4482,6 +4482,12 @@
 					"value": "WIP"
 				},
 				{
+					"name": "charset",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "crossorigin",
 					"description": "WIP",
 					"category": "particular",
@@ -4495,6 +4501,12 @@
 				},
 				{
 					"name": "integrity",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "language",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -4525,18 +4537,6 @@
 				},
 				{
 					"name": "type",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "charset",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "language",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -4659,6 +4659,12 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
+					"name": "media",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "sizes",
 					"description": "WIP",
 					"category": "particular",
@@ -4681,12 +4687,6 @@
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
-				},
-				{
-					"name": "media",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
 				}
 			]
 		},
@@ -4701,19 +4701,7 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
-					"name": "type",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "size",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "width",
+					"name": "align",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -4725,7 +4713,19 @@
 					"value": "WIP"
 				},
 				{
-					"name": "align",
+					"name": "size",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "type",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "width",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -4770,12 +4770,6 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
-					"name": "type",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "media",
 					"description": "WIP",
 					"category": "particular",
@@ -4788,13 +4782,19 @@
 					"value": "WIP"
 				},
 				{
+					"name": "scoped",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "title",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
-					"name": "scoped",
+					"name": "type",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -4911,30 +4911,6 @@
 					"value": "WIP"
 				},
 				{
-					"name": "bgcolor",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "char",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "charoff",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "valign",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "align",
 					"description": "WIP",
 					"obsolete": true,
@@ -4944,7 +4920,19 @@
 				{
 					"name": "bgcolor",
 					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
 					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "char",
+					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -4958,7 +4946,19 @@
 				{
 					"name": "charoff",
 					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "charoff",
+					"description": "WIP",
 					"obsolete": true,
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "valign",
+					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -5390,7 +5390,19 @@
 					"value": "WIP"
 				},
 				{
-					"name": "left",
+					"name": "baseline",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bgcolor",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "bottom",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -5402,25 +5414,7 @@
 					"value": "WIP"
 				},
 				{
-					"name": "right",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "justify",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "char",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "bgcolor",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -5438,19 +5432,13 @@
 					"value": "WIP"
 				},
 				{
-					"name": "valign",
+					"name": "justify",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
-					"name": "baseline",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "bottom",
+					"name": "left",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -5462,7 +5450,19 @@
 					"value": "WIP"
 				},
 				{
+					"name": "right",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "top",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "valign",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -5573,6 +5573,24 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "anonymous",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "autoplay",
 					"description": "WIP",
 					"category": "particular",
@@ -5592,18 +5610,6 @@
 				},
 				{
 					"name": "crossorigin",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "anonymous",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "use-credentials",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -5634,18 +5640,6 @@
 					"value": "WIP"
 				},
 				{
-					"name": "preload",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "playsinline",
 					"description": "WIP",
 					"category": "particular",
@@ -5658,19 +5652,25 @@
 					"value": "WIP"
 				},
 				{
+					"name": "preload",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "src",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
-					"name": "width",
+					"name": "use-credentials",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
-					"name": "",
+					"name": "width",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"

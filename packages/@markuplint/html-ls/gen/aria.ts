@@ -1,6 +1,7 @@
 import { ARIRRoleAttribute, ARIAAttribute, ARIAAttributeValue } from './types';
 import fetch, { fetchText } from './fetch';
 import xml from 'fast-xml-parser';
+import { nameCompare } from './utils';
 
 export async function getAria() {
 	const uml = await fetchText('https://www.w3.org/WAI/ARIA/schemata/aria-1.uml');
@@ -37,34 +38,38 @@ export async function getAria() {
 		},
 	);
 
+	roles.sort(nameCompare);
+
 	const ariaNameList: Set<string> = new Set();
 	for (const role of roles) {
 		role.ownedAttribute.map(attr => ariaNameList.add(attr));
 	}
 
-	const arias = Array.from(ariaNameList).map(
-		(name): ARIAAttribute => {
-			const $section = $(`#${name}`);
-			const className = $section.attr('class');
-			const type = /property/i.test(className) ? 'property' : 'state';
-			const deprecated = /deprecated/i.test(className) || undefined;
-			const $value = $section.find(`table.${type}-features .${type}-value`);
-			const value = $value.text().trim() as ARIAAttributeValue;
-			const $defaultValue = $section.find(`table.value-descriptions .value-name .default`);
-			const defaultValue =
-				$defaultValue
-					.text()
-					.replace(/\(default\)/gi, '')
-					.trim() || undefined;
-			return {
-				name,
-				type,
-				deprecated,
-				value,
-				defaultValue,
-			};
-		},
-	);
+	const arias = Array.from(ariaNameList)
+		.sort()
+		.map(
+			(name): ARIAAttribute => {
+				const $section = $(`#${name}`);
+				const className = $section.attr('class');
+				const type = /property/i.test(className) ? 'property' : 'state';
+				const deprecated = /deprecated/i.test(className) || undefined;
+				const $value = $section.find(`table.${type}-features .${type}-value`);
+				const value = $value.text().trim() as ARIAAttributeValue;
+				const $defaultValue = $section.find(`table.value-descriptions .value-name .default`);
+				const defaultValue =
+					$defaultValue
+						.text()
+						.replace(/\(default\)/gi, '')
+						.trim() || undefined;
+				return {
+					name,
+					type,
+					deprecated,
+					value,
+					defaultValue,
+				};
+			},
+		);
 
 	return {
 		roles,

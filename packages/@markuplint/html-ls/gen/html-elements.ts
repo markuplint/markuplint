@@ -1,11 +1,11 @@
 import { ElementSpec, ElementCategories, AttributeSpec } from './types';
 import fetch from './fetch';
+import { nameCompare } from './utils';
 
 export async function getHTMLElements() {
 	const links = await getHTMLElementLinks();
 	const specs = await Promise.all(links.map(getHTMLElement));
-	// @ts-ignore
-	return specs.sort((a, b) => a.name - b.name);
+	return specs.sort(nameCompare);
 }
 
 export async function getHTMLElement(link: string) {
@@ -35,10 +35,8 @@ export async function getHTMLElement(link: string) {
 	const attrs = getAttributes($);
 	const obsAttrs = getAttributes($, true);
 
-	// @ts-ignore
-	attrs.sort((a, b) => a.name - b.name);
-	// @ts-ignore
-	obsAttrs.sort((a, b) => a.name - b.name);
+	const allAttrs = [...attrs, ...obsAttrs];
+	allAttrs.sort(nameCompare);
 
 	const spec: ElementSpec = {
 		name,
@@ -47,7 +45,7 @@ export async function getHTMLElement(link: string) {
 		categories,
 		contentModel: [],
 		omittion: false,
-		attributes: ['#globalAttrs', '#ariaAttrs', ...attrs, ...obsAttrs],
+		attributes: ['#globalAttrs', '#ariaAttrs', ...allAttrs],
 	};
 
 	return spec;
