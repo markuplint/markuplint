@@ -1335,7 +1335,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content",
-				"content": false
+				"content": { "only": "#phrasing" }
 			},
 			"permittedRoles": {
 				"summary": "Any",

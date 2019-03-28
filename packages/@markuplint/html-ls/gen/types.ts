@@ -1,3 +1,5 @@
+import { string } from 'prop-types';
+
 /**
  * markuplit Markup-language spec
  */
@@ -119,6 +121,9 @@ export type PermittedContentSpec =
 	| false
 	| {
 			either: (string | { category: string; ignore: string[] })[];
+	  }
+	| {
+			only: string;
 	  };
 
 export type PermittedRolesSpec = {};
