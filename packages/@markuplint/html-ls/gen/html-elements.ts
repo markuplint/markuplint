@@ -57,7 +57,7 @@ export async function getHTMLElement(link: string) {
 		categories,
 		permittedContent: {
 			summary: permittedContent,
-			content: {},
+			content: false,
 		},
 		permittedRoles: {
 			summary: permittedRoles,
