@@ -1,7 +1,10 @@
 {
 	"lerna": "3.13.1",
-	"version": "fixed",
+	"version": null,
 	"npmClient": "yarn",
 	"useWorkspaces": true,
-	"packages": ["packages/*", "packages/@markuplint/*"]
+	"packages": [
+		"packages/*",
+		"packages/@markuplint/*"
+	]
 }

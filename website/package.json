@@ -1,7 +1,7 @@
 {
 	"name": "@markuplint/website",
 	"description": "https://markuplint.dev",
-	"version": "1.0.0-alpha.2",
+	"version": null,
 	"private": true,
 	"scripts": {
 		"site:dev": "gatsby develop",
