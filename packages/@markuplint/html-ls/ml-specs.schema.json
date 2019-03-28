@@ -254,25 +254,6 @@
 						"description": "Reference URL",
 						"type": "string"
 					},
-					"contentModel": {
-						"description": "Permitted content model",
-						"items": {
-							"properties": {
-								"exists": {
-									"enum": ["any", "required"],
-									"type": "string"
-								},
-								"models": {
-									"items": {
-										"type": "string"
-									},
-									"type": "array"
-								}
-							},
-							"type": "object"
-						},
-						"type": "array"
-					},
 					"deprecated": {
 						"description": "Deprecated",
 						"enum": [true],
@@ -358,6 +339,19 @@
 							}
 						],
 						"description": "Tag omittion"
+					},
+					"permittedContent": {
+						"description": "Permitted content",
+						"properties": {
+							"content": {
+								"properties": {},
+								"type": "object"
+							},
+							"summary": {
+								"type": "string"
+							}
+						},
+						"type": "object"
 					}
 				},
 				"type": "object"

@@ -1221,7 +1221,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a",
 			"description": "The HTML <a> element (or anchor element) creates a hyperlink to other web pages, files, locations within the same page, email addresses, or any other URL.",
 			"categories": ["flow", "phrasing", "interactive", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Transparent, containing either flow content (excluding interactive content) or phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1317,7 +1320,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr",
 			"description": "The HTML Abbreviation element (<abbr>) represents an abbreviation or acronym; the optional title attribute can provide an expansion or description for the abbreviation. If present, title must contain this full description and nothing else.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1327,7 +1333,10 @@
 			"description": "",
 			"obsolete": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1336,7 +1345,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address",
 			"description": "The HTML <address> element indicates that the enclosed HTML provides contact information for a person or people, or for an organization.",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content, but with no nested <address> element, no heading content (<hgroup>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6>), no sectioning content (<article>, <aside>, <section>, <nav>), and no <header> or <footer> element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1346,7 +1358,10 @@
 			"description": "The obsolete HTML Applet Element (<applet>) embeds a Java applet into the document; this element has been deprecated in favor of <object>.",
 			"obsolete": true,
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Zero or more <param> elements, then transparent.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1448,7 +1463,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area",
 			"description": "",
 			"categories": ["flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1556,7 +1574,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article",
 			"description": "",
 			"categories": ["flow", "sectioning", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1565,7 +1586,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside",
 			"description": "The HTML <aside> element represents a portion of a document whose content is only indirectly related to the document's main content. Asides are frequently presented as sidebars or call-out boxes.",
 			"categories": ["flow", "sectioning", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1574,7 +1598,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio",
 			"description": "The HTML <audio> element is used to embed sound content in documents. It may contain one or more audio sources, represented using the src attribute or the <source> element: the browser will choose the most suitable one. It can also be the destination for streamed media, using a MediaStream.",
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "If the element has a src attribute: zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.\n    Else: zero or more <source> elements followed by zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1628,7 +1655,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b",
 			"description": "The HTML Bring Attention To element (<b>)  is used to draw the reader's attention to the element's contents, which are not otherwise granted special importance. This was formerly known as the Boldface element, and most browsers still draw the text in boldface. However, you should not use <b> for styling text; instead, you should use the CSS font-weight property to create boldface text, or the <strong> element to indicate that text is of special importance.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1637,7 +1667,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base",
 			"description": "",
 			"categories": ["metadata"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1662,7 +1695,10 @@
 			"description": "The obsolete HTML Base Font element (<basefont>) sets a default font face, size, and color for the other elements which are descended from its parent element. With this set, the font's size can then be varied relative to the base size using the <font> element.",
 			"obsolete": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1692,7 +1728,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi",
 			"description": "The HTML Bidirectional Isolate element (<bdi>)  tells the browser's bidirectional algorithm to treat the text it contains in isolation from its surrounding text. It's particularly useful when a website dynamically inserts some text and doesn't know the directionality of the text being inserted.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1701,7 +1740,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo",
 			"description": "The HTML Bidirectional Text Override element (<bdo>) overrides the current directionality of text, so that the text within is rendered in a different direction.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1721,7 +1763,10 @@
 			"obsolete": true,
 			"nonStandard": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1758,7 +1803,10 @@
 			"description": "The obsolete HTML Big Element (<big>) renders the enclosed text at a font size one level larger than the surrounding text (medium becomes large, for example). The size is capped at the browser's maximum permitted font size.",
 			"obsolete": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1769,7 +1817,10 @@
 			"obsolete": true,
 			"deprecated": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1778,7 +1829,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote",
 			"description": "",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1796,7 +1850,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1987,7 +2044,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br",
 			"description": "",
 			"categories": ["flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2005,7 +2065,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button",
 			"description": "The HTML <button> element represents a clickable button, which can be used in forms or anywhere in a document that needs simple, standard button functionality. By default, HTML buttons are typically presented in a style similar to that of the host platform the user agent is running on, but you can change the appearance of the button using CSS.",
 			"categories": ["flow", "phrasing", "interactive", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content but there must be no Interactive content",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2090,7 +2153,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas",
 			"description": "",
 			"categories": ["flow", "phrasing", "embedded", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Transparent but with no interactive content descendants except for <a> elements, <button> elements, <input> elements whose type attribute is checkbox, radio, or button.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2122,7 +2188,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption",
 			"description": "The HTML Table Caption element (<caption>) specifies the caption (or title) of a table, and if used is always the first child of a <table>. Its styling and physical position relative to the table may be changed using the CSS caption-side and text-align properties.",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2142,7 +2211,10 @@
 			"description": "The obsolete HTML Center Element (<center>) is a block-level element that displays its block-level or inline contents centered horizontally within its containing element. The container is usually, but isn't required to be, <body>.",
 			"obsolete": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2151,7 +2223,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite",
 			"description": "The HTML Citation element (<cite>) is used to describe a reference to a cited creative work, and must include the title of that work. The reference may be in an abbreviated form according to context-appropriate conventions related to citation metadata.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2160,7 +2235,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code",
 			"description": "The HTML <code> element displays its contents styled in a fashion intended to indicate that the text is a short fragment of computer code. By default, the content text is displayed using the user agent's default monospace font.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2169,7 +2247,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2233,7 +2314,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "If the span attribute is present: none, it is an empty element.\n    If the attribute is not present: zero or more <col> element",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2298,7 +2382,10 @@
 			"description": "The HTML Command element (<command>) represents a command which the user can invoke. Commands are often used as part of a context menu or toolbar. However, they can be used anywhere on the page.",
 			"obsolete": true,
 			"categories": ["metadata", "flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2347,7 +2434,10 @@
 			"description": "The HTML <content> element—an obsolete part of the Web Components suite of technologies—was used inside of Shadow DOM as an insertion point, and wasn't meant to be used in ordinary HTML. It has now been replaced by the <slot> element, which creates a point in the DOM at which a shadow DOM can be inserted.",
 			"deprecated": true,
 			"categories": ["transparent"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2365,7 +2455,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data",
 			"description": "",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2383,7 +2476,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist",
 			"description": "",
 			"categories": ["flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Either phrasing content or zero or more <option> elements.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2392,7 +2488,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd",
 			"description": "The HTML <dd> element provides the details about or the definition of the preceding term (<dt>) in a description list (<dl>).",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2411,7 +2510,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del",
 			"description": "The HTML <del> element represents a range of text that has been deleted from a document. This can be used when rendering \"track changes\" or source code diff information, for example. The <ins> element can be used for the opposite purpose: to indicate text that has been added to the document.",
 			"categories": ["flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Transparent.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2435,7 +2537,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details",
 			"description": "The HTML Details Element (<details>) creates a disclosure widget in which information is visible only when the widget is toggled into an \"open\" state. A summary or label can be provided using the <summary> element.",
 			"categories": ["flow", "interactive", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "One <summary> element followed by flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2453,7 +2558,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn",
 			"description": "The HTML Definition element (<dfn>) is used to indicate the term being defined within the context of a definition phrase or sentence. The <p> element, the <dt>/<dd> pairing, or the <section> element which is the nearest ancestor of the <dfn> is considered to be the definition of the term.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content, but no <dfn> element must be a descendant.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2462,7 +2570,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
 			"description": "",
 			"categories": ["flow"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2481,7 +2592,10 @@
 			"description": "The obsolete HTML Directory element (<dir>) is used as a container for a directory of files and/or folders, potentially with styles and icons applied by the user agent. Do not use this obsolete element; instead, you should use the <ul> element for lists, including lists of files.",
 			"obsolete": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2490,7 +2604,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
 			"description": "The HTML Content Division element (<div>) is the generic container for flow content. It has no effect on the content or layout until styled using CSS.",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.\n    Or (in WHATWG HTML): If the parent is a <dl> element: one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2499,7 +2616,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl",
 			"description": "",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "\n    Either: Zero or more groups each consisting of one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.\n     Or: One or more <div> elements, optionally intermixed with <script> and <template> elements.\n   ",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2508,7 +2628,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt",
 			"description": "The HTML <dt> element specifies a term in a description or definition list, and as such must be used inside a <dl> element. It is usually followed by a <dd> element; however, multiple <dt> elements in a row indicate several terms that are all defined by the immediate next <dd> element.",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content, but with no <header>, <footer>, sectioning content or heading content descendants.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2518,7 +2641,10 @@
 			"description": "The obsolete HTML <element> element was part of the Web Components specification; it was intended to be used to define new custom DOM elements. It was removed in favor of a JavaScript-driven approach for creating new custom elements; however, that technology is not mature and no browers fully implement it.",
 			"obsolete": true,
 			"categories": ["transparent"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "???",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2527,7 +2653,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em",
 			"description": "",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2536,7 +2665,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed",
 			"description": "",
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2572,7 +2704,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset",
 			"description": "",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "An optional <legend> element, followed by flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2602,7 +2737,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption",
 			"description": "The HTML <figcaption> or Figure Caption element represents a caption or legend describing the rest of the contents of its parent <figure> element.",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2611,7 +2749,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure",
 			"description": "The HTML <figure> (Figure With Optional Caption) element represents self-contained content, potentially with an optional caption, which is specified using the (<figcaption>) element. The figure, its caption, and its contents are referenced as a single unit.",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "A <figcaption> element, followed by flow content; or flow content followed by a <figcaption> element; or flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2621,7 +2762,10 @@
 			"description": "",
 			"obsolete": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2630,7 +2774,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer",
 			"description": "",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content, but with no <footer> or <header> descendants.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2639,7 +2786,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form",
 			"description": "",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content, but not containing <form> elements",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2714,7 +2864,10 @@
 			"description": "",
 			"deprecated": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2769,7 +2922,10 @@
 			"description": "",
 			"deprecated": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2793,7 +2949,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
 			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
 			"categories": ["flow", "heading", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2802,7 +2961,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head",
 			"description": "The HTML <head> element contains machine-readable information (metadata) about the document, like its title, scripts, and style sheets.",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "\n    If the document is an <iframe> srcdoc document, or if title information is available from a higher level protocol (like the subject line in HTML email), zero or more elements of metadata content.\n\n    Otherwise, one or more elements of metadata content where exactly one is a <title> element.\n   ",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2821,7 +2983,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header",
 			"description": "",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content, but with no <header> or <footer> descendant.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2830,7 +2995,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup",
 			"description": "",
 			"categories": ["flow", "heading", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "One or more <h1>, <h2>, <h3>, <h4>, <h5>, and/or <h6>.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2839,7 +3007,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr",
 			"description": "The HTML <hr> element represents a thematic break between paragraph-level elements: for example, a change of scene in a story, or a shift of topic within a section.",
 			"categories": ["flow"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2886,7 +3057,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "One <head> element, followed by one <body> element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2918,7 +3092,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i",
 			"description": "",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2927,7 +3104,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe",
 			"description": "The HTML Inline Frame element (<iframe>) represents a nested browsing context, embedding another HTML page into the current one.",
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Fallback content, i.e. content that is normally not rendered, but that browsers not supporting the <iframe> element will render. (RSS readers and email clients often show the fallback content instead.)",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3065,7 +3245,10 @@
 			"obsolete": true,
 			"nonStandard": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3074,7 +3257,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img",
 			"description": "The HTML <img> element embeds an image into the document. It is a replaced element.",
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3083,7 +3269,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input",
 			"description": "The HTML <input> element is used to create interactive controls for web-based forms in order to accept data from the user; a wide variety of types of input data and control widgets are available, depending on the device and user agent.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3092,7 +3281,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins",
 			"description": "The HTML <ins> element represents a range of text that has been added to a document. You can use the <del> element to similarly represent a range of text that has been deleted from the document.",
 			"categories": ["flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Transparent.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3117,7 +3309,10 @@
 			"description": "<isindex> is an obsolete HTML element that puts a text field in a page for querying the document. <isindex> was providing a single line text input for entering a query string. When sent, the server would return a list of pages matching the query. Its supports depended on both the browser and the server to react to the query.",
 			"obsolete": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3126,7 +3321,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd",
 			"description": "The HTML Keyboard Input element (<kbd>) represents a span of inline text denoting textual user input from a keyboard, voice input, or any other text entry device. By convention, the user agent defaults to rendering the contents of a <kbd> element using its default monospace font, although this is not mandated by the HTML standard.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3136,7 +3334,10 @@
 			"description": "",
 			"deprecated": true,
 			"categories": ["flow", "phrasing", "interactive", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3184,7 +3385,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label",
 			"description": "",
 			"categories": ["flow", "phrasing", "interactive", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content, but no descendant label elements. No labelable elements other than the labeled control are allowed.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3208,7 +3412,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3217,7 +3424,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3242,7 +3452,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link",
 			"description": "",
 			"categories": ["metadata", "flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3372,7 +3585,10 @@
 			"description": "",
 			"obsolete": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3381,7 +3597,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main",
 			"description": "",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3390,7 +3609,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map",
 			"description": "",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Any transparent element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3408,7 +3630,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark",
 			"description": "The HTML Mark Text element (<mark>) represents text which is marked or highlighted for reference or notation purposes, due to the marked passage's relevance or importance in the enclosing context.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3418,7 +3643,10 @@
 			"description": "",
 			"obsolete": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3498,7 +3726,10 @@
 			"experimental": true,
 			"deprecated": true,
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "If the element is in the list menu state: flow content, or alternatively, zero or more occurrences of <li>, <script>, and <template>.\n    If the element is in the context menu state: zero or more occurrences, in any order, of <menu> (context menu state only), <menuitem>, <hr>, <script>, and <template>.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3524,7 +3755,10 @@
 			"description": "",
 			"deprecated": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3584,7 +3818,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta",
 			"description": "",
 			"categories": ["metadata", "flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3627,7 +3864,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter",
 			"description": "",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content, but there must be no <meter> element among its descendants.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3683,7 +3923,10 @@
 			"obsolete": true,
 			"nonStandard": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3692,7 +3935,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav",
 			"description": "The HTML <nav> element represents a section of a page whose purpose is to provide navigation links, either within the current document or to other documents. Common examples of navigation sections are menus, tables of contents, and indexes.",
 			"categories": ["flow", "sectioning", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3702,7 +3948,10 @@
 			"description": "<nextid> is an obsolete HTML element that served to enable the NeXT web designing tool to generate automatic NAME labels for its anchors. It was generated by that web editing tool automatically and was not to be adjusted or entered by hand. This element has the distinction of being the first element to become one of the \"Lost Tags\" by being eliminated from the official public DTD's of the HTML versions. It is also probably one of the least understood of all of the early HTML elements.",
 			"deprecated": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3722,7 +3971,10 @@
 			"obsolete": true,
 			"nonStandard": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3733,7 +3985,10 @@
 			"obsolete": true,
 			"nonStandard": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3743,7 +3998,10 @@
 			"description": "The obsolete HTML No Frames or frame fallback element, <noframes>, provides content to be presented in browsers that don't support (or have disabled support for) the <frame> element. Although most commonly-used browsers support frames, there are exceptions, including certain special-use browsers including some mobile browsers, as well as text-mode browsers.",
 			"obsolete": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3752,7 +4010,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript",
 			"description": "",
 			"categories": ["metadata", "flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "When scripting is disabled and when it is a descendant of the <head> element: in any order, zero or more <link> elements, zero or more <style> elements, and zero or more <meta> elements.\n    When scripting is disabled and when it isn't a descendant of the <head> element: any transparent content, but no <noscript> element must be among its descendants.\n    Otherwise: flow content or phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3761,7 +4022,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object",
 			"description": "",
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "zero or more <param> elements, then transparent.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3878,7 +4142,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol",
 			"description": "",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Zero or more <li> elements, which in turn often contain nested <ol> or <ul> elements.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3915,7 +4182,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Zero or more <option> elements.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3939,7 +4209,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option",
 			"description": "The HTML <option> element is used to define an item contained in a <select>, an <optgroup>, or a <datalist> element. As such, <option> can represent menu items in popups and other lists of items in an HTML document.",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Text, possibly with escaped characters (like &eacute;).",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3975,7 +4248,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output",
 			"description": "The HTML Output element (<output>) is a container element into which a site or app can inject the results of a calculation or the outcome of a user action.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4005,7 +4281,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p",
 			"description": "The HTML <p> element represents a paragraph. Paragraphs are usually represented in visual media as blocks of text separated from adjacent blocks by blank lines and/or first-line indentation, but HTML paragraphs can be any structural grouping of related content, such as images or form fields.",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4014,7 +4293,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4052,7 +4334,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture",
 			"description": "The HTML <picture> element contains zero or more <source> elements and one <img> element to provide versions of an image for different display/device scenarios. The browser will consider each child <source> element and choose the best match among them; if no matches are found, the URL of the <img> element's src attribute is selected. The selected image is then presented in the space occupied by the <img> element.",
 			"categories": ["flow", "phrasing", "embedded"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Zero or more <source> elements, followed by one <img> element, optionally intermixed with script-supporting elements.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4062,7 +4347,10 @@
 			"description": "The HTML Plaintext Element (<plaintext>) renders everything following the start tag as raw text, ignoring any following HTML. There is no closing tag, since everything after it is considered raw text.",
 			"obsolete": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4071,7 +4359,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre",
 			"description": "The HTML <pre> element represents preformatted text which is to be presented exactly as written in the HTML file. The text is typically rendered using a non-proportional (\"monospace\") font. Whitespace inside this element is displayed as written.",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4105,7 +4396,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress",
 			"description": "",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content, but there must be no <progress> element among its descendants.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4129,7 +4423,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q",
 			"description": "The HTML <q> element  indicates that the enclosed text is a short inline quotation. Most modern browsers implement this by surrounding the text in quotation marks. This element is intended for short quotations that don't require paragraph breaks; for long quotations use the <blockquote> element.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4147,7 +4444,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rb",
 			"description": "The HTML Ruby Base (<rb>) element is used to delimit the base text component of a  <ruby> annotation, i.e. the text that is being annotated. One <rb> element should wrap each separate atomic segment of the base text.",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "As a child of a <ruby> element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4156,7 +4456,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp",
 			"description": "The HTML Ruby Fallback Parenthesis (<rp>) element is used to provide fall-back parentheses for browsers that do not support display of ruby annotations using the <ruby> element. One <rp> element should enclose each of the opening and closing parentheses that wrap the <rt> element that contains the annotation's text.",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Text",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4165,7 +4468,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4174,7 +4480,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content or <rt> elements.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4183,7 +4492,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ruby",
 			"description": "",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4192,7 +4504,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s",
 			"description": "",
 			"categories": ["flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4201,7 +4516,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp",
 			"description": "The HTML Sample Element (<samp>) is used to enclose inline text which represents sample (or quoted) output from a computer program. Its contents are typically rendered using the browser's default monospaced font (such as Courier or Lucida Console).",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4210,7 +4528,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script",
 			"description": "The HTML <script> element is used to embed or reference executable code; this is typically used to embed or refer to JavaScript code. The <script> element can also be used with other languages, such as WebGL's GLSL shader programming language.",
 			"categories": ["metadata", "flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Dynamic script such as text/javascript.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4290,7 +4611,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section",
 			"description": "The HTML <section> element represents a standalone section — which doesn't have a more specific semantic element to represent it — contained within an HTML document. Typically, but not always, sections have a heading.",
 			"categories": ["flow", "sectioning", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4299,7 +4623,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select",
 			"description": "The HTML <select> element represents a control that provides a menu of options:",
 			"categories": ["flow", "phrasing", "interactive"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Zero or more <option> or <optgroup> elements.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4360,7 +4687,10 @@
 			"description": "The HTML <shadow> element—an obsolete part of the Web Components technology suite—was intended to be used as a shadow DOM insertion point. You might have used it if you have created multiple shadow roots under a shadow host. It is not useful in ordinary HTML.",
 			"deprecated": true,
 			"categories": ["transparent"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4369,7 +4699,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot",
 			"description": "The HTML <slot> element—part of the Web Components technology suite—is a placeholder inside a web component that you can fill with your own markup, which lets you create separate DOM trees and present them together.",
 			"categories": ["flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Transparent",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4387,7 +4720,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small",
 			"description": "",
 			"categories": ["flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4396,7 +4732,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source",
 			"description": "The HTML <source> element specifies multiple media resources for the <picture>, the <audio> element, or the <video> element. It is an empty element, meaning that it has no content and does not have a closing tag. It is commonly used to serve the same media content in multiple formats supported by different browsers.",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4440,7 +4779,10 @@
 			"obsolete": true,
 			"nonStandard": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4482,7 +4824,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span",
 			"description": "The HTML <span> element is a generic inline container for phrasing content, which does not inherently represent anything. It can be used to group elements for styling purposes (using the class or id attributes), or because they share attribute values, such as lang. It should be used only when no other semantic element is appropriate. <span> is very much like a <div> element, but <div> is a block-level element whereas a <span> is an inline element.",
 			"categories": ["flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4492,7 +4837,10 @@
 			"description": "",
 			"obsolete": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4501,7 +4849,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong",
 			"description": "The HTML Strong Importance Element (<strong>) indicates that its contents have strong importance, seriousness, or urgency. Browsers typically render the contents in bold type.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4510,7 +4861,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style",
 			"description": "The HTML <style> element contains style information for a document, or part of a document. It contains CSS, which is applied to the contents of the document containing the <style> element.",
 			"categories": ["metadata", "flow"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Text content matching the type attribute, that is text/css.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4554,7 +4908,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub",
 			"description": "The HTML Subscript element (<sub>) specifies inline text which should be displayed as subscript for solely typographical reasons. Subscripts are typically rendered with a lowered baseline using smaller text.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4563,7 +4920,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary",
 			"description": "The HTML Disclosure Summary element (<summary>) element specifies a summary, caption, or legend for a <details> element's disclosure box. Clicking the <summary> element toggles the state of the parent <details> element open and closed.",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content or one element of Heading content",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4572,7 +4932,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup",
 			"description": "The HTML Superscript element (<sup>) specifies inline text which is to be displayed as superscript for solely typographical reasons. Superscripts are usually rendered with a raised baseline using smaller text.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4581,7 +4944,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table",
 			"description": "The HTML <table> element represents tabular data — that is, information presented in a two-dimensional table comprised of rows and columns of cells containing data.",
 			"categories": ["flow"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "\n    \n    In this order:\n    \n     an optional <caption> element,\n     zero or more <colgroup> elements,\n     an optional <thead> element,\n     either one of the following:\n      \n       zero or more <tbody> elements\n       one or more <tr> elements\n      \n     \n     an optional <tfoot> element\n    \n    \n    \n   ",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4656,7 +5022,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody",
 			"description": "The HTML Table Body element (<tbody>) encapsulates a set of table row (<tr> elements), indicating that they comprise the body of the table (<table>).",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Zero or more <tr> elements.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4707,7 +5076,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4809,7 +5181,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template",
 			"description": "The HTML Content Template (<template>) element is a mechanism for holding client-side content that is not to be rendered when a page is loaded but may subsequently be instantiated during runtime using JavaScript.",
 			"categories": ["metadata", "flow", "phrasing", "script-supporting"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "No restrictions",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4818,7 +5193,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
 			"description": "",
 			"categories": ["flow", "phrasing", "interactive"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Text",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4921,7 +5299,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Zero or more <tr> elements.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4972,7 +5353,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th",
 			"description": "The HTML <th> element defines a cell as header of a group of table cells. The exact nature of this group is defined by the scope and headers attributes.",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Flow content, but with no header, footer, sectioning content, or heading content descendants.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5072,7 +5456,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Zero or more <tr> elements.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5123,7 +5510,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time",
 			"description": "The HTML <time> element represents a specific period in time. It may include the datetime attribute to translate dates into machine-readable format, allowing for better search engine results or custom features such as reminders.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5141,7 +5531,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title",
 			"description": "The HTML Title element (<title>) defines the document's title that is shown in a browser's title bar or a page's tab. It only contains text and tags within the element are ignored.",
 			"categories": ["metadata"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Text that is not inter-element whitespace.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5150,7 +5543,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr",
 			"description": "The HTML <tr> element defines a row of cells in a table. The row's cells can then be established using a mix of <td> (data cell) and <th> (header cell) elements.The HTML <tr> element specifies that the markup contained inside the <tr> block comprises one row of a table, inside which the <th> and <td> elements create header and data cells, respectively, within the row. Each cell is placed into its own column; the user agent follows specific rules to determine how the cells in each row are placed into columns with those coming from other rows.",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Zero or more <td> and/or <th> elements; script-supporting elements (<script> and <template>) are also allowed",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5197,7 +5593,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track",
 			"description": "",
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "None, it is an empty element.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5240,7 +5639,10 @@
 			"description": "The obsolete HTML Teletype Text element (<tt>) creates inline text which is presented using the user agent's default monospace font face. This element was created for the purpose of rendering text as it would be displayed on a fixed-width display such as a teletype, text-only screen, or line printer.",
 			"obsolete": true,
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5249,7 +5651,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u",
 			"description": "The HTML Unarticulated Annotation Element (<u>) represents a span of inline text which should be rendered in a way that indicates that it has a non-textual annotation. This is rendered by default as a simple solid underline, but may be altered using CSS.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5258,7 +5663,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul",
 			"description": "",
 			"categories": ["flow", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "zero or more <li> elements, which in turn often contain nested <ol> or <ul> elements.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5284,7 +5692,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var",
 			"description": "The HTML Variable element (<var>) represents the name of a variable in a mathematical expression or a programming context. It's typically presented using an italicized version of the current typeface, although that behavior is browser-dependent.",
 			"categories": ["flow", "phrasing", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Phrasing content.",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5293,7 +5704,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video",
 			"description": "The HTML Video element (<video>) embeds a media player which supports video playback into the document. You can use <video> for audio content as well, but the <audio> element may provide a more appropriate user experience.",
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "\n    If the element has a src attribute: zero or more <track> elements, followed by transparent content that contains no media elements–that is no <audio> or <video>\n\n    Else: zero or more <source> elements, followed by zero or more <track> elements, followed by transparent content that contains no media elements–that is no <audio> or <video>.\n   ",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5384,7 +5798,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr",
 			"description": "",
 			"categories": ["flow", "phrasing"],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "Empty",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5394,7 +5811,10 @@
 			"description": "",
 			"obsolete": true,
 			"categories": [],
-			"contentModel": [],
+			"permittedContent": {
+				"summary": "",
+				"content": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		}

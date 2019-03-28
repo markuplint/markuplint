@@ -40,6 +40,8 @@ export async function getHTMLElement(link: string) {
 	if (/palpable content/i.test(cat)) categories.push('palpable');
 	if (/script-supporting/i.test(cat)) categories.push('script-supporting');
 
+	const permittedContent = getProperty($, 'Permitted content');
+
 	const attrs = getAttributes($, '#Attributes');
 	attrs.sort(nameCompare);
 
@@ -52,7 +54,10 @@ export async function getHTMLElement(link: string) {
 		deprecated,
 		nonStandard,
 		categories,
-		contentModel: [],
+		permittedContent: {
+			summary: permittedContent,
+			content: {},
+		},
 		omittion: false,
 		attributes: ['#globalAttrs', '#ariaAttrs', ...attrs],
 	};

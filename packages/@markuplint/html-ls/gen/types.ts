@@ -65,12 +65,12 @@ export type ElementSpec = {
 	categories: ElementCategories;
 
 	/**
-	 * Permitted content model
+	 * Permitted content
 	 */
-	contentModel: {
-		exists: 'required' | 'any';
-		models: string[];
-	}[];
+	permittedContent: {
+		summary: string;
+		content: PermittedContentSpec;
+	};
 
 	/**
 	 * Tag omittion
@@ -106,6 +106,8 @@ export type ElementCategory =
 	| 'interactive'
 	| 'palpable'
 	| 'script-supporting';
+
+export type PermittedContentSpec = {};
 
 export type ElementSpecOmittion = false | ElementSpecOmittionTags;
 
