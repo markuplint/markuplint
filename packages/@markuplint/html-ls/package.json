@@ -16,8 +16,10 @@
 	},
 	"devDependencies": {
 		"@types/cheerio": "^0.22.11",
+		"@types/cli-progress": "^1.8.1",
 		"@types/node-fetch": "^2.1.7",
 		"cheerio": "^1.0.0-rc.2",
+		"cli-progress": "^2.1.1",
 		"fast-xml-parser": "^3.12.16",
 		"node-fetch": "^2.3.0",
 		"typescript-json-schema": "^0.36.0"
