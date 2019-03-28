@@ -104,7 +104,8 @@ export async function exec(options: MLCLIOption) {
 		specs = options.specs;
 	} else {
 		// @ts-ignore
-		specs = await import('@markuplint/html-ls');
+		const json = await import('@markuplint/html-ls');
+		specs = json.default;
 	}
 
 	let rules: MLRule<RuleConfigValue, unknown>[];

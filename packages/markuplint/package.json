@@ -32,7 +32,7 @@
 		"@markuplint/ml-config": "^1.0.0-alpha.1",
 		"@markuplint/ml-core": "^1.0.0-alpha.2",
 		"@markuplint/ml-spec": "^1.0.0-alpha",
-		"@markuplint/html-ls": "^1.0.0-alpha.1",
+		"@markuplint/html-ls": "^1.0.0-alpha.2",
 		"@markuplint/rules": "^1.0.0-alpha.2",
 		"cli-color": "^1.4.0",
 		"eastasianwidth": "^0.2.0",
