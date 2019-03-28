@@ -13,6 +13,7 @@
 	},
 	"scripts": {
 		"build": "tsc",
+		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean",
 		"schema": "typescript-json-schema -o schema.json --ignoreErrors src/types.ts MLMLSpec; prettier --write schema.json"
 	},

@@ -13,6 +13,7 @@
 	},
 	"scripts": {
 		"build": "tsc",
+		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {

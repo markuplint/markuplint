@@ -19,10 +19,16 @@
 			"path": "../@markuplint/ml-core"
 		},
 		{
+			"path": "../@markuplint/ml-spec"
+		},
+		{
 			"path": "../@markuplint/rules"
 		},
 		{
 			"path": "../@markuplint/i18n"
+		},
+		{
+			"path": "../@markuplint/html-ls"
 		}
 	],
 	"include": ["./src/**/*"],
