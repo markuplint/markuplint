@@ -1657,7 +1657,33 @@
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
 			"permittedContent": {
 				"summary": "If the element has a src attribute: zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.\n    Else: zero or more <source> elements followed by zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.",
-				"content": false
+				"content": {
+					"if": {
+						"hasAttr": "src"
+					},
+					"then": {
+						"zeroOrMore": "track",
+						"then": {
+							"either": [
+								{
+									"category": "transparent",
+									"ignore": ["audio", "video"]
+								}
+							]
+						}
+					},
+					"else": {
+						"zeroOrMore": ["source", "track"],
+						"then": {
+							"either": [
+								{
+									"category": "transparent",
+									"ignore": ["audio", "video"]
+								}
+							]
+						}
+					}
+				}
 			},
 			"permittedRoles": {
 				"summary": "application",

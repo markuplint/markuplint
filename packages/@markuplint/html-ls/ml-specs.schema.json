@@ -414,7 +414,212 @@
 												"type": "object"
 											},
 											"zeroOrMore": {
-												"type": "string"
+												"anyOf": [
+													{
+														"items": {
+															"type": "string"
+														},
+														"type": "array"
+													},
+													{
+														"type": "string"
+													}
+												]
+											}
+										},
+										"type": "object"
+									},
+									{
+										"properties": {
+											"else": {
+												"anyOf": [
+													{
+														"properties": {
+															"either": {
+																"items": {
+																	"anyOf": [
+																		{
+																			"properties": {
+																				"category": {
+																					"$ref": "#/definitions/ElementCategory"
+																				},
+																				"ignore": {
+																					"items": {
+																						"type": "string"
+																					},
+																					"type": "array"
+																				}
+																			},
+																			"type": "object"
+																		},
+																		{
+																			"type": "string"
+																		}
+																	]
+																},
+																"type": "array"
+															}
+														},
+														"type": "object"
+													},
+													{
+														"properties": {
+															"only": {
+																"type": "string"
+															}
+														},
+														"type": "object"
+													},
+													{
+														"properties": {
+															"then": {
+																"properties": {
+																	"either": {
+																		"items": {
+																			"anyOf": [
+																				{
+																					"properties": {
+																						"category": {
+																							"$ref": "#/definitions/ElementCategory"
+																						},
+																						"ignore": {
+																							"items": {
+																								"type": "string"
+																							},
+																							"type": "array"
+																						}
+																					},
+																					"type": "object"
+																				},
+																				{
+																					"type": "string"
+																				}
+																			]
+																		},
+																		"type": "array"
+																	}
+																},
+																"type": "object"
+															},
+															"zeroOrMore": {
+																"anyOf": [
+																	{
+																		"items": {
+																			"type": "string"
+																		},
+																		"type": "array"
+																	},
+																	{
+																		"type": "string"
+																	}
+																]
+															}
+														},
+														"type": "object"
+													},
+													{
+														"type": "boolean"
+													}
+												]
+											},
+											"if": {
+												"properties": {
+													"hasAttr": {
+														"type": "string"
+													}
+												},
+												"type": "object"
+											},
+											"then": {
+												"anyOf": [
+													{
+														"properties": {
+															"either": {
+																"items": {
+																	"anyOf": [
+																		{
+																			"properties": {
+																				"category": {
+																					"$ref": "#/definitions/ElementCategory"
+																				},
+																				"ignore": {
+																					"items": {
+																						"type": "string"
+																					},
+																					"type": "array"
+																				}
+																			},
+																			"type": "object"
+																		},
+																		{
+																			"type": "string"
+																		}
+																	]
+																},
+																"type": "array"
+															}
+														},
+														"type": "object"
+													},
+													{
+														"properties": {
+															"only": {
+																"type": "string"
+															}
+														},
+														"type": "object"
+													},
+													{
+														"properties": {
+															"then": {
+																"properties": {
+																	"either": {
+																		"items": {
+																			"anyOf": [
+																				{
+																					"properties": {
+																						"category": {
+																							"$ref": "#/definitions/ElementCategory"
+																						},
+																						"ignore": {
+																							"items": {
+																								"type": "string"
+																							},
+																							"type": "array"
+																						}
+																					},
+																					"type": "object"
+																				},
+																				{
+																					"type": "string"
+																				}
+																			]
+																		},
+																		"type": "array"
+																	}
+																},
+																"type": "object"
+															},
+															"zeroOrMore": {
+																"anyOf": [
+																	{
+																		"items": {
+																			"type": "string"
+																		},
+																		"type": "array"
+																	},
+																	{
+																		"type": "string"
+																	}
+																]
+															}
+														},
+														"type": "object"
+													},
+													{
+														"type": "boolean"
+													}
+												]
 											}
 										},
 										"type": "object"

@@ -116,7 +116,7 @@ export type ElementCategory =
 
 export type PermittedContentSpec = {
 	summary: string;
-	content: PermittedContent;
+	content: PermittedContent | ConditionalPermittedContent;
 };
 
 export type PermittedContent =
@@ -126,9 +126,17 @@ export type PermittedContent =
 			only: string;
 	  }
 	| {
-			zeroOrMore: string;
+			zeroOrMore: string | string[];
 			then?: PermittedContentEitherElements;
 	  };
+
+export type ConditionalPermittedContent = {
+	if: {
+		hasAttr?: string;
+	};
+	then: PermittedContent;
+	else?: PermittedContent;
+};
 
 export type PermittedContentEitherElements = {
 	either: (string | { category: ElementCategory; ignore: string[] })[];
