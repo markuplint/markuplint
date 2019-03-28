@@ -1,5 +1,5 @@
 {
-	"name": "@markuplint/file-resoliver",
+	"name": "@markuplint/file-resolver",
 	"version": "1.0.0-alpha.4",
 	"description": "The file resolver of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
