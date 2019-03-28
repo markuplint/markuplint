@@ -12,9 +12,11 @@ const writeFile = util.promisify(fs.writeFile);
 async function main() {
 	const outputFilePath = path.resolve(__dirname, `../index.json`);
 
-	const specs = await getHTMLElements();
-	const globalAttrs = await getGlobalAttrs();
-	const { roles, arias } = await getAria();
+	const [specs, globalAttrs, { roles, arias }] = await Promise.all([
+		await getHTMLElements(),
+		await getGlobalAttrs(),
+		await getAria(),
+	]);
 
 	const cites = getReferences();
 
