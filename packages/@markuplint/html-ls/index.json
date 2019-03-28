@@ -1621,7 +1621,9 @@
 			"categories": ["flow", "sectioning", "palpable"],
 			"permittedContent": {
 				"summary": "Flow content.",
-				"content": false
+				"content": {
+					"either": ["#flow"]
+				}
 			},
 			"permittedRoles": {
 				"summary": "application, document, feed, main, presentation, region",
