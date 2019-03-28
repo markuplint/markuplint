@@ -1,4 +1,4 @@
-import { ElementSpec, ElementCategories, AttributeSpec } from './types';
+import { ElementSpec, ElementCategories, AttributeSpec, AttributeValue } from './types';
 import fetch from './fetch';
 import { nameCompare } from './utils';
 
@@ -35,11 +35,8 @@ export async function getHTMLElement(link: string) {
 	if (/palpable content/i.test(cat)) categories.push('palpable');
 	if (/script-supporting/i.test(cat)) categories.push('script-supporting');
 
-	const attrs = getAttributes($);
-	const obsAttrs = getAttributes($, true);
-
-	const allAttrs = [...attrs, ...obsAttrs];
-	allAttrs.sort(nameCompare);
+	const attrs = getAttributes($, '#Attributes');
+	attrs.sort(nameCompare);
 
 	const spec: ElementSpec = {
 		name,
@@ -48,39 +45,52 @@ export async function getHTMLElement(link: string) {
 		categories,
 		contentModel: [],
 		omittion: false,
-		attributes: ['#globalAttrs', '#ariaAttrs', ...allAttrs],
+		attributes: ['#globalAttrs', '#ariaAttrs', ...attrs],
 	};
 
 	return spec;
 }
 
-function getAttributes($: CheerioStatic, obsolete?: true) {
-	const $heading = $(obsolete ? '#Obsolete_attributes' : '#Attributes');
-	const $outline = getThisOutline($heading, obsolete ? 'h3' : 'h2');
+function getAttributes($: CheerioStatic, heading: string): AttributeSpec[] {
+	const $heading = $(heading);
+	const $outline = getThisOutline($heading);
 	return $outline
-		.find('dt')
+		.find('>dt')
 		.toArray()
 		.map(
-			(dt): AttributeSpec => {
+			(dt): AttributeSpec | null => {
 				const $dt = $(dt);
-				const name = $dt.find('code').text();
+				const name = $dt
+					.find('code')
+					.text()
+					.trim();
+				if (!name) {
+					return null;
+				}
 				const experimental = !!$dt.find('.icon-beaker').length || undefined;
+				const obsolete = !!$dt.find('.icon-trash').length || !!$dt.find('.obsolete').length || undefined;
+				const deprecated =
+					!!$dt.find('.icon-thumbs-down-alt').length || !!$dt.find('.deprecated').length || undefined;
+				const nonStandard = !!$dt.find('.icon-warning-sign').length || undefined;
 				const description = 'WIP';
 				const required = undefined; // WIP
 				const category = 'particular';
-				const value = 'WIP';
+				// @ts-ignore
+				const value: AttributeValue = 'WIP';
 				return {
 					name,
 					experimental,
 					description,
 					required,
 					obsolete,
+					deprecated,
+					nonStandard,
 					category,
-					// @ts-ignore
 					value,
 				};
 			},
-		);
+		)
+		.filter((attr): attr is AttributeSpec => !!attr);
 }
 
 function getProperty($: CheerioStatic, prop: string) {
@@ -94,10 +104,10 @@ function getProperty($: CheerioStatic, prop: string) {
 	return $th.siblings('td').text();
 }
 
-function getThisOutline($start: Cheerio, nextOutlineHeading: 'h2' | 'h3') {
+function getThisOutline($start: Cheerio) {
 	let $next = $start.next();
 	let $els = $start;
-	while (!!$next.length && !$next.filter(nextOutlineHeading).length) {
+	while (!!$next.length && !$next.filter('h2').length) {
 		$els = $els.add($next);
 		$next = $next.siblings().eq(0);
 	}

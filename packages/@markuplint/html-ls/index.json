@@ -1234,26 +1234,7 @@
 					"value": "WIP"
 				},
 				{
-					"name": "charset",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "coords",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "coords",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "download",
 					"description": "WIP",
 					"obsolete": true,
 					"category": "particular",
@@ -1272,27 +1253,7 @@
 					"value": "WIP"
 				},
 				{
-					"name": "href",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "hreflang",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "hreflang",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "name",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -1307,21 +1268,6 @@
 				{
 					"name": "ping",
 					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "ping",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "referrerpolicy",
-					"experimental": true,
-					"description": "WIP",
-					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -1339,28 +1285,9 @@
 					"value": "WIP"
 				},
 				{
-					"name": "rel",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "rev",
 					"description": "WIP",
 					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "rev",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "shape",
-					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -1374,20 +1301,6 @@
 				{
 					"name": "target",
 					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "target",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "type",
-					"description": "WIP",
-					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -1541,6 +1454,7 @@
 				{
 					"name": "accesskey",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -1577,12 +1491,14 @@
 				{
 					"name": "name",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "nohref",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -1614,6 +1530,7 @@
 				{
 					"name": "tabindex",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -1626,6 +1543,7 @@
 				{
 					"name": "type",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -1659,18 +1577,6 @@
 			"attributes": [
 				"#globalAttrs",
 				"#ariaAttrs",
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
 				{
 					"name": "autoplay",
 					"description": "WIP",
@@ -1890,36 +1796,42 @@
 				{
 					"name": "alink",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "background",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "bgcolor",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "bottommargin",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "leftmargin",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "link",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -2035,24 +1947,28 @@
 				{
 					"name": "rightmargin",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "text",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "topmargin",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "vlink",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -2089,6 +2005,7 @@
 				{
 					"name": "autocomplete",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -2179,6 +2096,8 @@
 				{
 					"name": "moz-opaque",
 					"description": "WIP",
+					"deprecated": true,
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -2201,81 +2120,9 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
-					"name": "",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "align",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "align",
 					"description": "WIP",
 					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "bottom",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "bottom",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "left",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "left",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "right",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "right",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "top",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "top",
-					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -2321,24 +2168,31 @@
 				{
 					"name": "align",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "bgcolor",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "char",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "charoff",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -2351,12 +2205,15 @@
 				{
 					"name": "valign",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "width",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -2375,24 +2232,31 @@
 				{
 					"name": "align",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "bgcolor",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "char",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "charoff",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -2405,12 +2269,15 @@
 				{
 					"name": "valign",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "width",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -2522,6 +2389,7 @@
 				{
 					"name": "nowrap",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -2765,6 +2633,7 @@
 				{
 					"name": "accept",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -2783,6 +2652,7 @@
 				{
 					"name": "autocapitalize",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -2924,6 +2794,7 @@
 				{
 					"name": "profile",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -2960,30 +2831,35 @@
 				{
 					"name": "align",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "color",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "noshade",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "size",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "width",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -3002,12 +2878,14 @@
 				{
 					"name": "manifest",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "version",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3041,6 +2919,8 @@
 				{
 					"name": "align",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3063,12 +2943,6 @@
 					"value": "WIP"
 				},
 				{
-					"name": "auto",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "csp",
 					"experimental": true,
 					"description": "WIP",
@@ -3078,17 +2952,12 @@
 				{
 					"name": "frameborder",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "height",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "high",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -3103,30 +2972,28 @@
 				{
 					"name": "longdesc",
 					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "low",
-					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "marginheight",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "marginwidth",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "mozbrowser",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3151,6 +3018,7 @@
 				{
 					"name": "scrolling",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3337,6 +3205,7 @@
 				{
 					"name": "type",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3359,46 +3228,13 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
-					"name": "anonymous",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "anonymous",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "as",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
-					"name": "as",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "charset",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "charset",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "crossorigin",
 					"description": "WIP",
 					"obsolete": true,
 					"category": "particular",
@@ -3413,26 +3249,13 @@
 				{
 					"name": "disabled",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "href",
 					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "href",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "hreflang",
-					"description": "WIP",
-					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3450,32 +3273,9 @@
 					"value": "WIP"
 				},
 				{
-					"name": "importance",
-					"experimental": true,
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "integrity",
 					"experimental": true,
 					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "integrity",
-					"experimental": true,
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "media",
-					"description": "WIP",
-					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3488,12 +3288,14 @@
 				{
 					"name": "methods",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "prefetch",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3501,21 +3303,6 @@
 					"name": "referrerpolicy",
 					"experimental": true,
 					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "referrerpolicy",
-					"experimental": true,
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "rel",
-					"description": "WIP",
-					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3533,27 +3320,15 @@
 					"value": "WIP"
 				},
 				{
-					"name": "rev",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "sizes",
 					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "sizes",
-					"description": "WIP",
-					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "target",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3564,35 +3339,8 @@
 					"value": "WIP"
 				},
 				{
-					"name": "title",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "type",
 					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "type",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "use-credentials",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "use-credentials",
-					"description": "WIP",
-					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -3734,6 +3482,7 @@
 				{
 					"name": "label",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3842,6 +3591,7 @@
 				{
 					"name": "scheme",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -3930,66 +3680,6 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
 					"name": "n",
 					"description": "WIP",
 					"category": "particular",
@@ -4046,30 +3736,36 @@
 				{
 					"name": "archive",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "border",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "classid",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "codebase",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "codetype",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -4082,6 +3778,7 @@
 				{
 					"name": "declare",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -4106,12 +3803,14 @@
 				{
 					"name": "standby",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "tabindex",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -4154,6 +3853,7 @@
 				{
 					"name": "compact",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -4295,6 +3995,7 @@
 				{
 					"name": "type",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -4307,6 +4008,7 @@
 				{
 					"name": "valuetype",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -4343,18 +4045,22 @@
 				{
 					"name": "cols",
 					"description": "WIP",
+					"obsolete": true,
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "width",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "wrap",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -4484,6 +4190,7 @@
 				{
 					"name": "charset",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -4508,6 +4215,7 @@
 				{
 					"name": "language",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -4784,6 +4492,8 @@
 				{
 					"name": "scoped",
 					"description": "WIP",
+					"obsolete": true,
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -4841,54 +4551,63 @@
 				{
 					"name": "align",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "bgcolor",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "border",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "cellpadding",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "cellspacing",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "frame",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "rules",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "summary",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "width",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -4907,32 +4626,15 @@
 				{
 					"name": "align",
 					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "align",
-					"description": "WIP",
 					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "bgcolor",
 					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "bgcolor",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "char",
-					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -4940,12 +4642,7 @@
 					"name": "char",
 					"description": "WIP",
 					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "charoff",
-					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -4953,12 +4650,7 @@
 					"name": "charoff",
 					"description": "WIP",
 					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "valign",
-					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -4966,6 +4658,7 @@
 					"name": "valign",
 					"description": "WIP",
 					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -4984,36 +4677,42 @@
 				{
 					"name": "abbr",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "align",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "axis",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "bgcolor",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "char",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "charoff",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -5032,6 +4731,8 @@
 				{
 					"name": "height",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -5044,18 +4745,22 @@
 				{
 					"name": "scope",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "valign",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "width",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -5083,6 +4788,7 @@
 				{
 					"name": "autocapitalize",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -5185,30 +4891,39 @@
 				{
 					"name": "align",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "bgcolor",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "char",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "charoff",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "valign",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -5233,30 +4948,35 @@
 				{
 					"name": "align",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "axis",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "bgcolor",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "char",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "charoff",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -5275,6 +4995,8 @@
 				{
 					"name": "height",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -5293,12 +5015,15 @@
 				{
 					"name": "valign",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "width",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -5317,30 +5042,39 @@
 				{
 					"name": "align",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "bgcolor",
 					"description": "WIP",
+					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "char",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "charoff",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "valign",
 					"description": "WIP",
+					"obsolete": true,
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -5386,84 +5120,35 @@
 				{
 					"name": "align",
 					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "baseline",
-					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "bgcolor",
 					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "bottom",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "center",
-					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "char",
 					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "char",
-					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "charoff",
 					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "justify",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "left",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "middle",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "right",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "top",
-					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "valign",
 					"description": "WIP",
+					"obsolete": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -5542,12 +5227,14 @@
 				{
 					"name": "compact",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				},
 				{
 					"name": "type",
 					"description": "WIP",
+					"deprecated": true,
 					"category": "particular",
 					"value": "WIP"
 				}
@@ -5572,24 +5259,6 @@
 			"attributes": [
 				"#globalAttrs",
 				"#ariaAttrs",
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "anonymous",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
 				{
 					"name": "autoplay",
 					"description": "WIP",
@@ -5659,12 +5328,6 @@
 				},
 				{
 					"name": "src",
-					"description": "WIP",
-					"category": "particular",
-					"value": "WIP"
-				},
-				{
-					"name": "use-credentials",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"

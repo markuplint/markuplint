@@ -107,6 +107,8 @@ export type Attribute = {
 	category: AttributeCtegory;
 	experimental?: true;
 	obsolete?: true;
+	deprecated?: true;
+	nonStandard?: true;
 	value: AttributeValue;
 };
 
