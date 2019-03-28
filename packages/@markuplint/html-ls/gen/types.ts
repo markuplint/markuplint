@@ -36,11 +36,28 @@ export type ElementSpec = {
 	description?: string;
 
 	/**
-	 * If element is obsolete then defined alternate element name.
+	 * Experimental technology
 	 */
-	obsolete?: {
-		alt: string;
-	};
+	experimental?: true;
+
+	/**
+	 * Obsolete or alternative elements
+	 */
+	obsolete?:
+		| true
+		| {
+				alt: string;
+		  };
+
+	/**
+	 * Deprecated
+	 */
+	deprecated?: true;
+
+	/**
+	 * Non-standard
+	 */
+	nonStandard?: true;
 
 	/**
 	 * Element cateogries

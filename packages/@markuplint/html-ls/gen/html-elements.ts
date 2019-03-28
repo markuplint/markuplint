@@ -21,8 +21,13 @@ export async function getHTMLElement(link: string) {
 		.text()
 		.trim()
 		.replace(/\r?\n/gi, ' ');
-	const categories: ElementCategories = [];
 
+	const experimental = !!$article.find('.blockIndicator.experimental').length || undefined;
+	const obsolete = !!$article.find('.obsoleteHeader').length || undefined;
+	const deprecated = !!$article.find('.deprecatedHeader').length || undefined;
+	const nonStandard = !!$article.find('.nonStandardHeader').length || undefined;
+
+	const categories: ElementCategories = [];
 	const cat = getProperty($, 'Content categories');
 	if (/transparent/i.test(cat)) categories.push('transparent');
 	if (/metadata content/i.test(cat)) categories.push('metadata');
@@ -42,6 +47,10 @@ export async function getHTMLElement(link: string) {
 		name,
 		cite: link,
 		description,
+		experimental,
+		obsolete,
+		deprecated,
+		nonStandard,
 		categories,
 		contentModel: [],
 		omittion: false,
