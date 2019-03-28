@@ -10,6 +10,7 @@ import {
 import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { Config, RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
 import { convertRuleset, MLCore, MLRule } from '@markuplint/ml-core';
+import { MLMLSpec } from '@markuplint/ml-spec';
 import path from 'path';
 import { getMessenger } from './get-messenger';
 import { toRegxp } from './util';
@@ -28,6 +29,7 @@ export interface MLCLIOption {
 	files?: string;
 	sourceCodes?: string | string[];
 	config?: string | Config;
+	specs?: string | MLMLSpec;
 	rules?: MLRule<RuleConfigValue, unknown>[];
 	addRules?: MLRule<RuleConfigValue, unknown>[];
 	locale?: string;
@@ -95,6 +97,16 @@ export async function exec(options: MLCLIOption) {
 		}
 	}
 
+	let specs: MLMLSpec;
+	if (typeof options.specs === 'string') {
+		specs = await import(options.specs);
+	} else if (options.specs) {
+		specs = options.specs;
+	} else {
+		// @ts-ignore
+		specs = await import('@markuplint/html-ls');
+	}
+
 	let rules: MLRule<RuleConfigValue, unknown>[];
 	if (options.rules) {
 		rules = options.rules;
@@ -130,7 +142,7 @@ export async function exec(options: MLCLIOption) {
 		const sourceCode = await file.getContext();
 		const ruleset = convertRuleset(configSet.config);
 		const messenger = await getMessenger(options.locale);
-		const core = new MLCore(parser, sourceCode, ruleset, rules, messenger);
+		const core = new MLCore(parser, sourceCode, specs, ruleset, rules, messenger);
 
 		const results = await core.verify();
 		totalResults.push({
