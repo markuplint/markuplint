@@ -87,6 +87,10 @@
 							"category": {
 								"$ref": "#/definitions/AttributeCtegory"
 							},
+							"deprecated": {
+								"enum": [true],
+								"type": "boolean"
+							},
 							"description": {
 								"type": "string"
 							},
@@ -96,6 +100,10 @@
 							},
 							"name": {
 								"type": "string"
+							},
+							"nonStandard": {
+								"enum": [true],
+								"type": "boolean"
 							},
 							"obsolete": {
 								"enum": [true],
@@ -156,6 +164,10 @@
 												"category": {
 													"$ref": "#/definitions/AttributeCtegory"
 												},
+												"deprecated": {
+													"enum": [true],
+													"type": "boolean"
+												},
 												"description": {
 													"type": "string"
 												},
@@ -165,6 +177,10 @@
 												},
 												"name": {
 													"type": "string"
+												},
+												"nonStandard": {
+													"enum": [true],
+													"type": "boolean"
 												},
 												"obsolete": {
 													"enum": [true],
@@ -257,22 +273,45 @@
 						},
 						"type": "array"
 					},
+					"deprecated": {
+						"description": "Deprecated",
+						"enum": [true],
+						"type": "boolean"
+					},
 					"description": {
 						"description": "Description",
 						"type": "string"
+					},
+					"experimental": {
+						"description": "Experimental technology",
+						"enum": [true],
+						"type": "boolean"
 					},
 					"name": {
 						"description": "Tag name",
 						"type": "string"
 					},
+					"nonStandard": {
+						"description": "Non-standard",
+						"enum": [true],
+						"type": "boolean"
+					},
 					"obsolete": {
-						"description": "If element is obsolete then defined alternate element name.",
-						"properties": {
-							"alt": {
-								"type": "string"
+						"anyOf": [
+							{
+								"properties": {
+									"alt": {
+										"type": "string"
+									}
+								},
+								"type": "object"
+							},
+							{
+								"enum": [true],
+								"type": "boolean"
 							}
-						},
-						"type": "object"
+						],
+						"description": "Obsolete or alternative elements"
 					},
 					"omittion": {
 						"anyOf": [
