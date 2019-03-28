@@ -69,10 +69,7 @@ export type ElementSpec = {
 	/**
 	 * Permitted content
 	 */
-	permittedContent: {
-		summary: string;
-		content: PermittedContentSpec;
-	};
+	permittedContent: PermittedContentSpec;
 
 	/**
 	 * Permitted ARIA roles
@@ -117,8 +114,13 @@ export type ElementCategory =
 	| 'palpable'
 	| 'script-supporting';
 
-export type PermittedContentSpec =
-	| false
+export type PermittedContentSpec = {
+	summary: string;
+	content: PermittedContent;
+};
+
+export type PermittedContent =
+	| boolean
 	| {
 			either: (string | { category: string; ignore: string[] })[];
 	  }

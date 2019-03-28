@@ -1352,7 +1352,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",

@@ -383,7 +383,6 @@
 										"type": "object"
 									},
 									{
-										"enum": [false],
 										"type": "boolean"
 									}
 								]
