@@ -73,6 +73,14 @@ export type ElementSpec = {
 	};
 
 	/**
+	 * Permitted ARIA roles
+	 */
+	permittedRoles: {
+		summary: string;
+		roles: PermittedRolesSpec;
+	};
+
+	/**
 	 * Tag omittion
 	 */
 	omittion: ElementSpecOmittion;
@@ -108,6 +116,8 @@ export type ElementCategory =
 	| 'script-supporting';
 
 export type PermittedContentSpec = {};
+
+export type PermittedRolesSpec = {};
 
 export type ElementSpecOmittion = false | ElementSpecOmittionTags;
 

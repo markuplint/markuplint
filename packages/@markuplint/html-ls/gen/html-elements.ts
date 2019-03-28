@@ -41,6 +41,7 @@ export async function getHTMLElement(link: string) {
 	if (/script-supporting/i.test(cat)) categories.push('script-supporting');
 
 	const permittedContent = getProperty($, 'Permitted content');
+	const permittedRoles = getProperty($, 'Permitted ARIA roles');
 
 	const attrs = getAttributes($, '#Attributes');
 	attrs.sort(nameCompare);
@@ -57,6 +58,10 @@ export async function getHTMLElement(link: string) {
 		permittedContent: {
 			summary: permittedContent,
 			content: {},
+		},
+		permittedRoles: {
+			summary: permittedRoles,
+			roles: {},
 		},
 		omittion: false,
 		attributes: ['#globalAttrs', '#ariaAttrs', ...attrs],

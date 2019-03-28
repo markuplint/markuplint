@@ -1225,6 +1225,10 @@
 				"summary": "Transparent, containing either flow content (excluding interactive content) or phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "button, checkbox, menuitem, menuitemcheckbox, menuitemradio, option, radio, switch, tab, treeitem",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1324,6 +1328,10 @@
 				"summary": "Phrasing content",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1337,6 +1345,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1348,6 +1360,10 @@
 			"permittedContent": {
 				"summary": "Flow content, but with no nested <address> element, no heading content (<hgroup>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6>), no sectioning content (<article>, <aside>, <section>, <nav>), and no <header> or <footer> element.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -1361,6 +1377,10 @@
 			"permittedContent": {
 				"summary": "Zero or more <param> elements, then transparent.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -1466,6 +1486,10 @@
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -1578,6 +1602,10 @@
 				"summary": "Flow content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "application, document, feed, main, presentation, region",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1590,6 +1618,10 @@
 				"summary": "Flow content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "feed, note, presentation, region, search",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1601,6 +1633,10 @@
 			"permittedContent": {
 				"summary": "If the element has a src attribute: zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.\n    Else: zero or more <source> elements followed by zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "application",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -1659,6 +1695,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1670,6 +1710,10 @@
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -1698,6 +1742,10 @@
 			"permittedContent": {
 				"summary": "",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -1732,6 +1780,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1743,6 +1795,10 @@
 			"permittedContent": {
 				"summary": "Phrasing content.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -1766,6 +1822,10 @@
 			"permittedContent": {
 				"summary": "",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -1807,6 +1867,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1821,6 +1885,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1832,6 +1900,10 @@
 			"permittedContent": {
 				"summary": "Flow content.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -1853,6 +1925,10 @@
 			"permittedContent": {
 				"summary": "Flow content.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -2048,6 +2124,10 @@
 				"summary": "None, it is an empty element.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2068,6 +2148,10 @@
 			"permittedContent": {
 				"summary": "Phrasing content but there must be no Interactive content",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "checkbox, link, menuitem, menuitemcheckbox, menuitemradio, radio, switch, tab",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -2157,6 +2241,10 @@
 				"summary": "Transparent but with no interactive content descendants except for <a> elements, <button> elements, <input> elements whose type attribute is checkbox, radio, or button.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2192,6 +2280,10 @@
 				"summary": "Flow content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2215,6 +2307,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2226,6 +2322,10 @@
 			"permittedContent": {
 				"summary": "Phrasing content.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -2239,6 +2339,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2250,6 +2354,10 @@
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -2317,6 +2425,10 @@
 			"permittedContent": {
 				"summary": "If the span attribute is present: none, it is an empty element.\n    If the attribute is not present: zero or more <col> element",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -2386,6 +2498,10 @@
 				"summary": "None, it is an empty element.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2438,6 +2554,10 @@
 				"summary": "Flow content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2458,6 +2578,10 @@
 			"permittedContent": {
 				"summary": "Phrasing content.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -2480,6 +2604,10 @@
 				"summary": "Either phrasing content or zero or more <option> elements.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2491,6 +2619,10 @@
 			"permittedContent": {
 				"summary": "Flow content.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -2513,6 +2645,10 @@
 			"permittedContent": {
 				"summary": "Transparent.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -2541,6 +2677,10 @@
 				"summary": "One <summary> element followed by flow content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2562,6 +2702,10 @@
 				"summary": "Phrasing content, but no <dfn> element must be a descendant.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2573,6 +2717,10 @@
 			"permittedContent": {
 				"summary": "Flow content",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "alertdialog",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -2596,6 +2744,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2607,6 +2759,10 @@
 			"permittedContent": {
 				"summary": "Flow content.\n    Or (in WHATWG HTML): If the parent is a <dl> element: one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -2620,6 +2776,10 @@
 				"summary": "\n    Either: Zero or more groups each consisting of one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.\n     Or: One or more <div> elements, optionally intermixed with <script> and <template> elements.\n   ",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "group, presentation",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2631,6 +2791,10 @@
 			"permittedContent": {
 				"summary": "Flow content, but with no <header>, <footer>, sectioning content or heading content descendants.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -2645,6 +2809,10 @@
 				"summary": "???",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2657,6 +2825,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2668,6 +2840,10 @@
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "application, document, img, presentation",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -2708,6 +2884,10 @@
 				"summary": "An optional <legend> element, followed by flow content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "group, presentation",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2741,6 +2921,10 @@
 				"summary": "Flow content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "group, presentation",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2752,6 +2936,10 @@
 			"permittedContent": {
 				"summary": "A <figcaption> element, followed by flow content; or flow content followed by a <figcaption> element; or flow content.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "group, presentation",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -2766,6 +2954,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2778,6 +2970,10 @@
 				"summary": "Flow content, but with no <footer> or <header> descendants.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "group, presentation",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2789,6 +2985,10 @@
 			"permittedContent": {
 				"summary": "Flow content, but not containing <form> elements",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "group, presentation",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -2868,6 +3068,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2926,6 +3130,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2953,6 +3161,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "tab, presentation",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2964,6 +3176,10 @@
 			"permittedContent": {
 				"summary": "\n    If the document is an <iframe> srcdoc document, or if title information is available from a higher level protocol (like the subject line in HTML email), zero or more elements of metadata content.\n\n    Otherwise, one or more elements of metadata content where exactly one is a <title> element.\n   ",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -2987,6 +3203,10 @@
 				"summary": "Flow content, but with no <header> or <footer> descendant.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "group, presentation",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2999,6 +3219,10 @@
 				"summary": "One or more <h1>, <h2>, <h3>, <h4>, <h5>, and/or <h6>.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "tab, presentation",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3010,6 +3234,10 @@
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "presentation",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -3061,6 +3289,10 @@
 				"summary": "One <head> element, followed by one <body> element.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3096,6 +3328,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3107,6 +3343,10 @@
 			"permittedContent": {
 				"summary": "Fallback content, i.e. content that is normally not rendered, but that browsers not supporting the <iframe> element will render. (RSS readers and email clients often show the fallback content instead.)",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "application, document, img",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -3249,6 +3489,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3260,6 +3504,10 @@
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -3273,6 +3521,10 @@
 				"summary": "None, it is an empty element.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "\n    \n     type=button: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch, tab\n     type=checkbox: button, menuitemcheckbox, option, switch\n     type=image: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch\n     type=radio: menuitemradio\n     type=color|date|datetime|datetime-local|email|file: None\n     type=hidden|month|number|password|range|reset: None\n     type=search|submit|tel|text|url|week: None\n    \n   ",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3284,6 +3536,10 @@
 			"permittedContent": {
 				"summary": "Transparent.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -3313,6 +3569,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3324,6 +3584,10 @@
 			"permittedContent": {
 				"summary": "Phrasing content.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -3337,6 +3601,10 @@
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -3389,6 +3657,10 @@
 				"summary": "Phrasing content, but no descendant label elements. No labelable elements other than the labeled control are allowed.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3416,6 +3688,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3427,6 +3703,10 @@
 			"permittedContent": {
 				"summary": "Flow content.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "menuitem, menuitemcheckbox, menuitemradio, option, presentation, radio, separator, tab, treeitem",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -3455,6 +3735,10 @@
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -3589,6 +3873,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3601,6 +3889,10 @@
 				"summary": "Flow content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "The main role is applied to <main> by default, and the presentation role is permitted as well.",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3612,6 +3904,10 @@
 			"permittedContent": {
 				"summary": "Any transparent element.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -3634,6 +3930,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3646,6 +3946,10 @@
 			"permittedContent": {
 				"summary": "",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -3730,6 +4034,10 @@
 				"summary": "If the element is in the list menu state: flow content, or alternatively, zero or more occurrences of <li>, <script>, and <template>.\n    If the element is in the context menu state: zero or more occurrences, in any order, of <menu> (context menu state only), <menuitem>, <hr>, <script>, and <template>.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3758,6 +4066,10 @@
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -3822,6 +4134,10 @@
 				"summary": "None, it is an empty element.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3867,6 +4183,10 @@
 			"permittedContent": {
 				"summary": "Phrasing content, but there must be no <meter> element among its descendants.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -3927,6 +4247,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3938,6 +4262,10 @@
 			"permittedContent": {
 				"summary": "Flow content.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -3951,6 +4279,10 @@
 			"permittedContent": {
 				"summary": "",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -3975,6 +4307,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3989,6 +4325,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4002,6 +4342,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4014,6 +4358,10 @@
 				"summary": "When scripting is disabled and when it is a descendant of the <head> element: in any order, zero or more <link> elements, zero or more <style> elements, and zero or more <meta> elements.\n    When scripting is disabled and when it isn't a descendant of the <head> element: any transparent content, but no <noscript> element must be among its descendants.\n    Otherwise: flow content or phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4025,6 +4373,10 @@
 			"permittedContent": {
 				"summary": "zero or more <param> elements, then transparent.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "application, document, image",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -4146,6 +4498,10 @@
 				"summary": "Zero or more <li> elements, which in turn often contain nested <ol> or <ul> elements.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "directory, group, listbox, menu, menubar, radiogroup, tablist, toolbar, tree, presentation",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4186,6 +4542,10 @@
 				"summary": "Zero or more <option> elements.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4212,6 +4572,10 @@
 			"permittedContent": {
 				"summary": "Text, possibly with escaped characters (like &eacute;).",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -4252,6 +4616,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4285,6 +4653,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4296,6 +4668,10 @@
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -4338,6 +4714,10 @@
 				"summary": "Zero or more <source> elements, followed by one <img> element, optionally intermixed with script-supporting elements.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4351,6 +4731,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4362,6 +4746,10 @@
 			"permittedContent": {
 				"summary": "Phrasing content.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -4400,6 +4788,10 @@
 				"summary": "Phrasing content, but there must be no <progress> element among its descendants.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4427,6 +4819,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4448,6 +4844,10 @@
 				"summary": "As a child of a <ruby> element.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4459,6 +4859,10 @@
 			"permittedContent": {
 				"summary": "Text",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -4472,6 +4876,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4483,6 +4891,10 @@
 			"permittedContent": {
 				"summary": "Phrasing content or <rt> elements.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -4496,6 +4908,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4507,6 +4923,10 @@
 			"permittedContent": {
 				"summary": "Phrasing content.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -4520,6 +4940,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4531,6 +4955,10 @@
 			"permittedContent": {
 				"summary": "Dynamic script such as text/javascript.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -4615,6 +5043,10 @@
 				"summary": "Flow content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "alert, alertdialog, application, banner, complementary, contentinfo, dialog, document, feed, log, main, marquee, navigation, search, status, tabpanel",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4626,6 +5058,10 @@
 			"permittedContent": {
 				"summary": "Zero or more <option> or <optgroup> elements.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "menu",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -4691,6 +5127,10 @@
 				"summary": "Flow content",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4702,6 +5142,10 @@
 			"permittedContent": {
 				"summary": "Transparent",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -4724,6 +5168,10 @@
 				"summary": "Phrasing content",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4735,6 +5183,10 @@
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -4783,6 +5235,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4828,6 +5284,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4841,6 +5301,10 @@
 				"summary": "",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4853,6 +5317,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4864,6 +5332,10 @@
 			"permittedContent": {
 				"summary": "Text content matching the type attribute, that is text/css.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -4912,6 +5384,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4923,6 +5399,10 @@
 			"permittedContent": {
 				"summary": "Phrasing content or one element of Heading content",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "button",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -4936,6 +5416,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4947,6 +5431,10 @@
 			"permittedContent": {
 				"summary": "\n    \n    In this order:\n    \n     an optional <caption> element,\n     zero or more <colgroup> elements,\n     an optional <thead> element,\n     either one of the following:\n      \n       zero or more <tbody> elements\n       one or more <tr> elements\n      \n     \n     an optional <tfoot> element\n    \n    \n    \n   ",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -5026,6 +5514,10 @@
 				"summary": "Zero or more <tr> elements.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5079,6 +5571,10 @@
 			"permittedContent": {
 				"summary": "Flow content.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -5185,6 +5681,10 @@
 				"summary": "No restrictions",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5196,6 +5696,10 @@
 			"permittedContent": {
 				"summary": "Text",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -5303,6 +5807,10 @@
 				"summary": "Zero or more <tr> elements.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5356,6 +5864,10 @@
 			"permittedContent": {
 				"summary": "Flow content, but with no header, footer, sectioning content, or heading content descendants.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -5460,6 +5972,10 @@
 				"summary": "Zero or more <tr> elements.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5514,6 +6030,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5535,6 +6055,10 @@
 				"summary": "Text that is not inter-element whitespace.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None.",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5546,6 +6070,10 @@
 			"permittedContent": {
 				"summary": "Zero or more <td> and/or <th> elements; script-supporting elements (<script> and <template>) are also allowed",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -5597,6 +6125,10 @@
 				"summary": "None, it is an empty element.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "None",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5643,6 +6175,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5655,6 +6191,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5666,6 +6206,10 @@
 			"permittedContent": {
 				"summary": "zero or more <li> elements, which in turn often contain nested <ol> or <ul> elements.",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "directory, group, listbox, menu, menubar, radiogroup, tablist, toolbar, tree, presentation",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -5696,6 +6240,10 @@
 				"summary": "Phrasing content.",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5707,6 +6255,10 @@
 			"permittedContent": {
 				"summary": "\n    If the element has a src attribute: zero or more <track> elements, followed by transparent content that contains no media elements–that is no <audio> or <video>\n\n    Else: zero or more <source> elements, followed by zero or more <track> elements, followed by transparent content that contains no media elements–that is no <audio> or <video>.\n   ",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "application",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
@@ -5802,6 +6354,10 @@
 				"summary": "Empty",
 				"content": {}
 			},
+			"permittedRoles": {
+				"summary": "Any",
+				"roles": {}
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5814,6 +6370,10 @@
 			"permittedContent": {
 				"summary": "",
 				"content": {}
+			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": {}
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]

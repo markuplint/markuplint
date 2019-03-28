@@ -352,6 +352,19 @@
 							}
 						},
 						"type": "object"
+					},
+					"permittedRoles": {
+						"description": "Permitted ARIA roles",
+						"properties": {
+							"roles": {
+								"properties": {},
+								"type": "object"
+							},
+							"summary": {
+								"type": "string"
+							}
+						},
+						"type": "object"
 					}
 				},
 				"type": "object"
