@@ -1,5 +1,5 @@
 {
-	"$schema": "./ml-specs.schema.json",
+	"$schema": "https://raw.githubusercontent.com/markuplint/markuplint/next/packages/%40markuplint/ml-spec/schema.json",
 	"cites": [
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",

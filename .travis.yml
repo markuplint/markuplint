@@ -6,4 +6,4 @@ node_js:
     - 'stable'
 script:
     - yarn build
-    - yarn test
+    - yarn test:coverage

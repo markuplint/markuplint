@@ -6,6 +6,7 @@
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev",
 		"test": "jest --coverage",
+		"test:coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
 		"test:clear": "jest --clearCache",
 		"cli": "ts-node packages/markuplint/src/cli/index.ts",
 		"site:dev": "cd website; yarn site:dev",
@@ -50,6 +51,7 @@
 	],
 	"devDependencies": {
 		"@types/jest": "^24.0.11",
+		"coveralls": "^3.0.3",
 		"jest": "^24.5.0",
 		"lerna": "^3.13.1",
 		"prettier": "^1.16.4",
