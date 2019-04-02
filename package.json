@@ -52,14 +52,14 @@
 	"devDependencies": {
 		"@types/jest": "^24.0.11",
 		"coveralls": "^3.0.3",
-		"jest": "^24.5.0",
+		"jest": "^24.6.0",
 		"lerna": "^3.13.1",
 		"prettier": "^1.16.4",
-		"ts-jest": "^24.0.0",
+		"ts-jest": "^24.0.1",
 		"ts-node": "^8.0.3",
 		"tslint": "^5.14.0",
 		"tslint-config-prettier": "^1.18.0",
 		"tslint-plugin-prettier": "^2.0.1",
-		"typescript": "^3.4.0-dev.20190323"
+		"typescript": "^3.4.1"
 	}
 }
