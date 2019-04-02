@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/html-ls",
-	"version": "1.0.0-alpha.4",
+	"version": "1.0.0-alpha.5",
 	"description": "A Ruleset of HTML Living Standard for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -23,6 +23,6 @@
 		"node-fetch": "^2.3.0"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "^1.0.0-alpha.1"
+		"@markuplint/ml-spec": "^1.0.0-alpha.2"
 	}
 }
