@@ -1,4 +1,4 @@
-import { createRule, Result } from '@markuplint/ml-core';
+import { Result, createRule } from '@markuplint/ml-core';
 
 export type Type = 'double' | 'single';
 export type Quote = '"' | "'";

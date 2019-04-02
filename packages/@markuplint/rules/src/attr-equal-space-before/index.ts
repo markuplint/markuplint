@@ -1,4 +1,4 @@
-import { createRule, Result } from '@markuplint/ml-core';
+import { Result, createRule } from '@markuplint/ml-core';
 
 type Value = 'always' | 'never' | 'always-single-line' | 'never-single-line';
 
@@ -9,7 +9,7 @@ export default createRule<Value>({
 	defaultOptions: null,
 	async verify(document, messages) {
 		const reports: Result[] = [];
-		const message = messages('error');
+		// const message = messages('error');
 		await document.walkOn('Element', async node => {
 			for (const attr of node.attributes) {
 				if (!(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {
@@ -19,23 +19,23 @@ export default createRule<Value>({
 				const hasLineBreak = /\r?\n/.test(attr.spacesBeforeEqual.raw);
 				let isBad = false;
 				switch (node.rule.value) {
-					case 'always': {
-						isBad = !hasSpace;
-						break;
-					}
-					case 'never': {
-						isBad = hasSpace;
-						break;
-					}
-					case 'always-single-line': {
-						// or 'no-newline'
-						isBad = !hasSpace || hasLineBreak;
-						break;
-					}
-					case 'never-single-line': {
-						isBad = hasSpace && !hasLineBreak;
-						break;
-					}
+				case 'always': {
+					isBad = !hasSpace;
+					break;
+				}
+				case 'never': {
+					isBad = hasSpace;
+					break;
+				}
+				case 'always-single-line': {
+					// or 'no-newline'
+					isBad = !hasSpace || hasLineBreak;
+					break;
+				}
+				case 'never-single-line': {
+					isBad = hasSpace && !hasLineBreak;
+					break;
+				}
 				}
 				if (isBad) {
 					reports.push({

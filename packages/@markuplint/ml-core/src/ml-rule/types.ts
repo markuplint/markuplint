@@ -1,6 +1,6 @@
-import { Message } from '@markuplint/i18n';
 import { Result, RuleConfigValue, RuleInfo, Severity } from '@markuplint/ml-config';
 import Document from '../ml-dom/document';
+import { Message } from '@markuplint/i18n';
 
 export interface MLRuleOptions<T extends RuleConfigValue, O = null> {
 	name: string;

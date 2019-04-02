@@ -12,7 +12,6 @@ import {
 	MLASTText,
 	MLToken,
 } from '@markuplint/ml-ast/';
-import { RuleConfigValue } from '@markuplint/ml-config';
 import {
 	MLDOMAttribute,
 	MLDOMComment,
@@ -25,6 +24,7 @@ import {
 	MLDOMText,
 	MLDOMToken,
 } from '../tokens';
+import { RuleConfigValue } from '@markuplint/ml-config';
 
 // prettier-ignore
 export type MappedNode<N, T extends RuleConfigValue, O = null>

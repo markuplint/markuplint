@@ -1,6 +1,6 @@
-import path from 'path';
 import { Config, ConfigSet } from './';
 import { load, recursiveLoad } from './helper';
+import path from 'path';
 
 /**
  * Asynchronously get configuration file.

@@ -1,9 +1,9 @@
+import { AnonymousNode, Document } from '../';
+import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode } from './';
+import { createSelector, getNode } from '../helper';
+import { IMLDOMElement } from '../types';
 import { MLASTElement } from '@markuplint/ml-ast';
 import { RuleConfigValue } from '@markuplint/ml-config';
-import { AnonymousNode, Document } from '../';
-import { createSelector, getNode } from '../helper';
-import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode } from './';
-import { IMLDOMElement } from '../types';
 
 export default class MLDOMElement<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTElement>
 	implements IMLDOMElement {

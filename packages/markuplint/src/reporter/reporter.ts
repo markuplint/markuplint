@@ -1,12 +1,12 @@
-// tslint:disable:no-magic-numbers
+import { VerifiedResult } from '@markuplint/ml-config';
 import c from 'cli-color';
+// @ts-ignore
+import eastasianwidth from 'eastasianwidth';
 import path from 'path';
 import stripAnsi from 'strip-ansi';
 import url from 'url';
 
-const eaw: { characterLength: (char: string) => number } = require('eastasianwidth'); // tslint:disable-line
-
-import { VerifiedResult } from '@markuplint/ml-config';
+const eaw: { characterLength: (char: string) => number } = eastasianwidth;
 
 export interface ReporterConfig {
 	color: boolean;
@@ -155,10 +155,10 @@ function space(str: string) {
 		.replace(/\s+/g, $0 => {
 			return c.xterm(8)($0);
 		})
-		.replace(/ /g, $0 => `•`)
-		.replace(/\t/g, $0 => `→   `);
+		.replace(/ /g, $0 => '•')
+		.replace(/\t/g, $0 => '→   ');
 }
 
 function invisibleSpace(str: string) {
-	return str.replace(/\t/g, $0 => `    `).replace(/./g, $0 => ` `);
+	return str.replace(/\t/g, $0 => '    ').replace(/./g, $0 => ' ');
 }

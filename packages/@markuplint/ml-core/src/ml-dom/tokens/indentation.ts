@@ -1,5 +1,5 @@
-import { RuleConfigValue } from '@markuplint/ml-config';
 import MLDOMText from './text';
+import { RuleConfigValue } from '@markuplint/ml-config';
 
 export default class MLDOMIndentation<T extends RuleConfigValue, O = null> {
 	public readonly line: number;

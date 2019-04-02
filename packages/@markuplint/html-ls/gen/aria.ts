@@ -1,7 +1,7 @@
-import { ARIRRoleAttribute, ARIAAttribute, ARIAAttributeValue } from '@markuplint/ml-spec';
+import { ARIAAttribute, ARIAAttributeValue, ARIRRoleAttribute } from '@markuplint/ml-spec';
 import fetch, { fetchText } from './fetch';
-import xml from 'fast-xml-parser';
 import { nameCompare } from './utils';
+import xml from 'fast-xml-parser';
 
 export async function getAria() {
 	const uml = await fetchText('https://www.w3.org/WAI/ARIA/schemata/aria-1.uml');
@@ -55,7 +55,7 @@ export async function getAria() {
 				const deprecated = /deprecated/i.test(className) || undefined;
 				const $value = $section.find(`table.${type}-features .${type}-value`);
 				const value = $value.text().trim() as ARIAAttributeValue;
-				const $defaultValue = $section.find(`table.value-descriptions .value-name .default`);
+				const $defaultValue = $section.find('table.value-descriptions .value-name .default');
 				const defaultValue =
 					$defaultValue
 						.text()

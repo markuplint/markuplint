@@ -1,4 +1,4 @@
-import { createRule, getLocationFromChars, Result } from '@markuplint/ml-core';
+import { Result, createRule, getLocationFromChars } from '@markuplint/ml-core';
 
 export type Value = boolean;
 

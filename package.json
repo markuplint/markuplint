@@ -8,6 +8,7 @@
 		"test": "jest --coverage",
 		"test:coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
 		"test:clear": "jest --clearCache",
+		"lint": "eslint --fix ./packages/**/*.ts",
 		"cli": "ts-node packages/markuplint/src/cli/index.ts",
 		"site:dev": "cd website; yarn site:dev",
 		"site:build": "cd website; yarn site:build"
@@ -51,15 +52,19 @@
 	],
 	"devDependencies": {
 		"@types/jest": "^24.0.11",
+		"@typescript-eslint/eslint-plugin": "^1.5.0",
 		"coveralls": "^3.0.3",
+		"eslint": "^5.16.0",
+		"eslint-config-prettier": "^4.1.0",
+		"eslint-plugin-eslint-comments": "^3.1.1",
+		"eslint-plugin-jsdoc": "^4.7.0",
+		"eslint-plugin-node": "^8.0.1",
+		"eslint-plugin-prettier": "^3.0.1",
 		"jest": "^24.6.0",
 		"lerna": "^3.13.1",
 		"prettier": "^1.16.4",
 		"ts-jest": "^24.0.1",
 		"ts-node": "^8.0.3",
-		"tslint": "^5.14.0",
-		"tslint-config-prettier": "^1.18.0",
-		"tslint-plugin-prettier": "^2.0.1",
-		"typescript": "^3.4.1"
+		"typescript": "3.3.4000"
 	}
 }

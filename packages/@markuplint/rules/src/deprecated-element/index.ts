@@ -1,4 +1,4 @@
-import { createRule, Result } from '@markuplint/ml-core';
+import { Result, createRule } from '@markuplint/ml-core';
 import { getSpecByTagName } from '@markuplint/ml-spec';
 
 export default createRule({
@@ -7,7 +7,7 @@ export default createRule({
 	defaultOptions: null,
 	async verify(document, messages) {
 		const reports: Result[] = [];
-		const message = messages(`{0} is {1}`, 'Element', 'deprecated');
+		const message = messages('{0} is {1}', 'Element', 'deprecated');
 		await document.walkOn('Element', async node => {
 			const spec = getSpecByTagName(node.nodeName, document.specs);
 			if (spec && (spec.obsolete || spec.deprecated || spec.nonStandard)) {

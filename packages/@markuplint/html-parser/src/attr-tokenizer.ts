@@ -3,7 +3,8 @@ import UUID from 'uuid';
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
 
-const reAttrsInStartTag = /(\s*)([^\x00-\x1f\x7f-\x9f "'>\/=]+)(?:(\s*)(=)(\s*)(?:(?:"([^"]*)")|(?:'([^']*)')|([^\s]*)))?/;
+// eslint-disable-next-line no-control-regex
+const reAttrsInStartTag = /(\s*)([^\x00-\x1f\x7f-\x9f "'>/=]+)(?:(\s*)(=)(\s*)(?:(?:"([^"]*)")|(?:'([^']*)')|([^\s]*)))?/;
 
 export default function attrTokenizer(raw: string, line: number, col: number, startOffset: number): MLASTAttr {
 	const attrMatchedMap = raw.match(reAttrsInStartTag);

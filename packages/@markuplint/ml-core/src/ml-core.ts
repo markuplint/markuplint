@@ -1,9 +1,9 @@
-import { Messenger } from '@markuplint/i18n';
 import { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
+import { MLMLSpec, SpecOM, getSpecOM } from '@markuplint/ml-spec';
 import { RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
-import { MLMLSpec, getSpecOM, SpecOM } from '@markuplint/ml-spec';
 import { Document } from './ml-dom';
 import { MLRule } from './ml-rule';
+import { Messenger } from '@markuplint/i18n';
 import Ruleset from './ruleset';
 
 export class MLCore {

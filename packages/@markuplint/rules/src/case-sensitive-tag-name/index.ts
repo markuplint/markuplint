@@ -1,5 +1,5 @@
-import { createRule, Result } from '@markuplint/ml-core';
 import { MLDOMElement, MLDOMElementCloseTag } from '@markuplint/ml-core/lib/ml-dom/tokens';
+import { Result, createRule } from '@markuplint/ml-core';
 
 export type Value = 'lower' | 'upper';
 

@@ -1,6 +1,6 @@
+import { Config, ConfigSet, loadConfigFile } from './';
 import cosmiconfig from 'cosmiconfig';
 import path from 'path';
-import { loadConfigFile, Config, ConfigSet } from './';
 
 const explorer = cosmiconfig('markuplint');
 

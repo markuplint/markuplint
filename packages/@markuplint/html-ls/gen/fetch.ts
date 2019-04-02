@@ -1,6 +1,6 @@
-import fetch from 'node-fetch';
-import cheerio from 'cheerio';
 import { Bar, Presets } from 'cli-progress';
+import cheerio from 'cheerio';
+import fetch from 'node-fetch';
 
 const cache = new Map<string, string>();
 
@@ -8,11 +8,11 @@ let total = 1;
 let current = 0;
 const bar = new Bar(
 	{
-		format: `🔎 Fetch references... {bar} {percentage}% | ETA: {eta}s | {value}/{total} {process}`,
+		format: '🔎 Fetch references... {bar} {percentage}% | ETA: {eta}s | {value}/{total} {process}',
 	},
 	Presets.shades_grey,
 );
-bar.start(total, current, { process: `🚀 Started.` });
+bar.start(total, current, { process: '🚀 Started.' });
 
 export default async function(url: string) {
 	const html = await fetchText(url);
@@ -38,7 +38,7 @@ export async function fetchText(url: string) {
 
 export function getReferences() {
 	current += 1;
-	bar.update(current, { process: `🎉 Finished.` });
+	bar.update(current, { process: '🎉 Finished.' });
 	bar.stop();
 	return Array.from(cache.keys()).sort();
 }

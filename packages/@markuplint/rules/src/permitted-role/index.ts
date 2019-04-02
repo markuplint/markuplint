@@ -1,4 +1,4 @@
-import { createRule, Result } from '@markuplint/ml-core';
+import { Result, createRule } from '@markuplint/ml-core';
 
 export default createRule({
 	name: 'permitted-role',
@@ -39,7 +39,6 @@ export default createRule({
 		// 						continue;
 		// 					}
 		// 					for (const value of attr.values) {
-		// 						// tslint:disable-next-line:cyclomatic-complexity
 		// 						if (nodeAttrValue.value === value) {
 		// 							permittedRolesStrings.push(permittedRole.role);
 		// 							if (permittedRole.role === 'None') {

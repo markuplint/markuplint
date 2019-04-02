@@ -1,4 +1,4 @@
-import { createRule, Result } from '@markuplint/ml-core';
+import { Result, createRule } from '@markuplint/ml-core';
 
 export interface AttrSpasingOptions {
 	lineBreak: 'either' | 'always' | 'never';
@@ -15,7 +15,7 @@ export default createRule<boolean, AttrSpasingOptions>({
 	},
 	async verify(document, messages) {
 		const reports: Result[] = [];
-		const message = messages('error');
+		// const message = messages('error');
 		await document.walkOn('Element', async node => {
 			const attrs = node.attributes;
 			for (const attr of attrs) {

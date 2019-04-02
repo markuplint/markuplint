@@ -1,5 +1,5 @@
+import { MLFile, getFile } from './';
 import glob from 'glob';
-import { getFile, MLFile } from './';
 
 /**
  * Get files

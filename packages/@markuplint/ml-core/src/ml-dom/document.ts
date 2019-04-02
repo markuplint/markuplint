@@ -1,11 +1,11 @@
-import { MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
-import { RuleConfigValue } from '@markuplint/ml-config';
-import { SpecOM } from '@markuplint/ml-spec';
-import { MLRule } from '../';
-import Ruleset from '../ruleset';
-import { createNode } from './helper';
-import { MLDOMComment, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
 import { AnonymousNode, NodeType } from './types';
+import { MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
+import { MLDOMComment, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
+import { MLRule } from '../';
+import { RuleConfigValue } from '@markuplint/ml-config';
+import Ruleset from '../ruleset';
+import { SpecOM } from '@markuplint/ml-spec';
+import { createNode } from './helper';
 
 /**
  * markuplint DOM Document
@@ -117,7 +117,6 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	public async walkOn(type: 'Text', walker: Walker<T, O, MLDOMText<T, O>>): Promise<void>;
 	public async walkOn(type: 'Comment', walker: Walker<T, O, MLDOMComment<T, O>>): Promise<void>;
 	public async walkOn(type: 'ElementCloseTag', walker: Walker<T, O, MLDOMElementCloseTag<T, O>>): Promise<void>;
-	// tslint:disable-next-line:no-any
 	public async walkOn(type: NodeType, walker: Walker<T, O, any>): Promise<void> {
 		for (const node of this.nodeList) {
 			if (node instanceof MLDOMNode) {

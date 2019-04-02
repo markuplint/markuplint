@@ -1,13 +1,13 @@
+import { AnonymousNode, IMLDOMNode, NodeType } from '../types';
 import { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
 import { RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
-import { RuleInfo } from '../../';
-import Document from '../document';
 import { getNode, setNode } from '../helper/dom-traverser';
-import { AnonymousNode, NodeType, IMLDOMNode } from '../types';
+import Document from '../document';
 import MLDOMElement from './element';
 import MLDOMIndentation from './indentation';
 import MLDOMOmittedElement from './omitted-element';
 import MLDOMToken from './token';
+import { RuleInfo } from '../../';
 
 export default abstract class MLDOMNode<
 	T extends RuleConfigValue,
@@ -55,7 +55,7 @@ export default abstract class MLDOMNode<
 		while (parentNode && parentNode.type === 'OmittedElement') {
 			parentNode = parentNode.parentNode;
 		}
-		return parentNode as MLDOMElement<T, O> | null;
+		return parentNode;
 	}
 
 	public get prevToken(): AnonymousNode<T, O> | null {

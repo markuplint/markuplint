@@ -1,7 +1,7 @@
-import { Messenger } from '@markuplint/i18n';
 import { RuleConfig, RuleConfigValue, RuleInfo, Severity, VerifiedResult } from '@markuplint/ml-config';
 import Document from '../ml-dom/document';
 import { MLRuleOptions } from './types';
+import { Messenger } from '@markuplint/i18n';
 
 export class MLRule<T extends RuleConfigValue, O = null> {
 	public static create<T extends RuleConfigValue, O = null>(options: MLRuleOptions<T, O>) {

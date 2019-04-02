@@ -1,10 +1,10 @@
-import { MLASTElementCloseTag } from '@markuplint/ml-ast';
-import { RuleConfigValue } from '@markuplint/ml-config';
 import Document from '../document';
-import { setNode } from '../helper/dom-traverser';
 import { IMLDOMElementCloseTag } from '../types';
-import MLDOMNode from './node';
+import { MLASTElementCloseTag } from '@markuplint/ml-ast';
 import MLDOMElement from './element';
+import MLDOMNode from './node';
+import { RuleConfigValue } from '@markuplint/ml-config';
+import { setNode } from '../helper/dom-traverser';
 
 export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTElementCloseTag>

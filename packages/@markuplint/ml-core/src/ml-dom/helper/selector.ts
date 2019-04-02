@@ -1,8 +1,7 @@
 // @ts-ignore
 import { CssSelectorParser } from 'css-selector-parser';
-
-import { RuleConfigValue } from '@markuplint/ml-config';
 import { MLDOMElement } from '../tokens';
+import { RuleConfigValue } from '@markuplint/ml-config';
 
 const selectorParser = new CssSelectorParser();
 selectorParser.registerSelectorPseudos('not');
@@ -119,42 +118,42 @@ function match(element: ElementLikeObject, ruleset: CssSelectorParserResult, raw
 				}
 
 				switch (ruleAttr.operator) {
-					case '=': {
-						// if (ruleAttr.ignoreCase) {
-						// 	andMatch.push(value === ruleAttr.value);
-						// } else {
-						// 	andMatch.push(value.toLowerCase() === ruleAttr.value.toLowerCase());
-						// }
-						andMatch.push(value === ruleAttr.value);
-						break;
-					}
-					case '~=': {
-						throw new Error(`Unsupport "[attr~=val]" attribute selector in "${rawSelector}"`);
-					}
-					case '^=': {
-						// const re = new RegExp(`^${ruleAttr.value}`, ruleAttr.ignoreCase ? 'i' : undefined);
-						const re = new RegExp(`^${ruleAttr.value}`);
-						andMatch.push(re.test(value));
-						break;
-					}
-					case '$=': {
-						// const re = new RegExp(`${ruleAttr.value}$`, ruleAttr.ignoreCase ? 'i' : undefined);
-						const re = new RegExp(`${ruleAttr.value}$`);
-						andMatch.push(re.test(value));
-						break;
-					}
-					case '*=': {
-						// const re = new RegExp(ruleAttr.value, ruleAttr.ignoreCase ? 'i' : undefined);
-						const re = new RegExp(ruleAttr.value);
-						andMatch.push(re.test(value));
-						break;
-					}
-					// case '!=': {
-					// 	throw new Error(`Unsupport "[attr!=val]" attribute selector in "${rawSelector}"`);
+				case '=': {
+					// if (ruleAttr.ignoreCase) {
+					// 	andMatch.push(value === ruleAttr.value);
+					// } else {
+					// 	andMatch.push(value.toLowerCase() === ruleAttr.value.toLowerCase());
 					// }
-					case '|=': {
-						throw new Error(`Unsupport "[attr|=val]" attribute selector in "${rawSelector}"`);
-					}
+					andMatch.push(value === ruleAttr.value);
+					break;
+				}
+				case '~=': {
+					throw new Error(`Unsupport "[attr~=val]" attribute selector in "${rawSelector}"`);
+				}
+				case '^=': {
+					// const re = new RegExp(`^${ruleAttr.value}`, ruleAttr.ignoreCase ? 'i' : undefined);
+					const re = new RegExp(`^${ruleAttr.value}`);
+					andMatch.push(re.test(value));
+					break;
+				}
+				case '$=': {
+					// const re = new RegExp(`${ruleAttr.value}$`, ruleAttr.ignoreCase ? 'i' : undefined);
+					const re = new RegExp(`${ruleAttr.value}$`);
+					andMatch.push(re.test(value));
+					break;
+				}
+				case '*=': {
+					// const re = new RegExp(ruleAttr.value, ruleAttr.ignoreCase ? 'i' : undefined);
+					const re = new RegExp(ruleAttr.value);
+					andMatch.push(re.test(value));
+					break;
+				}
+				// case '!=': {
+				// 	throw new Error(`Unsupport "[attr!=val]" attribute selector in "${rawSelector}"`);
+				// }
+				case '|=': {
+					throw new Error(`Unsupport "[attr|=val]" attribute selector in "${rawSelector}"`);
+				}
 				}
 				break;
 			}
@@ -163,16 +162,16 @@ function match(element: ElementLikeObject, ruleset: CssSelectorParserResult, raw
 		if (rule.pseudos) {
 			for (const pseudo of rule.pseudos) {
 				switch (pseudo.name) {
-					case 'not': {
-						if (pseudo.valueType !== 'selector') {
-							throw new Error(`Unexpected parameters in "not" pseudo selector in "${rawSelector}"`);
-						}
-						andMatch.push(!match(element, pseudo.value, rawSelector));
-						break;
+				case 'not': {
+					if (pseudo.valueType !== 'selector') {
+						throw new Error(`Unexpected parameters in "not" pseudo selector in "${rawSelector}"`);
 					}
-					default: {
-						throw new Error(`Unsupport "${pseudo.name}" pseudo selector in "${rawSelector}"`);
-					}
+					andMatch.push(!match(element, pseudo.value, rawSelector));
+					break;
+				}
+				default: {
+					throw new Error(`Unsupport "${pseudo.name}" pseudo selector in "${rawSelector}"`);
+				}
 				}
 			}
 		}

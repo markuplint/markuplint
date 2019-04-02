@@ -1,4 +1,4 @@
-import { createRule, ElementCloseTag, Result } from '@markuplint/ml-core';
+import { ElementCloseTag, Result, createRule } from '@markuplint/ml-core';
 
 export type Value = 'tab' | number;
 export interface IndentationOptions {
@@ -38,7 +38,7 @@ export default createRule<Value, IndentationOptions>({
 						node.indentation.type === 'space' &&
 						node.indentation.width % node.rule.value
 					) {
-						spec = messages(`{0} width spaces`, `${node.rule.value}`);
+						spec = messages('{0} width spaces', `${node.rule.value}`);
 					}
 					if (spec) {
 						const message = messages(`{0} ${ms} be {1}`, 'Indentation', spec);
@@ -79,7 +79,7 @@ export default createRule<Value, IndentationOptions>({
 					if (nested === 'never') {
 						if (diff !== 0) {
 							const message = messages(
-								diff < 1 ? `インデントを下げてください` : `インデントを上げてください`,
+								diff < 1 ? 'インデントを下げてください' : 'インデントを上げてください',
 							);
 							reports.push({
 								severity: node.rule.severity,
@@ -92,7 +92,7 @@ export default createRule<Value, IndentationOptions>({
 					} else {
 						if (diff !== expectedWidth) {
 							const message = messages(
-								diff < 1 ? `インデントを下げてください` : `インデントを上げてください`,
+								diff < 1 ? 'インデントを下げてください' : 'インデントを上げてください',
 							);
 							reports.push({
 								severity: node.rule.severity,
@@ -133,7 +133,7 @@ export default createRule<Value, IndentationOptions>({
 				// });
 
 				if (startTagIndentationWidth !== endTagIndentationWidth) {
-					const message = messages(`終了タグと開始タグのインデント位置が揃っていません。`);
+					const message = messages('終了タグと開始タグのインデント位置が揃っていません。');
 					reports.push({
 						severity: closeTag.rule.severity,
 						message,
@@ -260,6 +260,6 @@ export default createRule<Value, IndentationOptions>({
 	// },
 });
 
-function space(str: string) {
-	return str.replace(/ /g, $0 => `•`).replace(/\t/g, $0 => `→   `);
-}
+// function space(str: string) {
+// 	return str.replace(/ /g, $0 => '•').replace(/\t/g, $0 => '→   ');
+// }

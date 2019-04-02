@@ -1,7 +1,7 @@
 import { MLASTAbstructNode } from '@markuplint/ml-ast';
-import { RuleConfigValue } from '@markuplint/ml-config';
 import MLDOMNode from '../tokens/node';
 import { MappedNode } from './mapped-nodes';
+import { RuleConfigValue } from '@markuplint/ml-config';
 
 const store = new WeakMap<MLASTAbstructNode, MLDOMNode<any, any, any>>();
 

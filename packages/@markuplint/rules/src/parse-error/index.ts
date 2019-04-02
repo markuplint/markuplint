@@ -1,4 +1,4 @@
-import { createRule, Element, InvalidNode, OmittedElement, Result } from '@markuplint/ml-core';
+import { Element, InvalidNode, OmittedElement, Result, createRule } from '@markuplint/ml-core';
 
 export default createRule({
 	name: 'parse-error',

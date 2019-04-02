@@ -1,4 +1,4 @@
-import { createRule, Doctype, Result } from '@markuplint/ml-core';
+import { Doctype, Result, createRule } from '@markuplint/ml-core';
 
 export type Value = 'always' | 'never';
 

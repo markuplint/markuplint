@@ -1,4 +1,4 @@
-import { MLMLSpec, ElementSpec, ElementCategories } from './types';
+import { ElementCategories, MLMLSpec } from './types';
 export * from './types';
 
 export interface SpecOM {

@@ -23,16 +23,16 @@ import { rePCEN } from './const';
  */
 export default function isPotentialCustomElementName(tagName: string) {
 	switch (tagName) {
-		case 'annotation-xml':
-		case 'color-profile':
-		case 'font-face':
-		case 'font-face-src':
-		case 'font-face-uri':
-		case 'font-face-format':
-		case 'font-face-name':
-		case 'missing-glyph': {
-			return false;
-		}
+	case 'annotation-xml':
+	case 'color-profile':
+	case 'font-face':
+	case 'font-face-src':
+	case 'font-face-uri':
+	case 'font-face-format':
+	case 'font-face-name':
+	case 'missing-glyph': {
+		return false;
+	}
 	}
 	return rePCEN.test(tagName);
 }

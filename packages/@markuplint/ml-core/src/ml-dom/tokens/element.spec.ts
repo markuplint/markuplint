@@ -1,10 +1,10 @@
-import { parse } from '@markuplint/html-parser';
-import { MLASTElement } from '@markuplint/ml-ast';
 import Element from './element';
+import { MLASTElement } from '@markuplint/ml-ast';
+import { parse } from '@markuplint/html-parser';
 
 describe('new Element', () => {
 	it('<div>', async () => {
-		const sourceCode = `<div>text</div>`;
+		const sourceCode = '<div>text</div>';
 		const ast = parse(sourceCode);
 		const astNode = ast.nodeList[0] as MLASTElement;
 		// @ts-ignore

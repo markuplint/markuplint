@@ -1,4 +1,4 @@
-import { createRule, Element, Result } from '@markuplint/ml-core';
+import { Element, Result, createRule } from '@markuplint/ml-core';
 
 export type Value = boolean;
 

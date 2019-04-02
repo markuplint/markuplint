@@ -1,4 +1,13 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
-	"tslint.autoFixOnSave": true
+	"eslint.enable": true,
+	"eslint.autoFixOnSave": true,
+	"eslint.validate": [
+		"javascript",
+		"javascriptreact",
+		{
+			"language": "typescript",
+			"autoFix": true
+		}
+	]
 }

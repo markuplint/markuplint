@@ -1,11 +1,11 @@
-import { parse } from '@markuplint/html-parser';
 import { Document } from '../';
 import { convertRuleset } from '../../';
 import { createNode } from './create-node';
+import { parse } from '@markuplint/html-parser';
 
 describe('create Node', () => {
 	it('Element', async () => {
-		const sourceCode = `<div>text</div>`;
+		const sourceCode = '<div>text</div>';
 		const ast = parse(sourceCode);
 		const astNode = ast.nodeList[0];
 		const ruleset = convertRuleset({});

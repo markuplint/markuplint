@@ -1,5 +1,5 @@
-import * as markuplint from 'markuplint';
-import rule from './';
+// import * as markuplint from 'markuplint';
+// import rule from './';
 
 test('no-test', () => {
 	expect(true);

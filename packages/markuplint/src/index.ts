@@ -1,18 +1,18 @@
+import { Config, RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
 import {
+	ConfigSet,
+	MLFile,
 	getAnonymousFile,
 	getFiles,
 	loadConfigFile,
 	recursiveLoad,
 	searchConfigFile,
-	ConfigSet,
-	MLFile,
 } from '@markuplint/file-resoliver';
-import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
-import { Config, RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
-import { convertRuleset, MLCore, MLRule } from '@markuplint/ml-core';
+import { MLCore, MLRule, convertRuleset } from '@markuplint/ml-core';
 import { MLMLSpec } from '@markuplint/ml-spec';
-import path from 'path';
+import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { getMessenger } from './get-messenger';
+import path from 'path';
 import { toRegxp } from './util';
 
 export async function verify(html: string, config: Config, rules: MLRule<RuleConfigValue, unknown>[], locale?: string) {
@@ -83,7 +83,7 @@ export async function exec(options: MLCLIOption) {
 	} else {
 		let configSetNearbyCWD: ConfigSet | void;
 		for (const file of files) {
-			let configSet = await searchConfigFile(file.path);
+			const configSet = await searchConfigFile(file.path);
 			if (configSet) {
 				configs.set(file, configSet);
 			} else {
