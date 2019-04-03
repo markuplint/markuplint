@@ -28,6 +28,7 @@
 	"dependencies": {
 		"@markuplint/file-resoliver": "^1.0.0-alpha.4",
 		"@markuplint/html-ls": "^1.0.0-alpha.5",
+		"@markuplint/html-parser": "^1.0.0-alpha.6",
 		"@markuplint/i18n": "^1.0.0-alpha.4",
 		"@markuplint/ml-ast": "^1.0.0-alpha.4",
 		"@markuplint/ml-config": "^1.0.0-alpha.4",
