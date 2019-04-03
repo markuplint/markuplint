@@ -10,6 +10,7 @@
 		"test:clear": "jest --clearCache",
 		"lint": "eslint --fix ./packages/**/*.ts",
 		"cli": "ts-node packages/markuplint/src/cli/index.ts",
+		"cli:js": "node packages/markuplint/lib/cli/index.js",
 		"site:dev": "cd website; yarn site:dev",
 		"site:build": "cd website; yarn site:build"
 	},

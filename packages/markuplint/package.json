@@ -11,7 +11,7 @@
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
 	"bin": {
-		"markuplint": "bin/index.js"
+		"markuplint": "lib/cli/index.js"
 	},
 	"scripts": {
 		"build": "tsc",
