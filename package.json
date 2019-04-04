@@ -9,6 +9,8 @@
 		"test:coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
 		"test:clear": "jest --clearCache",
 		"lint": "eslint --fix ./packages/**/*.ts",
+		"schema": "lerna run schema",
+		"all": "yarn lint; yarn clean; yarn build; yarn schema; yarn test:clear; yarn test;",
 		"cli": "./packages/markuplint/bin/markuplint",
 		"site:dev": "cd website; yarn site:dev",
 		"site:build": "cd website; yarn site:build"
