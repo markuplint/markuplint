@@ -2855,7 +2855,7 @@
 		{
 			"name": "element",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/element",
-			"description": "The obsolete HTML <element> element was part of the Web Components specification; it was intended to be used to define new custom DOM elements. It was removed in favor of a JavaScript-driven approach for creating new custom elements; however, that technology is not mature and no browers fully implement it.",
+			"description": "The obsolete HTML <element> element was part of the Web Components specification; it was intended to be used to define new custom DOM elements. It was removed in favor of a JavaScript-driven approach for creating new custom elements.",
 			"obsolete": true,
 			"categories": ["transparent"],
 			"permittedContent": {
