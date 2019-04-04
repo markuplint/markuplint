@@ -1,0 +1,8 @@
+{
+	"either": [
+		{
+			"category": "flow",
+			"ignore": ["address", "#heading", "#sectioning", "header", "footer"]
+		}
+	]
+}

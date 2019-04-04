@@ -1,6 +1,7 @@
 import { AttributeSpec, AttributeValue, ElementCategories, ElementSpec } from '@markuplint/ml-spec';
 import fetch from './fetch';
 import { nameCompare } from './utils';
+import { setPermittedContent } from './setPermittedContent';
 
 export async function getHTMLElements() {
 	const links = await getHTMLElementLinks();
@@ -57,7 +58,7 @@ export async function getHTMLElement(link: string) {
 		categories,
 		permittedContent: {
 			summary: permittedContent,
-			content: false,
+			content: setPermittedContent(name),
 		},
 		permittedRoles: {
 			summary: permittedRoles,

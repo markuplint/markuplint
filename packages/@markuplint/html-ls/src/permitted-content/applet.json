@@ -1,0 +1,6 @@
+{
+	"zeroOrMore": "param",
+	"then": {
+		"either": ["#transparent"]
+	}
+}

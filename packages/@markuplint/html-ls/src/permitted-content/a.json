@@ -1,0 +1,10 @@
+{
+	"either": [
+		"#transparent",
+		{
+			"category": "flow",
+			"ignore": ["#interactive"]
+		},
+		"#phrasing"
+	]
+}

@@ -1,0 +1,27 @@
+{
+	"if": {
+		"hasAttr": "src"
+	},
+	"then": {
+		"zeroOrMore": "track",
+		"then": {
+			"either": [
+				{
+					"category": "transparent",
+					"ignore": ["audio", "video"]
+				}
+			]
+		}
+	},
+	"else": {
+		"zeroOrMore": ["source", "track"],
+		"then": {
+			"either": [
+				{
+					"category": "transparent",
+					"ignore": ["audio", "video"]
+				}
+			]
+		}
+	}
+}
