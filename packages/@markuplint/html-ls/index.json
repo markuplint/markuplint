@@ -1746,7 +1746,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -1762,7 +1762,7 @@
 			"categories": ["metadata"],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -1794,7 +1794,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -1831,7 +1831,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -1847,7 +1847,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -1874,7 +1874,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -1918,7 +1918,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -1936,7 +1936,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -1952,7 +1952,7 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "Flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -1977,7 +1977,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2175,7 +2175,7 @@
 			"categories": ["flow", "phrasing"],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2200,7 +2200,7 @@
 			"categories": ["flow", "phrasing", "interactive", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content but there must be no Interactive content",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "checkbox, link, menuitem, menuitemcheckbox, menuitemradio, radio, switch, tab",
@@ -2292,7 +2292,7 @@
 			"categories": ["flow", "phrasing", "embedded", "palpable"],
 			"permittedContent": {
 				"summary": "Transparent but with no interactive content descendants except for <a> elements, <button> elements, <input> elements whose type attribute is checkbox, radio, or button.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2331,7 +2331,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2358,7 +2358,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -2374,7 +2374,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2390,7 +2390,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2406,7 +2406,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2477,7 +2477,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "If the span attribute is present: none, it is an empty element.\n    If the attribute is not present: zero or more <col> element",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2549,7 +2549,7 @@
 			"categories": ["metadata", "flow", "phrasing"],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -2605,7 +2605,7 @@
 			"categories": ["transparent"],
 			"permittedContent": {
 				"summary": "Flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -2630,7 +2630,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -2655,7 +2655,7 @@
 			"categories": ["flow", "phrasing"],
 			"permittedContent": {
 				"summary": "Either phrasing content or zero or more <option> elements.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2671,7 +2671,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2697,7 +2697,7 @@
 			"categories": ["flow", "phrasing"],
 			"permittedContent": {
 				"summary": "Transparent.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2728,7 +2728,7 @@
 			"categories": ["flow", "interactive", "palpable"],
 			"permittedContent": {
 				"summary": "One <summary> element followed by flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2753,7 +2753,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content, but no <dfn> element must be a descendant.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2769,7 +2769,7 @@
 			"categories": ["flow"],
 			"permittedContent": {
 				"summary": "Flow content",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "alertdialog",
@@ -2795,7 +2795,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -2811,7 +2811,7 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "Flow content.\n    Or (in WHATWG HTML): If the parent is a <dl> element: one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2827,7 +2827,7 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "\n    Either: Zero or more groups each consisting of one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.\n     Or: One or more <div> elements, optionally intermixed with <script> and <template> elements.\n   ",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -2843,7 +2843,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Flow content, but with no <header>, <footer>, sectioning content or heading content descendants.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2860,7 +2860,7 @@
 			"categories": ["transparent"],
 			"permittedContent": {
 				"summary": "???",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -2876,7 +2876,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2892,7 +2892,7 @@
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "application, document, img, presentation",
@@ -2935,7 +2935,7 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "An optional <legend> element, followed by flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -2972,7 +2972,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -2988,7 +2988,7 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "A <figcaption> element, followed by flow content; or flow content followed by a <figcaption> element; or flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -3005,7 +3005,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -3021,7 +3021,7 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "Flow content, but with no <footer> or <header> descendants.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -3037,7 +3037,7 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "Flow content, but not containing <form> elements",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -3119,7 +3119,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -3181,7 +3181,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -3212,7 +3212,7 @@
 			"categories": ["flow", "heading", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation",
@@ -3228,7 +3228,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "\n    If the document is an <iframe> srcdoc document, or if title information is available from a higher level protocol (like the subject line in HTML email), zero or more elements of metadata content.\n\n    Otherwise, one or more elements of metadata content where exactly one is a <title> element.\n   ",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3254,7 +3254,7 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "Flow content, but with no <header> or <footer> descendant.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -3270,7 +3270,7 @@
 			"categories": ["flow", "heading", "palpable"],
 			"permittedContent": {
 				"summary": "One or more <h1>, <h2>, <h3>, <h4>, <h5>, and/or <h6>.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation",
@@ -3286,7 +3286,7 @@
 			"categories": ["flow"],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "presentation",
@@ -3340,7 +3340,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "One <head> element, followed by one <body> element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3379,7 +3379,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -3395,7 +3395,7 @@
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
 			"permittedContent": {
 				"summary": "Fallback content, i.e. content that is normally not rendered, but that browsers not supporting the <iframe> element will render. (RSS readers and email clients often show the fallback content instead.)",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "application, document, img",
@@ -3540,7 +3540,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -3556,7 +3556,7 @@
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -3572,7 +3572,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "\n    \n     type=button: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch, tab\n     type=checkbox: button, menuitemcheckbox, option, switch\n     type=image: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch\n     type=radio: menuitemradio\n     type=color|date|datetime|datetime-local|email|file: None\n     type=hidden|month|number|password|range|reset: None\n     type=search|submit|tel|text|url|week: None\n    \n   ",
@@ -3588,7 +3588,7 @@
 			"categories": ["flow", "phrasing"],
 			"permittedContent": {
 				"summary": "Transparent.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -3620,7 +3620,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -3636,7 +3636,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -3653,7 +3653,7 @@
 			"categories": ["flow", "phrasing", "interactive", "palpable"],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3708,7 +3708,7 @@
 			"categories": ["flow", "phrasing", "interactive", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content, but no descendant label elements. No labelable elements other than the labeled control are allowed.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3739,7 +3739,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3755,7 +3755,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "menuitem, menuitemcheckbox, menuitemradio, option, presentation, radio, separator, tab, treeitem",
@@ -3787,7 +3787,7 @@
 			"categories": ["metadata", "flow", "phrasing"],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3924,7 +3924,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -3940,7 +3940,7 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "Flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "The main role is applied to <main> by default, and the presentation role is permitted as well.",
@@ -3956,7 +3956,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Any transparent element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3981,7 +3981,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -3998,7 +3998,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4085,7 +4085,7 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "If the element is in the list menu state: flow content, or alternatively, zero or more occurrences of <li>, <script>, and <template>.\n    If the element is in the context menu state: zero or more occurrences, in any order, of <menu> (context menu state only), <menuitem>, <hr>, <script>, and <template>.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4118,7 +4118,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4185,7 +4185,7 @@
 			"categories": ["metadata", "flow", "phrasing"],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4235,7 +4235,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content, but there must be no <meter> element among its descendants.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4298,7 +4298,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4314,7 +4314,7 @@
 			"categories": ["flow", "sectioning", "palpable"],
 			"permittedContent": {
 				"summary": "Flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4331,7 +4331,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4358,7 +4358,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4376,7 +4376,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4393,7 +4393,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4409,7 +4409,7 @@
 			"categories": ["metadata", "flow", "phrasing"],
 			"permittedContent": {
 				"summary": "When scripting is disabled and when it is a descendant of the <head> element: in any order, zero or more <link> elements, zero or more <style> elements, and zero or more <meta> elements.\n    When scripting is disabled and when it isn't a descendant of the <head> element: any transparent content, but no <noscript> element must be among its descendants.\n    Otherwise: flow content or phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4425,7 +4425,7 @@
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
 			"permittedContent": {
 				"summary": "zero or more <param> elements, then transparent.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "application, document, image",
@@ -4549,7 +4549,7 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "Zero or more <li> elements, which in turn often contain nested <ol> or <ul> elements.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "directory, group, listbox, menu, menubar, radiogroup, tablist, toolbar, tree, presentation",
@@ -4593,7 +4593,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Zero or more <option> elements.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4624,7 +4624,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Text, possibly with escaped characters (like &eacute;).",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4667,7 +4667,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4704,7 +4704,7 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4720,7 +4720,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4765,7 +4765,7 @@
 			"categories": ["flow", "phrasing", "embedded"],
 			"permittedContent": {
 				"summary": "Zero or more <source> elements, followed by one <img> element, optionally intermixed with script-supporting elements.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4782,7 +4782,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4798,7 +4798,7 @@
 			"categories": ["flow", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4839,7 +4839,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content, but there must be no <progress> element among its descendants.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4870,7 +4870,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4895,7 +4895,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "As a child of a <ruby> element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4911,7 +4911,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Text",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4927,7 +4927,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4943,7 +4943,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Phrasing content or <rt> elements.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4959,7 +4959,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4975,7 +4975,7 @@
 			"categories": ["flow", "phrasing"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4991,7 +4991,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5007,7 +5007,7 @@
 			"categories": ["metadata", "flow", "phrasing"],
 			"permittedContent": {
 				"summary": "Dynamic script such as text/javascript.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5094,7 +5094,7 @@
 			"categories": ["flow", "sectioning", "palpable"],
 			"permittedContent": {
 				"summary": "Flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "alert, alertdialog, application, banner, complementary, contentinfo, dialog, document, feed, log, main, marquee, navigation, search, status, tabpanel",
@@ -5110,7 +5110,7 @@
 			"categories": ["flow", "phrasing", "interactive"],
 			"permittedContent": {
 				"summary": "Zero or more <option> or <optgroup> elements.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "menu",
@@ -5178,7 +5178,7 @@
 			"categories": ["transparent"],
 			"permittedContent": {
 				"summary": "Flow content",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5194,7 +5194,7 @@
 			"categories": ["flow", "phrasing"],
 			"permittedContent": {
 				"summary": "Transparent",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5219,7 +5219,7 @@
 			"categories": ["flow", "phrasing"],
 			"permittedContent": {
 				"summary": "Phrasing content",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5235,7 +5235,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5286,7 +5286,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -5335,7 +5335,7 @@
 			"categories": ["flow", "phrasing"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5352,7 +5352,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -5368,7 +5368,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5384,7 +5384,7 @@
 			"categories": ["metadata", "flow"],
 			"permittedContent": {
 				"summary": "Text content matching the type attribute, that is text/css.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5435,7 +5435,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5451,7 +5451,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Phrasing content or one element of Heading content",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "button",
@@ -5467,7 +5467,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5483,7 +5483,7 @@
 			"categories": ["flow"],
 			"permittedContent": {
 				"summary": "\n    \n    In this order:\n    \n     an optional <caption> element,\n     zero or more <colgroup> elements,\n     an optional <thead> element,\n     either one of the following:\n      \n       zero or more <tbody> elements\n       one or more <tr> elements\n      \n     \n     an optional <tfoot> element\n    \n    \n    \n   ",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5565,7 +5565,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Zero or more <tr> elements.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5623,7 +5623,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Flow content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5732,7 +5732,7 @@
 			"categories": ["metadata", "flow", "phrasing", "script-supporting"],
 			"permittedContent": {
 				"summary": "No restrictions",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5748,7 +5748,7 @@
 			"categories": ["flow", "phrasing", "interactive"],
 			"permittedContent": {
 				"summary": "Text",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5858,7 +5858,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Zero or more <tr> elements.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5916,7 +5916,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Flow content, but with no header, footer, sectioning content, or heading content descendants.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6023,7 +6023,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Zero or more <tr> elements.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6081,7 +6081,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6106,7 +6106,7 @@
 			"categories": ["metadata"],
 			"permittedContent": {
 				"summary": "Text that is not inter-element whitespace.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None.",
@@ -6122,7 +6122,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "Zero or more <td> and/or <th> elements; script-supporting elements (<script> and <template>) are also allowed",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6176,7 +6176,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -6226,7 +6226,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6242,7 +6242,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6293,7 +6293,7 @@
 			"categories": ["flow", "phrasing", "palpable"],
 			"permittedContent": {
 				"summary": "Phrasing content.",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6309,7 +6309,7 @@
 			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
 			"permittedContent": {
 				"summary": "\n    If the element has a src attribute: zero or more <track> elements, followed by transparent content that contains no media elements–that is no <audio> or <video>\n\n    Else: zero or more <source> elements, followed by zero or more <track> elements, followed by transparent content that contains no media elements–that is no <audio> or <video>.\n   ",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "application",
@@ -6407,7 +6407,7 @@
 			"categories": ["flow", "phrasing"],
 			"permittedContent": {
 				"summary": "Empty",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6424,7 +6424,7 @@
 			"categories": [],
 			"permittedContent": {
 				"summary": "",
-				"content": false
+				"content": true
 			},
 			"permittedRoles": {
 				"summary": "",
