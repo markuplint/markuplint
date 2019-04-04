@@ -1669,7 +1669,7 @@
 							"either": [
 								{
 									"category": "transparent",
-									"ignore": ["audio", "video"]
+									"ignore": ["track", "audio", "video"]
 								}
 							]
 						}
@@ -1680,7 +1680,7 @@
 							"either": [
 								{
 									"category": "transparent",
-									"ignore": ["audio", "video"]
+									"ignore": ["source", "track", "audio", "video"]
 								}
 							]
 						}
