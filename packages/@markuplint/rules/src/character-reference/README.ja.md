@@ -12,17 +12,21 @@
 
 👎 間違ったコード例
 
+<!-- prettier-ignore-start -->
 ```html
 <div id="a"> > < & " </div>
 <img src="path/to?a=b&c=d">
 ```
+<!-- prettier-ignore-end -->
 
 👍 正しいコード例
 
+<!-- prettier-ignore-start -->
 ```html
 <div id="a"> &gt; &lt; &amp; &quot; </div>
 <img src="path/to?a=b&amp;c=d">
 ```
+<!-- prettier-ignore-end -->
 
 ### オプション
 

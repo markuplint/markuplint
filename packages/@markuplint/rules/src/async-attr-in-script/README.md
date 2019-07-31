@@ -50,7 +50,7 @@ Warn about setting / non-setting of **async attribute** in script tag.
 
 `warning`
 
-## 設定例
+## Configuration Example
 
 When using external libraries, problems may arise if you specify the `async` attribute in the order of definition. In that case you can filter by `nodeRules`. In the following example, to avoid warning of the tag of the jQuery library, it narrows down to `nodeRules` with the selector `script [src * = "jquery" i]` and reconfigures (overwrites) `"never"`.
 
@@ -62,7 +62,7 @@ When using external libraries, problems may arise if you specify the `async` att
 ```json
 {
 	"rules": {
-		"async-attr-in-script": "always",
+		"async-attr-in-script": "always"
 	},
 	"nodeRules": [
 		{

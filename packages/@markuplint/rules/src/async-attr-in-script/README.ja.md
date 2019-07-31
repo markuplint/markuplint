@@ -1,6 +1,6 @@
-# scriptタグのasync属性 (`async-attr-in-script`)
+# script タグの async 属性 (`async-attr-in-script`)
 
-scriptタグの**async属性**の設定・非設定を警告します。
+script タグの**async 属性**の設定・非設定を警告します。
 
 > Scripts without async or defer attributes, as well as inline scripts, are fetched and executed immediately, before the browser continues to parse the page.
 > [cite: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Script#Notes]
@@ -40,10 +40,10 @@ scriptタグの**async属性**の設定・非設定を警告します。
 
 ### オプション
 
-設定値|デフォルト|解説
----|---|---
-`"always"`|✓|async属性がないと警告します。
-`"never"`||async属性があると警告します。
+| 設定値     | デフォルト | 解説                           |
+| ---------- | ---------- | ------------------------------ |
+| `"always"` | ✓          | async 属性がないと警告します。 |
+| `"never"`  |            | async 属性があると警告します。 |
 
 ### デフォルトの警告レベル
 
@@ -51,7 +51,7 @@ scriptタグの**async属性**の設定・非設定を警告します。
 
 ## 設定例
 
-外部ライブラリを利用する場合、定義順の関係で`async`属性を指定すると問題が起こる場合があります。その場合は、`nodeRules`経由でフィルタリングするとことができます。次の例は、jQueryライブラリのタグの警告をさけるために`nodeRules`にセレクタ`script[src*="jquery" i]`で絞込み、`"never"`を再設定(上書き)しています。
+外部ライブラリを利用する場合、定義順の関係で`async`属性を指定すると問題が起こる場合があります。その場合は、`nodeRules`経由でフィルタリングするとことができます。次の例は、jQuery ライブラリのタグの警告をさけるために`nodeRules`にセレクタ`script[src*="jquery" i]`で絞込み、`"never"`を再設定(上書き)しています。
 
 ```html
 <script src="lib/jquery.min.js"></script>
@@ -61,7 +61,7 @@ scriptタグの**async属性**の設定・非設定を警告します。
 ```json
 {
 	"rules": {
-		"async-attr-in-script": "always",
+		"async-attr-in-script": "always"
 	},
 	"nodeRules": [
 		{

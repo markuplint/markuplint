@@ -15,17 +15,21 @@ Also, markuplint's HTML parser does not distinguish case of custom element tag n
 
 👎 Examples of **incorrect** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <DIV><p>lorem</p></DIV>
 <IMG src="path/to">
 ```
+<!-- prettier-ignore-end -->
 
 👍 Examples of **correct** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <div></div>
 <svg><textPath></textPath></svg>
 ```
+<!-- prettier-ignore-end -->
 
 ### Options
 

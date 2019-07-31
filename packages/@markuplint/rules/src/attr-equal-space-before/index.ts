@@ -28,7 +28,7 @@ export default createRule<Value>({
 						break;
 					}
 					case 'always-single-line': {
-					// or 'no-newline'
+						// or 'no-newline'
 						isBad = !hasSpace || hasLineBreak;
 						break;
 					}

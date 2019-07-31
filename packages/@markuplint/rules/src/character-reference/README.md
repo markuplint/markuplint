@@ -13,17 +13,21 @@ Warns when unauthorized illegal characters are not escaped with character refere
 
 👎 Examples of **incorrect** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <div id="a"> > < & " </div>
 <img src="path/to?a=b&c=d">
 ```
+<!-- prettier-ignore-end -->
 
 👍 Examples of **correct** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <div id="a"> &gt; &lt; &amp; &quot; </div>
 <img src="path/to?a=b&amp;c=d">
 ```
+<!-- prettier-ignore-end -->
 
 ### Options
 

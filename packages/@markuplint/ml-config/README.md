@@ -23,10 +23,6 @@ $ yarn build
 $ yarn test
 ```
 
-***
+---
 
 Copyright &copy; 2019 markuplint. Unter the MIT License.
-
-
-
-

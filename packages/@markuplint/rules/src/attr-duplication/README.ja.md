@@ -5,7 +5,7 @@
 > There must never be two or more attributes on the same start tag whose names are an ASCII case-insensitive match for each other.
 > [cite: https://html.spec.whatwg.org/#attributes-2]
 >
-> 名前が互いにASCII大文字・小文字不区別でマッチする同じ開始タグで2つ以上の属性があってはならない。
+> 名前が互いに ASCII 大文字・小文字不区別でマッチする同じ開始タグで 2 つ以上の属性があってはならない。
 > [引用: https://momdo.github.io/html/syntax.html#attributes-2]
 
 ## ルールの詳細

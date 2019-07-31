@@ -14,6 +14,7 @@ Warns that there is spaces **after** `=` of attribute.
 
 👎 Examples of **incorrect** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <img src= "path/to">
 <img src = "path/to">
@@ -25,9 +26,11 @@ Warns that there is spaces **after** `=` of attribute.
 	=
 	"path/to">
 ```
+<!-- prettier-ignore-end -->
 
 👍 Examples of **correct** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <img src="path/to">
 <img src ="path/to">
@@ -35,6 +38,7 @@ Warns that there is spaces **after** `=` of attribute.
 	src
 	="path/to">
 ```
+<!-- prettier-ignore-end -->
 
 ### `"always"`
 
@@ -42,15 +46,18 @@ Warns that there is not spaces **after** `=` of attribute. Line breaks are inclu
 
 👎 Examples of **incorrect** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <img src="path/to">
 <img
 	src
 	="path/to">
 ```
+<!-- prettier-ignore-end -->
 
 👍 Examples of **correct** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <img src= "path/to">
 <img src = "path/to">
@@ -62,6 +69,7 @@ Warns that there is not spaces **after** `=` of attribute. Line breaks are inclu
 	=
 	"path/to">
 ```
+<!-- prettier-ignore-end -->
 
 ### `"never-single-line"`
 
@@ -69,13 +77,16 @@ Warns that there is not spaces **after** `=` of attribute. Line breaks are inclu
 
 👎 Examples of **incorrect** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <img src= "path/to">
 <img src = "path/to">
 ```
+<!-- prettier-ignore-end -->
 
 👍 Examples of **correct** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <img src="path/to">
 <img src ="path/to">
@@ -90,6 +101,7 @@ Warns that there is not spaces **after** `=` of attribute. Line breaks are inclu
 	=
 	"path/to">
 ```
+<!-- prettier-ignore-end -->
 
 ### `"always-single-line"`
 
@@ -97,6 +109,7 @@ Warns that there is not spaces **after** `=` of attribute. But warns if there is
 
 👎 Examples of **incorrect** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <img src="path/to">
 <img
@@ -106,13 +119,16 @@ Warns that there is not spaces **after** `=` of attribute. But warns if there is
 	src=
 	"path/to">
 ```
+<!-- prettier-ignore-end -->
 
 👍 Examples of **correct** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <img src= "path/to">
 <img src = "path/to">
 ```
+<!-- prettier-ignore-end -->
 
 ### Options
 

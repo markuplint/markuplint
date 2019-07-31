@@ -10,21 +10,25 @@ Warns that indentation is not unified.
 
 👎 Examples of **incorrect** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <div>
   <span>lorem</span>
 	ipsam
    </div>
 ```
+<!-- prettier-ignore-end -->
 
 👍 Examples of **correct** code for this rule
 
+<!-- prettier-ignore-start -->
 ```html
 <div>
 	<span>lorem</span>
 	ipsam
 </div>
 ```
+<!-- prettier-ignore-end -->
 
 ### Options
 

@@ -13,7 +13,7 @@ Warns if specified attributes are not appeared on an element.
 `{ "required-attr": "alt" }`
 
 ```html
-<img src="/path/to/image.png">
+<img src="/path/to/image.png" />
 ```
 
 :+1: Example of **correct** code for this rule
@@ -21,7 +21,7 @@ Warns if specified attributes are not appeared on an element.
 `{ "required-attr": "alt" }`
 
 ```html
-<img src="/path/to/image.png" alt="alternative text">
+<img src="/path/to/image.png" alt="alternative text" />
 ```
 
 ### Options
