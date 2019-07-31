@@ -14,21 +14,21 @@ export async function output(
 ) {
 	if (format) {
 		switch (format.toLowerCase()) {
-		case 'json': {
-			process.stdout.write(JSON.stringify(reports, null, 2));
-			break;
-		}
-		case 'simple': {
-			await simpleReporter(filePath, reports, html, {
-				color: !noColor,
-				noStdOut: false,
-				problemOnly,
-			});
-			break;
-		}
-		default: {
-			throw new Error(`Unsupported output format "${format}"`);
-		}
+			case 'json': {
+				process.stdout.write(JSON.stringify(reports, null, 2));
+				break;
+			}
+			case 'simple': {
+				await simpleReporter(filePath, reports, html, {
+					color: !noColor,
+					noStdOut: false,
+					problemOnly,
+				});
+				break;
+			}
+			default: {
+				throw new Error(`Unsupported output format "${format}"`);
+			}
 		}
 	} else {
 		await standardReporter(filePath, reports, html, {

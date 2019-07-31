@@ -26,14 +26,14 @@ export async function getGlobalAttrs() {
 
 		let value: AttributeValue = 'string';
 		switch (category) {
-		case 'xml': {
-			value = 'string';
-			break;
-		}
-		case 'eventhandler': {
-			value = 'function-body';
-			break;
-		}
+			case 'xml': {
+				value = 'string';
+				break;
+			}
+			case 'eventhandler': {
+				value = 'function-body';
+				break;
+			}
 		}
 
 		const attr: Attribute = {

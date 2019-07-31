@@ -15,19 +15,19 @@ export default createRule<'always' | 'never'>({
 			let bad = false;
 			let necessary: string;
 			switch (elem.rule.value) {
-			case 'always': {
-				necessary = 'Required {0}';
-				bad = hasAsyncAttr;
-				break;
-			}
-			case 'never': {
-				necessary = 'Not required {0}';
-				bad = !hasAsyncAttr;
-				break;
-			}
-			default: {
-				return;
-			}
+				case 'always': {
+					necessary = 'Required {0}';
+					bad = hasAsyncAttr;
+					break;
+				}
+				case 'never': {
+					necessary = 'Not required {0}';
+					bad = !hasAsyncAttr;
+					break;
+				}
+				default: {
+					return;
+				}
 			}
 			if (bad) {
 				const message = messages(necessary, '{$} attribute');

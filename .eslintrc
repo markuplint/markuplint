@@ -27,6 +27,8 @@
 
 		"node/no-unsupported-features/es-syntax": 0,
 
+		"no-console": [1],
+
 		"@typescript-eslint/no-unused-vars": [2, { "args": "none" }],
 		"@typescript-eslint/no-array-constructor": 2,
 		"@typescript-eslint/adjacent-overload-signatures": 2,

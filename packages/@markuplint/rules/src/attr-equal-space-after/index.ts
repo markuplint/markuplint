@@ -19,23 +19,23 @@ export default createRule<Value>({
 				const hasLineBreak = /\r?\n/.test(attr.spacesAfterEqual.raw);
 				let isBad = false;
 				switch (node.rule.value) {
-				case 'always': {
-					isBad = !hasSpace;
-					break;
-				}
-				case 'never': {
-					isBad = hasSpace;
-					break;
-				}
-				case 'always-single-line': {
+					case 'always': {
+						isBad = !hasSpace;
+						break;
+					}
+					case 'never': {
+						isBad = hasSpace;
+						break;
+					}
+					case 'always-single-line': {
 					// or 'no-newline'
-					isBad = !hasSpace || hasLineBreak;
-					break;
-				}
-				case 'never-single-line': {
-					isBad = hasSpace && !hasLineBreak;
-					break;
-				}
+						isBad = !hasSpace || hasLineBreak;
+						break;
+					}
+					case 'never-single-line': {
+						isBad = hasSpace && !hasLineBreak;
+						break;
+					}
 				}
 				if (isBad) {
 					reports.push({
