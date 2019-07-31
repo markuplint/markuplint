@@ -53,20 +53,21 @@
 		"website"
 	],
 	"devDependencies": {
-		"@types/jest": "^24.0.11",
-		"@typescript-eslint/eslint-plugin": "^1.6.0",
-		"coveralls": "^3.0.3",
-		"eslint": "^5.16.0",
-		"eslint-config-prettier": "^4.1.0",
-		"eslint-plugin-eslint-comments": "^3.1.1",
-		"eslint-plugin-jsdoc": "^4.7.0",
-		"eslint-plugin-node": "^8.0.1",
-		"eslint-plugin-prettier": "^3.0.1",
-		"jest": "^24.6.0",
-		"lerna": "^3.13.1",
-		"prettier": "^1.16.4",
-		"ts-jest": "^24.0.1",
-		"ts-node": "^8.0.3",
-		"typescript": "3.4.1"
+		"@types/jest": "^24.0.16",
+		"@typescript-eslint/eslint-plugin": "^1.13.0",
+		"@typescript-eslint/parser": "^1.13.0",
+		"coveralls": "^3.0.5",
+		"eslint": "^6.1.0",
+		"eslint-config-prettier": "^6.0.0",
+		"eslint-plugin-eslint-comments": "^3.1.2",
+		"eslint-plugin-jsdoc": "^15.8.0",
+		"eslint-plugin-node": "^9.1.0",
+		"eslint-plugin-prettier": "^3.1.0",
+		"jest": "^24.8.0",
+		"lerna": "^3.16.4",
+		"prettier": "^1.18.2",
+		"ts-jest": "^24.0.2",
+		"ts-node": "^8.3.0",
+		"typescript": "3.5.3"
 	}
 }

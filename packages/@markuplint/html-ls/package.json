@@ -14,13 +14,13 @@
 		"gen": "ts-node gen/index.ts; prettier --write index.json"
 	},
 	"devDependencies": {
-		"@types/cheerio": "^0.22.11",
+		"@types/cheerio": "^0.22.12",
 		"@types/cli-progress": "^1.8.1",
-		"@types/node-fetch": "^2.1.7",
-		"cheerio": "^1.0.0-rc.2",
+		"@types/node-fetch": "^2.5.0",
+		"cheerio": "^1.0.0-rc.3",
 		"cli-progress": "^2.1.1",
-		"fast-xml-parser": "^3.12.16",
-		"node-fetch": "^2.3.0"
+		"fast-xml-parser": "^3.12.19",
+		"node-fetch": "^2.6.0"
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "^1.0.0-alpha.2"
