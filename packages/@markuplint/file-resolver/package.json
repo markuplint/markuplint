@@ -18,7 +18,7 @@
 	"devDependencies": {
 		"@types/cosmiconfig": "^5.0.3",
 		"@types/glob": "^7.1.1",
-		"@types/node": "^12.6.8"
+		"@types/node": "^12.7.3"
 	},
 	"dependencies": {
 		"@markuplint/ml-config": "^1.0.0-alpha.4",

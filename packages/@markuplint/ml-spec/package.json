@@ -18,6 +18,6 @@
 		"schema": "typescript-json-schema -o schema.json --ignoreErrors src/types.ts MLMLSpec; prettier --write schema.json"
 	},
 	"devDependencies": {
-		"typescript-json-schema": "^0.39.0"
+		"typescript-json-schema": "^0.40.0"
 	}
 }

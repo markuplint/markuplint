@@ -22,6 +22,6 @@
 	"dependencies": {
 		"@markuplint/ml-ast": "^1.0.0-alpha.4",
 		"parse5": "^5.1.0",
-		"uuid": "^3.3.2"
+		"uuid": "^3.3.3"
 	}
 }

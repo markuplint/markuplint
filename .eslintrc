@@ -35,7 +35,6 @@
 		"@typescript-eslint/no-namespace": [2, { "allowDeclarations": true }],
 		"@typescript-eslint/prefer-namespace-keyword": 2,
 		"@typescript-eslint/no-var-requires": 2,
-		"@typescript-eslint/no-object-literal-type-assertion": 2,
 		"@typescript-eslint/no-unnecessary-type-assertion": 2,
 		"@typescript-eslint/restrict-plus-operands": 2,
 
