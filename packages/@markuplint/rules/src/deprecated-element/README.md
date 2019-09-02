@@ -22,7 +22,7 @@ To reference [HTML Living Standard](https://html.spec.whatwg.org/) rules, add [h
 <span class="red">lorem</span>
 ```
 
-### Options
+### Setting value
 
 none
 

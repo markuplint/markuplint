@@ -39,7 +39,9 @@ Warn about setting / non-setting of **async attribute** in script tag.
 <script src="path/to"></script>
 ```
 
-### Options
+### Setting value
+
+Type: `"always" | "never"`
 
 | value      | default | description                            |
 | ---------- | ------- | -------------------------------------- |

@@ -31,7 +31,9 @@ Also, markuplint's HTML parser does not distinguish case of custom element tag n
 ```
 <!-- prettier-ignore-end -->
 
-### Options
+### Setting value
+
+Type: `"lower" | "upper"`
 
 | value     | default | description                                  |
 | --------- | ------- | -------------------------------------------- |

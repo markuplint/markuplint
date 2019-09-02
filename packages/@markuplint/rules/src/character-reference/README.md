@@ -29,7 +29,7 @@ Warns when unauthorized illegal characters are not escaped with character refere
 ```
 <!-- prettier-ignore-end -->
 
-### Options
+### Setting value
 
 none
 

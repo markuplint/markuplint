@@ -42,7 +42,9 @@ Warns if the attribute value is not **quoted**.
 ```
 <!-- prettier-ignore-end -->
 
-### Options
+### Setting value
+
+Type: `"double" | "single"`
 
 | value      | default | description                                                          |
 | ---------- | ------- | -------------------------------------------------------------------- |

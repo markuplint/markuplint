@@ -18,7 +18,7 @@
 <span class="red">lorem</span>
 ```
 
-### オプション
+### 設定値
 
 なし
 

@@ -6,7 +6,7 @@ export interface AttrSpasingOptions {
 }
 
 export default createRule<boolean, AttrSpasingOptions>({
-	name: 'attr-spasing',
+	name: 'attr-spacing',
 	defaultLevel: 'warning',
 	defaultValue: true,
 	defaultOptions: {

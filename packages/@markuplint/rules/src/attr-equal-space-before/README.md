@@ -130,7 +130,9 @@ Warns that there is not spaces **before** `=` of attribute. But warns if there i
 ```
 <!-- prettier-ignore-end -->
 
-### Options
+### Setting value
+
+Type: `"always" | "never" | "always-single-line" | "never-single-line"`
 
 | value                  | default | description                                                                                         |
 | ---------------------- | ------- | --------------------------------------------------------------------------------------------------- |

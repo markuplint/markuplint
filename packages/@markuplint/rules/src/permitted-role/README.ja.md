@@ -18,7 +18,7 @@
 <a role="button">lorem</span>
 ```
 
-### オプション
+### 設定値
 
 なし
 

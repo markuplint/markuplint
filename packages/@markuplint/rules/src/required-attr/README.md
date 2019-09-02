@@ -24,7 +24,9 @@ Warns if specified attributes are not appeared on an element.
 <img src="/path/to/image.png" alt="alternative text" />
 ```
 
-### Options
+### Setting value
+
+Type: `string | string[]`
 
 | value              | default | description                                                                         |
 | ------------------ | ------- | ----------------------------------------------------------------------------------- |

@@ -30,7 +30,9 @@ Warns that indentation is not unified.
 ```
 <!-- prettier-ignore-end -->
 
-### Options
+### Setting value
+
+Type: `"tab" | number`
 
 | value    | default | description                                                                 |
 | -------- | ------- | --------------------------------------------------------------------------- |

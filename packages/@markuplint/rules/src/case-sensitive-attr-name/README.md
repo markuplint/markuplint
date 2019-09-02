@@ -24,7 +24,9 @@ Warns that the attribute name is not in one of uppercase or lowercase letters. U
 <div data-attr></div>
 ```
 
-### Options
+### Setting value
+
+Type: `"lower" | "upper"`
 
 | value     | default | description                                        |
 | --------- | ------- | -------------------------------------------------- |

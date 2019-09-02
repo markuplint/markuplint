@@ -41,7 +41,7 @@ Warns that **id** attribute value were duplicated in one document.
 </html>
 ```
 
-### Options
+### Setting value
 
 none
 

@@ -1,5 +1,5 @@
 import * as markuplint from 'markuplint';
-import rule from './';
+import rule from '.';
 
 test('no-space', async () => {
 	const r = await markuplint.verify(
@@ -8,7 +8,7 @@ test('no-space', async () => {
 		`,
 		{
 			rules: {
-				'attr-spasing': true,
+				'attr-spacing': true,
 			},
 		},
 		[rule],
@@ -24,7 +24,7 @@ test('no-space', async () => {
 		`,
 		{
 			rules: {
-				'attr-spasing': true,
+				'attr-spacing': true,
 			},
 		},
 		[rule],
@@ -37,7 +37,7 @@ test('no-space', async () => {
 			line: 2,
 			col: 21,
 			raw: '',
-			ruleId: 'attr-spasing',
+			ruleId: 'attr-spacing',
 		},
 	]);
 });
@@ -49,7 +49,7 @@ test('no-space', async () => {
 		`,
 		{
 			rules: {
-				'attr-spasing': false,
+				'attr-spacing': false,
 			},
 		},
 		[rule],
@@ -66,7 +66,7 @@ test('no-space', async () => {
 		`,
 		{
 			rules: {
-				'attr-spasing': true,
+				'attr-spacing': true,
 			},
 		},
 		[rule],
@@ -83,7 +83,7 @@ test('Never line break', async () => {
 		`,
 		{
 			rules: {
-				'attr-spasing': {
+				'attr-spacing': {
 					severity: 'error',
 					value: true,
 					option: { lineBreak: 'never' },
@@ -100,7 +100,7 @@ test('Never line break', async () => {
 			line: 2,
 			col: 21,
 			raw: '\n\t\t',
-			ruleId: 'attr-spasing',
+			ruleId: 'attr-spacing',
 		},
 	]);
 });
@@ -112,7 +112,7 @@ test('no-space', async () => {
 		`,
 		{
 			rules: {
-				'attr-spasing': {
+				'attr-spacing': {
 					severity: 'error',
 					value: true,
 					option: { lineBreak: 'never' },
@@ -133,7 +133,7 @@ test('no-space', async () => {
 		`,
 		{
 			rules: {
-				'attr-spasing': {
+				'attr-spacing': {
 					severity: 'error',
 					value: true,
 					option: { lineBreak: 'always' },
@@ -150,7 +150,7 @@ test('no-space', async () => {
 			line: 2,
 			col: 7,
 			raw: ' ',
-			ruleId: 'attr-spasing',
+			ruleId: 'attr-spacing',
 		},
 	]);
 });
@@ -164,7 +164,7 @@ test('no-space', async () => {
 		`,
 		{
 			rules: {
-				'attr-spasing': {
+				'attr-spacing': {
 					severity: 'error',
 					value: true,
 					option: { lineBreak: 'always' },
@@ -184,7 +184,7 @@ test('no-space', async () => {
 		`,
 		{
 			rules: {
-				'attr-spasing': {
+				'attr-spacing': {
 					severity: 'error',
 					value: true,
 					option: { width: 1 },
@@ -201,7 +201,7 @@ test('no-space', async () => {
 			line: 2,
 			col: 21,
 			raw: '  ',
-			ruleId: 'attr-spasing',
+			ruleId: 'attr-spacing',
 		},
 	]);
 });
@@ -213,7 +213,7 @@ test('no-space', async () => {
 		`,
 		{
 			rules: {
-				'attr-spasing': {
+				'attr-spacing': {
 					severity: 'error',
 					value: true,
 					option: { width: 2 },
@@ -230,7 +230,7 @@ test('no-space', async () => {
 			line: 2,
 			col: 7,
 			raw: ' ',
-			ruleId: 'attr-spasing',
+			ruleId: 'attr-spacing',
 		},
 	]);
 });
@@ -243,7 +243,7 @@ test('no-space', async () => {
 		`,
 		{
 			rules: {
-				'attr-spasing': {
+				'attr-spacing': {
 					severity: 'error',
 					value: true,
 					option: { width: 3 },
@@ -263,7 +263,7 @@ test('no-space', async () => {
 // 		`,
 // 		{
 // 			rules: {
-// 				'attr-spasing': true,
+// 				'attr-spacing': true,
 // 			},
 // 		},
 // 		[rule],
@@ -284,7 +284,7 @@ test('no-space', async () => {
 // 		`,
 // 		{
 // 			rules: {
-// 				'attr-spasing': true,
+// 				'attr-spacing': true,
 // 			},
 // 		},
 // 		[rule],
@@ -305,7 +305,7 @@ test('no-space', async () => {
 // 		`,
 // 		{
 // 			rules: {
-// 				'attr-spasing': false,
+// 				'attr-spacing': false,
 // 			},
 // 		},
 // 		[rule],
@@ -327,7 +327,7 @@ test('no-space', async () => {
 // 		`,
 // 		{
 // 			rules: {
-// 				'attr-spasing': true,
+// 				'attr-spacing': true,
 // 			},
 // 		},
 // 		[rule],
@@ -350,7 +350,7 @@ test('no-space', async () => {
 // 		`,
 // 		{
 // 			rules: {
-// 				'attr-spasing': ['error', true, { lineBreak: 'never' }],
+// 				'attr-spacing': ['error', true, { lineBreak: 'never' }],
 // 			},
 // 		},
 // 		[rule],
@@ -371,7 +371,7 @@ test('no-space', async () => {
 // 		`,
 // 		{
 // 			rules: {
-// 				'attr-spasing': ['error', true, { lineBreak: 'never' }],
+// 				'attr-spacing': ['error', true, { lineBreak: 'never' }],
 // 			},
 // 		},
 // 		[rule],
@@ -393,7 +393,7 @@ test('no-space', async () => {
 // 		`,
 // 		{
 // 			rules: {
-// 				'attr-spasing': ['error', true, { lineBreak: 'always' }],
+// 				'attr-spacing': ['error', true, { lineBreak: 'always' }],
 // 			},
 // 		},
 // 		[rule],
@@ -418,7 +418,7 @@ test('no-space', async () => {
 // 		`,
 // 		{
 // 			rules: {
-// 				'attr-spasing': ['error', true, { lineBreak: 'always' }],
+// 				'attr-spacing': ['error', true, { lineBreak: 'always' }],
 // 			},
 // 		},
 // 		[rule],
@@ -441,7 +441,7 @@ test('no-space', async () => {
 // 		`,
 // 		{
 // 			rules: {
-// 				'attr-spasing': ['error', true, { width: 1 }],
+// 				'attr-spacing': ['error', true, { width: 1 }],
 // 			},
 // 		},
 // 		[rule],
@@ -462,7 +462,7 @@ test('no-space', async () => {
 // 		`,
 // 		{
 // 			rules: {
-// 				'attr-spasing': ['error', true, { width: 2 }],
+// 				'attr-spacing': ['error', true, { width: 2 }],
 // 			},
 // 		},
 // 		[rule],
@@ -484,7 +484,7 @@ test('no-space', async () => {
 // 		`,
 // 		{
 // 			rules: {
-// 				'attr-spasing': ['error', true, { width: 3 }],
+// 				'attr-spacing': ['error', true, { width: 3 }],
 // 			},
 // 		},
 // 		[rule],

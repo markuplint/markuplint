@@ -2,7 +2,7 @@ import AsyncAttrInScript from './async-attr-in-script';
 import AttrDuplication from './attr-duplication';
 import AttrEqualSpaceAfter from './attr-equal-space-after';
 import AttrEqualSpaceBefore from './attr-equal-space-before';
-import AttrSpasing from './attr-spasing';
+import AttrSpacing from './attr-spacing';
 import AttrValueQuotes from './attr-value-quotes';
 import CaseSensitiveAttrName from './case-sensitive-attr-name';
 import CaseSensitiveTagName from './case-sensitive-tag-name';
@@ -48,7 +48,7 @@ export default [
 	AttrDuplication,
 	AttrEqualSpaceAfter,
 	AttrEqualSpaceBefore,
-	AttrSpasing,
+	AttrSpacing,
 	AttrValueQuotes,
 	CaseSensitiveAttrName,
 	CaseSensitiveTagName,
