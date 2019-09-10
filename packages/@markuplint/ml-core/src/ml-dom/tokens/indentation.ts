@@ -28,19 +28,19 @@ export default class MLDOMIndentation<T extends RuleConfigValue, O = null> {
 		return this._fixed;
 	}
 
-	// public fix(raw: string) {
-	// 	const current = this._fixed;
-	// 	this._fixed = raw;
-	// 	if (this.node) {
-	// 		const node = this.node;
-	// 		const line = node.startLine;
-	// 		const lines = node.raw.split(/\r?\n/);
-	// 		const index = this.line - line;
-	// 		if (lines[index] != null) {
-	// 			lines[index] = lines[index].replace(current, this._fixed);
-	// 		}
-	// 		// console.log({ori: this._originRaw, raw, line, lines, index});
-	// 		node.fix(lines.join('\n'));
-	// 	}
-	// }
+	public fix(raw: string) {
+		const current = this._fixed;
+		this._fixed = raw;
+		if (this.node) {
+			const node = this.node;
+			const line = node.startLine;
+			const lines = node.raw.split(/\r?\n/);
+			const index = this.line - line;
+			if (lines[index] != null) {
+				lines[index] = lines[index].replace(current, this._fixed);
+			}
+			// console.log({ori: this._originRaw, raw, line, lines, index});
+			node.fix(lines.join('\n'));
+		}
+	}
 }

@@ -1,5 +1,6 @@
 ---
 title: case-sensitive-attr-name
+fixable: true
 ---
 
 # Attribute name case-sensitive (`case-sensitive-attr-name`)
@@ -8,6 +9,8 @@ Warns that the attribute name is not in one of uppercase or lowercase letters. U
 
 > Attributes have a name and a value. Attribute names must consist of one or more characters other than controls, U+0020 SPACE, U+0022 ("), U+0027 ('), U+003E (>), U+002F (/), U+003D (=), and noncharacters. In the HTML syntax, attribute names, even those for foreign elements, may be written with any mix of ASCII lower and ASCII upper alphas.
 > [cite: https://html.spec.whatwg.org/#attributes-2]
+
+**🔧 Fixable**
 
 ## Rule Details
 

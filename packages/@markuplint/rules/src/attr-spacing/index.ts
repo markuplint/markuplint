@@ -19,16 +19,16 @@ export default createRule<boolean, AttrSpasingOptions>({
 		await document.walkOn('Element', async node => {
 			const attrs = node.attributes;
 			for (const attr of attrs) {
-				const hasSpace = !!attr.beforeSpaces.raw;
-				const hasLineBreak = /\r?\n/.test(attr.beforeSpaces.raw);
-				// console.log({ attr: `${attr.beforeSpaces.raw}${attr.raw}`, hasSpace, hasLineBreak });
+				const hasSpace = !!attr.spacesBeforeName.raw;
+				const hasLineBreak = /\r?\n/.test(attr.spacesBeforeName.raw);
+				// console.log({ attr: `${attr.spacesBeforeName.raw}${attr.raw}`, hasSpace, hasLineBreak });
 				if (!hasSpace) {
 					reports.push({
 						severity: node.rule.severity,
 						message: messages('スペースが必要です'),
-						line: attr.beforeSpaces.startLine,
-						col: attr.beforeSpaces.startCol,
-						raw: attr.beforeSpaces.raw,
+						line: attr.spacesBeforeName.startLine,
+						col: attr.spacesBeforeName.startCol,
+						raw: attr.spacesBeforeName.raw,
 					});
 				} else {
 					if (hasLineBreak) {
@@ -36,9 +36,9 @@ export default createRule<boolean, AttrSpasingOptions>({
 							reports.push({
 								severity: node.rule.severity,
 								message: messages('改行はしないでください'),
-								line: attr.beforeSpaces.startLine,
-								col: attr.beforeSpaces.startCol,
-								raw: attr.beforeSpaces.raw,
+								line: attr.spacesBeforeName.startLine,
+								col: attr.spacesBeforeName.startCol,
+								raw: attr.spacesBeforeName.raw,
 							});
 						}
 					} else {
@@ -46,18 +46,18 @@ export default createRule<boolean, AttrSpasingOptions>({
 							reports.push({
 								severity: node.rule.severity,
 								message: messages('改行してください'),
-								line: attr.beforeSpaces.startLine,
-								col: attr.beforeSpaces.startCol,
-								raw: attr.beforeSpaces.raw,
+								line: attr.spacesBeforeName.startLine,
+								col: attr.spacesBeforeName.startCol,
+								raw: attr.spacesBeforeName.raw,
 							});
 						}
-						if (node.rule.option.width && node.rule.option.width !== attr.beforeSpaces.raw.length) {
+						if (node.rule.option.width && node.rule.option.width !== attr.spacesBeforeName.raw.length) {
 							reports.push({
 								severity: node.rule.severity,
 								message: messages('スペースは{0}つにしてください', node.rule.option.width),
-								line: attr.beforeSpaces.startLine,
-								col: attr.beforeSpaces.startCol,
-								raw: attr.beforeSpaces.raw,
+								line: attr.spacesBeforeName.startLine,
+								col: attr.spacesBeforeName.startCol,
+								raw: attr.spacesBeforeName.raw,
 							});
 						}
 					}
@@ -66,33 +66,34 @@ export default createRule<boolean, AttrSpasingOptions>({
 		});
 		return reports;
 	},
-	// async fix(document) {
-	// 	await document.walkOn('Element', async node => {
-	// 		const attrs = node.attributes;
-	// 		for (const attr of attrs) {
-	// 			const hasSpace = !!attr.beforeSpaces.raw;
-	// 			const hasLineBreak = /\r?\n/.test(attr.beforeSpaces.raw);
-	// 			// console.log({ attr: `${attr.beforeSpaces.raw}${attr.raw}`,  hasSpace, hasLineBreak });
-	// 			const expectWidth = node.rule.option.width || 1;
-	// 			const expectSpaces = ' '.repeat(expectWidth);
-	// 			if (!hasSpace) {
-	// 				attr.beforeSpaces.fix(expectSpaces);
-	// 			} else {
-	// 				if (hasLineBreak) {
-	// 					if (node.rule.option.lineBreak === 'never') {
-	// 						const fixed = attr.beforeSpaces.raw.replace(/\r?\n/g, '') || expectSpaces;
-	// 						attr.beforeSpaces.fix(expectSpaces);
-	// 					}
-	// 				} else {
-	// 					if (node.rule.option.lineBreak === 'always') {
-	// 						const expectIndent = node.indentation ? node.indentation.raw : '';
-	// 						attr.beforeSpaces.fix(`\n${expectIndent}`);
-	// 					} else if (node.rule.option.width && node.rule.option.width !== attr.beforeSpaces.raw.length) {
-	// 						attr.beforeSpaces.fix(expectSpaces);
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	});
-	// },
+	async fix(document) {
+		await document.walkOn('Element', async node => {
+			const attrs = node.attributes;
+			for (const attr of attrs) {
+				const hasSpace = !!attr.spacesBeforeName.raw;
+				const hasLineBreak = /\r?\n/.test(attr.spacesBeforeName.raw);
+				const expectWidth = node.rule.option.width || 1;
+				const expectSpaces = ' '.repeat(expectWidth);
+				if (!hasSpace) {
+					attr.spacesBeforeName.fix(expectSpaces);
+				} else {
+					if (hasLineBreak) {
+						if (node.rule.option.lineBreak === 'never') {
+							attr.spacesBeforeName.fix(expectSpaces);
+						}
+					} else {
+						if (node.rule.option.lineBreak === 'always') {
+							const expectIndent = node.indentation ? node.indentation.raw : '';
+							attr.spacesBeforeName.fix(`\n${expectIndent}`);
+						} else if (
+							node.rule.option.width &&
+							node.rule.option.width !== attr.spacesBeforeName.raw.length
+						) {
+							attr.spacesBeforeName.fix(expectSpaces);
+						}
+					}
+				}
+			}
+		});
+	},
 });

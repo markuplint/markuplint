@@ -147,117 +147,117 @@ export default createRule<Value, IndentationOptions>({
 
 		return reports;
 	},
-	// async fix(document) {
-	// 	/**
-	// 	 * Validate indent type and length.
-	// 	 */
-	// 	document.syncWalkOn('Node', node => {
-	// 		if (!node.rule.disabled && node.indentation) {
-	// 			if (node.indentation.type !== 'none') {
-	// 				const spec = node.rule.value === 'tab' ? '\t' : ' ';
-	// 				const baseWidth = node.rule.value === 'tab' ? 4 : node.rule.value;
-	// 				let width: number;
-	// 				if (node.rule.value === 'tab') {
-	// 					width =
-	// 						node.indentation.type === 'tab'
-	// 							? node.indentation.width
-	// 							: Math.ceil(node.indentation.width / baseWidth);
-	// 				} else {
-	// 					width =
-	// 						node.indentation.type === 'tab'
-	// 							? node.indentation.width * baseWidth
-	// 							: Math.ceil(node.indentation.width / baseWidth) * baseWidth;
-	// 				}
-	// 				const raw = node.indentation.raw;
-	// 				const fixed = spec.repeat(width);
-	// 				// console.log({spec, width});
-	// 				if (raw !== fixed) {
-	// 					// console.log('step1', {
-	// 					// 	raw: space(raw),
-	// 					// 	fix: space(fixed),
-	// 					// });
-	// 					node.indentation.fix(fixed);
-	// 				}
-	// 			}
-	// 		}
-	// 	});
+	async fix(document) {
+		/**
+		 * Validate indent type and length.
+		 */
+		await document.walk(async node => {
+			if (!node.rule.disabled && node.indentation) {
+				if (node.indentation.type !== 'none') {
+					const spec = node.rule.value === 'tab' ? '\t' : ' ';
+					const baseWidth = node.rule.value === 'tab' ? 4 : node.rule.value;
+					let width: number;
+					if (node.rule.value === 'tab') {
+						width =
+							node.indentation.type === 'tab'
+								? node.indentation.width
+								: Math.ceil(node.indentation.width / baseWidth);
+					} else {
+						width =
+							node.indentation.type === 'tab'
+								? node.indentation.width * baseWidth
+								: Math.ceil(node.indentation.width / baseWidth) * baseWidth;
+					}
+					const raw = node.indentation.raw;
+					const fixed = spec.repeat(width);
+					// console.log({spec, width});
+					if (raw !== fixed) {
+						// console.log('step1', {
+						// 	raw: space(raw),
+						// 	fix: space(fixed),
+						// });
+						node.indentation.fix(fixed);
+					}
+				}
+			}
+		});
 
-	// 	await document.walkOn('Node', async node => {
-	// 		if (node.rule.disabled) {
-	// 			return;
-	// 		}
-	// 		if (node.indentation) {
-	// 			/**
-	// 			 * Validate nested parent-children nodes.
-	// 			 */
-	// 			const nested = node.rule.option['indent-nested-nodes'];
-	// 			if (!nested) {
-	// 				return;
-	// 			}
-	// 			if (node.parentNode) {
-	// 				const parent = node.syntaxicalParentNode;
-	// 				// console.log(node.raw, parent);
-	// 				if (parent && parent.indentation) {
-	// 					const parentIndentWidth = parent.indentation.width;
-	// 					const childIndentWidth = node.indentation.width;
-	// 					const expectedWidth = node.rule.value === 'tab' ? 1 : node.rule.value;
-	// 					const diff = childIndentWidth - parentIndentWidth;
-	// 					// console.log({ parentIndentWidth, childIndentWidth, expectedWidth, diff });
-	// 					if (nested === 'never') {
-	// 						if (diff !== 0) {
-	// 							// const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
-	// 							const raw = node.indentation.raw;
-	// 							const fixed = parent.indentation.raw;
-	// 							// console.log('step2-A', {
-	// 							// 	raw: space(raw),
-	// 							// 	fix: space(fixed),
-	// 							// });
-	// 							node.indentation.fix(fixed);
-	// 						}
-	// 					} else {
-	// 						if (diff !== expectedWidth) {
-	// 							// const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
-	// 							const raw = node.indentation.raw;
-	// 							const fixed = (node.rule.value === 'tab' ? '\t' : ' ').repeat(
-	// 								parentIndentWidth + expectedWidth,
-	// 							);
-	// 							// console.log('step2-B', {
-	// 							// 	raw: space(raw),
-	// 							// 	fix: space(fixed),
-	// 							// });
-	// 							node.indentation.fix(fixed);
-	// 						}
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	});
+		await document.walk(async node => {
+			if (node.rule.disabled) {
+				return;
+			}
+			if (node.indentation) {
+				/**
+				 * Validate nested parent-children nodes.
+				 */
+				const nested = node.rule.option['indent-nested-nodes'];
+				if (!nested) {
+					return;
+				}
+				if (node.parentNode) {
+					const parent = node.syntaxicalParentNode;
+					// console.log(node.raw, parent);
+					if (parent && parent.indentation) {
+						const parentIndentWidth = parent.indentation.width;
+						const childIndentWidth = node.indentation.width;
+						const expectedWidth = node.rule.value === 'tab' ? 1 : node.rule.value;
+						const diff = childIndentWidth - parentIndentWidth;
+						// console.log({ parentIndentWidth, childIndentWidth, expectedWidth, diff });
+						if (nested === 'never') {
+							if (diff !== 0) {
+								// const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
+								// const raw = node.indentation.raw;
+								const fixed = parent.indentation.raw;
+								// console.log('step2-A', {
+								// 	raw: space(raw),
+								// 	fix: space(fixed),
+								// });
+								node.indentation.fix(fixed);
+							}
+						} else {
+							if (diff !== expectedWidth) {
+								// const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
+								// const raw = node.indentation.raw;
+								const fixed = (node.rule.value === 'tab' ? '\t' : ' ').repeat(
+									parentIndentWidth + expectedWidth,
+								);
+								// console.log('step2-B', {
+								// 	raw: space(raw),
+								// 	fix: space(fixed),
+								// });
+								node.indentation.fix(fixed);
+							}
+						}
+					}
+				}
+			}
+		});
 
-	// 	/**
-	// 	 * Validate alignment end-tags.
-	// 	 */
-	// 	await document.walkOn('EndTag', async endTag => {
-	// 		if (!endTag.rule || !endTag.rule.option) {
-	// 			return;
-	// 		}
-	// 		if (!endTag.rule.option.alignment) {
-	// 			return;
-	// 		}
-	// 		if (endTag.indentation && endTag.startTagNode.indentation) {
-	// 			const endTagIndentationWidth = endTag.indentation.width;
-	// 			const startTagIndentationWidth = endTag.startTagNode.indentation.width;
-	// 			if (startTagIndentationWidth !== endTagIndentationWidth) {
-	// 				const raw = endTag.indentation.raw;
-	// 				const fixed = endTag.startTagNode.indentation.raw;
-	// 				// console.log('step3', {
-	// 				// 	raw: space(raw),
-	// 				// 	fix: space(fixed),
-	// 				// });
-	// 				endTag.indentation.fix(fixed);
-	// 			}
-	// 		}
-	// 	});
-	// },
+		/**
+		 * Validate alignment end-tags.
+		 */
+		await document.walkOn('ElementCloseTag', async endTag => {
+			if (!endTag.rule || !endTag.rule.option) {
+				return;
+			}
+			if (!endTag.rule.option.alignment) {
+				return;
+			}
+			if (endTag.indentation && endTag.startTag.indentation) {
+				const endTagIndentationWidth = endTag.indentation.width;
+				const startTagIndentationWidth = endTag.startTag.indentation.width;
+				if (startTagIndentationWidth !== endTagIndentationWidth) {
+					// const raw = endTag.indentation.raw;
+					const fixed = endTag.startTag.indentation.raw;
+					// console.log('step3', {
+					// 	raw: space(raw),
+					// 	fix: space(fixed),
+					// });
+					endTag.indentation.fix(fixed);
+				}
+			}
+		});
+	},
 });
 
 // function space(str: string) {

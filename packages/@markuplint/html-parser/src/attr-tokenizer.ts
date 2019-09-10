@@ -12,7 +12,7 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 		throw new SyntaxError('Illegal attribute token');
 	}
 
-	const beforeSpacesChars = attrMatchedMap[1];
+	const spacesBeforeAttrString = attrMatchedMap[1];
 	const nameChars = attrMatchedMap[2];
 	const spacesBeforeEqualChars = attrMatchedMap[3] || '';
 	const equalChars = attrMatchedMap[4] || null;
@@ -25,61 +25,47 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 
 	let offset = startOffset;
 
-	const beforeSpaces = tokenizer(beforeSpacesChars, line, col, offset)!;
-	line = beforeSpaces.endLine;
-	col = beforeSpaces.endCol;
-	offset = beforeSpaces.endOffset;
+	const attrToken = tokenizer(raw, line, col, offset);
 
-	const attrToken = tokenizer(raw.substr(beforeSpacesChars.length), line, col, offset)!;
+	const spacesBeforeName = tokenizer(spacesBeforeAttrString, line, col, offset);
+	line = spacesBeforeName.endLine;
+	col = spacesBeforeName.endCol;
+	offset = spacesBeforeName.endOffset;
 
-	const name = tokenizer(nameChars, line, col, offset)!;
-	if (name) {
-		line = name.endLine;
-		col = name.endCol;
-		offset = name.endOffset;
-	}
+	const name = tokenizer(nameChars, line, col, offset);
+	line = name.endLine;
+	col = name.endCol;
+	offset = name.endOffset;
 
-	const spacesBeforeEqual = equalChars ? tokenizer(spacesBeforeEqualChars, line, col, offset) : null;
-	if (spacesBeforeEqual) {
-		line = spacesBeforeEqual.endLine;
-		col = spacesBeforeEqual.endCol;
-		offset = spacesBeforeEqual.endOffset;
-	}
+	const spacesBeforeEqual = tokenizer(spacesBeforeEqualChars, line, col, offset);
+	line = spacesBeforeEqual.endLine;
+	col = spacesBeforeEqual.endCol;
+	offset = spacesBeforeEqual.endOffset;
 
 	const equal = tokenizer(equalChars, line, col, offset);
-	if (equal) {
-		line = equal.endLine;
-		col = equal.endCol;
-		offset = equal.endOffset;
-	}
+	line = equal.endLine;
+	col = equal.endCol;
+	offset = equal.endOffset;
 
-	const spacesAfterEqual = equalChars ? tokenizer(spacesAfterEqualChars, line, col, offset) : null;
-	if (spacesAfterEqual) {
-		line = spacesAfterEqual.endLine;
-		col = spacesAfterEqual.endCol;
-		offset = spacesAfterEqual.endOffset;
-	}
+	const spacesAfterEqual = tokenizer(spacesAfterEqualChars, line, col, offset);
+	line = spacesAfterEqual.endLine;
+	col = spacesAfterEqual.endCol;
+	offset = spacesAfterEqual.endOffset;
 
-	const tokenBeforeValue = tokenizer(quoteChars, line, col, offset);
-	if (tokenBeforeValue) {
-		line = tokenBeforeValue.endLine;
-		col = tokenBeforeValue.endCol;
-		offset = tokenBeforeValue.endOffset;
-	}
+	const startQuote = tokenizer(quoteChars, line, col, offset);
+	line = startQuote.endLine;
+	col = startQuote.endCol;
+	offset = startQuote.endOffset;
 
 	const value = tokenizer(valueChars, line, col, offset);
-	if (value) {
-		line = value.endLine;
-		col = value.endCol;
-		offset = value.endOffset;
-	}
+	line = value.endLine;
+	col = value.endCol;
+	offset = value.endOffset;
 
-	const tokenAfterValue = tokenizer(quoteChars, line, col, offset);
-	if (tokenAfterValue) {
-		line = tokenAfterValue.endLine;
-		col = tokenAfterValue.endCol;
-		offset = tokenAfterValue.endOffset;
-	}
+	const endQuote = tokenizer(quoteChars, line, col, offset);
+	line = endQuote.endLine;
+	col = endQuote.endCol;
+	offset = endQuote.endOffset;
 
 	return {
 		uuid: UUID.v4(),
@@ -90,30 +76,28 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 		endLine: attrToken.endLine,
 		startCol: attrToken.startCol,
 		endCol: attrToken.endCol,
-		beforeSpaces,
+		spacesBeforeName,
 		name,
 		spacesBeforeEqual,
 		equal,
 		spacesAfterEqual,
-		tokenBeforeValue,
+		startQuote,
 		value,
-		tokenAfterValue,
+		endQuote,
 		isInvalid: invalid,
 	};
 }
 
-function tokenizer(raw: string | null, line: number, col: number, startOffset: number): MLToken | null {
-	if (raw != null) {
-		return {
-			uuid: UUID.v4(),
-			raw,
-			startLine: line,
-			endLine: getEndLine(raw, line),
-			startCol: col,
-			endCol: getEndCol(raw, col),
-			startOffset,
-			endOffset: startOffset + raw.length,
-		};
-	}
-	return null;
+function tokenizer(raw: string | null, line: number, col: number, startOffset: number): MLToken {
+	raw = raw || '';
+	return {
+		uuid: UUID.v4(),
+		raw,
+		startLine: line,
+		endLine: getEndLine(raw, line),
+		startCol: col,
+		endCol: getEndCol(raw, col),
+		startOffset,
+		endOffset: startOffset + raw.length,
+	};
 }

@@ -23,9 +23,9 @@ export default createRule<Value>({
 							reports.push({
 								severity: node.rule.severity,
 								message: `"${className}" class name is unmatched pattern of "${classPattern}"`,
-								line: attr.startLine,
-								col: attr.startCol,
-								raw: attr.raw,
+								line: attr.name.startLine,
+								col: attr.name.startCol,
+								raw: attr.raw.trim(),
 							});
 						}
 					}

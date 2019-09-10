@@ -15,9 +15,9 @@ export default createRule({
 					reports.push({
 						severity: node.rule.severity,
 						message,
-						line: attr.startLine,
-						col: attr.startCol,
-						raw: attr.raw,
+						line: attr.name.startLine,
+						col: attr.name.startCol,
+						raw: attr.raw.trim(),
 					});
 				} else {
 					attrNameStack.push(attrName);

@@ -34,21 +34,24 @@ export class MLCore {
 		this._rules = rules;
 	}
 
-	public async verify() {
+	public get document() {
+		return this._document;
+	}
+
+	public async verify(fix = false) {
 		const reports: VerifiedResult[] = [];
 		for (const rule of this._rules) {
 			const ruleInfo = rule.optimizeOption(this._ruleset.rules[rule.name] || false);
 			if (ruleInfo.disabled) {
 				continue;
 			}
+			if (fix) {
+				await rule.fix(this._document, ruleInfo);
+			}
 			const results = await rule.verify(this._document, this._messenger, ruleInfo);
 			reports.push(...results);
 		}
 		return reports;
-	}
-
-	public async fix() {
-		// return this._ruleset.fix(this._document);
 	}
 
 	public setParser(parser: MLMarkupLanguageParser) {

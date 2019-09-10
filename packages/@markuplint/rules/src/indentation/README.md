@@ -1,10 +1,13 @@
 ---
 title: indentation
+fixable: true
 ---
 
 # Indentation (`indentation`)
 
 Warns that indentation is not unified.
+
+**🔧 Fixable**
 
 ## Rule Details
 

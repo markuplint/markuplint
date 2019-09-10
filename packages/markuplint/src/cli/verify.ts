@@ -1,5 +1,6 @@
 import { exec } from '..';
 import { output } from './output';
+import { writeFile } from 'fs';
 
 export async function verify(
 	filesOrGlobPatterns: string[],
@@ -10,8 +11,17 @@ export async function verify(
 ) {
 	for (const filesOrGlobPattern of filesOrGlobPatterns) {
 		if (fix) {
-			// const { origin, fixed } = await fixFile(filePath, void 0, cli.flags.ruleset);
-			// process.stdout.write(fixed);
+			const reports = await exec({
+				files: filesOrGlobPattern,
+			});
+			for (const report of reports) {
+				writeFile(report.filePath, report.fixedCode, { encoding: 'utf8' }, err => {
+					if (err) {
+						throw err;
+					}
+					process.stdout.write(`markuplint: Fix "${report.filePath}"\n`);
+				});
+			}
 		} else {
 			const reports = await exec({
 				files: filesOrGlobPattern,

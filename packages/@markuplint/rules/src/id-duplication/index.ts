@@ -18,9 +18,9 @@ export default createRule({
 				reports.push({
 					severity: node.rule.severity,
 					message,
-					line: idAttr.startLine,
-					col: idAttr.startCol,
-					raw: idAttr.raw,
+					line: idAttr.name.startLine,
+					col: idAttr.name.startCol,
+					raw: idAttr.raw.trim(),
 				});
 			}
 			idStack.push(id);

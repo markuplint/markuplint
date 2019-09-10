@@ -39,21 +39,21 @@ export default createRule<Value, null>({
 		});
 		return reports;
 	},
-	// async fix(document) {
-	// 	await document.walk(async node => {
-	// 		if (node instanceof Element || node instanceof ElementCloseTag) {
-	// 			if (node.isForeignElement) {
-	// 				return;
-	// 			}
-	// 			const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
-	// 			if (deny.test(node.nodeName)) {
-	// 				if (node.rule.value === 'lower') {
-	// 					node.nodeName = node.nodeName.toLowerCase();
-	// 				} else {
-	// 					node.nodeName = node.nodeName.toUpperCase();
-	// 				}
-	// 			}
-	// 		}
-	// 	});
-	// },
+	async fix(document) {
+		await document.walk(async node => {
+			if (node instanceof MLDOMElement || node instanceof MLDOMElementCloseTag) {
+				if (node.isForeignElement) {
+					return;
+				}
+				const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
+				if (deny.test(node.nodeName)) {
+					if (node.rule.value === 'lower') {
+						node.fixNodeName(node.nodeName.toLowerCase());
+					} else {
+						node.fixNodeName(node.nodeName.toUpperCase());
+					}
+				}
+			}
+		});
+	},
 });

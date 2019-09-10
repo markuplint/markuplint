@@ -1,10 +1,13 @@
 ---
 title: attr-value-quotes
+fixable: true
 ---
 
 # Attribute quotes (`attr-value-quotes`)
 
 Warns if the attribute value is not **quoted**.
+
+**🔧 Fixable**
 
 ## Rule Details
 

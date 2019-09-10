@@ -14,15 +14,26 @@ export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 	public readonly startTag: MLDOMElement<T, O>;
 	public readonly isForeignElement: boolean;
 
+	private _fixedNodeName: string;
+
 	constructor(astNode: MLASTElementCloseTag, document: Document<T, O>, startTag: MLDOMElement<T, O>) {
 		super(astNode, document);
 		this.nodeName = astNode.nodeName;
+		this._fixedNodeName = astNode.nodeName;
 		this.startTag = startTag;
 		this.isForeignElement = startTag.isForeignElement;
 		setNode(astNode, this);
 	}
 
+	public get raw() {
+		return `</${this._fixedNodeName}>`;
+	}
+
 	public get rule() {
 		return this.startTag.rule;
+	}
+
+	public fixNodeName(name: string) {
+		this._fixedNodeName = name;
 	}
 }

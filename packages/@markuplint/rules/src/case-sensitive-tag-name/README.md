@@ -1,5 +1,6 @@
 ---
 title: case-sensitive-attr-name
+fixable: true
 ---
 
 # Tag name case-sensitive (`case-sensitive-attr-name`)
@@ -10,6 +11,8 @@ Warns that the tag name is not in one of uppercase or lowercase letters. Unlike 
 > [cite: https://html.spec.whatwg.org/#syntax-tag-name]
 
 Also, markuplint's HTML parser does not distinguish case of custom element tag names, but this rule works like HTML standard element. But originally you can not define a name that contains uppercase alphabets in custom elements. We recommend that you consider when setting rules.
+
+**🔧 Fixable**
 
 ## Rule Details
 

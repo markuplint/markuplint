@@ -8,7 +8,7 @@ import {
 	recursiveLoad,
 	searchConfigFile,
 } from '@markuplint/file-resoliver';
-import { MLCore, MLRule, convertRuleset } from '@markuplint/ml-core';
+import { Document, MLCore, MLRule, convertRuleset } from '@markuplint/ml-core';
 import { MLMLSpec } from '@markuplint/ml-spec';
 import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { getMessenger } from './get-messenger';
@@ -16,13 +16,28 @@ import path from 'path';
 import { toRegxp } from './util';
 
 export async function verify(html: string, config: Config, rules: MLRule<RuleConfigValue, unknown>[], locale?: string) {
-	const results = await exec({
+	const totalResults = await exec({
 		sourceCodes: html,
 		config,
 		rules,
 		locale,
 	});
-	return results[0] ? results[0].results : [];
+	return totalResults[0] ? totalResults[0].results : [];
+}
+
+export async function fix(html: string, config: Config, rules: MLRule<RuleConfigValue, unknown>[], locale?: string) {
+	const totalResults = await exec({
+		sourceCodes: html,
+		config,
+		rules,
+		locale,
+		fix: true,
+	});
+	const result = totalResults[0];
+	if (!result) {
+		return html;
+	}
+	return result.fixedCode;
 }
 
 export interface MLCLIOption {
@@ -39,7 +54,7 @@ export interface MLCLIOption {
 	// ruledir?: string;
 	// plugin?: string;
 	// rule?: string;
-	// fix?: boolean;
+	fix?: boolean;
 	// fixDryRun?: boolean;
 	// ignorePath?: string;
 	// noIgnore?: string;
@@ -145,11 +160,13 @@ export async function exec(options: MLCLIOption) {
 		const messenger = await getMessenger(options.locale);
 		const core = new MLCore(parser, sourceCode, specs, ruleset, rules, messenger);
 
-		const results = await core.verify();
+		const results = await core.verify(!!options.fix);
 		totalResults.push({
 			results,
 			filePath: file.path,
 			sourceCode,
+			fixedCode: core.document.toString(),
+			document: core.document,
 			parser: parserModName,
 			locale: options.locale,
 			configSet: {
@@ -167,6 +184,8 @@ interface MLResultInfo {
 	results: VerifiedResult[];
 	filePath: string;
 	sourceCode: string;
+	fixedCode: string;
+	document: Document<any, unknown>;
 	parser: string;
 	locale?: string;
 	configSet: {

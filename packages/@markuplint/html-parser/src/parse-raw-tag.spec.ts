@@ -26,14 +26,14 @@ test('has attribute', () => {
 		tagName: 'div',
 		attrs: [
 			{
-				raw: 'a',
+				raw: ' a',
 				startLine: 1,
 				endLine: 1,
-				startCol: 6,
+				startCol: 5,
 				endCol: 7,
-				startOffset: 5,
+				startOffset: 4,
 				endOffset: 6,
-				beforeSpaces: {
+				spacesBeforeName: {
 					raw: ' ',
 					startLine: 1,
 					endLine: 1,
@@ -51,12 +51,6 @@ test('has attribute', () => {
 					startOffset: 5,
 					endOffset: 6,
 				},
-				spacesBeforeEqual: null,
-				equal: null,
-				spacesAfterEqual: null,
-				tokenBeforeValue: null,
-				value: null,
-				tokenAfterValue: null,
 				isInvalid: false,
 			},
 		],
@@ -68,14 +62,14 @@ test('2 attributes', () => {
 		tagName: 'div',
 		attrs: [
 			{
-				raw: 'b',
+				raw: ' b',
 				startLine: 1,
 				endLine: 1,
-				startCol: 6,
+				startCol: 5,
 				endCol: 7,
-				startOffset: 5,
+				startOffset: 4,
 				endOffset: 6,
-				beforeSpaces: {
+				spacesBeforeName: {
 					raw: ' ',
 					startLine: 1,
 					endLine: 1,
@@ -93,23 +87,17 @@ test('2 attributes', () => {
 					startOffset: 5,
 					endOffset: 6,
 				},
-				spacesBeforeEqual: null,
-				equal: null,
-				spacesAfterEqual: null,
-				tokenBeforeValue: null,
-				value: null,
-				tokenAfterValue: null,
 				isInvalid: false,
 			},
 			{
-				raw: 'c',
+				raw: ' c',
 				startLine: 1,
 				endLine: 1,
-				startCol: 8,
+				startCol: 7,
 				endCol: 9,
-				startOffset: 7,
+				startOffset: 6,
 				endOffset: 8,
-				beforeSpaces: {
+				spacesBeforeName: {
 					raw: ' ',
 					startLine: 1,
 					endLine: 1,
@@ -127,12 +115,6 @@ test('2 attributes', () => {
 					startOffset: 7,
 					endOffset: 8,
 				},
-				spacesBeforeEqual: null,
-				equal: null,
-				spacesAfterEqual: null,
-				tokenBeforeValue: null,
-				value: null,
-				tokenAfterValue: null,
 				isInvalid: false,
 			},
 		],
@@ -156,14 +138,14 @@ a>`,
 		tagName: 'div',
 		attrs: [
 			{
-				raw: 'a',
-				startLine: 2,
+				raw: '\na',
+				startLine: 1,
 				endLine: 2,
-				startCol: 1,
+				startCol: 5,
 				endCol: 2,
-				startOffset: 5,
+				startOffset: 4,
 				endOffset: 6,
-				beforeSpaces: {
+				spacesBeforeName: {
 					raw: '\n',
 					startLine: 1,
 					endLine: 2,
@@ -181,12 +163,6 @@ a>`,
 					startOffset: 5,
 					endOffset: 6,
 				},
-				spacesBeforeEqual: null,
-				equal: null,
-				spacesAfterEqual: null,
-				tokenBeforeValue: null,
-				value: null,
-				tokenAfterValue: null,
 				isInvalid: false,
 			},
 		],
@@ -208,14 +184,14 @@ test('has multiple line breaks', () => {
 		tagName: 'div',
 		attrs: [
 			{
-				raw: 'a',
-				startLine: 4,
+				raw: '\n\n\n\t\t\ta',
+				startLine: 1,
 				endLine: 4,
-				startCol: 4,
+				startCol: 5,
 				endCol: 5,
-				startOffset: 10,
+				startOffset: 4,
 				endOffset: 11,
-				beforeSpaces: {
+				spacesBeforeName: {
 					raw: '\n\n\n\t\t\t',
 					startLine: 1,
 					endLine: 4,
@@ -233,19 +209,13 @@ test('has multiple line breaks', () => {
 					startOffset: 10,
 					endOffset: 11,
 				},
-				spacesBeforeEqual: null,
-				equal: null,
-				spacesAfterEqual: null,
-				tokenBeforeValue: null,
-				value: null,
-				tokenAfterValue: null,
 				isInvalid: false,
 			},
 		],
 	});
 });
 
-test('after line break', async () => {
+test('after line break', () => {
 	const { attrs } = parseRawTag(
 		`<div attr
 				attr2="value"
@@ -256,7 +226,7 @@ test('after line break', async () => {
 		0,
 	);
 	expect(attrs[1]).toMatchObject({
-		beforeSpaces: {
+		spacesBeforeName: {
 			raw: '\n\t\t\t\t',
 			startLine: 1,
 			endLine: 2,
@@ -268,250 +238,82 @@ test('after line break', async () => {
 	});
 });
 
-// test('standard', t => {
-// 	expect(
-// 		parseRawTag(
-// 			`<div
-//      a
-//       b c
-//       d>
-// 		`,
-// 			1,
-// 			1,
-// 			0,
-// 		),
-// 	).toMatchObject({
-// 		tagName: 'div',
-// 		attrs: [
-// 			{
-// 				name: 'a',
-// 				value: null,
-// 				quote: null,
-// 				equal: null,
-// 				startLine: 1,
-// 				startCol: 6,
-// 				raw: 'a',
-// 				isInvalid: false,
-// 			},
-// 			{
-// 				name: 'b',
-// 				value: null,
-// 				quote: null,
-// 				equal: null,
-// 				startLine: 2,
-// 				startCol: 7,
-// 				raw: 'b',
-// 				isInvalid: false,
-// 			},
-// 			{
-// 				name: 'c',
-// 				value: null,
-// 				quote: null,
-// 				equal: null,
-// 				startLine: 2,
-// 				startCol: 9,
-// 				raw: 'c',
-// 				isInvalid: false,
-// 			},
-// 			{
-// 				name: 'd',
-// 				value: null,
-// 				quote: null,
-// 				equal: null,
-// 				startLine: 3,
-// 				startCol: 7,
-// 				raw: 'd',
-// 				isInvalid: false,
-// 			},
-// 		],
-// 	});
-// });
+test('standard', () => {
+	expect(
+		parseRawTag(
+			`<div
+     a
+      b c
+      d>
+		`,
+			1,
+			1,
+			0,
+		),
+	).toMatchObject({
+		tagName: 'div',
+		attrs: [
+			{
+				name: {
+					raw: 'a',
+				},
+				startLine: 1,
+				startCol: 5,
+				raw: '\n     a',
+				isInvalid: false,
+			},
+			{
+				name: {
+					raw: 'b',
+				},
+				startLine: 2,
+				startCol: 7,
+				raw: '\n      b',
+				isInvalid: false,
+			},
+			{
+				name: {
+					raw: 'c',
+				},
+				startLine: 3,
+				startCol: 8,
+				raw: ' c',
+				isInvalid: false,
+			},
+			{
+				name: {
+					raw: 'd',
+				},
+				startLine: 3,
+				startCol: 10,
+				raw: '\n      d',
+				isInvalid: false,
+			},
+		],
+	});
+});
 
-// // test('standard', (t) => {
-// // 	expect(
-// // 		parseRawTag('<div a=a>', 1, 1, 0).toJSON(),
-// // 		{
-// // 			tagName: 'div',
-// // 			attrs: [
-// // 				{
-// // 					name: 'a',
-// // 					value: 'a',
-// // 					quote: null,
-// // 					equal: '=',
-// // 					startLine: 0,
-// // 					startCol: 5,
-// // 					raw: 'a=a',
-// // 					isInvalid: false,
-// // 				},
-// // 			],
-// // 		}
-// // 	);
-// // });
-
-// // test.only('standard', (t) => {
-// // 	expect(
-// // 		parseRawTag('<div a="a">', 1, 1, 0).toJSON(),
-// // 		{
-// // 			tagName: 'div',
-// // 			attrs: [
-// // 				{
-// // 					name: {
-// // 						raw: 'a',
-// // 						startLine: 0,
-// // 						startCol: 6,
-// // 						endLine: 0,
-// // 						endCol: 7,
-// // 						startOffset: 6,
-// // 						endOffset: 7,
-// // 						beforeSpaces: {
-// // 							raw: ' ',
-// // 							style: 'space',
-// // 						},
-// // 					},
-// // 					equal: {
-// // 						raw: '=',
-// // 						startLine: 1,
-// // 						startCol: 1,
-// // 						endLine: 1,
-// // 						endCol: 1,
-// // 						startOffset: 1,
-// // 						endOffset: 1,
-// // 						beforeSpaces: {
-// // 							raw: '',
-// // 							style: 'none',
-// // 						},
-// // 					},
-// // 					quote: '"',
-// // 					value: {
-// // 						raw: 'a',
-// // 						startLine: 1,
-// // 						startCol: 1,
-// // 						endLine: 1,
-// // 						endCol: 1,
-// // 						startOffset: 1,
-// // 						endOffset: 1,
-// // 						beforeSpaces: {
-// // 							raw: '',
-// // 							style: 'none',
-// // 						},
-// // 					},
-// // 					startLine: 0,
-// // 					startCol: 5,
-// // 					raw: 'a="a"',
-// // 					isInvalid: false,
-// // 					beforeSpaces: {
-// // 						raw: '',
-// // 						style: 'none',
-// // 					},
-// // 				},
-// // 			],
-// // 		}
-// // 	);
-// // });
-
-// // test('standard', (t) => {
-// // 	expect(
-// // 		parseRawTag('<div a=\'a\'>', 1, 1, 0).toJSON(),
-// // 		{
-// // 			tagName: 'div',
-// // 			attrs: [
-// // 				{
-// // 					name: 'a',
-// // 					value: 'a',
-// // 					quote: '\'',
-// // 					equal: '=',
-// // 					startLine: 0,
-// // 					startCol: 5,
-// // 					raw: 'a=\'a\'',
-// // 					isInvalid: false,
-// // 				},
-// // 			],
-// // 		}
-// // 	);
-// // });
-
-// // test('standard', (t) => {
-// // 	expect(
-// // 		parseRawTag('<div a="1" b="2">', 1, 1, 0).toJSON(),
-// // 		{
-// // 			tagName: 'div',
-// // 			attrs: [
-// // 				{
-// // 					name: 'a',
-// // 					value: '1',
-// // 					quote: '"',
-// // 					equal: '=',
-// // 					startLine: 0,
-// // 					startCol: 5,
-// // 					raw: 'a="1"',
-// // 					isInvalid: false,
-// // 				},
-// // 				{
-// // 					name: 'b',
-// // 					value: '2',
-// // 					quote: '"',
-// // 					equal: '=',
-// // 					startLine: 0,
-// // 					startCol: 11,
-// // 					raw: 'b="2"',
-// // 					isInvalid: false,
-// // 				},
-// // 			],
-// // 		}
-// // 	);
-// // });
-
-// // test('standard', (t) => {
-// // 	expect(
-// // 		parseRawTag('<div a="1" b=c=d>', 1, 1, 0).toJSON(),
-// // 		{
-// // 			tagName: 'div',
-// // 			attrs: [
-// // 				{
-// // 					name: 'a',
-// // 					value: '1',
-// // 					quote: '"',
-// // 					equal: '=',
-// // 					startLine: 0,
-// // 					startCol: 5,
-// // 					raw: 'a="1"',
-// // 					isInvalid: false,
-// // 				},
-// // 				{
-// // 					name: 'b',
-// // 					value: 'c=d',
-// // 					quote: null,
-// // 					equal: '=',
-// // 					startLine: 0,
-// // 					startCol: 11,
-// // 					raw: 'b=c=d',
-// // 					isInvalid: true,
-// // 				},
-// // 			],
-// // 		}
-// // 	);
-// // });
-
-// // test('standard', (t) => {
-// // 	expect(
-// // 		parseRawTag('<div a=>', 1, 1, 0).toJSON(),
-// // 		{
-// // 			tagName: 'div',
-// // 			attrs: [
-// // 				{
-// // 					name: 'a',
-// // 					value: null,
-// // 					quote: null,
-// // 					equal: '=',
-// // 					startLine: 0,
-// // 					startCol: 5,
-// // 					raw: 'a=',
-// // 					isInvalid: true,
-// // 				},
-// // 			],
-// // 		}
-// // 	);
-// // });
+test('standard', () => {
+	expect(parseRawTag('<div a=a>', 1, 1, 0)).toMatchObject({
+		tagName: 'div',
+		attrs: [
+			{
+				raw: ' a=a',
+				spacesBeforeName: { raw: ' ' },
+				name: { raw: 'a' },
+				spacesBeforeEqual: { raw: '' },
+				equal: { raw: '=' },
+				spacesAfterEqual: { raw: '' },
+				startQuote: { raw: '' },
+				value: { raw: 'a' },
+				endQuote: { raw: '' },
+				startLine: 1,
+				startCol: 5,
+				isInvalid: false,
+			},
+		],
+	});
+});
 
 test('standard', () => {
 	expect(
@@ -530,14 +332,14 @@ c"
 		tagName: 'div',
 		attrs: [
 			{
-				raw: 'a\n\t=\n\t"ab\nc"',
-				startLine: 2,
+				raw: '\na\n\t=\n\t"ab\nc"',
+				startLine: 1,
 				endLine: 5,
-				startCol: 1,
+				startCol: 5,
 				endCol: 3,
-				startOffset: 5,
+				startOffset: 4,
 				endOffset: 17,
-				beforeSpaces: {
+				spacesBeforeName: {
 					raw: '\n',
 					startLine: 1,
 					endLine: 2,
@@ -582,7 +384,7 @@ c"
 					startOffset: 9,
 					endOffset: 11,
 				},
-				tokenBeforeValue: {
+				startQuote: {
 					raw: '"',
 					startLine: 4,
 					endLine: 4,
@@ -600,7 +402,7 @@ c"
 					startOffset: 12,
 					endOffset: 16,
 				},
-				tokenAfterValue: {
+				endQuote: {
 					raw: '"',
 					startLine: 5,
 					endLine: 5,
@@ -651,16 +453,19 @@ test('custom element with full-width space', () => {
 });
 
 describe('error', () => {
-	// test('SyntaxError: <div', () => {
-	// 	expect(parseRawTag('<div', 1, 1, 0)).toThrowError('Invalid tag syntax: <div');
-	// });
-	// test('SyntaxError: <>', () => {
-	// 	expect(parseRawTag('<>', 1, 1, 0)).toThrowError('Invalid tag syntax: <>');
-	// });
-	// test('SyntaxError: < >', () => {
-	// 	expect(parseRawTag('< >', 1, 1, 0)).toThrowError('Invalid tag name: "" in < >');
-	// });
-	// test('SyntaxError: <要素>', () => {
-	// 	expect(parseRawTag('<要素>', 1, 1, 0)).toThrowError('Invalid tag name: "要素" in <要素>');
-	// });
+	test('SyntaxError: <div', () => {
+		expect(() => parseRawTag('<div', 1, 1, 0)).toThrow('Invalid tag syntax: <div');
+	});
+
+	test('SyntaxError: <>', () => {
+		expect(() => parseRawTag('<>', 1, 1, 0)).toThrow('Invalid tag syntax: <>');
+	});
+
+	test('SyntaxError: < >', () => {
+		expect(() => parseRawTag('< >', 1, 1, 0)).toThrow('Invalid tag name: "" in < >');
+	});
+
+	test('SyntaxError: <要素>', () => {
+		expect(() => parseRawTag('<要素>', 1, 1, 0)).toThrow('Invalid tag name: "要素" in <要素>');
+	});
 });

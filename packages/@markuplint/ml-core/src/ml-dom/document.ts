@@ -130,6 +130,14 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	public setRule(rule: MLRule<T, O> | null) {
 		this.currentRule = rule;
 	}
+
+	public toString() {
+		const html: string[] = [];
+		for (const node of this.nodeList) {
+			html.push(node.raw);
+		}
+		return html.join('');
+	}
 }
 
 export type Walker<T extends RuleConfigValue, O = null, N = AnonymousNode<T, O>> = (node: N) => Promise<void>;

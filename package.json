@@ -8,6 +8,7 @@
 		"test": "jest --coverage",
 		"test:coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
 		"test:clear": "jest --clearCache",
+		"test:unit": "jest",
 		"lint": "eslint --fix ./packages/**/*.ts",
 		"schema": "lerna run schema",
 		"all": "yarn lint; yarn clean; yarn build; yarn schema; yarn test:clear; yarn test;",

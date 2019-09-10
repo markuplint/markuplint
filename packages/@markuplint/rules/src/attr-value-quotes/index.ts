@@ -24,33 +24,32 @@ export default createRule<Type>({
 				`${node.rule.value} quotation mark`,
 			);
 			for (const attr of node.attributes) {
-				let quote: string | void;
-				if (attr.tokenBeforeValue) {
-					quote = attr.tokenBeforeValue.raw;
-				} else if (attr.equal) {
-					quote = '';
+				if (attr.equal.raw === '') {
+					continue;
 				}
-				if (quote != null && quote !== quoteList[node.rule.value]) {
+				const quote = attr.startQuote.raw;
+				if (quote !== quoteList[node.rule.value]) {
 					reports.push({
 						severity: node.rule.severity,
 						message,
-						line: attr.startLine,
-						col: attr.startCol,
-						raw: attr.raw,
+						line: attr.name.startLine,
+						col: attr.name.startCol,
+						raw: attr.raw.trim(),
 					});
 				}
 			}
 		});
 		return reports;
 	},
-	// async fix(document) {
-	// 	await document.walkOn('Element', async node => {
-	// 		for (const attr of node.attributes) {
-	// 			const quote = quoteList[node.rule.value];
-	// 			if (attr.value != null && attr.value.quote !== quote) {
-	// 				attr.value.fix(null, quoteList[node.rule.value]);
-	// 			}
-	// 		}
-	// 	});
-	// },
+	async fix(document) {
+		await document.walkOn('Element', async node => {
+			for (const attr of node.attributes) {
+				const quote = quoteList[node.rule.value];
+				if (quote && attr.startQuote && attr.startQuote.raw !== quote) {
+					attr.startQuote.fix(quote);
+					attr.endQuote.fix(quote);
+				}
+			}
+		});
+	},
 });

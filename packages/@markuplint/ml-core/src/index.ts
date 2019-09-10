@@ -7,6 +7,7 @@ export {
 	Attribute,
 	Comment,
 	Doctype,
+	Document,
 	Element,
 	ElementCloseTag,
 	InvalidNode,

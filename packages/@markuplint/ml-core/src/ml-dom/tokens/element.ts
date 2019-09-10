@@ -14,13 +14,21 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 	public readonly isForeignElement: boolean;
 	public readonly closeTag: MLDOMElementCloseTag<T, O> | null;
 
+	private _fixedNodeName: string;
+
 	constructor(astNode: MLASTElement, document: Document<T, O>) {
 		super(astNode, document);
 		this.nodeName = astNode.nodeName;
+		this._fixedNodeName = astNode.nodeName;
 		this.attributes = astNode.attributes.map(attr => new MLDOMAttribute(attr));
 		this.namespaceURI = astNode.namespace;
 		this.isForeignElement = this.namespaceURI !== 'http://www.w3.org/1999/xhtml';
 		this.closeTag = astNode.pearNode ? new MLDOMElementCloseTag<T, O>(astNode.pearNode, document, this) : null;
+	}
+
+	public get raw() {
+		const attrs = this.attributes.map(attr => attr.raw).join('');
+		return `<${this._fixedNodeName}${attrs}>`;
 	}
 
 	public get childNodes(): AnonymousNode<T, O>[] {
@@ -51,6 +59,10 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 
 	public matches(selector: string): boolean {
 		return createSelector(selector).match(this);
+	}
+
+	public fixNodeName(name: string) {
+		this._fixedNodeName = name;
 	}
 
 	public get classList() {

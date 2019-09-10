@@ -74,14 +74,14 @@ export interface MLASTInvalidNode extends MLASTAbstructNode {
 }
 
 export interface MLASTAttr extends MLToken {
+	spacesBeforeName: MLToken;
 	name: MLToken;
-	beforeSpaces: MLToken;
-	spacesBeforeEqual: MLToken | null;
-	equal: MLToken | null;
-	spacesAfterEqual: MLToken | null;
-	tokenBeforeValue: MLToken | null;
-	value: MLToken | null;
-	tokenAfterValue: MLToken | null;
+	spacesBeforeEqual: MLToken;
+	equal: MLToken;
+	spacesAfterEqual: MLToken;
+	startQuote: MLToken;
+	value: MLToken;
+	endQuote: MLToken;
 	isInvalid: boolean;
 }
 
