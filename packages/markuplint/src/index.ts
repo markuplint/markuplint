@@ -7,8 +7,8 @@ import {
 	loadConfigFile,
 	recursiveLoad,
 	searchConfigFile,
-} from '@markuplint/file-resoliver';
-import { Document, MLCore, MLRule, convertRuleset } from '@markuplint/ml-core';
+} from '@markuplint/file-resolver';
+import { Document, MLCore, MLRule, Ruleset, convertRuleset } from '@markuplint/ml-core';
 import { MLMLSpec } from '@markuplint/ml-spec';
 import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { getMessenger } from './get-messenger';
@@ -43,6 +43,7 @@ export async function fix(html: string, config: Config, rules: MLRule<RuleConfig
 export interface MLCLIOption {
 	files?: string;
 	sourceCodes?: string | string[];
+	workspace?: string;
 	config?: string | Config;
 	specs?: string | MLMLSpec;
 	rules?: MLRule<RuleConfigValue, unknown>[];
@@ -76,7 +77,7 @@ export async function exec(options: MLCLIOption) {
 		}
 	} else if (options.sourceCodes) {
 		const codes = Array.isArray(options.sourceCodes) ? options.sourceCodes : [options.sourceCodes];
-		files.push(...codes.map(code => getAnonymousFile(code)));
+		files.push(...codes.map(code => getAnonymousFile(code, options.workspace)));
 	}
 
 	// Resolve configuration data
@@ -102,7 +103,7 @@ export async function exec(options: MLCLIOption) {
 			if (configSet) {
 				configs.set(file, configSet);
 			} else {
-				if (configSetNearbyCWD) {
+				if (!configSetNearbyCWD) {
 					configSetNearbyCWD = await searchConfigFile(process.cwd());
 				}
 				if (configSetNearbyCWD) {
@@ -169,6 +170,7 @@ export async function exec(options: MLCLIOption) {
 			document: core.document,
 			parser: parserModName,
 			locale: options.locale,
+			ruleset,
 			configSet: {
 				config: configSet.config,
 				files: Array.from(configSet.files),
@@ -188,6 +190,7 @@ interface MLResultInfo {
 	document: Document<any, unknown>;
 	parser: string;
 	locale?: string;
+	ruleset: Ruleset;
 	configSet: {
 		config: Config;
 		files: string[];

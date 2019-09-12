@@ -8,6 +8,7 @@ export async function search<T = cosmiconfig.Config>(dir: string, cacheClear: bo
 	if (!cacheClear) {
 		explorer.clearCaches();
 	}
+	dir = path.dirname(dir);
 	const result = await explorer.search(dir);
 	if (!result || result.isEmpty) {
 		return null;

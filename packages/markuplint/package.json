@@ -26,7 +26,7 @@
 		"@types/strip-ansi": "^5.2.1"
 	},
 	"dependencies": {
-		"@markuplint/file-resoliver": "^1.0.0-alpha.4",
+		"@markuplint/file-resolver": "^1.0.0-alpha.7",
 		"@markuplint/html-ls": "^1.0.0-alpha.5",
 		"@markuplint/html-parser": "^1.0.0-alpha.6",
 		"@markuplint/i18n": "^1.0.0-alpha.4",

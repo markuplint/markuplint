@@ -33,4 +33,19 @@ describe('FileResolver', () => {
 			childNodeRules: [],
 		});
 	});
+
+	it('searchConfigFile recursive closest config file', async () => {
+		const filePath = `${__dirname}/../test/fixtures/003/dir/target.html`;
+		const file = await FileResolver.searchConfigFile(filePath);
+		if (!file) {
+			throw new Error();
+		}
+		expect(file.config).toEqual({
+			dummy: true,
+			dummy2: false,
+			rules: {},
+			nodeRules: [],
+			childNodeRules: [],
+		});
+	});
 });

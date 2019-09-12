@@ -12,17 +12,17 @@ export class MLFile {
 
 	/**
 	 *
-	 * @param filePath A file path or context
+	 * @param filePathOrContext A file path or context
 	 * @param anonymous if 1st param is a context
 	 */
-	constructor(filePath: string, anonymous = false) {
+	constructor(filePathOrContext: string, anonymous = false, workspace = process.cwd()) {
 		this.anonymous = anonymous;
 		if (anonymous) {
-			this._filePath = '<AnonymousFile>';
+			this._filePath = `${workspace}/<AnonymousFile>`;
 			// `filePath` is context
-			fileCaches.set(this, filePath);
+			fileCaches.set(this, filePathOrContext);
 		} else {
-			this._filePath = path.resolve(filePath);
+			this._filePath = path.resolve(filePathOrContext);
 		}
 	}
 
