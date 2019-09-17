@@ -18,6 +18,25 @@ test('tag only has spaces', () => {
 	expect(parseRawTag('<div  >', 1, 1, 0)).toMatchObject({
 		tagName: 'div',
 		attrs: [],
+		selfClosingSolidus: {
+			raw: '',
+		},
+		endSpace: {
+			raw: '  ',
+		},
+	});
+});
+
+test('self closing tag', () => {
+	expect(parseRawTag('<div />', 1, 1, 0)).toMatchObject({
+		tagName: 'div',
+		attrs: [],
+		selfClosingSolidus: {
+			raw: ' /',
+		},
+		endSpace: {
+			raw: '',
+		},
 	});
 });
 

@@ -252,6 +252,8 @@ function nodeize(
 				prevNode,
 				nextNode,
 				pearNode: endTag,
+				selfClosingSolidus: tagTokens.selfClosingSolidus,
+				endSpace: tagTokens.endSpace,
 				isFragment: false,
 				isGhost: false,
 			};

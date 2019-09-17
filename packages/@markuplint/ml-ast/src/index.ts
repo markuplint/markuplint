@@ -41,6 +41,8 @@ export interface MLASTElement extends MLASTAbstructNode {
 	attributes: MLASTAttr[];
 	childNodes?: MLASTNode[];
 	pearNode: MLASTElementCloseTag | null;
+	selfClosingSolidus: MLToken;
+	endSpace: MLToken;
 }
 
 export interface MLASTElementCloseTag extends MLASTAbstructNode {

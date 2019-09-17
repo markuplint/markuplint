@@ -1,11 +1,20 @@
+import { MLASTAttr, MLToken } from '@markuplint/ml-ast';
 import { rePCEN, reTag, reTagName } from './const';
-import { MLASTAttr } from '@markuplint/ml-ast';
 import attrTokenizer from './attr-tokenizer';
+import tokenizer from './tokenizer';
 
 // eslint-disable-next-line no-control-regex
 const reAttrsInStartTag = /\s*[^\x00-\x1f\x7f-\x9f "'>/=]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]*))?/;
+const reEndTokens = /(\s*\/)?(\s*)>$/;
 
-export default function parseRawTag(raw: string, nodeLine: number, nodeCol: number, startOffset: number) {
+type TagTokens = {
+	tagName: string;
+	attrs: MLASTAttr[];
+	selfClosingSolidus: MLToken;
+	endSpace: MLToken;
+};
+
+export default function parseRawTag(raw: string, nodeLine: number, nodeCol: number, startOffset: number): TagTokens {
 	let line = nodeLine;
 	let col = nodeCol;
 	let offset = startOffset;
@@ -46,8 +55,18 @@ export default function parseRawTag(raw: string, nodeLine: number, nodeCol: numb
 		}
 	}
 
+	const endTokens = reEndTokens.exec(raw);
+	const selfClosingSolidus = tokenizer(endTokens && endTokens[1], line, col, offset);
+	line = selfClosingSolidus.endLine;
+	col = selfClosingSolidus.endCol;
+	offset = selfClosingSolidus.endOffset;
+
+	const endSpace = tokenizer(endTokens && endTokens[2], line, col, offset);
+
 	return {
 		tagName,
 		attrs,
+		selfClosingSolidus,
+		endSpace,
 	};
 }

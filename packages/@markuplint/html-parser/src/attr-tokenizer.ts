@@ -1,7 +1,6 @@
-import { MLASTAttr, MLToken } from '@markuplint/ml-ast';
+import { MLASTAttr } from '@markuplint/ml-ast';
 import UUID from 'uuid';
-import getEndCol from './get-end-col';
-import getEndLine from './get-end-line';
+import tokenizer from './tokenizer';
 
 // eslint-disable-next-line no-control-regex
 const reAttrsInStartTag = /(\s*)([^\x00-\x1f\x7f-\x9f "'>/=]+)(?:(\s*)(=)(\s*)(?:(?:"([^"]*)")|(?:'([^']*)')|([^\s]*)))?/;
@@ -85,19 +84,5 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 		value,
 		endQuote,
 		isInvalid: invalid,
-	};
-}
-
-function tokenizer(raw: string | null, line: number, col: number, startOffset: number): MLToken {
-	raw = raw || '';
-	return {
-		uuid: UUID.v4(),
-		raw,
-		startLine: line,
-		endLine: getEndLine(raw, line),
-		startCol: col,
-		endCol: getEndCol(raw, col),
-		startOffset,
-		endOffset: startOffset + raw.length,
 	};
 }
