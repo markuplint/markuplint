@@ -7,10 +7,9 @@ A Linter for All Markup Languages (for legacy/modern HTML, Web Components, SVG, 
 
 ## Install
 
-Version `1.0.0-alpha` in development.
-
 ```
-$ yarn add -D markuplint@next
+$ npm install -D markuplint
+$ yarn add -D markuplint
 ```
 
 ## Usage
@@ -46,25 +45,60 @@ Examples
 
 ### API
 
-**WIP**
+Details and Documentation **🚧WIP**
 
 ## Configuration
 
 `.markuplintrc` JSON or YAML format
 
-**WIP**
+```json
+{
+	"extends": "@markuplint/html-ls",
+	"rules": {
+		"rule__enabled": true,
+		"rule__disabled": false,
+		"rule__custom-setting": {
+			"severity": "error",
+			"value": "VALUE"
+		},
+		"rule__custom-setting-with-detail-option": {
+			"value": "VALUE",
+			"option": { "OPTIONAL_PROP": "OPTIONAL_VALUE" }
+		}
+	},
+	"nodeRules": [
+		{
+			"tagName": "div",
+			"rules": {
+				"rule__disable-for-div-tag": false
+			}
+		}
+	],
+	"childNodeRules": [
+		{
+			"selector": "[data-attr^=\"value\"]",
+			"inheritance": true,
+			"rules": {
+				"rule__overwrite-setting-of-selector-matched-element": {
+					"value": "OVERWROTE_VALUE"
+				}
+			}
+		}
+	]
+}
+```
+
+Details and Documentation **🚧WIP**
 
 ## Rules
 
-**WIP**
+Details and Documentation **🚧WIP**
 
 ### Rule Customization
 
-**WIP**
+Details and Documentation **🚧WIP**
 
 ## Editor Extensions
-
-**No supported in this development version.**
 
 ## Thanks
 
