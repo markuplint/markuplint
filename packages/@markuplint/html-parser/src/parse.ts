@@ -1,5 +1,6 @@
 import {
 	MLASTAbstructNode,
+	MLASTDoctype,
 	MLASTDocument,
 	MLASTElement,
 	MLASTInvalidNode,
@@ -80,6 +81,12 @@ function nodeize(
 			nodes.push({
 				uuid: UUID.v4(),
 				raw,
+				// @ts-ignore
+				name: p5node.name || '',
+				// @ts-ignore
+				publicId: p5node.publicId || '',
+				// @ts-ignore
+				systemId: p5node.systemId || '',
 				startOffset,
 				endOffset,
 				startLine,
@@ -93,7 +100,7 @@ function nodeize(
 				nextNode,
 				isFragment: false,
 				isGhost: false,
-			});
+			} as MLASTDoctype);
 			break;
 		}
 		case '#text': {

@@ -1,6 +1,6 @@
 import { AnonymousNode, NodeType } from './types';
 import { MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
-import { MLDOMComment, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
+import { MLDOMComment, MLDOMDoctype, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
 import { MLRule } from '../';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import Ruleset from '../ruleset';
@@ -105,6 +105,15 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				}
 			}
 		}
+	}
+
+	public get doctype() {
+		for (const node of this.nodeList) {
+			if (node instanceof MLDOMDoctype) {
+				return node;
+			}
+		}
+		return null;
 	}
 
 	public async walk(walker: Walker<T, O>) {
