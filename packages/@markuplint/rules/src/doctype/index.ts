@@ -1,35 +1,47 @@
-import { Doctype, Result, createRule } from '@markuplint/ml-core';
+import { createRule } from '@markuplint/ml-core';
 
-export type Value = 'always' | 'never';
+type Value = 'always';
+type Option = {
+	denyObsolateType: boolean;
+};
 
-export default createRule<Value>({
+export default createRule<Value, Option>({
 	name: 'doctype',
 	defaultValue: 'always',
-	defaultOptions: null,
+	defaultOptions: {
+		denyObsolateType: true,
+	},
 	async verify(document, messages, rule) {
-		const reports: Result[] = [];
-		const message = messages('error');
-		let has = false;
+		if (document.isFragment) {
+			return [];
+		}
 
-		if (!document.isFragment) {
-			await document.walk(async node => {
-				if (node instanceof Doctype) {
-					has = true;
-				}
-			});
-			if (rule.value === 'never') {
-				has = !has;
-			}
-			if (!has) {
-				reports.push({
+		const doctype = document.doctype;
+
+		if (!doctype) {
+			return [
+				{
 					severity: rule.severity,
-					message,
+					message: messages('Missing doctype'),
 					line: 1,
 					col: 1,
 					raw: '',
-				});
-			}
+				},
+			];
 		}
-		return reports;
+
+		if ((doctype.name.toLowerCase() === 'html' && doctype.publicId) || doctype.systemId) {
+			return [
+				{
+					severity: rule.severity,
+					message: messages('Never declarate obsolete Doctype'),
+					line: doctype.startLine,
+					col: doctype.startCol,
+					raw: doctype.raw,
+				},
+			];
+		}
+
+		return [];
 	},
 });
