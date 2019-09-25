@@ -32,7 +32,7 @@ test('missing doctype', async () => {
 	expect(r).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'error',
+			message: 'Missing doctype',
 			line: 1,
 			col: 1,
 			raw: '',
@@ -55,11 +55,11 @@ test('document fragment', async () => {
 	expect(r.length).toBe(0);
 });
 
-test('test', async () => {
+test('obsolete doctypes', async () => {
 	const r = await markuplint.verify(
 		`
-		<!doctype html>
-		<html></html>
+		<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+		<div></div>
 		`,
 		{
 			rules: {
@@ -69,42 +69,12 @@ test('test', async () => {
 		[rule],
 		'en',
 	);
-	expect(r).toStrictEqual([
-		{
-			severity: 'error',
-			message: 'error',
-			line: 1,
-			col: 1,
-			raw: '',
-			ruleId: 'doctype',
-		},
-	]);
-});
-
-test('"never"', async () => {
-	const r = await markuplint.verify(
-		'<html></html>',
-		{
-			rules: {
-				doctype: 'never',
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r.length).toBe(0);
-});
-
-test('"never" in document fragment', async () => {
-	const r = await markuplint.verify(
-		'<div></div>',
-		{
-			rules: {
-				doctype: 'never',
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r.length).toBe(0);
+	expect(r[0]).toStrictEqual({
+		severity: 'error',
+		raw: '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">',
+		line: 2,
+		col: 3,
+		message: 'Never declarate obsolete Doctype',
+		ruleId: 'doctype',
+	});
 });

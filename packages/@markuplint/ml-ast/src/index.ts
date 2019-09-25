@@ -33,6 +33,9 @@ export interface MLASTAbstructNode extends MLToken {
 
 export interface MLASTDoctype extends MLASTAbstructNode {
 	type: MLASTNodeType.Doctype;
+	name: string;
+	publicId: string;
+	systemId: string;
 }
 
 export interface MLASTElement extends MLASTAbstructNode {
