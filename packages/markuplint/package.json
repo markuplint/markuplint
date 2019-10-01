@@ -20,10 +20,7 @@
 	},
 	"devDependencies": {
 		"@types/cli-color": "^0.3.29",
-		"@types/get-stdin": "^7.0.0",
-		"@types/meow": "^5.0.0",
-		"@types/os-locale": "^4.0.2",
-		"@types/strip-ansi": "^5.2.1"
+		"@types/meow": "^5.0.0"
 	},
 	"dependencies": {
 		"@markuplint/file-resolver": "^1.0.0-alpha.8",
