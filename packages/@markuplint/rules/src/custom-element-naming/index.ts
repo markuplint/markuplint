@@ -25,6 +25,18 @@ const pcenChar = [
 ].join('|');
 export const rePCEN = new RegExp(`^[a-z](?:${pcenChar})*\\-(?:${pcenChar})*$`);
 
+// TODO: Ignore tags
+// const ignoreTags = [
+// 	'annotation-xml',
+// 	'color-profile',
+// 	'font-face',
+// 	'font-face-src',
+// 	'font-face-uri',
+// 	'font-face-format',
+// 	'font-face-name',
+// 	'missing-glyph',
+// ];
+
 export default createRule<string | null>({
 	name: 'custom-element-naming',
 	defaultValue: null,
