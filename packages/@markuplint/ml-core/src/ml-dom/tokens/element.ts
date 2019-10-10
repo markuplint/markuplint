@@ -1,6 +1,6 @@
 import { AnonymousNode, Document } from '../';
 import { MLASTElement, MLToken } from '@markuplint/ml-ast';
-import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode, MLDOMToken } from './';
+import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode, MLDOMText, MLDOMToken } from './';
 import { createSelector, getNode } from '../helper';
 import { IMLDOMElement } from '../types';
 import { RuleConfigValue } from '@markuplint/ml-config';
@@ -67,6 +67,23 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 
 	public fixNodeName(name: string) {
 		this._fixedNodeName = name;
+	}
+
+	public getChildElementsAndTextNodeWithoutWhitespaces() {
+		const filteredNodes: (MLDOMElement<T, O> | MLDOMText<T, O>)[] = [];
+		this.childNodes.forEach(node => {
+			if (node.type === 'Element') {
+				filteredNodes.push(node);
+			}
+			if (node.type === 'Text' && !node.isWhitespace()) {
+				filteredNodes.push(node);
+			}
+			if (node.type === 'OmittedElement') {
+				const children = node.getChildElementsAndTextNodeWithoutWhitespaces();
+				filteredNodes.push(...children);
+			}
+		});
+		return filteredNodes;
 	}
 
 	public get classList() {
