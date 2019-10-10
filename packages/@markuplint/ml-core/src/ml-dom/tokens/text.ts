@@ -22,6 +22,10 @@ export default class MLDOMText<T extends RuleConfigValue, O = null> extends MLDO
 		this.isRawText = this.parentNode ? rawTextElements.includes(this.parentNode.nodeName.toLowerCase()) : false;
 	}
 
+	public isWhitespace() {
+		return /^\s+$/.test(this.raw);
+	}
+
 	/**
 	 * @override
 	 */
