@@ -60,31 +60,36 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		document.setRule(null);
 	}
 
-	public optimizeOption(option: T | RuleConfig<T, O>): RuleInfo<T, O> {
-		if (typeof option === 'boolean') {
+	public optimizeOption(configSettings: T | RuleConfig<T, O>): RuleInfo<T, O> {
+		if (typeof configSettings === 'boolean') {
 			return {
-				disabled: !option,
+				disabled: !configSettings,
 				severity: this.defaultServerity,
 				value: this.defaultValue,
 				option: this.defaultOptions,
 			};
 		}
-		if (!Array.isArray(option) && typeof option === 'object' && option !== null) {
+		if (!Array.isArray(configSettings) && typeof configSettings === 'object' && configSettings !== null) {
 			return {
 				disabled: false,
-				severity: option.severity || this.defaultServerity,
-				value: option.value !== undefined ? option.value : this.defaultValue,
-				option:
-					this.defaultOptions !== null && typeof this.defaultOptions === 'object'
-						? Object.assign({}, this.defaultOptions, option.option || {})
-						: option.option || this.defaultOptions,
+				severity: configSettings.severity || this.defaultServerity,
+				value: configSettings.value !== undefined ? configSettings.value : this.defaultValue,
+				option: Array.isArray(this.defaultOptions)
+					? configSettings.option
+						? // prettier-ignore
+						  // @ts-ignore for "as" casting
+						  this.defaultOptions.concat(configSettings.option) as O
+						: this.defaultOptions
+					: this.defaultOptions !== null && typeof this.defaultOptions === 'object'
+						? { ...this.defaultOptions, ...(configSettings.option || {}) }
+						: configSettings.option || this.defaultOptions,
 			};
 		}
 		return {
 			disabled: false,
 			severity: this.defaultServerity,
 			// @ts-ignore TODO: Wait for fix to bug of type guards in TypeScript
-			value: option == null ? this.defaultValue : option,
+			value: configSettings == null ? this.defaultValue : configSettings,
 			option: this.defaultOptions,
 		};
 	}
