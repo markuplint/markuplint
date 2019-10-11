@@ -144,6 +144,12 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
+		const r7 = await markuplint.verify(
+			'<table><caption></caption><tfoot></tfoot><thead></thead><tbody></tbody></table>',
+			o,
+			[rule],
+			'en',
+		);
 		expect(r1).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
@@ -182,6 +188,24 @@ describe('verify', () => {
 				col: 57,
 				raw: '<tr>',
 				message: 'Invalid contents, "table" is unpermitted to contain "tr"',
+			},
+		]);
+		expect(r7).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<table>',
+				message: 'Invalid content, Require "tbody" element',
+			},
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 42,
+				raw: '<thead>',
+				message: 'Invalid contents, "table" is unpermitted to contain "thead"',
 			},
 		]);
 	});
