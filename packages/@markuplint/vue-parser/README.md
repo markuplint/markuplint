@@ -14,6 +14,19 @@ $ npm install @markuplint/vue-parser
 $ yarn add @markuplint/vue-parser
 ```
 
+## Usage
+
+Add `parser` option into your `.eslintrc.*` file.
+
+```json
+{
+	"extends": "eslint:recommended",
+	"parser": "vue-eslint-parser"
+}
+```
+
+`parserOptions` option is work in progress. current setting is `{ "sourceType": "module" }` that hard coded.
+
 ## Contributing
 
 ```
