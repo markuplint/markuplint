@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/vue-parser",
-	"version": "1.0.0-alpha.0",
+	"version": "1.0.0-alpha.1",
 	"description": "Vue parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -20,7 +20,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "^1.0.0-alpha.7",
-		"vue-eslint-parser": "^6.0.4",
-		"uuid": "^3.3.3"
+		"uuid": "^3.3.3",
+		"vue-eslint-parser": "^6.0.4"
 	}
 }
