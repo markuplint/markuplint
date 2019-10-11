@@ -1,0 +1,26 @@
+{
+	"name": "@markuplint/vue-parser",
+	"version": "1.0.0-alpha.0",
+	"description": "Vue parser for markuplint",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"private": false,
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsc",
+		"clean": "tsc --build --clean"
+	},
+	"devDependencies": {
+		"@types/uuid": "^3.4.5"
+	},
+	"dependencies": {
+		"@markuplint/ml-ast": "^1.0.0-alpha.7",
+		"vue-eslint-parser": "^6.0.4",
+		"uuid": "^3.3.3"
+	}
+}
