@@ -41,8 +41,20 @@ export async function fix(html: string, config: Config, rules: MLRule<RuleConfig
 }
 
 export interface MLCLIOption {
+	/**
+	 * Glob pattern
+	 */
 	files?: string;
+
+	/**
+	 * Target source code of evaluation
+	 */
 	sourceCodes?: string | string[];
+
+	/**
+	 * File names of `sourceCodes`
+	 */
+	names?: string | string[];
 	workspace?: string;
 	config?: string | Config;
 	specs?: string | MLMLSpec;
@@ -77,7 +89,8 @@ export async function exec(options: MLCLIOption) {
 		}
 	} else if (options.sourceCodes) {
 		const codes = Array.isArray(options.sourceCodes) ? options.sourceCodes : [options.sourceCodes];
-		files.push(...codes.map(code => getAnonymousFile(code, options.workspace)));
+		const names = Array.isArray(options.names) ? options.names : options.names ? [options.names] : [];
+		files.push(...codes.map((code, i) => getAnonymousFile(code, options.workspace, names[i])));
 	}
 
 	// Resolve configuration data
