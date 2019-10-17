@@ -1,0 +1,11 @@
+{
+	"tag": "html",
+	"contents": [
+		{
+			"require": "head"
+		},
+		{
+			"require": "body"
+		}
+	]
+}

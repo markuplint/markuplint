@@ -1,0 +1,49 @@
+{
+	"tag": "table",
+	"contents": [
+		{
+			"zeroOrMore": "#script-supporting"
+		},
+		{
+			"optional": "caption"
+		},
+		{
+			"zeroOrMore": "#script-supporting"
+		},
+		{
+			"zeroOrMore": "colgroup"
+		},
+		{
+			"zeroOrMore": "#script-supporting"
+		},
+		{
+			"optional": "thead"
+		},
+		{
+			"zeroOrMore": "#script-supporting"
+		},
+		{
+			"interleave": [
+				[
+					{
+						"optional": "tbody"
+					}
+				],
+				[
+					{
+						"oneOrMore": "tr"
+					}
+				]
+			]
+		},
+		{
+			"zeroOrMore": "#script-supporting"
+		},
+		{
+			"optional": "tfoot"
+		},
+		{
+			"zeroOrMore": "#script-supporting"
+		}
+	]
+}

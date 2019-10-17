@@ -1,0 +1,9 @@
+{
+	"tag": "th",
+	"contents": [
+		{
+			"zeroOrMore": "#flow",
+			"notAllowedDescendants": ["header", "footer", "#sectioning", "#heading"]
+		}
+	]
+}

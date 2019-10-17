@@ -1,5 +1,5 @@
 {
-	"tag": "aside",
+	"tag": "nav",
 	"contents": [
 		{
 			"zeroOrMore": "#flow"

@@ -1,0 +1,34 @@
+{
+	"tag": "div",
+	"conditional": [
+		{
+			"condition": {
+				"parent": "dl"
+			},
+			"contents": [
+				{
+					"interleave": [
+						[
+							{
+								"oneOrMore": "dt"
+							},
+							{
+								"oneOrMore": "dd"
+							}
+						],
+						[
+							{
+								"zeroOrMore": ["#script-supporting"]
+							}
+						]
+					]
+				}
+			]
+		}
+	],
+	"contents": [
+		{
+			"zeroOrMore": "#flow"
+		}
+	]
+}

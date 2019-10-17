@@ -1,0 +1,19 @@
+{
+	"tag": "summary",
+	"contents": [
+		{
+			"choice": [
+				[
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				],
+				[
+					{
+						"optional": "#heading"
+					}
+				]
+			]
+		}
+	]
+}

@@ -1,0 +1,22 @@
+{
+	"tag": "dl",
+	"contents": [
+		{
+			"interleave": [
+				[
+					{
+						"oneOrMore": "dt"
+					},
+					{
+						"oneOrMore": "dd"
+					}
+				],
+				[
+					{
+						"oneOrMore": ["div", "#script-supporting"]
+					}
+				]
+			]
+		}
+	]
+}

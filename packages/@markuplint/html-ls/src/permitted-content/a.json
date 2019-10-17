@@ -1,10 +1,20 @@
 {
-	"either": [
-		"#transparent",
+	"tag": "a",
+	"contents": [
 		{
-			"category": "flow",
-			"ignore": ["#interactive"]
-		},
-		"#phrasing"
+			"choice": [
+				[
+					{
+						"zeroOrMore": "#flow",
+						"notAllowedDescendants": ["#interactive"]
+					}
+				],
+				[
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
+			]
+		}
 	]
 }

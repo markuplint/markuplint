@@ -1,5 +1,5 @@
 {
-	"tag": "aside",
+	"tag": "dialog",
 	"contents": [
 		{
 			"zeroOrMore": "#flow"

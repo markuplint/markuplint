@@ -1,0 +1,8 @@
+{
+	"tag": "title",
+	"contents": [
+		{
+			"require": "#text"
+		}
+	]
+}

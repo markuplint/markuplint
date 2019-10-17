@@ -1,0 +1,11 @@
+{
+	"tag": "object",
+	"contents": [
+		{
+			"zeroOrMore": "param"
+		},
+		{
+			"zeroOrMore": "#transparent"
+		}
+	]
+}

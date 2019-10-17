@@ -1,0 +1,8 @@
+{
+	"tag": "slot",
+	"contents": [
+		{
+			"zeroOrMore": "#transparent"
+		}
+	]
+}

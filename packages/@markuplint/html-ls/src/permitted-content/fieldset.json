@@ -1,6 +1,9 @@
 {
-	"tag": "aside",
+	"tag": "fieldset",
 	"contents": [
+		{
+			"optional": "legend"
+		},
 		{
 			"zeroOrMore": "#flow"
 		}

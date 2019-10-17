@@ -1,8 +1,9 @@
 {
-	"either": [
+	"tag": "address",
+	"contents": [
 		{
-			"category": "flow",
-			"ignore": ["address", "#heading", "#sectioning", "header", "footer"]
+			"zeroOrMore": "#flow",
+			"notAllowedDescendants": ["address", "#heading", "#sectioning", "header", "footer"]
 		}
 	]
 }

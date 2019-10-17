@@ -1,6 +1,9 @@
 {
-	"tag": "aside",
+	"tag": "details",
 	"contents": [
+		{
+			"require": "summary"
+		},
 		{
 			"zeroOrMore": "#flow"
 		}

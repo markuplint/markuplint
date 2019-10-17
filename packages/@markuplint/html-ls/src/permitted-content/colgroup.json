@@ -1,0 +1,16 @@
+{
+	"tag": "colgroup",
+	"conditional": [
+		{
+			"condition": {
+				"hasAttr": "span"
+			},
+			"contents": false
+		}
+	],
+	"contents": [
+		{
+			"oneOrMore": "col"
+		}
+	]
+}

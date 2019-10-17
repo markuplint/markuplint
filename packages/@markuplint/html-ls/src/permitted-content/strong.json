@@ -1,5 +1,5 @@
 {
-	"tag": "aside",
+	"tag": "strong",
 	"contents": [
 		{
 			"zeroOrMore": "#flow"

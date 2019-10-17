@@ -1,0 +1,9 @@
+{
+	"tag": "meter",
+	"contents": [
+		{
+			"zeroOrMore": "#phrasing",
+			"notAllowedDescendants": ["meter"]
+		}
+	]
+}

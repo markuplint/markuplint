@@ -1,0 +1,9 @@
+{
+	"tag": "progress",
+	"contents": [
+		{
+			"zeroOrMore": "#phrasing",
+			"notAllowedDescendants": ["progress"]
+		}
+	]
+}

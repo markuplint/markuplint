@@ -1,0 +1,9 @@
+{
+	"tag": "dfn",
+	"contents": [
+		{
+			"zeroOrMore": "#phrasing",
+			"notAllowedDescendants": ["dfn"]
+		}
+	]
+}

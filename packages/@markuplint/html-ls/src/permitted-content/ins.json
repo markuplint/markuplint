@@ -1,0 +1,8 @@
+{
+	"tag": "ins",
+	"contents": [
+		{
+			"zeroOrMore": "#transparent"
+		}
+	]
+}

@@ -1,0 +1,41 @@
+{
+	"tag": "ruby",
+	"contents": [
+		{
+			"oneOrMore": [
+				{
+					"require": "#phrasing",
+					"notAllowedDescendants": ["ruby"]
+				},
+				{
+					"choice": [
+						[
+							{
+								"oneOrMore": "rt"
+							}
+						],
+						[
+							{
+								"oneOrMore": [
+									{
+										"require": "rp"
+									},
+									{
+										"oneOrMore": [
+											{
+												"require": "rt"
+											},
+											{
+												"require": "rp"
+											}
+										]
+									}
+								]
+							}
+						]
+					]
+				}
+			]
+		}
+	]
+}

@@ -1,5 +1,5 @@
 {
-	"tag": "abbr",
+	"tag": "legend",
 	"contents": [
 		{
 			"zeroOrMore": "#phrasing"

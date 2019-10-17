@@ -1,0 +1,8 @@
+{
+	"tag": "select",
+	"contents": [
+		{
+			"zeroOrMore": ["option", "optgroup"]
+		}
+	]
+}

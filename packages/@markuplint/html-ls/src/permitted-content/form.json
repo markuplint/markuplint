@@ -1,0 +1,9 @@
+{
+	"tag": "form",
+	"contents": [
+		{
+			"zeroOrMore": "#flow",
+			"notAllowedDescendants": ["form"]
+		}
+	]
+}

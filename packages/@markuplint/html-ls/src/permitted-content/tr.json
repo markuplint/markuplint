@@ -1,0 +1,8 @@
+{
+	"tag": "tr",
+	"contents": [
+		{
+			"zeroOrMore": ["th", "td", "#script-supporting"]
+		}
+	]
+}

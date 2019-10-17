@@ -1,0 +1,20 @@
+{
+	"tag": "picture",
+	"contents": [
+		{
+			"zeroOrMore": "#script-supporting"
+		},
+		{
+			"zeroOrMore": "source"
+		},
+		{
+			"zeroOrMore": "#script-supporting"
+		},
+		{
+			"require": "img"
+		},
+		{
+			"zeroOrMore": "#script-supporting"
+		}
+	]
+}

@@ -1,5 +1,5 @@
 {
-	"tag": "abbr",
+	"tag": "samp",
 	"contents": [
 		{
 			"zeroOrMore": "#phrasing"

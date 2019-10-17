@@ -1,0 +1,19 @@
+{
+	"tag": "head",
+	"contents": [
+		{
+			"interleave": [
+				[
+					{
+						"require": "title"
+					}
+				],
+				[
+					{
+						"zeroOrMore": "#metadata"
+					}
+				]
+			]
+		}
+	]
+}

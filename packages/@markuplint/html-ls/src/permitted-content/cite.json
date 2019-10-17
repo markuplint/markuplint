@@ -1,5 +1,5 @@
 {
-	"tag": "abbr",
+	"tag": "cite",
 	"contents": [
 		{
 			"zeroOrMore": "#phrasing"

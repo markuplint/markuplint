@@ -1,5 +1,5 @@
 {
-	"tag": "abbr",
+	"tag": "u",
 	"contents": [
 		{
 			"zeroOrMore": "#phrasing"

@@ -1,0 +1,8 @@
+{
+	"tag": "textarea",
+	"contents": [
+		{
+			"optional": "#text"
+		}
+	]
+}

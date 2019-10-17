@@ -1,0 +1,21 @@
+{
+	"tag": "noscript",
+	"conditional": [
+		{
+			"condition": {
+				"parent": "head"
+			},
+			"contents": [
+				{
+					"zeroOrMore": ["link", "style", "meta"]
+				}
+			]
+		}
+	],
+	"contents": [
+		{
+			"zeroOrMore": "#transparent",
+			"notAllowedDescendants": ["noscript"]
+		}
+	]
+}

@@ -1,0 +1,8 @@
+{
+	"tag": "rp",
+	"contents": [
+		{
+			"zeroOrMore": "#text"
+		}
+	]
+}

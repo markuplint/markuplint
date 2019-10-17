@@ -1,0 +1,8 @@
+{
+	"tag": "thead",
+	"contents": [
+		{
+			"zeroOrMore": "tr"
+		}
+	]
+}

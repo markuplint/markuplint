@@ -1,3 +1,8 @@
 {
-	"zeroOrMore": "li"
+	"tag": "ul",
+	"contents": [
+		{
+			"zeroOrMore": "li"
+		}
+	]
 }

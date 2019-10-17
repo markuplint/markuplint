@@ -1,0 +1,9 @@
+{
+	"tag": "button",
+	"contents": [
+		{
+			"zeroOrMore": "#phrasing",
+			"notAllowedDescendants": ["#interactive"]
+		}
+	]
+}

@@ -1,0 +1,8 @@
+{
+	"tag": "menu",
+	"contents": [
+		{
+			"zeroOrMore": ["li", "#script-supporting"]
+		}
+	]
+}

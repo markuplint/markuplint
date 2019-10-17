@@ -1,0 +1,8 @@
+{
+	"tag": "tfoot",
+	"contents": [
+		{
+			"zeroOrMore": "tr"
+		}
+	]
+}

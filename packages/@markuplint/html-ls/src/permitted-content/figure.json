@@ -1,0 +1,19 @@
+{
+	"tag": "figure",
+	"contents": [
+		{
+			"interleave": [
+				[
+					{
+						"optional": "figcaption"
+					}
+				],
+				[
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
+			]
+		}
+	]
+}

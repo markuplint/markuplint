@@ -1,0 +1,9 @@
+{
+	"tag": "footer",
+	"contents": [
+		{
+			"zeroOrMore": "#flow",
+			"notAllowedDescendants": ["header", "footer"]
+		}
+	]
+}
