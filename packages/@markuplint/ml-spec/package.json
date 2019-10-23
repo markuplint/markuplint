@@ -15,9 +15,10 @@
 		"build": "tsc",
 		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean",
-		"schema": "typescript-json-schema -o schema.json --ignoreErrors src/types.ts MLMLSpec; prettier --write schema.json"
+		"schema": "json2ts ./schemas/permitted-structures.schema.json > ./src/permitted-structres.ts; prettier --write ./src/permitted-structres.ts; eslint --fix --config ../../../.eslintrc ./src/permitted-structres.ts"
 	},
 	"devDependencies": {
-		"typescript-json-schema": "^0.40.0"
+		"typescript-json-schema": "^0.40.0",
+		"json-schema-to-typescript": "^7.1.0"
 	}
 }

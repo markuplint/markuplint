@@ -1,3 +1,5 @@
+import { ContentModel, PermittedStructuresSchema } from './permitted-structres';
+
 /**
  * markuplit Markup-language spec
  */
@@ -12,6 +14,7 @@ export interface MLMLSpec {
 		'#globalAttrs'?: Attribute[];
 		'#roles'?: ARIRRoleAttribute[];
 		'#ariaAttrs'?: ARIAAttribute[];
+		'#contentModels'?: { [model in ContentModel]?: string[] };
 	};
 	specs: ElementSpec[];
 }
@@ -62,12 +65,12 @@ export type ElementSpec = {
 	/**
 	 * Element cateogries
 	 */
-	categories: ElementCategories;
+	categories: ContentModel[];
 
 	/**
-	 * Permitted content
+	 * Permitted contents and permitted parents
 	 */
-	permittedContent: PermittedContentSpec;
+	permittedStructures: PermittedStructuresSchema;
 
 	/**
 	 * Permitted ARIA roles
@@ -88,68 +91,16 @@ export type ElementSpec = {
 	attributes: (AttributeSpec | string)[];
 };
 
-export type ElementCategories = (
-	| ElementCategory
-	| {
-			category: ElementCategory;
-			condition: ElementCondition;
-	  })[];
+type PermittedRolesSpec = {};
 
-/**
- * Element Category
- *
- * @cite https://html.spec.whatwg.org/multipage/dom.html#kinds-of-content
- */
-export type ElementCategory =
-	| 'transparent'
-	| 'metadata'
-	| 'flow'
-	| 'sectioning'
-	| 'heading'
-	| 'phrasing'
-	| 'embedded'
-	| 'interactive'
-	| 'palpable'
-	| 'script-supporting';
-
-export type PermittedContentSpec = {
-	summary: string;
-	content: PermittedContent | ConditionalPermittedContent;
-};
-
-export type PermittedContent =
-	| boolean
-	| PermittedContentEitherElements
-	| {
-			only: string;
-	  }
-	| {
-			zeroOrMore: string | string[];
-			then?: PermittedContentEitherElements;
-	  };
-
-export type ConditionalPermittedContent = {
-	if: {
-		hasAttr?: string;
-	};
-	then: PermittedContent;
-	else?: PermittedContent;
-};
-
-export type PermittedContentEitherElements = {
-	either: (string | { category: ElementCategory; ignore: string[] })[];
-};
-
-export type PermittedRolesSpec = {};
-
-export type ElementSpecOmittion = false | ElementSpecOmittionTags;
+type ElementSpecOmittion = false | ElementSpecOmittionTags;
 
 type ElementSpecOmittionTags = {
 	startTag: boolean | ElementCondition;
 	endTag: boolean | ElementCondition;
 };
 
-export type ElementCondition = {
+type ElementCondition = {
 	__WIP__: 'WORK_IN_PROGRESS';
 };
 
@@ -168,7 +119,7 @@ export type AttributeSpec = Attribute & {
 	required?: true;
 };
 
-export type AttributeCtegory = 'global' | 'xml' | 'aria' | 'eventhandler' | 'form' | 'particular';
+type AttributeCtegory = 'global' | 'xml' | 'aria' | 'eventhandler' | 'form' | 'particular';
 
 export type AttributeValue = 'string' | 'space-separated-tokens' | 'function-body' | 'uint' | 'int' | 'float';
 

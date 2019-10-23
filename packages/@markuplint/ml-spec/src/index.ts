@@ -1,4 +1,7 @@
-import { ElementCategories, MLMLSpec } from './types';
+import { ContentModel, PermittedStructuresSchema } from './permitted-structres';
+import { MLMLSpec } from './types';
+
+export * from './permitted-structres';
 export * from './types';
 
 export interface SpecOM {
@@ -10,7 +13,8 @@ export interface MLDOMElementSpec {
 	obsolete: boolean | string;
 	deprecated: boolean;
 	nonStandard: boolean;
-	categories: ElementCategories;
+	categories: ContentModel[];
+	permittedStructures: PermittedStructuresSchema;
 }
 
 export function getSpecOM({ specs }: MLMLSpec): SpecOM {
@@ -22,6 +26,7 @@ export function getSpecOM({ specs }: MLMLSpec): SpecOM {
 			deprecated: !!el.deprecated,
 			nonStandard: !!el.nonStandard,
 			categories: el.categories,
+			permittedStructures: el.permittedStructures,
 		};
 	}
 	return som;
