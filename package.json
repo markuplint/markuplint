@@ -11,6 +11,7 @@
 		"test:unit": "jest",
 		"lint": "eslint --fix ./packages/**/*.ts",
 		"schema": "lerna run schema",
+		"gen": "cd packages/\\@markuplint/html-ls/; yarn gen",
 		"all": "yarn lint; yarn clean; yarn build; yarn schema; yarn test:clear; yarn test;",
 		"cli": "./packages/markuplint/bin/markuplint",
 		"site:dev": "cd website; yarn site:dev",
@@ -40,14 +41,6 @@
 			"packages/markuplint/src/**/*.ts",
 			"packages/@markuplint/*/src/**/*.ts"
 		]
-	},
-	"prettier": {
-		"printWidth": 120,
-		"tabWidth": 4,
-		"useTabs": true,
-		"singleQuote": true,
-		"trailingComma": "all",
-		"bracketSpacing": true
 	},
 	"workspaces": [
 		"packages/*",
