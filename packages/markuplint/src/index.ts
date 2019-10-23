@@ -134,6 +134,7 @@ export async function exec(options: MLCLIOption) {
 	} else {
 		// @ts-ignore
 		const json = await import('@markuplint/html-ls');
+		// @ts-ignore
 		specs = json.default;
 	}
 

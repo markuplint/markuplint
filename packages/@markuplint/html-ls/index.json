@@ -1,5 +1,5 @@
 {
-	"$schema": "https://raw.githubusercontent.com/markuplint/markuplint/next/packages/%40markuplint/ml-spec/schema.json",
+	"$schema": "./ml-specs.schema.json",
 	"cites": [
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
@@ -1213,26 +1213,214 @@
 				"type": "property",
 				"value": "string"
 			}
-		]
+		],
+		"#contentModels": {
+			"#metadata": ["base", "link", "meta", "noscript", "script", "style", "template", "title"],
+			"#flow": [
+				"a",
+				"abbr",
+				"address",
+				"article",
+				"aside",
+				"audio",
+				"b",
+				"bdo",
+				"bdi",
+				"blockquote",
+				"br",
+				"button",
+				"canvas",
+				"cite",
+				"code",
+				"data",
+				"datalist",
+				"del",
+				"details",
+				"dfn",
+				"div",
+				"dl",
+				"em",
+				"embed",
+				"fieldset",
+				"figure",
+				"footer",
+				"form",
+				"h1",
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"header",
+				"hgroup",
+				"hr",
+				"i",
+				"iframe",
+				"img",
+				"input",
+				"ins",
+				"kbd",
+				"label",
+				"main",
+				"map",
+				"mark",
+				"math",
+				"menu",
+				"meter",
+				"nav",
+				"noscript",
+				"object",
+				"ol",
+				"output",
+				"p",
+				"pre",
+				"progress",
+				"q",
+				"ruby",
+				"s",
+				"samp",
+				"script",
+				"section",
+				"select",
+				"small",
+				"span",
+				"strong",
+				"sub",
+				"sup",
+				"svg",
+				"table",
+				"template",
+				"textarea",
+				"time",
+				"ul",
+				"var",
+				"video",
+				"wbr",
+				"#custom",
+				"#text",
+				"area@map",
+				"link[itemprop]",
+				"link[rel=dns-prefetch]",
+				"link[rel=modulepreload]",
+				"link[rel=pingback]",
+				"link[rel=preconnect]",
+				"link[rel=prefetch]",
+				"link[rel=preload]",
+				"link[rel=prerender]",
+				"link[rel=stylesheet]",
+				"meta[itemprop]"
+			],
+			"#sectioning": ["article", "aside", "nav", "section"],
+			"#heading": ["h1", "h2", "h3", "h4", "h5", "h6", "hgroup"],
+			"#phrasing": [
+				"abbr",
+				"audio",
+				"b",
+				"bdo",
+				"br",
+				"button",
+				"canvas",
+				"cite",
+				"code",
+				"data",
+				"datalist",
+				"dfn",
+				"em",
+				"embed",
+				"i",
+				"iframe",
+				"img",
+				"input",
+				"kbd",
+				"label",
+				"mark",
+				"math",
+				"meter",
+				"noscript",
+				"object",
+				"output",
+				"progress",
+				"q",
+				"ruby",
+				"samp",
+				"script",
+				"select",
+				"small",
+				"span",
+				"strong",
+				"sub",
+				"sup",
+				"svg",
+				"textarea",
+				"time",
+				"var",
+				"video",
+				"wbr",
+				"#text",
+				"a",
+				"area@map",
+				"del",
+				"ins",
+				"link[itemprop]",
+				"link[rel=dns-prefetch]",
+				"link[rel=modulepreload]",
+				"link[rel=pingback]",
+				"link[rel=preconnect]",
+				"link[rel=prefetch]",
+				"link[rel=preload]",
+				"link[rel=prerender]",
+				"link[rel=stylesheet]",
+				"map",
+				"meta[itemprop]"
+			],
+			"#embedded": ["audio", "canvas", "embed", "iframe", "img", "math", "object", "svg", "video"],
+			"#interactive": [
+				"a[href]",
+				"audio[controls]",
+				"button",
+				"details",
+				"embed",
+				"iframe",
+				"img[usemap]",
+				"input:not([hidden])",
+				"label",
+				"object[usemap]",
+				"select",
+				"textarea",
+				"video[controls]",
+				"*[tabindex]"
+			],
+			"#palpable": [],
+			"#transparent": [],
+			"#script-supporting": ["script", "template"]
+		}
 	},
 	"specs": [
 		{
 			"name": "a",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a",
-			"description": "The HTML <a> element (or anchor element) creates a hyperlink to other web pages, files, locations within the same page, email addresses, or any other URL.",
-			"categories": ["flow", "phrasing", "interactive", "palpable"],
-			"permittedContent": {
+			"description": "The HTML <a> element (or anchor element), with its href attribute, creates a hyperlink to web pages, files, email addresses, locations in the same page, or anything else a URL can address.Content within each <a> should indicate the link's destination.",
+			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
+			"permittedStructures": {
 				"summary": "Transparent, containing either flow content (excluding interactive content) or phrasing content.",
-				"content": {
-					"either": [
-						"#transparent",
-						{
-							"category": "flow",
-							"ignore": ["#interactive"]
-						},
-						"#phrasing"
-					]
-				}
+				"tag": "a",
+				"contents": [
+					{
+						"choice": [
+							[
+								{
+									"zeroOrMore": "#flow",
+									"notAllowedDescendants": ["#interactive"]
+								}
+							],
+							[
+								{
+									"zeroOrMore": "#phrasing"
+								}
+							]
+						]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "button, checkbox, menuitem, menuitemcheckbox, menuitemradio, option, radio, switch, tab, treeitem",
@@ -1332,12 +1520,15 @@
 			"name": "abbr",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr",
 			"description": "The HTML Abbreviation element (<abbr>) represents an abbreviation or acronym; the optional title attribute can provide an expansion or description for the abbreviation. If present, title must contain this full description and nothing else.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content",
-				"content": {
-					"only": "#phrasing"
-				}
+				"tag": "abbr",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -1352,9 +1543,10 @@
 			"description": "",
 			"obsolete": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "acronym",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -1367,17 +1559,16 @@
 			"name": "address",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address",
 			"description": "The HTML <address> element indicates that the enclosed HTML provides contact information for a person or people, or for an organization.",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "Flow content, but with no nested <address> element, no heading content (<hgroup>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6>), no sectioning content (<article>, <aside>, <section>, <nav>), and no <header> or <footer> element.",
-				"content": {
-					"either": [
-						{
-							"category": "flow",
-							"ignore": ["address", "#heading", "#sectioning", "header", "footer"]
-						}
-					]
-				}
+				"tag": "address",
+				"contents": [
+					{
+						"zeroOrMore": "#flow",
+						"notAllowedDescendants": ["address", "#heading", "#sectioning", "header", "footer"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -1391,15 +1582,11 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/applet",
 			"description": "The obsolete HTML Applet Element (<applet>) embeds a Java applet into the document; this element has been deprecated in favor of <object>.",
 			"obsolete": true,
-			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"permittedStructures": {
 				"summary": "Zero or more <param> elements, then transparent.",
-				"content": {
-					"zeroOrMore": "param",
-					"then": {
-						"either": ["#transparent"]
-					}
-				}
+				"tag": "applet",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -1505,10 +1692,12 @@
 			"name": "area",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area",
 			"description": "",
-			"categories": ["flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": false
+				"tag": "aera",
+				"contents": false,
+				"ancestor": "map"
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -1518,13 +1707,6 @@
 			"attributes": [
 				"#globalAttrs",
 				"#ariaAttrs",
-				{
-					"name": "accesskey",
-					"description": "WIP",
-					"obsolete": true,
-					"category": "particular",
-					"value": "WIP"
-				},
 				{
 					"name": "alt",
 					"description": "WIP",
@@ -1619,13 +1801,16 @@
 		{
 			"name": "article",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article",
-			"description": "",
-			"categories": ["flow", "sectioning", "palpable"],
-			"permittedContent": {
+			"description": "The HTML <article> element represents a self-contained composition in a document, page, application, or site, which is intended to be independently distributable or reusable (e.g., in syndication). Examples include: a forum post, a magazine or newspaper article, or a blog entry.",
+			"categories": ["#flow", "#sectioning", "#palpable"],
+			"permittedStructures": {
 				"summary": "Flow content.",
-				"content": {
-					"either": ["#flow"]
-				}
+				"tag": "article",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "application, document, feed, main, presentation, region",
@@ -1638,12 +1823,15 @@
 			"name": "aside",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside",
 			"description": "The HTML <aside> element represents a portion of a document whose content is only indirectly related to the document's main content. Asides are frequently presented as sidebars or call-out boxes.",
-			"categories": ["flow", "sectioning", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#sectioning", "#palpable"],
+			"permittedStructures": {
 				"summary": "Flow content.",
-				"content": {
-					"either": ["#flow"]
-				}
+				"tag": "aside",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "feed, note, presentation, region, search",
@@ -1656,36 +1844,38 @@
 			"name": "audio",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio",
 			"description": "The HTML <audio> element is used to embed sound content in documents. It may contain one or more audio sources, represented using the src attribute or the <source> element: the browser will choose the most suitable one. It can also be the destination for streamed media, using a MediaStream.",
-			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"permittedContent": {
-				"summary": "If the element has a src attribute: zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.\n    Else: zero or more <source> elements followed by zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.",
-				"content": {
-					"if": {
-						"hasAttr": "src"
-					},
-					"then": {
-						"zeroOrMore": "track",
-						"then": {
-							"either": [
-								{
-									"category": "transparent",
-									"ignore": ["track", "audio", "video"]
-								}
-							]
-						}
-					},
-					"else": {
-						"zeroOrMore": ["source", "track"],
-						"then": {
-							"either": [
-								{
-									"category": "transparent",
-									"ignore": ["source", "track", "audio", "video"]
-								}
-							]
-						}
+			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"permittedStructures": {
+				"summary": "If the element has a src attribute: zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.\n\t\t\tElse: zero or more <source> elements followed by zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.",
+				"tag": "audio",
+				"conditional": [
+					{
+						"condition": {
+							"hasAttr": "src"
+						},
+						"contents": [
+							{
+								"zeroOrMore": "track"
+							},
+							{
+								"zeroOrMore": "#transparent",
+								"notAllowedDescendants": ["audio", "video"]
+							}
+						]
 					}
-				}
+				],
+				"contents": [
+					{
+						"zeroOrMore": "source"
+					},
+					{
+						"zeroOrMore": "track"
+					},
+					{
+						"zeroOrMore": "#transparent",
+						"notAllowedDescendants": ["source", "audio", "video"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "application",
@@ -1709,6 +1899,25 @@
 				},
 				{
 					"name": "crossorigin",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "currentTime",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "disableRemotePlayback",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "duration",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -1743,10 +1952,15 @@
 			"name": "b",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b",
 			"description": "The HTML Bring Attention To element (<b>)  is used to draw the reader's attention to the element's contents, which are not otherwise granted special importance. This was formerly known as the Boldface element, and most browsers still draw the text in boldface. However, you should not use <b> for styling text; instead, you should use the CSS font-weight property to create boldface text, or the <strong> element to indicate that text is of special importance.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "b",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -1758,11 +1972,12 @@
 		{
 			"name": "base",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base",
-			"description": "",
-			"categories": ["metadata"],
-			"permittedContent": {
+			"description": "The HTML <base> element specifies the base URL to use for all relative URLs in a document. There can be only one <base> element in a document.",
+			"categories": ["#metadata"],
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "base",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -1792,9 +2007,10 @@
 			"description": "The obsolete HTML Base Font element (<basefont>) sets a default font face, size, and color for the other elements which are descended from its parent element. With this set, the font's size can then be varied relative to the base size using the <font> element.",
 			"obsolete": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "basefont",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -1828,10 +2044,15 @@
 			"name": "bdi",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi",
 			"description": "The HTML Bidirectional Isolate element (<bdi>)  tells the browser's bidirectional algorithm to treat the text it contains in isolation from its surrounding text. It's particularly useful when a website dynamically inserts some text and doesn't know the directionality of the text being inserted.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "bdi",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -1844,10 +2065,15 @@
 			"name": "bdo",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo",
 			"description": "The HTML Bidirectional Text Override element (<bdo>) overrides the current directionality of text, so that the text within is rendered in a different direction.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "bdo",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -1872,9 +2098,10 @@
 			"obsolete": true,
 			"nonStandard": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "bgsound",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -1916,9 +2143,10 @@
 			"description": "The obsolete HTML Big Element (<big>) renders the enclosed text at a font size one level larger than the surrounding text (medium becomes large, for example). The size is capped at the browser's maximum permitted font size.",
 			"obsolete": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "big",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -1934,9 +2162,10 @@
 			"obsolete": true,
 			"deprecated": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "blink",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -1949,10 +2178,15 @@
 			"name": "blockquote",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote",
 			"description": "",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "Flow content.",
-				"content": true
+				"tag": "blockquote",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -1973,11 +2207,16 @@
 		{
 			"name": "body",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body",
-			"description": "",
+			"description": "The HTML <body> Element represents the content of an HTML document. There can be only one <body> element in a document.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Flow content.",
-				"content": true
+				"tag": "body",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2172,10 +2411,11 @@
 			"name": "br",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br",
 			"description": "",
-			"categories": ["flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "br",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2196,11 +2436,17 @@
 		{
 			"name": "button",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button",
-			"description": "The HTML <button> element represents a clickable button, which can be used in forms or anywhere in a document that needs simple, standard button functionality. By default, HTML buttons are typically presented in a style similar to that of the host platform the user agent is running on, but you can change the appearance of the button using CSS.",
-			"categories": ["flow", "phrasing", "interactive", "palpable"],
-			"permittedContent": {
+			"description": "The HTML <button> element represents a clickable button, which can be used in forms or anywhere in a document that needs simple, standard button functionality. By default, HTML buttons are typically presented in a style similar to that of the host platform the user agent is running on, but you can change buttons’ appearance with CSS.",
+			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content but there must be no Interactive content",
-				"content": true
+				"tag": "button",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing",
+						"notAllowedDescendants": ["#interactive"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "checkbox, link, menuitem, menuitemcheckbox, menuitemradio, radio, switch, tab",
@@ -2289,10 +2535,11 @@
 			"name": "canvas",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas",
 			"description": "",
-			"categories": ["flow", "phrasing", "embedded", "palpable"],
-			"permittedContent": {
-				"summary": "Transparent but with no interactive content descendants except for <a> elements, <button> elements, <input> elements whose type attribute is checkbox, radio, or button.",
-				"content": true
+			"categories": ["#flow", "#phrasing", "#embedded", "#palpable"],
+			"permittedStructures": {
+				"summary": "WIP",
+				"tag": "canvas",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2329,9 +2576,14 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption",
 			"description": "The HTML Table Caption element (<caption>) specifies the caption (or title) of a table, and if used is always the first child of a <table>. Its styling and physical position relative to the table may be changed using the CSS caption-side and text-align properties.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Flow content.",
-				"content": true
+				"tag": "caption",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2356,9 +2608,10 @@
 			"description": "The obsolete HTML Center Element (<center>) is a block-level element that displays its block-level or inline contents centered horizontally within its containing element. The container is usually, but isn't required to be, <body>.",
 			"obsolete": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "center",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -2371,10 +2624,15 @@
 			"name": "cite",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite",
 			"description": "The HTML Citation element (<cite>) is used to describe a reference to a cited creative work, and must include the title of that work. The reference may be in an abbreviated form according to context-appropriate conventions related to citation metadata.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "cite",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2387,10 +2645,15 @@
 			"name": "code",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code",
 			"description": "The HTML <code> element displays its contents styled in a fashion intended to indicate that the text is a short fragment of computer code. By default, the content text is displayed using the user agent's default monospace font.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "code",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2404,9 +2667,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col",
 			"description": "",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "col",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2475,9 +2739,22 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup",
 			"description": "",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "If the span attribute is present: none, it is an empty element.\n    If the attribute is not present: zero or more <col> element",
-				"content": true
+				"tag": "colgroup",
+				"conditional": [
+					{
+						"condition": {
+							"hasAttr": "span"
+						},
+						"contents": false
+					}
+				],
+				"contents": [
+					{
+						"oneOrMore": "col"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2546,10 +2823,11 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/command",
 			"description": "The HTML Command element (<command>) represents a command which the user can invoke. Commands are often used as part of a context menu or toolbar. However, they can be used anywhere on the page.",
 			"obsolete": true,
-			"categories": ["metadata", "flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#metadata", "#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "command",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -2602,10 +2880,11 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/content",
 			"description": "The HTML <content> element—an obsolete part of the Web Components suite of technologies—was used inside of Shadow DOM as an insertion point, and wasn't meant to be used in ordinary HTML. It has now been replaced by the <slot> element, which creates a point in the DOM at which a shadow DOM can be inserted.",
 			"deprecated": true,
-			"categories": ["transparent"],
-			"permittedContent": {
+			"categories": ["#transparent"],
+			"permittedStructures": {
 				"summary": "Flow content.",
-				"content": true
+				"tag": "content",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -2627,10 +2906,15 @@
 			"name": "data",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data",
 			"description": "",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "data",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -2652,10 +2936,26 @@
 			"name": "datalist",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist",
 			"description": "",
-			"categories": ["flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "Either phrasing content or zero or more <option> elements.",
-				"content": true
+				"tag": "datalist",
+				"contents": [
+					{
+						"choice": [
+							[
+								{
+									"zeroOrMore": "#phrasing"
+								}
+							],
+							[
+								{
+									"zeroOrMore": "option"
+								}
+							]
+						]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2667,11 +2967,16 @@
 		{
 			"name": "dd",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd",
-			"description": "The HTML <dd> element provides the details about or the definition of the preceding term (<dt>) in a description list (<dl>).",
+			"description": "The HTML <dd> element provides the description, definition, or value for the preceding term (<dt>) in a description list (<dl>).",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Flow content.",
-				"content": true
+				"tag": "dd",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2694,10 +2999,15 @@
 			"name": "del",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del",
 			"description": "The HTML <del> element represents a range of text that has been deleted from a document. This can be used when rendering \"track changes\" or source code diff information, for example. The <ins> element can be used for the opposite purpose: to indicate text that has been added to the document.",
-			"categories": ["flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "Transparent.",
-				"content": true
+				"tag": "del",
+				"contents": [
+					{
+						"zeroOrMore": "#transparent"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2725,10 +3035,18 @@
 			"name": "details",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details",
 			"description": "The HTML Details Element (<details>) creates a disclosure widget in which information is visible only when the widget is toggled into an \"open\" state. A summary or label can be provided using the <summary> element.",
-			"categories": ["flow", "interactive", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#interactive", "#palpable"],
+			"permittedStructures": {
 				"summary": "One <summary> element followed by flow content.",
-				"content": true
+				"tag": "details",
+				"contents": [
+					{
+						"require": "summary"
+					},
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2750,10 +3068,16 @@
 			"name": "dfn",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn",
 			"description": "The HTML Definition element (<dfn>) is used to indicate the term being defined within the context of a definition phrase or sentence. The <p> element, the <dt>/<dd> pairing, or the <section> element which is the nearest ancestor of the <dfn> is considered to be the definition of the term.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content, but no <dfn> element must be a descendant.",
-				"content": true
+				"tag": "dfn",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing",
+						"notAllowedDescendants": ["dfn"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2766,10 +3090,15 @@
 			"name": "dialog",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
 			"description": "",
-			"categories": ["flow"],
-			"permittedContent": {
+			"categories": ["#flow"],
+			"permittedStructures": {
 				"summary": "Flow content",
-				"content": true
+				"tag": "dialog",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "alertdialog",
@@ -2793,9 +3122,10 @@
 			"description": "The obsolete HTML Directory element (<dir>) is used as a container for a directory of files and/or folders, potentially with styles and icons applied by the user agent. Do not use this obsolete element; instead, you should use the <ul> element for lists, including lists of files.",
 			"obsolete": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "dir",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -2808,10 +3138,41 @@
 			"name": "div",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
 			"description": "The HTML Content Division element (<div>) is the generic container for flow content. It has no effect on the content or layout until styled using CSS.",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
-				"summary": "Flow content.\n    Or (in WHATWG HTML): If the parent is a <dl> element: one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.",
-				"content": true
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
+				"summary": "Flow content.\n    Or (in WHATWG HTML): If the parent is a <dl> element: one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.",
+				"tag": "div",
+				"conditional": [
+					{
+						"condition": {
+							"parent": "dl"
+						},
+						"contents": [
+							{
+								"interleave": [
+									[
+										{
+											"oneOrMore": "dt"
+										},
+										{
+											"oneOrMore": "dd"
+										}
+									],
+									[
+										{
+											"zeroOrMore": ["#script-supporting"]
+										}
+									]
+								]
+							}
+						]
+					}
+				],
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2824,10 +3185,29 @@
 			"name": "dl",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl",
 			"description": "",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "\n    Either: Zero or more groups each consisting of one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.\n     Or: One or more <div> elements, optionally intermixed with <script> and <template> elements.\n   ",
-				"content": true
+				"tag": "dl",
+				"contents": [
+					{
+						"interleave": [
+							[
+								{
+									"oneOrMore": "dt"
+								},
+								{
+									"oneOrMore": "dd"
+								}
+							],
+							[
+								{
+									"oneOrMore": ["div", "#script-supporting"]
+								}
+							]
+						]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -2841,9 +3221,15 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt",
 			"description": "The HTML <dt> element specifies a term in a description or definition list, and as such must be used inside a <dl> element. It is usually followed by a <dd> element; however, multiple <dt> elements in a row indicate several terms that are all defined by the immediate next <dd> element.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Flow content, but with no <header>, <footer>, sectioning content or heading content descendants.",
-				"content": true
+				"tag": "dt",
+				"contents": [
+					{
+						"zeroOrMore": "#flow",
+						"notAllowedDescendants": ["header", "footer", "#sectioning", "#heading"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -2857,10 +3243,11 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/element",
 			"description": "The obsolete HTML <element> element was part of the Web Components specification; it was intended to be used to define new custom DOM elements. It was removed in favor of a JavaScript-driven approach for creating new custom elements.",
 			"obsolete": true,
-			"categories": ["transparent"],
-			"permittedContent": {
+			"categories": ["#transparent"],
+			"permittedStructures": {
 				"summary": "???",
-				"content": true
+				"tag": "element",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -2873,10 +3260,15 @@
 			"name": "em",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em",
 			"description": "",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "em",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -2889,10 +3281,11 @@
 			"name": "embed",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed",
 			"description": "",
-			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "embed",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "application, document, img, presentation",
@@ -2932,10 +3325,18 @@
 			"name": "fieldset",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset",
 			"description": "",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "An optional <legend> element, followed by flow content.",
-				"content": true
+				"tag": "fieldset",
+				"contents": [
+					{
+						"optional": "legend"
+					},
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -2970,9 +3371,14 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption",
 			"description": "The HTML <figcaption> or Figure Caption element represents a caption or legend describing the rest of the contents of its parent <figure> element.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Flow content.",
-				"content": true
+				"tag": "figcaption",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -2985,10 +3391,26 @@
 			"name": "figure",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure",
 			"description": "The HTML <figure> (Figure With Optional Caption) element represents self-contained content, potentially with an optional caption, which is specified using the (<figcaption>) element. The figure, its caption, and its contents are referenced as a single unit.",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "A <figcaption> element, followed by flow content; or flow content followed by a <figcaption> element; or flow content.",
-				"content": true
+				"tag": "figure",
+				"contents": [
+					{
+						"interleave": [
+							[
+								{
+									"optional": "figcaption"
+								}
+							],
+							[
+								{
+									"zeroOrMore": "#flow"
+								}
+							]
+						]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -3003,9 +3425,10 @@
 			"description": "",
 			"obsolete": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "font",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -3017,11 +3440,17 @@
 		{
 			"name": "footer",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer",
-			"description": "",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"description": "The HTML <footer> element represents a footer for its nearest sectioning content or sectioning root element. A footer typically contains information about the author of the section, copyright data or links to related documents.",
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "Flow content, but with no <footer> or <header> descendants.",
-				"content": true
+				"tag": "footer",
+				"contents": [
+					{
+						"zeroOrMore": "#flow",
+						"notAllowedDescendants": ["header", "footer"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -3034,10 +3463,16 @@
 			"name": "form",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form",
 			"description": "",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "Flow content, but not containing <form> elements",
-				"content": true
+				"tag": "form",
+				"contents": [
+					{
+						"zeroOrMore": "#flow",
+						"notAllowedDescendants": ["form"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -3117,9 +3552,10 @@
 			"description": "",
 			"deprecated": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "frame",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -3179,9 +3615,10 @@
 			"description": "",
 			"deprecated": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "frameset",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -3209,10 +3646,11 @@
 			"name": "h1-h6",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
 			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
-			"categories": ["flow", "heading", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#heading", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "h1-h6",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation",
@@ -3226,9 +3664,25 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head",
 			"description": "The HTML <head> element contains machine-readable information (metadata) about the document, like its title, scripts, and style sheets.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "\n    If the document is an <iframe> srcdoc document, or if title information is available from a higher level protocol (like the subject line in HTML email), zero or more elements of metadata content.\n\n    Otherwise, one or more elements of metadata content where exactly one is a <title> element.\n   ",
-				"content": true
+				"tag": "head",
+				"contents": [
+					{
+						"interleave": [
+							[
+								{
+									"require": "title"
+								}
+							],
+							[
+								{
+									"zeroOrMore": "#metadata"
+								}
+							]
+						]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3250,11 +3704,17 @@
 		{
 			"name": "header",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header",
-			"description": "",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"description": "The HTML <header> element represents introductory content, typically a group of introductory or navigational aids. It may contain some heading elements but also a logo, a search form, an author name, and other elements.",
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "Flow content, but with no <header> or <footer> descendant.",
-				"content": true
+				"tag": "header",
+				"contents": [
+					{
+						"zeroOrMore": "#flow",
+						"notAllowedDescendants": ["header", "footer"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "group, presentation",
@@ -3267,10 +3727,11 @@
 			"name": "hgroup",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup",
 			"description": "",
-			"categories": ["flow", "heading", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#heading", "#palpable"],
+			"permittedStructures": {
 				"summary": "One or more <h1>, <h2>, <h3>, <h4>, <h5>, and/or <h6>.",
-				"content": true
+				"tag": "hr",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation",
@@ -3283,10 +3744,11 @@
 			"name": "hr",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr",
 			"description": "The HTML <hr> element represents a thematic break between paragraph-level elements: for example, a change of scene in a story, or a shift of topic within a section.",
-			"categories": ["flow"],
-			"permittedContent": {
+			"categories": ["#flow"],
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "hr",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "presentation",
@@ -3336,11 +3798,19 @@
 		{
 			"name": "html",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html",
-			"description": "",
+			"description": "The HTML <html> element represents the root (top-level element) of an HTML document, so it is also referred to as the root element. All other elements must be descendants of this element.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "One <head> element, followed by one <body> element.",
-				"content": true
+				"tag": "html",
+				"contents": [
+					{
+						"require": "head"
+					},
+					{
+						"require": "body"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3376,10 +3846,15 @@
 			"name": "i",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i",
 			"description": "",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "i",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -3392,10 +3867,11 @@
 			"name": "iframe",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe",
 			"description": "The HTML Inline Frame element (<iframe>) represents a nested browsing context, embedding another HTML page into the current one.",
-			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"permittedContent": {
-				"summary": "Fallback content, i.e. content that is normally not rendered, but that browsers not supporting the <iframe> element will render. (RSS readers and email clients often show the fallback content instead.)",
-				"content": true
+			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"permittedStructures": {
+				"summary": "None.",
+				"tag": "iframe",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "application, document, img",
@@ -3538,9 +4014,10 @@
 			"obsolete": true,
 			"nonStandard": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "image",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -3552,11 +4029,12 @@
 		{
 			"name": "img",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img",
-			"description": "The HTML <img> element embeds an image into the document. It is a replaced element.",
-			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"permittedContent": {
+			"description": "The HTML <img> element embeds an image into the document.",
+			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "img",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -3568,11 +4046,12 @@
 		{
 			"name": "input",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input",
-			"description": "The HTML <input> element is used to create interactive controls for web-based forms in order to accept data from the user; a wide variety of types of input data and control widgets are available, depending on the device and user agent.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"description": "The HTML <input> element is used to create interactive controls for web-based forms in order to accept data from the user; a wide variety of types of input data and control widgets are available, depending on the device and user agent. The <input> element is one of the most powerful and complex in all of HTML due to the sheer number of combinations of input types and attributes.",
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "input",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "\n    \n     type=button: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch, tab\n     type=checkbox: button, menuitemcheckbox, option, switch\n     type=image: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch\n     type=radio: menuitemradio\n     type=color|date|datetime|datetime-local|email|file: None\n     type=hidden|month|number|password|range|reset: None\n     type=search|submit|tel|text|url|week: None\n    \n   ",
@@ -3585,10 +4064,15 @@
 			"name": "ins",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins",
 			"description": "The HTML <ins> element represents a range of text that has been added to a document. You can use the <del> element to similarly represent a range of text that has been deleted from the document.",
-			"categories": ["flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "Transparent.",
-				"content": true
+				"tag": "ins",
+				"contents": [
+					{
+						"zeroOrMore": "#transparent"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -3618,9 +4102,10 @@
 			"description": "<isindex> is an obsolete HTML element that puts a text field in a page for querying the document. <isindex> was providing a single line text input for entering a query string. When sent, the server would return a list of pages matching the query. Its supports depended on both the browser and the server to react to the query.",
 			"obsolete": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "isindex",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -3633,10 +4118,15 @@
 			"name": "kbd",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd",
 			"description": "The HTML Keyboard Input element (<kbd>) represents a span of inline text denoting textual user input from a keyboard, voice input, or any other text entry device. By convention, the user agent defaults to rendering the contents of a <kbd> element using its default monospace font, although this is not mandated by the HTML standard.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "kbd",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -3649,11 +4139,12 @@
 			"name": "keygen",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/keygen",
 			"description": "",
-			"deprecated": true,
-			"categories": ["flow", "phrasing", "interactive", "palpable"],
-			"permittedContent": {
+			"obsolete": true,
+			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "keygen",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3705,10 +4196,16 @@
 			"name": "label",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label",
 			"description": "",
-			"categories": ["flow", "phrasing", "interactive", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content, but no descendant label elements. No labelable elements other than the labeled control are allowed.",
-				"content": true
+				"tag": "label",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing",
+						"notAllowedDescendants": ["label"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3737,9 +4234,14 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend",
 			"description": "",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "legend",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3751,11 +4253,16 @@
 		{
 			"name": "li",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li",
-			"description": "",
+			"description": "The HTML <li> element is used to represent an item in a list. It must be contained in a parent element: an ordered list (<ol>), an unordered list (<ul>), or a menu (<menu>). In menus and unordered lists, list items are usually displayed using bullet points. In ordered lists, they are usually displayed with an ascending counter on the left, such as a number or letter.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Flow content.",
-				"content": true
+				"tag": "li",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "menuitem, menuitemcheckbox, menuitemradio, option, presentation, radio, separator, tab, treeitem",
@@ -3784,10 +4291,11 @@
 			"name": "link",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link",
 			"description": "",
-			"categories": ["metadata", "flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#metadata", "#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "link",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3819,7 +4327,6 @@
 				{
 					"name": "disabled",
 					"description": "WIP",
-					"nonStandard": true,
 					"category": "particular",
 					"value": "WIP"
 				},
@@ -3922,9 +4429,10 @@
 			"description": "",
 			"obsolete": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "listing",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -3936,11 +4444,16 @@
 		{
 			"name": "main",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main",
-			"description": "",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"description": "The HTML <main> element represents the dominant content of the <body> of a document. The main content area consists of content that is directly related to or expands upon the central topic of a document, or the central functionality of an application.",
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "Flow content.",
-				"content": true
+				"tag": "main",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "The main role is applied to <main> by default, and the presentation role is permitted as well.",
@@ -3953,10 +4466,15 @@
 			"name": "map",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map",
 			"description": "",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Any transparent element.",
-				"content": true
+				"tag": "map",
+				"contents": [
+					{
+						"zeroOrMore": "#transparent"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -3978,10 +4496,15 @@
 			"name": "mark",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark",
 			"description": "The HTML Mark Text element (<mark>) represents text which is marked or highlighted for reference or notation purposes, due to the marked passage's relevance or importance in the enclosing context.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "mark",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -3994,11 +4517,11 @@
 			"name": "marquee",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/marquee",
 			"description": "",
-			"obsolete": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "marquee",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4082,10 +4605,15 @@
 			"description": "",
 			"experimental": true,
 			"deprecated": true,
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "If the element is in the list menu state: flow content, or alternatively, zero or more occurrences of <li>, <script>, and <template>.\n    If the element is in the context menu state: zero or more occurrences, in any order, of <menu> (context menu state only), <menuitem>, <hr>, <script>, and <template>.",
-				"content": true
+				"tag": "menu",
+				"contents": [
+					{
+						"zeroOrMore": ["li", "#script-supporting"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4116,9 +4644,10 @@
 			"description": "",
 			"deprecated": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "menuitem",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4182,10 +4711,11 @@
 			"name": "meta",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta",
 			"description": "",
-			"categories": ["metadata", "flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#metadata", "#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "meta",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4232,10 +4762,16 @@
 			"name": "meter",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter",
 			"description": "",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content, but there must be no <meter> element among its descendants.",
-				"content": true
+				"tag": "meter",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing",
+						"notAllowedDescendants": ["meter"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4296,9 +4832,10 @@
 			"obsolete": true,
 			"nonStandard": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "multicol",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4311,10 +4848,15 @@
 			"name": "nav",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav",
 			"description": "The HTML <nav> element represents a section of a page whose purpose is to provide navigation links, either within the current document or to other documents. Common examples of navigation sections are menus, tables of contents, and indexes.",
-			"categories": ["flow", "sectioning", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#sectioning", "#palpable"],
+			"permittedStructures": {
 				"summary": "Flow content.",
-				"content": true
+				"tag": "nav",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4329,9 +4871,10 @@
 			"description": "<nextid> is an obsolete HTML element that served to enable the NeXT web designing tool to generate automatic NAME labels for its anchors. It was generated by that web editing tool automatically and was not to be adjusted or entered by hand. This element has the distinction of being the first element to become one of the \"Lost Tags\" by being eliminated from the official public DTD's of the HTML versions. It is also probably one of the least understood of all of the early HTML elements.",
 			"deprecated": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "nextid",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4356,9 +4899,10 @@
 			"obsolete": true,
 			"nonStandard": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "nobr",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4374,9 +4918,10 @@
 			"obsolete": true,
 			"nonStandard": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "noembed",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4391,9 +4936,10 @@
 			"description": "The obsolete HTML No Frames or frame fallback element, <noframes>, provides content to be presented in browsers that don't support (or have disabled support for) the <frame> element. Although most commonly-used browsers support frames, there are exceptions, including certain special-use browsers including some mobile browsers, as well as text-mode browsers.",
 			"obsolete": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "noframes",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4406,10 +4952,28 @@
 			"name": "noscript",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript",
 			"description": "",
-			"categories": ["metadata", "flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#metadata", "#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "When scripting is disabled and when it is a descendant of the <head> element: in any order, zero or more <link> elements, zero or more <style> elements, and zero or more <meta> elements.\n    When scripting is disabled and when it isn't a descendant of the <head> element: any transparent content, but no <noscript> element must be among its descendants.\n    Otherwise: flow content or phrasing content.",
-				"content": true
+				"tag": "noscript",
+				"conditional": [
+					{
+						"condition": {
+							"parent": "head"
+						},
+						"contents": [
+							{
+								"zeroOrMore": ["link", "style", "meta"]
+							}
+						]
+					}
+				],
+				"contents": [
+					{
+						"zeroOrMore": "#transparent",
+						"notAllowedDescendants": ["noscript"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4422,10 +4986,18 @@
 			"name": "object",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object",
 			"description": "",
-			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"permittedStructures": {
 				"summary": "zero or more <param> elements, then transparent.",
-				"content": true
+				"tag": "object",
+				"contents": [
+					{
+						"zeroOrMore": "param"
+					},
+					{
+						"zeroOrMore": "#transparent"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "application, document, image",
@@ -4546,10 +5118,11 @@
 			"name": "ol",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol",
 			"description": "",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "Zero or more <li> elements, which in turn often contain nested <ol> or <ul> elements.",
-				"content": true
+				"tag": "ol",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "directory, group, listbox, menu, menubar, radiogroup, tablist, toolbar, tree, presentation",
@@ -4591,9 +5164,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup",
 			"description": "",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Zero or more <option> elements.",
-				"content": true
+				"tag": "optgroup",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4622,9 +5196,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option",
 			"description": "The HTML <option> element is used to define an item contained in a <select>, an <optgroup>, or a <datalist> element. As such, <option> can represent menu items in popups and other lists of items in an HTML document.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Text, possibly with escaped characters (like &eacute;).",
-				"content": true
+				"tag": "option",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4664,10 +5239,11 @@
 			"name": "output",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output",
 			"description": "The HTML Output element (<output>) is a container element into which a site or app can inject the results of a calculation or the outcome of a user action.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "output",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4701,10 +5277,11 @@
 			"name": "p",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p",
 			"description": "The HTML <p> element represents a paragraph. Paragraphs are usually represented in visual media as blocks of text separated from adjacent blocks by blank lines and/or first-line indentation, but HTML paragraphs can be any structural grouping of related content, such as images or form fields.",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "p",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4718,9 +5295,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param",
 			"description": "",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "param",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4761,11 +5339,28 @@
 		{
 			"name": "picture",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture",
-			"description": "The HTML <picture> element contains zero or more <source> elements and one <img> element to provide versions of an image for different display/device scenarios. The browser will consider each child <source> element and choose the best match among them; if no matches are found, the URL of the <img> element's src attribute is selected. The selected image is then presented in the space occupied by the <img> element.",
-			"categories": ["flow", "phrasing", "embedded"],
-			"permittedContent": {
+			"description": "The HTML <picture> element contains zero or more <source> elements and one <img> element to provide versions of an image for different display/device scenarios. The browser will consider each child <source> element and choose the best match among them; if no matches are found or the browser doesn't support the <picture> element, the URL of the <img> element's src attribute is selected. The selected image is then presented in the space occupied by the <img> element.",
+			"categories": ["#flow", "#phrasing", "#embedded"],
+			"permittedStructures": {
 				"summary": "Zero or more <source> elements, followed by one <img> element, optionally intermixed with script-supporting elements.",
-				"content": true
+				"tag": "picture",
+				"contents": [
+					{
+						"zeroOrMore": "#script-supporting"
+					},
+					{
+						"zeroOrMore": "source"
+					},
+					{
+						"zeroOrMore": "#script-supporting"
+					},
+					{
+						"require": "img"
+					},
+					{
+						"zeroOrMore": "#script-supporting"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4780,9 +5375,10 @@
 			"description": "The HTML Plaintext Element (<plaintext>) renders everything following the start tag as raw text, ignoring any following HTML. There is no closing tag, since everything after it is considered raw text.",
 			"obsolete": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "plaintext",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -4795,10 +5391,15 @@
 			"name": "pre",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre",
 			"description": "The HTML <pre> element represents preformatted text which is to be presented exactly as written in the HTML file. The text is typically rendered using a non-proportional (\"monospace\") font. Whitespace inside this element is displayed as written.",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "pre",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4836,10 +5437,16 @@
 			"name": "progress",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress",
 			"description": "",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content, but there must be no <progress> element among its descendants.",
-				"content": true
+				"tag": "progress",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing",
+						"notAllowedDescendants": ["progress"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -4867,10 +5474,15 @@
 			"name": "q",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q",
 			"description": "The HTML <q> element  indicates that the enclosed text is a short inline quotation. Most modern browsers implement this by surrounding the text in quotation marks. This element is intended for short quotations that don't require paragraph breaks; for long quotations use the <blockquote> element.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "q",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4893,9 +5505,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rb",
 			"description": "The HTML Ruby Base (<rb>) element is used to delimit the base text component of a  <ruby> annotation, i.e. the text that is being annotated. One <rb> element should wrap each separate atomic segment of the base text.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "As a child of a <ruby> element.",
-				"content": true
+				"tag": "rb",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4909,9 +5522,14 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp",
 			"description": "The HTML Ruby Fallback Parenthesis (<rp>) element is used to provide fall-back parentheses for browsers that do not support display of ruby annotations using the <ruby> element. One <rp> element should enclose each of the opening and closing parentheses that wrap the <rt> element that contains the annotation's text.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Text",
-				"content": true
+				"tag": "rp",
+				"contents": [
+					{
+						"zeroOrMore": "#text"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4925,9 +5543,14 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt",
 			"description": "",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "rt",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4941,9 +5564,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc",
 			"description": "",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Phrasing content or <rt> elements.",
-				"content": true
+				"tag": "rtc",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4956,10 +5580,48 @@
 			"name": "ruby",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ruby",
 			"description": "",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "ruby",
+				"contents": [
+					{
+						"oneOrMore": [
+							{
+								"require": "#phrasing",
+								"notAllowedDescendants": ["ruby"]
+							},
+							{
+								"choice": [
+									[
+										{
+											"oneOrMore": "rt"
+										}
+									],
+									[
+										{
+											"oneOrMore": [
+												{
+													"require": "rp"
+												},
+												{
+													"oneOrMore": [
+														{
+															"require": "rt"
+														},
+														{
+															"require": "rp"
+														}
+													]
+												}
+											]
+										}
+									]
+								]
+							}
+						]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4972,10 +5634,15 @@
 			"name": "s",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s",
 			"description": "",
-			"categories": ["flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "s",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -4988,10 +5655,15 @@
 			"name": "samp",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp",
 			"description": "The HTML Sample Element (<samp>) is used to enclose inline text which represents sample (or quoted) output from a computer program. Its contents are typically rendered using the browser's default monospaced font (such as Courier or Lucida Console).",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "samp",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5004,10 +5676,11 @@
 			"name": "script",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script",
 			"description": "The HTML <script> element is used to embed or reference executable code; this is typically used to embed or refer to JavaScript code. The <script> element can also be used with other languages, such as WebGL's GLSL shader programming language.",
-			"categories": ["metadata", "flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#metadata", "#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "Dynamic script such as text/javascript.",
-				"content": true
+				"tag": "script",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5091,10 +5764,15 @@
 			"name": "section",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section",
 			"description": "The HTML <section> element represents a standalone section — which doesn't have a more specific semantic element to represent it — contained within an HTML document. Typically, but not always, sections have a heading.",
-			"categories": ["flow", "sectioning", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#sectioning", "#palpable"],
+			"permittedStructures": {
 				"summary": "Flow content.",
-				"content": true
+				"tag": "section",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "alert, alertdialog, application, banner, complementary, contentinfo, dialog, document, feed, log, main, marquee, navigation, search, status, tabpanel",
@@ -5107,10 +5785,15 @@
 			"name": "select",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select",
 			"description": "The HTML <select> element represents a control that provides a menu of options:",
-			"categories": ["flow", "phrasing", "interactive"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#interactive"],
+			"permittedStructures": {
 				"summary": "Zero or more <option> or <optgroup> elements.",
-				"content": true
+				"tag": "select",
+				"contents": [
+					{
+						"zeroOrMore": ["option", "optgroup"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "menu",
@@ -5175,10 +5858,11 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/shadow",
 			"description": "The HTML <shadow> element—an obsolete part of the Web Components technology suite—was intended to be used as a shadow DOM insertion point. You might have used it if you have created multiple shadow roots under a shadow host. It is not useful in ordinary HTML.",
 			"deprecated": true,
-			"categories": ["transparent"],
-			"permittedContent": {
+			"categories": ["#transparent"],
+			"permittedStructures": {
 				"summary": "Flow content",
-				"content": true
+				"tag": "shadow",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5191,10 +5875,15 @@
 			"name": "slot",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot",
 			"description": "The HTML <slot> element—part of the Web Components technology suite—is a placeholder inside a web component that you can fill with your own markup, which lets you create separate DOM trees and present them together.",
-			"categories": ["flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "Transparent",
-				"content": true
+				"tag": "slot",
+				"contents": [
+					{
+						"zeroOrMore": "#transparent"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5216,10 +5905,15 @@
 			"name": "small",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small",
 			"description": "",
-			"categories": ["flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "Phrasing content",
-				"content": true
+				"tag": "small",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5233,9 +5927,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source",
 			"description": "The HTML <source> element specifies multiple media resources for the <picture>, the <audio> element, or the <video> element. It is an empty element, meaning that it has no content and does not have a closing tag. It is commonly used to serve the same media content in multiple formats supported by different browsers.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "source",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5284,9 +5979,10 @@
 			"obsolete": true,
 			"nonStandard": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "spacer",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -5332,10 +6028,15 @@
 			"name": "span",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span",
 			"description": "The HTML <span> element is a generic inline container for phrasing content, which does not inherently represent anything. It can be used to group elements for styling purposes (using the class or id attributes), or because they share attribute values, such as lang. It should be used only when no other semantic element is appropriate. <span> is very much like a <div> element, but <div> is a block-level element whereas a <span> is an inline element.",
-			"categories": ["flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "span",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5350,9 +6051,10 @@
 			"description": "",
 			"obsolete": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "strike",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
@@ -5365,10 +6067,15 @@
 			"name": "strong",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong",
 			"description": "The HTML Strong Importance Element (<strong>) indicates that its contents have strong importance, seriousness, or urgency. Browsers typically render the contents in bold type.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "strong",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5381,10 +6088,11 @@
 			"name": "style",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style",
 			"description": "The HTML <style> element contains style information for a document, or part of a document. It contains CSS, which is applied to the contents of the document containing the <style> element.",
-			"categories": ["metadata", "flow"],
-			"permittedContent": {
+			"categories": ["#metadata", "#flow"],
+			"permittedStructures": {
 				"summary": "Text content matching the type attribute, that is text/css.",
-				"content": true
+				"tag": "style",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5432,10 +6140,15 @@
 			"name": "sub",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub",
 			"description": "The HTML Subscript element (<sub>) specifies inline text which should be displayed as subscript for solely typographical reasons. Subscripts are typically rendered with a lowered baseline using smaller text.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "sub",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5449,9 +6162,25 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary",
 			"description": "The HTML Disclosure Summary element (<summary>) element specifies a summary, caption, or legend for a <details> element's disclosure box. Clicking the <summary> element toggles the state of the parent <details> element open and closed.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Phrasing content or one element of Heading content",
-				"content": true
+				"tag": "summary",
+				"contents": [
+					{
+						"choice": [
+							[
+								{
+									"zeroOrMore": "#phrasing"
+								}
+							],
+							[
+								{
+									"optional": "#heading"
+								}
+							]
+						]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "button",
@@ -5464,10 +6193,15 @@
 			"name": "sup",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup",
 			"description": "The HTML Superscript element (<sup>) specifies inline text which is to be displayed as superscript for solely typographical reasons. Superscripts are usually rendered with a raised baseline using smaller text.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "sup",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5480,10 +6214,56 @@
 			"name": "table",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table",
 			"description": "The HTML <table> element represents tabular data — that is, information presented in a two-dimensional table comprised of rows and columns of cells containing data.",
-			"categories": ["flow"],
-			"permittedContent": {
+			"categories": ["#flow"],
+			"permittedStructures": {
 				"summary": "\n    \n    In this order:\n    \n     an optional <caption> element,\n     zero or more <colgroup> elements,\n     an optional <thead> element,\n     either one of the following:\n      \n       zero or more <tbody> elements\n       one or more <tr> elements\n      \n     \n     an optional <tfoot> element\n    \n    \n    \n   ",
-				"content": true
+				"tag": "table",
+				"contents": [
+					{
+						"zeroOrMore": "#script-supporting"
+					},
+					{
+						"optional": "caption"
+					},
+					{
+						"zeroOrMore": "#script-supporting"
+					},
+					{
+						"zeroOrMore": "colgroup"
+					},
+					{
+						"zeroOrMore": "#script-supporting"
+					},
+					{
+						"optional": "thead"
+					},
+					{
+						"zeroOrMore": "#script-supporting"
+					},
+					{
+						"interleave": [
+							[
+								{
+									"optional": "tbody"
+								}
+							],
+							[
+								{
+									"oneOrMore": "tr"
+								}
+							]
+						]
+					},
+					{
+						"zeroOrMore": "#script-supporting"
+					},
+					{
+						"optional": "tfoot"
+					},
+					{
+						"zeroOrMore": "#script-supporting"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5561,11 +6341,16 @@
 		{
 			"name": "tbody",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody",
-			"description": "The HTML Table Body element (<tbody>) encapsulates a set of table row (<tr> elements), indicating that they comprise the body of the table (<table>).",
+			"description": "The HTML Table Body element (<tbody>) encapsulates a set of table rows (<tr> elements), indicating that they comprise the body of the table (<table>).",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Zero or more <tr> elements.",
-				"content": true
+				"tag": "tbody",
+				"contents": [
+					{
+						"zeroOrMore": "tr"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5619,11 +6404,16 @@
 		{
 			"name": "td",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td",
-			"description": "",
+			"description": "The HTML <td> element defines a cell of a table that contains data. It participates in the table model.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Flow content.",
-				"content": true
+				"tag": "td",
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5728,11 +6518,12 @@
 		{
 			"name": "template",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template",
-			"description": "The HTML Content Template (<template>) element is a mechanism for holding client-side content that is not to be rendered when a page is loaded but may subsequently be instantiated during runtime using JavaScript.",
-			"categories": ["metadata", "flow", "phrasing", "script-supporting"],
-			"permittedContent": {
+			"description": "The HTML Content Template (<template>) element is a mechanism for holding HTML that is not to be rendered immediately when a page is loaded but may be instantiated subsequently during runtime using JavaScript.",
+			"categories": ["#metadata", "#flow", "#phrasing", "#script-supporting"],
+			"permittedStructures": {
 				"summary": "No restrictions",
-				"content": true
+				"tag": "template",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5745,10 +6536,15 @@
 			"name": "textarea",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
 			"description": "",
-			"categories": ["flow", "phrasing", "interactive"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#interactive"],
+			"permittedStructures": {
 				"summary": "Text",
-				"content": true
+				"tag": "textarea",
+				"contents": [
+					{
+						"optional": "#text"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -5856,9 +6652,14 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot",
 			"description": "",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Zero or more <tr> elements.",
-				"content": true
+				"tag": "tfoot",
+				"contents": [
+					{
+						"zeroOrMore": "tr"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5914,9 +6715,15 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th",
 			"description": "The HTML <th> element defines a cell as header of a group of table cells. The exact nature of this group is defined by the scope and headers attributes.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Flow content, but with no header, footer, sectioning content, or heading content descendants.",
-				"content": true
+				"tag": "th",
+				"contents": [
+					{
+						"zeroOrMore": "#flow",
+						"notAllowedDescendants": ["header", "footer", "#sectioning", "#heading"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6021,9 +6828,14 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead",
 			"description": "",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Zero or more <tr> elements.",
-				"content": true
+				"tag": "thead",
+				"contents": [
+					{
+						"zeroOrMore": "tr"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6078,10 +6890,15 @@
 			"name": "time",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time",
 			"description": "The HTML <time> element represents a specific period in time. It may include the datetime attribute to translate dates into machine-readable format, allowing for better search engine results or custom features such as reminders.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "time",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6102,11 +6919,16 @@
 		{
 			"name": "title",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title",
-			"description": "The HTML Title element (<title>) defines the document's title that is shown in a browser's title bar or a page's tab. It only contains text and tags within the element are ignored.",
-			"categories": ["metadata"],
-			"permittedContent": {
+			"description": "The HTML Title element (<title>) defines the document's title that is shown in a browser's title bar or a page's tab. It only contains text; tags within the element are ignored.",
+			"categories": ["#metadata"],
+			"permittedStructures": {
 				"summary": "Text that is not inter-element whitespace.",
-				"content": true
+				"tag": "title",
+				"contents": [
+					{
+						"require": "#text"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None.",
@@ -6118,11 +6940,16 @@
 		{
 			"name": "tr",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr",
-			"description": "The HTML <tr> element defines a row of cells in a table. The row's cells can then be established using a mix of <td> (data cell) and <th> (header cell) elements.The HTML <tr> element specifies that the markup contained inside the <tr> block comprises one row of a table, inside which the <th> and <td> elements create header and data cells, respectively, within the row. Each cell is placed into its own column; the user agent follows specific rules to determine how the cells in each row are placed into columns with those coming from other rows.",
+			"description": "The HTML <tr> element defines a row of cells in a table. The row's cells can then be established using a mix of <td> (data cell) and <th> (header cell) elements.",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "Zero or more <td> and/or <th> elements; script-supporting elements (<script> and <template>) are also allowed",
-				"content": true
+				"tag": "tr",
+				"contents": [
+					{
+						"zeroOrMore": ["th", "td", "#script-supporting"]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6174,9 +7001,10 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track",
 			"description": "",
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"content": true
+				"tag": "track",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -6223,10 +7051,11 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tt",
 			"description": "The obsolete HTML Teletype Text element (<tt>) creates inline text which is presented using the user agent's default monospace font face. This element was created for the purpose of rendering text as it would be displayed on a fixed-width display such as a teletype, text-only screen, or line printer.",
 			"obsolete": true,
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "tt",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6239,10 +7068,15 @@
 			"name": "u",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u",
 			"description": "The HTML Unarticulated Annotation Element (<u>) represents a span of inline text which should be rendered in a way that indicates that it has a non-textual annotation. This is rendered by default as a simple solid underline, but may be altered using CSS.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "u",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6255,12 +7089,15 @@
 			"name": "ul",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul",
 			"description": "",
-			"categories": ["flow", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#palpable"],
+			"permittedStructures": {
 				"summary": "zero or more <li> elements, which in turn often contain nested <ol> or <ul> elements.",
-				"content": {
-					"zeroOrMore": "li"
-				}
+				"tag": "ul",
+				"contents": [
+					{
+						"zeroOrMore": "li"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "directory, group, listbox, menu, menubar, radiogroup, tablist, toolbar, tree, presentation",
@@ -6290,10 +7127,15 @@
 			"name": "var",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var",
 			"description": "The HTML Variable element (<var>) represents the name of a variable in a mathematical expression or a programming context. It's typically presented using an italicized version of the current typeface, although that behavior is browser-dependent.",
-			"categories": ["flow", "phrasing", "palpable"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing", "#palpable"],
+			"permittedStructures": {
 				"summary": "Phrasing content.",
-				"content": true
+				"tag": "var",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6305,20 +7147,55 @@
 		{
 			"name": "video",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video",
-			"description": "The HTML Video element (<video>) embeds a media player which supports video playback into the document. You can use <video> for audio content as well, but the <audio> element may provide a more appropriate user experience.",
-			"categories": ["flow", "phrasing", "embedded", "interactive", "palpable"],
-			"permittedContent": {
-				"summary": "\n    If the element has a src attribute: zero or more <track> elements, followed by transparent content that contains no media elements–that is no <audio> or <video>\n\n    Else: zero or more <source> elements, followed by zero or more <track> elements, followed by transparent content that contains no media elements–that is no <audio> or <video>.\n   ",
-				"content": true
+			"description": "",
+			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "video",
+				"conditional": [
+					{
+						"condition": {
+							"hasAttr": "src"
+						},
+						"contents": [
+							{
+								"zeroOrMore": "track"
+							},
+							{
+								"zeroOrMore": "#transparent",
+								"notAllowedDescendants": ["audio", "video"]
+							}
+						]
+					}
+				],
+				"contents": [
+					{
+						"zeroOrMore": "source"
+					},
+					{
+						"zeroOrMore": "track"
+					},
+					{
+						"zeroOrMore": "#transparent",
+						"notAllowedDescendants": ["source", "audio", "video"]
+					}
+				]
 			},
 			"permittedRoles": {
-				"summary": "application",
+				"summary": "",
 				"roles": {}
 			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
 				"#ariaAttrs",
+				{
+					"name": "autoPictureInPicture",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
 				{
 					"name": "autoplay",
 					"description": "WIP",
@@ -6338,7 +7215,40 @@
 					"value": "WIP"
 				},
 				{
+					"name": "controlslist",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
 					"name": "crossorigin",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "currentTime",
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "disablePictureInPicture",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "disableRemotePlayback",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "duration",
 					"description": "WIP",
 					"category": "particular",
 					"value": "WIP"
@@ -6404,10 +7314,11 @@
 			"name": "wbr",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr",
 			"description": "",
-			"categories": ["flow", "phrasing"],
-			"permittedContent": {
+			"categories": ["#flow", "#phrasing"],
+			"permittedStructures": {
 				"summary": "Empty",
-				"content": true
+				"tag": "wbr",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -6422,9 +7333,10 @@
 			"description": "",
 			"obsolete": true,
 			"categories": [],
-			"permittedContent": {
+			"permittedStructures": {
 				"summary": "",
-				"content": true
+				"tag": "xmp",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "",
