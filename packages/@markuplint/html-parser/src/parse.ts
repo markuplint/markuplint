@@ -3,14 +3,14 @@ import {
 	MLASTDoctype,
 	MLASTDocument,
 	MLASTElement,
-	MLASTInvalidNode,
+	MLASTElementCloseTag,
 	MLASTNode,
 	MLASTNodeType,
 	MLASTOmittedElement,
 	MLASTParentNode,
 	MLASTTag,
 	MLASTText,
-} from '@markuplint/ml-ast/';
+} from '@markuplint/ml-ast';
 import UUID from 'uuid';
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
@@ -27,7 +27,7 @@ export default function parse(html: string) {
 		? (parse5.parseFragment(html, P5_OPTIONS) as P5Fragment)
 		: (parse5.parse(html, P5_OPTIONS) as P5Document);
 
-	const nodeTree: MLASTNode[] = traverse(doc, null, html);
+	const nodeTree: MLASTNode[] = traverse(doc, null, html, 0);
 	// console.dir(nodeTree);
 
 	const nodeList = flattenNodes(nodeTree, html);
@@ -46,39 +46,37 @@ function nodeize(
 	prevNode: MLASTNode | null,
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
-): MLASTNode[] {
-	const nodes: MLASTNode[] = [];
-	prevNode = prevNode || parentNode;
+	depth: number,
+): MLASTNode | null {
+	const nextNode = null;
 	if (!p5node.sourceCodeLocation) {
+		const prevToken = prevNode || parentNode;
 		const node: MLASTOmittedElement = {
 			uuid: UUID.v4(),
 			raw: '',
-			startOffset: prevNode ? prevNode.endOffset : 0,
-			endOffset: prevNode ? prevNode.endOffset : 0,
-			startLine: prevNode ? prevNode.endLine : 0,
-			endLine: prevNode ? prevNode.endLine : 0,
-			startCol: prevNode ? prevNode.endCol : 0,
-			endCol: prevNode ? prevNode.endCol : 0,
+			startOffset: prevToken ? prevToken.endOffset : 0,
+			endOffset: prevToken ? prevToken.endOffset : 0,
+			startLine: prevToken ? prevToken.endLine : 0,
+			endLine: prevToken ? prevToken.endLine : 0,
+			startCol: prevToken ? prevToken.endCol : 0,
+			endCol: prevToken ? prevToken.endCol : 0,
 			nodeName: p5node.nodeName,
 			type: MLASTNodeType.OmittedTag,
 			namespace: p5node.namespaceURI,
 			parentNode,
 			prevNode,
-			nextNode: null,
+			nextNode,
 			isFragment: false,
 			isGhost: true,
 		};
-		node.childNodes = traverse(p5node, node, rawHtml);
-		nodes.push(node);
-		return nodes;
+		node.childNodes = traverse(p5node, node, rawHtml, depth);
+		return node;
 	}
 	const { startOffset, endOffset, startLine, endLine, startCol, endCol } = p5node.sourceCodeLocation;
 	const raw = rawHtml.slice(startOffset, endOffset || startOffset);
-	const nextNode = null;
-	// console.log({ name: p5node.nodeName, raw, l: endOffset - startOffset });
 	switch (p5node.nodeName) {
 		case '#documentType': {
-			nodes.push({
+			return {
 				uuid: UUID.v4(),
 				raw,
 				// @ts-ignore
@@ -97,89 +95,34 @@ function nodeize(
 				type: MLASTNodeType.Doctype,
 				parentNode,
 				prevNode,
+				_addPrevNode: 102,
 				nextNode,
 				isFragment: false,
 				isGhost: false,
-			} as MLASTDoctype);
-			break;
+			} as MLASTDoctype;
 		}
 		case '#text': {
-			if (parentNode && /^(?:script|style)$/i.test(parentNode.nodeName)) {
-				nodes.push({
-					uuid: UUID.v4(),
-					raw,
-					startOffset,
-					endOffset,
-					startLine,
-					endLine,
-					startCol,
-					endCol,
-					nodeName: '#text',
-					type: MLASTNodeType.Text,
-					parentNode,
-					prevNode,
-					nextNode,
-					isFragment: false,
-					isGhost: false,
-				});
-			} else {
-				const tokens = tagSplitter(
-					raw,
-					p5node.sourceCodeLocation.startLine,
-					p5node.sourceCodeLocation.startCol,
-				);
-				let tokenStartOffset = startOffset;
-				for (const token of tokens) {
-					const tokenEndOffset = tokenStartOffset + token.raw.length;
-
-					if (token.type === 'text') {
-						const node: MLASTText = {
-							uuid: UUID.v4(),
-							raw: token.raw,
-							startOffset: tokenStartOffset,
-							endOffset: tokenEndOffset,
-							startLine: token.line,
-							endLine: getEndLine(token.raw, token.line),
-							startCol: token.col,
-							endCol: getEndCol(token.raw, token.col),
-							nodeName: '#text',
-							type: MLASTNodeType.Text,
-							parentNode,
-							prevNode,
-							nextNode,
-							isFragment: false,
-							isGhost: false,
-						};
-						nodes.push(node);
-						prevNode = node;
-					} else {
-						const node: MLASTInvalidNode = {
-							uuid: UUID.v4(),
-							raw: token.raw,
-							startOffset: tokenStartOffset,
-							endOffset: tokenEndOffset,
-							startLine: token.line,
-							endLine: getEndLine(token.raw, token.line),
-							startCol: token.col,
-							endCol: getEndCol(token.raw, token.col),
-							nodeName: '#invalid',
-							type: MLASTNodeType.InvalidNode,
-							parentNode,
-							prevNode,
-							nextNode,
-							isFragment: false,
-							isGhost: false,
-						};
-						nodes.push(node);
-						prevNode = node;
-					}
-					tokenStartOffset = tokenEndOffset;
-				}
-			}
-			break;
+			const node: MLASTText = {
+				uuid: UUID.v4(),
+				raw,
+				startOffset,
+				endOffset,
+				startLine,
+				endLine,
+				startCol,
+				endCol,
+				nodeName: '#text',
+				type: MLASTNodeType.Text,
+				parentNode,
+				prevNode,
+				nextNode,
+				isFragment: false,
+				isGhost: false,
+			};
+			return node;
 		}
 		case '#comment': {
-			nodes.push({
+			return {
 				uuid: UUID.v4(),
 				raw,
 				startOffset,
@@ -195,8 +138,7 @@ function nodeize(
 				nextNode,
 				isFragment: false,
 				isGhost: false,
-			});
-			break;
+			};
 		}
 		default: {
 			const tagLoc = p5node.sourceCodeLocation.startTag;
@@ -210,7 +152,7 @@ function nodeize(
 				p5node.sourceCodeLocation.startOffset,
 			);
 			const tagName = tagTokens.tagName;
-			let endTag: MLASTTag | null = null;
+			let endTag: MLASTElementCloseTag | null = null;
 			const endTagLoc = p5node.sourceCodeLocation.endTag;
 			if (endTagLoc) {
 				const endTagRaw = rawHtml.slice(endTagLoc.startOffset, endTagLoc.endOffset);
@@ -267,32 +209,37 @@ function nodeize(
 			if (endTag) {
 				endTag.pearNode = startTag;
 			}
-			startTag.childNodes = traverse(p5node, startTag, rawHtml);
-			nodes.push(startTag);
+			startTag.childNodes = traverse(p5node, startTag, rawHtml, depth);
+			return startTag;
 		}
 	}
-	return nodes;
 }
 
 function traverse(
 	rootNode: P5Node | P5Document | P5Fragment,
 	parentNode: MLASTParentNode | null = null,
 	rawHtml: string,
+	depth: number,
 ): MLASTNode[] {
+	depth += 1;
 	const nodeList: MLASTNode[] = [];
 
 	const childNodes: P5Node[] = getChildNodes(rootNode);
 
-	let prev: MLASTNode | null = null;
+	let prevNode: MLASTNode | null = null;
 	for (const p5node of childNodes) {
-		const nodes: MLASTNode[] = nodeize(p5node, prev, parentNode, rawHtml);
-		for (const node of nodes) {
-			if (prev) {
-				prev.nextNode = node;
-			}
-			prev = node;
-			nodeList.push(node);
+		const node = nodeize(p5node, prevNode, parentNode, rawHtml, depth);
+		if (!node) {
+			continue;
 		}
+		if (prevNode) {
+			if (node.type !== MLASTNodeType.EndTag && node.type !== MLASTNodeType.InvalidNode) {
+				prevNode.nextNode = node;
+			}
+			node.prevNode = prevNode;
+		}
+		prevNode = node;
+		nodeList.push(node);
 	}
 	return nodeList;
 }
@@ -329,7 +276,6 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 		const diff = currentStartOffset - currentEndOffset;
 		if (diff > 0) {
 			const html = rawHtml.slice(currentEndOffset, currentStartOffset);
-			// console.log(`diff: ${diff} => "${spaces.replace(/\n/g, '⏎').replace(/\t/g, '→').replace(/\s/g, '␣')}"`);
 
 			/**
 			 * first white spaces
@@ -356,6 +302,9 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 				};
 				node.prevNode = textNode;
 
+				if (node.parentNode && node.parentNode.childNodes) {
+					node.parentNode.childNodes.unshift(textNode);
+				}
 				nodeOrders.push(textNode);
 			} else if (/^<\/[a-z0-9][a-z0-9:-]*>$/i.test(html)) {
 				// close tag
@@ -376,130 +325,234 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 		nodeOrders.push(node);
 	});
 
+	{
+		/**
+		 * Correction prev/next/parent
+		 */
+		let prevToken: MLASTNode | null = null;
+		for (const node of nodeOrders) {
+			if (!prevToken) {
+				prevToken = node;
+				continue;
+			}
+			if (node.type !== MLASTNodeType.EndTag) {
+				prevToken = node;
+				continue;
+			}
+			const endTag = node;
+			if (endTag.nodeName.toLowerCase() === 'body' && prevToken.type === MLASTNodeType.Text) {
+				const prevWreckagesText = prevToken;
+				if (prevWreckagesText) {
+					const wreckages = tagSplitter(
+						prevWreckagesText.raw,
+						prevWreckagesText.startLine,
+						prevWreckagesText.startCol,
+					);
+					if (wreckages.length) {
+						// console.log('wreckages\n', wreckages);
+						const lastText = wreckages[0];
+						const raw = lastText.raw;
+						const startLine = lastText.line;
+						const startCol = lastText.col;
+						prevWreckagesText.raw = raw;
+						prevWreckagesText.endOffset = prevWreckagesText.startOffset + raw.length;
+						prevWreckagesText.startLine = startLine;
+						prevWreckagesText.endLine = getEndLine(raw, startLine);
+						prevWreckagesText.startCol = startCol;
+						prevWreckagesText.endCol = getEndCol(raw, startCol);
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * sorting
 	 */
 	nodeOrders.sort((a, b) => {
-		if (a.startOffset === b.startOffset) {
-			if (a.isGhost && b.isGhost) {
-				return 0;
-			}
-			if (a.isGhost) {
-				return -1;
-			}
-			if (b.isGhost) {
-				return 1;
-			}
+		if (a.isGhost || b.isGhost) {
+			return 0;
 		}
 		return a.startOffset - b.startOffset;
 	});
 
-	/**
-	 * getting last node
-	 */
-	let lastNode: MLASTAbstructNode | null = null;
-	for (const node of nodeOrders) {
-		if (node.isGhost) {
-			continue;
-		}
-		lastNode = node;
-	}
-
-	/**
-	 * remove duplicated node
-	 */
-	const stack: { [pos: string]: number } = {};
-	const removeIndexes: number[] = [];
-	nodeOrders.forEach((node, i) => {
-		if (node.isGhost) {
-			return;
-		}
-		const id = `${node.startLine}:${node.startCol}:${node.endLine}:${node.endCol}`;
-		if (stack[id] != null) {
-			const iA = stack[id];
-			const iB = i;
-			const a = nodeOrders[iA];
-			const b = node;
-			if (isInvalidNode(a) && isInvalidNode(b)) {
-				removeIndexes.push(iB);
-			} else if (isInvalidNode(a)) {
-				removeIndexes.push(iA);
-			} else {
-				removeIndexes.push(iB);
-			}
-		}
-		stack[id] = i;
-	});
-	let r = nodeOrders.length;
-	while (r--) {
-		if (removeIndexes.includes(r)) {
-			nodeOrders.splice(r, 1);
-		}
-	}
-
-	/**
-	 * create Last spaces
-	 */
-	nodeOrders.forEach((node, i) => {
-		if (i === nodeOrders.length - 1) {
-			const lastTextContent = rawHtml.slice(node.endOffset);
-			if (!lastTextContent) {
+	{
+		/**
+		 * remove duplicated node
+		 */
+		const stack: { [pos: string]: number } = {};
+		const removeIndexes: number[] = [];
+		nodeOrders.forEach((node, i) => {
+			if (node.isGhost) {
 				return;
 			}
-			const uuid = UUID.v4();
-			const line = lastNode ? lastNode.endLine : 0;
-			const col = lastNode ? lastNode.endCol : 0;
-			const lastTextNode: MLASTText = {
-				uuid,
-				raw: lastTextContent,
-				startOffset: node.endOffset,
-				endOffset: node.endOffset + lastTextContent.length,
-				startLine: line,
-				endLine: getEndLine(lastTextContent, line),
-				startCol: col,
-				endCol: getEndCol(lastTextContent, col),
-				nodeName: '#text',
-				type: MLASTNodeType.Text,
-				parentNode: node.parentNode || null,
-				prevNode: node,
-				nextNode: null,
-				isFragment: false,
-				isGhost: false,
-			};
-			if (lastNode) {
-				lastNode.nextNode = lastTextNode;
+			const id = `${node.startLine}:${node.startCol}:${node.endLine}:${node.endCol}`;
+			if (stack[id] != null) {
+				const iA = stack[id];
+				const iB = i;
+				const a = nodeOrders[iA];
+				const b = node;
+				if (isInvalidNode(a) && isInvalidNode(b)) {
+					removeIndexes.push(iB);
+				} else if (isInvalidNode(a)) {
+					removeIndexes.push(iA);
+				} else {
+					removeIndexes.push(iB);
+				}
 			}
-			nodeOrders.push(lastTextNode);
+			stack[id] = i;
+		});
+		let r = nodeOrders.length;
+		while (r--) {
+			if (removeIndexes.includes(r)) {
+				nodeOrders.splice(r, 1);
+			}
 		}
-	});
+	}
 
-	const result: MLASTNode[] = [];
+	{
+		/**
+		 * getting last node
+		 */
+		let lastNode: MLASTNode | null = null;
+		for (const node of nodeOrders) {
+			if (node.isGhost) {
+				continue;
+			}
+			lastNode = node;
+		}
+
+		if (lastNode) {
+			if (lastNode.type === MLASTNodeType.Text) {
+				// Correction for Parse5 AST
+				// prev node: ? -> html
+				lastNode.prevNode = lastNode.parentNode && lastNode.parentNode.parentNode;
+				if (lastNode.prevNode) {
+					lastNode.prevNode.nextNode = lastNode;
+				}
+				// parent node: body -> null
+				lastNode.parentNode = null;
+				// next node: ? -> null
+				lastNode.nextNode = null;
+			} else {
+				/**
+				 * create Last spaces
+				 */
+				let lastOffset = 0;
+				nodeOrders.forEach((node, i) => {
+					lastOffset = Math.max(node.endOffset, lastOffset);
+				});
+				// console.log(lastOffset);
+				const lastTextContent = rawHtml.slice(lastOffset);
+				// console.log(`"${lastTextContent}"`);
+				if (lastTextContent) {
+					const uuid = UUID.v4();
+					const line = lastNode ? lastNode.endLine : 0;
+					const col = lastNode ? lastNode.endCol : 0;
+					const lastTextNode: MLASTText = {
+						uuid,
+						raw: lastTextContent,
+						startOffset: lastOffset,
+						endOffset: lastOffset + lastTextContent.length,
+						startLine: line,
+						endLine: getEndLine(lastTextContent, line),
+						startCol: col,
+						endCol: getEndCol(lastTextContent, col),
+						nodeName: '#text',
+						type: MLASTNodeType.Text,
+						parentNode: null,
+						prevNode: lastNode,
+						nextNode: null,
+						isFragment: false,
+						isGhost: false,
+					};
+					if (lastNode) {
+						lastNode.nextNode = lastTextNode;
+						if (
+							(lastNode.type === MLASTNodeType.StartTag || lastNode.type === MLASTNodeType.EndTag) &&
+							lastNode.pearNode
+						) {
+							lastNode.pearNode.nextNode = lastTextNode;
+						}
+					}
+					nodeOrders.push(lastTextNode);
+				}
+			}
+		}
+	}
 
 	/**
 	 * concat text nodes
-	 *
-	 * TODO: refactoring
 	 */
-	let prevSyntaxicalNode: MLASTNode | null = null;
+	const result: MLASTNode[] = [];
 	nodeOrders.forEach(node => {
-		node.prevNode = prevSyntaxicalNode;
-		prevSyntaxicalNode = node;
-		if (node.prevNode && node.prevNode.type === MLASTNodeType.Text) {
-			const prevSyntaxicalTextNode = node.prevNode;
-
-			// concat contiguous textNodes
-			if (node.type === MLASTNodeType.Text) {
-				prevSyntaxicalTextNode.raw = prevSyntaxicalTextNode.raw + node.raw;
-				prevSyntaxicalTextNode.endOffset = node.endOffset;
-				prevSyntaxicalTextNode.endLine = node.endLine;
-				prevSyntaxicalTextNode.endCol = node.endCol;
-				prevSyntaxicalTextNode.nextNode = node.nextNode;
-				prevSyntaxicalNode = prevSyntaxicalTextNode;
-				return;
+		const prevNode = result[result.length - 1] || null;
+		if (node.type === MLASTNodeType.Text && prevNode && prevNode.type === MLASTNodeType.Text) {
+			prevNode.raw = prevNode.raw + node.raw;
+			prevNode.endOffset = node.endOffset;
+			prevNode.endLine = node.endLine;
+			prevNode.endCol = node.endCol;
+			prevNode.nextNode = node.nextNode;
+			if (prevNode.parentNode && prevNode.parentNode.childNodes) {
+				prevNode.parentNode.childNodes = prevNode.parentNode.childNodes.filter(n => n.uuid !== node.uuid);
 			}
+			if (node.nextNode) {
+				node.nextNode.prevNode = prevNode;
+			}
+			return;
 		}
 		result.push(node);
 	});
+
+	{
+		/**
+		 * Correction prev/next/parent
+		 */
+		let prevToken: MLASTNode | null = null;
+		for (const node of result) {
+			if (!prevToken) {
+				prevToken = node;
+				continue;
+			}
+
+			if (
+				((prevToken.type === MLASTNodeType.EndTag && prevToken.nodeName.toLowerCase() === 'body') ||
+					prevToken.type === MLASTNodeType.Doctype) &&
+				node.type === MLASTNodeType.Text
+			) {
+				const nextNode = prevToken.nextNode;
+				prevToken.nextNode = node;
+				if (prevToken.type === MLASTNodeType.EndTag && prevToken.pearNode) {
+					prevToken.pearNode.nextNode = node;
+				}
+				node.prevNode = prevToken;
+				node.nextNode = nextNode;
+				node.parentNode = prevToken.parentNode;
+			}
+
+			// EndTag
+			if (node.type === MLASTNodeType.StartTag && node.pearNode) {
+				const endTag = node.pearNode;
+				endTag.pearNode = node;
+				endTag.prevNode = node.prevNode;
+				endTag.nextNode = node.nextNode;
+			}
+
+			// Children
+			if (node.type === MLASTNodeType.Text) {
+				const parent = node.parentNode;
+				if (parent && parent.type === MLASTNodeType.StartTag && parent.nodeName.toLowerCase() === 'html') {
+					if (parent.childNodes && !parent.childNodes.some(n => n.uuid === node.uuid)) {
+						parent.childNodes.push(node);
+					}
+				}
+			}
+
+			prevToken = node;
+		}
+	}
+
+	// console.log(nodeOrders.map((n, i) => `${i}: ${n.raw.trim()}`));
 
 	return result;
 }
@@ -549,10 +602,3 @@ interface TraversalNode {
 type P5Node = parse5.DefaultTreeElement & TraversalNode;
 type P5Document = parse5.DefaultTreeDocument & TraversalNode;
 type P5Fragment = parse5.DefaultTreeDocumentFragment & TraversalNode;
-type P5DocumentType = parse5.DefaultTreeDocumentType;
-
-interface SortableNode {
-	node: MLASTAbstructNode;
-	startOffset: number;
-	endOffset: number;
-}
