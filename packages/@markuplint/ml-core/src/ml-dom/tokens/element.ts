@@ -1,7 +1,7 @@
 import { AnonymousNode, Document } from '../';
 import { MLASTElement, MLToken } from '@markuplint/ml-ast';
 import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode, MLDOMText, MLDOMToken } from './';
-import { createSelector, getNode } from '../helper';
+import { createNode, createSelector, getNode } from '../helper';
 import { IMLDOMElement } from '../types';
 import { RuleConfigValue } from '@markuplint/ml-config';
 
@@ -27,7 +27,7 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		this.endSpace = new MLDOMToken(astNode.endSpace);
 		this.namespaceURI = astNode.namespace;
 		this.isForeignElement = this.namespaceURI !== 'http://www.w3.org/1999/xhtml';
-		this.closeTag = astNode.pearNode ? new MLDOMElementCloseTag<T, O>(astNode.pearNode, document, this) : null;
+		this.closeTag = astNode.pearNode ? createNode(astNode.pearNode, document, this) : null;
 	}
 
 	public get raw() {

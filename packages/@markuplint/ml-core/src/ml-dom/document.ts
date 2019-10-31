@@ -1,11 +1,11 @@
 import { AnonymousNode, NodeType } from './types';
-import { MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
+import { MLASTDocument, MLASTNode, MLASTNodeType } from '@markuplint/ml-ast';
 import { MLDOMComment, MLDOMDoctype, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
+import { createNode, getNode } from './helper';
 import { MLRule } from '../';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import Ruleset from '../ruleset';
 import { SpecOM } from '@markuplint/ml-spec';
-import { createNode } from './helper';
 
 /**
  * markuplint DOM Document
@@ -37,7 +37,15 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	 * @param ruleset ruleset object
 	 */
 	constructor(ast: MLASTDocument, specs: SpecOM, ruleset: Ruleset) {
-		this.nodeList = Object.freeze(ast.nodeList.map(astNode => createNode<MLASTNode, T, O>(astNode, this)));
+		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
+		this.nodeList = Object.freeze(
+			ast.nodeList.map(astNode => {
+				if (astNode.type === MLASTNodeType.EndTag) {
+					return getNode(astNode);
+				}
+				return createNode<MLASTNode, T, O>(astNode, this);
+			}),
+		);
 		this.specs = specs;
 		this.isFragment = ast.isFragment;
 

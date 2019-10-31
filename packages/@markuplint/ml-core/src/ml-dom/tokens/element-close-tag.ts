@@ -4,7 +4,6 @@ import { MLASTElementCloseTag } from '@markuplint/ml-ast';
 import MLDOMElement from './element';
 import MLDOMNode from './node';
 import { RuleConfigValue } from '@markuplint/ml-config';
-import { setNode } from '../helper/dom-traverser';
 
 export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTElementCloseTag>
@@ -22,7 +21,6 @@ export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 		this._fixedNodeName = astNode.nodeName;
 		this.startTag = startTag;
 		this.isForeignElement = startTag.isForeignElement;
-		setNode(astNode, this);
 	}
 
 	public get raw() {
