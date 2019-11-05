@@ -1,0 +1,30 @@
+{
+	"tag": "option",
+	"conditional": [
+		{
+			"condition": { "hasAttr": "label & value" },
+			"contents": false
+		},
+		{
+			"condition": { "hasAttr": "label" },
+			"contents": [
+				{
+					"optional": "#text"
+				}
+			]
+		},
+		{
+			"condition": { "parent": "datalist", "hasNotAttr": "label" },
+			"contents": [
+				{
+					"optional": "#text"
+				}
+			]
+		}
+	],
+	"contents": [
+		{
+			"optional": "#text"
+		}
+	]
+}

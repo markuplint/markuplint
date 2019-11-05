@@ -1406,19 +1406,8 @@
 				"tag": "a",
 				"contents": [
 					{
-						"choice": [
-							[
-								{
-									"zeroOrMore": "#flow",
-									"notAllowedDescendants": ["#interactive"]
-								}
-							],
-							[
-								{
-									"zeroOrMore": "#phrasing"
-								}
-							]
-						]
+						"zeroOrMore": "#transparent",
+						"notAllowedDescendants": ["#interactive"]
 					}
 				]
 			},
@@ -5313,7 +5302,40 @@
 			"permittedStructures": {
 				"summary": "Text, possibly with escaped characters (like &eacute;).",
 				"tag": "option",
-				"contents": true
+				"conditional": [
+					{
+						"condition": {
+							"hasAttr": "label & value"
+						},
+						"contents": false
+					},
+					{
+						"condition": {
+							"hasAttr": "label"
+						},
+						"contents": [
+							{
+								"optional": "#text"
+							}
+						]
+					},
+					{
+						"condition": {
+							"parent": "datalist",
+							"hasNotAttr": "label"
+						},
+						"contents": [
+							{
+								"optional": "#text"
+							}
+						]
+					}
+				],
+				"contents": [
+					{
+						"optional": "#text"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",

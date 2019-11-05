@@ -2,19 +2,8 @@
 	"tag": "a",
 	"contents": [
 		{
-			"choice": [
-				[
-					{
-						"zeroOrMore": "#flow",
-						"notAllowedDescendants": ["#interactive"]
-					}
-				],
-				[
-					{
-						"zeroOrMore": "#phrasing"
-					}
-				]
-			]
+			"zeroOrMore": "#transparent",
+			"notAllowedDescendants": ["#interactive"]
 		}
 	]
 }
