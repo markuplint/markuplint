@@ -45,27 +45,41 @@ export interface PermittedStructuresSchema {
 }
 export interface PermittedContentRequire {
 	require: Target;
+	ignore?: Target;
 	notAllowedDescendants?: Node[];
 	max?: number;
 	min?: number;
 }
 export interface PermittedContentOptional {
 	optional: Target;
+	ignore?: Target;
 	notAllowedDescendants?: Node[];
 	max?: number;
 }
 export interface PermittedContentOneOrMore {
 	oneOrMore: Target | PermittedContentSpec;
+	ignore?: Target;
 	notAllowedDescendants?: Node[];
 	max?: number;
 }
 export interface PermittedContentZeroOrMore {
 	zeroOrMore: Target | PermittedContentSpec;
+	ignore?: Target;
 	notAllowedDescendants?: Node[];
 	max?: number;
 }
 export interface PermittedContentChoice {
-	choice: [PermittedContentSpec, PermittedContentSpec, ...(PermittedContentSpec)[]];
+	choice:
+		| [PermittedContentSpec, PermittedContentSpec]
+		| [PermittedContentSpec, PermittedContentSpec, PermittedContentSpec]
+		| [PermittedContentSpec, PermittedContentSpec, PermittedContentSpec, PermittedContentSpec]
+		| [
+				PermittedContentSpec,
+				PermittedContentSpec,
+				PermittedContentSpec,
+				PermittedContentSpec,
+				PermittedContentSpec,
+		  ];
 }
 export interface PermittedContentInterleave {
 	interleave: [PermittedContentSpec, PermittedContentSpec, ...(PermittedContentSpec)[]];

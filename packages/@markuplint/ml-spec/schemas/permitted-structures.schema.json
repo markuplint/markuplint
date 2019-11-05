@@ -59,6 +59,7 @@
 			"required": ["require"],
 			"properties": {
 				"require": { "$ref": "#/definitions/Target" },
+				"ignore": { "$ref": "#/definitions/Target" },
 				"notAllowedDescendants": {
 					"type": "array",
 					"items": { "$ref": "#/definitions/Node" },
@@ -74,6 +75,7 @@
 			"required": ["optional"],
 			"properties": {
 				"optional": { "$ref": "#/definitions/Target" },
+				"ignore": { "$ref": "#/definitions/Target" },
 				"notAllowedDescendants": {
 					"type": "array",
 					"items": { "$ref": "#/definitions/Node" },
@@ -90,6 +92,7 @@
 				"oneOrMore": {
 					"oneOf": [{ "$ref": "#/definitions/Target" }, { "$ref": "#/definitions/PermittedContentSpec" }]
 				},
+				"ignore": { "$ref": "#/definitions/Target" },
 				"notAllowedDescendants": {
 					"type": "array",
 					"items": { "$ref": "#/definitions/Node" },
@@ -106,6 +109,7 @@
 				"zeroOrMore": {
 					"oneOf": [{ "$ref": "#/definitions/Target" }, { "$ref": "#/definitions/PermittedContentSpec" }]
 				},
+				"ignore": { "$ref": "#/definitions/Target" },
 				"notAllowedDescendants": {
 					"type": "array",
 					"items": { "$ref": "#/definitions/Node" },
@@ -122,7 +126,8 @@
 				"choice": {
 					"type": "array",
 					"items": { "$ref": "#/definitions/PermittedContentSpec" },
-					"minItems": 2
+					"minItems": 2,
+					"maxItems": 5
 				}
 			}
 		},
