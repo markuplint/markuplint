@@ -222,20 +222,20 @@ test('content model alias', () => {
 				require: '#transparent',
 			},
 		]).source,
-	).toEqual('^<[^>]+>$');
+	).toEqual('^(?<TRANSPARENT><[^>]+>)$');
 });
 
 test('a', () => {
 	// @ts-ignore
 	expect(specToRegExp(htmlSpec('a').contents).source).toEqual(
-		'^(?:(?<NAD__interactive>(?:<a>|<abbr>|<address>|<article>|<aside>|<audio>|<b>|<bdo>|<bdi>|<blockquote>|<br>|<button>|<canvas>|<cite>|<code>|<data>|<datalist>|<del>|<details>|<dfn>|<div>|<dl>|<em>|<embed>|<fieldset>|<figure>|<footer>|<form>|<h1>|<h2>|<h3>|<h4>|<h5>|<h6>|<header>|<hgroup>|<hr>|<i>|<iframe>|<img>|<input>|<ins>|<kbd>|<label>|<main>|<map>|<mark>|<math>|<menu>|<meter>|<nav>|<noscript>|<object>|<ol>|<output>|<p>|<pre>|<progress>|<q>|<ruby>|<s>|<samp>|<script>|<section>|<select>|<small>|<span>|<strong>|<sub>|<sup>|<svg>|<table>|<template>|<textarea>|<time>|<ul>|<var>|<video>|<wbr>|<#custom>|<#text>|<area@map>|<link【itemprop】>|<link【rel=dns-prefetch】>|<link【rel=modulepreload】>|<link【rel=pingback】>|<link【rel=preconnect】>|<link【rel=prefetch】>|<link【rel=preload】>|<link【rel=prerender】>|<link【rel=stylesheet】>|<meta【itemprop】>)*)|(?:<abbr>|<audio>|<b>|<bdo>|<br>|<button>|<canvas>|<cite>|<code>|<data>|<datalist>|<dfn>|<em>|<embed>|<i>|<iframe>|<img>|<input>|<kbd>|<label>|<mark>|<math>|<meter>|<noscript>|<object>|<output>|<progress>|<q>|<ruby>|<samp>|<script>|<select>|<small>|<span>|<strong>|<sub>|<sup>|<svg>|<textarea>|<time>|<var>|<video>|<wbr>|<#text>|<a>|<area@map>|<del>|<ins>|<link【itemprop】>|<link【rel=dns-prefetch】>|<link【rel=modulepreload】>|<link【rel=pingback】>|<link【rel=preconnect】>|<link【rel=prefetch】>|<link【rel=preload】>|<link【rel=prerender】>|<link【rel=stylesheet】>|<map>|<meta【itemprop】>)*)$',
+		'^(?<NAD__interactive___InTRANSPARENT>(?:(?<TRANSPARENT><[^>]+>))*)$',
 	);
 });
 
 test('audio', () => {
 	// @ts-ignore
 	expect(specToRegExp(htmlSpec('audio').contents).source).toEqual(
-		'^(?<NAD_source_audio_video>(?:<source>)*(?:<track>)*(?:<[^>]+>)*)$',
+		'^(?<NAD_source_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT><[^>]+>))*)$',
 	);
 });
 
@@ -256,7 +256,7 @@ test('picture', () => {
 test('ruby', () => {
 	// @ts-ignore
 	expect(specToRegExp(htmlSpec('ruby').contents).source).toEqual(
-		'^(?:(?:<abbr>|<audio>|<b>|<bdo>|<br>|<button>|<canvas>|<cite>|<code>|<data>|<datalist>|<dfn>|<em>|<embed>|<i>|<iframe>|<img>|<input>|<kbd>|<label>|<mark>|<math>|<meter>|<noscript>|<object>|<output>|<progress>|<q>|<ruby>|<samp>|<script>|<select>|<small>|<span>|<strong>|<sub>|<sup>|<svg>|<textarea>|<time>|<var>|<video>|<wbr>|<#text>|<a>|<area@map>|<del>|<ins>|<link【itemprop】>|<link【rel=dns-prefetch】>|<link【rel=modulepreload】>|<link【rel=pingback】>|<link【rel=preconnect】>|<link【rel=prefetch】>|<link【rel=preload】>|<link【rel=prerender】>|<link【rel=stylesheet】>|<map>|<meta【itemprop】>)(?:(?:<rt>)+|(?:<rp>(?:<rt><rp>)+)+))+$',
+		'^(?<NAD_ruby>(?:<abbr>|<audio>|<b>|<bdo>|<br>|<button>|<canvas>|<cite>|<code>|<data>|<datalist>|<dfn>|<em>|<embed>|<i>|<iframe>|<img>|<input>|<kbd>|<label>|<mark>|<math>|<meter>|<noscript>|<object>|<output>|<progress>|<q>|<ruby>|<samp>|<script>|<select>|<small>|<span>|<strong>|<sub>|<sup>|<svg>|<textarea>|<time>|<var>|<video>|<wbr>|<#text>|<a>|<area@map>|<del>|<ins>|<link【itemprop】>|<link【rel=dns-prefetch】>|<link【rel=modulepreload】>|<link【rel=pingback】>|<link【rel=preconnect】>|<link【rel=prefetch】>|<link【rel=preload】>|<link【rel=prerender】>|<link【rel=stylesheet】>|<map>|<meta【itemprop】>)(?:(?:<rt>)+|(?:<rp>(?:<rt><rp>)+)+))+$',
 	);
 });
 

@@ -12,9 +12,18 @@ import combination from './array.combination';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
 const ALL = '<[^>]+>';
+const ___TRANSPARENT___ = '___TRANSPARENT___';
+const ___InTRANSPARENT = '___InTRANSPARENT';
 
-export default function specToRegExp(contentRule: PermittedContent[]) {
-	const pattern = toPattern(contentRule, null, 1, 1);
+export default function specToRegExp(contentRule: PermittedContent[] | boolean, parentExp: RegExp | null = null) {
+	if (contentRule === true) {
+		return new RegExp(`^(?:${ALL})$`);
+	}
+	if (contentRule === false) {
+		return new RegExp('^$');
+	}
+	const parentPattern = parentExp ? parentExp.source.replace(/^\^|\$$/g, '') : ALL;
+	const pattern = toPattern(contentRule, null, 1, 1).replace(___TRANSPARENT___, `(?<TRANSPARENT>${parentPattern})`);
 	return new RegExp(`^${pattern}$`, 'i');
 }
 
@@ -27,6 +36,14 @@ function toPattern(contentRule: Target | PermittedContent[], ignore: Target | nu
 	for (const nodeRule of contentRule) {
 		let pattern = '';
 		if (isRequiredContents(nodeRule)) {
+			if (nodeRule.notAllowedDescendants) {
+				notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
+					.map(r => r.replace('#', '_'))
+					.join('_');
+				if (nodeRule.require === '#transparent') {
+					notAllowedDescendantsNamedCapture += ___InTRANSPARENT;
+				}
+			}
 			pattern = targetTags(
 				nodeRule.require,
 				nodeRule.ignore || null,
@@ -34,16 +51,35 @@ function toPattern(contentRule: Target | PermittedContent[], ignore: Target | nu
 				nodeRule.max || nodeRule.min || 1,
 			);
 		} else if (isOptionalContents(nodeRule)) {
-			pattern = targetTags(nodeRule.optional, nodeRule.ignore || null, 0, nodeRule.max || 1);
-		} else if (isOneOrMoreContents(nodeRule)) {
-			pattern = toPattern(nodeRule.oneOrMore, nodeRule.ignore || null, 1, nodeRule.max || Infinity);
-		} else if (isZeroOrMoreContents(nodeRule)) {
-			pattern = toPattern(nodeRule.zeroOrMore, nodeRule.ignore || null, 0, nodeRule.max || Infinity);
 			if (nodeRule.notAllowedDescendants) {
 				notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
 					.map(r => r.replace('#', '_'))
 					.join('_');
+				if (nodeRule.optional === '#transparent') {
+					notAllowedDescendantsNamedCapture += ___InTRANSPARENT;
+				}
 			}
+			pattern = targetTags(nodeRule.optional, nodeRule.ignore || null, 0, nodeRule.max || 1);
+		} else if (isOneOrMoreContents(nodeRule)) {
+			if (nodeRule.notAllowedDescendants) {
+				notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
+					.map(r => r.replace('#', '_'))
+					.join('_');
+				if (nodeRule.oneOrMore === '#transparent') {
+					notAllowedDescendantsNamedCapture += ___InTRANSPARENT;
+				}
+			}
+			pattern = toPattern(nodeRule.oneOrMore, nodeRule.ignore || null, 1, nodeRule.max || Infinity);
+		} else if (isZeroOrMoreContents(nodeRule)) {
+			if (nodeRule.notAllowedDescendants) {
+				notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
+					.map(r => r.replace('#', '_'))
+					.join('_');
+				if (nodeRule.zeroOrMore === '#transparent') {
+					notAllowedDescendantsNamedCapture += ___InTRANSPARENT;
+				}
+			}
+			pattern = toPattern(nodeRule.zeroOrMore, nodeRule.ignore || null, 0, nodeRule.max || Infinity);
 		} else if (isChoiceContents(nodeRule)) {
 			pattern = `(?:${nodeRule.choice.map(choice => toPattern(choice, null, 1, 1)).join('|')})`;
 		} else if (isInterleaveContents(nodeRule)) {
@@ -100,7 +136,7 @@ function resolveTags(target: Target) {
 		if (name !== '#text' && name[0] === '#') {
 			switch (name) {
 				case '#transparent': {
-					tagList.add(ALL);
+					tagList.add(___TRANSPARENT___);
 					break;
 				}
 				default: {

@@ -15,13 +15,13 @@ describe('verify', () => {
 		const r2 = await markuplint.verify('<a><h1></h1></a>', ruleOn, [rule], 'en');
 		expect(r2).toStrictEqual([]);
 
-		const r3 = await markuplint.verify('<a><option></option></a>', ruleOn, [rule], 'en');
+		const r3 = await markuplint.verify('<div><a><option></option></a><div>', ruleOn, [rule], 'en');
 		expect(r3).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
 				line: 1,
-				col: 1,
+				col: 6,
 				raw: '<a>',
 				message: 'Invalid content in "a" element on the HTML spec',
 			},
@@ -50,6 +50,18 @@ describe('verify', () => {
 				message: 'Invalid content in "a" element on the HTML spec',
 			},
 		]);
+
+		const r6 = await markuplint.verify('<span><a><div></div></a></span>', ruleOn, [rule], 'en');
+		expect(r6).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 7,
+				raw: '<a>',
+				message: 'Invalid content in "a" element on the HTML spec',
+			},
+		]);
 	});
 
 	test('address', async () => {
@@ -64,6 +76,23 @@ describe('verify', () => {
 				message: 'Invalid content in "address" element on the HTML spec',
 			},
 		]);
+	});
+
+	test('audio', async () => {
+		const r1 = await markuplint.verify('<div><audio src="path/to"><source></audio></div>', ruleOn, [rule], 'en');
+		expect(r1).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 6,
+				raw: '<audio src="path/to">',
+				message: 'Invalid content in "audio" element on the HTML spec',
+			},
+		]);
+
+		const r2 = await markuplint.verify('<div><audio><source><div></div></audio></div>', ruleOn, [rule], 'en');
+		expect(r2).toStrictEqual([]);
 	});
 
 	test('dl', async () => {

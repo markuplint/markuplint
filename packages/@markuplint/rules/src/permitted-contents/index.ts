@@ -1,5 +1,5 @@
 import { Element, Result, createRule } from '@markuplint/ml-core';
-import { PermittedContent, PermittedStructuresSchema } from '@markuplint/ml-spec';
+import { PermittedStructuresSchema } from '@markuplint/ml-spec';
 import htmlSpec from './html-spec';
 import specToRegExp from './permitted-content.spec-to-regexp';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
@@ -30,8 +30,11 @@ export default createRule<boolean, TagRule[]>({
 								!!node.parentNode &&
 								node.parentNode.type === 'Element' &&
 								node.parentNode.matches(conditional.condition.parent));
+						// console.log({ ...conditional, matched });
 						if (matched) {
-							const conditionalResult = match(conditional.contents, nodes);
+							const parentExp = getRegExpFromParentNode(node);
+							const exp = specToRegExp(conditional.contents, parentExp);
+							const conditionalResult = match(exp, nodes);
 							if (!conditionalResult) {
 								reports.push({
 									severity: node.rule.severity,
@@ -47,7 +50,8 @@ export default createRule<boolean, TagRule[]>({
 				}
 
 				if (!matched) {
-					const specResult = match(spec.contents, nodes);
+					const exp = getRegExpFromNode(node);
+					const specResult = match(exp, nodes);
 
 					if (!specResult) {
 						reports.push({
@@ -66,7 +70,9 @@ export default createRule<boolean, TagRule[]>({
 					continue;
 				}
 
-				const r = match(rule.contents, nodes);
+				const parentExp = getRegExpFromParentNode(node);
+				const exp = specToRegExp(rule.contents, parentExp);
+				const r = match(exp, nodes);
 
 				if (!r) {
 					reports.push({
@@ -90,24 +96,51 @@ function normalization(nodes: TargetNodes) {
 	return nodes.map(node => `<${node.type === 'Element' ? node.nodeName : '#text'}>`).join('');
 }
 
-function match(contentRule: PermittedContent[] | boolean, nodes: TargetNodes) {
-	if (contentRule === true) {
-		return true;
-	} else if (contentRule === false) {
-		return !nodes.length;
-	}
-	const exp = specToRegExp(contentRule);
+type El = {
+	parentNode: El | null;
+	nodeName: string;
+};
+
+function getRegExpFromNode(node: El) {
+	// console.log({ n: node.nodeName });
+	const parentExp = node.parentNode ? getRegExpFromNode(node.parentNode) : null;
+	const spec = htmlSpec(node.nodeName);
+	const contentRule = spec ? spec.contents : true;
+	const exp = specToRegExp(contentRule, parentExp);
+	return exp;
+}
+
+function getRegExpFromParentNode(node: El) {
+	// console.log({ p: node.nodeName });
+	const parentExp = node.parentNode ? getRegExpFromNode(node.parentNode) : null;
+	return parentExp;
+}
+
+function match(exp: RegExp, nodes: TargetNodes) {
 	const target = normalization(nodes);
 	const result = exp.exec(target);
-	const capGroups = result && result.groups;
+	if (!result) {
+		return false;
+	}
+	const capGroups = result.groups;
 	// console.log({ exp, target, capGroups });
 	if (capGroups) {
 		for (const groupName of Object.keys(capGroups)) {
 			const matched = capGroups[groupName];
-			const targetsMaybeIncludesNotAllowedDescendants = matched.split(/><|<|>/g).filter(_ => _);
-			const [type, ..._contents] = groupName.split(/(?<=[a-z0-9])_/gi);
+			if (!matched) {
+				continue;
+			}
+			let targetsMaybeIncludesNotAllowedDescendants = Array.from(
+				new Set(matched.split(/><|<|>/g).filter(_ => _)),
+			);
+			const [type, ..._selector] = groupName.split(/(?<=[a-z0-9])_/gi);
 			const contents: Set<string> = new Set();
-			_contents.forEach(content => {
+			const inTransparent = _selector.includes('__InTRANSPARENT')
+				? capGroups['TRANSPARENT']
+					? capGroups['TRANSPARENT'].split(/><|<|>/g).filter(_ => _)
+					: null
+				: null;
+			_selector.forEach(content => {
 				if (content[0] === '_') {
 					unfoldContentModelsToTags(content.replace('_', '#')).forEach(tag => contents.add(tag));
 					return;
@@ -115,15 +148,29 @@ function match(contentRule: PermittedContent[] | boolean, nodes: TargetNodes) {
 				contents.add(content);
 			});
 			const selectors = Array.from(contents);
-			// console.log({ groupName, matched, _contents, type, selectors, targetsMaybeIncludesNotAllowedDescendants });
+			targetsMaybeIncludesNotAllowedDescendants = targetsMaybeIncludesNotAllowedDescendants.filter(content =>
+				inTransparent ? inTransparent.includes(content) : true,
+			);
+			// console.log({
+			// 	groupName,
+			// 	matched,
+			// 	_selector,
+			// 	type,
+			// 	selectors,
+			// 	inTransparent,
+			// 	targetsMaybeIncludesNotAllowedDescendants,
+			// });
 			switch (type) {
 				case 'NAD': {
 					for (const node of nodes) {
 						for (const target of targetsMaybeIncludesNotAllowedDescendants) {
 							if (node.type === 'Text') {
-								if (target === '#text') {
+								if (selectors.includes('#text')) {
 									return false;
 								}
+								continue;
+							}
+							if (node.nodeName.toLowerCase() !== target.toLowerCase()) {
 								continue;
 							}
 							for (const selector of selectors) {
