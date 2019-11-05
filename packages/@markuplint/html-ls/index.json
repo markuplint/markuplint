@@ -3149,21 +3149,19 @@
 						},
 						"contents": [
 							{
-								"interleave": [
-									[
-										{
-											"oneOrMore": "dt"
-										},
-										{
-											"oneOrMore": "dd"
-										}
-									],
-									[
-										{
-											"zeroOrMore": ["#script-supporting"]
-										}
-									]
-								]
+								"zeroOrMore": "#script-supporting"
+							},
+							{
+								"oneOrMore": "dt"
+							},
+							{
+								"zeroOrMore": "#script-supporting"
+							},
+							{
+								"oneOrMore": "dd"
+							},
+							{
+								"zeroOrMore": "#script-supporting"
 							}
 						]
 					}
@@ -3191,13 +3189,26 @@
 				"tag": "dl",
 				"contents": [
 					{
-						"interleave": [
+						"choice": [
 							[
 								{
-									"oneOrMore": "dt"
-								},
-								{
-									"oneOrMore": "dd"
+									"oneOrMore": [
+										{
+											"zeroOrMore": "#script-supporting"
+										},
+										{
+											"oneOrMore": "dt"
+										},
+										{
+											"zeroOrMore": "#script-supporting"
+										},
+										{
+											"oneOrMore": "dd"
+										},
+										{
+											"zeroOrMore": "#script-supporting"
+										}
+									]
 								}
 							],
 							[
@@ -3643,6 +3654,27 @@
 			]
 		},
 		{
+			"name": "h1",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
+			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"categories": ["#flow", "#heading", "#palpable"],
+			"permittedStructures": {
+				"summary": "Phrasing content.",
+				"tag": "h1",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
+			},
+			"permittedRoles": {
+				"summary": "tab, presentation",
+				"roles": {}
+			},
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
 			"name": "h1-h6",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
 			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
@@ -3651,6 +3683,90 @@
 				"summary": "Phrasing content.",
 				"tag": "h1-h6",
 				"contents": true
+			},
+			"permittedRoles": {
+				"summary": "tab, presentation",
+				"roles": {}
+			},
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "h2",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
+			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"categories": ["#flow", "#heading", "#palpable"],
+			"permittedStructures": {
+				"summary": "Phrasing content.",
+				"tag": "h2",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
+			},
+			"permittedRoles": {
+				"summary": "tab, presentation",
+				"roles": {}
+			},
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "h3",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
+			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"categories": ["#flow", "#heading", "#palpable"],
+			"permittedStructures": {
+				"summary": "Phrasing content.",
+				"tag": "h3",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
+			},
+			"permittedRoles": {
+				"summary": "tab, presentation",
+				"roles": {}
+			},
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "h4",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
+			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"categories": ["#flow", "#heading", "#palpable"],
+			"permittedStructures": {
+				"summary": "Phrasing content.",
+				"tag": "h4",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
+			},
+			"permittedRoles": {
+				"summary": "tab, presentation",
+				"roles": {}
+			},
+			"omittion": false,
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "h5",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
+			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"categories": ["#flow", "#heading", "#palpable"],
+			"permittedStructures": {
+				"summary": "Phrasing content.",
+				"tag": "h5",
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation",
@@ -3677,7 +3793,8 @@
 							],
 							[
 								{
-									"zeroOrMore": "#metadata"
+									"zeroOrMore": "#metadata",
+									"ignore": "title"
 								}
 							]
 						]
@@ -5117,12 +5234,16 @@
 		{
 			"name": "ol",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol",
-			"description": "",
+			"description": "The HTML <ol> element represents an ordered list of items — typically rendered as a numbered list.",
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
 				"summary": "Zero or more <li> elements, which in turn often contain nested <ol> or <ul> elements.",
 				"tag": "ol",
-				"contents": true
+				"contents": [
+					{
+						"zeroOrMore": "li"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "directory, group, listbox, menu, menubar, radiogroup, tablist, toolbar, tree, presentation",
@@ -5132,13 +5253,6 @@
 			"attributes": [
 				"#globalAttrs",
 				"#ariaAttrs",
-				{
-					"name": "compact",
-					"description": "WIP",
-					"deprecated": true,
-					"category": "particular",
-					"value": "WIP"
-				},
 				{
 					"name": "reversed",
 					"description": "WIP",
@@ -5925,7 +6039,7 @@
 		{
 			"name": "source",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source",
-			"description": "The HTML <source> element specifies multiple media resources for the <picture>, the <audio> element, or the <video> element. It is an empty element, meaning that it has no content and does not have a closing tag. It is commonly used to serve the same media content in multiple formats supported by different browsers.",
+			"description": "The HTML <source> element specifies multiple media resources for the <picture>, the <audio> element, or the <video> element. It is an empty element, meaning that it has no content and does not have a closing tag. It is commonly used to offer the same media content in multiple file formats in order to provide compatibility with a broad range of browsers given their differing support for image file formats and media file formats.",
 			"categories": [],
 			"permittedStructures": {
 				"summary": "None, it is an empty element.",
@@ -6241,7 +6355,7 @@
 						"zeroOrMore": "#script-supporting"
 					},
 					{
-						"interleave": [
+						"choice": [
 							[
 								{
 									"optional": "tbody"

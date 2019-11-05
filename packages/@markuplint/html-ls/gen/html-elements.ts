@@ -6,6 +6,17 @@ import { setPermittedContent as setPermittedStructures } from './setPermittedStr
 export async function getHTMLElements() {
 	const links = await getHTMLElementLinks();
 	const specs = await Promise.all(links.map(getHTMLElement));
+	// h1-h6
+	const headingElementSpec = specs.find(spec => spec.name === 'h1-h6');
+	if (headingElementSpec) {
+		for (let i = 1; i < 6; i++) {
+			const h = { ...headingElementSpec };
+			const name = `h${i}`;
+			h.name = name;
+			h.permittedStructures = { ...h.permittedStructures, ...setPermittedStructures(name) };
+			specs.push(h);
+		}
+	}
 	return specs.sort(nameCompare);
 }
 

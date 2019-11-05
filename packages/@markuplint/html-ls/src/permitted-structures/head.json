@@ -10,7 +10,8 @@
 				],
 				[
 					{
-						"zeroOrMore": "#metadata"
+						"zeroOrMore": "#metadata",
+						"ignore": "title"
 					}
 				]
 			]

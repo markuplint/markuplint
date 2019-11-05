@@ -1,0 +1,8 @@
+{
+	"tag": "h1",
+	"contents": [
+		{
+			"zeroOrMore": "#phrasing"
+		}
+	]
+}

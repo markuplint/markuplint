@@ -1,0 +1,8 @@
+{
+	"tag": "ol",
+	"contents": [
+		{
+			"zeroOrMore": "li"
+		}
+	]
+}

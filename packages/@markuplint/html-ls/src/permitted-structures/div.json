@@ -7,21 +7,19 @@
 			},
 			"contents": [
 				{
-					"interleave": [
-						[
-							{
-								"oneOrMore": "dt"
-							},
-							{
-								"oneOrMore": "dd"
-							}
-						],
-						[
-							{
-								"zeroOrMore": ["#script-supporting"]
-							}
-						]
-					]
+					"zeroOrMore": "#script-supporting"
+				},
+				{
+					"oneOrMore": "dt"
+				},
+				{
+					"zeroOrMore": "#script-supporting"
+				},
+				{
+					"oneOrMore": "dd"
+				},
+				{
+					"zeroOrMore": "#script-supporting"
 				}
 			]
 		}

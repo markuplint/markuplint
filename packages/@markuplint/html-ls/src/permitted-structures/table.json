@@ -23,7 +23,7 @@
 			"zeroOrMore": "#script-supporting"
 		},
 		{
-			"interleave": [
+			"choice": [
 				[
 					{
 						"optional": "tbody"

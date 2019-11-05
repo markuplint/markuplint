@@ -2,13 +2,26 @@
 	"tag": "dl",
 	"contents": [
 		{
-			"interleave": [
+			"choice": [
 				[
 					{
-						"oneOrMore": "dt"
-					},
-					{
-						"oneOrMore": "dd"
+						"oneOrMore": [
+							{
+								"zeroOrMore": "#script-supporting"
+							},
+							{
+								"oneOrMore": "dt"
+							},
+							{
+								"zeroOrMore": "#script-supporting"
+							},
+							{
+								"oneOrMore": "dd"
+							},
+							{
+								"zeroOrMore": "#script-supporting"
+							}
+						]
 					}
 				],
 				[
