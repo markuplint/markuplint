@@ -110,3 +110,19 @@ test('raw', async () => {
 	expect(document.nodeList[6].indentation!).toBe(null);
 	expect(document.nodeList[7].indentation!.width).toBe(0);
 });
+
+test('content model', async () => {
+	const sourceCode = '<a href="path/to"><div><span>text</span></div></a>';
+	const ast = parse(sourceCode);
+	const ruleset = convertRuleset({});
+	const document = new Document(ast, {}, ruleset);
+	const el = document.nodeList[0];
+	// @ts-ignore
+	expect(Array.from(el.ownModels)).toMatchObject(['#flow', '#interactive']);
+	// @ts-ignore
+	expect(Array.from(el.childNodes[0].ownModels)).toMatchObject(['#flow']);
+	// @ts-ignore
+	expect(Array.from(el.childNodes[0].childNodes[0].ownModels)).toMatchObject(['#flow', '#phrasing']);
+	// @ts-ignore
+	expect(Array.from(el.childNodes[0].childNodes[0].childNodes[0].ownModels)).toMatchObject(['#flow', '#phrasing']);
+});

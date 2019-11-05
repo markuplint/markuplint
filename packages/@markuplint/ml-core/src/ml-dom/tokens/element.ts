@@ -1,9 +1,11 @@
 import { AnonymousNode, Document } from '../';
 import { MLASTElement, MLToken } from '@markuplint/ml-ast';
-import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode, MLDOMText, MLDOMToken } from './';
+import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode, MLDOMOmittedElement, MLDOMText, MLDOMToken } from './';
 import { createNode, createSelector, getNode } from '../helper';
+import { ContentModel } from '@markuplint/ml-spec';
 import { IMLDOMElement } from '../types';
 import { RuleConfigValue } from '@markuplint/ml-config';
+import { syncWalk } from '../helper/walkers';
 
 export default class MLDOMElement<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTElement>
 	implements IMLDOMElement {
@@ -15,6 +17,9 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 	public readonly closeTag: MLDOMElementCloseTag<T, O> | null;
 	public readonly selfClosingSolidus: MLDOMToken<MLToken>;
 	public readonly endSpace: MLDOMToken<MLToken>;
+	public readonly ownModels: Set<ContentModel> = new Set();
+	public readonly childModels: Set<ContentModel> = new Set();
+	public readonly descendantModels: Set<ContentModel> = new Set();
 
 	private _fixedNodeName: string;
 
@@ -38,6 +43,31 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 	public get childNodes(): AnonymousNode<T, O>[] {
 		const astChildren = this._astToken.childNodes || [];
 		return astChildren.map(node => getNode<typeof node, T, O>(node));
+	}
+
+	public querySelectorAll(selector: string) {
+		const matchedNodes: (MLDOMElement<T, O> | MLDOMText<T, O>)[] = [];
+		syncWalk(this.childNodes, node => {
+			if (node.type === 'Element' && node.matches(selector)) {
+				matchedNodes.push(node);
+			}
+			if (selector === '#text' && node.type === 'Text' && !node.isWhitespace()) {
+				matchedNodes.push(node);
+			}
+		});
+		return matchedNodes;
+	}
+
+	public closest(selector: string) {
+		let el: MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null = this;
+
+		do {
+			if (el.matches(selector)) {
+				return el;
+			}
+			el = el.parentNode;
+		} while (el !== null && el.type === 'Element');
+		return null;
 	}
 
 	public getAttributeToken(attrName: string) {

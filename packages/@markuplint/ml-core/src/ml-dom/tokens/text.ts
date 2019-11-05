@@ -1,3 +1,4 @@
+import { ContentModel } from '@markuplint/ml-spec';
 import { Document } from '../';
 import { IMLDOMText } from '../types';
 import { MLASTText } from '@markuplint/ml-ast';
@@ -16,6 +17,7 @@ export default class MLDOMText<T extends RuleConfigValue, O = null> extends MLDO
 	implements IMLDOMText {
 	public readonly type = 'Text';
 	public readonly isRawText: boolean;
+	public readonly ownModels: Set<ContentModel> = new Set();
 
 	constructor(astNode: MLASTText, document: Document<T, O>) {
 		super(astNode, document);
