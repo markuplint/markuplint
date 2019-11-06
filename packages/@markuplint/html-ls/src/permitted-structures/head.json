@@ -2,19 +2,15 @@
 	"tag": "head",
 	"contents": [
 		{
-			"interleave": [
-				[
-					{
-						"require": "title"
-					}
-				],
-				[
-					{
-						"zeroOrMore": "#metadata",
-						"ignore": "title"
-					}
-				]
-			]
+			"zeroOrMore": "#metadata",
+			"ignore": "title"
+		},
+		{
+			"require": "title"
+		},
+		{
+			"zeroOrMore": "#metadata",
+			"ignore": "title"
 		}
 	]
 }

@@ -3774,19 +3774,15 @@
 				"tag": "head",
 				"contents": [
 					{
-						"interleave": [
-							[
-								{
-									"require": "title"
-								}
-							],
-							[
-								{
-									"zeroOrMore": "#metadata",
-									"ignore": "title"
-								}
-							]
-						]
+						"zeroOrMore": "#metadata",
+						"ignore": "title"
+					},
+					{
+						"require": "title"
+					},
+					{
+						"zeroOrMore": "#metadata",
+						"ignore": "title"
 					}
 				]
 			},
@@ -6228,7 +6224,7 @@
 			"permittedStructures": {
 				"summary": "Text content matching the type attribute, that is text/css.",
 				"tag": "style",
-				"contents": false
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "None",
