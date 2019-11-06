@@ -370,6 +370,11 @@ describe('verify', () => {
 	});
 
 	test('Custom element', async () => {
+		const r1 = await markuplint.verify('<div><x-item></x-item></div>', ruleOn, [rule], 'en');
+		expect(r1).toStrictEqual([]);
+	});
+
+	test('Custom element', async () => {
 		const o = {
 			rules: {
 				'permitted-contents': {
