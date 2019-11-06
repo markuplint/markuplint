@@ -97,16 +97,23 @@ function normalization(nodes: TargetNodes) {
 }
 
 type El = {
-	parentNode: El | null;
+	uuid: string;
 	nodeName: string;
+	parentNode: El | null;
 };
+
+const expMapOnNodeId: Map<string, RegExp> = new Map();
 
 function getRegExpFromNode(node: El) {
 	// console.log({ n: node.nodeName });
+	if (expMapOnNodeId.has(node.uuid)) {
+		return expMapOnNodeId.get(node.uuid)!;
+	}
 	const parentExp = node.parentNode ? getRegExpFromNode(node.parentNode) : null;
 	const spec = htmlSpec(node.nodeName);
 	const contentRule = spec ? spec.contents : true;
 	const exp = specToRegExp(contentRule, parentExp);
+	expMapOnNodeId.set(node.uuid, exp);
 	return exp;
 }
 
