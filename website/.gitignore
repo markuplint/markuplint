@@ -1,2 +1,16 @@
-public
-.cache
+node_modules
+.sass-cache
+package-lock.json
+
+# ignore file types
+*.zip
+*.psd
+*.ai
+
+# docs
+docs/_book
+docs/**/*.pdf
+docs/node_modules
+htdocs/__guideline/**/*.pdf
+
+webhook-current.log
