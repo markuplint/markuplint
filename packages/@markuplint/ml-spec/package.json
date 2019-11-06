@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-spec",
-	"version": "1.0.0-alpha.3",
+	"version": "1.0.0-alpha.4",
 	"description": "Types and schema that specs of the Markup languages for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -18,7 +18,7 @@
 		"schema": "json2ts ./schemas/permitted-structures.schema.json > ./src/permitted-structres.ts; prettier --write ./src/permitted-structres.ts; eslint --fix --config ../../../.eslintrc ./src/permitted-structres.ts"
 	},
 	"devDependencies": {
-		"typescript-json-schema": "^0.40.0",
-		"json-schema-to-typescript": "^7.1.0"
+		"json-schema-to-typescript": "^7.1.0",
+		"typescript-json-schema": "^0.40.0"
 	}
 }
