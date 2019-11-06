@@ -1,13 +1,15 @@
+import ExpGenerator from './permitted-content.spec-to-regexp';
 import htmlSpec from './html-spec';
-import specToRegExp from './permitted-content.spec-to-regexp';
 
 test('empty', () => {
-	expect(specToRegExp([]).source).toEqual('^$');
+	const expGen = new ExpGenerator(0);
+	expect(expGen.specToRegExp([]).source).toEqual('^$');
 });
 
 test('ordered required', () => {
+	const expGen = new ExpGenerator(0);
 	expect(
-		specToRegExp([
+		expGen.specToRegExp([
 			{
 				require: 'a',
 			},
@@ -22,8 +24,9 @@ test('ordered required', () => {
 });
 
 test('ordered optional', () => {
+	const expGen = new ExpGenerator(0);
 	expect(
-		specToRegExp([
+		expGen.specToRegExp([
 			{
 				optional: 'a',
 			},
@@ -38,8 +41,9 @@ test('ordered optional', () => {
 });
 
 test('ordered zeroOrMore', () => {
+	const expGen = new ExpGenerator(0);
 	expect(
-		specToRegExp([
+		expGen.specToRegExp([
 			{
 				zeroOrMore: 'a',
 			},
@@ -54,8 +58,9 @@ test('ordered zeroOrMore', () => {
 });
 
 test('ordered oneOrMore', () => {
+	const expGen = new ExpGenerator(0);
 	expect(
-		specToRegExp([
+		expGen.specToRegExp([
 			{
 				oneOrMore: 'a',
 			},
@@ -70,8 +75,9 @@ test('ordered oneOrMore', () => {
 });
 
 test('ordered mixed', () => {
+	const expGen = new ExpGenerator(0);
 	expect(
-		specToRegExp([
+		expGen.specToRegExp([
 			{
 				oneOrMore: 'a',
 			},
@@ -102,8 +108,9 @@ test('ordered mixed', () => {
 });
 
 test('choice required', () => {
+	const expGen = new ExpGenerator(0);
 	expect(
-		specToRegExp([
+		expGen.specToRegExp([
 			{
 				choice: [
 					[
@@ -128,8 +135,9 @@ test('choice required', () => {
 });
 
 test('choice required', () => {
+	const expGen = new ExpGenerator(0);
 	expect(
-		specToRegExp([
+		expGen.specToRegExp([
 			{
 				require: ['a', 'b', 'c'],
 			},
@@ -138,8 +146,9 @@ test('choice required', () => {
 });
 
 test('interleave required', () => {
+	const expGen = new ExpGenerator(0);
 	expect(
-		specToRegExp([
+		expGen.specToRegExp([
 			{
 				interleave: [
 					[
@@ -164,8 +173,9 @@ test('interleave required', () => {
 });
 
 test('ignore', () => {
+	const expGen = new ExpGenerator(0);
 	expect(
-		specToRegExp([
+		expGen.specToRegExp([
 			{
 				require: ['a', 'b', 'c'],
 				ignore: 'a',
@@ -175,8 +185,9 @@ test('ignore', () => {
 });
 
 test('group oneOrMore', () => {
+	const expGen = new ExpGenerator(0);
 	expect(
-		specToRegExp([
+		expGen.specToRegExp([
 			{
 				oneOrMore: [
 					{
@@ -192,8 +203,9 @@ test('group oneOrMore', () => {
 });
 
 test('content model alias', () => {
+	const expGen = new ExpGenerator(0);
 	expect(
-		specToRegExp([
+		expGen.specToRegExp([
 			{
 				require: '#flow',
 			},
@@ -204,8 +216,9 @@ test('content model alias', () => {
 });
 
 test('content model alias', () => {
+	const expGen = new ExpGenerator(0);
 	expect(
-		specToRegExp([
+		expGen.specToRegExp([
 			{
 				require: ['a', '#flow'],
 			},
@@ -216,65 +229,75 @@ test('content model alias', () => {
 });
 
 test('content model alias', () => {
+	const expGen = new ExpGenerator(0);
 	expect(
-		specToRegExp([
+		expGen.specToRegExp([
 			{
 				require: '#transparent',
 			},
 		]).source,
-	).toEqual('^(?<TRANSPARENT><[^>]+>)$');
+	).toEqual('^(?<TRANSPARENT_00><[^>]+>)$');
 });
 
 test('a', () => {
-	// @ts-ignore
-	expect(specToRegExp(htmlSpec('a').contents).source).toEqual(
-		'^(?<NAD__interactive___InTRANSPARENT>(?:(?<TRANSPARENT><[^>]+>))*)$',
+	const expGen = new ExpGenerator(0);
+	expect(expGen.specToRegExp(htmlSpec('a')!.contents).source).toEqual(
+		'^(?<NAD_00__interactive___InTRANSPARENT>(?:(?<TRANSPARENT_01><[^>]+>))*)$',
 	);
 });
 
 test('audio', () => {
-	// @ts-ignore
-	expect(specToRegExp(htmlSpec('audio').contents).source).toEqual(
-		'^(?<NAD_source_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT><[^>]+>))*)$',
+	const expGen = new ExpGenerator(0);
+	expect(expGen.specToRegExp(htmlSpec('audio')!.contents).source).toEqual(
+		'^(?<NAD_00_source_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01><[^>]+>))*)$',
 	);
 });
 
 test('head', () => {
-	// @ts-ignore
-	expect(specToRegExp(htmlSpec('head').contents).source).toEqual(
+	const expGen = new ExpGenerator(0);
+	expect(expGen.specToRegExp(htmlSpec('head')!.contents).source).toEqual(
 		'^(?:(?:<base>|<link>|<meta>|<noscript>|<script>|<style>|<template>)*<title>|<title>(?:<base>|<link>|<meta>|<noscript>|<script>|<style>|<template>)*)$',
 	);
 });
 
 test('picture', () => {
-	// @ts-ignore
-	expect(specToRegExp(htmlSpec('picture').contents).source).toEqual(
+	const expGen = new ExpGenerator(0);
+	expect(expGen.specToRegExp(htmlSpec('picture')!.contents).source).toEqual(
 		'^(?:<script>|<template>)*(?:<source>)*(?:<script>|<template>)*<img>(?:<script>|<template>)*$',
 	);
 });
 
 test('ruby', () => {
-	// @ts-ignore
-	expect(specToRegExp(htmlSpec('ruby').contents).source).toEqual(
-		'^(?<NAD_ruby>(?:<abbr>|<audio>|<b>|<bdo>|<br>|<button>|<canvas>|<cite>|<code>|<data>|<datalist>|<dfn>|<em>|<embed>|<i>|<iframe>|<img>|<input>|<kbd>|<label>|<mark>|<math>|<meter>|<noscript>|<object>|<output>|<progress>|<q>|<ruby>|<samp>|<script>|<select>|<small>|<span>|<strong>|<sub>|<sup>|<svg>|<textarea>|<time>|<var>|<video>|<wbr>|<#text>|<a>|<area@map>|<del>|<ins>|<link【itemprop】>|<link【rel=dns-prefetch】>|<link【rel=modulepreload】>|<link【rel=pingback】>|<link【rel=preconnect】>|<link【rel=prefetch】>|<link【rel=preload】>|<link【rel=prerender】>|<link【rel=stylesheet】>|<map>|<meta【itemprop】>)(?:(?:<rt>)+|(?:<rp>(?:<rt><rp>)+)+))+$',
+	const expGen = new ExpGenerator(0);
+	expect(expGen.specToRegExp(htmlSpec('ruby')!.contents).source).toEqual(
+		'^(?<NAD_00_ruby>(?:<abbr>|<audio>|<b>|<bdo>|<br>|<button>|<canvas>|<cite>|<code>|<data>|<datalist>|<dfn>|<em>|<embed>|<i>|<iframe>|<img>|<input>|<kbd>|<label>|<mark>|<math>|<meter>|<noscript>|<object>|<output>|<progress>|<q>|<ruby>|<samp>|<script>|<select>|<small>|<span>|<strong>|<sub>|<sup>|<svg>|<textarea>|<time>|<var>|<video>|<wbr>|<#text>|<a>|<area@map>|<del>|<ins>|<link【itemprop】>|<link【rel=dns-prefetch】>|<link【rel=modulepreload】>|<link【rel=pingback】>|<link【rel=preconnect】>|<link【rel=prefetch】>|<link【rel=preload】>|<link【rel=prerender】>|<link【rel=stylesheet】>|<map>|<meta【itemprop】>)(?:(?:<rt>)+|(?:<rp>(?:<rt><rp>)+)+))+$',
 	);
 });
 
 test('select', () => {
-	// @ts-ignore
-	expect(specToRegExp(htmlSpec('select').contents).source).toEqual('^(?:<option>|<optgroup>)*$');
+	const expGen = new ExpGenerator(0);
+	expect(expGen.specToRegExp(htmlSpec('select')!.contents).source).toEqual('^(?:<option>|<optgroup>)*$');
 });
 
 test('summary', () => {
-	// @ts-ignore
-	expect(specToRegExp(htmlSpec('summary').contents).source).toEqual(
+	const expGen = new ExpGenerator(0);
+	expect(expGen.specToRegExp(htmlSpec('summary')!.contents).source).toEqual(
 		'^(?:(?:<abbr>|<audio>|<b>|<bdo>|<br>|<button>|<canvas>|<cite>|<code>|<data>|<datalist>|<dfn>|<em>|<embed>|<i>|<iframe>|<img>|<input>|<kbd>|<label>|<mark>|<math>|<meter>|<noscript>|<object>|<output>|<progress>|<q>|<ruby>|<samp>|<script>|<select>|<small>|<span>|<strong>|<sub>|<sup>|<svg>|<textarea>|<time>|<var>|<video>|<wbr>|<#text>|<a>|<area@map>|<del>|<ins>|<link【itemprop】>|<link【rel=dns-prefetch】>|<link【rel=modulepreload】>|<link【rel=pingback】>|<link【rel=preconnect】>|<link【rel=prefetch】>|<link【rel=preload】>|<link【rel=prerender】>|<link【rel=stylesheet】>|<map>|<meta【itemprop】>)*|(?:<h1>|<h2>|<h3>|<h4>|<h5>|<h6>|<hgroup>)?)$',
 	);
 });
 
 test('table', () => {
-	// @ts-ignore
-	expect(specToRegExp(htmlSpec('table').contents).source).toEqual(
+	const expGen = new ExpGenerator(0);
+	expect(expGen.specToRegExp(htmlSpec('table')!.contents).source).toEqual(
 		'^(?:<script>|<template>)*(?:<caption>)?(?:<script>|<template>)*(?:<colgroup>)*(?:<script>|<template>)*(?:<thead>)?(?:<script>|<template>)*(?:(?:<tbody>)?|(?:<tr>)+)(?:<script>|<template>)*(?:<tfoot>)?(?:<script>|<template>)*$',
+	);
+});
+
+test('audio in audio / Duplicate capture group name', () => {
+	const expGen = new ExpGenerator(0);
+	expect(
+		expGen.specToRegExp(htmlSpec('audio')!.contents, expGen.specToRegExp(htmlSpec('audio')!.contents)).source,
+	).toEqual(
+		'^(?<NAD_02_source_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_03>(?<NAD_00_source_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01><[^>]+>))*)))*)$',
 	);
 });

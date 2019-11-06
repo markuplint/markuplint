@@ -15,93 +15,111 @@ const ALL = '<[^>]+>';
 const ___TRANSPARENT___ = '___TRANSPARENT___';
 const ___InTRANSPARENT = '___InTRANSPARENT';
 
-export default function specToRegExp(contentRule: PermittedContent[] | boolean, parentExp: RegExp | null = null) {
-	if (contentRule === true) {
-		return new RegExp(`^(?:${ALL})$`);
-	}
-	if (contentRule === false) {
-		return new RegExp('^$');
-	}
-	const parentPattern = parentExp ? parentExp.source.replace(/^\^|\$$/g, '') : ALL;
-	const pattern = toPattern(contentRule, null, 1, 1).replace(___TRANSPARENT___, `(?<TRANSPARENT>${parentPattern})`);
-	return new RegExp(`^${pattern}$`, 'i');
-}
+export default class ExpGenerator {
+	private _idCounter = 0;
 
-function toPattern(contentRule: Target | PermittedContent[], ignore: Target | null, min: number, max: number) {
-	if (isTarget(contentRule)) {
-		return targetTags(contentRule, ignore, min, max);
-	}
-	let notAllowedDescendantsNamedCapture = '';
-	const exp: string[] = [];
-	for (const nodeRule of contentRule) {
-		let pattern = '';
-		if (isRequiredContents(nodeRule)) {
-			if (nodeRule.notAllowedDescendants) {
-				notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
-					.map(r => r.replace('#', '_'))
-					.join('_');
-				if (nodeRule.require === '#transparent') {
-					notAllowedDescendantsNamedCapture += ___InTRANSPARENT;
-				}
-			}
-			pattern = targetTags(
-				nodeRule.require,
-				nodeRule.ignore || null,
-				nodeRule.min || 1,
-				nodeRule.max || nodeRule.min || 1,
-			);
-		} else if (isOptionalContents(nodeRule)) {
-			if (nodeRule.notAllowedDescendants) {
-				notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
-					.map(r => r.replace('#', '_'))
-					.join('_');
-				if (nodeRule.optional === '#transparent') {
-					notAllowedDescendantsNamedCapture += ___InTRANSPARENT;
-				}
-			}
-			pattern = targetTags(nodeRule.optional, nodeRule.ignore || null, 0, nodeRule.max || 1);
-		} else if (isOneOrMoreContents(nodeRule)) {
-			if (nodeRule.notAllowedDescendants) {
-				notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
-					.map(r => r.replace('#', '_'))
-					.join('_');
-				if (nodeRule.oneOrMore === '#transparent') {
-					notAllowedDescendantsNamedCapture += ___InTRANSPARENT;
-				}
-			}
-			pattern = toPattern(nodeRule.oneOrMore, nodeRule.ignore || null, 1, nodeRule.max || Infinity);
-		} else if (isZeroOrMoreContents(nodeRule)) {
-			if (nodeRule.notAllowedDescendants) {
-				notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
-					.map(r => r.replace('#', '_'))
-					.join('_');
-				if (nodeRule.zeroOrMore === '#transparent') {
-					notAllowedDescendantsNamedCapture += ___InTRANSPARENT;
-				}
-			}
-			pattern = toPattern(nodeRule.zeroOrMore, nodeRule.ignore || null, 0, nodeRule.max || Infinity);
-		} else if (isChoiceContents(nodeRule)) {
-			pattern = `(?:${nodeRule.choice.map(choice => toPattern(choice, null, 1, 1)).join('|')})`;
-		} else if (isInterleaveContents(nodeRule)) {
-			pattern = interleavePattern(nodeRule.interleave);
+	constructor(private _id: number) {}
+
+	public specToRegExp(contentRule: PermittedContent[] | boolean, parentExp: RegExp | null = null) {
+		if (contentRule === true) {
+			return new RegExp(`^(?:${ALL})$`);
 		}
-		exp.push(pattern);
-	}
-	const range = createRange(min, max);
-	const c = notAllowedDescendantsNamedCapture ? `?<NAD_${notAllowedDescendantsNamedCapture}>` : '?:';
-	if (1 === exp.length && range === '') {
-		if (notAllowedDescendantsNamedCapture) {
-			return `(${c}${exp[0]})`;
+		if (contentRule === false) {
+			return new RegExp('^$');
 		}
-		return exp[0];
+		const parentPattern = parentExp ? parentExp.source.replace(/^\^|\$$/g, '') : ALL;
+		const pattern = this._toPattern(contentRule, null, 1, 1).replace(
+			___TRANSPARENT___,
+			() => `(?<TRANSPARENT_${this._id}${this._idCounter++}>${parentPattern})`,
+		);
+
+		return new RegExp(`^${pattern}$`, 'i');
 	}
-	if (range === '') {
-		if (notAllowedDescendantsNamedCapture) {
-			return `(${c}${exp.join('')})`;
+
+	private _toPattern(contentRule: Target | PermittedContent[], ignore: Target | null, min: number, max: number) {
+		if (isTarget(contentRule)) {
+			return targetTags(contentRule, ignore, min, max);
 		}
-		return exp.join('');
+		let notAllowedDescendantsNamedCapture = '';
+		const exp: string[] = [];
+		for (const nodeRule of contentRule) {
+			let pattern = '';
+			if (isRequiredContents(nodeRule)) {
+				if (nodeRule.notAllowedDescendants) {
+					notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
+						.map(r => r.replace('#', '_'))
+						.join('_');
+					if (nodeRule.require === '#transparent') {
+						notAllowedDescendantsNamedCapture += `${___InTRANSPARENT}`;
+					}
+				}
+				pattern = targetTags(
+					nodeRule.require,
+					nodeRule.ignore || null,
+					nodeRule.min || 1,
+					nodeRule.max || nodeRule.min || 1,
+				);
+			} else if (isOptionalContents(nodeRule)) {
+				if (nodeRule.notAllowedDescendants) {
+					notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
+						.map(r => r.replace('#', '_'))
+						.join('_');
+					if (nodeRule.optional === '#transparent') {
+						notAllowedDescendantsNamedCapture += `${___InTRANSPARENT}`;
+					}
+				}
+				pattern = targetTags(nodeRule.optional, nodeRule.ignore || null, 0, nodeRule.max || 1);
+			} else if (isOneOrMoreContents(nodeRule)) {
+				if (nodeRule.notAllowedDescendants) {
+					notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
+						.map(r => r.replace('#', '_'))
+						.join('_');
+					if (nodeRule.oneOrMore === '#transparent') {
+						notAllowedDescendantsNamedCapture += `${___InTRANSPARENT}`;
+					}
+				}
+				pattern = this._toPattern(nodeRule.oneOrMore, nodeRule.ignore || null, 1, nodeRule.max || Infinity);
+			} else if (isZeroOrMoreContents(nodeRule)) {
+				if (nodeRule.notAllowedDescendants) {
+					notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
+						.map(r => r.replace('#', '_'))
+						.join('_');
+					if (nodeRule.zeroOrMore === '#transparent') {
+						notAllowedDescendantsNamedCapture += `${___InTRANSPARENT}`;
+					}
+				}
+				pattern = this._toPattern(nodeRule.zeroOrMore, nodeRule.ignore || null, 0, nodeRule.max || Infinity);
+			} else if (isChoiceContents(nodeRule)) {
+				pattern = `(?:${nodeRule.choice.map(choice => this._toPattern(choice, null, 1, 1)).join('|')})`;
+			} else if (isInterleaveContents(nodeRule)) {
+				pattern = this._interleavePattern(nodeRule.interleave);
+			}
+			exp.push(pattern);
+		}
+		const range = createRange(min, max);
+		const c = notAllowedDescendantsNamedCapture
+			? `?<NAD_${this._id}${this._idCounter++}_${notAllowedDescendantsNamedCapture}>`
+			: '?:';
+		if (1 === exp.length && range === '') {
+			if (notAllowedDescendantsNamedCapture) {
+				return `(${c}${exp[0]})`;
+			}
+			return exp[0];
+		}
+		if (range === '') {
+			if (notAllowedDescendantsNamedCapture) {
+				return `(${c}${exp.join('')})`;
+			}
+			return exp.join('');
+		}
+		return `(${c}${exp.join('')})${range}`;
 	}
-	return `(${c}${exp.join('')})${range}`;
+
+	private _interleavePattern(contents: PermittedContent[][]) {
+		const interleave = contents.map(content => this._toPattern(content, null, 1, 1));
+		const patterns = combination(interleave).map(pattern => pattern.join(''));
+		return join(patterns);
+	}
 }
 
 function isRequiredContents(contents: PermittedContent): contents is PermittedContentRequire {
@@ -187,12 +205,6 @@ function isTarget(contentRule: Target | PermittedContent[]): contentRule is Targ
 		return true;
 	}
 	return contentRule.some((i: string | PermittedContent) => typeof i === 'string');
-}
-
-function interleavePattern(contents: PermittedContent[][]) {
-	const interleave = contents.map(content => toPattern(content, null, 1, 1));
-	const patterns = combination(interleave).map(pattern => pattern.join(''));
-	return join(patterns);
 }
 
 function join(pattern: string[], range = '') {

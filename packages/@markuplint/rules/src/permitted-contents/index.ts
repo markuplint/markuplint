@@ -1,7 +1,7 @@
 import { Element, Result, createRule } from '@markuplint/ml-core';
+import ExpGenerator from './permitted-content.spec-to-regexp';
 import { PermittedStructuresSchema } from '@markuplint/ml-spec';
 import htmlSpec from './html-spec';
-import specToRegExp from './permitted-content.spec-to-regexp';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
 type TagRule = PermittedStructuresSchema;
@@ -12,6 +12,7 @@ export default createRule<boolean, TagRule[]>({
 	defaultOptions: [],
 	async verify(document, messages) {
 		const reports: Result[] = [];
+		let idCounter = 0;
 		await document.walkOn('Element', async node => {
 			if (!node.rule.value) {
 				return;
@@ -19,6 +20,8 @@ export default createRule<boolean, TagRule[]>({
 
 			const nodes = node.getChildElementsAndTextNodeWithoutWhitespaces();
 			const spec = htmlSpec(node.nodeName);
+
+			const expGen = new ExpGenerator(idCounter++);
 
 			if (spec) {
 				let matched = false;
@@ -32,8 +35,8 @@ export default createRule<boolean, TagRule[]>({
 								node.parentNode.matches(conditional.condition.parent));
 						// console.log({ ...conditional, matched });
 						if (matched) {
-							const parentExp = getRegExpFromParentNode(node);
-							const exp = specToRegExp(conditional.contents, parentExp);
+							const parentExp = getRegExpFromParentNode(node, expGen);
+							const exp = expGen.specToRegExp(conditional.contents, parentExp);
 							const conditionalResult = match(exp, nodes);
 							if (!conditionalResult) {
 								reports.push({
@@ -50,7 +53,7 @@ export default createRule<boolean, TagRule[]>({
 				}
 
 				if (!matched) {
-					const exp = getRegExpFromNode(node);
+					const exp = getRegExpFromNode(node, expGen);
 					const specResult = match(exp, nodes);
 
 					if (!specResult) {
@@ -70,8 +73,8 @@ export default createRule<boolean, TagRule[]>({
 					continue;
 				}
 
-				const parentExp = getRegExpFromParentNode(node);
-				const exp = specToRegExp(rule.contents, parentExp);
+				const parentExp = getRegExpFromParentNode(node, expGen);
+				const exp = expGen.specToRegExp(rule.contents, parentExp);
 				const r = match(exp, nodes);
 
 				if (!r) {
@@ -104,22 +107,22 @@ type El = {
 
 const expMapOnNodeId: Map<string, RegExp> = new Map();
 
-function getRegExpFromNode(node: El) {
+function getRegExpFromNode(node: El, expGen: ExpGenerator) {
 	// console.log({ n: node.nodeName });
 	if (expMapOnNodeId.has(node.uuid)) {
 		return expMapOnNodeId.get(node.uuid)!;
 	}
-	const parentExp = node.parentNode ? getRegExpFromNode(node.parentNode) : null;
+	const parentExp = node.parentNode ? getRegExpFromNode(node.parentNode, expGen) : null;
 	const spec = htmlSpec(node.nodeName);
 	const contentRule = spec ? spec.contents : true;
-	const exp = specToRegExp(contentRule, parentExp);
+	const exp = expGen.specToRegExp(contentRule, parentExp);
 	expMapOnNodeId.set(node.uuid, exp);
 	return exp;
 }
 
-function getRegExpFromParentNode(node: El) {
+function getRegExpFromParentNode(node: El, expGen: ExpGenerator) {
 	// console.log({ p: node.nodeName });
-	const parentExp = node.parentNode ? getRegExpFromNode(node.parentNode) : null;
+	const parentExp = node.parentNode ? getRegExpFromNode(node.parentNode, expGen) : null;
 	return parentExp;
 }
 
@@ -132,7 +135,8 @@ function match(exp: RegExp, nodes: TargetNodes) {
 	const capGroups = result.groups;
 	// console.log({ exp, target, capGroups });
 	if (capGroups) {
-		for (const groupName of Object.keys(capGroups)) {
+		const groupNames = Object.keys(capGroups);
+		for (const groupName of groupNames) {
 			const matched = capGroups[groupName];
 			if (!matched) {
 				continue;
@@ -140,35 +144,36 @@ function match(exp: RegExp, nodes: TargetNodes) {
 			let targetsMaybeIncludesNotAllowedDescendants = Array.from(
 				new Set(matched.split(/><|<|>/g).filter(_ => _)),
 			);
-			const [type, ..._selector] = groupName.split(/(?<=[a-z0-9])_/gi);
-			const contents: Set<string> = new Set();
-			const inTransparent = _selector.includes('__InTRANSPARENT')
-				? capGroups['TRANSPARENT']
-					? capGroups['TRANSPARENT'].split(/><|<|>/g).filter(_ => _)
-					: null
-				: null;
-			_selector.forEach(content => {
-				if (content[0] === '_') {
-					unfoldContentModelsToTags(content.replace('_', '#')).forEach(tag => contents.add(tag));
-					return;
-				}
-				contents.add(content);
-			});
-			const selectors = Array.from(contents);
-			targetsMaybeIncludesNotAllowedDescendants = targetsMaybeIncludesNotAllowedDescendants.filter(content =>
-				inTransparent ? inTransparent.includes(content) : true,
-			);
-			// console.log({
-			// 	groupName,
-			// 	matched,
-			// 	_selector,
-			// 	type,
-			// 	selectors,
-			// 	inTransparent,
-			// 	targetsMaybeIncludesNotAllowedDescendants,
-			// });
+			const [type, , ..._selector] = groupName.split(/(?<=[a-z0-9])_/gi);
 			switch (type) {
 				case 'NAD': {
+					const contents: Set<string> = new Set();
+					const transparentGroupName = groupNames.find(name => /^TRANSPARENT_[0-9]+$/.test(name));
+					const inTransparent = _selector.includes('__InTRANSPARENT')
+						? transparentGroupName && capGroups[transparentGroupName]
+							? capGroups[transparentGroupName].split(/><|<|>/g).filter(_ => _)
+							: null
+						: null;
+					_selector.forEach(content => {
+						if (content[0] === '_') {
+							unfoldContentModelsToTags(content.replace('_', '#')).forEach(tag => contents.add(tag));
+							return;
+						}
+						contents.add(content);
+					});
+					const selectors = Array.from(contents);
+					targetsMaybeIncludesNotAllowedDescendants = targetsMaybeIncludesNotAllowedDescendants.filter(
+						content => (inTransparent ? inTransparent.includes(content) : true),
+					);
+					// console.log({
+					// 	groupName,
+					// 	matched,
+					// 	_selector,
+					// 	type,
+					// 	selectors,
+					// 	inTransparent,
+					// 	targetsMaybeIncludesNotAllowedDescendants,
+					// });
 					for (const node of nodes) {
 						for (const target of targetsMaybeIncludesNotAllowedDescendants) {
 							if (node.type === 'Text') {
