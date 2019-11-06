@@ -24,7 +24,21 @@ export default createRule<boolean, TagRule[]>({
 			const expGen = new ExpGenerator(idCounter++);
 
 			if (spec) {
+				if (spec.ancestor && !node.closest(spec.ancestor)) {
+					reports.push({
+						severity: node.rule.severity,
+						message: messages(
+							`Invalid structure: "${node.nodeName}" element must have an ancestor "${spec.ancestor}"`,
+						),
+						line: node.startLine,
+						col: node.startCol,
+						raw: node.raw,
+					});
+					return;
+				}
+
 				let matched = false;
+
 				if (spec.conditional) {
 					for (const conditional of spec.conditional) {
 						matched =

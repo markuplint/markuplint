@@ -349,6 +349,26 @@ describe('verify', () => {
 		expect(r3).toStrictEqual([]);
 	});
 
+	test('area', async () => {
+		const r1 = await markuplint.verify('<div><area></div>', ruleOn, [rule], 'en');
+		expect(r1).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 6,
+				raw: '<area>',
+				message: 'Invalid structure: "area" element must have an ancestor "map"',
+			},
+		]);
+
+		const r2 = await markuplint.verify('<map><area></map>', ruleOn, [rule], 'en');
+		expect(r2).toStrictEqual([]);
+
+		const r3 = await markuplint.verify('<map><div><area></div></map>', ruleOn, [rule], 'en');
+		expect(r3).toStrictEqual([]);
+	});
+
 	test('Custom element', async () => {
 		const o = {
 			rules: {
