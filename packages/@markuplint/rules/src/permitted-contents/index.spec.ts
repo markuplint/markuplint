@@ -418,6 +418,11 @@ describe('verify', () => {
 		expect(r2).toStrictEqual([]);
 	});
 
+	test('Dep exp named capture in interleave', async () => {
+		const r1 = await markuplint.verify('<figure><img><figcaption></figure>', ruleOn, [rule], 'en');
+		expect(r1).toStrictEqual([]);
+	});
+
 	test('Custom element', async () => {
 		const r1 = await markuplint.verify('<div><x-item></x-item></div>', ruleOn, [rule], 'en');
 		expect(r1).toStrictEqual([]);

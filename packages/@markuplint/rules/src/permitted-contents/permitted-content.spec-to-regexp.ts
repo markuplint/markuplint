@@ -154,7 +154,9 @@ export default class ExpGenerator {
 
 	private _interleavePattern(contents: PermittedContent[][]) {
 		const interleave = contents.map(content => this._toPattern(content, null, 1, 1));
-		const patterns = combination(interleave).map(pattern => pattern.join(''));
+		const patterns = combination(interleave).map((pattern, i) =>
+			pattern.join('').replace(/(\(\?<[A-Z]+_)([0-9]+)_/g, ($0, $1, $2) => `${$1}${$2}${i}_`),
+		);
 		return join(patterns);
 	}
 

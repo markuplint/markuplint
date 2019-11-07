@@ -49,35 +49,47 @@ export default createRule<boolean, TagRule[]>({
 								node.parentNode.matches(conditional.condition.parent));
 						// console.log({ ...conditional, matched });
 						if (matched) {
-							const parentExp = getRegExpFromParentNode(node, expGen);
-							const exp = expGen.specToRegExp(conditional.contents, parentExp);
-							const conditionalResult = match(exp, nodes);
-							if (!conditionalResult) {
-								reports.push({
-									severity: node.rule.severity,
-									message: messages(`Invalid content in "${node.nodeName}" element on the HTML spec`),
-									line: node.startLine,
-									col: node.startCol,
-									raw: node.raw,
-								});
-								break;
+							try {
+								const parentExp = getRegExpFromParentNode(node, expGen);
+								const exp = expGen.specToRegExp(conditional.contents, parentExp);
+								const conditionalResult = match(exp, nodes);
+								if (!conditionalResult) {
+									reports.push({
+										severity: node.rule.severity,
+										message: messages(
+											`Invalid content in "${node.nodeName}" element on the HTML spec`,
+										),
+										line: node.startLine,
+										col: node.startCol,
+										raw: node.raw,
+									});
+									break;
+								}
+							} catch (e) {
+								// eslint-disable-next-line no-console
+								console.warn(node.raw, 'conditional', conditional, e.message);
 							}
 						}
 					}
 				}
 
 				if (!matched) {
-					const exp = getRegExpFromNode(node, expGen);
-					const specResult = match(exp, nodes);
+					try {
+						const exp = getRegExpFromNode(node, expGen);
+						const specResult = match(exp, nodes);
 
-					if (!specResult) {
-						reports.push({
-							severity: node.rule.severity,
-							message: messages(`Invalid content in "${node.nodeName}" element on the HTML spec`),
-							line: node.startLine,
-							col: node.startCol,
-							raw: node.raw,
-						});
+						if (!specResult) {
+							reports.push({
+								severity: node.rule.severity,
+								message: messages(`Invalid content in "${node.nodeName}" element on the HTML spec`),
+								line: node.startLine,
+								col: node.startCol,
+								raw: node.raw,
+							});
+						}
+					} catch (e) {
+						// eslint-disable-next-line no-console
+						console.warn(node.raw, 'HTML Spec', e.message);
 					}
 				}
 			}
@@ -88,18 +100,23 @@ export default createRule<boolean, TagRule[]>({
 				}
 
 				const parentExp = getRegExpFromParentNode(node, expGen);
-				const exp = expGen.specToRegExp(rule.contents, parentExp);
-				const r = match(exp, nodes);
+				try {
+					const exp = expGen.specToRegExp(rule.contents, parentExp);
+					const r = match(exp, nodes);
 
-				if (!r) {
-					reports.push({
-						severity: node.rule.severity,
-						message: messages(`Invalid content in "${node.nodeName}" element on rule settings`),
-						line: node.startLine,
-						col: node.startCol,
-						raw: node.raw,
-					});
-					return;
+					if (!r) {
+						reports.push({
+							severity: node.rule.severity,
+							message: messages(`Invalid content in "${node.nodeName}" element on rule settings`),
+							line: node.startLine,
+							col: node.startCol,
+							raw: node.raw,
+						});
+						return;
+					}
+				} catch (e) {
+					// eslint-disable-next-line no-console
+					console.warn(node.raw, 'rule', rule, e.message);
 				}
 			}
 		});

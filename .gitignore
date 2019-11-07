@@ -65,3 +65,6 @@ typings/
 
 # TypeScript
 *.tsbuildinfo
+
+# Secret Test
+test/fixture/.__*
