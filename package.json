@@ -16,8 +16,7 @@
 		"cli": "./packages/markuplint/bin/markuplint",
 		"site:dev": "cd website; yarn site:dev",
 		"site:build": "cd website; yarn site:build",
-		"release": "lerna publish",
-		"prerelease": "lerna publish --canary"
+		"release": "lerna publish"
 	},
 	"jest": {
 		"globals": {
