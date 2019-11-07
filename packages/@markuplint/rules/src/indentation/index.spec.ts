@@ -845,6 +845,72 @@ describe('verify', () => {
 		);
 		expect(r).toStrictEqual([]);
 	});
+
+	test('end tag', async () => {
+		const r = await markuplint.verify(
+			`
+		<div>
+		<div no-rule>
+			<span></span>
+</div>
+		</div>
+		`,
+			{
+				rules: {
+					indentation: {
+						severity: 'error',
+						value: 'tab',
+					},
+				},
+				nodeRules: [
+					{
+						selector: '[no-rule]',
+						rules: {
+							indentation: false,
+						},
+					},
+				],
+			},
+			[rule],
+			'en',
+		);
+		expect(r).toStrictEqual([]);
+	});
+
+	test('childNodeRules', async () => {
+		const r = await markuplint.verify(
+			`
+		<div>
+			<div no-rule>
+			<span>
+			<span>
+					  </span>
+	</span>
+			</div>
+		</div>
+		`,
+			{
+				rules: {
+					indentation: {
+						severity: 'error',
+						value: 'tab',
+					},
+				},
+				childNodeRules: [
+					{
+						selector: '[no-rule]',
+						inheritance: true,
+						rules: {
+							indentation: false,
+						},
+					},
+				],
+			},
+			[rule],
+			'en',
+		);
+		expect(r).toStrictEqual([]);
+	});
 });
 
 describe('fix', () => {

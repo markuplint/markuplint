@@ -69,7 +69,7 @@ export default createRule<Value, IndentationOptions>({
 					// console.log({
 					// 	[parent.raw]: parent.indentation ? parent.indentation.width : 0,
 					// 	[node.raw]: node.indentation.width,
-					// 	// rule: node.rule,
+					// 	rule: node.rule,
 					// 	parentIndentWidth,
 					// 	childIndentWidth,
 					// 	expectedWidth,
