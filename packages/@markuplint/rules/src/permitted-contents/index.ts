@@ -245,5 +245,5 @@ function match(exp: RegExp, nodes: TargetNodes) {
 			}
 		}
 	}
-	return !!result;
+	return true;
 }

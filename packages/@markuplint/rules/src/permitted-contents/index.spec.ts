@@ -395,6 +395,18 @@ describe('verify', () => {
 		const r2 = await markuplint.verify(
 			`<ol itemscope itemtype="https://schema.org/BreadcrumbList">
 				<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+					<a itemprop="item" href="https://example.com/books">
+						<span itemprop="name">Books</span>
+					</a>
+					<meta itemprop="position" content="1" />
+				</li>
+				<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+					<a itemscope itemtype="https://schema.org/WebPage" itemprop="item" itemid="https://example.com/books/sciencefiction" href="https://example.com/books/sciencefiction">
+						<span itemprop="name">Science Fiction</span>
+					</a>
+					<meta itemprop="position" content="2" />
+				</li>
+				<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
 					<span itemprop="name">Award winners</span>
 					<meta itemprop="position" content="3" />
 				</li>

@@ -186,6 +186,7 @@ export default class ExpGenerator {
 					}
 					default: {
 						const selectors = unfoldContentModelsToTags(name);
+						const counter = this._idCounter++;
 						selectors.forEach(selector => {
 							if (selector === '#custom') {
 								tagList.add(CUSTOM_ELEMENT);
@@ -194,7 +195,7 @@ export default class ExpGenerator {
 							if (/]$/i.test(selector)) {
 								const [, tagName] = /^([^[\]]+)\[[^\]]+\]$/.exec(selector) || [];
 								// ACM = Attributes by comtent model
-								const exp = `(?<ACM_${this._id}_${name.slice(1)}_${tagName}><${tagName}>)`;
+								const exp = `(?<ACM_${this._id}${counter}_${name.slice(1)}_${tagName}><${tagName}>)`;
 								tagList.add(exp);
 								return;
 							}
