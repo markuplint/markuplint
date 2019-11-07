@@ -256,7 +256,7 @@ test('audio', () => {
 test('head', () => {
 	const expGen = new ExpGenerator(0);
 	expect(expGen.specToRegExp(htmlSpec('head')!.contents).source).toEqual(
-		'^(?:(?:<base>|<link>|<meta>|<noscript>|<script>|<style>|<template>)*<title>|<title>(?:<base>|<link>|<meta>|<noscript>|<script>|<style>|<template>)*)$',
+		'^(?:<base>|<link>|<meta>|<noscript>|<script>|<style>|<template>)*<title>(?:<base>|<link>|<meta>|<noscript>|<script>|<style>|<template>)*$',
 	);
 });
 
