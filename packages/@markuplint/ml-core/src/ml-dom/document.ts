@@ -56,6 +56,10 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		this.specs = specs;
 		this.isFragment = ast.isFragment;
 
+		for (const node of this.tree) {
+			recursiveResolveCategories(node);
+		}
+
 		// add rules to node
 		for (const node of this.nodeList) {
 			// global rules
@@ -64,33 +68,33 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				node.rules[ruleName] = rule;
 			}
 
-			if (!(node instanceof MLDOMElement)) {
+			if (node.type !== 'Element' && node.type !== 'ElementCloseTag') {
 				continue;
 			}
 
+			const selectorTarget = node.type === 'Element' ? node : node.startTag;
+
 			// node specs and special rules for node by selector
 			for (const nodeRule of ruleset.nodeRules) {
+				if (!nodeRule.rules) {
+					continue;
+				}
+
 				const selector = nodeRule.selector || nodeRule.tagName;
 				if (!selector) {
 					continue;
 				}
 
-				const matched = node.matches(selector);
+				const matched = selectorTarget.matches(selector);
 
 				if (!matched) {
-					continue;
-				}
-
-				if (!nodeRule.rules) {
 					continue;
 				}
 
 				// special rules
 				for (const ruleName of Object.keys(nodeRule.rules)) {
 					const rule = nodeRule.rules[ruleName];
-					if (rule) {
-						node.rules[ruleName] = rule;
-					}
+					node.rules[ruleName] = rule;
 				}
 			}
 		}
@@ -98,12 +102,12 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		// overwrite rule to child node
 		for (const nodeRule of ruleset.childNodeRules) {
 			if (!nodeRule.rules || !nodeRule.selector) {
-				return;
+				break;
 			}
 			for (const ruleName of Object.keys(nodeRule.rules)) {
 				const rule = nodeRule.rules[ruleName];
 				for (const node of this.nodeList) {
-					if (!(node instanceof MLDOMElement)) {
+					if (node.type !== 'Element') {
 						continue;
 					}
 					if (node.matches(nodeRule.selector)) {
@@ -119,10 +123,6 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					}
 				}
 			}
-		}
-
-		for (const node of this.tree) {
-			recursiveResolveCategories(node);
 		}
 	}
 
