@@ -369,6 +369,43 @@ describe('verify', () => {
 		expect(r3).toStrictEqual([]);
 	});
 
+	test('meta', async () => {
+		const r1 = await markuplint.verify(
+			`<ol>
+				<li>
+					<span>Award winners</span>
+					<meta content="3" />
+				</li>
+			</ol>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r1).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 2,
+				col: 5,
+				raw: '<li>',
+				message: 'Invalid content in "li" element on the HTML spec',
+			},
+		]);
+
+		const r2 = await markuplint.verify(
+			`<ol itemscope itemtype="https://schema.org/BreadcrumbList">
+				<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+					<span itemprop="name">Award winners</span>
+					<meta itemprop="position" content="3" />
+				</li>
+			</ol>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r2).toStrictEqual([]);
+	});
+
 	test('Custom element', async () => {
 		const r1 = await markuplint.verify('<div><x-item></x-item></div>', ruleOn, [rule], 'en');
 		expect(r1).toStrictEqual([]);

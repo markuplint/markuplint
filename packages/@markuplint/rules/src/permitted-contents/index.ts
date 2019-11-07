@@ -155,12 +155,37 @@ function match(exp: RegExp, nodes: TargetNodes) {
 			if (!matched) {
 				continue;
 			}
-			let targetsMaybeIncludesNotAllowedDescendants = Array.from(
-				new Set(matched.split(/><|<|>/g).filter(_ => _)),
-			);
 			const [type, , ..._selector] = groupName.split(/(?<=[a-z0-9])_/gi);
+			// console.log({ type, _selector });
 			switch (type) {
+				case 'ACM': {
+					const [model, tag] = _selector;
+					const selectors = unfoldContentModelsToTags(`#${model}`).filter(selector => {
+						const [, tagName] = /^([^[\]]+)(?:\[[^\]]+\])?$/.exec(selector) || [];
+						return tagName.toLowerCase() === tag.toLowerCase();
+					});
+					for (const node of nodes) {
+						if (node.type === 'Text') {
+							continue;
+						}
+						if (node.nodeName.toLowerCase() !== tag.toLowerCase()) {
+							continue;
+						}
+						for (const selector of selectors) {
+							const matched = node.matches(selector);
+							// console.log({ raw: node.raw, selector, matched });
+							if (matched) {
+								return true;
+							}
+						}
+						return false;
+					}
+					break;
+				}
 				case 'NAD': {
+					let targetsMaybeIncludesNotAllowedDescendants = Array.from(
+						new Set(matched.split(/><|<|>/g).filter(_ => _)),
+					);
 					const contents: Set<string> = new Set();
 					const transparentGroupName = groupNames.find(name => /^TRANSPARENT_[0-9]+$/.test(name));
 					const inTransparent = _selector.includes('__InTRANSPARENT')

@@ -75,7 +75,7 @@ export default class ExpGenerator {
 
 	private _toPattern(contentRule: Target | PermittedContent[], ignore: Target | null, min: number, max: number) {
 		if (isTarget(contentRule)) {
-			return targetTags(contentRule, ignore, min, max);
+			return this._targetTags(contentRule, ignore, min, max);
 		}
 		let notAllowedDescendantsNamedCapture = '';
 		const exp: string[] = [];
@@ -90,7 +90,7 @@ export default class ExpGenerator {
 						notAllowedDescendantsNamedCapture += `${___InTRANSPARENT}`;
 					}
 				}
-				pattern = targetTags(
+				pattern = this._targetTags(
 					nodeRule.require,
 					nodeRule.ignore || null,
 					nodeRule.min || 1,
@@ -105,7 +105,7 @@ export default class ExpGenerator {
 						notAllowedDescendantsNamedCapture += `${___InTRANSPARENT}`;
 					}
 				}
-				pattern = targetTags(nodeRule.optional, nodeRule.ignore || null, 0, nodeRule.max || 1);
+				pattern = this._targetTags(nodeRule.optional, nodeRule.ignore || null, 0, nodeRule.max || 1);
 			} else if (isOneOrMoreContents(nodeRule)) {
 				if (nodeRule.notAllowedDescendants) {
 					notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
@@ -157,6 +157,58 @@ export default class ExpGenerator {
 		const patterns = combination(interleave).map(pattern => pattern.join(''));
 		return join(patterns);
 	}
+
+	private _targetTags(target: Target, ignore: Target | null, min: number, max: number) {
+		const tagList = this._resolveTags(target);
+		const ignoreList = ignore ? this._resolveTags(ignore) : null;
+
+		if (ignoreList) {
+			ignoreList.forEach(ignore => tagList.delete(ignore));
+		}
+
+		return join(Array.from(tagList), createRange(min, max));
+	}
+
+	private _resolveTags(target: Target) {
+		const list = Array.isArray(target) ? target : [target];
+		const tagList: Set<string> = new Set();
+
+		for (const name of list) {
+			if (name !== '#text' && name[0] === '#') {
+				switch (name) {
+					case '#transparent': {
+						tagList.add(___TRANSPARENT___);
+						break;
+					}
+					case '#custom': {
+						tagList.add(CUSTOM_ELEMENT);
+						break;
+					}
+					default: {
+						const selectors = unfoldContentModelsToTags(name);
+						selectors.forEach(selector => {
+							if (selector === '#custom') {
+								tagList.add(CUSTOM_ELEMENT);
+								return;
+							}
+							if (/]$/i.test(selector)) {
+								const [, tagName] = /^([^[\]]+)\[[^\]]+\]$/.exec(selector) || [];
+								// ACM = Attributes by comtent model
+								const exp = `(?<ACM_${this._id}_${name.slice(1)}_${tagName}><${tagName}>)`;
+								tagList.add(exp);
+								return;
+							}
+							tagList.add(`<${selector}>`);
+						});
+					}
+				}
+				continue;
+			}
+			tagList.add(`<${name}>`);
+		}
+
+		return tagList;
+	}
 }
 
 function isRequiredContents(contents: PermittedContent): contents is PermittedContentRequire {
@@ -181,51 +233,6 @@ function isChoiceContents(contents: PermittedContent): contents is PermittedCont
 
 function isInterleaveContents(contents: PermittedContent): contents is PermittedContentInterleave {
 	return 'interleave' in contents;
-}
-
-function resolveTags(target: Target) {
-	const list = Array.isArray(target) ? target : [target];
-	const tagList: Set<string> = new Set();
-
-	for (const name of list) {
-		if (name !== '#text' && name[0] === '#') {
-			switch (name) {
-				case '#transparent': {
-					tagList.add(___TRANSPARENT___);
-					break;
-				}
-				case '#custom': {
-					tagList.add(CUSTOM_ELEMENT);
-					break;
-				}
-				default: {
-					const tags = unfoldContentModelsToTags(name);
-					tags.forEach(tag => {
-						if (tag === '#custom') {
-							tagList.add(CUSTOM_ELEMENT);
-							return;
-						}
-						tagList.add(`<${espace(tag)}>`);
-					});
-				}
-			}
-			continue;
-		}
-		tagList.add(`<${espace(name)}>`);
-	}
-
-	return tagList;
-}
-
-function targetTags(target: Target, ignore: Target | null, min: number, max: number) {
-	const tagList = resolveTags(target);
-	const ignoreList = ignore ? resolveTags(ignore) : null;
-
-	if (ignoreList) {
-		ignoreList.forEach(ignore => tagList.delete(ignore));
-	}
-
-	return join(Array.from(tagList), createRange(min, max));
 }
 
 function createRange(min: number, max: number) {
@@ -259,8 +266,4 @@ function join(pattern: string[], range = '') {
 		return pattern[0];
 	}
 	return `(?:${pattern.join('|')})${range}`;
-}
-
-function espace(selector: string) {
-	return selector.replace(/\[/g, '【').replace(/\]/g, '】');
 }
