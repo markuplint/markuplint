@@ -418,6 +418,138 @@ describe('verify', () => {
 		expect(r2).toStrictEqual([]);
 	});
 
+	test('hgroup', async () => {
+		const r1 = await markuplint.verify(
+			`<hgroup>
+				<h1>Heading</h1>
+			</hgroup>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r1).toStrictEqual([]);
+
+		const r2 = await markuplint.verify(
+			`<hgroup>
+				<h1>Heading</h1>
+				<h2>Sub</h2>
+				<h2>Sub2</h2>
+			</hgroup>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r2).toStrictEqual([]);
+
+		const r3 = await markuplint.verify(
+			`<hgroup>
+				<template></template>
+				<h1>Heading</h1>
+				<template></template>
+				<h2>Sub</h2>
+				<template></template>
+				<h2>Sub2</h2>
+				<template></template>
+			</hgroup>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r3).toStrictEqual([]);
+
+		const r4 = await markuplint.verify(
+			`<hgroup>
+				<template></template>
+			</hgroup>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r4).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<hgroup>',
+				message: 'Invalid content in "hgroup" element on the HTML spec',
+			},
+		]);
+	});
+
+	test('script', async () => {
+		const r1 = await markuplint.verify(
+			`<script>
+				alert("checking");
+			</script>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r1).toStrictEqual([]);
+	});
+
+	test('style', async () => {
+		const r1 = await markuplint.verify(
+			`<style>
+				#id {
+					prop: value;
+				}
+			</style>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r1).toStrictEqual([]);
+	});
+
+	test('template', async () => {
+		const r1 = await markuplint.verify(
+			`<div>
+				<a href="path/to">
+					<template>
+						<span>tmpl</span>
+					</template>
+				</a>
+			</div>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r1).toStrictEqual([]);
+
+		const r2 = await markuplint.verify(
+			`<div>
+				<a href="path/to">
+					<template>
+						<button>tmpl</button>
+					</template>
+				</a>
+			</div>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r2).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 2,
+				col: 5,
+				raw: '<a href="path/to">',
+				message: 'Invalid content in "a" element on the HTML spec',
+			},
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 3,
+				col: 6,
+				raw: '<template>',
+				message: 'Invalid content in "template" element on the HTML spec',
+			},
+		]);
+	});
+
 	test('Dep exp named capture in interleave', async () => {
 		const r1 = await markuplint.verify('<figure><img><figcaption></figure>', ruleOn, [rule], 'en');
 		expect(r1).toStrictEqual([]);
