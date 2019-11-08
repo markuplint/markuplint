@@ -1220,12 +1220,13 @@
 				"a",
 				"abbr",
 				"address",
+				"area",
 				"article",
 				"aside",
 				"audio",
 				"b",
-				"bdo",
 				"bdi",
+				"bdo",
 				"blockquote",
 				"br",
 				"button",
@@ -1237,6 +1238,7 @@
 				"del",
 				"details",
 				"dfn",
+				"dialog",
 				"div",
 				"dl",
 				"em",
@@ -1261,11 +1263,21 @@
 				"ins",
 				"kbd",
 				"label",
+				"link[itemprop]",
+				"link[rel=dns-prefetch]",
+				"link[rel=modulepreload]",
+				"link[rel=pingback]",
+				"link[rel=preconnect]",
+				"link[rel=prefetch]",
+				"link[rel=preload]",
+				"link[rel=prerender]",
+				"link[rel=stylesheet]",
 				"main",
 				"map",
 				"mark",
 				"math",
 				"menu",
+				"meta[itemprop]",
 				"meter",
 				"nav",
 				"noscript",
@@ -1273,6 +1285,7 @@
 				"ol",
 				"output",
 				"p",
+				"picture",
 				"pre",
 				"progress",
 				"q",
@@ -1282,6 +1295,7 @@
 				"script",
 				"section",
 				"select",
+				"slot",
 				"small",
 				"span",
 				"strong",
@@ -1292,30 +1306,23 @@
 				"template",
 				"textarea",
 				"time",
+				"u",
 				"ul",
 				"var",
 				"video",
 				"wbr",
 				"#custom",
-				"#text",
-				"area",
-				"link[itemprop]",
-				"link[rel=dns-prefetch]",
-				"link[rel=modulepreload]",
-				"link[rel=pingback]",
-				"link[rel=preconnect]",
-				"link[rel=prefetch]",
-				"link[rel=preload]",
-				"link[rel=prerender]",
-				"link[rel=stylesheet]",
-				"meta[itemprop]"
+				"#text"
 			],
 			"#sectioning": ["article", "aside", "nav", "section"],
 			"#heading": ["h1", "h2", "h3", "h4", "h5", "h6", "hgroup"],
 			"#phrasing": [
+				"a",
 				"abbr",
+				"area",
 				"audio",
 				"b",
+				"bdi",
 				"bdo",
 				"br",
 				"button",
@@ -1324,6 +1331,7 @@
 				"code",
 				"data",
 				"datalist",
+				"del",
 				"dfn",
 				"em",
 				"embed",
@@ -1331,36 +1339,9 @@
 				"iframe",
 				"img",
 				"input",
+				"ins",
 				"kbd",
 				"label",
-				"mark",
-				"math",
-				"meter",
-				"noscript",
-				"object",
-				"output",
-				"progress",
-				"q",
-				"ruby",
-				"samp",
-				"script",
-				"select",
-				"small",
-				"span",
-				"strong",
-				"sub",
-				"sup",
-				"svg",
-				"textarea",
-				"time",
-				"var",
-				"video",
-				"wbr",
-				"#text",
-				"a",
-				"area",
-				"del",
-				"ins",
 				"link[itemprop]",
 				"link[rel=dns-prefetch]",
 				"link[rel=modulepreload]",
@@ -1371,9 +1352,39 @@
 				"link[rel=prerender]",
 				"link[rel=stylesheet]",
 				"map",
-				"meta[itemprop]"
+				"mark",
+				"math",
+				"meta[itemprop]",
+				"meter",
+				"noscript",
+				"object",
+				"output",
+				"picture",
+				"progress",
+				"q",
+				"ruby",
+				"s",
+				"samp",
+				"script",
+				"select",
+				"slot",
+				"small",
+				"span",
+				"strong",
+				"sub",
+				"sup",
+				"svg",
+				"template",
+				"textarea",
+				"time",
+				"u",
+				"var",
+				"video",
+				"wbr",
+				"#custom",
+				"#text"
 			],
-			"#embedded": ["audio", "canvas", "embed", "iframe", "img", "math", "object", "svg", "video"],
+			"#embedded": ["audio", "canvas", "embed", "iframe", "img", "math", "object", "picture", "svg", "video"],
 			"#interactive": [
 				"a[href]",
 				"audio[controls]",
@@ -1382,16 +1393,14 @@
 				"embed",
 				"iframe",
 				"img[usemap]",
-				"input:not([hidden])",
+				"input:not([type=hidden])",
 				"label",
 				"object[usemap]",
 				"select",
 				"textarea",
 				"video[controls]",
-				"*[tabindex]"
+				"[tabindex]"
 			],
-			"#palpable": [],
-			"#transparent": [],
 			"#script-supporting": ["script", "template"]
 		}
 	},
@@ -2526,7 +2535,7 @@
 			"description": "",
 			"categories": ["#flow", "#phrasing", "#embedded", "#palpable"],
 			"permittedStructures": {
-				"summary": "WIP",
+				"summary": "WIP: Transparent, but with no interactive content descendants except for a elements, img elements with usemap attributes, button elements, input elements whose type attribute are in the Checkbox or Radio Button states, input elements that are buttons, select elements with a multiple attribute or a display size greater than 1, and elements that would not be interactive content except for having the tabindex attribute specified.",
 				"tag": "canvas",
 				"contents": true
 			},
@@ -3832,8 +3841,22 @@
 			"categories": ["#flow", "#heading", "#palpable"],
 			"permittedStructures": {
 				"summary": "One or more <h1>, <h2>, <h3>, <h4>, <h5>, and/or <h6>.",
-				"tag": "hr",
-				"contents": false
+				"tag": "hgroup",
+				"contents": [
+					{
+						"oneOrMore": [
+							{
+								"zeroOrMore": "#script-supporting"
+							},
+							{
+								"oneOrMore": ["h1", "h2", "h3", "h4", "h5", "h6"]
+							},
+							{
+								"zeroOrMore": "#script-supporting"
+							}
+						]
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation",
@@ -3973,7 +3996,11 @@
 			"permittedStructures": {
 				"summary": "None.",
 				"tag": "iframe",
-				"contents": true
+				"contents": [
+					{
+						"zeroOrMore": "#transparent"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "application, document, img",
@@ -5375,7 +5402,11 @@
 			"permittedStructures": {
 				"summary": "Phrasing content.",
 				"tag": "output",
-				"contents": true
+				"contents": [
+					{
+						"zeroOrMore": "#phrasing"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "Any",
@@ -5816,7 +5847,11 @@
 			"permittedStructures": {
 				"summary": "Dynamic script such as text/javascript.",
 				"tag": "script",
-				"contents": false
+				"contents": [
+					{
+						"zeroOrMore": "#text"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -6228,7 +6263,11 @@
 			"permittedStructures": {
 				"summary": "Text content matching the type attribute, that is text/css.",
 				"tag": "style",
-				"contents": true
+				"contents": [
+					{
+						"zeroOrMore": "#text"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",
@@ -6311,7 +6350,7 @@
 							],
 							[
 								{
-									"optional": "#heading"
+									"require": "#heading"
 								}
 							]
 						]
@@ -6659,7 +6698,11 @@
 			"permittedStructures": {
 				"summary": "No restrictions",
 				"tag": "template",
-				"contents": true
+				"contents": [
+					{
+						"zeroOrMore": "#transparent"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "None",

@@ -1,4 +1,8 @@
 {
 	"tag": "style",
-	"contents": true
+	"contents": [
+		{
+			"zeroOrMore": "#text"
+		}
+	]
 }

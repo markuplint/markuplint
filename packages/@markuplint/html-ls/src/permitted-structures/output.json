@@ -1,0 +1,8 @@
+{
+	"tag": "output",
+	"contents": [
+		{
+			"zeroOrMore": "#phrasing"
+		}
+	]
+}

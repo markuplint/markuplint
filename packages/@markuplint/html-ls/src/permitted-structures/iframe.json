@@ -1,4 +1,8 @@
 {
 	"tag": "iframe",
-	"contents": true
+	"contents": [
+		{
+			"zeroOrMore": "#transparent"
+		}
+	]
 }

@@ -10,7 +10,7 @@
 				],
 				[
 					{
-						"optional": "#heading"
+						"require": "#heading"
 					}
 				]
 			]

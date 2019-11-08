@@ -1,4 +1,8 @@
 {
 	"tag": "template",
-	"contents": true
+	"contents": [
+		{
+			"zeroOrMore": "#transparent"
+		}
+	]
 }
