@@ -1,7 +1,7 @@
 {
 	"name": "@markuplint/website",
 	"description": "https://markuplint.dev",
-	"version": "1.0.0-alpha.15",
+	"version": "1.0.0-alpha.16",
 	"private": true,
 	"scripts": {
 		"site:dev": "webpack-dev-server --progress --watch --colors",
@@ -16,14 +16,14 @@
 		"webpack-dev-server": "^3.9.0"
 	},
 	"dependencies": {
-		"@markuplint/html-ls": "^1.0.0-alpha.10",
-		"@markuplint/html-parser": "^1.0.0-alpha.10",
+		"@markuplint/html-ls": "^1.0.0-alpha.11",
+		"@markuplint/html-parser": "^1.0.0-alpha.11",
 		"@markuplint/i18n": "^1.0.0-alpha.5",
 		"@markuplint/ml-ast": "^1.0.0-alpha.7",
 		"@markuplint/ml-config": "^1.0.0-alpha.5",
 		"@markuplint/ml-core": "^1.0.0-alpha.12",
 		"@markuplint/ml-spec": "^1.0.0-alpha.4",
-		"@markuplint/rules": "^1.0.0-alpha.16",
+		"@markuplint/rules": "^1.0.0-alpha.17",
 		"monaco-editor": "^0.18.1"
 	}
 }
