@@ -35,7 +35,7 @@ export default createRule<boolean, Option>({
 			reports.push({
 				severity: config.severity,
 				message,
-				line: result.line - 1,
+				line: result.line + 1,
 				col: result.column,
 				raw,
 			});
