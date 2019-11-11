@@ -12,6 +12,7 @@ import { Document, MLCore, MLRule, Ruleset, convertRuleset } from '@markuplint/m
 import { MLMLSpec } from '@markuplint/ml-spec';
 import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { getMessenger } from './get-messenger';
+import { moduleAutoLoader } from './module-auto-loader';
 import path from 'path';
 import { toRegxp } from './util';
 
@@ -20,6 +21,7 @@ export async function verify(html: string, config: Config, rules: MLRule<RuleCon
 		sourceCodes: html,
 		config,
 		rules,
+		rulesAutoResolve: true,
 		locale,
 	});
 	return totalResults[0] ? totalResults[0].results : [];
@@ -31,6 +33,7 @@ export async function fix(html: string, config: Config, rules: MLRule<RuleConfig
 		config,
 		rules,
 		locale,
+		rulesAutoResolve: true,
 		fix: true,
 	});
 	const result = totalResults[0];
@@ -59,7 +62,7 @@ export interface MLCLIOption {
 	config?: string | Config;
 	specs?: string | MLMLSpec;
 	rules?: MLRule<RuleConfigValue, unknown>[];
-	addRules?: MLRule<RuleConfigValue, unknown>[];
+	rulesAutoResolve?: boolean;
 	locale?: string;
 	// noConfig?: boolean;
 	// ext?: string;
@@ -145,9 +148,6 @@ export async function exec(options: MLCLIOption) {
 		const r = await import('@markuplint/rules');
 		rules = r.default;
 	}
-	if (options.addRules) {
-		rules = rules.concat(options.addRules);
-	}
 
 	const totalResults: MLResultInfo[] = [];
 
@@ -169,9 +169,17 @@ export async function exec(options: MLCLIOption) {
 		}
 		const parser: MLMarkupLanguageParser = await import(parserModName);
 
+		// Resolve ruleset
+		const ruleset = convertRuleset(configSet.config);
+
+		// Addition rules
+		if (options.rulesAutoResolve) {
+			const { rules: additionalRules } = await moduleAutoLoader<RuleConfigValue, unknown>(ruleset);
+			rules = rules.concat(...additionalRules);
+		}
+
 		// create MLCore
 		const sourceCode = await file.getContext();
-		const ruleset = convertRuleset(configSet.config);
 		const messenger = await getMessenger(options.locale);
 		const core = new MLCore(parser, sourceCode, specs, ruleset, rules, messenger);
 
