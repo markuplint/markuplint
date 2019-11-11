@@ -62,6 +62,10 @@ export interface MLCLIOption {
 	config?: string | Config;
 	specs?: string | MLMLSpec;
 	rules?: MLRule<RuleConfigValue, unknown>[];
+
+	/**
+	 * @default true
+	 */
 	rulesAutoResolve?: boolean;
 	locale?: string;
 	// noConfig?: boolean;
@@ -83,6 +87,9 @@ export interface MLCLIOption {
 }
 
 export async function exec(options: MLCLIOption) {
+	// Options
+	const rulesAutoResolve = options.rulesAutoResolve ?? true;
+
 	// Resolve files
 	const files: MLFile[] = [];
 	if (options.files) {
@@ -173,7 +180,7 @@ export async function exec(options: MLCLIOption) {
 		const ruleset = convertRuleset(configSet.config);
 
 		// Addition rules
-		if (options.rulesAutoResolve) {
+		if (rulesAutoResolve) {
 			const { rules: additionalRules } = await moduleAutoLoader<RuleConfigValue, unknown>(ruleset);
 			rules = rules.concat(...additionalRules);
 		}
