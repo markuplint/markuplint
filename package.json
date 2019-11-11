@@ -59,7 +59,7 @@
 		"eslint-plugin-node": "^10.0.0",
 		"eslint-plugin-prettier": "^3.1.1",
 		"jest": "^24.9.0",
-		"lerna": "^3.18.3",
+		"lerna": "^3.18.4",
 		"prettier": "^1.18.2",
 		"ts-jest": "^24.1.0",
 		"ts-node": "^8.4.1",
