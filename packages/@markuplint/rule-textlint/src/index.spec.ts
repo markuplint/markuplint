@@ -47,9 +47,9 @@ test('is test 1', async () => {
 		{
 			severity: 'warning',
 			ruleId: 'textlint',
-			line: 11,
+			line: 10,
 			col: 20,
-			raw: '',
+			raw: 'jquery',
 			message: 'Invalid text: jquery => jQuery',
 		},
 	]);

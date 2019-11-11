@@ -30,12 +30,14 @@ export default createRule<boolean, Option>({
 		});
 		for (const result of textlintResult.messages) {
 			const message = messages(`Invalid text: ${result.message}`);
+			const [s, e] = result.fix?.range || [result.index, result.index];
+			const raw = html.slice(s, e) || '';
 			reports.push({
 				severity: config.severity,
 				message,
-				line: result.line,
+				line: result.line - 1,
 				col: result.column,
-				raw: '',
+				raw,
 			});
 		}
 		return reports;
