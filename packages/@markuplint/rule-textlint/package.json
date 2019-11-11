@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/rule-textlint",
-	"version": "0.0.1-alpha.4",
+	"version": "0.0.1-alpha.5",
 	"description": "The textlint rule for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
