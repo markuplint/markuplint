@@ -13,6 +13,8 @@ export async function verify(
 		if (fix) {
 			const reports = await exec({
 				files: filesOrGlobPattern,
+				fix: true,
+				rulesAutoResolve: true,
 			});
 			for (const report of reports) {
 				writeFile(report.filePath, report.fixedCode, { encoding: 'utf8' }, err => {
@@ -25,6 +27,7 @@ export async function verify(
 		} else {
 			const reports = await exec({
 				files: filesOrGlobPattern,
+				rulesAutoResolve: true,
 			});
 			for (const result of reports) {
 				await output(result.filePath, result.results, result.sourceCode, format, noColor, problemOnly);
