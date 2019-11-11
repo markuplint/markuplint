@@ -19,8 +19,10 @@ $ yarn add @markuplint/rule-textlint
 ### Example
 
 ```sh
-$ yarn add @markuplint/rule-textlint
+$ yarn add -D textlint-rule-prh
 ```
+
+`markuplint.config.js`
 
 ```js
 const path = reuqire('path');
