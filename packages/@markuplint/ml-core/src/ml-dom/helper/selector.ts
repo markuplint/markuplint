@@ -1,7 +1,5 @@
 // @ts-ignore
 import { CssSelectorParser } from 'css-selector-parser';
-import { MLDOMElement } from '../tokens';
-import { RuleConfigValue } from '@markuplint/ml-config';
 
 const selectorParser = new CssSelectorParser();
 selectorParser.registerSelectorPseudos('not');
@@ -55,9 +53,10 @@ interface CssSelectorParserRulePseudoHasSelectors {
 
 interface ElementLikeObject {
 	nodeName: string;
-	id: string;
-	classList: string[] | DOMTokenList;
-	getAttribute(attrName: string): string | null;
+	id?: string;
+	classList?: string[] | DOMTokenList;
+	parentNode: this | null;
+	getAttribute?: (attrName: string) => string | null;
 }
 
 export class Selector {
@@ -70,7 +69,7 @@ export class Selector {
 		// console.log(JSON.stringify(this._ruleset, null, 2));
 	}
 
-	public match<T extends RuleConfigValue, O = null>(element: MLDOMElement<T, O>) {
+	public match(element: ElementLikeObject) {
 		return match(element, this._ruleset, this._rawSelector);
 	}
 }
@@ -91,7 +90,7 @@ function match(element: ElementLikeObject, ruleset: CssSelectorParserResult, raw
 				rule.classNames.every(className =>
 					Array.isArray(element.classList)
 						? element.classList.includes(className)
-						: element.classList.contains(className),
+						: element.classList?.contains(className),
 				),
 			);
 		}
@@ -104,7 +103,7 @@ function match(element: ElementLikeObject, ruleset: CssSelectorParserResult, raw
 			}
 		}
 
-		if (rule.attrs) {
+		if (rule.attrs && element.getAttribute) {
 			for (const ruleAttr of rule.attrs) {
 				const value = element.getAttribute(ruleAttr.name);
 				if (value == null) {
@@ -167,6 +166,10 @@ function match(element: ElementLikeObject, ruleset: CssSelectorParserResult, raw
 							throw new Error(`Unexpected parameters in "not" pseudo selector in "${rawSelector}"`);
 						}
 						andMatch.push(!match(element, pseudo.value, rawSelector));
+						break;
+					}
+					case 'root': {
+						andMatch.push(!element.parentNode);
 						break;
 					}
 					default: {
