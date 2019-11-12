@@ -45,6 +45,6 @@ Warns that **id** attribute value were duplicated in one document.
 
 none
 
-### Default notification level
+### Default severity
 
 `error`

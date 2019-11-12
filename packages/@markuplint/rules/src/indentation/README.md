@@ -42,6 +42,6 @@ Type: `"tab" | number`
 | `"tab"`  |         | Unify indentation with tab characters.                                      |
 | [Number] | `2`     | Unified with the space of the width of the numerical value with indent set. |
 
-### Default notification level
+### Default severity
 
 `warning`

@@ -48,7 +48,7 @@ Type: `"always" | "never"`
 | `"always"` | ✓       | Warns that "async" attribute is unset. |
 | `"never"`  |         | Warns that "async" attribute is set.   |
 
-### Default notification level
+### Default severity
 
 `warning`
 

@@ -54,6 +54,6 @@ Type: `"double" | "single"`
 | `"double"` | ✓       | Warns if the attribute value is not quoted on double quotation mark. |
 | `"single"` |         | Warns if the attribute value is not quoted on single quotation mark. |
 
-### Default notification level
+### Default severity
 
 `warning`

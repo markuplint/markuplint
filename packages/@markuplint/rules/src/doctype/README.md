@@ -61,6 +61,6 @@ Type: `boolean`
 | `true`  | ✓       | Warns that the type is not `<!doctype html>`. |
 | `false` |         | Allow any type.                               |
 
-### Default notification level
+### Default severity
 
 `error`

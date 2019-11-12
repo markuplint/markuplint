@@ -43,6 +43,6 @@ Type: `"lower" | "upper"`
 | `"lower"` | ✓       | Warns that the tag name is not in lowercase. |
 | `"upper"` |         | Warns that the tag name is not in uppercase. |
 
-### Default notification level
+### Default severity
 
 `warning`

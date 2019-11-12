@@ -33,6 +33,6 @@ Warns when unauthorized illegal characters are not escaped with character refere
 
 none
 
-### Default notification level
+### Default severity
 
 `error`

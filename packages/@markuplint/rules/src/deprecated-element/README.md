@@ -26,6 +26,6 @@ To reference [HTML Living Standard](https://html.spec.whatwg.org/) rules, add [h
 
 none
 
-### Default notification level
+### Default severity
 
 `error`

@@ -27,6 +27,6 @@ Warns that **attributes** were duplicated in one element. Capital letters and lo
 
 none
 
-### Default notification level
+### Default severity
 
 `error`
