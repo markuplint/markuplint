@@ -8,13 +8,6 @@
 
 A Linter for All Markup Languages (for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more).
 
-## Install
-
-```sh
-$ npm install -D markuplint
-$ yarn add -D markuplint
-```
-
 ## Packages
 
 | Package                                                             | NPM                                                                                                                                   | Platform  |
@@ -30,6 +23,20 @@ $ yarn add -D markuplint
 | [`@markuplint/ml-spec`](./packages/@markuplint/ml-spec)             | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-spec.svg)](https://badge.fury.io/js/%40markuplint%2Fml-spec)              | Universal |
 | [`@markuplint/rules`](./packages/@markuplint/rules)                 | [![npm version](https://badge.fury.io/js/%40markuplint%2Frules.svg)](https://badge.fury.io/js/%40markuplint%2Frules)                  | Universal |
 
+### Plugins
+
+#### Rule plugins
+
+| Package                                                             | NPM                                                                                                                                   | Platform  |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| [`@markuplint/rule-textlint`](./packages/@markuplint/rule-textlint) | [![npm version](https://badge.fury.io/js/%40markuplint%2Frule-textlint.svg)](https://www.npmjs.com/package/@markuplint/rule-textlint) | Universal |
+
+#### Parser plugins
+
+| Package                                                       | NPM                                                                                                                             | Platform  |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| [`@markuplint/vue-parser`](./packages/@markuplint/vue-parser) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fvue-parser.svg)](https://www.npmjs.com/package/@markuplint/vue-parser) | Universal |
+
 ## Editor Extensions
 
 | Editor                                                                                                                                  | Page                                                                                                    | Author                                         |
@@ -40,6 +47,47 @@ $ yarn add -D markuplint
 ## Other Tools
 
 -   [gulp-markuplint](https://github.com/oro-oss/gulp-markuplint) (Not support v1.x yet) Author: [@ktsn](https://twitter.com/ktsn)
+
+## Configuration
+
+`.markuplintrc` JSON or YAML format. See [API Document](./packages/markuplint/) for details.
+
+```json
+{
+	"extends": "@markuplint/html-ls",
+	"rules": {
+		"rule__enabled": true,
+		"rule__disabled": false,
+		"rule__custom-setting": {
+			"severity": "error",
+			"value": "VALUE"
+		},
+		"rule__custom-setting-with-detail-option": {
+			"value": "VALUE",
+			"option": { "OPTIONAL_PROP": "OPTIONAL_VALUE" }
+		}
+	},
+	"nodeRules": [
+		{
+			"tagName": "div",
+			"rules": {
+				"rule__disable-for-div-tag": false
+			}
+		}
+	],
+	"childNodeRules": [
+		{
+			"selector": "[data-attr^=\"value\"]",
+			"inheritance": true,
+			"rules": {
+				"rule__overwrite-setting-of-selector-matched-element": {
+					"value": "OVERWROTE_VALUE"
+				}
+			}
+		}
+	]
+}
+```
 
 ## License
 
