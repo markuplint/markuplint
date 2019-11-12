@@ -3,9 +3,7 @@ import { CssSelectorParser } from 'css-selector-parser';
 
 const selectorParser = new CssSelectorParser();
 selectorParser.registerSelectorPseudos('not');
-selectorParser.registerNestingOperators('>', '+', '~');
 selectorParser.registerAttrEqualityMods('~', '^', '$', '*', '|');
-selectorParser.enableSubstitutes();
 
 type CssSelectorParserResult = CssSelectorParserResultRuleset | CssSelectorParserResultSelectors;
 
@@ -59,7 +57,7 @@ interface ElementLikeObject {
 	getAttribute?: (attrName: string) => string | null;
 }
 
-export class Selector {
+class Selector {
 	private _rawSelector: string;
 	private _ruleset: CssSelectorParserResult;
 
@@ -118,11 +116,11 @@ function match(element: ElementLikeObject, ruleset: CssSelectorParserResult, raw
 
 				switch (ruleAttr.operator) {
 					case '=': {
-					// if (ruleAttr.ignoreCase) {
-					// 	andMatch.push(value === ruleAttr.value);
-					// } else {
-					// 	andMatch.push(value.toLowerCase() === ruleAttr.value.toLowerCase());
-					// }
+						// if (ruleAttr.ignoreCase) {
+						// 	andMatch.push(value === ruleAttr.value);
+						// } else {
+						// 	andMatch.push(value.toLowerCase() === ruleAttr.value.toLowerCase());
+						// }
 						andMatch.push(value === ruleAttr.value);
 						break;
 					}
@@ -130,19 +128,19 @@ function match(element: ElementLikeObject, ruleset: CssSelectorParserResult, raw
 						throw new Error(`Unsupport "[attr~=val]" attribute selector in "${rawSelector}"`);
 					}
 					case '^=': {
-					// const re = new RegExp(`^${ruleAttr.value}`, ruleAttr.ignoreCase ? 'i' : undefined);
+						// const re = new RegExp(`^${ruleAttr.value}`, ruleAttr.ignoreCase ? 'i' : undefined);
 						const re = new RegExp(`^${ruleAttr.value}`);
 						andMatch.push(re.test(value));
 						break;
 					}
 					case '$=': {
-					// const re = new RegExp(`${ruleAttr.value}$`, ruleAttr.ignoreCase ? 'i' : undefined);
+						// const re = new RegExp(`${ruleAttr.value}$`, ruleAttr.ignoreCase ? 'i' : undefined);
 						const re = new RegExp(`${ruleAttr.value}$`);
 						andMatch.push(re.test(value));
 						break;
 					}
 					case '*=': {
-					// const re = new RegExp(ruleAttr.value, ruleAttr.ignoreCase ? 'i' : undefined);
+						// const re = new RegExp(ruleAttr.value, ruleAttr.ignoreCase ? 'i' : undefined);
 						const re = new RegExp(ruleAttr.value);
 						andMatch.push(re.test(value));
 						break;
