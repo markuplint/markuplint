@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/rules",
-	"version": "1.0.0-alpha.17",
+	"version": "1.0.0-alpha.18",
 	"description": "Rules for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -20,6 +20,6 @@
 		"@markuplint/ml-spec": "^1.0.0-alpha.4"
 	},
 	"devDependencies": {
-		"@markuplint/ml-core": "^1.0.0-alpha.12"
+		"@markuplint/ml-core": "^1.0.0-alpha.13"
 	}
 }
