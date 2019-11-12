@@ -12,16 +12,18 @@ $ npm install -D markuplint
 $ yarn add -D markuplint
 ```
 
+Supported for _Node.js_ `v12.4.0` or later.
+
 ## Usage
 
 ### CLI
 
 ```
-$ markuplint verifyee.html
+$ npx markuplint verifyee.html
 ```
 
 ```
-$ markuplint --help
+$ npx markuplint --help
 
 Usage
 	$ markuplint <HTML file pathes (glob format)>
