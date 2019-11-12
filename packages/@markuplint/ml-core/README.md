@@ -6,7 +6,7 @@
 
 ## Install
 
-Prerequisites: [Node.js](https://nodejs.org) (Version 8.0.0 or later)
+Prerequisites: [Node.js](https://nodejs.org) (Version 10.0.0 or later)
 
 ```sh
 $ npm install @markuplint/ml-core
