@@ -54,14 +54,14 @@ export async function recursiveLoad(
 					continue;
 				}
 				files = new Set(files).add(file);
-				config = margeConfig(config, extendFileResult.config);
+				config = margeConfig(extendFileResult.config, config);
 			} else {
 				try {
 					const mod: Config = await import(_file);
 					// @ts-ignore
 					delete mod.default;
 					files.add(_file);
-					config = margeConfig(config, mod);
+					config = margeConfig(mod, config);
 				} catch (err) {
 					errs.push(err);
 				}

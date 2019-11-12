@@ -1,4 +1,46 @@
 {
-	"extends": "../001/package.json",
-	"dummy2": false
+	"extends": "../002/.markuplintrc.json",
+	"dummy2": true,
+	"rules": {
+		"rule__enabled": false,
+		"rule__disabled": true,
+		"rule__custom-setting": {
+			"severity": "error",
+			"value": "CHANGED_VALUE"
+		},
+		"rule__custom-setting-with-detail-option": {
+			"value": "VALUE",
+			"option": {
+				"OPTIONAL_PROP": "CHANGED_OPTIONAL_VALUE"
+			}
+		},
+		"additional_rule": {
+			"value": "VALUE"
+		}
+	},
+	"nodeRules": [
+		{
+			"tagName": "div",
+			"rules": {
+				"rule__disable-for-div-tag": true
+			}
+		},
+		{
+			"tagName": "a",
+			"rules": {
+				"rule__enble-for-a-tag": true
+			}
+		}
+	],
+	"childNodeRules": [
+		{
+			"selector": "[data-attr^=\"value\"]",
+			"inheritance": false,
+			"rules": {
+				"rule__overwrite-setting-of-selector-matched-element": {
+					"value": "OVERWROTE_VALUE"
+				}
+			}
+		}
+	]
 }

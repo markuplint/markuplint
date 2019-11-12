@@ -1,4 +1,37 @@
 {
 	"extends": "../001/package.json",
-	"dummy2": false
+	"dummy2": false,
+	"rules": {
+		"rule__enabled": true,
+		"rule__disabled": false,
+		"rule__custom-setting": {
+			"severity": "error",
+			"value": "VALUE"
+		},
+		"rule__custom-setting-with-detail-option": {
+			"value": "VALUE",
+			"option": {
+				"OPTIONAL_PROP": "OPTIONAL_VALUE"
+			}
+		}
+	},
+	"nodeRules": [
+		{
+			"tagName": "div",
+			"rules": {
+				"rule__disable-for-div-tag": false
+			}
+		}
+	],
+	"childNodeRules": [
+		{
+			"selector": "[data-attr^=\"value\"]",
+			"inheritance": true,
+			"rules": {
+				"rule__overwrite-setting-of-selector-matched-element": {
+					"value": "OVERWROTE_VALUE"
+				}
+			}
+		}
+	]
 }
