@@ -47,7 +47,28 @@ Examples
 
 ### API
 
-Details and Documentation **🚧WIP**
+```ts
+import { verify, fix, exec } from 'markuplint';
+
+// Standard usage
+const result = verify(htmlCode, config, rules);
+
+// Standard fix
+const fixedCode = verify(htmlCode, config, rules);
+
+// Custom usage
+const result = exec({
+	files,
+	workspaceDir,
+	config,
+	specs,
+	rules,
+});
+```
+
+#### 📖 API Document
+
+[API Document](https://api.markuplint.dev) genereated by typedoc.
 
 ## Configuration
 
