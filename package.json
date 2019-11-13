@@ -16,6 +16,7 @@
 		"cli": "./packages/markuplint/bin/markuplint",
 		"site:dev": "cd website; yarn site:dev",
 		"site:build": "cd website; yarn site:build",
+		"apidoc": "typedoc --ignoreCompilerErrors --exclude '**/*+(index|.spec|.e2e|.d).ts,node_modules/**/*' --mode file --out apidoc --media packages/markuplint/media --readme ./packages/markuplint/README.md ./packages/markuplint/",
 		"release": "lerna publish",
 		"prerelease": "yarn build; yarn test"
 	},
@@ -64,6 +65,7 @@
 		"prettier": "^1.19.1",
 		"ts-jest": "^24.1.0",
 		"ts-node": "^8.5.0",
+		"typedoc": "^0.15.1",
 		"typescript": "^3.7.2"
 	}
 }

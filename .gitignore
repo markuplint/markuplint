@@ -68,3 +68,6 @@ typings/
 
 # Secret Test
 test/fixture/.__*
+
+# API Document
+apidoc
