@@ -19,7 +19,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/cli-color": "^0.3.29",
+		"@types/cli-color": "^0.3.30",
 		"@types/meow": "^5.0.0"
 	},
 	"dependencies": {
@@ -32,11 +32,11 @@
 		"@markuplint/ml-core": "^1.0.0-alpha.13",
 		"@markuplint/ml-spec": "^1.0.0-alpha.4",
 		"@markuplint/rules": "^1.0.0-alpha.18",
-		"cli-color": "^1.4.0",
+		"cli-color": "^2.0.0",
 		"eastasianwidth": "^0.2.0",
 		"get-stdin": "^7.0.0",
 		"meow": "^5.0.0",
 		"os-locale": "^4.0.0",
-		"strip-ansi": "^5.2.0"
+		"strip-ansi": "^6.0.0"
 	}
 }

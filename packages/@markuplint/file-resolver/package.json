@@ -18,11 +18,11 @@
 	"devDependencies": {
 		"@types/cosmiconfig": "^5.0.3",
 		"@types/glob": "^7.1.1",
-		"@types/node": "^12.7.8"
+		"@types/node": "^12.12.14"
 	},
 	"dependencies": {
 		"@markuplint/ml-config": "^1.0.0-alpha.5",
 		"cosmiconfig": "^5.2.1",
-		"glob": "^7.1.4"
+		"glob": "^7.1.6"
 	}
 }
