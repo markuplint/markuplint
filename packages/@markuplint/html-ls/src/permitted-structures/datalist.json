@@ -10,7 +10,7 @@
 				],
 				[
 					{
-						"zeroOrMore": "option"
+						"zeroOrMore": ["option", "#script-supporting"]
 					}
 				]
 			]

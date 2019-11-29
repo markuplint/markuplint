@@ -2933,7 +2933,7 @@
 		{
 			"name": "datalist",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist",
-			"description": "",
+			"description": "The HTML <datalist> element contains a set of <option> elements that represent the permissible or recommended options available to choose from within other controls.",
 			"categories": ["#flow", "#phrasing"],
 			"permittedStructures": {
 				"summary": "Either phrasing content or zero or more <option> elements.",
@@ -2948,7 +2948,7 @@
 							],
 							[
 								{
-									"zeroOrMore": "option"
+									"zeroOrMore": ["option", "#script-supporting"]
 								}
 							]
 						]
@@ -4058,6 +4058,13 @@
 				},
 				{
 					"name": "importance",
+					"experimental": true,
+					"description": "WIP",
+					"category": "particular",
+					"value": "WIP"
+				},
+				{
+					"name": "loading",
 					"experimental": true,
 					"description": "WIP",
 					"category": "particular",
