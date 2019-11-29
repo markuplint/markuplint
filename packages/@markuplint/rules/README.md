@@ -8,70 +8,70 @@
 
 ### Validation
 
-| Avaiable | Docs | Docs(ja) | Rule                                                       | Fixable |
-| -------- | ---- | -------- | ---------------------------------------------------------- | ------- |
-| ✅       | ✅   | ✅       | [attr-duplication](./src/attr-duplication/README.md)       | 🚧      |
-| ✅       | ✅   | ✅       | [character-reference](./src/character-reference/README.md) | 🚧      |
-| 🚧       | 🚧   | 🚧       | [comment](./src/comment/README.md)                         |
-| 🚧       | 🚧   | 🚧       | [deprecated-attr](./src/deprecated-attr/README.md)         |
-| ✅       | ✅   | ✅       | [deprecated-element](./src/deprecated-element/README.md)   |
-| ✅       | ✅   | ✅       | [doctype](./src/doctype/README.md)                         | 🚧      |
-| ✅       | ✅   | ✅       | [id-duplication](./src/id-duplication/README.md)           |
-| ✅       | 🚧   | 🚧       | [parse-error](./src/parse-error/README.md)                 |
-| ✅       | 🚧   | 🚧       | [permitted-contents](./src/permitted-contents/README.md)   |
-| ✅       | ✅   | ✅       | [required-attr](./src/required-attr/README.md)             |
+| Avaiable | Docs | Docs(ja) | Rule                                              | Fixable |
+| -------- | ---- | -------- | ------------------------------------------------- | ------- |
+| ✅       | ✅   | ✅       | [attr-duplication](./src/attr-duplication/)       | 🚧      |
+| ✅       | ✅   | ✅       | [character-reference](./src/character-reference/) | 🚧      |
+| 🚧       | 🚧   | 🚧       | [comment](./src/comment/)                         |
+| 🚧       | 🚧   | 🚧       | [deprecated-attr](./src/deprecated-attr/)         |
+| ✅       | ✅   | ✅       | [deprecated-element](./src/deprecated-element/)   |
+| ✅       | ✅   | ✅       | [doctype](./src/doctype/)                         | 🚧      |
+| ✅       | ✅   | ✅       | [id-duplication](./src/id-duplication/)           |
+| ✅       | 🚧   | 🚧       | [parse-error](./src/parse-error/)                 |
+| ✅       | 🚧   | 🚧       | [permitted-contents](./src/permitted-contents/)   |
+| ✅       | ✅   | ✅       | [required-attr](./src/required-attr/)             |
 
 ### Accessibility
 
-| Avaiable | Docs | Docs(ja) | Rule                                                                           | Fixable |
-| -------- | ---- | -------- | ------------------------------------------------------------------------------ | ------- |
-| 🚧       | 🚧   | 🚧       | [accessible-text](./src/accessible-text/README.md)                             |
-| 🚧       | 🚧   | 🚧       | [attr-role](./src/permitted-role/README.md)                                    |
-| 🚧       | 🚧   | 🚧       | [heading-in-sectioning-content](./src/heading-in-sectioning-content/README.md) |
-| 🚧       | 🚧   | 🚧       | [heading-in-sectioning-root](./src/heading-in-sectioning-root/README.md)       |
-| 🚧       | 🚧   | 🚧       | [heading-levels-skipping](./src/heading-levels-skipping/README.md)             |
-| 🚧       | 🚧   | 🚧       | [labeling-controls](./src/labeling-controls/README.md)                         |
-| 🚧       | 🚧   | 🚧       | [landmark-roles](./src/landmark-roles/README.md)                               |
-| ✅       | 🚧   | 🚧       | [required-h1](./src/required-h1/README.md)                                     |
+| Avaiable | Docs | Docs(ja) | Rule                                                                  | Fixable |
+| -------- | ---- | -------- | --------------------------------------------------------------------- | ------- |
+| 🚧       | 🚧   | 🚧       | [accessible-text](./src/accessible-text/)                             |
+| 🚧       | 🚧   | 🚧       | [attr-role](./src/permitted-role/)                                    |
+| 🚧       | 🚧   | 🚧       | [heading-in-sectioning-content](./src/heading-in-sectioning-content/) |
+| 🚧       | 🚧   | 🚧       | [heading-in-sectioning-root](./src/heading-in-sectioning-root/)       |
+| 🚧       | 🚧   | 🚧       | [heading-levels-skipping](./src/heading-levels-skipping/)             |
+| 🚧       | 🚧   | 🚧       | [labeling-controls](./src/labeling-controls/)                         |
+| 🚧       | 🚧   | 🚧       | [landmark-roles](./src/landmark-roles/)                               |
+| ✅       | 🚧   | 🚧       | [required-h1](./src/required-h1/)                                     |
 
 ### Usability
 
-| Avaiable | Docs | Docs(ja) | Rule                                           | Fixable |
-| -------- | ---- | -------- | ---------------------------------------------- | ------- |
-| 🚧       | 🚧   | 🚧       | [external-link](./src/external-link/README.md) | 🚧      |
+| Avaiable | Docs | Docs(ja) | Rule                                  | Fixable |
+| -------- | ---- | -------- | ------------------------------------- | ------- |
+| 🚧       | 🚧   | 🚧       | [external-link](./src/external-link/) | 🚧      |
 
 ### Structure Design and Naming Convention
 
-| Avaiable | Docs | Docs(ja) | Rule                                                           | Fixable |
-| -------- | ---- | -------- | -------------------------------------------------------------- | ------- |
-| 🚧       | 🚧   | 🚧       | [class-naming](./src/class-naming/README.md)                   |
-| 🚧       | 🚧   | 🚧       | [custom-element-naming](./src/custom-element-naming/README.md) |
-| 🚧       | 🚧   | 🚧       | [data-attr-naming](./src/data-attr-naming/README.md)           |
-| 🚧       | 🚧   | 🚧       | [required-element](./src/required-element/README.md)           |
+| Avaiable | Docs | Docs(ja) | Rule                                                  | Fixable |
+| -------- | ---- | -------- | ----------------------------------------------------- | ------- |
+| ✅       | 🚧   | 🚧       | [class-naming](./src/class-naming/)                   |
+| 🚧       | 🚧   | 🚧       | [custom-element-naming](./src/custom-element-naming/) |
+| 🚧       | 🚧   | 🚧       | [data-attr-naming](./src/data-attr-naming/)           |
+| 🚧       | 🚧   | 🚧       | [required-element](./src/required-element/)           |
 
 ### Style
 
-| Avaiable | Docs | Docs(ja) | Rule                                                                 | Fixable |
-| -------- | ---- | -------- | -------------------------------------------------------------------- | ------- |
-| ✅       | ✅   | ✅       | [attr-equal-space-after](./src/attr-equal-space-after/README.md)     | ✅      |
-| ✅       | ✅   | ✅       | [attr-equal-space-before](./src/attr-equal-space-before/README.md)   | ✅      |
-| ✅       | ✅   | ✅       | [attr-spacing](./src/attr-spacing/README.md)                         | ✅      |
-| ✅       | ✅   | ✅       | [attr-value-quotes](./src/attr-value-quotes/README.md)               | ✅      |
-| ✅       | ✅   | ✅       | [case-sensitive-attr-name](./src/case-sensitive-attr-name/README.md) | ✅      |
-| ✅       | ✅   | ✅       | [case-sensitive-tag-name](./src/case-sensitive-tag-name/README.md)   | ✅      |
-| 🚧       | 🚧   | 🚧       | [comment-spasing](./src/comment-spasing/README.md)                   | 🚧      |
-| 🚧       | 🚧   | 🚧       | [event-attr](./src/event-attr/README.md)                             |
-| ✅       | ✅   | ✅       | [indentation](./src/indentation/README.md)                           | ✅      |
-| 🚧       | 🚧   | 🚧       | [indentation-attr](./src/indentation-attr/README.md)                 | 🚧      |
-| 🚧       | 🚧   | 🚧       | [path](./src/path/README.md)                                         |
-| 🚧       | 🚧   | ✅       | [self-closing-tag](./src/self-closing-tag/README.md)                 | 🚧      |
-| 🚧       | 🚧   | 🚧       | [tag-omission](./src/tag-omission/README.md)                         | 🚧      |
+| Avaiable | Docs | Docs(ja) | Rule                                                        | Fixable |
+| -------- | ---- | -------- | ----------------------------------------------------------- | ------- |
+| ✅       | ✅   | ✅       | [attr-equal-space-after](./src/attr-equal-space-after/)     | ✅      |
+| ✅       | ✅   | ✅       | [attr-equal-space-before](./src/attr-equal-space-before/)   | ✅      |
+| ✅       | ✅   | ✅       | [attr-spacing](./src/attr-spacing/)                         | ✅      |
+| ✅       | ✅   | ✅       | [attr-value-quotes](./src/attr-value-quotes/)               | ✅      |
+| ✅       | ✅   | ✅       | [case-sensitive-attr-name](./src/case-sensitive-attr-name/) | ✅      |
+| ✅       | ✅   | ✅       | [case-sensitive-tag-name](./src/case-sensitive-tag-name/)   | ✅      |
+| 🚧       | 🚧   | 🚧       | [comment-spasing](./src/comment-spasing/)                   | 🚧      |
+| 🚧       | 🚧   | 🚧       | [event-attr](./src/event-attr/)                             |
+| ✅       | ✅   | ✅       | [indentation](./src/indentation/)                           | ✅      |
+| 🚧       | 🚧   | 🚧       | [indentation-attr](./src/indentation-attr/)                 | 🚧      |
+| 🚧       | 🚧   | 🚧       | [path](./src/path/)                                         |
+| 🚧       | 🚧   | ✅       | [self-closing-tag](./src/self-closing-tag/)                 | 🚧      |
+| 🚧       | 🚧   | 🚧       | [tag-omission](./src/tag-omission/)                         | 🚧      |
 
 ### Performance
 
-| Avaiable | Docs | Docs(ja) | Rule                                                         | Fixable |
-| -------- | ---- | -------- | ------------------------------------------------------------ | ------- |
-| ✅       | ✅   | ✅       | [async-attr-in-script](./src/async-attr-in-script/README.md) |
+| Avaiable | Docs | Docs(ja) | Rule                                                | Fixable |
+| -------- | ---- | -------- | --------------------------------------------------- | ------- |
+| ✅       | ✅   | ✅       | [async-attr-in-script](./src/async-attr-in-script/) |
 
 ## Install
 
