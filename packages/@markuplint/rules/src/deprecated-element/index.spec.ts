@@ -53,3 +53,37 @@ test('deprecated', async () => {
 		},
 	]);
 });
+
+test('Foreign element', async () => {
+	const r = await markuplint.verify(
+		'<svg><g><image width="100" height="100" xlink:href="path/to"/></g></svg>',
+		{
+			rules: {
+				'deprecated-element': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	const r2 = await markuplint.verify(
+		'<div><span><image width="100" height="100" xlink:href="path/to"/></span></div>',
+		{
+			rules: {
+				'deprecated-element': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r).toStrictEqual([]);
+	expect(r2).toStrictEqual([
+		{
+			ruleId: 'deprecated-element',
+			severity: 'error',
+			line: 1,
+			col: 13,
+			raw: 'image',
+			message: 'Element is deprecated',
+		},
+	]);
+});
