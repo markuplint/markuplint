@@ -1,5 +1,5 @@
+import { Attribute, MLMLSpec } from './types';
 import { ContentModel, PermittedStructuresSchema } from './permitted-structres';
-import { MLMLSpec } from './types';
 
 export * from './permitted-structres';
 export * from './types';
@@ -15,6 +15,7 @@ export interface MLDOMElementSpec {
 	nonStandard: boolean;
 	categories: ContentModel[];
 	permittedStructures: PermittedStructuresSchema;
+	attributes: Attribute[];
 }
 
 function getSpecOM({ specs }: MLMLSpec): SpecOM {
@@ -27,6 +28,9 @@ function getSpecOM({ specs }: MLMLSpec): SpecOM {
 			nonStandard: !!el.nonStandard,
 			categories: el.categories,
 			permittedStructures: el.permittedStructures,
+			attributes: el.attributes.filter(
+				(attr: Attribute | string): attr is Attribute => !(typeof attr === 'string'),
+			),
 		};
 	}
 	return som;

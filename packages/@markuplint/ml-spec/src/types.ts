@@ -88,7 +88,7 @@ export type ElementSpec = {
 	/**
 	 * Attributes
 	 */
-	attributes: (AttributeSpec | string)[];
+	attributes: (Attribute | string)[];
 };
 
 type PermittedRolesSpec = {};
@@ -106,22 +106,22 @@ type ElementCondition = {
 
 export type Attribute = {
 	name: string;
+	type: AttributeType;
 	description: string;
-	category: AttributeCtegory;
 	experimental?: true;
 	obsolete?: true;
 	deprecated?: true;
 	nonStandard?: true;
-	value: AttributeValue;
-};
-
-export type AttributeSpec = Attribute & {
 	required?: true;
+	enum?: string[];
+	condition?: {
+		ancestor: string;
+	};
 };
 
-type AttributeCtegory = 'global' | 'xml' | 'aria' | 'eventhandler' | 'form' | 'particular';
+// type AttributeCtegory = 'global' | 'xml' | 'aria' | 'eventhandler' | 'form' | 'particular';
 
-export type AttributeValue = 'string' | 'space-separated-tokens' | 'function-body' | 'uint' | 'int' | 'float';
+export type AttributeType = 'string' | 'space-separated-tokens' | 'function-body' | 'uint' | 'int' | 'float';
 
 export type ARIRRoleAttribute = {
 	name: string;
