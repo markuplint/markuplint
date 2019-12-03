@@ -4190,7 +4190,7 @@
 				"contents": false
 			},
 			"permittedRoles": {
-				"summary": "\n    \n     type=button: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch, tab\n     type=checkbox: button, menuitemcheckbox, option, switch\n     type=image: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch\n     type=radio: menuitemradio\n     type=color|date|datetime|datetime-local|email|file: None\n     type=hidden|month|number|password|range|reset: None\n     type=search|submit|tel|text|url|week: None\n    \n   ",
+				"summary": "\n\t\t\t\n\t\t\t\ttype=button: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch, tab\n\t\t\t\ttype=checkbox: button, menuitemcheckbox, option, switch\n\t\t\t\ttype=image: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch\n\t\t\t\ttype=radio: menuitemradio\n\t\t\t\ttype=color|date|datetime|datetime-local|email|file: None\n\t\t\t\ttype=hidden|month|number|password|range|reset: None\n\t\t\t\ttype=search|submit|tel|text|url|week: None\n\t\t\t\n\t\t\t",
 				"roles": {}
 			},
 			"omittion": false,
@@ -6398,7 +6398,7 @@
 			"description": "The HTML <table> element represents tabular data — that is, information presented in a two-dimensional table comprised of rows and columns of cells containing data.",
 			"categories": ["#flow"],
 			"permittedStructures": {
-				"summary": "\n    \n    In this order:\n    \n     an optional <caption> element,\n     zero or more <colgroup> elements,\n     an optional <thead> element,\n     either one of the following:\n      \n       zero or more <tbody> elements\n       one or more <tr> elements\n      \n     \n     an optional <tfoot> element\n    \n    \n    \n   ",
+				"summary": "\n\t\t\t\n\t\t\tIn this order:\n\t\t\t\n\t\t\t\tan optional <caption> element,\n\t\t\t\tzero or more <colgroup> elements,\n\t\t\t\tan optional <thead> element,\n\t\t\t\teither one of the following:\n\t\t\t\t\n\t\t\t\t\tzero or more <tbody> elements\n\t\t\t\t\tone or more <tr> elements\n\t\t\t\t\n\t\t\t\t\n\t\t\t\tan optional <tfoot> element\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t",
 				"tag": "table",
 				"contents": [
 					{
