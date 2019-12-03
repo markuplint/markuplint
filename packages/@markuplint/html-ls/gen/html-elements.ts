@@ -32,7 +32,7 @@ export async function getHTMLElement(link: string) {
 		.closest('p')
 		.text()
 		.trim()
-		.replace(/\r?\n/gi, ' ');
+		.replace(/(?:\r?\n|\s)+/gi, ' ');
 
 	const experimental = !!$article.find('.blockIndicator.experimental').length || undefined;
 	const obsolete = !!$article.find('.obsoleteHeader').length || undefined;
@@ -130,7 +130,11 @@ function getProperty($: CheerioStatic, prop: string) {
 			.toArray()
 			.filter(el => new RegExp(prop, 'i').test($(el).text())),
 	);
-	return $th.siblings('td').text();
+	return $th
+		.siblings('td')
+		.text()
+		.trim()
+		.replace(/(?:\r?\n|\s)+/gi, ' ');
 }
 
 function getThisOutline($start: Cheerio) {

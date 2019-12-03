@@ -1841,10 +1841,10 @@
 		{
 			"name": "audio",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio",
-			"description": "The HTML <audio> element is used to embed sound content in documents. It may contain one or more audio sources, represented using the src attribute or the <source> element: the browser will choose the most suitable one. It can also be the destination for streamed media, using a MediaStream.",
+			"description": "The HTML <audio> element is used to embed sound content in documents. It may contain one or more audio sources, represented using the src attribute or the <source> element: the browser will choose the most suitable one. It can also be the destination for streamed media, using a MediaStream.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"permittedStructures": {
-				"summary": "If the element has a src attribute: zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.\n\t\t\tElse: zero or more <source> elements followed by zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.",
+				"summary": "If the element has a src attribute: zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements. Else: zero or more <source> elements followed by zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.",
 				"tag": "audio",
 				"conditional": [
 					{
@@ -1949,7 +1949,7 @@
 		{
 			"name": "b",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b",
-			"description": "The HTML Bring Attention To element (<b>)  is used to draw the reader's attention to the element's contents, which are not otherwise granted special importance. This was formerly known as the Boldface element, and most browsers still draw the text in boldface. However, you should not use <b> for styling text; instead, you should use the CSS font-weight property to create boldface text, or the <strong> element to indicate that text is of special importance.",
+			"description": "The HTML Bring Attention To element (<b>) is used to draw the reader's attention to the element's contents, which are not otherwise granted special importance. This was formerly known as the Boldface element, and most browsers still draw the text in boldface. However, you should not use <b> for styling text; instead, you should use the CSS font-weight property to create boldface text, or the <strong> element to indicate that text is of special importance.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"permittedStructures": {
 				"summary": "Phrasing content.",
@@ -2041,7 +2041,7 @@
 		{
 			"name": "bdi",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi",
-			"description": "The HTML Bidirectional Isolate element (<bdi>)  tells the browser's bidirectional algorithm to treat the text it contains in isolation from its surrounding text. It's particularly useful when a website dynamically inserts some text and doesn't know the directionality of the text being inserted.",
+			"description": "The HTML Bidirectional Isolate element (<bdi>) tells the browser's bidirectional algorithm to treat the text it contains in isolation from its surrounding text. It's particularly useful when a website dynamically inserts some text and doesn't know the directionality of the text being inserted.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"permittedStructures": {
 				"summary": "Phrasing content.",
@@ -2205,7 +2205,7 @@
 		{
 			"name": "body",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body",
-			"description": "The HTML <body> Element represents the content of an HTML document. There can be only one <body> element in a document.",
+			"description": "The HTML <body> Element represents the content of an HTML document. There can be only one <body> element in a document.",
 			"categories": [],
 			"permittedStructures": {
 				"summary": "Flow content.",
@@ -2738,7 +2738,7 @@
 			"description": "",
 			"categories": [],
 			"permittedStructures": {
-				"summary": "If the span attribute is present: none, it is an empty element.\n    If the attribute is not present: zero or more <col> element",
+				"summary": "If the span attribute is present: none, it is an empty element. If the attribute is not present: zero or more <col> element",
 				"tag": "colgroup",
 				"conditional": [
 					{
@@ -3138,7 +3138,7 @@
 			"description": "The HTML Content Division element (<div>) is the generic container for flow content. It has no effect on the content or layout until styled using CSS.",
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
-				"summary": "Flow content.\n    Or (in WHATWG HTML): If the parent is a <dl> element: one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.",
+				"summary": "Flow content. Or (in WHATWG HTML): If the parent is a <dl> element: one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.",
 				"tag": "div",
 				"conditional": [
 					{
@@ -3183,7 +3183,7 @@
 			"description": "",
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
-				"summary": "\n    Either: Zero or more groups each consisting of one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.\n     Or: One or more <div> elements, optionally intermixed with <script> and <template> elements.\n   ",
+				"summary": "Either: Zero or more groups each consisting of one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements. Or: One or more <div> elements, optionally intermixed with <script> and <template> elements.",
 				"tag": "dl",
 				"contents": [
 					{
@@ -3779,7 +3779,7 @@
 			"description": "The HTML <head> element contains machine-readable information (metadata) about the document, like its title, scripts, and style sheets.",
 			"categories": [],
 			"permittedStructures": {
-				"summary": "\n    If the document is an <iframe> srcdoc document, or if title information is available from a higher level protocol (like the subject line in HTML email), zero or more elements of metadata content.\n\n    Otherwise, one or more elements of metadata content where exactly one is a <title> element.\n   ",
+				"summary": "If the document is an <iframe> srcdoc document, or if title information is available from a higher level protocol (like the subject line in HTML email), zero or more elements of metadata content. Otherwise, one or more elements of metadata content where exactly one is a <title> element.",
 				"tag": "head",
 				"contents": [
 					{
@@ -4190,7 +4190,7 @@
 				"contents": false
 			},
 			"permittedRoles": {
-				"summary": "\n\t\t\t\n\t\t\t\ttype=button: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch, tab\n\t\t\t\ttype=checkbox: button, menuitemcheckbox, option, switch\n\t\t\t\ttype=image: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch\n\t\t\t\ttype=radio: menuitemradio\n\t\t\t\ttype=color|date|datetime|datetime-local|email|file: None\n\t\t\t\ttype=hidden|month|number|password|range|reset: None\n\t\t\t\ttype=search|submit|tel|text|url|week: None\n\t\t\t\n\t\t\t",
+				"summary": "type=button: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch, tab type=checkbox: button, menuitemcheckbox, option, switch type=image: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch type=radio: menuitemradio type=color|date|datetime|datetime-local|email|file: None type=hidden|month|number|password|range|reset: None type=search|submit|tel|text|url|week: None",
 				"roles": {}
 			},
 			"omittion": false,
@@ -4743,7 +4743,7 @@
 			"deprecated": true,
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
-				"summary": "If the element is in the list menu state: flow content, or alternatively, zero or more occurrences of <li>, <script>, and <template>.\n    If the element is in the context menu state: zero or more occurrences, in any order, of <menu> (context menu state only), <menuitem>, <hr>, <script>, and <template>.",
+				"summary": "If the element is in the list menu state: flow content, or alternatively, zero or more occurrences of <li>, <script>, and <template>. If the element is in the context menu state: zero or more occurrences, in any order, of <menu> (context menu state only), <menuitem>, <hr>, <script>, and <template>.",
 				"tag": "menu",
 				"contents": [
 					{
@@ -5090,7 +5090,7 @@
 			"description": "",
 			"categories": ["#metadata", "#flow", "#phrasing"],
 			"permittedStructures": {
-				"summary": "When scripting is disabled and when it is a descendant of the <head> element: in any order, zero or more <link> elements, zero or more <style> elements, and zero or more <meta> elements.\n    When scripting is disabled and when it isn't a descendant of the <head> element: any transparent content, but no <noscript> element must be among its descendants.\n    Otherwise: flow content or phrasing content.",
+				"summary": "When scripting is disabled and when it is a descendant of the <head> element: in any order, zero or more <link> elements, zero or more <style> elements, and zero or more <meta> elements. When scripting is disabled and when it isn't a descendant of the <head> element: any transparent content, but no <noscript> element must be among its descendants. Otherwise: flow content or phrasing content.",
 				"tag": "noscript",
 				"conditional": [
 					{
@@ -5327,7 +5327,7 @@
 		{
 			"name": "option",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option",
-			"description": "The HTML <option> element is used to define an item contained in a <select>, an <optgroup>, or a <datalist> element. As such, <option> can represent menu items in popups and other lists of items in an HTML document.",
+			"description": "The HTML <option> element is used to define an item contained in a <select>, an <optgroup>, or a <datalist> element. As such, <option> can represent menu items in popups and other lists of items in an HTML document.",
 			"categories": [],
 			"permittedStructures": {
 				"summary": "Text, possibly with escaped characters (like &eacute;).",
@@ -5647,7 +5647,7 @@
 		{
 			"name": "q",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q",
-			"description": "The HTML <q> element  indicates that the enclosed text is a short inline quotation. Most modern browsers implement this by surrounding the text in quotation marks. This element is intended for short quotations that don't require paragraph breaks; for long quotations use the <blockquote> element.",
+			"description": "The HTML <q> element indicates that the enclosed text is a short inline quotation. Most modern browsers implement this by surrounding the text in quotation marks. This element is intended for short quotations that don't require paragraph breaks; for long quotations use the <blockquote> element.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"permittedStructures": {
 				"summary": "Phrasing content.",
@@ -5677,7 +5677,7 @@
 		{
 			"name": "rb",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rb",
-			"description": "The HTML Ruby Base (<rb>) element is used to delimit the base text component of a  <ruby> annotation, i.e. the text that is being annotated. One <rb> element should wrap each separate atomic segment of the base text.",
+			"description": "The HTML Ruby Base (<rb>) element is used to delimit the base text component of a <ruby> annotation, i.e. the text that is being annotated. One <rb> element should wrap each separate atomic segment of the base text.",
 			"categories": [],
 			"permittedStructures": {
 				"summary": "As a child of a <ruby> element.",
@@ -6103,7 +6103,7 @@
 		{
 			"name": "source",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source",
-			"description": "The HTML <source> element specifies multiple media resources for the <picture>, the <audio> element, or the <video> element. It is an empty element, meaning that it has no content and does not have a closing tag. It is commonly used to offer the same media content in multiple file formats in order to provide compatibility with a broad range of browsers given their differing support for image file formats and media file formats.",
+			"description": "The HTML <source> element specifies multiple media resources for the <picture>, the <audio> element, or the <video> element. It is an empty element, meaning that it has no content and does not have a closing tag. It is commonly used to offer the same media content in multiple file formats in order to provide compatibility with a broad range of browsers given their differing support for image file formats and media file formats.",
 			"categories": [],
 			"permittedStructures": {
 				"summary": "None, it is an empty element.",
@@ -6398,7 +6398,7 @@
 			"description": "The HTML <table> element represents tabular data — that is, information presented in a two-dimensional table comprised of rows and columns of cells containing data.",
 			"categories": ["#flow"],
 			"permittedStructures": {
-				"summary": "\n\t\t\t\n\t\t\tIn this order:\n\t\t\t\n\t\t\t\tan optional <caption> element,\n\t\t\t\tzero or more <colgroup> elements,\n\t\t\t\tan optional <thead> element,\n\t\t\t\teither one of the following:\n\t\t\t\t\n\t\t\t\t\tzero or more <tbody> elements\n\t\t\t\t\tone or more <tr> elements\n\t\t\t\t\n\t\t\t\t\n\t\t\t\tan optional <tfoot> element\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t",
+				"summary": "In this order: an optional <caption> element, zero or more <colgroup> elements, an optional <thead> element, either one of the following: zero or more <tbody> elements one or more <tr> elements an optional <tfoot> element",
 				"tag": "table",
 				"contents": [
 					{
