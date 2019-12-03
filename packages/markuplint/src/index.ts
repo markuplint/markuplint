@@ -9,7 +9,6 @@ import {
 	searchConfigFile,
 } from '@markuplint/file-resolver';
 import { Document, MLCore, MLRule, Ruleset, convertRuleset } from '@markuplint/ml-core';
-import { MLMLSpec } from '@markuplint/ml-spec';
 import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { getMessenger } from './get-messenger';
 import { moduleAutoLoader } from './module-auto-loader';
@@ -60,7 +59,6 @@ export interface MLCLIOption {
 	names?: string | string[];
 	workspace?: string;
 	config?: string | Config;
-	specs?: string | MLMLSpec;
 	rules?: MLRule<RuleConfigValue, unknown>[];
 
 	/**
@@ -136,18 +134,6 @@ export async function exec(options: MLCLIOption) {
 		}
 	}
 
-	let specs: MLMLSpec;
-	if (typeof options.specs === 'string') {
-		specs = await import(options.specs);
-	} else if (options.specs) {
-		specs = options.specs;
-	} else {
-		// @ts-ignore
-		const json = await import('@markuplint/html-ls');
-		// @ts-ignore
-		specs = json.default;
-	}
-
 	let rules: MLRule<RuleConfigValue, unknown>[];
 	if (options.rules) {
 		rules = options.rules;
@@ -188,7 +174,7 @@ export async function exec(options: MLCLIOption) {
 		// create MLCore
 		const sourceCode = await file.getContext();
 		const messenger = await getMessenger(options.locale);
-		const core = new MLCore(parser, sourceCode, specs, ruleset, rules, messenger);
+		const core = new MLCore(parser, sourceCode, ruleset, rules, messenger);
 
 		const results = await core.verify(!!options.fix);
 		totalResults.push({

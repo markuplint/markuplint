@@ -17,7 +17,7 @@ export interface MLDOMElementSpec {
 	permittedStructures: PermittedStructuresSchema;
 }
 
-export function getSpecOM({ specs }: MLMLSpec): SpecOM {
+function getSpecOM({ specs }: MLMLSpec): SpecOM {
 	const som: SpecOM = {};
 	for (const el of specs) {
 		som[el.name] = {
@@ -32,7 +32,8 @@ export function getSpecOM({ specs }: MLMLSpec): SpecOM {
 	return som;
 }
 
-export function getSpecByTagName(tagName: string, specOM: SpecOM): MLDOMElementSpec {
+export function getSpecByTagName(tagName: string, specs: MLMLSpec): MLDOMElementSpec {
+	const specOM = getSpecOM(specs);
 	tagName = tagName.toLowerCase();
 	const spec = specOM[tagName];
 	return spec || null;

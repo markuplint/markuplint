@@ -17,6 +17,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
+		"@markuplint/html-ls": "^1.0.0-alpha.11",
 		"@markuplint/ml-spec": "^1.0.0-alpha.4"
 	},
 	"devDependencies": {
