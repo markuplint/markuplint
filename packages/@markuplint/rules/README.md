@@ -13,7 +13,7 @@
 | ✅       | ✅   | ✅       | [attr-duplication](./src/attr-duplication/)       | 🚧      |
 | ✅       | ✅   | ✅       | [character-reference](./src/character-reference/) | 🚧      |
 | 🚧       | 🚧   | 🚧       | [comment](./src/comment/)                         |
-| 🚧       | 🚧   | 🚧       | [deprecated-attr](./src/deprecated-attr/)         |
+| ✅       | ✅   | ✅       | [deprecated-attr](./src/deprecated-attr/)         |
 | ✅       | ✅   | ✅       | [deprecated-element](./src/deprecated-element/)   |
 | ✅       | ✅   | ✅       | [doctype](./src/doctype/)                         | 🚧      |
 | ✅       | ✅   | ✅       | [id-duplication](./src/id-duplication/)           |
