@@ -4,9 +4,9 @@ title: deprecated-element
 
 # Deprecated elements (`deprecated-element`)
 
-Warns when there is an element defined as deprecated in `nodeRules` in the configuration file.
+Warns when there is an element defined as **deprecated** or **obsolete** or **non-standard**.
 
-To reference [HTML Living Standard](https://html.spec.whatwg.org/) rules, add [html-ls](https://github.com/YusukeHirao/markuplint/blob/master/rulesets/html-ls.json) to extends setting of configuration file.
+This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-ls`](https://github.com/markuplint/markuplint/blob/next/packages/%40markuplint/html-ls/index.json).
 
 ## Rule Details
 
