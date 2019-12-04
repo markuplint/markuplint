@@ -1,0 +1,34 @@
+{
+	"definitions": {},
+	"type": "object",
+	"additionalProperties": false,
+	"required": ["tag", "attributes"],
+	"properties": {
+		"tag": { "type": "string" },
+		"attributes": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": ["name", "type"],
+				"properties": {
+					"name": { "type": "string" },
+					"type": { "type": "string" },
+					"required": { "type": "boolean" },
+					"enum": { "type": "array", "items": { "type": "string" }, "minLength": 1 },
+					"condition": {
+						"oneOf": [
+							{
+								"type": "object",
+								"additionalProperties": false,
+								"properties": {
+									"ancestor": { "type": "string" }
+								}
+							}
+						]
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,5 +1,5 @@
+import { Attribute, MLMLSpec } from './types';
 import { ContentModel, PermittedStructuresSchema } from './permitted-structres';
-import { MLMLSpec } from './types';
 
 export * from './permitted-structres';
 export * from './types';
@@ -15,9 +15,10 @@ export interface MLDOMElementSpec {
 	nonStandard: boolean;
 	categories: ContentModel[];
 	permittedStructures: PermittedStructuresSchema;
+	attributes: Attribute[];
 }
 
-export function getSpecOM({ specs }: MLMLSpec): SpecOM {
+function getSpecOM({ specs }: MLMLSpec): SpecOM {
 	const som: SpecOM = {};
 	for (const el of specs) {
 		som[el.name] = {
@@ -27,12 +28,16 @@ export function getSpecOM({ specs }: MLMLSpec): SpecOM {
 			nonStandard: !!el.nonStandard,
 			categories: el.categories,
 			permittedStructures: el.permittedStructures,
+			attributes: el.attributes.filter(
+				(attr: Attribute | string): attr is Attribute => !(typeof attr === 'string'),
+			),
 		};
 	}
 	return som;
 }
 
-export function getSpecByTagName(tagName: string, specOM: SpecOM): MLDOMElementSpec {
+export function getSpecByTagName(tagName: string, specs: MLMLSpec): MLDOMElementSpec {
+	const specOM = getSpecOM(specs);
 	tagName = tagName.toLowerCase();
 	const spec = specOM[tagName];
 	return spec || null;

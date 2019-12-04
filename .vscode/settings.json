@@ -14,6 +14,10 @@
 		{
 			"fileMatch": ["/packages/*markuplint/html-ls/src/permitted-structures/*.json"],
 			"url": "/packages/@markuplint/ml-spec/schemas/permitted-structures.schema.json"
+		},
+		{
+			"fileMatch": ["/packages/*markuplint/html-ls/src/attributes/*.json"],
+			"url": "/packages/@markuplint/ml-spec/schemas/attributes.schema.json"
 		}
 	]
 }

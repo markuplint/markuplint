@@ -1,10 +1,10 @@
 ---
-title: deprecated-element
+title: deprecated-attr
 ---
 
-# Deprecated elements (`deprecated-element`)
+# Deprecated elements (`deprecated-attr`)
 
-Warns when there is an element defined as **deprecated** or **obsolete** or **non-standard**.
+Warns when there is an attribute defined as **deprecated** or **obsolete**.
 
 This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-ls`](https://github.com/markuplint/markuplint/blob/next/packages/%40markuplint/html-ls/index.json).
 
@@ -13,13 +13,13 @@ This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN
 👎 Examples of **incorrect** code for this rule
 
 ```html
-<font color="red">lorem</font>
+<img src="path/to" alt="any picture" align="top" />
 ```
 
 👍 Examples of **correct** code for this rule
 
 ```html
-<span class="red">lorem</span>
+<img src="path/to" alt="any picture" style="vertical-align: center" />
 ```
 
 ### Setting value

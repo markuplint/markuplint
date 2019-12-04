@@ -1,4 +1,4 @@
-import { Attribute, AttributeValue } from '@markuplint/ml-spec';
+import { Attribute, AttributeType } from '@markuplint/ml-spec';
 import fetch from './fetch';
 import { nameCompare } from './utils';
 
@@ -24,14 +24,14 @@ export async function getGlobalAttrs() {
 			return;
 		}
 
-		let value: AttributeValue = 'string';
+		let type: AttributeType = 'string';
 		switch (category) {
 			case 'xml': {
-				value = 'string';
+				type = 'string';
 				break;
 			}
 			case 'eventhandler': {
-				value = 'function-body';
+				type = 'function-body';
 				break;
 			}
 		}
@@ -39,8 +39,7 @@ export async function getGlobalAttrs() {
 		const attr: Attribute = {
 			name,
 			description: 'WIP',
-			category,
-			value,
+			type,
 		};
 		attrs.push(attr);
 	});

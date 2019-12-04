@@ -1,5 +1,4 @@
 import { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
-import { MLMLSpec, SpecOM, getSpecOM } from '@markuplint/ml-spec';
 import { RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
 import { Document } from './ml-dom';
 import { MLRule } from './ml-rule';
@@ -10,7 +9,6 @@ export class MLCore {
 	private _parser: MLMarkupLanguageParser;
 	private _sourceCode: string;
 	private _ast: MLASTDocument;
-	private _specs: SpecOM;
 	private _document: Document<RuleConfigValue, unknown>;
 	private _ruleset: Ruleset;
 	private _messenger: Messenger;
@@ -19,18 +17,16 @@ export class MLCore {
 	constructor(
 		parser: MLMarkupLanguageParser,
 		sourceCode: string,
-		specs: MLMLSpec,
 		ruleset: Ruleset,
 		rules: MLRule<RuleConfigValue, unknown>[],
 		messenger: Messenger,
 	) {
 		this._parser = parser;
 		this._sourceCode = sourceCode;
-		this._specs = getSpecOM(specs);
 		this._ruleset = ruleset;
 		this._messenger = messenger;
 		this._ast = this._parser.parse(this._sourceCode);
-		this._document = new Document(this._ast, this._specs, this._ruleset);
+		this._document = new Document(this._ast, this._ruleset);
 		this._rules = rules;
 	}
 
@@ -57,17 +53,17 @@ export class MLCore {
 	public setParser(parser: MLMarkupLanguageParser) {
 		this._parser = parser;
 		this._ast = this._parser.parse(this._sourceCode);
-		this._document = new Document(this._ast, this._specs, this._ruleset);
+		this._document = new Document(this._ast, this._ruleset);
 	}
 
 	public setCode(sourceCode: string) {
 		this._sourceCode = sourceCode;
 		this._ast = this._parser.parse(this._sourceCode);
-		this._document = new Document(this._ast, this._specs, this._ruleset);
+		this._document = new Document(this._ast, this._ruleset);
 	}
 
 	public setRuleset(ruleset: Ruleset) {
 		this._ruleset = ruleset;
-		this._document = new Document(this._ast, this._specs, this._ruleset);
+		this._document = new Document(this._ast, this._ruleset);
 	}
 }

@@ -6,7 +6,7 @@ test('node count', async () => {
 	const sourceCode = '<div>text</div>';
 	const ast = parse(sourceCode);
 	const ruleset = convertRuleset({});
-	const document = new Document(ast, {}, ruleset);
+	const document = new Document(ast, ruleset);
 	expect(document.nodeList.length).toBe(3);
 });
 
@@ -14,7 +14,7 @@ test('raw', async () => {
 	const sourceCode = '<div>text</div>';
 	const ast = parse(sourceCode);
 	const ruleset = convertRuleset({});
-	const document = new Document(ast, {}, ruleset);
+	const document = new Document(ast, ruleset);
 	expect(document.nodeList[0].raw).toBe('<div>');
 	expect(document.nodeList[1].raw).toBe('text');
 	expect(document.nodeList[2].raw).toBe('</div>');
@@ -27,7 +27,7 @@ test('raw', async () => {
 </div>`;
 	const ast = parse(sourceCode);
 	const ruleset = convertRuleset({});
-	const document = new Document(ast, {}, ruleset);
+	const document = new Document(ast, ruleset);
 	expect(document.nodeList[0].raw).toBe('\n');
 	expect(document.nodeList[1].raw).toBe('<div>');
 	expect(document.nodeList[2].raw).toBe('\n\ttext\n');
@@ -41,7 +41,7 @@ test('raw', async () => {
     </div>`;
 	const ast = parse(sourceCode);
 	const ruleset = convertRuleset({});
-	const document = new Document(ast, {}, ruleset);
+	const document = new Document(ast, ruleset);
 	expect(document.nodeList[0].raw).toBe('\n    ');
 	expect(document.nodeList[1].raw).toBe('<div>');
 	expect(document.nodeList[2].raw).toBe('\n        text\n    ');
@@ -66,7 +66,7 @@ test('raw', async () => {
     </div>`;
 	const ast = parse(sourceCode);
 	const ruleset = convertRuleset({});
-	const document = new Document(ast, {}, ruleset);
+	const document = new Document(ast, ruleset);
 	expect(document.nodeList[0].raw).toBe('\n    ');
 	expect(document.nodeList[1].raw).toBe('<div>');
 	expect(document.nodeList[2].raw).toBe('\n        ');
@@ -92,7 +92,7 @@ test('raw', async () => {
 </div>`;
 	const ast = parse(sourceCode);
 	const ruleset = convertRuleset({});
-	const document = new Document(ast, {}, ruleset);
+	const document = new Document(ast, ruleset);
 	expect(document.nodeList[0].raw).toBe('\n');
 	expect(document.nodeList[1].raw).toBe('<div>');
 	expect(document.nodeList[2].raw).toBe('\n\t');
@@ -109,20 +109,4 @@ test('raw', async () => {
 	expect(document.nodeList[5].indentation!).toBe(null);
 	expect(document.nodeList[6].indentation!).toBe(null);
 	expect(document.nodeList[7].indentation!.width).toBe(0);
-});
-
-test('content model', async () => {
-	const sourceCode = '<a href="path/to"><div><span>text</span></div></a>';
-	const ast = parse(sourceCode);
-	const ruleset = convertRuleset({});
-	const document = new Document(ast, {}, ruleset);
-	const el = document.nodeList[0];
-	// @ts-ignore
-	expect(Array.from(el.ownModels)).toMatchObject(['#flow', '#interactive']);
-	// @ts-ignore
-	expect(Array.from(el.childNodes[0].ownModels)).toMatchObject(['#flow']);
-	// @ts-ignore
-	expect(Array.from(el.childNodes[0].childNodes[0].ownModels)).toMatchObject(['#flow', '#phrasing']);
-	// @ts-ignore
-	expect(Array.from(el.childNodes[0].childNodes[0].childNodes[0].ownModels)).toMatchObject(['#flow', '#phrasing']);
 });

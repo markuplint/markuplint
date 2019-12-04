@@ -1,7 +1,8 @@
-import { AttributeSpec, AttributeValue, ContentModel, ElementSpec } from '@markuplint/ml-spec';
+import { Attribute, ContentModel, ElementSpec } from '@markuplint/ml-spec';
 import fetch from './fetch';
+import { getAttribute } from './get-attribute';
+import { getPermittedStructures } from './get-permitted-structures';
 import { nameCompare } from './utils';
-import { setPermittedContent as setPermittedStructures } from './setPermittedStructures';
 
 export async function getHTMLElements() {
 	const links = await getHTMLElementLinks();
@@ -13,7 +14,7 @@ export async function getHTMLElements() {
 			const h = { ...headingElementSpec };
 			const name = `h${i}`;
 			h.name = name;
-			h.permittedStructures = { ...h.permittedStructures, ...setPermittedStructures(name) };
+			h.permittedStructures = { ...h.permittedStructures, ...getPermittedStructures(name) };
 			specs.push(h);
 		}
 	}
@@ -32,7 +33,7 @@ export async function getHTMLElement(link: string) {
 		.closest('p')
 		.text()
 		.trim()
-		.replace(/\r?\n/gi, ' ');
+		.replace(/(?:\r?\n|\s)+/gi, ' ');
 
 	const experimental = !!$article.find('.blockIndicator.experimental').length || undefined;
 	const obsolete = !!$article.find('.obsoleteHeader').length || undefined;
@@ -55,7 +56,7 @@ export async function getHTMLElement(link: string) {
 	const permittedContent = getProperty($, 'Permitted content');
 	const permittedRoles = getProperty($, 'Permitted ARIA roles');
 
-	const attrs = getAttributes($, '#Attributes');
+	const attrs = getAttributes($, '#Attributes', name);
 	attrs.sort(nameCompare);
 
 	const spec: ElementSpec = {
@@ -69,7 +70,7 @@ export async function getHTMLElement(link: string) {
 		categories,
 		permittedStructures: {
 			summary: permittedContent,
-			...setPermittedStructures(name),
+			...getPermittedStructures(name),
 		},
 		permittedRoles: {
 			summary: permittedRoles,
@@ -82,13 +83,14 @@ export async function getHTMLElement(link: string) {
 	return spec;
 }
 
-function getAttributes($: CheerioStatic, heading: string): AttributeSpec[] {
+function getAttributes($: CheerioStatic, heading: string, tagName: string): Attribute[] {
 	const $heading = $(heading);
 	const $outline = getThisOutline($heading);
+	const { attributes } = getAttribute(tagName);
 	return $outline
 		.find('>dt')
 		.toArray()
-		.map((dt): AttributeSpec | null => {
+		.map((dt): Attribute | null => {
 			const $dt = $(dt);
 			const name = $dt
 				.find('code')
@@ -102,24 +104,25 @@ function getAttributes($: CheerioStatic, heading: string): AttributeSpec[] {
 			const deprecated =
 				!!$dt.find('.icon-thumbs-down-alt').length || !!$dt.find('.deprecated').length || undefined;
 			const nonStandard = !!$dt.find('.icon-warning-sign').length || undefined;
-			const description = 'WIP';
-			const required = undefined; // WIP
-			const category = 'particular';
-			// @ts-ignore
-			const value: AttributeValue = 'WIP';
+			const description = $dt
+				.nextAll('dd')
+				.toArray()
+				.map(el => $(el).text())
+				.join('')
+				.trim()
+				.replace(/(?:\r?\n|\s)+/gi, ' ');
+			const spec = attributes.find(attr => attr.name === name) || { name: tagName, type: 'string' };
 			return {
+				...spec,
 				name,
 				experimental,
 				description,
-				required,
 				obsolete,
 				deprecated,
 				nonStandard,
-				category,
-				value,
 			};
 		})
-		.filter((attr): attr is AttributeSpec => !!attr);
+		.filter((attr): attr is Attribute => !!attr);
 }
 
 function getProperty($: CheerioStatic, prop: string) {
@@ -130,15 +133,19 @@ function getProperty($: CheerioStatic, prop: string) {
 			.toArray()
 			.filter(el => new RegExp(prop, 'i').test($(el).text())),
 	);
-	return $th.siblings('td').text();
+	return $th
+		.siblings('td')
+		.text()
+		.trim()
+		.replace(/(?:\r?\n|\s)+/gi, ' ');
 }
 
 function getThisOutline($start: Cheerio) {
 	let $next = $start.next();
-	let $els = $start;
+	let $els = $start.clone();
 	while (!!$next.length && !$next.filter('h2').length) {
-		$els = $els.add($next);
-		$next = $next.siblings().eq(0);
+		$els = $els.add($next.clone());
+		$next = $next.next();
 	}
 	return $els;
 }
