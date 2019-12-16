@@ -15,11 +15,10 @@ export enum MLASTNodeType {
 	EndTag = 'endtag',
 	Comment = 'comment',
 	Text = 'text',
-	InvalidNode = 'invalidnode',
 	OmittedTag = 'omittedtag',
 }
 
-export type MLASTNode = MLASTDoctype | MLASTTag | MLASTComment | MLASTText | MLASTInvalidNode;
+export type MLASTNode = MLASTDoctype | MLASTTag | MLASTComment | MLASTText;
 
 export interface MLASTAbstructNode extends MLToken {
 	type: MLASTNodeType;
@@ -72,10 +71,6 @@ export interface MLASTComment extends MLASTAbstructNode {
 
 export interface MLASTText extends MLASTAbstructNode {
 	type: MLASTNodeType.Text;
-}
-
-export interface MLASTInvalidNode extends MLASTAbstructNode {
-	type: MLASTNodeType.InvalidNode;
 }
 
 export interface MLASTAttr extends MLToken {

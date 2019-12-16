@@ -27,7 +27,6 @@ import Indentation from './indentation';
 import IndentationAttr from './indentation-attr';
 import LabelingControls from './labeling-controls';
 import LandmarkRoles from './landmark-roles';
-import ParseError from './parse-error';
 import Path from './path';
 import PermittedContents from './permitted-contents';
 import RequiredAttr from './required-attr';
@@ -66,7 +65,6 @@ export default [
 	IndentationAttr,
 	LandmarkRoles,
 	LabelingControls,
-	ParseError,
 	Path,
 	PermittedContents,
 	RequiredAttr,

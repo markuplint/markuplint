@@ -4,16 +4,5 @@ export { createRule } from './create-rule';
 export { MLCore } from './ml-core';
 export { MLRule, MLRuleOptions } from './ml-rule';
 export { default as Ruleset } from './ruleset';
-export {
-	Attribute,
-	Comment,
-	Doctype,
-	Document,
-	Element,
-	ElementCloseTag,
-	InvalidNode,
-	Node,
-	OmittedElement,
-	Text,
-} from './ml-dom';
+export { Attribute, Comment, Doctype, Document, Element, ElementCloseTag, Node, OmittedElement, Text } from './ml-dom';
 export { getLocationFromChars } from './utils';

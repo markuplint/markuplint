@@ -3,7 +3,6 @@ import {
 	MLDOMDoctype,
 	MLDOMElement,
 	MLDOMElementCloseTag,
-	MLDOMInvalidNode,
 	MLDOMOmittedElement,
 	MLDOMText,
 } from './tokens';
@@ -28,9 +27,7 @@ export interface IMLDOMComment extends IMLDOMNode {
 export interface IMLDOMText extends IMLDOMNode {
 	type: 'Text';
 }
-export interface IMLDOMInvalidNode extends IMLDOMNode {
-	type: 'InvalidNode';
-}
+
 export interface IMLDOMNode {}
 
 export type AnonymousNode<T extends RuleConfigValue, O = null> =
@@ -39,15 +36,6 @@ export type AnonymousNode<T extends RuleConfigValue, O = null> =
 	| MLDOMElementCloseTag<T, O>
 	| MLDOMOmittedElement<T, O>
 	| MLDOMComment<T, O>
-	| MLDOMText<T, O>
-	| MLDOMInvalidNode<T, O>;
+	| MLDOMText<T, O>;
 
-export type NodeType =
-	| 'Doctype'
-	| 'Element'
-	| 'ElementCloseTag'
-	| 'OmittedElement'
-	| 'Comment'
-	| 'Text'
-	| 'InvalidNode'
-	| 'Node';
+export type NodeType = 'Doctype' | 'Element' | 'ElementCloseTag' | 'OmittedElement' | 'Comment' | 'Text' | 'Node';

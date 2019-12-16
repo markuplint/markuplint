@@ -17,7 +17,6 @@
 | ✅       | ✅   | ✅       | [deprecated-element](./src/deprecated-element/)   |
 | ✅       | ✅   | ✅       | [doctype](./src/doctype/)                         | 🚧      |
 | ✅       | ✅   | ✅       | [id-duplication](./src/id-duplication/)           |
-| ✅       | 🚧   | 🚧       | [parse-error](./src/parse-error/)                 |
 | ✅       | ✅   | ✅       | [permitted-contents](./src/permitted-contents/)   |
 | ✅       | ✅   | ✅       | [required-attr](./src/required-attr/)             |
 

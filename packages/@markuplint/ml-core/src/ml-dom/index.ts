@@ -6,7 +6,6 @@ export {
 	MLDOMDoctype as Doctype,
 	MLDOMElement as Element,
 	MLDOMElementCloseTag as ElementCloseTag,
-	MLDOMInvalidNode as InvalidNode,
 	MLDOMNode as Node,
 	MLDOMOmittedElement as OmittedElement,
 	MLDOMText as Text,

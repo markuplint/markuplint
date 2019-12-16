@@ -2,7 +2,6 @@ export { default as MLDOMAttribute } from './attribute';
 export { default as MLDOMComment } from './comment';
 export { default as MLDOMToken } from './token';
 export { default as MLDOMNode } from './node';
-export { default as MLDOMInvalidNode } from './invalid-node';
 export { default as MLDOMDoctype } from './doctype';
 export { default as MLDOMText } from './text';
 export { default as MLDOMOmittedElement } from './omitted-element';

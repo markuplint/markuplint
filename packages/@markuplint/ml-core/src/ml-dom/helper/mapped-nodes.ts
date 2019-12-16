@@ -5,7 +5,6 @@ import {
 	MLASTDoctype,
 	MLASTElement,
 	MLASTElementCloseTag,
-	MLASTInvalidNode,
 	MLASTNode,
 	MLASTOmittedElement,
 	MLASTParentNode,
@@ -18,7 +17,6 @@ import {
 	MLDOMDoctype,
 	MLDOMElement,
 	MLDOMElementCloseTag,
-	MLDOMInvalidNode,
 	MLDOMNode,
 	MLDOMOmittedElement,
 	MLDOMText,
@@ -34,7 +32,6 @@ export type MappedNode<N, T extends RuleConfigValue, O = null>
 	: N extends MLASTParentNode ? (MLDOMElement<T, O> | MLDOMOmittedElement<T, O>)
 	: N extends MLASTComment ? MLDOMComment<T, O>
 	: N extends MLASTText ? MLDOMText<T, O>
-	: N extends MLASTInvalidNode ? MLDOMInvalidNode<T, O>
 	: N extends MLASTDoctype ? MLDOMDoctype<T, O>
 	: N extends MLASTNode ? MLDOMNode<T, O, MLASTNode>
 	: N extends MLASTAbstructNode ? MLDOMNode<T, O, MLASTAbstructNode>

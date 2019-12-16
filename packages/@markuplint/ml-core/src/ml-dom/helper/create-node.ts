@@ -4,7 +4,6 @@ import {
 	MLDOMDoctype,
 	MLDOMElement,
 	MLDOMElementCloseTag,
-	MLDOMInvalidNode,
 	MLDOMOmittedElement,
 	MLDOMText,
 } from '../tokens';
@@ -33,9 +32,6 @@ export function createNode<N extends MLASTAbstructNode, T extends RuleConfigValu
 		}
 		case MLASTNodeType.Text: {
 			return new MLDOMText<T, O>(_astNode, document) as MappedNode<N, T, O>;
-		}
-		case MLASTNodeType.InvalidNode: {
-			return new MLDOMInvalidNode<T, O>(_astNode, document) as MappedNode<N, T, O>;
 		}
 		case MLASTNodeType.OmittedTag: {
 			return new MLDOMOmittedElement<T, O>(_astNode, document) as MappedNode<N, T, O>;

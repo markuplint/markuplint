@@ -1,9 +1,7 @@
 import * as VueESLintParser from 'vue-eslint-parser';
 import {
-	MLASTAbstructNode,
 	MLASTDocument,
 	MLASTElement,
-	MLASTInvalidNode,
 	MLASTNode,
 	MLASTNodeType,
 	MLASTParentNode,
@@ -82,47 +80,25 @@ function nodeize(
 				let tokenStartOffset = startOffset;
 				for (const token of tokens) {
 					const tokenEndOffset = tokenStartOffset + token.raw.length;
-					if (token.type === 'text') {
-						const node: MLASTText = {
-							uuid: UUID.v4(),
-							raw: token.raw,
-							startOffset: tokenStartOffset,
-							endOffset: tokenEndOffset,
-							startLine: token.line,
-							endLine: getEndLine(token.raw, token.line),
-							startCol: token.col,
-							endCol: getEndCol(token.raw, token.col),
-							nodeName: '#text',
-							type: MLASTNodeType.Text,
-							parentNode,
-							prevNode,
-							nextNode,
-							isFragment: false,
-							isGhost: false,
-						};
-						nodes.push(node);
-						prevNode = node;
-					} else {
-						const node: MLASTInvalidNode = {
-							uuid: UUID.v4(),
-							raw: token.raw,
-							startOffset: tokenStartOffset,
-							endOffset: tokenEndOffset,
-							startLine: token.line,
-							endLine: getEndLine(token.raw, token.line),
-							startCol: token.col,
-							endCol: getEndCol(token.raw, token.col),
-							nodeName: '#invalid',
-							type: MLASTNodeType.InvalidNode,
-							parentNode,
-							prevNode,
-							nextNode,
-							isFragment: false,
-							isGhost: false,
-						};
-						nodes.push(node);
-						prevNode = node;
-					}
+					const node: MLASTText = {
+						uuid: UUID.v4(),
+						raw: token.raw,
+						startOffset: tokenStartOffset,
+						endOffset: tokenEndOffset,
+						startLine: token.line,
+						endLine: getEndLine(token.raw, token.line),
+						startCol: token.col,
+						endCol: getEndCol(token.raw, token.col),
+						nodeName: '#text',
+						type: MLASTNodeType.Text,
+						parentNode,
+						prevNode,
+						nextNode,
+						isFragment: false,
+						isGhost: false,
+					};
+					nodes.push(node);
+					prevNode = node;
 					tokenStartOffset = tokenEndOffset;
 				}
 			}
@@ -309,17 +285,7 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 		}
 		const id = `${node.startLine}:${node.startCol}:${node.endLine}:${node.endCol}`;
 		if (stack[id] != null) {
-			const iA = stack[id];
-			const iB = i;
-			const a = nodeOrders[iA];
-			const b = node;
-			if (isInvalidNode(a) && isInvalidNode(b)) {
-				removeIndexes.push(iB);
-			} else if (isInvalidNode(a)) {
-				removeIndexes.push(iA);
-			} else {
-				removeIndexes.push(iB);
-			}
+			removeIndexes.push(i);
 		}
 		stack[id] = i;
 	});
@@ -359,8 +325,4 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 	});
 
 	return result;
-}
-
-function isInvalidNode(node: MLASTAbstructNode) {
-	return node.type === MLASTNodeType.InvalidNode;
 }

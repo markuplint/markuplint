@@ -1,5 +1,4 @@
 import {
-	MLASTAbstructNode,
 	MLASTDoctype,
 	MLASTDocument,
 	MLASTElement,
@@ -233,7 +232,7 @@ function traverse(
 			continue;
 		}
 		if (prevNode) {
-			if (node.type !== MLASTNodeType.EndTag && node.type !== MLASTNodeType.InvalidNode) {
+			if (node.type !== MLASTNodeType.EndTag) {
 				prevNode.nextNode = node;
 			}
 			node.prevNode = prevNode;
@@ -388,17 +387,7 @@ function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 			}
 			const id = `${node.startLine}:${node.startCol}:${node.endLine}:${node.endCol}`;
 			if (stack[id] != null) {
-				const iA = stack[id];
-				const iB = i;
-				const a = nodeOrders[iA];
-				const b = node;
-				if (isInvalidNode(a) && isInvalidNode(b)) {
-					removeIndexes.push(iB);
-				} else if (isInvalidNode(a)) {
-					removeIndexes.push(iA);
-				} else {
-					removeIndexes.push(iB);
-				}
+				removeIndexes.push(i);
 			}
 			stack[id] = i;
 		});
@@ -588,10 +577,6 @@ function getChildNodes(rootNode: P5Node | P5Document | P5Fragment): P5Node[] {
 		return childNodes;
 	}
 	return rootNode.content ? rootNode.content.childNodes : rootNode.childNodes;
-}
-
-function isInvalidNode(node: MLASTAbstructNode) {
-	return node.type === MLASTNodeType.InvalidNode;
 }
 
 interface TraversalNode {
