@@ -1,36 +1,28 @@
 # 許可するコンテンツ (`permitted-contents`)
 
-直接の子として許可するコンテンツ（要素およびテキストノード）を設定します。設定された条件を満たさない要素がネストされた場合は警告します。テキストノードは `tag` に `#text` を設定することで許可対象となります。
+許可された要素もしくはテキストノードを子要素にもつ場合に警告します。
+
+[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-ls`](https://github.com/markuplint/markuplint/blob/next/packages/%40markuplint/html-ls/index.json)に設定値を持っています。
+
+オプションに独自のルールを設けることができます。カスタム要素や Vue などのテンプレートエンジン上での要素関係を設定することで、構造を堅牢にすることが可能です。
 
 ## ルールの詳細
-
-### `oneOrMore`
-
-```json
-{
-	"required-attr": {
-		"option": [
-			{
-				"tag": "ul",
-				"contents": [
-					{
-						"oneOrMore": "li"
-					}
-				]
-			}
-		]
-	}
-}
-```
 
 👎 間違ったコード例
 
 <!-- prettier-ignore-start -->
 ```html
-<ul></ul>
+<ul>
+	<div>許可されていないdiv要素</div>
+</ul>
 <ul>許可されていないテキストノード</ul>
-````
 
+<table>
+	<thead><tr><th>ヘッダセル<th></tr></thead>
+	<tfoot><tr><td>許可されていない順番のtfoot要素<td></tr></tfoot>
+	<tbody><tr><td>ボディセル<td></tr></tbody>
+</table>
+```
 <!-- prettier-ignore-end -->
 
 👍 正しいコード例
@@ -39,7 +31,14 @@
 ```html
 <ul>
 	<li>リストアイテム</li>
+	<li>リストアイテム</li>
 </ul>
+
+<table>
+	<thead><tr><th>ヘッダセル<th></tr></thead>
+	<tbody><tr><td>ボディセル<td></tr></tbody>
+	<tfoot><tr><td>フッタセル<td></tr></tfoot>
+</table>
 ```
 <!-- prettier-ignore-end -->
 
@@ -51,33 +50,22 @@
 
 ### オプション
 
-基本的にオプション `option` に配列で、許可するコンテンツを設定したい要素ごとに設定します。
+ルールを設定したい対象の要素を配列で指定します。次の例はカスタム要素の `x-container` と `x-item` それぞれにルールを指定していることになります。
 
 ```json
 {
-	"option": [
-		{
-			"tag": "table",
-			"contents": [
-				{ "require": "caption" },
-				{ "optional": "thead" },
-				{ "optional": "tfoot" },
-				{ "require": "tbody" }
-			]
-		},
-		{
-			"tag": "caption",
-			"contents": [{ "require": "#text" }]
-		},
-		{
-			"tag": "tbody",
-			"contents": [{ "oneOrMore": "tr" }]
-		},
-		{
-			"tag": "tr",
-			"contents": [{ "require": "th" }, { "oneOrMore": "td" }]
-		}
-	]
+	"required-attr": {
+		"option": [
+			{
+				"tag": "x-container",
+				"contents": []
+			},
+			{
+				"tag": "x-item",
+				"contents": []
+			}
+		]
+	}
 }
 ```
 
@@ -86,15 +74,40 @@
 -   型: `string`
 -   省略不可
 
-要素（タグ）名を指定します。大文字小文字は区別しません。
+対象の要素（タグ）名を指定します。大文字小文字は区別しません。
 
 #### `contents`
 
-許可する要素を配列で指定します。この配列の順番は **許可する要素の順番** を意味します。（現在の実装では許可された順番で定義されていない要素は「許可されていない要素」として扱われます）
+対象の許可する要素を配列で指定します。この配列の順番は **許可するコンテンツの順番** を意味します。（この配列に含まれないコンテンツは、すなわち **許可されないコンテンツ** になります。）
 
-キーは次のいずれかの指定が必ず必要で、値として許可する要素およびテキストノードを指定します。ホワイトスペースのみのテキストノードは無視されます。テキストノードは `#text` と指定します。それぞれのキーを組み合わせることはできません。
+`require`、`optional`、`oneOrMore`、`zeroOrMore`、`choice`、`interleave`、の 6 つのいずれかのキーワードを使って定義します。
 
-| キー         | 意味           |
+そのうち`require`、`optional`、`oneOrMore`、`zeroOrMore`は要素の個数を意味します。そのキーワードをキーとしてタグ名（もしくはテキストノードの場合 `#text` ）を指定します。それぞれのキーワードを同時に指定することはできません。
+
+```json
+{
+	"required-attr": {
+		"option": [
+			{
+				"tag": "x-container",
+				"contents": [
+					{ "require": "x-item" },
+					{ "optional": "y-item" },
+					{ "oneOrMore": "z-item" },
+					{ "zeroOrMore": "#text" },
+					// ❌ キーワードの同時の指定はできない
+					{
+						"require": "x-item",
+						"optional": "y-item"
+					}
+				]
+			}
+		]
+	}
+}
+```
+
+| キーワード   | 意味           |
 | ------------ | -------------- |
 | `require`    | 必ず 1 個必要  |
 | `optional`   | 0 個か 1 個    |
@@ -103,14 +116,40 @@
 
 任意個数の上限を `max` キーで指定することができます。また、 `require` を指定するときには下限の `min` キーを設定できます。
 
-組み合わせによっては、次の指定は同じ意味となります。
+組み合わせによっては、次の 2 つの指定は同じ意味となります。
 
 ```json
 { "optional": "tag", "max": 5 }
+{ "zeroOrMore": "tag", "max": 5 }
 ```
 
+---
+
+`choice`、`interleave`の 2 つのキーワードは指定した配列に対して次の意味をもちます。
+
+| キーワード   | 意味          |
+| ------------ | ------------- |
+| `choice`     | いずれか 1 つ |
+| `interleave` | 順不同        |
+
 ```json
-{ "zeroOrMore": "tag", "max": 5 }
+{
+	"required-attr": {
+		"option": [
+			{
+				"tag": "x-container",
+				"contents": [
+					{
+						"choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
+					},
+					{
+						"interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
+					}
+				]
+			}
+		]
+	}
+}
 ```
 
 ### デフォルトの警告の厳しさ
