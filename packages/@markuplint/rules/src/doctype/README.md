@@ -50,7 +50,7 @@ Type: `"always"`
 | ---------- | ------- | --------------------------------------------------------------------- |
 | `"always"` | ✓       | Warns when doesn't declare DOCTYPE. Ignore when document is fragment. |
 
-### オプション
+### Options
 
 #### `denyObsolateType`
 
