@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/html-ls",
-	"version": "1.0.0-alpha.12",
+	"version": "1.0.0-alpha.13",
 	"description": "A Ruleset of HTML Living Standard for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
