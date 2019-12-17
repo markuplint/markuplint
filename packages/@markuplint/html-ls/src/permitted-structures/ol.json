@@ -2,7 +2,7 @@
 	"tag": "ol",
 	"contents": [
 		{
-			"zeroOrMore": "li"
+			"zeroOrMore": ["li", "#script-supporting"]
 		}
 	]
 }
