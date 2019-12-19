@@ -30,7 +30,7 @@
 | 🚧       | 🚧   | 🚧       | [heading-in-sectioning-root](./src/heading-in-sectioning-root/)       |
 | 🚧       | 🚧   | 🚧       | [heading-levels-skipping](./src/heading-levels-skipping/)             |
 | 🚧       | 🚧   | 🚧       | [labeling-controls](./src/labeling-controls/)                         |
-| 🚧       | 🚧   | 🚧       | [landmark-roles](./src/landmark-roles/)                               |
+| ✅       | ✅   | ✅       | [landmark-roles](./src/landmark-roles/)                               |
 | ✅       | ✅   | ✅       | [required-h1](./src/required-h1/)                                     |
 
 ### Usability
