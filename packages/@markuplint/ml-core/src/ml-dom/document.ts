@@ -152,6 +152,12 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		this.currentRule = rule;
 	}
 
+	public matchNodes(query: string) {
+		return this.nodeList.filter(
+			(node: AnonymousNode<T, O>): node is MLDOMElement<T, O> => node.type === 'Element' && node.matches(query),
+		);
+	}
+
 	public toString() {
 		const html: string[] = [];
 		for (const node of this.nodeList) {
