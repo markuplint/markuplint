@@ -9,7 +9,7 @@ type CssSelectorParserResult = CssSelectorParserResultRuleset | CssSelectorParse
 
 interface CssSelectorParserResultSelectors {
 	type: 'selectors';
-	selectors: CssSelectorParserRule[];
+	selectors: CssSelectorParserResultRuleset[];
 }
 
 interface CssSelectorParserResultRuleset {
@@ -64,7 +64,6 @@ class Selector {
 	constructor(selector: string) {
 		this._rawSelector = selector;
 		this._ruleset = selectorParser.parse(selector);
-		// console.log(JSON.stringify(this._ruleset, null, 2));
 	}
 
 	public match(element: ElementLikeObject) {
@@ -73,7 +72,8 @@ class Selector {
 }
 
 function match(element: ElementLikeObject, ruleset: CssSelectorParserResult, rawSelector: string) {
-	const rules: CssSelectorParserRule[] = ruleset.type === 'selectors' ? ruleset.selectors : [ruleset.rule];
+	const rules: CssSelectorParserRule[] =
+		ruleset.type === 'selectors' ? ruleset.selectors.map(ruleSet => ruleSet.rule) : [ruleset.rule];
 	const orMatch: boolean[] = [];
 
 	for (const rule of rules) {

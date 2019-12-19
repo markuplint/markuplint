@@ -68,4 +68,12 @@ describe('selector matching', () => {
 		expect(createSelector(':root').match(el)).toBe(false);
 		expect(createSelector(':root').match(el.parentNode)).toBe(true);
 	});
+
+	it('Multiple selector', async () => {
+		const el = {
+			nodeName: 'div',
+			parentNode: null,
+		};
+		expect(createSelector('div, span').match(el)).toBe(true);
+	});
 });
