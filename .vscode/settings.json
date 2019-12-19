@@ -19,5 +19,8 @@
 			"fileMatch": ["/packages/*markuplint/html-ls/src/attributes/*.json"],
 			"url": "/packages/@markuplint/ml-spec/schemas/attributes.schema.json"
 		}
-	]
+	],
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	}
 }
