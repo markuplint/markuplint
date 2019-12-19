@@ -31,7 +31,7 @@
 | 🚧       | 🚧   | 🚧       | [heading-levels-skipping](./src/heading-levels-skipping/)             |
 | 🚧       | 🚧   | 🚧       | [labeling-controls](./src/labeling-controls/)                         |
 | 🚧       | 🚧   | 🚧       | [landmark-roles](./src/landmark-roles/)                               |
-| ✅       | 🚧   | 🚧       | [required-h1](./src/required-h1/)                                     |
+| ✅       | ✅   | ✅       | [required-h1](./src/required-h1/)                                     |
 
 ### Usability
 
@@ -43,7 +43,7 @@
 
 | Avaiable | Docs | Docs(ja) | Rule                                                  | Fixable |
 | -------- | ---- | -------- | ----------------------------------------------------- | ------- |
-| ✅       | 🚧   | 🚧       | [class-naming](./src/class-naming/)                   |
+| ✅       | ✅   | ✅       | [class-naming](./src/class-naming/)                   |
 | 🚧       | 🚧   | 🚧       | [custom-element-naming](./src/custom-element-naming/) |
 | 🚧       | 🚧   | 🚧       | [data-attr-naming](./src/data-attr-naming/)           |
 | 🚧       | 🚧   | 🚧       | [required-element](./src/required-element/)           |
