@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-core",
-	"version": "1.0.0-alpha.15",
+	"version": "1.0.0-alpha.16",
 	"description": "The core module of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
