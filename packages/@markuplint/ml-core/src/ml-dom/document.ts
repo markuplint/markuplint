@@ -152,7 +152,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		this.currentRule = rule;
 	}
 
-	public matchNodes(query: string) {
+	public matchNodes(query: string): MLDOMElement<T, O>[] {
 		return this.nodeList.filter(
 			(node: AnonymousNode<T, O>): node is MLDOMElement<T, O> => node.type === 'Element' && node.matches(query),
 		);

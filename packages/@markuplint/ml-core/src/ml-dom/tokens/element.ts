@@ -116,6 +116,22 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		return filteredNodes;
 	}
 
+	public isDescendantByUUIDList(uuidList: string[]) {
+		let el: MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null = this.parentNode;
+
+		if (el === null) {
+			return false;
+		}
+
+		do {
+			if (uuidList.includes(el.uuid)) {
+				return true;
+			}
+			el = el.parentNode;
+		} while (el !== null && el.type === 'Element');
+		return false;
+	}
+
 	public get classList() {
 		const classAttr = this.getAttributeToken('class');
 		if (classAttr && classAttr.value) {
