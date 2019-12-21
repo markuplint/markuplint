@@ -36,9 +36,8 @@ function getSpecOM({ specs }: MLMLSpec): SpecOM {
 	return som;
 }
 
-export function getSpecByTagName(tagName: string, specs: MLMLSpec): MLDOMElementSpec {
+export function getSpecByTagName(tagName: string, specs: MLMLSpec): MLDOMElementSpec | null {
 	const specOM = getSpecOM(specs);
 	tagName = tagName.toLowerCase();
-	const spec = specOM[tagName];
-	return spec || null;
+	return specOM[tagName] || null;
 }

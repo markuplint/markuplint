@@ -10,6 +10,11 @@ export default createRule({
 		const reports: Result[] = [];
 		await document.walkOn('Element', async element => {
 			const spec = getSpecByTagName(element.nodeName, specs);
+
+			if (!spec) {
+				return;
+			}
+
 			for (const attr of element.attributes) {
 				const name = attr.name.raw.toLowerCase();
 				const attrSpec = spec.attributes.find(item => item.name === name);
