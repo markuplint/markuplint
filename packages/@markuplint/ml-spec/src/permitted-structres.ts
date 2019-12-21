@@ -82,5 +82,5 @@ export interface PermittedContentChoice {
 		  ];
 }
 export interface PermittedContentInterleave {
-	interleave: [PermittedContentSpec, PermittedContentSpec, ...(PermittedContentSpec)[]];
+	interleave: [PermittedContentSpec, PermittedContentSpec, ...PermittedContentSpec[]];
 }
