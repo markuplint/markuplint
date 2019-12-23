@@ -30,9 +30,10 @@ Usage
 	$ <stdout> | markuplint
 
 Options
-	--ruleset,      -r FILE_PATH  Ruleset file path.
-	--no-color,     -c            Output no color.
-	--format,       -f FORMAT     Output format. Support "JSON" or "Simple". Default "JSON".
+	--config-file,  -c FILE_PATH  Ruleset file path.
+	--fix,                        Fix HTML.
+	--format,       -f FORMAT     Output format. Support "JSON", "Simple" and "Standard". Default: "Standard".
+	--no-color,                   Output no color.
 	--problem-only, -p            Output only problems, without passeds.
 
 	--help,         -h            Show help.

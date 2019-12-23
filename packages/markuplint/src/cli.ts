@@ -10,7 +10,7 @@ Usage
 Options
 	--config-file,  -c FILE_PATH  Ruleset file path.
 	--fix,                        Fix HTML.
-	--format,       -f FORMAT     Output format. Support "JSON", "Simple" and "Standard". Default "Standard".
+	--format,       -f FORMAT     Output format. Support "JSON", "Simple" and "Standard". Default: "Standard".
 	--no-color,                   Output no color.
 	--problem-only, -p            Output only problems, without passeds.
 
