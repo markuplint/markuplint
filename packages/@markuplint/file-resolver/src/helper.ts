@@ -1,10 +1,12 @@
 import { Config, ConfigSet, loadConfigFile } from './';
-import cosmiconfig from 'cosmiconfig';
+import { LoaderSync, cosmiconfig } from 'cosmiconfig';
 import path from 'path';
 
 const explorer = cosmiconfig('markuplint');
 
-export async function search<T = cosmiconfig.Config>(dir: string, cacheClear: boolean) {
+type CosmiConfig = ReturnType<LoaderSync>;
+
+export async function search<T = CosmiConfig>(dir: string, cacheClear: boolean) {
 	if (!cacheClear) {
 		explorer.clearCaches();
 	}
@@ -19,7 +21,7 @@ export async function search<T = cosmiconfig.Config>(dir: string, cacheClear: bo
 	};
 }
 
-export async function load<T = cosmiconfig.Config>(filePath: string, cacheClear: boolean) {
+export async function load<T = CosmiConfig>(filePath: string, cacheClear: boolean) {
 	if (!cacheClear) {
 		explorer.clearCaches();
 	}

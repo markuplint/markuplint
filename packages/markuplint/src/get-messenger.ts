@@ -5,7 +5,6 @@ let cachedLocale: string | null = null;
 
 async function getLocale() {
 	if (!cachedLocale) {
-		// eslint-disable-next-line require-atomic-updates
 		cachedLocale = await osLocale({ spawn: true });
 	}
 	return cachedLocale;
