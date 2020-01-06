@@ -51,8 +51,8 @@ export async function getAria() {
 			(name): ARIAAttribute => {
 				const $section = $(`#${name}`);
 				const className = $section.attr('class');
-				const type = /property/i.test(className) ? 'property' : 'state';
-				const deprecated = /deprecated/i.test(className) || undefined;
+				const type = className && /property/i.test(className) ? 'property' : 'state';
+				const deprecated = (className && /deprecated/i.test(className)) || undefined;
 				const $value = $section.find(`table.${type}-features .${type}-value`);
 				const value = $value.text().trim() as ARIAAttributeValue;
 				const $defaultValue = $section.find('table.value-descriptions .value-name .default');
