@@ -1,10 +1,6 @@
 // @ts-ignore
 import { CssSelectorParser } from 'css-selector-parser';
 
-const selectorParser = new CssSelectorParser();
-selectorParser.registerSelectorPseudos('not');
-selectorParser.registerAttrEqualityMods('~', '^', '$', '*', '|');
-
 type CssSelectorParserResult = CssSelectorParserResultRuleset | CssSelectorParserResultSelectors;
 
 interface CssSelectorParserResultSelectors {
@@ -62,6 +58,10 @@ class Selector {
 	private _ruleset: CssSelectorParserResult;
 
 	constructor(selector: string) {
+		const selectorParser = new CssSelectorParser();
+		selectorParser.registerSelectorPseudos('not');
+		selectorParser.registerAttrEqualityMods('~', '^', '$', '*', '|');
+
 		this._rawSelector = selector;
 		this._ruleset = selectorParser.parse(selector);
 	}
