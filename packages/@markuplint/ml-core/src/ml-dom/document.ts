@@ -1,8 +1,8 @@
 import { AnonymousNode, NodeType } from './types';
 import { MLASTDocument, MLASTNode, MLASTNodeType } from '@markuplint/ml-ast';
 import { MLDOMComment, MLDOMDoctype, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
+import { NodeStore, createNode } from './helper';
 import { Walker, syncWalk } from './helper/walkers';
-import { createNode, getNode } from './helper';
 import { MLRule } from '../';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import Ruleset from '../ruleset';
@@ -28,6 +28,11 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 
 	/**
 	 *
+	 */
+	public readonly nodeStore = new NodeStore();
+
+	/**
+	 *
 	 * @param ast node list of markuplint AST
 	 * @param ruleset ruleset object
 	 */
@@ -36,7 +41,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		this.nodeList = Object.freeze(
 			ast.nodeList.map(astNode => {
 				if (astNode.type === MLASTNodeType.EndTag) {
-					return getNode(astNode);
+					return this.nodeStore.getNode(astNode);
 				}
 				return createNode<MLASTNode, T, O>(astNode, this);
 			}),

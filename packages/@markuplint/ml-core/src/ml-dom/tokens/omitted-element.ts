@@ -5,7 +5,6 @@ import MLDOMElement from './element';
 import MLDOMNode from './node';
 import MLDOMText from './text';
 import { RuleConfigValue } from '@markuplint/ml-config';
-import { getNode } from '../helper';
 
 export default class MLDOMOmittedElement<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTOmittedElement>
@@ -25,7 +24,7 @@ export default class MLDOMOmittedElement<T extends RuleConfigValue, O = null>
 
 	public get childNodes(): AnonymousNode<T, O>[] {
 		const astChildren = this._astToken.childNodes || [];
-		return astChildren.map(node => getNode<typeof node, T, O>(node));
+		return astChildren.map(node => this.nodeStore.getNode<typeof node, T, O>(node));
 	}
 
 	public getChildElementsAndTextNodeWithoutWhitespaces() {

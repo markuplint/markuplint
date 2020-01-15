@@ -1,7 +1,7 @@
 import { AnonymousNode, Document } from '../';
 import { MLASTElement, MLToken } from '@markuplint/ml-ast';
 import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode, MLDOMOmittedElement, MLDOMText, MLDOMToken } from './';
-import { createNode, createSelector, getNode } from '../helper';
+import { createNode, createSelector } from '../helper';
 import { ContentModel } from '@markuplint/ml-spec';
 import { IMLDOMElement } from '../types';
 import { RuleConfigValue } from '@markuplint/ml-config';
@@ -42,7 +42,7 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 
 	public get childNodes(): AnonymousNode<T, O>[] {
 		const astChildren = this._astToken.childNodes || [];
-		return astChildren.map(node => getNode<typeof node, T, O>(node));
+		return astChildren.map(node => this.nodeStore.getNode<typeof node, T, O>(node));
 	}
 
 	public querySelectorAll(selector: string) {

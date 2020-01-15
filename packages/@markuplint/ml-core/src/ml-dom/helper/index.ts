@@ -1,4 +1,4 @@
 export { createNode } from './create-node';
-export { getNode, setNode } from './dom-traverser';
+export { default as NodeStore } from './node-store';
 export { MappedNode } from './mapped-nodes';
 export { createSelector } from './selector';
