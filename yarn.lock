@@ -4624,6 +4624,13 @@ hast@0.0.2:
     trim "0.0.1"
     unified "^2.1.0"
 
+heapdump@^0.3.15:
+  version "0.3.15"
+  resolved "https://registry.yarnpkg.com/heapdump/-/heapdump-0.3.15.tgz#631a8a2585588ea64778d8ec80a64c6c025f6a08"
+  integrity sha512-n8aSFscI9r3gfhOcAECAtXFaQ1uy4QSke6bnaL+iymYZ/dWs9cqDqHM+rALfsHUwukUbxsdlECZ0pKmJdQ/4OA==
+  dependencies:
+    nan "^2.13.2"
+
 highlight.js@^9.17.1:
   version "9.17.1"
   resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-9.17.1.tgz#14a4eded23fd314b05886758bb906e39dd627f9a"
@@ -6635,7 +6642,7 @@ mz@^2.5.0, mz@^2.7.0:
     object-assign "^4.0.1"
     thenify-all "^1.0.0"
 
-nan@^2.12.1:
+nan@^2.12.1, nan@^2.13.2:
   version "2.14.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
   integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==

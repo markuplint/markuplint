@@ -1,0 +1,22 @@
+{
+	"rules": {
+		"attr-duplication": true,
+		"character-reference": true,
+		"deprecated-element": true,
+		"doctype": true,
+		"id-duplication": true,
+		"parse-error": true,
+		"permitted-contents": true,
+		"required-attr": true,
+		"required-h1": true,
+		"class-naming": "/./i",
+		"attr-equal-space-after": true,
+		"attr-equal-space-before": true,
+		"attr-spasing": true,
+		"attr-value-quotes": true,
+		"case-sensitive-attr-name": true,
+		"case-sensitive-tag-name": true,
+		"indentation": "tab",
+		"async-attr-in-script": false
+	}
+}
