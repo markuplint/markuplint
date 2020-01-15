@@ -6,6 +6,8 @@ import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
 type TagRule = PermittedStructuresSchema;
 
+const expMapOnNodeId: Map<string, RegExp> = new Map();
+
 export default createRule<boolean, TagRule[]>({
 	name: 'permitted-contents',
 	defaultValue: true,
@@ -120,6 +122,8 @@ export default createRule<boolean, TagRule[]>({
 				}
 			}
 		});
+
+		expMapOnNodeId.clear();
 		return reports;
 	},
 });
@@ -135,8 +139,6 @@ type El = {
 	nodeName: string;
 	parentNode: El | null;
 };
-
-const expMapOnNodeId: Map<string, RegExp> = new Map();
 
 function getRegExpFromNode(node: El, expGen: ExpGenerator) {
 	// console.log({ n: node.nodeName });
