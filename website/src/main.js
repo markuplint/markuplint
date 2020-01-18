@@ -1,7 +1,6 @@
 /* global monaco */
 
 import * as HTMLParser from '@markuplint/html-parser';
-import * as HTMLSpecs from '@markuplint/html-ls';
 import { MLCore } from '@markuplint/ml-core';
 import { Messenger } from '@markuplint/i18n';
 import rules from '@markuplint/rules';
@@ -56,9 +55,9 @@ const lint = async newCode => {
 	const reqConf = await fetch('./resources/markuplintrc.json');
 	const ruleset = await reqConf.json();
 	const messenger = await Messenger.create(null);
-	// console.log({ HTMLParser, newCode, HTMLSpecs, ruleset, rules, messenger });
+	// console.log({ HTMLParser, newCode, ruleset, rules, messenger });
 	ruleset.childNodeRules = [];
-	const linter = new MLCore(HTMLParser, newCode, HTMLSpecs, ruleset, rules, messenger);
+	const linter = new MLCore(HTMLParser, newCode, ruleset, rules, messenger);
 	const reports = await linter.verify();
 	const diagnotics = [];
 	for (const report of reports) {
