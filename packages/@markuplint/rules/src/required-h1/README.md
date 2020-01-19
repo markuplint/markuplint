@@ -2,7 +2,7 @@
 title: required-h1
 ---
 
-# level-one heading in document required (`required-attr`)
+# level-one heading in document required (`required-h1`)
 
 Warn if there is no h1 element in the document.
 
