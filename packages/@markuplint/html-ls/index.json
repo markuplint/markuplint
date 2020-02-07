@@ -6293,8 +6293,8 @@
 				{
 					"name": "scoped",
 					"type": "string",
-					"description": "This attribute specifies that the styles only apply to the elements of its parent(s) and children.",
-					"obsolete": true,
+					"description": "This attribute specifies that the styles only apply to the elements of its parent(s) and children. This attribute may be re-introduced in the future per https://github.com/w3c/csswg-drafts/issues/3547. If you want to use the attribute now, you can use a polyfill.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				{
