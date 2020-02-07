@@ -4349,7 +4349,7 @@
 		{
 			"name": "isindex",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/isindex",
-			"description": "<isindex> is an obsolete HTML element that puts a text field in a page for querying the document. <isindex> was providing a single line text input for entering a query string. When sent, the server would return a list of pages matching the query. Its supports depended on both the browser and the server to react to the query.",
+			"description": "<isindex> was an obsolete HTML element that puts a text field in a page for querying the document. <isindex> was providing a single line text input for entering a query string. When sent, the server would return a list of pages matching the query. Its supports depended on both the browser and the server to react to the query.",
 			"obsolete": true,
 			"categories": [],
 			"permittedStructures": {
@@ -4368,12 +4368,12 @@
 				{
 					"name": "action",
 					"type": "string",
-					"description": "This attribute can be used to send the query to a different URL. Action is not defined by W3C."
+					"description": "This attribute determined the server URL to which the query was sent."
 				},
 				{
 					"name": "prompt",
 					"type": "string",
-					"description": "This attribute adds its value as a prompt for text field.This attribute can be used to send the query to a different URL. Action is not defined by W3C."
+					"description": "This attribute added its value as a prompt for text field.This attribute determined the server URL to which the query was sent."
 				}
 			]
 		},
