@@ -52,19 +52,21 @@
 
 ルールを設定したい対象の要素を配列で指定します。次の例はカスタム要素の `x-container` と `x-item` それぞれにルールを指定していることになります。
 
-```json
+```json:title=.markuplintrc
 {
-	"required-attr": {
-		"option": [
-			{
-				"tag": "x-container",
-				"contents": []
-			},
-			{
-				"tag": "x-item",
-				"contents": []
-			}
-		]
+	"rules": {
+		"permitted-contents": {
+			"option": [
+				{
+					"tag": "x-container",
+					"contents": []
+				},
+				{
+					"tag": "x-item",
+					"contents": []
+				}
+			]
+		}
 	}
 }
 ```
@@ -84,25 +86,27 @@
 
 そのうち`require`、`optional`、`oneOrMore`、`zeroOrMore`は要素の個数を意味します。そのキーワードをキーとしてタグ名（もしくはテキストノードの場合 `#text` ）を指定します。それぞれのキーワードを同時に指定することはできません。
 
-```json
+```json:title=.markuplintrc
 {
-	"required-attr": {
-		"option": [
-			{
-				"tag": "x-container",
-				"contents": [
-					{ "require": "x-item" },
-					{ "optional": "y-item" },
-					{ "oneOrMore": "z-item" },
-					{ "zeroOrMore": "#text" },
-					// ❌ キーワードの同時の指定はできない
-					{
-						"require": "x-item",
-						"optional": "y-item"
-					}
-				]
-			}
-		]
+	"rules": {
+		"permitted-contents": {
+			"option": [
+				{
+					"tag": "x-container",
+					"contents": [
+						{ "require": "x-item" },
+						{ "optional": "y-item" },
+						{ "oneOrMore": "z-item" },
+						{ "zeroOrMore": "#text" },
+						// ❌ キーワードの同時の指定はできない
+						{
+							"require": "x-item",
+							"optional": "y-item"
+						}
+					]
+				}
+			]
+		}
 	}
 }
 ```
@@ -132,22 +136,24 @@
 | `choice`     | いずれか 1 つ |
 | `interleave` | 順不同        |
 
-```json
+```json:title=.markuplintrc
 {
-	"required-attr": {
-		"option": [
-			{
-				"tag": "x-container",
-				"contents": [
-					{
-						"choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
-					},
-					{
-						"interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
-					}
-				]
-			}
-		]
+	"rules": {
+		"permitted-contents": {
+			"option": [
+				{
+					"tag": "x-container",
+					"contents": [
+						{
+							"choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
+						},
+						{
+							"interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
+						}
+					]
+				}
+			]
+		}
 	}
 }
 ```

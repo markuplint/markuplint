@@ -56,19 +56,21 @@ It is possible to make the structure robust by setting element relationships on 
 
 Specify the target element for which you want to set a rule as an array. In the following example, rules are specified for each of the custom elements `x-container` and `x-item`.
 
-```json
+```json:title=.markuplintrc
 {
-	"required-attr": {
-		"option": [
-			{
-				"tag": "x-container",
-				"contents": []
-			},
-			{
-				"tag": "x-item",
-				"contents": []
-			}
-		]
+	"rules": {
+		"permitted-contents": {
+			"option": [
+				{
+					"tag": "x-container",
+					"contents": []
+				},
+				{
+					"tag": "x-item",
+					"contents": []
+				}
+			]
+		}
 	}
 }
 ```
@@ -88,25 +90,27 @@ It is defined using one of the six keywords `require`, `optional`, `oneOrMore`, 
 
 Of these, `require`, `optional`, `oneOrMore` and `zeroOrMore` mean the number of elements. Specify the tag name (or `# text` for text nodes) using the keyword as a key. Each keyword cannot be simultaneously specified.
 
-```json
+```json:title=.markuplintrc
 {
-	"required-attr": {
-		"option": [
-			{
-				"tag": "x-container",
-				"contents": [
-					{ "require": "x-item" },
-					{ "optional": "y-item" },
-					{ "oneOrMore": "z-item" },
-					{ "zeroOrMore": "#text" },
-					// ❌ Keyword cannot be simultaneously specified.
-					{
-						"require": "x-item",
-						"optional": "y-item"
-					}
-				]
-			}
-		]
+	"rules": {
+		"permitted-contents": {
+			"option": [
+				{
+					"tag": "x-container",
+					"contents": [
+						{ "require": "x-item" },
+						{ "optional": "y-item" },
+						{ "oneOrMore": "z-item" },
+						{ "zeroOrMore": "#text" },
+						// ❌ キーワードの同時の指定はできない
+						{
+							"require": "x-item",
+							"optional": "y-item"
+						}
+					]
+				}
+			]
+		}
 	}
 }
 ```
@@ -136,22 +140,24 @@ The two keywords `choice` and`interleave` have the following meanings for the sp
 | `choice`     | Any one              |
 | `interleave` | Not matter the order |
 
-```json
+```json:title=.markuplintrc
 {
-	"required-attr": {
-		"option": [
-			{
-				"tag": "x-container",
-				"contents": [
-					{
-						"choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
-					},
-					{
-						"interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
-					}
-				]
-			}
-		]
+	"rules": {
+		"permitted-contents": {
+			"option": [
+				{
+					"tag": "x-container",
+					"contents": [
+						{
+							"choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
+						},
+						{
+							"interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
+						}
+					]
+				}
+			]
+		}
 	}
 }
 ```

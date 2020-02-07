@@ -22,6 +22,22 @@
 
 ### 設定値
 
+```json:title=.markuplintrc
+{
+	"rules": {
+		"required-attr": "alt"
+	}
+}
+```
+
+```json:title=.markuplintrc
+{
+	"rules": {
+		"required-attr": ["alt", "src"]
+	}
+}
+```
+
 型: `string | string[]`
 
 | 設定値     | デフォルト | 解説                                                             |
@@ -34,7 +50,7 @@
 
 以下は `<img>` 要素上で `alt` 属性を必須とする設定例です。
 
-```json
+```json:title=.markuplintrc
 {
 	"rules": {
 		"required-attr": true

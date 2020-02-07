@@ -43,6 +43,27 @@ This rule is based on [Techniques H42](https://www.w3.org/WAI/WCAG21/Techniques/
 
 ### Setting value
 
+```json:title=.markuplintrc
+{
+	"rules": {
+		"required-h1": true
+	}
+}
+```
+
+```json:title=.markuplintrc
+{
+	"rules": {
+		"required-h1": {
+			"option": {
+				"expected-once": true,
+				"in-document-fragment": true
+			}
+		}
+	}
+}
+```
+
 -   Type: `boolean`
 -   Optional
 -   Default value: `true`

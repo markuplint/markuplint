@@ -26,6 +26,22 @@ Warns if specified attributes are not appeared on an element.
 
 ### Setting value
 
+```json:title=.markuplintrc
+{
+	"rules": {
+		"required-attr": "alt"
+	}
+}
+```
+
+```json:title=.markuplintrc
+{
+	"rules": {
+		"required-attr": ["alt", "src"]
+	}
+}
+```
+
 Type: `string | string[]`
 
 | value              | default | description                                                                         |
@@ -38,7 +54,7 @@ Since we ordinary want to configure required attributes for each element type, `
 
 Example configuration that `alt` attribute must be required on `<img>` element:
 
-```json
+```json:title=.markuplintrc
 {
 	"rules": {
 		"required-attr": true

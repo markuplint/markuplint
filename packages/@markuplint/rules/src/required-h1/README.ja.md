@@ -39,6 +39,27 @@
 
 ### 設定値
 
+```json:title=.markuplintrc
+{
+	"rules": {
+		"required-h1": true
+	}
+}
+```
+
+```json:title=.markuplintrc
+{
+	"rules": {
+		"required-h1": {
+			"option": {
+				"expected-once": true,
+				"in-document-fragment": true
+			}
+		}
+	}
+}
+```
+
 -   型: `boolean`
 -   省略可
 -   初期値: `true`
