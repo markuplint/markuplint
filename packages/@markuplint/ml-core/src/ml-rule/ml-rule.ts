@@ -4,38 +4,34 @@ import { MLRuleOptions } from './types';
 import { Messenger } from '@markuplint/i18n';
 
 export class MLRule<T extends RuleConfigValue, O = null> {
-	public static create<T extends RuleConfigValue, O = null>(options: MLRuleOptions<T, O>) {
+	static create<T extends RuleConfigValue, O = null>(options: MLRuleOptions<T, O>) {
 		return new MLRule<T, O>(options);
 	}
 
-	public readonly name: string;
-	public readonly defaultServerity: Severity;
-	public readonly defaultValue: T;
-	public readonly defaultOptions: O;
+	readonly name: string;
+	readonly defaultServerity: Severity;
+	readonly defaultValue: T;
+	readonly defaultOptions: O;
 
-	private _v: MLRuleOptions<T, O>['verify'];
-	private _f: MLRuleOptions<T, O>['fix'];
+	#v: MLRuleOptions<T, O>['verify'];
+	#f: MLRuleOptions<T, O>['fix'];
 
 	private constructor(o: MLRuleOptions<T, O>) {
 		this.name = o.name;
 		this.defaultServerity = o.defaultLevel || 'error';
 		this.defaultValue = o.defaultValue;
 		this.defaultOptions = o.defaultOptions;
-		this._v = o.verify;
-		this._f = o.fix;
+		this.#v = o.verify;
+		this.#f = o.fix;
 	}
 
-	public async verify(
-		document: Document<T, O>,
-		messenger: Messenger,
-		rule: RuleInfo<T, O>,
-	): Promise<VerifiedResult[]> {
-		if (!this._v) {
+	async verify(document: Document<T, O>, messenger: Messenger, rule: RuleInfo<T, O>): Promise<VerifiedResult[]> {
+		if (!this.#v) {
 			return [];
 		}
 
 		document.setRule(this);
-		const results = await this._v(document, messenger.message(), rule);
+		const results = await this.#v(document, messenger.message(), rule);
 		document.setRule(null);
 
 		return results.map<VerifiedResult>(result => {
@@ -50,17 +46,17 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		});
 	}
 
-	public async fix(document: Document<T, O>, rule: RuleInfo<T, O>): Promise<void> {
-		if (!this._f) {
+	async fix(document: Document<T, O>, rule: RuleInfo<T, O>): Promise<void> {
+		if (!this.#f) {
 			return;
 		}
 
 		document.setRule(this);
-		await this._f(document, rule);
+		await this.#f(document, rule);
 		document.setRule(null);
 	}
 
-	public optimizeOption(configSettings: T | RuleConfig<T, O>): RuleInfo<T, O> {
+	optimizeOption(configSettings: T | RuleConfig<T, O>): RuleInfo<T, O> {
 		if (typeof configSettings === 'boolean') {
 			return {
 				disabled: !configSettings,

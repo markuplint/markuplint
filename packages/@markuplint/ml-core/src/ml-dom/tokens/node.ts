@@ -14,44 +14,44 @@ export default abstract class MLDOMNode<
 	O = null,
 	A extends MLASTAbstructNode = MLASTAbstructNode
 > extends MLDOMToken<A> implements IMLDOMNode {
-	public readonly type: NodeType = 'Node';
+	readonly type: NodeType = 'Node';
 
 	protected _astToken: A;
 
-	private _doc: Document<T, O>;
+	#doc: Document<T, O>;
 
 	/**
 	 * prevToken cache props
 	 */
-	private _prevToken: AnonymousNode<T, O> | null | undefined;
+	#prevToken: AnonymousNode<T, O> | null | undefined;
 
 	/**
 	 * indentation cache props
 	 */
-	private _indentaion: MLDOMIndentation<T, O> | null | undefined;
+	#indentaion: MLDOMIndentation<T, O> | null | undefined;
 
 	constructor(astNode: A, document: Document<T, O>) {
 		super(astNode);
 		this._astToken = astNode;
-		this._doc = document;
-		this._doc.nodeStore.setNode(astNode, this);
+		this.#doc = document;
+		this.#doc.nodeStore.setNode(astNode, this);
 	}
 
-	public get parentNode(): MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null {
+	get parentNode(): MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null {
 		return this._astToken.parentNode
-			? this._doc.nodeStore.getNode<MLASTParentNode, T, O>(this._astToken.parentNode)
+			? this.#doc.nodeStore.getNode<MLASTParentNode, T, O>(this._astToken.parentNode)
 			: null;
 	}
 
-	public get prevNode(): AnonymousNode<T, O> | null {
-		return this._astToken.prevNode ? this._doc.nodeStore.getNode<MLASTNode, T, O>(this._astToken.prevNode) : null;
+	get prevNode(): AnonymousNode<T, O> | null {
+		return this._astToken.prevNode ? this.#doc.nodeStore.getNode<MLASTNode, T, O>(this._astToken.prevNode) : null;
 	}
 
-	public get nextNode(): AnonymousNode<T, O> | null {
-		return this._astToken.nextNode ? this._doc.nodeStore.getNode<MLASTNode, T, O>(this._astToken.nextNode) : null;
+	get nextNode(): AnonymousNode<T, O> | null {
+		return this._astToken.nextNode ? this.#doc.nodeStore.getNode<MLASTNode, T, O>(this._astToken.nextNode) : null;
 	}
 
-	public get syntaxicalParentNode(): MLDOMElement<T, O> | null {
+	get syntaxicalParentNode(): MLDOMElement<T, O> | null {
 		let parentNode: MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null = this.parentNode;
 		while (parentNode && parentNode.type === 'OmittedElement') {
 			parentNode = parentNode.parentNode;
@@ -59,14 +59,14 @@ export default abstract class MLDOMNode<
 		return parentNode;
 	}
 
-	public get prevToken(): AnonymousNode<T, O> | null {
-		if (this._prevToken !== undefined) {
-			return this._prevToken;
+	get prevToken(): AnonymousNode<T, O> | null {
+		if (this.#prevToken !== undefined) {
+			return this.#prevToken;
 		}
 
 		let index = -1;
-		for (let i = 0; i < this._doc.nodeList.length; i++) {
-			const node = this._doc.nodeList[i];
+		for (let i = 0; i < this.#doc.nodeList.length; i++) {
+			const node = this.#doc.nodeList[i];
 			if (!node) {
 				continue;
 			}
@@ -79,28 +79,28 @@ export default abstract class MLDOMNode<
 			}
 		}
 		if (index === -1) {
-			this._prevToken = null;
-			return this._prevToken;
+			this.#prevToken = null;
+			return this.#prevToken;
 		}
-		this._prevToken = this._doc.nodeList[index - 1] || null;
-		return this._prevToken;
+		this.#prevToken = this.#doc.nodeList[index - 1] || null;
+		return this.#prevToken;
 	}
 
-	public get nodeStore() {
-		return this._doc.nodeStore;
+	get nodeStore() {
+		return this.#doc.nodeStore;
 	}
 
-	public toString() {
+	toString() {
 		return this.raw;
 	}
 
-	public is(type: NodeType) {
+	is(type: NodeType) {
 		return this.type === type;
 	}
 
-	public get indentation(): MLDOMIndentation<T, O> | null {
-		if (this._indentaion !== undefined) {
-			return this._indentaion;
+	get indentation(): MLDOMIndentation<T, O> | null {
+		if (this.#indentaion !== undefined) {
+			return this.#indentaion;
 		}
 
 		const prevToken = this.prevToken;
@@ -121,20 +121,20 @@ export default abstract class MLDOMNode<
 			// Spaces will include empty string.
 			const spaces = matched[1];
 			if (spaces != null) {
-				this._indentaion = new MLDOMIndentation(prevToken, spaces, this.startLine);
-				return this._indentaion;
+				this.#indentaion = new MLDOMIndentation(prevToken, spaces, this.startLine);
+				return this.#indentaion;
 			}
 		}
 
-		this._indentaion = null;
-		return this._indentaion;
+		this.#indentaion = null;
+		return this.#indentaion;
 	}
 
-	public get rule(): RuleInfo<T, O> {
-		if (!this._doc.currentRule) {
+	get rule(): RuleInfo<T, O> {
+		if (!this.#doc.currentRule) {
 			throw new Error('Invalid call.');
 		}
-		const name = this._doc.currentRule.name;
+		const name = this.#doc.currentRule.name;
 
 		// @ts-ignore
 		const ruleConfig: RuleConfig<T, O> | T = this.rules[name];
@@ -142,7 +142,7 @@ export default abstract class MLDOMNode<
 		if (ruleConfig == null) {
 			throw new Error('Invalid call "rule" property.');
 		}
-		return this._doc.currentRule.optimizeOption(ruleConfig);
+		return this.#doc.currentRule.optimizeOption(ruleConfig);
 	}
 
 	private _isFirstToken() {

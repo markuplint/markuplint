@@ -15,23 +15,23 @@ const rawTextElements = ['script', 'style'];
 
 export default class MLDOMText<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTText>
 	implements IMLDOMText {
-	public readonly type = 'Text';
-	public readonly isRawText: boolean;
-	public readonly ownModels: Set<ContentModel> = new Set();
+	readonly type = 'Text';
+	readonly isRawText: boolean;
+	readonly ownModels: Set<ContentModel> = new Set();
 
 	constructor(astNode: MLASTText, document: Document<T, O>) {
 		super(astNode, document);
 		this.isRawText = this.parentNode ? rawTextElements.includes(this.parentNode.nodeName.toLowerCase()) : false;
 	}
 
-	public isWhitespace() {
+	isWhitespace() {
 		return /^\s+$/.test(this.raw);
 	}
 
 	/**
 	 * @override
 	 */
-	public get indentation(): MLDOMIndentation<T, O> | null {
+	get indentation(): MLDOMIndentation<T, O> | null {
 		if (this.isRawText) {
 			return null;
 		}

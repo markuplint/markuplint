@@ -8,30 +8,30 @@ import { RuleConfigValue } from '@markuplint/ml-config';
 export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTElementCloseTag>
 	implements IMLDOMElementCloseTag {
-	public readonly type = 'ElementCloseTag';
-	public readonly nodeName: string;
-	public readonly startTag: MLDOMElement<T, O>;
-	public readonly isForeignElement: boolean;
+	readonly type = 'ElementCloseTag';
+	readonly nodeName: string;
+	readonly startTag: MLDOMElement<T, O>;
+	readonly isForeignElement: boolean;
 
-	private _fixedNodeName: string;
+	#fixedNodeName: string;
 
 	constructor(astNode: MLASTElementCloseTag, document: Document<T, O>, startTag: MLDOMElement<T, O>) {
 		super(astNode, document);
 		this.nodeName = astNode.nodeName;
-		this._fixedNodeName = astNode.nodeName;
+		this.#fixedNodeName = astNode.nodeName;
 		this.startTag = startTag;
 		this.isForeignElement = startTag.isForeignElement;
 	}
 
-	public get raw() {
-		return `</${this._fixedNodeName}>`;
+	get raw() {
+		return `</${this.#fixedNodeName}>`;
 	}
 
-	public get rule() {
+	get rule() {
 		return this.startTag.rule;
 	}
 
-	public fixNodeName(name: string) {
-		this._fixedNodeName = name;
+	fixNodeName(name: string) {
+		this.#fixedNodeName = name;
 	}
 }

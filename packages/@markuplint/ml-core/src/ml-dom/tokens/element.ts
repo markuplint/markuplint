@@ -9,24 +9,24 @@ import { syncWalk } from '../helper/walkers';
 
 export default class MLDOMElement<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTElement>
 	implements IMLDOMElement {
-	public readonly type = 'Element';
-	public readonly nodeName: string;
-	public readonly attributes: MLDOMAttribute[];
-	public readonly namespaceURI: string;
-	public readonly isForeignElement: boolean;
-	public readonly closeTag: MLDOMElementCloseTag<T, O> | null;
-	public readonly selfClosingSolidus: MLDOMToken<MLToken>;
-	public readonly endSpace: MLDOMToken<MLToken>;
-	public readonly ownModels: Set<ContentModel> = new Set();
-	public readonly childModels: Set<ContentModel> = new Set();
-	public readonly descendantModels: Set<ContentModel> = new Set();
+	readonly type = 'Element';
+	readonly nodeName: string;
+	readonly attributes: MLDOMAttribute[];
+	readonly namespaceURI: string;
+	readonly isForeignElement: boolean;
+	readonly closeTag: MLDOMElementCloseTag<T, O> | null;
+	readonly selfClosingSolidus: MLDOMToken<MLToken>;
+	readonly endSpace: MLDOMToken<MLToken>;
+	readonly ownModels: Set<ContentModel> = new Set();
+	readonly childModels: Set<ContentModel> = new Set();
+	readonly descendantModels: Set<ContentModel> = new Set();
 
-	private _fixedNodeName: string;
+	#fixedNodeName: string;
 
 	constructor(astNode: MLASTElement, document: Document<T, O>) {
 		super(astNode, document);
 		this.nodeName = astNode.nodeName;
-		this._fixedNodeName = astNode.nodeName;
+		this.#fixedNodeName = astNode.nodeName;
 		this.attributes = astNode.attributes.map(attr => new MLDOMAttribute(attr));
 		this.selfClosingSolidus = new MLDOMToken(astNode.selfClosingSolidus);
 		this.endSpace = new MLDOMToken(astNode.endSpace);
@@ -35,17 +35,17 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		this.closeTag = astNode.pearNode ? createNode(astNode.pearNode, document, this) : null;
 	}
 
-	public get raw() {
+	get raw() {
 		const attrs = this.attributes.map(attr => attr.raw).join('');
-		return `<${this._fixedNodeName}${attrs}${this.selfClosingSolidus.raw}${this.endSpace.raw}>`;
+		return `<${this.#fixedNodeName}${attrs}${this.selfClosingSolidus.raw}${this.endSpace.raw}>`;
 	}
 
-	public get childNodes(): AnonymousNode<T, O>[] {
+	get childNodes(): AnonymousNode<T, O>[] {
 		const astChildren = this._astToken.childNodes || [];
 		return astChildren.map(node => this.nodeStore.getNode<typeof node, T, O>(node));
 	}
 
-	public querySelectorAll(selector: string) {
+	querySelectorAll(selector: string) {
 		const matchedNodes: (MLDOMElement<T, O> | MLDOMText<T, O>)[] = [];
 		syncWalk(this.childNodes, node => {
 			if (node.type === 'Element' && node.matches(selector)) {
@@ -58,7 +58,7 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		return matchedNodes;
 	}
 
-	public closest(selector: string) {
+	closest(selector: string) {
 		let el: MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null = this;
 
 		do {
@@ -70,7 +70,7 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		return null;
 	}
 
-	public getAttributeToken(attrName: string) {
+	getAttributeToken(attrName: string) {
 		for (const attr of this.attributes) {
 			if (attr.name.raw.toLowerCase() === attrName.toLowerCase()) {
 				return attr;
@@ -78,7 +78,7 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		}
 	}
 
-	public getAttribute(attrName: string) {
+	getAttribute(attrName: string) {
 		for (const attr of this.attributes) {
 			if (attr.name.raw.toLowerCase() === attrName.toLowerCase()) {
 				return attr.value ? attr.value.raw : null;
@@ -87,19 +87,19 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		return null;
 	}
 
-	public hasAttribute(attrName: string) {
+	hasAttribute(attrName: string) {
 		return !!this.getAttributeToken(attrName);
 	}
 
-	public matches(selector: string): boolean {
+	matches(selector: string): boolean {
 		return createSelector(selector).match(this);
 	}
 
-	public fixNodeName(name: string) {
-		this._fixedNodeName = name;
+	fixNodeName(name: string) {
+		this.#fixedNodeName = name;
 	}
 
-	public getChildElementsAndTextNodeWithoutWhitespaces() {
+	getChildElementsAndTextNodeWithoutWhitespaces() {
 		const filteredNodes: (MLDOMElement<T, O> | MLDOMText<T, O>)[] = [];
 		this.childNodes.forEach(node => {
 			if (node.type === 'Element') {
@@ -116,7 +116,7 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		return filteredNodes;
 	}
 
-	public isDescendantByUUIDList(uuidList: string[]) {
+	isDescendantByUUIDList(uuidList: string[]) {
 		let el: MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null = this.parentNode;
 
 		if (el === null) {
@@ -132,7 +132,7 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		return false;
 	}
 
-	public get classList() {
+	get classList() {
 		const classAttr = this.getAttributeToken('class');
 		if (classAttr && classAttr.value) {
 			return classAttr.value.raw
@@ -143,7 +143,7 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		return [];
 	}
 
-	public get id() {
+	get id() {
 		const idAttr = this.getAttributeToken('id');
 		if (idAttr && idAttr.value) {
 			return idAttr.value.raw;

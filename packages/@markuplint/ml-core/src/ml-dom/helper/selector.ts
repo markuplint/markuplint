@@ -54,20 +54,20 @@ interface ElementLikeObject {
 }
 
 class Selector {
-	private _rawSelector: string;
-	private _ruleset: CssSelectorParserResult;
+	#rawSelector: string;
+	#ruleset: CssSelectorParserResult;
 
 	constructor(selector: string) {
 		const selectorParser = new CssSelectorParser();
 		selectorParser.registerSelectorPseudos('not');
 		selectorParser.registerAttrEqualityMods('~', '^', '$', '*', '|');
 
-		this._rawSelector = selector;
-		this._ruleset = selectorParser.parse(selector);
+		this.#rawSelector = selector;
+		this.#ruleset = selectorParser.parse(selector);
 	}
 
-	public match(element: ElementLikeObject) {
-		return match(element, this._ruleset, this._rawSelector);
+	match(element: ElementLikeObject) {
+		return match(element, this.#ruleset, this.#rawSelector);
 	}
 }
 

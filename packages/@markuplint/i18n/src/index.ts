@@ -14,7 +14,7 @@ export interface LocalesKeywords {
 export class Messenger {
 	private static _singleton: Messenger | null = null;
 
-	public static async create(localeSet: LocaleSet | null) {
+	static async create(localeSet: LocaleSet | null) {
 		if (!Messenger._singleton) {
 			Messenger._singleton = new Messenger(localeSet);
 		} else {
@@ -23,13 +23,13 @@ export class Messenger {
 		return Messenger._singleton;
 	}
 
-	public localeSet: LocaleSet | null;
+	localeSet: LocaleSet | null;
 
 	private constructor(localeSet: LocaleSet | null) {
 		this.localeSet = localeSet;
 	}
 
-	public message(): Message {
+	message(): Message {
 		const localeSet = this.localeSet;
 		return (messageTmpl: string, ...keywords: Primitive[]) => {
 			let message = messageTmpl;

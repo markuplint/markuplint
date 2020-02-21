@@ -6,13 +6,13 @@ import { Messenger } from '@markuplint/i18n';
 import Ruleset from './ruleset';
 
 export class MLCore {
-	private _parser: MLMarkupLanguageParser;
-	private _sourceCode: string;
-	private _ast: MLASTDocument;
-	private _document: Document<RuleConfigValue, unknown>;
-	private _ruleset: Ruleset;
-	private _messenger: Messenger;
-	private _rules: MLRule<RuleConfigValue, unknown>[];
+	#parser: MLMarkupLanguageParser;
+	#sourceCode: string;
+	#ast: MLASTDocument;
+	#document: Document<RuleConfigValue, unknown>;
+	#ruleset: Ruleset;
+	#messenger: Messenger;
+	#rules: MLRule<RuleConfigValue, unknown>[];
 
 	constructor(
 		parser: MLMarkupLanguageParser,
@@ -21,49 +21,49 @@ export class MLCore {
 		rules: MLRule<RuleConfigValue, unknown>[],
 		messenger: Messenger,
 	) {
-		this._parser = parser;
-		this._sourceCode = sourceCode;
-		this._ruleset = ruleset;
-		this._messenger = messenger;
-		this._ast = this._parser.parse(this._sourceCode);
-		this._document = new Document(this._ast, this._ruleset);
-		this._rules = rules;
+		this.#parser = parser;
+		this.#sourceCode = sourceCode;
+		this.#ruleset = ruleset;
+		this.#messenger = messenger;
+		this.#ast = this.#parser.parse(this.#sourceCode);
+		this.#document = new Document(this.#ast, this.#ruleset);
+		this.#rules = rules;
 	}
 
-	public get document() {
-		return this._document;
+	get document() {
+		return this.#document;
 	}
 
-	public async verify(fix = false) {
+	async verify(fix = false) {
 		const reports: VerifiedResult[] = [];
-		for (const rule of this._rules) {
-			const ruleInfo = rule.optimizeOption(this._ruleset.rules[rule.name] || false);
+		for (const rule of this.#rules) {
+			const ruleInfo = rule.optimizeOption(this.#ruleset.rules[rule.name] || false);
 			if (ruleInfo.disabled) {
 				continue;
 			}
 			if (fix) {
-				await rule.fix(this._document, ruleInfo);
+				await rule.fix(this.#document, ruleInfo);
 			}
-			const results = await rule.verify(this._document, this._messenger, ruleInfo);
+			const results = await rule.verify(this.#document, this.#messenger, ruleInfo);
 			reports.push(...results);
 		}
 		return reports;
 	}
 
-	public setParser(parser: MLMarkupLanguageParser) {
-		this._parser = parser;
-		this._ast = this._parser.parse(this._sourceCode);
-		this._document = new Document(this._ast, this._ruleset);
+	setParser(parser: MLMarkupLanguageParser) {
+		this.#parser = parser;
+		this.#ast = this.#parser.parse(this.#sourceCode);
+		this.#document = new Document(this.#ast, this.#ruleset);
 	}
 
-	public setCode(sourceCode: string) {
-		this._sourceCode = sourceCode;
-		this._ast = this._parser.parse(this._sourceCode);
-		this._document = new Document(this._ast, this._ruleset);
+	setCode(sourceCode: string) {
+		this.#sourceCode = sourceCode;
+		this.#ast = this.#parser.parse(this.#sourceCode);
+		this.#document = new Document(this.#ast, this.#ruleset);
 	}
 
-	public setRuleset(ruleset: Ruleset) {
-		this._ruleset = ruleset;
-		this._document = new Document(this._ast, this._ruleset);
+	setRuleset(ruleset: Ruleset) {
+		this.#ruleset = ruleset;
+		this.#document = new Document(this.#ast, this.#ruleset);
 	}
 }

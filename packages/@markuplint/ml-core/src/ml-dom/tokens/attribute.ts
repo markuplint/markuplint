@@ -2,14 +2,15 @@ import { MLASTAttr, MLToken } from '@markuplint/ml-ast';
 import MLDOMToken from './token';
 
 export default class MLDOMAttribute extends MLDOMToken<MLASTAttr> {
-	public readonly name: MLDOMToken<MLToken>;
-	public readonly spacesBeforeName: MLDOMToken<MLToken>;
-	public readonly spacesBeforeEqual: MLDOMToken<MLToken>;
-	public readonly equal: MLDOMToken<MLToken>;
-	public readonly spacesAfterEqual: MLDOMToken<MLToken>;
-	public readonly startQuote: MLDOMToken<MLToken>;
-	public readonly value: MLDOMToken<MLToken>;
-	public readonly endQuote: MLDOMToken<MLToken>;
+	readonly name: MLDOMToken<MLToken>;
+	readonly spacesBeforeName: MLDOMToken<MLToken>;
+	readonly spacesBeforeEqual: MLDOMToken<MLToken>;
+	readonly equal: MLDOMToken<MLToken>;
+	readonly spacesAfterEqual: MLDOMToken<MLToken>;
+	readonly startQuote: MLDOMToken<MLToken>;
+	readonly value: MLDOMToken<MLToken>;
+	readonly endQuote: MLDOMToken<MLToken>;
+
 	constructor(astToken: MLASTAttr) {
 		super(astToken);
 
@@ -23,7 +24,7 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTAttr> {
 		this.endQuote = new MLDOMToken(this._astToken.endQuote);
 	}
 
-	public get raw() {
+	get raw() {
 		const raw = [this.spacesBeforeName.raw];
 		raw.push(this.name.raw);
 		if (this.equal.raw === '=') {

@@ -14,22 +14,22 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	/**
 	 * An array of markuplint DOM nodes
 	 */
-	public nodeList: ReadonlyArray<AnonymousNode<T, O>>;
+	nodeList: ReadonlyArray<AnonymousNode<T, O>>;
 
 	/**
 	 *
 	 */
-	public currentRule: MLRule<T, O> | null = null;
+	currentRule: MLRule<T, O> | null = null;
 
 	/**
 	 *
 	 */
-	public isFragment: boolean;
+	isFragment: boolean;
 
 	/**
 	 *
 	 */
-	public readonly nodeStore = new NodeStore();
+	readonly nodeStore = new NodeStore();
 
 	/**
 	 *
@@ -114,7 +114,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		}
 	}
 
-	public get doctype() {
+	get doctype() {
 		for (const node of this.nodeList) {
 			if (node instanceof MLDOMDoctype) {
 				return node;
@@ -123,7 +123,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		return null;
 	}
 
-	public get tree() {
+	get tree() {
 		const treeRoots: AnonymousNode<T, O>[] = [];
 		let traversalNode: AnonymousNode<T, O> | null = this.nodeList[0];
 		while (traversalNode) {
@@ -133,17 +133,17 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		return treeRoots;
 	}
 
-	public async walk(walker: Walker<T, O>) {
+	async walk(walker: Walker<T, O>) {
 		for (const node of this.nodeList) {
 			await walker(node);
 		}
 	}
 
-	public async walkOn(type: 'Element', walker: Walker<T, O, MLDOMElement<T, O>>): Promise<void>;
-	public async walkOn(type: 'Text', walker: Walker<T, O, MLDOMText<T, O>>): Promise<void>;
-	public async walkOn(type: 'Comment', walker: Walker<T, O, MLDOMComment<T, O>>): Promise<void>;
-	public async walkOn(type: 'ElementCloseTag', walker: Walker<T, O, MLDOMElementCloseTag<T, O>>): Promise<void>;
-	public async walkOn(type: NodeType, walker: Walker<T, O, any>): Promise<void> {
+	async walkOn(type: 'Element', walker: Walker<T, O, MLDOMElement<T, O>>): Promise<void>;
+	async walkOn(type: 'Text', walker: Walker<T, O, MLDOMText<T, O>>): Promise<void>;
+	async walkOn(type: 'Comment', walker: Walker<T, O, MLDOMComment<T, O>>): Promise<void>;
+	async walkOn(type: 'ElementCloseTag', walker: Walker<T, O, MLDOMElementCloseTag<T, O>>): Promise<void>;
+	async walkOn(type: NodeType, walker: Walker<T, O, any>): Promise<void> {
 		for (const node of this.nodeList) {
 			if (node instanceof MLDOMNode) {
 				if (node.is(type)) {
@@ -153,17 +153,17 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		}
 	}
 
-	public setRule(rule: MLRule<T, O> | null) {
+	setRule(rule: MLRule<T, O> | null) {
 		this.currentRule = rule;
 	}
 
-	public matchNodes(query: string): MLDOMElement<T, O>[] {
+	matchNodes(query: string): MLDOMElement<T, O>[] {
 		return this.nodeList.filter(
 			(node: AnonymousNode<T, O>): node is MLDOMElement<T, O> => node.type === 'Element' && node.matches(query),
 		);
 	}
 
-	public toString() {
+	toString() {
 		const html: string[] = [];
 		for (const node of this.nodeList) {
 			html.push(node.raw);

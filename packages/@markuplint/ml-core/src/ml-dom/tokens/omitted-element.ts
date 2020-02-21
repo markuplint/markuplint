@@ -9,11 +9,11 @@ import { RuleConfigValue } from '@markuplint/ml-config';
 export default class MLDOMOmittedElement<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTOmittedElement>
 	implements IMLDOMOmittedElement {
-	public readonly type = 'OmittedElement';
-	public readonly nodeName: string;
-	public readonly namespaceURI: string;
-	public readonly isForeignElement: boolean;
-	public obsolete = false;
+	readonly type = 'OmittedElement';
+	readonly nodeName: string;
+	readonly namespaceURI: string;
+	readonly isForeignElement: boolean;
+	obsolete = false;
 
 	constructor(astNode: MLASTOmittedElement, document: Document<T, O>) {
 		super(astNode, document);
@@ -22,12 +22,12 @@ export default class MLDOMOmittedElement<T extends RuleConfigValue, O = null>
 		this.isForeignElement = this.namespaceURI !== 'http://www.w3.org/1999/xhtml';
 	}
 
-	public get childNodes(): AnonymousNode<T, O>[] {
+	get childNodes(): AnonymousNode<T, O>[] {
 		const astChildren = this._astToken.childNodes || [];
 		return astChildren.map(node => this.nodeStore.getNode<typeof node, T, O>(node));
 	}
 
-	public getChildElementsAndTextNodeWithoutWhitespaces() {
+	getChildElementsAndTextNodeWithoutWhitespaces() {
 		const filteredNodes: (MLDOMElement<T, O> | MLDOMText<T, O>)[] = [];
 		this.childNodes.forEach(node => {
 			if (node.type === 'Element') {
