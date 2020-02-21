@@ -35,7 +35,7 @@
 		"cli-color": "^2.0.0",
 		"eastasianwidth": "^0.2.0",
 		"get-stdin": "^7.0.0",
-		"meow": "^6.0.0",
+		"meow": "^6.0.1",
 		"os-locale": "^4.0.0",
 		"strip-ansi": "^6.0.0"
 	}
