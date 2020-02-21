@@ -1499,7 +1499,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "Any",
 				"roles": {}
 			},
 			"omittion": false,
