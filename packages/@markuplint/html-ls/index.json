@@ -4348,7 +4348,7 @@
 		{
 			"name": "isindex",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/isindex",
-			"description": "<isindex> was an obsolete HTML element that puts a text field in a page for querying the document. <isindex> was providing a single line text input for entering a query string. When sent, the server would return a list of pages matching the query. Its supports depended on both the browser and the server to react to the query.",
+			"description": "<isindex> was an obsolete HTML element that put a text field in a page for querying the document. <isindex> provided a single line text input for entering a query string. When sent, the server would return a list of pages matching the query. Its support depended on both the browser and the server to react to the query.",
 			"obsolete": true,
 			"categories": [],
 			"permittedStructures": {
