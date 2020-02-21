@@ -2882,7 +2882,7 @@
 		{
 			"name": "dialog",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
-			"description": "",
+			"description": "The HTML <dialog> element represents a dialog box or other interactive component, such as a dismissable alert, inspector, or subwindow.",
 			"categories": ["#flow"],
 			"permittedStructures": {
 				"summary": "Flow content",
@@ -2904,7 +2904,7 @@
 				{
 					"name": "open",
 					"type": "string",
-					"description": "Indicates that the dialog is active and available for interaction. When the open attribute is not set, the dialog shouldn't be shown to the user."
+					"description": "Indicates that the dialog is active and can be interacted with. When the open attribute is not set, the dialog shouldn't be shown to the user."
 				}
 			]
 		},
