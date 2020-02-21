@@ -1356,7 +1356,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "button, checkbox, menuitem, menuitemcheckbox, menuitemradio, option, radio, switch, tab, treeitem",
+				"summary": "When href attribute is present: button checkbox menuitem menuitemcheckbox menuitemradio option radio switch tab treeitem When href attribute is not present: any",
 				"roles": {}
 			},
 			"omittion": false,
