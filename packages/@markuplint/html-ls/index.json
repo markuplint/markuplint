@@ -1733,7 +1733,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "feed, note, presentation, region, search",
+				"summary": "feed, none, note, presentation, region, search",
 				"roles": {}
 			},
 			"omittion": false,
