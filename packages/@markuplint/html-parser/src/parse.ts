@@ -20,24 +20,18 @@ import tagSplitter from './tag-splitter';
 
 const P5_OPTIONS = { sourceCodeLocationInfo: true };
 
-export default function parse(html: string) {
+export default function parse(html: string): MLASTDocument {
 	const isFragment = isDocumentFragment(html);
 	const doc = isFragment
 		? (parse5.parseFragment(html, P5_OPTIONS) as P5Fragment)
 		: (parse5.parse(html, P5_OPTIONS) as P5Document);
 
-	const nodeTree: MLASTNode[] = traverse(doc, null, html, 0);
-	// console.dir(nodeTree);
+	const nodeList = flattenNodes(traverse(doc, null, html), html);
 
-	const nodeList = flattenNodes(nodeTree, html);
-	// console.dir(nodeList);
-
-	const parsedDoc: MLASTDocument = {
+	return {
 		nodeList,
 		isFragment,
 	};
-
-	return parsedDoc;
 }
 
 function nodeize(
@@ -45,7 +39,6 @@ function nodeize(
 	prevNode: MLASTNode | null,
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
-	depth: number,
 ): MLASTNode | null {
 	const nextNode = null;
 	if (!p5node.sourceCodeLocation) {
@@ -68,7 +61,7 @@ function nodeize(
 			isFragment: false,
 			isGhost: true,
 		};
-		node.childNodes = traverse(p5node, node, rawHtml, depth);
+		node.childNodes = traverse(p5node, node, rawHtml);
 		return node;
 	}
 	const { startOffset, endOffset, startLine, endLine, startCol, endCol } = p5node.sourceCodeLocation;
@@ -208,7 +201,7 @@ function nodeize(
 			if (endTag) {
 				endTag.pearNode = startTag;
 			}
-			startTag.childNodes = traverse(p5node, startTag, rawHtml, depth);
+			startTag.childNodes = traverse(p5node, startTag, rawHtml);
 			return startTag;
 		}
 	}
@@ -218,16 +211,14 @@ function traverse(
 	rootNode: P5Node | P5Document | P5Fragment,
 	parentNode: MLASTParentNode | null = null,
 	rawHtml: string,
-	depth: number,
 ): MLASTNode[] {
-	depth += 1;
 	const nodeList: MLASTNode[] = [];
 
 	const childNodes: P5Node[] = getChildNodes(rootNode);
 
 	let prevNode: MLASTNode | null = null;
 	for (const p5node of childNodes) {
-		const node = nodeize(p5node, prevNode, parentNode, rawHtml, depth);
+		const node = nodeize(p5node, prevNode, parentNode, rawHtml);
 		if (!node) {
 			continue;
 		}
