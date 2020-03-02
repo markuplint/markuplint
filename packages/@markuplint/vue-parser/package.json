@@ -19,6 +19,7 @@
 		"@types/uuid": "^3.4.6"
 	},
 	"dependencies": {
+		"@markuplint/html-parser": "^1.0.0-alpha.13",
 		"@markuplint/ml-ast": "^1.0.0-alpha.9",
 		"uuid": "^3.3.3",
 		"vue-eslint-parser": "^7.0.0"
