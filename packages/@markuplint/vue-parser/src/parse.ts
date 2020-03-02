@@ -1,4 +1,3 @@
-import * as VueESLintParser from 'vue-eslint-parser';
 import {
 	MLASTDocument,
 	MLASTElement,
@@ -8,16 +7,15 @@ import {
 	MLASTTag,
 	MLASTText,
 } from '@markuplint/ml-ast/';
+import vueParse, { ASTNode } from './vue-parser';
 import UUID from 'uuid';
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
 import parseRawTag from './parse-raw-tag';
 import tagSplitter from './tag-splitter';
 
-type ASTNode = VueESLintParser.AST.VElement | VueESLintParser.AST.VText | VueESLintParser.AST.VExpressionContainer;
-
 export default function parse(html: string) {
-	const ast = VueESLintParser.parse(html, { sourceType: 'module' });
+	const ast = vueParse(html);
 
 	let nodeList: MLASTNode[] = [];
 	const isFragment = true;
