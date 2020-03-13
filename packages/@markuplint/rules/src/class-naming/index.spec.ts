@@ -65,7 +65,7 @@ test('unmatched class name', async () => {
 	]);
 });
 
-test('test-name', async () => {
+test('childNodeRules', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
@@ -106,7 +106,7 @@ test('test-name', async () => {
 	]);
 });
 
-test('test-name', async () => {
+test('unmatched class name (2)', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
@@ -141,7 +141,7 @@ test('test-name', async () => {
 	]);
 });
 
-test('test-name', async () => {
+test('childNodeRules multi selectors', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
@@ -198,7 +198,7 @@ test('test-name', async () => {
 	]);
 });
 
-test('test-name', async () => {
+test('childNodeRules multi selectors (No error)', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
