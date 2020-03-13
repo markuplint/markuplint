@@ -13,21 +13,21 @@ export default createRule<Value>({
 		await document.walkOn('Element', async node => {
 			if (node.rule.value) {
 				const classPatterns = Array.isArray(node.rule.value) ? node.rule.value : [node.rule.value];
-				for (const classPattern of classPatterns) {
-					for (const className of node.classList) {
-						if (!match(className, classPattern)) {
-							const attr = node.getAttributeToken('class');
-							if (!attr) {
-								continue;
-							}
-							reports.push({
-								severity: node.rule.severity,
-								message: `"${className}" class name is unmatched pattern of "${classPattern}"`,
-								line: attr.name.startLine,
-								col: attr.name.startCol,
-								raw: attr.raw.trim(),
-							});
+				for (const className of node.classList) {
+					if (!classPatterns.some(pattern => match(className, pattern))) {
+						const attr = node.getAttributeToken('class');
+						if (!attr) {
+							continue;
 						}
+						reports.push({
+							severity: node.rule.severity,
+							message: `"${className}" class name is unmatched patterns ("${classPatterns.join(
+								'" or "',
+							)}")`,
+							line: attr.name.startLine,
+							col: attr.name.startCol,
+							raw: attr.raw.trim(),
+						});
 					}
 				}
 			}
