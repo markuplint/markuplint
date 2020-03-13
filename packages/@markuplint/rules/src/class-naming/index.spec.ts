@@ -56,7 +56,7 @@ test('unmatched class name', async () => {
 	expect(r).toStrictEqual([
 		{
 			severity: 'error',
-			message: '"c-root" class name is unmatched pattern of "/^c-[a-z]+__[a-z0-9]+/"',
+			message: '"c-root" class name is unmatched patterns ("/^c-[a-z]+__[a-z0-9]+/")',
 			line: 2,
 			col: 8,
 			raw: 'class="c-root"',
@@ -65,7 +65,7 @@ test('unmatched class name', async () => {
 	]);
 });
 
-test('test-name', async () => {
+test('childNodeRules', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
@@ -97,7 +97,7 @@ test('test-name', async () => {
 	expect(r).toStrictEqual([
 		{
 			severity: 'error',
-			message: '"c-root_x" class name is unmatched pattern of "/^c-[a-z]+__[a-z0-9]+/"',
+			message: '"c-root_x" class name is unmatched patterns ("/^c-[a-z]+__[a-z0-9]+/")',
 			line: 3,
 			col: 9,
 			raw: 'class="c-root_x"',
@@ -106,7 +106,7 @@ test('test-name', async () => {
 	]);
 });
 
-test('test-name', async () => {
+test('unmatched class name (2)', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
@@ -132,7 +132,7 @@ test('test-name', async () => {
 	expect(r).toStrictEqual([
 		{
 			severity: 'error',
-			message: '"hoge" class name is unmatched pattern of "/^c-[a-z]+/"',
+			message: '"hoge" class name is unmatched patterns ("/^c-[a-z]+/")',
 			line: 6,
 			col: 11,
 			raw: 'class="hoge"',
@@ -141,7 +141,29 @@ test('test-name', async () => {
 	]);
 });
 
-test('test-name', async () => {
+test('multi pattern', async () => {
+	const r = await markuplint.verify(
+		`
+		<div class="c-root">
+			<div class="c-root__el"></div>
+			<div class="exceptional"></div>
+		</div>
+		`,
+		{
+			rules: {
+				'class-naming': {
+					severity: 'error',
+					value: ['/^c-[a-z]+/', 'exceptional'],
+				},
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r.length).toBe(0);
+});
+
+test('childNodeRules multi selectors', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
@@ -189,7 +211,7 @@ test('test-name', async () => {
 	expect(r).toStrictEqual([
 		{
 			severity: 'error',
-			message: '"hoge" class name is unmatched pattern of "hoge2"',
+			message: '"hoge" class name is unmatched patterns ("hoge2")',
 			line: 6,
 			col: 11,
 			raw: 'class="hoge"',
@@ -198,7 +220,7 @@ test('test-name', async () => {
 	]);
 });
 
-test('test-name', async () => {
+test('childNodeRules multi selectors (No error)', async () => {
 	const r = await markuplint.verify(
 		`
 		<div class="c-root">
