@@ -506,6 +506,56 @@ describe('parser', () => {
 		]);
 	});
 
+	it('<form>', () => {
+		const doc = HTMLParser.parse(`
+	<div>
+		<form novalidate>
+			<input type="text" name="foo">
+			<input type="checkbox" name="bar">
+		</form>
+	</div>
+	`);
+		const map = HTMLParser.nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[2:2](0,2)#text: ⏎→',
+			'[2:2]>[2:7](2,7)div: <div>',
+			'[2:7]>[3:3](7,10)#text: ⏎→→',
+			'[3:3]>[3:20](10,27)form: <form␣novalidate>',
+			'[3:20]>[4:4](27,31)#text: ⏎→→→',
+			'[4:4]>[4:34](31,61)input: <input␣type="text"␣name="foo">',
+			'[4:34]>[5:4](61,65)#text: ⏎→→→',
+			'[5:4]>[5:38](65,99)input: <input␣type="checkbox"␣name="bar">',
+			'[5:38]>[6:3](99,102)#text: ⏎→→',
+			'[6:3]>[6:10](102,109)form: </form>',
+			'[6:10]>[7:2](109,111)#text: ⏎→',
+			'[7:2]>[7:8](111,117)div: </div>',
+			'[7:8]>[8:2](117,119)#text: ⏎→',
+		]);
+	});
+
+	it('<form> in <form>', () => {
+		const doc = HTMLParser.parse(`
+	<form>
+		<form novalidate>
+			<input type="text" name="foo">
+			<input type="checkbox" name="bar">
+		</form>
+	</form>
+	`);
+		const map = HTMLParser.nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[2:2](0,2)#text: ⏎→',
+			'[2:2]>[2:8](2,8)form: <form>',
+			'[2:8]>[4:4](8,32)#text: ⏎→→<form␣novalidate>⏎→→→',
+			'[4:4]>[4:34](32,62)input: <input␣type="text"␣name="foo">',
+			'[4:34]>[5:4](62,66)#text: ⏎→→→',
+			'[5:4]>[5:38](66,100)input: <input␣type="checkbox"␣name="bar">',
+			'[5:38]>[6:3](100,103)#text: ⏎→→',
+			'[6:3]>[6:10](103,110)form: </form>',
+			'[6:10]>[8:2](110,121)#text: ⏎→</form>⏎→',
+		]);
+	});
+
 	it('UUID', () => {
 		const doc = HTMLParser.parse('<html><head><title>title</title></head><body><div>test</div></body></html>');
 		// const map = HTMLParser.nodeListToDebugMaps(doc.nodeList);
