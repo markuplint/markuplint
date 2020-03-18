@@ -20,7 +20,6 @@
 		"attr-value-quotes": true,
 		"case-sensitive-attr-name": true,
 		"case-sensitive-tag-name": true,
-		"indentation": "tab",
-		"async-attr-in-script": false
+		"indentation": "tab"
 	}
 }
