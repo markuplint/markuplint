@@ -90,5 +90,5 @@ test('is test 3', async () => {
 		'ja',
 	);
 
-	expect(r.map(_ => _.message)).toStrictEqual(['属性名が重複しています。']);
+	expect(r.map(_ => _.message)).toStrictEqual(['属性名が重複しています']);
 });

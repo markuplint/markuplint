@@ -66,12 +66,6 @@
 | 🚧       | 🚧   | ✅       | [self-closing-tag](./src/self-closing-tag/)                 | 🚧      |
 | 🚧       | 🚧   | 🚧       | [tag-omission](./src/tag-omission/)                         | 🚧      |
 
-### Performance
-
-| Avaiable | Docs | Docs(ja) | Rule                                                | Fixable |
-| -------- | ---- | -------- | --------------------------------------------------- | ------- |
-| ✅       | ✅   | ✅       | [async-attr-in-script](./src/async-attr-in-script/) |
-
 ## Install
 
 This package is **default** used that dependenced by [`markuplint`](https://www.npmjs.com/package/markuplint/).

@@ -34,7 +34,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'never',
+				message: 'Never insert space before equal sign of attribute',
 				line: 2,
 				col: 11,
 				raw: ' = ',
@@ -59,7 +59,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'never',
+				message: 'Never insert space before equal sign of attribute',
 				line: 2,
 				col: 11,
 				raw: ' =',
@@ -102,7 +102,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'never',
+				message: 'Never insert space before equal sign of attribute',
 				line: 3,
 				col: 6,
 				raw: '\n\t\t=',
@@ -145,7 +145,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'always',
+				message: 'Always insert space before equal sign of attribute',
 				line: 2,
 				col: 11,
 				raw: '=',
@@ -202,7 +202,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'always',
+				message: 'Always insert space before equal sign of attribute',
 				line: 2,
 				col: 11,
 				raw: '= ',
@@ -247,7 +247,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'always',
+				message: 'Always insert space before equal sign of attribute',
 				line: 3,
 				col: 6,
 				raw: '=\n\t\t',
@@ -272,7 +272,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'always-single-line',
+				message: 'Always insert space before equal sign of attribute',
 				line: 2,
 				col: 11,
 				raw: '=',
@@ -329,7 +329,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'always-single-line',
+				message: 'Always insert space before equal sign of attribute',
 				line: 2,
 				col: 11,
 				raw: '= ',
@@ -356,7 +356,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'always-single-line',
+				message: 'Always insert space before equal sign of attribute',
 				line: 3,
 				col: 6,
 				raw: '\n\t\t=',
@@ -383,7 +383,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'always-single-line',
+				message: 'Always insert space before equal sign of attribute',
 				line: 3,
 				col: 6,
 				raw: '=\n\t\t',
@@ -424,7 +424,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'never-single-line',
+				message: 'Never insert space before equal sign of attribute',
 				line: 2,
 				col: 11,
 				raw: ' = ',
@@ -449,7 +449,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'never-single-line',
+				message: 'Never insert space before equal sign of attribute',
 				line: 2,
 				col: 11,
 				raw: ' =',

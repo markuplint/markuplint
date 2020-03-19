@@ -1,4 +1,3 @@
-import AsyncAttrInScript from './async-attr-in-script';
 import AttrDuplication from './attr-duplication';
 import AttrEqualSpaceAfter from './attr-equal-space-after';
 import AttrEqualSpaceBefore from './attr-equal-space-before';
@@ -19,7 +18,6 @@ import RequiredAttr from './required-attr';
 import RequiredH1 from './required-h1';
 
 export default [
-	AsyncAttrInScript,
 	AttrDuplication,
 	AttrEqualSpaceAfter,
 	AttrEqualSpaceBefore,

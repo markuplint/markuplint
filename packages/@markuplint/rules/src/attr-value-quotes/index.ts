@@ -14,10 +14,10 @@ export default createRule<Type>({
 	defaultLevel: 'warning',
 	defaultValue: 'double',
 	defaultOptions: null,
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
 		await document.walkOn('Element', async node => {
-			const message = messages(
+			const message = translate(
 				'{0} is must {1} on {2}',
 				'Attribute value',
 				'quote',

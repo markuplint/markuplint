@@ -3,7 +3,7 @@ import { MLCore, MLRule, convertRuleset } from '@markuplint/ml-core';
 import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { MLResultInfo } from './types';
 import { RuleConfigValue } from '@markuplint/ml-config';
-import { getMessenger } from './get-messenger';
+import { i18n } from './i18n';
 import { moduleAutoLoader } from './module-auto-loader';
 import path from 'path';
 import { toRegxp } from './util';
@@ -44,8 +44,8 @@ export async function lintFile(
 
 	// create MLCore
 	const sourceCode = await file.getContext();
-	const messenger = await getMessenger(locale);
-	const core = new MLCore(parser, sourceCode, ruleset, rules, messenger);
+	const i18nSettings = await i18n(locale);
+	const core = new MLCore(parser, sourceCode, ruleset, rules, i18nSettings);
 
 	const results = await core.verify(fix);
 

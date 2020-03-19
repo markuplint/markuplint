@@ -34,7 +34,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'スペースが必要です',
+				message: 'Required space',
 				line: 2,
 				col: 21,
 				raw: '',
@@ -97,7 +97,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'error',
-				message: '改行はしないでください',
+				message: 'Never break line',
 				line: 2,
 				col: 21,
 				raw: '\n\t\t',
@@ -147,7 +147,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'error',
-				message: '改行してください',
+				message: 'Insert line break',
 				line: 2,
 				col: 7,
 				raw: ' ',
@@ -198,7 +198,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'error',
-				message: 'スペースは1つにしてください',
+				message: 'Space should be 1',
 				line: 2,
 				col: 21,
 				raw: '  ',
@@ -227,7 +227,7 @@ describe('verify', () => {
 		expect(r).toStrictEqual([
 			{
 				severity: 'error',
-				message: 'スペースは2つにしてください',
+				message: 'Space should be 2',
 				line: 2,
 				col: 7,
 				raw: ' ',

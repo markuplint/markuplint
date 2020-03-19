@@ -1,8 +1,8 @@
 import { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
 import { Document } from './ml-dom';
+import { I18n } from '@markuplint/i18n';
 import { MLRule } from './ml-rule';
-import { Messenger } from '@markuplint/i18n';
 import Ruleset from './ruleset';
 
 export class MLCore {
@@ -11,7 +11,7 @@ export class MLCore {
 	#ast: MLASTDocument;
 	#document: Document<RuleConfigValue, unknown>;
 	#ruleset: Ruleset;
-	#messenger: Messenger;
+	#i18n: I18n;
 	#rules: MLRule<RuleConfigValue, unknown>[];
 
 	constructor(
@@ -19,12 +19,12 @@ export class MLCore {
 		sourceCode: string,
 		ruleset: Ruleset,
 		rules: MLRule<RuleConfigValue, unknown>[],
-		messenger: Messenger,
+		i18n: I18n,
 	) {
 		this.#parser = parser;
 		this.#sourceCode = sourceCode;
 		this.#ruleset = ruleset;
-		this.#messenger = messenger;
+		this.#i18n = i18n;
 		this.#ast = this.#parser.parse(this.#sourceCode);
 		this.#document = new Document(this.#ast, this.#ruleset);
 		this.#rules = rules;
@@ -44,7 +44,7 @@ export class MLCore {
 			if (fix) {
 				await rule.fix(this.#document, ruleInfo);
 			}
-			const results = await rule.verify(this.#document, this.#messenger, ruleInfo);
+			const results = await rule.verify(this.#document, this.#i18n, ruleInfo);
 			reports.push(...results);
 		}
 		return reports;

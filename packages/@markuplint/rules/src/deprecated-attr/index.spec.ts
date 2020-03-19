@@ -10,6 +10,7 @@ test('test', async () => {
 			},
 		},
 		[rule],
+		'en',
 	);
 	expect(r).toStrictEqual([
 		{
@@ -18,7 +19,7 @@ test('test', async () => {
 			line: 1,
 			col: 6,
 			raw: 'align',
-			message: '"align" attribute is obsolete',
+			message: 'The align attribute is obsolete',
 		},
 	]);
 });

@@ -1,6 +1,6 @@
 export type Primitive = string | number | boolean;
 
-export type Message = (messageTmpl: string, ...keywords: Primitive[]) => string;
+export type Translator = (messageTmpl: string, ...keywords: Primitive[]) => string;
 
 export interface LocaleSet {
 	keywords: LocalesKeywords;
@@ -11,16 +11,16 @@ export interface LocalesKeywords {
 	[messageId: string]: string | void;
 }
 
-export class Messenger {
-	private static _singleton: Messenger | null = null;
+export class I18n {
+	private static _singleton: I18n | null = null;
 
 	static async create(localeSet: LocaleSet | null) {
-		if (!Messenger._singleton) {
-			Messenger._singleton = new Messenger(localeSet);
+		if (!I18n._singleton) {
+			I18n._singleton = new I18n(localeSet);
 		} else {
-			Messenger._singleton.localeSet = localeSet;
+			I18n._singleton.localeSet = localeSet;
 		}
-		return Messenger._singleton;
+		return I18n._singleton;
 	}
 
 	localeSet: LocaleSet | null;
@@ -29,7 +29,7 @@ export class Messenger {
 		this.localeSet = localeSet;
 	}
 
-	message(): Message {
+	translator(): Translator {
 		const localeSet = this.localeSet;
 		return (messageTmpl: string, ...keywords: Primitive[]) => {
 			let message = messageTmpl;

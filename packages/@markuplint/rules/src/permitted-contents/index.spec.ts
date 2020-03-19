@@ -23,7 +23,7 @@ describe('verify', () => {
 				line: 1,
 				col: 6,
 				raw: '<a>',
-				message: 'Invalid content in "a" element on the HTML spec',
+				message: 'Invalid content of the a element in the HTML specification',
 			},
 		]);
 
@@ -35,7 +35,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<a>',
-				message: 'Invalid content in "a" element on the HTML spec',
+				message: 'Invalid content of the a element in the HTML specification',
 			},
 		]);
 
@@ -47,7 +47,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<a>',
-				message: 'Invalid content in "a" element on the HTML spec',
+				message: 'Invalid content of the a element in the HTML specification',
 			},
 		]);
 
@@ -59,7 +59,7 @@ describe('verify', () => {
 				line: 1,
 				col: 7,
 				raw: '<a>',
-				message: 'Invalid content in "a" element on the HTML spec',
+				message: 'Invalid content of the a element in the HTML specification',
 			},
 		]);
 	});
@@ -73,7 +73,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<address>',
-				message: 'Invalid content in "address" element on the HTML spec',
+				message: 'Invalid content of the address element in the HTML specification',
 			},
 		]);
 	});
@@ -87,7 +87,7 @@ describe('verify', () => {
 				line: 1,
 				col: 6,
 				raw: '<audio src="path/to">',
-				message: 'Invalid content in "audio" element on the HTML spec',
+				message: 'Invalid content of the audio element in the HTML specification',
 			},
 		]);
 
@@ -124,7 +124,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<dl>',
-				message: 'Invalid content in "dl" element on the HTML spec',
+				message: 'Invalid content of the dl element in the HTML specification',
 			},
 			{
 				ruleId: 'permitted-contents',
@@ -132,7 +132,7 @@ describe('verify', () => {
 				line: 4,
 				col: 5,
 				raw: '<div>',
-				message: 'Invalid content in "div" element on the HTML spec',
+				message: 'Invalid content of the div element in the HTML specification',
 			},
 		]);
 
@@ -154,7 +154,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<dl>',
-				message: 'Invalid content in "dl" element on the HTML spec',
+				message: 'Invalid content of the dl element in the HTML specification',
 			},
 			{
 				ruleId: 'permitted-contents',
@@ -162,7 +162,7 @@ describe('verify', () => {
 				line: 3,
 				col: 5,
 				raw: '<div>',
-				message: 'Invalid content in "div" element on the HTML spec',
+				message: 'Invalid content of the div element in the HTML specification',
 			},
 			{
 				ruleId: 'permitted-contents',
@@ -170,7 +170,7 @@ describe('verify', () => {
 				line: 5,
 				col: 5,
 				raw: '<div>',
-				message: 'Invalid content in "div" element on the HTML spec',
+				message: 'Invalid content of the div element in the HTML specification',
 			},
 		]);
 
@@ -216,7 +216,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<div>',
-				message: 'Invalid content in "div" element on the HTML spec',
+				message: 'Invalid content of the div element in the HTML specification',
 			},
 		]);
 
@@ -237,7 +237,7 @@ describe('verify', () => {
 				line: 2,
 				col: 5,
 				raw: '<div>',
-				message: 'Invalid content in "div" element on the HTML spec',
+				message: 'Invalid content of the div element in the HTML specification',
 			},
 		]);
 	});
@@ -276,7 +276,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<table>',
-				message: 'Invalid content in "table" element on the HTML spec',
+				message: 'Invalid content of the table element in the HTML specification',
 			},
 		]);
 	});
@@ -312,7 +312,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<ruby>',
-				message: 'Invalid content in "ruby" element on the HTML spec',
+				message: 'Invalid content of the ruby element in the HTML specification',
 			},
 		]);
 
@@ -338,7 +338,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<ul>',
-				message: 'Invalid content in "ul" element on the HTML spec',
+				message: 'Invalid content of the ul element in the HTML specification',
 			},
 		]);
 
@@ -358,7 +358,7 @@ describe('verify', () => {
 				line: 1,
 				col: 6,
 				raw: '<area>',
-				message: 'Invalid structure: "area" element must have an ancestor "map"',
+				message: 'The area element must be descendant of the map element',
 			},
 		]);
 
@@ -388,7 +388,7 @@ describe('verify', () => {
 				line: 2,
 				col: 5,
 				raw: '<li>',
-				message: 'Invalid content in "li" element on the HTML spec',
+				message: 'Invalid content of the li element in the HTML specification',
 			},
 		]);
 
@@ -472,7 +472,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<hgroup>',
-				message: 'Invalid content in "hgroup" element on the HTML spec',
+				message: 'Invalid content of the hgroup element in the HTML specification',
 			},
 		]);
 	});
@@ -537,7 +537,7 @@ describe('verify', () => {
 				line: 2,
 				col: 5,
 				raw: '<a href="path/to">',
-				message: 'Invalid content in "a" element on the HTML spec',
+				message: 'Invalid content of the a element in the HTML specification',
 			},
 			{
 				ruleId: 'permitted-contents',
@@ -545,7 +545,7 @@ describe('verify', () => {
 				line: 3,
 				col: 6,
 				raw: '<template>',
-				message: 'Invalid content in "template" element on the HTML spec',
+				message: 'Invalid content of the template element in the HTML specification',
 			},
 		]);
 	});
@@ -620,7 +620,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<x-container>',
-				message: 'Invalid content in "x-container" element on rule settings',
+				message: 'Invalid content of the x-container element in settings',
 			},
 		]);
 		expect(r2).toStrictEqual([
@@ -630,7 +630,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<x-container>',
-				message: 'Invalid content in "x-container" element on rule settings',
+				message: 'Invalid content of the x-container element in settings',
 			},
 		]);
 		expect(r3).toStrictEqual([]);
@@ -642,7 +642,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<x-container>',
-				message: 'Invalid content in "x-container" element on rule settings',
+				message: 'Invalid content of the x-container element in settings',
 			},
 		]);
 	});

@@ -3800,7 +3800,6 @@
 					"name": "align",
 					"type": "string",
 					"description": "The alignment of this element with respect to the surrounding context.The value 1 (the default) draws a border around this frame. The value 0 removes the border around this frame, but you should instead use the CSS property border to control <iframe> borders.A URL of a long description of the frame's content. Due to widespread misuse, this is not helpful for non-visual browsers.The amount of space in pixels between the frame's content and its top and bottom borders.The amount of space in pixels between the frame's content and its left and right borders.Indicates when the browser should provide a scrollbar for the frame: auto: Only when the frame's content is larger than its dimensions. yes: Always show a scrollbar. no: Never show a scrollbar.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
@@ -3828,7 +3827,7 @@
 					"name": "frameborder",
 					"type": "string",
 					"description": "The value 1 (the default) draws a border around this frame. The value 0 removes the border around this frame, but you should instead use the CSS property border to control <iframe> borders.A URL of a long description of the frame's content. Due to widespread misuse, this is not helpful for non-visual browsers.The amount of space in pixels between the frame's content and its top and bottom borders.The amount of space in pixels between the frame's content and its left and right borders.Indicates when the browser should provide a scrollbar for the frame: auto: Only when the frame's content is larger than its dimensions. yes: Always show a scrollbar. no: Never show a scrollbar.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "height",
@@ -3851,19 +3850,19 @@
 					"name": "longdesc",
 					"type": "string",
 					"description": "A URL of a long description of the frame's content. Due to widespread misuse, this is not helpful for non-visual browsers.The amount of space in pixels between the frame's content and its top and bottom borders.The amount of space in pixels between the frame's content and its left and right borders.Indicates when the browser should provide a scrollbar for the frame: auto: Only when the frame's content is larger than its dimensions. yes: Always show a scrollbar. no: Never show a scrollbar.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "marginheight",
 					"type": "string",
 					"description": "The amount of space in pixels between the frame's content and its top and bottom borders.The amount of space in pixels between the frame's content and its left and right borders.Indicates when the browser should provide a scrollbar for the frame: auto: Only when the frame's content is larger than its dimensions. yes: Always show a scrollbar. no: Never show a scrollbar.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "marginwidth",
 					"type": "string",
 					"description": "The amount of space in pixels between the frame's content and its left and right borders.Indicates when the browser should provide a scrollbar for the frame: auto: Only when the frame's content is larger than its dimensions. yes: Always show a scrollbar. no: Never show a scrollbar.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "mozbrowser",
@@ -3890,7 +3889,7 @@
 					"name": "scrolling",
 					"type": "string",
 					"description": "Indicates when the browser should provide a scrollbar for the frame: auto: Only when the frame's content is larger than its dimensions. yes: Always show a scrollbar. no: Never show a scrollbar.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "src",

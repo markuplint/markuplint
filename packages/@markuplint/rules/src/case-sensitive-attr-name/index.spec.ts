@@ -28,7 +28,7 @@ describe('verify', () => {
 			'en',
 		);
 		expect(r[0].severity).toBe('warning');
-		expect(r[0].message).toBe('Attribute name of HTML should be lowercase');
+		expect(r[0].message).toBe('Attribute name of HTML elements should be lowercase');
 		expect(r[0].raw).toBe('data-UPPERCASE');
 	});
 
@@ -48,7 +48,7 @@ describe('verify', () => {
 			'en',
 		);
 		expect(r[0].severity).toBe('error');
-		expect(r[0].message).toBe('Attribute name of HTML must be uppercase');
+		expect(r[0].message).toBe('Attribute name of HTML elements must be uppercase');
 	});
 
 	test('upper case', async () => {
@@ -67,7 +67,7 @@ describe('verify', () => {
 			'en',
 		);
 		expect(r[0].severity).toBe('error');
-		expect(r[0].message).toBe('Attribute name of HTML must be uppercase');
+		expect(r[0].message).toBe('Attribute name of HTML elements must be uppercase');
 	});
 
 	test('upper case', async () => {

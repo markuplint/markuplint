@@ -2,7 +2,7 @@
 
 import * as HTMLParser from '@markuplint/html-parser';
 import { MLCore } from '@markuplint/ml-core';
-import { Messenger } from '@markuplint/i18n';
+import { I18n } from '@markuplint/i18n';
 import rules from '@markuplint/rules';
 // import Markuplint from 'markuplint/lib/core';
 // import createRuleset from 'markuplint/lib/ruleset/createRuleset.remote';
@@ -51,13 +51,18 @@ require.config({ paths: { vs: 'monaco-editor/min/vs' } });
 
 let diagnoseId;
 
+const localeSets = {};
+
 const lint = async newCode => {
+	const language = navigator.language || '';
+	const langCode = language.split(/_|-/)[0];
+	const localSet = localeSets[langCode] || null;
+	const i18n = await I18n.create(localSet);
 	const reqConf = await fetch('./resources/markuplintrc.json');
 	const ruleset = await reqConf.json();
-	const messenger = await Messenger.create(null);
-	// console.log({ HTMLParser, newCode, ruleset, rules, messenger });
+	// console.log({ HTMLParser, newCode, ruleset, rules, i18n });
 	ruleset.childNodeRules = [];
-	const linter = new MLCore(HTMLParser, newCode, ruleset, rules, messenger);
+	const linter = new MLCore(HTMLParser, newCode, ruleset, rules, i18n);
 	const reports = await linter.verify();
 	const diagnotics = [];
 	for (const report of reports) {
@@ -85,6 +90,9 @@ const diagnose = async model => {
 require(['vs/editor/editor.main'], async () => {
 	const req = await fetch('./resources/sample.html');
 	const sample = await req.text();
+
+	localeSets.en = await import('@markuplint/i18n/locales/en.json');
+	localeSets.ja = await import('@markuplint/i18n/locales/ja.json');
 
 	let code = sample;
 	if (location.hash) {
