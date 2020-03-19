@@ -6,7 +6,7 @@ export default createRule({
 	name: 'deprecated-attr',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
 		await document.walkOn('Element', async element => {
 			const spec = getSpecByTagName(element.nodeName, specs);
@@ -22,7 +22,7 @@ export default createRule({
 					return;
 				}
 				if (attrSpec.deprecated || attrSpec.obsolete) {
-					const message = messages(
+					const message = translate(
 						'The {0} {1} is {2}',
 						name,
 						'attribute',

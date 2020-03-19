@@ -12,7 +12,7 @@ export default createRule<boolean, TagRule[]>({
 	name: 'permitted-contents',
 	defaultValue: true,
 	defaultOptions: [],
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
 		let idCounter = 0;
 		await document.walkOn('Element', async node => {
@@ -29,7 +29,7 @@ export default createRule<boolean, TagRule[]>({
 				if (spec.ancestor && !node.closest(spec.ancestor)) {
 					reports.push({
 						severity: node.rule.severity,
-						message: messages(
+						message: translate(
 							'The {0} element must be descendant of the {1} element',
 							node.nodeName,
 							spec.ancestor,
@@ -60,7 +60,7 @@ export default createRule<boolean, TagRule[]>({
 								if (!conditionalResult) {
 									reports.push({
 										severity: node.rule.severity,
-										message: messages(
+										message: translate(
 											'Invalid content of the {0} element in {1}',
 											node.nodeName,
 											'the HTML specification',
@@ -87,7 +87,7 @@ export default createRule<boolean, TagRule[]>({
 						if (!specResult) {
 							reports.push({
 								severity: node.rule.severity,
-								message: messages(
+								message: translate(
 									'Invalid content of the {0} element in {1}',
 									node.nodeName,
 									'the HTML specification',
@@ -117,7 +117,7 @@ export default createRule<boolean, TagRule[]>({
 					if (!r) {
 						reports.push({
 							severity: node.rule.severity,
-							message: messages('Invalid content of the {0} element in {1}', node.nodeName, 'settings'),
+							message: translate('Invalid content of the {0} element in {1}', node.nodeName, 'settings'),
 							line: node.startLine,
 							col: node.startCol,
 							raw: node.raw,

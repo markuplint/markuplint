@@ -11,7 +11,7 @@ export default createRule<Value, Option>({
 	defaultOptions: {
 		denyObsolateType: true,
 	},
-	async verify(document, messages, rule) {
+	async verify(document, translate, rule) {
 		if (document.isFragment) {
 			return [];
 		}
@@ -22,7 +22,7 @@ export default createRule<Value, Option>({
 			return [
 				{
 					severity: rule.severity,
-					message: messages('Required {0}', 'doctype'),
+					message: translate('Required {0}', 'doctype'),
 					line: 1,
 					col: 1,
 					raw: '',
@@ -34,7 +34,7 @@ export default createRule<Value, Option>({
 			return [
 				{
 					severity: rule.severity,
-					message: messages('Never {0} {1}', 'declarate', 'obsolete doctype'),
+					message: translate('Never {0} {1}', 'declarate', 'obsolete doctype'),
 					line: doctype.startLine,
 					col: doctype.startCol,
 					raw: doctype.raw,

@@ -13,7 +13,7 @@ export default createRule<boolean, Option>({
 	name: 'textlint',
 	defaultValue: true,
 	defaultOptions: {},
-	async verify(document, messages, config) {
+	async verify(document, translate, config) {
 		const reports: Result[] = [];
 		const html = document.toString();
 		const option = config.option;
@@ -29,7 +29,7 @@ export default createRule<boolean, Option>({
 			],
 		});
 		for (const result of textlintResult.messages) {
-			const message = messages(`Invalid text: ${result.message}`);
+			const message = translate(`Invalid text: ${result.message}`);
 			const [s, e] = result.fix?.range || [result.index, result.index];
 			const raw = html.slice(s, e) || '';
 			reports.push({

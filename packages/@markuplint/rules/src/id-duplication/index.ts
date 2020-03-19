@@ -4,9 +4,9 @@ export default createRule({
 	name: 'id-duplication',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
-		const message = messages('Duplicate {0}', 'attribute id value');
+		const message = translate('Duplicate {0}', 'attribute id value');
 		const idStack: string[] = [];
 		await document.walkOn('Element', async node => {
 			const idAttr = node.getAttributeToken('id');

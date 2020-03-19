@@ -9,7 +9,7 @@ export default createRule<Value>({
 	name: 'character-reference',
 	defaultValue: true,
 	defaultOptions: null,
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
 		const targetNodes: Result[] = [];
 
@@ -19,7 +19,7 @@ export default createRule<Value>({
 			}
 			const severity = node.rule.severity;
 			const ms = severity === 'error' ? 'must' : 'should';
-			const message = messages(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
+			const message = translate(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			targetNodes.push({
 				severity,
 				line: node.startLine,
@@ -32,7 +32,7 @@ export default createRule<Value>({
 		await document.walkOn('Element', async node => {
 			const severity = node.rule.severity;
 			const ms = severity === 'error' ? 'must' : 'should';
-			const message = messages(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
+			const message = translate(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			for (const attr of node.attributes) {
 				if (!attr.value) {
 					continue;

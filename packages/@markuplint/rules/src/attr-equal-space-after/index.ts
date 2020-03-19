@@ -10,7 +10,7 @@ export default createRule<Value>({
 	defaultLevel: 'warning',
 	defaultValue: 'never',
 	defaultOptions: null,
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
 		await document.walkOn('Element', async node => {
 			for (const attr of node.attributes) {
@@ -48,7 +48,7 @@ export default createRule<Value>({
 				if (isBad) {
 					reports.push({
 						severity: node.rule.severity,
-						message: messages(rawMessage, 'space', 'equal sign', 'attribute'),
+						message: translate(rawMessage, 'space', 'equal sign', 'attribute'),
 						line: attr.spacesBeforeEqual.startLine,
 						col: attr.spacesBeforeEqual.startCol,
 						raw: attr.spacesBeforeEqual.raw + attr.equal.raw + attr.spacesAfterEqual.raw,

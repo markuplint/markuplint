@@ -4,9 +4,9 @@ export default createRule({
 	name: 'attr-duplication',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
-		const message = messages('Duplicate {0}', 'attribute name');
+		const message = translate('Duplicate {0}', 'attribute name');
 		await document.walkOn('Element', async node => {
 			const attrNameStack: string[] = [];
 			for (const attr of node.attributes) {

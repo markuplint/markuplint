@@ -13,7 +13,7 @@ export default createRule<boolean, AttrSpasingOptions>({
 		lineBreak: 'either',
 		width: 1,
 	},
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
 		await document.walkOn('Element', async node => {
 			const attrs = node.attributes;
@@ -24,7 +24,7 @@ export default createRule<boolean, AttrSpasingOptions>({
 				if (!hasSpace) {
 					reports.push({
 						severity: node.rule.severity,
-						message: messages('Required {0}', 'space'),
+						message: translate('Required {0}', 'space'),
 						line: attr.spacesBeforeName.startLine,
 						col: attr.spacesBeforeName.startCol,
 						raw: attr.spacesBeforeName.raw,
@@ -34,7 +34,7 @@ export default createRule<boolean, AttrSpasingOptions>({
 						if (node.rule.option.lineBreak === 'never') {
 							reports.push({
 								severity: node.rule.severity,
-								message: messages('Never {0}', 'break line'),
+								message: translate('Never {0}', 'break line'),
 								line: attr.spacesBeforeName.startLine,
 								col: attr.spacesBeforeName.startCol,
 								raw: attr.spacesBeforeName.raw,
@@ -44,7 +44,7 @@ export default createRule<boolean, AttrSpasingOptions>({
 						if (node.rule.option.lineBreak === 'always') {
 							reports.push({
 								severity: node.rule.severity,
-								message: messages('Insert {0}', 'line break'),
+								message: translate('Insert {0}', 'line break'),
 								line: attr.spacesBeforeName.startLine,
 								col: attr.spacesBeforeName.startCol,
 								raw: attr.spacesBeforeName.raw,
@@ -53,7 +53,7 @@ export default createRule<boolean, AttrSpasingOptions>({
 						if (node.rule.option.width && node.rule.option.width !== attr.spacesBeforeName.raw.length) {
 							reports.push({
 								severity: node.rule.severity,
-								message: messages('{0} should be {1}', 'Space', node.rule.option.width),
+								message: translate('{0} should be {1}', 'Space', node.rule.option.width),
 								line: attr.spacesBeforeName.startLine,
 								col: attr.spacesBeforeName.startCol,
 								raw: attr.spacesBeforeName.raw,

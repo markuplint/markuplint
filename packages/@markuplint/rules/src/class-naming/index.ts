@@ -7,9 +7,8 @@ export default createRule<Value>({
 	defaultLevel: 'warning',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
-		// const message = messages(`{0} of {1} ${ms} be {2}`, 'Attribute name', 'HTML', `${config.value}case`);
 		await document.walkOn('Element', async node => {
 			if (node.rule.value) {
 				const classPatterns = Array.isArray(node.rule.value) ? node.rule.value : [node.rule.value];
@@ -21,7 +20,7 @@ export default createRule<Value>({
 						}
 						reports.push({
 							severity: node.rule.severity,
-							message: messages(
+							message: translate(
 								'{0} {1} is unmatched patterns ({2})',
 								`"${className}"`,
 								'class name',
