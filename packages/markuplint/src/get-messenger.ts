@@ -11,9 +11,10 @@ async function getLocale() {
 }
 
 export async function getMessenger(locale?: string) {
-	locale = locale || (await getLocale());
-	const localeSet: LocaleSet | null = locale
-		? await import(`@markuplint/i18n/locales/${locale}`).catch(() => null)
+	locale = locale || (await getLocale()) || '';
+	const langCode = locale.split('-')[0];
+	const localeSet: LocaleSet | null = langCode
+		? await import(`@markuplint/i18n/locales/${langCode}`).catch(() => null)
 		: null;
 	return Messenger.create(localeSet);
 }

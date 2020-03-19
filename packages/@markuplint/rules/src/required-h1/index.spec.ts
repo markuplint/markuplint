@@ -15,7 +15,7 @@ test('h1', async () => {
 	expect(r).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Missing h1 element',
+			message: 'Missing the h1 element',
 			line: 1,
 			col: 1,
 			raw: '<',
@@ -52,7 +52,7 @@ test('h1', async () => {
 	expect(r).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Duplicate h1 element',
+			message: 'Duplicate the h1 element',
 			line: 1,
 			col: 26,
 			raw: '<h1>',

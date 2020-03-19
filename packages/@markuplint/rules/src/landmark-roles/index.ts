@@ -102,7 +102,7 @@ export default createRule<boolean, Options>({
 				if (el.isDescendantByUUIDList(uuidList)) {
 					reports.push({
 						severity: el.rule.severity,
-						message: messages(`The ${role} landmark should be top level landmarks`),
+						message: messages('{0} should be {1}', role, 'top level'),
 						line: el.startLine,
 						col: el.startCol,
 						raw: el.raw,
@@ -131,7 +131,8 @@ export default createRule<boolean, Options>({
 					reports.push({
 						severity: el.rule.severity,
 						message: messages(
-							`Should have a unique label because ${role} landmark role is used more than once on a web page`,
+							'Should have a unique label because {0} landmarks were markup more than once on a page',
+							role,
 						),
 						line: el.startLine,
 						col: el.startCol,

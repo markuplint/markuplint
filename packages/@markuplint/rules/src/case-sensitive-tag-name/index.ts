@@ -20,7 +20,7 @@ export default createRule<Value, null>({
 				const message = messages(
 					`{0} of {1} ${ms} be {2}`,
 					'Tag name',
-					'HTML element',
+					'HTML elements',
 					`${node.rule.value}case`,
 				);
 				if (deny.test(node.nodeName)) {

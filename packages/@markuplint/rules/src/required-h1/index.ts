@@ -26,7 +26,7 @@ export default createRule<Value, RequiredH1Options>({
 			}
 		});
 		if (h1Stack.length === 0) {
-			const message = messages('Missing {0}', 'h1 element');
+			const message = messages('Missing the {0} {1}', 'h1', 'element');
 			reports.push({
 				severity: globalRule.severity,
 				message,
@@ -35,7 +35,7 @@ export default createRule<Value, RequiredH1Options>({
 				raw: document.nodeList[0].raw.slice(0, 1),
 			});
 		} else if (globalRule.option['expected-once'] && h1Stack.length > 1) {
-			const message = messages('Duplicate {0}', 'h1 element');
+			const message = messages('Duplicate the {0} {1}', 'h1', 'element');
 			reports.push({
 				severity: globalRule.severity,
 				message,

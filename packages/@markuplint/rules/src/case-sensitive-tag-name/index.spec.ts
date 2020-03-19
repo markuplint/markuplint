@@ -28,7 +28,7 @@ describe('verify', () => {
 			'en',
 		);
 		expect(r[0].severity).toBe('warning');
-		expect(r[0].message).toBe('Tag name of HTML element should be lowercase');
+		expect(r[0].message).toBe('Tag name of HTML elements should be lowercase');
 		expect(r[0].raw).toBe('DIV');
 	});
 
@@ -47,7 +47,7 @@ describe('verify', () => {
 			'en',
 		);
 		expect(r[0].severity).toBe('error');
-		expect(r[0].message).toBe('Tag name of HTML element must be uppercase');
+		expect(r[0].message).toBe('Tag name of HTML elements must be uppercase');
 	});
 
 	test('upper case', async () => {
@@ -140,7 +140,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r[0].message).toBe('Tag name of HTML element should be lowercase');
+		expect(r[0].message).toBe('Tag name of HTML elements should be lowercase');
 	});
 });
 

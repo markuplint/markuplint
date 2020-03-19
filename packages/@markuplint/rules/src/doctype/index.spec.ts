@@ -32,7 +32,7 @@ test('missing doctype', async () => {
 	expect(r).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Missing doctype',
+			message: 'Required doctype',
 			line: 1,
 			col: 1,
 			raw: '',
@@ -74,7 +74,7 @@ test('obsolete doctypes', async () => {
 		raw: '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">',
 		line: 2,
 		col: 3,
-		message: 'Never declarate obsolete Doctype',
+		message: 'Never declarate obsolete doctype',
 		ruleId: 'doctype',
 	});
 });

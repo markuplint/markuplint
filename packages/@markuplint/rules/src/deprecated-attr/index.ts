@@ -23,7 +23,8 @@ export default createRule({
 				}
 				if (attrSpec.deprecated || attrSpec.obsolete) {
 					const message = messages(
-						`"${name}" {0} is {1}`,
+						'The {0} {1} is {2}',
+						name,
 						'attribute',
 						attrSpec.deprecated ? 'deprecated' : 'obsolete',
 					);

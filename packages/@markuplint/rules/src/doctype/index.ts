@@ -22,7 +22,7 @@ export default createRule<Value, Option>({
 			return [
 				{
 					severity: rule.severity,
-					message: messages('Missing doctype'),
+					message: messages('Required {0}', 'doctype'),
 					line: 1,
 					col: 1,
 					raw: '',
@@ -34,7 +34,7 @@ export default createRule<Value, Option>({
 			return [
 				{
 					severity: rule.severity,
-					message: messages('Never declarate obsolete Doctype'),
+					message: messages('Never {0} {1}', 'declarate', 'obsolete doctype'),
 					line: doctype.startLine,
 					col: doctype.startCol,
 					raw: doctype.raw,

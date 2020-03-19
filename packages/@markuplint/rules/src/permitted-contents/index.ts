@@ -30,7 +30,9 @@ export default createRule<boolean, TagRule[]>({
 					reports.push({
 						severity: node.rule.severity,
 						message: messages(
-							`Invalid structure: "${node.nodeName}" element must have an ancestor "${spec.ancestor}"`,
+							'The {0} element must be descendant of the {1} element',
+							node.nodeName,
+							spec.ancestor,
 						),
 						line: node.startLine,
 						col: node.startCol,
@@ -59,7 +61,9 @@ export default createRule<boolean, TagRule[]>({
 									reports.push({
 										severity: node.rule.severity,
 										message: messages(
-											`Invalid content in "${node.nodeName}" element on the HTML spec`,
+											'Invalid content of the {0} element in {1}',
+											node.nodeName,
+											'the HTML specification',
 										),
 										line: node.startLine,
 										col: node.startCol,
@@ -83,7 +87,11 @@ export default createRule<boolean, TagRule[]>({
 						if (!specResult) {
 							reports.push({
 								severity: node.rule.severity,
-								message: messages(`Invalid content in "${node.nodeName}" element on the HTML spec`),
+								message: messages(
+									'Invalid content of the {0} element in {1}',
+									node.nodeName,
+									'the HTML specification',
+								),
 								line: node.startLine,
 								col: node.startCol,
 								raw: node.raw,
@@ -109,7 +117,7 @@ export default createRule<boolean, TagRule[]>({
 					if (!r) {
 						reports.push({
 							severity: node.rule.severity,
-							message: messages(`Invalid content in "${node.nodeName}" element on rule settings`),
+							message: messages('Invalid content of the {0} element in {1}', node.nodeName, 'settings'),
 							line: node.startLine,
 							col: node.startCol,
 							raw: node.raw,

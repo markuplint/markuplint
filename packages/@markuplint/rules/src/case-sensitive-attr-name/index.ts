@@ -13,7 +13,7 @@ export default createRule<Value, null>({
 			const ms = node.rule.severity === 'error' ? 'must' : 'should';
 			const deny = node.rule.value === 'no-upper' ? /[A-Z]/ : /[a-z]/;
 			const cases = node.rule.value === 'no-upper' ? 'lower' : 'upper';
-			const message = messages(`{0} of {1} ${ms} be {2}`, 'Attribute name', 'HTML', `${cases}case`);
+			const message = messages(`{0} of {1} ${ms} be {2}`, 'Attribute name', 'HTML elements', `${cases}case`);
 			if (node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
 				if (node.attributes) {
 					for (const attr of node.attributes) {

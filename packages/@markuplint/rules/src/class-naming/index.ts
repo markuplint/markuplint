@@ -21,9 +21,12 @@ export default createRule<Value>({
 						}
 						reports.push({
 							severity: node.rule.severity,
-							message: `"${className}" class name is unmatched patterns ("${classPatterns.join(
-								'" or "',
-							)}")`,
+							message: messages(
+								'{0} {1} is unmatched patterns ({2})',
+								`"${className}"`,
+								'class name',
+								`"${classPatterns.join('", "')}"`,
+							),
 							line: attr.name.startLine,
 							col: attr.name.startCol,
 							raw: attr.raw.trim(),

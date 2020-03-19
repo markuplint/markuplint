@@ -11,6 +11,7 @@ describe('basic test', () => {
 	it('is reported from 002.html', async () => {
 		const r = await markuplint.exec({
 			files: 'test/fixture/002.html',
+			locale: 'en',
 		});
 		expect(r[0].results).toEqual([
 			{
@@ -63,7 +64,7 @@ describe('basic test', () => {
 			},
 			{
 				severity: 'error',
-				message: 'Missing h1 element',
+				message: 'Missing the h1 element',
 				line: 1,
 				col: 1,
 				raw: '<',
