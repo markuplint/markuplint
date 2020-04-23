@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/html-parser",
-	"version": "1.0.0-alpha.15",
+	"version": "1.0.0-alpha.16",
 	"description": "HTML parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
