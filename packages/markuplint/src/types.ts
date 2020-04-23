@@ -6,7 +6,7 @@ export interface MLResultInfo {
 	filePath: string;
 	sourceCode: string;
 	fixedCode: string;
-	document: Document<any, unknown>;
+	document: Document<any, unknown> | null;
 	parser: string;
 	locale?: string;
 	ruleset: Ruleset;

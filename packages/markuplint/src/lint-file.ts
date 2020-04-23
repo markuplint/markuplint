@@ -1,8 +1,9 @@
 import { ConfigSet, MLFile } from '@markuplint/file-resolver';
-import { MLCore, MLRule, convertRuleset } from '@markuplint/ml-core';
+import { MLCore, MLParseError, MLRule, convertRuleset } from '@markuplint/ml-core';
+import { RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
+import { Document } from '@markuplint/ml-core';
 import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { MLResultInfo } from './types';
-import { RuleConfigValue } from '@markuplint/ml-config';
 import { i18n } from './i18n';
 import { moduleAutoLoader } from './module-auto-loader';
 import path from 'path';
@@ -45,16 +46,37 @@ export async function lintFile(
 	// create MLCore
 	const sourceCode = await file.getContext();
 	const i18nSettings = await i18n(locale);
-	const core = new MLCore(parser, sourceCode, ruleset, rules, i18nSettings);
 
-	const results = await core.verify(fix);
+	let results: VerifiedResult[] = [];
+	let fixedCode = sourceCode;
+	let document: Document<RuleConfigValue, unknown> | null = null;
+
+	try {
+		const core = new MLCore(parser, sourceCode, ruleset, rules, i18nSettings);
+		results = await core.verify(fix);
+		fixedCode = core.document.toString();
+		document = core.document;
+	} catch (err) {
+		if (err instanceof MLParseError) {
+			results = [
+				{
+					ruleId: 'parse-error',
+					severity: 'error',
+					message: err.message,
+					col: err.col,
+					line: err.line,
+					raw: err.raw,
+				},
+			];
+		}
+	}
 
 	return {
 		results,
 		filePath: file.path,
 		sourceCode,
-		fixedCode: core.document.toString(),
-		document: core.document,
+		fixedCode,
+		document,
 		parser: parserModName,
 		locale,
 		ruleset,

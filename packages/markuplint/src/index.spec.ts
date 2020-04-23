@@ -72,4 +72,21 @@ describe('basic test', () => {
 			},
 		]);
 	});
+
+	it('is reported from 006.html', async () => {
+		const r = await markuplint.exec({
+			files: 'test/fixture/006.html',
+			locale: 'en',
+		});
+		expect(r[0].results).toEqual([
+			{
+				severity: 'error',
+				message: 'Invalid element',
+				line: 7,
+				col: 6,
+				raw: '<a>',
+				ruleId: 'parse-error',
+			},
+		]);
+	});
 });
