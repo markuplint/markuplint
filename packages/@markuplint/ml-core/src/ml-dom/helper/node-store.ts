@@ -1,5 +1,6 @@
 import { MLASTAbstructNode } from '@markuplint/ml-ast';
 import MLDOMNode from '../tokens/node';
+import MLParseError from '../../ml-error/ml-parse-error';
 import { MappedNode } from './mapped-nodes';
 import { RuleConfigValue } from '@markuplint/ml-config';
 
@@ -17,7 +18,7 @@ export default class NodeStore {
 		// console.log(`Get: ${astNode.uuid} -> ${astNode.raw.trim()}(${astNode.type})`);
 		const node = this.#store.get(astNode.uuid);
 		if (!node) {
-			throw new Error(`Can not store "${astNode.raw}" by ${astNode.uuid}`);
+			throw new MLParseError(astNode.startLine, astNode.startCol, astNode.raw, astNode.nodeName);
 		}
 		return node as MappedNode<N, T, O>;
 	}
