@@ -5,10 +5,7 @@ import { nameCompare } from './utils';
 export async function getGlobalAttrs() {
 	const $ = await fetch('https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
 	const $article = $('#wikiArticle');
-	const $specials = $article
-		.find('ul')
-		.eq(0)
-		.find('code');
+	const $specials = $article.find('ul').eq(0).find('code');
 
 	const attrs: Attribute[] = [];
 

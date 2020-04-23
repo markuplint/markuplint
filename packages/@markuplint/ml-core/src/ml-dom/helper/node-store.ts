@@ -7,10 +7,7 @@ import { RuleConfigValue } from '@markuplint/ml-config';
 export default class NodeStore {
 	#store = new Map<string, MLDOMNode<any, any, any>>();
 
-	setNode<A extends MLASTAbstructNode, T extends RuleConfigValue, O = null>(
-		astNode: A,
-		node: MLDOMNode<T, O, A>,
-	) {
+	setNode<A extends MLASTAbstructNode, T extends RuleConfigValue, O = null>(astNode: A, node: MLDOMNode<T, O, A>) {
 		this.#store.set(astNode.uuid, node);
 	}
 

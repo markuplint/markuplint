@@ -14,7 +14,7 @@ const bar = new Bar(
 );
 bar.start(total, current, { process: '🚀 Started.' });
 
-export default async function(url: string) {
+export default async function (url: string) {
 	const html = await fetchText(url);
 	const $ = cheerio.load(html);
 	return $;

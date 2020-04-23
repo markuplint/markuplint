@@ -1,6 +1,6 @@
 import readJson from './read-json';
 
-export default function() {
+export default function () {
 	const json = readJson('../src/content-models.json', {
 		models: {
 			'#metadata': [] as string[],

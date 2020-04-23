@@ -92,10 +92,7 @@ function getAttributes($: CheerioStatic, heading: string, tagName: string): Attr
 		.toArray()
 		.map((dt): Attribute | null => {
 			const $dt = $(dt);
-			const name = $dt
-				.find('code')
-				.text()
-				.trim();
+			const name = $dt.find('code').text().trim();
 			if (!name) {
 				return null;
 			}

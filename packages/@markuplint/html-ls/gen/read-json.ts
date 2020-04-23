@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-export default function<T = Record<string, any>>(filePath: string, fallBackContext: T): T {
+export default function <T = Record<string, any>>(filePath: string, fallBackContext: T): T {
 	let json: string;
 	try {
 		json = fs.readFileSync(path.resolve(__dirname, filePath), {

@@ -1,6 +1,6 @@
 import { MLASTNode } from '@markuplint/ml-ast';
 
-export default function(nodeList: MLASTNode[]) {
+export default function (nodeList: MLASTNode[]) {
 	return nodeList.map(n => {
 		if (!n.isGhost) {
 			return `[${n.startLine}:${n.startCol}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${
@@ -13,8 +13,5 @@ export default function(nodeList: MLASTNode[]) {
 }
 
 function visibleWhiteSpace(chars: string) {
-	return chars
-		.replace(/\n/g, '⏎')
-		.replace(/\t/g, '→')
-		.replace(/\s/g, '␣');
+	return chars.replace(/\n/g, '⏎').replace(/\t/g, '→').replace(/\s/g, '␣');
 }

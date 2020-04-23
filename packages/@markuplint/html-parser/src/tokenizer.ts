@@ -3,7 +3,7 @@ import UUID from 'uuid';
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
 
-export default function(raw: string | null, line: number, col: number, startOffset: number): MLToken {
+export default function (raw: string | null, line: number, col: number, startOffset: number): MLToken {
 	raw = raw || '';
 	return {
 		uuid: UUID.v4(),
