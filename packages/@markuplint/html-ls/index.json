@@ -1613,7 +1613,7 @@
 				"ancestor": "map"
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -1712,7 +1712,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "application, document, feed, main, presentation, region",
+				"summary": "application, document, feed, main, none, presentation, region",
 				"roles": {}
 			},
 			"omittion": false,
@@ -1869,7 +1869,7 @@
 				"contents": false
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -2097,7 +2097,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -2268,7 +2268,7 @@
 				"contents": false
 			},
 			"permittedRoles": {
-				"summary": "Any",
+				"summary": "none, presentation",
 				"roles": {}
 			},
 			"omittion": false,
@@ -2298,7 +2298,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "checkbox, link, menuitem, menuitemcheckbox, menuitemradio, radio, switch, tab",
+				"summary": "checkbox, link, menuitem, menuitemcheckbox, menuitemradio, option, radio, switch, tab",
 				"roles": {}
 			},
 			"omittion": false,
@@ -2420,7 +2420,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -2506,7 +2506,7 @@
 				"contents": false
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -2579,7 +2579,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -2755,7 +2755,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -2776,7 +2776,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -2843,7 +2843,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3021,7 +3021,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "group, presentation",
+				"summary": "group, list, none, presentation",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3043,7 +3043,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "listitem",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3099,7 +3099,7 @@
 				"contents": false
 			},
 			"permittedRoles": {
-				"summary": "application, document, img, presentation",
+				"summary": "application, document, img, none, presentation",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3146,7 +3146,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "group, presentation",
+				"summary": "radiogroup, presentation, none",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3185,7 +3185,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "group, presentation",
+				"summary": "group, none, presentation",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3217,7 +3217,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "group, presentation",
+				"summary": "With no figcaption descendant: any, otherwise no permitted roles",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3275,7 +3275,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "group, presentation",
+				"summary": "group, presentation or none",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3297,7 +3297,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "group, presentation",
+				"summary": "search, none or presentation",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3461,7 +3461,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "tab, presentation",
+				"summary": "tab, presentation or none",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3478,7 +3478,7 @@
 				"contents": true
 			},
 			"permittedRoles": {
-				"summary": "tab, presentation",
+				"summary": "tab, presentation or none",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3499,7 +3499,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "tab, presentation",
+				"summary": "tab, presentation or none",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3520,7 +3520,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "tab, presentation",
+				"summary": "tab, presentation or none",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3541,7 +3541,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "tab, presentation",
+				"summary": "tab, presentation or none",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3562,7 +3562,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "tab, presentation",
+				"summary": "tab, presentation or none",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3591,7 +3591,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3622,7 +3622,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "group, presentation",
+				"summary": "group, presentation or none",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3653,7 +3653,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "tab, presentation",
+				"summary": "Any",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3670,7 +3670,7 @@
 				"contents": false
 			},
 			"permittedRoles": {
-				"summary": "presentation",
+				"summary": "presentation or none",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3727,7 +3727,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3789,7 +3789,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "application, document, img",
+				"summary": "application, document, img, none, presentation",
 				"roles": {}
 			},
 			"omittion": false,
@@ -3938,7 +3938,7 @@
 				"contents": false
 			},
 			"permittedRoles": {
-				"summary": "Any",
+				"summary": "with non-empty alt attribute: button checkbox link menuitem menuitemcheckbox menuitemradio option progressbar scrollbar separator slider switch tab treeitem with empty alt attribute, none or presentation with no alt attribute, no role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -4463,7 +4463,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -4497,7 +4497,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -4518,7 +4518,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "menuitem, menuitemcheckbox, menuitemradio, option, presentation, radio, separator, tab, treeitem",
+				"summary": "menuitem, menuitemcheckbox, menuitemradio, option, none, presentation, radio, separator, tab, treeitem",
 				"roles": {}
 			},
 			"omittion": false,
@@ -4549,7 +4549,7 @@
 				"contents": false
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -4689,7 +4689,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "The main role is applied to <main> by default, and the presentation role is permitted as well.",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -4710,7 +4710,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -4828,7 +4828,7 @@
 			"deprecated": true,
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
-				"summary": "If the element is in the list menu state: flow content, or alternatively, zero or more occurrences of <li>, <script>, and <template>. If the element is in the context menu state: zero or more occurrences, in any order, of <menu> (context menu state only), <menuitem>, <hr>, <script>, and <template>.",
+				"summary": "If the element is in the list menu state: flow content, or alternatively, zero or more occurrences of <li>, <script>, and <template>. (list menu is the default state, unless the parent element is a <menu> in the context menu state.) If the element is in the context menu state: zero or more occurrences, in any order, of <menu> (context menu state only), <menuitem>, <hr>, <script>, and <template>.",
 				"tag": "menu",
 				"contents": [
 					{
@@ -4837,7 +4837,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "directory, group, listbox, menu, menubar, none, presentation, radiogroup, tablist, toolbar or tree",
 				"roles": {}
 			},
 			"omittion": false,
@@ -4929,7 +4929,7 @@
 				"contents": false
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -4974,7 +4974,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -5052,7 +5052,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -5168,7 +5168,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -5305,7 +5305,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "directory, group, listbox, menu, menubar, radiogroup, tablist, toolbar, tree, presentation",
+				"summary": "directory, group, listbox, menu, menubar, none, presentation, radiogroup, tablist, toolbar, tree",
 				"roles": {}
 			},
 			"omittion": false,
@@ -5340,7 +5340,7 @@
 				"contents": true
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -5403,7 +5403,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -5503,7 +5503,7 @@
 				"contents": true
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -5561,7 +5561,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -5644,7 +5644,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -5879,7 +5879,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -5960,7 +5960,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "alert, alertdialog, application, banner, complementary, contentinfo, dialog, document, feed, log, main, marquee, navigation, search, status, tabpanel",
+				"summary": "alert, alertdialog, application, banner, complementary, contentinfo, dialog, document, feed, log, main, marquee, navigation, none, note, presentation, search, status, tabpanel",
 				"roles": {}
 			},
 			"omittion": false,
@@ -5981,7 +5981,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "menu",
+				"summary": "menu with no multiple attribute and no size attribute greater than 1, otherwise no role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -6063,7 +6063,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -6109,7 +6109,7 @@
 				"contents": false
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -6265,7 +6265,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -6348,7 +6348,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "button",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -6664,7 +6664,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -6685,7 +6685,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -7030,7 +7030,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "None.",
+				"summary": "No role permitted.",
 				"roles": {}
 			},
 			"omittion": false,
@@ -7101,7 +7101,7 @@
 				"contents": false
 			},
 			"permittedRoles": {
-				"summary": "None",
+				"summary": "No role permitted",
 				"roles": {}
 			},
 			"omittion": false,
@@ -7189,7 +7189,7 @@
 				]
 			},
 			"permittedRoles": {
-				"summary": "directory, group, listbox, menu, menubar, radiogroup, tablist, toolbar, tree, presentation",
+				"summary": "directory, group, listbox, menu, menubar, none, presentation, radiogroup, tablist, toolbar, tree",
 				"roles": {}
 			},
 			"omittion": false,
