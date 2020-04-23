@@ -5523,8 +5523,8 @@
 				{
 					"name": "type",
 					"type": "string",
-					"description": "Only used if the valuetype is set to \"ref\". Specifies the MIME type of values found at the URI specified by value.Specifies the value of the parameter.Specifies the type of the value attribute. Possible values are: data: Default value. The value is passed to the object's implementation as a string. ref: The value is a URI to a resource where run-time values are stored. object: An ID of another <object> in the same document.",
-					"obsolete": true
+					"description": "Only used if the valuetype is set to ref. Specifies the MIME type of values found at the URI specified by value.Specifies the type of the value attribute. Possible values are: data: Default value. The value is passed to the object's implementation as a string. ref: The value is a URI to a resource where run-time values are stored. object: An ID of another <object> in the same document.",
+					"deprecated": true
 				},
 				{
 					"name": "value",
@@ -5535,7 +5535,7 @@
 					"name": "valuetype",
 					"type": "string",
 					"description": "Specifies the type of the value attribute. Possible values are: data: Default value. The value is passed to the object's implementation as a string. ref: The value is a URI to a resource where run-time values are stored. object: An ID of another <object> in the same document.",
-					"obsolete": true
+					"deprecated": true
 				}
 			]
 		},
