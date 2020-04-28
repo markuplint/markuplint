@@ -1,8 +1,8 @@
 import { MLASTNode, MLASTNodeType, MLASTText } from '@markuplint/ml-ast';
-import UUID from 'uuid';
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
 import tagSplitter from './tag-splitter';
+import { v4 as uuid4 } from 'uuid';
 import { walk } from './walk';
 
 export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
@@ -27,7 +27,7 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 			 * first white spaces
 			 */
 			if (/^\s+$/.test(html)) {
-				const uuid = UUID.v4();
+				const uuid = uuid4();
 				const spaces = html;
 				const textNode: MLASTText = {
 					uuid,
@@ -182,7 +182,7 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 				const lastTextContent = rawHtml.slice(lastOffset);
 				// console.log(`"${lastTextContent}"`);
 				if (lastTextContent) {
-					const uuid = UUID.v4();
+					const uuid = uuid4();
 					const line = lastNode ? lastNode.endLine : 0;
 					const col = lastNode ? lastNode.endCol : 0;
 					const lastTextNode: MLASTText = {

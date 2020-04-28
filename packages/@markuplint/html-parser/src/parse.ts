@@ -9,13 +9,13 @@ import {
 	MLASTTag,
 	MLASTText,
 } from '@markuplint/ml-ast';
-import UUID from 'uuid';
 import { flattenNodes } from './flatten-nodes';
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
 import isDocumentFragment from './is-document-fragment';
 import parse5 from 'parse5';
 import parseRawTag from './parse-raw-tag';
+import { v4 as uuid4 } from 'uuid';
 
 const P5_OPTIONS = { sourceCodeLocationInfo: true };
 
@@ -68,7 +68,7 @@ function nodeize(
 	if (!originNode.sourceCodeLocation) {
 		const prevToken = prevNode || parentNode;
 		const node: MLASTOmittedElement = {
-			uuid: UUID.v4(),
+			uuid: uuid4(),
 			raw: '',
 			startOffset: prevToken ? prevToken.endOffset : 0,
 			endOffset: prevToken ? prevToken.endOffset : 0,
@@ -93,7 +93,7 @@ function nodeize(
 	switch (originNode.nodeName) {
 		case '#documentType': {
 			return {
-				uuid: UUID.v4(),
+				uuid: uuid4(),
 				raw,
 				// @ts-ignore
 				name: originNode.name || '',
@@ -119,7 +119,7 @@ function nodeize(
 		}
 		case '#text': {
 			const node: MLASTText = {
-				uuid: UUID.v4(),
+				uuid: uuid4(),
 				raw,
 				startOffset,
 				endOffset,
@@ -139,7 +139,7 @@ function nodeize(
 		}
 		case '#comment': {
 			return {
-				uuid: UUID.v4(),
+				uuid: uuid4(),
 				raw,
 				startOffset,
 				endOffset,
@@ -175,7 +175,7 @@ function nodeize(
 				);
 				const endTagName = endTagTokens.tagName;
 				endTag = {
-					uuid: UUID.v4(),
+					uuid: uuid4(),
 					raw: endTagRaw,
 					startOffset: endTagLoc.startOffset,
 					endOffset: endTagLoc.endOffset,
@@ -196,7 +196,7 @@ function nodeize(
 				};
 			}
 			const startTag: MLASTTag = {
-				uuid: UUID.v4(),
+				uuid: uuid4(),
 				raw: startTagRaw,
 				startOffset,
 				endOffset: startOffset + startTagRaw.length,
