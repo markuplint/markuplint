@@ -18,11 +18,11 @@
 	},
 	"devDependencies": {
 		"@types/parse5": "^5.0.2",
-		"@types/uuid": "^3.4.6"
+		"@types/uuid": "^7.0.3"
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "^1.0.0-alpha.9",
-		"parse5": "^5.1.1",
-		"uuid": "^3.3.3"
+		"parse5": "^6.0.0",
+		"uuid": "^7.0.3"
 	}
 }

@@ -16,12 +16,12 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/uuid": "^3.4.6"
+		"@types/uuid": "^7.0.3"
 	},
 	"dependencies": {
 		"@markuplint/html-parser": "^1.0.0-alpha.16",
 		"@markuplint/ml-ast": "^1.0.0-alpha.9",
-		"uuid": "^3.3.3",
+		"uuid": "^7.0.3",
 		"vue-eslint-parser": "^7.0.0"
 	}
 }
