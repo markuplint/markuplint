@@ -2278,7 +2278,8 @@
 				{
 					"name": "clear",
 					"type": "string",
-					"description": "Indicates where to begin the next line after the break."
+					"description": "Indicates where to begin the next line after the break.",
+					"deprecated": true
 				}
 			]
 		},
@@ -3954,7 +3955,8 @@
 					"name": "align",
 					"type": "string",
 					"description": "Aligns the image with its surrounding context. Use the float and/or vertical-align CSS properties instead of this attribute. Allowed values: top Equivalent to vertical-align: top or vertical-align: text-top middle Equivalent to vertical-align: -moz-middle-with-baseline bottom The default, equivalent to vertical-align: unset or vertical-align: initial left Equivalent to float: left right Equivalent to float: right The width of a border around the image. Use the border CSS property instead.The number of pixels of white space on the left and right of the image. Use the margin CSS property instead.A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG’s HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details. A name for the element. Use the id attribute instead.The number of pixels of white space above and below the image. Use the margin CSS property instead.",
-					"obsolete": true
+					"obsolete": true,
+					"deprecated": true
 				},
 				{
 					"name": "alt",
@@ -3965,7 +3967,8 @@
 					"name": "border",
 					"type": "string",
 					"description": "The width of a border around the image. Use the border CSS property instead.The number of pixels of white space on the left and right of the image. Use the margin CSS property instead.A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG’s HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details. A name for the element. Use the id attribute instead.The number of pixels of white space above and below the image. Use the margin CSS property instead.",
-					"obsolete": true
+					"obsolete": true,
+					"deprecated": true
 				},
 				{
 					"name": "crossorigin",
@@ -3988,7 +3991,8 @@
 					"name": "hspace",
 					"type": "string",
 					"description": "The number of pixels of white space on the left and right of the image. Use the margin CSS property instead.A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG’s HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details. A name for the element. Use the id attribute instead.The number of pixels of white space above and below the image. Use the margin CSS property instead.",
-					"obsolete": true
+					"obsolete": true,
+					"deprecated": true
 				},
 				{
 					"name": "importance",
@@ -4020,13 +4024,15 @@
 					"name": "longdesc",
 					"type": "string",
 					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG’s HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details. A name for the element. Use the id attribute instead.The number of pixels of white space above and below the image. Use the margin CSS property instead.",
-					"obsolete": true
+					"obsolete": true,
+					"deprecated": true
 				},
 				{
 					"name": "name",
 					"type": "string",
 					"description": "A name for the element. Use the id attribute instead.The number of pixels of white space above and below the image. Use the margin CSS property instead.",
-					"obsolete": true
+					"obsolete": true,
+					"deprecated": true
 				},
 				{
 					"name": "referrerpolicy",
@@ -4070,7 +4076,8 @@
 					"name": "vspace",
 					"type": "string",
 					"description": "The number of pixels of white space above and below the image. Use the margin CSS property instead.",
-					"obsolete": true
+					"obsolete": true,
+					"deprecated": true
 				},
 				{
 					"name": "width",
@@ -7067,31 +7074,36 @@
 					"name": "align",
 					"type": "string",
 					"description": "A DOMString which specifies how the cell's context should be aligned horizontally within the cells in the row; this is shorthand for using align on every cell in the row individually. Possible values are: left Align the content of each cell at its left edge. center Center the contents of each cell between their left and right edges. right Align the content of each cell at its right edge. justify Widen whitespaces within the text of each cell so that the text fills the full width of each cell (full justification). char Align each cell in the row on a specific character (such that each row in the column that is configured this way will horizontally align its cells on that character). This uses the char and charoff to establish the alignment character (typically \".\" or \",\" when aligning numerical data) and the number of characters that should follow the alignment character. This alignment type was never widely supported. If no value is expressly set for align, the parent node's value is inherited. Instead of using the obsolete align attribute, you should instead use the CSS text-align property to establish left, center, right, or justify alignment for the row's cells. To apply character-based alignment, set the CSS text-align property to the alignment character (such as \".\" or \",\").",
-					"obsolete": true
+					"obsolete": true,
+					"deprecated": true
 				},
 				{
 					"name": "bgcolor",
 					"type": "string",
 					"description": "A DOMString specifying a color to apply to the backgrounds of each of the row's cells. This can be either an hexadecimal #RRGGBB or #RGB value or a color keyword. Omitting the attribute or setting it to null in JavaScript causes the row's cells to inherit the row's parent element's background color. The <tr> element should be styled using CSS. To give a similar effect as the bgcolor attribute, use the CSS property background-color.",
-					"obsolete": true
+					"obsolete": true,
+					"deprecated": true
 				},
 				{
 					"name": "char",
 					"type": "string",
 					"description": "A DOMString which sets the character to align the cells in each of the row's columns on (each row's centering that uses the same character gets aligned with others using the same character . Typical values for this include a period (\".\") or comma (\",\") when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. This attribute is not only obsolete, but was rarely implemented anyway. To achieve the same effect as the char attribute, set the CSS text-align property to the same string you would specify for the char property, such as text-align: \".\".",
-					"obsolete": true
+					"obsolete": true,
+					"deprecated": true
 				},
 				{
 					"name": "charoff",
 					"type": "string",
 					"description": "A DOMString indicating the number of characters on the tail end of the column's data should be displayed after the alignment character specified by the char attribute. For example, when displaying money values for currencies that use hundredths of a unit (such as the dollar, which is divided into 100 cents), you would typically specify a value of 2, so that in tandem with char being set to \".\", the values in a column would be cleanly aligned on the decimal points, with the number of cents properly displayed to the right of the decimal point. This attribute is obsolete, and was never widely supported anyway.",
-					"obsolete": true
+					"obsolete": true,
+					"deprecated": true
 				},
 				{
 					"name": "valign",
 					"type": "string",
 					"description": "A DOMString specifying the vertical alignment of the text within each cell in the row. Possible values for this attribute are: baseline Aligns each cell's content text as closely as possible to the bottom of the cell, handling alignment of different fonts and font sizes by aligning the characters along the baseline of the font(s) used in the row. If all of the characters in the row are the same size, the effect is the same as bottom. bottom, Draws the text in each of the row's cells as closely as possible to the bottom edge of those cells. middle Each cell's text is vertically centered. top Each cell's text is drawn as closely as possible to the top edge of the containing cell. Don't use the obsolete valign attribute. Instead, add the CSS vertical-align property to the row.",
-					"obsolete": true
+					"obsolete": true,
+					"deprecated": true
 				}
 			]
 		},

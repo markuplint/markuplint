@@ -85,10 +85,10 @@ export async function getHTMLElement(link: string) {
 
 function getAttributes($: CheerioStatic, heading: string, tagName: string): Attribute[] {
 	const $heading = $(heading);
-	const $outline = getThisOutline($heading);
+	const $outline = getThisOutline($, $heading);
 	const { attributes } = getAttribute(tagName);
 	return $outline
-		.find('>dt')
+		.find('> dl > dt')
 		.toArray()
 		.map((dt): Attribute | null => {
 			const $dt = $(dt);
@@ -96,10 +96,14 @@ function getAttributes($: CheerioStatic, heading: string, tagName: string): Attr
 			if (!name) {
 				return null;
 			}
+			const $myHeading = getItsHeading($dt);
 			const experimental = !!$dt.find('.icon-beaker').length || undefined;
 			const obsolete = !!$dt.find('.icon-trash').length || !!$dt.find('.obsolete').length || undefined;
 			const deprecated =
-				!!$dt.find('.icon-thumbs-down-alt').length || !!$dt.find('.deprecated').length || undefined;
+				!!$dt.find('.icon-thumbs-down-alt').length ||
+				!!$dt.find('.deprecated').length ||
+				$myHeading?.attr('id') === 'Deprecated_attributes' ||
+				undefined;
 			const nonStandard = !!$dt.find('.icon-warning-sign').length || undefined;
 			const description = $dt
 				.nextAll('dd')
@@ -137,14 +141,39 @@ function getProperty($: CheerioStatic, prop: string) {
 		.replace(/(?:\r?\n|\s)+/gi, ' ');
 }
 
-function getThisOutline($start: Cheerio) {
+function getThisOutline($: CheerioStatic, $start: Cheerio) {
+	const $container = $('<div></div>');
 	let $next = $start.next();
-	let $els = $start.clone();
+	const els = [$start.clone()];
 	while (!!$next.length && !$next.filter('h2').length) {
-		$els = $els.add($next.clone());
+		els.push($next.clone());
 		$next = $next.next();
 	}
-	return $els;
+	els.forEach(el => $container.append(el));
+	return $container;
+}
+
+function getItsHeading($start: Cheerio) {
+	let $needle = upToPrevOrParent($start);
+	while ($needle.length) {
+		if (isHeading($needle)) {
+			return $needle;
+		}
+		$needle = upToPrevOrParent($needle);
+	}
+	return null;
+}
+
+function upToPrevOrParent($start: Cheerio) {
+	let $needle = $start.prev();
+	if (!$needle.length) {
+		$needle = $start.parent();
+	}
+	return $needle;
+}
+
+function isHeading($el: Cheerio) {
+	return /^h[1-6]$/i.test($el[0].tagName);
 }
 
 async function getHTMLElementLinks() {
