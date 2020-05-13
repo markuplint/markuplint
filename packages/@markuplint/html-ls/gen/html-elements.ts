@@ -36,7 +36,12 @@ export async function getHTMLElement(link: string) {
 		.replace(/(?:\r?\n|\s)+/gi, ' ');
 
 	const experimental = !!$article.find('.blockIndicator.experimental').length || undefined;
-	const obsolete = !!$article.find('.obsoleteHeader').length || undefined;
+	const obsolete =
+		!!$article.find('.obsoleteHeader').length ||
+		!!$('h1')
+			.text()
+			.match(/obsolete/i) ||
+		undefined;
 	const deprecated = !!$article.find('.deprecatedHeader').length || undefined;
 	const nonStandard = !!$article.find('.nonStandardHeader').length || undefined;
 
