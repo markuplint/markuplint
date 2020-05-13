@@ -35,15 +35,31 @@ export async function getHTMLElement(link: string) {
 		.trim()
 		.replace(/(?:\r?\n|\s)+/gi, ' ');
 
-	const experimental = !!$article.find('.blockIndicator.experimental').length || undefined;
-	const obsolete =
-		!!$article.find('.obsoleteHeader').length ||
-		!!$('h1')
-			.text()
-			.match(/obsolete/i) ||
-		undefined;
-	const deprecated = !!$article.find('.deprecatedHeader').length || undefined;
-	const nonStandard = !!$article.find('.nonStandardHeader').length || undefined;
+	const $bcTable = $article.find('.bc-table');
+	const $bcTableFirstRow = $bcTable.find('tbody tr:first-child th');
+	const isBcTableIsAvailabled = $bcTableFirstRow.find('code').text().trim() === name;
+
+	let experimental: true | undefined;
+	let obsolete: true | undefined;
+	let deprecated: true | undefined;
+	let nonStandard: true | undefined;
+
+	if (isBcTableIsAvailabled) {
+		experimental = !!$bcTableFirstRow.find('.ic-experimental').length || undefined;
+		obsolete = !!$bcTableFirstRow.find('.ic-obsolete').length || undefined;
+		deprecated = !!$bcTableFirstRow.find('.ic-deprecated').length || undefined;
+		nonStandard = !!$bcTableFirstRow.find('.ic-non-standard').length || undefined;
+	} else {
+		experimental = !!$article.find('.blockIndicator.experimental').length || undefined;
+		obsolete =
+			!!$article.find('.obsoleteHeader').length ||
+			!!$('h1')
+				.text()
+				.match(/obsolete/i) ||
+			undefined;
+		deprecated = !!$article.find('.deprecatedHeader').length || undefined;
+		nonStandard = !!$article.find('.nonStandardHeader').length || undefined;
+	}
 
 	const categories: ContentModel[] = [];
 	const cat = getProperty($, 'Content categories');
