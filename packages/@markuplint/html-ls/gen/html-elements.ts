@@ -104,14 +104,15 @@ export async function getHTMLElement(link: string) {
 	return spec;
 }
 
-function getAttributes($: CheerioStatic, heading: string, tagName: string): Attribute[] {
+export function getAttributes($: CheerioStatic, heading: string, tagName: string): Attribute[] {
 	const $heading = $(heading);
 	const $outline = getThisOutline($, $heading);
 	const { attributes } = getAttribute(tagName);
-	return $outline
+	const result: Attribute[] = attributes.map(a => ({ ...a, description: '' }));
+	$outline
 		.find('> dl > dt')
 		.toArray()
-		.map((dt): Attribute | null => {
+		.forEach(dt => {
 			const $dt = $(dt);
 			const name = $dt.find('code').text().trim();
 			if (!name) {
@@ -133,18 +134,31 @@ function getAttributes($: CheerioStatic, heading: string, tagName: string): Attr
 				.join('')
 				.trim()
 				.replace(/(?:\r?\n|\s)+/gi, ' ');
-			const spec = attributes.find(attr => attr.name === name) || { name: tagName, type: 'string' };
-			return {
-				...spec,
+
+			const specIndex = result.findIndex(attr => attr.name === name);
+			if (specIndex === -1) {
+				result.push({
+					name,
+					type: 'String',
+					description,
+					experimental,
+					obsolete,
+					deprecated,
+					nonStandard,
+				});
+				return;
+			}
+			result[specIndex] = {
 				name,
-				experimental,
 				description,
+				experimental,
 				obsolete,
 				deprecated,
 				nonStandard,
+				...attributes[specIndex],
 			};
-		})
-		.filter((attr): attr is Attribute => !!attr);
+		});
+	return result;
 }
 
 function getProperty($: CheerioStatic, prop: string) {
