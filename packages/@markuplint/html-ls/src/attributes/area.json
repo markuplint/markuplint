@@ -1,6 +1,18 @@
 {
-	"tag": "a",
+	"tag": "area",
 	"attributes": [
+		{
+			"name": "alt",
+			"type": "String",
+			"required": true,
+			"condition": {
+				"self": "[href]"
+			}
+		},
+		{
+			"name": "coords",
+			"type": "Coords"
+		},
 		{
 			"name": "download",
 			"type": "String"
@@ -8,10 +20,6 @@
 		{
 			"name": "href",
 			"type": "URL"
-		},
-		{
-			"name": "hreflang",
-			"type": "BCP47"
 		},
 		{
 			"name": "ping",
@@ -27,6 +35,11 @@
 			"condition": {
 				"self": "[href]"
 			}
+		},
+		{
+			"name": "shape",
+			"type": "String",
+			"enum": ["rect", "circle", "poly", "default"]
 		},
 		{
 			"name": "target",

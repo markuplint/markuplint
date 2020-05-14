@@ -1,0 +1,9 @@
+{
+	"tag": "colgroup",
+	"attributes": [
+		{
+			"name": "span",
+			"type": "NonZeroUint"
+		}
+	]
+}

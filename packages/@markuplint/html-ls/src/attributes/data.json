@@ -1,0 +1,9 @@
+{
+	"tag": "data",
+	"attributes": [
+		{
+			"name": "value",
+			"type": "String"
+		}
+	]
+}

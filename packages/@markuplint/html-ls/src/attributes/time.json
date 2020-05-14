@@ -1,0 +1,26 @@
+{
+	"tag": "time",
+	"attributes": [
+		{
+			"name": "kind",
+			"type": "String",
+			"enum": ["subtitles", "captions", "descriptions", "chapters", "metadata"]
+		},
+		{
+			"name": "src",
+			"type": "URL"
+		},
+		{
+			"name": "srclang",
+			"type": "BCP47"
+		},
+		{
+			"name": "label",
+			"type": "String"
+		},
+		{
+			"name": "default",
+			"type": "Boolean"
+		}
+	]
+}

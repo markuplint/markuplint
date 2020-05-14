@@ -1,0 +1,78 @@
+{
+	"tag": "li",
+	"attributes": [
+		{
+			"name": "href",
+			"type": "URL"
+		},
+		{
+			"name": "crossorigin",
+			"type": "String",
+			"enum": ["anonymous", "use-credentials"]
+		},
+		{
+			"name": "rel",
+			"type": "LinkTypeList"
+		},
+		{
+			"name": "media",
+			"type": "MediaQueryList"
+		},
+		{
+			"name": "integrity",
+			"type": "String"
+		},
+		{
+			"name": "hreflang",
+			"type": "BCP47"
+		},
+		{
+			"name": "type",
+			"type": "MIMEType"
+		},
+		{
+			"name": "referrerpolicy",
+			"type": "ReferrerPolicy"
+		},
+		{
+			"name": "sizes",
+			"type": "LinkSizes"
+		},
+		{
+			"name": "imagesrcset",
+			"type": "SrcSet",
+			"condition": {
+				"self": "[imagesizes]"
+			}
+		},
+		{
+			"name": "imagesizes",
+			"type": "SourceSizeList",
+			"condition": {
+				"self": "[imagesrcset]"
+			}
+		},
+		{
+			"name": "as",
+			"type": "Destination",
+			"condition": {
+				"self": ["[rel=preload]", "[rel=modulepreload]"]
+			}
+		},
+		{
+			"name": "color",
+			"type": "Color",
+			"condition": {
+				"self": "[rel=mask-icon]"
+			}
+		},
+		{
+			"name": "importance",
+			"type": "String",
+			"enum": ["auto", "high", "low"],
+			"condition": {
+				"self": ["[rel=preload]", "[rel=prefetch]"]
+			}
+		}
+	]
+}

@@ -3,53 +3,46 @@
 	"attributes": [
 		{
 			"name": "alt",
-			"type": "string"
+			"type": "String"
 		},
 		{
 			"name": "crossorigin",
-			"type": "string",
+			"type": "String",
 			"enum": ["anonymous", "use-credentials"]
 		},
 		{
 			"name": "decoding",
-			"type": "string",
+			"type": "String",
 			"enum": ["sync", "async", "auto"]
 		},
 		{
 			"name": "height",
-			"type": "uint"
+			"type": "Uint"
 		},
 		{
 			"name": "importance",
-			"type": "string",
+			"type": "String",
 			"enum": ["auto", "high", "low"]
 		},
 		{
-			"name": "intrinsicsize",
-			"type": "WIP"
-		},
-		{
 			"name": "ismap",
-			"type": "boolean",
+			"type": "Boolean",
 			"condition": {
 				"ancestor": "a[href]"
 			}
 		},
 		{
+			"name": "loading",
+			"type": "String",
+			"enum": ["eager", "lazy"]
+		},
+		{
 			"name": "referrerpolicy",
-			"type": "string",
-			"enum": [
-				"no-referrer",
-				"no-referrer-when-downgrade",
-				"origin",
-				"origin-when-cross-origin",
-				"strict-origin-when-cross-origin",
-				"unsafe-url"
-			]
+			"type": "ReferrerPolicy"
 		},
 		{
 			"name": "sizes",
-			"type": "WIP"
+			"type": "SourceSizeList"
 		},
 		{
 			"name": "src",
@@ -58,11 +51,11 @@
 		},
 		{
 			"name": "srcset",
-			"type": "WIP"
+			"type": "SrcSet"
 		},
 		{
 			"name": "width",
-			"type": "uint"
+			"type": "Uint"
 		},
 		{
 			"name": "usemap",

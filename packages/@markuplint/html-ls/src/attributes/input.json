@@ -1,0 +1,296 @@
+{
+	"tag": "input",
+	"attributes": [
+		{
+			"name": "accept",
+			"type": "AcceptList",
+			"condition": {
+				"self": "[type=file]"
+			}
+		},
+		{
+			"name": "alt",
+			"type": "String",
+			"condition": {
+				"self": "[type=image]"
+			}
+		},
+		{
+			"name": "autocomplete",
+			"type": "AutoComplete",
+			"condition": {
+				"self": [
+					"[type=hidden]",
+					"[type=text]",
+					"[type=search]",
+					"[type=url]",
+					"[type=tel]",
+					"[type=email]",
+					"[type=password]",
+					"[type=date]",
+					"[type=month]",
+					"[type=week]",
+					"[type=time]",
+					"[type=datetime-local]",
+					"[type=number]",
+					"[type=range]",
+					"[type=color]"
+				]
+			}
+		},
+		{
+			"name": "checked",
+			"type": "Boolean",
+			"condition": {
+				"self": ["[type=checkbox]", "[type=radio]"]
+			}
+		},
+		{
+			"name": "dirname",
+			"type": "String",
+			"condition": {
+				"self": ["[type=text]", "[type=search]"]
+			}
+		},
+		{
+			"name": "disabled",
+			"type": "Boolean"
+		},
+		{
+			"name": "form",
+			"type": "DOMID",
+			"condition": {
+				"self": ["[type=file]", "[type=file]"]
+			}
+		},
+		{
+			"name": "formaction",
+			"type": "URL",
+			"condition": {
+				"self": ["[type=submit]", "[type=image]"]
+			}
+		},
+		{
+			"name": "formenctype",
+			"type": "String",
+			"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"],
+			"condition": {
+				"self": ["[type=submit]", "[type=image]"]
+			}
+		},
+		{
+			"name": "formmethod",
+			"type": "String",
+			"enum": ["post", "get", "dialog"],
+			"condition": {
+				"self": ["[type=submit]", "[type=image]"]
+			}
+		},
+		{
+			"name": "formnovalidate",
+			"type": "Boolean",
+			"condition": {
+				"self": ["[type=submit]", "[type=image]"]
+			}
+		},
+		{
+			"name": "formtarget",
+			"type": "Target",
+			"condition": {
+				"self": ["[type=submit]", "[type=image]"]
+			}
+		},
+		{
+			"name": "height",
+			"type": "Uint",
+			"condition": {
+				"self": "[type=image]"
+			}
+		},
+		{
+			"name": "list",
+			"type": "DOMID",
+			"condition": {
+				"self": [
+					"[type=text]",
+					"[type=search]",
+					"[type=url]",
+					"[type=tel]",
+					"[type=email]",
+					"[type=date]",
+					"[type=month]",
+					"[type=week]",
+					"[type=time]",
+					"[type=datetime-local]",
+					"[type=number]",
+					"[type=range]",
+					"[type=color]"
+				]
+			}
+		},
+		{
+			"name": "max",
+			"type": "String",
+			"condition": {
+				"self": [
+					"[type=date]",
+					"[type=month]",
+					"[type=week]",
+					"[type=time]",
+					"[type=datetime-local]",
+					"[type=number]",
+					"[type=range]"
+				]
+			}
+		},
+		{
+			"name": "maxlength",
+			"type": "Uint",
+			"condition": {
+				"self": ["[type=text]", "[type=search]", "[type=url]", "[type=tel]", "[type=email]", "[type=password]"]
+			}
+		},
+		{
+			"name": "min",
+			"type": "String",
+			"condition": {
+				"self": [
+					"[type=date]",
+					"[type=month]",
+					"[type=week]",
+					"[type=time]",
+					"[type=datetime-local]",
+					"[type=number]",
+					"[type=range]"
+				]
+			}
+		},
+		{
+			"name": "minlength",
+			"type": "Uint",
+			"condition": {
+				"self": ["[type=text]", "[type=search]", "[type=url]", "[type=tel]", "[type=email]", "[type=password]"]
+			}
+		},
+		{
+			"name": "multiple",
+			"type": "Boolean",
+			"condition": {
+				"self": ["[type=email]", "[type=file]"]
+			}
+		},
+		{
+			"name": "name",
+			"type": "Boolean"
+		},
+		{
+			"name": "pattern",
+			"type": "String",
+			"condition": {
+				"self": ["[type=text]", "[type=search]", "[type=url]", "[type=tel]", "[type=email]", "[type=password]"]
+			}
+		},
+		{
+			"name": "placeholder",
+			"type": "String",
+			"condition": {
+				"self": [
+					"[type=text]",
+					"[type=search]",
+					"[type=url]",
+					"[type=tel]",
+					"[type=email]",
+					"[type=password]",
+					"[type=number]"
+				]
+			}
+		},
+		{
+			"name": "readonly",
+			"type": "Boolean",
+			"condition": {
+				"self": [
+					"[type=text]",
+					"[type=search]",
+					"[type=url]",
+					"[type=tel]",
+					"[type=email]",
+					"[type=password]",
+					"[type=date]",
+					"[type=month]",
+					"[type=week]",
+					"[type=time]",
+					"[type=datetime-local]",
+					"[type=number]"
+				]
+			}
+		},
+		{
+			"name": "required",
+			"type": "Boolean",
+			"condition": {
+				"self": [
+					"[type=text]",
+					"[type=search]",
+					"[type=url]",
+					"[type=tel]",
+					"[type=email]",
+					"[type=password]",
+					"[type=date]",
+					"[type=month]",
+					"[type=week]",
+					"[type=time]",
+					"[type=datetime-local]",
+					"[type=number]",
+					"[type=checkbox]",
+					"[type=radio]",
+					"[type=file]"
+				]
+			}
+		},
+		{
+			"name": "size",
+			"type": "NonZeroUint",
+			"condition": {
+				"self": ["[type=text]", "[type=search]", "[type=url]", "[type=tel]", "[type=email]", "[type=password]"]
+			}
+		},
+		{
+			"name": "src",
+			"type": "URL",
+			"condition": {
+				"self": "[type=image]"
+			}
+		},
+		{
+			"name": "step",
+			"type": "String",
+			"condition": {
+				"self": [
+					"[type=date]",
+					"[type=month]",
+					"[type=week]",
+					"[type=time]",
+					"[type=datetime-local]",
+					"[type=number]",
+					"[type=range]"
+				]
+			}
+		},
+		{
+			"name": "type",
+			"type": "Boolean"
+		},
+		{
+			"name": "value",
+			"type": "Boolean"
+		},
+		{
+			"name": "width",
+			"type": "Uint",
+			"condition": {
+				"self": "[type=image]"
+			}
+		}
+	]
+}

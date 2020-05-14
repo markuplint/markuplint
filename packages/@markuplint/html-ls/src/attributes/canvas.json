@@ -1,0 +1,13 @@
+{
+	"tag": "canvas",
+	"attributes": [
+		{
+			"name": "height",
+			"type": "Uint"
+		},
+		{
+			"name": "width",
+			"type": "Uint"
+		}
+	]
+}

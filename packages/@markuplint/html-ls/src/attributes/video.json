@@ -1,0 +1,51 @@
+{
+	"tag": "video",
+	"attributes": [
+		{
+			"name": "autoplay",
+			"type": "Boolean"
+		},
+		{
+			"name": "controls",
+			"type": "Boolean"
+		},
+		{
+			"name": "crossorigin",
+			"type": "String",
+			"enum": ["anonymous", "use-credentials"]
+		},
+		{
+			"name": "height",
+			"type": "Uint"
+		},
+		{
+			"name": "loop",
+			"type": "Boolean"
+		},
+		{
+			"name": "muted",
+			"type": "Boolean"
+		},
+		{
+			"name": "preload",
+			"type": "String",
+			"enum": ["none", "metadata", "auto", ""]
+		},
+		{
+			"name": "playsinline",
+			"type": "Boolean"
+		},
+		{
+			"name": "poster",
+			"type": "URL"
+		},
+		{
+			"name": "src",
+			"type": "URL"
+		},
+		{
+			"name": "width",
+			"type": "Uint"
+		}
+	]
+}

@@ -1,0 +1,13 @@
+{
+	"tag": "del",
+	"attributes": [
+		{
+			"name": "cite",
+			"type": "URL"
+		},
+		{
+			"name": "datetime",
+			"type": "Date"
+		}
+	]
+}

@@ -1,0 +1,10 @@
+{
+	"tag": "_custom",
+	"attributes": [
+		{
+			"name": "is",
+			"type": "String",
+			"noUse": true
+		}
+	]
+}

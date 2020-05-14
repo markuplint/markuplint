@@ -1,0 +1,9 @@
+{
+	"tag": "style",
+	"attributes": [
+		{
+			"name": "media",
+			"type": "MediaQuery"
+		}
+	]
+}

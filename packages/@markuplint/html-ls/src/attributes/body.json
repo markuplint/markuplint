@@ -1,0 +1,69 @@
+{
+	"tag": "body",
+	"attributes": [
+		{
+			"name": "onafterprint",
+			"type": "Function"
+		},
+		{
+			"name": "onbeforeprint",
+			"type": "Function"
+		},
+		{
+			"name": "onbeforeunload",
+			"type": "Function"
+		},
+		{
+			"name": "onhashchange",
+			"type": "Function"
+		},
+		{
+			"name": "onlanguagechange",
+			"type": "Function"
+		},
+		{
+			"name": "onmessage",
+			"type": "Function"
+		},
+		{
+			"name": "onmessageerror",
+			"type": "Function"
+		},
+		{
+			"name": "onoffline",
+			"type": "Function"
+		},
+		{
+			"name": "ononline",
+			"type": "Function"
+		},
+		{
+			"name": "onpagehide",
+			"type": "Function"
+		},
+		{
+			"name": "onpageshow",
+			"type": "Function"
+		},
+		{
+			"name": "onpopstate",
+			"type": "Function"
+		},
+		{
+			"name": "onrejectionhandled",
+			"type": "Function"
+		},
+		{
+			"name": "onstorage",
+			"type": "Function"
+		},
+		{
+			"name": "onunhandledrejection",
+			"type": "Function"
+		},
+		{
+			"name": "onunload",
+			"type": "Function"
+		}
+	]
+}

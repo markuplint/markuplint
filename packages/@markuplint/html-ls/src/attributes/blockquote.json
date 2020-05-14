@@ -1,0 +1,9 @@
+{
+	"tag": "blockquote",
+	"attributes": [
+		{
+			"name": "cite",
+			"type": "URL"
+		}
+	]
+}
