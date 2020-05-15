@@ -1,6 +1,8 @@
 # 必須属性 (`required-attr`)
 
-設定された属性が要素上に存在しない場合に警告をします。
+設定された属性もしくは仕様上必須となっている属性が要素上に存在しない場合に警告をします。
+
+[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-ls`](https://github.com/markuplint/markuplint/blob/master/packages/%40markuplint/html-ls/index.json)に設定値を持っています。
 
 ## ルールの詳細
 
