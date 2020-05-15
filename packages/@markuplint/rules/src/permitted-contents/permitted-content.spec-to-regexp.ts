@@ -1,4 +1,5 @@
 import {
+	ContentModel,
 	PermittedContent,
 	PermittedContentChoice,
 	PermittedContentInterleave,
@@ -187,7 +188,7 @@ export default class ExpGenerator {
 						break;
 					}
 					default: {
-						const selectors = unfoldContentModelsToTags(name);
+						const selectors = unfoldContentModelsToTags(name as ContentModel);
 						const counter = this._idCounter++;
 						selectors.forEach(selector => {
 							if (selector === '#custom') {

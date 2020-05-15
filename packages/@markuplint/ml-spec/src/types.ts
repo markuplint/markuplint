@@ -4,20 +4,22 @@ import { ContentModel, PermittedStructuresSchema } from './permitted-structres';
  * markuplit Markup-language spec
  */
 export interface MLMLSpec {
-	$schema?: string;
-
-	/**
-	 * Reference URLs
-	 */
-	cites?: string[];
-	def?: {
-		'#globalAttrs'?: Attribute[];
-		'#roles'?: ARIRRoleAttribute[];
-		'#ariaAttrs'?: ARIAAttribute[];
-		'#contentModels'?: { [model in ContentModel]?: string[] };
-	};
+	cites: Cites;
+	def: SpecDefs;
 	specs: ElementSpec[];
 }
+
+/**
+ * Reference URLs
+ */
+export type Cites = string[];
+
+export type SpecDefs = {
+	'#globalAttrs': Attribute[];
+	'#roles': ARIRRoleAttribute[];
+	'#ariaAttrs': ARIAAttribute[];
+	'#contentModels': { [model in ContentModel]?: string[] };
+};
 
 /**
  * Element spec

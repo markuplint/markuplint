@@ -1,6 +1,6 @@
+import { ContentModel, PermittedStructuresSchema } from '@markuplint/ml-spec';
 import { Element, Result, createRule } from '@markuplint/ml-core';
 import ExpGenerator from './permitted-content.spec-to-regexp';
-import { PermittedStructuresSchema } from '@markuplint/ml-spec';
 import htmlSpec from './html-spec';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
@@ -187,7 +187,7 @@ function match(exp: RegExp, nodes: TargetNodes) {
 			switch (type) {
 				case 'ACM': {
 					const [model, tag] = _selector;
-					const selectors = unfoldContentModelsToTags(`#${model}`).filter(selector => {
+					const selectors = unfoldContentModelsToTags(`#${model}` as ContentModel).filter(selector => {
 						const [, tagName] = /^([^[\]]+)(?:\[[^\]]+\])?$/.exec(selector) || [];
 						return tagName.toLowerCase() === tag.toLowerCase();
 					});
@@ -222,7 +222,9 @@ function match(exp: RegExp, nodes: TargetNodes) {
 						: null;
 					_selector.forEach(content => {
 						if (content[0] === '_') {
-							unfoldContentModelsToTags(content.replace('_', '#')).forEach(tag => contents.add(tag));
+							unfoldContentModelsToTags(content.replace('_', '#') as ContentModel).forEach(tag =>
+								contents.add(tag),
+							);
 							return;
 						}
 						contents.add(content);
