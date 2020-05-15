@@ -1,6 +1,6 @@
 import html, { Attribute } from '@markuplint/html-ls';
 
-export default function attrSpec(tag: string) {
+export function attrSpecs(tag: string) {
 	tag = tag.toLowerCase();
 	const spec = html.specs.find(spec => spec.name === tag);
 	if (!spec) {

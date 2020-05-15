@@ -1,5 +1,5 @@
 import { Result, createRule } from '@markuplint/ml-core';
-import attrSpec from './attr-spec';
+import { attrSpecs } from '../helpers';
 
 type RequiredAttributes = string | string[];
 
@@ -13,7 +13,7 @@ export default createRule<RequiredAttributes, null>({
 		await document.walkOn('Element', async node => {
 			const customRequiredAttrs = typeof node.rule.value === 'string' ? [node.rule.value] : node.rule.value;
 
-			const attributeSpecs = attrSpec(node.nodeName).map(attr => {
+			const attributeSpecs = attrSpecs(node.nodeName).map(attr => {
 				const required = customRequiredAttrs.includes(attr.name);
 				if (required) {
 					return {
