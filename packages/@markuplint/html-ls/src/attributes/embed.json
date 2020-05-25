@@ -1,0 +1,21 @@
+{
+	"tag": "embed",
+	"attributes": [
+		{
+			"name": "height",
+			"type": "Uint"
+		},
+		{
+			"name": "src",
+			"type": "URL"
+		},
+		{
+			"name": "type",
+			"type": "String"
+		},
+		{
+			"name": "width",
+			"type": "Uint"
+		}
+	]
+}

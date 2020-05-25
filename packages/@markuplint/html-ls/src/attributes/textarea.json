@@ -1,0 +1,58 @@
+{
+	"tag": "textarea",
+	"attributes": [
+		{
+			"name": "autocomplete",
+			"type": "AutoComplete"
+		},
+		{
+			"name": "cols",
+			"type": "Uint"
+		},
+		{
+			"name": "dirname",
+			"type": "String"
+		},
+		{
+			"name": "disabled",
+			"type": "Boolean"
+		},
+		{
+			"name": "form",
+			"type": "DOMID"
+		},
+		{
+			"name": "maxlength",
+			"type": "Uint"
+		},
+		{
+			"name": "minlength",
+			"type": "Uint"
+		},
+		{
+			"name": "name",
+			"type": "String"
+		},
+		{
+			"name": "placeholder",
+			"type": "String"
+		},
+		{
+			"name": "readonly",
+			"type": "Boolean"
+		},
+		{
+			"name": "required",
+			"type": "Boolean"
+		},
+		{
+			"name": "rows",
+			"type": "NonZeroUint"
+		},
+		{
+			"name": "wrap",
+			"type": "String",
+			"enum": ["soft", "hard"]
+		}
+	]
+}

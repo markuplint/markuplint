@@ -12,6 +12,7 @@ import DeprecatedElement from './deprecated-element';
 import Doctype from './doctype';
 import IdDuplication from './id-duplication';
 import Indentation from './indentation';
+import InvalidAttr from './invalid-attr';
 import LandmarkRoles from './landmark-roles';
 import PermittedContents from './permitted-contents';
 import RequiredAttr from './required-attr';
@@ -32,6 +33,7 @@ export default [
 	Doctype,
 	IdDuplication,
 	Indentation,
+	InvalidAttr,
 	LandmarkRoles,
 	PermittedContents,
 	RequiredAttr,

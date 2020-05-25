@@ -1,0 +1,16 @@
+{
+	"tag": "base",
+	"attributes": [
+		{
+			"name": "href",
+			"type": "URL"
+		},
+		{
+			"name": "target",
+			"type": "String",
+			"condition": {
+				"self": "[href]"
+			}
+		}
+	]
+}

@@ -1,0 +1,38 @@
+{
+	"tag": "script",
+	"attributes": [
+		{
+			"name": "src",
+			"type": "URL"
+		},
+		{
+			"name": "type",
+			"type": "String"
+		},
+		{
+			"name": "nomodule",
+			"type": "Boolean"
+		},
+		{
+			"name": "async",
+			"type": "Boolean"
+		},
+		{
+			"name": "defer",
+			"type": "Boolean"
+		},
+		{
+			"name": "crossorigin",
+			"type": "String",
+			"enum": ["anonymous", "use-credentials"]
+		},
+		{
+			"name": "integrity",
+			"type": "String"
+		},
+		{
+			"name": "referrerpolicy",
+			"type": "ReferrerPolicy"
+		}
+	]
+}

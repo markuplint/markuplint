@@ -1,20 +1,36 @@
 # 必須属性 (`required-attr`)
 
-設定された属性が要素上に存在しない場合に警告をします。
+設定された属性もしくは仕様上必須となっている属性が要素上に存在しない場合に警告をします。
+
+[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-ls`](https://github.com/markuplint/markuplint/tree/master/packages/%40markuplint/html-ls/src/attributes)に設定値を持っています。
 
 ## ルールの詳細
 
+`<img>` 要素の `src` 属性は[HTML Living Standard](https://momdo.github.io/html/)では必須となります。
+
 👎 間違ったコード例
 
-`{ "required-attr": "alt" }`
+```html
+<img />
+```
+
+👍 正しいコード例
+
+```html
+<img src="/path/to/image.png" />
+```
+
+### 独自指定の例
+
+`{ "required-attr": "alt" }` として `alt` 属性を必須とします。
+
+👎 間違ったコード例
 
 ```html
 <img src="/path/to/image.png" />
 ```
 
 👍 正しいコード例
-
-`{ "required-attr": "alt" }`
 
 ```html
 <img src="/path/to/image.png" alt="alternative text" />
@@ -33,7 +49,7 @@
 ```json:title=.markuplintrc
 {
 	"rules": {
-		"required-attr": ["alt", "src"]
+		"required-attr": ["alt", "width", "height"]
 	}
 }
 ```

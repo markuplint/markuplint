@@ -1,0 +1,17 @@
+{
+	"tag": "fieldset",
+	"attributes": [
+		{
+			"name": "disabled",
+			"type": "Boolean"
+		},
+		{
+			"name": "form",
+			"type": "DOMID"
+		},
+		{
+			"name": "name",
+			"type": "String"
+		}
+	]
+}

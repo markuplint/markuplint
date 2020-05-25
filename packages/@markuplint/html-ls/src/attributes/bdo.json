@@ -1,0 +1,10 @@
+{
+	"tag": "bdo",
+	"attributes": [
+		{
+			"name": "dir",
+			"type": "String",
+			"enum": ["ltr", "rtl"]
+		}
+	]
+}

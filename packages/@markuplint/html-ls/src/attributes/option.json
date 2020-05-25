@@ -1,0 +1,21 @@
+{
+	"tag": "option",
+	"attributes": [
+		{
+			"name": "disabled",
+			"type": "Boolean"
+		},
+		{
+			"name": "label",
+			"type": "String"
+		},
+		{
+			"name": "selected",
+			"type": "Boolean"
+		},
+		{
+			"name": "value",
+			"type": "String"
+		}
+	]
+}

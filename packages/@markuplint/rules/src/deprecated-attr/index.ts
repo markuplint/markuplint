@@ -1,6 +1,5 @@
 import { Result, createRule } from '@markuplint/ml-core';
-import { getSpecByTagName } from '@markuplint/ml-spec';
-import specs from '@markuplint/html-ls';
+import { attrSpecs } from '../helpers';
 
 export default createRule({
 	name: 'deprecated-attr',
@@ -9,15 +8,11 @@ export default createRule({
 	async verify(document, translate) {
 		const reports: Result[] = [];
 		await document.walkOn('Element', async element => {
-			const spec = getSpecByTagName(element.nodeName, specs);
-
-			if (!spec) {
-				return;
-			}
+			const specs = attrSpecs(element.nodeName);
 
 			for (const attr of element.attributes) {
 				const name = attr.name.raw.toLowerCase();
-				const attrSpec = spec.attributes.find(item => item.name === name);
+				const attrSpec = specs.find(item => item.name === name);
 				if (!attrSpec) {
 					return;
 				}
@@ -26,7 +21,7 @@ export default createRule({
 						'The {0} {1} is {2}',
 						name,
 						'attribute',
-						attrSpec.deprecated ? 'deprecated' : 'obsolete',
+						attrSpec.obsolete ? 'obsolete' : 'deprecated',
 					);
 					reports.push({
 						severity: element.rule.severity,

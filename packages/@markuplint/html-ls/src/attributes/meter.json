@@ -1,0 +1,29 @@
+{
+	"tag": "meter",
+	"attributes": [
+		{
+			"name": "value",
+			"type": "Float"
+		},
+		{
+			"name": "min",
+			"type": "Float"
+		},
+		{
+			"name": "max",
+			"type": "Float"
+		},
+		{
+			"name": "low",
+			"type": "Float"
+		},
+		{
+			"name": "high",
+			"type": "Float"
+		},
+		{
+			"name": "optimum",
+			"type": "Float"
+		}
+	]
+}

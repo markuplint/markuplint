@@ -1,0 +1,45 @@
+{
+	"tag": "form",
+	"attributes": [
+		{
+			"name": "accept-charset",
+			"type": "String"
+		},
+
+		{
+			"name": "action",
+			"type": "URL"
+		},
+
+		{
+			"name": "autocomplete",
+			"type": "Boolean"
+		},
+		{
+			"name": "enctype",
+			"type": "String",
+			"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
+		},
+		{
+			"name": "method",
+			"type": "String",
+			"enum": ["post", "get", "dialog"]
+		},
+		{
+			"name": "name",
+			"type": "String"
+		},
+		{
+			"name": "novalidate",
+			"type": "Boolean"
+		},
+		{
+			"name": "target",
+			"type": "Target"
+		},
+		{
+			"name": "rel",
+			"type": "LinkTypeList"
+		}
+	]
+}

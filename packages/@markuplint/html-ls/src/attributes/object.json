@@ -1,0 +1,35 @@
+{
+	"tag": "meter",
+	"attributes": [
+		{
+			"name": "data",
+			"type": "URL",
+			"requiredEither": ["type"]
+		},
+		{
+			"name": "type",
+			"type": "String",
+			"requiredEither": ["data"]
+		},
+		{
+			"name": "name",
+			"type": "String"
+		},
+		{
+			"name": "usemap",
+			"type": "String"
+		},
+		{
+			"name": "form",
+			"type": "DOMID"
+		},
+		{
+			"name": "width",
+			"type": "Uint"
+		},
+		{
+			"name": "height",
+			"type": "Uint"
+		}
+	]
+}

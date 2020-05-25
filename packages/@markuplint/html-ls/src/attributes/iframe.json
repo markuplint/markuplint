@@ -1,0 +1,69 @@
+{
+	"tag": "iframe",
+	"attributes": [
+		{
+			"name": "src",
+			"type": "URL"
+		},
+		{
+			"name": "srcdoc",
+			"type": "String"
+		},
+		{
+			"name": "name",
+			"type": "String"
+		},
+		{
+			"name": "sandbox",
+			"type": "String",
+			"enum": [
+				"allow-forms",
+				"allow-modals",
+				"allow-orientation-lock",
+				"allow-pointer-lock",
+				"allow-popups",
+				"allow-popups-to-escape-sandbox",
+				"allow-presentation",
+				"allow-same-origin",
+				"allow-scripts",
+				"allow-top-navigation",
+				"allow-top-navigation-by-user-activation",
+				"allow-downloads"
+			]
+		},
+		{
+			"name": "allow",
+			"type": "String"
+		},
+		{
+			"name": "allowfullscreen",
+			"type": "Boolean"
+		},
+		{
+			"name": "allowpaymentrequest",
+			"type": "Boolean"
+		},
+		{
+			"name": "width",
+			"type": "Uint"
+		},
+		{
+			"name": "height",
+			"type": "Uint"
+		},
+		{
+			"name": "referrerpolicy",
+			"type": "ReferrerPolicy"
+		},
+		{
+			"name": "importance",
+			"type": "String",
+			"enum": ["auto", "high", "low"]
+		},
+		{
+			"name": "loading",
+			"type": "String",
+			"enum": ["eager", "lazy"]
+		}
+	]
+}

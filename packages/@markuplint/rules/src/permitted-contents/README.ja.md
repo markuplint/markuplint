@@ -2,7 +2,7 @@
 
 許可された要素もしくはテキストノードを子要素にもつ場合に警告します。
 
-[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-ls`](https://github.com/markuplint/markuplint/blob/next/packages/%40markuplint/html-ls/index.json)に設定値を持っています。
+[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-ls`](https://github.com/markuplint/markuplint/blob/master/packages/%40markuplint/html-ls/index.json)に設定値を持っています。
 
 オプションに独自のルールを設けることができます。カスタム要素や Vue などのテンプレートエンジン上での要素関係を設定することで、構造を堅牢にすることが可能です。
 

@@ -1,0 +1,17 @@
+{
+	"tag": "output",
+	"attributes": [
+		{
+			"name": "for",
+			"type": "DOMID"
+		},
+		{
+			"name": "form",
+			"type": "DOMID"
+		},
+		{
+			"name": "name",
+			"type": "String"
+		}
+	]
+}

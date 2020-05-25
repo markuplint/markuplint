@@ -1,0 +1,13 @@
+{
+	"tag": "param",
+	"attributes": [
+		{
+			"name": "name",
+			"type": "String"
+		},
+		{
+			"name": "value",
+			"type": "String"
+		}
+	]
+}

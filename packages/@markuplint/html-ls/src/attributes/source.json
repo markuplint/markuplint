@@ -1,0 +1,35 @@
+{
+	"tag": "source",
+	"attributes": [
+		{
+			"name": "src",
+			"type": "URL",
+			"required": true
+		},
+		{
+			"name": "type",
+			"type": "MIMEType"
+		},
+		{
+			"name": "srcset",
+			"type": "SrcSet",
+			"condition": {
+				"ancestor": "picture"
+			}
+		},
+		{
+			"name": "sizes",
+			"type": "SourceSizeList",
+			"condition": {
+				"ancestor": "picture"
+			}
+		},
+		{
+			"name": "media",
+			"type": "MediaQueryList",
+			"condition": {
+				"ancestor": "picture"
+			}
+		}
+	]
+}

@@ -1,0 +1,9 @@
+{
+	"tag": "slot",
+	"attributes": [
+		{
+			"name": "name",
+			"type": "String"
+		}
+	]
+}

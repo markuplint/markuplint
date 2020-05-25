@@ -3,7 +3,7 @@
 	"attributes": [
 		{
 			"name": "download",
-			"type": "string"
+			"type": "String"
 		},
 		{
 			"name": "href",
@@ -11,7 +11,7 @@
 		},
 		{
 			"name": "hreflang",
-			"type": "#BCP47"
+			"type": "BCP47"
 		},
 		{
 			"name": "ping",
@@ -19,27 +19,25 @@
 		},
 		{
 			"name": "referrerpolicy",
-			"type": "string",
-			"enum": [
-				"no-referrer",
-				"no-referrer-when-downgrade",
-				"origin",
-				"origin-when-cross-origin",
-				"strict-origin-when-cross-origin",
-				"unsafe-url"
-			]
+			"type": "ReferrerPolicy"
 		},
 		{
 			"name": "rel",
-			"type": "LinkTypeList"
+			"type": "LinkTypeList",
+			"condition": {
+				"self": "[href]"
+			}
 		},
 		{
 			"name": "target",
-			"type": "string"
+			"type": "Target",
+			"condition": {
+				"self": "[href]"
+			}
 		},
 		{
 			"name": "type",
-			"type": "string"
+			"type": "String"
 		}
 	]
 }

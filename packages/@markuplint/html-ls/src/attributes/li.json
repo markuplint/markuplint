@@ -1,0 +1,12 @@
+{
+	"tag": "li",
+	"attributes": [
+		{
+			"name": "value",
+			"type": "Int",
+			"condition": {
+				"ancestor": "ul, menu"
+			}
+		}
+	]
+}

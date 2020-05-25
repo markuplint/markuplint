@@ -1,0 +1,17 @@
+{
+	"tag": "td",
+	"attributes": [
+		{
+			"name": "colspan",
+			"type": "ColSpan"
+		},
+		{
+			"name": "rowspan",
+			"type": "RowSpan"
+		},
+		{
+			"name": "headers",
+			"type": "DOMIDList"
+		}
+	]
+}

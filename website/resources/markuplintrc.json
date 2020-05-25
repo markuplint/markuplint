@@ -9,6 +9,7 @@
 		"id-duplication": true,
 		"permitted-contents": true,
 		"required-attr": true,
+		"invalid-attr": true,
 		"landmark-roles": true,
 		"required-h1": true,
 		"class-naming": "/[a-z]+/",

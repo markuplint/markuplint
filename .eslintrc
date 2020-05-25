@@ -13,7 +13,7 @@
 		"project": "./tsconfig.json"
 	},
 	"rules": {
-		"indent": [2, "tab", { "SwitchCase": 1 }],
+		"indent": 0,
 		"quotes": [2, "single", "avoid-escape"],
 
 		"no-var": 2,
@@ -36,7 +36,7 @@
 		"@typescript-eslint/prefer-namespace-keyword": 2,
 		"@typescript-eslint/no-var-requires": 2,
 		"@typescript-eslint/no-unnecessary-type-assertion": 2,
-		"@typescript-eslint/restrict-plus-operands": 2,
+		"@typescript-eslint/restrict-plus-operands": 0,
 
 		"eslint-comments/disable-enable-pair": "error",
 		"eslint-comments/no-duplicate-disable": "error",

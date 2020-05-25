@@ -5,9 +5,12 @@ export type AttributeSpecJSON = {
 	name: string;
 	type: AttributeType;
 	required?: true;
+	requiredEither?: string[];
 	enum?: string[];
+	noUse?: boolean;
 	condition?: {
-		ancestor: string;
+		ancestor?: string;
+		self?: string | string[];
 	};
 };
 

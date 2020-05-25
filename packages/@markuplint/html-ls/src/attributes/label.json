@@ -1,0 +1,13 @@
+{
+	"tag": "label",
+	"attributes": [
+		{
+			"name": "for",
+			"type": "DOMID"
+		},
+		{
+			"name": "form",
+			"type": "DOMID"
+		}
+	]
+}

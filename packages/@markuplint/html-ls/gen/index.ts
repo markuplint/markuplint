@@ -23,7 +23,6 @@ async function main() {
 	const cites = getReferences();
 
 	const json: MLMLSpec = {
-		$schema: './ml-specs.schema.json',
 		cites,
 		def: {
 			'#globalAttrs': globalAttrs,
