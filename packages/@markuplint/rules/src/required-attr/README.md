@@ -6,21 +6,35 @@ title: required-attr
 
 Warns if specified attributes or required attribute on specs are not appeared on an element.
 
-This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-ls`](https://github.com/markuplint/markuplint/blob/master/packages/%40markuplint/html-ls/index.json).
+This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-ls`](https://github.com/markuplint/markuplint/tree/master/packages/%40markuplint/html-ls/src/attributes).
 
 ## Rule Details
 
-:-1: Example of **incorrect** code for this rule
+The `src` attribute is required on `<img>` element on [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML).
 
-`{ "required-attr": "alt" }`
+👎 Example of **incorrect** code for this rule
+
+```html
+<img />
+```
+
+👍 Example of **correct** code for this rule
 
 ```html
 <img src="/path/to/image.png" />
 ```
 
-:+1: Example of **correct** code for this rule
+### Custom setting
 
-`{ "required-attr": "alt" }`
+When the `alt` attribute is required, set `{"required-attr": "alt"}`.
+
+👎 Example of **incorrect** code for this rule
+
+```html
+<img src="/path/to/image.png" />
+```
+
+👍 Example of **correct** code for this rule
 
 ```html
 <img src="/path/to/image.png" alt="alternative text" />
