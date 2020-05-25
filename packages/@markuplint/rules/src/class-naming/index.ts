@@ -1,4 +1,5 @@
 import { Result, createRule } from '@markuplint/ml-core';
+import { match } from '../helpers';
 
 export type Value = string | string[] | null;
 
@@ -37,13 +38,3 @@ export default createRule<Value>({
 		return reports;
 	},
 });
-
-function match(needle: string, pattern: string) {
-	const matches = pattern.match(/^\/(.*)\/(i|g|m)*$/);
-	if (matches && matches[1]) {
-		const re = matches[1];
-		const flag = matches[2];
-		return new RegExp(re, flag).test(needle);
-	}
-	return needle === pattern;
-}

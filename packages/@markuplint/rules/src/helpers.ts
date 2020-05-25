@@ -33,3 +33,13 @@ export function attrSpecs(tag: string) {
 
 	return attrs;
 }
+
+export function match(needle: string, pattern: string) {
+	const matches = pattern.match(/^\/(.*)\/(i|g|m)*$/);
+	if (matches && matches[1]) {
+		const re = matches[1];
+		const flag = matches[2];
+		return new RegExp(re, flag).test(needle);
+	}
+	return needle === pattern;
+}

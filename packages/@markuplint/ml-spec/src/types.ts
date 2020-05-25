@@ -152,7 +152,7 @@ export type AttributeType =
 	| 'MediaQuery' // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-media-query-list
 	| 'MediaQueryList' // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-media-query-list
 	| 'MIMEType' // https://mimesniff.spec.whatwg.org/#valid-mime-type
-	| 'ReferrerPolicy' // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#referrer-policy-attribute
+	| 'ReferrerPolicy' // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#referrer-policy-attributes
 	| 'RowSpan' // https://html.spec.whatwg.org/multipage/tables.html#attr-tdth-rowspan
 	| 'SourceSizeList' // https://html.spec.whatwg.org/multipage/images.html#sizes-attributes
 	| 'SrcSet' // https://html.spec.whatwg.org/multipage/images.html#srcset-attribute
