@@ -55,7 +55,7 @@ import { verify, fix, exec } from 'markuplint';
 const result = verify(htmlCode, config, rules);
 
 // Standard fix
-const fixedCode = verify(htmlCode, config, rules);
+const fixedCode = fix(htmlCode, config, rules);
 
 // Custom usage
 const result = exec({
