@@ -1,6 +1,6 @@
 import * as markuplint from 'markuplint';
+import { floatCheck, intCheck, nonZeroUintCheck, uintCheck } from './type-check';
 import rule from './';
-import { intCheck, uintCheck, floatCheck, nonZeroUintCheck } from './type-check';
 
 test('intCheck', () => {
 	expect(intCheck('0')).toBe(true);

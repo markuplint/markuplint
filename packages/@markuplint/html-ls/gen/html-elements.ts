@@ -149,6 +149,7 @@ export function getAttributes($: CheerioStatic, heading: string, tagName: string
 				return;
 			}
 			result[specIndex] = {
+				// @ts-ignore for key order that "name" is first
 				name,
 				description,
 				experimental,
