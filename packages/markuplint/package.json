@@ -34,8 +34,8 @@
 		"@markuplint/rules": "^1.0.0-alpha.28",
 		"cli-color": "^2.0.0",
 		"eastasianwidth": "^0.2.0",
-		"get-stdin": "^7.0.0",
-		"meow": "^6.1.0",
+		"get-stdin": "^8.0.0",
+		"meow": "^7.0.1",
 		"os-locale": "^5.0.0",
 		"strip-ansi": "^6.0.0"
 	}
