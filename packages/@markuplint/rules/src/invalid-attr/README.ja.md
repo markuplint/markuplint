@@ -30,11 +30,13 @@
 
 ### オプション
 
+#### `attrs`
+
 独自ルールを指定します。
 
 `enum` `pattern` `type` のいずれかで設定します。
 
-#### `enum`
+##### `enum`
 
 列挙した文字列にマッチする値のみ許可します。
 
@@ -44,15 +46,17 @@
 {
 	"invalid-attr": {
 		"option": {
-			"x-attr": {
-				"enum": ["value1", "value2", "value3"]
+			"attrs": {
+				"x-attr": {
+					"enum": ["value1", "value2", "value3"]
+				}
 			}
 		}
 	}
 }
 ```
 
-#### `pattern`
+##### `pattern`
 
 パターンにマッチする値のみ許可します。 `/` で囲むことで **正規表現** として機能します。
 
@@ -62,15 +66,17 @@
 {
 	"invalid-attr": {
 		"option": {
-			"x-attr": {
-				"pattern": "/[a-z]+/"
+			"attrs": {
+				"x-attr": {
+					"pattern": "/[a-z]+/"
+				}
 			}
 		}
 	}
 }
 ```
 
-#### `type`
+##### `type`
 
 指定した[型](https://github.com/markuplint/markuplint/blob/master/packages/%40markuplint/ml-spec/src/types.ts#L129-L163)にマッチする値のみ許可します。
 
@@ -80,9 +86,27 @@
 {
 	"invalid-attr": {
 		"option": {
-			"x-attr": {
-				"type": "Boolean"
+			"attrs": {
+				"x-attr": {
+					"type": "Boolean"
+				}
 			}
+		}
+	}
+}
+```
+
+#### `ignoreAttrNamePrefix`
+
+HTML の仕様には存在しない、View ライブラリやテンプレートエンジン固有の属性を除外するために、プレフィックスを設定します。
+
+型: `string | string[]`
+
+```json:title=.markuplintrc
+{
+	"invalid-attr": {
+		"option": {
+			"ignoreAttrNamePrefix": ["v-bind:", ":", "@"]
 		}
 	}
 }

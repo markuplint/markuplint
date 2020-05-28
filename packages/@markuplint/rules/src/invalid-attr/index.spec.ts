@@ -117,8 +117,10 @@ test('custom rule', async () => {
 			rules: {
 				'invalid-attr': {
 					option: {
-						'x-attr': {
-							pattern: '/[a-z]+/',
+						attrs: {
+							'x-attr': {
+								pattern: '/[a-z]+/',
+							},
 						},
 					},
 				},
@@ -147,8 +149,10 @@ test('custom rule: type', async () => {
 			rules: {
 				'invalid-attr': {
 					option: {
-						'x-attr': {
-							type: 'Int',
+						attrs: {
+							'x-attr': {
+								type: 'Int',
+							},
 						},
 					},
 				},
@@ -168,4 +172,63 @@ test('custom rule: type', async () => {
 			raw: 'abc',
 		},
 	]);
+});
+
+test('prefix attribute', async () => {
+	const r = await markuplint.verify(
+		'<div v-bind:title="title" :class="classes" @click="click"></div>',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "v-bind:title" attribute is not allowed',
+			raw: 'v-bind:title',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 27,
+			message: 'The ":class" attribute is not allowed',
+			raw: ':class',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			col: 44,
+			line: 1,
+			message: 'The "@click" attribute is not allowed',
+			raw: '@click',
+		},
+	]);
+});
+
+test('ignore prefix attribute', async () => {
+	const r = await markuplint.verify(
+		'<div v-bind:title="title" :class="classes" @click="click"></div>',
+		{
+			rules: {
+				'invalid-attr': {
+					option: {
+						ignoreAttrNamePrefix: ['v-bind:', ':', '@'],
+					},
+				},
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r.length).toBe(0);
 });
