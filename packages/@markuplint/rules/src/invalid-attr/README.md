@@ -34,11 +34,13 @@ Type: `boolean`
 
 ### Options
 
+#### `attrs`
+
 Setting custom rule.
 
 Set either `enum`, `pattern` or `type`.
 
-#### `enum`
+##### `enum`
 
 Only values ​​that match the enumerated strings are allowed.
 
@@ -48,15 +50,17 @@ Type: `string[]`
 {
 	"invalid-attr": {
 		"option": {
-			"x-attr": {
-				"enum": ["value1", "value2", "value3"]
+			"attrs": {
+				"x-attr": {
+					"enum": ["value1", "value2", "value3"]
+				}
 			}
 		}
 	}
 }
 ```
 
-#### `pattern`
+##### `pattern`
 
 Only allow values ​​that match the pattern. It works as **regular expression** by enclosing it in `/`.
 
@@ -66,15 +70,17 @@ Type: `string`
 {
 	"invalid-attr": {
 		"option": {
-			"x-attr": {
-				"pattern": "/[a-z]+/"
+			"attrs": {
+				"x-attr": {
+					"pattern": "/[a-z]+/"
+				}
 			}
 		}
 	}
 }
 ```
 
-#### `type`
+##### `type`
 
 Only values that match the specified [type](https://github.com/markuplint/markuplint/blob/master/packages/%40markuplint/ml-spec/src/types.ts#L129-L163) are allowed.
 
@@ -84,9 +90,27 @@ Type: `string`
 {
 	"invalid-attr": {
 		"option": {
-			"x-attr": {
-				"type": "Boolean"
+			"attrs": {
+				"x-attr": {
+					"type": "Boolean"
+				}
 			}
+		}
+	}
+}
+```
+
+#### `ignoreAttrNamePrefix`
+
+Set prefixes to exclude special attributes for the library and template engine that do not exist in the HTML specifications.
+
+Type: `string | string[]`
+
+```json:title=.markuplintrc
+{
+	"invalid-attr": {
+		"option": {
+			"ignoreAttrNamePrefix": ["v-bind:", ":", "@"]
 		}
 	}
 }

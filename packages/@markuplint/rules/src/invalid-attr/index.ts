@@ -3,7 +3,10 @@ import { attrSpecs, match } from '../helpers';
 import { AttributeType } from '@markuplint/ml-spec/src';
 import { typeCheck } from './type-check';
 
-type Option = Record<string, Rule>;
+type Option = {
+	attrs?: Record<string, Rule>;
+	ignoreAttrNamePrefix?: string | string[];
+};
 
 type Rule =
 	| {
@@ -27,9 +30,19 @@ export default createRule<true, Option>({
 			const attributeSpecs = attrSpecs(node.nodeName);
 
 			for (const attr of node.attributes) {
-				let invalid: ReturnType<typeof typeCheck> = false;
 				const name = attr.name.raw.toLowerCase();
-				const customRule = node.rule.option[name];
+
+				if (node.rule.option.ignoreAttrNamePrefix) {
+					const ignoreAttrNamePrefixes = Array.isArray(node.rule.option.ignoreAttrNamePrefix)
+						? node.rule.option.ignoreAttrNamePrefix
+						: [node.rule.option.ignoreAttrNamePrefix];
+					if (ignoreAttrNamePrefixes.some(prefix => name.indexOf(prefix) === 0)) {
+						continue;
+					}
+				}
+
+				let invalid: ReturnType<typeof typeCheck> = false;
+				const customRule = node.rule.option.attrs ? node.rule.option.attrs[name] : null;
 
 				if (customRule) {
 					if ('enum' in customRule) {
