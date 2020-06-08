@@ -1,7 +1,7 @@
 {
 	"name": "@markuplint/website",
 	"description": "https://markuplint.dev",
-	"version": "1.0.0-alpha.29",
+	"version": "1.0.0-alpha.30",
 	"private": true,
 	"scripts": {
 		"site:dev": "webpack-dev-server --progress --watch --colors",
@@ -23,7 +23,7 @@
 		"@markuplint/ml-config": "^1.0.0-alpha.6",
 		"@markuplint/ml-core": "^1.0.0-alpha.22",
 		"@markuplint/ml-spec": "^1.0.0-alpha.8",
-		"@markuplint/rules": "^1.0.0-alpha.30",
+		"@markuplint/rules": "^1.0.0-alpha.31",
 		"monaco-editor": "^0.18.1"
 	}
 }
