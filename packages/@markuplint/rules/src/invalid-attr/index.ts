@@ -1,5 +1,5 @@
 import { Result, createRule } from '@markuplint/ml-core';
-import { attrSpecs, match } from '../helpers';
+import { attrSpecs, isCustomElement, match } from '../helpers';
 import { AttributeType } from '@markuplint/ml-spec/src';
 import { typeCheck } from './type-check';
 
@@ -57,7 +57,7 @@ export default createRule<true, Option>({
 					} else if ('type' in customRule) {
 						invalid = typeCheck(attr, [{ name, type: customRule.type, description: '' }]);
 					}
-				} else {
+				} else if (!isCustomElement(node.nodeName)) {
 					invalid = typeCheck(attr, attributeSpecs);
 				}
 

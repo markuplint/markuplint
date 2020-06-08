@@ -174,6 +174,52 @@ test('custom rule: type', async () => {
 	]);
 });
 
+test('custom element', async () => {
+	const r = await markuplint.verify(
+		'<custom-element any-attr></custom-element>',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r.length).toBe(0);
+});
+
+test('custom element and custom rule', async () => {
+	const r = await markuplint.verify(
+		'<custom-element any-attr="any-string"></custom-element>',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+			nodeRules: [
+				{
+					tagName: 'custom-element',
+					rules: {
+						'invalid-attr': {
+							option: {
+								attrs: {
+									'any-attr': {
+										type: 'Int',
+									},
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r.length).toBe(1);
+});
+
 test('prefix attribute', async () => {
 	const r = await markuplint.verify(
 		'<div v-bind:title="title" :class="classes" @click="click"></div>',
