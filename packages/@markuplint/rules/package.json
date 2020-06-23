@@ -18,11 +18,9 @@
 	},
 	"dependencies": {
 		"@markuplint/html-ls": "^1.0.0-alpha.21",
-		"@markuplint/ml-spec": "^1.0.0-alpha.8",
-		"validator": "^13.0.0"
+		"@markuplint/ml-spec": "^1.0.0-alpha.8"
 	},
 	"devDependencies": {
-		"@markuplint/ml-core": "^1.0.0-alpha.22",
-		"@types/validator": "^13.0.0"
+		"@markuplint/ml-core": "^1.0.0-alpha.22"
 	}
 }
