@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/rules",
-	"version": "1.0.0-alpha.31",
+	"version": "1.0.0-alpha.32",
 	"description": "Rules for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
