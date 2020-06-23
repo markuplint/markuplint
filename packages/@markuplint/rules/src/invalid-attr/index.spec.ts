@@ -84,14 +84,6 @@ test('warns if specified attribute value is invalid', async () => {
 				'The "referrerpolicy" attribute expect either "", "no-referrer", "no-referrer-when-downgrade", "same-origin", "origin", "strict-origin", "origin-when-cross-origin", "strict-origin-when-cross-origin", "unsafe-url"',
 			raw: 'invalid-value',
 		},
-		{
-			severity: 'error',
-			ruleId: 'invalid-attr',
-			line: 1,
-			col: 58,
-			message: 'The "src" attribute expect valid-URL',
-			raw: ':::::',
-		},
 	]);
 });
 
@@ -277,4 +269,150 @@ test('ignore prefix attribute', async () => {
 	);
 
 	expect(r.length).toBe(0);
+});
+
+test('URL attribute', async () => {
+	const r = await markuplint.verify(
+		'<img src="https://sample.com/path/to">',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r.length).toBe(0);
+
+	const r2 = await markuplint.verify(
+		'<img src="//sample.com/path/to">',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r2.length).toBe(0);
+
+	const r3 = await markuplint.verify(
+		'<img src="//user:pass@sample.com/path/to">',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r3.length).toBe(0);
+
+	const r4 = await markuplint.verify(
+		'<img src="/path/to">',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r4.length).toBe(0);
+
+	const r5 = await markuplint.verify(
+		'<img src="/path/to?param=value">',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r5.length).toBe(0);
+
+	const r6 = await markuplint.verify(
+		'<img src="/?param=value">',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r6.length).toBe(0);
+
+	const r7 = await markuplint.verify(
+		'<img src="?param=value">',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r7.length).toBe(0);
+
+	const r8 = await markuplint.verify(
+		'<img src="path/to">',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r8.length).toBe(0);
+
+	const r9 = await markuplint.verify(
+		'<img src="./path/to">',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r9.length).toBe(0);
+
+	const r10 = await markuplint.verify(
+		'<img src="../path/to">',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r10.length).toBe(0);
+
+	const r11 = await markuplint.verify(
+		'<img src="/path/to#hash">',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r11.length).toBe(0);
+
+	const r12 = await markuplint.verify(
+		'<img src="#hash">',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r12.length).toBe(0);
 });

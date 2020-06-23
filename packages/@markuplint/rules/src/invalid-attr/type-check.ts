@@ -1,6 +1,5 @@
 import { Attribute as AttrSpec } from '@markuplint/ml-spec';
 import { Attribute } from '@markuplint/ml-core';
-import isURL from 'validator/lib/isURL';
 
 type Invalid = {
 	invalidType: 'non-existent' | 'invalid-value';
@@ -297,14 +296,7 @@ export function typeCheck(attr: Attribute, specs: AttrSpec[]): Invalid | false {
 		/**
 		 * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces
 		 */
-		const valid = isURL(value.trim());
-		if (valid) {
-			return false;
-		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect valid-URL`,
-		};
+		return false;
 	}
 
 	if (spec.type === 'URLHash') {
@@ -325,15 +317,7 @@ export function typeCheck(attr: Attribute, specs: AttrSpec[]): Invalid | false {
 		/**
 		 * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces
 		 */
-		const list = value.trim().split(/\s+/g);
-		const valid = list.every(url => isURL(url));
-		if (valid) {
-			return false;
-		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect valid-URL list`,
-		};
+		return false;
 	}
 
 	return false;
