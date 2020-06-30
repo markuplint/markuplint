@@ -16,9 +16,10 @@ export enum MLASTNodeType {
 	Comment = 'comment',
 	Text = 'text',
 	OmittedTag = 'omittedtag',
+	PreprocessorSpecificBlock = 'psblock',
 }
 
-export type MLASTNode = MLASTDoctype | MLASTTag | MLASTComment | MLASTText;
+export type MLASTNode = MLASTDoctype | MLASTTag | MLASTComment | MLASTText | MLASTPreprocessorSpecificBlock;
 
 export interface MLASTAbstructNode extends MLToken {
 	type: MLASTNodeType;
@@ -45,6 +46,8 @@ export interface MLASTElement extends MLASTAbstructNode {
 	pearNode: MLASTElementCloseTag | null;
 	selfClosingSolidus: MLToken;
 	endSpace: MLToken;
+	tagOpenChar: string;
+	tagCloseChar: string;
 }
 
 export interface MLASTElementCloseTag extends MLASTAbstructNode {
@@ -53,6 +56,8 @@ export interface MLASTElementCloseTag extends MLASTAbstructNode {
 	attributes: MLASTAttr[];
 	childNodes?: MLASTNode[];
 	pearNode: MLASTTag | null;
+	tagOpenChar: string;
+	tagCloseChar: string;
 }
 
 export interface MLASTOmittedElement extends MLASTAbstructNode {
@@ -61,9 +66,19 @@ export interface MLASTOmittedElement extends MLASTAbstructNode {
 	childNodes?: MLASTNode[];
 }
 
+export interface MLASTPreprocessorSpecificBlock extends MLASTAbstructNode {
+	type: MLASTNodeType.PreprocessorSpecificBlock;
+	nodeName: string;
+	parentNode: MLASTParentNode | null;
+	prevNode: MLASTNode | null;
+	nextNode: MLASTNode | null;
+	childNodes?: MLASTNode[];
+	branchedChildNodes?: MLASTNode[];
+}
+
 export type MLASTTag = MLASTElement | MLASTElementCloseTag | MLASTOmittedElement;
 
-export type MLASTParentNode = MLASTElement | MLASTOmittedElement;
+export type MLASTParentNode = MLASTElement | MLASTOmittedElement | MLASTPreprocessorSpecificBlock;
 
 export interface MLASTComment extends MLASTAbstructNode {
 	type: MLASTNodeType.Comment;
@@ -73,7 +88,10 @@ export interface MLASTText extends MLASTAbstructNode {
 	type: MLASTNodeType.Text;
 }
 
-export interface MLASTAttr extends MLToken {
+export type MLASTAttr = MLASTHTMLAttr | MLASTPreprocessorSpecificAttr;
+
+export interface MLASTHTMLAttr extends MLToken {
+	type: 'html-attr';
 	spacesBeforeName: MLToken;
 	name: MLToken;
 	spacesBeforeEqual: MLToken;
@@ -83,11 +101,21 @@ export interface MLASTAttr extends MLToken {
 	value: MLToken;
 	endQuote: MLToken;
 	isInvalid: boolean;
+	isDynamicValue?: true;
+}
+
+export interface MLASTPreprocessorSpecificAttr extends MLToken {
+	type: 'ps-attr';
+	potentialName: string;
+	potentialValue: string;
+	valueType: 'string' | 'number' | 'boolean' | 'code';
+	isDuplicatable: boolean;
 }
 
 export interface MLASTDocument {
 	nodeList: MLASTNode[];
 	isFragment: boolean;
+	parseError?: string;
 }
 
 export interface MLMarkupLanguageParser {

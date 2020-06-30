@@ -8,6 +8,7 @@ import {
 	MLASTNode,
 	MLASTOmittedElement,
 	MLASTParentNode,
+	MLASTPreprocessorSpecificBlock,
 	MLASTText,
 	MLToken,
 } from '@markuplint/ml-ast/';
@@ -19,6 +20,7 @@ import {
 	MLDOMElementCloseTag,
 	MLDOMNode,
 	MLDOMOmittedElement,
+	MLDOMPreprocessorSpecificBlock,
 	MLDOMText,
 	MLDOMToken,
 } from '../tokens';
@@ -34,6 +36,7 @@ export type MappedNode<N, T extends RuleConfigValue, O = null>
 	: N extends MLASTText ? MLDOMText<T, O>
 	: N extends MLASTDoctype ? MLDOMDoctype<T, O>
 	: N extends MLASTNode ? MLDOMNode<T, O, MLASTNode>
+	: N extends MLASTPreprocessorSpecificBlock ? MLDOMPreprocessorSpecificBlock<T, O>
 	: N extends MLASTAbstructNode ? MLDOMNode<T, O, MLASTAbstructNode>
 	: N extends MLASTAttr ? MLDOMAttribute
 	: N extends MLToken ? MLDOMToken<MLToken>

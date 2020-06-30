@@ -153,6 +153,8 @@ function nodeize(
 					pearNode: null,
 					isFragment: false,
 					isGhost: false,
+					tagOpenChar: '</',
+					tagCloseChar: '>',
 				};
 			}
 			const startTag: MLASTTag = {
@@ -176,6 +178,8 @@ function nodeize(
 				endSpace: tagTokens.endSpace,
 				isFragment: false,
 				isGhost: false,
+				tagOpenChar: '<',
+				tagCloseChar: '>',
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
