@@ -1,15 +1,11 @@
 import { Attribute as AttrSpec } from '@markuplint/ml-spec';
-import { Attribute } from '@markuplint/ml-core';
 
 type Invalid = {
 	invalidType: 'non-existent' | 'invalid-value';
 	message: string;
 };
 
-export function typeCheck(attr: Attribute, specs: AttrSpec[]): Invalid | false {
-	const name = attr.name.raw.trim().toLowerCase();
-	const value = attr.value.raw;
-
+export function typeCheck(name: string, value: string, specs: AttrSpec[]): Invalid | false {
 	if (/^data-.+$/.test(name)) {
 		// Ignore checking because "data-*" attribute is any type
 		return false;

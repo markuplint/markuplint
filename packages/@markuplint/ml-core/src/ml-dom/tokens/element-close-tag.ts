@@ -4,6 +4,7 @@ import { MLASTElementCloseTag } from '@markuplint/ml-ast';
 import MLDOMElement from './element';
 import MLDOMNode from './node';
 import { RuleConfigValue } from '@markuplint/ml-config';
+import { stringSplice } from '../../utils/string-splice';
 
 export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTElementCloseTag>
@@ -13,6 +14,9 @@ export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 	readonly startTag: MLDOMElement<T, O>;
 	readonly isForeignElement: boolean;
 
+	readonly #tagOpenChar: string;
+	// readonly #tagCloseChar: string;
+
 	#fixedNodeName: string;
 
 	constructor(astNode: MLASTElementCloseTag, document: Document<T, O>, startTag: MLDOMElement<T, O>) {
@@ -21,10 +25,18 @@ export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 		this.#fixedNodeName = astNode.nodeName;
 		this.startTag = startTag;
 		this.isForeignElement = startTag.isForeignElement;
+
+		this.#tagOpenChar = astNode.tagOpenChar;
+		// this.#tagCloseChar = astNode.tagCloseChar;
 	}
 
 	get raw() {
-		return `</${this.#fixedNodeName}>`;
+		let fixed = this.originRaw;
+		if (this.nodeName !== this.#fixedNodeName) {
+			fixed = stringSplice(fixed, this.#tagOpenChar.length, this.nodeName.length, this.#fixedNodeName);
+		}
+
+		return fixed;
 	}
 
 	get rule() {

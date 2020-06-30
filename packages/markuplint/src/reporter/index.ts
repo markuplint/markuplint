@@ -1,1 +1,1 @@
-export { standardReporter, simpleReporter } from './reporter';
+export * from './reporter';

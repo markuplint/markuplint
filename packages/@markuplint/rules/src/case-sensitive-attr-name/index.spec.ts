@@ -77,6 +77,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
+		console.log(r);
 		expect(r.length).toBe(0);
 	});
 

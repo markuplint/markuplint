@@ -68,6 +68,8 @@ export async function lintFile(
 					raw: err.raw,
 				},
 			];
+		} else {
+			throw err;
 		}
 	}
 

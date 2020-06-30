@@ -13,6 +13,7 @@ Options
 	--format,       -f FORMAT     Output format. Support "JSON", "Simple" and "Standard". Default: "Standard".
 	--no-color,                   Output no color.
 	--problem-only, -p            Output only problems, without passeds.
+	--verbose                     Output with detailed information.
 
 	--help,         -h            Show help.
 	--version,      -v            Show version.
@@ -42,6 +43,9 @@ const cli = meow(help, {
 		problemOnly: {
 			type: 'boolean',
 			alias: 'p',
+		},
+		verbose: {
+			type: 'boolean',
 		},
 	},
 });

@@ -24,7 +24,7 @@ export default createRule<Type>({
 				`${node.rule.value} quotation mark`,
 			);
 			for (const attr of node.attributes) {
-				if (attr.equal.raw === '') {
+				if (attr.attrType === 'ps-attr' || attr.isDynamicValue || attr.equal.raw === '') {
 					continue;
 				}
 				const quote = attr.startQuote.raw;
@@ -45,7 +45,7 @@ export default createRule<Type>({
 		await document.walkOn('Element', async node => {
 			for (const attr of node.attributes) {
 				const quote = quoteList[node.rule.value];
-				if (quote && attr.startQuote && attr.startQuote.raw !== quote) {
+				if (attr.attrType === 'html-attr' && quote && attr.startQuote && attr.startQuote.raw !== quote) {
 					attr.startQuote.fix(quote);
 					attr.endQuote.fix(quote);
 				}

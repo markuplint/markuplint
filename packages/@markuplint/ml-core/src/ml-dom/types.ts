@@ -27,6 +27,9 @@ export interface IMLDOMComment extends IMLDOMNode {
 export interface IMLDOMText extends IMLDOMNode {
 	type: 'Text';
 }
+export interface IMLDOMPreprocessorSpecificBlock extends IMLDOMNode {
+	type: 'PSBlock';
+}
 
 export interface IMLDOMNode {}
 
@@ -38,4 +41,12 @@ export type AnonymousNode<T extends RuleConfigValue, O = null> =
 	| MLDOMComment<T, O>
 	| MLDOMText<T, O>;
 
-export type NodeType = 'Doctype' | 'Element' | 'ElementCloseTag' | 'OmittedElement' | 'Comment' | 'Text' | 'Node';
+export type NodeType =
+	| 'Doctype'
+	| 'Element'
+	| 'ElementCloseTag'
+	| 'OmittedElement'
+	| 'Comment'
+	| 'Text'
+	| 'Node'
+	| 'PSBlock';

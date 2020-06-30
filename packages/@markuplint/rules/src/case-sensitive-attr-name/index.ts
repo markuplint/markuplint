@@ -17,13 +17,17 @@ export default createRule<Value, null>({
 			if (node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
 				if (node.attributes) {
 					for (const attr of node.attributes) {
-						if (deny.test(attr.name.raw)) {
+						if (attr.attrType === 'ps-attr') {
+							continue;
+						}
+						const name = attr.getName();
+						if (deny.test(name.raw)) {
 							reports.push({
 								severity: node.rule.severity,
 								message,
-								line: attr.name.startLine,
-								col: attr.name.startCol,
-								raw: attr.name.raw,
+								line: name.line,
+								col: name.col,
+								raw: name.raw,
 							});
 						}
 					}
@@ -37,10 +41,12 @@ export default createRule<Value, null>({
 			if (node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
 				if (node.attributes) {
 					for (const attr of node.attributes) {
-						if (node.rule.value === 'no-upper') {
-							attr.name.fix(attr.name.raw.toLowerCase());
-						} else {
-							attr.name.fix(attr.name.raw.toUpperCase());
+						if (attr.attrType === 'html-attr') {
+							if (node.rule.value === 'no-upper') {
+								attr.name.fix(attr.name.raw.toLowerCase());
+							} else {
+								attr.name.fix(attr.name.raw.toUpperCase());
+							}
 						}
 					}
 				}

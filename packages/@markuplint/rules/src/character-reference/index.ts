@@ -34,14 +34,15 @@ export default createRule<Value>({
 			const ms = severity === 'error' ? 'must' : 'should';
 			const message = translate(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			for (const attr of node.attributes) {
-				if (!attr.value) {
+				const value = attr.getValue();
+				if (attr.attrType === 'html-attr' && attr.isDynamicValue) {
 					continue;
 				}
 				targetNodes.push({
 					severity,
-					line: attr.value.startLine,
-					col: attr.value.startCol,
-					raw: attr.value.raw,
+					line: value.line,
+					col: value.col,
+					raw: value.raw,
 					message,
 				});
 			}

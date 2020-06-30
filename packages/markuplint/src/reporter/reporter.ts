@@ -1,49 +1,33 @@
-import { VerifiedResult } from '@markuplint/ml-config';
+import { MLResultInfo } from '../types';
 import c from 'cli-color';
 // @ts-ignore
 import eastasianwidth from 'eastasianwidth';
-import path from 'path';
 import stripAnsi from 'strip-ansi';
-import url from 'url';
 
 const eaw: { characterLength: (char: string) => number } = eastasianwidth;
 
-export interface ReporterConfig {
+export type ReportingData = MLResultInfo & {
+	format: string;
 	color: boolean;
 	problemOnly: boolean;
 	noStdOut: boolean;
-}
+	verbose: boolean;
+};
 
 export type Optional<C> = { [P in keyof C]?: C[P] };
-
-const defaultConfig: ReporterConfig = {
-	color: true,
-	problemOnly: false,
-	noStdOut: false,
-};
 
 const loggerError = c.red;
 const loggerWarning = c.xterm(208);
 const markuplint = `markup${c.xterm(39)('lint')}`;
 
-export async function standardReporter(
-	targetPath: string,
-	results: VerifiedResult[],
-	rawSource: string,
-	options: Optional<ReporterConfig>,
-) {
-	const config: ReporterConfig = Object.assign({}, defaultConfig, options);
-	if (!url.parse(targetPath).host) {
-		targetPath = path.resolve(targetPath);
-	}
-
+export async function standardReporter(data: ReportingData) {
 	const sizes = {
 		line: 0,
 		col: 0,
 		meg: 0,
 	};
 
-	for (const result of results) {
+	for (const result of data.results) {
 		sizes.line = Math.max(sizes.line, result.line.toString(10).length);
 		sizes.col = Math.max(sizes.col, result.col.toString(10).length);
 		sizes.meg = Math.max(sizes.meg, w(result.message));
@@ -51,9 +35,9 @@ export async function standardReporter(
 
 	const out: string[] = [];
 
-	if (results.length) {
-		const lines = rawSource.split(/\r?\n/g);
-		for (const result of results) {
+	if (data.results.length) {
+		const lines = data.sourceCode.split(/\r?\n/g);
+		for (const result of data.results) {
 			const prev = lines[result.line - 2] || '';
 			const line = lines[result.line - 1] || '';
 			const next = lines[result.line - 0] || '';
@@ -64,7 +48,7 @@ export async function standardReporter(
 			out.push(
 				`<${markuplint}> ${logger(
 					`${result.severity}: ${result.message} (${result.ruleId}) ${c.underline(
-						`${targetPath}:${result.line}:${result.col}`,
+						`${data.filePath}:${result.line}:${result.col}`,
 					)}`,
 				)}`,
 			);
@@ -74,41 +58,41 @@ export async function standardReporter(
 			out.push(
 				`  ${c.cyan(p(result.line, sizes.col, true))}: ${space(before)}${c.bgRed(result.raw)}${space(after)}`,
 			);
-			if (!config.color) {
+			if (!data.color) {
 				out.push(`         ${invisibleSpace(before)}${'^'.repeat(result.raw.length)}${invisibleSpace(after)}`);
 			}
 			out.push(`  ${c.cyan(p(result.line + 1, sizes.col, true))}: ${space(next)}`);
 		}
-	} else if (!config.problemOnly) {
-		out.push(`<${markuplint}> ${c.green('passed')} ${c.underline(targetPath)}`);
+	} else if (!data.problemOnly) {
+		if (data.verbose) {
+			out.push(`<${markuplint}> ${c.green('passed')}🎉`);
+			out.push(`  Filepath: ${data.filePath}`);
+			out.push(`  Parser: ${data.parser}`);
+			out.push('  Config: [');
+			out.push(`    ${data.configSet.files.join('\n    ')}`);
+			out.push('  ]');
+			// out.push(JSON.stringify(data, null, 2));
+		} else {
+			out.push(`<${markuplint}> ${c.green('passed')} ${c.underline(data.filePath)}`);
+		}
 	}
 
-	if (!config.noStdOut && out.length) {
+	if (!data.noStdOut && out.length) {
 		const outs = `${out.join('\n')}\n`;
-		process.stdout.write(config.color ? outs : stripAnsi(outs));
+		process.stdout.write(data.color ? outs : stripAnsi(outs));
 	}
 
-	return config.color ? out : out.map(stripAnsi);
+	return data.color ? out : out.map(stripAnsi);
 }
 
-export async function simpleReporter(
-	targetPath: string,
-	results: VerifiedResult[],
-	rawSource: string,
-	options: Optional<ReporterConfig>,
-) {
-	const config: ReporterConfig = Object.assign({}, defaultConfig, options);
-	if (!url.parse(targetPath).host) {
-		targetPath = path.resolve(targetPath);
-	}
-
+export async function simpleReporter(data: ReportingData) {
 	const sizes = {
 		line: 0,
 		col: 0,
 		meg: 0,
 	};
 
-	for (const result of results) {
+	for (const result of data.results) {
 		sizes.line = Math.max(sizes.line, result.line.toString(10).length);
 		sizes.col = Math.max(sizes.col, result.col.toString(10).length);
 		sizes.meg = Math.max(sizes.meg, w(result.message));
@@ -116,9 +100,9 @@ export async function simpleReporter(
 
 	const out: string[] = [];
 
-	if (results.length) {
-		out.push(`<${markuplint}> ${c.underline(targetPath)}: ${c.red('✗')}`);
-		for (const result of results) {
+	if (data.results.length) {
+		out.push(`<${markuplint}> ${c.underline(data.filePath)}: ${c.red('✗')}`);
+		for (const result of data.results) {
 			const s = result.severity === 'error' ? '❌' : '⚠️';
 			out.push(
 				`  ${c.cyan(`${p(result.line, sizes.line, true)}:${p(result.col, sizes.col)}`)} ${s}  ${p(
@@ -127,16 +111,16 @@ export async function simpleReporter(
 				)} ${c.xterm(8)(result.ruleId)} `,
 			);
 		}
-	} else if (!config.problemOnly) {
-		out.push(`<${markuplint}> ${c.underline(targetPath)}: ${c.green('✓')}`);
+	} else if (!data.problemOnly) {
+		out.push(`<${markuplint}> ${c.underline(data.filePath)}: ${c.green('✓')}`);
 	}
 
-	if (!config.noStdOut && out.length) {
+	if (!data.noStdOut && out.length) {
 		const outs = `${out.join('\n')}\n`;
-		process.stdout.write(config.color ? outs : stripAnsi(outs));
+		process.stdout.write(data.color ? outs : stripAnsi(outs));
 	}
 
-	return config.color ? out : out.map(stripAnsi);
+	return data.color ? out : out.map(stripAnsi);
 }
 
 function p(s: number | string, pad: number, start = false) {

@@ -14,7 +14,7 @@ export default createRule<Value>({
 		const reports: Result[] = [];
 		await document.walkOn('Element', async node => {
 			for (const attr of node.attributes) {
-				if (!(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {
+				if (attr.attrType === 'ps-attr' || !(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {
 					continue;
 				}
 				const hasSpace = !!attr.spacesBeforeEqual.raw;
@@ -61,7 +61,7 @@ export default createRule<Value>({
 	async fix(document) {
 		await document.walkOn('Element', async node => {
 			for (const attr of node.attributes) {
-				if (!(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {
+				if (attr.attrType === 'ps-attr' || !(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {
 					continue;
 				}
 				const hasSpace = !!attr.spacesBeforeEqual.raw;

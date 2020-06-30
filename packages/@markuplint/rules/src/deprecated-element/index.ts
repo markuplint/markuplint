@@ -19,8 +19,8 @@ export default createRule({
 					severity: element.rule.severity,
 					message,
 					line: element.startLine,
-					col: element.startCol + 1,
-					raw: element.nodeName,
+					col: element.startCol,
+					raw: element.raw,
 				});
 			}
 		});

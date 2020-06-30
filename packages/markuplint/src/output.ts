@@ -1,33 +1,17 @@
-import { simpleReporter, standardReporter } from './reporter';
-import { VerifiedResult } from '@markuplint/ml-config';
+import { ReportingData, simpleReporter, standardReporter } from './reporter';
 
-export async function output(options: {
-	filePath: string;
-	reports: VerifiedResult[];
-	html: string;
-	format: string;
-	color: boolean;
-	problemOnly: boolean;
-}) {
-	switch (options.format.toLowerCase()) {
+export async function output(params: ReportingData) {
+	switch (params.format.toLowerCase()) {
 		case 'json': {
-			process.stdout.write(JSON.stringify(options.reports, null, 2));
+			process.stdout.write(JSON.stringify(params.results, null, 2));
 			break;
 		}
 		case 'simple': {
-			await simpleReporter(options.filePath, options.reports, options.html, {
-				color: options.color,
-				noStdOut: false,
-				problemOnly: options.problemOnly,
-			});
+			await simpleReporter(params);
 			break;
 		}
 		default: {
-			await standardReporter(options.filePath, options.reports, options.html, {
-				color: options.color,
-				noStdOut: false,
-				problemOnly: options.problemOnly,
-			});
+			await standardReporter(params);
 		}
 	}
 }

@@ -7,4 +7,5 @@ export { default as MLDOMText } from './text';
 export { default as MLDOMOmittedElement } from './omitted-element';
 export { default as MLDOMElement } from './element';
 export { default as MLDOMElementCloseTag } from './element-close-tag';
+export { default as MLDOMPreprocessorSpecificBlock } from './preprocessor-specific-block';
 export { default as MLDOMIndentation } from './indentation';
