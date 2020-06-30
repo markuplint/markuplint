@@ -1,6 +1,6 @@
-# @markuplint/vue-parser
+# @markuplint/pug-parser
 
-[![npm version](https://badge.fury.io/js/%40markuplint%2Fvue-parser.svg)](https://www.npmjs.com/package/@markuplint/vue-parser)
+[![npm version](https://badge.fury.io/js/%40markuplint%2Fpug-parser.svg)](https://www.npmjs.com/package/@markuplint/pug-parser)
 [![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=next)](https://travis-ci.org/markuplint/markuplint)
 [![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=next)](https://coveralls.io/github/markuplint/markuplint?branch=next)
 
@@ -9,9 +9,9 @@
 Prerequisites: [Node.js](https://nodejs.org) (Version 12.4.0 or later)
 
 ```sh
-$ npm install @markuplint/vue-parser
+$ npm install @markuplint/pug-parser
 
-$ yarn add @markuplint/vue-parser
+$ yarn add @markuplint/pug-parser
 ```
 
 ## Usage
@@ -22,12 +22,10 @@ Add `parser` option into your `.eslintrc.*` file.
 {
 	"extends": "@markuplint/html-ls",
 	"parser": {
-		".vue$": "@markuplint/vue-parser"
+		".{pug,jade}$": "@markuplint/pug-parser"
 	}
 }
 ```
-
-`parserOptions` option is work in progress. current setting is `{ "sourceType": "module" }` that hard coded.
 
 ## Contributing
 
@@ -40,4 +38,4 @@ $ yarn test
 
 ---
 
-Copyright &copy; 2019 markuplint. Unter the MIT License.
+Copyright &copy; 2020 markuplint. Unter the MIT License.
