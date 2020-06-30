@@ -12,6 +12,7 @@ export async function command(options: {
 	format?: string;
 	color?: boolean;
 	problemOnly?: boolean;
+	verbose?: boolean;
 }) {
 	const fix = options.fix ?? false;
 	const workspace = options.workspace ?? process.cwd();
@@ -19,6 +20,7 @@ export async function command(options: {
 	const format = options.format ?? 'standard';
 	const color = options.color ?? true;
 	const problemOnly = options.problemOnly ?? false;
+	const verbose = options.verbose ?? false;
 
 	const reports = await lint({
 		files: options.files,
@@ -41,12 +43,12 @@ export async function command(options: {
 	} else {
 		for (const result of reports) {
 			await output({
-				filePath: result.filePath,
-				reports: result.results,
-				html: result.sourceCode,
+				...result,
 				format,
 				color,
 				problemOnly,
+				noStdOut: false,
+				verbose,
 			});
 		}
 	}
