@@ -81,7 +81,7 @@ describe('basic test', () => {
 		expect(r[0].results).toEqual([
 			{
 				severity: 'error',
-				message: 'Invalid element',
+				message: 'The a is invalid element (7:6)',
 				line: 7,
 				col: 6,
 				raw: '<a>',
