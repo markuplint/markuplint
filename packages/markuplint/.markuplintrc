@@ -1,7 +1,4 @@
 {
-	"parser": {
-		".vue$": "@markuplint/vue-parser"
-	},
 	"rules": {
 		"attr-duplication": true,
 		"character-reference": true,
@@ -14,13 +11,13 @@
 		"invalid-attr": true,
 		"landmark-roles": true,
 		"required-h1": true,
-		"class-naming": "/[a-z]+/",
-		"attr-equal-space-after": true,
-		"attr-equal-space-before": true,
-		"attr-spasing": true,
-		"attr-value-quotes": true,
+		"class-naming": false,
+		"attr-equal-space-after": false,
+		"attr-equal-space-before": false,
+		"attr-spasing": false,
+		"attr-value-quotes": false,
 		"case-sensitive-attr-name": true,
 		"case-sensitive-tag-name": true,
-		"indentation": "tab"
+		"indentation": false
 	}
 }

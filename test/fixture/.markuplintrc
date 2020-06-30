@@ -1,6 +1,4 @@
 {
-	"$schema": "./markuplint.schema.json",
-	"extends": "@markuplint/html-ls",
 	"rules": {
 		"attr-duplication": true,
 		"character-reference": true,
