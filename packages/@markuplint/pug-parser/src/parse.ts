@@ -24,7 +24,6 @@ export default function parse(pug: string): MLASTDocument {
 	} catch (err) {
 		nodeList = [];
 		if (err instanceof Error) {
-			console.log(err);
 			parseError = err.message;
 		} else {
 			parseError = 'Unknown Error';
