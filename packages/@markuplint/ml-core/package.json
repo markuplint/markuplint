@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-core",
-	"version": "1.0.0-alpha.23",
+	"version": "1.0.0-alpha.24",
 	"description": "The core module of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -17,9 +17,9 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/i18n": "^1.0.0-alpha.8",
-		"@markuplint/ml-ast": "^1.0.0-alpha.10",
-		"@markuplint/ml-config": "^1.0.0-alpha.6",
+		"@markuplint/i18n": "^1.0.0-alpha.9",
+		"@markuplint/ml-ast": "^1.0.0-alpha.11",
+		"@markuplint/ml-config": "^1.0.0-alpha.7",
 		"@markuplint/ml-spec": "^1.0.0-alpha.8",
 		"css-selector-parser": "^1.4.1"
 	}
