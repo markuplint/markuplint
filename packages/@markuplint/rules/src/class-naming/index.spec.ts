@@ -58,8 +58,8 @@ test('unmatched class name', async () => {
 			severity: 'error',
 			message: '"c-root" class name is unmatched patterns ("/^c-[a-z]+__[a-z0-9]+/")',
 			line: 2,
-			col: 8,
-			raw: 'class="c-root"',
+			col: 15,
+			raw: 'c-root',
 			ruleId: 'class-naming',
 		},
 	]);
@@ -99,8 +99,8 @@ test('childNodeRules', async () => {
 			severity: 'error',
 			message: '"c-root_x" class name is unmatched patterns ("/^c-[a-z]+__[a-z0-9]+/")',
 			line: 3,
-			col: 9,
-			raw: 'class="c-root_x"',
+			col: 16,
+			raw: 'c-root_x',
 			ruleId: 'class-naming',
 		},
 	]);
@@ -134,8 +134,8 @@ test('unmatched class name (2)', async () => {
 			severity: 'error',
 			message: '"hoge" class name is unmatched patterns ("/^c-[a-z]+/")',
 			line: 6,
-			col: 11,
-			raw: 'class="hoge"',
+			col: 18,
+			raw: 'hoge',
 			ruleId: 'class-naming',
 		},
 	]);
@@ -213,8 +213,8 @@ test('childNodeRules multi selectors', async () => {
 			severity: 'error',
 			message: '"hoge" class name is unmatched patterns ("hoge2")',
 			line: 6,
-			col: 11,
-			raw: 'class="hoge"',
+			col: 18,
+			raw: 'hoge',
 			ruleId: 'class-naming',
 		},
 	]);

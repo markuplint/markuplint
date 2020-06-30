@@ -11,24 +11,24 @@ export default createRule({
 			const specs = attrSpecs(element.nodeName);
 
 			for (const attr of element.attributes) {
-				const name = attr.name.raw.toLowerCase();
-				const attrSpec = specs.find(item => item.name === name);
+				const name = attr.getName();
+				const attrSpec = specs.find(item => item.name === name.potential);
 				if (!attrSpec) {
 					return;
 				}
 				if (attrSpec.deprecated || attrSpec.obsolete) {
 					const message = translate(
 						'The {0} {1} is {2}',
-						name,
+						name.raw,
 						'attribute',
 						attrSpec.obsolete ? 'obsolete' : 'deprecated',
 					);
 					reports.push({
 						severity: element.rule.severity,
 						message,
-						line: attr.name.startLine,
-						col: attr.name.startCol,
-						raw: attr.name.raw,
+						line: name.line,
+						col: name.col,
+						raw: name.raw,
 					});
 				}
 			}

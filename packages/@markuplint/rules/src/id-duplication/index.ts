@@ -9,21 +9,20 @@ export default createRule({
 		const message = translate('Duplicate {0}', 'attribute id value');
 		const idStack: string[] = [];
 		await document.walkOn('Element', async node => {
-			const idAttr = node.getAttributeToken('id');
-			if (!idAttr || !idAttr.value) {
-				return;
+			const idAttrs = node.getAttributeToken('id');
+			for (const idAttr of idAttrs) {
+				const id = idAttr.getValue();
+				if (idStack.includes(id.raw)) {
+					reports.push({
+						severity: node.rule.severity,
+						message,
+						line: idAttr.startLine,
+						col: idAttr.startCol,
+						raw: idAttr.raw,
+					});
+				}
+				idStack.push(id.raw);
 			}
-			const id = idAttr.value.raw;
-			if (idStack.includes(id)) {
-				reports.push({
-					severity: node.rule.severity,
-					message,
-					line: idAttr.name.startLine,
-					col: idAttr.name.startCol,
-					raw: idAttr.raw.trim(),
-				});
-			}
-			idStack.push(id);
 		});
 		return reports;
 	},

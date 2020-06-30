@@ -18,6 +18,9 @@ export default createRule<boolean, AttrSpasingOptions>({
 		await document.walkOn('Element', async node => {
 			const attrs = node.attributes;
 			for (const attr of attrs) {
+				if (attr.attrType === 'ps-attr') {
+					continue;
+				}
 				const hasSpace = !!attr.spacesBeforeName.raw;
 				const hasLineBreak = /\r?\n/.test(attr.spacesBeforeName.raw);
 				// console.log({ attr: `${attr.spacesBeforeName.raw}${attr.raw}`, hasSpace, hasLineBreak });
@@ -69,6 +72,9 @@ export default createRule<boolean, AttrSpasingOptions>({
 		await document.walkOn('Element', async node => {
 			const attrs = node.attributes;
 			for (const attr of attrs) {
+				if (attr.attrType === 'ps-attr') {
+					continue;
+				}
 				const hasSpace = !!attr.spacesBeforeName.raw;
 				const hasLineBreak = /\r?\n/.test(attr.spacesBeforeName.raw);
 				const expectWidth = node.rule.option.width || 1;

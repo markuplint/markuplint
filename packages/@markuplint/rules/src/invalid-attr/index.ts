@@ -26,11 +26,15 @@ export default createRule<true, Option>({
 	defaultOptions: {},
 	async verify(document, translate) {
 		const reports: Result[] = [];
+
 		await document.walkOn('Element', async node => {
 			const attributeSpecs = attrSpecs(node.nodeName);
 
 			for (const attr of node.attributes) {
-				const name = attr.name.raw.toLowerCase();
+				const attrName = attr.getName();
+				const name = attrName.potential;
+				const attrValue = attr.getValue();
+				const value = attrValue.raw;
 
 				if (node.rule.option.ignoreAttrNamePrefix) {
 					const ignoreAttrNamePrefixes = Array.isArray(node.rule.option.ignoreAttrNamePrefix)
@@ -46,19 +50,21 @@ export default createRule<true, Option>({
 
 				if (customRule) {
 					if ('enum' in customRule) {
-						invalid = typeCheck(attr, [{ name, type: 'String', enum: customRule.enum, description: '' }]);
+						invalid = typeCheck(name.toLowerCase(), value, [
+							{ name, type: 'String', enum: customRule.enum, description: '' },
+						]);
 					} else if ('pattern' in customRule) {
-						if (!match(attr.value.raw, customRule.pattern)) {
+						if (!match(value, customRule.pattern)) {
 							invalid = {
 								invalidType: 'invalid-value',
 								message: `The "${name}" attribute expect custom pattern "${customRule.pattern}"`,
 							};
 						}
 					} else if ('type' in customRule) {
-						invalid = typeCheck(attr, [{ name, type: customRule.type, description: '' }]);
+						invalid = typeCheck(name, value, [{ name, type: customRule.type, description: '' }]);
 					}
 				} else if (!isCustomElement(node.nodeName)) {
-					invalid = typeCheck(attr, attributeSpecs);
+					invalid = typeCheck(name, value, attributeSpecs);
 				}
 
 				if (invalid) {
@@ -67,9 +73,9 @@ export default createRule<true, Option>({
 							reports.push({
 								severity: node.rule.severity,
 								message: invalid.message,
-								line: attr.value.startLine,
-								col: attr.value.startCol,
-								raw: attr.value.raw,
+								line: attrValue.line,
+								col: attrValue.col,
+								raw: value,
 							});
 							break;
 						}
@@ -77,9 +83,9 @@ export default createRule<true, Option>({
 							reports.push({
 								severity: node.rule.severity,
 								message: invalid.message,
-								line: attr.name.startLine,
-								col: attr.name.startCol,
-								raw: attr.name.raw,
+								line: attrName.line,
+								col: attrName.col,
+								raw: name,
 							});
 						}
 					}
