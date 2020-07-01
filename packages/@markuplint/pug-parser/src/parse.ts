@@ -7,9 +7,8 @@ import {
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
 	MLASTTag,
-	MLASTText,
 } from '@markuplint/ml-ast';
-import { parse as htmlParser, isDocumentFragment, walk } from '@markuplint/html-parser';
+import { parse as htmlParser, isDocumentFragment, removeDeprecatedNode, walk } from '@markuplint/html-parser';
 import attrTokenizer from './attr-tokenizer';
 import tokenizer from './tokenizer';
 import { v4 as uuid4 } from 'uuid';
@@ -48,7 +47,8 @@ class Parser {
 	}
 
 	getNodeList() {
-		return this.flattenNodes(this.traverse(this.#ast.nodes, null), this.#raw);
+		const nodeTree = this.traverse(this.#ast.nodes, null);
+		return this.flattenNodes(nodeTree);
 	}
 
 	traverse(astNodes: ASTNode[], parentNode: MLASTParentNode | null = null): MLASTNode[] {
@@ -56,10 +56,18 @@ class Parser {
 
 		let prevNode: MLASTNode | null = null;
 		for (const astNode of astNodes) {
-			const node = this.nodeize(astNode, prevNode, parentNode);
-			if (!node) {
+			const nodes = this.nodeize(astNode, prevNode, parentNode);
+			if (!nodes) {
 				continue;
 			}
+
+			let node: MLASTNode;
+			if (Array.isArray(nodes)) {
+				node = nodes[nodes.length - 1];
+			} else {
+				node = nodes;
+			}
+
 			if (prevNode) {
 				if (node.type !== MLASTNodeType.EndTag) {
 					prevNode.nextNode = node;
@@ -67,13 +75,22 @@ class Parser {
 				node.prevNode = prevNode;
 			}
 			prevNode = node;
-			nodeList.push(node);
+
+			if (Array.isArray(nodes)) {
+				nodeList.push(...nodes);
+			} else {
+				nodeList.push(nodes);
+			}
 		}
 
 		return nodeList;
 	}
 
-	nodeize(originNode: ASTNode, prevNode: MLASTNode | null, parentNode: MLASTParentNode | null): MLASTNode | null {
+	nodeize(
+		originNode: ASTNode,
+		prevNode: MLASTNode | null,
+		parentNode: MLASTParentNode | null,
+	): MLASTNode | MLASTNode[] | null {
 		const nextNode = null;
 		const startOffset = originNode.offset;
 		const endOffset = originNode.endOffset;
@@ -109,30 +126,17 @@ class Parser {
 				} as MLASTDoctype;
 			}
 			case 'Text': {
-				if (originNode.isHtml) {
-					const htmlDoc = htmlParser(originNode.val);
-					const node = htmlDoc.nodeList[0];
-					// TODO: Add number of locations
-					return node;
+				const htmlDoc = htmlParser(
+					originNode.raw,
+					originNode.offset,
+					originNode.line - 1,
+					originNode.column - 1,
+				);
+				const nodes = htmlDoc.nodeList;
+				for (const node of nodes) {
+					node.parentNode = parentNode;
 				}
-				const node: MLASTText = {
-					uuid: uuid4(),
-					raw: originNode.raw,
-					startOffset,
-					endOffset,
-					startLine,
-					endLine,
-					startCol,
-					endCol,
-					nodeName: '#text',
-					type: MLASTNodeType.Text,
-					parentNode,
-					prevNode,
-					nextNode,
-					isFragment: false,
-					isGhost: false,
-				};
-				return node;
+				return nodes;
 			}
 			case 'Comment': {
 				return {
@@ -214,11 +218,14 @@ class Parser {
 		}
 	}
 
-	flattenNodes(nodeTree: MLASTNode[], rawPug: string) {
+	flattenNodes(nodeTree: MLASTNode[]) {
 		const nodeOrders: MLASTNode[] = [];
 		walk(nodeTree, node => {
 			nodeOrders.push(node);
 		});
+
+		removeDeprecatedNode(nodeOrders);
+
 		return nodeOrders;
 	}
 }

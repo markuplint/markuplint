@@ -46,4 +46,12 @@ export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 	fixNodeName(name: string) {
 		this.#fixedNodeName = name;
 	}
+
+	getNameLocation() {
+		return {
+			offset: this.startOffset,
+			line: this.startLine,
+			col: this.startCol + this.#tagOpenChar.length,
+		};
+	}
 }

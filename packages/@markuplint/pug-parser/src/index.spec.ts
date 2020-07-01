@@ -1,29 +1,8 @@
-import { MLASTElement, MLASTHTMLAttr } from '@markuplint/ml-ast';
+import { MLASTElement, MLASTHTMLAttr, MLASTPreprocessorSpecificAttr } from '@markuplint/ml-ast';
 import { nodeListToDebugMaps } from '@markuplint/html-parser';
 import { parse } from './';
-// import { MLASTNodeType } from '@markuplint/ml-ast';
 
 describe('parser', () => {
-	// it('<!DOCTYPE html>', () => {
-	// 	const doc = parse('<!DOCTYPE html>');
-	// 	expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
-	// 	expect(doc.nodeList[1].nodeName).toBe('html');
-	// 	expect(doc.nodeList[2].nodeName).toBe('head');
-	// 	expect(doc.nodeList[3].nodeName).toBe('body');
-	// 	expect(doc.nodeList.length).toBe(4);
-	// });
-	// it('<!DOCTYPE html>\\ntext', () => {
-	// 	const doc = parse('<!DOCTYPE html>\ntext');
-	// 	expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
-	// 	expect(doc.nodeList[1].nodeName).toBe('html');
-	// 	expect(doc.nodeList[2].nodeName).toBe('head');
-	// 	expect(doc.nodeList[3].nodeName).toBe('body');
-	// 	expect(doc.nodeList[4].type).toBe(MLASTNodeType.Text);
-	// 	expect(doc.nodeList[4].raw).toBe('\ntext');
-	// 	expect(doc.nodeList[4].startCol).toBe(16);
-	// 	expect(doc.nodeList.length).toBe(5);
-	// });
-
 	it('empty code', () => {
 		const doc = parse('');
 		expect(doc.nodeList).toStrictEqual([]);
@@ -78,6 +57,45 @@ describe('parser', () => {
 		expect(((doc.nodeList[0] as MLASTElement).attributes[3] as MLASTHTMLAttr).value.raw).toBe('${variable5}');
 	});
 
+	it('ID and Classes', () => {
+		const doc = parse('div#the-id.the-class.the-class2');
+		expect(((doc.nodeList[0] as MLASTElement).attributes[0] as MLASTPreprocessorSpecificAttr).potentialName).toBe(
+			'id',
+		);
+		expect(((doc.nodeList[0] as MLASTElement).attributes[0] as MLASTPreprocessorSpecificAttr).potentialValue).toBe(
+			'the-id',
+		);
+		expect(((doc.nodeList[0] as MLASTElement).attributes[1] as MLASTPreprocessorSpecificAttr).potentialName).toBe(
+			'class',
+		);
+		expect(((doc.nodeList[0] as MLASTElement).attributes[1] as MLASTPreprocessorSpecificAttr).potentialValue).toBe(
+			'the-class',
+		);
+		expect(((doc.nodeList[0] as MLASTElement).attributes[2] as MLASTPreprocessorSpecificAttr).potentialName).toBe(
+			'class',
+		);
+		expect(((doc.nodeList[0] as MLASTElement).attributes[2] as MLASTPreprocessorSpecificAttr).potentialValue).toBe(
+			'the-class2',
+		);
+	});
+
+	it('HTML in Pug', () => {
+		const doc = parse(
+			`div
+	<span data-hoge hoge>Text</span>
+	<span data-hoge2 hoge2>Text2</span>`,
+		);
+		// console.log(doc.nodeList);
+		// const map = nodeListToDebugMaps(doc.nodeList);
+		// console.log(map);
+
+		expect((doc.nodeList[0] as MLASTElement).nodeName).toBe('div');
+		expect((doc.nodeList[1] as MLASTElement).nodeName).toBe('span');
+		expect(((doc.nodeList[1] as MLASTElement).attributes[0] as MLASTHTMLAttr).name.raw).toBe('data-hoge');
+		expect(((doc.nodeList[1] as MLASTElement).attributes[1] as MLASTHTMLAttr).name.raw).toBe('hoge');
+		expect(((doc.nodeList[0] as MLASTElement).childNodes![0] as MLASTElement).nodeName).toBe('span');
+	});
+
 	it('standard code', () => {
 		const doc = parse(`doctype html
 html
@@ -114,26 +132,26 @@ html
 			'[5:3]>[5:72](50,119)meta: meta(name="viewport"␣content=\'width=device-width,␣initial-scale=1.0\')',
 			"[6:3]>[6:55](122,174)meta: meta(http-equiv='X-UA-Compatible'␣content='ie=edge')",
 			'[7:3]>[7:8](177,182)title: title',
-			'[7:9]>[7:17](183,191)#text: Document',
+			'[7:9]>[8:2](183,193)#text: Document⏎→',
 			'[8:2]>[8:6](193,197)body: body',
 			'[9:3]>[9:9](200,206)script: script',
 			'[10:4]>[10:16](211,223)#text: const␣i␣=␣0;',
 			'[11:3]>[11:18](226,241)#comment: //␣html-comment',
 			'[12:3]>[12:6](244,247)div: div',
-			'[13:6]>[13:18](253,265)#text: text&amp;div',
+			'[13:6]>[14:3](253,268)#text: text&amp;div⏎→→',
 			'[14:3]>[14:8](268,273)table: table',
 			'[15:4]>[15:6](277,279)tr: tr',
 			'[16:4]>[16:6](283,285)th: th',
 			'[16:7]>[16:13](286,292)#text: header',
 			'[17:4]>[17:6](296,298)td: td',
-			'[17:7]>[17:11](299,303)#text: cell',
+			'[17:7]>[18:3](299,306)#text: cell⏎→→',
 			'[18:3]>[18:8](306,311)table: table',
 			'[19:4]>[19:9](315,320)tbody: tbody',
 			'[20:4]>[20:6](324,326)tr: tr',
 			'[21:5]>[21:7](331,333)th: th',
 			'[21:8]>[21:14](334,340)#text: header',
 			'[22:5]>[22:7](345,347)td: td',
-			'[22:8]>[22:12](348,352)#text: cell',
+			'[22:8]>[23:3](348,355)#text: cell⏎→→',
 			'[23:3]>[23:19](355,371)img: img(src=path/to)',
 		]);
 	});
@@ -152,10 +170,10 @@ html
 			'[1:1]>[1:5](0,4)html: html',
 			'[2:2]>[2:6](6,10)head: head',
 			'[3:3]>[3:8](13,18)title: title',
-			'[3:9]>[3:14](19,24)#text: Title',
+			'[3:9]>[4:2](19,26)#text: Title⏎→',
 			'[4:2]>[4:6](26,30)body: body',
 			'[5:3]>[5:5](33,35)h1: h1',
-			'[5:6]>[5:11](36,41)#text: Title',
+			'[5:6]>[6:1](36,42)#text: Title⏎',
 		]);
 	});
 
@@ -237,11 +255,35 @@ else
 		// console.log(map);
 		expect(map).toStrictEqual([
 			'[1:1]>[1:8](0,7)Conditional: if␣bool',
-			'[2:4]>[2:5](11,12)#text: 1',
+			'[2:4]>[3:1](11,13)#text: 1⏎',
 			'[3:1]>[3:14](13,26)Conditional: else␣if␣bool2',
-			'[4:4]>[4:5](30,31)#text: 2',
-			'[5:1]>[5:5](13,17)Conditional: else',
-			'[6:4]>[6:5](40,41)#text: 3',
+			'[4:4]>[5:1](30,32)#text: 2⏎',
+			'[5:1]>[5:5](32,36)Conditional: else',
+			'[6:4]>[7:1](40,42)#text: 3⏎',
+		]);
+	});
+
+	it('HTML in Pug', () => {
+		const doc = parse(
+			`section
+	div
+		<span>
+			<img src="path/to">
+		</span>
+			`,
+		);
+		// console.log(doc.nodeList);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		// console.log(map);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:8](0,7)section: section',
+			'[2:2]>[2:5](9,12)div: div',
+			'[3:3]>[3:9](15,21)span: <span>',
+			'[3:9]>[4:4](21,25)#text: ⏎→→→',
+			'[4:6]>[4:25](25,44)img: <img␣src="path/to">',
+			'[4:25]>[5:3](44,47)#text: ⏎→→',
+			'[5:5]>[5:12](47,54)span: </span>',
+			'[5:12]>[6:4](54,58)#text: ⏎→→→',
 		]);
 	});
 });

@@ -218,9 +218,32 @@ function optimizeAST(originalAST: PugAST<PugASTNode>, tokens: PugLexToken[], pug
 				nodes.push(newNode);
 				continue;
 			}
-			case 'Text':
+			case 'Text': {
+				const { endOffset, endLine, endColumn } = getEndHTMLText(
+					node.val,
+					offset,
+					line,
+					column,
+					tokens,
+					offsets,
+				);
+				const raw = pug.slice(offset, endOffset);
+
+				const textNode: ASTTextNode = {
+					type: node.type,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+				};
+				nodes.push(textNode);
+				continue;
+			}
 			case 'Doctype': {
-				const commentNode: ASTTextNode | ASTDoctype = {
+				const commentNode: ASTDoctype = {
 					type: node.type,
 					val: node.val,
 					raw,
@@ -283,6 +306,7 @@ function optimizeASTOfConditionalNode(
 			break;
 		}
 	}
+
 	if (tokenOfCurrentNode) {
 		// console.log(JSON.stringify(node, null, 2));
 		const lineOffset = Math.max(offsets[node.line - 2], 0) || 0;
@@ -325,6 +349,8 @@ function optimizeASTOfConditionalNode(
 					return [];
 				}
 
+				const lineOffset = Math.max(offsets[tokenOfCurrentNode.loc.start.line - 2], 0) || 0;
+				const offset = lineOffset + tokenOfCurrentNode.loc.start.column - 1;
 				const length = tokenOfCurrentNode.loc.end.column - tokenOfCurrentNode.loc.start.column;
 				const endOffset = offset + length;
 				const raw = pug.slice(offset, endOffset);
@@ -468,6 +494,42 @@ function getEndAttributeLocation(
 	};
 }
 
+function getEndHTMLText(
+	val: string,
+	offset: number,
+	line: number,
+	column: number,
+	tokens: PugLexToken[],
+	offsets: number[],
+) {
+	let beforeNewlineToken: PugLexToken | null = null;
+	for (const token of tokens) {
+		// Searching token after the text.
+		if (
+			beforeNewlineToken &&
+			token.loc.start.line > line &&
+			token.type !== 'text' &&
+			token.type !== 'text-html' &&
+			token.type !== 'indent' &&
+			token.type !== 'outdent'
+		) {
+			const endAttrlineOffset = Math.max(offsets[beforeNewlineToken.loc.end.line - 2], 0) || 0;
+			const endAttrOffset = endAttrlineOffset + beforeNewlineToken.loc.end.column - 1;
+			return {
+				endOffset: endAttrOffset,
+				endLine: beforeNewlineToken.loc.end.line,
+				endColumn: beforeNewlineToken.loc.end.column,
+			};
+		}
+		beforeNewlineToken = token;
+	}
+	return {
+		endOffset: offset + val.length,
+		endLine: line,
+		endColumn: column + val.length,
+	};
+}
+
 export type ASTBlock = PugAST<ASTNode>;
 
 export type ASTNode =
@@ -487,7 +549,7 @@ export type ASTNode =
 export type ASTTagNode = Omit<PugASTTagNode<ASTAttr, ASTBlock>, 'attributeBlocks' | 'selfClosing' | 'isInline'> &
 	AddtionalASTData;
 
-export type ASTTextNode = PugASTTextNode & AddtionalASTData;
+export type ASTTextNode = Omit<PugASTTextNode, 'val'> & AddtionalASTData;
 
 export type ASTCodeNode = PugASTCodeNode & AddtionalASTData;
 

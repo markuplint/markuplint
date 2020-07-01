@@ -92,14 +92,13 @@ describe('parser', () => {
 												nodes: [
 													{
 														type: 'Text',
-														val: 'Title',
-														raw: 'Title',
+														raw: 'Title\n\t',
 														offset: 28,
-														endOffset: 33,
+														endOffset: 35,
 														line: 3,
-														endLine: 3,
+														endLine: 4,
 														column: 9,
-														endColumn: 14,
+														endColumn: 2,
 													},
 												],
 												line: 3,
@@ -150,7 +149,6 @@ describe('parser', () => {
 										},
 										{
 											type: 'Text',
-											val: '<!-- HTML raw comment -->',
 											raw: '<!-- HTML raw comment -->',
 											offset: 78,
 											endOffset: 103,
@@ -174,7 +172,6 @@ describe('parser', () => {
 												nodes: [
 													{
 														type: 'Text',
-														val: 'Title',
 														raw: 'Title',
 														offset: 109,
 														endOffset: 114,
@@ -235,14 +232,13 @@ describe('parser', () => {
 												nodes: [
 													{
 														type: 'Text',
-														val: 'lorem',
-														raw: 'lorem',
+														raw: 'lorem\n\t\t',
 														offset: 167,
-														endOffset: 172,
+														endOffset: 175,
 														line: 11,
-														endLine: 11,
+														endLine: 12,
 														column: 6,
-														endColumn: 11,
+														endColumn: 3,
 													},
 												],
 												line: 10,
@@ -389,14 +385,13 @@ describe('parser', () => {
 										},
 										{
 											type: 'Text',
-											val: '<div>\n<span>Raw HTML</span>\n</div>',
-											raw: '<div>',
+											raw: '<div>\n\t\t\t<span>Raw HTML</span>\n\t\t</div>',
 											offset: 280,
-											endOffset: 285,
+											endOffset: 319,
 											line: 20,
-											endLine: 20,
+											endLine: 22,
 											column: 3,
-											endColumn: 8,
+											endColumn: 9,
 										},
 										{
 											type: 'Tag',
@@ -526,14 +521,13 @@ describe('parser', () => {
 															nodes: [
 																{
 																	type: 'Text',
-																	val: 'True',
-																	raw: 'True',
+																	raw: 'True\n\t\t',
 																	offset: 414,
-																	endOffset: 418,
+																	endOffset: 421,
 																	line: 27,
-																	endLine: 27,
+																	endLine: 28,
 																	column: 8,
-																	endColumn: 12,
+																	endColumn: 3,
 																},
 															],
 															line: 27,
@@ -572,14 +566,13 @@ describe('parser', () => {
 															nodes: [
 																{
 																	type: 'Text',
-																	val: 'Any',
-																	raw: 'Any',
+																	raw: 'Any\n\t\t',
 																	offset: 442,
-																	endOffset: 445,
+																	endOffset: 448,
 																	line: 29,
-																	endLine: 29,
+																	endLine: 30,
 																	column: 8,
-																	endColumn: 11,
+																	endColumn: 3,
 																},
 															],
 															line: 29,
@@ -594,8 +587,8 @@ describe('parser', () => {
 											type: 'Conditional',
 											raw: 'else',
 											test: 'bool2',
-											offset: 421,
-											endOffset: 425,
+											offset: 448,
+											endOffset: 452,
 											line: 30,
 											endLine: 30,
 											column: 3,
@@ -618,14 +611,13 @@ describe('parser', () => {
 															nodes: [
 																{
 																	type: 'Text',
-																	val: 'False',
-																	raw: 'False',
+																	raw: 'False\n\t\t',
 																	offset: 460,
-																	endOffset: 465,
+																	endOffset: 468,
 																	line: 31,
-																	endLine: 31,
+																	endLine: 32,
 																	column: 8,
-																	endColumn: 13,
+																	endColumn: 3,
 																},
 															],
 															line: 31,
@@ -708,14 +700,13 @@ describe('parser', () => {
 																		nodes: [
 																			{
 																				type: 'Text',
-																				val: 'Condition 2',
-																				raw: 'Condition 2',
+																				raw: 'Condition 2\n\t\t\t',
 																				offset: 531,
-																				endOffset: 542,
+																				endOffset: 546,
 																				line: 36,
-																				endLine: 36,
+																				endLine: 37,
 																				column: 7,
-																				endColumn: 18,
+																				endColumn: 4,
 																			},
 																		],
 																		line: 36,
@@ -754,14 +745,13 @@ describe('parser', () => {
 																		nodes: [
 																			{
 																				type: 'Text',
-																				val: 'Condition 3',
-																				raw: 'Condition 3',
+																				raw: 'Condition 3\n\t\t\t',
 																				offset: 565,
-																				endOffset: 576,
+																				endOffset: 580,
 																				line: 38,
-																				endLine: 38,
+																				endLine: 39,
 																				column: 7,
-																				endColumn: 18,
+																				endColumn: 4,
 																			},
 																		],
 																		line: 38,
@@ -800,14 +790,13 @@ describe('parser', () => {
 																		nodes: [
 																			{
 																				type: 'Text',
-																				val: 'Default',
-																				raw: 'Default',
+																				raw: 'Default\n\t\t',
 																				offset: 594,
-																				endOffset: 601,
+																				endOffset: 604,
 																				line: 40,
-																				endLine: 40,
+																				endLine: 41,
 																				column: 7,
-																				endColumn: 14,
+																				endColumn: 3,
 																			},
 																		],
 																		line: 40,
@@ -837,7 +826,6 @@ describe('parser', () => {
 												nodes: [
 													{
 														type: 'Text',
-														val: 'console.log(123);',
 														raw: 'console.log(123);',
 														offset: 615,
 														endOffset: 632,
@@ -853,7 +841,6 @@ describe('parser', () => {
 										},
 										{
 											type: 'Text',
-											val: '<script>alert(123)</script>',
 											raw: '<script>alert(123)</script>',
 											offset: 640,
 											endOffset: 667,
@@ -984,7 +971,6 @@ mixin link(href, name)
 												nodes: [
 													{
 														type: 'Text',
-														val: 'foo',
 														raw: 'foo',
 														offset: 36,
 														endOffset: 39,
@@ -1013,7 +999,6 @@ mixin link(href, name)
 												nodes: [
 													{
 														type: 'Text',
-														val: 'bar',
 														raw: 'bar',
 														offset: 45,
 														endOffset: 48,
@@ -1042,14 +1027,13 @@ mixin link(href, name)
 												nodes: [
 													{
 														type: 'Text',
-														val: 'baz',
-														raw: 'baz',
+														raw: 'baz\n',
 														offset: 54,
-														endOffset: 57,
+														endOffset: 58,
 														line: 6,
-														endLine: 6,
+														endLine: 7,
 														column: 6,
-														endColumn: 9,
+														endColumn: 1,
 													},
 												],
 												line: 6,
@@ -1210,10 +1194,10 @@ mixin link(href, name)
 													},
 													{
 														type: 'Conditional',
-														raw: 'if b',
+														raw: 'else',
 														test: 'block',
-														offset: 145,
-														endOffset: 149,
+														offset: 167,
+														endOffset: 171,
 														line: 17,
 														endLine: 17,
 														column: 4,
@@ -1236,14 +1220,13 @@ mixin link(href, name)
 																		nodes: [
 																			{
 																				type: 'Text',
-																				val: 'No content provided',
-																				raw: 'No content provided',
+																				raw: 'No content provided\n\n',
 																				offset: 178,
-																				endOffset: 197,
+																				endOffset: 199,
 																				line: 18,
-																				endLine: 18,
+																				endLine: 20,
 																				column: 7,
-																				endColumn: 26,
+																				endColumn: 1,
 																			},
 																		],
 																		line: 18,
@@ -1340,7 +1323,6 @@ mixin link(href, name)
 									nodes: [
 										{
 											type: 'Text',
-											val: 'This is my',
 											raw: 'This is my',
 											offset: 251,
 											endOffset: 261,
@@ -1369,14 +1351,13 @@ mixin link(href, name)
 									nodes: [
 										{
 											type: 'Text',
-											val: 'Amazing article',
-											raw: 'Amazing article',
+											raw: 'Amazing article\n\n',
 											offset: 265,
-											endOffset: 280,
+											endOffset: 282,
 											line: 24,
-											endLine: 24,
+											endLine: 26,
 											column: 4,
-											endColumn: 19,
+											endColumn: 1,
 										},
 									],
 									line: 24,
@@ -1490,6 +1471,49 @@ mixin link(href, name)
 					column: 1,
 					endColumn: 21,
 					block: null,
+					attrs: [],
+				},
+			],
+			line: 0,
+		});
+	});
+
+	it('use mixin', () => {
+		const ast = pugParse(`div
+	<span>
+		<img src="path/to">
+	</span>
+`);
+		// console.log(JSON.stringify(ast));
+		expect(ast).toStrictEqual({
+			type: 'Block',
+			nodes: [
+				{
+					type: 'Tag',
+					name: 'div',
+					raw: 'div',
+					offset: 0,
+					endOffset: 3,
+					line: 1,
+					endLine: 1,
+					column: 1,
+					endColumn: 4,
+					block: {
+						type: 'Block',
+						nodes: [
+							{
+								type: 'Text',
+								raw: '<span>\n\t\t<img src="path/to">\n\t</span>\n',
+								offset: 5,
+								endOffset: 43,
+								line: 2,
+								endLine: 5,
+								column: 2,
+								endColumn: 1,
+							},
+						],
+						line: 1,
+					},
 					attrs: [],
 				},
 			],

@@ -16,7 +16,7 @@ export default createRule<Value>({
 				const attrs = node.getAttributeToken('class');
 				for (const attr of attrs) {
 					const classAttr = attr.getValue();
-					const classList = classAttr.raw
+					const classList = classAttr.potential
 						.split(/\s+/g)
 						.map(c => c.trim())
 						.filter(c => c);

@@ -563,22 +563,21 @@ describe('verify', () => {
 	test('Custom element', async () => {
 		const o = {
 			rules: {
-				'permitted-contents': {
-					option: [
-						{
-							tag: 'x-container',
-							contents: [
-								{
-									require: 'x-item',
-									min: 2,
-									max: 5,
-								},
-							],
-						},
-					],
-				},
+				'permitted-contents': [
+					{
+						tag: 'x-container',
+						contents: [
+							{
+								require: 'x-item',
+								min: 2,
+								max: 5,
+							},
+						],
+					},
+				],
 			},
 		};
+
 		const r1 = await markuplint.verify('<x-container></x-container>', o, [rule], 'en');
 		const r2 = await markuplint.verify('<x-container><x-item>0</x-item></x-container>', o, [rule], 'en');
 		const r3 = await markuplint.verify(

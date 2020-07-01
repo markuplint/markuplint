@@ -158,6 +158,13 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		return filteredNodes;
 	}
 
+	/**
+	 * This element has "Preprocessor Specific Block". In other words, Its children are potentially mutable.
+	 */
+	hasMutableChildren() {
+		return this.childNodes.some(node => node.type === 'PSBlock');
+	}
+
 	isDescendantByUUIDList(uuidList: string[]) {
 		let el: MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null = this.parentNode;
 
@@ -172,6 +179,14 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 			el = el.parentNode;
 		} while (el !== null && el.type === 'Element');
 		return false;
+	}
+
+	getNameLocation() {
+		return {
+			offset: this.startOffset,
+			line: this.startLine,
+			col: this.startCol + this.#tagOpenChar.length,
+		};
 	}
 
 	get classList() {
