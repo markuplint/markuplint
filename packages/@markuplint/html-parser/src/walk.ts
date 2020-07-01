@@ -1,16 +1,20 @@
-import { MLASTElement, MLASTNode } from '@markuplint/ml-ast';
+import { MLASTNode, MLASTNodeType } from '@markuplint/ml-ast';
 
-export type Walker = (node: MLASTNode) => void;
+export type Walker = (node: MLASTNode, depth: number) => void;
 
-export function walk(nodeList: MLASTNode[], walker: Walker) {
+export function walk(nodeList: MLASTNode[], walker: Walker, depth = 0) {
 	for (const node of nodeList) {
-		walker(node);
-		const tag = node as MLASTElement;
-		if (tag.childNodes && tag.childNodes.length) {
-			walk(tag.childNodes, walker);
-		}
-		if (tag.pearNode) {
-			walker(tag.pearNode);
+		walker(node, depth);
+		if ('childNodes' in node) {
+			if (node.type === MLASTNodeType.EndTag) {
+				continue;
+			}
+			if (node.childNodes && node.childNodes.length) {
+				walk(node.childNodes, walker, depth + 1);
+			}
+			if ('pearNode' in node && node.pearNode) {
+				walker(node.pearNode, depth);
+			}
 		}
 	}
 }

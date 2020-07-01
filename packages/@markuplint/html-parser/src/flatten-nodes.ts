@@ -4,6 +4,7 @@ import getEndLine from './get-end-line';
 import tagSplitter from './tag-splitter';
 import { v4 as uuid4 } from 'uuid';
 import { walk } from './walk';
+import { removeDeprecatedNode } from './remove-deprecated-node';
 
 export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 	const nodeOrders: MLASTNode[] = [];
@@ -112,39 +113,7 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 		}
 	}
 
-	/**
-	 * sorting
-	 */
-	nodeOrders.sort((a, b) => {
-		if (a.isGhost || b.isGhost) {
-			return 0;
-		}
-		return a.startOffset - b.startOffset;
-	});
-
-	{
-		/**
-		 * remove duplicated node
-		 */
-		const stack: { [pos: string]: number } = {};
-		const removeIndexes: number[] = [];
-		nodeOrders.forEach((node, i) => {
-			if (node.isGhost) {
-				return;
-			}
-			const id = `${node.startLine}:${node.startCol}:${node.endLine}:${node.endCol}`;
-			if (stack[id] != null) {
-				removeIndexes.push(i);
-			}
-			stack[id] = i;
-		});
-		let r = nodeOrders.length;
-		while (r--) {
-			if (removeIndexes.includes(r)) {
-				nodeOrders.splice(r, 1);
-			}
-		}
-	}
+	removeDeprecatedNode(nodeOrders);
 
 	{
 		/**

@@ -14,10 +14,18 @@ type TagTokens = {
 	endSpace: MLToken;
 };
 
-export default function parseRawTag(raw: string, nodeLine: number, nodeCol: number, startOffset: number): TagTokens {
-	let line = nodeLine;
-	let col = nodeCol;
-	let offset = startOffset;
+export default function parseRawTag(
+	raw: string,
+	nodeLine: number,
+	nodeCol: number,
+	startOffset: number,
+	offsetOffset = 0,
+	offsetLine = 0,
+	offsetColumn = 0,
+): TagTokens {
+	let line = nodeLine + offsetLine;
+	let col = nodeCol + offsetColumn;
+	let offset = startOffset + offsetOffset;
 
 	const matches = raw.match(reTag);
 	if (!matches) {

@@ -944,4 +944,30 @@ describe('parser', () => {
 		// @ts-ignore
 		expect(doc.nodeList[4].nextNode.uuid).toEqual(doc.nodeList[5].uuid);
 	});
+
+	it('Offset', () => {
+		const doc = HTMLParser.parse('<span>\n\t\t\t<img src="path/to">\n\t\t</span>\n\t\t\t', 15, 2, 2);
+		const map = HTMLParser.nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[3:3]>[3:9](15,21)span: <span>',
+			'[3:9]>[4:4](21,25)#text: ⏎→→→',
+			'[4:6]>[4:25](25,44)img: <img␣src="path/to">',
+			'[4:25]>[5:3](44,47)#text: ⏎→→',
+			'[5:5]>[5:12](47,54)span: </span>',
+			'[5:12]>[6:4](54,58)#text: ⏎→→→',
+		]);
+
+		// @ts-ignore
+		expect(doc.nodeList[2].attributes[0].startOffset).toBe(29);
+		// @ts-ignore
+		expect(doc.nodeList[2].attributes[0].endOffset).toBe(43);
+		// @ts-ignore
+		expect(doc.nodeList[2].attributes[0].startLine).toBe(4);
+		// @ts-ignore
+		expect(doc.nodeList[2].attributes[0].endLine).toBe(4);
+		// @ts-ignore
+		expect(doc.nodeList[2].attributes[0].startCol).toBe(10);
+		// @ts-ignore
+		expect(doc.nodeList[2].attributes[0].endCol).toBe(24);
+	});
 });

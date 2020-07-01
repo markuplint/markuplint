@@ -21,13 +21,13 @@ const P5_OPTIONS = { sourceCodeLocationInfo: true };
 
 type ASTNode = P5Node | P5Document | P5Fragment;
 
-export default function parse(html: string): MLASTDocument {
+export default function parse(html: string, offsetOffset = 0, offsetLine = 0, offsetColumn = 0): MLASTDocument {
 	const isFragment = isDocumentFragment(html);
 	const doc = isFragment
 		? (parse5.parseFragment(html, P5_OPTIONS) as P5Fragment)
 		: (parse5.parse(html, P5_OPTIONS) as P5Document);
 
-	const nodeList = flattenNodes(traverse(doc, null, html), html);
+	const nodeList = flattenNodes(traverse(doc, null, html, offsetOffset, offsetLine, offsetColumn), html);
 
 	return {
 		nodeList,
@@ -35,14 +35,21 @@ export default function parse(html: string): MLASTDocument {
 	};
 }
 
-function traverse(rootNode: ASTNode, parentNode: MLASTParentNode | null = null, rawHtml: string): MLASTNode[] {
+function traverse(
+	rootNode: ASTNode,
+	parentNode: MLASTParentNode | null,
+	rawHtml: string,
+	offsetOffset: number,
+	offsetLine: number,
+	offsetColumn: number,
+): MLASTNode[] {
 	const nodeList: MLASTNode[] = [];
 
 	const childNodes: P5Node[] = getChildNodes(rootNode);
 
 	let prevNode: MLASTNode | null = null;
 	for (const p5node of childNodes) {
-		const node = nodeize(p5node, prevNode, parentNode, rawHtml);
+		const node = nodeize(p5node, prevNode, parentNode, rawHtml, offsetOffset, offsetLine, offsetColumn);
 		if (!node) {
 			continue;
 		}
@@ -63,19 +70,28 @@ function nodeize(
 	prevNode: MLASTNode | null,
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
+	offsetOffset: number,
+	offsetLine: number,
+	offsetColumn: number,
 ): MLASTNode | null {
 	const nextNode = null;
 	if (!originNode.sourceCodeLocation) {
 		const prevToken = prevNode || parentNode;
+		const startOffset = prevToken ? prevToken.endOffset : 0;
+		const endOffset = prevToken ? prevToken.endOffset : 0;
+		const startLine = prevToken ? prevToken.endLine : 0;
+		const endLine = prevToken ? prevToken.endLine : 0;
+		const startCol = prevToken ? prevToken.endCol : 0;
+		const endCol = prevToken ? prevToken.endCol : 0;
 		const node: MLASTOmittedElement = {
 			uuid: uuid4(),
 			raw: '',
-			startOffset: prevToken ? prevToken.endOffset : 0,
-			endOffset: prevToken ? prevToken.endOffset : 0,
-			startLine: prevToken ? prevToken.endLine : 0,
-			endLine: prevToken ? prevToken.endLine : 0,
-			startCol: prevToken ? prevToken.endCol : 0,
-			endCol: prevToken ? prevToken.endCol : 0,
+			startOffset: startOffset + offsetOffset,
+			endOffset: endOffset + offsetOffset,
+			startLine: startLine + offsetLine,
+			endLine: endLine + offsetLine,
+			startCol: startCol + offsetColumn,
+			endCol: endCol + (startLine === endLine ? offsetColumn : 0),
 			nodeName: originNode.nodeName,
 			type: MLASTNodeType.OmittedTag,
 			namespace: originNode.namespaceURI,
@@ -85,7 +101,7 @@ function nodeize(
 			isFragment: false,
 			isGhost: true,
 		};
-		node.childNodes = traverse(originNode, node, rawHtml);
+		node.childNodes = traverse(originNode, node, rawHtml, offsetOffset, offsetLine, offsetColumn);
 		return node;
 	}
 	const { startOffset, endOffset, startLine, endLine, startCol, endCol } = originNode.sourceCodeLocation;
@@ -101,12 +117,12 @@ function nodeize(
 				publicId: originNode.publicId || '',
 				// @ts-ignore
 				systemId: originNode.systemId || '',
-				startOffset,
-				endOffset,
-				startLine,
-				endLine,
-				startCol,
-				endCol,
+				startOffset: startOffset + offsetOffset,
+				endOffset: endOffset + offsetOffset,
+				startLine: startLine + offsetLine,
+				endLine: endLine + offsetLine,
+				startCol: startCol + offsetColumn,
+				endCol: endCol + (startLine === endLine ? offsetColumn : 0),
 				nodeName: '#doctype',
 				type: MLASTNodeType.Doctype,
 				parentNode,
@@ -121,12 +137,12 @@ function nodeize(
 			const node: MLASTText = {
 				uuid: uuid4(),
 				raw,
-				startOffset,
-				endOffset,
-				startLine,
-				endLine,
-				startCol,
-				endCol,
+				startOffset: startOffset + offsetOffset,
+				endOffset: endOffset + offsetOffset,
+				startLine: startLine + offsetLine,
+				endLine: endLine + offsetLine,
+				startCol: startCol + offsetColumn,
+				endCol: endCol + (startLine === endLine ? offsetColumn : 0),
 				nodeName: '#text',
 				type: MLASTNodeType.Text,
 				parentNode,
@@ -141,12 +157,12 @@ function nodeize(
 			return {
 				uuid: uuid4(),
 				raw,
-				startOffset,
-				endOffset,
-				startLine,
-				endLine,
-				startCol,
-				endCol,
+				startOffset: startOffset + offsetOffset,
+				endOffset: endOffset + offsetOffset,
+				startLine: startLine + offsetLine,
+				endLine: endLine + offsetLine,
+				startCol: startCol + offsetColumn,
+				endCol: endCol + (startLine === endLine ? offsetColumn : 0),
 				nodeName: '#comment',
 				type: MLASTNodeType.Comment,
 				parentNode,
@@ -161,28 +177,40 @@ function nodeize(
 			const startTagRaw = originNode.sourceCodeLocation.startTag
 				? rawHtml.slice(tagLoc.startOffset, tagLoc.endOffset)
 				: rawHtml.slice(startOffset, endOffset || startOffset);
-			const tagTokens = parseRawTag(startTagRaw, startLine, startCol, startOffset);
+			const tagTokens = parseRawTag(
+				startTagRaw,
+				startLine,
+				startCol,
+				startOffset,
+				offsetOffset,
+				offsetLine,
+				offsetColumn,
+			);
 			const tagName = tagTokens.tagName;
 			let endTag: MLASTElementCloseTag | null = null;
 			const endTagLoc = originNode.sourceCodeLocation.endTag;
 			if (endTagLoc) {
-				const endTagRaw = rawHtml.slice(endTagLoc.startOffset, endTagLoc.endOffset);
+				const { startOffset, endOffset, startLine, endLine, startCol, endCol } = endTagLoc;
+				const endTagRaw = rawHtml.slice(startOffset, endOffset);
 				const endTagTokens = parseRawTag(
 					endTagRaw,
-					endTagLoc.startLine,
-					endTagLoc.startCol,
-					endTagLoc.startOffset,
+					startLine,
+					startCol,
+					startOffset,
+					offsetOffset,
+					offsetLine,
+					offsetColumn,
 				);
 				const endTagName = endTagTokens.tagName;
 				endTag = {
 					uuid: uuid4(),
 					raw: endTagRaw,
-					startOffset: endTagLoc.startOffset,
-					endOffset: endTagLoc.endOffset,
-					startLine: endTagLoc.startLine,
-					endLine: endTagLoc.endLine,
-					startCol: endTagLoc.startCol,
-					endCol: endTagLoc.endCol,
+					startOffset: startOffset + offsetOffset,
+					endOffset: endOffset + offsetOffset,
+					startLine: startLine + offsetLine,
+					endLine: endLine + offsetLine,
+					startCol: startCol + offsetColumn,
+					endCol: endCol + (startLine === endLine ? offsetColumn : 0),
 					nodeName: endTagName,
 					type: MLASTNodeType.EndTag,
 					namespace: originNode.namespaceURI,
@@ -197,15 +225,18 @@ function nodeize(
 					tagCloseChar: '>',
 				};
 			}
+			const _endOffset = startOffset + startTagRaw.length;
+			const _endLine = getEndLine(startTagRaw, startLine);
+			const _endCol = getEndCol(startTagRaw, startCol);
 			const startTag: MLASTTag = {
 				uuid: uuid4(),
 				raw: startTagRaw,
-				startOffset,
-				endOffset: startOffset + startTagRaw.length,
-				startLine,
-				endLine: getEndLine(startTagRaw, startLine),
-				startCol,
-				endCol: getEndCol(startTagRaw, startCol),
+				startOffset: startOffset + offsetOffset,
+				endOffset: _endOffset + offsetOffset,
+				startLine: startLine + offsetLine,
+				endLine: _endLine + offsetLine,
+				startCol: startCol + offsetColumn,
+				endCol: _endCol + (startLine === _endLine ? offsetColumn : 0),
 				nodeName: tagName,
 				type: MLASTNodeType.StartTag,
 				namespace: originNode.namespaceURI,
@@ -224,7 +255,7 @@ function nodeize(
 			if (endTag) {
 				endTag.pearNode = startTag;
 			}
-			startTag.childNodes = traverse(originNode, startTag, rawHtml);
+			startTag.childNodes = traverse(originNode, startTag, rawHtml, offsetOffset, offsetLine, offsetColumn);
 			return startTag;
 		}
 	}
