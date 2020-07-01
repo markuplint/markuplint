@@ -1,4 +1,4 @@
-import { MLASTElement, MLASTHTMLAttr } from '@markuplint/ml-ast';
+import { MLASTElement, MLASTHTMLAttr, MLASTPreprocessorSpecificAttr } from '@markuplint/ml-ast';
 import { nodeListToDebugMaps } from '@markuplint/html-parser';
 import { parse } from './';
 
@@ -55,6 +55,28 @@ describe('parser', () => {
 		expect(((doc.nodeList[0] as MLASTElement).attributes[2] as MLASTHTMLAttr).value.raw).toBe('');
 		expect(((doc.nodeList[0] as MLASTElement).attributes[3] as MLASTHTMLAttr).name.raw).toBe('data-attr4');
 		expect(((doc.nodeList[0] as MLASTElement).attributes[3] as MLASTHTMLAttr).value.raw).toBe('${variable5}');
+	});
+
+	it('ID and Classes', () => {
+		const doc = parse('div#the-id.the-class.the-class2');
+		expect(((doc.nodeList[0] as MLASTElement).attributes[0] as MLASTPreprocessorSpecificAttr).potentialName).toBe(
+			'id',
+		);
+		expect(((doc.nodeList[0] as MLASTElement).attributes[0] as MLASTPreprocessorSpecificAttr).potentialValue).toBe(
+			'the-id',
+		);
+		expect(((doc.nodeList[0] as MLASTElement).attributes[1] as MLASTPreprocessorSpecificAttr).potentialName).toBe(
+			'class',
+		);
+		expect(((doc.nodeList[0] as MLASTElement).attributes[1] as MLASTPreprocessorSpecificAttr).potentialValue).toBe(
+			'the-class',
+		);
+		expect(((doc.nodeList[0] as MLASTElement).attributes[2] as MLASTPreprocessorSpecificAttr).potentialName).toBe(
+			'class',
+		);
+		expect(((doc.nodeList[0] as MLASTElement).attributes[2] as MLASTPreprocessorSpecificAttr).potentialValue).toBe(
+			'the-class2',
+		);
 	});
 
 	it('HTML in Pug', () => {

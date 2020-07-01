@@ -14,7 +14,7 @@
 		"invalid-attr": true,
 		"landmark-roles": true,
 		"required-h1": true,
-		"class-naming": "/[a-z]+/",
+		"class-naming": "/^[a-z]+$/",
 		"attr-equal-space-after": true,
 		"attr-equal-space-before": true,
 		"attr-spasing": true,
