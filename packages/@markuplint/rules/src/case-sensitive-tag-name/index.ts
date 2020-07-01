@@ -23,14 +23,12 @@ export default createRule<Value, null>({
 					`${node.rule.value}case`,
 				);
 				if (deny.test(node.nodeName)) {
+					const loc = node.getNameLocation();
 					reports.push({
 						severity: node.rule.severity,
 						message,
-						line: node.startLine,
-						col:
-							'closeTag' in node
-								? node.startCol + 1 // remove "<" char.
-								: node.startCol + 2, // remove "</" char.
+						line: loc.line,
+						col: loc.col,
 						raw: node.nodeName,
 					});
 				}

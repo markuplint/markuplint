@@ -174,6 +174,14 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		return false;
 	}
 
+	getNameLocation() {
+		return {
+			offset: this.startOffset,
+			line: this.startLine,
+			col: this.startCol + this.#tagOpenChar.length,
+		};
+	}
+
 	get classList() {
 		const classList: string[] = [];
 		const classAttrs = this.getAttributeToken('class');
