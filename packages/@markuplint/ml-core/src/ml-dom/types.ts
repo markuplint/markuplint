@@ -4,6 +4,7 @@ import {
 	MLDOMElement,
 	MLDOMElementCloseTag,
 	MLDOMOmittedElement,
+	MLDOMPreprocessorSpecificBlock,
 	MLDOMText,
 } from './tokens';
 import { RuleConfigValue } from '@markuplint/ml-config';
@@ -39,6 +40,7 @@ export type AnonymousNode<T extends RuleConfigValue, O = null> =
 	| MLDOMElementCloseTag<T, O>
 	| MLDOMOmittedElement<T, O>
 	| MLDOMComment<T, O>
+	| MLDOMPreprocessorSpecificBlock<T, O>
 	| MLDOMText<T, O>;
 
 export type NodeType =

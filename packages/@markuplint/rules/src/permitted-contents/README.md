@@ -48,29 +48,25 @@ It is possible to make the structure robust by setting element relationships on 
 
 ### Setting value
 
--   Type: `boolean`
+-   Type: `Array`
 -   Optional
--   Default value: `true`
-
-### Options
+-   Default value: `[]`
 
 Specify the target element for which you want to set a rule as an array. In the following example, rules are specified for each of the custom elements `x-container` and `x-item`.
 
 ```json:title=.markuplintrc
 {
 	"rules": {
-		"permitted-contents": {
-			"option": [
-				{
-					"tag": "x-container",
-					"contents": []
-				},
-				{
-					"tag": "x-item",
-					"contents": []
-				}
-			]
-		}
+		"permitted-contents": [
+			{
+				"tag": "x-container",
+				"contents": []
+			},
+			{
+				"tag": "x-item",
+				"contents": []
+			}
+		]
 	}
 }
 ```
@@ -93,24 +89,22 @@ Of these, `require`, `optional`, `oneOrMore` and `zeroOrMore` mean the number of
 ```json:title=.markuplintrc
 {
 	"rules": {
-		"permitted-contents": {
-			"option": [
-				{
-					"tag": "x-container",
-					"contents": [
-						{ "require": "x-item" },
-						{ "optional": "y-item" },
-						{ "oneOrMore": "z-item" },
-						{ "zeroOrMore": "#text" },
-						// ❌ キーワードの同時の指定はできない
-						{
-							"require": "x-item",
-							"optional": "y-item"
-						}
-					]
-				}
-			]
-		}
+		"permitted-contents": [
+			{
+				"tag": "x-container",
+				"contents": [
+					{ "require": "x-item" },
+					{ "optional": "y-item" },
+					{ "oneOrMore": "z-item" },
+					{ "zeroOrMore": "#text" },
+					// ❌ Cannot specify keywords simultaneously
+					{
+						"require": "x-item",
+						"optional": "y-item"
+					}
+				]
+			}
+		]
 	}
 }
 ```
@@ -143,23 +137,39 @@ The two keywords `choice` and`interleave` have the following meanings for the sp
 ```json:title=.markuplintrc
 {
 	"rules": {
-		"permitted-contents": {
-			"option": [
-				{
-					"tag": "x-container",
-					"contents": [
-						{
-							"choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
-						},
-						{
-							"interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
-						}
-					]
-				}
-			]
-		}
+		"permitted-contents": [
+			{
+				"tag": "x-container",
+				"contents": [
+					{
+						"choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
+					},
+					{
+						"interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
+					}
+				]
+			}
+		]
 	}
 }
+```
+
+### Options
+
+#### `ignoreHasMutableChildren`
+
+-   Type: `boolean`
+-   Default: `true`
+
+Ignore if it has mutable child elements in a preprocessor language like _Pug_ or a component library like _Vue_. (If use _Pug_ or _Vue_ need each [@markuplint/pug-parser](https://github.com/markuplint/markuplint/tree/master/packages/%40markuplint/pug-parser) and [@markuplint/vue-parser](https://github.com/markuplint/markuplint/tree/master/packages/%40markuplint/vue-parser))
+
+```pug
+html
+	// Originally, it is warned because the head element does not include the title element, but it is ignored because it contains a mutable element such as include.
+	head
+		include path/to/meta-list.pug
+	body
+		p lorem...
 ```
 
 ### Default notification severity

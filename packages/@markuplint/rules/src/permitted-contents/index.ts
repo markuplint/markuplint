@@ -5,18 +5,27 @@ import htmlSpec from './html-spec';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
 type TagRule = PermittedStructuresSchema;
+type Options = {
+	ignoreHasMutableChildren: boolean;
+};
 
 const expMapOnNodeId: Map<string, RegExp> = new Map();
 
-export default createRule<boolean, TagRule[]>({
+export default createRule<TagRule[], Options>({
 	name: 'permitted-contents',
-	defaultValue: true,
-	defaultOptions: [],
+	defaultValue: [],
+	defaultOptions: {
+		ignoreHasMutableChildren: true,
+	},
 	async verify(document, translate) {
 		const reports: Result[] = [];
 		let idCounter = 0;
 		await document.walkOn('Element', async node => {
 			if (!node.rule.value) {
+				return;
+			}
+
+			if (node.rule.option.ignoreHasMutableChildren && node.hasMutableChildren()) {
 				return;
 			}
 
@@ -104,7 +113,7 @@ export default createRule<boolean, TagRule[]>({
 				}
 			}
 
-			for (const rule of node.rule.option) {
+			for (const rule of node.rule.value) {
 				if (rule.tag.toLowerCase() !== node.nodeName.toLowerCase()) {
 					continue;
 				}
@@ -136,7 +145,7 @@ export default createRule<boolean, TagRule[]>({
 	},
 });
 
-type TargetNodes = ReturnType<Element<boolean, TagRule[]>['getChildElementsAndTextNodeWithoutWhitespaces']>;
+type TargetNodes = ReturnType<Element<TagRule[], Options>['getChildElementsAndTextNodeWithoutWhitespaces']>;
 
 function normalization(nodes: TargetNodes) {
 	return nodes.map(node => `<${node.type === 'Element' ? node.nodeName : '#text'}>`).join('');
