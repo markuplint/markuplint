@@ -1,6 +1,6 @@
-import { parse } from './';
-import { nodeListToDebugMaps } from '@markuplint/html-parser';
 import { MLASTElement, MLASTHTMLAttr } from '@markuplint/ml-ast';
+import { nodeListToDebugMaps } from '@markuplint/html-parser';
+import { parse } from './';
 // import { MLASTNodeType } from '@markuplint/ml-ast';
 
 describe('parser', () => {
@@ -111,7 +111,7 @@ html
 			'[2:1]>[2:5](13,17)html: html',
 			'[3:2]>[3:6](19,23)head: head',
 			"[4:3]>[4:24](26,47)meta: meta(charset='UTF-8')",
-			`[5:3]>[5:72](50,119)meta: meta(name="viewport"␣content='width=device-width,␣initial-scale=1.0')`,
+			'[5:3]>[5:72](50,119)meta: meta(name="viewport"␣content=\'width=device-width,␣initial-scale=1.0\')',
 			"[6:3]>[6:55](122,174)meta: meta(http-equiv='X-UA-Compatible'␣content='ie=edge')",
 			'[7:3]>[7:8](177,182)title: title',
 			'[7:9]>[7:17](183,191)#text: Document',
