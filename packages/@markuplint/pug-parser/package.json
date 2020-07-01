@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/pug-parser",
-	"version": "1.0.0-alpha.2",
+	"version": "1.0.0-alpha.3",
 	"description": "Pug parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -19,7 +19,7 @@
 		"@types/uuid": "^8.0.0"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "^1.0.0-alpha.19",
+		"@markuplint/html-parser": "^1.0.0-alpha.20",
 		"@markuplint/ml-ast": "^1.0.0-alpha.11",
 		"pug-lexer": "^5.0.0",
 		"pug-parser": "^6.0.0",
