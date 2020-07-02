@@ -46,6 +46,8 @@ describe('parser', () => {
 			console.log(123);
 		.
 			<script>alert(123)</script>
+		:any-filter(arg1 arg2 arg3=123)
+			filter contents
 `);
 		// console.log(JSON.stringify(ast));
 		expect(ast).toStrictEqual({
@@ -848,6 +850,71 @@ describe('parser', () => {
 											endLine: 44,
 											column: 4,
 											endColumn: 31,
+										},
+										{
+											type: 'Filter',
+											name: 'any-filter',
+											raw: ':any-filter(arg1 arg2 arg3=123)',
+											offset: 670,
+											endOffset: 701,
+											line: 45,
+											endLine: 45,
+											column: 3,
+											endColumn: 34,
+											block: {
+												type: 'Block',
+												nodes: [
+													{
+														type: 'Text',
+														raw: 'filter contents',
+														offset: 705,
+														endOffset: 720,
+														line: 46,
+														endLine: 46,
+														column: 4,
+														endColumn: 19,
+													},
+												],
+												line: 45,
+											},
+											attrs: [
+												{
+													name: 'arg1',
+													val: true,
+													mustEscape: true,
+													offset: 682,
+													endOffset: 686,
+													line: 45,
+													endLine: 45,
+													column: 15,
+													endColumn: 19,
+													raw: 'arg1',
+												},
+												{
+													name: 'arg2',
+													val: true,
+													mustEscape: true,
+													offset: 687,
+													endOffset: 691,
+													line: 45,
+													endLine: 45,
+													column: 20,
+													endColumn: 24,
+													raw: 'arg2',
+												},
+												{
+													name: 'arg3',
+													val: '123',
+													mustEscape: true,
+													offset: 692,
+													endOffset: 700,
+													line: 45,
+													endLine: 45,
+													column: 25,
+													endColumn: 33,
+													raw: 'arg3=123',
+												},
+											],
 										},
 									],
 									line: 4,

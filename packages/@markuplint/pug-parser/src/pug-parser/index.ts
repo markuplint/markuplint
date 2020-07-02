@@ -276,6 +276,37 @@ function optimizeAST(originalAST: PugAST<PugASTNode>, tokens: PugLexToken[], pug
 				nodes.push(caseNode);
 				continue;
 			}
+			case 'Filter': {
+				const attrs = getAttrs(node.attrs, tokens, offsets, pug);
+
+				const { endOffset, endLine, endColumn } = getEndAttributeLocation(
+					node.name,
+					offset,
+					line,
+					column,
+					tokens,
+					offsets,
+				);
+
+				const raw = pug.slice(offset, endOffset);
+				const block = optimizeAST(node.block, tokens, pug);
+
+				const filterNode: ASTFilterNode = {
+					type: node.type,
+					name: node.name,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+					block,
+					attrs,
+				};
+				nodes.push(filterNode);
+				continue;
+			}
 			default: {
 				// @ts-ignore
 				throw new Error(`Unsupported syntax: The "${node.type}" node\n${JSON.stringify(node, null, 2)}`);
@@ -332,9 +363,6 @@ function optimizeASTOfConditionalNode(
 	}
 
 	if ('alternate' in node && node.alternate) {
-		const lineOffset = Math.max(offsets[node.line - 2], 0) || 0;
-		const offset = lineOffset + node.column - 1;
-
 		switch (node.alternate.type) {
 			case 'Block': {
 				let tokenOfCurrentNode: PugLexToken | null = null;
@@ -541,6 +569,7 @@ export type ASTNode =
 	| ASTIncludeNode
 	| ASTMixinNode
 	| ASTMixinSlotNode
+	| ASTFilterNode
 	| ASTEachNode
 	| ASTConditionalNode
 	| ASTCaseNode
@@ -562,6 +591,8 @@ export type ASTIncludeNode = PugASTIncludeNode<ASTBlock> & AddtionalASTData;
 export type ASTMixinNode = Omit<PugASTMixinNode<ASTAttr, ASTBlock>, 'attributeBlocks'> & AddtionalASTData;
 
 export type ASTMixinSlotNode = PugASTMixinSlotNode & AddtionalASTData;
+
+export type ASTFilterNode = PugASTFilterNode<ASTAttr, ASTBlock> & AddtionalASTData;
 
 export type ASTEachNode = PugASTEachNode<ASTBlock> & AddtionalASTData;
 
@@ -598,6 +629,7 @@ type PugASTNode =
 	| PugASTIncludeNode<PugAST<PugASTNode>>
 	| PugASTMixinNode<PugASTAttr, PugAST<PugASTNode>>
 	| PugASTMixinSlotNode
+	| PugASTFilterNode<PugASTAttr, PugAST<PugASTTextNode>>
 	| PugASTEachNode<PugAST<PugASTNode>>
 	| PugASTConditionalNode<PugAST<PugASTNode>>
 	| PugASTCaseNode<PugAST<PugASTNode>>
@@ -685,6 +717,15 @@ type PugASTMixinNode<A, B> = {
 
 type PugASTMixinSlotNode = {
 	type: 'MixinBlock';
+	line: number;
+	column: number;
+};
+
+type PugASTFilterNode<A, B> = {
+	type: 'Filter';
+	name: string;
+	block: B;
+	attrs: A[];
 	line: number;
 	column: number;
 };
