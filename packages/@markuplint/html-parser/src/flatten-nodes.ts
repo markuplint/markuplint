@@ -1,10 +1,10 @@
 import { MLASTNode, MLASTNodeType, MLASTText } from '@markuplint/ml-ast';
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
+import { removeDeprecatedNode } from './remove-deprecated-node';
 import tagSplitter from './tag-splitter';
 import { v4 as uuid4 } from 'uuid';
 import { walk } from './walk';
-import { removeDeprecatedNode } from './remove-deprecated-node';
 
 export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 	const nodeOrders: MLASTNode[] = [];
