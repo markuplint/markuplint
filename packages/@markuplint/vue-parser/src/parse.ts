@@ -1,5 +1,4 @@
 import {
-	MLASTElement,
 	MLASTElementCloseTag,
 	MLASTNode,
 	MLASTNodeType,
@@ -7,15 +6,14 @@ import {
 	MLASTTag,
 	MLASTText,
 	Parse,
+	getEndCol,
+	getEndLine,
 	uuid,
 } from '@markuplint/ml-ast';
+import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
 import vueParse, { ASTNode } from './vue-parser';
-import { flattenNodes } from '@markuplint/html-parser';
-import getEndCol from './get-end-col';
-import getEndLine from './get-end-line';
-import parseRawTag from './parse-raw-tag';
 
-export const parse: Parse = (rawCode, offsetOffset = 0, offsetLine = 0, offsetColumn = 0) => {
+export const parse: Parse = rawCode => {
 	const ast = vueParse(rawCode);
 
 	const nodeList: MLASTNode[] = ast.templateBody
@@ -188,21 +186,6 @@ function nodeize(
 			}
 			startTag.childNodes = traverse(originNode, startTag, rawHtml);
 			return startTag;
-		}
-	}
-}
-
-export type Walker = (node: MLASTNode) => void;
-
-export function walk(nodeList: MLASTNode[], walker: Walker) {
-	for (const node of nodeList) {
-		walker(node);
-		const tag = node as MLASTElement;
-		if (tag.childNodes && tag.childNodes.length) {
-			walk(tag.childNodes, walker);
-		}
-		if (tag.pearNode) {
-			walker(tag.pearNode);
 		}
 	}
 }

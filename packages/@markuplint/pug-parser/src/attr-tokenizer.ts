@@ -1,6 +1,5 @@
-import { MLASTAttr, uuid } from '@markuplint/ml-ast';
+import { MLASTAttr, tokenizer, uuid } from '@markuplint/ml-ast';
 import { ASTAttr } from './pug-parser';
-import tokenizer from './tokenizer';
 
 export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 	if (/^[#.]/.test(attr.raw)) {

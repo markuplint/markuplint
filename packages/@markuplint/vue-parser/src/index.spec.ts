@@ -1,34 +1,35 @@
-import * as VueParser from './';
+import { parse } from './';
+import { nodeListToDebugMaps } from '@markuplint/ml-ast';
 
 describe('parser', () => {
 	it('empty code', () => {
-		const doc = VueParser.parse('<template></template>');
+		const doc = parse('<template></template>');
 		expect(doc.nodeList).toStrictEqual([]);
 		expect(doc.nodeList.length).toBe(0);
 	});
 
 	it('<div />', () => {
-		const doc = VueParser.parse('<template><div /></template>');
+		const doc = parse('<template><div /></template>');
 		expect(doc.nodeList[0].nodeName).toBe('div');
 		expect(doc.nodeList.length).toBe(1);
 	});
 
 	it('<div></div>', () => {
-		const doc = VueParser.parse('<template><div></div></template>');
+		const doc = parse('<template><div></div></template>');
 		expect(doc.nodeList[0].nodeName).toBe('div');
 		expect(doc.nodeList[1].nodeName).toBe('div');
 		expect(doc.nodeList.length).toBe(2);
 	});
 
 	it('text only', () => {
-		const doc = VueParser.parse('<template>text</template>');
+		const doc = parse('<template>text</template>');
 		expect(doc.nodeList[0].nodeName).toBe('#text');
 		expect(doc.nodeList[0].raw).toBe('text');
 		expect(doc.nodeList.length).toBe(1);
 	});
 
 	it('standard code', () => {
-		const doc = VueParser.parse(`
+		const doc = parse(`
 	<template>
 		<script>
 			const i = 0;
@@ -68,7 +69,7 @@ describe('parser', () => {
 	text-node
 	</template>
 	`);
-		const map = VueParser.nodeListToDebugMaps(doc.nodeList);
+		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[2:11]>[3:2](12,15)#text: ⏎→→',
 			'[3:2]>[3:10](15,23)script: <script>',
@@ -129,7 +130,7 @@ describe('parser', () => {
 	});
 
 	it('<template>', () => {
-		const doc = VueParser.parse(`
+		const doc = parse(`
 	<template>
 		<script>
 			const i = 0;
@@ -169,7 +170,7 @@ describe('parser', () => {
 	text-node
 	</template>
 	`);
-		const map = VueParser.nodeListToDebugMaps(doc.nodeList);
+		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[2:11]>[3:2](12,15)#text: ⏎→→',
 			'[3:2]>[3:10](15,23)script: <script>',
@@ -228,7 +229,7 @@ describe('parser', () => {
 	});
 
 	it('<noscript>', () => {
-		const doc = VueParser.parse(`
+		const doc = parse(`
 	<template>
 	<noscript>
 		<div>test</div>
@@ -237,7 +238,7 @@ describe('parser', () => {
 	</noscript>
 	</template>
 	`);
-		const map = VueParser.nodeListToDebugMaps(doc.nodeList);
+		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[2:11]>[3:1](12,14)#text: ⏎→',
 			'[3:1]>[3:11](14,24)noscript: <noscript>',
@@ -248,10 +249,10 @@ describe('parser', () => {
 	});
 
 	it('UUID', () => {
-		const doc = VueParser.parse(
+		const doc = parse(
 			'<template><x-wrap><x-before><span>title</span></x-before><x-after><div>test</div></x-after></x-wrap></template>',
 		);
-		// const map = VueParser.nodeListToDebugMaps(doc.nodeList);
+		// const map = nodeListToDebugMaps(doc.nodeList);
 		// console.log(map);
 		// console.log(doc.nodeList.map((n, i) => `${i}: ${n.uuid} ${n.raw.trim()}`));
 

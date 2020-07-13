@@ -1,5 +1,4 @@
-import { MLASTElement, MLASTHTMLAttr, MLASTPreprocessorSpecificAttr } from '@markuplint/ml-ast';
-import { nodeListToDebugMaps } from '@markuplint/html-parser';
+import { MLASTElement, MLASTHTMLAttr, MLASTPreprocessorSpecificAttr, nodeListToDebugMaps } from '@markuplint/ml-ast';
 import { parse } from './';
 
 describe('parser', () => {

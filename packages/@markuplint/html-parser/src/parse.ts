@@ -8,11 +8,11 @@ import {
 	MLASTTag,
 	MLASTText,
 	Parse,
+	getEndCol,
+	getEndLine,
 	uuid,
 } from '@markuplint/ml-ast';
 import { flattenNodes } from './flatten-nodes';
-import getEndCol from './get-end-col';
-import getEndLine from './get-end-line';
 import isDocumentFragment from './is-document-fragment';
 import parse5 from 'parse5';
 import parseRawTag from './parse-raw-tag';

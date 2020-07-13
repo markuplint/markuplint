@@ -1,7 +1,6 @@
-import { MLASTAttr, MLToken } from '@markuplint/ml-ast';
+import { MLASTAttr, MLToken, tokenizer } from '@markuplint/ml-ast';
 import { rePCEN, reTag, reTagName } from './const';
 import attrTokenizer from './attr-tokenizer';
-import tokenizer from './tokenizer';
 
 // eslint-disable-next-line no-control-regex
 const reAttrsInStartTag = /\s*[^\x00-\x1f\x7f-\x9f "'>/=]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]*))?/;

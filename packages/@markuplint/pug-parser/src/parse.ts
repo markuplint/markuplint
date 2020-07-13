@@ -7,13 +7,14 @@ import {
 	MLASTPreprocessorSpecificBlock,
 	MLASTTag,
 	Parse,
+	tokenizer,
 	uuid,
+	walk,
 } from '@markuplint/ml-ast';
-import { parse as htmlParser, isDocumentFragment, removeDeprecatedNode, walk } from '@markuplint/html-parser';
+import { parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
 import attrTokenizer from './attr-tokenizer';
-import tokenizer from './tokenizer';
 
-export const parse: Parse = (rawCode, offsetOffset = 0, offsetLine = 0, offsetColumn = 0) => {
+export const parse: Parse = rawCode => {
 	let parseError: string | undefined;
 	let nodeList: MLASTNode[];
 

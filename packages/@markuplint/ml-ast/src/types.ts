@@ -128,3 +128,5 @@ export type Parse = (
 	offsetLine?: number,
 	offsetColumn?: number,
 ) => MLASTDocument;
+
+export type Walker = (node: MLASTNode, depth: number) => void;
