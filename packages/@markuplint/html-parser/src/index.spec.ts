@@ -1,5 +1,5 @@
-import { isDocumentFragment, parse } from './';
 import { MLASTNodeType, nodeListToDebugMaps } from '@markuplint/ml-ast';
+import { isDocumentFragment, parse } from './';
 
 describe('isDocumentFragment', () => {
 	it('<!doctype>', () => {

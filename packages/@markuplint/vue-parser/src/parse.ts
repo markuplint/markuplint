@@ -74,8 +74,8 @@ function nodeize(
 	const endOffset = originNode.range[1];
 	const startLine = originNode.loc.start.line;
 	const endLine = originNode.loc.end.line;
-	const startCol = originNode.loc.start.column;
-	const endCol = originNode.loc.end.column;
+	const startCol = originNode.loc.start.column + 1;
+	const endCol = originNode.loc.end.column + 1;
 	const raw = rawHtml.slice(startOffset, endOffset || startOffset);
 
 	switch (originNode.type) {
@@ -141,8 +141,8 @@ function nodeize(
 					endOffset: endTagLoc.range[1],
 					startLine: endTagLoc.loc.start.line,
 					endLine: endTagLoc.loc.end.line,
-					startCol: endTagLoc.loc.start.column,
-					endCol: endTagLoc.loc.end.column,
+					startCol: endTagLoc.loc.start.column + 1,
+					endCol: endTagLoc.loc.end.column + 1,
 					nodeName: endTagName,
 					type: MLASTNodeType.EndTag,
 					namespace: originNode.namespace,
