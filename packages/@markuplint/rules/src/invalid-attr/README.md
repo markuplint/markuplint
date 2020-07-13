@@ -6,7 +6,7 @@ title: invalid-attr
 
 Warn if an attribute is a non-existent attribute or an invalid type value due to the specifications (or the custom rule).
 
-This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-ls`](https://github.com/markuplint/markuplint/tree/master/packages/%40markuplint/html-ls/src/attributes).
+This rule refers the [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-ls`](https://github.com/markuplint/markuplint/tree/master/packages/%40markuplint/html-ls/src/attributes).
 
 ## Rule Details
 
@@ -62,7 +62,7 @@ Type: `string[]`
 
 ##### `pattern`
 
-Only allow values ​​that match the pattern. It works as **regular expression** by enclosing it in `/`.
+Only allow values ​​that match the pattern. It works as a **regular expression** by enclosing it in `/`.
 
 Type: `string`
 
@@ -102,7 +102,7 @@ Type: `string`
 
 #### `ignoreAttrNamePrefix`
 
-Set prefixes to exclude special attributes for the library and template engine that do not exist in the HTML specifications.
+Set prefixes to exclude special attributes or directives for the library and template engine that do not exist in the HTML specifications.
 
 Type: `string | string[]`
 
@@ -110,11 +110,17 @@ Type: `string | string[]`
 {
 	"invalid-attr": {
 		"option": {
-			"ignoreAttrNamePrefix": ["v-bind:", ":", "@"]
+			"ignoreAttrNamePrefix": [
+				// If Angular
+				"app",
+				"*ng"
+			]
 		}
 	}
 }
 ```
+
+In some parser, detect an attribute as a directive so ignored. (Ex: Ignore directive that starts `v-` string in the [vue-parser](https://github.com/markuplint/markuplint/tree/master/packages/@markuplint/vue-parser).)
 
 ### Default severity
 

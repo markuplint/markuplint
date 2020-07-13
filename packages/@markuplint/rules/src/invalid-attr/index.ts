@@ -31,6 +31,10 @@ export default createRule<true, Option>({
 			const attributeSpecs = attrSpecs(node.nodeName);
 
 			for (const attr of node.attributes) {
+				if (attr.attrType === 'html-attr' && attr.isDirective) {
+					continue;
+				}
+
 				const attrName = attr.getName();
 				const name = attrName.potential;
 				const attrValue = attr.getValue();

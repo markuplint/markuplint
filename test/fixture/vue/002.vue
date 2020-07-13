@@ -8,6 +8,7 @@
 			<span>Text</span>
 		</template>
 		<template></template>
+		<img :src="src" :align="align" />
 		<button>
 			<template>
 				<slot />

@@ -98,7 +98,7 @@
 
 #### `ignoreAttrNamePrefix`
 
-HTML の仕様には存在しない、View ライブラリやテンプレートエンジン固有の属性を除外するために、プレフィックスを設定します。
+HTML の仕様には存在しない、View ライブラリやテンプレートエンジン固有の属性およびディレクティブを除外するために、プレフィックスを設定します。
 
 型: `string | string[]`
 
@@ -106,11 +106,17 @@ HTML の仕様には存在しない、View ライブラリやテンプレート�
 {
 	"invalid-attr": {
 		"option": {
-			"ignoreAttrNamePrefix": ["v-bind:", ":", "@"]
+			"ignoreAttrNamePrefix": [
+				// Angularの場合
+				"app",
+				"*ng"
+			]
 		}
 	}
 }
 ```
+
+パーサーによってはディレクティブを判定して除外します。（例えば [vue-parser](https://github.com/markuplint/markuplint/tree/master/packages/@markuplint/vue-parser) では `v-` の文字列で始まるディレクティブは除外します。）
 
 ### デフォルトの警告の厳しさ
 

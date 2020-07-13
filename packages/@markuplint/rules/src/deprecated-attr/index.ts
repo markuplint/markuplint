@@ -19,7 +19,7 @@ export default createRule({
 				if (attrSpec.deprecated || attrSpec.obsolete) {
 					const message = translate(
 						'The {0} {1} is {2}',
-						name.raw,
+						name.potential,
 						'attribute',
 						attrSpec.obsolete ? 'obsolete' : 'deprecated',
 					);

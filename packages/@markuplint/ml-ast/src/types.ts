@@ -102,6 +102,8 @@ export interface MLASTHTMLAttr extends MLToken {
 	endQuote: MLToken;
 	isInvalid: boolean;
 	isDynamicValue?: true;
+	isDirective?: true;
+	potentialName?: string;
 }
 
 export interface MLASTPreprocessorSpecificAttr extends MLToken {

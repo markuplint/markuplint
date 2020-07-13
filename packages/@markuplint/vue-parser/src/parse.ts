@@ -12,6 +12,7 @@ import {
 } from '@markuplint/ml-ast';
 import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
 import vueParse, { ASTNode } from './vue-parser';
+import { attr } from './attr';
 
 export const parse: Parse = rawCode => {
 	const ast = vueParse(rawCode);
@@ -169,7 +170,7 @@ function nodeize(
 				nodeName: tagName,
 				type: MLASTNodeType.StartTag,
 				namespace: originNode.namespace,
-				attributes: tagTokens.attrs,
+				attributes: tagTokens.attrs.map(attr),
 				parentNode,
 				prevNode,
 				nextNode,
