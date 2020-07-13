@@ -121,3 +121,10 @@ export interface MLASTDocument {
 export interface MLMarkupLanguageParser {
 	parse(sourceCode: string): MLASTDocument;
 }
+
+export type Parse = (
+	rawCode: string,
+	offsetOffset?: number,
+	offsetLine?: number,
+	offsetColumn?: number,
+) => MLASTDocument;

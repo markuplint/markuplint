@@ -1,24 +1,24 @@
 import { ASTBlock, ASTNode, pugParse } from './pug-parser';
 import {
 	MLASTDoctype,
-	MLASTDocument,
 	MLASTNode,
 	MLASTNodeType,
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
 	MLASTTag,
+	Parse,
 	uuid,
 } from '@markuplint/ml-ast';
 import { parse as htmlParser, isDocumentFragment, removeDeprecatedNode, walk } from '@markuplint/html-parser';
 import attrTokenizer from './attr-tokenizer';
 import tokenizer from './tokenizer';
 
-export default function parse(pug: string): MLASTDocument {
+export const parse: Parse = (rawCode, offsetOffset = 0, offsetLine = 0, offsetColumn = 0) => {
 	let parseError: string | undefined;
 	let nodeList: MLASTNode[];
 
 	try {
-		const parser = new Parser(pug);
+		const parser = new Parser(rawCode);
 		nodeList = parser.getNodeList();
 	} catch (err) {
 		nodeList = [];
@@ -31,10 +31,10 @@ export default function parse(pug: string): MLASTDocument {
 
 	return {
 		nodeList,
-		isFragment: isDocumentFragment(pug),
+		isFragment: isDocumentFragment(rawCode),
 		parseError,
 	};
-}
+};
 
 class Parser {
 	#raw: string;

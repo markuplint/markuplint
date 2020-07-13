@@ -1,5 +1,4 @@
 import {
-	MLASTDocument,
 	MLASTElement,
 	MLASTElementCloseTag,
 	MLASTNode,
@@ -7,6 +6,7 @@ import {
 	MLASTParentNode,
 	MLASTTag,
 	MLASTText,
+	Parse,
 	uuid,
 } from '@markuplint/ml-ast';
 import vueParse, { ASTNode } from './vue-parser';
@@ -15,10 +15,12 @@ import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
 import parseRawTag from './parse-raw-tag';
 
-export default function parse(html: string): MLASTDocument {
-	const ast = vueParse(html);
+export const parse: Parse = (rawCode, offsetOffset = 0, offsetLine = 0, offsetColumn = 0) => {
+	const ast = vueParse(rawCode);
 
-	const nodeList: MLASTNode[] = ast.templateBody ? flattenNodes(traverse(ast.templateBody, null, html), html) : [];
+	const nodeList: MLASTNode[] = ast.templateBody
+		? flattenNodes(traverse(ast.templateBody, null, rawCode), rawCode)
+		: [];
 
 	// Remove `</template>`
 	const templateEndTagIndex = nodeList.findIndex(node => /\s*<\/\s*template\s*>\s*/i.test(node.raw));
@@ -36,7 +38,7 @@ export default function parse(html: string): MLASTDocument {
 		nodeList,
 		isFragment: true,
 	};
-}
+};
 
 function traverse(rootNode: ASTNode, parentNode: MLASTParentNode | null = null, rawHtml: string): MLASTNode[] {
 	const nodeList: MLASTNode[] = [];

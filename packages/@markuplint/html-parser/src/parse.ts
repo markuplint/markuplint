@@ -1,6 +1,5 @@
 import {
 	MLASTDoctype,
-	MLASTDocument,
 	MLASTElementCloseTag,
 	MLASTNode,
 	MLASTNodeType,
@@ -8,6 +7,7 @@ import {
 	MLASTParentNode,
 	MLASTTag,
 	MLASTText,
+	Parse,
 	uuid,
 } from '@markuplint/ml-ast';
 import { flattenNodes } from './flatten-nodes';
@@ -21,19 +21,19 @@ const P5_OPTIONS = { sourceCodeLocationInfo: true };
 
 type ASTNode = P5Node | P5Document | P5Fragment;
 
-export default function parse(html: string, offsetOffset = 0, offsetLine = 0, offsetColumn = 0): MLASTDocument {
-	const isFragment = isDocumentFragment(html);
+export const parse: Parse = (rawCode, offsetOffset = 0, offsetLine = 0, offsetColumn = 0) => {
+	const isFragment = isDocumentFragment(rawCode);
 	const doc = isFragment
-		? (parse5.parseFragment(html, P5_OPTIONS) as P5Fragment)
-		: (parse5.parse(html, P5_OPTIONS) as P5Document);
+		? (parse5.parseFragment(rawCode, P5_OPTIONS) as P5Fragment)
+		: (parse5.parse(rawCode, P5_OPTIONS) as P5Document);
 
-	const nodeList = flattenNodes(traverse(doc, null, html, offsetOffset, offsetLine, offsetColumn), html);
+	const nodeList = flattenNodes(traverse(doc, null, rawCode, offsetOffset, offsetLine, offsetColumn), rawCode);
 
 	return {
 		nodeList,
 		isFragment,
 	};
-}
+};
 
 function traverse(
 	rootNode: ASTNode,
