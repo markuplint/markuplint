@@ -100,14 +100,8 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		const attrs: (MLDOMAttribute | MLDOMPreprocessorSpecificAttribute)[] = [];
 		attrName = attrName.toLowerCase();
 		for (const attr of this.attributes) {
-			if (attr.attrType === 'html-attr') {
-				if (attr.name.raw.toLowerCase() === attrName) {
-					attrs.push(attr);
-				}
-			} else {
-				if (attr.potentialName.toLowerCase() === attrName) {
-					attrs.push(attr);
-				}
+			if (attr.potentialName === attrName) {
+				attrs.push(attr);
 			}
 		}
 		return attrs;
@@ -116,12 +110,10 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 	getAttribute(attrName: string) {
 		attrName = attrName.toLowerCase();
 		for (const attr of this.attributes) {
-			if (attr.attrType === 'html-attr') {
-				if (attr.name.raw.toLowerCase() === attrName) {
+			if (attr.potentialName === attrName) {
+				if (attr.attrType === 'html-attr') {
 					return attr.value ? attr.value.raw : null;
-				}
-			} else {
-				if (attr.potentialName.toLowerCase() === attrName) {
+				} else {
 					return attr.potentialValue;
 				}
 			}
