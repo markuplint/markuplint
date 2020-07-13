@@ -15,14 +15,11 @@
 		"build": "tsc",
 		"clean": "tsc --build --clean"
 	},
-	"devDependencies": {
-		"@types/uuid": "^8.0.0"
-	},
+	"devDependencies": {},
 	"dependencies": {
 		"@markuplint/html-parser": "^1.0.0-alpha.20",
 		"@markuplint/ml-ast": "^1.0.0-alpha.11",
 		"pug-lexer": "^5.0.0",
-		"pug-parser": "^6.0.0",
-		"uuid": "^8.1.0"
+		"pug-parser": "^6.0.0"
 	}
 }

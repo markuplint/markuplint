@@ -7,11 +7,11 @@ import {
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
 	MLASTTag,
+	uuid,
 } from '@markuplint/ml-ast';
 import { parse as htmlParser, isDocumentFragment, removeDeprecatedNode, walk } from '@markuplint/html-parser';
 import attrTokenizer from './attr-tokenizer';
 import tokenizer from './tokenizer';
-import { v4 as uuid4 } from 'uuid';
 
 export default function parse(pug: string): MLASTDocument {
 	let parseError: string | undefined;
@@ -102,7 +102,7 @@ class Parser {
 		switch (originNode.type) {
 			case 'Doctype': {
 				return {
-					uuid: uuid4(),
+					uuid: uuid(),
 					raw: originNode.raw,
 					name: originNode.val || '',
 					// TODO:
@@ -140,7 +140,7 @@ class Parser {
 			}
 			case 'Comment': {
 				return {
-					uuid: uuid4(),
+					uuid: uuid(),
 					raw: originNode.raw,
 					startOffset,
 					endOffset,
@@ -159,7 +159,7 @@ class Parser {
 			}
 			case 'Tag': {
 				const tag: MLASTTag = {
-					uuid: uuid4(),
+					uuid: uuid(),
 					raw: originNode.raw,
 					startOffset,
 					endOffset,
@@ -192,7 +192,7 @@ class Parser {
 			}
 			default: {
 				const tag: MLASTPreprocessorSpecificBlock = {
-					uuid: uuid4(),
+					uuid: uuid(),
 					raw: originNode.raw,
 					startOffset,
 					endOffset,

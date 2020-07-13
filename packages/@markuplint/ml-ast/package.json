@@ -14,5 +14,11 @@
 	"scripts": {
 		"build": "tsc",
 		"clean": "tsc --build --clean"
+	},
+	"devDependencies": {
+		"@types/uuid": "^8.0.0"
+	},
+	"dependencies": {
+		"uuid": "^8.2.0"
 	}
 }

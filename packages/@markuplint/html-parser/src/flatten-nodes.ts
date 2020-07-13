@@ -1,9 +1,8 @@
-import { MLASTNode, MLASTNodeType, MLASTText } from '@markuplint/ml-ast';
+import { MLASTNode, MLASTNodeType, MLASTText, uuid } from '@markuplint/ml-ast';
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
 import { removeDeprecatedNode } from './remove-deprecated-node';
 import tagSplitter from './tag-splitter';
-import { v4 as uuid4 } from 'uuid';
 import { walk } from './walk';
 
 export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
@@ -28,10 +27,9 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 			 * first white spaces
 			 */
 			if (/^\s+$/.test(html)) {
-				const uuid = uuid4();
 				const spaces = html;
 				const textNode: MLASTText = {
-					uuid,
+					uuid: uuid(),
 					raw: spaces,
 					startOffset: currentEndOffset,
 					endOffset: currentEndOffset + spaces.length,
@@ -151,11 +149,10 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 				const lastTextContent = rawHtml.slice(lastOffset);
 				// console.log(`"${lastTextContent}"`);
 				if (lastTextContent) {
-					const uuid = uuid4();
 					const line = lastNode ? lastNode.endLine : 0;
 					const col = lastNode ? lastNode.endCol : 0;
 					const lastTextNode: MLASTText = {
-						uuid,
+						uuid: uuid(),
 						raw: lastTextContent,
 						startOffset: lastOffset,
 						endOffset: lastOffset + lastTextContent.length,

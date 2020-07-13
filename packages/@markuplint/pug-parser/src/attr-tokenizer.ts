@@ -1,7 +1,6 @@
+import { MLASTAttr, uuid } from '@markuplint/ml-ast';
 import { ASTAttr } from './pug-parser';
-import { MLASTAttr } from '@markuplint/ml-ast';
 import tokenizer from './tokenizer';
-import { v4 as uuid4 } from 'uuid';
 
 export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 	if (/^[#.]/.test(attr.raw)) {
@@ -13,7 +12,7 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 		}
 		return {
 			type: 'ps-attr',
-			uuid: uuid4(),
+			uuid: uuid(),
 			raw: attr.raw,
 			startOffset: attr.offset,
 			endOffset: attr.endOffset,
@@ -111,7 +110,7 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 
 	return {
 		type: 'html-attr',
-		uuid: uuid4(),
+		uuid: uuid(),
 		raw: attrToken.raw,
 		startOffset: attrToken.startOffset,
 		endOffset: attrToken.endOffset,

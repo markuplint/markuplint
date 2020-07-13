@@ -8,6 +8,7 @@ import {
 	MLASTParentNode,
 	MLASTTag,
 	MLASTText,
+	uuid,
 } from '@markuplint/ml-ast';
 import { flattenNodes } from './flatten-nodes';
 import getEndCol from './get-end-col';
@@ -15,7 +16,6 @@ import getEndLine from './get-end-line';
 import isDocumentFragment from './is-document-fragment';
 import parse5 from 'parse5';
 import parseRawTag from './parse-raw-tag';
-import { v4 as uuid4 } from 'uuid';
 
 const P5_OPTIONS = { sourceCodeLocationInfo: true };
 
@@ -84,7 +84,7 @@ function nodeize(
 		const startCol = prevToken ? prevToken.endCol : 0;
 		const endCol = prevToken ? prevToken.endCol : 0;
 		const node: MLASTOmittedElement = {
-			uuid: uuid4(),
+			uuid: uuid(),
 			raw: '',
 			startOffset: startOffset + offsetOffset,
 			endOffset: endOffset + offsetOffset,
@@ -109,7 +109,7 @@ function nodeize(
 	switch (originNode.nodeName) {
 		case '#documentType': {
 			return {
-				uuid: uuid4(),
+				uuid: uuid(),
 				raw,
 				// @ts-ignore
 				name: originNode.name || '',
@@ -135,7 +135,7 @@ function nodeize(
 		}
 		case '#text': {
 			const node: MLASTText = {
-				uuid: uuid4(),
+				uuid: uuid(),
 				raw,
 				startOffset: startOffset + offsetOffset,
 				endOffset: endOffset + offsetOffset,
@@ -155,7 +155,7 @@ function nodeize(
 		}
 		case '#comment': {
 			return {
-				uuid: uuid4(),
+				uuid: uuid(),
 				raw,
 				startOffset: startOffset + offsetOffset,
 				endOffset: endOffset + offsetOffset,
@@ -203,7 +203,7 @@ function nodeize(
 				);
 				const endTagName = endTagTokens.tagName;
 				endTag = {
-					uuid: uuid4(),
+					uuid: uuid(),
 					raw: endTagRaw,
 					startOffset: startOffset + offsetOffset,
 					endOffset: endOffset + offsetOffset,
@@ -229,7 +229,7 @@ function nodeize(
 			const _endLine = getEndLine(startTagRaw, startLine);
 			const _endCol = getEndCol(startTagRaw, startCol);
 			const startTag: MLASTTag = {
-				uuid: uuid4(),
+				uuid: uuid(),
 				raw: startTagRaw,
 				startOffset: startOffset + offsetOffset,
 				endOffset: _endOffset + offsetOffset,

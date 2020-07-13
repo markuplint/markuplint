@@ -7,13 +7,13 @@ import {
 	MLASTParentNode,
 	MLASTTag,
 	MLASTText,
+	uuid,
 } from '@markuplint/ml-ast';
 import vueParse, { ASTNode } from './vue-parser';
 import { flattenNodes } from '@markuplint/html-parser';
 import getEndCol from './get-end-col';
 import getEndLine from './get-end-line';
 import parseRawTag from './parse-raw-tag';
-import { v4 as uuid4 } from 'uuid';
 
 export default function parse(html: string): MLASTDocument {
 	const ast = vueParse(html);
@@ -81,7 +81,7 @@ function nodeize(
 	switch (originNode.type) {
 		case 'VText': {
 			const node: MLASTText = {
-				uuid: uuid4(),
+				uuid: uuid(),
 				raw,
 				startOffset,
 				endOffset,
@@ -101,7 +101,7 @@ function nodeize(
 		}
 		case 'VExpressionContainer': {
 			return {
-				uuid: uuid4(),
+				uuid: uuid(),
 				raw,
 				startOffset,
 				endOffset,
@@ -135,7 +135,7 @@ function nodeize(
 				);
 				const endTagName = endTagTokens.tagName;
 				endTag = {
-					uuid: uuid4(),
+					uuid: uuid(),
 					raw: endTagRaw,
 					startOffset: endTagLoc.range[0],
 					endOffset: endTagLoc.range[1],
@@ -158,7 +158,7 @@ function nodeize(
 				};
 			}
 			const startTag: MLASTTag = {
-				uuid: uuid4(),
+				uuid: uuid(),
 				raw: startTagRaw,
 				startOffset,
 				endOffset: startOffset + startTagRaw.length,

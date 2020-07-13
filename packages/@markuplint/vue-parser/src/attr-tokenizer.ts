@@ -1,6 +1,5 @@
-import { MLASTHTMLAttr } from '@markuplint/ml-ast';
+import { MLASTHTMLAttr, uuid } from '@markuplint/ml-ast';
 import tokenizer from './tokenizer';
-import { v4 as uuid4 } from 'uuid';
 
 // eslint-disable-next-line no-control-regex
 const reAttrsInStartTag = /(\s*)([^\x00-\x1f\x7f-\x9f "'>/=]+)(?:(\s*)(=)(\s*)(?:(?:"([^"]*)")|(?:'([^']*)')|([^\s]*)))?/;
@@ -68,7 +67,7 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 
 	return {
 		type: 'html-attr',
-		uuid: uuid4(),
+		uuid: uuid(),
 		raw: attrToken.raw,
 		startOffset: attrToken.startOffset,
 		endOffset: attrToken.endOffset,
