@@ -170,3 +170,52 @@ test('At least one of data and type must be defined to <object>.', async () => {
 		).length,
 	).toBe(2);
 });
+
+test('Pug', async () => {
+	expect(
+		await markuplint.verify(
+			'img',
+			{
+				parser: {
+					'.*': '@markuplint/pug-parser',
+				},
+				rules: {
+					'required-attr': true,
+				},
+				nodeRules: [],
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([
+		{
+			ruleId: 'required-attr',
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: "Required 'src' on '<img>'",
+			raw: 'img',
+		},
+	]);
+});
+
+test('Vue', async () => {
+	expect(
+		(
+			await markuplint.verify(
+				'<template><img :src="src"></template>',
+				{
+					parser: {
+						'.*': '@markuplint/vue-parser',
+					},
+					rules: {
+						'required-attr': true,
+					},
+					nodeRules: [],
+				},
+				[rule],
+				'en',
+			)
+		).length,
+	).toBe(0);
+});

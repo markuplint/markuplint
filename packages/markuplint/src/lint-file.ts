@@ -1,4 +1,5 @@
 import { ConfigSet, MLFile } from '@markuplint/file-resolver';
+import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 import { MLCore, MLParseError, MLRule, convertRuleset } from '@markuplint/ml-core';
 import { RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
 import { Document } from '@markuplint/ml-core';
@@ -37,6 +38,18 @@ export async function lintFile(
 	// Resolve ruleset
 	const ruleset = convertRuleset(configSet.config);
 
+	// Schemas
+	const specs = configSet.config.specs
+		? Array.isArray(configSet.config.specs)
+			? configSet.config.specs
+			: [configSet.config.specs]
+		: [];
+	const htmlSpec: MLMLSpec = await import('@markuplint/html-spec');
+	const extendedSpecs = await Promise.all(
+		specs.map<Promise<ExtendedSpec>>(async spec => (await import(spec)).default),
+	);
+	const schemas = [htmlSpec, ...extendedSpecs] as const;
+
 	// Addition rules
 	if (rulesAutoResolve) {
 		const { rules: additionalRules } = await moduleAutoLoader<RuleConfigValue, unknown>(ruleset);
@@ -52,7 +65,7 @@ export async function lintFile(
 	let document: Document<RuleConfigValue, unknown> | null = null;
 
 	try {
-		const core = new MLCore(parser, sourceCode, ruleset, rules, i18nSettings);
+		const core = new MLCore(parser, sourceCode, ruleset, rules, i18nSettings, schemas);
 		results = await core.verify(fix);
 		fixedCode = core.document.toString();
 		document = core.document;

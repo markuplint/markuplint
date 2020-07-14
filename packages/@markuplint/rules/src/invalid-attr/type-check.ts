@@ -5,7 +5,7 @@ type Invalid = {
 	message: string;
 };
 
-export function typeCheck(name: string, value: string, specs: AttrSpec[]): Invalid | false {
+export function typeCheck(name: string, value: string, spec?: AttrSpec): Invalid | false {
 	if (/^data-.+$/.test(name)) {
 		// Ignore checking because "data-*" attribute is any type
 		return false;
@@ -15,8 +15,6 @@ export function typeCheck(name: string, value: string, specs: AttrSpec[]): Inval
 		// Ignore checking because ARIA attributes are check on another rule
 		return false;
 	}
-
-	const spec = specs.find(s => s.name === name);
 
 	// Existance
 	if (!spec) {

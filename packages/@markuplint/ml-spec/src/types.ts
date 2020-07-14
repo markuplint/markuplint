@@ -9,6 +9,12 @@ export interface MLMLSpec {
 	specs: ElementSpec[];
 }
 
+export type ExtendedSpec = {
+	cites?: Cites;
+	def?: Partial<SpecDefs>;
+	specs?: ElementSpec[];
+};
+
 /**
  * Reference URLs
  */

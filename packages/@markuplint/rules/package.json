@@ -17,10 +17,12 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-spec": "^1.0.0-alpha.23",
 		"@markuplint/ml-spec": "^1.0.0-alpha.8"
 	},
 	"devDependencies": {
-		"@markuplint/ml-core": "^1.0.0-alpha.27"
+		"@markuplint/html-spec": "^1.0.0-alpha.23",
+		"@markuplint/ml-core": "^1.0.0-alpha.27",
+		"@markuplint/pug-parser": "^1.0.0-alpha.5",
+		"@markuplint/vue-parser": "^1.0.0-alpha.12",
 	}
 }

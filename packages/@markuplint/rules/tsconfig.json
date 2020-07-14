@@ -11,13 +11,16 @@
 	},
 	"references": [
 		{
-			"path": "../html-spec"
-		},
-		{
 			"path": "../ml-core"
 		},
 		{
 			"path": "../ml-spec"
+		},
+		{
+			"path": "../pug-parser"
+		},
+		{
+			"path": "../vue-parser"
 		}
 	],
 	"include": ["./src/**/*"],

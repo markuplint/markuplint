@@ -1,5 +1,5 @@
 import { Result, createRule } from '@markuplint/ml-core';
-import { attrSpecs } from '../helpers';
+import { attrMatches, attrSpecs, getSpec } from '../helpers';
 
 type RequiredAttributes = string | string[];
 
@@ -10,10 +10,11 @@ export default createRule<RequiredAttributes, null>({
 	defaultOptions: null,
 	async verify(document, translate) {
 		const reports: Result[] = [];
+		const spec = getSpec(document.schemas);
 		await document.walkOn('Element', async node => {
 			const customRequiredAttrs = typeof node.rule.value === 'string' ? [node.rule.value] : node.rule.value;
 
-			const attributeSpecs = attrSpecs(node.nodeName).map(attr => {
+			const attributeSpecs = attrSpecs(node.nodeName, spec).map(attr => {
 				const required = customRequiredAttrs.includes(attr.name);
 				if (required) {
 					return {
@@ -30,16 +31,7 @@ export default createRule<RequiredAttributes, null>({
 					const candidate = [...spec.requiredEither, spec.name];
 					invalid = !candidate.some(attrName => node.hasAttribute(attrName));
 				} else if (spec.required) {
-					if (spec.condition) {
-						if (spec.condition.self) {
-							const condSelector = Array.isArray(spec.condition.self)
-								? spec.condition.self.join(',')
-								: spec.condition.self;
-							invalid = node.matches(condSelector) && !node.hasAttribute(spec.name);
-						}
-					} else {
-						invalid = !node.hasAttribute(spec.name);
-					}
+					invalid = attrMatches(node, spec.condition) && !node.hasAttribute(spec.name);
 				}
 
 				if (invalid) {
