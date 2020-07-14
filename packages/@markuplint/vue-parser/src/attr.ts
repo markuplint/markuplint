@@ -13,6 +13,7 @@ export function attr(attr: MLASTAttr): MLASTAttr {
 		return {
 			...attr,
 			potentialName,
+			isDynamicValue: true,
 		};
 	}
 

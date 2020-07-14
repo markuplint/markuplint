@@ -24,5 +24,6 @@
 		"@markuplint/ml-core": "^1.0.0-alpha.27",
 		"@markuplint/pug-parser": "^1.0.0-alpha.5",
 		"@markuplint/vue-parser": "^1.0.0-alpha.12",
+		"@markuplint/vue-spec": "^1.0.0-alpha.0"
 	}
 }

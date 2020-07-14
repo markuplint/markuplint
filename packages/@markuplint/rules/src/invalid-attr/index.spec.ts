@@ -466,3 +466,36 @@ test('Vue', async () => {
 	expect(r1.length).toBe(1);
 	expect(r2.length).toBe(0);
 });
+
+test('Vue iterator', async () => {
+	const r1 = await markuplint.verify(
+		'<template><ul ref="ul"><li key="key"></li></ul></template>',
+		{
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+			specs: ['@markuplint/vue-spec'],
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	const r2 = await markuplint.verify(
+		'<template><ul><li v-for="item of list" :key="key"></li></ul></template>',
+		{
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r1.length).toBe(1);
+	expect(r2.length).toBe(0);
+});
