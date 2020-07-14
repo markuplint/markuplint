@@ -28,7 +28,7 @@
 			"path": "../@markuplint/i18n"
 		},
 		{
-			"path": "../@markuplint/html-ls"
+			"path": "../@markuplint/html-spec"
 		}
 	],
 	"include": ["./src/**/*"],

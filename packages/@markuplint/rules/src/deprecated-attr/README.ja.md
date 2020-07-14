@@ -2,7 +2,7 @@
 
 非推奨（**deprecated**）もしくは廃止（**obsolete**）属性があると警告します。
 
-[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-ls`](https://github.com/markuplint/markuplint/blob/master/packages/%40markuplint/html-ls/index.json)に設定値を持っています。
+[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/blob/master/packages/%40markuplint/html-spec/index.json)に設定値を持っています。
 
 ## ルールの詳細
 

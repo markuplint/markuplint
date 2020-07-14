@@ -12,7 +12,7 @@
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
 		"lint": "prettier --write './packages/**/*.ts'; eslint --fix './packages/**/*.ts'",
 		"schema": "lerna run schema",
-		"gen": "cd packages/\\@markuplint/html-ls/; yarn gen; cd ../",
+		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
 		"all": "yarn lint; yarn clean; yarn gen; yarn build; yarn schema; yarn test:clear; yarn test;",
 		"cli": "./packages/markuplint/bin/markuplint",
 		"site:dev": "cd website; yarn site:dev",

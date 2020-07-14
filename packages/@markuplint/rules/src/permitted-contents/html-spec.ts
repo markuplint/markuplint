@@ -1,4 +1,4 @@
-import html from '@markuplint/html-ls';
+import html from '@markuplint/html-spec';
 
 export default function htmlSpec(tag: string) {
 	tag = tag.toLowerCase();

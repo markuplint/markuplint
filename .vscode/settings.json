@@ -3,11 +3,11 @@
 	"eslint.enable": true,
 	"json.schemas": [
 		{
-			"fileMatch": ["/packages/*markuplint/html-ls/src/permitted-structures/*.json"],
+			"fileMatch": ["/packages/*markuplint/html-spec/src/permitted-structures/*.json"],
 			"url": "/packages/@markuplint/ml-spec/schemas/permitted-structures.schema.json"
 		},
 		{
-			"fileMatch": ["/packages/*markuplint/html-ls/src/attributes/*.json"],
+			"fileMatch": ["/packages/*markuplint/html-spec/src/attributes/*.json"],
 			"url": "/packages/@markuplint/ml-spec/schemas/attributes.schema.json"
 		}
 	],

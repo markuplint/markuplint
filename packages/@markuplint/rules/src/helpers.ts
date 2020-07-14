@@ -1,4 +1,4 @@
-import html, { Attribute } from '@markuplint/html-ls';
+import html, { Attribute } from '@markuplint/html-spec';
 
 export function attrSpecs(tag: string) {
 	tag = tag.toLowerCase();

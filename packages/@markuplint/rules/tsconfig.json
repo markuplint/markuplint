@@ -11,7 +11,7 @@
 	},
 	"references": [
 		{
-			"path": "../html-ls"
+			"path": "../html-spec"
 		},
 		{
 			"path": "../ml-core"
