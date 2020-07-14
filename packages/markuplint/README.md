@@ -78,7 +78,7 @@ const result = exec({
 
 ```json
 {
-	"extends": "@markuplint/html-ls",
+	"extends": "@markuplint/html-spec",
 	"rules": {
 		"rule__enabled": true,
 		"rule__disabled": false,

@@ -1,8 +1,68 @@
-import html, { Attribute } from '@markuplint/html-ls';
+import { Attribute, ElementSpec, ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+import { Element, RuleConfigValue } from '@markuplint/ml-core';
 
-export function attrSpecs(tag: string) {
+/**
+ * Merging HTML-spec schema and extended spec schemas
+ *
+ * Ex: `@markuplint/html-spec` + `{ specs: ["@markuplint/vue-spec"] }` in cofigure files.
+ *
+ * @param schemas `MLDocument.schemas`
+ */
+export function getSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
+	const [main, ...extendedSpecs] = schemas;
+	const result = { ...main };
+	for (const extendedSpec of extendedSpecs) {
+		if (extendedSpec.cites) {
+			result.cites = [...result.cites, ...extendedSpec.cites];
+		}
+		if (extendedSpec.def) {
+			if (extendedSpec.def['#ariaAttrs']) {
+				result.def['#ariaAttrs'] = [...result.def['#ariaAttrs'], ...extendedSpec.def['#ariaAttrs']];
+			}
+			if (extendedSpec.def['#globalAttrs']) {
+				result.def['#globalAttrs'] = [...result.def['#globalAttrs'], ...extendedSpec.def['#globalAttrs']];
+			}
+			if (extendedSpec.def['#roles']) {
+				result.def['#roles'] = [...result.def['#roles'], ...extendedSpec.def['#roles']];
+			}
+			if (extendedSpec.def['#contentModels']) {
+				const keys = new Set([
+					...Object.keys(result.def['#contentModels']),
+					...Object.keys(extendedSpec.def['#contentModels']),
+				]) as Set<keyof typeof result.def['#contentModels']>;
+				for (const modelName of keys) {
+					const mainModel = result.def['#contentModels'][modelName];
+					const exModel = extendedSpec.def['#contentModels'][modelName];
+					result.def['#contentModels'][modelName] = [...(mainModel || []), ...(exModel || [])];
+				}
+			}
+		}
+		if (extendedSpec.specs) {
+			const specs: ElementSpec[] = [];
+			for (const elSpec of result.specs) {
+				const tagName = elSpec.name.toLowerCase();
+				const index = extendedSpec.specs.findIndex(spec => spec.name.toLowerCase() === tagName);
+				if (index === -1) {
+					specs.push(elSpec);
+					continue;
+				}
+				const exSpec = extendedSpec.specs.splice(index, 1)[0];
+				specs.push({
+					...elSpec,
+					...exSpec,
+					attributes: [...elSpec.attributes, ...exSpec.attributes],
+					categories: [...elSpec.categories, ...exSpec.categories],
+				});
+			}
+		}
+	}
+
+	return result;
+}
+
+export function attrSpecs(tag: string, { specs, def }: MLMLSpec) {
 	tag = tag.toLowerCase();
-	const spec = html.specs.find(spec => spec.name === tag);
+	const spec = specs.find(spec => spec.name === tag);
 	if (!spec) {
 		return [];
 	}
@@ -11,7 +71,7 @@ export function attrSpecs(tag: string) {
 	const attrs: Attribute[] = [];
 
 	if (hasGlobalAttr) {
-		attrs.push(...html.def['#globalAttrs']);
+		attrs.push(...def['#globalAttrs']);
 	}
 
 	for (const attr of spec.attributes) {
@@ -32,6 +92,31 @@ export function attrSpecs(tag: string) {
 	}
 
 	return attrs;
+}
+
+export function attrMatches<T extends RuleConfigValue, R>(node: Element<T, R>, condition: Attribute['condition']) {
+	if (!condition) {
+		return true;
+	}
+
+	let matched = false;
+	if (condition.self) {
+		const condSelector = Array.isArray(condition.self) ? condition.self.join(',') : condition.self;
+		matched = node.matches(condSelector);
+	}
+	if (condition.ancestor) {
+		let _node = node.parentNode;
+		while (_node) {
+			if (_node.type === 'Element') {
+				if (_node.matches(condition.ancestor)) {
+					matched = true;
+					break;
+				}
+			}
+			_node = node.parentNode;
+		}
+	}
+	return matched;
 }
 
 export function match(needle: string, pattern: string) {

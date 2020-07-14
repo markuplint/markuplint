@@ -2,6 +2,7 @@ export interface Config {
 	$schema?: string;
 	parser?: ParserConfig;
 	extends?: string | string[];
+	specs?: string | string[];
 	rules?: Rules;
 	nodeRules?: NodeRule[];
 	childNodeRules?: ChildNodeRule[];

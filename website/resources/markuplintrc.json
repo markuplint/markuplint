@@ -1,5 +1,5 @@
 {
-	"extends": "markuplint/html-ls",
+	"extends": "markuplint/html-spec",
 	"rules": {
 		"attr-duplication": true,
 		"character-reference": true,

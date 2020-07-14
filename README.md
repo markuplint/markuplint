@@ -14,7 +14,7 @@ A Linter for All Markup Languages (for legacy/modern HTML, Web Components, SVG, 
 | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------- |
 | [`markuplint`](./packages/markuplint)                               | [![npm version](https://badge.fury.io/js/markuplint.svg)](https://badge.fury.io/js/markuplint)                                        | Node.js   |
 | [`@markuplint/file-resolver`](./packages/@markuplint/file-resolver) | [![npm version](https://badge.fury.io/js/%40markuplint%2Ffile-resolver.svg)](https://www.npmjs.com/package/@markuplint/file-resolver) | Node.js   |
-| [`@markuplint/html-ls`](./packages/@markuplint/html-ls)             | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-ls.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-ls)              | Universal |
+| [`@markuplint/html-spec`](./packages/@markuplint/html-spec)         | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-spec.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-spec)          | Universal |
 | [`@markuplint/html-parser`](./packages/@markuplint/html-parser)     | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-parser.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-parser)      | Universal |
 | [`@markuplint/i18n`](./packages/@markuplint/i18n)                   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fi18n.svg)](https://badge.fury.io/js/%40markuplint%2Fi18n)                    | Universal |
 | [`@markuplint/ml-ast`](./packages/@markuplint/ml-ast)               | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-ast.svg)](https://badge.fury.io/js/%40markuplint%2Fml-ast)                | Universal |
@@ -54,7 +54,7 @@ A Linter for All Markup Languages (for legacy/modern HTML, Web Components, SVG, 
 
 ```json
 {
-	"extends": "@markuplint/html-ls",
+	"extends": "@markuplint/html-spec",
 	"rules": {
 		"rule__enabled": true,
 		"rule__disabled": false,

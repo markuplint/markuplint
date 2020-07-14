@@ -15,6 +15,13 @@
 				<a href="path/to">Deny Link</a>
 			</template>
 		</button>
+		<ul>
+			<li v-for="item of list" :key="item.id"></li>
+		</ul>
+		<div :data-variant="variant">
+			<a v-if="href" :href="href" :target="target">{{ text }}</a>
+			<button v-else :type="type">{{ text }}</button>
+		</div>
 	</div>
 </template>
 

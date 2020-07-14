@@ -1,12 +1,13 @@
 import { Document } from './';
 import { convertRuleset } from '../';
+import { dummySchemas } from './debug-utils';
 import { parse } from '@markuplint/html-parser';
 
 test('node count', async () => {
 	const sourceCode = '<div>text</div>';
 	const ast = parse(sourceCode);
 	const ruleset = convertRuleset({});
-	const document = new Document(ast, ruleset);
+	const document = new Document(ast, ruleset, dummySchemas());
 	expect(document.nodeList.length).toBe(3);
 });
 
@@ -14,7 +15,7 @@ test('raw', async () => {
 	const sourceCode = '<div>text</div>';
 	const ast = parse(sourceCode);
 	const ruleset = convertRuleset({});
-	const document = new Document(ast, ruleset);
+	const document = new Document(ast, ruleset, dummySchemas());
 	expect(document.nodeList[0].raw).toBe('<div>');
 	expect(document.nodeList[1].raw).toBe('text');
 	expect(document.nodeList[2].raw).toBe('</div>');
@@ -27,7 +28,7 @@ test('raw', async () => {
 </div>`;
 	const ast = parse(sourceCode);
 	const ruleset = convertRuleset({});
-	const document = new Document(ast, ruleset);
+	const document = new Document(ast, ruleset, dummySchemas());
 	expect(document.nodeList[0].raw).toBe('\n');
 	expect(document.nodeList[1].raw).toBe('<div>');
 	expect(document.nodeList[2].raw).toBe('\n\ttext\n');
@@ -41,7 +42,7 @@ test('raw', async () => {
     </div>`;
 	const ast = parse(sourceCode);
 	const ruleset = convertRuleset({});
-	const document = new Document(ast, ruleset);
+	const document = new Document(ast, ruleset, dummySchemas());
 	expect(document.nodeList[0].raw).toBe('\n    ');
 	expect(document.nodeList[1].raw).toBe('<div>');
 	expect(document.nodeList[2].raw).toBe('\n        text\n    ');
@@ -66,7 +67,7 @@ test('raw', async () => {
     </div>`;
 	const ast = parse(sourceCode);
 	const ruleset = convertRuleset({});
-	const document = new Document(ast, ruleset);
+	const document = new Document(ast, ruleset, dummySchemas());
 	expect(document.nodeList[0].raw).toBe('\n    ');
 	expect(document.nodeList[1].raw).toBe('<div>');
 	expect(document.nodeList[2].raw).toBe('\n        ');
@@ -92,7 +93,7 @@ test('raw', async () => {
 </div>`;
 	const ast = parse(sourceCode);
 	const ruleset = convertRuleset({});
-	const document = new Document(ast, ruleset);
+	const document = new Document(ast, ruleset, dummySchemas());
 	expect(document.nodeList[0].raw).toBe('\n');
 	expect(document.nodeList[1].raw).toBe('<div>');
 	expect(document.nodeList[2].raw).toBe('\n\t');

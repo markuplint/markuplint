@@ -1,6 +1,6 @@
 import { Result, createRule } from '@markuplint/ml-core';
 import { getSpecByTagName } from '@markuplint/ml-spec';
-import specs from '@markuplint/html-ls';
+import specs from '@markuplint/html-spec';
 
 export default createRule({
 	name: 'deprecated-element',

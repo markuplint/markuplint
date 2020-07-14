@@ -416,3 +416,86 @@ test('URL attribute', async () => {
 	);
 	expect(r12.length).toBe(0);
 });
+
+test('Pug', async () => {
+	const r = await markuplint.verify(
+		'button(type=buttonType)',
+		{
+			parser: {
+				'.*': '@markuplint/pug-parser',
+			},
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r.length).toBe(0);
+});
+
+test('Vue', async () => {
+	const r1 = await markuplint.verify(
+		'<template><button type="buttonType"></button></template>',
+		{
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	const r2 = await markuplint.verify(
+		'<template><button :type="buttonType"></button></template>',
+		{
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r1.length).toBe(1);
+	expect(r2.length).toBe(0);
+});
+
+test('Vue iterator', async () => {
+	const r1 = await markuplint.verify(
+		'<template><ul ref="ul"><li key="key"></li></ul></template>',
+		{
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+			specs: ['@markuplint/vue-spec'],
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	const r2 = await markuplint.verify(
+		'<template><ul><li v-for="item of list" :key="key"></li></ul></template>',
+		{
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r1.length).toBe(1);
+	expect(r2.length).toBe(0);
+});

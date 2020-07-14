@@ -1,3 +1,4 @@
+import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 import { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
 import { Document } from './ml-dom';
@@ -13,6 +14,7 @@ export class MLCore {
 	#ruleset: Ruleset;
 	#i18n: I18n;
 	#rules: MLRule<RuleConfigValue, unknown>[];
+	#schemas: Readonly<[MLMLSpec, ...ExtendedSpec[]]>;
 
 	constructor(
 		parser: MLMarkupLanguageParser,
@@ -20,13 +22,15 @@ export class MLCore {
 		ruleset: Ruleset,
 		rules: MLRule<RuleConfigValue, unknown>[],
 		i18n: I18n,
+		schemas: Readonly<[MLMLSpec, ...ExtendedSpec[]]>,
 	) {
 		this.#parser = parser;
 		this.#sourceCode = sourceCode;
 		this.#ruleset = ruleset;
 		this.#i18n = i18n;
+		this.#schemas = schemas;
 		this.#ast = this.#parser.parse(this.#sourceCode);
-		this.#document = new Document(this.#ast, this.#ruleset);
+		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas);
 		this.#rules = rules;
 	}
 
@@ -53,17 +57,18 @@ export class MLCore {
 	setParser(parser: MLMarkupLanguageParser) {
 		this.#parser = parser;
 		this.#ast = this.#parser.parse(this.#sourceCode);
-		this.#document = new Document(this.#ast, this.#ruleset);
+		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas);
 	}
 
 	setCode(sourceCode: string) {
 		this.#sourceCode = sourceCode;
 		this.#ast = this.#parser.parse(this.#sourceCode);
-		this.#document = new Document(this.#ast, this.#ruleset);
+		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas);
 	}
 
-	setRuleset(ruleset: Ruleset) {
+	setRuleset(ruleset: Ruleset, schemas: [MLMLSpec, ...ExtendedSpec[]]) {
 		this.#ruleset = ruleset;
-		this.#document = new Document(this.#ast, this.#ruleset);
+		this.#schemas = schemas;
+		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas);
 	}
 }

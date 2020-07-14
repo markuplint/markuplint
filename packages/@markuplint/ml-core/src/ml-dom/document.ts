@@ -1,4 +1,5 @@
 import { AnonymousNode, NodeType } from './types';
+import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 import { MLASTDocument, MLASTNode, MLASTNodeType } from '@markuplint/ml-ast';
 import { MLDOMComment, MLDOMDoctype, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
 import { NodeStore, createNode } from './helper';
@@ -29,6 +30,11 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	/**
 	 *
 	 */
+	schemas: Readonly<[MLMLSpec, ...ExtendedSpec[]]>;
+
+	/**
+	 *
+	 */
 	readonly nodeStore = new NodeStore();
 
 	/**
@@ -36,7 +42,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	 * @param ast node list of markuplint AST
 	 * @param ruleset ruleset object
 	 */
-	constructor(ast: MLASTDocument, ruleset: Ruleset) {
+	constructor(ast: MLASTDocument, ruleset: Ruleset, schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
 		this.nodeList = Object.freeze(
 			ast.nodeList.map(astNode => {
@@ -48,6 +54,69 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		);
 		this.isFragment = ast.isFragment;
 
+		this.schemas = schemas;
+
+		this._init(ruleset);
+	}
+
+	get doctype() {
+		for (const node of this.nodeList) {
+			if (node instanceof MLDOMDoctype) {
+				return node;
+			}
+		}
+		return null;
+	}
+
+	get tree() {
+		const treeRoots: AnonymousNode<T, O>[] = [];
+		let traversalNode: AnonymousNode<T, O> | null = this.nodeList[0];
+		while (traversalNode) {
+			treeRoots.push(traversalNode);
+			traversalNode = traversalNode.nextNode;
+		}
+		return treeRoots;
+	}
+
+	async walk(walker: Walker<T, O>) {
+		for (const node of this.nodeList) {
+			await walker(node);
+		}
+	}
+
+	async walkOn(type: 'Element', walker: Walker<T, O, MLDOMElement<T, O>>): Promise<void>;
+	async walkOn(type: 'Text', walker: Walker<T, O, MLDOMText<T, O>>): Promise<void>;
+	async walkOn(type: 'Comment', walker: Walker<T, O, MLDOMComment<T, O>>): Promise<void>;
+	async walkOn(type: 'ElementCloseTag', walker: Walker<T, O, MLDOMElementCloseTag<T, O>>): Promise<void>;
+	async walkOn(type: NodeType, walker: Walker<T, O, any>): Promise<void> {
+		for (const node of this.nodeList) {
+			if (node instanceof MLDOMNode) {
+				if (node.is(type)) {
+					await walker(node);
+				}
+			}
+		}
+	}
+
+	setRule(rule: MLRule<T, O> | null) {
+		this.currentRule = rule;
+	}
+
+	matchNodes(query: string): MLDOMElement<T, O>[] {
+		return this.nodeList.filter(
+			(node: AnonymousNode<T, O>): node is MLDOMElement<T, O> => node.type === 'Element' && node.matches(query),
+		);
+	}
+
+	toString() {
+		const html: string[] = [];
+		for (const node of this.nodeList) {
+			html.push(node.raw);
+		}
+		return html.join('');
+	}
+
+	private _init(ruleset: Ruleset) {
 		// add rules to node
 		for (const node of this.nodeList) {
 			// global rules
@@ -112,62 +181,5 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				}
 			}
 		}
-	}
-
-	get doctype() {
-		for (const node of this.nodeList) {
-			if (node instanceof MLDOMDoctype) {
-				return node;
-			}
-		}
-		return null;
-	}
-
-	get tree() {
-		const treeRoots: AnonymousNode<T, O>[] = [];
-		let traversalNode: AnonymousNode<T, O> | null = this.nodeList[0];
-		while (traversalNode) {
-			treeRoots.push(traversalNode);
-			traversalNode = traversalNode.nextNode;
-		}
-		return treeRoots;
-	}
-
-	async walk(walker: Walker<T, O>) {
-		for (const node of this.nodeList) {
-			await walker(node);
-		}
-	}
-
-	async walkOn(type: 'Element', walker: Walker<T, O, MLDOMElement<T, O>>): Promise<void>;
-	async walkOn(type: 'Text', walker: Walker<T, O, MLDOMText<T, O>>): Promise<void>;
-	async walkOn(type: 'Comment', walker: Walker<T, O, MLDOMComment<T, O>>): Promise<void>;
-	async walkOn(type: 'ElementCloseTag', walker: Walker<T, O, MLDOMElementCloseTag<T, O>>): Promise<void>;
-	async walkOn(type: NodeType, walker: Walker<T, O, any>): Promise<void> {
-		for (const node of this.nodeList) {
-			if (node instanceof MLDOMNode) {
-				if (node.is(type)) {
-					await walker(node);
-				}
-			}
-		}
-	}
-
-	setRule(rule: MLRule<T, O> | null) {
-		this.currentRule = rule;
-	}
-
-	matchNodes(query: string): MLDOMElement<T, O>[] {
-		return this.nodeList.filter(
-			(node: AnonymousNode<T, O>): node is MLDOMElement<T, O> => node.type === 'Element' && node.matches(query),
-		);
-	}
-
-	toString() {
-		const html: string[] = [];
-		for (const node of this.nodeList) {
-			html.push(node.raw);
-		}
-		return html.join('');
 	}
 }

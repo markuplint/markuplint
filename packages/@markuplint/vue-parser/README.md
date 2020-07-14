@@ -20,7 +20,7 @@ Add `parser` option into your `.eslintrc.*` file.
 
 ```json
 {
-	"extends": "@markuplint/html-ls",
+	"extends": "@markuplint/html-spec",
 	"parser": {
 		".vue$": "@markuplint/vue-parser"
 	}

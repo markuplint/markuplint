@@ -1,5 +1,5 @@
 import { Result, createRule } from '@markuplint/ml-core';
-import { attrSpecs, isCustomElement, match } from '../helpers';
+import { attrMatches, attrSpecs, getSpec, isCustomElement, match } from '../helpers';
 import { AttributeType } from '@markuplint/ml-spec/src';
 import { typeCheck } from './type-check';
 
@@ -25,10 +25,11 @@ export default createRule<true, Option>({
 	defaultValue: true,
 	defaultOptions: {},
 	async verify(document, translate) {
+		const spec = getSpec(document.schemas);
 		const reports: Result[] = [];
 
 		await document.walkOn('Element', async node => {
-			const attributeSpecs = attrSpecs(node.nodeName);
+			const attributeSpecs = attrSpecs(node.nodeName, spec);
 
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'html-attr' && attr.isDirective) {
@@ -54,9 +55,12 @@ export default createRule<true, Option>({
 
 				if (customRule) {
 					if ('enum' in customRule) {
-						invalid = typeCheck(name.toLowerCase(), value, [
-							{ name, type: 'String', enum: customRule.enum, description: '' },
-						]);
+						invalid = typeCheck(name.toLowerCase(), value, {
+							name,
+							type: 'String',
+							enum: customRule.enum,
+							description: '',
+						});
 					} else if ('pattern' in customRule) {
 						if (!match(value, customRule.pattern)) {
 							invalid = {
@@ -65,10 +69,25 @@ export default createRule<true, Option>({
 							};
 						}
 					} else if ('type' in customRule) {
-						invalid = typeCheck(name, value, [{ name, type: customRule.type, description: '' }]);
+						invalid = typeCheck(name, value, { name, type: customRule.type, description: '' });
 					}
 				} else if (!isCustomElement(node.nodeName)) {
-					invalid = typeCheck(name, value, attributeSpecs);
+					const spec = attributeSpecs.find(s => s.name === name);
+					invalid = typeCheck(name, value, spec);
+					if (!invalid && spec && !attrMatches(node, spec.condition)) {
+						invalid = {
+							invalidType: 'non-existent',
+							message: `The "${name}" attribute is not allowed`,
+						};
+					}
+					if (
+						invalid &&
+						invalid.invalidType === 'invalid-value' &&
+						attr.attrType === 'html-attr' &&
+						attr.isDynamicValue
+					) {
+						invalid = false;
+					}
 				}
 
 				if (invalid) {
