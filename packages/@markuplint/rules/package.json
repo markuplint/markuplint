@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/rules",
-	"version": "1.0.0-alpha.37",
+	"version": "1.0.0-alpha.38",
 	"description": "Rules for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -17,13 +17,13 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "^1.0.0-alpha.8"
+		"@markuplint/ml-spec": "^1.0.0-alpha.9"
 	},
 	"devDependencies": {
-		"@markuplint/html-spec": "^1.0.0-alpha.23",
-		"@markuplint/ml-core": "^1.0.0-alpha.27",
-		"@markuplint/pug-parser": "^1.0.0-alpha.5",
-		"@markuplint/vue-parser": "^1.0.0-alpha.12",
-		"@markuplint/vue-spec": "^1.0.0-alpha.0"
+		"@markuplint/html-spec": "^1.0.0-alpha.24",
+		"@markuplint/ml-core": "^1.0.0-alpha.28",
+		"@markuplint/pug-parser": "^1.0.0-alpha.6",
+		"@markuplint/vue-parser": "^1.0.0-alpha.13",
+		"@markuplint/vue-spec": "^1.0.0-alpha.1"
 	}
 }
