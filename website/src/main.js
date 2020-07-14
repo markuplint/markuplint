@@ -1,52 +1,16 @@
 /* global monaco */
 
 import * as HTMLParser from '@markuplint/html-parser';
+import { getEndCol, getEndLine } from '@markuplint/ml-ast';
 import { MLCore } from '@markuplint/ml-core';
 import { I18n } from '@markuplint/i18n';
 import rules from '@markuplint/rules';
-// import Markuplint from 'markuplint/lib/core';
-// import createRuleset from 'markuplint/lib/ruleset/createRuleset.remote';
-// import Messenger from 'markuplint/lib/locale/messenger';
-// import getLine from 'markuplint/lib/dom/parser/get-line';
-// import getCol from 'markuplint/lib/dom/parser/get-col';
-
-// import rules from 'markuplint/lib/rules/all';
-
-/**
- *
- * @param {string} html
- * @param {number} line
- */
-function getEndLine(html, line) {
-	return html.split(/\r?\n/).length - 1 + line;
-}
-
-/**
- *
- * @param {string} html
- * @param {number} col
- */
-function getEndCol(html, col) {
-	const lines = html.split(/\r?\n/);
-	const lineCount = lines.length;
-	const lastLine = lines.pop();
-	return lineCount > 1 ? lastLine.length + 1 : col + html.length;
-}
+import spec from '@markuplint/html-spec';
 
 const encode = text => btoa(encodeURIComponent(text));
 const decode = text => decodeURIComponent(atob(text));
 
-window.markuplint = {
-	// Markuplint,
-	// createRuleset,
-	// Messenger,
-	// getLine,
-	// getCol,
-	// rules,
-};
-
 const require = window.require; // overwirte
-
 require.config({ paths: { vs: 'monaco-editor/min/vs' } });
 
 let diagnoseId;
@@ -60,9 +24,8 @@ const lint = async newCode => {
 	const i18n = await I18n.create(localSet);
 	const reqConf = await fetch('./resources/markuplintrc.json');
 	const ruleset = await reqConf.json();
-	// console.log({ HTMLParser, newCode, ruleset, rules, i18n });
 	ruleset.childNodeRules = [];
-	const linter = new MLCore(HTMLParser, newCode, ruleset, rules, i18n);
+	const linter = new MLCore(HTMLParser, newCode, ruleset, rules, i18n, [spec]);
 	const reports = await linter.verify();
 	const diagnotics = [];
 	for (const report of reports) {
@@ -72,10 +35,14 @@ const lint = async newCode => {
 			startColumn: report.col,
 			endLineNumber: getEndLine(report.raw, report.line),
 			endColumn: getEndCol(report.raw, report.col),
-			message: `<markuplint> ${report.message} (${report.ruleId})`,
+			owner: 'markuplint',
+			resource: monaco.Uri.parse(
+				`https://github.com/markuplint/markuplint/tree/master/packages/@markuplint/rules/src/${report.ruleId}`,
+			),
+			message: `${report.message} (${report.ruleId}) <markuplint>`,
+			tags: [monaco.Unnecessary, monaco.Deprecated],
 		});
 	}
-	// console.log(reports);
 	return diagnotics;
 };
 

@@ -24,6 +24,6 @@
 		"@markuplint/ml-core": "^1.0.0-alpha.27",
 		"@markuplint/ml-spec": "^1.0.0-alpha.8",
 		"@markuplint/rules": "^1.0.0-alpha.37",
-		"monaco-editor": "^0.18.1"
+		"monaco-editor": "^0.20.0"
 	}
 }

@@ -1,5 +1,4 @@
 {
-	"$schema": "./markuplint.schema.json",
 	"extends": "markuplint/html-spec",
 	"rules": {
 		"attr-duplication": true,
