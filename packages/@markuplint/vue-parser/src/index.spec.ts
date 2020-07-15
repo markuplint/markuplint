@@ -303,7 +303,7 @@ describe('parser', () => {
 
 	it('attributes', () => {
 		const doc = parse(
-			'<template><div v-if="bool" data-attr v-bind:data-attr2="variable" @click.once v-on:click.foobar></div></template>',
+			'<template><div v-if="bool" data-attr v-bind:data-attr2="variable" @click.once="event" v-on:click.foobar="event"></div></template>',
 		);
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[0].raw).toBe(' v-if="bool"');
@@ -314,8 +314,8 @@ describe('parser', () => {
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[2].potentialName).toBe('data-attr2');
 		// @ts-ignore
-		expect(doc.nodeList[0].attributes[3].potentialName).toBe('click');
+		expect(doc.nodeList[0].attributes[3].isDirective).toBeTruthy();
 		// @ts-ignore
-		expect(doc.nodeList[0].attributes[4].potentialName).toBe('click.foobar');
+		expect(doc.nodeList[0].attributes[4].isDirective).toBeTruthy();
 	});
 });

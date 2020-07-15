@@ -20,7 +20,7 @@
 		</ul>
 		<div :data-variant="variant">
 			<a v-if="href" :href="href" :target="target">{{ text }}</a>
-			<button v-else :type="type">{{ text }}</button>
+			<button v-else :type="type" @click="event" v-on:custom:event="event">{{ text }}</button>
 		</div>
 	</div>
 </template>
