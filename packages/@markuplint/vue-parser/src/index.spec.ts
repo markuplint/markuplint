@@ -302,7 +302,9 @@ describe('parser', () => {
 	});
 
 	it('attributes', () => {
-		const doc = parse('<template><div v-if="bool" data-attr v-bind:data-attr2="variable"></div></template>');
+		const doc = parse(
+			'<template><div v-if="bool" data-attr v-bind:data-attr2="variable" @click.once v-on:click.foobar></div></template>',
+		);
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[0].raw).toBe(' v-if="bool"');
 		// @ts-ignore
@@ -311,5 +313,9 @@ describe('parser', () => {
 		expect(doc.nodeList[0].attributes[2].raw).toBe(' v-bind:data-attr2="variable"');
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[2].potentialName).toBe('data-attr2');
+		// @ts-ignore
+		expect(doc.nodeList[0].attributes[3].potentialName).toBe('click');
+		// @ts-ignore
+		expect(doc.nodeList[0].attributes[4].potentialName).toBe('click.foobar');
 	});
 });

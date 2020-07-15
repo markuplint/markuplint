@@ -8,8 +8,13 @@ export function attr(attr: MLASTAttr): MLASTAttr {
 	/**
 	 * If data-binding attributes
 	 */
-	const [, directive, potentialName] = attr.name.raw.match(/(^v-bind:|^:|^v-on|@)(.+)/i) || [];
-	if (directive && potentialName) {
+	const [, directive, attrName, modifiedEventDirective, modifiedEventName, , eventDirective, eventName] =
+		attr.name.raw.match(
+			/(^v-bind:|^:)(.+)|(^v-on:|^@)(.+)(\.(?:stop|prevent|capture|self|once|passive)$)|(^v-on:|^@)(.+)/i,
+		) || [];
+	const isDirective = !!(directive || modifiedEventDirective || eventDirective);
+	const potentialName = attrName || modifiedEventName || eventName;
+	if (isDirective && potentialName) {
 		return {
 			...attr,
 			potentialName,
