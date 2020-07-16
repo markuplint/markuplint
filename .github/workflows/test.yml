@@ -14,10 +14,11 @@ on:
 
 jobs:
     test:
-        runs-on: [ubuntu-latest, macos-latest]
+        runs-on: ${{ matrix.os }}
 
         strategy:
             matrix:
+                os: [ubuntu-latest, macos-latest]
                 node: [12]
 
         steps:
