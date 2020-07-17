@@ -34,7 +34,11 @@ export default createRule<Value>({
 			const ms = severity === 'error' ? 'must' : 'should';
 			const message = translate(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			for (const attr of node.attributes) {
-				if (attr.attrType === 'ps-attr' || (attr.attrType === 'html-attr' && attr.isDynamicValue)) {
+				if (
+					attr.attrType === 'ps-attr' ||
+					(attr.attrType === 'html-attr' && attr.isDynamicValue) ||
+					(attr.attrType === 'html-attr' && attr.isDirective)
+				) {
 					continue;
 				}
 				const value = attr.getValue();
