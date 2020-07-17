@@ -65,3 +65,23 @@ test('id-duplication', async () => {
 	);
 	expect(r.length).toBe(0);
 });
+
+test('in Vue', async () => {
+	const r = await markuplint.verify(
+		`<template>
+	<div v-if="bool"><span :id="uuid"></span></div>
+	<div v-else><span :id="uuid"></span></div>
+</template>`,
+		{
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+			rules: {
+				'id-duplication': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r.length).toBe(0);
+});
