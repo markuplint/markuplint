@@ -308,7 +308,11 @@ describe('parser', () => {
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[0].raw).toBe(' v-if="bool"');
 		// @ts-ignore
+		expect(doc.nodeList[0].attributes[0].isDirective).toBeTruthy();
+		// @ts-ignore
 		expect(doc.nodeList[0].attributes[1].raw).toBe(' data-attr');
+		// @ts-ignore
+		expect(doc.nodeList[0].attributes[1].isDirective).toBeUndefined();
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[2].raw).toBe(' v-bind:data-attr2="variable"');
 		// @ts-ignore

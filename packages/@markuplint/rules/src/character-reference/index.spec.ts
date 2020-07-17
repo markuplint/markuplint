@@ -65,3 +65,20 @@ test('character-reference', async () => {
 	);
 	expect(r.length).toBe(0);
 });
+
+test('in Vue', async () => {
+	const r = await markuplint.verify(
+		'<template><div v-if="a < b"></div></template>',
+		{
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+			rules: {
+				'character-reference': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r.length).toBe(0);
+});
