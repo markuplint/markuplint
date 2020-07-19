@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { verify } from '../helpers';
 
 test('deprecated attribute', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<img align="top">',
 		{
 			rules: {
@@ -25,7 +25,7 @@ test('deprecated attribute', async () => {
 });
 
 test('deprecated global attribute', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<img xml:lang="en-US">',
 		{
 			rules: {

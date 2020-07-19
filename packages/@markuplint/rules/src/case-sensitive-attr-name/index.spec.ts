@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { fix, verify } from '../helpers';
 import rule from './';
 
 describe('verify', () => {
 	test('lower case', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			'<div data-lowercase></div>',
 			{
 				rules: {
@@ -17,7 +17,7 @@ describe('verify', () => {
 	});
 
 	test('upper case', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			'<div data-UPPERCASE="value"></div>',
 			{
 				rules: {
@@ -33,7 +33,7 @@ describe('verify', () => {
 	});
 
 	test('upper case', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			'<div data-UPPERCASE="value"></div>',
 			{
 				rules: {
@@ -52,7 +52,7 @@ describe('verify', () => {
 	});
 
 	test('upper case', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			'<div data-uppercase="value"></div>',
 			{
 				rules: {
@@ -71,7 +71,7 @@ describe('verify', () => {
 	});
 
 	test('upper case', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			'<div DATA-UPPERCASE="value"></div>',
 			{ rules: { 'case-sensitive-attr-name': ['error', 'no-lower'] } },
 			[rule],
@@ -81,7 +81,7 @@ describe('verify', () => {
 	});
 
 	test('foreign elements', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			'<svg viewBox="0 0 100 100"></svg>',
 			{ rules: { 'case-sensitive-attr-name': true } },
 			[rule],
@@ -93,7 +93,7 @@ describe('verify', () => {
 
 describe('fix', () => {
 	test('upper case', async () => {
-		const fixed = await markuplint.fix(
+		const fixed = await fix(
 			'<DIV DATA-LOWERCASE></DIV>',
 			{ rules: { 'case-sensitive-attr-name': true } },
 			[rule],
@@ -103,7 +103,7 @@ describe('fix', () => {
 	});
 
 	test('upper case', async () => {
-		const fixed = await markuplint.fix(
+		const fixed = await fix(
 			'<DIV data-lowercase></DIV>',
 			{ rules: { 'case-sensitive-attr-name': 'no-lower' } },
 			[rule],

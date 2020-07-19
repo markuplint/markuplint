@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { verify } from '../helpers';
 
 test('valid', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 		<!doctype html>
 		<html></html>
@@ -19,7 +19,7 @@ test('valid', async () => {
 });
 
 test('missing doctype', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<html></html>',
 		{
 			rules: {
@@ -42,7 +42,7 @@ test('missing doctype', async () => {
 });
 
 test('document fragment', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<div></div>',
 		{
 			rules: {
@@ -56,7 +56,7 @@ test('document fragment', async () => {
 });
 
 test('obsolete doctypes', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 		<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 		<div></div>

@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { fix, verify } from '../helpers';
 import rule from './';
 
 describe('verify', () => {
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src="path/to">
 		`,
@@ -19,7 +19,7 @@ describe('verify', () => {
 	});
 
 	test('space before and after', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src = "path/to">
 		`,
@@ -44,7 +44,7 @@ describe('verify', () => {
 	});
 
 	test('space before', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src ="path/to">
 		`,
@@ -69,7 +69,7 @@ describe('verify', () => {
 	});
 
 	test('space after', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src= "path/to">
 		`,
@@ -85,7 +85,7 @@ describe('verify', () => {
 	});
 
 	test('line break before', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img
 		src
@@ -112,7 +112,7 @@ describe('verify', () => {
 	});
 
 	test('line break after', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img
 		src=
@@ -130,7 +130,7 @@ describe('verify', () => {
 	});
 
 	test('always: no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src="path/to">
 		`,
@@ -155,7 +155,7 @@ describe('verify', () => {
 	});
 
 	test('always: space before and after', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src = "path/to">
 		`,
@@ -171,7 +171,7 @@ describe('verify', () => {
 	});
 
 	test('always: space before', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src ="path/to">
 		`,
@@ -187,7 +187,7 @@ describe('verify', () => {
 	});
 
 	test('always: space after', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src= "path/to">
 		`,
@@ -212,7 +212,7 @@ describe('verify', () => {
 	});
 
 	test('always: line break before', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img
 		src
@@ -230,7 +230,7 @@ describe('verify', () => {
 	});
 
 	test('always: line break after', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img
 		src=
@@ -257,7 +257,7 @@ describe('verify', () => {
 	});
 
 	test('always-single-line: no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src="path/to">
 		`,
@@ -282,7 +282,7 @@ describe('verify', () => {
 	});
 
 	test('always-single-line: space before and after', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src = "path/to">
 		`,
@@ -298,7 +298,7 @@ describe('verify', () => {
 	});
 
 	test('always-single-line: space before', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src ="path/to">
 		`,
@@ -314,7 +314,7 @@ describe('verify', () => {
 	});
 
 	test('always-single-line: space after', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src= "path/to">
 		`,
@@ -339,7 +339,7 @@ describe('verify', () => {
 	});
 
 	test('always-single-line: line break before', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img
 		src
@@ -366,7 +366,7 @@ describe('verify', () => {
 	});
 
 	test('always: line break after', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img
 		src=
@@ -393,7 +393,7 @@ describe('verify', () => {
 	});
 
 	test('never-single-line: no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src="path/to">
 		`,
@@ -409,7 +409,7 @@ describe('verify', () => {
 	});
 
 	test('never-single-line: space before and after', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src = "path/to">
 		`,
@@ -434,7 +434,7 @@ describe('verify', () => {
 	});
 
 	test('never-single-line: space before', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src ="path/to">
 		`,
@@ -459,7 +459,7 @@ describe('verify', () => {
 	});
 
 	test('never-single-line: space after', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src= "path/to">
 		`,
@@ -475,7 +475,7 @@ describe('verify', () => {
 	});
 
 	test('never-single-line: line break before', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img
 		src
@@ -493,7 +493,7 @@ describe('verify', () => {
 	});
 
 	test('never-single-line: line break after', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img
 		src=
@@ -513,7 +513,7 @@ describe('verify', () => {
 
 describe('fix', () => {
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src="path/to">
 		`,
@@ -533,7 +533,7 @@ describe('fix', () => {
 	});
 
 	test('space before and after', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src = "path/to">
 		`,
@@ -553,7 +553,7 @@ describe('fix', () => {
 	});
 
 	test('space before', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src ="path/to">
 		`,
@@ -573,7 +573,7 @@ describe('fix', () => {
 	});
 
 	test('space after', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src= "path/to">
 		`,
@@ -593,7 +593,7 @@ describe('fix', () => {
 	});
 
 	test('line break before', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img
 		src
@@ -616,7 +616,7 @@ describe('fix', () => {
 	});
 
 	test('line break after', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img
 		src=
@@ -640,7 +640,7 @@ describe('fix', () => {
 	});
 
 	test('always: no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src="path/to">
 		`,
@@ -660,7 +660,7 @@ describe('fix', () => {
 	});
 
 	test('always: space before and after', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src = "path/to">
 		`,
@@ -680,7 +680,7 @@ describe('fix', () => {
 	});
 
 	test('always: space before', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src ="path/to">
 		`,
@@ -700,7 +700,7 @@ describe('fix', () => {
 	});
 
 	test('always: space after', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src= "path/to">
 		`,
@@ -720,7 +720,7 @@ describe('fix', () => {
 	});
 
 	test('always: line break before', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img
 		src
@@ -744,7 +744,7 @@ describe('fix', () => {
 	});
 
 	test('always: line break after', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img
 		src=
@@ -768,7 +768,7 @@ describe('fix', () => {
 	});
 
 	test('always-single-line: no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src="path/to">
 		`,
@@ -788,7 +788,7 @@ describe('fix', () => {
 	});
 
 	test('always-single-line: space before and after', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src = "path/to">
 		`,
@@ -808,7 +808,7 @@ describe('fix', () => {
 	});
 
 	test('always-single-line: space before', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src ="path/to">
 		`,
@@ -828,7 +828,7 @@ describe('fix', () => {
 	});
 
 	test('always-single-line: space after', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src= "path/to">
 		`,
@@ -848,7 +848,7 @@ describe('fix', () => {
 	});
 
 	test('always-single-line: line break before', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img
 		src
@@ -871,7 +871,7 @@ describe('fix', () => {
 	});
 
 	test('always: line break after', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img
 		src=
@@ -895,7 +895,7 @@ describe('fix', () => {
 	});
 
 	test('never-single-line: no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src="path/to">
 		`,
@@ -915,7 +915,7 @@ describe('fix', () => {
 	});
 
 	test('never-single-line: space before and after', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src = "path/to">
 		`,
@@ -935,7 +935,7 @@ describe('fix', () => {
 	});
 
 	test('never-single-line: space before', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src ="path/to">
 		`,
@@ -955,7 +955,7 @@ describe('fix', () => {
 	});
 
 	test('never-single-line: space after', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img src= "path/to">
 		`,
@@ -975,7 +975,7 @@ describe('fix', () => {
 	});
 
 	test('never-single-line: line break before', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img
 		src
@@ -999,7 +999,7 @@ describe('fix', () => {
 	});
 
 	test('never-single-line: line break after', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 		<img
 		src=

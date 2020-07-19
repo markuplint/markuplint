@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { verify } from '../helpers';
 
 test('is test 1', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
@@ -39,7 +39,7 @@ test('is test 1', async () => {
 });
 
 test('is test 2', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 		<div
 			data-attr="value"
@@ -79,7 +79,7 @@ test('is test 2', async () => {
 });
 
 test('is test 3', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<img src="/" SRC="/" >',
 		{
 			rules: {

@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { verify } from '../helpers';
 
 test('warns if specified attribute is not appeared', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<img src="/path/to/image.png">',
 		{
 			rules: {
@@ -37,7 +37,7 @@ test('warns if specified attribute is not appeared', async () => {
 });
 
 test('multiple required attributes', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<img src="/path/to/image.png">',
 		{
 			rules: {
@@ -90,7 +90,7 @@ test('multiple required attributes', async () => {
 test('"alt" attribute on "<area>" is required only if the href attribute is used', async () => {
 	expect(
 		(
-			await markuplint.verify(
+			await verify(
 				'<area href="path/to">',
 				{
 					rules: {
@@ -106,7 +106,7 @@ test('"alt" attribute on "<area>" is required only if the href attribute is used
 
 	expect(
 		(
-			await markuplint.verify(
+			await verify(
 				'<area href="path/to" alt="alternate text">',
 				{
 					rules: {
@@ -124,7 +124,7 @@ test('"alt" attribute on "<area>" is required only if the href attribute is used
 test('At least one of data and type must be defined to <object>.', async () => {
 	expect(
 		(
-			await markuplint.verify(
+			await verify(
 				'<object data="https://example.com/data">',
 				{
 					rules: {
@@ -140,7 +140,7 @@ test('At least one of data and type must be defined to <object>.', async () => {
 
 	expect(
 		(
-			await markuplint.verify(
+			await verify(
 				'<object type="XXXX_YYYY_ZZZZ">',
 				{
 					rules: {
@@ -156,7 +156,7 @@ test('At least one of data and type must be defined to <object>.', async () => {
 
 	expect(
 		(
-			await markuplint.verify(
+			await verify(
 				'<object>',
 				{
 					rules: {
@@ -173,7 +173,7 @@ test('At least one of data and type must be defined to <object>.', async () => {
 
 test('Pug', async () => {
 	expect(
-		await markuplint.verify(
+		await verify(
 			'img',
 			{
 				parser: {
@@ -202,7 +202,7 @@ test('Pug', async () => {
 test('Vue', async () => {
 	expect(
 		(
-			await markuplint.verify(
+			await verify(
 				'<template><img :src="src"></template>',
 				{
 					parser: {

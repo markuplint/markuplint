@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { verify } from '../helpers';
 
 test('normal', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<div></div><p><span></span></p>',
 		{
 			rules: {
@@ -16,7 +16,7 @@ test('normal', async () => {
 });
 
 test('deprecated', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<font></font><big><blink></blink></big>',
 		{
 			rules: {
@@ -55,7 +55,7 @@ test('deprecated', async () => {
 });
 
 test('Foreign element', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<svg><g><image width="100" height="100" xlink:href="path/to"/></g></svg>',
 		{
 			rules: {
@@ -65,7 +65,7 @@ test('Foreign element', async () => {
 		[rule],
 		'en',
 	);
-	const r2 = await markuplint.verify(
+	const r2 = await verify(
 		'<div><span><image width="100" height="100" xlink:href="path/to"/></span></div>',
 		{
 			rules: {

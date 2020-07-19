@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { verify } from '../helpers';
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<html><body>text</body></html>',
 		{
 			rules: {
@@ -25,7 +25,7 @@ test('h1', async () => {
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<html><body><h1>text</h1></body></html>',
 		{
 			rules: {
@@ -39,7 +39,7 @@ test('h1', async () => {
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<html><body><h1>text</h1><h1>text</h1></body></html>',
 		{
 			rules: {
@@ -62,7 +62,7 @@ test('h1', async () => {
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<html><body><h1>text</h1><h1>text</h1></body></html>',
 		{
 			rules: {
@@ -82,7 +82,7 @@ test('h1', async () => {
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<div><h2>text</h2></div>',
 		{
 			rules: {
@@ -96,7 +96,7 @@ test('h1', async () => {
 });
 
 test('enable to opetion "in-document-fragment"', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<div><h2>text</h2></div>',
 		{
 			rules: {

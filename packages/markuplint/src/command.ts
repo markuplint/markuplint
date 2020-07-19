@@ -1,4 +1,4 @@
-import { lint } from './lint';
+import { exec } from '@markuplint/ml-service';
 import { output } from './output';
 import path from 'path';
 import { writeFile } from 'fs';
@@ -22,7 +22,7 @@ export async function command(options: {
 	const problemOnly = options.problemOnly ?? false;
 	const verbose = options.verbose ?? false;
 
-	const reports = await lint({
+	const reports = await exec({
 		files: options.files,
 		sourceCodes: options.codes,
 		workspace,

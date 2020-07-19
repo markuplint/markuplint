@@ -1,6 +1,6 @@
-import * as markuplint from 'markuplint';
 import { floatCheck, intCheck, nonZeroUintCheck, uintCheck } from './type-check';
 import rule from './';
+import { verify } from '../helpers';
 
 test('intCheck', () => {
 	expect(intCheck('0')).toBe(true);
@@ -55,7 +55,7 @@ test('nonZeroUintCheck', () => {
 });
 
 test('warns if specified attribute value is invalid', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
 		{
 			rules: {
@@ -88,7 +88,7 @@ test('warns if specified attribute value is invalid', async () => {
 });
 
 test('disable', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
 		{
 			rules: {
@@ -103,7 +103,7 @@ test('disable', async () => {
 });
 
 test('custom rule', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>',
 		{
 			rules: {
@@ -135,7 +135,7 @@ test('custom rule', async () => {
 });
 
 test('custom rule: type', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>',
 		{
 			rules: {
@@ -167,7 +167,7 @@ test('custom rule: type', async () => {
 });
 
 test('custom element', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<custom-element any-attr></custom-element>',
 		{
 			rules: {
@@ -182,7 +182,7 @@ test('custom element', async () => {
 });
 
 test('custom element and custom rule', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<custom-element any-attr="any-string"></custom-element>',
 		{
 			rules: {
@@ -213,7 +213,7 @@ test('custom element and custom rule', async () => {
 });
 
 test('prefix attribute', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<div v-bind:title="title" :class="classes" @click="click"></div>',
 		{
 			rules: {
@@ -253,7 +253,7 @@ test('prefix attribute', async () => {
 });
 
 test('ignore prefix attribute', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<div v-bind:title="title" :class="classes" @click="click"></div>',
 		{
 			rules: {
@@ -272,7 +272,7 @@ test('ignore prefix attribute', async () => {
 });
 
 test('URL attribute', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<img src="https://sample.com/path/to">',
 		{
 			rules: {
@@ -284,7 +284,7 @@ test('URL attribute', async () => {
 	);
 	expect(r.length).toBe(0);
 
-	const r2 = await markuplint.verify(
+	const r2 = await verify(
 		'<img src="//sample.com/path/to">',
 		{
 			rules: {
@@ -296,7 +296,7 @@ test('URL attribute', async () => {
 	);
 	expect(r2.length).toBe(0);
 
-	const r3 = await markuplint.verify(
+	const r3 = await verify(
 		'<img src="//user:pass@sample.com/path/to">',
 		{
 			rules: {
@@ -308,7 +308,7 @@ test('URL attribute', async () => {
 	);
 	expect(r3.length).toBe(0);
 
-	const r4 = await markuplint.verify(
+	const r4 = await verify(
 		'<img src="/path/to">',
 		{
 			rules: {
@@ -320,7 +320,7 @@ test('URL attribute', async () => {
 	);
 	expect(r4.length).toBe(0);
 
-	const r5 = await markuplint.verify(
+	const r5 = await verify(
 		'<img src="/path/to?param=value">',
 		{
 			rules: {
@@ -332,7 +332,7 @@ test('URL attribute', async () => {
 	);
 	expect(r5.length).toBe(0);
 
-	const r6 = await markuplint.verify(
+	const r6 = await verify(
 		'<img src="/?param=value">',
 		{
 			rules: {
@@ -344,7 +344,7 @@ test('URL attribute', async () => {
 	);
 	expect(r6.length).toBe(0);
 
-	const r7 = await markuplint.verify(
+	const r7 = await verify(
 		'<img src="?param=value">',
 		{
 			rules: {
@@ -356,7 +356,7 @@ test('URL attribute', async () => {
 	);
 	expect(r7.length).toBe(0);
 
-	const r8 = await markuplint.verify(
+	const r8 = await verify(
 		'<img src="path/to">',
 		{
 			rules: {
@@ -368,7 +368,7 @@ test('URL attribute', async () => {
 	);
 	expect(r8.length).toBe(0);
 
-	const r9 = await markuplint.verify(
+	const r9 = await verify(
 		'<img src="./path/to">',
 		{
 			rules: {
@@ -380,7 +380,7 @@ test('URL attribute', async () => {
 	);
 	expect(r9.length).toBe(0);
 
-	const r10 = await markuplint.verify(
+	const r10 = await verify(
 		'<img src="../path/to">',
 		{
 			rules: {
@@ -392,7 +392,7 @@ test('URL attribute', async () => {
 	);
 	expect(r10.length).toBe(0);
 
-	const r11 = await markuplint.verify(
+	const r11 = await verify(
 		'<img src="/path/to#hash">',
 		{
 			rules: {
@@ -404,7 +404,7 @@ test('URL attribute', async () => {
 	);
 	expect(r11.length).toBe(0);
 
-	const r12 = await markuplint.verify(
+	const r12 = await verify(
 		'<img src="#hash">',
 		{
 			rules: {
@@ -418,7 +418,7 @@ test('URL attribute', async () => {
 });
 
 test('Pug', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'button(type=buttonType)',
 		{
 			parser: {
@@ -436,7 +436,7 @@ test('Pug', async () => {
 });
 
 test('Vue', async () => {
-	const r1 = await markuplint.verify(
+	const r1 = await verify(
 		'<template><button type="buttonType"></button></template>',
 		{
 			parser: {
@@ -449,7 +449,7 @@ test('Vue', async () => {
 		[rule],
 		'en',
 	);
-	const r2 = await markuplint.verify(
+	const r2 = await verify(
 		'<template><button :type="buttonType"></button></template>',
 		{
 			parser: {
@@ -468,7 +468,7 @@ test('Vue', async () => {
 });
 
 test('Vue iterator', async () => {
-	const r1 = await markuplint.verify(
+	const r1 = await verify(
 		'<template><ul ref="ul"><li key="key"></li></ul></template>',
 		{
 			parser: {
@@ -482,7 +482,7 @@ test('Vue iterator', async () => {
 		[rule],
 		'en',
 	);
-	const r2 = await markuplint.verify(
+	const r2 = await verify(
 		'<template><ul><li v-for="item of list" :key="key"></li></ul></template>',
 		{
 			parser: {

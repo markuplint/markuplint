@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { verify } from '../helpers';
 
 test('character-reference', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<div id="a"> > < & " \' &amp;</div>',
 		{
 			rules: {
@@ -30,7 +30,7 @@ test('character-reference', async () => {
 });
 
 test('character-reference', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<img src="path/to?a=b&c=d">',
 		{
 			rules: {
@@ -53,7 +53,7 @@ test('character-reference', async () => {
 });
 
 test('character-reference', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<script>if (i < 0) console.log("<markuplint>");</script>',
 		{
 			rules: {
@@ -67,7 +67,7 @@ test('character-reference', async () => {
 });
 
 test('in Vue', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<template><div v-if="a < b"></div></template>',
 		{
 			parser: {

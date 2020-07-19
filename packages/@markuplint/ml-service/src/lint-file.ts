@@ -1,8 +1,7 @@
 import { ConfigSet, MLFile } from '@markuplint/file-resolver';
+import { Document, MLCore, MLParseError, MLRule, convertRuleset } from '@markuplint/ml-core';
 import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
-import { MLCore, MLParseError, MLRule, convertRuleset } from '@markuplint/ml-core';
 import { RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
-import { Document } from '@markuplint/ml-core';
 import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { MLResultInfo } from './types';
 import { i18n } from './i18n';

@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { verify } from '../helpers';
 
 test('pass class name', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 		<div class="c-root">
 			<div class="c-root__el"></div>
@@ -24,7 +24,7 @@ test('pass class name', async () => {
 });
 
 test('unmatched class name', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 		<div class="c-root">
 			<div class="c-root__el"></div>
@@ -66,7 +66,7 @@ test('unmatched class name', async () => {
 });
 
 test('childNodeRules', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 		<div class="c-root">
 			<div class="c-root_x"></div>
@@ -107,7 +107,7 @@ test('childNodeRules', async () => {
 });
 
 test('unmatched class name (2)', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 		<div class="c-root">
 			<div class="c-root__x">
@@ -142,7 +142,7 @@ test('unmatched class name (2)', async () => {
 });
 
 test('multi pattern', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 		<div class="c-root">
 			<div class="c-root__el"></div>
@@ -164,7 +164,7 @@ test('multi pattern', async () => {
 });
 
 test('childNodeRules multi selectors', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 		<div class="c-root">
 			<div class="c-root__x">
@@ -221,7 +221,7 @@ test('childNodeRules multi selectors', async () => {
 });
 
 test('childNodeRules multi selectors (No error)', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 		<div class="c-root">
 			<div class="c-root__x">

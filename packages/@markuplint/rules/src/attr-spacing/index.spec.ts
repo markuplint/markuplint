@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { fix, verify } from '../helpers';
 import rule from '.';
 
 describe('verify', () => {
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src="path/to" src="path/to2">
 		`,
@@ -19,7 +19,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src="path/to"src="path/to2">
 		`,
@@ -44,7 +44,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src="path/to"src="path/to2">
 		`,
@@ -60,7 +60,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src="path/to"
 		src="path/to2">
@@ -77,7 +77,7 @@ describe('verify', () => {
 	});
 
 	test('Never line break', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src="path/to"
 		src="path/to2">
@@ -107,7 +107,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src="path/to" src="path/to2">
 		`,
@@ -127,7 +127,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src="path/to"
 		src="path/to2">
@@ -157,7 +157,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img
 		src="path/to"
@@ -179,7 +179,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src="path/to"  src="path/to2">
 		`,
@@ -208,7 +208,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img src="path/to"  src="path/to2">
 		`,
@@ -237,7 +237,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<img
 		src="path/to"   src="path/to2">
@@ -260,7 +260,7 @@ describe('verify', () => {
 
 describe('fix', () => {
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -280,7 +280,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 			<img src="path/to"src="path/to2">
 			`,
@@ -300,7 +300,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 			<img src="path/to"src="path/to2">
 			`,
@@ -320,7 +320,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 			<img src="path/to"
 			src="path/to2">
@@ -342,7 +342,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 			<img src="path/to"
 			src="path/to2">
@@ -367,7 +367,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -391,7 +391,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 			<img src="path/to"
 			src="path/to2">
@@ -418,7 +418,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 			<img
 			src="path/to"
@@ -446,7 +446,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 			<img src="path/to"  src="path/to2">
 			`,
@@ -470,7 +470,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 			<img src="path/to"  src="path/to2">
 			`,
@@ -494,7 +494,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			`
 			<img
 			src="path/to"   src="path/to2">

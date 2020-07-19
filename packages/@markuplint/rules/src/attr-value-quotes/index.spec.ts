@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { fix, verify } from '../helpers';
 import rule from './';
 
 describe('verify', () => {
 	test('default', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
@@ -39,7 +39,7 @@ describe('verify', () => {
 	});
 
 	test('double', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
@@ -79,7 +79,7 @@ describe('verify', () => {
 	});
 
 	test('single', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
@@ -119,7 +119,7 @@ describe('verify', () => {
 	});
 
 	test('empty', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<div data-attr>
 			lorem
@@ -140,7 +140,7 @@ describe('verify', () => {
 
 describe('fix', () => {
 	test('empty', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			'<div attr noop=noop foo="bar" hoge=\'fuga\'>',
 			{
 				rules: {
@@ -154,7 +154,7 @@ describe('fix', () => {
 	});
 
 	test('empty', async () => {
-		const r = await markuplint.fix(
+		const r = await fix(
 			'<div attr noop=noop foo="bar" hoge=\'fuga\'>',
 			{
 				rules: {

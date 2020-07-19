@@ -7,19 +7,25 @@
 	},
 	"references": [
 		{
+			"path": "../file-resolver"
+		},
+		{
+			"path": "../ml-ast"
+		},
+		{
+			"path": "../ml-config"
+		},
+		{
 			"path": "../ml-core"
 		},
 		{
 			"path": "../ml-spec"
 		},
 		{
-			"path": "../pug-parser"
+			"path": "../i18n"
 		},
 		{
-			"path": "../vue-parser"
-		},
-		{
-			"path": "../ml-service"
+			"path": "../html-spec"
 		}
 	],
 	"include": ["./src/**/*"],

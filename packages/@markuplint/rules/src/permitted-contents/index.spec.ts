@@ -1,5 +1,5 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { verify } from '../helpers';
 
 const ruleOn = {
 	rules: {
@@ -9,13 +9,13 @@ const ruleOn = {
 
 describe('verify', () => {
 	test('a', async () => {
-		const r1 = await markuplint.verify('<a><div></div><span></span><em></em></a>', ruleOn, [rule], 'en');
+		const r1 = await verify('<a><div></div><span></span><em></em></a>', ruleOn, [rule], 'en');
 		expect(r1).toStrictEqual([]);
 
-		const r2 = await markuplint.verify('<a><h1></h1></a>', ruleOn, [rule], 'en');
+		const r2 = await verify('<a><h1></h1></a>', ruleOn, [rule], 'en');
 		expect(r2).toStrictEqual([]);
 
-		const r3 = await markuplint.verify('<div><a><option></option></a><div>', ruleOn, [rule], 'en');
+		const r3 = await verify('<div><a><option></option></a><div>', ruleOn, [rule], 'en');
 		expect(r3).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
@@ -27,7 +27,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const r4 = await markuplint.verify('<a><button></button></a>', ruleOn, [rule], 'en');
+		const r4 = await verify('<a><button></button></a>', ruleOn, [rule], 'en');
 		expect(r4).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
@@ -39,7 +39,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const r5 = await markuplint.verify('<a><div><div><button></button></div></div></a>', ruleOn, [rule], 'en');
+		const r5 = await verify('<a><div><div><button></button></div></div></a>', ruleOn, [rule], 'en');
 		expect(r5).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
@@ -51,7 +51,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const r6 = await markuplint.verify('<span><a><div></div></a></span>', ruleOn, [rule], 'en');
+		const r6 = await verify('<span><a><div></div></a></span>', ruleOn, [rule], 'en');
 		expect(r6).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
@@ -65,7 +65,7 @@ describe('verify', () => {
 	});
 
 	test('address', async () => {
-		const r1 = await markuplint.verify('<address><address></address></address>', ruleOn, [rule], 'en');
+		const r1 = await verify('<address><address></address></address>', ruleOn, [rule], 'en');
 		expect(r1).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
@@ -79,7 +79,7 @@ describe('verify', () => {
 	});
 
 	test('audio', async () => {
-		const r1 = await markuplint.verify('<div><audio src="path/to"><source></audio></div>', ruleOn, [rule], 'en');
+		const r1 = await verify('<div><audio src="path/to"><source></audio></div>', ruleOn, [rule], 'en');
 		expect(r1).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
@@ -91,12 +91,12 @@ describe('verify', () => {
 			},
 		]);
 
-		const r2 = await markuplint.verify('<div><audio><source><div></div></audio></div>', ruleOn, [rule], 'en');
+		const r2 = await verify('<div><audio><source><div></div></audio></div>', ruleOn, [rule], 'en');
 		expect(r2).toStrictEqual([]);
 	});
 
 	test('dl', async () => {
-		const r1 = await markuplint.verify(
+		const r1 = await verify(
 			`<dl>
 				<dt></dt>
 				<dd></dd>
@@ -107,7 +107,7 @@ describe('verify', () => {
 		);
 		expect(r1).toStrictEqual([]);
 
-		const r2 = await markuplint.verify(
+		const r2 = await verify(
 			`<dl>
 				<dt></dt>
 				<dd></dd>
@@ -136,7 +136,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const r3 = await markuplint.verify(
+		const r3 = await verify(
 			`<dl>
 				<dt></dt>
 				<div></div>
@@ -174,7 +174,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const r4 = await markuplint.verify(
+		const r4 = await verify(
 			`<dl>
 				<div></div>
 				<div></div>
@@ -187,7 +187,7 @@ describe('verify', () => {
 		);
 		expect(r4.length).toStrictEqual(4);
 
-		const r5 = await markuplint.verify(
+		const r5 = await verify(
 			`<dl>
 				<div>
 					<dt></dt>
@@ -200,7 +200,7 @@ describe('verify', () => {
 		);
 		expect(r5).toStrictEqual([]);
 
-		const r6 = await markuplint.verify(
+		const r6 = await verify(
 			`<div>
 				<dt></dt>
 				<dd></dd>
@@ -220,7 +220,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const r7 = await markuplint.verify(
+		const r7 = await verify(
 			`<dl>
 				<div>
 					<span></span>
@@ -243,7 +243,7 @@ describe('verify', () => {
 	});
 
 	test('table', async () => {
-		const r1 = await markuplint.verify(
+		const r1 = await verify(
 			`<table>
 			<thead></thead>
 			<tr>
@@ -256,7 +256,7 @@ describe('verify', () => {
 		);
 		expect(r1).toStrictEqual([]);
 
-		const r2 = await markuplint.verify(
+		const r2 = await verify(
 			`<table>
 			<tbody>
 				<tr>
@@ -282,7 +282,7 @@ describe('verify', () => {
 	});
 
 	test('ruby', async () => {
-		const r1 = await markuplint.verify(
+		const r1 = await verify(
 			`<ruby>
 			<span>漢字</span>
 			<rp>(</rp>
@@ -295,7 +295,7 @@ describe('verify', () => {
 		);
 		expect(r1).toStrictEqual([]);
 
-		const r2 = await markuplint.verify(
+		const r2 = await verify(
 			`<ruby>
 			<span>漢字</span>
 			<rp>(</rp>
@@ -316,7 +316,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const r3 = await markuplint.verify(
+		const r3 = await verify(
 			`<ruby>
 				♥ <rt> Heart <rt lang=fr> Cœur </rt>
 				☘ <rt> Shamrock <rt lang=fr> Trèfle </rt>
@@ -330,7 +330,7 @@ describe('verify', () => {
 	});
 
 	test('ul', async () => {
-		const r1 = await markuplint.verify('<ul><div></div></ul>', ruleOn, [rule], 'en');
+		const r1 = await verify('<ul><div></div></ul>', ruleOn, [rule], 'en');
 		expect(r1).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
@@ -342,15 +342,15 @@ describe('verify', () => {
 			},
 		]);
 
-		const r2 = await markuplint.verify('<ul><li></li></ul>', ruleOn, [rule], 'en');
+		const r2 = await verify('<ul><li></li></ul>', ruleOn, [rule], 'en');
 		expect(r2).toStrictEqual([]);
 
-		const r3 = await markuplint.verify('<ul><li></li><li></li><li></li></ul>', ruleOn, [rule], 'en');
+		const r3 = await verify('<ul><li></li><li></li><li></li></ul>', ruleOn, [rule], 'en');
 		expect(r3).toStrictEqual([]);
 	});
 
 	test('area', async () => {
-		const r1 = await markuplint.verify('<div><area></div>', ruleOn, [rule], 'en');
+		const r1 = await verify('<div><area></div>', ruleOn, [rule], 'en');
 		expect(r1).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
@@ -362,15 +362,15 @@ describe('verify', () => {
 			},
 		]);
 
-		const r2 = await markuplint.verify('<map><area></map>', ruleOn, [rule], 'en');
+		const r2 = await verify('<map><area></map>', ruleOn, [rule], 'en');
 		expect(r2).toStrictEqual([]);
 
-		const r3 = await markuplint.verify('<map><div><area></div></map>', ruleOn, [rule], 'en');
+		const r3 = await verify('<map><div><area></div></map>', ruleOn, [rule], 'en');
 		expect(r3).toStrictEqual([]);
 	});
 
 	test('meta', async () => {
-		const r1 = await markuplint.verify(
+		const r1 = await verify(
 			`<ol>
 				<li>
 					<span>Award winners</span>
@@ -392,7 +392,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const r2 = await markuplint.verify(
+		const r2 = await verify(
 			`<ol itemscope itemtype="https://schema.org/BreadcrumbList">
 				<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
 					<a itemprop="item" href="https://example.com/books">
@@ -419,7 +419,7 @@ describe('verify', () => {
 	});
 
 	test('hgroup', async () => {
-		const r1 = await markuplint.verify(
+		const r1 = await verify(
 			`<hgroup>
 				<h1>Heading</h1>
 			</hgroup>`,
@@ -429,7 +429,7 @@ describe('verify', () => {
 		);
 		expect(r1).toStrictEqual([]);
 
-		const r2 = await markuplint.verify(
+		const r2 = await verify(
 			`<hgroup>
 				<h1>Heading</h1>
 				<h2>Sub</h2>
@@ -441,7 +441,7 @@ describe('verify', () => {
 		);
 		expect(r2).toStrictEqual([]);
 
-		const r3 = await markuplint.verify(
+		const r3 = await verify(
 			`<hgroup>
 				<template></template>
 				<h1>Heading</h1>
@@ -457,7 +457,7 @@ describe('verify', () => {
 		);
 		expect(r3).toStrictEqual([]);
 
-		const r4 = await markuplint.verify(
+		const r4 = await verify(
 			`<hgroup>
 				<template></template>
 			</hgroup>`,
@@ -478,7 +478,7 @@ describe('verify', () => {
 	});
 
 	test('script', async () => {
-		const r1 = await markuplint.verify(
+		const r1 = await verify(
 			`<script>
 				alert("checking");
 			</script>`,
@@ -490,7 +490,7 @@ describe('verify', () => {
 	});
 
 	test('style', async () => {
-		const r1 = await markuplint.verify(
+		const r1 = await verify(
 			`<style>
 				#id {
 					prop: value;
@@ -504,7 +504,7 @@ describe('verify', () => {
 	});
 
 	test('template', async () => {
-		const r1 = await markuplint.verify(
+		const r1 = await verify(
 			`<div>
 				<a href="path/to">
 					<template>
@@ -518,7 +518,7 @@ describe('verify', () => {
 		);
 		expect(r1).toStrictEqual([]);
 
-		const r2 = await markuplint.verify(
+		const r2 = await verify(
 			`<div>
 				<a href="path/to">
 					<template>
@@ -551,12 +551,12 @@ describe('verify', () => {
 	});
 
 	test('Dep exp named capture in interleave', async () => {
-		const r1 = await markuplint.verify('<figure><img><figcaption></figure>', ruleOn, [rule], 'en');
+		const r1 = await verify('<figure><img><figcaption></figure>', ruleOn, [rule], 'en');
 		expect(r1).toStrictEqual([]);
 	});
 
 	test('Custom element', async () => {
-		const r1 = await markuplint.verify('<div><x-item></x-item></div>', ruleOn, [rule], 'en');
+		const r1 = await verify('<div><x-item></x-item></div>', ruleOn, [rule], 'en');
 		expect(r1).toStrictEqual([]);
 	});
 
@@ -578,15 +578,15 @@ describe('verify', () => {
 			},
 		};
 
-		const r1 = await markuplint.verify('<x-container></x-container>', o, [rule], 'en');
-		const r2 = await markuplint.verify('<x-container><x-item>0</x-item></x-container>', o, [rule], 'en');
-		const r3 = await markuplint.verify(
+		const r1 = await verify('<x-container></x-container>', o, [rule], 'en');
+		const r2 = await verify('<x-container><x-item>0</x-item></x-container>', o, [rule], 'en');
+		const r3 = await verify(
 			'<x-container><x-item>0</x-item><x-item>1</x-item><x-item>2</x-item></x-container>',
 			o,
 			[rule],
 			'en',
 		);
-		const r4 = await markuplint.verify(
+		const r4 = await verify(
 			`<x-container>
 					<x-item>0</x-item>
 					<x-item>1</x-item>
@@ -598,7 +598,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		const r5 = await markuplint.verify(
+		const r5 = await verify(
 			`<x-container>
 					<x-item>0</x-item>
 					<x-item>1</x-item>

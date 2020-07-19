@@ -1,7 +1,7 @@
 {
-	"name": "@markuplint/ml-core",
-	"version": "1.0.0-alpha.28",
-	"description": "The core module of markuplint",
+	"name": "@markuplint/ml-service",
+	"version": "1.0.0-alpha.51",
+	"description": "The service module of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
@@ -16,14 +16,16 @@
 		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean"
 	},
-	"devDependencies": {
-		"@markuplint/html-parser": "^1.0.0-alpha.21"
-	},
+	"devDependencies": {},
 	"dependencies": {
+		"@markuplint/file-resolver": "^1.0.0-alpha.18",
+		"@markuplint/html-parser": "^1.0.0-alpha.21",
+		"@markuplint/html-spec": "^1.0.0-alpha.24",
 		"@markuplint/i18n": "^1.0.0-alpha.9",
 		"@markuplint/ml-ast": "^1.0.0-alpha.12",
 		"@markuplint/ml-config": "^1.0.0-alpha.9",
+		"@markuplint/ml-core": "^1.0.0-alpha.28",
 		"@markuplint/ml-spec": "^1.0.0-alpha.9",
-		"css-selector-parser": "^1.4.1"
+		"os-locale": "^5.0.0"
 	}
 }

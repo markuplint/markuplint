@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { fix, verify } from '../helpers';
 import rule from './';
 
 describe('verify', () => {
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<div>
 			lorem
@@ -25,7 +25,7 @@ describe('verify', () => {
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
     <div>
         lorem
@@ -80,7 +80,7 @@ describe('verify', () => {
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
     <div>
 
@@ -128,7 +128,7 @@ describe('verify', () => {
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
     <div>
         lorem
@@ -147,7 +147,7 @@ describe('verify', () => {
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
     <div>
       lorem
@@ -169,7 +169,7 @@ describe('verify', () => {
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 	<div>
 		lorem
@@ -224,7 +224,7 @@ describe('verify', () => {
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
    <div>
       lorem
@@ -266,7 +266,7 @@ describe('verify', () => {
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
    <div>
       lorem
@@ -288,7 +288,7 @@ describe('verify', () => {
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
    <div>
       lorem
@@ -322,7 +322,7 @@ describe('verify', () => {
 	});
 
 	test('rawText', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 	<script>
     var text = 'lorem';
@@ -340,7 +340,7 @@ describe('verify', () => {
 	});
 
 	test('options - align: false', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 	<div>
 		</div>
@@ -363,7 +363,7 @@ describe('verify', () => {
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 	<div>
 		</div>
@@ -395,7 +395,7 @@ describe('verify', () => {
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 	<div>
 </div>
@@ -427,7 +427,7 @@ describe('verify', () => {
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 	<div>	</div>
 		`,
@@ -449,7 +449,7 @@ describe('verify', () => {
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 	<div> </div>
 		`,
@@ -471,7 +471,7 @@ describe('verify', () => {
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<div> text </div>
 		`,
@@ -493,7 +493,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<div>
 		<img>
@@ -534,7 +534,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<div>
 	<img>
@@ -567,7 +567,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<div>
 					<!-- comment -->
@@ -600,7 +600,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`<html>
 <body></body>
 </html>`,
@@ -625,7 +625,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`<html>
 <body>
 	<div>text
@@ -658,7 +658,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`<html>
 	<body>
 		<div>text
@@ -691,7 +691,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`<html>
 	<body>
 		<div>text
@@ -741,7 +741,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`\t<html>
 <body>
 	<div>text
@@ -791,7 +791,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`\t<html>
 	<body>
 		<div>text
@@ -824,7 +824,7 @@ describe('verify', () => {
 	});
 
 	test('no indent', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<div>
 			<p> ipsam </p>
@@ -847,7 +847,7 @@ describe('verify', () => {
 	});
 
 	test('end tag', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<div>
 		<div no-rule>
@@ -878,7 +878,7 @@ describe('verify', () => {
 	});
 
 	test('childNodeRules', async () => {
-		const r = await markuplint.verify(
+		const r = await verify(
 			`
 		<div>
 			<div no-rule>
@@ -921,7 +921,7 @@ describe('fix', () => {
 		<p>ipsam</p>
 	</div>
 	`;
-		const fixed = await markuplint.fix(
+		const fixed = await fix(
 			fixture,
 			{
 				rules: {
@@ -944,7 +944,7 @@ describe('fix', () => {
         <p>ipsam</p>
     </div>
 	`;
-		const fixed = await markuplint.fix(
+		const fixed = await fix(
 			fixture,
 			{
 				rules: {
@@ -968,7 +968,7 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		const fixed = await fix(
 			`
 		<div>
 			lorem
@@ -997,7 +997,7 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		const fixed = await fix(
 			`
   <div>
     lorem
@@ -1026,7 +1026,7 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		const fixed = await fix(
 			`
   <div>
     lorem
@@ -1055,7 +1055,7 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		const fixed = await fix(
 			`
   <div>
     lorem

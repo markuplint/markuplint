@@ -1,8 +1,8 @@
 import { Config, RuleConfigValue } from '@markuplint/ml-config';
 import { MLRule } from '@markuplint/ml-core';
-import { lint } from './lint';
+import { exec } from '@markuplint/ml-service';
 
-export { lint as exec } from './lint';
+export { exec } from '@markuplint/ml-service';
 
 /**
  * @deprecated
@@ -12,7 +12,7 @@ export { lint as exec } from './lint';
  * @param locale
  */
 export async function verify(html: string, config: Config, rules: MLRule<RuleConfigValue, unknown>[], locale?: string) {
-	const totalResults = await lint({
+	const totalResults = await exec({
 		sourceCodes: html,
 		config,
 		rules,
@@ -30,7 +30,7 @@ export async function verify(html: string, config: Config, rules: MLRule<RuleCon
  * @param locale
  */
 export async function fix(html: string, config: Config, rules: MLRule<RuleConfigValue, unknown>[], locale?: string) {
-	const totalResults = await lint({
+	const totalResults = await exec({
 		sourceCodes: html,
 		config,
 		rules,

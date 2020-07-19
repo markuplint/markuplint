@@ -7,6 +7,9 @@
 	},
 	"references": [
 		{
+			"path": "../html-parser"
+		},
+		{
 			"path": "../ml-ast"
 		},
 		{
@@ -20,5 +23,5 @@
 		}
 	],
 	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
+	"exclude": ["node_modules", "lib"]
 }

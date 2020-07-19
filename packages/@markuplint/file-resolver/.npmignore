@@ -1,5 +1,5 @@
-.vscode
-docs
 src
-tsconfig.json
-yarn.lock
+test
+lib/**/*.spec.js
+lib/**/*.spec..d.ts
+tsconfig.*

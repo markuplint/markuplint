@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { verify } from '../helpers';
 
 test('No warning', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 <html>
 <body>
@@ -30,7 +30,7 @@ test('No warning', async () => {
 });
 
 test('Top level landmarks', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 <html>
 <body>
@@ -67,7 +67,7 @@ test('Top level landmarks', async () => {
 });
 
 test('Top level landmarks: disabled', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 <html>
 <body>
@@ -103,7 +103,7 @@ test('Top level landmarks: disabled', async () => {
 });
 
 test('Top level landmarks: ignoreRoles option', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 <html>
 <body>
@@ -135,7 +135,7 @@ test('Top level landmarks: ignoreRoles option', async () => {
 });
 
 test('Duplicated area: has-label', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 <html>
 <body>
@@ -167,7 +167,7 @@ test('Duplicated area: has-label', async () => {
 });
 
 test('Duplicated area: no-label', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`
 <html>
 <body>

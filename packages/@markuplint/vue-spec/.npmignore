@@ -1,3 +1,4 @@
-.vscode
-gen
-tsconfig.json
+src
+lib/**/*.spec.js
+lib/**/*.spec..d.ts
+tsconfig.*

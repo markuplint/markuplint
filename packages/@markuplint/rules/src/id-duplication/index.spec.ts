@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { verify } from '../helpers';
 
 test('id-duplication', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<div id="a"><p id="a"></p></div>',
 		{
 			rules: {
@@ -25,7 +25,7 @@ test('id-duplication', async () => {
 });
 
 test('id-duplication', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<div id="a"></div>',
 		{
 			rules: {
@@ -39,7 +39,7 @@ test('id-duplication', async () => {
 });
 
 test('id-duplication', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<div id="a"></div><div id="a"></div><div id="a"></div>',
 		{
 			rules: {
@@ -53,7 +53,7 @@ test('id-duplication', async () => {
 });
 
 test('id-duplication', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		'<div id="a"></div><div id="b"></div><div id="c"></div>',
 		{
 			rules: {
@@ -67,7 +67,7 @@ test('id-duplication', async () => {
 });
 
 test('in Vue', async () => {
-	const r = await markuplint.verify(
+	const r = await verify(
 		`<template>
 	<div v-if="bool"><span :id="uuid"></span></div>
 	<div v-else><span :id="uuid"></span></div>

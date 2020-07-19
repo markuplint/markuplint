@@ -1,4 +1,4 @@
-import { MLResultInfo } from '../types';
+import { MLResultInfo } from '@markuplint/ml-service';
 import c from 'cli-color';
 // @ts-ignore
 import eastasianwidth from 'eastasianwidth';
