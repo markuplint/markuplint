@@ -3,17 +3,20 @@ import { output } from './output';
 import path from 'path';
 import { writeFile } from 'fs';
 
-export async function command(options: {
-	files?: string[];
-	codes?: string;
-	fix?: boolean;
-	workspace?: string;
-	configFile?: string;
-	format?: string;
-	color?: boolean;
-	problemOnly?: boolean;
-	verbose?: boolean;
-}) {
+export async function command(
+	options: {
+		files?: string[];
+		codes?: string;
+		fix?: boolean;
+		workspace?: string;
+		configFile?: string;
+		format?: string;
+		color?: boolean;
+		problemOnly?: boolean;
+		verbose?: boolean;
+	},
+	exitCode = 0,
+) {
 	const fix = options.fix ?? false;
 	const workspace = options.workspace ?? process.cwd();
 	const configFile = options.configFile ? path.join(process.cwd(), options.configFile) : options.configFile;
@@ -52,4 +55,6 @@ export async function command(options: {
 			});
 		}
 	}
+
+	process.exit(exitCode);
 }

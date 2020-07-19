@@ -20,7 +20,8 @@
 	},
 	"devDependencies": {
 		"@types/cli-color": "^2.0.0",
-		"@types/meow": "^5.0.0"
+		"@types/meow": "^5.0.0",
+		"execa": "^4.0.3"
 	},
 	"dependencies": {
 		"@markuplint/file-resolver": "^1.0.0-alpha.18",
