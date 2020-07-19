@@ -1,0 +1,13 @@
+{
+	"extends": "../../../tsconfig.json",
+	"compilerOptions": {
+		"composite": true
+	},
+	"references": [
+		{
+			"path": "../ml-ast"
+		}
+	],
+	"include": ["./src/**/*"],
+	"exclude": ["node_modules"]
+}
