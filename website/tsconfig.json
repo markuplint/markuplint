@@ -1,34 +1,8 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"composite": true
+		"resolveJsonModule": true
 	},
-	"references": [
-		{
-			"path": "../packages/@markuplint/file-resolver"
-		},
-		{
-			"path": "../packages/@markuplint/ml-ast"
-		},
-		{
-			"path": "../packages/@markuplint/ml-config"
-		},
-		{
-			"path": "../packages/@markuplint/ml-core"
-		},
-		{
-			"path": "../packages/@markuplint/ml-spec"
-		},
-		{
-			"path": "../packages/@markuplint/rules"
-		},
-		{
-			"path": "../packages/@markuplint/i18n"
-		},
-		{
-			"path": "../packages/@markuplint/html-spec"
-		}
-	],
 	"include": ["./webpack.config.ts", "./src/**/*"],
 	"exclude": ["node_modules"]
 }
