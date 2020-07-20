@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	entry: './src/main.js',
 	output: {
 		path: `${__dirname}/resources/`,
@@ -17,6 +17,7 @@ module.exports = {
 		contentBase: `${__dirname}/`,
 		compress: true,
 		port: 9000,
+		open: true,
 	},
 	stats: 'errors-only',
 };
