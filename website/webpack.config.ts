@@ -1,9 +1,11 @@
+import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
+
 export default {
 	entry: './src/index.ts',
 	output: {
-		path: `${__dirname}/resources/`,
+		path: `${__dirname}/scripts/`,
 		filename: 'main.js',
-		publicPath: '/resources/',
+		publicPath: '/scripts/',
 	},
 	resolve: {
 		extensions: ['.js', '.json', '.ts'],
@@ -18,6 +20,22 @@ export default {
 				test: /.js?$/,
 				loader: 'babel-loader',
 			},
+			{
+				test: /\.css$/i,
+				use: ['style-loader', 'css-loader'],
+			},
+			{
+				test: /\.ttf$/,
+				use: [
+					'file-loader',
+					{
+						loader: 'ttf-loader',
+						options: {
+							name: './font/[hash].[ext]',
+						},
+					},
+				],
+			},
 		],
 	},
 	devServer: {
@@ -26,5 +44,10 @@ export default {
 		port: 9000,
 		open: true,
 	},
+	plugins: [
+		new MonacoWebpackPlugin({
+			languages: ['html'],
+		}),
+	],
 	stats: 'errors-only',
 };

@@ -1,18 +1,20 @@
 import * as HTMLParser from '@markuplint/html-parser';
 import { I18n, LocaleSet } from '@markuplint/i18n';
-import { decode, encode } from './utils';
 import { getEndCol, getEndLine } from '@markuplint/ml-ast';
 import { MLCore } from '@markuplint/ml-core';
 import type { editor } from 'monaco-editor';
+import { encode } from './utils';
 import rules from '@markuplint/rules';
 import spec from '@markuplint/html-spec';
 
-type LocaleSets = Record<string, LocaleSet>;
-
-const lint = async (newCode: string, localeSets: LocaleSets) => {
+const lint = async (newCode: string) => {
 	const language = navigator.language || '';
 	const langCode = language.split(/_|-/)[0];
-	const localSet = localeSets[langCode] || null;
+	// @ts-ignore TODO: Solve types
+	const localSet: LocaleSet =
+		langCode === 'ja'
+			? await import('@markuplint/i18n/locales/ja.json')
+			: await import('@markuplint/i18n/locales/en.json');
 	const i18n = await I18n.create(localSet);
 	const reqConf = await fetch('./resources/markuplintrc.json');
 	const ruleset = await reqConf.json();
@@ -34,28 +36,12 @@ const lint = async (newCode: string, localeSets: LocaleSets) => {
 	return diagnotics;
 };
 
-export const init = async () => {
-	const req = await fetch('./resources/sample.html');
-	const sample = await req.text();
-
-	const localeSets: LocaleSets = {};
-	// @ts-ignore
-	localeSets.en = await import('@markuplint/i18n/locales/en.json');
-	// @ts-ignore
-	localeSets.ja = await import('@markuplint/i18n/locales/ja.json');
-
-	let code = sample;
-	if (location.hash) {
-		code = decode(location.hash.slice(1));
-	}
-
-	return { code, localeSets };
-};
-
-export const diagnose = async (model: editor.ITextModel, localeSets: LocaleSets) => {
+export const diagnose = async (model: editor.ITextModel) => {
 	const code = model.getValue();
-	const diagnotics = await lint(code, localeSets);
+	const diagnotics = await lint(code);
 	const encoded = encode(code);
 	location.hash = encoded;
 	return diagnotics;
 };
+
+export type Diagnose = typeof diagnose;

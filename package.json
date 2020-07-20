@@ -10,7 +10,7 @@
 		"test:clear": "jest --clearCache",
 		"test:unit": "jest",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
-		"lint": "prettier --write './packages/**/*.ts'; eslint --fix './packages/**/*.ts'",
+		"lint": "prettier --write './{packages,website}/**/*.ts'; eslint --fix './{packages,website}/**/*.ts'",
 		"schema": "lerna run schema",
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
 		"all": "yarn lint; yarn clean; yarn gen; yarn build; yarn schema; yarn test:clear; yarn test;",
