@@ -35,10 +35,11 @@
 				width: 950px;
 				margin: 0 auto;
 			}
-			#main {
+			#playground {
 				width: 950px;
 				height: 500px;
 				margin: 0 0 2em;
+				background: #000;
 			}
 			header {
 				padding: 2em 0;
@@ -124,7 +125,7 @@
 	<body>
 		<header>
 			<div>
-				<h1><img src="media/logo.svg" alt="markuplint" /></h1>
+				<h1><img src="media/logo.svg" width="200" height="134" alt="markuplint" /></h1>
 				<p>HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.</p>
 			</div>
 		</header>
@@ -133,7 +134,7 @@
 			<section>
 				<div>
 					<h2>Playground</h2>
-					<div id="main"></div>
+					<div id="playground"></div>
 				</div>
 			</section>
 		</main>
@@ -186,7 +187,6 @@
 			</div>
 		</footer>
 
-		<script src="monaco-editor/min/vs/loader.js"></script>
-		<script async src="resources/main.js"></script>
+		<script src="scripts/main.js" defer></script>
 	</body>
 </html>

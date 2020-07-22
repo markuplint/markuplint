@@ -20,5 +20,24 @@
 		"case-sensitive-attr-name": true,
 		"case-sensitive-tag-name": true,
 		"indentation": "tab"
-	}
+	},
+	"nodeRules": [
+		{
+			"tagName": "meta",
+			"rules": {
+				"invalid-attr": {
+					"option": {
+						"attrs": {
+							"property": {
+								"type": "String"
+							},
+							"content": {
+								"type": "String"
+							}
+						}
+					}
+				}
+			}
+		}
+	]
 }
