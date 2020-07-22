@@ -1,4 +1,6 @@
 import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
+import path from 'path';
+import sveltePreprocess from 'svelte-preprocess';
 
 export default {
 	entry: './src/index.ts',
@@ -8,10 +10,25 @@ export default {
 		publicPath: '/scripts/',
 	},
 	resolve: {
-		extensions: ['.js', '.json', '.ts'],
+		extensions: ['.mjs', '.js', '.json', '.ts', '.svelte'],
+		alias: {
+			svelte: path.resolve(__dirname, '..', 'node_modules', 'svelte'),
+		},
+		mainFields: ['svelte', 'browser', 'module', 'main'],
 	},
 	module: {
 		rules: [
+			{
+				test: /\.(html|svelte)$/,
+				loader: 'svelte-loader',
+				options: {
+					hotReload: true,
+					preprocess: sveltePreprocess(),
+					hotOptions: {
+						noPreserveState: true,
+					},
+				},
+			},
 			{
 				test: /.ts?$/,
 				loader: 'ts-loader',

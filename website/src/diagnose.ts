@@ -21,7 +21,7 @@ const lint = async (newCode: string) => {
 	ruleset.childNodeRules = [];
 	const linter = new MLCore(HTMLParser, newCode, ruleset, rules, i18n, [spec]);
 	const reports = await linter.verify();
-	const diagnotics = [];
+	const diagnotics: editor.IMarkerData[] = [];
 	for (const report of reports) {
 		diagnotics.push({
 			severity: report.severity === 'warning' ? 4 : 8,
@@ -29,7 +29,6 @@ const lint = async (newCode: string) => {
 			startColumn: report.col,
 			endLineNumber: getEndLine(report.raw, report.line),
 			endColumn: getEndCol(report.raw, report.col),
-			owner: 'markuplint',
 			message: `${report.message} (${report.ruleId}) <markuplint>`,
 		});
 	}
@@ -43,5 +42,3 @@ export const diagnose = async (model: editor.ITextModel) => {
 	location.hash = encoded;
 	return diagnotics;
 };
-
-export type Diagnose = typeof diagnose;
