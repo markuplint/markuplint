@@ -5,6 +5,5 @@
 		"declaration": false,
 		"importHelpers": true
 	},
-	"include": ["./webpack.config.ts", "./src/**/*"],
 	"exclude": ["node_modules"]
 }
