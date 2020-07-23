@@ -241,6 +241,16 @@ describe('parser', () => {
 		expect(doc.nodeList.length).toBe(5);
 	});
 
+	test('a element', () => {
+		const r = parse('<div>text</div>');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:6](0,5)div: <div>',
+			'[1:6]>[1:10](5,9)#text: text',
+			'[1:10]>[1:16](9,15)div: </div>',
+		]);
+	});
+
 	it('standard code', () => {
 		const doc = parse(`
 	<!DOCTYPE html>
