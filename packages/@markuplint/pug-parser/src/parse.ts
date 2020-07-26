@@ -38,11 +38,9 @@ export const parse: Parse = rawCode => {
 };
 
 class Parser {
-	#raw: string;
 	#ast: ASTBlock;
 
 	constructor(raw: string) {
-		this.#raw = raw;
 		this.#ast = pugParse(raw);
 		// console.log(JSON.stringify(this.#ast, null, 2));
 	}

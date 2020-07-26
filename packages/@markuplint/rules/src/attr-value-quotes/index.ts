@@ -24,7 +24,7 @@ export default createRule<Type>({
 				`${node.rule.value} quotation mark`,
 			);
 			for (const attr of node.attributes) {
-				if (attr.attrType === 'ps-attr' || attr.isDynamicValue || attr.equal.raw === '') {
+				if (attr.attrType === 'ps-attr' || attr.isDynamicValue || attr.isDirective || attr.equal.raw === '') {
 					continue;
 				}
 				const quote = attr.startQuote.raw;
