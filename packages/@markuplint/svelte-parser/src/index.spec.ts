@@ -1,4 +1,4 @@
-import { nodeListToDebugMaps } from '@markuplint/ml-ast';
+import { MLASTElement, attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/ml-ast';
 import { parse } from './';
 
 describe('parser', () => {
@@ -144,6 +144,202 @@ describe('parser', () => {
 			'[1:38]>[1:51](37,50)CatchBlock: {:catch␣name}',
 			'[1:51]>[1:54](50,53)#text: ...',
 			'[1:54]>[1:62](53,61)AwaitBlock: {/await}',
+		]);
+	});
+
+	test('attribute', () => {
+		const r = parse('<el attr-name="value" />');
+		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		expect(attr).toStrictEqual([
+			[
+				'[1:5]>[1:22](4,21)html-attr: attr-name="value"',
+				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:5]>[1:14](4,13)name: attr-name',
+				'  [1:14]>[1:14](13,13)bE: ',
+				'  [1:14]>[1:15](13,14)equal: =',
+				'  [1:15]>[1:15](14,14)aE: ',
+				'  [1:15]>[1:16](14,15)sQ: "',
+				'  [1:16]>[1:21](15,20)value: value',
+				'  [1:21]>[1:22](20,21)eQ: "',
+				'  isDirective: false',
+				'  isDynamicValue: false',
+				'  isInvalid: false',
+			],
+		]);
+	});
+
+	test('event directive', () => {
+		const r = parse('<el on:eventname={ `abc${def}ghi` } />');
+		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		expect(attr).toStrictEqual([
+			[
+				'[1:5]>[1:36](4,35)html-attr: on:eventname={␣`abc${def}ghi`␣}',
+				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:5]>[1:17](4,16)name: on:eventname',
+				'  [1:17]>[1:17](16,16)bE: ',
+				'  [1:17]>[1:18](16,17)equal: =',
+				'  [1:18]>[1:18](17,17)aE: ',
+				'  [1:18]>[1:19](17,18)sQ: {',
+				'  [1:19]>[1:35](18,34)value: ␣`abc${def}ghi`␣',
+				'  [1:35]>[1:36](34,35)eQ: }',
+				'  isDirective: true',
+				'  isDynamicValue: false',
+				'  isInvalid: false',
+			],
+		]);
+	});
+
+	test('event directive 2', () => {
+		const r = parse('<el on:eventname|modifiers = {handler} />');
+		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		expect(attr).toStrictEqual([
+			[
+				'[1:5]>[1:39](4,38)html-attr: on:eventname|modifiers␣=␣{handler}',
+				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:5]>[1:27](4,26)name: on:eventname|modifiers',
+				'  [1:27]>[1:28](26,27)bE: ␣',
+				'  [1:28]>[1:29](27,28)equal: =',
+				'  [1:29]>[1:30](28,29)aE: ␣',
+				'  [1:30]>[1:31](29,30)sQ: {',
+				'  [1:31]>[1:38](30,37)value: handler',
+				'  [1:38]>[1:39](37,38)eQ: }',
+				'  isDirective: true',
+				'  isDynamicValue: false',
+				'  isInvalid: false',
+			],
+		]);
+	});
+
+	test('event directive 3', () => {
+		const r = parse('<el on:eventname />');
+		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		expect(attr).toStrictEqual([
+			[
+				'[1:5]>[1:17](4,16)html-attr: on:eventname',
+				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:5]>[1:17](4,16)name: on:eventname',
+				'  [1:17]>[1:17](16,16)bE: ',
+				'  [1:17]>[1:17](16,16)equal: ',
+				'  [1:17]>[1:17](16,16)aE: ',
+				'  [1:17]>[1:17](16,16)sQ: ',
+				'  [1:17]>[1:17](16,16)value: ',
+				'  [1:17]>[1:17](16,16)eQ: ',
+				'  isDirective: true',
+				'  isDynamicValue: false',
+				'  isInvalid: false',
+			],
+		]);
+	});
+
+	test('bind directive', () => {
+		const r = parse('<el bind:property={variable} />');
+		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		expect(attr).toStrictEqual([
+			[
+				'[1:5]>[1:29](4,28)property: bind:property={variable}',
+				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:5]>[1:18](4,17)name: bind:property',
+				'  [1:18]>[1:18](17,17)bE: ',
+				'  [1:18]>[1:19](17,18)equal: =',
+				'  [1:19]>[1:19](18,18)aE: ',
+				'  [1:19]>[1:20](18,19)sQ: {',
+				'  [1:20]>[1:28](19,27)value: variable',
+				'  [1:28]>[1:29](27,28)eQ: }',
+				'  isDirective: false',
+				'  isDynamicValue: true',
+				'  isInvalid: false',
+				'  potentialName: property',
+			],
+		]);
+	});
+
+	test('bind directive 2', () => {
+		const r = parse('<el bind:property />');
+		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		expect(attr).toStrictEqual([
+			[
+				'[1:5]>[1:18](4,17)property: bind:property',
+				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:5]>[1:18](4,17)name: bind:property',
+				'  [1:18]>[1:18](17,17)bE: ',
+				'  [1:18]>[1:18](17,17)equal: ',
+				'  [1:18]>[1:18](17,17)aE: ',
+				'  [1:18]>[1:18](17,17)sQ: ',
+				'  [1:18]>[1:18](17,17)value: ',
+				'  [1:18]>[1:18](17,17)eQ: ',
+				'  isDirective: false',
+				'  isDynamicValue: true',
+				'  isInvalid: false',
+				'  potentialName: property',
+			],
+		]);
+	});
+
+	test('other directives', () => {
+		const r = parse(`<el
+	class:name={value}
+	use:action={parameters}
+	transition:fn
+	transition:fn2={params}
+	transition:fn3|local
+	transition:fn4|local={params}
+	transition:fade="{{ duration: 2000 }}"
+	in:whoosh
+	in:fn
+	in:fn2={params}
+	in:fn3|local
+	in:fn4|local={params}
+	out:fn
+	out:fn2={params}
+	out:fn3|local
+	out:fn4|local={params}
+	animate:name
+	animate:name2={params}
+/>`);
+		const attrs = (r.nodeList[0] as MLASTElement).attributes;
+		expect(attrs.every(attr => (attr.type === 'html-attr' ? attr.isDirective : false))).toBe(true);
+	});
+
+	test('shorthand', () => {
+		const r = parse('<el {items} />');
+		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		expect(attr).toStrictEqual([
+			[
+				'[1:5]>[1:12](4,11)items: {items}',
+				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:5]>[1:5](4,4)name: ',
+				'  [1:5]>[1:5](4,4)bE: ',
+				'  [1:5]>[1:5](4,4)equal: ',
+				'  [1:5]>[1:5](4,4)aE: ',
+				'  [1:5]>[1:6](4,5)sQ: {',
+				'  [1:6]>[1:11](5,10)value: items',
+				'  [1:11]>[1:12](10,11)eQ: }',
+				'  isDirective: false',
+				'  isDynamicValue: true',
+				'  isInvalid: false',
+				'  potentialName: items',
+			],
+		]);
+	});
+
+	test('spread attributes', () => {
+		const r = parse('<el { ... attrs} />');
+		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		expect(attr).toStrictEqual([
+			[
+				'[1:5]>[1:17](4,16)html-attr: {␣...␣attrs}',
+				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:5]>[1:5](4,4)name: ',
+				'  [1:5]>[1:5](4,4)bE: ',
+				'  [1:5]>[1:5](4,4)equal: ',
+				'  [1:5]>[1:5](4,4)aE: ',
+				'  [1:5]>[1:6](4,5)sQ: {',
+				'  [1:6]>[1:16](5,15)value: ␣...␣attrs',
+				'  [1:16]>[1:17](15,16)eQ: }',
+				'  isDirective: true',
+				'  isDynamicValue: false',
+				'  isInvalid: false',
+			],
 		]);
 	});
 });

@@ -9,7 +9,7 @@ import {
 	sliceFragment,
 	uuid,
 } from '@markuplint/ml-ast';
-import { SvelteNode } from './svelte-parser';
+import { SvelteDirective, SvelteNode } from './svelte-parser';
 import { attr } from './attr';
 import { parseRawTag } from '@markuplint/html-parser';
 import { traverse } from './traverse';
@@ -26,8 +26,6 @@ export function nodeize(
 		originNode.start,
 		originNode.end,
 	);
-
-	console.log(originNode);
 
 	switch (originNode.type) {
 		case 'Text': {
@@ -111,7 +109,7 @@ export function nodeize(
 				};
 			}
 
-			const attributes = originNode.attributes || [];
+			const attributes: SvelteDirective[] = originNode.attributes || [];
 			const tagTokens = parseRawTag(
 				startTagLocation.raw,
 				startTagLocation.startLine,
@@ -125,7 +123,7 @@ export function nodeize(
 				nodeName: originNode.name,
 				type: MLASTNodeType.StartTag,
 				namespace: 'http://www.w3.org/1999/xhtml',
-				attributes: attributes.map(attr),
+				attributes: attributes.map(a => attr(a, rawHtml)),
 				parentNode,
 				prevNode,
 				nextNode,

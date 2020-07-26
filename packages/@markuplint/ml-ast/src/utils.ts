@@ -1,4 +1,4 @@
-import { MLASTNode, MLASTNodeType, MLToken, Walker } from './types';
+import { MLASTAttr, MLASTNode, MLASTNodeType, MLToken, Walker } from './types';
 import { v4 as uuid4 } from 'uuid';
 
 export function uuid() {
@@ -72,13 +72,53 @@ export function walk(nodeList: MLASTNode[], walker: Walker, depth = 0) {
 export function nodeListToDebugMaps(nodeList: MLASTNode[]) {
 	return nodeList.map(n => {
 		if (!n.isGhost) {
-			return `[${n.startLine}:${n.startCol}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${
-				n.nodeName
-			}: ${visibleWhiteSpace(n.raw)}`;
+			return tokenDebug(n);
 		} else {
 			return `[N/A]>[N/A](N/A)${n.nodeName}: ${visibleWhiteSpace(n.raw)}`;
 		}
 	});
+}
+
+export function attributesToDebugMaps(attributes: MLASTAttr[]) {
+	return attributes.map(n => {
+		const r = [tokenDebug(n)];
+		if (n.type === 'html-attr') {
+			r.push(`  ${tokenDebug(n.spacesBeforeName, 'bN')}`);
+			r.push(`  ${tokenDebug(n.name, 'name')}`);
+			r.push(`  ${tokenDebug(n.spacesBeforeEqual, 'bE')}`);
+			r.push(`  ${tokenDebug(n.equal, 'equal')}`);
+			r.push(`  ${tokenDebug(n.spacesAfterEqual, 'aE')}`);
+			r.push(`  ${tokenDebug(n.startQuote, 'sQ')}`);
+			r.push(`  ${tokenDebug(n.value, 'value')}`);
+			r.push(`  ${tokenDebug(n.endQuote, 'eQ')}`);
+			r.push(`  isDirective: ${!!n.isDirective}`);
+			r.push(`  isDynamicValue: ${!!n.isDynamicValue}`);
+			r.push(`  isInvalid: ${!!n.isInvalid}`);
+		}
+		if (n.potentialName != null) {
+			r.push(`  potentialName: ${visibleWhiteSpace(n.potentialName)}`);
+		}
+		return r;
+	});
+}
+
+function tokenDebug<
+	N extends {
+		startOffset: number;
+		endOffset: number;
+		startLine: number;
+		endLine: number;
+		startCol: number;
+		endCol: number;
+		nodeName?: string;
+		potentialName?: string;
+		type?: string;
+		raw: string;
+	}
+>(n: N, type = '') {
+	return `[${n.startLine}:${n.startCol}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${
+		n.nodeName || n.potentialName || n.type || type
+	}: ${visibleWhiteSpace(n.raw)}`;
 }
 
 function visibleWhiteSpace(chars: string) {

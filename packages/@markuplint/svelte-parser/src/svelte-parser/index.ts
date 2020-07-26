@@ -1,4 +1,4 @@
-import type { TemplateNode } from 'svelte/types/compiler/interfaces';
+import type { Directive, TemplateNode } from 'svelte/types/compiler/interfaces';
 import { parse } from 'svelte/compiler';
 
 export type SvelteNode = TemplateNode;
@@ -14,3 +14,5 @@ export default function svelteParse(template: string) {
 
 	return children;
 }
+
+export type SvelteDirective = Directive;
