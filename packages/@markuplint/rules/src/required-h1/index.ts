@@ -17,9 +17,15 @@ export default createRule<Value, RequiredH1Options>({
 	async verify(document, translate, globalRule) {
 		const reports: Result[] = [];
 		const h1Stack: Element<Value, RequiredH1Options>[] = [];
+
+		if (document.nodeList.length === 0) {
+			return reports;
+		}
+
 		if (!globalRule.option['in-document-fragment'] && document.isFragment) {
 			return reports;
 		}
+
 		await document.walkOn('Element', async node => {
 			if (node.nodeName.toLowerCase() === 'h1') {
 				h1Stack.push(node);

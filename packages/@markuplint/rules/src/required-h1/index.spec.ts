@@ -113,3 +113,17 @@ test('enable to opetion "in-document-fragment"', async () => {
 	);
 	expect(r.length).toBe(1);
 });
+
+test('Issue #57', async () => {
+	const r = await markuplint.verify(
+		'',
+		{
+			rules: {
+				'required-h1': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r.length).toBe(0);
+});
