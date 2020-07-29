@@ -1587,4 +1587,82 @@ mixin link(href, name)
 			line: 0,
 		});
 	});
+
+	it('tag interpolation (Issue #58)', () => {
+		const ast = pugParse(`p
+	| lorem #[span ipsum]`);
+		expect(ast).toStrictEqual({
+			type: 'Block',
+			nodes: [
+				{
+					type: 'Tag',
+					name: 'p',
+					raw: 'p',
+					offset: 0,
+					endOffset: 1,
+					line: 1,
+					endLine: 1,
+					column: 1,
+					endColumn: 2,
+					block: {
+						type: 'Block',
+						nodes: [
+							{
+								type: 'Text',
+								raw: 'lorem ',
+								offset: 5,
+								endOffset: 11,
+								line: 2,
+								endLine: 2,
+								column: 4,
+								endColumn: 10,
+							},
+							{
+								type: 'Tag',
+								name: 'span',
+								raw: 'span',
+								offset: 13,
+								endOffset: 17,
+								line: 2,
+								endLine: 2,
+								column: 12,
+								endColumn: 16,
+								block: {
+									type: 'Block',
+									nodes: [
+										{
+											type: 'Text',
+											raw: 'ipsum',
+											offset: 18,
+											endOffset: 23,
+											line: 2,
+											endLine: 2,
+											column: 17,
+											endColumn: 22,
+										},
+									],
+									line: 2,
+								},
+								attrs: [],
+							},
+							// A cause of issue #58
+							{
+								type: 'Text',
+								raw: '',
+								offset: 24,
+								endOffset: 24,
+								line: 2,
+								endLine: 2,
+								column: 23,
+								endColumn: 23,
+							},
+						],
+						line: 1,
+					},
+					attrs: [],
+				},
+			],
+			line: 0,
+		});
+	});
 });

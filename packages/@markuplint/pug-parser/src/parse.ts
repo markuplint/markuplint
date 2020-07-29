@@ -56,7 +56,7 @@ class Parser {
 		let prevNode: MLASTNode | null = null;
 		for (const astNode of astNodes) {
 			const nodes = this.nodeize(astNode, prevNode, parentNode);
-			if (!nodes) {
+			if (!nodes || (Array.isArray(nodes) && nodes.length === 0)) {
 				continue;
 			}
 
