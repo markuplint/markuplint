@@ -1588,10 +1588,9 @@ mixin link(href, name)
 		});
 	});
 
-	it.only('tag interpolation (Issue #58)', () => {
+	it('tag interpolation (Issue #58)', () => {
 		const ast = pugParse(`p
 	| lorem #[span ipsum]`);
-		console.log(JSON.stringify(ast));
 		expect(ast).toStrictEqual({
 			type: 'Block',
 			nodes: [
