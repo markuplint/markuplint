@@ -285,4 +285,18 @@ else
 			'[5:12]>[6:4](54,58)#text: ⏎→→→',
 		]);
 	});
+
+	it('tag interpolation (Issue #58)', () => {
+		const doc = parse(`p
+	| lorem #[span ipsum]`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		// console.log(map);
+		expect(doc.parseError).toBeUndefined();
+		expect(map).toStrictEqual([
+			'[1:1]>[1:2](0,1)p: p',
+			'[2:4]>[2:10](5,11)#text: lorem␣',
+			'[2:12]>[2:16](13,17)span: span',
+			'[2:17]>[2:22](18,23)#text: ipsum',
+		]);
+	});
 });
