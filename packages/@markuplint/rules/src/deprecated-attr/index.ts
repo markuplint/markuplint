@@ -1,38 +1,35 @@
 import { Result, createRule } from '@markuplint/ml-core';
-import { getSpecByTagName } from '@markuplint/ml-spec';
-import specs from '@markuplint/html-ls';
+import { attrSpecs, getSpec } from '../helpers';
 
 export default createRule({
 	name: 'deprecated-attr',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
+		const spec = getSpec(document.schemas);
 		await document.walkOn('Element', async element => {
-			const spec = getSpecByTagName(element.nodeName, specs);
-
-			if (!spec) {
-				return;
-			}
+			const specs = attrSpecs(element.nodeName, spec);
 
 			for (const attr of element.attributes) {
-				const name = attr.name.raw.toLowerCase();
-				const attrSpec = spec.attributes.find(item => item.name === name);
+				const name = attr.getName();
+				const attrSpec = specs.find(item => item.name === name.potential);
 				if (!attrSpec) {
 					return;
 				}
 				if (attrSpec.deprecated || attrSpec.obsolete) {
-					const message = messages(
-						`"${name}" {0} is {1}`,
+					const message = translate(
+						'The {0} {1} is {2}',
+						name.potential,
 						'attribute',
-						attrSpec.deprecated ? 'deprecated' : 'obsolete',
+						attrSpec.obsolete ? 'obsolete' : 'deprecated',
 					);
 					reports.push({
 						severity: element.rule.severity,
 						message,
-						line: attr.name.startLine,
-						col: attr.name.startCol,
-						raw: attr.name.raw,
+						line: name.line,
+						col: name.col,
+						raw: name.raw,
 					});
 				}
 			}

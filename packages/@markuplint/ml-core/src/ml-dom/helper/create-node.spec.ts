@@ -1,6 +1,7 @@
 import { Document } from '../';
 import { convertRuleset } from '../../';
 import { createNode } from './create-node';
+import { dummySchemas } from '../debug-utils';
 import { parse } from '@markuplint/html-parser';
 
 describe('create Node', () => {
@@ -9,7 +10,7 @@ describe('create Node', () => {
 		const ast = parse(sourceCode);
 		const astNode = ast.nodeList[0];
 		const ruleset = convertRuleset({});
-		const document = new Document(ast, ruleset);
+		const document = new Document(ast, ruleset, dummySchemas());
 		const node = createNode(astNode, document);
 		expect(node.raw).toBe('<div>');
 	});

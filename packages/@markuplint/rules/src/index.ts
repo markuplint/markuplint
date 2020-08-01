@@ -1,4 +1,3 @@
-import AsyncAttrInScript from './async-attr-in-script';
 import AttrDuplication from './attr-duplication';
 import AttrEqualSpaceAfter from './attr-equal-space-after';
 import AttrEqualSpaceBefore from './attr-equal-space-before';
@@ -13,13 +12,13 @@ import DeprecatedElement from './deprecated-element';
 import Doctype from './doctype';
 import IdDuplication from './id-duplication';
 import Indentation from './indentation';
+import InvalidAttr from './invalid-attr';
 import LandmarkRoles from './landmark-roles';
 import PermittedContents from './permitted-contents';
 import RequiredAttr from './required-attr';
 import RequiredH1 from './required-h1';
 
 export default [
-	AsyncAttrInScript,
 	AttrDuplication,
 	AttrEqualSpaceAfter,
 	AttrEqualSpaceBefore,
@@ -34,6 +33,7 @@ export default [
 	Doctype,
 	IdDuplication,
 	Indentation,
+	InvalidAttr,
 	LandmarkRoles,
 	PermittedContents,
 	RequiredAttr,

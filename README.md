@@ -1,10 +1,10 @@
 # ![markuplint](https://cdn.rawgit.com/YusukeHirao/markuplint/HEAD/media/logo-v.svg)
 
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=next)](https://travis-ci.org/markuplint/markuplint)
+![Test](https://github.com/markuplint/markuplint/workflows/Test/badge.svg?branch=master)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmarkuplint%2Fmarkuplint.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmarkuplint%2Fmarkuplint?ref=badge_shield)
 [![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=next)](https://coveralls.io/github/markuplint/markuplint?branch=next)
 [![Gitter](https://badges.gitter.im/markuplint/community.svg)](https://gitter.im/markuplint/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmarkuplint%2Fmarkuplint.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmarkuplint%2Fmarkuplint?ref=badge_shield)
 
 A Linter for All Markup Languages (for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more).
 
@@ -14,7 +14,7 @@ A Linter for All Markup Languages (for legacy/modern HTML, Web Components, SVG, 
 | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------- |
 | [`markuplint`](./packages/markuplint)                               | [![npm version](https://badge.fury.io/js/markuplint.svg)](https://badge.fury.io/js/markuplint)                                        | Node.js   |
 | [`@markuplint/file-resolver`](./packages/@markuplint/file-resolver) | [![npm version](https://badge.fury.io/js/%40markuplint%2Ffile-resolver.svg)](https://www.npmjs.com/package/@markuplint/file-resolver) | Node.js   |
-| [`@markuplint/html-ls`](./packages/@markuplint/html-ls)             | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-ls.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-ls)              | Universal |
+| [`@markuplint/html-spec`](./packages/@markuplint/html-spec)         | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-spec.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-spec)          | Universal |
 | [`@markuplint/html-parser`](./packages/@markuplint/html-parser)     | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-parser.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-parser)      | Universal |
 | [`@markuplint/i18n`](./packages/@markuplint/i18n)                   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fi18n.svg)](https://badge.fury.io/js/%40markuplint%2Fi18n)                    | Universal |
 | [`@markuplint/ml-ast`](./packages/@markuplint/ml-ast)               | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-ast.svg)](https://badge.fury.io/js/%40markuplint%2Fml-ast)                | Universal |
@@ -54,7 +54,7 @@ A Linter for All Markup Languages (for legacy/modern HTML, Web Components, SVG, 
 
 ```json
 {
-	"extends": "@markuplint/html-ls",
+	"extends": "@markuplint/html-spec",
 	"rules": {
 		"rule__enabled": true,
 		"rule__disabled": false,

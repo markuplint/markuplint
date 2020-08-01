@@ -61,7 +61,7 @@ test('Top level landmarks', async () => {
 			line: 9,
 			col: 3,
 			raw: '<aside>',
-			message: 'The complementary landmark should be top level landmarks',
+			message: 'complementary should be top level',
 		},
 	]);
 });
@@ -202,7 +202,7 @@ test('Duplicated area: no-label', async () => {
 			line: 5,
 			col: 2,
 			raw: '<nav>',
-			message: 'Should have a unique label because navigation landmark role is used more than once on a web page',
+			message: 'Should have a unique label because navigation landmarks were markup more than once on a page',
 		},
 		{
 			ruleId: 'landmark-roles',
@@ -210,7 +210,7 @@ test('Duplicated area: no-label', async () => {
 			line: 8,
 			col: 3,
 			raw: '<nav>',
-			message: 'Should have a unique label because navigation landmark role is used more than once on a web page',
+			message: 'Should have a unique label because navigation landmarks were markup more than once on a page',
 		},
 	]);
 });

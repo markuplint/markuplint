@@ -1,7 +1,7 @@
 import { RuleConfig, RuleConfigValue, RuleInfo, Severity, VerifiedResult } from '@markuplint/ml-config';
 import Document from '../ml-dom/document';
+import { I18n } from '@markuplint/i18n';
 import { MLRuleOptions } from './types';
-import { Messenger } from '@markuplint/i18n';
 
 export class MLRule<T extends RuleConfigValue, O = null> {
 	static create<T extends RuleConfigValue, O = null>(options: MLRuleOptions<T, O>) {
@@ -25,13 +25,13 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		this.#f = o.fix;
 	}
 
-	async verify(document: Document<T, O>, messenger: Messenger, rule: RuleInfo<T, O>): Promise<VerifiedResult[]> {
+	async verify(document: Document<T, O>, i18n: I18n, rule: RuleInfo<T, O>): Promise<VerifiedResult[]> {
 		if (!this.#v) {
 			return [];
 		}
 
 		document.setRule(this);
-		const results = await this.#v(document, messenger.message(), rule);
+		const results = await this.#v(document, i18n.translator(), rule);
 		document.setRule(null);
 
 		return results.map<VerifiedResult>(result => {
@@ -77,8 +77,8 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 						  this.defaultOptions.concat(configSettings.option) as O
 						: this.defaultOptions
 					: this.defaultOptions !== null && typeof this.defaultOptions === 'object'
-						? { ...this.defaultOptions, ...(configSettings.option || {}) }
-						: configSettings.option || this.defaultOptions,
+					? { ...this.defaultOptions, ...(configSettings.option || {}) }
+					: configSettings.option || this.defaultOptions,
 			};
 		}
 		return {

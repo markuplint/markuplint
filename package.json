@@ -10,9 +10,9 @@
 		"test:clear": "jest --clearCache",
 		"test:unit": "jest",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
-		"lint": "eslint --fix ./packages/**/*.ts",
+		"lint": "prettier --write './{packages,website}/**/*.ts'; eslint --fix './{packages,website}/**/*.ts'",
 		"schema": "lerna run schema",
-		"gen": "cd packages/\\@markuplint/html-ls/; yarn gen; cd ../",
+		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
 		"all": "yarn lint; yarn clean; yarn gen; yarn build; yarn schema; yarn test:clear; yarn test;",
 		"cli": "./packages/markuplint/bin/markuplint",
 		"site:dev": "cd website; yarn site:dev",
@@ -31,7 +31,7 @@
 		"transform": {
 			"^.+\\.tsx?$": "ts-jest"
 		},
-		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+		"testRegex": "(\\.|/)(test|spec)\\.tsx?$",
 		"moduleFileExtensions": [
 			"ts",
 			"tsx",
@@ -51,23 +51,21 @@
 		"website"
 	],
 	"devDependencies": {
-		"@types/jest": "^25.1.3",
-		"@typescript-eslint/eslint-plugin": "^2.20.0",
-		"@typescript-eslint/parser": "^2.20.0",
-		"coveralls": "^3.0.9",
-		"eslint": "^6.8.0",
-		"eslint-config-prettier": "^6.9.0",
-		"eslint-plugin-eslint-comments": "^3.1.2",
-		"eslint-plugin-jsdoc": "^20.0.0",
-		"eslint-plugin-node": "^11.0.0",
-		"eslint-plugin-prettier": "^3.1.2",
+		"@types/jest": "^26.0.5",
+		"@typescript-eslint/eslint-plugin": "^3.6.1",
+		"@typescript-eslint/parser": "^3.6.1",
+		"coveralls": "^3.1.0",
+		"eslint": "^7.5.0",
+		"eslint-plugin-eslint-comments": "^3.2.0",
+		"eslint-plugin-jsdoc": "^30.0.0",
+		"eslint-plugin-node": "^11.1.0",
 		"heapdump": "^0.3.15",
-		"jest": "^24.9.0",
-		"lerna": "^3.20.2",
-		"prettier": "^1.19.1",
-		"ts-jest": "^25.2.1",
-		"ts-node": "^8.6.2",
-		"typedoc": "^0.16.10",
-		"typescript": "^3.8.2"
+		"jest": "^26.1.0",
+		"lerna": "^3.22.1",
+		"prettier": "^2.0.5",
+		"ts-jest": "^26.1.3",
+		"ts-node": "^8.10.2",
+		"typedoc": "^0.17.8",
+		"typescript": "^3.9.6"
 	}
 }

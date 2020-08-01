@@ -11,6 +11,7 @@ describe('basic test', () => {
 	it('is reported from 002.html', async () => {
 		const r = await markuplint.exec({
 			files: 'test/fixture/002.html',
+			locale: 'en',
 		});
 		expect(r[0].results).toEqual([
 			{
@@ -63,11 +64,28 @@ describe('basic test', () => {
 			},
 			{
 				severity: 'error',
-				message: 'Missing h1 element',
+				message: 'Missing the h1 element',
 				line: 1,
 				col: 1,
 				raw: '<',
 				ruleId: 'required-h1',
+			},
+		]);
+	});
+
+	it('is reported from 006.html', async () => {
+		const r = await markuplint.exec({
+			files: 'test/fixture/006.html',
+			locale: 'en',
+		});
+		expect(r[0].results).toEqual([
+			{
+				severity: 'error',
+				message: 'The a is invalid element (7:6)',
+				line: 7,
+				col: 6,
+				raw: '<a>',
+				ruleId: 'parse-error',
 			},
 		]);
 	});

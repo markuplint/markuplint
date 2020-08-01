@@ -13,19 +13,21 @@ export default createRule<boolean, AttrSpasingOptions>({
 		lineBreak: 'either',
 		width: 1,
 	},
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
-		// const message = messages('error');
 		await document.walkOn('Element', async node => {
 			const attrs = node.attributes;
 			for (const attr of attrs) {
+				if (attr.attrType === 'ps-attr') {
+					continue;
+				}
 				const hasSpace = !!attr.spacesBeforeName.raw;
 				const hasLineBreak = /\r?\n/.test(attr.spacesBeforeName.raw);
 				// console.log({ attr: `${attr.spacesBeforeName.raw}${attr.raw}`, hasSpace, hasLineBreak });
 				if (!hasSpace) {
 					reports.push({
 						severity: node.rule.severity,
-						message: messages('スペースが必要です'),
+						message: translate('Required {0}', 'space'),
 						line: attr.spacesBeforeName.startLine,
 						col: attr.spacesBeforeName.startCol,
 						raw: attr.spacesBeforeName.raw,
@@ -35,7 +37,7 @@ export default createRule<boolean, AttrSpasingOptions>({
 						if (node.rule.option.lineBreak === 'never') {
 							reports.push({
 								severity: node.rule.severity,
-								message: messages('改行はしないでください'),
+								message: translate('Never {0}', 'break line'),
 								line: attr.spacesBeforeName.startLine,
 								col: attr.spacesBeforeName.startCol,
 								raw: attr.spacesBeforeName.raw,
@@ -45,7 +47,7 @@ export default createRule<boolean, AttrSpasingOptions>({
 						if (node.rule.option.lineBreak === 'always') {
 							reports.push({
 								severity: node.rule.severity,
-								message: messages('改行してください'),
+								message: translate('Insert {0}', 'line break'),
 								line: attr.spacesBeforeName.startLine,
 								col: attr.spacesBeforeName.startCol,
 								raw: attr.spacesBeforeName.raw,
@@ -54,7 +56,7 @@ export default createRule<boolean, AttrSpasingOptions>({
 						if (node.rule.option.width && node.rule.option.width !== attr.spacesBeforeName.raw.length) {
 							reports.push({
 								severity: node.rule.severity,
-								message: messages('スペースは{0}つにしてください', node.rule.option.width),
+								message: translate('{0} should be {1}', 'Space', node.rule.option.width),
 								line: attr.spacesBeforeName.startLine,
 								col: attr.spacesBeforeName.startCol,
 								raw: attr.spacesBeforeName.raw,
@@ -70,6 +72,9 @@ export default createRule<boolean, AttrSpasingOptions>({
 		await document.walkOn('Element', async node => {
 			const attrs = node.attributes;
 			for (const attr of attrs) {
+				if (attr.attrType === 'ps-attr') {
+					continue;
+				}
 				const hasSpace = !!attr.spacesBeforeName.raw;
 				const hasLineBreak = /\r?\n/.test(attr.spacesBeforeName.raw);
 				const expectWidth = node.rule.option.width || 1;

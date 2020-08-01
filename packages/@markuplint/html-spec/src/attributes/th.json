@@ -1,0 +1,26 @@
+{
+	"tag": "th",
+	"attributes": [
+		{
+			"name": "colspan",
+			"type": "ColSpan"
+		},
+		{
+			"name": "rowspan",
+			"type": "RowSpan"
+		},
+		{
+			"name": "headers",
+			"type": "DOMIDList"
+		},
+		{
+			"name": "scope",
+			"type": "String",
+			"enum": ["row", "col", "rowgroup", "colgroup", "auto"]
+		},
+		{
+			"name": "abbr",
+			"type": "String"
+		}
+	]
+}

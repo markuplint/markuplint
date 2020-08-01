@@ -1,14 +1,14 @@
 import { Result, createRule } from '@markuplint/ml-core';
 import { getSpecByTagName } from '@markuplint/ml-spec';
-import specs from '@markuplint/html-ls';
+import specs from '@markuplint/html-spec';
 
 export default createRule({
 	name: 'deprecated-element',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
-		const message = messages('{0} is {1}', 'Element', 'deprecated');
+		const message = translate('{0} is {1}', 'Element', 'deprecated');
 		await document.walkOn('Element', async element => {
 			if (element.isForeignElement) {
 				return;
@@ -19,8 +19,8 @@ export default createRule({
 					severity: element.rule.severity,
 					message,
 					line: element.startLine,
-					col: element.startCol + 1,
-					raw: element.nodeName,
+					col: element.startCol,
+					raw: element.raw,
 				});
 			}
 		});

@@ -14,17 +14,17 @@ export default createRule<Type>({
 	defaultLevel: 'warning',
 	defaultValue: 'double',
 	defaultOptions: null,
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
 		await document.walkOn('Element', async node => {
-			const message = messages(
+			const message = translate(
 				'{0} is must {1} on {2}',
 				'Attribute value',
 				'quote',
 				`${node.rule.value} quotation mark`,
 			);
 			for (const attr of node.attributes) {
-				if (attr.equal.raw === '') {
+				if (attr.attrType === 'ps-attr' || attr.isDynamicValue || attr.isDirective || attr.equal.raw === '') {
 					continue;
 				}
 				const quote = attr.startQuote.raw;
@@ -45,7 +45,7 @@ export default createRule<Type>({
 		await document.walkOn('Element', async node => {
 			for (const attr of node.attributes) {
 				const quote = quoteList[node.rule.value];
-				if (quote && attr.startQuote && attr.startQuote.raw !== quote) {
+				if (attr.attrType === 'html-attr' && quote && attr.startQuote && attr.startQuote.raw !== quote) {
 					attr.startQuote.fix(quote);
 					attr.endQuote.fix(quote);
 				}

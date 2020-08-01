@@ -1,0 +1,378 @@
+{
+	"tag": "_global",
+	"attributes": [
+		{
+			"name": "xml:lang",
+			"type": "String",
+			"deprecated": true
+		},
+		{
+			"name": "xml:base",
+			"type": "String",
+			"deprecated": true
+		},
+		{
+			"name": "accesskey",
+			"type": "String"
+		},
+		{
+			"name": "autocapitalize",
+			"type": "String",
+			"enum": ["off", "on", "none", "sentences", "words", "characters"]
+		},
+		{
+			"name": "autofocus",
+			"type": "Boolean"
+		},
+		{
+			"name": "contenteditable",
+			"type": "String",
+			"enum": ["true", "false"]
+		},
+		{
+			"name": "dir",
+			"type": "String",
+			"enum": ["ltr", "rtl", "auto"]
+		},
+		{
+			"name": "draggable",
+			"type": "String",
+			"enum": ["true", "false"]
+		},
+		{
+			"name": "enterkeyhint",
+			"type": "String",
+			"enum": ["enter", "done", "go", "next", "previous", "search", "send"]
+		},
+		{
+			"name": "hidden",
+			"type": "Boolean"
+		},
+		{
+			"name": "inputmode",
+			"type": "String",
+			"enum": ["none", "text", "tel", "url", "email", "numeric", "decimal", "search"]
+		},
+		{
+			"name": "is",
+			"type": "String"
+		},
+		{
+			"name": "itemid",
+			"type": "String"
+		},
+		{
+			"name": "itemprop",
+			"type": "String"
+		},
+		{
+			"name": "itemref",
+			"type": "DOMIDList",
+			"condition": {
+				"self": "[itemscope]"
+			}
+		},
+		{
+			"name": "itemscope",
+			"type": "Boolean"
+		},
+		{
+			"name": "itemtype",
+			"type": "ItemType"
+		},
+		{
+			"name": "lang",
+			"type": "BCP47"
+		},
+		{
+			"name": "nonce",
+			"type": "String"
+		},
+		{
+			"name": "spellcheck",
+			"type": "String",
+			"enum": ["true", "false"]
+		},
+		{
+			"name": "style",
+			"type": "String"
+		},
+		{
+			"name": "tabindex",
+			"type": "TabIndex"
+		},
+		{
+			"name": "title",
+			"type": "String"
+		},
+		{
+			"name": "translate",
+			"type": "String",
+			"enum": ["true", "false"]
+		},
+		{
+			"name": "onabort",
+			"type": "Function"
+		},
+		{
+			"name": "onauxclick",
+			"type": "Function"
+		},
+		{
+			"name": "onblur",
+			"type": "Function"
+		},
+		{
+			"name": "oncancel",
+			"type": "Function"
+		},
+		{
+			"name": "oncanplay",
+			"type": "Function"
+		},
+		{
+			"name": "oncanplaythrough",
+			"type": "Function"
+		},
+		{
+			"name": "onchange",
+			"type": "Function"
+		},
+		{
+			"name": "onclick",
+			"type": "Function"
+		},
+		{
+			"name": "onclose",
+			"type": "Function"
+		},
+		{
+			"name": "oncontextmenu",
+			"type": "Function"
+		},
+		{
+			"name": "oncopy",
+			"type": "Function"
+		},
+		{
+			"name": "oncuechange",
+			"type": "Function"
+		},
+		{
+			"name": "oncut",
+			"type": "Function"
+		},
+		{
+			"name": "ondblclick",
+			"type": "Function"
+		},
+		{
+			"name": "ondrag",
+			"type": "Function"
+		},
+		{
+			"name": "ondragend",
+			"type": "Function"
+		},
+		{
+			"name": "ondragenter",
+			"type": "Function"
+		},
+		{
+			"name": "ondragexit",
+			"type": "Function"
+		},
+		{
+			"name": "ondragleave",
+			"type": "Function"
+		},
+		{
+			"name": "ondragover",
+			"type": "Function"
+		},
+		{
+			"name": "ondragstart",
+			"type": "Function"
+		},
+		{
+			"name": "ondrop",
+			"type": "Function"
+		},
+		{
+			"name": "ondurationchange",
+			"type": "Function"
+		},
+		{
+			"name": "onemptied",
+			"type": "Function"
+		},
+		{
+			"name": "onended",
+			"type": "Function"
+		},
+		{
+			"name": "onerror",
+			"type": "Function"
+		},
+		{
+			"name": "onfocus",
+			"type": "Function"
+		},
+		{
+			"name": "onformdata",
+			"type": "Function"
+		},
+		{
+			"name": "oninput",
+			"type": "Function"
+		},
+		{
+			"name": "oninvalid",
+			"type": "Function"
+		},
+		{
+			"name": "onkeydown",
+			"type": "Function"
+		},
+		{
+			"name": "onkeypress",
+			"type": "Function"
+		},
+		{
+			"name": "onkeyup",
+			"type": "Function"
+		},
+		{
+			"name": "onload",
+			"type": "Function"
+		},
+		{
+			"name": "onloadeddata",
+			"type": "Function"
+		},
+		{
+			"name": "onloadedmetadata",
+			"type": "Function"
+		},
+		{
+			"name": "onloadstart",
+			"type": "Function"
+		},
+		{
+			"name": "onmousedown",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseenter",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseleave",
+			"type": "Function"
+		},
+		{
+			"name": "onmousemove",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseout",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseover",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseup",
+			"type": "Function"
+		},
+		{
+			"name": "onpaste",
+			"type": "Function"
+		},
+		{
+			"name": "onpause",
+			"type": "Function"
+		},
+		{
+			"name": "onplay",
+			"type": "Function"
+		},
+		{
+			"name": "onplaying",
+			"type": "Function"
+		},
+		{
+			"name": "onprogress",
+			"type": "Function"
+		},
+		{
+			"name": "onratechange",
+			"type": "Function"
+		},
+		{
+			"name": "onreset",
+			"type": "Function"
+		},
+		{
+			"name": "onresize",
+			"type": "Function"
+		},
+		{
+			"name": "onscroll",
+			"type": "Function"
+		},
+		{
+			"name": "onsecuritypolicyviolation",
+			"type": "Function"
+		},
+		{
+			"name": "onseeked",
+			"type": "Function"
+		},
+		{
+			"name": "onseeking",
+			"type": "Function"
+		},
+		{
+			"name": "onselect",
+			"type": "Function"
+		},
+		{
+			"name": "onslotchange",
+			"type": "Function"
+		},
+		{
+			"name": "onstalled",
+			"type": "Function"
+		},
+		{
+			"name": "onsubmit",
+			"type": "Function"
+		},
+		{
+			"name": "onsuspend",
+			"type": "Function"
+		},
+		{
+			"name": "ontimeupdate",
+			"type": "Function"
+		},
+		{
+			"name": "ontoggle",
+			"type": "Function"
+		},
+		{
+			"name": "onvolumechange",
+			"type": "Function"
+		},
+		{
+			"name": "onwaiting",
+			"type": "Function"
+		},
+		{
+			"name": "onwheel",
+			"type": "Function"
+		}
+	]
+}

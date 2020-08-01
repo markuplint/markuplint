@@ -1,0 +1,48 @@
+{
+	"tag": "button",
+	"attributes": [
+		{
+			"name": "disabled",
+			"type": "Boolean"
+		},
+		{
+			"name": "form",
+			"type": "DOMID"
+		},
+		{
+			"name": "formaction",
+			"type": "URL"
+		},
+		{
+			"name": "formenctype",
+			"type": "String",
+			"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
+		},
+		{
+			"name": "formmethod",
+			"type": "String",
+			"enum": ["post", "get", "dialog"]
+		},
+		{
+			"name": "formnovalidate",
+			"type": "Boolean"
+		},
+		{
+			"name": "formtarget",
+			"type": "Target"
+		},
+		{
+			"name": "name",
+			"type": "String"
+		},
+		{
+			"name": "type",
+			"type": "String",
+			"enum": ["submit", "reset", "button"]
+		},
+		{
+			"name": "value",
+			"type": "String"
+		}
+	]
+}

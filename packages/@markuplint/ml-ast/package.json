@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-ast",
-	"version": "1.0.0-alpha.9",
+	"version": "1.0.0-alpha.14",
 	"description": "The markuplint AST types.",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -14,5 +14,11 @@
 	"scripts": {
 		"build": "tsc",
 		"clean": "tsc --build --clean"
+	},
+	"devDependencies": {
+		"@types/uuid": "^8.0.0"
+	},
+	"dependencies": {
+		"uuid": "^8.2.0"
 	}
 }

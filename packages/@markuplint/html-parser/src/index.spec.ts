@@ -1,14 +1,14 @@
-import * as HTMLParser from './';
-import { MLASTNodeType } from '@markuplint/ml-ast';
+import { MLASTNodeType, nodeListToDebugMaps } from '@markuplint/ml-ast';
+import { isDocumentFragment, parse } from './';
 
 describe('isDocumentFragment', () => {
 	it('<!doctype>', () => {
-		expect(HTMLParser.isDocumentFragment('<!DOCTYPE html>')).toBe(false);
+		expect(isDocumentFragment('<!DOCTYPE html>')).toBe(false);
 	});
 
 	it('<!doctype> - 2', () => {
 		expect(
-			HTMLParser.isDocumentFragment(`
+			isDocumentFragment(`
 		<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
 		`),
 		).toBe(false);
@@ -16,7 +16,7 @@ describe('isDocumentFragment', () => {
 
 	it('<!doctype> + <html>', () => {
 		expect(
-			HTMLParser.isDocumentFragment(`
+			isDocumentFragment(`
 		<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
 		<html>
 		`),
@@ -25,7 +25,7 @@ describe('isDocumentFragment', () => {
 
 	it('<!doctype> + <html></html>', () => {
 		expect(
-			HTMLParser.isDocumentFragment(`
+			isDocumentFragment(`
 		<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
 		<html></html>
 		`),
@@ -34,7 +34,7 @@ describe('isDocumentFragment', () => {
 
 	it('<!doctype> + <html> - 2', () => {
 		expect(
-			HTMLParser.isDocumentFragment(`
+			isDocumentFragment(`
 		<html lang="ja">
 		`),
 		).toBe(false);
@@ -42,48 +42,48 @@ describe('isDocumentFragment', () => {
 
 	it('<!doctype> + <html></html> - 2', () => {
 		expect(
-			HTMLParser.isDocumentFragment(`
+			isDocumentFragment(`
 		<html lang="ja"></html>
 		`),
 		).toBe(false);
 	});
 
 	it('<html></html>', () => {
-		expect(HTMLParser.isDocumentFragment('<html lang="ja"></html>')).toBe(false);
+		expect(isDocumentFragment('<html lang="ja"></html>')).toBe(false);
 	});
 
 	it('<html></html> - 2', () => {
-		expect(HTMLParser.isDocumentFragment('<html></html>')).toBe(false);
+		expect(isDocumentFragment('<html></html>')).toBe(false);
 	});
 
 	it('<body>', () => {
 		expect(
-			HTMLParser.isDocumentFragment(`
+			isDocumentFragment(`
 		<body>
 		`),
 		).toBe(true);
 	});
 
 	it('<body></body>', () => {
-		expect(HTMLParser.isDocumentFragment('<body></body>')).toBe(true);
+		expect(isDocumentFragment('<body></body>')).toBe(true);
 	});
 
 	it('<div></div>', () => {
-		expect(HTMLParser.isDocumentFragment('<div></div>')).toBe(true);
+		expect(isDocumentFragment('<div></div>')).toBe(true);
 	});
 
 	it('<template></template>', () => {
-		expect(HTMLParser.isDocumentFragment('<template></template>')).toBe(true);
+		expect(isDocumentFragment('<template></template>')).toBe(true);
 	});
 
 	it('<head></head>', () => {
-		expect(HTMLParser.isDocumentFragment('<head></head>')).toBe(true);
+		expect(isDocumentFragment('<head></head>')).toBe(true);
 	});
 });
 
 describe('parser', () => {
 	it('<!DOCTYPE html>', () => {
-		const doc = HTMLParser.parse('<!DOCTYPE html>');
+		const doc = parse('<!DOCTYPE html>');
 		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
@@ -92,7 +92,7 @@ describe('parser', () => {
 	});
 
 	it('<!DOCTYPE html> ', () => {
-		const doc = HTMLParser.parse('<!DOCTYPE html> ');
+		const doc = parse('<!DOCTYPE html> ');
 		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
@@ -103,7 +103,7 @@ describe('parser', () => {
 	});
 
 	it('<!DOCTYPE html>\\n', () => {
-		const doc = HTMLParser.parse('<!DOCTYPE html>\n');
+		const doc = parse('<!DOCTYPE html>\n');
 		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
@@ -114,7 +114,7 @@ describe('parser', () => {
 	});
 
 	it('<!DOCTYPE html>text', () => {
-		const doc = HTMLParser.parse('<!DOCTYPE html>text');
+		const doc = parse('<!DOCTYPE html>text');
 		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
@@ -125,7 +125,7 @@ describe('parser', () => {
 	});
 
 	it('<!DOCTYPE html> text', () => {
-		const doc = HTMLParser.parse('<!DOCTYPE html> text');
+		const doc = parse('<!DOCTYPE html> text');
 		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
@@ -137,7 +137,7 @@ describe('parser', () => {
 	});
 
 	it('<!DOCTYPE html>\\ntext', () => {
-		const doc = HTMLParser.parse('<!DOCTYPE html>\ntext');
+		const doc = parse('<!DOCTYPE html>\ntext');
 		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
@@ -149,7 +149,7 @@ describe('parser', () => {
 	});
 
 	it('<!DOCTYPE html>\\n<p>text', () => {
-		const doc = HTMLParser.parse('<!DOCTYPE html>\n<p>text');
+		const doc = parse('<!DOCTYPE html>\n<p>text');
 		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
@@ -163,7 +163,7 @@ describe('parser', () => {
 	});
 
 	it('<!DOCTYPE html><p>\\ntext', () => {
-		const doc = HTMLParser.parse('<!DOCTYPE html><p>\ntext');
+		const doc = parse('<!DOCTYPE html><p>\ntext');
 		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
@@ -176,7 +176,7 @@ describe('parser', () => {
 	});
 
 	it('<!DOCTYPE html>\\n<html>text', () => {
-		const doc = HTMLParser.parse('<!DOCTYPE html>\n<html>text');
+		const doc = parse('<!DOCTYPE html>\n<html>text');
 		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
 		expect(doc.nodeList[1].nodeName).toBe('#text');
 		expect(doc.nodeList[2].nodeName).toBe('html');
@@ -189,7 +189,7 @@ describe('parser', () => {
 	});
 
 	it('<!DOCTYPE html><html>\\ntext', () => {
-		const doc = HTMLParser.parse('<!DOCTYPE html><html>\ntext');
+		const doc = parse('<!DOCTYPE html><html>\ntext');
 		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
@@ -201,13 +201,13 @@ describe('parser', () => {
 	});
 
 	it('empty code', () => {
-		const doc = HTMLParser.parse('');
+		const doc = parse('');
 		expect(doc.nodeList).toStrictEqual([]);
 		expect(doc.nodeList.length).toBe(0);
 	});
 
 	it('<html>', () => {
-		const doc = HTMLParser.parse('<html>');
+		const doc = parse('<html>');
 		expect(doc.nodeList[0].nodeName).toBe('html');
 		expect(doc.nodeList[1].nodeName).toBe('head');
 		expect(doc.nodeList[2].nodeName).toBe('body');
@@ -215,7 +215,7 @@ describe('parser', () => {
 	});
 
 	it('<html></body>', () => {
-		const doc = HTMLParser.parse('<html></body>');
+		const doc = parse('<html></body>');
 		expect(doc.nodeList[0].nodeName).toBe('html');
 		expect(doc.nodeList[1].nodeName).toBe('head');
 		expect(doc.nodeList[2].nodeName).toBe('body');
@@ -225,14 +225,14 @@ describe('parser', () => {
 	});
 
 	it('text only', () => {
-		const doc = HTMLParser.parse('text');
+		const doc = parse('text');
 		expect(doc.nodeList[0].nodeName).toBe('#text');
 		expect(doc.nodeList[0].raw).toBe('text');
 		expect(doc.nodeList.length).toBe(1);
 	});
 
 	it('<html>invalid-before-text<body>text</body>invalid-after-text</html>', () => {
-		const doc = HTMLParser.parse('<html>invalid-before-text<body>text</body>invalid-after-text</html>');
+		const doc = parse('<html>invalid-before-text<body>text</body>invalid-after-text</html>');
 		expect(doc.nodeList[0].nodeName).toBe('html');
 		expect(doc.nodeList[1].nodeName).toBe('head');
 		expect(doc.nodeList[2].nodeName).toBe('body');
@@ -241,8 +241,18 @@ describe('parser', () => {
 		expect(doc.nodeList.length).toBe(5);
 	});
 
+	test('a element', () => {
+		const r = parse('<div>text</div>');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:6](0,5)div: <div>',
+			'[1:6]>[1:10](5,9)#text: text',
+			'[1:10]>[1:16](9,15)div: </div>',
+		]);
+	});
+
 	it('standard code', () => {
-		const doc = HTMLParser.parse(`
+		const doc = parse(`
 	<!DOCTYPE html>
 	<html lang="en">
 	<head>
@@ -291,7 +301,7 @@ describe('parser', () => {
 	</body>
 	</html>
 	`);
-		const map = HTMLParser.nodeListToDebugMaps(doc.nodeList);
+		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[1:1]>[2:2](0,2)#text: ⏎→',
 			'[2:2]>[2:17](2,17)#doctype: <!DOCTYPE␣html>',
@@ -377,7 +387,7 @@ describe('parser', () => {
 	});
 
 	it('<template>', () => {
-		const doc = HTMLParser.parse(`
+		const doc = parse(`
 	<template>
 		<script>
 			const i = 0;
@@ -417,7 +427,7 @@ describe('parser', () => {
 	text-node
 	</template>
 	`);
-		const map = HTMLParser.nodeListToDebugMaps(doc.nodeList);
+		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[1:1]>[2:2](0,2)#text: ⏎→',
 			'[2:2]>[2:12](2,12)template: <template>',
@@ -483,14 +493,14 @@ describe('parser', () => {
 	});
 
 	it('<noscript>', () => {
-		const doc = HTMLParser.parse(`
+		const doc = parse(`
 	<noscript>
 		<div>test</div>
 		<expected>
 		</expected2>
 	</noscript>
 	`);
-		const map = HTMLParser.nodeListToDebugMaps(doc.nodeList);
+		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[1:1]>[2:2](0,2)#text: ⏎→',
 			'[2:2]>[2:12](2,12)noscript: <noscript>',
@@ -506,9 +516,59 @@ describe('parser', () => {
 		]);
 	});
 
+	it('<form>', () => {
+		const doc = parse(`
+	<div>
+		<form novalidate>
+			<input type="text" name="foo">
+			<input type="checkbox" name="bar">
+		</form>
+	</div>
+	`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[2:2](0,2)#text: ⏎→',
+			'[2:2]>[2:7](2,7)div: <div>',
+			'[2:7]>[3:3](7,10)#text: ⏎→→',
+			'[3:3]>[3:20](10,27)form: <form␣novalidate>',
+			'[3:20]>[4:4](27,31)#text: ⏎→→→',
+			'[4:4]>[4:34](31,61)input: <input␣type="text"␣name="foo">',
+			'[4:34]>[5:4](61,65)#text: ⏎→→→',
+			'[5:4]>[5:38](65,99)input: <input␣type="checkbox"␣name="bar">',
+			'[5:38]>[6:3](99,102)#text: ⏎→→',
+			'[6:3]>[6:10](102,109)form: </form>',
+			'[6:10]>[7:2](109,111)#text: ⏎→',
+			'[7:2]>[7:8](111,117)div: </div>',
+			'[7:8]>[8:2](117,119)#text: ⏎→',
+		]);
+	});
+
+	it('<form> in <form>', () => {
+		const doc = parse(`
+	<form>
+		<form novalidate>
+			<input type="text" name="foo">
+			<input type="checkbox" name="bar">
+		</form>
+	</form>
+	`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[2:2](0,2)#text: ⏎→',
+			'[2:2]>[2:8](2,8)form: <form>',
+			'[2:8]>[4:4](8,32)#text: ⏎→→<form␣novalidate>⏎→→→',
+			'[4:4]>[4:34](32,62)input: <input␣type="text"␣name="foo">',
+			'[4:34]>[5:4](62,66)#text: ⏎→→→',
+			'[5:4]>[5:38](66,100)input: <input␣type="checkbox"␣name="bar">',
+			'[5:38]>[6:3](100,103)#text: ⏎→→',
+			'[6:3]>[6:10](103,110)form: </form>',
+			'[6:10]>[8:2](110,121)#text: ⏎→</form>⏎→',
+		]);
+	});
+
 	it('UUID', () => {
-		const doc = HTMLParser.parse('<html><head><title>title</title></head><body><div>test</div></body></html>');
-		// const map = HTMLParser.nodeListToDebugMaps(doc.nodeList);
+		const doc = parse('<html><head><title>title</title></head><body><div>test</div></body></html>');
+		// const map = nodeListToDebugMaps(doc.nodeList);
 		// console.log(map);
 		// console.log(doc.nodeList.map((n, i) => `${i}: ${n.uuid} ${n.raw.trim()}`));
 
@@ -558,7 +618,7 @@ describe('parser', () => {
 	});
 
 	it('UUID', () => {
-		const doc = HTMLParser.parse(`
+		const doc = parse(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -572,7 +632,7 @@ describe('parser', () => {
 </body>
 </html>
 `);
-		// const map = HTMLParser.nodeListToDebugMaps(doc.nodeList);
+		// const map = nodeListToDebugMaps(doc.nodeList);
 		// console.log(map);
 		// console.log(doc.nodeList.map((n, i) => `${i}: ${n.uuid} ${n.raw.trim()}`));
 
@@ -883,15 +943,41 @@ describe('parser', () => {
 	});
 
 	it('UUID', () => {
-		const doc = HTMLParser.parse(`<html>
+		const doc = parse(`<html>
 <body></body>
 </html>`);
-		// const map = HTMLParser.nodeListToDebugMaps(doc.nodeList);
+		// const map = nodeListToDebugMaps(doc.nodeList);
 		// console.log(map);
 
 		// @ts-ignore
 		expect(doc.nodeList[3].nextNode.uuid).toEqual(doc.nodeList[5].uuid);
 		// @ts-ignore
 		expect(doc.nodeList[4].nextNode.uuid).toEqual(doc.nodeList[5].uuid);
+	});
+
+	it('Offset', () => {
+		const doc = parse('<span>\n\t\t\t<img src="path/to">\n\t\t</span>\n\t\t\t', 15, 2, 2);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[3:3]>[3:9](15,21)span: <span>',
+			'[3:9]>[4:4](21,25)#text: ⏎→→→',
+			'[4:6]>[4:25](25,44)img: <img␣src="path/to">',
+			'[4:25]>[5:3](44,47)#text: ⏎→→',
+			'[5:5]>[5:12](47,54)span: </span>',
+			'[5:12]>[6:4](54,58)#text: ⏎→→→',
+		]);
+
+		// @ts-ignore
+		expect(doc.nodeList[2].attributes[0].startOffset).toBe(29);
+		// @ts-ignore
+		expect(doc.nodeList[2].attributes[0].endOffset).toBe(43);
+		// @ts-ignore
+		expect(doc.nodeList[2].attributes[0].startLine).toBe(4);
+		// @ts-ignore
+		expect(doc.nodeList[2].attributes[0].endLine).toBe(4);
+		// @ts-ignore
+		expect(doc.nodeList[2].attributes[0].startCol).toBe(10);
+		// @ts-ignore
+		expect(doc.nodeList[2].attributes[0].endCol).toBe(24);
 	});
 });

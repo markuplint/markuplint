@@ -24,7 +24,7 @@ test('is test 1', async () => {
 			message: 'Duplicate attribute name',
 			line: 2,
 			col: 26,
-			raw: "data-Attr='db'",
+			raw: 'data-Attr',
 			ruleId: 'attr-duplication',
 		},
 		{
@@ -32,7 +32,7 @@ test('is test 1', async () => {
 			message: 'Duplicate attribute name',
 			line: 2,
 			col: 41,
-			raw: 'data-attR=tr',
+			raw: 'data-attR',
 			ruleId: 'attr-duplication',
 		},
 	]);
@@ -64,7 +64,7 @@ test('is test 2', async () => {
 			message: 'Duplicate attribute name',
 			line: 4,
 			col: 4,
-			raw: "data-Attr='db'",
+			raw: 'data-Attr',
 			ruleId: 'attr-duplication',
 		},
 		{
@@ -72,7 +72,7 @@ test('is test 2', async () => {
 			message: 'Duplicate attribute name',
 			line: 5,
 			col: 4,
-			raw: 'data-attR=tr',
+			raw: 'data-attR',
 			ruleId: 'attr-duplication',
 		},
 	]);
@@ -90,5 +90,5 @@ test('is test 3', async () => {
 		'ja',
 	);
 
-	expect(r.map(_ => _.message)).toStrictEqual(['属性名が重複しています。']);
+	expect(r.map(_ => _.message)).toStrictEqual(['属性名が重複しています']);
 });

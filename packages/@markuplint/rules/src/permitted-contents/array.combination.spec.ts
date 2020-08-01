@@ -6,12 +6,25 @@ test('length 1', () => {
 });
 
 test('length 2', () => {
-	expect(combination([0, 1])).toEqual([[0, 1], [1, 0]]);
-	expect(combination([1, 0])).toEqual([[0, 1], [1, 0]]);
+	expect(combination([0, 1])).toEqual([
+		[0, 1],
+		[1, 0],
+	]);
+	expect(combination([1, 0])).toEqual([
+		[0, 1],
+		[1, 0],
+	]);
 });
 
 test('length 3', () => {
-	expect(combination([0, 1, 2])).toEqual([[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]]);
+	expect(combination([0, 1, 2])).toEqual([
+		[0, 1, 2],
+		[0, 2, 1],
+		[1, 0, 2],
+		[1, 2, 0],
+		[2, 0, 1],
+		[2, 1, 0],
+	]);
 });
 
 test('length 4', () => {

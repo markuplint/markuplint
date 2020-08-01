@@ -1,0 +1,30 @@
+html(LANG="en")
+	head
+		include path/to/meta-list.pug
+		meta( http-equiv = "X-UA-Compatible" content='ie=edge' )
+		script(src="/path/to/js/lib/jquery.min.js")
+		script(src="/path/to/js/main.js" async)
+	body.abc
+		DIV.a-b-c
+			h1 lorem
+
+		p#dupl
+			span#dupl duplicated
+
+		p
+			| Illegal &("> <'')&
+			<br />
+			br
+			| characters &amp;(&quot;&gt; &lt;'')&amp;
+			img(src="path/to" alt='&("<")& &amp;(&quot;&gt; &lt;&quot;)&amp;')
+
+		p ホ゜ケットモンスター
+		font(color="red") 非推奨要素
+
+		a(href="path/to" role="button") link1
+		a(href="path/to" role="document") link2
+		label(role="button"): input(type="text")
+		<img src="path/to" align="top" invalid-attr>
+		img(src="path/to")
+							| invalid-indent
+

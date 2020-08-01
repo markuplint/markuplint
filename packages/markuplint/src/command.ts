@@ -3,22 +3,27 @@ import { output } from './output';
 import path from 'path';
 import { writeFile } from 'fs';
 
-export async function command(options: {
-	files?: string[];
-	codes?: string;
-	fix?: boolean;
-	workspace?: string;
-	configFile?: string;
-	format?: string;
-	color?: boolean;
-	problemOnly?: boolean;
-}) {
+export async function command(
+	options: {
+		files?: string[];
+		codes?: string;
+		fix?: boolean;
+		workspace?: string;
+		configFile?: string;
+		format?: string;
+		color?: boolean;
+		problemOnly?: boolean;
+		verbose?: boolean;
+	},
+	exitCode = 0,
+) {
 	const fix = options.fix ?? false;
 	const workspace = options.workspace ?? process.cwd();
 	const configFile = options.configFile ? path.join(process.cwd(), options.configFile) : options.configFile;
 	const format = options.format ?? 'standard';
 	const color = options.color ?? true;
 	const problemOnly = options.problemOnly ?? false;
+	const verbose = options.verbose ?? false;
 
 	const reports = await lint({
 		files: options.files,
@@ -41,13 +46,15 @@ export async function command(options: {
 	} else {
 		for (const result of reports) {
 			await output({
-				filePath: result.filePath,
-				reports: result.results,
-				html: result.sourceCode,
+				...result,
 				format,
 				color,
 				problemOnly,
+				noStdOut: false,
+				verbose,
 			});
 		}
 	}
+
+	process.exit(exitCode);
 }

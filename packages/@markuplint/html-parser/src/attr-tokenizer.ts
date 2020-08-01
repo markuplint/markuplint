@@ -1,11 +1,9 @@
-import { MLASTAttr } from '@markuplint/ml-ast';
-import UUID from 'uuid';
-import tokenizer from './tokenizer';
+import { MLASTHTMLAttr, tokenizer, uuid } from '@markuplint/ml-ast';
 
 // eslint-disable-next-line no-control-regex
 const reAttrsInStartTag = /(\s*)([^\x00-\x1f\x7f-\x9f "'>/=]+)(?:(\s*)(=)(\s*)(?:(?:"([^"]*)")|(?:'([^']*)')|([^\s]*)))?/;
 
-export default function attrTokenizer(raw: string, line: number, col: number, startOffset: number): MLASTAttr {
+export default function attrTokenizer(raw: string, line: number, col: number, startOffset: number): MLASTHTMLAttr {
 	const attrMatchedMap = raw.match(reAttrsInStartTag);
 	if (!attrMatchedMap) {
 		throw new SyntaxError('Illegal attribute token');
@@ -67,7 +65,8 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 	offset = endQuote.endOffset;
 
 	return {
-		uuid: UUID.v4(),
+		type: 'html-attr',
+		uuid: uuid(),
 		raw: attrToken.raw,
 		startOffset: attrToken.startOffset,
 		endOffset: attrToken.endOffset,

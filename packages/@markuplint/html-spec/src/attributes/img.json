@@ -1,0 +1,68 @@
+{
+	"tag": "img",
+	"attributes": [
+		{
+			"name": "alt",
+			"type": "String"
+		},
+		{
+			"name": "crossorigin",
+			"type": "String",
+			"enum": ["anonymous", "use-credentials"]
+		},
+		{
+			"name": "decoding",
+			"type": "String",
+			"enum": ["sync", "async", "auto"]
+		},
+		{
+			"name": "height",
+			"type": "Uint"
+		},
+		{
+			"name": "importance",
+			"type": "String",
+			"enum": ["auto", "high", "low"]
+		},
+		{
+			"name": "ismap",
+			"type": "Boolean",
+			"condition": {
+				"ancestor": "a[href]"
+			}
+		},
+		{
+			"name": "loading",
+			"type": "String",
+			"enum": ["eager", "lazy"]
+		},
+		{
+			"name": "referrerpolicy",
+			"type": "ReferrerPolicy"
+		},
+		{
+			"name": "sizes",
+			"type": "SourceSizeList"
+		},
+		{
+			"name": "src",
+			"type": "URL",
+			"required": true
+		},
+		{
+			"name": "srcset",
+			"type": "SrcSet"
+		},
+		{
+			"name": "width",
+			"type": "Uint"
+		},
+		{
+			"name": "usemap",
+			"type": "URLHash",
+			"condition": {
+				"ancestor": ":not(a):not(button)"
+			}
+		}
+	]
+}

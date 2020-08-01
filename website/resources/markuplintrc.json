@@ -1,5 +1,5 @@
 {
-	"extends": "markuplint/html-ls",
+	"extends": "markuplint/html-spec",
 	"rules": {
 		"attr-duplication": true,
 		"character-reference": true,
@@ -9,6 +9,7 @@
 		"id-duplication": true,
 		"permitted-contents": true,
 		"required-attr": true,
+		"invalid-attr": true,
 		"landmark-roles": true,
 		"required-h1": true,
 		"class-naming": "/[a-z]+/",
@@ -18,8 +19,7 @@
 		"attr-value-quotes": true,
 		"case-sensitive-attr-name": true,
 		"case-sensitive-tag-name": true,
-		"indentation": "tab",
-		"async-attr-in-script": true
+		"indentation": "tab"
 	},
 	"nodeRules": []
 }

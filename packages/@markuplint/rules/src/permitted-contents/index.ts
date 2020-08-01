@@ -1,22 +1,31 @@
+import { ContentModel, PermittedStructuresSchema } from '@markuplint/ml-spec';
 import { Element, Result, createRule } from '@markuplint/ml-core';
 import ExpGenerator from './permitted-content.spec-to-regexp';
-import { PermittedStructuresSchema } from '@markuplint/ml-spec';
 import htmlSpec from './html-spec';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
 type TagRule = PermittedStructuresSchema;
+type Options = {
+	ignoreHasMutableChildren: boolean;
+};
 
 const expMapOnNodeId: Map<string, RegExp> = new Map();
 
-export default createRule<boolean, TagRule[]>({
+export default createRule<TagRule[], Options>({
 	name: 'permitted-contents',
-	defaultValue: true,
-	defaultOptions: [],
-	async verify(document, messages) {
+	defaultValue: [],
+	defaultOptions: {
+		ignoreHasMutableChildren: true,
+	},
+	async verify(document, translate) {
 		const reports: Result[] = [];
 		let idCounter = 0;
 		await document.walkOn('Element', async node => {
 			if (!node.rule.value) {
+				return;
+			}
+
+			if (node.rule.option.ignoreHasMutableChildren && node.hasMutableChildren()) {
 				return;
 			}
 
@@ -29,8 +38,10 @@ export default createRule<boolean, TagRule[]>({
 				if (spec.ancestor && !node.closest(spec.ancestor)) {
 					reports.push({
 						severity: node.rule.severity,
-						message: messages(
-							`Invalid structure: "${node.nodeName}" element must have an ancestor "${spec.ancestor}"`,
+						message: translate(
+							'The {0} element must be descendant of the {1} element',
+							node.nodeName,
+							spec.ancestor,
 						),
 						line: node.startLine,
 						col: node.startCol,
@@ -58,8 +69,10 @@ export default createRule<boolean, TagRule[]>({
 								if (!conditionalResult) {
 									reports.push({
 										severity: node.rule.severity,
-										message: messages(
-											`Invalid content in "${node.nodeName}" element on the HTML spec`,
+										message: translate(
+											'Invalid content of the {0} element in {1}',
+											node.nodeName,
+											'the HTML specification',
 										),
 										line: node.startLine,
 										col: node.startCol,
@@ -83,7 +96,11 @@ export default createRule<boolean, TagRule[]>({
 						if (!specResult) {
 							reports.push({
 								severity: node.rule.severity,
-								message: messages(`Invalid content in "${node.nodeName}" element on the HTML spec`),
+								message: translate(
+									'Invalid content of the {0} element in {1}',
+									node.nodeName,
+									'the HTML specification',
+								),
 								line: node.startLine,
 								col: node.startCol,
 								raw: node.raw,
@@ -96,7 +113,7 @@ export default createRule<boolean, TagRule[]>({
 				}
 			}
 
-			for (const rule of node.rule.option) {
+			for (const rule of node.rule.value) {
 				if (rule.tag.toLowerCase() !== node.nodeName.toLowerCase()) {
 					continue;
 				}
@@ -109,7 +126,7 @@ export default createRule<boolean, TagRule[]>({
 					if (!r) {
 						reports.push({
 							severity: node.rule.severity,
-							message: messages(`Invalid content in "${node.nodeName}" element on rule settings`),
+							message: translate('Invalid content of the {0} element in {1}', node.nodeName, 'settings'),
 							line: node.startLine,
 							col: node.startCol,
 							raw: node.raw,
@@ -128,7 +145,7 @@ export default createRule<boolean, TagRule[]>({
 	},
 });
 
-type TargetNodes = ReturnType<Element<boolean, TagRule[]>['getChildElementsAndTextNodeWithoutWhitespaces']>;
+type TargetNodes = ReturnType<Element<TagRule[], Options>['getChildElementsAndTextNodeWithoutWhitespaces']>;
 
 function normalization(nodes: TargetNodes) {
 	return nodes.map(node => `<${node.type === 'Element' ? node.nodeName : '#text'}>`).join('');
@@ -179,7 +196,7 @@ function match(exp: RegExp, nodes: TargetNodes) {
 			switch (type) {
 				case 'ACM': {
 					const [model, tag] = _selector;
-					const selectors = unfoldContentModelsToTags(`#${model}`).filter(selector => {
+					const selectors = unfoldContentModelsToTags(`#${model}` as ContentModel).filter(selector => {
 						const [, tagName] = /^([^[\]]+)(?:\[[^\]]+\])?$/.exec(selector) || [];
 						return tagName.toLowerCase() === tag.toLowerCase();
 					});
@@ -214,7 +231,9 @@ function match(exp: RegExp, nodes: TargetNodes) {
 						: null;
 					_selector.forEach(content => {
 						if (content[0] === '_') {
-							unfoldContentModelsToTags(content.replace('_', '#')).forEach(tag => contents.add(tag));
+							unfoldContentModelsToTags(content.replace('_', '#') as ContentModel).forEach(tag =>
+								contents.add(tag),
+							);
 							return;
 						}
 						contents.add(content);

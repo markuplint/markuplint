@@ -1,0 +1,56 @@
+{
+	"tag": "area",
+	"attributes": [
+		{
+			"name": "alt",
+			"type": "String",
+			"required": true,
+			"condition": {
+				"self": "[href]"
+			}
+		},
+		{
+			"name": "coords",
+			"type": "Coords"
+		},
+		{
+			"name": "download",
+			"type": "String"
+		},
+		{
+			"name": "href",
+			"type": "URL"
+		},
+		{
+			"name": "ping",
+			"type": "URLList"
+		},
+		{
+			"name": "referrerpolicy",
+			"type": "ReferrerPolicy"
+		},
+		{
+			"name": "rel",
+			"type": "LinkTypeList",
+			"condition": {
+				"self": "[href]"
+			}
+		},
+		{
+			"name": "shape",
+			"type": "String",
+			"enum": ["rect", "circle", "poly", "default"]
+		},
+		{
+			"name": "target",
+			"type": "Target",
+			"condition": {
+				"self": "[href]"
+			}
+		},
+		{
+			"name": "type",
+			"type": "String"
+		}
+	]
+}

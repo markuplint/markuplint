@@ -1,6 +1,5 @@
+import { getEndCol, getEndLine } from '@markuplint/ml-ast';
 import { reSplitterTag, reTagName } from './const';
-import getEndCol from './get-end-col';
-import getEndLine from './get-end-line';
 
 export interface N {
 	type: 'text' | 'starttag' | 'endtag' | 'comment' | 'boguscomment';

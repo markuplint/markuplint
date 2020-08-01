@@ -4,23 +4,26 @@ export default createRule({
 	name: 'attr-duplication',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
-		const message = messages('Duplicate {0}', 'attribute name');
+		const message = translate('Duplicate {0}', 'attribute name');
 		await document.walkOn('Element', async node => {
 			const attrNameStack: string[] = [];
 			for (const attr of node.attributes) {
-				const attrName = attr.name.raw.toLowerCase();
-				if (attrNameStack.includes(attrName)) {
+				if (attr.attrType === 'ps-attr' && attr.isDuplicatable) {
+					continue;
+				}
+				const attrName = attr.getName();
+				if (attrNameStack.includes(attrName.raw.toLowerCase())) {
 					reports.push({
 						severity: node.rule.severity,
 						message,
-						line: attr.name.startLine,
-						col: attr.name.startCol,
-						raw: attr.raw.trim(),
+						line: attrName.line,
+						col: attrName.col,
+						raw: attrName.raw,
 					});
 				} else {
-					attrNameStack.push(attrName);
+					attrNameStack.push(attrName.raw.toLowerCase());
 				}
 			}
 		});

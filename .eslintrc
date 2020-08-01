@@ -1,33 +1,30 @@
 {
-	"extends": ["eslint:recommended", "prettier", "prettier/@typescript-eslint"],
+	"extends": ["eslint:recommended"],
 	"env": {
 		"browser": false,
 		"es6": true,
 		"node": true,
 		"jest": true
 	},
-	"plugins": ["@typescript-eslint", "jsdoc", "eslint-comments", "prettier"],
+	"plugins": ["@typescript-eslint", "jsdoc", "eslint-comments"],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
 		"sourceType": "module",
-		"project": "./tsconfig.json"
+		"project": ["./tsconfig.json", "./tsconfig.test.json"]
 	},
 	"rules": {
-		"indent": [2, "tab", { "SwitchCase": 1 }],
+		"indent": 0,
 		"quotes": [2, "single", "avoid-escape"],
-
 		"no-var": 2,
 		"prefer-const": 2,
-
 		"no-dupe-class-members": 0,
 		"no-unused-vars": 0,
 		"no-array-constructor": 0,
-
 		"sort-imports": [2],
+		"no-console": [1],
+		"no-mixed-spaces-and-tabs": 0,
 
 		"node/no-unsupported-features/es-syntax": 0,
-
-		"no-console": [1],
 
 		"@typescript-eslint/no-unused-vars": [2, { "args": "none" }],
 		"@typescript-eslint/no-array-constructor": 2,
@@ -36,7 +33,7 @@
 		"@typescript-eslint/prefer-namespace-keyword": 2,
 		"@typescript-eslint/no-var-requires": 2,
 		"@typescript-eslint/no-unnecessary-type-assertion": 2,
-		"@typescript-eslint/restrict-plus-operands": 2,
+		"@typescript-eslint/restrict-plus-operands": 0,
 
 		"eslint-comments/disable-enable-pair": "error",
 		"eslint-comments/no-duplicate-disable": "error",

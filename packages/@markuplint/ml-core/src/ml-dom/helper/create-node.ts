@@ -8,6 +8,7 @@ import {
 	MLDOMText,
 } from '../tokens';
 import { Document } from '../';
+import MLDOMPreprocessorSpecificBlock from '../tokens/preprocessor-specific-block';
 import { MappedNode } from './mapped-nodes';
 import { RuleConfigValue } from '@markuplint/ml-config';
 
@@ -26,6 +27,9 @@ export function createNode<N extends MLASTAbstructNode, T extends RuleConfigValu
 		}
 		case MLASTNodeType.EndTag: {
 			return new MLDOMElementCloseTag<T, O>(_astNode, document, pearNode!) as MappedNode<N, T, O>;
+		}
+		case MLASTNodeType.PreprocessorSpecificBlock: {
+			return new MLDOMPreprocessorSpecificBlock<T, O>(_astNode, document) as MappedNode<N, T, O>;
 		}
 		case MLASTNodeType.Comment: {
 			return new MLDOMComment<T, O>(_astNode, document) as MappedNode<N, T, O>;

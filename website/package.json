@@ -1,7 +1,7 @@
 {
 	"name": "@markuplint/website",
 	"description": "https://markuplint.dev",
-	"version": "1.0.0-alpha.23",
+	"version": "1.0.0-alpha.42",
 	"private": true,
 	"scripts": {
 		"site:dev": "webpack-dev-server --progress --watch --colors",
@@ -10,20 +10,30 @@
 	"author": "Yusuke Hirao",
 	"license": "MIT",
 	"devDependencies": {
-		"babel-loader": "^8.0.6",
-		"webpack": "^4.41.2",
-		"webpack-cli": "^3.3.10",
-		"webpack-dev-server": "^3.9.0"
+		"babel-loader": "^8.1.0",
+		"css-loader": "^3.6.0",
+		"file-loader": "^6.0.0",
+		"monaco-editor-webpack-plugin": "^1.9.0",
+		"style-loader": "^1.2.1",
+		"svelte-loader": "^2.13.6",
+		"svelte-preprocess": "^4.0.8",
+		"ts-loader": "^8.0.1",
+		"ttf-loader": "^1.0.2",
+		"webpack": "^4.43.0",
+		"webpack-cli": "^3.3.12",
+		"webpack-dev-server": "^3.11.0"
 	},
 	"dependencies": {
-		"@markuplint/html-ls": "^1.0.0-alpha.16",
-		"@markuplint/html-parser": "^1.0.0-alpha.13",
-		"@markuplint/i18n": "^1.0.0-alpha.7",
-		"@markuplint/ml-ast": "^1.0.0-alpha.9",
-		"@markuplint/ml-config": "^1.0.0-alpha.6",
-		"@markuplint/ml-core": "^1.0.0-alpha.19",
-		"@markuplint/ml-spec": "^1.0.0-alpha.7",
-		"@markuplint/rules": "^1.0.0-alpha.24",
-		"monaco-editor": "^0.18.1"
+		"@markuplint/html-parser": "^1.0.0-alpha.23",
+		"@markuplint/html-spec": "^1.0.0-alpha.25",
+		"@markuplint/i18n": "^1.0.0-alpha.10",
+		"@markuplint/ml-ast": "^1.0.0-alpha.14",
+		"@markuplint/ml-config": "^1.0.0-alpha.10",
+		"@markuplint/ml-core": "^1.0.0-alpha.30",
+		"@markuplint/ml-spec": "^1.0.0-alpha.10",
+		"@markuplint/rules": "^1.0.0-alpha.43",
+		"monaco-editor": "^0.20.0",
+		"svelte": "^3.24.0",
+		"tslib": "^2.0.0"
 	}
 }

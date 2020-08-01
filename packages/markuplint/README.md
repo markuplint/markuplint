@@ -35,6 +35,7 @@ Options
 	--format,       -f FORMAT     Output format. Support "JSON", "Simple" and "Standard". Default: "Standard".
 	--no-color,                   Output no color.
 	--problem-only, -p            Output only problems, without passeds.
+	--verbose                     Output with detailed information.
 
 	--help,         -h            Show help.
 	--version,      -v            Show version.
@@ -55,7 +56,7 @@ import { verify, fix, exec } from 'markuplint';
 const result = verify(htmlCode, config, rules);
 
 // Standard fix
-const fixedCode = verify(htmlCode, config, rules);
+const fixedCode = fix(htmlCode, config, rules);
 
 // Custom usage
 const result = exec({
@@ -77,7 +78,7 @@ const result = exec({
 
 ```json
 {
-	"extends": "@markuplint/html-ls",
+	"extends": "@markuplint/html-spec",
 	"rules": {
 		"rule__enabled": true,
 		"rule__disabled": false,

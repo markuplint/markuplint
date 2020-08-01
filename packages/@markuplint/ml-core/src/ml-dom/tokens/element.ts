@@ -4,14 +4,16 @@ import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode, MLDOMOmittedElement, M
 import { createNode, createSelector } from '../helper';
 import { ContentModel } from '@markuplint/ml-spec';
 import { IMLDOMElement } from '../types';
+import MLDOMPreprocessorSpecificAttribute from './preprocessor-specific-attribute';
 import { RuleConfigValue } from '@markuplint/ml-config';
+import { stringSplice } from '../../utils/string-splice';
 import { syncWalk } from '../helper/walkers';
 
 export default class MLDOMElement<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTElement>
 	implements IMLDOMElement {
 	readonly type = 'Element';
 	readonly nodeName: string;
-	readonly attributes: MLDOMAttribute[];
+	readonly attributes: (MLDOMAttribute | MLDOMPreprocessorSpecificAttribute)[];
 	readonly namespaceURI: string;
 	readonly isForeignElement: boolean;
 	readonly closeTag: MLDOMElementCloseTag<T, O> | null;
@@ -21,23 +23,47 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 	readonly childModels: Set<ContentModel> = new Set();
 	readonly descendantModels: Set<ContentModel> = new Set();
 
+	readonly #tagOpenChar: string;
+	readonly #tagCloseChar: string;
+
 	#fixedNodeName: string;
 
 	constructor(astNode: MLASTElement, document: Document<T, O>) {
 		super(astNode, document);
 		this.nodeName = astNode.nodeName;
 		this.#fixedNodeName = astNode.nodeName;
-		this.attributes = astNode.attributes.map(attr => new MLDOMAttribute(attr));
+		this.attributes = astNode.attributes.map(attr =>
+			attr.type === 'html-attr' ? new MLDOMAttribute(attr) : new MLDOMPreprocessorSpecificAttribute(attr),
+		);
 		this.selfClosingSolidus = new MLDOMToken(astNode.selfClosingSolidus);
 		this.endSpace = new MLDOMToken(astNode.endSpace);
 		this.namespaceURI = astNode.namespace;
 		this.isForeignElement = this.namespaceURI !== 'http://www.w3.org/1999/xhtml';
 		this.closeTag = astNode.pearNode ? createNode(astNode.pearNode, document, this) : null;
+
+		this.#tagOpenChar = astNode.tagOpenChar;
+		this.#tagCloseChar = astNode.tagCloseChar;
 	}
 
 	get raw() {
-		const attrs = this.attributes.map(attr => attr.raw).join('');
-		return `<${this.#fixedNodeName}${attrs}${this.selfClosingSolidus.raw}${this.endSpace.raw}>`;
+		let fixed = this.originRaw;
+		let gap = 0;
+		if (this.nodeName !== this.#fixedNodeName) {
+			fixed = stringSplice(fixed, this.#tagOpenChar.length, this.nodeName.length, this.#fixedNodeName);
+			gap = gap + this.#fixedNodeName.length - this.nodeName.length;
+		}
+		for (const attr of this.attributes) {
+			const startOffset =
+				(attr.attrType === 'html-attr' ? attr.spacesBeforeName.startOffset : attr.startOffset) -
+				this.startOffset;
+			const fixedAttr = attr.toString();
+			if (attr.originRaw !== fixedAttr) {
+				fixed = stringSplice(fixed, startOffset + gap, attr.originRaw.length, fixedAttr);
+				gap = gap + fixedAttr.length - attr.originRaw.length;
+			}
+		}
+
+		return fixed;
 	}
 
 	get childNodes(): AnonymousNode<T, O>[] {
@@ -71,24 +97,32 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 	}
 
 	getAttributeToken(attrName: string) {
+		const attrs: (MLDOMAttribute | MLDOMPreprocessorSpecificAttribute)[] = [];
+		attrName = attrName.toLowerCase();
 		for (const attr of this.attributes) {
-			if (attr.name.raw.toLowerCase() === attrName.toLowerCase()) {
-				return attr;
+			if (attr.potentialName === attrName) {
+				attrs.push(attr);
 			}
 		}
+		return attrs;
 	}
 
 	getAttribute(attrName: string) {
+		attrName = attrName.toLowerCase();
 		for (const attr of this.attributes) {
-			if (attr.name.raw.toLowerCase() === attrName.toLowerCase()) {
-				return attr.value ? attr.value.raw : null;
+			if (attr.potentialName === attrName) {
+				if (attr.attrType === 'html-attr') {
+					return attr.value ? attr.value.raw : null;
+				} else {
+					return attr.potentialValue;
+				}
 			}
 		}
 		return null;
 	}
 
 	hasAttribute(attrName: string) {
-		return !!this.getAttributeToken(attrName);
+		return !!this.getAttributeToken(attrName).length;
 	}
 
 	matches(selector: string): boolean {
@@ -116,6 +150,13 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		return filteredNodes;
 	}
 
+	/**
+	 * This element has "Preprocessor Specific Block". In other words, Its children are potentially mutable.
+	 */
+	hasMutableChildren() {
+		return this.childNodes.some(node => node.type === 'PSBlock');
+	}
+
 	isDescendantByUUIDList(uuidList: string[]) {
 		let el: MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null = this.parentNode;
 
@@ -132,22 +173,30 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null> extends M
 		return false;
 	}
 
+	getNameLocation() {
+		return {
+			offset: this.startOffset,
+			line: this.startLine,
+			col: this.startCol + this.#tagOpenChar.length,
+		};
+	}
+
 	get classList() {
-		const classAttr = this.getAttributeToken('class');
-		if (classAttr && classAttr.value) {
-			return classAttr.value.raw
-				.split(/\s+/g)
-				.map(c => c.trim())
-				.filter(c => c);
+		const classList: string[] = [];
+		const classAttrs = this.getAttributeToken('class');
+		for (const classAttr of classAttrs) {
+			const value = classAttr.attrType === 'html-attr' ? classAttr.value.raw : classAttr.potentialValue;
+			classList.push(
+				...value
+					.split(/\s+/g)
+					.map(c => c.trim())
+					.filter(c => c),
+			);
 		}
-		return [];
+		return classList;
 	}
 
 	get id() {
-		const idAttr = this.getAttributeToken('id');
-		if (idAttr && idAttr.value) {
-			return idAttr.value.raw;
-		}
-		return '';
+		return this.getAttribute('id') || '';
 	}
 }

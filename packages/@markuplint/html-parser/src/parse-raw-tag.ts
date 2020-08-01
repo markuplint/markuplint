@@ -1,7 +1,6 @@
-import { MLASTAttr, MLToken } from '@markuplint/ml-ast';
+import { MLASTAttr, MLToken, tokenizer } from '@markuplint/ml-ast';
 import { rePCEN, reTag, reTagName } from './const';
 import attrTokenizer from './attr-tokenizer';
-import tokenizer from './tokenizer';
 
 // eslint-disable-next-line no-control-regex
 const reAttrsInStartTag = /\s*[^\x00-\x1f\x7f-\x9f "'>/=]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]*))?/;
@@ -14,10 +13,18 @@ type TagTokens = {
 	endSpace: MLToken;
 };
 
-export default function parseRawTag(raw: string, nodeLine: number, nodeCol: number, startOffset: number): TagTokens {
-	let line = nodeLine;
-	let col = nodeCol;
-	let offset = startOffset;
+export default function parseRawTag(
+	raw: string,
+	nodeLine: number,
+	nodeCol: number,
+	startOffset: number,
+	offsetOffset = 0,
+	offsetLine = 0,
+	offsetColumn = 0,
+): TagTokens {
+	let line = nodeLine + offsetLine;
+	let col = nodeCol + offsetColumn;
+	let offset = startOffset + offsetOffset;
 
 	const matches = raw.match(reTag);
 	if (!matches) {

@@ -1,0 +1,18 @@
+{
+	"tag": "ol",
+	"attributes": [
+		{
+			"name": "reversed",
+			"type": "Boolean"
+		},
+		{
+			"name": "start",
+			"type": "Int"
+		},
+		{
+			"name": "type",
+			"type": "String",
+			"enum": ["1", "a", "A", "i", "I"]
+		}
+	]
+}

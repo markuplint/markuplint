@@ -1,49 +1,4 @@
-// @ts-ignore
-import { CssSelectorParser } from 'css-selector-parser';
-
-type CssSelectorParserResult = CssSelectorParserResultRuleset | CssSelectorParserResultSelectors;
-
-interface CssSelectorParserResultSelectors {
-	type: 'selectors';
-	selectors: CssSelectorParserResultRuleset[];
-}
-
-interface CssSelectorParserResultRuleset {
-	type: 'ruleSet';
-	rule: CssSelectorParserRule;
-}
-
-interface CssSelectorParserRule {
-	type: 'rule';
-	nestingOperator?: string | null;
-	tagName?: string;
-	id?: string;
-	classNames?: string[];
-	attrs?: CssSelectorParserRuleAttr[];
-	pseudos?: CssSelectorParserRulePseudo[];
-	rule: CssSelectorParserRule;
-}
-
-interface CssSelectorParserRuleAttr {
-	name: string;
-	operator?: string;
-	valueType?: 'string';
-	value?: string;
-}
-
-type CssSelectorParserRulePseudo = CssSelectorParserRulePseudoNormal | CssSelectorParserRulePseudoHasSelectors;
-
-interface CssSelectorParserRulePseudoNormal {
-	name: string;
-	valueType?: 'string';
-	value?: string;
-}
-
-interface CssSelectorParserRulePseudoHasSelectors {
-	name: string;
-	valueType: 'selector';
-	value: CssSelectorParserResult;
-}
+import { Selector as CSSSelector, CssSelectorParser } from 'css-selector-parser';
 
 interface ElementLikeObject {
 	nodeName: string;
@@ -55,7 +10,7 @@ interface ElementLikeObject {
 
 class Selector {
 	#rawSelector: string;
-	#ruleset: CssSelectorParserResult;
+	#ruleset: CSSSelector;
 
 	constructor(selector: string) {
 		const selectorParser = new CssSelectorParser();
@@ -71,9 +26,8 @@ class Selector {
 	}
 }
 
-function match(element: ElementLikeObject, ruleset: CssSelectorParserResult, rawSelector: string) {
-	const rules: CssSelectorParserRule[] =
-		ruleset.type === 'selectors' ? ruleset.selectors.map(ruleSet => ruleSet.rule) : [ruleset.rule];
+function match(element: ElementLikeObject, ruleset: CSSSelector, rawSelector: string) {
+	const rules = ruleset.type === 'selectors' ? ruleset.selectors.map(ruleSet => ruleSet.rule) : [ruleset.rule];
 	const orMatch: boolean[] = [];
 
 	for (const rule of rules) {
@@ -109,7 +63,7 @@ function match(element: ElementLikeObject, ruleset: CssSelectorParserResult, raw
 					continue;
 				}
 
-				if (ruleAttr.value == null) {
+				if (!('value' in ruleAttr && 'operator' in ruleAttr)) {
 					andMatch.push(true);
 					continue;
 				}

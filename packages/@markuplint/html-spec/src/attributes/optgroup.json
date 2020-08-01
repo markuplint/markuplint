@@ -1,0 +1,14 @@
+{
+	"tag": "optgroup",
+	"attributes": [
+		{
+			"name": "disabled",
+			"type": "Boolean"
+		},
+		{
+			"name": "label",
+			"type": "String",
+			"required": true
+		}
+	]
+}

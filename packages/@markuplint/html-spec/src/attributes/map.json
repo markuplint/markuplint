@@ -1,0 +1,9 @@
+{
+	"tag": "map",
+	"attributes": [
+		{
+			"name": "name",
+			"type": "String"
+		}
+	]
+}

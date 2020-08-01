@@ -2,7 +2,7 @@
 
 許可された要素もしくはテキストノードを子要素にもつ場合に警告します。
 
-[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-ls`](https://github.com/markuplint/markuplint/blob/next/packages/%40markuplint/html-ls/index.json)に設定値を持っています。
+[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/blob/master/packages/%40markuplint/html-spec/index.json)に設定値を持っています。
 
 オプションに独自のルールを設けることができます。カスタム要素や Vue などのテンプレートエンジン上での要素関係を設定することで、構造を堅牢にすることが可能です。
 
@@ -44,29 +44,25 @@
 
 ### 設定値
 
--   型: `boolean`
+-   型: `Array`
 -   省略可
--   初期値: `true`
-
-### オプション
+-   初期値: `[]`
 
 ルールを設定したい対象の要素を配列で指定します。次の例はカスタム要素の `x-container` と `x-item` それぞれにルールを指定していることになります。
 
 ```json:title=.markuplintrc
 {
 	"rules": {
-		"permitted-contents": {
-			"option": [
-				{
-					"tag": "x-container",
-					"contents": []
-				},
-				{
-					"tag": "x-item",
-					"contents": []
-				}
-			]
-		}
+		"permitted-contents": [
+			{
+				"tag": "x-container",
+				"contents": []
+			},
+			{
+				"tag": "x-item",
+				"contents": []
+			}
+		]
 	}
 }
 ```
@@ -89,24 +85,22 @@
 ```json:title=.markuplintrc
 {
 	"rules": {
-		"permitted-contents": {
-			"option": [
-				{
-					"tag": "x-container",
-					"contents": [
-						{ "require": "x-item" },
-						{ "optional": "y-item" },
-						{ "oneOrMore": "z-item" },
-						{ "zeroOrMore": "#text" },
-						// ❌ キーワードの同時の指定はできない
-						{
-							"require": "x-item",
-							"optional": "y-item"
-						}
-					]
-				}
-			]
-		}
+		"permitted-contents": [
+			{
+				"tag": "x-container",
+				"contents": [
+					{ "require": "x-item" },
+					{ "optional": "y-item" },
+					{ "oneOrMore": "z-item" },
+					{ "zeroOrMore": "#text" },
+					// ❌ キーワードの同時の指定はできない
+					{
+						"require": "x-item",
+						"optional": "y-item"
+					}
+				]
+			}
+		]
 	}
 }
 ```
@@ -139,23 +133,39 @@
 ```json:title=.markuplintrc
 {
 	"rules": {
-		"permitted-contents": {
-			"option": [
-				{
-					"tag": "x-container",
-					"contents": [
-						{
-							"choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
-						},
-						{
-							"interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
-						}
-					]
-				}
-			]
-		}
+		"permitted-contents": [
+			{
+				"tag": "x-container",
+				"contents": [
+					{
+						"choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
+					},
+					{
+						"interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
+					}
+				]
+			}
+		]
 	}
 }
+```
+
+### オプション
+
+#### `ignoreHasMutableChildren`
+
+-   型: `boolean`
+-   初期値: `true`
+
+_Pug_ のようなプリプロセッサ言語や _Vue_ のようなコンポーネントライブラリにおけるミュータブルな子要素を含む場合、無視します。（_Pug_ も _Vue_ もそれぞれ [@markuplint/pug-parser](https://github.com/markuplint/markuplint/tree/master/packages/%40markuplint/pug-parser) や [@markuplint/vue-parser](https://github.com/markuplint/markuplint/tree/master/packages/%40markuplint/vue-parser) が必要です。）
+
+```pug
+html
+	// 本来であればhead要素にtitle要素が含まれないため警告されますが、includeのようなミュータブルな要素を含むため、無視されます。
+	head
+		include path/to/meta-list.pug
+	body
+		p lorem...
 ```
 
 ### デフォルトの警告の厳しさ

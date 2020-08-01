@@ -1,0 +1,43 @@
+{
+	"tag": "a",
+	"attributes": [
+		{
+			"name": "download",
+			"type": "String"
+		},
+		{
+			"name": "href",
+			"type": "URL"
+		},
+		{
+			"name": "hreflang",
+			"type": "BCP47"
+		},
+		{
+			"name": "ping",
+			"type": "URLList"
+		},
+		{
+			"name": "referrerpolicy",
+			"type": "ReferrerPolicy"
+		},
+		{
+			"name": "rel",
+			"type": "LinkTypeList",
+			"condition": {
+				"self": "[href]"
+			}
+		},
+		{
+			"name": "target",
+			"type": "Target",
+			"condition": {
+				"self": "[href]"
+			}
+		},
+		{
+			"name": "type",
+			"type": "String"
+		}
+	]
+}

@@ -1,0 +1,36 @@
+{
+	"tag": "select",
+	"attributes": [
+		{
+			"name": "autocomplete",
+			"type": "AutoComplete"
+		},
+		{
+			"name": "disabled",
+			"type": "Boolean"
+		},
+		{
+			"name": "form",
+			"type": "DOMID"
+		},
+		{
+			"name": "multiple",
+			"type": "Boolean"
+		},
+		{
+			"name": "name",
+			"type": "String"
+		},
+		{
+			"name": "required",
+			"type": "Boolean"
+		},
+		{
+			"name": "size",
+			"type": "NonZeroUint",
+			"condition": {
+				"self": "[multiple]"
+			}
+		}
+	]
+}

@@ -1,0 +1,13 @@
+{
+	"tag": "progress",
+	"attributes": [
+		{
+			"name": "value",
+			"type": "Float"
+		},
+		{
+			"name": "max",
+			"type": "Float"
+		}
+	]
+}

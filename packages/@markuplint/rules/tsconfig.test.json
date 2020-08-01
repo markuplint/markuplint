@@ -1,0 +1,26 @@
+{
+	"extends": "../../../tsconfig.json",
+	"compilerOptions": {
+		"composite": true,
+		"paths": {
+			"@markuplint/*": ["../../../node_modules"],
+			"*": ["../../../node_modules"]
+		}
+	},
+	"references": [
+		{
+			"path": "../ml-core"
+		},
+		{
+			"path": "../ml-spec"
+		},
+		{
+			"path": "../pug-parser"
+		},
+		{
+			"path": "../vue-parser"
+		}
+	],
+	"include": ["./src/**/*.spec.ts"],
+	"exclude": ["node_modules"]
+}

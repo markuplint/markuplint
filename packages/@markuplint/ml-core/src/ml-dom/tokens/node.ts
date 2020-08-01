@@ -1,7 +1,6 @@
 import { AnonymousNode, IMLDOMNode, NodeType } from '../types';
 import { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
 import { RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
-// import { getNode, setNode } from '../helper/dom-traverser';
 import Document from '../document';
 import MLDOMElement from './element';
 import MLDOMIndentation from './indentation';
@@ -38,17 +37,24 @@ export default abstract class MLDOMNode<
 	}
 
 	get parentNode(): MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null {
-		return this._astToken.parentNode
-			? this.#doc.nodeStore.getNode<MLASTParentNode, T, O>(this._astToken.parentNode)
-			: null;
+		if (!this._astToken.parentNode) {
+			return null;
+		}
+		return this.#doc.nodeStore.getNode<MLASTParentNode, T, O>(this._astToken.parentNode);
 	}
 
 	get prevNode(): AnonymousNode<T, O> | null {
-		return this._astToken.prevNode ? this.#doc.nodeStore.getNode<MLASTNode, T, O>(this._astToken.prevNode) : null;
+		if (!this._astToken.prevNode) {
+			return null;
+		}
+		return this.#doc.nodeStore.getNode<MLASTNode, T, O>(this._astToken.prevNode);
 	}
 
 	get nextNode(): AnonymousNode<T, O> | null {
-		return this._astToken.nextNode ? this.#doc.nodeStore.getNode<MLASTNode, T, O>(this._astToken.nextNode) : null;
+		if (!this._astToken.nextNode) {
+			return null;
+		}
+		return this.#doc.nodeStore.getNode<MLASTNode, T, O>(this._astToken.nextNode);
 	}
 
 	get syntaxicalParentNode(): MLDOMElement<T, O> | null {

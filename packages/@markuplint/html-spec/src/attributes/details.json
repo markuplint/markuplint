@@ -1,0 +1,14 @@
+{
+	"tag": "details",
+	"attributes": [
+		{
+			"name": "tabindex",
+			"type": "Int",
+			"noUse": true
+		},
+		{
+			"name": "open",
+			"type": "Boolean"
+		}
+	]
+}

@@ -2,6 +2,7 @@ export interface Config {
 	$schema?: string;
 	parser?: ParserConfig;
 	extends?: string | string[];
+	specs?: string | string[];
 	rules?: Rules;
 	nodeRules?: NodeRule[];
 	childNodeRules?: ChildNodeRule[];
@@ -26,7 +27,7 @@ export type RuleConfig<T extends RuleConfigValue, O = void> = {
 
 export type Severity = 'error' | 'warning' | 'info';
 
-export type RuleConfigValue = string | number | boolean | string[] | number[] | boolean[] | null;
+export type RuleConfigValue = string | number | boolean | any[] | null;
 
 export interface NodeRule {
 	tagName?: string;

@@ -1,0 +1,41 @@
+{
+	"tag": "meta",
+	"attributes": [
+		{
+			"name": "itemprop",
+			"type": "String",
+			"condition": {
+				"self": [":not([name])", ":not([http-equiv])", ":not([charset])"]
+			}
+		},
+		{
+			"name": "name",
+			"type": "String",
+			"condition": {
+				"self": [":not([itemprop])", ":not([http-equiv])", ":not([charset])"]
+			}
+		},
+		{
+			"name": "http-equiv",
+			"type": "String",
+			"enum": ["content-type", "default-style", "refresh", "x-ua-compatible", "content-security-policy"],
+			"condition": {
+				"self": [":not([itemprop])", ":not([name])", ":not([charset])"]
+			}
+		},
+		{
+			"name": "content",
+			"type": "String",
+			"condition": {
+				"self": ["[name]", "[http-equiv]"]
+			}
+		},
+		{
+			"name": "charset",
+			"type": "String",
+			"condition": {
+				"self": [":not([itemprop])", ":not([name])", ":not([http-equiv])"]
+			}
+		}
+	]
+}

@@ -1,0 +1,36 @@
+name: Test
+
+on:
+    push:
+        branches:
+            - master
+            - next
+            - dev
+    pull_request:
+        branches:
+            - master
+            - next
+            - dev
+
+jobs:
+    test:
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            matrix:
+                os: [ubuntu-latest, macos-latest]
+                node: [12]
+
+        steps:
+            - uses: actions/checkout@v1
+            - name: Use Node.js ${{ matrix.node }}
+              uses: actions/setup-node@v1
+              with:
+                  node-version: ${{ matrix.node }}
+            - name: npm install, build, and test
+              run: |
+                  yarn install
+                  yarn build
+                  yarn test
+              env:
+                  CI: true

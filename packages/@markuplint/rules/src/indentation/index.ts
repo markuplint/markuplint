@@ -14,7 +14,7 @@ export default createRule<Value, IndentationOptions>({
 		alignment: true,
 		'indent-nested-nodes': true,
 	},
-	async verify(document, messages) {
+	async verify(document, translate) {
 		const reports: Result[] = [];
 		await document.walk(async node => {
 			if (node.rule.disabled) {
@@ -38,10 +38,10 @@ export default createRule<Value, IndentationOptions>({
 						node.indentation.type === 'space' &&
 						node.indentation.width % node.rule.value
 					) {
-						spec = messages('{0} width spaces', `${node.rule.value}`);
+						spec = translate('{0} width spaces', `${node.rule.value}`);
 					}
 					if (spec) {
-						const message = messages(`{0} ${ms} be {1}`, 'Indentation', spec);
+						const message = translate(`{0} ${ms} be {1}`, 'Indentation', spec);
 						reports.push({
 							severity: node.rule.severity,
 							message,
@@ -78,8 +78,8 @@ export default createRule<Value, IndentationOptions>({
 					// });
 					if (nested === 'never') {
 						if (diff !== 0) {
-							const message = messages(
-								diff < 1 ? 'インデントを下げてください' : 'インデントを上げてください',
+							const message = translate(
+								diff < 1 ? 'Should increase indentation' : 'Should decrease indentation',
 							);
 							reports.push({
 								severity: node.rule.severity,
@@ -91,8 +91,8 @@ export default createRule<Value, IndentationOptions>({
 						}
 					} else {
 						if (diff !== expectedWidth) {
-							const message = messages(
-								diff < 1 ? 'インデントを下げてください' : 'インデントを上げてください',
+							const message = translate(
+								diff < 1 ? 'Should increase indentation' : 'Should decrease indentation',
 							);
 							reports.push({
 								severity: node.rule.severity,
@@ -133,7 +133,7 @@ export default createRule<Value, IndentationOptions>({
 				// });
 
 				if (startTagIndentationWidth !== endTagIndentationWidth) {
-					const message = messages('終了タグと開始タグのインデント位置が揃っていません。');
+					const message = translate('Start tag and end tag indentation should align');
 					reports.push({
 						severity: closeTag.rule.severity,
 						message,
@@ -205,7 +205,6 @@ export default createRule<Value, IndentationOptions>({
 						// console.log({ parentIndentWidth, childIndentWidth, expectedWidth, diff });
 						if (nested === 'never') {
 							if (diff !== 0) {
-								// const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
 								// const raw = node.indentation.raw;
 								const fixed = parent.indentation.raw;
 								// console.log('step2-A', {
@@ -216,7 +215,6 @@ export default createRule<Value, IndentationOptions>({
 							}
 						} else {
 							if (diff !== expectedWidth) {
-								// const message = messages(diff < 1 ? `インデントを下げてください` : `インデントを上げてください`);
 								// const raw = node.indentation.raw;
 								const fixed = (node.rule.value === 'tab' ? '\t' : ' ').repeat(
 									parentIndentWidth + expectedWidth,
