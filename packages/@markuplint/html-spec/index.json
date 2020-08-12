@@ -4944,11 +4944,11 @@
 			"description": "",
 			"categories": [],
 			"permittedStructures": {
-				"summary": "Phrasing content.",
+				"summary": "Phrasing content and headings (h1–h6 elements).",
 				"tag": "legend",
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"zeroOrMore": ["#phrasing", "#heading"]
 					}
 				]
 			},
