@@ -2,7 +2,7 @@
 	"tag": "legend",
 	"contents": [
 		{
-			"zeroOrMore": "#phrasing"
+			"zeroOrMore": ["#phrasing", "#heading"]
 		}
 	]
 }
