@@ -1,0 +1,42 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean"
+		},
+		"option": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"ignoreRoles": {
+					"type": "array",
+					"uniqueItems": true,
+					"minItems": 1,
+					"items": {
+						"type": "string",
+						"enum": ["banner", "main", "complementary", "contentinfo", "form", "navigation", "region"]
+					}
+				},
+				"labelEachArea": {
+					"type": "boolean"
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"option": { "$ref": "#/definitions/option" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+				}
+			}
+		}
+	]
+}
