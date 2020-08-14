@@ -1,7 +1,18 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"eslint.enable": true,
+	"files.associations": {
+		".markuplintrc": "json"
+	},
 	"json.schemas": [
+		{
+			"fileMatch": ["/config.schema.json"],
+			"url": "http://json-schema.org/draft-07/schema#"
+		},
+		{
+			"fileMatch": ["/**/*.markuplintrc"],
+			"url": "https://raw.githubusercontent.com/markuplint/markuplint/master/config.schema.json"
+		},
 		{
 			"fileMatch": ["/packages/*markuplint/html-spec/src/permitted-structures/*.json"],
 			"url": "/packages/@markuplint/ml-spec/schemas/permitted-structures.schema.json"

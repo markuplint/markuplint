@@ -14,7 +14,7 @@
 		"class-naming": false,
 		"attr-equal-space-after": false,
 		"attr-equal-space-before": false,
-		"attr-spasing": false,
+		"attr-spacing": false,
 		"attr-value-quotes": false,
 		"case-sensitive-attr-name": true,
 		"case-sensitive-tag-name": true,

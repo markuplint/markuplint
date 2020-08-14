@@ -1,0 +1,101 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"contents": {
+			"type": "array",
+			"items": {
+				"oneOf": [
+					{
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["require"],
+						"properties": {
+							"require": { "type": "string" },
+							"max": { "type": "integer", "minimum": 1 }
+						}
+					},
+					{
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["optional"],
+						"properties": {
+							"optional": { "type": "string" },
+							"max": { "type": "integer", "minimum": 1 },
+							"min": { "type": "integer", "minimum": 0 }
+						}
+					},
+					{
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["oneOrMore"],
+						"properties": {
+							"oneOrMore": { "type": "string" },
+							"max": { "type": "integer", "minimum": 1 },
+							"min": { "type": "integer", "minimum": 0 }
+						}
+					},
+					{
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["choice"],
+						"properties": {
+							"choice": { "$ref": "#/definitions/contents" }
+						}
+					},
+					{
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["interleave"],
+						"properties": {
+							"interleave": { "$ref": "#/definitions/contents" }
+						}
+					}
+				]
+			}
+		},
+		"value": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": ["tag", "contents"],
+				"properties": {
+					"tag": {
+						"type": "string"
+					},
+					"contents": {
+						"$ref": "#/definitions/contents"
+					}
+				}
+			}
+		},
+		"option": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"ignoreHasMutableChildren": {
+					"type": "boolean"
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"type": "boolean"
+		},
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"option": { "$ref": "#/definitions/option" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+				}
+			}
+		}
+	]
+}
