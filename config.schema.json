@@ -1,0 +1,43 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"type": "object",
+	"additionalProperties": false,
+	"definitions": {
+		"rules": {
+			"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/schema.json#/definitions/rules"
+		}
+	},
+	"properties": {
+		"parser": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "string"
+			}
+		},
+		"specs": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
+		},
+		"rules": {
+			"$ref": "#/definitions/rules"
+		},
+		"nodeRules": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": ["tagName", "rules"],
+				"properties": {
+					"tagName": {
+						"type": "string"
+					},
+					"rules": {
+						"$ref": "#/definitions/rules"
+					}
+				}
+			}
+		}
+	}
+}
