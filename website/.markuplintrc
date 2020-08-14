@@ -1,5 +1,4 @@
 {
-	"extends": "markuplint/html-spec",
 	"rules": {
 		"attr-duplication": true,
 		"character-reference": true,
@@ -19,7 +18,7 @@
 		"attr-value-quotes": true,
 		"case-sensitive-attr-name": true,
 		"case-sensitive-tag-name": true,
-		"indentation": "tab"
+		"indentation": false
 	},
 	"nodeRules": [
 		{

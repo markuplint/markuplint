@@ -1,7 +1,8 @@
-// @ts-ignore
-import MLPlayground from './ml-playground';
+import './style/home.scss';
 
-new MLPlayground({
-	target: document.querySelector('#playground'),
-	props: {},
+// @ts-ignore
+import MLPlaygroundHome from './ml-playground-home';
+
+new MLPlaygroundHome({
+	target: document.querySelector('#playground-home'),
 });
