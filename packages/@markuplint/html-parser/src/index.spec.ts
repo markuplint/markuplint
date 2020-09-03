@@ -980,4 +980,13 @@ describe('parser', () => {
 		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].endCol).toBe(24);
 	});
+
+	it('The fragment tree', () => {
+		const doc = parse('<audio><source media="print"></audio>');
+		// const map = nodeListToDebugMaps(doc.nodeList);
+		// console.log(map);
+
+		expect(doc.nodeList[0].parentNode).toEqual(null);
+		expect(doc.nodeList[1].parentNode!.parentNode).toEqual(null);
+	});
 });
