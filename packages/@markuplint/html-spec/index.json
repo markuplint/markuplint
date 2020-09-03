@@ -1963,7 +1963,7 @@
 					},
 					{
 						"zeroOrMore": "#transparent",
-						"notAllowedDescendants": ["source", "audio", "video"]
+						"notAllowedDescendants": ["audio", "video"]
 					}
 				]
 			},
@@ -7838,7 +7838,7 @@
 					},
 					{
 						"zeroOrMore": "#transparent",
-						"notAllowedDescendants": ["source", "audio", "video"]
+						"notAllowedDescendants": ["audio", "video"]
 					}
 				]
 			},

@@ -93,6 +93,9 @@ describe('verify', () => {
 
 		const r2 = await markuplint.verify('<div><audio><source><div></div></audio></div>', ruleOn, [rule], 'en');
 		expect(r2).toStrictEqual([]);
+
+		const r3 = await markuplint.verify('<div><audio><source></audio></div>', ruleOn, [rule], 'en');
+		expect(r3).toStrictEqual([]);
 	});
 
 	test('dl', async () => {

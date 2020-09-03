@@ -249,7 +249,7 @@ test('a', () => {
 test('audio', () => {
 	const expGen = new ExpGenerator(0);
 	expect(expGen.specToRegExp(htmlSpec('audio')!.contents).source).toEqual(
-		'^(?<NAD_00_source_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01><[^>]+>))*)$',
+		'^(?<NAD_00_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01><[^>]+>))*)$',
 	);
 });
 
@@ -298,7 +298,7 @@ test('audio in audio / Duplicate capture group name', () => {
 	expect(
 		expGen.specToRegExp(htmlSpec('audio')!.contents, expGen.specToRegExp(htmlSpec('audio')!.contents)).source,
 	).toEqual(
-		'^(?<NAD_02_source_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_03>(?<NAD_00_source_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01><[^>]+>))*)))*)$',
+		'^(?<NAD_02_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_03>(?<NAD_00_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01><[^>]+>))*)))*)$',
 	);
 });
 
