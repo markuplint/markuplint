@@ -26,12 +26,20 @@ export default createRule<RequiredAttributes, null>({
 			});
 
 			for (const spec of attributeSpecs) {
+				const didntHave = !node.hasAttribute(spec.name);
+
 				let invalid = false;
+
 				if (spec.requiredEither) {
 					const candidate = [...spec.requiredEither, spec.name];
 					invalid = !candidate.some(attrName => node.hasAttribute(attrName));
+				} else if (spec.required === true) {
+					invalid = attrMatches(node, spec.condition) && didntHave;
 				} else if (spec.required) {
-					invalid = attrMatches(node, spec.condition) && !node.hasAttribute(spec.name);
+					if (spec.required.ancestor) {
+						const ancestors = spec.required.ancestor.split(',').map(a => a.trim());
+						invalid = ancestors.some(a => node.closest(a)) && didntHave;
+					}
 				}
 
 				if (invalid) {

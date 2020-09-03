@@ -171,6 +171,68 @@ test('At least one of data and type must be defined to <object>.', async () => {
 	).toBe(2);
 });
 
+test('The ancestors of the <source> element.', async () => {
+	expect(
+		await markuplint.verify(
+			'<audio><source></audio>',
+			{
+				rules: {
+					'required-attr': true,
+				},
+				nodeRules: [],
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([
+		{
+			ruleId: 'required-attr',
+			severity: 'error',
+			line: 1,
+			col: 8,
+			message: "Required 'src' on '<source>'",
+			raw: '<source>',
+		},
+	]);
+
+	expect(
+		await markuplint.verify(
+			'<video><source></video>',
+			{
+				rules: {
+					'required-attr': true,
+				},
+				nodeRules: [],
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([
+		{
+			ruleId: 'required-attr',
+			severity: 'error',
+			line: 1,
+			col: 8,
+			message: "Required 'src' on '<source>'",
+			raw: '<source>',
+		},
+	]);
+
+	expect(
+		await markuplint.verify(
+			'<picture><source></picture>',
+			{
+				rules: {
+					'required-attr': true,
+				},
+				nodeRules: [],
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([]);
+});
+
 test('Pug', async () => {
 	expect(
 		await markuplint.verify(

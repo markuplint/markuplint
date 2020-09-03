@@ -1,5 +1,27 @@
 {
-	"definitions": {},
+	"definitions": {
+		"condition": {
+			"oneOf": [
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"ancestor": { "type": "string" }
+					}
+				},
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"self": {
+							"type": ["string", "array"],
+							"items": { "type": "string", "minItems": 2 }
+						}
+					}
+				}
+			]
+		}
+	},
 	"type": "object",
 	"additionalProperties": false,
 	"required": ["tag", "attributes"],
@@ -53,32 +75,16 @@
 						]
 					},
 					"deprecated": { "type": "boolean" },
-					"required": { "type": "boolean" },
+					"required": {
+						"oneOf": [{ "type": "boolean" }, { "$ref": "#/definitions/condition" }]
+					},
 					"requiredEither": { "type": "array", "items": { "type": "string" } },
 					"enum": { "type": "array", "items": { "type": "string" }, "minLength": 1 },
 					"noUse": {
 						"type": "boolean"
 					},
 					"condition": {
-						"oneOf": [
-							{
-								"type": "object",
-								"additionalProperties": false,
-								"properties": {
-									"ancestor": { "type": "string" }
-								}
-							},
-							{
-								"type": "object",
-								"additionalProperties": false,
-								"properties": {
-									"self": {
-										"type": ["string", "array"],
-										"items": { "type": "string", "minItems": 2 }
-									}
-								}
-							}
-						]
+						"$ref": "#/definitions/condition"
 					}
 				}
 			}
