@@ -6656,7 +6656,9 @@
 					"name": "src",
 					"description": "Required for <audio> and <video>, address of the media resource. The value of this attribute is ignored when the <source> element is placed inside a <picture> element. A list of one or more strings separated by commas indicating a set of possible images represented by the source for the browser to use. Each string is composed of: One URL specifying an image. A width descriptor, which consists of a string containing a positive integer directly followed by \"w\", such as 300w. The default value, if missing, is the infinity. A pixel density descriptor, that is a positive floating number directly followed by \"x\". The default value, if missing, is 1x. Each string in the list must have at least a width descriptor or a pixel density descriptor to be valid. Among the list, there must be only one string containing the same tuple of width descriptor and pixel density descriptor. The browser chooses the most adequate image to display at a given point of time. The srcset attribute has an effect only when the <source> element is the direct child of a <picture> element. The MIME media type of the resource, optionally with a codecs parameter.",
 					"type": "URL",
-					"required": true
+					"required": {
+						"ancestor": "video, audio"
+					}
 				},
 				{
 					"name": "srcset",
