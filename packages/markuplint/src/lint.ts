@@ -33,6 +33,11 @@ export async function lint(options: {
 	config?: string | Config;
 
 	/**
+	 * The config applied when not resolved from files or set it explicitly.
+	 */
+	defaultConfig?: Config;
+
+	/**
 	 * Rules (default: `@markuplint/rules`)
 	 */
 	rules?: MLRule<RuleConfigValue, unknown>[];
