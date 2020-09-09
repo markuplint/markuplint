@@ -23,6 +23,7 @@
 		"html-loader": "^1.1.0",
 		"html-webpack-plugin": "^4.3.0",
 		"json-loader": "^0.5.7",
+		"json-schema-ref-parser": "^9.0.6",
 		"mini-css-extract-plugin": "^0.10.0",
 		"monaco-editor-webpack-plugin": "^1.9.0",
 		"postcss-base64": "^0.7.1",
