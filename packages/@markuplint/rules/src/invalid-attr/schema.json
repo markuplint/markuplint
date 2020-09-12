@@ -1,0 +1,124 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean"
+		},
+		"option": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"attrs": {
+					"type": "object",
+					"additionalProperties": {
+						"type": "object",
+						"oneOf": [
+							{
+								"type": "object",
+								"additionalProperties": false,
+								"required": ["enum"],
+								"properties": {
+									"enum": {
+										"type": "array",
+										"uniqueItems": true,
+										"items": {
+											"type": "string",
+											"minimum": 1
+										}
+									}
+								}
+							},
+							{
+								"type": "object",
+								"additionalProperties": false,
+								"required": ["pattern"],
+								"properties": {
+									"pattern": {
+										"type": "string"
+									}
+								}
+							},
+							{
+								"type": "object",
+								"additionalProperties": false,
+								"required": ["type"],
+								"properties": {
+									"type": {
+										"type": "string",
+										"enum": [
+											"String",
+											"Boolean",
+											"Function",
+											"Date",
+											"Int",
+											"Uint",
+											"Float",
+											"NonZeroUint",
+											"AcceptList",
+											"AutoComplete",
+											"BCP47",
+											"Color",
+											"ColSpan",
+											"Coords",
+											"DateTime",
+											"Destination",
+											"DOMID",
+											"DOMIDList",
+											"ItemType",
+											"LinkSizes",
+											"LinkType",
+											"LinkTypeList",
+											"MediaQuery",
+											"MediaQueryList",
+											"MIMEType",
+											"ReferrerPolicy",
+											"RowSpan",
+											"SourceSizeList",
+											"SrcSet",
+											"TabIndex",
+											"Target",
+											"URL",
+											"URLHash",
+											"URLList"
+										]
+									}
+								}
+							}
+						]
+					}
+				},
+				"ignoreAttrNamePrefix": {
+					"oneOf": [
+						{
+							"type": "string"
+						},
+						{
+							"type": "array",
+							"uniqueItems": true,
+							"minItems": 1,
+							"items": {
+								"type": "string"
+							}
+						}
+					]
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"option": { "$ref": "#/definitions/option" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+				}
+			}
+		}
+	]
+}

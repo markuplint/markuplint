@@ -120,14 +120,16 @@ export type Attribute = {
 	obsolete?: true;
 	deprecated?: true;
 	nonStandard?: true;
-	required?: true;
+	required?: true | AttributeCondition;
 	requiredEither?: string[];
 	enum?: string[];
 	noUse?: boolean;
-	condition?: {
-		ancestor?: string;
-		self?: string | string[];
-	};
+	condition?: AttributeCondition;
+};
+
+export type AttributeCondition = {
+	ancestor?: string;
+	self?: string | string[];
 };
 
 // type AttributeCtegory = 'global' | 'xml' | 'aria' | 'eventhandler' | 'form' | 'particular';

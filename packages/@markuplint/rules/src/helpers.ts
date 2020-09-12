@@ -113,7 +113,7 @@ export function attrMatches<T extends RuleConfigValue, R>(node: Element<T, R>, c
 					break;
 				}
 			}
-			_node = node.parentNode;
+			_node = _node.parentNode;
 		}
 	}
 	return matched;

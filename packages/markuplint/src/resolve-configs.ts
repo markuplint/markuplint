@@ -6,6 +6,7 @@ export async function resolveConfigs(
 	options: {
 		config?: string | Config;
 		workspace?: string;
+		defaultConfig?: Config;
 	},
 ) {
 	const workspace = options.workspace ?? process.cwd();
@@ -31,13 +32,19 @@ export async function resolveConfigs(
 			const configSet = await searchConfigFile(file.path);
 			if (configSet) {
 				configs.set(file, configSet);
-			} else {
-				if (!configSetNearbyCWD) {
-					configSetNearbyCWD = await searchConfigFile(workspace);
-				}
-				if (configSetNearbyCWD) {
-					configs.set(file, configSetNearbyCWD);
-				}
+				continue;
+			}
+			if (!configSetNearbyCWD) {
+				configSetNearbyCWD = await searchConfigFile(workspace);
+			}
+			if (configSetNearbyCWD) {
+				configs.set(file, configSetNearbyCWD);
+			} else if (options.defaultConfig) {
+				configs.set(file, {
+					files: new Set([`${workspace}/__DEFAULT_SET__`]),
+					config: options.defaultConfig,
+					errs: [],
+				});
 			}
 		}
 	}

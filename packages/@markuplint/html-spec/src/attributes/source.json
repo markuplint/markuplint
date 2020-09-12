@@ -4,7 +4,9 @@
 		{
 			"name": "src",
 			"type": "URL",
-			"required": true
+			"required": {
+				"ancestor": "video, audio"
+			}
 		},
 		{
 			"name": "type",

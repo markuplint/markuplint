@@ -102,6 +102,43 @@ test('disable', async () => {
 	expect(r.length).toBe(0);
 });
 
+test('ancestor condition', async () => {
+	expect(
+		await markuplint.verify(
+			'<picture><source media="print"></picture>',
+			{
+				rules: {
+					'invalid-attr': true,
+				},
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([]);
+
+	expect(
+		await markuplint.verify(
+			'<audio><source media="print"></audio>',
+			{
+				rules: {
+					'invalid-attr': true,
+				},
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 16,
+			message: 'The "media" attribute is not allowed',
+			raw: 'media',
+		},
+	]);
+});
+
 test('custom rule', async () => {
 	const r = await markuplint.verify(
 		'<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>',

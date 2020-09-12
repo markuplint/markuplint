@@ -15,7 +15,7 @@
 ```
 <!-- prettier-ignore-end -->
 
-`{ attr-value-quotes: ['warning', 'single'] }`
+`{ attr-value-quotes: 'single' }`
 
 <!-- prettier-ignore-start -->
 ```html
@@ -32,7 +32,7 @@
 ```
 <!-- prettier-ignore-end -->
 
-`{ attr-value-quotes: ['warning', 'single'] }`
+`{ attr-value-quotes: 'single' }`
 
 <!-- prettier-ignore-start -->
 ```html

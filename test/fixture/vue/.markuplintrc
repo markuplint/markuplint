@@ -20,7 +20,7 @@
 		"class-naming": "/[a-z]+/",
 		"attr-equal-space-after": true,
 		"attr-equal-space-before": true,
-		"attr-spasing": true,
+		"attr-spacing": true,
 		"attr-value-quotes": true,
 		"case-sensitive-attr-name": true,
 		"case-sensitive-tag-name": true,

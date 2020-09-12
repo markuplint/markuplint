@@ -1,0 +1,36 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean"
+		},
+		"option": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"expected-once": {
+					"type": "boolean"
+				},
+				"in-document-fragment": {
+					"type": "boolean"
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"option": { "$ref": "#/definitions/option" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+				}
+			}
+		}
+	]
+}
