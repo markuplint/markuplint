@@ -1,8 +1,10 @@
 ---
-title: landmark-roles
+title: Landmark roles
+id: landmark-roles
+category: a11y
 ---
 
-# Landmark roles (`landmark-roles`)
+# Landmark roles
 
 -   ~~Whether perceptible content exists on any landmark~~ (Work in prgress)
 -   Whether `banner`, `main`, `complementary` and `contentinfo` are top-level landmarks

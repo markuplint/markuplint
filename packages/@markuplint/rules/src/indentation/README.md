@@ -1,9 +1,11 @@
 ---
-title: indentation
+title: Indentation
+id: indentation
 fixable: true
+category: style
 ---
 
-# Indentation (`indentation`)
+# Indentation
 
 Warns that indentation is not unified.
 

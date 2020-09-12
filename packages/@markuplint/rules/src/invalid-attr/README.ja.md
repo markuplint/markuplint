@@ -42,7 +42,7 @@
 
 型: `string[]`
 
-```json:title=.markuplintrc
+```json
 {
 	"invalid-attr": {
 		"option": {
@@ -62,7 +62,7 @@
 
 型: `string`
 
-```json:title=.markuplintrc
+```json
 {
 	"invalid-attr": {
 		"option": {
@@ -82,7 +82,7 @@
 
 型: `string`
 
-```json:title=.markuplintrc
+```json
 {
 	"invalid-attr": {
 		"option": {
@@ -102,7 +102,7 @@ HTML の仕様には存在しない、View ライブラリやテンプレート�
 
 型: `string | string[]`
 
-```json:title=.markuplintrc
+```json
 {
 	"invalid-attr": {
 		"option": {

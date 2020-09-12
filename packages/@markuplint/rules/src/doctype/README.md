@@ -1,9 +1,11 @@
 ---
-title: doctype
+title: DOCTYPE declaration
+id: doctype
 fixable: false
+category: validation
 ---
 
-# DOCTYPE declaration (`doctype`)
+# DOCTYPE declaration
 
 Warns when doesn't declare DOCTYPE. Also warns when declared obsolete type.
 

@@ -1,8 +1,10 @@
 ---
-title: permitted-contents
+title: Permitted contents
+id: permitted-contents
+category: validation
 ---
 
-# Permitted contents (`permitted-contents`)
+# Permitted contents
 
 Warn if a child element has an allowed element or text node.
 
@@ -54,7 +56,7 @@ It is possible to make the structure robust by setting element relationships on 
 
 Specify the target element for which you want to set a rule as an array. In the following example, rules are specified for each of the custom elements `x-container` and `x-item`.
 
-```json:title=.markuplintrc
+```json
 {
 	"rules": {
 		"permitted-contents": [
@@ -86,7 +88,7 @@ It is defined using one of the six keywords `require`, `optional`, `oneOrMore`, 
 
 Of these, `require`, `optional`, `oneOrMore` and `zeroOrMore` mean the number of elements. Specify the tag name (or `# text` for text nodes) using the keyword as a key. Each keyword cannot be simultaneously specified.
 
-```json:title=.markuplintrc
+```json
 {
 	"rules": {
 		"permitted-contents": [
@@ -134,7 +136,7 @@ The two keywords `choice` and`interleave` have the following meanings for the sp
 | `choice`     | Any one              |
 | `interleave` | Not matter the order |
 
-```json:title=.markuplintrc
+```json
 {
 	"rules": {
 		"permitted-contents": [

@@ -1,0 +1,20 @@
+{
+	"extends": ["../.eslintrc", "plugin:react/recommended"],
+	"plugins": ["react"],
+	"parserOptions": {
+		"ecmaFeatures": {
+			"jsx": true
+		}
+	},
+	"settings": {
+		"react": {
+			"version": "detect"
+		}
+	},
+	"rules": {
+		"react/display-name": 0
+	},
+	"globals": {
+		"React": true
+	}
+}
