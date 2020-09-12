@@ -1,7 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
 
 :root {
 	--main-color: #0071bc;
+	--main-color-dark: #1e608b;
 	--shadow: rgba(0, 0, 0, 0.3);
 	--base-color: #fff;
 	--base-color-front: hsl(0, 0%, 100%);

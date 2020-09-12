@@ -1,0 +1,18 @@
+---
+title: Configuration
+---
+
+## Configuration file
+
+The configuration file is the rules and/or options that load on markuplint executes. That is usually automatic loading, But you also can load explicitly if use CLI or API.
+
+The automatic loading is recursively searching from a directory that the target exists. In other words, It is applying that configure files that the closest each the target.
+
+### Format and Filename
+
+You can get even if the filename is not `.markuplintrc`.
+
+-   `package.json` property that key is `markuplint`
+-   You can get even if the format is YAML not JSON on `.markuplintrc`
+-   `markuplintrc` with `.json`, `.yaml`, `.yml`, `.js`, or `.cjs`
+-   `markuplint.config.js` or `markuplint.config.cjs`

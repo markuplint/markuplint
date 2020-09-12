@@ -1,11 +1,10 @@
+import Footer from './Footer';
 import Head from 'next/head';
 import Header from './Header';
 import { PropsWithChildren } from 'react';
 
-type Props = {
-	isHome?: boolean;
-};
-export default function Layout({ isHome = false, children }: PropsWithChildren<Props>) {
+type Props = {};
+export default function Layout({ children }: PropsWithChildren<Props>) {
 	return (
 		<>
 			<Head>
@@ -15,14 +14,17 @@ export default function Layout({ isHome = false, children }: PropsWithChildren<P
 				<link rel="apple-touch-icon" href="/icon.png" />
 				<meta name="theme-color" content="#fff" />
 			</Head>
-			<Header isHome={isHome} />
+			<Header />
 			<main>{children}</main>
+			<Footer />
 			<style jsx>
 				{`
 					main {
 						max-width: 580px;
 						margin: 3em auto 5em;
 						padding: 0 20px;
+						position: relative;
+						z-index: 0;
 					}
 				`}
 			</style>

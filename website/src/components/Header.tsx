@@ -45,8 +45,8 @@ export default memo(({ isHome = false }: Props) => {
 							</Link>
 						</li>
 						<li>
-							<Link href="/api">
-								<a href="/api">
+							<Link href="/api-docs">
+								<a href="/api-docs">
 									<abbr title="Application Programming Interface">API</abbr>
 								</a>
 							</Link>
@@ -63,6 +63,8 @@ export default memo(({ isHome = false }: Props) => {
 					flex-wrap: wrap;
 					padding: 1em;
 					box-shadow: 0 0 5px 0 var(--shadow);
+					position: relative;
+					z-index: 10;
 				}
 
 				h1 {

@@ -54,6 +54,9 @@ const mdComponents: MDXProviderComponentsProp = {
 			</a>
 		);
 	},
+	img: (props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement>>) => {
+		return <img {...props} loading="lazy" />;
+	},
 };
 
 export default function App({ Component, pageProps }: AppProps) {
