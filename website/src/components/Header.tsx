@@ -40,16 +40,14 @@ export default memo(({ isHome = false }: Props) => {
 							</Link>
 						</li>
 						<li>
-							<Link href="/playground">
-								<a href="/playground">Playground</a>
-							</Link>
-						</li>
-						<li>
 							<Link href="/api-docs">
 								<a href="/api-docs">
 									<abbr title="Application Programming Interface">API</abbr>
 								</a>
 							</Link>
+						</li>
+						<li>
+							<a href="https://playground.markuplint.dev">Playground</a>
 						</li>
 					</ul>
 				</nav>

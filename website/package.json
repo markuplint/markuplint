@@ -45,6 +45,7 @@
 		"normalize.css": "^8.0.1",
 		"react": "16.13.1",
 		"react-dom": "16.13.1",
+		"react-innertext": "^1.1.5",
 		"react-monaco-editor": "^0.40.0"
 	}
 }

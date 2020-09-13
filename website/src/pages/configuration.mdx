@@ -6,13 +6,153 @@ title: Configuration
 
 The configuration file is the rules and/or options that load on markuplint executes. That is usually automatic loading, But you also can load explicitly if use CLI or API.
 
-The automatic loading is recursively searching from a directory that the target exists. In other words, It is applying that configure files that the closest each the target.
+The automatic loading is recursively searching up from a directory that the target exists. In other words, It is applying that configure files that the closest each the target.
 
 ### Format and Filename
 
-You can get even if the filename is not `.markuplintrc`.
+You can get even if the filename is not `.markuplintrc`. If you use `.markuplintrc`, You can get even if the format is YAML not JSON.
 
--   `package.json` property that key is `markuplint`
--   You can get even if the format is YAML not JSON on `.markuplintrc`
--   `markuplintrc` with `.json`, `.yaml`, `.yml`, `.js`, or `.cjs`
+The priority appied names are:
+
+-   `markuplint` property in `package.json`
+-   `markuplintrc.json`, `markuplintrc.yaml`, `markuplintrc.yml`, `markuplintrc.js`, or `markuplintrc.cjs`
 -   `markuplint.config.js` or `markuplint.config.cjs`
+
+## Properties
+
+-   [`parser`](#parser)
+-   [`specs`](#specs)
+-   [`extends`](#extends)
+-   [`rules`](#rules)
+-   [`nodeRules`](#nodeRules)
+-   [`childNodeRules`](#childNodeRules)
+
+### `parser`
+
+Set a regular expression that can identify the target file name to the key, and the parser module path to the value.
+
+```json
+{
+	"parser": {
+		".vue$": "@markuplint/vue-parser",
+		".pug$": "@markuplint/pug-parser",
+		".svelte$": "@markuplint/svelte-parser",
+		".any$": "./path/to/custom-parser/any-lang"
+	}
+}
+```
+
+### `specs`
+
+Add the spec module path to this array.
+
+```json
+{
+	"specs": ["@markuplint/vue-spec", "./path/to/custom-specs/any-lang"]
+}
+```
+
+### `extends`
+
+If set another configuration file path then the current setting is merged with it.
+
+```json
+{
+	"extends": ["../../.markuplintrc"]
+}
+```
+
+### `rules`
+
+And add some rules to this property.
+
+```json
+{
+	"rules": {
+		"rule-name": "value" // Add to here or more
+	}
+}
+```
+
+Basically, Set the boolean to value. If it is the boolean a switching the enabled and the disabled.
+Or set a value given each rule. Those are any string, any number, and an array.
+And if the value is the Object type, it should be this structure like:
+
+```json
+{
+	// Type: string | number | boolean | Array
+	"value": "any-value",
+
+	// Optional, "error" or "warning"
+	"severity": "error",
+
+	// Optional
+	"option": {
+		"any-option": "any-optional-value"
+	}
+}
+```
+
+The detail of Each rule is said from the [Rules page](/rules).
+
+For example, setting of the rule of `invalid-attr`:
+
+```json
+{
+	"rule": {
+		"invalid-attr": {
+			"value": true,
+			"severity": "warning",
+			"option": {
+				"attrs": {
+					"x-attr": {
+						"enum": ["value1", "value2", "value3"]
+					}
+				}
+			}
+		}
+	}
+}
+```
+
+### `nodeRules`
+
+If you want only any specific element to apply some rule, you can set by this property.
+Be careful the value is an array.
+You can set the `rules` property of this property like the [`rules`](#rules) property of the root.
+
+```json
+{
+	"nodeRules": [
+		{
+			"tagName": "main",
+			"rules": {
+				"class-naming": "/[a-z]+(__[a-z]+)?/"
+			}
+		}
+	]
+}
+```
+
+The `tagName` allows only element name but allows `"#text"` if it is _the text node_ exceptionally.
+
+### `childNodeRules`
+
+If you want only any specific element and/or scope to apply some rule, you can set by this property.
+If set true to `inheritance` property then _affects all descendant nodes_ of the target element.
+Be careful the value is an array.
+You can set the `rules` property of this property like the [`rules`](#rules) property of the root.
+
+```json
+{
+	"childNodeRules": [
+		{
+			"selector": ".ignoreClass",
+			"inheritance": true,
+			"rules": {
+				"character-reference": true
+			}
+		}
+	]
+}
+```

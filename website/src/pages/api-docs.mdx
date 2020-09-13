@@ -17,7 +17,7 @@ title: API Document
 | [`@markuplint/ml-spec`](./packages/@markuplint/ml-spec)             | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-spec.svg)](https://badge.fury.io/js/%40markuplint%2Fml-spec)              | Universal |
 | [`@markuplint/rules`](./packages/@markuplint/rules)                 | [![npm version](https://badge.fury.io/js/%40markuplint%2Frules.svg)](https://badge.fury.io/js/%40markuplint%2Frules)                  | Universal |
 
-## Basic Usage
+Basic Usage:
 
 ```js
 import { exec } from 'markuplint';
@@ -28,6 +28,30 @@ const result = await exec({
 
 console.log(result); // => The results in JSON format
 ```
+
+## Functions
+
+### `exec`
+
+-   _Parameter_
+    -   `options`
+-   _Return_
+    -   type: `Promise`&lt;`Array`&lt;[`MLResultInfo`](https://api.markuplint.dev/interfaces/mlresultinfo.html)&gt;&gt;
+
+#### `options`
+
+| Key                | Type                | Optional | Description                                                                                                                                      |
+| ------------------ | ------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `files`            | `string` `string[]` | ✓        | Glob pattern                                                                                                                                     |
+| `sourceCodes`      | `string` `string[]` | ✓        | Target source code of evaluation                                                                                                                 |
+| `names`            | `string` `string[]` | ✓        | File names when `sourceCodes`                                                                                                                    |
+| `workspace`        | `string`            | ✓        | Workspace path when `sourceCodes`                                                                                                                |
+| `config`           | `string` `Config`   | ✓        | Configure file or object                                                                                                                         |
+| `defaultConfig`    | `Config`            | ✓        | The config applied when not resolved from files or set it explicitly.                                                                            |
+| `rules`            | `MLRule[]`          | ✓        | Rules (default: `@markuplint/rules`)                                                                                                             |
+| `rulesAutoResolve` | `boolean`           | ✓        | Auto resolve rules - Auto importing form _node_modules_ when set `@markuplint/rule-{RULE_NAME}` or `markuplint-rule-{RULE_NAME}` in config rules |
+| `fix`              | `boolean`           | ✓        | with to fix                                                                                                                                      |
+| `locale`           | `string`            | ✓        | Locale                                                                                                                                           |
 
 ## Interface Document
 
