@@ -1,58 +1,65 @@
 import Footer from '../components/Footer';
+import Head from 'next/head';
 import Header from '../components/Header';
 import Link from 'next/link';
 
 export default function Index() {
 	return (
 		<>
+			<Head>
+				<title>markuplint - A Linter for All Markup Languages.</title>
+			</Head>
 			<Header />
-			<div className="hero">
-				<h1>markuplint</h1>
-				<h2>Peace of mind in your markup</h2>
-				<Link href="/getting-started">
-					<a href="/getting-started">Get Started</a>
-				</Link>
-			</div>
 			<main>
-				<section>
-					<h2>HTML Validation</h2>
-					<p>
-						The markup needs to written valid code. This is important to keep the promise of the standards
-						that do not break webpages through each user agent more than your policy. markuplint can
-						validate given the specs that are HTML Living Standard.
-					</p>
-				</section>
-				<section>
-					<h2>Designed Structures</h2>
-					<p>
-						markuplint checks whether to correct the structure of elements made on the design system of your
-						project. It can check the relation parent-child of the elements by class name and/or the custom
-						element name.
-					</p>
-				</section>
-				<section>
-					<h2>On Your House Rules</h2>
-					<p>
-						You may have the house rules on your project or your organization. You can check based on your
-						policy and/or your rules. For example, if you must give the alt attribute to the img element,
-						You should set up that rule.
-					</p>
-				</section>
-				<section>
-					<h2>Set for each Selector</h2>
-					<p>
-						Depending on the situation, You may want the part of structures only to apply some rule. Or want
-						it is ignored from the rule. If that, markuplint can that. There are settings to apply in any
-						scope by the selector in the spec W3C Selectors.
-					</p>
-				</section>
-				<section>
-					<h2>Supporting Template Engine</h2>
-					<p>
-						You can use it for other markup languages with plugins. Currently, There are plugins for Pug,
-						Vue, and Svelte. And it provides the API that creates the plugin for any markup language.
-					</p>
-				</section>
+				<div className="hero">
+					<h1>markuplint</h1>
+					<h2>Peace of mind in your markup</h2>
+					<Link href="/getting-started">
+						<a href="/getting-started">Get Started</a>
+					</Link>
+				</div>
+				<div className="body">
+					<section>
+						<h2>HTML Validation</h2>
+						<p>
+							The markup needs to written valid code. This is important to keep the promise of the
+							standards that do not break webpages through each user agent more than your policy.
+							markuplint can validate given the specs that are HTML Living Standard.
+						</p>
+					</section>
+					<section>
+						<h2>Designed Structures</h2>
+						<p>
+							markuplint checks whether to correct the structure of elements made on the design system of
+							your project. It can check the relation parent-child of the elements by class name and/or
+							the custom element name.
+						</p>
+					</section>
+					<section>
+						<h2>On Your House Rules</h2>
+						<p>
+							You may have the house rules on your project or your organization. You can check based on
+							your policy and/or your rules. For example, if you must give the alt attribute to the img
+							element, You should set up that rule.
+						</p>
+					</section>
+					<section>
+						<h2>Set for each Selector</h2>
+						<p>
+							Depending on the situation, You may want the part of structures only to apply some rule. Or
+							want it is ignored from the rule. If that, markuplint can that. There are settings to apply
+							in any scope by the selector in the spec W3C Selectors.
+						</p>
+					</section>
+					<section>
+						<h2>Supporting Template Engine</h2>
+						<p>
+							You can use it for other markup languages with plugins. Currently, There are plugins for
+							Pug, Vue, and Svelte. And it provides the API that creates the plugin for any markup
+							language.
+						</p>
+					</section>
+				</div>
 			</main>
 			<Footer />
 			<style jsx>
@@ -122,7 +129,7 @@ export default function Index() {
 						z-index: 1;
 					}
 
-					main {
+					.body {
 						max-width: 680px;
 						padding: 20px;
 						margin: 0 auto;

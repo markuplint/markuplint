@@ -1,6 +1,9 @@
 {
-	"extends": ["../.eslintrc", "plugin:react/recommended"],
+	"extends": ["../.eslintrc", "plugin:react/recommended", "plugin:react-hooks/recommended"],
 	"plugins": ["react"],
+	"env": {
+		"browser": true
+	},
 	"parserOptions": {
 		"ecmaFeatures": {
 			"jsx": true
