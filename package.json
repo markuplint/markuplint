@@ -48,7 +48,8 @@
 	"workspaces": [
 		"packages/*",
 		"packages/@markuplint/*",
-		"website"
+		"website",
+		"playground"
 	],
 	"devDependencies": {
 		"@types/jest": "^26.0.5",
