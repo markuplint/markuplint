@@ -39,7 +39,7 @@
 
 ### 設定値
 
-```json:title=.markuplintrc
+```json
 {
 	"rules": {
 		"required-h1": true
@@ -47,7 +47,7 @@
 }
 ```
 
-```json:title=.markuplintrc
+```json
 {
 	"rules": {
 		"required-h1": {

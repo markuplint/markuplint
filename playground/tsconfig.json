@@ -1,0 +1,9 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"resolveJsonModule": true,
+		"declaration": false,
+		"importHelpers": true
+	},
+	"exclude": ["node_modules"]
+}

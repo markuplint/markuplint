@@ -19,14 +19,18 @@ export class MLCore {
 	constructor(
 		parser: MLMarkupLanguageParser,
 		sourceCode: string,
-		ruleset: Ruleset,
+		ruleset: Partial<Ruleset>,
 		rules: MLRule<RuleConfigValue, unknown>[],
 		i18n: I18n,
 		schemas: Readonly<[MLMLSpec, ...ExtendedSpec[]]>,
 	) {
 		this.#parser = parser;
 		this.#sourceCode = sourceCode;
-		this.#ruleset = ruleset;
+		this.#ruleset = {
+			rules: ruleset.rules || {},
+			nodeRules: ruleset.nodeRules || [],
+			childNodeRules: ruleset.childNodeRules || [],
+		};
 		this.#i18n = i18n;
 		this.#schemas = schemas;
 		this.#ast = this.#parser.parse(this.#sourceCode);

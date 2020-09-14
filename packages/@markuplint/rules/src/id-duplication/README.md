@@ -1,8 +1,10 @@
 ---
-title: id-duplication
+title: The "id" attribute value duplication
+id: id-duplication
+category: validation
 ---
 
-# The "id" attribute value duplication (`id-duplication`)
+# The "id" attribute value duplication
 
 Warns that **id** attribute value were duplicated in one document.
 

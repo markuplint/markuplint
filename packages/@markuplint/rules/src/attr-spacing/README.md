@@ -1,9 +1,11 @@
 ---
-title: attr-spacing
+title: 属性間のスペース
+id: attr-spacing
 fixable: true
+cateogry: style
 ---
 
-# 属性間のスペース (`attr-spacing`)
+# 属性間のスペース
 
 要素間のスペース・改行の有無や数に対して警告します。
 

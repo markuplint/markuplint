@@ -1,8 +1,10 @@
 ---
-title: attr-duplication
+title: Attributes duplication
+id: attr-duplication
+category: validation
 ---
 
-# Attributes duplication (`attr-duplication`)
+# Attributes duplication
 
 Warns that **attributes** were duplicated in one element. Capital letters and lower case letters are not distinguished.
 

@@ -1,8 +1,10 @@
 ---
-title: deprecated-element
+title: Deprecated elements
+id: deprecated-element
+category: validation
 ---
 
-# Deprecated elements (`deprecated-element`)
+# Deprecated elements
 
 Warns when there is an element defined as **deprecated** or **obsolete** or **non-standard**.
 
