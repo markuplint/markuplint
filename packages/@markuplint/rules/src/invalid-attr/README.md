@@ -1,8 +1,10 @@
 ---
-title: invalid-attr
+title: Invalid Attribute
+id: invalid-attr
+category: style
 ---
 
-# Invalid Attribute (`invalid-attr`)
+# Invalid Attribute
 
 Warn if an attribute is a non-existent attribute or an invalid type value due to the specifications (or the custom rule).
 
@@ -46,7 +48,7 @@ Only values ​​that match the enumerated strings are allowed.
 
 Type: `string[]`
 
-```json:title=.markuplintrc
+```json
 {
 	"invalid-attr": {
 		"option": {
@@ -66,7 +68,7 @@ Only allow values ​​that match the pattern. It works as a **regular expressi
 
 Type: `string`
 
-```json:title=.markuplintrc
+```json
 {
 	"invalid-attr": {
 		"option": {
@@ -86,7 +88,7 @@ Only values that match the specified [type](https://github.com/markuplint/markup
 
 Type: `string`
 
-```json:title=.markuplintrc
+```json
 {
 	"invalid-attr": {
 		"option": {
@@ -106,7 +108,7 @@ Set prefixes to exclude special attributes or directives for the library and tem
 
 Type: `string | string[]`
 
-```json:title=.markuplintrc
+```json
 {
 	"invalid-attr": {
 		"option": {
