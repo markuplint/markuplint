@@ -20,11 +20,11 @@ export default function Index() {
 				</div>
 				<div className="body">
 					<section>
-						<h2>HTML Validation</h2>
+						<h2>Conformance checking</h2>
 						<p>
 							The markup needs to written valid code. This is important to keep the promise of the
 							standards that do not break webpages through each user agent more than your policy.
-							markuplint can validate given the specs that are HTML Living Standard.
+							markuplint can conformance checking given the specs that are HTML Living Standard.
 						</p>
 					</section>
 					<section>

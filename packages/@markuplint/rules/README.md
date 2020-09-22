@@ -6,7 +6,7 @@
 
 ## Rules
 
-### Validation
+### Conformance checking
 
 | Avaiable | Docs | Docs(ja) | Rule                                              | Fixable |
 | -------- | ---- | -------- | ------------------------------------------------- | ------- |
