@@ -18,7 +18,7 @@ export default function Index({ title, back, next }: Props) {
 	return ({ children }: PropsWithChildren<{}>) => {
 		return (
 			<Layout>
-				<BasicMeta url="/" title={title} />
+				<BasicMeta title={title} />
 				<h1>{title}</h1>
 				<div>{children}</div>
 				{(back || next) && (

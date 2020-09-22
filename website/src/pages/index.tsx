@@ -8,6 +8,7 @@ export default function Index() {
 		<>
 			<Head>
 				<title>markuplint - A Linter for All Markup Languages.</title>
+				<meta name="description" content="Peace of mind in your markup. A Linter for All Markup Languages." />
 			</Head>
 			<Header />
 			<main>
