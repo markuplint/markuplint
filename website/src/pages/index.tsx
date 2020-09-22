@@ -1,15 +1,15 @@
+import BasicMeta from '../components/meta/BasicMeta';
 import Footer from '../components/Footer';
-import Head from 'next/head';
 import Header from '../components/Header';
 import Link from 'next/link';
 
 export default function Index() {
 	return (
 		<>
-			<Head>
-				<title>markuplint - A Linter for All Markup Languages.</title>
-				<meta name="description" content="Peace of mind in your markup. A Linter for All Markup Languages." />
-			</Head>
+			<BasicMeta
+				title="markuplint - A Linter for All Markup Languages."
+				description="Peace of mind in your markup. A Linter for All Markup Languages."
+			/>
 			<Header />
 			<main>
 				<div className="hero">
