@@ -202,17 +202,17 @@ td code {
 
 /** Syntax Highlighting */
 :root {
-	--sh-color-comment: #6a737d;
-	--sh-color-operator: #d73a49;
-	--sh-color-tag: #22863a;
-	--sh-color-symbol: #22863a;
+	--sh-color-comment: #5d666f;
+	--sh-color-operator: #c53d4a;
+	--sh-color-tag: #1e7934;
+	--sh-color-symbol: #1e7934;
 	--sh-color-string: #032f62;
 	--sh-color-class: #6f42c1;
 }
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--sh-color-comment: #75715e;
+		--sh-color-comment: #7d7a6a;
 		--sh-color-operator: #d73a49;
 		--sh-color-tag: #f92672;
 		--sh-color-symbol: #ae81ff;

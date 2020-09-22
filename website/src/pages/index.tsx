@@ -1,14 +1,15 @@
+import BasicMeta from '../components/meta/BasicMeta';
 import Footer from '../components/Footer';
-import Head from 'next/head';
 import Header from '../components/Header';
 import Link from 'next/link';
 
 export default function Index() {
 	return (
 		<>
-			<Head>
-				<title>markuplint - A Linter for All Markup Languages.</title>
-			</Head>
+			<BasicMeta
+				title="markuplint - A Linter for All Markup Languages."
+				description="Peace of mind in your markup. A Linter for All Markup Languages."
+			/>
 			<Header />
 			<main>
 				<div className="hero">
@@ -20,11 +21,11 @@ export default function Index() {
 				</div>
 				<div className="body">
 					<section>
-						<h2>HTML Validation</h2>
+						<h2>Conformance checking</h2>
 						<p>
 							The markup needs to written valid code. This is important to keep the promise of the
 							standards that do not break webpages through each user agent more than your policy.
-							markuplint can validate given the specs that are HTML Living Standard.
+							markuplint can conformance checking given the specs that are HTML Living Standard.
 						</p>
 					</section>
 					<section>

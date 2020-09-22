@@ -14,13 +14,13 @@ export default memo(({ isHome = false }: Props) => {
 						<Logo />
 					</div>
 				) : (
-					<h1>
+					<div>
 						<Link href="/">
 							<a href="/">
 								<Logo />
 							</a>
 						</Link>
-					</h1>
+					</div>
 				)}
 				<nav aria-label="main menu">
 					<ul>
