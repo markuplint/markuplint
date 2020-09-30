@@ -1,8 +1,8 @@
 # @markuplint/ml-core
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-core.svg)](https://www.npmjs.com/package/@markuplint/ml-core)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=next)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=next)](https://coveralls.io/github/markuplint/markuplint?branch=next)
+[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=master)](https://travis-ci.org/markuplint/markuplint)
+[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=master)](https://coveralls.io/github/markuplint/markuplint?branch=master)
 
 ## Install
 
@@ -17,7 +17,7 @@ $ yarn add @markuplint/ml-core
 ## Contributing
 
 ```
-$ git clone git@github.com:markuplint/markuplint.git -b next
+$ git clone git@github.com:markuplint/markuplint.git -b master
 $ yarn
 $ yarn build
 $ yarn test
