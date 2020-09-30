@@ -1,0 +1,58 @@
+---
+title: API Document
+---
+
+## Packages
+
+| Package                                                             | NPM                                                                                                                                   | Platform  |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| [`markuplint`](./packages/markuplint)                               | [![npm version](https://badge.fury.io/js/markuplint.svg)](https://badge.fury.io/js/markuplint)                                        | Node.js   |
+| [`@markuplint/file-resolver`](./packages/@markuplint/file-resolver) | [![npm version](https://badge.fury.io/js/%40markuplint%2Ffile-resolver.svg)](https://www.npmjs.com/package/@markuplint/file-resolver) | Node.js   |
+| [`@markuplint/html-spec`](./packages/@markuplint/html-spec)         | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-spec.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-spec)          | Universal |
+| [`@markuplint/html-parser`](./packages/@markuplint/html-parser)     | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-parser.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-parser)      | Universal |
+| [`@markuplint/i18n`](./packages/@markuplint/i18n)                   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fi18n.svg)](https://badge.fury.io/js/%40markuplint%2Fi18n)                    | Universal |
+| [`@markuplint/ml-ast`](./packages/@markuplint/ml-ast)               | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-ast.svg)](https://badge.fury.io/js/%40markuplint%2Fml-ast)                | Universal |
+| [`@markuplint/ml-config`](./packages/@markuplint/ml-config)         | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-config.svg)](https://badge.fury.io/js/%40markuplint%2Fml-config)          | Universal |
+| [`@markuplint/ml-core`](./packages/@markuplint/ml-core)             | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-core.svg)](https://badge.fury.io/js/%40markuplint%2Fml-core)              | Universal |
+| [`@markuplint/ml-spec`](./packages/@markuplint/ml-spec)             | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-spec.svg)](https://badge.fury.io/js/%40markuplint%2Fml-spec)              | Universal |
+| [`@markuplint/rules`](./packages/@markuplint/rules)                 | [![npm version](https://badge.fury.io/js/%40markuplint%2Frules.svg)](https://badge.fury.io/js/%40markuplint%2Frules)                  | Universal |
+
+Basic Usage:
+
+```js
+import { exec } from 'markuplint';
+
+const result = await exec({
+	files: './**/*.html',
+});
+
+console.log(result); // => The results in JSON format
+```
+
+## Functions
+
+### `exec`
+
+-   _Parameter_
+    -   `options`
+-   _Return_
+    -   type: `Promise`&lt;`Array`&lt;[`MLResultInfo`](https://api.markuplint.dev/interfaces/mlresultinfo.html)&gt;&gt;
+
+#### `options`
+
+| Key                | Type                | Optional | Description                                                                                                                                      |
+| ------------------ | ------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `files`            | `string` `string[]` | ✓        | Glob pattern                                                                                                                                     |
+| `sourceCodes`      | `string` `string[]` | ✓        | Target source code of evaluation                                                                                                                 |
+| `names`            | `string` `string[]` | ✓        | File names when `sourceCodes`                                                                                                                    |
+| `workspace`        | `string`            | ✓        | Workspace path when `sourceCodes`                                                                                                                |
+| `config`           | `string` `Config`   | ✓        | Configure file or object                                                                                                                         |
+| `defaultConfig`    | `Config`            | ✓        | The config applied when not resolved from files or set it explicitly.                                                                            |
+| `rules`            | `MLRule[]`          | ✓        | Rules (default: `@markuplint/rules`)                                                                                                             |
+| `rulesAutoResolve` | `boolean`           | ✓        | Auto resolve rules - Auto importing form _node_modules_ when set `@markuplint/rule-{RULE_NAME}` or `markuplint-rule-{RULE_NAME}` in config rules |
+| `fix`              | `boolean`           | ✓        | with to fix                                                                                                                                      |
+| `locale`           | `string`            | ✓        | Locale                                                                                                                                           |
+
+## Interface Document
+
+The details are said by [https://api.markuplint.dev](https://api.markuplint.dev).

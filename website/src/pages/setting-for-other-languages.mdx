@@ -1,0 +1,47 @@
+---
+title: Setting for other languages
+back:
+    title: Set up rules
+    href: set-up-rules
+---
+
+## Install plugins for a language
+
+Install the _parser plugin_ through NPM or Yarn:
+
+```
+$ npm install --save-dev @markuplint/pug-parser
+# or
+$ yarn add -D @markuplint/pug-parser
+```
+
+If a language has its own specification you should install the spec plugin with the parser plugin:
+
+```
+$ npm install --save-dev @markuplint/vue-parser @markuplint/vue-spec
+# or
+$ yarn add -D @markuplint/vue-parser @markuplint/vue-spec
+```
+
+There are more:
+
+| Lang                            | Parser                      | Spec                   |
+| ------------------------------- | --------------------------- | ---------------------- |
+| [_Pug_](https://pugjs.org/)     | `@markuplint/pug-parser`    | -                      |
+| [_Vue_](https://vuejs.org/)     | `@markuplint/vue-parser`    | `@markuplint/vue-spec` |
+| [_Svelte_](https://svelte.dev/) | `@markuplint/svelte-parser` | -                      |
+
+## Set to the configuration file
+
+Set about the plugin to the `parser` option on the configuration file.
+And If it has spec add to the `specs` option.
+Set a regular expression that can identify the target file name to the `parser` option key.
+
+```json
+{
+	"parser": {
+		".vue$": "@markuplint/vue-parser"
+	},
+	"specs": ["@markuplint/vue-spec"]
+}
+```

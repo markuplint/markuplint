@@ -1,8 +1,10 @@
 ---
-title: character-reference
+title: Character reference
+id: character-reference
+category: validation
 ---
 
-# Character reference (`character-reference`)
+# Character reference
 
 Warns when unauthorized illegal characters are not escaped with character reference in the text node or attribute value.
 

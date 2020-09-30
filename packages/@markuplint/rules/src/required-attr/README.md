@@ -1,8 +1,10 @@
 ---
-title: required-attr
+title: Required attributes
+id: required-attr
+category: validation
 ---
 
-# Required attributes (`required-attr`)
+# Required attributes
 
 Warns if specified attributes or required attribute on specs are not appeared on an element.
 
@@ -42,7 +44,7 @@ When the `alt` attribute is required, set `{"required-attr": "alt"}`.
 
 ### Setting value
 
-```json:title=.markuplintrc
+```json
 {
 	"rules": {
 		"required-attr": "alt"
@@ -50,7 +52,7 @@ When the `alt` attribute is required, set `{"required-attr": "alt"}`.
 }
 ```
 
-```json:title=.markuplintrc
+```json
 {
 	"rules": {
 		"required-attr": ["alt", "src"]
@@ -70,7 +72,7 @@ Since we ordinary want to configure required attributes for each element type, `
 
 Example configuration that `alt` attribute must be required on `<img>` element:
 
-```json:title=.markuplintrc
+```json
 {
 	"rules": {
 		"required-attr": true

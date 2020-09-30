@@ -19,113 +19,12 @@
 			content="HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more."
 		/>
 		<meta name="twitter:image" content="https://markuplint.dev/media/icon-large.png" />
-		<style>
-			body {
-				margin: 0;
-				padding: 0;
-				display: grid;
-				grid-template-rows: auto 1fr auto;
-				min-height: 100vh;
-				font-family: sans-serif;
-			}
-			header > *,
-			.main > *,
-			.editor > *,
-			footer > * {
-				width: 950px;
-				margin: 0 auto;
-			}
-			#playground {
-				width: 950px;
-				height: 500px;
-				margin: 0 0 2em;
-				background: #000;
-			}
-			header {
-				padding: 2em 0;
-				text-align: center;
-			}
-			h1 {
-				width: 200px;
-				margin: 0 auto;
-			}
-			h1 img {
-				display: block;
-				width: 100%;
-			}
-			h2 {
-				text-align: center;
-			}
-			.editor {
-				margin: 0;
-				padding: 2em;
-			}
-			.editor ul {
-				margin: 0;
-				padding: 0;
-				display: flex;
-				justify-content: center;
-				align-items: flex-end;
-			}
-			.editor li {
-				margin: 0 5em;
-				padding: 0;
-				display: block;
-				text-align: center;
-			}
-			.editor a {
-				margin: 0;
-				padding: 0;
-				display: block;
-				color: currentColor;
-				text-decoration: none;
-			}
-			.editor figure {
-				margin: 0;
-				padding: 0;
-				display: block;
-			}
-			.editor img {
-				margin: 0;
-				padding: 0;
-				display: block;
-			}
-			footer {
-				padding: 2em;
-				color: #fff;
-				background: #000;
-			}
-			footer ul {
-				margin: 0;
-				padding: 0;
-				display: flex;
-				justify-content: flex-end;
-				align-items: center;
-			}
-			footer li {
-				margin: 0 1em;
-				padding: 0;
-				display: block;
-				text-align: center;
-			}
-			footer a {
-				margin: 0;
-				padding: 0;
-				display: block;
-				color: currentColor;
-				text-decoration: none;
-			}
-			footer img {
-				margin: 0;
-				padding: 0;
-				display: block;
-			}
-		</style>
+		<!-- inline_css_plugin -->
 	</head>
 	<body>
 		<header>
 			<div>
-				<h1><img src="media/logo.svg" width="200" height="134" alt="markuplint" /></h1>
+				<h1><img src="./media/logo.svg" width="200" height="134" alt="markuplint" loading="lazy" /></h1>
 				<p>HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more.</p>
 			</div>
 		</header>
@@ -134,7 +33,7 @@
 			<section>
 				<div>
 					<h2>Playground</h2>
-					<div id="playground"></div>
+					<div id="playground-home"></div>
 				</div>
 			</section>
 		</main>
@@ -149,7 +48,7 @@
 							target="_blank"
 						>
 							<figure>
-								<img src="media/vscode.png" alt="" height="140" />
+								<img src="./media/vscode.png" alt="" height="140" />
 								<figcaption>Visual Studio Code</figcaption>
 							</figure>
 						</a>
@@ -186,7 +85,5 @@
 				</ul>
 			</div>
 		</footer>
-
-		<script src="scripts/main.js" defer></script>
 	</body>
 </html>

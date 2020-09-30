@@ -1,9 +1,11 @@
 ---
-title: attr-value-quotes
+title: Attribute quotes
+id: attr-value-quotes
 fixable: true
+cateogry: style
 ---
 
-# Attribute quotes (`attr-value-quotes`)
+# Attribute quotes
 
 Warns if the attribute value is not **quoted**.
 

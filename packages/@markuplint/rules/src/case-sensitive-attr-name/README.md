@@ -1,9 +1,11 @@
 ---
-title: case-sensitive-attr-name
+title: Attribute name case-sensitive
+id: case-sensitive-attr-name
 fixable: true
+category: style
 ---
 
-# Attribute name case-sensitive (`case-sensitive-attr-name`)
+# Attribute name case-sensitive
 
 Warns that the attribute name is not in one of uppercase or lowercase letters. Unlike HTML, foreign elements (SVG or MathML) are case sensitive, so they are not subject to this rule.
 
