@@ -1,8 +1,10 @@
 ---
-title: class-naming
+title: Class naming convention
+id: class-naming
+category: naming-convention
 ---
 
-# Class naming convention (`class-naming`)
+# Class naming convention
 
 Warn if the class name does not conform to the specified rules.
 

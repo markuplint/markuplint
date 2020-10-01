@@ -50,7 +50,7 @@
 
 ルールを設定したい対象の要素を配列で指定します。次の例はカスタム要素の `x-container` と `x-item` それぞれにルールを指定していることになります。
 
-```json:title=.markuplintrc
+```json
 {
 	"rules": {
 		"permitted-contents": [
@@ -82,7 +82,7 @@
 
 そのうち`require`、`optional`、`oneOrMore`、`zeroOrMore`は要素の個数を意味します。そのキーワードをキーとしてタグ名（もしくはテキストノードの場合 `#text` ）を指定します。それぞれのキーワードを同時に指定することはできません。
 
-```json:title=.markuplintrc
+```json
 {
 	"rules": {
 		"permitted-contents": [
@@ -130,7 +130,7 @@
 | `choice`     | いずれか 1 つ |
 | `interleave` | 順不同        |
 
-```json:title=.markuplintrc
+```json
 {
 	"rules": {
 		"permitted-contents": [

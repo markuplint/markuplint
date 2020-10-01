@@ -1,9 +1,19 @@
 {
-	"extends": "../tsconfig.json",
 	"compilerOptions": {
+		"target": "ES2017",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"strict": false,
+		"forceConsistentCasingInFileNames": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"module": "esnext",
+		"moduleResolution": "node",
 		"resolveJsonModule": true,
-		"declaration": false,
-		"importHelpers": true
+		"isolatedModules": true,
+		"jsx": "preserve"
 	},
-	"exclude": ["node_modules"]
+	"exclude": ["node_modules"],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }

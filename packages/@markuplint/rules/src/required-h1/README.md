@@ -1,8 +1,10 @@
 ---
-title: required-h1
+title: Level-one heading in document required
+id: required-h1
+category: a11y
 ---
 
-# level-one heading in document required (`required-h1`)
+# Level-one heading in document required
 
 Warn if there is no h1 element in the document.
 
@@ -43,7 +45,7 @@ This rule is based on [Techniques H42](https://www.w3.org/WAI/WCAG21/Techniques/
 
 ### Setting value
 
-```json:title=.markuplintrc
+```json
 {
 	"rules": {
 		"required-h1": true
@@ -51,7 +53,7 @@ This rule is based on [Techniques H42](https://www.w3.org/WAI/WCAG21/Techniques/
 }
 ```
 
-```json:title=.markuplintrc
+```json
 {
 	"rules": {
 		"required-h1": {

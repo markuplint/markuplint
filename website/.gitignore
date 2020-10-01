@@ -1,1 +1,6 @@
-scripts
+dist
+src/pages/rules/*.mdx
+!src/pages/rules/index.mdx
+
+# Ignore next-mdx-enhanced cache directory
+.mdx-data
