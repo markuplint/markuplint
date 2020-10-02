@@ -1,13 +1,13 @@
 ---
-title: 属性間のスペース
+title: Spaces between attributes
 id: attr-spacing
 fixable: true
 cateogry: style
 ---
 
-# 属性間のスペース
+# Spaces between attributes
 
-要素間のスペース・改行の有無や数に対して警告します。
+Warn about the existence or number of spaces and tabs between attributes.
 
 **🔧 Fixable**
 
@@ -39,20 +39,20 @@ Type: `boolean`
 
 Type: `"either" | "always" | "never"`
 
-| value      | default | description                    |
-| ---------- | ------- | ------------------------------ |
-| `"either"` | ✓       | 改行に関して警告をしません。   |
-| `"always"` |         | 改行をしていないと警告します。 |
-| `"never"`  |         | 改行をしていると警告します。   |
+| value      | default | description                   |
+| ---------- | ------- | ----------------------------- |
+| `"either"` | ✓       | Not warn about line-break.    |
+| `"always"` |         | Warn if not exist line-break. |
+| `"never"`  |         | Warn if exist line-break.     |
 
 #### `width`
 
 Type: `number | false`
 
-| value    | default | description                                              |
-| -------- | ------- | -------------------------------------------------------- |
-| [number] | ✓ `1`   | スペースの幅が設定した数値になっていなければ警告します。 |
-| `false`  |         | スペースの幅に関して警告をしません。                     |
+| value    | default | description                                  |
+| -------- | ------- | -------------------------------------------- |
+| [number] | ✓ `1`   | Warn if not equal spaces and the set number. |
+| `false`  |         | Not warn about spaces.                       |
 
 ### Default notification severity
 
