@@ -49,81 +49,17 @@ Examples
 
 ### API
 
-```ts
-import { verify, fix, exec } from 'markuplint';
-
-// Standard usage
-const result = verify(htmlCode, config, rules);
-
-// Standard fix
-const fixedCode = fix(htmlCode, config, rules);
-
-// Custom usage
-const result = exec({
-	files,
-	workspaceDir,
-	config,
-	specs,
-	rules,
-});
-```
-
-#### 📖 API Document
-
-[API Document](https://api.markuplint.dev) genereated by typedoc.
+-   [Functions](https://markuplint.dev/api-docs#Functions)
+-   [Interface Document](https://api.markuplint.dev) (genereated by [TypeDoc](https://typedoc.org/))
 
 ## Configuration
 
-`.markuplintrc` JSON or YAML format
-
-```json
-{
-	"extends": "@markuplint/html-spec",
-	"rules": {
-		"rule__enabled": true,
-		"rule__disabled": false,
-		"rule__custom-setting": {
-			"severity": "error",
-			"value": "VALUE"
-		},
-		"rule__custom-setting-with-detail-option": {
-			"value": "VALUE",
-			"option": { "OPTIONAL_PROP": "OPTIONAL_VALUE" }
-		}
-	},
-	"nodeRules": [
-		{
-			"tagName": "div",
-			"rules": {
-				"rule__disable-for-div-tag": false
-			}
-		}
-	],
-	"childNodeRules": [
-		{
-			"selector": "[data-attr^=\"value\"]",
-			"inheritance": true,
-			"rules": {
-				"rule__overwrite-setting-of-selector-matched-element": {
-					"value": "OVERWROTE_VALUE"
-				}
-			}
-		}
-	]
-}
-```
-
-Details and Documentation **🚧WIP**
+-   [Configuration](https://markuplint.dev/configuration)
 
 ## Rules
 
-Details and Documentation **🚧WIP**
-
-### Rule Customization
-
-Details and Documentation **🚧WIP**
-
-## Editor Extensions
+-   [Rules](https://markuplint.dev/rules)
+-   Customizing your rule **🚧 WIP**
 
 ## Thanks
 
