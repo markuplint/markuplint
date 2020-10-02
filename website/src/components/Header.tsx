@@ -106,6 +106,7 @@ export default memo(({ isHome = false }: Props) => {
 						padding: 0;
 					}
 
+					header > div,
 					h1 {
 						padding: 1em;
 					}
