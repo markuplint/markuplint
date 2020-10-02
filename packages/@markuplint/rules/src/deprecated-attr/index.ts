@@ -11,6 +11,10 @@ export default createRule({
 		await document.walkOn('Element', async element => {
 			const specs = attrSpecs(element.nodeName, spec);
 
+			if (!specs) {
+				return;
+			}
+
 			for (const attr of element.attributes) {
 				const name = attr.getName();
 				const attrSpec = specs.find(item => item.name === name.potential);

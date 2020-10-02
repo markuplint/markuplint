@@ -233,6 +233,41 @@ test('The ancestors of the <source> element.', async () => {
 	).toStrictEqual([]);
 });
 
+test('Foreign element', async () => {
+	expect(
+		await markuplint.verify(
+			'<svg></svg>',
+			{
+				rules: {
+					'required-attr': true,
+				},
+				nodeRules: [
+					{
+						tagName: 'svg',
+						rules: {
+							'required-attr': {
+								severity: 'error',
+								value: 'viewBox',
+							},
+						},
+					},
+				],
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([
+		{
+			ruleId: 'required-attr',
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: "Required 'viewBox' on '<svg>'",
+			raw: '<svg>',
+		},
+	]);
+});
+
 test('Pug', async () => {
 	expect(
 		await markuplint.verify(
