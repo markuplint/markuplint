@@ -17,6 +17,8 @@ if (cli.input.length) {
 		files: cli.input,
 		...cli.flags,
 	});
+} else {
+	cli.showHelp(0);
 }
 
 getStdin().then(stdin => {
