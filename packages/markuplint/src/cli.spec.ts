@@ -5,6 +5,11 @@ import path from 'path';
 const entryFilePath = path.resolve(__dirname, '../bin/markuplint');
 
 describe('STDIN Test', () => {
+	it('empty', async () => {
+		const { stdout } = await execa(entryFilePath);
+		expect(stdout).toBe(cli.help);
+	});
+
 	it('version', async () => {
 		const { stdout } = await execa(entryFilePath, ['--version']);
 		expect(stdout).toBe(cli.pkg.version);
