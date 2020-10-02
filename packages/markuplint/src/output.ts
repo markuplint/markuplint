@@ -1,4 +1,4 @@
-import { ReportingData, simpleReporter, standardReporter } from './reporter';
+import { ReportingData, gccReporter, simpleReporter, standardReporter } from './reporter';
 
 export async function output(params: ReportingData) {
 	switch (params.format.toLowerCase()) {
@@ -8,6 +8,10 @@ export async function output(params: ReportingData) {
 		}
 		case 'simple': {
 			await simpleReporter(params);
+			break;
+		}
+		case 'gcc': {
+			await gccReporter(params);
 			break;
 		}
 		default: {
