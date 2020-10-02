@@ -1,10 +1,10 @@
 ---
-title: Deprecated elements
+title: Deprecated attributes
 id: deprecated-attr
 category: validation
 ---
 
-# Deprecated elements
+# Deprecated attributes
 
 Warns when there is an attribute defined as **deprecated** or **obsolete**.
 
