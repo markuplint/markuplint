@@ -454,6 +454,21 @@ test('URL attribute', async () => {
 	expect(r12.length).toBe(0);
 });
 
+test('Foreign element', async () => {
+	const r = await markuplint.verify(
+		'<div><svg width="10px" height="10px" viewBox="0 0 10 10"></svg></div>',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r.length).toBe(0);
+});
+
 test('Pug', async () => {
 	const r = await markuplint.verify(
 		'button(type=buttonType)',

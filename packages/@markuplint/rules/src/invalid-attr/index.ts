@@ -71,7 +71,7 @@ export default createRule<true, Option>({
 					} else if ('type' in customRule) {
 						invalid = typeCheck(name, value, { name, type: customRule.type, description: '' });
 					}
-				} else if (!isCustomElement(node.nodeName)) {
+				} else if (!isCustomElement(node.nodeName) && attributeSpecs) {
 					const spec = attributeSpecs.find(s => s.name === name);
 					invalid = typeCheck(name, value, spec);
 					if (!invalid && spec && !attrMatches(node, spec.condition)) {

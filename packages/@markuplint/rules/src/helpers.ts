@@ -64,7 +64,7 @@ export function attrSpecs(tag: string, { specs, def }: MLMLSpec) {
 	tag = tag.toLowerCase();
 	const spec = specs.find(spec => spec.name === tag);
 	if (!spec) {
-		return [];
+		return null;
 	}
 	const hasGlobalAttr = spec.attributes.some(attr => attr === '#globalAttrs');
 
