@@ -14,16 +14,25 @@ export default createRule<RequiredAttributes, null>({
 		await document.walkOn('Element', async node => {
 			const customRequiredAttrs = typeof node.rule.value === 'string' ? [node.rule.value] : node.rule.value;
 
-			const attributeSpecs = attrSpecs(node.nodeName, spec).map(attr => {
-				const required = customRequiredAttrs.includes(attr.name);
-				if (required) {
-					return {
-						...attr,
+			const attrSpec = attrSpecs(node.nodeName, spec);
+
+			const attributeSpecs = attrSpec
+				? attrSpec.map(attr => {
+						const required = customRequiredAttrs.includes(attr.name);
+						if (required) {
+							return {
+								...attr,
+								required: true,
+							};
+						}
+						return attr;
+				  })
+				: customRequiredAttrs.map(attr => ({
+						name: attr,
 						required: true,
-					};
-				}
-				return attr;
-			});
+						requiredEither: undefined,
+						condition: undefined,
+				  }));
 
 			for (const spec of attributeSpecs) {
 				const didntHave = !node.hasAttribute(spec.name);
