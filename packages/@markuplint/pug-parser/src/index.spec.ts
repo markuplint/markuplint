@@ -299,4 +299,28 @@ else
 			'[2:17]>[2:22](18,23)#text: ipsum',
 		]);
 	});
+
+	it('block-in-tag div', () => {
+		const doc = parse(`div.
+	<span>text</span>`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(doc.parseError).toBeUndefined();
+		expect(map).toStrictEqual([
+			'[1:1]>[1:4](0,3)div: div',
+			'[2:2]>[2:8](6,12)span: <span>',
+			'[2:8]>[2:12](12,16)#text: text',
+			'[2:12]>[2:19](16,23)span: </span>',
+		]);
+	});
+
+	it('block-in-tag script', () => {
+		const doc = parse(`script.
+	const $span = '<span>text</span>';`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(doc.parseError).toBeUndefined();
+		expect(map).toStrictEqual([
+			'[1:1]>[1:7](0,6)script: script',
+			"[2:2]>[2:36](9,43)#text: const␣$span␣=␣'<span>text</span>';",
+		]);
+	});
 });

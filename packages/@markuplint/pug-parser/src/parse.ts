@@ -125,6 +125,25 @@ class Parser {
 				} as MLASTDoctype;
 			}
 			case 'Text': {
+				if (parentNode && /^script$|^style$/i.test(parentNode.nodeName)) {
+					return {
+						uuid: uuid(),
+						raw: originNode.raw,
+						startOffset,
+						endOffset,
+						startLine,
+						endLine,
+						startCol,
+						endCol,
+						nodeName: '#text',
+						type: MLASTNodeType.Text,
+						parentNode,
+						prevNode,
+						nextNode,
+						isFragment: false,
+						isGhost: false,
+					};
+				}
 				const htmlDoc = htmlParser(
 					originNode.raw,
 					originNode.offset,
