@@ -323,4 +323,54 @@ else
 			"[2:2]>[2:36](9,43)#text: const␣$span␣=␣'<span>text</span>';",
 		]);
 	});
+
+	it('attribute', () => {
+		const doc = parse('div(data-hoge="content")');
+		const attr = (doc.nodeList[0] as MLASTElement).attributes[0];
+		if (attr.type !== 'html-attr') {
+			return;
+		}
+		expect(attr.raw).toEqual('data-hoge="content"');
+		expect(attr.name.raw).toEqual('data-hoge');
+		expect(attr.equal.raw).toEqual('=');
+		expect(attr.startQuote.raw).toEqual('"');
+		expect(attr.value.raw).toEqual('content');
+		expect(attr.endQuote.raw).toEqual('"');
+	});
+
+	it('attribute 2', () => {
+		const doc = parse("div(data-hoge='content')");
+		const attr = (doc.nodeList[0] as MLASTElement).attributes[0];
+		if (attr.type !== 'html-attr') {
+			return;
+		}
+		expect(attr.raw).toEqual("data-hoge='content'");
+		expect(attr.name.raw).toEqual('data-hoge');
+		expect(attr.equal.raw).toEqual('=');
+		expect(attr.startQuote.raw).toEqual("'");
+		expect(attr.value.raw).toEqual('content');
+		expect(attr.endQuote.raw).toEqual("'");
+	});
+
+	it('attribute 3', () => {
+		const doc = parse(`div.
+	<span data-attr="value">`);
+		// console.log(doc.nodeList);
+		const attr = (doc.nodeList[1] as MLASTElement).attributes[0];
+		if (attr.type !== 'html-attr') {
+			return;
+		}
+		expect(attr.raw).toEqual(' data-attr="value"');
+		expect(attr.startCol).toEqual(7);
+		expect(attr.name.raw).toEqual('data-attr');
+		expect(attr.name.startCol).toEqual(8);
+		expect(attr.equal.raw).toEqual('=');
+		expect(attr.equal.startCol).toEqual(17);
+		expect(attr.startQuote.raw).toEqual('"');
+		expect(attr.startQuote.startCol).toEqual(18);
+		expect(attr.value.raw).toEqual('value');
+		expect(attr.value.startCol).toEqual(19);
+		expect(attr.endQuote.raw).toEqual('"');
+		expect(attr.endQuote.startCol).toEqual(24);
+	});
 });
