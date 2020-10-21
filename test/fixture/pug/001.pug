@@ -22,9 +22,20 @@ html(LANG="en")
 		font(color="red") 非推奨要素
 
 		a(href="path/to" role="button") link1
-		a(href="path/to" role="document") link2
-		label(role="button"): input(type="text")
-		<img src="path/to" align="top" invalid-attr>
+		a(href="path/to" role="document")
+							| indent
+		label(role="button"): input(type="text" invalid-attr)
+		img(src="path/to" align="top" invalid-attr)
+		div.
+			<img src="path/to" align="top" invalid-attr>
 		img(src="path/to")
-							| invalid-indent
+							| invalid-content
 
+		div.
+			<script> var a = "<aaaa>"; </script>
+
+		div.
+			<img invalid-attr src/>
+			<img src="path/to" align="top" invalid-attr/>
+			<INPUT invalid-attr/>
+			<INPUT invalid-attr/>

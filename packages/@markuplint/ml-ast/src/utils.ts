@@ -5,17 +5,20 @@ export function uuid() {
 	return uuid4();
 }
 
-export function tokenizer(raw: string | null, line: number, col: number, startOffset: number): MLToken {
+export function tokenizer(raw: string | null, startLine: number, startCol: number, startOffset: number): MLToken {
 	raw = raw || '';
+	const endLine = getEndLine(raw, startLine);
+	const endCol = getEndCol(raw, startCol);
+	const endOffset = startOffset + raw.length;
 	return {
 		uuid: uuid(),
 		raw,
-		startLine: line,
-		endLine: getEndLine(raw, line),
-		startCol: col,
-		endCol: getEndCol(raw, col),
 		startOffset,
-		endOffset: startOffset + raw.length,
+		endOffset,
+		startLine,
+		endLine,
+		startCol,
+		endCol,
 	};
 }
 

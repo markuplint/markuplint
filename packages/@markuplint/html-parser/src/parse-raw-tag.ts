@@ -15,16 +15,16 @@ type TagTokens = {
 
 export default function parseRawTag(
 	raw: string,
-	nodeLine: number,
-	nodeCol: number,
+	startLine: number,
+	startCol: number,
 	startOffset: number,
 	offsetOffset = 0,
 	offsetLine = 0,
 	offsetColumn = 0,
 ): TagTokens {
-	let line = nodeLine + offsetLine;
-	let col = nodeCol + offsetColumn;
 	let offset = startOffset + offsetOffset;
+	let line = startLine + offsetLine;
+	let col = startCol + (startLine === 1 ? offsetColumn : 0);
 
 	const matches = raw.match(reTag);
 	if (!matches) {
