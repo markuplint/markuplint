@@ -1,4 +1,4 @@
-import { pugParse } from './';
+import { pugParse } from '.';
 
 describe('parser', () => {
 	it('basic code', () => {
@@ -1655,6 +1655,50 @@ mixin link(href, name)
 								endLine: 2,
 								column: 23,
 								endColumn: 23,
+							},
+						],
+						line: 1,
+					},
+					attrs: [],
+				},
+			],
+			line: 0,
+		});
+	});
+
+	it('block-in-tag', () => {
+		const ast = pugParse(`div.
+	#text
+	<img tag>
+	<span>
+		#text2
+	</span>`);
+		// console.log(JSON.stringify(ast));
+		expect(ast).toStrictEqual({
+			type: 'Block',
+			nodes: [
+				{
+					type: 'Tag',
+					name: 'div',
+					raw: 'div',
+					offset: 0,
+					endOffset: 3,
+					line: 1,
+					endLine: 1,
+					column: 1,
+					endColumn: 4,
+					block: {
+						type: 'Block',
+						nodes: [
+							{
+								type: 'Text',
+								raw: '\n\t#text\n\t<img tag>\n\t<span>\n\t\t#text2\n\t</span>',
+								offset: 4,
+								endOffset: 48,
+								line: 1,
+								endLine: 6,
+								column: 5,
+								endColumn: 9,
 							},
 						],
 						line: 1,

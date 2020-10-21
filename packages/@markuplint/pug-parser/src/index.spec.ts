@@ -313,6 +313,40 @@ else
 		]);
 	});
 
+	it('block-in-tag div 2', () => {
+		const doc = parse(`.root.
+	<div>
+		text
+	</div>`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(doc.parseError).toBeUndefined();
+		expect(map).toStrictEqual([
+			'[1:1]>[1:6](0,5)div: .root',
+			'[1:7]>[2:2](6,8)#text: ⏎→',
+			'[2:8]>[2:13](8,13)div: <div>',
+			'[2:13]>[4:2](13,22)#text: ⏎→→text⏎→',
+			'[4:8]>[4:14](22,28)div: </div>',
+		]);
+	});
+
+	it('block-in-tag div 3', () => {
+		const doc = parse(`.root.
+	<div>
+		<img />
+	</div>`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(doc.parseError).toBeUndefined();
+		expect(map).toStrictEqual([
+			'[1:1]>[1:6](0,5)div: .root',
+			'[1:7]>[2:2](6,8)#text: ⏎→',
+			'[2:8]>[2:13](8,13)div: <div>',
+			'[2:13]>[3:3](13,16)#text: ⏎→→',
+			'[3:9]>[3:16](16,23)img: <img␣/>',
+			'[3:16]>[4:2](23,25)#text: ⏎→',
+			'[4:8]>[4:14](25,31)div: </div>',
+		]);
+	});
+
 	it('block-in-tag script', () => {
 		const doc = parse(`script.
 	const $span = '<span>text</span>';`);
