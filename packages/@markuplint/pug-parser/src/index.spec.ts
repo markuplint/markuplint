@@ -358,6 +358,22 @@ else
 		]);
 	});
 
+	it('block-in-tag script2', () => {
+		const doc = parse(`div.
+	<script> var a = "<aaaa>"; </script>`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(doc.parseError).toBeUndefined();
+		expect(map).toStrictEqual([
+			'[1:1]>[1:4](0,3)div: div',
+			'[2:2]>[2:10](6,14)script: <script>',
+			'[2:10]>[2:29](14,33)#text: ␣var␣a␣=␣"<aaaa>";␣',
+			'[2:29]>[2:38](33,42)script: </script>',
+		]);
+		const code = (doc.nodeList[1] as MLASTElement).childNodes![0];
+		expect(code.raw).toBe(' var a = "<aaaa>"; ');
+		expect(code.parentNode!.nodeName).toBe('script');
+	});
+
 	it('attribute', () => {
 		const doc = parse('div(data-hoge="content")');
 		const attr = (doc.nodeList[0] as MLASTElement).attributes[0];

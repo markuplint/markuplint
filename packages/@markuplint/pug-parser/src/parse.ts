@@ -152,7 +152,9 @@ class Parser {
 				);
 				const nodes = htmlDoc.nodeList;
 				for (const node of nodes) {
-					node.parentNode = parentNode;
+					if (!node.parentNode) {
+						node.parentNode = parentNode;
+					}
 				}
 				return nodes;
 			}
