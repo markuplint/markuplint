@@ -1709,4 +1709,45 @@ mixin link(href, name)
 			line: 0,
 		});
 	});
+
+	it('block-in-tag', () => {
+		const ast = pugParse(`div.
+	<input invalid-attr/>
+	<input invalid-attr/>`);
+		// console.log(JSON.stringify(ast));
+		expect(ast).toStrictEqual({
+			type: 'Block',
+			nodes: [
+				{
+					type: 'Tag',
+					name: 'div',
+					raw: 'div',
+					offset: 0,
+					endOffset: 3,
+					line: 1,
+					endLine: 1,
+					column: 1,
+					endColumn: 4,
+					block: {
+						type: 'Block',
+						nodes: [
+							{
+								type: 'Text',
+								raw: '\n\t<input invalid-attr/>\n\t<input invalid-attr/>',
+								offset: 4,
+								endOffset: 50,
+								line: 1,
+								endLine: 3,
+								column: 5,
+								endColumn: 23,
+							},
+						],
+						line: 1,
+					},
+					attrs: [],
+				},
+			],
+			line: 0,
+		});
+	});
 });

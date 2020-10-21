@@ -23,6 +23,9 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 	let offset = startOffset;
 
 	const attrToken = tokenizer(raw, line, col, offset);
+	line = attrToken.startLine;
+	col = attrToken.startCol;
+	offset = attrToken.startOffset;
 
 	const spacesBeforeName = tokenizer(spacesBeforeAttrString, line, col, offset);
 	line = spacesBeforeName.endLine;

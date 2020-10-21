@@ -279,10 +279,10 @@ else
 			'[2:2]>[2:5](9,12)div: div',
 			'[3:3]>[3:9](15,21)span: <span>',
 			'[3:9]>[4:4](21,25)#text: ⏎→→→',
-			'[4:6]>[4:25](25,44)img: <img␣src="path/to">',
-			'[4:25]>[5:3](44,47)#text: ⏎→→',
-			'[5:5]>[5:12](47,54)span: </span>',
-			'[5:12]>[6:4](54,58)#text: ⏎→→→',
+			'[4:4]>[4:25](25,44)img: <img␣src="path/to">',
+			'[4:23]>[5:3](44,47)#text: ⏎→→',
+			'[5:3]>[5:10](47,54)span: </span>',
+			'[5:10]>[6:4](54,58)#text: ⏎→→→',
 		]);
 	});
 
@@ -323,9 +323,9 @@ else
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: .root',
 			'[1:7]>[2:2](6,8)#text: ⏎→',
-			'[2:8]>[2:13](8,13)div: <div>',
-			'[2:13]>[4:2](13,22)#text: ⏎→→text⏎→',
-			'[4:8]>[4:14](22,28)div: </div>',
+			'[2:2]>[2:13](8,13)div: <div>',
+			'[2:7]>[4:2](13,22)#text: ⏎→→text⏎→',
+			'[4:2]>[4:8](22,28)div: </div>',
 		]);
 	});
 
@@ -339,11 +339,11 @@ else
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: .root',
 			'[1:7]>[2:2](6,8)#text: ⏎→',
-			'[2:8]>[2:13](8,13)div: <div>',
-			'[2:13]>[3:3](13,16)#text: ⏎→→',
-			'[3:9]>[3:16](16,23)img: <img␣/>',
-			'[3:16]>[4:2](23,25)#text: ⏎→',
-			'[4:8]>[4:14](25,31)div: </div>',
+			'[2:2]>[2:13](8,13)div: <div>',
+			'[2:7]>[3:3](13,16)#text: ⏎→→',
+			'[3:3]>[3:16](16,23)img: <img␣/>',
+			'[3:10]>[4:2](23,25)#text: ⏎→',
+			'[4:2]>[4:8](25,31)div: </div>',
 		]);
 	});
 
@@ -373,6 +373,85 @@ else
 		expect(code.raw).toBe(' var a = "<aaaa>"; ');
 		expect(code.parentNode!.nodeName).toBe('script');
 	});
+
+	it('block-in-tag attr', () => {
+		const doc = parse(`div.
+	<input invalid-attr/>
+	<input invalid-attr/>`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(doc.parseError).toBeUndefined();
+		expect(map).toStrictEqual([
+			'[1:1]>[1:4](0,3)div: div',
+			'[1:5]>[2:2](4,6)#text: ⏎→',
+			'[2:2]>[2:27](6,27)input: <input␣invalid-attr/>',
+			'[2:23]>[3:2](27,29)#text: ⏎→',
+			'[3:2]>[3:27](29,50)input: <input␣invalid-attr/>',
+		]);
+		const input1 = doc.nodeList[2] as MLASTElement;
+		const input2 = doc.nodeList[4] as MLASTElement;
+		expect(input1.startOffset).toBe(6);
+		expect(input1.startLine).toBe(2);
+		expect(input1.startCol).toBe(2);
+		expect(input1.attributes[0].startLine).toBe(2);
+		expect(input1.attributes[0].startCol).toBe(8);
+		expect(input2.startOffset).toBe(29);
+		expect(input2.startLine).toBe(3);
+		expect(input2.startCol).toBe(2);
+		expect(input2.attributes[0].startLine).toBe(3);
+		expect(input2.attributes[0].startCol).toBe(8);
+	});
+
+	it('block-in-tag attr2', () => {
+		const doc = parse(
+			'\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ndiv.\n\t<input invalid-attr/>\n\t<input invalid-attr invalid-attr2/>',
+		);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(doc.parseError).toBeUndefined();
+		expect(map).toStrictEqual([
+			'[21:1]>[21:4](20,23)div: div',
+			'[21:5]>[22:2](24,26)#text: ⏎→',
+			'[22:2]>[22:27](26,47)input: <input␣invalid-attr/>',
+			'[22:23]>[23:2](47,49)#text: ⏎→',
+			'[23:2]>[23:41](49,84)input: <input␣invalid-attr␣invalid-attr2/>',
+		]);
+		const input1 = doc.nodeList[2] as MLASTElement;
+		const input2 = doc.nodeList[4] as MLASTElement;
+		const attr1 = input1.attributes[0] as MLASTHTMLAttr;
+		const attr2 = input2.attributes[0] as MLASTHTMLAttr;
+		const attr3 = input2.attributes[1] as MLASTHTMLAttr;
+		expect(attr1.startLine).toBe(22);
+		expect(attr1.startCol).toBe(8);
+		expect(attr1.name.startLine).toBe(22);
+		expect(attr1.name.startCol).toBe(9);
+		expect(attr2.startLine).toBe(23);
+		expect(attr2.startCol).toBe(8);
+		expect(attr2.name.startLine).toBe(23);
+		expect(attr2.name.startCol).toBe(9);
+		expect(attr3.startLine).toBe(23);
+		expect(attr3.startCol).toBe(21);
+		expect(attr3.name.startLine).toBe(23);
+		expect(attr3.name.startCol).toBe(22);
+	});
+
+	// TODO: If there is an HTML tag in siblings
+	// it.only('html', () => {
+	// 	const doc = parse('div\n<input invalid-attr/>\n<input invalid-attr/>');
+	// 	const map = nodeListToDebugMaps(doc.nodeList);
+	// 	expect(doc.parseError).toBeUndefined();
+	// 	expect(map).toStrictEqual(['[1:1]>[1:4](0,3)div: div', '[2:1]>[2:22](4,25)input: <input␣invalid-attr/>']);
+	// 	const input1 = doc.nodeList[1] as MLASTElement;
+	// 	const input2 = doc.nodeList[2] as MLASTElement;
+	// 	const attr1 = input1.attributes[0] as MLASTHTMLAttr;
+	// 	const attr2 = input2.attributes[0] as MLASTHTMLAttr;
+	// 	expect(attr1.startLine).toBe(2);
+	// 	expect(attr1.startCol).toBe(8);
+	// 	expect(attr1.name.startLine).toBe(2);
+	// 	expect(attr1.name.startCol).toBe(9);
+	// 	expect(attr2.startLine).toBe(3);
+	// 	expect(attr2.startCol).toBe(8);
+	// 	expect(attr2.name.startLine).toBe(3);
+	// 	expect(attr2.name.startCol).toBe(9);
+	// });
 
 	it('attribute', () => {
 		const doc = parse('div(data-hoge="content")');
