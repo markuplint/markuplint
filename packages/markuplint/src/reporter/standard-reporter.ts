@@ -1,24 +1,10 @@
-import { MLResultInfo } from '../types';
+import { invisibleSpace, markuplint, p, space, w } from './utils';
+import { ReportingData } from './types';
 import c from 'cli-color';
-// @ts-ignore
-import eastasianwidth from 'eastasianwidth';
 import stripAnsi from 'strip-ansi';
-
-const eaw: { characterLength: (char: string) => number } = eastasianwidth;
-
-export type ReportingData = MLResultInfo & {
-	format: string;
-	color: boolean;
-	problemOnly: boolean;
-	noStdOut: boolean;
-	verbose: boolean;
-};
-
-export type Optional<C> = { [P in keyof C]?: C[P] };
 
 const loggerError = c.red;
 const loggerWarning = c.xterm(208);
-const markuplint = `markup${c.xterm(39)('lint')}`;
 
 export async function standardReporter(data: ReportingData) {
 	const sizes = {
@@ -83,66 +69,4 @@ export async function standardReporter(data: ReportingData) {
 	}
 
 	return data.color ? out : out.map(stripAnsi);
-}
-
-export async function simpleReporter(data: ReportingData) {
-	const sizes = {
-		line: 0,
-		col: 0,
-		meg: 0,
-	};
-
-	for (const result of data.results) {
-		sizes.line = Math.max(sizes.line, result.line.toString(10).length);
-		sizes.col = Math.max(sizes.col, result.col.toString(10).length);
-		sizes.meg = Math.max(sizes.meg, w(result.message));
-	}
-
-	const out: string[] = [];
-
-	if (data.results.length) {
-		out.push(`<${markuplint}> ${c.underline(data.filePath)}: ${c.red('✗')}`);
-		for (const result of data.results) {
-			const s = result.severity === 'error' ? '❌' : '⚠️';
-			out.push(
-				`  ${c.cyan(`${p(result.line, sizes.line, true)}:${p(result.col, sizes.col)}`)} ${s}  ${p(
-					result.message,
-					sizes.meg,
-				)} ${c.xterm(8)(result.ruleId)} `,
-			);
-		}
-	} else if (!data.problemOnly) {
-		out.push(`<${markuplint}> ${c.underline(data.filePath)}: ${c.green('✓')}`);
-	}
-
-	if (!data.noStdOut && out.length) {
-		const outs = `${out.join('\n')}\n`;
-		process.stdout.write(data.color ? outs : stripAnsi(outs));
-	}
-
-	return data.color ? out : out.map(stripAnsi);
-}
-
-function p(s: number | string, pad: number, start = false) {
-	const l = w(`${s}`.trim());
-	const d = pad - l;
-	const _ = ' '.repeat(d < 0 ? 0 : d);
-	return start ? `${_}${s}` : `${s}${_}`;
-}
-
-function w(s: string): number {
-	return s.replace(/./g, _ => '0'.repeat(eaw.characterLength(_))).length;
-}
-
-function space(str: string) {
-	return str
-		.replace(/\s+/g, $0 => {
-			return c.xterm(8)($0);
-		})
-		.replace(/ /g, $0 => '•')
-		.replace(/\t/g, $0 => '→   ');
-}
-
-function invisibleSpace(str: string) {
-	return str.replace(/\t/g, $0 => '    ').replace(/./g, $0 => ' ');
 }
