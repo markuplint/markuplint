@@ -956,15 +956,23 @@ describe('parser', () => {
 	});
 
 	it('Offset', () => {
-		const doc = parse('<span>\n\t\t\t<img src="path/to">\n\t\t</span>\n\t\t\t', 15, 2, 2);
+		const doc = parse(
+			`<span>
+			<img src="path/to">
+		</span>
+			`,
+			15,
+			2,
+			2,
+		);
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[3:3]>[3:9](15,21)span: <span>',
 			'[3:9]>[4:4](21,25)#text: ⏎→→→',
-			'[4:6]>[4:25](25,44)img: <img␣src="path/to">',
-			'[4:25]>[5:3](44,47)#text: ⏎→→',
-			'[5:5]>[5:12](47,54)span: </span>',
-			'[5:12]>[6:4](54,58)#text: ⏎→→→',
+			'[4:4]>[4:25](25,44)img: <img␣src="path/to">',
+			'[4:23]>[5:3](44,47)#text: ⏎→→',
+			'[5:3]>[5:10](47,54)span: </span>',
+			'[5:10]>[6:4](54,58)#text: ⏎→→→',
 		]);
 
 		// @ts-ignore
@@ -976,9 +984,9 @@ describe('parser', () => {
 		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].endLine).toBe(4);
 		// @ts-ignore
-		expect(doc.nodeList[2].attributes[0].startCol).toBe(10);
+		expect(doc.nodeList[2].attributes[0].startCol).toBe(8);
 		// @ts-ignore
-		expect(doc.nodeList[2].attributes[0].endCol).toBe(24);
+		expect(doc.nodeList[2].attributes[0].endCol).toBe(22);
 	});
 
 	it('The fragment tree', () => {
@@ -988,5 +996,16 @@ describe('parser', () => {
 
 		expect(doc.nodeList[0].parentNode).toEqual(null);
 		expect(doc.nodeList[1].parentNode!.parentNode).toEqual(null);
+	});
+
+	it('code in script', () => {
+		const doc = parse("<script>const $span = '<span>text</span>';</script>");
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(doc.parseError).toBeUndefined();
+		expect(map).toStrictEqual([
+			'[1:1]>[1:9](0,8)script: <script>',
+			"[1:9]>[1:43](8,42)#text: const␣$span␣=␣'<span>text</span>';",
+			'[1:43]>[1:52](42,51)script: </script>',
+		]);
 	});
 });

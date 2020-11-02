@@ -1,3 +1,4 @@
+import { getOffsetFromLineAndCol } from '../utils/get-offset-from-line-and-col';
 // @ts-ignore
 import lexer from 'pug-lexer';
 // @ts-ignore
@@ -21,6 +22,22 @@ function getOffsetsFromlines(pug: string): number[] {
 		return chars;
 	});
 	return result;
+}
+
+function mergeTextNode(nodes: ASTNode[], pug: string) {
+	const baseNodes: ASTNode[] = [];
+	for (const node of nodes) {
+		const prevNode: ASTNode | null = baseNodes[baseNodes.length - 1] || null;
+		if (prevNode && prevNode.type === 'Text' && node.type === 'Text') {
+			prevNode.raw = pug.slice(prevNode.offset, node.endOffset);
+			prevNode.endColumn = node.endColumn;
+			prevNode.endLine = node.endLine;
+			prevNode.endOffset = node.endOffset;
+			continue;
+		}
+		baseNodes.push(node);
+	}
+	return baseNodes;
 }
 
 /**
@@ -219,15 +236,27 @@ function optimizeAST(originalAST: PugAST<PugASTNode>, tokens: PugLexToken[], pug
 				continue;
 			}
 			case 'Text': {
-				const { endOffset, endLine, endColumn } = getEndHTMLText(
+				const pipelessText = getPipelessText(node, pug, tokens);
+				if (pipelessText) {
+					const textNode: ASTTextNode = {
+						type: node.type,
+						...pipelessText,
+					};
+					nodes.push(textNode);
+					break;
+				}
+
+				const { endOffset, endLine, endColumn } = getRawTextAndLocationEnd(
 					node.val,
 					offset,
 					line,
 					column,
 					tokens,
 					offsets,
+					pug,
 				);
 				const raw = pug.slice(offset, endOffset);
+				// console.log({ v: node.val, r: raw });
 
 				const textNode: ASTTextNode = {
 					type: node.type,
@@ -314,9 +343,11 @@ function optimizeAST(originalAST: PugAST<PugASTNode>, tokens: PugLexToken[], pug
 		}
 	}
 
+	const mergedNodes = mergeTextNode(nodes, pug);
+
 	return {
 		type: 'Block',
-		nodes,
+		nodes: mergedNodes,
 		line: originalAST.line,
 	};
 }
@@ -522,13 +553,50 @@ function getEndAttributeLocation(
 	};
 }
 
-function getEndHTMLText(
+function getPipelessText(node: PugASTTextNode, pug: string, tokens: PugLexToken[]) {
+	let startPipelessText: PugLexToken | null = null;
+	let endPipelessText: PugLexToken | null = null;
+	for (const token of tokens) {
+		if (token.type === 'start-pipeless-text') {
+			startPipelessText = token;
+		}
+		if (token.type === 'end-pipeless-text') {
+			endPipelessText = token;
+		}
+	}
+
+	if (!(startPipelessText && endPipelessText)) {
+		return null;
+	}
+
+	if (startPipelessText.loc.start.line < node.line && node.line < endPipelessText.loc.start.line) {
+		const { line, column } = startPipelessText.loc.start;
+		const { line: endLine, column: endColumn } = endPipelessText.loc.end;
+		const offset = getOffsetFromLineAndCol(pug, line, column);
+		const endOffset = getOffsetFromLineAndCol(pug, endLine, endColumn);
+		const raw = pug.slice(offset, endOffset);
+		return {
+			raw,
+			offset,
+			endOffset,
+			line,
+			endLine,
+			column,
+			endColumn,
+		};
+	}
+
+	return null;
+}
+
+function getRawTextAndLocationEnd(
 	val: string,
 	offset: number,
 	line: number,
 	column: number,
 	tokens: PugLexToken[],
 	offsets: number[],
+	pug: string,
 ) {
 	let beforeNewlineToken: PugLexToken | null = null;
 	for (const token of tokens) {
