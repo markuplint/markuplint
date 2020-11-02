@@ -15,7 +15,10 @@ export async function command(
 		problemOnly?: boolean;
 		verbose?: boolean;
 	},
-	exitCode = 0,
+	/**
+	 * @deprecated
+	 */
+	exitCode?: number,
 ) {
 	const fix = options.fix ?? false;
 	const workspace = options.workspace ?? process.cwd();
@@ -56,5 +59,5 @@ export async function command(
 		}
 	}
 
-	process.exit(exitCode);
+	process.exit(exitCode ?? process.exitCode);
 }
