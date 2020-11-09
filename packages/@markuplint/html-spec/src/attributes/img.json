@@ -20,11 +20,6 @@
 			"type": "Uint"
 		},
 		{
-			"name": "importance",
-			"type": "String",
-			"enum": ["auto", "high", "low"]
-		},
-		{
 			"name": "ismap",
 			"type": "Boolean",
 			"condition": {
