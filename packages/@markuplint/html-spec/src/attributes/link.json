@@ -65,14 +65,6 @@
 			"condition": {
 				"self": "[rel=mask-icon]"
 			}
-		},
-		{
-			"name": "importance",
-			"type": "String",
-			"enum": ["auto", "high", "low"],
-			"condition": {
-				"self": ["[rel=preload]", "[rel=prefetch]"]
-			}
 		}
 	]
 }
