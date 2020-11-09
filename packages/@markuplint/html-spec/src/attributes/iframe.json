@@ -56,11 +56,6 @@
 			"type": "ReferrerPolicy"
 		},
 		{
-			"name": "importance",
-			"type": "String",
-			"enum": ["auto", "high", "low"]
-		},
-		{
 			"name": "loading",
 			"type": "String",
 			"enum": ["eager", "lazy"]
