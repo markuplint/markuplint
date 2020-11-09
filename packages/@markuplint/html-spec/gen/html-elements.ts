@@ -104,7 +104,7 @@ export async function getHTMLElement(link: string) {
 	return spec;
 }
 
-export function getAttributes($: CheerioStatic, heading: string, tagName: string): Attribute[] {
+export function getAttributes($: cheerio.Root, heading: string, tagName: string): Attribute[] {
 	const $heading = $(heading);
 	const $outline = getThisOutline($, $heading);
 	const { attributes } = getAttribute(tagName);
@@ -162,7 +162,7 @@ export function getAttributes($: CheerioStatic, heading: string, tagName: string
 	return result;
 }
 
-function getProperty($: CheerioStatic, prop: string) {
+function getProperty($: cheerio.Root, prop: string) {
 	const $tr = $('#wikiArticle table.properties tr') || $('#Technical_summary').next('table tr');
 	const $th = $(
 		$tr
@@ -177,7 +177,7 @@ function getProperty($: CheerioStatic, prop: string) {
 		.replace(/(?:\r?\n|\s)+/gi, ' ');
 }
 
-function getThisOutline($: CheerioStatic, $start: Cheerio) {
+function getThisOutline($: cheerio.Root, $start: cheerio.Cheerio) {
 	const $container = $('<div></div>');
 	let $next = $start.next();
 	const els = [$start.clone()];
@@ -189,7 +189,7 @@ function getThisOutline($: CheerioStatic, $start: Cheerio) {
 	return $container;
 }
 
-function getItsHeading($start: Cheerio) {
+function getItsHeading($start: cheerio.Cheerio) {
 	let $needle = upToPrevOrParent($start);
 	while ($needle.length) {
 		if (isHeading($needle)) {
@@ -200,7 +200,7 @@ function getItsHeading($start: Cheerio) {
 	return null;
 }
 
-function upToPrevOrParent($start: Cheerio) {
+function upToPrevOrParent($start: cheerio.Cheerio) {
 	let $needle = $start.prev();
 	if (!$needle.length) {
 		$needle = $start.parent();
@@ -208,7 +208,7 @@ function upToPrevOrParent($start: Cheerio) {
 	return $needle;
 }
 
-function isHeading($el: Cheerio) {
+function isHeading($el: cheerio.Cheerio) {
 	return /^h[1-6]$/i.test($el[0].tagName);
 }
 
