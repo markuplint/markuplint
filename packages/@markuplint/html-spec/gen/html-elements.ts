@@ -76,6 +76,7 @@ export async function getHTMLElement(link: string) {
 
 	const permittedContent = getProperty($, 'Permitted content');
 	const permittedRoles = getProperty($, 'Permitted ARIA roles');
+	const implicitRole = getProperty($, 'Implicit ARIA role');
 
 	const attrs = getAttributes($, '#Attributes', name);
 	attrs.sort(nameCompare);
@@ -97,6 +98,7 @@ export async function getHTMLElement(link: string) {
 			summary: permittedRoles,
 			roles: {},
 		},
+		implicitRole,
 		omittion: false,
 		attributes: ['#globalAttrs', '#ariaAttrs', ...attrs],
 	};
