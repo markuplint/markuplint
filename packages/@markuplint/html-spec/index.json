@@ -1538,9 +1538,35 @@
 			},
 			"permittedRoles": {
 				"summary": "When href attribute is present: button checkbox menuitem menuitemcheckbox menuitemradio option radio switch tab treeitem When href attribute is not present: any",
-				"roles": {}
+				"roles": true,
+				"conditions": [
+					{
+						"condition": "[href]",
+						"roles": [
+							"button",
+							"checkbox",
+							"menuitem",
+							"menuitemcheckbox",
+							"menuitemradio",
+							"option",
+							"radio",
+							"switch",
+							"tab",
+							"treeitem"
+						]
+					}
+				]
 			},
-			"implicitRole": "link when href attribute is present, otherwise no corresponding role",
+			"implicitRole": {
+				"summary": "link when href attribute is present, otherwise no corresponding role",
+				"role": false,
+				"conditions": [
+					{
+						"condition": "[href]",
+						"role": "link"
+					}
+				]
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1640,9 +1666,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1660,9 +1689,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1683,9 +1715,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1702,9 +1737,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1799,9 +1837,18 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "link when href attribute is present, otherwise no corresponding role",
+			"implicitRole": {
+				"summary": "link when href attribute is present, otherwise no corresponding role",
+				"role": false,
+				"conditions": [
+					{
+						"condition": "[href]",
+						"role": "link"
+					}
+				]
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -1910,9 +1957,12 @@
 			},
 			"permittedRoles": {
 				"summary": "application, document, feed, main, none, presentation, region",
-				"roles": {}
+				"roles": ["application", "document", "feed", "main", "none", "presentation", "region"]
 			},
-			"implicitRole": "article",
+			"implicitRole": {
+				"summary": "article",
+				"role": "article"
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1932,9 +1982,12 @@
 			},
 			"permittedRoles": {
 				"summary": "feed, none, note, presentation, region, search",
-				"roles": {}
+				"roles": ["feed", "none", "note", "presentation", "region", "search"]
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": "complementary"
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -1977,9 +2030,12 @@
 			},
 			"permittedRoles": {
 				"summary": "application",
-				"roles": {}
+				"roles": ["application"]
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2055,9 +2111,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2073,9 +2132,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2108,9 +2170,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2148,9 +2213,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2170,9 +2238,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2199,9 +2270,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2242,9 +2316,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2262,9 +2339,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2284,9 +2364,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2314,9 +2397,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "document",
+			"implicitRole": {
+				"summary": "document",
+				"role": "document"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2511,9 +2597,12 @@
 			},
 			"permittedRoles": {
 				"summary": "none, presentation",
-				"roles": {}
+				"roles": ["none", "presentation"]
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2543,9 +2632,22 @@
 			},
 			"permittedRoles": {
 				"summary": "checkbox, link, menuitem, menuitemcheckbox, menuitemradio, option, radio, switch, tab",
-				"roles": {}
+				"roles": [
+					"checkbox",
+					"link",
+					"menuitem",
+					"menuitemcheckbox",
+					"menuitemradio",
+					"option",
+					"radio",
+					"switch",
+					"tab"
+				]
 			},
-			"implicitRole": "button",
+			"implicitRole": {
+				"summary": "button",
+				"role": "button"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2628,9 +2730,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2670,9 +2775,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2698,9 +2806,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2720,9 +2831,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2742,9 +2856,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -2760,9 +2877,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2834,9 +2954,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2892,9 +3015,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2945,9 +3071,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -2975,9 +3104,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3016,9 +3148,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "listbox",
+			"implicitRole": {
+				"summary": "listbox",
+				"role": "listbox"
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3038,9 +3173,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "definition",
+			"implicitRole": {
+				"summary": "definition",
+				"role": "definition"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3069,9 +3207,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3107,9 +3248,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "group",
+			"implicitRole": {
+				"summary": "group",
+				"role": "group"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3144,9 +3288,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "term",
+			"implicitRole": {
+				"summary": "term",
+				"role": "term"
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3166,9 +3313,12 @@
 			},
 			"permittedRoles": {
 				"summary": "alertdialog",
-				"roles": {}
+				"roles": ["alertdialog"]
 			},
-			"implicitRole": "dialog",
+			"implicitRole": {
+				"summary": "dialog",
+				"role": "dialog"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3193,9 +3343,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3247,9 +3400,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3296,9 +3452,12 @@
 			},
 			"permittedRoles": {
 				"summary": "group, list, none, presentation",
-				"roles": {}
+				"roles": ["group", "list", "none", "presentation"]
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3319,9 +3478,12 @@
 			},
 			"permittedRoles": {
 				"summary": "listitem",
-				"roles": {}
+				"roles": ["listitem"]
 			},
-			"implicitRole": "term",
+			"implicitRole": {
+				"summary": "term",
+				"role": "term"
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3339,9 +3501,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3361,9 +3526,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3379,9 +3547,12 @@
 			},
 			"permittedRoles": {
 				"summary": "application, document, img, none, presentation",
-				"roles": {}
+				"roles": ["application", "document", "img", "none", "presentation"]
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": "term"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3427,9 +3598,12 @@
 			},
 			"permittedRoles": {
 				"summary": "radiogroup, presentation, none",
-				"roles": {}
+				"roles": ["radiogroup", "presentation", "none"]
 			},
-			"implicitRole": "group",
+			"implicitRole": {
+				"summary": "group",
+				"role": "group"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3467,9 +3641,12 @@
 			},
 			"permittedRoles": {
 				"summary": "group, none, presentation",
-				"roles": {}
+				"roles": ["group", "none", "presentation"]
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3500,9 +3677,18 @@
 			},
 			"permittedRoles": {
 				"summary": "With no figcaption descendant: any, otherwise no permitted roles",
-				"roles": {}
+				"roles": false,
+				"conditions": [
+					{
+						"condition": ":has(>figcaption)",
+						"roles": true
+					}
+				]
 			},
-			"implicitRole": "figure",
+			"implicitRole": {
+				"summary": "figure",
+				"role": "figure"
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3519,9 +3705,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3560,9 +3749,18 @@
 			},
 			"permittedRoles": {
 				"summary": "group, presentation or none",
-				"roles": {}
+				"roles": ["group", "presentation", "none"]
 			},
-			"implicitRole": "contentinfo, or no corresponding role if a descendant of an article, aside, main, nav or section element, or an element with role=article, complementary, main, navigation or region",
+			"implicitRole": {
+				"summary": "contentinfo, or no corresponding role if a descendant of an article, aside, main, nav or section element, or an element with role=article, complementary, main, navigation or region",
+				"role": "contentinfo",
+				"conditions": [
+					{
+						"condition": ":descendants(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])",
+						"role": false
+					}
+				]
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3583,9 +3781,18 @@
 			},
 			"permittedRoles": {
 				"summary": "search, none or presentation",
-				"roles": {}
+				"roles": ["search", "none", "presentation"]
 			},
-			"implicitRole": "form if the form has an accessible name, otherwise no corresponding role",
+			"implicitRole": {
+				"summary": "form if the form has an accessible name, otherwise no corresponding role",
+				"role": "form",
+				"conditions": [
+					{
+						"condition": "#hasAccname",
+						"role": false
+					}
+				]
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3664,9 +3871,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3721,9 +3931,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3756,9 +3969,12 @@
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation or none",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "heading",
+			"implicitRole": {
+				"summary": "heading",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3774,9 +3990,12 @@
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation or none",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "heading",
+			"implicitRole": {
+				"summary": "heading",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3796,9 +4015,12 @@
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation or none",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "heading",
+			"implicitRole": {
+				"summary": "heading",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3818,9 +4040,12 @@
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation or none",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "heading",
+			"implicitRole": {
+				"summary": "heading",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3840,9 +4065,12 @@
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation or none",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "heading",
+			"implicitRole": {
+				"summary": "heading",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3862,9 +4090,12 @@
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation or none",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "heading",
+			"implicitRole": {
+				"summary": "heading",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3892,9 +4123,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -3924,9 +4158,18 @@
 			},
 			"permittedRoles": {
 				"summary": "group, presentation or none",
-				"roles": {}
+				"roles": ["group", "presentation", "none"]
 			},
-			"implicitRole": "banner, or no corresponding role if a descendant of an article, aside, main, nav or section element, or an element with role=article, complementary, main, navigation or region",
+			"implicitRole": {
+				"summary": "banner, or no corresponding role if a descendant of an article, aside, main, nav or section element, or an element with role=article, complementary, main, navigation or region",
+				"role": "banner",
+				"conditions": [
+					{
+						"condition": ":descendants(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])",
+						"role": false
+					}
+				]
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3956,9 +4199,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -3974,9 +4220,12 @@
 			},
 			"permittedRoles": {
 				"summary": "presentation or none",
-				"roles": {}
+				"roles": ["presentation", "none"]
 			},
-			"implicitRole": "separator",
+			"implicitRole": {
+				"summary": "separator",
+				"role": "separator"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4032,9 +4281,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4074,9 +4326,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4096,9 +4351,12 @@
 			},
 			"permittedRoles": {
 				"summary": "application, document, img, none, presentation",
-				"roles": {}
+				"roles": ["application", "document", "img", "none", "presentation"]
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4238,9 +4496,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4256,9 +4517,43 @@
 			},
 			"permittedRoles": {
 				"summary": "with non-empty alt attribute: button checkbox link menuitem menuitemcheckbox menuitemradio option progressbar scrollbar separator slider switch tab treeitem with empty alt attribute, none or presentation with no alt attribute, no role permitted",
-				"roles": {}
+				"roles": [
+					"button",
+					"checkbox",
+					"link",
+					"menuitem",
+					"menuitemcheckbox",
+					"menuitemradio",
+					"option",
+					"progressbar",
+					"scrollbar",
+					"separator",
+					"slider",
+					"switch",
+					"tab",
+					"treeitem"
+				],
+				"conditions": [
+					{
+						"condition": "[alt=\"\"]",
+						"roles": ["none", "presentation"]
+					},
+					{
+						"condition": ":not([alt])",
+						"roles": false
+					}
+				]
 			},
-			"implicitRole": "with non-empty alt attribute or no alt attribute: img with empty alt attribute: no corresponding role",
+			"implicitRole": {
+				"summary": "with non-empty alt attribute or no alt attribute: img with empty alt attribute: no corresponding role",
+				"role": "img",
+				"conditions": [
+					{
+						"condition": "[alt=\"\"]",
+						"role": false
+					}
+				]
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4396,9 +4691,209 @@
 			},
 			"permittedRoles": {
 				"summary": "type=button: link, menuitem, menuitemcheckbox, menuitemradio, option, radio, switch, tab type=checkbox: button when used with aria-pressed, menuitemcheckbox, option, switch type=image: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch type=radio: menuitemradio type=text with no list attribute: combobox, searchbox, spinbutton type=color|date|datetime|datetime-local|email|file|hidden|month|number|password|range|reset|search|submit|tel|url|week or text with list attribute: no role permitted",
-				"roles": {}
+				"roles": false,
+				"conditions": [
+					{
+						"condition": "[type=button]",
+						"roles": [
+							"link",
+							"menuitem",
+							"menuitemcheckbox",
+							"menuitemradio",
+							"option",
+							"radio",
+							"switch",
+							"tab"
+						]
+					},
+					{
+						"condition": "[type=checkbox][aria-pressed]",
+						"roles": ["button"]
+					},
+					{
+						"condition": "[type=checkbox]",
+						"roles": ["menuitemcheckbox", "option", "switch"]
+					},
+					{
+						"condition": "[type=color]",
+						"roles": false
+					},
+					{
+						"condition": "[type=date]",
+						"roles": false
+					},
+					{
+						"condition": "[type=email]:not([list])",
+						"roles": false
+					},
+					{
+						"condition": "[type=file]",
+						"roles": false
+					},
+					{
+						"condition": "[type=hidden]",
+						"roles": false
+					},
+					{
+						"condition": "[type=image]",
+						"roles": ["link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch"]
+					},
+					{
+						"condition": "[type=month]",
+						"roles": false
+					},
+					{
+						"condition": "[type=number]",
+						"roles": false
+					},
+					{
+						"condition": "[type=password]",
+						"roles": false
+					},
+					{
+						"condition": "[type=radio]",
+						"roles": ["menuitemradio"]
+					},
+					{
+						"condition": "[type=range]",
+						"roles": false
+					},
+					{
+						"condition": "[type=reset]",
+						"roles": false
+					},
+					{
+						"condition": "[type=search]:not([list])",
+						"roles": false
+					},
+					{
+						"condition": "[type=submit]",
+						"roles": false
+					},
+					{
+						"condition": "[type=tel]:not([list])",
+						"roles": false
+					},
+					{
+						"condition": "[type=text]:not([list])",
+						"roles": ["combobox", "searchbox", "spinbutton"]
+					},
+					{
+						"condition": "[type=text][list], [type=search][list], [type=tel][list], [type=url][list], [type=email][list]",
+						"roles": false
+					},
+					{
+						"condition": "[type=time]",
+						"roles": false
+					},
+					{
+						"condition": "[type=url]:not([list])",
+						"roles": false
+					},
+					{
+						"condition": "[type=week]",
+						"roles": false
+					}
+				]
 			},
-			"implicitRole": "type=button: button type=checkbox: checkbox type=email with no list attribute: textbox with list attribute: combobox type=image: button type=number: spinbutton type=radio: radio type=range: slider type=reset: button type=search with no list attribute: searchbox with list attribute: combobox type=submit: button type=tel with no list attribute: textbox with list attribute: combobox type=text with no list attribute: textbox with list attribute: combobox type=url with no list attribute: textbox with list attribute: combobox type=color|date|datetime-local|file|hidden|month|password|time|week: no corresponding role",
+			"implicitRole": {
+				"summary": "type=button: button type=checkbox: checkbox type=email with no list attribute: textbox with list attribute: combobox type=image: button type=number: spinbutton type=radio: radio type=range: slider type=reset: button type=search with no list attribute: searchbox with list attribute: combobox type=submit: button type=tel with no list attribute: textbox with list attribute: combobox type=text with no list attribute: textbox with list attribute: combobox type=url with no list attribute: textbox with list attribute: combobox type=color|date|datetime-local|file|hidden|month|password|time|week: no corresponding role",
+				"role": false,
+				"conditions": [
+					{
+						"condition": "[type=button]",
+						"role": "button"
+					},
+					{
+						"condition": "[type=checkbox]",
+						"role": "checkbox"
+					},
+					{
+						"condition": "[type=color]",
+						"role": false
+					},
+					{
+						"condition": "[type=date]",
+						"role": false
+					},
+					{
+						"condition": "[type=email]:not([list])",
+						"role": "textbox"
+					},
+					{
+						"condition": "[type=file]",
+						"role": false
+					},
+					{
+						"condition": "[type=hidden]",
+						"role": false
+					},
+					{
+						"condition": "[type=image]",
+						"role": "button"
+					},
+					{
+						"condition": "[type=month]",
+						"role": false
+					},
+					{
+						"condition": "[type=number]",
+						"role": "spinbutton"
+					},
+					{
+						"condition": "[type=password]",
+						"role": false
+					},
+					{
+						"condition": "[type=radio]",
+						"role": false
+					},
+					{
+						"condition": "[type=radio]",
+						"role": "radio"
+					},
+					{
+						"condition": "[type=range]",
+						"role": "slider"
+					},
+					{
+						"condition": "[type=reset]",
+						"role": "button"
+					},
+					{
+						"condition": "[type=search]:not([list])",
+						"role": "searchbox"
+					},
+					{
+						"condition": "[type=submit]",
+						"role": "button"
+					},
+					{
+						"condition": "[type=tel]:not([list])",
+						"role": "textbox"
+					},
+					{
+						"condition": "[type=text]:not([list])",
+						"role": "textbox"
+					},
+					{
+						"condition": "[type=text][list], [type=search][list], [type=tel][list], [type=url][list], [type=email][list]",
+						"role": "combobox"
+					},
+					{
+						"condition": "[type=time]",
+						"role": false
+					},
+					{
+						"condition": "[type=url]:not([list])",
+						"role": "textbox"
+					},
+					{
+						"condition": "[type=week]",
+						"role": false
+					}
+				]
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4836,9 +5331,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4868,9 +5366,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4903,9 +5404,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -4922,9 +5426,12 @@
 			},
 			"permittedRoles": {
 				"summary": "None",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -4978,9 +5485,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5013,9 +5523,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5035,9 +5548,23 @@
 			},
 			"permittedRoles": {
 				"summary": "menuitem, menuitemcheckbox, menuitemradio, option, none, presentation, radio, separator, tab, treeitem",
-				"roles": {}
+				"roles": [
+					"menuitem",
+					"menuitemcheckbox",
+					"menuitemradio",
+					"option",
+					"none",
+					"presentation",
+					"radio",
+					"separator",
+					"tab",
+					"treeitem"
+				]
 			},
-			"implicitRole": "listitem when child of an ol, ul or menu",
+			"implicitRole": {
+				"summary": "listitem when child of an ol, ul or menu",
+				"role": "listitem"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5070,9 +5597,18 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "link with href attribute",
+			"implicitRole": {
+				"summary": "link with href attribute",
+				"role": false,
+				"conditions": [
+					{
+						"condition": "[href]",
+						"role": "link"
+					}
+				]
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5212,9 +5748,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5234,9 +5773,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "main",
+			"implicitRole": {
+				"summary": "main",
+				"role": "main"
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5256,9 +5798,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5286,9 +5831,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5305,9 +5853,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5386,9 +5937,24 @@
 			},
 			"permittedRoles": {
 				"summary": "directory, group, listbox, menu, menubar, none, presentation, radiogroup, tablist, toolbar or tree",
-				"roles": {}
+				"roles": [
+					"directory",
+					"group",
+					"listbox",
+					"menu",
+					"menubar",
+					"none",
+					"presentation",
+					"radiogroup",
+					"tablist",
+					"toolbar",
+					"tree"
+				]
 			},
-			"implicitRole": "list",
+			"implicitRole": {
+				"summary": "list",
+				"role": "list"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5419,9 +5985,12 @@
 			},
 			"permittedRoles": {
 				"summary": "None",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5480,9 +6049,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5547,9 +6119,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5605,9 +6180,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5627,9 +6205,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": ["group", "menu", "menubar", "none", "presentation", "tablist"]
 			},
-			"implicitRole": "navigation",
+			"implicitRole": {
+				"summary": "navigation",
+				"role": "navigation"
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5646,9 +6227,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5673,9 +6257,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5692,9 +6279,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5712,9 +6302,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5747,9 +6340,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -5772,9 +6368,12 @@
 			},
 			"permittedRoles": {
 				"summary": "application, document, image",
-				"roles": {}
+				"roles": ["application", "document", "img"]
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5888,9 +6487,24 @@
 			},
 			"permittedRoles": {
 				"summary": "directory, group, listbox, menu, menubar, none, presentation, radiogroup, tablist, toolbar, tree",
-				"roles": {}
+				"roles": [
+					"directory",
+					"group",
+					"listbox",
+					"menu",
+					"menubar",
+					"none",
+					"presentation",
+					"radiogroup",
+					"tablist",
+					"toolbar",
+					"tree"
+				]
 			},
-			"implicitRole": "list",
+			"implicitRole": {
+				"summary": "list",
+				"role": "list"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5925,9 +6539,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "group",
+			"implicitRole": {
+				"summary": "group",
+				"role": "group"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -5990,9 +6607,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "option",
+			"implicitRole": {
+				"summary": "option",
+				"role": "option"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -6035,9 +6655,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "status",
+			"implicitRole": {
+				"summary": "status",
+				"role": "status"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -6075,9 +6698,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6093,9 +6719,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -6152,9 +6781,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6171,9 +6803,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6193,9 +6828,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -6238,9 +6876,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "progressbar",
+			"implicitRole": {
+				"summary": "progressbar",
+				"role": "progressbar"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -6273,9 +6914,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -6300,9 +6944,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6322,9 +6969,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6344,9 +6994,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6362,9 +7015,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6417,9 +7073,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6439,9 +7098,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6461,9 +7123,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6483,9 +7148,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -6566,9 +7234,38 @@
 			},
 			"permittedRoles": {
 				"summary": "alert, alertdialog, application, banner, complementary, contentinfo, dialog, document, feed, log, main, marquee, navigation, none, note, presentation, search, status, tabpanel",
-				"roles": {}
+				"roles": [
+					"alert",
+					"alertdialog",
+					"application",
+					"banner",
+					"complementary",
+					"contentinfo",
+					"dialog",
+					"document",
+					"feed",
+					"log",
+					"main",
+					"marquee",
+					"navigation",
+					"none",
+					"note",
+					"presentation",
+					"search",
+					"status",
+					"tabpanel"
+				]
 			},
-			"implicitRole": "region if the element has an accessible name, otherwise no corresponding role",
+			"implicitRole": {
+				"summary": "region if the element has an accessible name, otherwise no corresponding role",
+				"role": false,
+				"conditions": [
+					{
+						"condition": "#hasAccname",
+						"role": "region"
+					}
+				]
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6588,9 +7285,24 @@
 			},
 			"permittedRoles": {
 				"summary": "menu with no multiple attribute and no size attribute greater than 1, otherwise no role permitted",
-				"roles": {}
+				"roles": ["menu"],
+				"conditions": [
+					{
+						"condition": "[multiple], [size]:not([size=1])",
+						"roles": false
+					}
+				]
 			},
-			"implicitRole": "combobox with no multiple attribute and no size attribute greater than 1, otherwise listbox",
+			"implicitRole": {
+				"summary": "combobox with no multiple attribute and no size attribute greater than 1, otherwise listbox",
+				"role": "combobox",
+				"conditions": [
+					{
+						"condition": "[multiple], [size]:not([size=1])",
+						"role": "listbox"
+					}
+				]
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -6654,9 +7366,12 @@
 			},
 			"permittedRoles": {
 				"summary": "None",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6676,9 +7391,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -6706,9 +7424,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6724,9 +7445,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -6784,9 +7508,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -6834,9 +7561,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6853,9 +7583,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6875,9 +7608,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6897,9 +7633,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -6949,9 +7688,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -6982,9 +7724,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "button",
+			"implicitRole": {
+				"summary": "button",
+				"role": "button"
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -7004,9 +7749,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -7067,9 +7815,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "table",
+			"implicitRole": {
+				"summary": "table",
+				"role": "table"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -7146,9 +7897,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "rowgroup",
+			"implicitRole": {
+				"summary": "rowgroup",
+				"role": "rowgroup"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -7201,9 +7955,24 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true,
+				"conditions": [
+					{
+						"condition": ":descendants(table[role=table], table[role=grid], table[role=treegrid])",
+						"roles": false
+					}
+				]
 			},
-			"implicitRole": "cell if a descendant of a <table> element",
+			"implicitRole": {
+				"summary": "cell if a descendant of a <table> element",
+				"role": "cell",
+				"conditions": [
+					{
+						"condition": ":descendants(table[role=grid], table[role=treegrid])",
+						"role": "gridcell"
+					}
+				]
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -7301,9 +8070,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -7323,9 +8095,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "textbox",
+			"implicitRole": {
+				"summary": "textbox",
+				"role": "textbox"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -7430,9 +8205,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "rowgroup",
+			"implicitRole": {
+				"summary": "rowgroup",
+				"role": "rowgroup"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -7491,9 +8269,28 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true,
+				"conditions": [
+					{
+						"condition": ":descendants(table[role=table], table[role=grid], table[role=treegrid])",
+						"roles": false
+					}
+				]
 			},
-			"implicitRole": "columnheader or rowheader",
+			"implicitRole": {
+				"summary": "columnheader or rowheader",
+				"role": "rowheader",
+				"conditions": [
+					{
+						"condition": ":descendants(table[role=grid], table[role=treegrid])",
+						"role": "gridcell"
+					},
+					{
+						"condition": ":descendants(thead, tfoot), [scope=col]",
+						"role": "columnheader"
+					}
+				]
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -7598,9 +8395,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "rowgroup",
+			"implicitRole": {
+				"summary": "rowgroup",
+				"role": "rowgroup"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -7658,9 +8458,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -7714,9 +8517,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted.",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -7736,9 +8542,18 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true,
+				"conditions": [
+					{
+						"condition": ":descendants(table[role=table], table[role=grid], table[role=treegrid])",
+						"roles": false
+					}
+				]
 			},
-			"implicitRole": "row",
+			"implicitRole": {
+				"summary": "row",
+				"role": "row"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -7792,9 +8607,12 @@
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
-				"roles": {}
+				"roles": false
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -7839,9 +8657,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -7861,9 +8682,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -7883,9 +8707,24 @@
 			},
 			"permittedRoles": {
 				"summary": "directory, group, listbox, menu, menubar, none, presentation, radiogroup, tablist, toolbar, tree",
-				"roles": {}
+				"roles": [
+					"directory",
+					"group",
+					"listbox",
+					"menu",
+					"menubar",
+					"none",
+					"presentation",
+					"radiogroup",
+					"tablist",
+					"toolbar",
+					"tree"
+				]
 			},
-			"implicitRole": "list",
+			"implicitRole": {
+				"summary": "list",
+				"role": "list"
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -7920,9 +8759,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -7965,9 +8807,12 @@
 			},
 			"permittedRoles": {
 				"summary": "application",
-				"roles": {}
+				"roles": ["application"]
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": [
 				"#globalAttrs",
@@ -8088,9 +8933,12 @@
 			},
 			"permittedRoles": {
 				"summary": "Any",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "No corresponding role",
+			"implicitRole": {
+				"summary": "No corresponding role",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
@@ -8107,9 +8955,12 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": {}
+				"roles": true
 			},
-			"implicitRole": "",
+			"implicitRole": {
+				"summary": "",
+				"role": false
+			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		}

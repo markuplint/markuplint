@@ -1,0 +1,8 @@
+{
+	"permittedRoles": {
+		"roles": ["tab", "presentation", "none"]
+	},
+	"implicitRole": {
+		"role": "heading"
+	}
+}

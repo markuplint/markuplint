@@ -1,0 +1,20 @@
+{
+	"permittedRoles": {
+		"roles": [
+			"directory",
+			"group",
+			"listbox",
+			"menu",
+			"menubar",
+			"none",
+			"presentation",
+			"radiogroup",
+			"tablist",
+			"toolbar",
+			"tree"
+		]
+	},
+	"implicitRole": {
+		"role": "list"
+	}
+}

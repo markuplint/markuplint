@@ -85,7 +85,23 @@ export type ElementSpec = {
 	 */
 	permittedRoles: {
 		summary: string;
-		roles: PermittedRolesSpec;
+		roles: PermittedRoles;
+		coconditions?: {
+			condition: string;
+			role: PermittedRoles;
+		}[];
+	};
+
+	/**
+	 * Implicit ARIA role
+	 */
+	implicitRole: {
+		summary: string;
+		role: ImplicitRole;
+		coconditions?: {
+			condition: string;
+			role: ImplicitRole;
+		}[];
 	};
 
 	/**
@@ -99,7 +115,16 @@ export type ElementSpec = {
 	attributes: (Attribute | string)[];
 };
 
-type PermittedRolesSpec = {};
+/**
+ * If `false`, this mean is "No corresponding role".
+ */
+type ImplicitRole = string | false;
+
+/**
+ * If `true`, this mean is "Any".
+ * If `false`, this mean is "No".
+ */
+type PermittedRoles = string[] | boolean;
 
 type ElementSpecOmittion = false | ElementSpecOmittionTags;
 

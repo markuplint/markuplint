@@ -1,0 +1,8 @@
+{
+	"permittedRoles": {
+		"roles": ["listitem"]
+	},
+	"implicitRole": {
+		"role": "term"
+	}
+}

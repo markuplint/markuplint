@@ -1,0 +1,87 @@
+{
+	"definitions": {
+		"permittedRoles": {
+			"description": "If `true`, this mean is \"Any\". If `false`, this mean is \"No\".",
+			"oneOf": [
+				{
+					"type": "boolean"
+				},
+				{
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				}
+			]
+		},
+		"implicitRole": {
+			"description": "If `false`, this mean is \"No corresponding role\".",
+			"oneOf": [
+				{
+					"type": "boolean",
+					"enum": [false]
+				},
+				{
+					"type": "string"
+				}
+			]
+		}
+	},
+	"type": "object",
+	"required": ["permittedRoles", "implicitRole"],
+	"additionalProperties": false,
+	"properties": {
+		"permittedRoles": {
+			"type": "object",
+			"required": ["roles"],
+			"additionalProperties": false,
+			"properties": {
+				"roles": {
+					"$ref": "#/definitions/permittedRoles"
+				},
+				"conditions": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": ["condition", "roles"],
+						"additionalProperties": false,
+						"properties": {
+							"condition": {
+								"type": "string"
+							},
+							"roles": {
+								"$ref": "#/definitions/permittedRoles"
+							}
+						}
+					}
+				}
+			}
+		},
+		"implicitRole": {
+			"type": "object",
+			"required": ["role"],
+			"additionalProperties": false,
+			"properties": {
+				"role": {
+					"$ref": "#/definitions/implicitRole"
+				},
+				"conditions": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": ["condition", "role"],
+						"additionalProperties": false,
+						"properties": {
+							"condition": {
+								"type": "string"
+							},
+							"role": {
+								"$ref": "#/definitions/implicitRole"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"permittedRoles": {
+		"roles": [
+			"menuitem",
+			"menuitemcheckbox",
+			"menuitemradio",
+			"option",
+			"none",
+			"presentation",
+			"radio",
+			"separator",
+			"tab",
+			"treeitem"
+		]
+	},
+	"implicitRole": {
+		"role": "listitem"
+	}
+}

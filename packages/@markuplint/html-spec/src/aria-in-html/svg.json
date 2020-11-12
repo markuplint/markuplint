@@ -1,0 +1,8 @@
+{
+	"permittedRoles": {
+		"roles": ["application", "document", "img"]
+	},
+	"implicitRole": {
+		"role": false
+	}
+}

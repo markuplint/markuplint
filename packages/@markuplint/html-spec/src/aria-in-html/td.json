@@ -1,0 +1,20 @@
+{
+	"permittedRoles": {
+		"roles": true,
+		"conditions": [
+			{
+				"condition": ":descendants(table[role=table], table[role=grid], table[role=treegrid])",
+				"roles": false
+			}
+		]
+	},
+	"implicitRole": {
+		"role": "cell",
+		"conditions": [
+			{
+				"condition": ":descendants(table[role=grid], table[role=treegrid])",
+				"role": "gridcell"
+			}
+		]
+	}
+}

@@ -1,0 +1,14 @@
+{
+	"permittedRoles": {
+		"roles": ["group", "presentation", "none"]
+	},
+	"implicitRole": {
+		"role": "banner",
+		"conditions": [
+			{
+				"condition": ":descendants(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])",
+				"role": false
+			}
+		]
+	}
+}

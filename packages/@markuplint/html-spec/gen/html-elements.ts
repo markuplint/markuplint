@@ -1,5 +1,6 @@
 import { Attribute, ContentModel, ElementSpec } from '@markuplint/ml-spec';
 import fetch from './fetch';
+import { getAriaInHtml } from './get-aria-in-html';
 import { getAttribute } from './get-attribute';
 import { getPermittedStructures } from './get-permitted-structures';
 import { nameCompare } from './utils';
@@ -81,6 +82,8 @@ export async function getHTMLElement(link: string) {
 	const attrs = getAttributes($, '#Attributes', name);
 	attrs.sort(nameCompare);
 
+	const ariaInHtml = getAriaInHtml(name);
+
 	const spec: ElementSpec = {
 		name,
 		cite: link,
@@ -96,9 +99,12 @@ export async function getHTMLElement(link: string) {
 		},
 		permittedRoles: {
 			summary: permittedRoles,
-			roles: {},
+			...ariaInHtml.permittedRoles,
 		},
-		implicitRole,
+		implicitRole: {
+			summary: implicitRole,
+			...ariaInHtml.implicitRole,
+		},
 		omittion: false,
 		attributes: ['#globalAttrs', '#ariaAttrs', ...attrs],
 	};

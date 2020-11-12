@@ -1,0 +1,14 @@
+{
+	"permittedRoles": {
+		"roles": false,
+		"conditions": [
+			{
+				"condition": ":has(>figcaption)",
+				"roles": true
+			}
+		]
+	},
+	"implicitRole": {
+		"role": "figure"
+	}
+}

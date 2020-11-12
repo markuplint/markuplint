@@ -1,0 +1,20 @@
+{
+	"permittedRoles": {
+		"roles": ["menu"],
+		"conditions": [
+			{
+				"condition": "[multiple], [size]:not([size=1])",
+				"roles": false
+			}
+		]
+	},
+	"implicitRole": {
+		"role": "combobox",
+		"conditions": [
+			{
+				"condition": "[multiple], [size]:not([size=1])",
+				"role": "listbox"
+			}
+		]
+	}
+}
