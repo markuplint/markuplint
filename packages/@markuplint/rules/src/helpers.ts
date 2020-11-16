@@ -1,5 +1,6 @@
 import { Attribute, ElementSpec, ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 import { Element, RuleConfigValue } from '@markuplint/ml-core';
+import html from '@markuplint/html-spec';
 
 /**
  * Merging HTML-spec schema and extended spec schemas
@@ -169,4 +170,10 @@ const reCostomElement = new RegExp(`^(?:[a-z](?:${rePCENChar})*\\-(?:${rePCENCha
 
 export function isCustomElement(nodeName: string) {
 	return reCostomElement.test(nodeName);
+}
+
+export function htmlSpec(tag: string) {
+	tag = tag.toLowerCase();
+	const spec = html.specs.find(spec => spec.name === tag);
+	return spec || null;
 }

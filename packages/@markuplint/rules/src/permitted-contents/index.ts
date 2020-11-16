@@ -1,7 +1,7 @@
 import { ContentModel, PermittedStructuresSchema } from '@markuplint/ml-spec';
 import { Element, Result, createRule } from '@markuplint/ml-core';
 import ExpGenerator from './permitted-content.spec-to-regexp';
-import htmlSpec from './html-spec';
+import { htmlSpec } from '../helpers';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
 type TagRule = PermittedStructuresSchema;
@@ -30,7 +30,7 @@ export default createRule<TagRule[], Options>({
 			}
 
 			const nodes = node.getChildElementsAndTextNodeWithoutWhitespaces();
-			const spec = htmlSpec(node.nodeName);
+			const spec = htmlSpec(node.nodeName)?.permittedStructures;
 
 			const expGen = new ExpGenerator(idCounter++);
 
@@ -163,7 +163,7 @@ function getRegExpFromNode(node: El, expGen: ExpGenerator) {
 		return expMapOnNodeId.get(node.uuid)!;
 	}
 	const parentExp = node.parentNode ? getRegExpFromNode(node.parentNode, expGen) : null;
-	const spec = htmlSpec(node.nodeName);
+	const spec = htmlSpec(node.nodeName)?.permittedStructures;
 	const contentRule = spec ? spec.contents : true;
 	const exp = expGen.specToRegExp(contentRule, parentExp);
 	expMapOnNodeId.set(node.uuid, exp);
