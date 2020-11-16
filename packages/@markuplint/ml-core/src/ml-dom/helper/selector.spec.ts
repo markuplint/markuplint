@@ -6,6 +6,7 @@ describe('selector matching', () => {
 			nodeName: 'div',
 			id: 'hoge',
 			classList: ['foo', 'bar'],
+			childNodes: [],
 			parentNode: null,
 		};
 		expect(createSelector('*').match(el)).toBe(true);
@@ -24,6 +25,7 @@ describe('selector matching', () => {
 		const el = {
 			nodeName: 'div',
 			parentNode: null,
+			childNodes: [],
 			getAttribute(attr: string): string | null {
 				const attrs = {
 					a: 'ABC',
@@ -49,6 +51,7 @@ describe('selector matching', () => {
 			id: 'hoge',
 			classList: ['foo', 'bar'],
 			parentNode: null,
+			childNodes: [],
 		};
 		expect(createSelector('*:not(a)').match(el)).toBe(true);
 		expect(createSelector('*:not(div)').match(el)).toBe(false);
@@ -63,7 +66,9 @@ describe('selector matching', () => {
 			parentNode: {
 				nodeName: 'html',
 				parentNode: null,
+				childNodes: [],
 			},
+			childNodes: [],
 		};
 		expect(createSelector(':root').match(el)).toBe(false);
 		expect(createSelector(':root').match(el.parentNode)).toBe(true);
@@ -73,6 +78,7 @@ describe('selector matching', () => {
 		const el = {
 			nodeName: 'div',
 			parentNode: null,
+			childNodes: [],
 		};
 		expect(createSelector('div, span').match(el)).toBe(true);
 	});

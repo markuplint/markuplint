@@ -1,10 +1,12 @@
 import { Selector as CSSSelector, CssSelectorParser } from 'css-selector-parser';
+import { AnonymousNode } from '../';
 
 interface ElementLikeObject {
 	nodeName: string;
 	id?: string;
 	classList?: string[] | DOMTokenList;
 	parentNode: this | null;
+	childNodes: AnonymousNode<any, any>[];
 	getAttribute?: (attrName: string) => string | null;
 }
 
@@ -15,6 +17,7 @@ class Selector {
 	constructor(selector: string) {
 		const selectorParser = new CssSelectorParser();
 		selectorParser.registerSelectorPseudos('not');
+		selectorParser.registerNestingOperators('>');
 		selectorParser.registerAttrEqualityMods('~', '^', '$', '*', '|');
 
 		this.#rawSelector = selector;
@@ -122,6 +125,38 @@ function match(element: ElementLikeObject, ruleset: CSSSelector, rawSelector: st
 					}
 					case 'root': {
 						andMatch.push(!element.parentNode);
+						break;
+					}
+					case 'has': {
+						const has = element.childNodes.some(child => {
+							let childSelector: CSSSelector;
+							let useChildCombinator = false;
+							if (pseudo.valueType !== 'selector') {
+								const selectorParser = new CssSelectorParser();
+
+								/**
+								 * The issue.
+								 * @see https://github.com/mdevils/css-selector-parser/issues/21
+								 */
+								if (/^>/.test(pseudo.value.trim())) {
+									pseudo.value = pseudo.value.trim().replace(/^>/, '');
+									useChildCombinator = true;
+								}
+								childSelector = selectorParser.parse(pseudo.value);
+								// throw new Error(`Unexpected parameters in "has" pseudo selector in "${rawSelector}"`);
+							} else {
+								childSelector = pseudo.value;
+							}
+							if (child.type === 'Element') {
+								if (useChildCombinator) {
+									return match(child, childSelector, rawSelector);
+								}
+								// TODO: Recursive checking when selector without child combinator.
+								throw new Error(`Unsupport "${pseudo.name}" pseudo selector in "${rawSelector}"`);
+							}
+							return false;
+						});
+						andMatch.push(has);
 						break;
 					}
 					default: {

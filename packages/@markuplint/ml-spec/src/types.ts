@@ -86,9 +86,9 @@ export type ElementSpec = {
 	permittedRoles: {
 		summary: string;
 		roles: PermittedRoles;
-		coconditions?: {
+		conditions?: {
 			condition: string;
-			role: PermittedRoles;
+			roles: PermittedRoles;
 		}[];
 	};
 
@@ -98,7 +98,7 @@ export type ElementSpec = {
 	implicitRole: {
 		summary: string;
 		role: ImplicitRole;
-		coconditions?: {
+		conditions?: {
 			condition: string;
 			role: ImplicitRole;
 		}[];
