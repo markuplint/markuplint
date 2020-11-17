@@ -72,3 +72,27 @@ test('Bad state/property', async () => {
 		},
 	]);
 });
+
+test('No permitted', async () => {
+	const r = await markuplint.verify(
+		'<script role="link"></script>',
+		{
+			rules: {
+				'wai-aria': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r).toStrictEqual([
+		{
+			ruleId: 'wai-aria',
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The ARIA Role of the script element cannot overwrite according to ARIA in HTML spec.',
+			raw: 'role="link"',
+		},
+	]);
+});

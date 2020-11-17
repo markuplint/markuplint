@@ -226,3 +226,25 @@ function recursiveTraverseSuperClassRoles(roleName: string) {
 	}
 	return roles;
 }
+
+/**
+ * Getting permitted ARIA roles.
+ *
+ * - If an array, it is role list.
+ * - If `true`, this mean is "Any".
+ * - If `false`, this mean is "No".
+ */
+export function getRermittedRoles(el: Element<any, any>) {
+	const spec = htmlSpec(el.nodeName)?.permittedRoles;
+	if (!spec) {
+		return true;
+	}
+	if (spec.conditions) {
+		for (const { condition, roles } of spec.conditions) {
+			if (el.matches(condition)) {
+				return roles;
+			}
+		}
+	}
+	return spec.roles;
+}

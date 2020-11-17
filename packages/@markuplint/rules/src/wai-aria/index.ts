@@ -1,5 +1,5 @@
 import { Result, createRule } from '@markuplint/ml-core';
-import { ariaSpec, attrSpecs, getRoleSpec, getSpec, htmlSpec } from '../helpers';
+import { ariaSpec, attrSpecs, getRermittedRoles, getRoleSpec, getSpec, htmlSpec } from '../helpers';
 
 export default createRule<true, null>({
 	name: 'wai-aria',
@@ -70,6 +70,18 @@ export default createRule<true, null>({
 				}
 			}
 			// TODO: No role element
+
+			// Permitted ARIA Roles
+			const permittedRoles = getRermittedRoles(node);
+			if (permittedRoles === false) {
+				reports.push({
+					severity: node.rule.severity,
+					message: `The ARIA Role of the ${node.nodeName} element cannot overwrite according to ARIA in HTML spec.`,
+					line: roleAttr.startLine,
+					col: roleAttr.startCol,
+					raw: roleAttr.raw,
+				});
+			}
 		});
 
 		return reports;
