@@ -177,3 +177,10 @@ export function htmlSpec(tag: string) {
 	const spec = html.specs.find(spec => spec.name === tag);
 	return spec || null;
 }
+
+export function ariaSpec() {
+	const roles = html.def['#roles'];
+	return {
+		roles,
+	};
+}
