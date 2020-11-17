@@ -31,7 +31,16 @@ export default createRule<true, null>({
 					// Not exist
 					reports.push({
 						severity: node.rule.severity,
-						message: `This "${value}" role is not exist in WAI-ARIA.`,
+						message: `This "${value}" role does not exist in WAI-ARIA.`,
+						line: roleAttr.startLine,
+						col: roleAttr.startCol,
+						raw: roleAttr.raw,
+					});
+				} else if (existedRole.isAbstract) {
+					// Abstract role
+					reports.push({
+						severity: node.rule.severity,
+						message: `This "${value}" role is the abstract role.`,
 						line: roleAttr.startLine,
 						col: roleAttr.startCol,
 						raw: roleAttr.raw,
