@@ -48,3 +48,27 @@ test('Abstract role', async () => {
 		},
 	]);
 });
+
+test('Bad state/property', async () => {
+	const r = await markuplint.verify(
+		'<div role="alert" aria-disabled="true"></div>',
+		{
+			rules: {
+				'wai-aria': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r).toStrictEqual([
+		{
+			ruleId: 'wai-aria',
+			severity: 'error',
+			line: 1,
+			col: 19,
+			message: 'The aria-disabled state/property cannot use on the alert role.',
+			raw: 'aria-disabled="true"',
+		},
+	]);
+});

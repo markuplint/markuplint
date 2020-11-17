@@ -1,4 +1,4 @@
-import { Attribute, ElementSpec, ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+import { ARIRRoleAttribute, Attribute, ElementSpec, ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 import { Element, RuleConfigValue } from '@markuplint/ml-core';
 import html from '@markuplint/html-spec';
 
@@ -183,4 +183,46 @@ export function ariaSpec() {
 	return {
 		roles,
 	};
+}
+
+export function getRoleSpec(roleName: string) {
+	const role = getRoleByName(roleName);
+	if (!role) {
+		return null;
+	}
+	const superClassRoles = recursiveTraverseSuperClassRoles(roleName);
+	return {
+		name: role.name,
+		isAbstract: !!role.isAbstract,
+		statesAndProps: role.ownedAttribute,
+		superClassRoles,
+	};
+}
+
+function getRoleByName(roleName: string) {
+	const roles = html.def['#roles'];
+	const role = roles.find(r => r.name === roleName);
+	return role;
+}
+
+function getSuperClassRoles(roleName: string) {
+	const role = getRoleByName(roleName);
+	return (
+		role?.generalization
+			.map(roleName => getRoleByName(roleName))
+			.filter((role): role is ARIRRoleAttribute => !!role) || null
+	);
+}
+
+function recursiveTraverseSuperClassRoles(roleName: string) {
+	const roles: ARIRRoleAttribute[] = [];
+	const superClassRoles = getSuperClassRoles(roleName);
+	if (superClassRoles) {
+		roles.push(...superClassRoles);
+		for (const superClassRole of superClassRoles) {
+			const ancestorRoles = recursiveTraverseSuperClassRoles(superClassRole.name);
+			roles.push(...ancestorRoles);
+		}
+	}
+	return roles;
 }

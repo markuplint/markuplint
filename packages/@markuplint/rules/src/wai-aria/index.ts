@@ -1,5 +1,5 @@
 import { Result, createRule } from '@markuplint/ml-core';
-import { ariaSpec, attrSpecs, getSpec, htmlSpec } from '../helpers';
+import { ariaSpec, attrSpecs, getRoleSpec, getSpec, htmlSpec } from '../helpers';
 
 export default createRule<true, null>({
 	name: 'wai-aria',
@@ -47,6 +47,29 @@ export default createRule<true, null>({
 					});
 				}
 			}
+
+			// Checking aria-*
+			const currentRole = roleAttr?.getValue().potential.trim().toLowerCase() || null; // TODO: or its implicit role
+			if (currentRole) {
+				const role = getRoleSpec(currentRole);
+				if (role) {
+					for (const attr of node.attributes) {
+						const attrName = attr.getName().potential.trim().toLowerCase();
+						if (/^aria-/i.test(attrName)) {
+							if (!role.statesAndProps.includes(attrName)) {
+								reports.push({
+									severity: node.rule.severity,
+									message: `The ${attrName} state/property cannot use on the ${role.name} role.`,
+									line: attr.startLine,
+									col: attr.startCol,
+									raw: attr.raw,
+								});
+							}
+						}
+					}
+				}
+			}
+			// TODO: No role element
 		});
 
 		return reports;
