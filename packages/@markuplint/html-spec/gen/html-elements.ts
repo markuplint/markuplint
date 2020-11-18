@@ -1,3 +1,5 @@
+/* global cheerio */
+
 import { Attribute, ContentModel, ElementSpec } from '@markuplint/ml-spec';
 import fetch from './fetch';
 import { getAttribute } from './get-attribute';
