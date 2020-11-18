@@ -7,7 +7,7 @@ import { PropsWithChildren } from 'react';
 import innerText from 'react-innertext';
 
 const mdComponents: MDXProviderComponentsProp = {
-	h1: props => null,
+	h1: _ => null,
 	h2: (props: PropsWithChildren<{}>) => (
 		<h2>
 			<a {...props} id={innerText(props.children) || undefined} href={`#${innerText(props.children)}`}>
@@ -49,7 +49,7 @@ const mdComponents: MDXProviderComponentsProp = {
 			<a
 				{...props}
 				target={isExternal ? '_blank' : undefined}
-				referrerPolicy={isExternal ? 'noreferrer noopener' : undefined}
+				referrerPolicy={isExternal ? 'no-referrer' : undefined}
 			>
 				{props.children}
 			</a>
