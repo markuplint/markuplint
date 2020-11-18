@@ -13,7 +13,8 @@ import { RuleConfigValue } from '@markuplint/ml-config';
  */
 const rawTextElements = ['script', 'style'];
 
-export default class MLDOMText<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTText>
+export default class MLDOMText<T extends RuleConfigValue, O = null>
+	extends MLDOMNode<T, O, MLASTText>
 	implements IMLDOMText {
 	readonly type = 'Text';
 	readonly isRawText: boolean;

@@ -11,13 +11,15 @@ export function attr(attr: SvelteDirective, rawHTML: string): MLASTAttr {
 			? attr.value.some((val: any) => val.type === 'AttributeShorthand')
 			: false;
 
+	const { start, end } = attr;
+
 	// @ts-ignore TODO solve type
 	if (attr.type === 'Attribute' && !isShorthand) {
-		const { raw, startLine, startCol, startOffset } = sliceFragment(rawHTML, attr.start, attr.end);
+		const { raw, startLine, startCol, startOffset } = sliceFragment(rawHTML, start, end);
 		const token = attrTokenizer(raw, startLine, startCol, startOffset);
 		return token;
 	}
-	const { raw, startLine, startCol, startOffset } = sliceFragment(rawHTML, attr.start, attr.end);
+	const { raw, startLine, startCol, startOffset } = sliceFragment(rawHTML, start, end);
 	const valueToken = isShorthand
 		? attr.name
 		: // @ts-ignore TODO solve type

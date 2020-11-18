@@ -9,7 +9,8 @@ import { RuleConfigValue } from '@markuplint/ml-config';
 import { stringSplice } from '../../utils/string-splice';
 import { syncWalk } from '../helper/walkers';
 
-export default class MLDOMElement<T extends RuleConfigValue, O = null> extends MLDOMNode<T, O, MLASTElement>
+export default class MLDOMElement<T extends RuleConfigValue, O = null>
+	extends MLDOMNode<T, O, MLASTElement>
 	implements IMLDOMElement {
 	readonly type = 'Element';
 	readonly nodeName: string;
