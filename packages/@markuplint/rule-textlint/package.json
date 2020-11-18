@@ -22,7 +22,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-core": "^1.1.0",
-		"@textlint/kernel": "^3.2.1",
+		"@textlint/kernel": "^3.3.6",
 		"textlint-plugin-html": "^0.2.0"
 	}
 }
