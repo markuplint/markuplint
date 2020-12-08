@@ -1,5 +1,14 @@
 import { Result, createRule } from '@markuplint/ml-core';
-import { ariaSpec, attrSpecs, getRermittedRoles, getRoleSpec, getSpec, htmlSpec } from '../helpers';
+import {
+	ariaSpec,
+	attrSpecs,
+	getComputedRole,
+	getImplicitRole,
+	getRermittedRoles,
+	getRoleSpec,
+	getSpec,
+	htmlSpec,
+} from '../helpers';
 
 export default createRule<true, null>({
 	name: 'wai-aria',
@@ -81,8 +90,25 @@ export default createRule<true, null>({
 						}
 					}
 				}
+			} else {
+				// No role element
+				const { ariaAttrs } = ariaSpec();
+				for (const attr of node.attributes) {
+					const attrName = attr.getName().potential.trim().toLowerCase();
+					if (/^aria-/i.test(attrName)) {
+						const ariaAttr = ariaAttrs.find(attr => attr.name === attrName);
+						if (ariaAttr && !ariaAttr.isGlobal) {
+							reports.push({
+								severity: node.rule.severity,
+								message: `The ${attrName} is not global state/property.`,
+								line: attr.startLine,
+								col: attr.startCol,
+								raw: attr.raw,
+							});
+						}
+					}
+				}
 			}
-			// TODO: No role element
 
 			// Permitted ARIA Roles
 			const permittedRoles = getRermittedRoles(node);

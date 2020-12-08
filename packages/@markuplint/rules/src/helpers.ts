@@ -180,8 +180,10 @@ export function htmlSpec(tag: string) {
 
 export function ariaSpec() {
 	const roles = html.def['#roles'];
+	const ariaAttrs = html.def['#ariaAttrs'];
 	return {
 		roles,
+		ariaAttrs,
 	};
 }
 
