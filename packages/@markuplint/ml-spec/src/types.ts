@@ -207,6 +207,7 @@ export type ARIAAttribute = {
 	name: string;
 	type: 'property' | 'state';
 	deprecated?: true;
+	isGlobal?: true;
 	value: ARIAAttributeValue;
 	defaultValue?: string;
 };

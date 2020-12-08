@@ -3150,7 +3150,8 @@
 				"name": "aria-atomic",
 				"type": "property",
 				"value": "true/false",
-				"defaultValue": "false"
+				"defaultValue": "false",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-autocomplete",
@@ -3162,7 +3163,8 @@
 				"name": "aria-busy",
 				"type": "state",
 				"value": "true/false",
-				"defaultValue": "false"
+				"defaultValue": "false",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-checked",
@@ -3188,23 +3190,27 @@
 			{
 				"name": "aria-controls",
 				"type": "property",
-				"value": "ID reference list"
+				"value": "ID reference list",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-current",
 				"type": "state",
 				"value": "",
-				"defaultValue": "false"
+				"defaultValue": "false",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-describedby",
 				"type": "property",
-				"value": "ID reference list"
+				"value": "ID reference list",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-details",
 				"type": "property",
-				"value": "ID reference"
+				"value": "ID reference",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-disabled",
@@ -3217,7 +3223,8 @@
 				"type": "property",
 				"deprecated": true,
 				"value": "token list",
-				"defaultValue": "none"
+				"defaultValue": "none",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-errormessage",
@@ -3233,14 +3240,16 @@
 			{
 				"name": "aria-flowto",
 				"type": "property",
-				"value": "ID reference list"
+				"value": "ID reference list",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-grabbed",
 				"type": "state",
 				"deprecated": true,
 				"value": "true/false/undefined",
-				"defaultValue": "undefined"
+				"defaultValue": "undefined",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-haspopup",
@@ -3252,7 +3261,8 @@
 				"name": "aria-hidden",
 				"type": "state",
 				"value": "true/false/undefined",
-				"defaultValue": "undefined"
+				"defaultValue": "undefined",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-invalid",
@@ -3263,17 +3273,20 @@
 			{
 				"name": "aria-keyshortcuts",
 				"type": "property",
-				"value": "string"
+				"value": "string",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-label",
 				"type": "property",
-				"value": "string"
+				"value": "string",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-labelledby",
 				"type": "property",
-				"value": "ID reference list"
+				"value": "ID reference list",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-level",
@@ -3284,7 +3297,8 @@
 				"name": "aria-live",
 				"type": "property",
 				"value": "token",
-				"defaultValue": "off"
+				"defaultValue": "off",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-modal",
@@ -3313,7 +3327,8 @@
 			{
 				"name": "aria-owns",
 				"type": "property",
-				"value": "ID reference list"
+				"value": "ID reference list",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-placeholder",
@@ -3341,7 +3356,8 @@
 				"name": "aria-relevant",
 				"type": "property",
 				"value": "token list",
-				"defaultValue": "additions text"
+				"defaultValue": "additions text",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-required",
@@ -3352,7 +3368,8 @@
 			{
 				"name": "aria-roledescription",
 				"type": "property",
-				"value": "string"
+				"value": "string",
+				"isGlobal": true
 			},
 			{
 				"name": "aria-rowcount",

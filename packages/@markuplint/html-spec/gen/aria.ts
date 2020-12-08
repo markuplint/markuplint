@@ -58,6 +58,10 @@ export async function getAria() {
 		role.ownedAttribute.map(attr => ariaNameList.add(attr));
 	}
 
+	const globalStatesAndProperties = $('#global_states li a')
+		.toArray()
+		.map(el => $(el).attr('href')?.replace('#', ''))
+		.filter((s): s is string => !!s);
 	const arias = Array.from(ariaNameList)
 		.sort()
 		.map(
@@ -74,12 +78,14 @@ export async function getAria() {
 						.text()
 						.replace(/\(default\)/gi, '')
 						.trim() || undefined;
+				const isGlobal = globalStatesAndProperties.includes(name) || undefined;
 				return {
 					name,
 					type,
 					deprecated,
 					value,
 					defaultValue,
+					isGlobal,
 				};
 			},
 		);

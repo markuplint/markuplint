@@ -217,6 +217,7 @@ function upToPrevOrParent($start: cheerio.Cheerio) {
 }
 
 function isHeading($el: cheerio.Cheerio) {
+	// @ts-ignore
 	return /^h[1-6]$/i.test($el[0].tagName);
 }
 
