@@ -70,8 +70,19 @@ export async function getAria() {
 				const className = $section.attr('class');
 				const type = className && /property/i.test(className) ? 'property' : 'state';
 				const deprecated = (className && /deprecated/i.test(className)) || undefined;
-				const $value = $section.find(`table.${type}-features .${type}-value`);
+				const $value = $section.find(`table.${type}-features .${type}-value, .state-features .property-value`);
 				const value = $value.text().trim() as ARIAAttributeValue;
+				const $defaultValues = $section.find('table.value-descriptions .value-name');
+				const enumValues: string[] = [];
+				if (value === 'token' || value === 'token list') {
+					const values = $defaultValues.toArray().map(el =>
+						$(el)
+							.text()
+							.replace(/\(default\)/gi, '')
+							.trim(),
+					);
+					enumValues.push(...values);
+				}
 				const $defaultValue = $section.find('table.value-descriptions .value-name .default');
 				const defaultValue =
 					$defaultValue
@@ -84,6 +95,7 @@ export async function getAria() {
 					type,
 					deprecated,
 					value,
+					enum: enumValues,
 					defaultValue,
 					isGlobal,
 				};

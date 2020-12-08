@@ -2,6 +2,7 @@ import { Result, createRule } from '@markuplint/ml-core';
 import {
 	ariaSpec,
 	attrSpecs,
+	checkAria,
 	getComputedRole,
 	getImplicitRole,
 	getRermittedRoles,
@@ -10,11 +11,21 @@ import {
 	htmlSpec,
 } from '../helpers';
 
-export default createRule<true, null>({
+type Options = {
+	checkingValue?: boolean;
+	permittedAriaRoles?: boolean;
+	disallowSetImplicitRole?: boolean;
+};
+
+export default createRule<true, Options>({
 	name: 'wai-aria',
 	defaultLevel: 'error',
 	defaultValue: true,
-	defaultOptions: null,
+	defaultOptions: {
+		checkingValue: true,
+		permittedAriaRoles: true,
+		disallowSetImplicitRole: true,
+	},
 	async verify(document, translate) {
 		const spec = getSpec(document.schemas);
 		const reports: Result[] = [];
@@ -70,7 +81,7 @@ export default createRule<true, null>({
 				}
 			}
 
-			// Checking aria-*
+			// Checking aria-* on the role
 			const computedRole = getComputedRole(node);
 			if (computedRole) {
 				const role = getRoleSpec(computedRole);
@@ -106,6 +117,28 @@ export default createRule<true, null>({
 								raw: attr.raw,
 							});
 						}
+					}
+				}
+			}
+
+			// Checking ARIA Value
+			for (const attr of node.attributes) {
+				const attrName = attr.getName().potential.trim().toLowerCase();
+				if (/^aria-/i.test(attrName)) {
+					const value = attr.getValue().potential.trim().toLowerCase();
+					const result = checkAria(attrName, value);
+					if (!result.isValid) {
+						reports.push({
+							severity: node.rule.severity,
+							message:
+								`The "${value}" is disallowed in the ${attrName} state/property.` +
+								('enum' in result && result.enum.length
+									? ` Allow values are ${result.enum.join(', ')}.`
+									: ''),
+							line: attr.startLine,
+							col: attr.startCol,
+							raw: attr.raw,
+						});
 					}
 				}
 			}

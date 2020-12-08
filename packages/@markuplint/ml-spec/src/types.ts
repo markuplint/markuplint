@@ -209,6 +209,7 @@ export type ARIAAttribute = {
 	deprecated?: true;
 	isGlobal?: true;
 	value: ARIAAttributeValue;
+	enum: string[];
 	defaultValue?: string;
 };
 

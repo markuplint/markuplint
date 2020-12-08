@@ -3144,12 +3144,14 @@
 			{
 				"name": "aria-activedescendant",
 				"type": "property",
-				"value": "ID reference"
+				"value": "ID reference",
+				"enum": []
 			},
 			{
 				"name": "aria-atomic",
 				"type": "property",
 				"value": "true/false",
+				"enum": [],
 				"defaultValue": "false",
 				"isGlobal": true
 			},
@@ -3157,12 +3159,14 @@
 				"name": "aria-autocomplete",
 				"type": "property",
 				"value": "token",
+				"enum": ["inline", "list", "both", "none"],
 				"defaultValue": "none"
 			},
 			{
 				"name": "aria-busy",
 				"type": "state",
 				"value": "true/false",
+				"enum": [],
 				"defaultValue": "false",
 				"isGlobal": true
 			},
@@ -3170,33 +3174,39 @@
 				"name": "aria-checked",
 				"type": "state",
 				"value": "tristate",
+				"enum": [],
 				"defaultValue": "undefined"
 			},
 			{
 				"name": "aria-colcount",
 				"type": "property",
-				"value": "integer"
+				"value": "integer",
+				"enum": []
 			},
 			{
 				"name": "aria-colindex",
 				"type": "property",
-				"value": "integer"
+				"value": "integer",
+				"enum": []
 			},
 			{
 				"name": "aria-colspan",
 				"type": "property",
-				"value": "integer"
+				"value": "integer",
+				"enum": []
 			},
 			{
 				"name": "aria-controls",
 				"type": "property",
 				"value": "ID reference list",
+				"enum": [],
 				"isGlobal": true
 			},
 			{
 				"name": "aria-current",
 				"type": "state",
-				"value": "",
+				"value": "token",
+				"enum": ["page", "step", "location", "date", "time", "true", "false"],
 				"defaultValue": "false",
 				"isGlobal": true
 			},
@@ -3204,18 +3214,21 @@
 				"name": "aria-describedby",
 				"type": "property",
 				"value": "ID reference list",
+				"enum": [],
 				"isGlobal": true
 			},
 			{
 				"name": "aria-details",
 				"type": "property",
 				"value": "ID reference",
+				"enum": [],
 				"isGlobal": true
 			},
 			{
 				"name": "aria-disabled",
 				"type": "state",
 				"value": "true/false",
+				"enum": [],
 				"defaultValue": "false"
 			},
 			{
@@ -3223,24 +3236,28 @@
 				"type": "property",
 				"deprecated": true,
 				"value": "token list",
+				"enum": ["copy", "execute", "link", "move", "none", "popup"],
 				"defaultValue": "none",
 				"isGlobal": true
 			},
 			{
 				"name": "aria-errormessage",
 				"type": "property",
-				"value": "ID reference"
+				"value": "ID reference",
+				"enum": []
 			},
 			{
 				"name": "aria-expanded",
 				"type": "state",
 				"value": "true/false/undefined",
+				"enum": [],
 				"defaultValue": "undefined"
 			},
 			{
 				"name": "aria-flowto",
 				"type": "property",
 				"value": "ID reference list",
+				"enum": [],
 				"isGlobal": true
 			},
 			{
@@ -3248,6 +3265,7 @@
 				"type": "state",
 				"deprecated": true,
 				"value": "true/false/undefined",
+				"enum": [],
 				"defaultValue": "undefined",
 				"isGlobal": true
 			},
@@ -3255,12 +3273,14 @@
 				"name": "aria-haspopup",
 				"type": "property",
 				"value": "token",
+				"enum": ["false", "true", "menu", "listbox", "tree", "grid", "dialog"],
 				"defaultValue": "false"
 			},
 			{
 				"name": "aria-hidden",
 				"type": "state",
 				"value": "true/false/undefined",
+				"enum": [],
 				"defaultValue": "undefined",
 				"isGlobal": true
 			},
@@ -3268,35 +3288,41 @@
 				"name": "aria-invalid",
 				"type": "state",
 				"value": "token",
+				"enum": ["grammar", "false", "spelling", "true"],
 				"defaultValue": "false"
 			},
 			{
 				"name": "aria-keyshortcuts",
 				"type": "property",
 				"value": "string",
+				"enum": [],
 				"isGlobal": true
 			},
 			{
 				"name": "aria-label",
 				"type": "property",
 				"value": "string",
+				"enum": [],
 				"isGlobal": true
 			},
 			{
 				"name": "aria-labelledby",
 				"type": "property",
 				"value": "ID reference list",
+				"enum": [],
 				"isGlobal": true
 			},
 			{
 				"name": "aria-level",
 				"type": "property",
-				"value": "integer"
+				"value": "integer",
+				"enum": []
 			},
 			{
 				"name": "aria-live",
 				"type": "property",
 				"value": "token",
+				"enum": ["assertive", "off", "polite"],
 				"defaultValue": "off",
 				"isGlobal": true
 			},
@@ -3304,58 +3330,68 @@
 				"name": "aria-modal",
 				"type": "property",
 				"value": "true/false",
+				"enum": [],
 				"defaultValue": "false"
 			},
 			{
 				"name": "aria-multiline",
 				"type": "property",
 				"value": "true/false",
+				"enum": [],
 				"defaultValue": "false"
 			},
 			{
 				"name": "aria-multiselectable",
 				"type": "property",
 				"value": "true/false",
+				"enum": [],
 				"defaultValue": "false"
 			},
 			{
 				"name": "aria-orientation",
 				"type": "property",
 				"value": "token",
+				"enum": ["horizontal", "undefined", "vertical"],
 				"defaultValue": "undefined"
 			},
 			{
 				"name": "aria-owns",
 				"type": "property",
 				"value": "ID reference list",
+				"enum": [],
 				"isGlobal": true
 			},
 			{
 				"name": "aria-placeholder",
 				"type": "property",
-				"value": "string"
+				"value": "string",
+				"enum": []
 			},
 			{
 				"name": "aria-posinset",
 				"type": "property",
-				"value": "integer"
+				"value": "integer",
+				"enum": []
 			},
 			{
 				"name": "aria-pressed",
 				"type": "state",
 				"value": "tristate",
+				"enum": [],
 				"defaultValue": "undefined"
 			},
 			{
 				"name": "aria-readonly",
 				"type": "property",
 				"value": "true/false",
+				"enum": [],
 				"defaultValue": "false"
 			},
 			{
 				"name": "aria-relevant",
 				"type": "property",
 				"value": "token list",
+				"enum": ["additions", "additions text", "all", "removals", "text"],
 				"defaultValue": "additions text",
 				"isGlobal": true
 			},
@@ -3363,65 +3399,77 @@
 				"name": "aria-required",
 				"type": "property",
 				"value": "true/false",
+				"enum": [],
 				"defaultValue": "false"
 			},
 			{
 				"name": "aria-roledescription",
 				"type": "property",
 				"value": "string",
+				"enum": [],
 				"isGlobal": true
 			},
 			{
 				"name": "aria-rowcount",
 				"type": "property",
-				"value": "integer"
+				"value": "integer",
+				"enum": []
 			},
 			{
 				"name": "aria-rowindex",
 				"type": "property",
-				"value": "integer"
+				"value": "integer",
+				"enum": []
 			},
 			{
 				"name": "aria-rowspan",
 				"type": "property",
-				"value": "integer"
+				"value": "integer",
+				"enum": []
 			},
 			{
 				"name": "aria-selected",
 				"type": "state",
 				"value": "true/false/undefined",
+				"enum": [],
 				"defaultValue": "undefined"
 			},
 			{
 				"name": "aria-setsize",
 				"type": "property",
-				"value": "integer"
+				"value": "integer",
+				"enum": []
 			},
 			{
 				"name": "aria-sort",
 				"type": "property",
 				"value": "token",
+				"enum": ["ascending", "descending", "none", "other"],
 				"defaultValue": "none"
 			},
 			{
 				"name": "aria-valuemax",
 				"type": "property",
-				"value": "number"
+				"value": "number",
+				"enum": []
 			},
 			{
 				"name": "aria-valuemin",
 				"type": "property",
-				"value": "number"
+				"value": "number",
+				"enum": []
 			},
 			{
 				"name": "aria-valuenow",
 				"type": "property",
-				"value": "number"
+				"value": "number",
+				"enum": []
 			},
 			{
 				"name": "aria-valuetext",
 				"type": "property",
-				"value": "string"
+				"value": "string",
+				"enum": []
 			}
 		],
 		"#contentModels": {

@@ -275,3 +275,63 @@ export function getComputedRole(el: Element<any, any>) {
 	const implicitRole = getImplicitRole(el);
 	return implicitRole;
 }
+
+/**
+ *
+ * @see https://www.w3.org/TR/wai-aria-1.2/#propcharacteristic_value
+ *
+ * @param type
+ * @param value
+ * @param tokenEnum
+ */
+export function checkAriaValue(type: string, value: string, tokenEnum: string[]) {
+	switch (type) {
+		case 'token': {
+			return tokenEnum.includes(value);
+		}
+		case 'token list': {
+			const list = value.split(/\s+/g).map(s => s.trim());
+			return list.every(token => tokenEnum.includes(token));
+		}
+		case 'string':
+		case 'ID reference':
+		case 'ID reference list': {
+			return true;
+		}
+		case 'true/false': {
+			return ['true', 'false'].includes(value);
+		}
+		case 'tristate': {
+			return ['mixed', 'true', 'false', 'undefined'].includes(value);
+		}
+		case 'true/false/undefined': {
+			return ['true', 'false', 'undefined'].includes(value);
+		}
+		case 'integer': {
+			return parseInt(value).toString() === value;
+		}
+		case 'number': {
+			return parseFloat(value).toString() === value;
+		}
+	}
+	// For skipping checking
+	return true;
+}
+
+export function checkAria(attrName: string, currentValue: string) {
+	const ariaAttrs = html.def['#ariaAttrs'];
+	const aria = ariaAttrs.find(a => a.name === attrName);
+	if (!aria) {
+		return {
+			currentValue,
+			// For skipping checking
+			isValid: true,
+		};
+	}
+	const isValid = checkAriaValue(aria.value, currentValue, aria.enum);
+	return {
+		...aria,
+		currentValue,
+		isValid,
+	};
+}
