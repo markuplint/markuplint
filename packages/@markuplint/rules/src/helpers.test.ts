@@ -1,4 +1,4 @@
-import { getComputedRole, getImplicitRole, getRermittedRoles, getRoleSpec } from './helpers';
+import { checkAria, checkAriaValue, getComputedRole, getImplicitRole, getRermittedRoles, getRoleSpec } from './helpers';
 import { createElement } from './test-utils';
 
 describe('getRoleSpec', () => {
@@ -161,5 +161,60 @@ describe('getComputedRole', () => {
 		expect(getComputedRole(createElement('<a href></a>')!)).toBe('link');
 		expect(getComputedRole(createElement('<a role="button"></a>')!)).toBe('button');
 		expect(getComputedRole(createElement('<a role="button" href></a>')!)).toBe('button');
+	});
+});
+
+describe('checkAriaValue', () => {
+	test('token', () => {
+		expect(checkAriaValue('token', 'a', ['a'])).toBe(true);
+		expect(checkAriaValue('token', 'a', ['b'])).toBe(false);
+	});
+
+	test('token list', () => {
+		expect(checkAriaValue('token list', 'a', ['a'])).toBe(true);
+		expect(checkAriaValue('token list', 'a', ['b'])).toBe(false);
+		expect(checkAriaValue('token list', 'a b', ['a'])).toBe(false);
+		expect(checkAriaValue('token list', 'a b', ['b'])).toBe(false);
+		expect(checkAriaValue('token list', 'a b', ['a', 'b'])).toBe(true);
+		expect(checkAriaValue('token list', 'a b', ['a', 'b', 'c'])).toBe(true);
+		expect(checkAriaValue('token list', 'a b d', ['a', 'b', 'c'])).toBe(false);
+	});
+
+	test('integer', () => {
+		expect(checkAriaValue('integer', '1', [])).toBe(true);
+		expect(checkAriaValue('integer', '-1', [])).toBe(true);
+		expect(checkAriaValue('integer', '-1.1', [])).toBe(false);
+		expect(checkAriaValue('integer', '-1.1', [])).toBe(false);
+	});
+
+	test('number', () => {
+		expect(checkAriaValue('number', '1', [])).toBe(true);
+		expect(checkAriaValue('number', '-1', [])).toBe(true);
+		expect(checkAriaValue('number', '-1.1', [])).toBe(true);
+		expect(checkAriaValue('number', '-1.1', [])).toBe(true);
+		expect(checkAriaValue('number', '-1.1.1', [])).toBe(false);
+	});
+});
+
+describe('checkAria', () => {
+	test('aria-activedescendant', () => {
+		expect(checkAria('aria-activedescendant', 'foo').isValid).toBe(true);
+		expect(checkAria('aria-activedescendant', '').isValid).toBe(true);
+	});
+
+	test('aria-atomic', () => {
+		expect(checkAria('aria-atomic', '').isValid).toBe(false);
+		expect(checkAria('aria-atomic', 'true').isValid).toBe(true);
+		expect(checkAria('aria-atomic', 'false').isValid).toBe(true);
+		expect(checkAria('aria-atomic', 'undefined').isValid).toBe(false);
+	});
+
+	test('aria-autocomplete', () => {
+		expect(checkAria('aria-autocomplete', '').isValid).toBe(false);
+		expect(checkAria('aria-autocomplete', 'inline').isValid).toBe(true);
+		expect(checkAria('aria-autocomplete', 'list').isValid).toBe(true);
+		expect(checkAria('aria-autocomplete', 'both').isValid).toBe(true);
+		expect(checkAria('aria-autocomplete', 'none').isValid).toBe(true);
+		expect(checkAria('aria-autocomplete', 'foo').isValid).toBe(false);
 	});
 });
