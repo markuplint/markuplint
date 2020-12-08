@@ -1,4 +1,4 @@
-import { getImplicitRole, getRermittedRoles, getRoleSpec } from './helpers';
+import { getComputedRole, getImplicitRole, getRermittedRoles, getRoleSpec } from './helpers';
 import { createElement } from './test-utils';
 
 describe('getRoleSpec', () => {
@@ -125,7 +125,7 @@ describe('getRermittedRoles', () => {
 	});
 });
 
-describe('getImplicitRoles', () => {
+describe('getImplicitRole', () => {
 	test('the a element', async () => {
 		expect(getImplicitRole(createElement('<a></a>')!)).toBe(false);
 		expect(getImplicitRole(createElement('<a name="foo"></a>')!)).toBe(false);
@@ -152,5 +152,14 @@ describe('getImplicitRoles', () => {
 
 	test('the audio element', async () => {
 		expect(getImplicitRole(createElement('<audio></audio>')!)).toBe(false);
+	});
+});
+
+describe('getComputedRole', () => {
+	test('the a element', async () => {
+		expect(getComputedRole(createElement('<a></a>')!)).toBe(false);
+		expect(getComputedRole(createElement('<a href></a>')!)).toBe('link');
+		expect(getComputedRole(createElement('<a role="button"></a>')!)).toBe('button');
+		expect(getComputedRole(createElement('<a role="button" href></a>')!)).toBe('button');
 	});
 });

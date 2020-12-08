@@ -71,9 +71,9 @@ export default createRule<true, null>({
 			}
 
 			// Checking aria-*
-			const currentRole = roleAttr?.getValue().potential.trim().toLowerCase() || null; // TODO: or its implicit role
-			if (currentRole) {
-				const role = getRoleSpec(currentRole);
+			const computedRole = getComputedRole(node);
+			if (computedRole) {
+				const role = getRoleSpec(computedRole);
 				if (role) {
 					for (const attr of node.attributes) {
 						const attrName = attr.getName().potential.trim().toLowerCase();
@@ -81,7 +81,7 @@ export default createRule<true, null>({
 							if (!role.statesAndProps.includes(attrName)) {
 								reports.push({
 									severity: node.rule.severity,
-									message: `The ${attrName} state/property cannot use on the ${role.name} role.`,
+									message: `Cannot use the ${attrName} state/property on the ${role.name} role.`,
 									line: attr.startLine,
 									col: attr.startCol,
 									raw: attr.raw,

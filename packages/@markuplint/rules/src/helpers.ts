@@ -265,3 +265,13 @@ export function getImplicitRole(el: Element<any, any>) {
 	}
 	return implicitRole.role;
 }
+
+export function getComputedRole(el: Element<any, any>) {
+	const roleAttrTokens = el.getAttributeToken('role');
+	const roleAttr = roleAttrTokens[0];
+	if (roleAttr) {
+		return roleAttr.getValue().potential.trim().toLowerCase();
+	}
+	const implicitRole = getImplicitRole(el);
+	return implicitRole;
+}
