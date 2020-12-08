@@ -1,4 +1,4 @@
-import { getRermittedRoles, getRoleSpec } from './helpers';
+import { getImplicitRole, getRermittedRoles, getRoleSpec } from './helpers';
 import { createElement } from './test-utils';
 
 describe('getRoleSpec', () => {
@@ -122,5 +122,35 @@ describe('getRermittedRoles', () => {
 		expect(getRermittedRoles(createElement('<input type="checkbox" aria-pressed="true">')!)).toStrictEqual([
 			'button',
 		]);
+	});
+});
+
+describe('getImplicitRoles', () => {
+	test('the a element', async () => {
+		expect(getImplicitRole(createElement('<a></a>')!)).toBe(false);
+		expect(getImplicitRole(createElement('<a name="foo"></a>')!)).toBe(false);
+		expect(getImplicitRole(createElement('<a href></a>')!)).toBe('link');
+		expect(getImplicitRole(createElement('<a href=""></a>')!)).toBe('link');
+		expect(getImplicitRole(createElement('<a href="path/to"></a>')!)).toBe('link');
+	});
+
+	test('the area element', async () => {
+		expect(getImplicitRole(createElement('<area />')!)).toBe(false);
+		expect(getImplicitRole(createElement('<area shape="rect" />')!)).toBe(false);
+		expect(getImplicitRole(createElement('<area href />')!)).toBe('link');
+		expect(getImplicitRole(createElement('<area href="" />')!)).toBe('link');
+		expect(getImplicitRole(createElement('<area href="path/to" />')!)).toBe('link');
+	});
+
+	test('the article element', async () => {
+		expect(getImplicitRole(createElement('<article></article>')!)).toBe('article');
+	});
+
+	test('the aside element', async () => {
+		expect(getImplicitRole(createElement('<aside></aside>')!)).toBe('complementary');
+	});
+
+	test('the audio element', async () => {
+		expect(getImplicitRole(createElement('<audio></audio>')!)).toBe(false);
 	});
 });

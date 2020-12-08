@@ -46,6 +46,19 @@ export default createRule<true, null>({
 						raw: roleAttr.raw,
 					});
 				}
+
+				// Set the implicit role explicitly
+				const implictRole = getImplicitRole(node);
+				if (implictRole && implictRole === value) {
+					// Abstract role
+					reports.push({
+						severity: node.rule.severity,
+						message: `Don't set the implicit role explicitly because the "${value}" role is the implicit role of the ${node.nodeName} element.`,
+						line: roleAttr.startLine,
+						col: roleAttr.startCol,
+						raw: roleAttr.raw,
+					});
+				}
 			}
 
 			// Checking aria-*

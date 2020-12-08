@@ -248,3 +248,18 @@ export function getRermittedRoles(el: Element<any, any>) {
 	}
 	return spec.roles;
 }
+
+export function getImplicitRole(el: Element<any, any>) {
+	const implicitRole = htmlSpec(el.nodeName)?.implicitRole;
+	if (!implicitRole) {
+		return false;
+	}
+	if (implicitRole.conditions) {
+		for (const { condition, role } of implicitRole.conditions) {
+			if (el.matches(condition)) {
+				return role;
+			}
+		}
+	}
+	return implicitRole.role;
+}
