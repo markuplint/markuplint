@@ -17,6 +17,7 @@ import LandmarkRoles from './landmark-roles';
 import PermittedContents from './permitted-contents';
 import RequiredAttr from './required-attr';
 import RequiredH1 from './required-h1';
+import WaiAria from './wai-aria';
 
 export default [
 	AttrDuplication,
@@ -38,4 +39,5 @@ export default [
 	PermittedContents,
 	RequiredAttr,
 	RequiredH1,
+	WaiAria,
 ];

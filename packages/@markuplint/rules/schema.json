@@ -62,6 +62,9 @@
 				},
 				"required-h1": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/required-h1/schema.json"
+				},
+				"wai-aria": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/wai-aria/schema.json"
 				}
 			}
 		}
