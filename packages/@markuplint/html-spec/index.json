@@ -5505,7 +5505,7 @@
 		{
 			"name": "div",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
-			"description": "The HTML Content Division element (<div>) is the generic container for flow content. It has no effect on the content or layout until styled using CSS.",
+			"description": "The HTML Content Division element (<div>) is the generic container for flow content. It has no effect on the content or layout until styled in some way using CSS (e.g. styling is directly applied to it, or some kind of layout model like Flexbox is applied to its parent element).",
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
 				"summary": "Flow content. Or (in WHATWG HTML): If the parent is a <dl> element: one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.",
