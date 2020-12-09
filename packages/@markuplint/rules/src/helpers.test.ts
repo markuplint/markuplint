@@ -157,6 +157,10 @@ describe('getImplicitRole', () => {
 	test('the audio element', async () => {
 		expect(getImplicitRole(createElement('<audio></audio>')!)).toBe(false);
 	});
+
+	test('the h1 element', async () => {
+		expect(getImplicitRole(createElement('<h1></h1>')!)).toBe('heading');
+	});
 });
 
 describe('getComputedRole', () => {

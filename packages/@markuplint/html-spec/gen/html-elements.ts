@@ -14,12 +14,15 @@ export async function getHTMLElements() {
 		for (let i = 1; i < 6; i++) {
 			const h = { ...headingElementSpec };
 			const name = `h${i}`;
+			const ariaInHtml = getAriaInHtml(name);
 			h.name = name;
 			h.permittedStructures = { ...h.permittedStructures, ...getPermittedStructures(name) };
+			h.permittedRoles = { ...h.permittedRoles, ...ariaInHtml.permittedRoles };
+			h.implicitRole = { ...h.implicitRole, ...ariaInHtml.implicitRole };
 			specs.push(h);
 		}
 	}
-	return specs.sort(nameCompare);
+	return specs.sort(nameCompare).filter(spec => spec.name !== 'h1-h6');
 }
 
 export async function getHTMLElement(link: string) {

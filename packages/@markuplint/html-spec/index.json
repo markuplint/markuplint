@@ -6111,32 +6111,11 @@
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation or none",
-				"roles": true
+				"roles": ["tab", "presentation", "none"]
 			},
 			"implicitRole": {
 				"summary": "heading",
-				"role": false
-			},
-			"omittion": false,
-			"attributes": ["#globalAttrs", "#ariaAttrs"]
-		},
-		{
-			"name": "h1-h6",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements",
-			"description": "The HTML <h1>–<h6> elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
-			"categories": ["#flow", "#heading", "#palpable"],
-			"permittedStructures": {
-				"summary": "Phrasing content.",
-				"tag": "h1-h6",
-				"contents": true
-			},
-			"permittedRoles": {
-				"summary": "tab, presentation or none",
-				"roles": true
-			},
-			"implicitRole": {
-				"summary": "heading",
-				"role": false
+				"role": "heading"
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -6157,11 +6136,11 @@
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation or none",
-				"roles": true
+				"roles": ["tab", "presentation", "none"]
 			},
 			"implicitRole": {
 				"summary": "heading",
-				"role": false
+				"role": "heading"
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -6182,11 +6161,11 @@
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation or none",
-				"roles": true
+				"roles": ["tab", "presentation", "none"]
 			},
 			"implicitRole": {
 				"summary": "heading",
-				"role": false
+				"role": "heading"
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -6207,11 +6186,11 @@
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation or none",
-				"roles": true
+				"roles": ["tab", "presentation", "none"]
 			},
 			"implicitRole": {
 				"summary": "heading",
-				"role": false
+				"role": "heading"
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
@@ -6232,11 +6211,11 @@
 			},
 			"permittedRoles": {
 				"summary": "tab, presentation or none",
-				"roles": true
+				"roles": ["tab", "presentation", "none"]
 			},
 			"implicitRole": {
 				"summary": "heading",
-				"role": false
+				"role": "heading"
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
