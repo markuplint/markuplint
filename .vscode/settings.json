@@ -2,7 +2,8 @@
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"eslint.enable": true,
 	"files.associations": {
-		".markuplintrc": "json"
+		".markuplintrc": "json",
+		"*.schema.json": "jsonc"
 	},
 	"json.schemas": [
 		{
@@ -20,6 +21,10 @@
 		{
 			"fileMatch": ["/packages/*markuplint/html-spec/src/attributes/*.json"],
 			"url": "/packages/@markuplint/ml-spec/schemas/attributes.schema.json"
+		},
+		{
+			"fileMatch": ["/packages/*markuplint/html-spec/src/wai-aria/*.json"],
+			"url": "/packages/@markuplint/ml-spec/schemas/wai-aria.schema.json"
 		}
 	],
 	"eslint.workingDirectories": [

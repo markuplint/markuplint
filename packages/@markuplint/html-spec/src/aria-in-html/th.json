@@ -1,0 +1,24 @@
+{
+	"permittedRoles": {
+		"roles": true,
+		"conditions": [
+			{
+				"condition": ":descendants(table[role=table], table[role=grid], table[role=treegrid])",
+				"roles": false
+			}
+		]
+	},
+	"implicitRole": {
+		"role": "rowheader",
+		"conditions": [
+			{
+				"condition": ":descendants(table[role=grid], table[role=treegrid])",
+				"role": "gridcell"
+			},
+			{
+				"condition": ":descendants(thead, tfoot), [scope=col]",
+				"role": "columnheader"
+			}
+		]
+	}
+}

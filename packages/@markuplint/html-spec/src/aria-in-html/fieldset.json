@@ -1,0 +1,8 @@
+{
+	"permittedRoles": {
+		"roles": ["radiogroup", "presentation", "none"]
+	},
+	"implicitRole": {
+		"role": "group"
+	}
+}

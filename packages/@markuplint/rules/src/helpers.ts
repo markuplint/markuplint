@@ -1,5 +1,6 @@
-import { Attribute, ElementSpec, ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+import { ARIRRoleAttribute, Attribute, ElementSpec, ExtendedSpec, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
 import { Element, RuleConfigValue } from '@markuplint/ml-core';
+import html from '@markuplint/html-spec';
 
 /**
  * Merging HTML-spec schema and extended spec schemas
@@ -169,4 +170,185 @@ const reCostomElement = new RegExp(`^(?:[a-z](?:${rePCENChar})*\\-(?:${rePCENCha
 
 export function isCustomElement(nodeName: string) {
 	return reCostomElement.test(nodeName);
+}
+
+export function htmlSpec(tag: string) {
+	tag = tag.toLowerCase();
+	const spec = html.specs.find(spec => spec.name === tag);
+	return spec || null;
+}
+
+export function ariaSpec() {
+	const roles = html.def['#roles'];
+	const ariaAttrs = html.def['#ariaAttrs'];
+	return {
+		roles,
+		ariaAttrs,
+	};
+}
+
+export function getRoleSpec(roleName: string) {
+	const role = getRoleByName(roleName);
+	if (!role) {
+		return null;
+	}
+	const superClassRoles = recursiveTraverseSuperClassRoles(roleName);
+	return {
+		name: role.name,
+		isAbstract: !!role.isAbstract,
+		statesAndProps: role.ownedAttribute,
+		superClassRoles,
+	};
+}
+
+function getRoleByName(roleName: string) {
+	const roles = html.def['#roles'];
+	const role = roles.find(r => r.name === roleName);
+	return role;
+}
+
+function getSuperClassRoles(roleName: string) {
+	const role = getRoleByName(roleName);
+	return (
+		role?.generalization
+			.map(roleName => getRoleByName(roleName))
+			.filter((role): role is ARIRRoleAttribute => !!role) || null
+	);
+}
+
+function recursiveTraverseSuperClassRoles(roleName: string) {
+	const roles: ARIRRoleAttribute[] = [];
+	const superClassRoles = getSuperClassRoles(roleName);
+	if (superClassRoles) {
+		roles.push(...superClassRoles);
+		for (const superClassRole of superClassRoles) {
+			const ancestorRoles = recursiveTraverseSuperClassRoles(superClassRole.name);
+			roles.push(...ancestorRoles);
+		}
+	}
+	return roles;
+}
+
+/**
+ * Getting permitted ARIA roles.
+ *
+ * - If an array, it is role list.
+ * - If `true`, this mean is "Any".
+ * - If `false`, this mean is "No".
+ */
+export function getPermittedRoles(el: Element<any, any>) {
+	const implicitRole = getImplicitRole(el);
+	const spec = htmlSpec(el.nodeName)?.permittedRoles;
+	if (!spec) {
+		return true;
+	}
+	if (spec.conditions) {
+		for (const { condition, roles } of spec.conditions) {
+			if (el.matches(condition)) {
+				return mergeRoleList(implicitRole, roles);
+			}
+		}
+	}
+	if (implicitRole && Array.isArray(spec.roles)) {
+		return [implicitRole, ...spec.roles];
+	}
+	if (implicitRole && spec.roles === false) {
+		return [implicitRole];
+	}
+	return mergeRoleList(implicitRole, spec.roles);
+}
+
+function mergeRoleList(implicitRole: string | false, permittedRoles: PermittedRoles) {
+	if (implicitRole && Array.isArray(permittedRoles)) {
+		return [implicitRole, ...permittedRoles];
+	}
+	if (implicitRole && permittedRoles === false) {
+		return [implicitRole];
+	}
+	return permittedRoles;
+}
+
+export function getImplicitRole(el: Element<any, any>) {
+	const implicitRole = htmlSpec(el.nodeName)?.implicitRole;
+	if (!implicitRole) {
+		return false;
+	}
+	if (implicitRole.conditions) {
+		for (const { condition, role } of implicitRole.conditions) {
+			if (el.matches(condition)) {
+				return role;
+			}
+		}
+	}
+	return implicitRole.role;
+}
+
+export function getComputedRole(el: Element<any, any>) {
+	const roleAttrTokens = el.getAttributeToken('role');
+	const roleAttr = roleAttrTokens[0];
+	if (roleAttr) {
+		return roleAttr.getValue().potential.trim().toLowerCase();
+	}
+	const implicitRole = getImplicitRole(el);
+	return implicitRole;
+}
+
+/**
+ *
+ * @see https://www.w3.org/TR/wai-aria-1.2/#propcharacteristic_value
+ *
+ * @param type
+ * @param value
+ * @param tokenEnum
+ */
+export function checkAriaValue(type: string, value: string, tokenEnum: string[]) {
+	switch (type) {
+		case 'token': {
+			return tokenEnum.includes(value);
+		}
+		case 'token list': {
+			const list = value.split(/\s+/g).map(s => s.trim());
+			return list.every(token => tokenEnum.includes(token));
+		}
+		case 'string':
+		case 'ID reference':
+		case 'ID reference list': {
+			return true;
+		}
+		case 'true/false': {
+			return ['true', 'false'].includes(value);
+		}
+		case 'tristate': {
+			return ['mixed', 'true', 'false', 'undefined'].includes(value);
+		}
+		case 'true/false/undefined': {
+			return ['true', 'false', 'undefined'].includes(value);
+		}
+		case 'integer': {
+			return parseInt(value).toString() === value;
+		}
+		case 'number': {
+			return parseFloat(value).toString() === value;
+		}
+	}
+	// For skipping checking
+	return true;
+}
+
+export function checkAria(attrName: string, currentValue: string) {
+	const ariaAttrs = html.def['#ariaAttrs'];
+	const aria = ariaAttrs.find(a => a.name === attrName);
+	if (!aria) {
+		return {
+			currentValue,
+			// For skipping checking
+			isValid: true,
+		};
+	}
+	const isValid = checkAriaValue(aria.value, currentValue, aria.enum);
+	return {
+		...aria,
+		currentValue,
+		isValid,
+	};
 }

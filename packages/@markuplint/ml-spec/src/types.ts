@@ -85,7 +85,23 @@ export type ElementSpec = {
 	 */
 	permittedRoles: {
 		summary: string;
-		roles: PermittedRolesSpec;
+		roles: PermittedRoles;
+		conditions?: {
+			condition: string;
+			roles: PermittedRoles;
+		}[];
+	};
+
+	/**
+	 * Implicit ARIA role
+	 */
+	implicitRole: {
+		summary: string;
+		role: ImplicitRole;
+		conditions?: {
+			condition: string;
+			role: ImplicitRole;
+		}[];
 	};
 
 	/**
@@ -99,7 +115,16 @@ export type ElementSpec = {
 	attributes: (Attribute | string)[];
 };
 
-type PermittedRolesSpec = {};
+/**
+ * If `false`, this mean is "No corresponding role".
+ */
+type ImplicitRole = string | false;
+
+/**
+ * If `true`, this mean is "Any".
+ * If `false`, this mean is "No".
+ */
+export type PermittedRoles = string[] | boolean;
 
 type ElementSpecOmittion = false | ElementSpecOmittionTags;
 
@@ -182,7 +207,9 @@ export type ARIAAttribute = {
 	name: string;
 	type: 'property' | 'state';
 	deprecated?: true;
+	isGlobal?: true;
 	value: ARIAAttributeValue;
+	enum: string[];
 	defaultValue?: string;
 };
 

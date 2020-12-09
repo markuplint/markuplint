@@ -1,0 +1,31 @@
+{
+	"permittedRoles": {
+		"roles": true,
+		"conditions": [
+			{
+				"condition": "[href]",
+				"roles": [
+					"button",
+					"checkbox",
+					"menuitem",
+					"menuitemcheckbox",
+					"menuitemradio",
+					"option",
+					"radio",
+					"switch",
+					"tab",
+					"treeitem"
+				]
+			}
+		]
+	},
+	"implicitRole": {
+		"role": false,
+		"conditions": [
+			{
+				"condition": "[href]",
+				"role": "link"
+			}
+		]
+	}
+}

@@ -18,7 +18,8 @@
 		"attr-value-quotes": true,
 		"case-sensitive-attr-name": true,
 		"case-sensitive-tag-name": true,
-		"indentation": "tab"
+		"indentation": "tab",
+		"wai-aria": true
 	},
 	"nodeRules": [
 		{

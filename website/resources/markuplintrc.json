@@ -1,5 +1,4 @@
 {
-	"extends": "markuplint/html-spec",
 	"rules": {
 		"attr-duplication": true,
 		"character-reference": true,
@@ -15,11 +14,12 @@
 		"class-naming": "/[a-z]+/",
 		"attr-equal-space-after": true,
 		"attr-equal-space-before": true,
-		"attr-spasing": true,
+		"attr-spacing": true,
 		"attr-value-quotes": true,
 		"case-sensitive-attr-name": true,
 		"case-sensitive-tag-name": true,
-		"indentation": "tab"
+		"indentation": "tab",
+		"wai-aria": true
 	},
 	"nodeRules": []
 }

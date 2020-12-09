@@ -1,0 +1,14 @@
+{
+	"permittedRoles": {
+		"roles": ["search", "none", "presentation"]
+	},
+	"implicitRole": {
+		"role": "form",
+		"conditions": [
+			{
+				"condition": "#hasAccname",
+				"role": false
+			}
+		]
+	}
+}

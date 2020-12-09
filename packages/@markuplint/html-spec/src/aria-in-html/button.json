@@ -1,0 +1,18 @@
+{
+	"permittedRoles": {
+		"roles": [
+			"checkbox",
+			"link",
+			"menuitem",
+			"menuitemcheckbox",
+			"menuitemradio",
+			"option",
+			"radio",
+			"switch",
+			"tab"
+		]
+	},
+	"implicitRole": {
+		"role": "button"
+	}
+}

@@ -2,6 +2,7 @@
 
 import { Attribute, ContentModel, ElementSpec } from '@markuplint/ml-spec';
 import fetch from './fetch';
+import { getAriaInHtml } from './get-aria-in-html';
 import { getAttribute } from './get-attribute';
 import { getPermittedStructures } from './get-permitted-structures';
 import { nameCompare } from './utils';
@@ -15,12 +16,15 @@ export async function getHTMLElements() {
 		for (let i = 1; i < 6; i++) {
 			const h = { ...headingElementSpec };
 			const name = `h${i}`;
+			const ariaInHtml = getAriaInHtml(name);
 			h.name = name;
 			h.permittedStructures = { ...h.permittedStructures, ...getPermittedStructures(name) };
+			h.permittedRoles = { ...h.permittedRoles, ...ariaInHtml.permittedRoles };
+			h.implicitRole = { ...h.implicitRole, ...ariaInHtml.implicitRole };
 			specs.push(h);
 		}
 	}
-	return specs.sort(nameCompare);
+	return specs.sort(nameCompare).filter(spec => spec.name !== 'h1-h6');
 }
 
 export async function getHTMLElement(link: string) {
@@ -78,9 +82,12 @@ export async function getHTMLElement(link: string) {
 
 	const permittedContent = getProperty($, 'Permitted content');
 	const permittedRoles = getProperty($, 'Permitted ARIA roles');
+	const implicitRole = getProperty($, 'Implicit ARIA role');
 
 	const attrs = getAttributes($, '#Attributes', name);
 	attrs.sort(nameCompare);
+
+	const ariaInHtml = getAriaInHtml(name);
 
 	const spec: ElementSpec = {
 		name,
@@ -97,7 +104,11 @@ export async function getHTMLElement(link: string) {
 		},
 		permittedRoles: {
 			summary: permittedRoles,
-			roles: {},
+			...ariaInHtml.permittedRoles,
+		},
+		implicitRole: {
+			summary: implicitRole,
+			...ariaInHtml.implicitRole,
 		},
 		omittion: false,
 		attributes: ['#globalAttrs', '#ariaAttrs', ...attrs],
@@ -211,6 +222,7 @@ function upToPrevOrParent($start: cheerio.Cheerio) {
 }
 
 function isHeading($el: cheerio.Cheerio) {
+	// @ts-ignore
 	return /^h[1-6]$/i.test($el[0].tagName);
 }
 

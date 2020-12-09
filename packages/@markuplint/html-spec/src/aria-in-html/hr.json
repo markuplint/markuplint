@@ -1,0 +1,8 @@
+{
+	"permittedRoles": {
+		"roles": ["presentation", "none"]
+	},
+	"implicitRole": {
+		"role": "separator"
+	}
+}

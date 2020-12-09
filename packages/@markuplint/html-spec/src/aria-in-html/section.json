@@ -1,0 +1,34 @@
+{
+	"permittedRoles": {
+		"roles": [
+			"alert",
+			"alertdialog",
+			"application",
+			"banner",
+			"complementary",
+			"contentinfo",
+			"dialog",
+			"document",
+			"feed",
+			"log",
+			"main",
+			"marquee",
+			"navigation",
+			"none",
+			"note",
+			"presentation",
+			"search",
+			"status",
+			"tabpanel"
+		]
+	},
+	"implicitRole": {
+		"role": false,
+		"conditions": [
+			{
+				"condition": "#hasAccname",
+				"role": "region"
+			}
+		]
+	}
+}
