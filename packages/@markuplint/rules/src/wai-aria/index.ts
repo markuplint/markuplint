@@ -68,36 +68,40 @@ export default createRule<true, Options>({
 				}
 
 				// Set the implicit role explicitly
-				const implictRole = getImplicitRole(node);
-				if (implictRole && implictRole === value) {
-					// Abstract role
-					reports.push({
-						severity: node.rule.severity,
-						message: `Don't set the implicit role explicitly because the "${value}" role is the implicit role of the ${node.nodeName} element.`,
-						line: roleAttr.startLine,
-						col: roleAttr.startCol,
-						raw: roleAttr.raw,
-					});
+				if (node.rule.option.disallowSetImplicitRole) {
+					const implictRole = getImplicitRole(node);
+					if (implictRole && implictRole === value) {
+						// Abstract role
+						reports.push({
+							severity: node.rule.severity,
+							message: `Don't set the implicit role explicitly because the "${value}" role is the implicit role of the ${node.nodeName} element.`,
+							line: roleAttr.startLine,
+							col: roleAttr.startCol,
+							raw: roleAttr.raw,
+						});
+					}
 				}
 
 				// Permitted ARIA Roles
-				const permittedRoles = getPermittedRoles(node);
-				if (permittedRoles === false) {
-					reports.push({
-						severity: node.rule.severity,
-						message: `The ARIA Role of the ${node.nodeName} element cannot overwrite according to ARIA in HTML spec.`,
-						line: roleAttr.startLine,
-						col: roleAttr.startCol,
-						raw: roleAttr.raw,
-					});
-				} else if (Array.isArray(permittedRoles) && !permittedRoles.includes(value)) {
-					reports.push({
-						severity: node.rule.severity,
-						message: `The ARIA Role of the ${node.nodeName} element cannot overwrite "${value}" according to ARIA in HTML spec.`,
-						line: roleAttr.startLine,
-						col: roleAttr.startCol,
-						raw: roleAttr.raw,
-					});
+				if (node.rule.option.permittedAriaRoles) {
+					const permittedRoles = getPermittedRoles(node);
+					if (permittedRoles === false) {
+						reports.push({
+							severity: node.rule.severity,
+							message: `The ARIA Role of the ${node.nodeName} element cannot overwrite according to ARIA in HTML spec.`,
+							line: roleAttr.startLine,
+							col: roleAttr.startCol,
+							raw: roleAttr.raw,
+						});
+					} else if (Array.isArray(permittedRoles) && !permittedRoles.includes(value)) {
+						reports.push({
+							severity: node.rule.severity,
+							message: `The ARIA Role of the ${node.nodeName} element cannot overwrite "${value}" according to ARIA in HTML spec.`,
+							line: roleAttr.startLine,
+							col: roleAttr.startCol,
+							raw: roleAttr.raw,
+						});
+					}
 				}
 			}
 
@@ -142,23 +146,25 @@ export default createRule<true, Options>({
 			}
 
 			// Checking ARIA Value
-			for (const attr of node.attributes) {
-				const attrName = attr.getName().potential.trim().toLowerCase();
-				if (/^aria-/i.test(attrName)) {
-					const value = attr.getValue().potential.trim().toLowerCase();
-					const result = checkAria(attrName, value);
-					if (!result.isValid) {
-						reports.push({
-							severity: node.rule.severity,
-							message:
-								`The "${value}" is disallowed in the ${attrName} state/property.` +
-								('enum' in result && result.enum.length
-									? ` Allow values are ${result.enum.join(', ')}.`
-									: ''),
-							line: attr.startLine,
-							col: attr.startCol,
-							raw: attr.raw,
-						});
+			if (node.rule.option.checkingValue) {
+				for (const attr of node.attributes) {
+					const attrName = attr.getName().potential.trim().toLowerCase();
+					if (/^aria-/i.test(attrName)) {
+						const value = attr.getValue().potential.trim().toLowerCase();
+						const result = checkAria(attrName, value);
+						if (!result.isValid) {
+							reports.push({
+								severity: node.rule.severity,
+								message:
+									`The "${value}" is disallowed in the ${attrName} state/property.` +
+									('enum' in result && result.enum.length
+										? ` Allow values are ${result.enum.join(', ')}.`
+										: ''),
+								line: attr.startLine,
+								col: attr.startCol,
+								raw: attr.raw,
+							});
+						}
 					}
 				}
 			}

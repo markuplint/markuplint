@@ -182,6 +182,25 @@ describe('Use a bad value of the `aria-*` attribute', () => {
 
 		expect(r.length).toBe(0);
 	});
+
+	test('disabled', async () => {
+		const r = await markuplint.verify(
+			'<div aria-current="foo"></div>',
+			{
+				rules: {
+					'wai-aria': {
+						option: {
+							checkingValue: false,
+						},
+					},
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r.length).toBe(0);
+	});
 });
 
 describe('Use the not permitted role according to ARIA in HTML', () => {
@@ -227,11 +246,29 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 				severity: 'error',
 				line: 1,
 				col: 9,
-				message:
-					'The ARIA Role of the a element cannot overwrite by "document" according to ARIA in HTML spec.',
+				message: 'The ARIA Role of the a element cannot overwrite "document" according to ARIA in HTML spec.',
 				raw: 'role="document"',
 			},
 		]);
+	});
+
+	test('disabled', async () => {
+		const r = await markuplint.verify(
+			'<script role="link"></script>',
+			{
+				rules: {
+					'wai-aria': {
+						option: {
+							permittedAriaRoles: false,
+						},
+					},
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r.length).toBe(0);
 	});
 });
 
@@ -259,5 +296,24 @@ describe('Set the implicit role explicitly', () => {
 				raw: 'role="link"',
 			},
 		]);
+	});
+
+	test('disabled', async () => {
+		const r = await markuplint.verify(
+			'<a href="path/to" role="link"></a>',
+			{
+				rules: {
+					'wai-aria': {
+						option: {
+							disallowSetImplicitRole: false,
+						},
+					},
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r.length).toBe(0);
 	});
 });
