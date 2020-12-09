@@ -208,6 +208,31 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 			},
 		]);
 	});
+
+	test('a[role=document]', async () => {
+		const r = await markuplint.verify(
+			'<a href role="document"></a>',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message:
+					'The ARIA Role of the a element cannot overwrite by "document" according to ARIA in HTML spec.',
+				raw: 'role="document"',
+			},
+		]);
+	});
 });
 
 describe('Set the implicit role explicitly', () => {

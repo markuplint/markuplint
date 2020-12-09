@@ -5,7 +5,7 @@ import {
 	checkAria,
 	getComputedRole,
 	getImplicitRole,
-	getRermittedRoles,
+	getPermittedRoles,
 	getRoleSpec,
 	getSpec,
 	htmlSpec,
@@ -79,6 +79,26 @@ export default createRule<true, Options>({
 						raw: roleAttr.raw,
 					});
 				}
+
+				// Permitted ARIA Roles
+				const permittedRoles = getPermittedRoles(node);
+				if (permittedRoles === false) {
+					reports.push({
+						severity: node.rule.severity,
+						message: `The ARIA Role of the ${node.nodeName} element cannot overwrite according to ARIA in HTML spec.`,
+						line: roleAttr.startLine,
+						col: roleAttr.startCol,
+						raw: roleAttr.raw,
+					});
+				} else if (Array.isArray(permittedRoles) && !permittedRoles.includes(value)) {
+					reports.push({
+						severity: node.rule.severity,
+						message: `The ARIA Role of the ${node.nodeName} element cannot overwrite "${value}" according to ARIA in HTML spec.`,
+						line: roleAttr.startLine,
+						col: roleAttr.startCol,
+						raw: roleAttr.raw,
+					});
+				}
 			}
 
 			// Checking aria-* on the role
@@ -141,18 +161,6 @@ export default createRule<true, Options>({
 						});
 					}
 				}
-			}
-
-			// Permitted ARIA Roles
-			const permittedRoles = getRermittedRoles(node);
-			if (permittedRoles === false) {
-				reports.push({
-					severity: node.rule.severity,
-					message: `The ARIA Role of the ${node.nodeName} element cannot overwrite according to ARIA in HTML spec.`,
-					line: roleAttr.startLine,
-					col: roleAttr.startCol,
-					raw: roleAttr.raw,
-				});
 			}
 		});
 

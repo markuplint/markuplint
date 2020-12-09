@@ -1,4 +1,4 @@
-import { ARIRRoleAttribute, Attribute, ElementSpec, ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+import { ARIRRoleAttribute, Attribute, ElementSpec, ExtendedSpec, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
 import { Element, RuleConfigValue } from '@markuplint/ml-core';
 import html from '@markuplint/html-spec';
 
@@ -236,7 +236,8 @@ function recursiveTraverseSuperClassRoles(roleName: string) {
  * - If `true`, this mean is "Any".
  * - If `false`, this mean is "No".
  */
-export function getRermittedRoles(el: Element<any, any>) {
+export function getPermittedRoles(el: Element<any, any>) {
+	const implicitRole = getImplicitRole(el);
 	const spec = htmlSpec(el.nodeName)?.permittedRoles;
 	if (!spec) {
 		return true;
@@ -244,11 +245,27 @@ export function getRermittedRoles(el: Element<any, any>) {
 	if (spec.conditions) {
 		for (const { condition, roles } of spec.conditions) {
 			if (el.matches(condition)) {
-				return roles;
+				return mergeRoleList(implicitRole, roles);
 			}
 		}
 	}
-	return spec.roles;
+	if (implicitRole && Array.isArray(spec.roles)) {
+		return [implicitRole, ...spec.roles];
+	}
+	if (implicitRole && spec.roles === false) {
+		return [implicitRole];
+	}
+	return mergeRoleList(implicitRole, spec.roles);
+}
+
+function mergeRoleList(implicitRole: string | false, permittedRoles: PermittedRoles) {
+	if (implicitRole && Array.isArray(permittedRoles)) {
+		return [implicitRole, ...permittedRoles];
+	}
+	if (implicitRole && permittedRoles === false) {
+		return [implicitRole];
+	}
+	return permittedRoles;
 }
 
 export function getImplicitRole(el: Element<any, any>) {

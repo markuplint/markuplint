@@ -124,7 +124,7 @@ type ImplicitRole = string | false;
  * If `true`, this mean is "Any".
  * If `false`, this mean is "No".
  */
-type PermittedRoles = string[] | boolean;
+export type PermittedRoles = string[] | boolean;
 
 type ElementSpecOmittion = false | ElementSpecOmittionTags;
 

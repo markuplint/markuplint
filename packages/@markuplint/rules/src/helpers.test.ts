@@ -1,4 +1,4 @@
-import { checkAria, checkAriaValue, getComputedRole, getImplicitRole, getRermittedRoles, getRoleSpec } from './helpers';
+import { checkAria, checkAriaValue, getComputedRole, getImplicitRole, getPermittedRoles, getRoleSpec } from './helpers';
 import { createElement } from './test-utils';
 
 describe('getRoleSpec', () => {
@@ -59,10 +59,11 @@ describe('getRoleSpec', () => {
 	});
 });
 
-describe('getRermittedRoles', () => {
+describe('getPermittedRoles', () => {
 	test('the a element', async () => {
-		expect(getRermittedRoles(createElement('<a></a>')!)).toBe(true);
-		expect(getRermittedRoles(createElement('<a href="path/to"></a>')!)).toStrictEqual([
+		expect(getPermittedRoles(createElement('<a></a>')!)).toBe(true);
+		expect(getPermittedRoles(createElement('<a href="path/to"></a>')!)).toStrictEqual([
+			'link',
 			'button',
 			'checkbox',
 			'menuitem',
@@ -77,19 +78,20 @@ describe('getRermittedRoles', () => {
 	});
 
 	test('the area element', async () => {
-		expect(getRermittedRoles(createElement('<area></area>')!)).toBe(false);
-		expect(getRermittedRoles(createElement('<area href="path/to"></area>')!)).toBe(false);
+		expect(getPermittedRoles(createElement('<area></area>')!)).toBe(false);
+		expect(getPermittedRoles(createElement('<area href="path/to"></area>')!)).toStrictEqual(['link']);
 	});
 
 	test('the figure element', async () => {
-		expect(getRermittedRoles(createElement('<figure></figure>')!)).toBe(false);
-		expect(getRermittedRoles(createElement('<figure><figcaption></figcaption></figure>')!)).toBe(true);
+		expect(getPermittedRoles(createElement('<figure></figure>')!)).toStrictEqual(['figure']);
+		expect(getPermittedRoles(createElement('<figure><figcaption></figcaption></figure>')!)).toBe(true);
 	});
 
 	test('the img element', async () => {
-		expect(getRermittedRoles(createElement('<img>')!)).toBe(false);
-		expect(getRermittedRoles(createElement('<img alt="">')!)).toStrictEqual(['none', 'presentation']);
-		expect(getRermittedRoles(createElement('<img alt="photo: something">')!)).toStrictEqual([
+		expect(getPermittedRoles(createElement('<img>')!)).toStrictEqual(['img']);
+		expect(getPermittedRoles(createElement('<img alt="">')!)).toStrictEqual(['none', 'presentation']);
+		expect(getPermittedRoles(createElement('<img alt="photo: something">')!)).toStrictEqual([
+			'img',
 			'button',
 			'checkbox',
 			'link',
@@ -108,8 +110,9 @@ describe('getRermittedRoles', () => {
 	});
 
 	test('the input element', async () => {
-		expect(getRermittedRoles(createElement('<input>')!)).toBe(false);
-		expect(getRermittedRoles(createElement('<input type="button">')!)).toStrictEqual([
+		expect(getPermittedRoles(createElement('<input>')!)).toBe(false);
+		expect(getPermittedRoles(createElement('<input type="button">')!)).toStrictEqual([
+			'button',
 			'link',
 			'menuitem',
 			'menuitemcheckbox',
@@ -119,7 +122,8 @@ describe('getRermittedRoles', () => {
 			'switch',
 			'tab',
 		]);
-		expect(getRermittedRoles(createElement('<input type="checkbox" aria-pressed="true">')!)).toStrictEqual([
+		expect(getPermittedRoles(createElement('<input type="checkbox" aria-pressed="true">')!)).toStrictEqual([
+			'checkbox',
 			'button',
 		]);
 	});
