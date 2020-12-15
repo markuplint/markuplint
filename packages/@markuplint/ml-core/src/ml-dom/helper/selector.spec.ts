@@ -74,6 +74,34 @@ describe('selector matching', () => {
 		expect(createSelector(':root').match(el.parentNode)).toBe(true);
 	});
 
+	it(':has', async () => {
+		const el = {
+			nodeName: 'div',
+			parentNode: null,
+			childNodes: [
+				{
+					nodeName: 'span',
+					parentNode: null,
+					childNodes: [],
+				},
+			],
+		};
+		expect(createSelector(':has(> span)').match(el)).toBe(true);
+
+		const el2 = {
+			nodeName: 'div',
+			parentNode: null,
+			childNodes: [
+				{
+					nodeName: 'a',
+					parentNode: null,
+					childNodes: [],
+				},
+			],
+		};
+		expect(createSelector(':has(> span)').match(el2)).toBe(false);
+	});
+
 	it('Multiple selector', async () => {
 		const el = {
 			nodeName: 'div',
