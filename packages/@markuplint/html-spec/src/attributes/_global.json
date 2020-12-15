@@ -373,6 +373,10 @@
 		{
 			"name": "onwheel",
 			"type": "Function"
+		},
+		{
+			"name": "role",
+			"type": "String"
 		}
 	]
 }
