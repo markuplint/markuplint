@@ -53,7 +53,8 @@ This is the default setting. If you never used it, you should probably copy it t
 
 ## Scoped Rules
 
-If you want the part of structures only to apply some rule then set the tag name to `nodeRules` or set the selector to `childNodeRules`.
+If you want the part of structures only to apply some rule then set the tag name or the selector to `nodeRules` or `childNodeRules`.
+`nodeRules` affect only the target element. And `childNodeRules` affect child (includes descendants if set to `inheritance`) elements of the target element.
 
 ```json
 {
@@ -62,6 +63,12 @@ If you want the part of structures only to apply some rule then set the tag name
 			"tagName": "main",
 			"rules": {
 				"class-naming": "/[a-z]+(__[a-z]+)?/"
+			}
+		},
+		{
+			"selector": ".some-class-name",
+			"rules": {
+				"required-attr": true
 			}
 		}
 	],

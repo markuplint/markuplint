@@ -26,12 +26,48 @@
 		"nodeRules": {
 			"type": "array",
 			"items": {
+				"oneOf": [
+					{
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["tagName", "rules"],
+						"properties": {
+							"tagName": {
+								"type": "string"
+							},
+							"rules": {
+								"$ref": "#/definitions/rules"
+							}
+						}
+					},
+					{
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["selector", "rules"],
+						"properties": {
+							"selector": {
+								"type": "string"
+							},
+							"rules": {
+								"$ref": "#/definitions/rules"
+							}
+						}
+					}
+				]
+			}
+		},
+		"childNodeRules": {
+			"type": "array",
+			"items": {
 				"type": "object",
 				"additionalProperties": false,
-				"required": ["tagName", "rules"],
+				"required": ["selector", "rules"],
 				"properties": {
-					"tagName": {
+					"selector": {
 						"type": "string"
+					},
+					"inheritance": {
+						"type": "boolean"
 					},
 					"rules": {
 						"$ref": "#/definitions/rules"
