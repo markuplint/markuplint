@@ -102,6 +102,42 @@ describe('selector matching', () => {
 		expect(createSelector(':has(> span)').match(el2)).toBe(false);
 	});
 
+	it(':descendants', () => {
+		const selector =
+			':descendants(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])';
+		const el = {
+			nodeName: 'header',
+			parentNode: null,
+			childNodes: [
+				{
+					nodeName: 'article',
+					parentNode: null,
+					childNodes: [],
+				},
+			],
+		};
+		expect(createSelector(selector).match(el)).toBe(true);
+
+		const el2 = {
+			nodeName: 'header',
+			parentNode: null,
+			childNodes: [
+				{
+					nodeName: 'div',
+					parentNode: null,
+					childNodes: [
+						{
+							nodeName: 'article',
+							parentNode: null,
+							childNodes: [],
+						},
+					],
+				},
+			],
+		};
+		expect(createSelector(selector).match(el2)).toBe(true);
+	});
+
 	it('Multiple selector', async () => {
 		const el = {
 			nodeName: 'div',
