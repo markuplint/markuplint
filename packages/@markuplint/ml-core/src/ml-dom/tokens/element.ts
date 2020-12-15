@@ -127,6 +127,7 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null>
 	}
 
 	matches(selector: string): boolean {
+		// @ts-ignore TODO: To improvement testable object
 		return createSelector(selector).match(this);
 	}
 

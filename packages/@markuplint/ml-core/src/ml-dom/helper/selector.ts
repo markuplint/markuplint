@@ -1,12 +1,14 @@
 import { Selector as CSSSelector, CssSelectorParser } from 'css-selector-parser';
-import { AnonymousNode } from '../';
 
-interface ElementLikeObject {
+interface NodeLikeObject {
 	nodeName: string;
+	parentNode: this | null;
+}
+
+interface ElementLikeObject extends NodeLikeObject {
 	id?: string;
 	classList?: string[] | DOMTokenList;
-	parentNode: this | null;
-	childNodes: AnonymousNode<any, any>[];
+	childNodes: (NodeLikeObject | ElementLikeObject)[];
 	getAttribute?: (attrName: string) => string | null;
 }
 
@@ -128,35 +130,33 @@ function match(element: ElementLikeObject, ruleset: CSSSelector, rawSelector: st
 						break;
 					}
 					case 'has': {
-						const has = element.childNodes.some(child => {
-							let childSelector: CSSSelector;
-							let useChildCombinator = false;
-							if (pseudo.valueType !== 'selector') {
-								const selectorParser = new CssSelectorParser();
+						let childSelector: CSSSelector;
+						let useChildCombinator = false;
+						if (pseudo.valueType !== 'selector') {
+							const selectorParser = new CssSelectorParser();
 
-								/**
-								 * The issue.
-								 * @see https://github.com/mdevils/css-selector-parser/issues/21
-								 */
-								if (/^>/.test(pseudo.value.trim())) {
-									pseudo.value = pseudo.value.trim().replace(/^>/, '');
-									useChildCombinator = true;
-								}
-								childSelector = selectorParser.parse(pseudo.value);
-								// throw new Error(`Unexpected parameters in "has" pseudo selector in "${rawSelector}"`);
-							} else {
-								childSelector = pseudo.value;
+							/**
+							 * The issue.
+							 * @see https://github.com/mdevils/css-selector-parser/issues/21
+							 */
+							if (/^>/.test(pseudo.value.trim())) {
+								pseudo.value = pseudo.value.trim().replace(/^>/, '');
+								useChildCombinator = true;
 							}
-							if (child.type === 'Element') {
-								if (useChildCombinator) {
-									return match(child, childSelector, rawSelector);
-								}
-								// TODO: Recursive checking when selector without child combinator.
-								throw new Error(`Unsupport "${pseudo.name}" pseudo selector in "${rawSelector}"`);
-							}
-							return false;
+							childSelector = selectorParser.parse(pseudo.value);
+							// throw new Error(`Unexpected parameters in "has" pseudo selector in "${rawSelector}"`);
+						} else {
+							childSelector = pseudo.value;
+						}
+						const nodes = treeToArray(element.childNodes, !useChildCombinator);
+						const has = nodes.some(node => {
+							return match(node, childSelector, rawSelector);
 						});
 						andMatch.push(has);
+						break;
+					}
+					case 'closest': {
+						// TODO: To impliment
 						break;
 					}
 					default: {
@@ -174,4 +174,17 @@ function match(element: ElementLikeObject, ruleset: CSSSelector, rawSelector: st
 
 export function createSelector(selector: string) {
 	return new Selector(selector);
+}
+
+function treeToArray(tree: (NodeLikeObject | ElementLikeObject)[], recursive = true) {
+	const array: ElementLikeObject[] = [];
+	for (const node of tree) {
+		if ('childNodes' in node) {
+			array.push(node);
+			if (recursive) {
+				array.push(...treeToArray(node.childNodes));
+			}
+		}
+	}
+	return array;
 }

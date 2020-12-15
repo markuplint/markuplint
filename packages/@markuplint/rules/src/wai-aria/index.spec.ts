@@ -298,6 +298,54 @@ describe('Set the implicit role explicitly', () => {
 		]);
 	});
 
+	test('header[role=banner]', async () => {
+		const r = await markuplint.verify(
+			'<header role="banner"></header>',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message:
+					'Don\'t set the implicit role explicitly because the "banner" role is the implicit role of the header element.',
+				raw: 'role="banner"',
+			},
+		]);
+
+		const r2 = await markuplint.verify(
+			'<header role="banner"><article></article></header>',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r2).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message:
+					'The ARIA Role of the header element cannot overwrite "banner" according to ARIA in HTML spec.',
+				raw: 'role="banner"',
+			},
+		]);
+	});
+
 	test('disabled', async () => {
 		const r = await markuplint.verify(
 			'<a href="path/to" role="link"></a>',

@@ -3,7 +3,7 @@
 		"roles": true,
 		"conditions": [
 			{
-				"condition": ":descendants(table[role=table], table[role=grid], table[role=treegrid])",
+				"condition": ":closest(table[role=table], table[role=grid], table[role=treegrid])",
 				"roles": false
 			}
 		]
@@ -12,11 +12,11 @@
 		"role": "rowheader",
 		"conditions": [
 			{
-				"condition": ":descendants(table[role=grid], table[role=treegrid])",
+				"condition": ":closest(table[role=grid], table[role=treegrid])",
 				"role": "gridcell"
 			},
 			{
-				"condition": ":descendants(thead, tfoot), [scope=col]",
+				"condition": ":closest(thead, tfoot), [scope=col]",
 				"role": "columnheader"
 			}
 		]

@@ -74,6 +74,68 @@ describe('selector matching', () => {
 		expect(createSelector(':root').match(el.parentNode)).toBe(true);
 	});
 
+	it(':has', async () => {
+		const el = {
+			nodeName: 'div',
+			parentNode: null,
+			childNodes: [
+				{
+					nodeName: 'span',
+					parentNode: null,
+					childNodes: [],
+				},
+			],
+		};
+		expect(createSelector(':has(> span)').match(el)).toBe(true);
+
+		const el2 = {
+			nodeName: 'div',
+			parentNode: null,
+			childNodes: [
+				{
+					nodeName: 'a',
+					parentNode: null,
+					childNodes: [],
+				},
+			],
+		};
+		expect(createSelector(':has(> span)').match(el2)).toBe(false);
+
+		const selector =
+			':has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])';
+		const el3 = {
+			nodeName: 'header',
+			parentNode: null,
+			childNodes: [
+				{
+					nodeName: 'article',
+					parentNode: null,
+					childNodes: [],
+				},
+			],
+		};
+		expect(createSelector(selector).match(el3)).toBe(true);
+
+		const el4 = {
+			nodeName: 'header',
+			parentNode: null,
+			childNodes: [
+				{
+					nodeName: 'div',
+					parentNode: null,
+					childNodes: [
+						{
+							nodeName: 'article',
+							parentNode: null,
+							childNodes: [],
+						},
+					],
+				},
+			],
+		};
+		expect(createSelector(selector).match(el4)).toBe(true);
+	});
+
 	it('Multiple selector', async () => {
 		const el = {
 			nodeName: 'div',

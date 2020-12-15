@@ -5898,7 +5898,7 @@
 				"role": "contentinfo",
 				"conditions": [
 					{
-						"condition": ":descendants(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])",
+						"condition": ":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])",
 						"role": false
 					}
 				]
@@ -6286,7 +6286,7 @@
 				"role": "banner",
 				"conditions": [
 					{
-						"condition": ":descendants(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])",
+						"condition": ":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])",
 						"role": false
 					}
 				]
@@ -10079,7 +10079,7 @@
 				"roles": true,
 				"conditions": [
 					{
-						"condition": ":descendants(table[role=table], table[role=grid], table[role=treegrid])",
+						"condition": ":closest(table[role=table], table[role=grid], table[role=treegrid])",
 						"roles": false
 					}
 				]
@@ -10089,7 +10089,7 @@
 				"role": "cell",
 				"conditions": [
 					{
-						"condition": ":descendants(table[role=grid], table[role=treegrid])",
+						"condition": ":closest(table[role=grid], table[role=treegrid])",
 						"role": "gridcell"
 					}
 				]
@@ -10388,7 +10388,7 @@
 				"roles": true,
 				"conditions": [
 					{
-						"condition": ":descendants(table[role=table], table[role=grid], table[role=treegrid])",
+						"condition": ":closest(table[role=table], table[role=grid], table[role=treegrid])",
 						"roles": false
 					}
 				]
@@ -10398,11 +10398,11 @@
 				"role": "rowheader",
 				"conditions": [
 					{
-						"condition": ":descendants(table[role=grid], table[role=treegrid])",
+						"condition": ":closest(table[role=grid], table[role=treegrid])",
 						"role": "gridcell"
 					},
 					{
-						"condition": ":descendants(thead, tfoot), [scope=col]",
+						"condition": ":closest(thead, tfoot), [scope=col]",
 						"role": "columnheader"
 					}
 				]
@@ -10661,7 +10661,7 @@
 				"roles": true,
 				"conditions": [
 					{
-						"condition": ":descendants(table[role=table], table[role=grid], table[role=treegrid])",
+						"condition": ":closest(table[role=table], table[role=grid], table[role=treegrid])",
 						"roles": false
 					}
 				]

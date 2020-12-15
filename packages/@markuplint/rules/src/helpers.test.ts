@@ -161,6 +161,13 @@ describe('getImplicitRole', () => {
 	test('the h1 element', async () => {
 		expect(getImplicitRole(createElement('<h1></h1>')!)).toBe('heading');
 	});
+
+	test('the header element', async () => {
+		expect(getImplicitRole(createElement('<header></header>')!)).toBe('banner');
+		expect(getImplicitRole(createElement('<header><article></article></header>')!)).toBe(false);
+		expect(getImplicitRole(createElement('<header><div></div></header>')!)).toBe('banner');
+		expect(getImplicitRole(createElement('<header><div role="article"></div></header>')!)).toBe(false);
+	});
 });
 
 describe('getComputedRole', () => {

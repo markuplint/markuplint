@@ -3,7 +3,7 @@
 		"roles": true,
 		"conditions": [
 			{
-				"condition": ":descendants(table[role=table], table[role=grid], table[role=treegrid])",
+				"condition": ":closest(table[role=table], table[role=grid], table[role=treegrid])",
 				"roles": false
 			}
 		]
