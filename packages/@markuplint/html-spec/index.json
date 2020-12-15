@@ -3666,7 +3666,7 @@
 		{
 			"name": "a",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a",
-			"description": "The HTML <a> element (or anchor element), with its href attribute, creates a hyperlink to web pages, files, email addresses, locations in the same page, or anything else a URL can address. Content within each <a> should indicate the link's destination.",
+			"description": "The HTML <a> element (or anchor element), with its href attribute, creates a hyperlink to web pages, files, email addresses, locations in the same page, or anything else a URL can address. Content within each <a> should indicate the link's destination. If the href attribute is present, pressing the enter key while focused on the <a> element will activate it.",
 			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
 			"permittedStructures": {
 				"summary": "Transparent, containing either flow content (excluding interactive content) or phrasing content.",
