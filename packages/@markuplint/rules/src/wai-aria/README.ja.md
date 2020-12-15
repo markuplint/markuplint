@@ -70,3 +70,44 @@ ARIA in HTML の仕様において要素に許可されているロールかど�
 ### デフォルトの警告の厳しさ
 
 `error`
+
+## 設定例
+
+ブラウザのサポート状況や支援技術の振る舞いで調整が必要な場合の例を挙げます。
+
+以下は Safari と VoiceOver の環境で、SVG を読み込んでいる`img`要素に`role="img"`が必要な場合に、`disallowSetImplicitRole`を無効化する例です。（この問題は[この課題](https://bugs.webkit.org/show_bug.cgi?id=145263)に基づいています。）
+
+```json
+{
+	"rules": {
+		"wai-aria": true
+	},
+	"nodeRules": [
+		{
+			"selector": "img[src$=.svg]",
+			"rules": {
+				// 暗黙のロールを許可する
+				"wai-aria": {
+					"option": {
+						"disallowSetImplicitRole": false
+					}
+				},
+				// role属性を必須とする
+				"required-attr": "role",
+				// role属性の値をimgのみとする
+				"invalid-attr": {
+					"option": {
+						"attrs": {
+							"role": {
+								"enum": ["img"]
+							}
+						}
+					}
+				}
+			}
+		}
+	]
+}
+```
+
+セレクタ `img[src$=.svg]` を指定して SVG を読み込んでいる要素に**限定して**ルールを設定します。そして、 `disallowSetImplicitRole`オプションを無効化することで、`img`要素の暗黙のロールである`role="img"`の指定を**許可**します。さらに `required-attr`ルールで `role`属性の指定を必須とし、`invalid-attr`ルールで`role`属性の値を`img`のみ許可することで、`img[src$=.svg]`の要素に`role="img"`を付加することを促すことができます。

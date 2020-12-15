@@ -365,3 +365,32 @@ describe('Set the implicit role explicitly', () => {
 		expect(r.length).toBe(0);
 	});
 });
+
+describe('childNodeRules', () => {
+	test('ex. For Safari + VoiceOver', async () => {
+		const r = await markuplint.verify(
+			'<img src="path/to.svg" alt="text" role="img" />',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+				nodeRules: [
+					{
+						selector: 'img[src$=.svg]',
+						rules: {
+							'wai-aria': {
+								option: {
+									disallowSetImplicitRole: false,
+								},
+							},
+						},
+					},
+				],
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r.length).toBe(0);
+	});
+});
