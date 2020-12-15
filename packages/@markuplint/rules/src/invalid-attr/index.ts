@@ -55,7 +55,7 @@ export default createRule<true, Option>({
 
 				if (customRule) {
 					if ('enum' in customRule) {
-						invalid = typeCheck(name.toLowerCase(), value, {
+						invalid = typeCheck(name.toLowerCase(), value, true, {
 							name,
 							type: 'String',
 							enum: customRule.enum,
@@ -69,11 +69,11 @@ export default createRule<true, Option>({
 							};
 						}
 					} else if ('type' in customRule) {
-						invalid = typeCheck(name, value, { name, type: customRule.type, description: '' });
+						invalid = typeCheck(name, value, true, { name, type: customRule.type, description: '' });
 					}
 				} else if (!isCustomElement(node.nodeName) && attributeSpecs) {
 					const spec = attributeSpecs.find(s => s.name === name);
-					invalid = typeCheck(name, value, spec);
+					invalid = typeCheck(name, value, false, spec);
 					if (!invalid && spec && !attrMatches(node, spec.condition)) {
 						invalid = {
 							invalidType: 'non-existent',

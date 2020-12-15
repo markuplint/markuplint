@@ -41,6 +41,28 @@
 					}
 				}
 			}
+		},
+		{
+			"selector": "img[src$=.svg]",
+			"rules": {
+				"wai-aria": {
+					"option": {
+						"disallowSetImplicitRole": false
+					}
+				},
+				"required-attr": "role",
+				"invalid-attr": {
+					"option": {
+						"attrs": {
+							"role": {
+								"enum": [
+									"img"
+								]
+							}
+						}
+					}
+				}
+			}
 		}
 	]
 }

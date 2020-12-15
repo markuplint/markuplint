@@ -5,15 +5,17 @@ type Invalid = {
 	message: string;
 };
 
-export function typeCheck(name: string, value: string, spec?: AttrSpec): Invalid | false {
-	if (/^data-.+$/.test(name)) {
-		// Ignore checking because "data-*" attribute is any type
-		return false;
-	}
+export function typeCheck(name: string, value: string, isCustomRule: boolean, spec?: AttrSpec): Invalid | false {
+	if (!isCustomRule) {
+		if (/^data-.+$/.test(name)) {
+			// Ignore checking because "data-*" attribute is any type
+			return false;
+		}
 
-	if (/^aria-.+$|^role$/.test(name)) {
-		// Ignore checking because ARIA attributes are check on another rule
-		return false;
+		if (/^aria-.+$|^role$/.test(name)) {
+			// Ignore checking because ARIA attributes are check on another rule
+			return false;
+		}
 	}
 
 	// Existance
