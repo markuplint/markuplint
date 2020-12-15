@@ -100,12 +100,10 @@ describe('selector matching', () => {
 			],
 		};
 		expect(createSelector(':has(> span)').match(el2)).toBe(false);
-	});
 
-	it(':descendants', () => {
 		const selector =
-			':descendants(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])';
-		const el = {
+			':has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])';
+		const el3 = {
 			nodeName: 'header',
 			parentNode: null,
 			childNodes: [
@@ -116,9 +114,9 @@ describe('selector matching', () => {
 				},
 			],
 		};
-		expect(createSelector(selector).match(el)).toBe(true);
+		expect(createSelector(selector).match(el3)).toBe(true);
 
-		const el2 = {
+		const el4 = {
 			nodeName: 'header',
 			parentNode: null,
 			childNodes: [
@@ -135,7 +133,7 @@ describe('selector matching', () => {
 				},
 			],
 		};
-		expect(createSelector(selector).match(el2)).toBe(true);
+		expect(createSelector(selector).match(el4)).toBe(true);
 	});
 
 	it('Multiple selector', async () => {

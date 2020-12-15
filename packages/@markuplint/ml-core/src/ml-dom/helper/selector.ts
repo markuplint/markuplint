@@ -129,8 +129,7 @@ function match(element: ElementLikeObject, ruleset: CSSSelector, rawSelector: st
 						andMatch.push(!element.parentNode);
 						break;
 					}
-					case 'has':
-					case 'descendants' /* @deprecated */: {
+					case 'has': {
 						let childSelector: CSSSelector;
 						let useChildCombinator = false;
 						if (pseudo.valueType !== 'selector') {
@@ -154,6 +153,10 @@ function match(element: ElementLikeObject, ruleset: CSSSelector, rawSelector: st
 							return match(node, childSelector, rawSelector);
 						});
 						andMatch.push(has);
+						break;
+					}
+					case 'closest': {
+						// TODO: To impliment
 						break;
 					}
 					default: {

@@ -6,7 +6,7 @@
 		"role": "banner",
 		"conditions": [
 			{
-				"condition": ":descendants(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])",
+				"condition": ":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])",
 				"role": false
 			}
 		]
