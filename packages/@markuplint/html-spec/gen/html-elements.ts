@@ -33,7 +33,7 @@ export async function getHTMLElement(link: string) {
 	if (name === 'heading_elements') {
 		name = 'h1-h6';
 	}
-	const $article = $('#wikiArticle');
+	const $article = $('article.article');
 	const description = $article
 		.find('.seoSummary')
 		.closest('p')
@@ -56,15 +56,17 @@ export async function getHTMLElement(link: string) {
 		deprecated = !!$bcTableFirstRow.find('.ic-deprecated').length || undefined;
 		nonStandard = !!$bcTableFirstRow.find('.ic-non-standard').length || undefined;
 	} else {
-		experimental = !!$article.find('.blockIndicator.experimental').length || undefined;
+		experimental =
+			!!$article.find('.blockIndicator.experimental, > div .notecard.experimental').length || undefined;
 		obsolete =
 			!!$article.find('.obsoleteHeader').length ||
 			!!$('h1')
 				.text()
 				.match(/obsolete/i) ||
+			!!$article.find('> div:first-child .notecard.obsolete').length ||
 			undefined;
-		deprecated = !!$article.find('.deprecatedHeader').length || undefined;
-		nonStandard = !!$article.find('.nonStandardHeader').length || undefined;
+		deprecated = !!$article.find('.deprecatedHeader, > div:first-child .notecard.deprecated').length || undefined;
+		nonStandard = !!$article.find('.nonStandardHeader, h4#Non-standard').length || undefined;
 	}
 
 	const categories: ContentModel[] = [];
@@ -123,7 +125,7 @@ export function getAttributes($: cheerio.Root, heading: string, tagName: string)
 	const { attributes } = getAttribute(tagName);
 	const result: Attribute[] = attributes.map(a => ({ ...a, description: '' }));
 	$outline
-		.find('> dl > dt')
+		.find('> div > dl > dt')
 		.toArray()
 		.forEach(dt => {
 			const $dt = $(dt);
@@ -132,14 +134,14 @@ export function getAttributes($: cheerio.Root, heading: string, tagName: string)
 				return null;
 			}
 			const $myHeading = getItsHeading($dt);
-			const experimental = !!$dt.find('.icon-beaker').length || undefined;
-			const obsolete = !!$dt.find('.icon-trash').length || !!$dt.find('.obsolete').length || undefined;
+			const experimental = !!$dt.find('.icon-beaker, .icon.experimental').length || undefined;
+			const obsolete =
+				!!$dt.find('.icon-trash, .icon.obsolete').length || !!$dt.find('.obsolete').length || undefined;
 			const deprecated =
-				!!$dt.find('.icon-thumbs-down-alt').length ||
-				!!$dt.find('.deprecated').length ||
+				!!$dt.find('.icon-thumbs-down-alt, .icon.deprecated').length ||
 				$myHeading?.attr('id') === 'Deprecated_attributes' ||
 				undefined;
-			const nonStandard = !!$dt.find('.icon-warning-sign').length || undefined;
+			const nonStandard = !!$dt.find('.icon-warning-sign, .icon.non-standard').length || undefined;
 			const description = $dt
 				.nextAll('dd')
 				.toArray()
@@ -176,7 +178,7 @@ export function getAttributes($: cheerio.Root, heading: string, tagName: string)
 }
 
 function getProperty($: cheerio.Root, prop: string) {
-	const $tr = $('#wikiArticle table.properties tr') || $('#Technical_summary').next('table tr');
+	const $tr = $('article.article table.properties tr') || $('#Technical_summary').next('table tr');
 	const $th = $(
 		$tr
 			.find('th')
@@ -229,7 +231,7 @@ function isHeading($el: cheerio.Cheerio) {
 async function getHTMLElementLinks() {
 	const $ = await fetch('https://developer.mozilla.org/en-US/docs/Web/HTML/Element');
 	const $listHeading = $(
-		$('.sidebar .quick-links details summary')
+		$('#sidebar-quicklinks summary')
 			.toArray()
 			.filter(el => /html elements/i.test($(el).text()))[0],
 	);
