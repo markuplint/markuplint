@@ -21,7 +21,7 @@
 	"devDependencies": {
 		"@types/cli-color": "^2.0.0",
 		"@types/meow": "^5.0.0",
-		"execa": "^4.0.3"
+		"execa": "^5.0.0"
 	},
 	"dependencies": {
 		"@markuplint/file-resolver": "^1.1.0",
@@ -36,7 +36,7 @@
 		"cli-color": "^2.0.0",
 		"eastasianwidth": "^0.2.0",
 		"get-stdin": "^8.0.0",
-		"meow": "^7.0.1",
+		"meow": "^8.1.0",
 		"os-locale": "^5.0.0",
 		"strip-ansi": "^6.0.0"
 	}

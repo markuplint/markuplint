@@ -1,4 +1,5 @@
 import { Document, Element, convertRuleset } from '@markuplint/ml-core';
+import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 import { parse } from '@markuplint/html-parser';
 
 export function createElement(htmlFragmentString: string) {
