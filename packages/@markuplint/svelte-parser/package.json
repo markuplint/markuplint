@@ -18,6 +18,6 @@
 	"dependencies": {
 		"@markuplint/html-parser": "^1.1.0",
 		"@markuplint/ml-ast": "^1.1.0",
-		"svelte": "^3.31.0"
+		"svelte": "^3.31.2"
 	}
 }

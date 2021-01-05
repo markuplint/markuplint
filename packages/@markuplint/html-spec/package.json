@@ -18,9 +18,9 @@
 		"@types/cheerio": "^0.22.23",
 		"@types/cli-progress": "^3.8.0",
 		"@types/node-fetch": "^2.5.7",
-		"cheerio": "^1.0.0-rc.3",
+		"cheerio": "^1.0.0-rc.5",
 		"cli-progress": "^3.8.2",
-		"fast-xml-parser": "^3.17.5",
+		"fast-xml-parser": "^3.17.6",
 		"node-fetch": "^2.6.1"
 	},
 	"dependencies": {
