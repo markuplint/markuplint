@@ -5553,7 +5553,7 @@
 			"description": "",
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
-				"summary": "Either: Zero or more groups each consisting of one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements. Or: One or more <div> elements, optionally intermixed with <script> and <template> elements.",
+				"summary": "Either: Zero or more groups each consisting of one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements. Or: (in WHATWG HTML, W3C HTML 5.2 and later) One or more <div> elements, optionally intermixed with <script> and <template> elements.",
 				"tag": "dl",
 				"contents": [
 					{
