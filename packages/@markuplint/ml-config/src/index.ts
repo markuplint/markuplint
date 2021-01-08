@@ -1,6 +1,7 @@
 export interface Config {
 	$schema?: string;
 	parser?: ParserConfig;
+	parserOptions?: ParserOptions;
 	extends?: string | string[];
 	specs?: string | string[];
 	rules?: Rules;
@@ -12,6 +13,10 @@ export interface Config {
 export interface ParserConfig {
 	[extensionPattern: string]: string /* module name or path */;
 }
+
+export type ParserOptions = {
+	ignoreFrontMatter?: boolean;
+};
 
 export type Rule = RuleConfig<RuleConfigValue, unknown> | RuleConfigValue;
 

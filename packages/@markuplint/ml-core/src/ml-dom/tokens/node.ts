@@ -129,7 +129,7 @@ export default abstract class MLDOMNode<
 			// Spaces will include empty string.
 			const spaces = matched[1];
 			if (spaces != null) {
-				this.#indentaion = new MLDOMIndentation(prevToken, spaces, this.startLine);
+				this.#indentaion = new MLDOMIndentation(prevToken, spaces, this.startLine, this);
 				return this.#indentaion;
 			}
 		}

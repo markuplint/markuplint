@@ -14,6 +14,15 @@
 				"type": "string"
 			}
 		},
+		"parserOptions": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"ignoreFrontMatter": {
+					"type": "boolean"
+				}
+			}
+		},
 		"specs": {
 			"type": "array",
 			"items": {
