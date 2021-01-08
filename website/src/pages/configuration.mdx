@@ -21,6 +21,7 @@ The priority applied names are:
 ## Properties
 
 -   [`parser`](#parser)
+-   [`parserOptions`](#parserOptions)
 -   [`specs`](#specs)
 -   [`extends`](#extends)
 -   [`rules`](#rules)
@@ -40,6 +41,33 @@ Set a regular expression that can identify the target file name to the key, and 
 		".any$": "./path/to/custom-parser/any-lang"
 	}
 }
+```
+
+### `parserOptions`
+
+```json
+{
+	"parserOptions": {
+		"ignoreFrontMatter": true
+	}
+}
+```
+
+#### `ignoreFrontMatter`
+
+-   **Type**: `boolean`
+-   **Default**: `false`
+
+When set true the parser ignores the [Front Matter](https://jekyllrb.com/docs/front-matter/) format part of the source code.
+
+```html
+---
+prop: value
+---
+
+<html>
+	...
+</html>
 ```
 
 ### `specs`
