@@ -18,6 +18,7 @@
 	"dependencies": {
 		"@markuplint/html-parser": "^1.1.0",
 		"@markuplint/ml-ast": "^1.1.0",
+		"@markuplint/parser-utils": "^1.0.0",
 		"pug-lexer": "^5.0.0",
 		"pug-parser": "^6.0.0"
 	}

@@ -502,4 +502,56 @@ else
 		expect(attr.endQuote.raw).toEqual('"');
 		expect(attr.endQuote.startCol).toEqual(24);
 	});
+
+	it.only('add space to below', () => {
+		const doc = parse(`   \n           \n   \nhtml
+	head
+		title Title
+	body
+		h1 Title
+`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		// console.log(doc.nodeList);
+		// console.log(map);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:4](0,3)#text: ␣␣␣',
+			'[4:1]>[4:5](20,24)html: html',
+			'[5:2]>[5:6](26,30)head: head',
+			'[6:3]>[6:8](33,38)title: title',
+			'[6:9]>[7:2](39,46)#text: Title⏎→',
+			'[7:2]>[7:6](46,50)body: body',
+			'[8:3]>[8:5](53,55)h1: h1',
+			'[8:6]>[9:1](56,62)#text: Title⏎',
+		]);
+	});
+
+	it('with frontmatter', () => {
+		const doc = parse(
+			`---
+prop: value
+---
+html
+	head
+		title Title
+	body
+		h1 Title
+`,
+			0,
+			0,
+			0,
+			true,
+		);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		// console.log(doc.nodeList);
+		// console.log(map);
+		expect(map).toStrictEqual([
+			'[4:1]>[4:5](3,7)html: html',
+			'[5:2]>[5:6](9,13)head: head',
+			'[6:3]>[6:8](16,21)title: title',
+			'[6:9]>[7:2](22,29)#text: Title⏎→',
+			'[7:2]>[7:6](29,33)body: body',
+			'[8:3]>[8:5](36,38)h1: h1',
+			'[8:6]>[9:1](39,45)#text: Title⏎',
+		]);
+	});
 });

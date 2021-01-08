@@ -6,6 +6,9 @@
 	"references": [
 		{
 			"path": "../ml-ast"
+		},
+		{
+			"path": "../parser-utils"
 		}
 	],
 	"include": ["./src/**/*"],
