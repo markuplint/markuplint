@@ -121,14 +121,15 @@ export interface MLASTDocument {
 }
 
 export interface MLMarkupLanguageParser {
-	parse(sourceCode: string): MLASTDocument;
+	parse(
+		sourceCode: string,
+		offsetOffset?: number,
+		offsetLine?: number,
+		offsetColumn?: number,
+		ignoreFrontMatter?: boolean,
+	): MLASTDocument;
 }
 
-export type Parse = (
-	rawCode: string,
-	offsetOffset?: number,
-	offsetLine?: number,
-	offsetColumn?: number,
-) => MLASTDocument;
+export type Parse = MLMarkupLanguageParser['parse'];
 
 export type Walker = (node: MLASTNode, depth: number) => void;

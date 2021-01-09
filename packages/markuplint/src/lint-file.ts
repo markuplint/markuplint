@@ -34,6 +34,7 @@ export async function lintFile(
 		}
 	}
 	const parser: MLMarkupLanguageParser = await import(parserModName);
+	const parserOptions = configSet.config.parserOptions || {};
 
 	// Resolve ruleset
 	const ruleset = convertRuleset(configSet.config);
@@ -65,7 +66,7 @@ export async function lintFile(
 	let document: Document<RuleConfigValue, unknown> | null = null;
 
 	try {
-		const core = new MLCore(parser, sourceCode, ruleset, rules, i18nSettings, schemas);
+		const core = new MLCore(parser, sourceCode, ruleset, rules, i18nSettings, schemas, parserOptions);
 		results = await core.verify(fix);
 		fixedCode = core.document.toString();
 		document = core.document;

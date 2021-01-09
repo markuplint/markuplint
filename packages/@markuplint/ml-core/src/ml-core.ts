@@ -1,6 +1,6 @@
 import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 import { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
-import { RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
+import { ParserOptions, RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
 import { Document } from './ml-dom';
 import { I18n } from '@markuplint/i18n';
 import { MLRule } from './ml-rule';
@@ -15,6 +15,7 @@ export class MLCore {
 	#i18n: I18n;
 	#rules: MLRule<RuleConfigValue, unknown>[];
 	#schemas: Readonly<[MLMLSpec, ...ExtendedSpec[]]>;
+	#ignoreFrontMatter: boolean;
 
 	constructor(
 		parser: MLMarkupLanguageParser,
@@ -23,9 +24,11 @@ export class MLCore {
 		rules: MLRule<RuleConfigValue, unknown>[],
 		i18n: I18n,
 		schemas: Readonly<[MLMLSpec, ...ExtendedSpec[]]>,
+		parserOptions: ParserOptions,
 	) {
 		this.#parser = parser;
 		this.#sourceCode = sourceCode;
+		this.#ignoreFrontMatter = !!parserOptions.ignoreFrontMatter;
 		this.#ruleset = {
 			rules: ruleset.rules || {},
 			nodeRules: ruleset.nodeRules || [],
@@ -33,7 +36,7 @@ export class MLCore {
 		};
 		this.#i18n = i18n;
 		this.#schemas = schemas;
-		this.#ast = this.#parser.parse(this.#sourceCode);
+		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
 		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas);
 		this.#rules = rules;
 	}
@@ -58,15 +61,16 @@ export class MLCore {
 		return reports;
 	}
 
-	setParser(parser: MLMarkupLanguageParser) {
+	setParser(parser: MLMarkupLanguageParser, parserOptions: ParserOptions) {
 		this.#parser = parser;
-		this.#ast = this.#parser.parse(this.#sourceCode);
+		this.#ignoreFrontMatter = parserOptions.ignoreFrontMatter ?? this.#ignoreFrontMatter;
+		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
 		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas);
 	}
 
 	setCode(sourceCode: string) {
 		this.#sourceCode = sourceCode;
-		this.#ast = this.#parser.parse(this.#sourceCode);
+		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
 		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas);
 	}
 

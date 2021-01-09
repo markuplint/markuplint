@@ -13,10 +13,15 @@ import {
 } from '@markuplint/ml-ast';
 import { parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
 import attrTokenizer from './attr-tokenizer';
+import { ignoreFrontMatter } from '@markuplint/parser-utils';
 
-export const parse: Parse = rawCode => {
+export const parse: Parse = (rawCode, _, __, ___, isIgnoringFrontMatter) => {
 	let parseError: string | undefined;
 	let nodeList: MLASTNode[];
+
+	if (isIgnoringFrontMatter) {
+		rawCode = ignoreFrontMatter(rawCode);
+	}
 
 	try {
 		const parser = new Parser(rawCode);

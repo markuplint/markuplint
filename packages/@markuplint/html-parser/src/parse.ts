@@ -13,6 +13,7 @@ import {
 	uuid,
 } from '@markuplint/ml-ast';
 import { flattenNodes } from './flatten-nodes';
+import { ignoreFrontMatter } from '@markuplint/parser-utils';
 import isDocumentFragment from './is-document-fragment';
 import parse5 from 'parse5';
 import parseRawTag from './parse-raw-tag';
@@ -21,7 +22,11 @@ const P5_OPTIONS = { sourceCodeLocationInfo: true };
 
 type ASTNode = P5Node | P5Document | P5Fragment;
 
-export const parse: Parse = (rawCode, offsetOffset = 0, offsetLine = 0, offsetColumn = 0) => {
+export const parse: Parse = (rawCode, offsetOffset = 0, offsetLine = 0, offsetColumn = 0, isIgnoringFrontMatter) => {
+	if (isIgnoringFrontMatter) {
+		rawCode = ignoreFrontMatter(rawCode);
+	}
+
 	const isFragment = isDocumentFragment(rawCode);
 	const doc = isFragment
 		? (parse5.parseFragment(rawCode, P5_OPTIONS) as P5Fragment)

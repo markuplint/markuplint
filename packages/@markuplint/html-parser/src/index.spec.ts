@@ -1008,4 +1008,21 @@ describe('parser', () => {
 			'[1:43]>[1:52](42,51)script: </script>',
 		]);
 	});
+
+	it('With frontmatter', () => {
+		const doc = parse('===\np: v\n===\n<html></html>', 0, 0, 0, true);
+		expect(doc.nodeList[0].nodeName).toBe('html');
+
+		const doc2 = parse('===\np: v\n===\n<html></html>', 0, 0, 0, false);
+		expect(doc2.nodeList[0].nodeName).toBe('html');
+		expect(doc2.nodeList[0].isGhost).toBe(true);
+
+		const doc3 = parse('===\np: v\n===\n<div></div>', 0, 0, 0, true);
+		expect(doc3.nodeList[0].nodeName).toBe('#text');
+		expect(doc3.nodeList[1].nodeName).toBe('div');
+
+		const doc4 = parse('===\np: v\n===\n<div></div>', 0, 0, 0, false);
+		expect(doc4.nodeList[0].nodeName).toBe('#text');
+		expect(doc4.nodeList[1].nodeName).toBe('div');
+	});
 });

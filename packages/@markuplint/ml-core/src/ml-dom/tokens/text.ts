@@ -45,7 +45,7 @@ export default class MLDOMText<T extends RuleConfigValue, O = null>
 				const line = spaceLines.length + this.startLine - 1;
 				const lastSpace = spaceLines.pop();
 				if (lastSpace != null) {
-					return new MLDOMIndentation(this, lastSpace, line);
+					return new MLDOMIndentation(this, lastSpace, line, this);
 				}
 			}
 		}

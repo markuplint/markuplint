@@ -5,17 +5,7 @@
 		"outDir": "./lib",
 		"rootDir": "./src"
 	},
-	"references": [
-		{
-			"path": "../html-parser"
-		},
-		{
-			"path": "../ml-ast"
-		},
-		{
-			"path": "../parser-utils"
-		}
-	],
+	"references": [],
 	"include": ["./src/**/*"],
 	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
 }
