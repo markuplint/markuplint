@@ -5409,8 +5409,8 @@
 				"#ariaAttrs",
 				{
 					"name": "open",
-					"type": "String",
-					"description": "Indicates that the dialog is active and can be interacted with. When the open attribute is not set, the dialog shouldn't be shown to the user."
+					"description": "Indicates that the dialog is active and can be interacted with. When the open attribute is not set, the dialog shouldn't be shown to the user.",
+					"type": "Boolean"
 				}
 			]
 		},
