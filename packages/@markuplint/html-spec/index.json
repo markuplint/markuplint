@@ -95,6 +95,7 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/plaintext",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/portal",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q",
@@ -8857,6 +8858,44 @@
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
+		},
+		{
+			"name": "portal",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/portal",
+			"description": "The HTML Portal element (<portal>) enables the embedding of another HTML page into the current one for the purposes of allowing smoother navigation into new pages.",
+			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "portal",
+				"contents": [
+					{
+						"zeroOrMore": "#transparent"
+					}
+				]
+			},
+			"permittedRoles": {
+				"summary": "",
+				"roles": false
+			},
+			"implicitRole": {
+				"summary": "button",
+				"role": "button"
+			},
+			"omittion": false,
+			"attributes": [
+				"#globalAttrs",
+				"#ariaAttrs",
+				{
+					"name": "referrerpolicy",
+					"description": "Sets the referrer policy to use when requesting the page at the URL given as the value of the src attribute.",
+					"type": "ReferrerPolicy"
+				},
+				{
+					"name": "src",
+					"description": "The URL of the page to embed.",
+					"type": "URL"
+				}
+			]
 		},
 		{
 			"name": "pre",
