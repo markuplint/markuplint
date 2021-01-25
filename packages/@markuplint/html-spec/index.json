@@ -30,7 +30,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/command",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/content",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist",
@@ -43,7 +42,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/element",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset",
@@ -5143,61 +5141,6 @@
 			]
 		},
 		{
-			"name": "command",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/command",
-			"description": "The HTML Command element (<command>) represents a command which the user can invoke. Commands are often used as part of a context menu or toolbar. However, they can be used anywhere on the page.",
-			"obsolete": true,
-			"categories": ["#metadata", "#flow", "#phrasing"],
-			"permittedStructures": {
-				"summary": "None, it is an empty element.",
-				"tag": "command",
-				"contents": true
-			},
-			"permittedRoles": {
-				"summary": "",
-				"roles": true
-			},
-			"implicitRole": {
-				"summary": "",
-				"role": false
-			},
-			"omittion": false,
-			"attributes": [
-				"#globalAttrs",
-				"#ariaAttrs",
-				{
-					"name": "checked",
-					"type": "String",
-					"description": "Indicates whether the command is selected. Must be omitted unless the type attribute is checkbox or radio.Indicates that the command is not available.Gives a picture which represents the command.The name of the command as shown to the user.This attribute gives the name of the group of commands, with a type of radio, that will be toggled when the command itself is toggled. This attribute must be omitted unless the type attribute is radio.This attribute indicates the kind of command. This can be one of three values. command or empty which is the default state and indicates that this is a normal command. checkbox indicates that the command can be toggled using a checkbox. radio indicates that the command can be toggled using a radio button."
-				},
-				{
-					"name": "disabled",
-					"type": "String",
-					"description": "Indicates that the command is not available.Gives a picture which represents the command.The name of the command as shown to the user.This attribute gives the name of the group of commands, with a type of radio, that will be toggled when the command itself is toggled. This attribute must be omitted unless the type attribute is radio.This attribute indicates the kind of command. This can be one of three values. command or empty which is the default state and indicates that this is a normal command. checkbox indicates that the command can be toggled using a checkbox. radio indicates that the command can be toggled using a radio button."
-				},
-				{
-					"name": "icon",
-					"type": "String",
-					"description": "Gives a picture which represents the command.The name of the command as shown to the user.This attribute gives the name of the group of commands, with a type of radio, that will be toggled when the command itself is toggled. This attribute must be omitted unless the type attribute is radio.This attribute indicates the kind of command. This can be one of three values. command or empty which is the default state and indicates that this is a normal command. checkbox indicates that the command can be toggled using a checkbox. radio indicates that the command can be toggled using a radio button."
-				},
-				{
-					"name": "label",
-					"type": "String",
-					"description": "The name of the command as shown to the user.This attribute gives the name of the group of commands, with a type of radio, that will be toggled when the command itself is toggled. This attribute must be omitted unless the type attribute is radio.This attribute indicates the kind of command. This can be one of three values. command or empty which is the default state and indicates that this is a normal command. checkbox indicates that the command can be toggled using a checkbox. radio indicates that the command can be toggled using a radio button."
-				},
-				{
-					"name": "radiogroup",
-					"type": "String",
-					"description": "This attribute gives the name of the group of commands, with a type of radio, that will be toggled when the command itself is toggled. This attribute must be omitted unless the type attribute is radio.This attribute indicates the kind of command. This can be one of three values. command or empty which is the default state and indicates that this is a normal command. checkbox indicates that the command can be toggled using a checkbox. radio indicates that the command can be toggled using a radio button."
-				},
-				{
-					"name": "type",
-					"type": "String",
-					"description": "This attribute indicates the kind of command. This can be one of three values. command or empty which is the default state and indicates that this is a normal command. checkbox indicates that the command can be toggled using a checkbox. radio indicates that the command can be toggled using a radio button."
-				}
-			]
-		},
-		{
 			"name": "content",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/content",
 			"description": "The HTML <content> element—an obsolete part of the Web Components suite of technologies—was used inside of Shadow DOM as an insertion point, and wasn't meant to be used in ordinary HTML. It has now been replaced by the <slot> element, which creates a point in the DOM at which a shadow DOM can be inserted.",
@@ -5624,28 +5567,6 @@
 			"implicitRole": {
 				"summary": "term",
 				"role": "term"
-			},
-			"omittion": false,
-			"attributes": ["#globalAttrs", "#ariaAttrs"]
-		},
-		{
-			"name": "element",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/element",
-			"description": "The obsolete HTML <element> element was part of the Web Components specification; it was intended to be used to define new custom DOM elements. It was removed in favor of a JavaScript-driven approach for creating new custom elements.",
-			"obsolete": true,
-			"categories": ["#transparent"],
-			"permittedStructures": {
-				"summary": "???",
-				"tag": "element",
-				"contents": true
-			},
-			"permittedRoles": {
-				"summary": "",
-				"roles": true
-			},
-			"implicitRole": {
-				"summary": "",
-				"role": false
 			},
 			"omittion": false,
 			"attributes": ["#globalAttrs", "#ariaAttrs"]
