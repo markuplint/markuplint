@@ -1,0 +1,9 @@
+{
+	"tag": "dialog",
+	"attributes": [
+		{
+			"name": "open",
+			"type": "Boolean"
+		}
+	]
+}

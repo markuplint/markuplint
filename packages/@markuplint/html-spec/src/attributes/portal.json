@@ -1,0 +1,13 @@
+{
+	"tag": "portal",
+	"attributes": [
+		{
+			"name": "src",
+			"type": "URL"
+		},
+		{
+			"name": "referrerpolicy",
+			"type": "ReferrerPolicy"
+		}
+	]
+}

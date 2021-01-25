@@ -1,0 +1,8 @@
+{
+	"tag": "portal",
+	"contents": [
+		{
+			"zeroOrMore": "#transparent"
+		}
+	]
+}
