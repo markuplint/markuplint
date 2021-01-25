@@ -86,7 +86,7 @@ export async function getHTMLElement(link: string) {
 	const permittedRoles = getProperty($, 'Permitted ARIA roles');
 	const implicitRole = getProperty($, 'Implicit ARIA role');
 
-	const attrs = getAttributes($, '#Attributes', name);
+	const attrs = getAttributes($, '#attributes', name);
 	attrs.sort(nameCompare);
 
 	const ariaInHtml = getAriaInHtml(name);
@@ -136,14 +136,17 @@ export function getAttributes($: cheerio.Root, heading: string, tagName: string)
 			const $myHeading = getItsHeading($dt);
 			const experimental = !!$dt.find('.icon-beaker, .icon.experimental').length || undefined;
 			const obsolete =
-				!!$dt.find('.icon-trash, .icon.obsolete').length || !!$dt.find('.obsolete').length || undefined;
+				!!$dt.find('.icon-trash, .icon.obsolete').length ||
+				!!$dt.find('.obsolete').length ||
+				$myHeading?.attr('id') === 'obsolete_attributes' ||
+				undefined;
 			const deprecated =
 				!!$dt.find('.icon-thumbs-down-alt, .icon.deprecated').length ||
-				$myHeading?.attr('id') === 'Deprecated_attributes' ||
+				$myHeading?.attr('id') === 'deprecated_attributes' ||
 				undefined;
 			const nonStandard = !!$dt.find('.icon-warning-sign, .icon.non-standard').length || undefined;
 			const description = $dt
-				.nextAll('dd')
+				.next('dd')
 				.toArray()
 				.map(el => $(el).text())
 				.join('')
