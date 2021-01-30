@@ -7254,7 +7254,7 @@
 				},
 				{
 					"name": "required",
-					"description": "required is a Boolean attribute which, if present, indicates that the user must specify a value for the input before the owning form can be submitted. The required attribute is supported text, search, url, tel, email, date, month, week, time, datetime-local, number, password, checkbox, radio, and file. See Client-side validation and the HTML attribute: required for more information.",
+					"description": "required is a Boolean attribute which, if present, indicates that the user must specify a value for the input before the owning form can be submitted. The required attribute is supported by text, search, url, tel, email, date, month, week, time, datetime-local, number, password, checkbox, radio, and file inputs. See Client-side validation and the HTML attribute: required for more information.",
 					"type": "Boolean",
 					"condition": {
 						"self": [
