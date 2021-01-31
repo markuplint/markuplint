@@ -28,6 +28,17 @@ describe('parser', () => {
 		expect(doc.nodeList.length).toBe(1);
 	});
 
+	it('fragments', () => {
+		const doc = parse('<template><header></header><main></main><footer></footer></template>');
+		expect(doc.nodeList[0].nodeName).toBe('header');
+		expect(doc.nodeList[1].nodeName).toBe('header');
+		expect(doc.nodeList[2].nodeName).toBe('main');
+		expect(doc.nodeList[3].nodeName).toBe('main');
+		expect(doc.nodeList[4].nodeName).toBe('footer');
+		expect(doc.nodeList[5].nodeName).toBe('footer');
+		expect(doc.nodeList.length).toBe(6);
+	});
+
 	it('standard code', () => {
 		const doc = parse(`
 	<template>
