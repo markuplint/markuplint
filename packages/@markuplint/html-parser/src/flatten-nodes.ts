@@ -3,69 +3,7 @@ import { removeDeprecatedNode } from './remove-deprecated-node';
 import tagSplitter from './tag-splitter';
 
 export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
-	const nodeOrders: MLASTNode[] = [];
-
-	let prevLine = 1;
-	let prevCol = 1;
-	let currentStartOffset = 0;
-	let currentEndOffset = 0;
-
-	/**
-	 * pushing list
-	 */
-	walk(nodeTree, node => {
-		currentStartOffset = node.startOffset;
-
-		const diff = currentStartOffset - currentEndOffset;
-		if (diff > 0) {
-			const html = rawHtml.slice(currentEndOffset, currentStartOffset);
-
-			/**
-			 * first white spaces
-			 */
-			if (/^\s+$/.test(html)) {
-				const spaces = html;
-				const textNode: MLASTText = {
-					uuid: uuid(),
-					raw: spaces,
-					startOffset: currentEndOffset,
-					endOffset: currentEndOffset + spaces.length,
-					startLine: prevLine,
-					endLine: getEndLine(spaces, prevLine),
-					startCol: prevCol,
-					endCol: getEndCol(spaces, prevCol),
-					nodeName: '#text',
-					type: MLASTNodeType.Text,
-					parentNode: node.parentNode,
-					prevNode: node.prevNode,
-					nextNode: node,
-					isFragment: false,
-					isGhost: false,
-				};
-				node.prevNode = textNode;
-
-				if (node.parentNode && node.parentNode.childNodes) {
-					node.parentNode.childNodes.unshift(textNode);
-				}
-				nodeOrders.push(textNode);
-			} else if (/^<\/[a-z0-9][a-z0-9:-]*>$/i.test(html)) {
-				// close tag
-			} else {
-				// never
-			}
-		}
-
-		currentEndOffset = currentStartOffset + node.raw.length;
-
-		prevLine = node.endLine;
-		prevCol = node.endCol;
-
-		// for ghost nodes
-		node.startOffset = node.startOffset || currentStartOffset;
-		node.endOffset = node.endOffset || currentEndOffset;
-
-		nodeOrders.push(node);
-	});
+	const nodeOrders: MLASTNode[] = arrayize(nodeTree, rawHtml);
 
 	{
 		/**
@@ -254,4 +192,72 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 	// console.log(nodeOrders.map((n, i) => `${i}: ${n.raw.trim()}`));
 
 	return result;
+}
+
+function arrayize(nodeTree: MLASTNode[], rawHtml: string) {
+	const nodeOrders: MLASTNode[] = [];
+
+	let prevLine = 1;
+	let prevCol = 1;
+	let currentStartOffset = 0;
+	let currentEndOffset = 0;
+
+	/**
+	 * pushing list
+	 */
+	walk(nodeTree, node => {
+		currentStartOffset = node.startOffset;
+
+		const diff = currentStartOffset - currentEndOffset;
+		if (diff > 0) {
+			const html = rawHtml.slice(currentEndOffset, currentStartOffset);
+
+			/**
+			 * first white spaces
+			 */
+			if (/^\s+$/.test(html)) {
+				const spaces = html;
+				const textNode: MLASTText = {
+					uuid: uuid(),
+					raw: spaces,
+					startOffset: currentEndOffset,
+					endOffset: currentEndOffset + spaces.length,
+					startLine: prevLine,
+					endLine: getEndLine(spaces, prevLine),
+					startCol: prevCol,
+					endCol: getEndCol(spaces, prevCol),
+					nodeName: '#text',
+					type: MLASTNodeType.Text,
+					parentNode: node.parentNode,
+					prevNode: node.prevNode,
+					nextNode: node,
+					isFragment: false,
+					isGhost: false,
+				};
+				node.prevNode = textNode;
+
+				if (node.parentNode && node.parentNode.childNodes) {
+					node.parentNode.childNodes.unshift(textNode);
+				}
+				nodeOrders.push(textNode);
+			} else if (/^<\/[a-z0-9][a-z0-9:-]*>$/i.test(html)) {
+				// close tag
+			} else {
+				// never
+			}
+		}
+
+		currentEndOffset = currentStartOffset + node.raw.length;
+
+		prevLine = node.endLine;
+		prevCol = node.endCol;
+
+		// for ghost nodes
+		node.startOffset = node.startOffset || currentStartOffset;
+		node.endOffset = node.endOffset || currentEndOffset;
+
+		nodeOrders.push(node);
+	});
+
+	return nodeOrders;
 }

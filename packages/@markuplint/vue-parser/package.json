@@ -18,6 +18,6 @@
 	"dependencies": {
 		"@markuplint/html-parser": "^1.2.0",
 		"@markuplint/ml-ast": "^1.2.0",
-		"vue-eslint-parser": "^7.3.0"
+		"vue-eslint-parser": "^7.4.1"
 	}
 }
