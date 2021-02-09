@@ -7,10 +7,8 @@ import {
 	MLASTParentNode,
 	MLASTTag,
 	MLASTText,
-	getEndCol,
-	getEndLine,
-	uuid,
 } from '@markuplint/ml-ast';
+import { getEndCol, getEndLine, uuid } from '@markuplint/parser-utils';
 import parse5, { CommentNode, Document, DocumentFragment, Element, Node, TextNode } from 'parse5';
 import parseRawTag from './parse-raw-tag';
 

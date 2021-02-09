@@ -3,7 +3,11 @@
 	"compilerOptions": {
 		"composite": true
 	},
-	"references": [],
+	"references": [
+		{
+			"path": "../ml-ast"
+		}
+	],
 	"include": ["./src/**/*"],
 	"exclude": ["node_modules"]
 }

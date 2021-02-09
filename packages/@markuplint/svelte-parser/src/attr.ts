@@ -1,7 +1,8 @@
-import { MLASTAttr, sliceFragment } from '@markuplint/ml-ast';
+import { MLASTAttr } from '@markuplint/ml-ast';
 import { SvelteDirective } from './svelte-parser';
 import { attrTokenizer } from '@markuplint/html-parser';
 import directiveTokenizer from './directive-tokenizer';
+import { sliceFragment } from '@markuplint/parser-utils';
 
 const specificBindDirective = ['bind:group', 'bind:this'];
 
