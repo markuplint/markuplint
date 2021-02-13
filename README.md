@@ -52,7 +52,7 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 | [`@markuplint/erb-parser`](./packages/@markuplint/erb-parser)           | [![npm version](https://badge.fury.io/js/%40markuplint%2Ferb-parser.svg)](https://www.npmjs.com/package/@markuplint/erb-parser)           | Universal |
 | [`@markuplint/ejs-parser`](./packages/@markuplint/ejs-parser)           | [![npm version](https://badge.fury.io/js/%40markuplint%2Fejs-parser.svg)](https://www.npmjs.com/package/@markuplint/ejs-parser)           | Universal |
 | [`@markuplint/mustache-parser`](./packages/@markuplint/mustache-parser) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fmustache-parser.svg)](https://www.npmjs.com/package/@markuplint/mustache-parser) | Universal |
-| [`@markuplint/nunjacks-parser`](./packages/@markuplint/nunjacks-parser) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fnunjacks-parser.svg)](https://www.npmjs.com/package/@markuplint/nunjacks-parser) | Universal |
+| [`@markuplint/nunjucks-parser`](./packages/@markuplint/nunjucks-parser) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fnunjucks-parser.svg)](https://www.npmjs.com/package/@markuplint/nunjucks-parser) | Universal |
 | [`@markuplint/liquid-parser`](./packages/@markuplint/liquid-parser)     | [![npm version](https://badge.fury.io/js/%40markuplint%2Fliquid-parser.svg)](https://www.npmjs.com/package/@markuplint/liquid-parser)     | Universal |
 
 ## Editor Extensions
