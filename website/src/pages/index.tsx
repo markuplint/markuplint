@@ -56,8 +56,8 @@ export default function Index() {
 						<h2>Supporting Template Engine</h2>
 						<p>
 							You can use it for other markup languages with plugins. Currently, There are plugins for
-							Pug, Vue, and Svelte. And it provides the API that creates the plugin for any markup
-							language.
+							Pug, Vue, Svelte, PHP, eRuby, EJS, Mustache/Handlebars, Nunjucks, and Liquid. And it
+							provides the API that creates the plugin for any markup language.
 						</p>
 					</section>
 				</div>
