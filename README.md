@@ -26,6 +26,7 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 | [`@markuplint/html-parser`](./packages/@markuplint/html-parser)     | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-parser.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-parser)      | Universal |
 | [`@markuplint/i18n`](./packages/@markuplint/i18n)                   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fi18n.svg)](https://badge.fury.io/js/%40markuplint%2Fi18n)                    | Universal |
 | [`@markuplint/ml-ast`](./packages/@markuplint/ml-ast)               | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-ast.svg)](https://badge.fury.io/js/%40markuplint%2Fml-ast)                | Universal |
+| [`@markuplint/parser-utils`](./packages/@markuplint/parser-utils)   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fparser-utils.svg)](https://badge.fury.io/js/%40markuplint%2Fparser-utils)    | Universal |
 | [`@markuplint/ml-config`](./packages/@markuplint/ml-config)         | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-config.svg)](https://badge.fury.io/js/%40markuplint%2Fml-config)          | Universal |
 | [`@markuplint/ml-core`](./packages/@markuplint/ml-core)             | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-core.svg)](https://badge.fury.io/js/%40markuplint%2Fml-core)              | Universal |
 | [`@markuplint/ml-spec`](./packages/@markuplint/ml-spec)             | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-spec.svg)](https://badge.fury.io/js/%40markuplint%2Fml-spec)              | Universal |
@@ -41,12 +42,18 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 
 #### Language plugins
 
-| Package                                                             | NPM                                                                                                                                | Platform  |
-| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| [`@markuplint/pug-parser`](./packages/@markuplint/pug-parser)       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fpug-parser.svg)](https://www.npmjs.com/package/@markuplint/pug-parser)    | Universal |
-| [`@markuplint/vue-parser`](./packages/@markuplint/vue-parser)       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fvue-parser.svg)](https://www.npmjs.com/package/@markuplint/vue-spec)      | Universal |
-| [`@markuplint/vue-spec`](./packages/@markuplint/vue-spec)           | [![npm version](https://badge.fury.io/js/%40markuplint%2Fvue-spec.svg)](https://www.npmjs.com/package/@markuplint/svelte-parser)   | Universal |
-| [`@markuplint/svelte-parser`](./packages/@markuplint/svelte-parser) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fsvelte-parser.svg)](https://www.npmjs.com/package/@markuplint/vue-parser) | Universal |
+| Package                                                                 | NPM                                                                                                                                       | Platform  |
+| ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| [`@markuplint/pug-parser`](./packages/@markuplint/pug-parser)           | [![npm version](https://badge.fury.io/js/%40markuplint%2Fpug-parser.svg)](https://www.npmjs.com/package/@markuplint/pug-parser)           | Universal |
+| [`@markuplint/vue-parser`](./packages/@markuplint/vue-parser)           | [![npm version](https://badge.fury.io/js/%40markuplint%2Fvue-parser.svg)](https://www.npmjs.com/package/@markuplint/vue-parser)           | Universal |
+| [`@markuplint/vue-spec`](./packages/@markuplint/vue-spec)               | [![npm version](https://badge.fury.io/js/%40markuplint%2Fvue-spec.svg)](https://www.npmjs.com/package/@markuplint/vue-spec)               | Universal |
+| [`@markuplint/svelte-parser`](./packages/@markuplint/svelte-parser)     | [![npm version](https://badge.fury.io/js/%40markuplint%2Fsvelte-parser.svg)](https://www.npmjs.com/package/@markuplint/svelte-parser)     | Universal |
+| [`@markuplint/php-parser`](./packages/@markuplint/php-parser)           | [![npm version](https://badge.fury.io/js/%40markuplint%2Fphp-parser.svg)](https://www.npmjs.com/package/@markuplint/php-parser)           | Universal |
+| [`@markuplint/erb-parser`](./packages/@markuplint/erb-parser)           | [![npm version](https://badge.fury.io/js/%40markuplint%2Ferb-parser.svg)](https://www.npmjs.com/package/@markuplint/erb-parser)           | Universal |
+| [`@markuplint/ejs-parser`](./packages/@markuplint/ejs-parser)           | [![npm version](https://badge.fury.io/js/%40markuplint%2Fejs-parser.svg)](https://www.npmjs.com/package/@markuplint/ejs-parser)           | Universal |
+| [`@markuplint/mustache-parser`](./packages/@markuplint/mustache-parser) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fmustache-parser.svg)](https://www.npmjs.com/package/@markuplint/mustache-parser) | Universal |
+| [`@markuplint/nunjacks-parser`](./packages/@markuplint/nunjacks-parser) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fnunjacks-parser.svg)](https://www.npmjs.com/package/@markuplint/nunjacks-parser) | Universal |
+| [`@markuplint/liquid-parser`](./packages/@markuplint/liquid-parser)     | [![npm version](https://badge.fury.io/js/%40markuplint%2Fliquid-parser.svg)](https://www.npmjs.com/package/@markuplint/liquid-parser)     | Universal |
 
 ## Editor Extensions
 
