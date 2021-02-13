@@ -6,11 +6,9 @@ import {
 	MLASTTag,
 	MLASTText,
 	Parse,
-	getEndCol,
-	getEndLine,
-	uuid,
 } from '@markuplint/ml-ast';
 import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
+import { getEndCol, getEndLine, uuid } from '@markuplint/parser-utils';
 import vueParse, { ASTNode } from './vue-parser';
 import { attr } from './attr';
 

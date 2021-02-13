@@ -14,5 +14,12 @@
 	"scripts": {
 		"build": "tsc",
 		"clean": "tsc --build --clean"
+	},
+	"devDependencies": {
+		"@markuplint/ml-ast": "^1.2.0",
+		"@types/uuid": "^8.3.0"
+	},
+	"dependencies": {
+		"uuid": "^8.3.2"
 	}
 }

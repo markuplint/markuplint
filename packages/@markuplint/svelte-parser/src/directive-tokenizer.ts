@@ -1,4 +1,5 @@
-import { MLASTHTMLAttr, tokenizer, uuid } from '@markuplint/ml-ast';
+import { tokenizer, uuid } from '@markuplint/parser-utils';
+import { MLASTHTMLAttr } from '@markuplint/ml-ast';
 import { attrTokenizer } from '@markuplint/html-parser';
 
 // eslint-disable-next-line no-control-regex

@@ -1,4 +1,4 @@
-import { MLASTAttr, MLASTNode, MLASTNodeType, MLToken, Walker } from './types';
+import { MLASTAttr, MLASTNode, MLASTNodeType, MLToken, Walker } from '@markuplint/ml-ast';
 import { v4 as uuid4 } from 'uuid';
 
 export function uuid() {
@@ -103,6 +103,16 @@ export function attributesToDebugMaps(attributes: MLASTAttr[]) {
 		}
 		return r;
 	});
+}
+
+export function siblingsCorrection(nodeList: MLASTNode[]) {
+	for (let i = 0; i < nodeList.length; i++) {
+		const prevNode = nodeList[i - 1] || null;
+		const node = nodeList[i];
+		const nextNode = nodeList[i + 1] || null;
+		node.prevNode = prevNode;
+		node.nextNode = nextNode;
+	}
 }
 
 function tokenDebug<

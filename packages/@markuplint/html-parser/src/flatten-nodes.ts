@@ -1,4 +1,5 @@
-import { MLASTNode, MLASTNodeType, MLASTText, getEndCol, getEndLine, uuid, walk } from '@markuplint/ml-ast';
+import { MLASTNode, MLASTNodeType, MLASTText } from '@markuplint/ml-ast';
+import { getEndCol, getEndLine, uuid, walk } from '@markuplint/parser-utils';
 import { removeDeprecatedNode } from './remove-deprecated-node';
 import tagSplitter from './tag-splitter';
 

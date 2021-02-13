@@ -1,3 +1,6 @@
+export * from './ignore-block';
+export * from './utils';
+
 export function ignoreFrontMatter(code: string) {
 	const reStart = /^(?:\s*\r?\n)?---\r?\n/.exec(code);
 	if (!reStart) {

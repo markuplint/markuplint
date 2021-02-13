@@ -1,4 +1,5 @@
-import { MLASTElement, attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/ml-ast';
+import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
+import { MLASTElement } from '@markuplint/ml-ast';
 import { parse } from './';
 
 describe('parser', () => {

@@ -6,10 +6,9 @@ import {
 	MLASTPreprocessorSpecificBlock,
 	MLASTTag,
 	MLASTText,
-	sliceFragment,
-	uuid,
 } from '@markuplint/ml-ast';
 import { SvelteDirective, SvelteNode } from './svelte-parser';
+import { sliceFragment, uuid } from '@markuplint/parser-utils';
 import { attr } from './attr';
 import { parseRawTag } from '@markuplint/html-parser';
 import { traverse } from './traverse';

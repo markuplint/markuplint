@@ -19,5 +19,8 @@
 		"@markuplint/html-parser": "^1.2.0",
 		"@markuplint/ml-ast": "^1.2.0",
 		"svelte": "^3.32.1"
+	},
+	"devDependencies": {
+		"@markuplint/parser-utils": "^1.1.0"
 	}
 }

@@ -7,13 +7,10 @@ import {
 	MLASTPreprocessorSpecificBlock,
 	MLASTTag,
 	Parse,
-	tokenizer,
-	uuid,
-	walk,
 } from '@markuplint/ml-ast';
 import { parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
+import { ignoreFrontMatter, tokenizer, uuid, walk } from '@markuplint/parser-utils';
 import attrTokenizer from './attr-tokenizer';
-import { ignoreFrontMatter } from '@markuplint/parser-utils';
 
 export const parse: Parse = (rawCode, _, __, ___, isIgnoringFrontMatter) => {
 	let parseError: string | undefined;
