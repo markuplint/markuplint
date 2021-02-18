@@ -5862,7 +5862,7 @@
 				{
 					"name": "accept",
 					"type": "String",
-					"description": "Comma-separated content types the server accepts. This attribute was removed in HTML5 and should not be used. Instead, use the accept attribute on <input type=file> elements.",
+					"description": "Comma-separated content types the server accepts. Note This attribute was removed in HTML5 and should not be used. Instead, use the accept attribute on <input type=file> elements.",
 					"obsolete": true
 				},
 				{
@@ -5915,7 +5915,7 @@
 				},
 				{
 					"name": "target",
-					"description": "Indicates where to display the response after submitting the form. In HTML 4, this is the name/keyword for a frame. In HTML5, it is a name/keyword for a browsing context (for example, tab, window, or iframe). The following keywords have special meanings: _self (default): Load into the same browsing context as the current one. _blank: Load into a new unnamed browsing context. _parent: Load into the parent browsing context of the current one. If no parent, behaves the same as _self. _top: Load into the top-level browsing context (i.e., the browsing context that is an ancestor of the current one and has no parent). If no parent, behaves the same as _self. This value can be overridden by a formtarget attribute on a <button>, <input type=\"submit\">, or <input type=\"image\"> element.",
+					"description": "Indicates where to display the response after submitting the form. In HTML 4, this is the name/keyword for a frame. In HTML5, it is a name/keyword for a browsing context (for example, tab, window, or iframe). The following keywords have special meanings: _self (default): Load into the same browsing context as the current one. _blank: Load into a new unnamed browsing context. _parent: Load into the parent browsing context of the current one. If no parent, behaves the same as _self. _top: Load into the top-level browsing context (i.e., the browsing context that is an ancestor of the current one and has no parent). If no parent, behaves the same as _self. This value can be overridden by a formtarget attribute on a <button>, <input type=\"submit\">, or <input type=\"image\"> element. Note Setting target=\"_blank\" on <form> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener.",
 					"type": "Target"
 				}
 			]
