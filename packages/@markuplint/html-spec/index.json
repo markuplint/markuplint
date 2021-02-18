@@ -4030,7 +4030,7 @@
 				{
 					"name": "nohref",
 					"type": "String",
-					"description": "Indicates that no hyperlink exists for the associated area. Note: Since HTML5, omitting the href attribute is sufficient.",
+					"description": "Indicates that no hyperlink exists for the associated area. Note Since HTML5, omitting the href attribute is sufficient.",
 					"deprecated": true
 				},
 				{
