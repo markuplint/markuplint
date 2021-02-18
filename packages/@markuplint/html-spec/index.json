@@ -3714,7 +3714,7 @@
 				{
 					"name": "charset",
 					"type": "String",
-					"description": "Hinted at the character encoding of the linked URL. Note: This attribute is obsolete and should not be used by authors. Use the HTTP Content-Type header on the linked URL.",
+					"description": "Hinted at the character encoding of the linked URL. Note This attribute is obsolete and should not be used by authors. Use the HTTP Content-Type header on the linked URL.",
 					"obsolete": true
 				},
 				{
@@ -3741,7 +3741,7 @@
 				{
 					"name": "name",
 					"type": "String",
-					"description": "Was required to define a possible target location in a page. In HTML 4.01, id and name could both be used on <a>, as long as they had identical values. Note: Use the global attribute id instead.",
+					"description": "Was required to define a possible target location in a page. In HTML 4.01, id and name could both be used on <a>, as long as they had identical values. Note Use the global attribute id instead.",
 					"obsolete": true
 				},
 				{
@@ -3772,12 +3772,12 @@
 				{
 					"name": "shape",
 					"type": "String",
-					"description": "The shape of the hyperlink’s region in an image map. Note: Use the <area> element for image maps instead.",
+					"description": "The shape of the hyperlink’s region in an image map. Note Use the <area> element for image maps instead.",
 					"obsolete": true
 				},
 				{
 					"name": "target",
-					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: the current browsing context. (Default) _blank: usually a new tab, but users can configure browsers to open a new window instead. _parent: the parent browsing context of the current one. If no parent, behaves as _self. _top: the topmost browsing context (the \"highest\" context that’s an ancestor of the current one). If no ancestors, behaves as _self. Note: When using target, add rel=\"noreferrer noopener\" to avoid exploitation of the window.opener API. Note: In newer browser versions (e.g. Firefox 79+) setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\".",
+					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: the current browsing context. (Default) _blank: usually a new tab, but users can configure browsers to open a new window instead. _parent: the parent browsing context of the current one. If no parent, behaves as _self. _top: the topmost browsing context (the \"highest\" context that’s an ancestor of the current one). If no ancestors, behaves as _self. Note Setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener. See browser compatibility for support status.",
 					"type": "Target",
 					"condition": {
 						"self": "[href]"
