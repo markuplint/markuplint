@@ -9306,7 +9306,7 @@
 		{
 			"name": "section",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section",
-			"description": "The HTML <section> element represents a standalone section — which doesn't have a more specific semantic element to represent it — contained within an HTML document. Typically, but not always, sections have a heading.",
+			"description": "The HTML <section> element represents a generic standalone section of a document, which doesn't have a more specific semantic element to represent it. Sections should always have a heading, with very few exceptions.",
 			"categories": ["#flow", "#sectioning", "#palpable"],
 			"permittedStructures": {
 				"summary": "Flow content.",
