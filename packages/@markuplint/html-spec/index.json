@@ -181,7 +181,7 @@
 			{
 				"name": "data-*",
 				"type": "String",
-				"description": "Forms a class of attributes, called custom data attributes, that allow proprietary information to be exchanged between the HTML and its DOM representation that may be used by scripts. All such custom data are available via the HTMLElement interface of the element the attribute is set on. The HTMLElement.dataset property gives access to them."
+				"description": "Forms a class of attributes, called custom data attributes, that allow proprietary information to be exchanged between the HTML and its DOM representation that may be used by scripts. All such custom data are available via the HTMLElement interface of the element the attribute is set on. The HTMLOrForeignElement/dataset property gives access to them."
 			},
 			{
 				"name": "dir",
@@ -263,8 +263,8 @@
 			},
 			{
 				"name": "nonce",
-				"type": "String",
-				"description": ""
+				"description": "A cryptographic nonce (\"number used once\") which can be used by Content Security Policy to determine whether or not a given fetch will be allowed to proceed.",
+				"type": "String"
 			},
 			{
 				"name": "onabort",
@@ -3714,7 +3714,7 @@
 				{
 					"name": "charset",
 					"type": "String",
-					"description": "Hinted at the character encoding of the linked URL. Note: This attribute is obsolete and should not be used by authors. Use the HTTP Content-Type header on the linked URL.",
+					"description": "Hinted at the character encoding of the linked URL. Note This attribute is obsolete and should not be used by authors. Use the HTTP Content-Type header on the linked URL.",
 					"obsolete": true
 				},
 				{
@@ -3741,7 +3741,7 @@
 				{
 					"name": "name",
 					"type": "String",
-					"description": "Was required to define a possible target location in a page. In HTML 4.01, id and name could both be used on <a>, as long as they had identical values. Note: Use the global attribute id instead.",
+					"description": "Was required to define a possible target location in a page. In HTML 4.01, id and name could both be used on <a>, as long as they had identical values. Note Use the global attribute id instead.",
 					"obsolete": true
 				},
 				{
@@ -3772,12 +3772,12 @@
 				{
 					"name": "shape",
 					"type": "String",
-					"description": "The shape of the hyperlink’s region in an image map. Note: Use the <area> element for image maps instead.",
+					"description": "The shape of the hyperlink’s region in an image map. Note Use the <area> element for image maps instead.",
 					"obsolete": true
 				},
 				{
 					"name": "target",
-					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: the current browsing context. (Default) _blank: usually a new tab, but users can configure browsers to open a new window instead. _parent: the parent browsing context of the current one. If no parent, behaves as _self. _top: the topmost browsing context (the \"highest\" context that’s an ancestor of the current one). If no ancestors, behaves as _self. Note: When using target, add rel=\"noreferrer noopener\" to avoid exploitation of the window.opener API. Note: In newer browser versions (e.g. Firefox 79+) setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\".",
+					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: the current browsing context. (Default) _blank: usually a new tab, but users can configure browsers to open a new window instead. _parent: the parent browsing context of the current one. If no parent, behaves as _self. _top: the topmost browsing context (the \"highest\" context that’s an ancestor of the current one). If no ancestors, behaves as _self. Note Setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener. See browser compatibility for support status.",
 					"type": "Target",
 					"condition": {
 						"self": "[href]"
@@ -4030,7 +4030,7 @@
 				{
 					"name": "nohref",
 					"type": "String",
-					"description": "Indicates that no hyperlink exists for the associated area. Note: Since HTML5, omitting the href attribute is sufficient.",
+					"description": "Indicates that no hyperlink exists for the associated area. Note Since HTML5, omitting the href attribute is sufficient.",
 					"deprecated": true
 				},
 				{
@@ -4399,7 +4399,6 @@
 			"name": "bgsound",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bgsound",
 			"description": "The Internet Explorer only HTML Background Sound element (<bgsound>) sets up a sound file to play in the background while the page is used; use <audio> instead.",
-			"obsolete": true,
 			"deprecated": true,
 			"nonStandard": true,
 			"categories": [],
@@ -4468,7 +4467,6 @@
 			"name": "blink",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blink",
 			"description": "The HTML Blink Element (<blink>) is a non-standard element which causes the enclosed text to flash slowly.",
-			"obsolete": true,
 			"deprecated": true,
 			"categories": [],
 			"permittedStructures": {
@@ -4936,7 +4934,6 @@
 			"name": "center",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/center",
 			"description": "The obsolete HTML Center Element (<center>) is a block-level element that displays its block-level or inline contents centered horizontally within its containing element. The container is usually, but isn't required to be, <body>.",
-			"obsolete": true,
 			"deprecated": true,
 			"categories": [],
 			"permittedStructures": {
@@ -5145,7 +5142,6 @@
 			"name": "content",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/content",
 			"description": "The HTML <content> element—an obsolete part of the Web Components suite of technologies—was used inside of Shadow DOM as an insertion point, and wasn't meant to be used in ordinary HTML. It has now been replaced by the <slot> element, which creates a point in the DOM at which a shadow DOM can be inserted.",
-			"obsolete": true,
 			"deprecated": true,
 			"categories": ["#transparent"],
 			"permittedStructures": {
@@ -5418,7 +5414,6 @@
 			"name": "dir",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dir",
 			"description": "The obsolete HTML Directory element (<dir>) is used as a container for a directory of files and/or folders, potentially with styles and icons applied by the user agent. Do not use this obsolete element; instead, you should use the <ul> element for lists, including lists of files.",
-			"obsolete": true,
 			"deprecated": true,
 			"categories": [],
 			"permittedStructures": {
@@ -5862,7 +5857,7 @@
 				{
 					"name": "accept",
 					"type": "String",
-					"description": "Comma-separated content types the server accepts. This attribute was removed in HTML5 and should not be used. Instead, use the accept attribute on <input type=file> elements.",
+					"description": "Comma-separated content types the server accepts. Note This attribute was removed in HTML5 and should not be used. Instead, use the accept attribute on <input type=file> elements.",
 					"obsolete": true
 				},
 				{
@@ -5915,7 +5910,7 @@
 				},
 				{
 					"name": "target",
-					"description": "Indicates where to display the response after submitting the form. In HTML 4, this is the name/keyword for a frame. In HTML5, it is a name/keyword for a browsing context (for example, tab, window, or iframe). The following keywords have special meanings: _self (default): Load into the same browsing context as the current one. _blank: Load into a new unnamed browsing context. _parent: Load into the parent browsing context of the current one. If no parent, behaves the same as _self. _top: Load into the top-level browsing context (i.e., the browsing context that is an ancestor of the current one and has no parent). If no parent, behaves the same as _self. This value can be overridden by a formtarget attribute on a <button>, <input type=\"submit\">, or <input type=\"image\"> element.",
+					"description": "Indicates where to display the response after submitting the form. In HTML 4, this is the name/keyword for a frame. In HTML5, it is a name/keyword for a browsing context (for example, tab, window, or iframe). The following keywords have special meanings: _self (default): Load into the same browsing context as the current one. _blank: Load into a new unnamed browsing context. _parent: Load into the parent browsing context of the current one. If no parent, behaves the same as _self. _top: Load into the top-level browsing context (i.e., the browsing context that is an ancestor of the current one and has no parent). If no parent, behaves the same as _self. This value can be overridden by a formtarget attribute on a <button>, <input type=\"submit\">, or <input type=\"image\"> element. Note Setting target=\"_blank\" on <form> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener.",
 					"type": "Target"
 				}
 			]
@@ -6527,7 +6522,6 @@
 			"name": "image",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/image",
 			"description": "The obsolete HTML Image element (<image>) is an obsolete remnant of an ancient version of HTML lost in the mists of time; use the standard <img> element instead. Seriously, the specification even literally uses the words \"Don't ask\" when describing this element.",
-			"obsolete": true,
 			"deprecated": true,
 			"nonStandard": true,
 			"categories": [],
@@ -6609,7 +6603,7 @@
 				},
 				{
 					"name": "alt",
-					"description": "Defines an alternative text description of the image. Note: Browsers do not always display images. There are a number of situations in which a browser might not display images, such as: Non-visual browsers (such as those used by people with visual impairments) The user chooses not to display images (saving bandwidth, privacy reasons) The image is invalid or an unsupported type In these cases, the browser may replace the image with the text in the element's alt attribute. For these reasons and others, provide a useful value for alt whenever possible. Omitting alt altogether indicates that the image is a key part of the content and no textual equivalent is available. Setting this attribute to an empty string (alt=\"\") indicates that this image is not a key part of the content (it’s decoration or a tracking pixel), and that non-visual browsers may omit it from rendering. Visual browsers will also hide the broken image icon if the alt is empty and the image failed to display. This attribute is also used when copying and pasting the image to text, or saving a linked image to a bookmark.",
+					"description": "Defines an alternative text description of the image. Note Browsers do not always display images. There are a number of situations in which a browser might not display images, such as: Non-visual browsers (such as those used by people with visual impairments) The user chooses not to display images (saving bandwidth, privacy reasons) The image is invalid or an unsupported type In these cases, the browser may replace the image with the text in the element's alt attribute. For these reasons and others, provide a useful value for alt whenever possible. Omitting alt altogether indicates that the image is a key part of the content and no textual equivalent is available. Setting this attribute to an empty string (alt=\"\") indicates that this image is not a key part of the content (it’s decoration or a tracking pixel), and that non-visual browsers may omit it from rendering. Visual browsers will also hide the broken image icon if the alt is empty and the image failed to display. This attribute is also used when copying and pasting the image to text, or saving a linked image to a bookmark.",
 					"type": "String"
 				},
 				{
@@ -6651,7 +6645,7 @@
 				},
 				{
 					"name": "ismap",
-					"description": "This Boolean attribute indicates that the image is part of a server-side map. If so, the coordinates where the user clicked on the image are sent to the server. Note: This attribute is allowed only if the <img> element is a descendant of an <a> element with a valid href attribute. This gives users without pointing devices a fallback destination.",
+					"description": "This Boolean attribute indicates that the image is part of a server-side map. If so, the coordinates where the user clicked on the image are sent to the server. Note Note: This attribute is allowed only if the <img> element is a descendant of an <a> element with a valid href attribute. This gives users without pointing devices a fallback destination.",
 					"type": "Boolean",
 					"condition": {
 						"ancestor": "a[href]"
@@ -6659,14 +6653,14 @@
 				},
 				{
 					"name": "loading",
-					"description": "Indicates how the browser should load the image: eager: Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy: Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. The intent is to avoid the network and storage bandwidth needed to handle the image until it's reasonably certain that it will be needed. This generally improves the performance of the content in most typical use cases. Note: Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when.",
+					"description": "Indicates how the browser should load the image: eager: Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy: Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. The intent is to avoid the network and storage bandwidth needed to handle the image until it's reasonably certain that it will be needed. This generally improves the performance of the content in most typical use cases. Note Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when.",
 					"type": "String",
 					"enum": ["eager", "lazy"]
 				},
 				{
 					"name": "longdesc",
 					"type": "String",
-					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG’s HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
+					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG’s HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
 					"obsolete": true,
 					"deprecated": true
 				},
@@ -6701,7 +6695,7 @@
 				},
 				{
 					"name": "usemap",
-					"description": "The partial URL (starting with #) of an image map associated with the element. Note: You cannot use this attribute if the <img> element is inside an <a> or <button> element.",
+					"description": "The partial URL (starting with #) of an image map associated with the element. Note You cannot use this attribute if the <img> element is inside an <a> or <button> element.",
 					"type": "URLHash",
 					"condition": {
 						"ancestor": ":not(a):not(button)"
@@ -7886,7 +7880,6 @@
 			"name": "marquee",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/marquee",
 			"description": "",
-			"obsolete": true,
 			"deprecated": true,
 			"categories": [],
 			"permittedStructures": {
@@ -8213,7 +8206,6 @@
 			"name": "multicol",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/multicol",
 			"description": "The HTML Multi-Column Layout element (<multicol>) was an experimental element designed to allow multi-column layouts and must not be used. It never got any significant traction and is not implemented in any major browsers. It's covered here only to warn you off in case you stumble on it in any other documentation.",
-			"obsolete": true,
 			"deprecated": true,
 			"nonStandard": true,
 			"categories": [],
@@ -8262,7 +8254,6 @@
 			"name": "nextid",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nextid",
 			"description": "<nextid> is an obsolete HTML element that served to enable the NeXT web designing tool to generate automatic NAME labels for its anchors. It was generated by that web editing tool automatically and was not to be adjusted or entered by hand. This element has the distinction of being the first element to become one of the \"Lost Tags\" by being eliminated from the official public DTD's of the HTML versions. It is also probably one of the least understood of all of the early HTML elements.",
-			"obsolete": true,
 			"deprecated": true,
 			"categories": [],
 			"permittedStructures": {
@@ -8293,7 +8284,6 @@
 			"name": "nobr",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nobr",
 			"description": "",
-			"obsolete": true,
 			"deprecated": true,
 			"nonStandard": true,
 			"categories": [],
@@ -8317,7 +8307,6 @@
 			"name": "noembed",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noembed",
 			"description": "The <noembed> element is an obsolete, non-standard way to provide alternative, or \"fallback\", content for browsers that do not support the <embed> element or do not support the type of embedded content an author wishes to use. This element was deprecated in HTML 4.01 and above in favor of placing fallback content between the opening and closing tags of an <object> element.",
-			"obsolete": true,
 			"deprecated": true,
 			"nonStandard": true,
 			"categories": [],
@@ -9306,7 +9295,7 @@
 		{
 			"name": "section",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section",
-			"description": "The HTML <section> element represents a standalone section — which doesn't have a more specific semantic element to represent it — contained within an HTML document. Typically, but not always, sections have a heading.",
+			"description": "The HTML <section> element represents a generic standalone section of a document, which doesn't have a more specific semantic element to represent it. Sections should always have a heading, with very few exceptions.",
 			"categories": ["#flow", "#sectioning", "#palpable"],
 			"permittedStructures": {
 				"summary": "Flow content.",
@@ -9441,7 +9430,6 @@
 			"name": "shadow",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/shadow",
 			"description": "The HTML <shadow> element—an obsolete part of the Web Components technology suite—was intended to be used as a shadow DOM insertion point. You might have used it if you have created multiple shadow roots under a shadow host. It is not useful in ordinary HTML.",
-			"obsolete": true,
 			"deprecated": true,
 			"categories": ["#transparent"],
 			"permittedStructures": {
@@ -10728,7 +10716,6 @@
 			"name": "tt",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tt",
 			"description": "The obsolete HTML Teletype Text element (<tt>) creates inline text which is presented using the user agent's default monospace font face. This element was created for the purpose of rendering text as it would be displayed on a fixed-width display such as a teletype, text-only screen, or line printer.",
-			"obsolete": true,
 			"deprecated": true,
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"permittedStructures": {
@@ -10957,12 +10944,6 @@
 					"name": "height",
 					"description": "The height of the video's display area, in CSS pixels (absolute values only; no percentages.)",
 					"type": "Uint"
-				},
-				{
-					"name": "intrinsicsize",
-					"type": "String",
-					"description": "This attribute tells the browser to ignore the actual intrinsic size of the image and pretend it’s the size specified in the attribute. Specifically, the image would raster at these dimensions and naturalWidth/naturalHeight on images would return the values specified in this attribute. Explainer, examples",
-					"experimental": true
 				},
 				{
 					"name": "loop",
