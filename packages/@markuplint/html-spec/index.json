@@ -181,7 +181,7 @@
 			{
 				"name": "data-*",
 				"type": "String",
-				"description": "Forms a class of attributes, called custom data attributes, that allow proprietary information to be exchanged between the HTML and its DOM representation that may be used by scripts. All such custom data are available via the HTMLElement interface of the element the attribute is set on. The HTMLElement.dataset property gives access to them."
+				"description": "Forms a class of attributes, called custom data attributes, that allow proprietary information to be exchanged between the HTML and its DOM representation that may be used by scripts. All such custom data are available via the HTMLElement interface of the element the attribute is set on. The HTMLOrForeignElement/dataset property gives access to them."
 			},
 			{
 				"name": "dir",
@@ -263,8 +263,8 @@
 			},
 			{
 				"name": "nonce",
-				"type": "String",
-				"description": ""
+				"description": "A cryptographic nonce (\"number used once\") which can be used by Content Security Policy to determine whether or not a given fetch will be allowed to proceed.",
+				"type": "String"
 			},
 			{
 				"name": "onabort",
