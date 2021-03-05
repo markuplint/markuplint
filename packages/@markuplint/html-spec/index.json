@@ -6213,6 +6213,7 @@
 			"name": "hgroup",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup",
 			"description": "",
+			"deprecated": true,
 			"categories": ["#flow", "#heading", "#palpable"],
 			"permittedStructures": {
 				"summary": "One or more <h1>, <h2>, <h3>, <h4>, <h5>, and/or <h6>.",
