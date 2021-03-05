@@ -9010,7 +9010,7 @@
 			"name": "rb",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rb",
 			"description": "The HTML Ruby Base (<rb>) element is used to delimit the base text component of a <ruby> annotation, i.e. the text that is being annotated. One <rb> element should wrap each separate atomic segment of the base text.",
-			"nonStandard": true,
+			"deprecated": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "As a child of a <ruby> element.",
@@ -9082,6 +9082,7 @@
 			"name": "rtc",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc",
 			"description": "",
+			"deprecated": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "Phrasing content or <rt> elements.",
