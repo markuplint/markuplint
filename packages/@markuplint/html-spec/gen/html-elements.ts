@@ -65,7 +65,10 @@ export async function getHTMLElement(link: string) {
 				.match(/obsolete/i) ||
 			!!$article.find('> div:first-child .notecard.obsolete').length ||
 			undefined;
-		deprecated = !!$article.find('.deprecatedHeader, > div:first-child .notecard.deprecated').length || undefined;
+		deprecated =
+			!!$article.find('.deprecatedHeader, > div:first-child .notecard.deprecated').length ||
+			!!$article.find('h1').next().find('.notecard.deprecated').length ||
+			undefined;
 		nonStandard = !!$article.find('.nonStandardHeader, h4#Non-standard').length || undefined;
 	}
 
