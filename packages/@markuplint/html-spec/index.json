@@ -10192,6 +10192,12 @@
 					"type": "AutoComplete"
 				},
 				{
+					"name": "autocorrect",
+					"type": "String",
+					"description": "A string which indicates whether or not to activate automatic spelling correction and processing of text substitutions (if any are configured) while the user is editing this textarea. Permitted values are: on Enable automatic spelling correction and text substitutions. off Disable automatic spelling correction and text substitutions.",
+					"nonStandard": true
+				},
+				{
 					"name": "autofocus",
 					"type": "String",
 					"description": "This Boolean attribute lets you specify that a form control should have input focus when the page loads. Only one form-associated element in a document can have this attribute specified."
