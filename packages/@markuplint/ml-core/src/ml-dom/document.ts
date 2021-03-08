@@ -84,13 +84,34 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		}
 	}
 
-	async walkOn(type: 'Element', walker: Walker<T, O, MLDOMElement<T, O>>): Promise<void>;
-	async walkOn(type: 'Text', walker: Walker<T, O, MLDOMText<T, O>>): Promise<void>;
-	async walkOn(type: 'Comment', walker: Walker<T, O, MLDOMComment<T, O>>): Promise<void>;
-	async walkOn(type: 'ElementCloseTag', walker: Walker<T, O, MLDOMElementCloseTag<T, O>>): Promise<void>;
-	async walkOn(type: NodeType, walker: Walker<T, O, any>): Promise<void> {
+	/**
+	 *
+	 * @param type
+	 * @param walker
+	 * @param skipWhenRuleIsDisabled
+	 */
+	async walkOn(
+		type: 'Element',
+		walker: Walker<T, O, MLDOMElement<T, O>>,
+		skipWhenRuleIsDisabled?: boolean,
+	): Promise<void>;
+	async walkOn(type: 'Text', walker: Walker<T, O, MLDOMText<T, O>>, skipWhenRuleIsDisabled?: boolean): Promise<void>;
+	async walkOn(
+		type: 'Comment',
+		walker: Walker<T, O, MLDOMComment<T, O>>,
+		skipWhenRuleIsDisabled?: boolean,
+	): Promise<void>;
+	async walkOn(
+		type: 'ElementCloseTag',
+		walker: Walker<T, O, MLDOMElementCloseTag<T, O>>,
+		skipWhenRuleIsDisabled?: boolean,
+	): Promise<void>;
+	async walkOn(type: NodeType, walker: Walker<T, O, any>, skipWhenRuleIsDisabled: boolean = true): Promise<void> {
 		for (const node of this.nodeList) {
 			if (node instanceof MLDOMNode) {
+				if (skipWhenRuleIsDisabled && node.rule.disabled) {
+					continue;
+				}
 				if (node.is(type)) {
 					await walker(node);
 				}
