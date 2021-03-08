@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/parser-utils",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"description": "Utility module for markuplint parser plugin",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
