@@ -92,3 +92,26 @@ test('is test 3', async () => {
 
 	expect(r.map(_ => _.message)).toStrictEqual(['属性名が重複しています']);
 });
+
+test('nodeRules disable', async () => {
+	const r = await markuplint.verify(
+		'<div><span attr attr></span></div>',
+		{
+			rules: {
+				'attr-duplication': true,
+			},
+			nodeRules: [
+				{
+					selector: 'span',
+					rules: {
+						'attr-duplication': false,
+					},
+				},
+			],
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r.length).toStrictEqual(0);
+});
