@@ -113,7 +113,18 @@ export default createRule<true, Options>({
 					for (const attr of node.attributes) {
 						const attrName = attr.getName().potential.trim().toLowerCase();
 						if (/^aria-/i.test(attrName)) {
-							if (!role.statesAndProps.includes(attrName)) {
+							const statesAndProp = role.statesAndProps.find(s => s.name === attrName);
+							if (statesAndProp) {
+								if (statesAndProp.deprecated) {
+									reports.push({
+										severity: node.rule.severity,
+										message: `The ${attrName} state/property is deprecated on the ${role.name} role.`,
+										line: attr.startLine,
+										col: attr.startCol,
+										raw: attr.raw,
+									});
+								}
+							} else {
 								reports.push({
 									severity: node.rule.severity,
 									message: `Cannot use the ${attrName} state/property on the ${role.name} role.`,
@@ -124,6 +135,8 @@ export default createRule<true, Options>({
 							}
 						}
 					}
+
+					const requiredStateAndPropNames = role.statesAndProps.filter(s => s.required).map(s => s.name);
 				}
 			} else {
 				// No role element
