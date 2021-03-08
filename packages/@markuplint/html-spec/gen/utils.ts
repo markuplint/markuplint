@@ -11,3 +11,16 @@ export function nameCompare(a: HasName, b: HasName) {
 	}
 	return 0;
 }
+
+export function arrayUnique<T extends HasName>(array: T[]) {
+	const nameStack: string[] = [];
+	const result: T[] = [];
+	for (const item of array) {
+		if (nameStack.includes(item.name)) {
+			continue;
+		}
+		result.push(item);
+		nameStack.push(item.name);
+	}
+	return result;
+}

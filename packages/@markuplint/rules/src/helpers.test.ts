@@ -5,7 +5,7 @@ describe('getRoleSpec', () => {
 	test('the button role', () => {
 		const role = getRoleSpec('button')!;
 		const superClassRoles = role.superClassRoles.map(r => r.name);
-		expect(role.statesAndProps).toStrictEqual([
+		expect(role.statesAndProps.map(p => p.name + (p.deprecated ? ':deprecated' : ''))).toStrictEqual([
 			'aria-atomic',
 			'aria-busy',
 			'aria-controls',
@@ -14,11 +14,13 @@ describe('getRoleSpec', () => {
 			'aria-details',
 			'aria-disabled',
 			'aria-dropeffect',
+			'aria-errormessage:deprecated',
 			'aria-expanded',
 			'aria-flowto',
 			'aria-grabbed',
 			'aria-haspopup',
 			'aria-hidden',
+			'aria-invalid:deprecated',
 			'aria-keyshortcuts',
 			'aria-label',
 			'aria-labelledby',
@@ -35,17 +37,21 @@ describe('getRoleSpec', () => {
 	test('the roletype role', () => {
 		const role = getRoleSpec('roletype')!;
 		const superClassRoles = role.superClassRoles.map(r => r.name);
-		expect(role.statesAndProps).toStrictEqual([
+		expect(role.statesAndProps.map(p => p.name + (p.deprecated ? ':deprecated' : ''))).toStrictEqual([
 			'aria-atomic',
 			'aria-busy',
 			'aria-controls',
 			'aria-current',
 			'aria-describedby',
 			'aria-details',
+			'aria-disabled:deprecated',
 			'aria-dropeffect',
+			'aria-errormessage:deprecated',
 			'aria-flowto',
 			'aria-grabbed',
+			'aria-haspopup:deprecated',
 			'aria-hidden',
+			'aria-invalid:deprecated',
 			'aria-keyshortcuts',
 			'aria-label',
 			'aria-labelledby',

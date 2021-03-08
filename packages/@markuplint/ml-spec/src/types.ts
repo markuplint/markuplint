@@ -200,7 +200,21 @@ export type ARIRRoleAttribute = {
 	description: string;
 	isAbstract?: true;
 	generalization: string[];
-	ownedAttribute: string[];
+	requiredContextRole?: string[];
+	accessibleNameRequired: boolean;
+	accessibleNameFromContent: boolean;
+	accessibleNameProhibited: boolean;
+	ownedAttribute: ARIARoleOwnedPropOrState[];
+	childrenPresentational?: boolean;
+};
+
+export type ARIARoleOwnedPropOrState = {
+	name: string;
+	inherited?: true;
+	required?: true;
+	deprecated?: true;
+	prohibited?: true;
+	defaultValue?: boolean | string | number;
 };
 
 export type ARIAAttribute = {
