@@ -10884,7 +10884,7 @@
 		{
 			"name": "figure",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure",
-			"description": "The HTML <figure> (Figure With Optional Caption) element represents self-contained content, potentially with an optional caption, which is specified using the (<figcaption>) element. The figure, its caption, and its contents are referenced as a single unit.",
+			"description": "The HTML <figure> (Figure With Optional Caption) element represents self-contained content, potentially with an optional caption, which is specified using the <figcaption> element. The figure, its caption, and its contents are referenced as a single unit.",
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
 				"summary": "A <figcaption> element, followed by flow content; or flow content followed by a <figcaption> element; or flow content.",
