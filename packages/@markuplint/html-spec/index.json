@@ -12856,7 +12856,7 @@
 				{
 					"name": "disabled",
 					"type": "String",
-					"description": "For rel=\"stylesheet\" only, the disabled Boolean attribute indicates whether or not the described stylesheet should be loaded and applied to the document. If disabled is specified in the HTML when it is loaded, the stylesheet will not be loaded during page load. Instead, the stylesheet will be loaded on-demand, if and when the disabled attribute is changed to false or removed. Setting the disabled property in the DOM causes the stylesheet to be removed from the document's DocumentOrShadowRoot/styleSheets list."
+					"description": "For rel=\"stylesheet\" only, the disabled Boolean attribute indicates whether or not the described stylesheet should be loaded and applied to the document. If disabled is specified in the HTML when it is loaded, the stylesheet will not be loaded during page load. Instead, the stylesheet will be loaded on-demand, if and when the disabled attribute is changed to false or removed. Setting the disabled property in the DOM causes the stylesheet to be removed from the document's Document.styleSheets list."
 				},
 				{
 					"name": "href",
