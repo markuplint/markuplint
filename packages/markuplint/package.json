@@ -35,6 +35,7 @@
 		"@markuplint/rules": "^1.4.1",
 		"cli-color": "^2.0.0",
 		"eastasianwidth": "^0.2.0",
+		"enquirer": "^2.3.6",
 		"get-stdin": "^8.0.0",
 		"meow": "^9.0.0",
 		"os-locale": "^5.0.0",

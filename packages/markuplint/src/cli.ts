@@ -1,6 +1,7 @@
 import { cli } from './cli-bootstrap';
 import { command } from './command';
 import getStdin from 'get-stdin';
+import { initialize } from './initialize';
 
 (async () => {
 	if (cli.flags.v) {
@@ -9,6 +10,14 @@ import getStdin from 'get-stdin';
 
 	if (cli.flags.h) {
 		cli.showHelp(0); // And exit successfully.
+	}
+
+	if (cli.flags.init) {
+		await initialize().catch(err => {
+			process.stderr.write(err + '\n');
+			process.exit(1);
+		});
+		return;
 	}
 
 	const stdin = await getStdin();
