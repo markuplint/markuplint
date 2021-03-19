@@ -31,12 +31,12 @@ Warns that the attribute name is not in one of uppercase or lowercase letters. U
 
 ### Setting value
 
-Type: `"lower" | "upper"`
+Type: `"no-upper" | "no-lower"`
 
-| value     | default | description                                        |
-| --------- | ------- | -------------------------------------------------- |
-| `"lower"` | ✓       | Warns that the attribute name is not in lowercase. |
-| `"upper"` |         | Warns that the attribute name is not in uppercase. |
+| value        | default | description                                        |
+| ------------ | ------- | -------------------------------------------------- |
+| `"no-upper"` | ✓       | Warns that the attribute name is not in lowercase. |
+| `"no-lower"` |         | Warns that the attribute name is not in uppercase. |
 
 ### Default severity
 
