@@ -1767,7 +1767,7 @@
     "@types/connect" "*"
     "@types/node" "*"
 
-"@types/cheerio@^0.22.23":
+"@types/cheerio@^0.22.24":
   version "0.22.24"
   resolved "https://registry.yarnpkg.com/@types/cheerio/-/cheerio-0.22.24.tgz#fcee47074aa221ac0f31ede0c72c0800bf3bf0aa"
   integrity sha512-iKXt/cwltGvN06Dd6zwQG1U35edPwId9lmcSeYfcxSNvvNg4vysnFB+iBQNjj06tSVV7MBj0GWMQ7dwb4Z+p8Q==
@@ -1779,10 +1779,10 @@
   resolved "https://registry.yarnpkg.com/@types/cli-color/-/cli-color-2.0.0.tgz#dc64e32da0fb9ea1814300fb468a58e833ce71a6"
   integrity sha512-E2Oisr73FjwxMHkYU6RcN9P9mmrbG4TNQMIebWhazYxOgWRzA7s4hM+DtAs6ZwiwKFbPst42v1XUAC1APIhRJA==
 
-"@types/cli-progress@^3.8.0":
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/@types/cli-progress/-/cli-progress-3.8.0.tgz#f60f6d88ef2d9628876c9e906431ac9f34670975"
-  integrity sha512-2OV7ybuYQc6ju6Xlg8ncQcPA/vVbMTSGS0vygjszi9O7swC63S6f2oAnP4CE+4ppRo7eCQovlj268KySt1MaUQ==
+"@types/cli-progress@^3.9.0":
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/@types/cli-progress/-/cli-progress-3.9.0.tgz#dabb5863e7bf5c7b3a1a06f7ebbcecfb6558a612"
+  integrity sha512-tjjS3BcYACRt3TLxfccN0dkA8X1DHNc2bDsTvcHaOHwa710MTH7owylG8WOaFQtZzt04vojiLvsObPfZbO6Ncw==
   dependencies:
     "@types/node" "*"
 
@@ -3674,7 +3674,7 @@ cli-cursor@^2.1.0:
   dependencies:
     restore-cursor "^2.0.0"
 
-cli-progress@^3.8.2:
+cli-progress@^3.9.0:
   version "3.9.0"
   resolved "https://registry.yarnpkg.com/cli-progress/-/cli-progress-3.9.0.tgz#25db83447deb812e62d05bac1af9aec5387ef3d4"
   integrity sha512-g7rLWfhAo/7pF+a/STFH/xPyosaL1zgADhI0OM83hl3c7S43iGvJWEAV2QuDOnQ8i6EMBj/u4+NTd0d5L+4JfA==
@@ -5725,7 +5725,7 @@ fast-levenshtein@^2.0.6, fast-levenshtein@~2.0.6:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
 
-fast-xml-parser@^3.17.6:
+fast-xml-parser@^3.18.0:
   version "3.18.0"
   resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-3.18.0.tgz#b77f4a494cd64e6f44aadfa68fbde30cd922b2df"
   integrity sha512-tRrwShhppv0K5GKEtuVs92W0VGDaVltZAwtHbpjNF+JOT7cjIFySBGTEOmdBslXYyWYaZwEX/g4Su8ZeKg0LKQ==

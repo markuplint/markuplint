@@ -1,11 +1,26 @@
-import { ARIAAttribute, ARIAAttributeValue, ARIRRoleAttribute } from '@markuplint/ml-spec';
+import { ARIAAttribute, ARIAAttributeValue, ARIARoleOwnedPropOrState, ARIRRoleAttribute } from '@markuplint/ml-spec';
+import { arrayUnique, nameCompare } from './utils';
+import type cheerio from 'cheerio';
 import fetch from './fetch';
-import { nameCompare } from './utils';
 
 export async function getAria() {
 	const $ = await fetch('https://www.w3.org/TR/wai-aria-1.2/');
 	const $roleList = $('#role_definitions section.role');
 	const roles: ARIRRoleAttribute[] = [];
+	const getAttr = (li: cheerio.Element): ARIARoleOwnedPropOrState => {
+		const $li = $(li);
+		const text = $li.text();
+		const isDeprecated = /deprecated/i.test(text) || undefined;
+		const $a = $li.find('a');
+		const name = $a
+			.text()
+			.replace(/\s*\(\s*state\s*\)\s*/i, '')
+			.trim();
+		return {
+			name,
+			deprecated: isDeprecated,
+		};
+	};
 	$roleList.each((_, el) => {
 		const $el = $(el);
 		const name = $el.find('.role-name').attr('title')?.trim() || '';
@@ -20,34 +35,39 @@ export async function getAria() {
 			.toArray()
 			.map(a => $(a).text().trim());
 		const isAbstract = $feaures.find('.role-abstract').text().trim().toLowerCase() === 'true' || undefined;
-		const ownedAttribute = Array.from(
-			new Set([
-				...$feaures
-					.find('.role-inherited a')
-					.toArray()
-					.map(a =>
-						$(a)
-							.text()
-							.trim()
-							.replace(/\s*\(state\)\s*/, ''),
-					),
-				...$feaures
-					.find('.role-properties a')
-					.toArray()
-					.map(a =>
-						$(a)
-							.text()
-							.trim()
-							.replace(/\s*\(state\)\s*/, ''),
-					),
-			]),
-		).sort();
+		const ownedInheritedProps = $feaures.find('.role-inherited li').toArray().map(getAttr);
+		const ownedProps = $feaures.find('.role-properties li').toArray().map(getAttr);
+		const requiredContextRole = $feaures
+			.find('.role-scope li')
+			.toArray()
+			.map(el => $(el).text().trim());
+		const accessibleNameRequired = !!$feaures.find('.role-namerequired').text().match(/true/i);
+		const accessibleNameFromContent = !!$feaures
+			.find('.role-namefrom')
+			.text()
+			.match(/content/i);
+		const accessibleNameProhibited = !!$feaures
+			.find('.role-childpresentational')
+			.text()
+			.match(/prohibited/i);
+		const $childrenPresentational = $feaures.find('.role-namerequired').text();
+		const childrenPresentational = $childrenPresentational.match(/true/i)
+			? true
+			: $childrenPresentational.match(/false/i)
+			? false
+			: undefined;
+		const ownedAttribute = arrayUnique([...ownedInheritedProps, ...ownedProps].sort(nameCompare));
 		roles.push({
 			name,
 			description,
 			isAbstract,
 			generalization,
+			requiredContextRole,
+			accessibleNameRequired,
+			accessibleNameFromContent,
+			accessibleNameProhibited,
 			ownedAttribute,
+			childrenPresentational,
 		});
 	});
 
@@ -55,7 +75,9 @@ export async function getAria() {
 
 	const ariaNameList: Set<string> = new Set();
 	for (const role of roles) {
-		role.ownedAttribute.map(attr => ariaNameList.add(attr));
+		role.ownedAttribute.forEach(attr => {
+			ariaNameList.add(attr.name);
+		});
 	}
 
 	const globalStatesAndProperties = $('#global_states li a')

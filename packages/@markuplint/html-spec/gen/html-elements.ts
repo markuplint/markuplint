@@ -7,6 +7,8 @@ import { getAttribute } from './get-attribute';
 import { getPermittedStructures } from './get-permitted-structures';
 import { nameCompare } from './utils';
 
+const MAIN_ARTICLE_SELECTOR = 'article.main-page-content, article.article';
+
 export async function getHTMLElements() {
 	const links = await getHTMLElementLinks();
 	const specs = await Promise.all(links.map(getHTMLElement));
@@ -33,7 +35,7 @@ export async function getHTMLElement(link: string) {
 	if (name === 'heading_elements') {
 		name = 'h1-h6';
 	}
-	const $article = $('article.article');
+	const $article = $(MAIN_ARTICLE_SELECTOR);
 	const description = $article
 		.find('.seoSummary')
 		.closest('p')
@@ -65,7 +67,10 @@ export async function getHTMLElement(link: string) {
 				.match(/obsolete/i) ||
 			!!$article.find('> div:first-child .notecard.obsolete').length ||
 			undefined;
-		deprecated = !!$article.find('.deprecatedHeader, > div:first-child .notecard.deprecated').length || undefined;
+		deprecated =
+			!!$article.find('.deprecatedHeader, > div:first-child .notecard.deprecated').length ||
+			!!$article.find('h1').next().find('.notecard.deprecated').length ||
+			undefined;
 		nonStandard = !!$article.find('.nonStandardHeader, h4#Non-standard').length || undefined;
 	}
 
@@ -181,7 +186,7 @@ export function getAttributes($: cheerio.Root, heading: string, tagName: string)
 }
 
 function getProperty($: cheerio.Root, prop: string) {
-	const $tr = $('article.article table.properties tr') || $('#Technical_summary').next('table tr');
+	const $tr = $(MAIN_ARTICLE_SELECTOR).find('table.properties tr') || $('#Technical_summary').next('table tr');
 	const $th = $(
 		$tr
 			.find('th')

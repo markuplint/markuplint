@@ -72,7 +72,7 @@ describe("Use the `aria-*` attribute that doesn't belong to a set role (or an im
 				severity: 'error',
 				line: 1,
 				col: 19,
-				message: 'Cannot use the aria-disabled state/property on the alert role.',
+				message: 'The aria-disabled state/property is deprecated on the alert role.',
 				raw: 'aria-disabled="true"',
 			},
 		]);
