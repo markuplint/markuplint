@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/pug-parser",
-	"version": "1.0.0-beta.0",
+	"version": "1.0.0-beta.1",
 	"description": "Pug parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -16,9 +16,9 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "^1.3.0",
+		"@markuplint/html-parser": "^1.3.1",
 		"@markuplint/ml-ast": "^1.3.0",
-		"@markuplint/parser-utils": "^1.2.0",
+		"@markuplint/parser-utils": "^1.2.1",
 		"pug-lexer": "^5.0.0",
 		"pug-parser": "^6.0.0"
 	}

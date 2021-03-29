@@ -89,4 +89,12 @@ describe('basic test', () => {
 			},
 		]);
 	});
+
+	it('is reported from 007.html', async () => {
+		const r = await markuplint.exec({
+			files: 'test/fixture/007.html',
+			locale: 'en',
+		});
+		expect(r[0].results.length).toEqual(16);
+	});
 });

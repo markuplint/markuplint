@@ -1,4 +1,5 @@
 import { Document } from './';
+import { MLRule } from '../ml-rule';
 import { convertRuleset } from '../';
 import { dummySchemas } from './debug-utils';
 import { parse } from '@markuplint/html-parser';
@@ -110,4 +111,44 @@ test('raw', async () => {
 	expect(document.nodeList[5].indentation!).toBe(null);
 	expect(document.nodeList[6].indentation!).toBe(null);
 	expect(document.nodeList[7].indentation!.width).toBe(0);
+});
+
+test('rule', async () => {
+	const sourceCode = '<div><span>text</span></div>';
+	const ast = parse(sourceCode);
+	const ruleset = convertRuleset({
+		rules: {
+			ruleA: true,
+			ruleB: true,
+		},
+		nodeRules: [
+			{
+				tagName: 'span',
+				rules: {
+					ruleA: false,
+				},
+			},
+		],
+	});
+	const document = new Document(ast, ruleset, dummySchemas());
+	const ruleA = MLRule.create<string, null>({
+		name: 'ruleA',
+		defaultValue: 'foo',
+		defaultOptions: null,
+		async verify() {
+			throw new Error();
+		},
+	});
+	document.setRule(ruleA);
+	expect(document.nodeList[1].rule.disabled).toBe(true);
+	const ruleB = MLRule.create<string, null>({
+		name: 'ruleB',
+		defaultValue: 'foo',
+		defaultOptions: null,
+		async verify() {
+			throw new Error();
+		},
+	});
+	document.setRule(ruleB);
+	expect(document.nodeList[1].rule.disabled).toBe(false);
 });
