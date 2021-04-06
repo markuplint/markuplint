@@ -13667,11 +13667,6 @@
 					"requiredEither": ["data"]
 				},
 				{
-					"name": "typemustmatch",
-					"type": "String",
-					"description": "This Boolean attribute indicates if the type attribute and the actual content type of the resource must match to be used."
-				},
-				{
 					"name": "usemap",
 					"description": "A hash-name reference to a <map> element; that is a '#' followed by the value of a name of a map element.",
 					"type": "String"
