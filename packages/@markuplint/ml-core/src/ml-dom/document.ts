@@ -1,12 +1,12 @@
-import { AnonymousNode, NodeType } from './types';
+import { AnonymousNode, NodeType, SyncWalker, Walker } from './types';
 import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 import { MLASTDocument, MLASTNode, MLASTNodeType } from '@markuplint/ml-ast';
 import { MLDOMComment, MLDOMDoctype, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
 import { NodeStore, createNode } from './helper';
-import { SyncWalker, Walker, syncWalk } from './helper/walkers';
-import { MLRule } from '../';
+import { MLRule } from '../ml-rule';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import Ruleset from '../ruleset';
+import { syncWalk } from './helper/walkers';
 
 /**
  * markuplint DOM Document

@@ -51,16 +51,17 @@ test('unmatched class name', async () => {
 		},
 		[rule],
 		'en',
-	[
-		{
-			severity: 'error',
-			message: '"c-root" class name is unmatched patterns ("/^c-[a-z]+__[a-z0-9]+/")',
-			line: 2,
-			col: 15,
-			raw: 'c-root',
-			ruleId: 'class-naming',
-		},
-	]);
+		[
+			{
+				severity: 'error',
+				message: '"c-root" class name is unmatched patterns ("/^c-[a-z]+__[a-z0-9]+/")',
+				line: 2,
+				col: 15,
+				raw: 'c-root',
+				ruleId: 'class-naming',
+			},
+		],
+	);
 });
 
 test('childNodeRules', async () => {
@@ -91,16 +92,17 @@ test('childNodeRules', async () => {
 		},
 		[rule],
 		'en',
-	[
-		{
-			severity: 'error',
-			message: '"c-root_x" class name is unmatched patterns ("/^c-[a-z]+__[a-z0-9]+/")',
-			line: 3,
-			col: 16,
-			raw: 'c-root_x',
-			ruleId: 'class-naming',
-		},
-	]);
+		[
+			{
+				severity: 'error',
+				message: '"c-root_x" class name is unmatched patterns ("/^c-[a-z]+__[a-z0-9]+/")',
+				line: 3,
+				col: 16,
+				raw: 'c-root_x',
+				ruleId: 'class-naming',
+			},
+		],
+	);
 });
 
 test('unmatched class name (2)', async () => {
@@ -125,16 +127,17 @@ test('unmatched class name (2)', async () => {
 		},
 		[rule],
 		'en',
-	[
-		{
-			severity: 'error',
-			message: '"hoge" class name is unmatched patterns ("/^c-[a-z]+/")',
-			line: 6,
-			col: 18,
-			raw: 'hoge',
-			ruleId: 'class-naming',
-		},
-	]);
+		[
+			{
+				severity: 'error',
+				message: '"hoge" class name is unmatched patterns ("/^c-[a-z]+/")',
+				line: 6,
+				col: 18,
+				raw: 'hoge',
+				ruleId: 'class-naming',
+			},
+		],
+	);
 });
 
 test('multi pattern', async () => {
@@ -202,16 +205,17 @@ test('childNodeRules multi selectors', async () => {
 		},
 		[rule],
 		'en',
-	[
-		{
-			severity: 'error',
-			message: '"hoge" class name is unmatched patterns ("hoge2")',
-			line: 6,
-			col: 18,
-			raw: 'hoge',
-			ruleId: 'class-naming',
-		},
-	]);
+		[
+			{
+				severity: 'error',
+				message: '"hoge" class name is unmatched patterns ("hoge2")',
+				line: 6,
+				col: 18,
+				raw: 'hoge',
+				ruleId: 'class-naming',
+			},
+		],
+	);
 });
 
 test('childNodeRules multi selectors (No error)', async () => {

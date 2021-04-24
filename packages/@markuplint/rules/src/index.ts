@@ -41,3 +41,4 @@ export default [
 	RequiredH1,
 	WaiAria,
 ];
+export { VerifyWalkerFactory, FixWalker, ElementVerifyWalkerFactory, ElementFixWalker } from './types';

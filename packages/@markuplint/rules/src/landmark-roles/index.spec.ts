@@ -25,8 +25,6 @@ test('No warning', async () => {
 		[rule],
 		'en',
 	);
-
-	
 });
 
 test('Top level landmarks', async () => {
@@ -52,16 +50,17 @@ test('Top level landmarks', async () => {
 		},
 		[rule],
 		'en',
-	[
-		{
-			ruleId: 'landmark-roles',
-			severity: 'warning',
-			line: 9,
-			col: 3,
-			raw: '<aside>',
-			message: 'complementary should be top level',
-		},
-	]);
+		[
+			{
+				ruleId: 'landmark-roles',
+				severity: 'warning',
+				line: 9,
+				col: 3,
+				raw: '<aside>',
+				message: 'complementary should be top level',
+			},
+		],
+	);
 });
 
 test('Top level landmarks: disabled', async () => {
@@ -96,8 +95,6 @@ test('Top level landmarks: disabled', async () => {
 		[rule],
 		'en',
 	);
-
-	
 });
 
 test('Top level landmarks: ignoreRoles option', async () => {
@@ -128,8 +125,6 @@ test('Top level landmarks: ignoreRoles option', async () => {
 		[rule],
 		'en',
 	);
-
-	
 });
 
 test('Duplicated area: has-label', async () => {
@@ -160,8 +155,6 @@ test('Duplicated area: has-label', async () => {
 		[rule],
 		'en',
 	);
-
-	
 });
 
 test('Duplicated area: no-label', async () => {
@@ -191,22 +184,23 @@ test('Duplicated area: no-label', async () => {
 		},
 		[rule],
 		'en',
-	[
-		{
-			ruleId: 'landmark-roles',
-			severity: 'warning',
-			line: 5,
-			col: 2,
-			raw: '<nav>',
-			message: 'Should have a unique label because navigation landmarks were markup more than once on a page',
-		},
-		{
-			ruleId: 'landmark-roles',
-			severity: 'warning',
-			line: 8,
-			col: 3,
-			raw: '<nav>',
-			message: 'Should have a unique label because navigation landmarks were markup more than once on a page',
-		},
-	]);
+		[
+			{
+				ruleId: 'landmark-roles',
+				severity: 'warning',
+				line: 5,
+				col: 2,
+				raw: '<nav>',
+				message: 'Should have a unique label because navigation landmarks were markup more than once on a page',
+			},
+			{
+				ruleId: 'landmark-roles',
+				severity: 'warning',
+				line: 8,
+				col: 3,
+				raw: '<nav>',
+				message: 'Should have a unique label because navigation landmarks were markup more than once on a page',
+			},
+		],
+	);
 });

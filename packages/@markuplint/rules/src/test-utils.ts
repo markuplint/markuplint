@@ -26,7 +26,7 @@ export async function testAsyncAndSyncVerify(
 	rules: MLRule<RuleConfigValue, unknown>[],
 	locale: string,
 	result?: VerifiedResult[],
-): Promise<void>
+): Promise<void>;
 // eslint-disable-next-line no-redeclare
 export async function testAsyncAndSyncVerify<T>(
 	html: string,
@@ -35,7 +35,7 @@ export async function testAsyncAndSyncVerify<T>(
 	locale: string,
 	result: T,
 	mapper: (results: VerifiedResult[]) => T,
-): Promise<void>
+): Promise<void>;
 // eslint-disable-next-line no-redeclare
 export async function testAsyncAndSyncVerify<T = VerifiedResult[]>(
 	html: string,

@@ -5,11 +5,11 @@ import html from '@markuplint/html-spec';
 /**
  * Merging HTML-spec schema and extended spec schemas
  *
- * Ex: `@markuplint/html-spec` + `{ specs: ["@markuplint/vue-spec"] }` in cofigure files.
+ * Ex: `@markuplint/html-spec` + `{ specs: ["@markuplint/vue-spec"] }` in configure files.
  *
  * @param schemas `MLDocument.schemas`
  */
-export function getSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
+export function getSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]): MLMLSpec {
 	const [main, ...extendedSpecs] = schemas;
 	const result = { ...main };
 	for (const extendedSpec of extendedSpecs) {

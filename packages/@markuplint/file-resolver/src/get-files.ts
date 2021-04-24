@@ -29,10 +29,12 @@ export async function getFiles(filePathOrGlob: string): Promise<MLFile[]> {
  * @param filePathOrGlob
  */
 export function getFilesSync(filePathOrGlob: string): MLFile[] {
+	let fileList: string[] = [];
 	try {
-		const fileList = glob.sync(filePathOrGlob);
-		return fileList.map(fileName => getFile(fileName));
+		fileList = glob.sync(filePathOrGlob);
 	} catch {
-		return [];
+		// ignore
 	}
+
+	return fileList.map(fileName => getFile(fileName));
 }

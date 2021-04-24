@@ -29,16 +29,17 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
-		[
-			{
-				severity: 'warning',
-				message: 'Required space',
-				line: 2,
-				col: 21,
-				raw: '',
-				ruleId: 'attr-spacing',
-			},
-		]);
+			[
+				{
+					severity: 'warning',
+					message: 'Required space',
+					line: 2,
+					col: 21,
+					raw: '',
+					ruleId: 'attr-spacing',
+				},
+			],
+		);
 	});
 
 	test('no-space', async () => {
@@ -89,16 +90,17 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
-		[
-			{
-				severity: 'error',
-				message: 'Never break line',
-				line: 2,
-				col: 21,
-				raw: '\n\t\t',
-				ruleId: 'attr-spacing',
-			},
-		]);
+			[
+				{
+					severity: 'error',
+					message: 'Never break line',
+					line: 2,
+					col: 21,
+					raw: '\n\t\t',
+					ruleId: 'attr-spacing',
+				},
+			],
+		);
 	});
 
 	test('no-space', async () => {
@@ -137,16 +139,17 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
-		[
-			{
-				severity: 'error',
-				message: 'Insert line break',
-				line: 2,
-				col: 7,
-				raw: ' ',
-				ruleId: 'attr-spacing',
-			},
-		]);
+			[
+				{
+					severity: 'error',
+					message: 'Insert line break',
+					line: 2,
+					col: 7,
+					raw: ' ',
+					ruleId: 'attr-spacing',
+				},
+			],
+		);
 	});
 
 	test('no-space', async () => {
@@ -186,16 +189,17 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
-		[
-			{
-				severity: 'error',
-				message: 'Space should be 1',
-				line: 2,
-				col: 21,
-				raw: '  ',
-				ruleId: 'attr-spacing',
-			},
-		]);
+			[
+				{
+					severity: 'error',
+					message: 'Space should be 1',
+					line: 2,
+					col: 21,
+					raw: '  ',
+					ruleId: 'attr-spacing',
+				},
+			],
+		);
 	});
 
 	test('no-space', async () => {
@@ -214,16 +218,17 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
-		[
-			{
-				severity: 'error',
-				message: 'Space should be 2',
-				line: 2,
-				col: 7,
-				raw: ' ',
-				ruleId: 'attr-spacing',
-			},
-		]);
+			[
+				{
+					severity: 'error',
+					message: 'Space should be 2',
+					line: 2,
+					col: 7,
+					raw: ' ',
+					ruleId: 'attr-spacing',
+				},
+			],
+		);
 	});
 
 	test('no-space', async () => {

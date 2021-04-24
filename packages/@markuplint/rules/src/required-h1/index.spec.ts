@@ -11,16 +11,17 @@ test('h1', async () => {
 		},
 		[rule],
 		'en',
-	[
-		{
-			severity: 'error',
-			message: 'Missing the h1 element',
-			line: 1,
-			col: 1,
-			raw: '<',
-			ruleId: 'required-h1',
-		},
-	]);
+		[
+			{
+				severity: 'error',
+				message: 'Missing the h1 element',
+				line: 1,
+				col: 1,
+				raw: '<',
+				ruleId: 'required-h1',
+			},
+		],
+	);
 });
 
 test('h1', async () => {
@@ -34,7 +35,6 @@ test('h1', async () => {
 		[rule],
 		'en',
 	);
-	
 });
 
 test('h1', async () => {
@@ -47,16 +47,17 @@ test('h1', async () => {
 		},
 		[rule],
 		'en',
-	[
-		{
-			severity: 'error',
-			message: 'Duplicate the h1 element',
-			line: 1,
-			col: 26,
-			raw: '<h1>',
-			ruleId: 'required-h1',
-		},
-	]);
+		[
+			{
+				severity: 'error',
+				message: 'Duplicate the h1 element',
+				line: 1,
+				col: 26,
+				raw: '<h1>',
+				ruleId: 'required-h1',
+			},
+		],
+	);
 });
 
 test('h1', async () => {
@@ -76,7 +77,6 @@ test('h1', async () => {
 		[rule],
 		'en',
 	);
-	
 });
 
 test('h1', async () => {
@@ -90,7 +90,6 @@ test('h1', async () => {
 		[rule],
 		'en',
 	);
-	
 });
 
 test('enable to opetion "in-document-fragment"', async () => {
@@ -124,5 +123,4 @@ test('Issue #57', async () => {
 		[rule],
 		'en',
 	);
-	
 });

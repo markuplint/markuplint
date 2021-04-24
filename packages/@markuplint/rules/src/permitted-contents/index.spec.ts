@@ -612,7 +612,7 @@ describe('verify', () => {
 					raw: '<x-container>',
 					message: 'Invalid content of the x-container element in settings',
 				},
-			]
+			],
 		);
 	});
 });

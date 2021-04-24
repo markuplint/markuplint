@@ -1,9 +1,5 @@
-import { AnonymousNode } from '../types';
+import { AnonymousNode, SyncWalker } from '../types';
 import { RuleConfigValue } from '@markuplint/ml-config';
-
-export type Walker<T extends RuleConfigValue, O = null, N = AnonymousNode<T, O>> = (node: N) => Promise<void>;
-
-export type SyncWalker<T extends RuleConfigValue, O = null, N = AnonymousNode<T, O>> = (node: N) => void;
 
 export function syncWalk<T extends RuleConfigValue, O = null>(
 	nodeList: AnonymousNode<T, O>[],
