@@ -30,6 +30,18 @@ const result = await exec({
 console.log(result); // => The results in JSON format
 ```
 
+sync API:
+
+```js
+import { execSync } from 'markuplint';
+
+const result = execSync({
+	files: './**/*.html',
+});
+
+console.log(result); // => The results in JSON format
+```
+
 ## Functions
 
 ### `exec`
@@ -37,7 +49,14 @@ console.log(result); // => The results in JSON format
 -   _Parameter_
     -   `options`
 -   _Return_
-    -   type: `Promise`&lt;`Array`&lt;[`MLResultInfo`](https://api.markuplint.dev/interfaces/mlresultinfo.html)&gt;&gt;
+    -   type: `Promise<Array<`[`MLResultInfo`](https://api.markuplint.dev/interfaces/mlresultinfo.html)`>>`;
+
+### `execSync`
+
+-   _Parameter_
+    -   `options`
+-   _Return_
+    -   type: `Array<`[`MLResultInfo`](https://api.markuplint.dev/interfaces/mlresultinfo.html)`>`;
 
 #### `options`
 
