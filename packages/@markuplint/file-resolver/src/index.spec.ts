@@ -1,31 +1,26 @@
-import * as FileResolver from './';
+import { testAsyncAndSyncLoadConfigFile, testAsyncAndSyncSearchConfigFile } from './test-utils';
 
 describe('FileResolver', () => {
 	it('loadConfigFile', async () => {
 		const filePath = `${__dirname}/../test/fixtures/001/package.json`;
-		const file = await FileResolver.loadConfigFile(filePath);
-		if (!file) {
-			throw new Error();
-		}
-		expect(file.config).toEqual({ dummy: true });
+		await testAsyncAndSyncLoadConfigFile(filePath, {
+			// @ts-expect-error
+			dummy: true,
+		});
 	});
 
 	it('searchConfigFile', async () => {
 		const filePath = `${__dirname}/../test/fixtures/001/target.html`;
-		const file = await FileResolver.searchConfigFile(filePath);
-		if (!file) {
-			throw new Error();
-		}
-		expect(file.config).toEqual({ dummy: true });
+		await testAsyncAndSyncSearchConfigFile(filePath, {
+			// @ts-expect-error
+			dummy: true,
+		});
 	});
 
 	it('searchConfigFile recursiveExtends', async () => {
 		const filePath = `${__dirname}/../test/fixtures/002/target.html`;
-		const file = await FileResolver.searchConfigFile(filePath);
-		if (!file) {
-			throw new Error();
-		}
-		expect(file.config).toEqual({
+		await testAsyncAndSyncSearchConfigFile(filePath, {
+			// @ts-expect-error
 			dummy: true,
 			dummy2: false,
 			rules: {
@@ -66,11 +61,8 @@ describe('FileResolver', () => {
 
 	it('searchConfigFile recursive closest config file', async () => {
 		const filePath = `${__dirname}/../test/fixtures/003/dir/target.html`;
-		const file = await FileResolver.searchConfigFile(filePath);
-		if (!file) {
-			throw new Error();
-		}
-		expect(file.config).toEqual({
+		await testAsyncAndSyncSearchConfigFile(filePath, {
+			// @ts-expect-error
 			dummy: true,
 			dummy2: true,
 			rules: {

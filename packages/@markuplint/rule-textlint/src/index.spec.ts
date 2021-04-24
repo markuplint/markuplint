@@ -7,8 +7,7 @@ import path from 'path';
 // import rule from './';
 
 test('is test 1', async () => {
-	const r = await markuplint.verify(
-		`<!DOCTYPE html>
+	const text = `<!DOCTYPE html>
 		<html lang="en">
 		<head>
 			<meta charset="UTF-8">
@@ -20,7 +19,9 @@ test('is test 1', async () => {
 			<h1>Title</h1>
 			<p>This not use jquery.</p>
 		</body>
-		</html>`,
+		</html>`;
+	const r = await markuplint.verify(
+		text,
 		{
 			rules: {
 				textlint: {
@@ -53,4 +54,17 @@ test('is test 1', async () => {
 			message: 'Invalid text: jquery => jQuery',
 		},
 	]);
+
+	expect(() =>
+		markuplint.verifySync(
+			text,
+			{
+				rules: {
+					textlint: true,
+				},
+			},
+			[],
+			'en',
+		),
+	).toThrow('textlint does not support sync API for now, so this rule can not be used in sync mode');
 });

@@ -8,7 +8,7 @@ import { Document } from '@markuplint/ml-core';
 import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import { MLResultInfo } from './types';
 import path from 'path';
-import { toRegxp } from './util';
+import { toRegexp } from './util';
 
 export async function lintFile(
 	file: MLFile,
@@ -28,7 +28,7 @@ export async function lintFile(
 	let parserModName = '@markuplint/html-parser';
 	if (configSet.config.parser) {
 		for (const pattern of Object.keys(configSet.config.parser)) {
-			if (path.basename(file.path).match(toRegxp(pattern))) {
+			if (path.basename(file.path).match(toRegexp(pattern))) {
 				parserModName = configSet.config.parser[pattern];
 			}
 		}
@@ -122,7 +122,7 @@ export function lintFileSync(
 	let parserModName = '@markuplint/html-parser';
 	if (configSet.config.parser) {
 		for (const pattern of Object.keys(configSet.config.parser)) {
-			if (path.basename(file.path).match(toRegxp(pattern))) {
+			if (path.basename(file.path).match(toRegexp(pattern))) {
 				parserModName = configSet.config.parser[pattern];
 			}
 		}

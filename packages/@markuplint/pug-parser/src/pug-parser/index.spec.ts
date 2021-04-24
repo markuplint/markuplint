@@ -1,4 +1,4 @@
-import { pugParse } from '.';
+import { pugParse } from './';
 
 describe('parser', () => {
 	it('basic code', () => {

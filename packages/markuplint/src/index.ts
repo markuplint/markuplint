@@ -20,7 +20,7 @@ export async function verify(html: string, config: Config, rules: MLRule<RuleCon
 		rulesAutoResolve: true,
 		locale,
 	});
-	return totalResults[0] ? totalResults[0].results : [];
+	return totalResults[0]?.results ?? [];
 }
 
 /**
@@ -38,7 +38,7 @@ export function verifySync(html: string, config: Config, rules: MLRule<RuleConfi
 		rulesAutoResolve: true,
 		locale,
 	});
-	return totalResults[0] ? totalResults[0].results : [];
+	return totalResults[0]?.results ?? [];
 }
 
 /**
@@ -57,11 +57,7 @@ export async function fix(html: string, config: Config, rules: MLRule<RuleConfig
 		rulesAutoResolve: true,
 		fix: true,
 	});
-	const result = totalResults[0];
-	if (!result) {
-		return html;
-	}
-	return result.fixedCode;
+	return totalResults[0]?.fixedCode ?? html;
 }
 
 /**
@@ -80,9 +76,5 @@ export function fixSync(html: string, config: Config, rules: MLRule<RuleConfigVa
 		rulesAutoResolve: true,
 		fix: true,
 	});
-	const result = totalResults[0];
-	if (!result) {
-		return html;
-	}
-	return result.fixedCode;
+	return totalResults[0]?.fixedCode ?? html;
 }
