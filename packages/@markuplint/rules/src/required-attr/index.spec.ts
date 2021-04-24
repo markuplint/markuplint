@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { testAsyncAndSyncVerify } from '../test-utils';
 
 test('warns if specified attribute is not appeared', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="/path/to/image.png">',
 		{
 			rules: {
@@ -22,22 +22,21 @@ test('warns if specified attribute is not appeared', async () => {
 		},
 		[rule],
 		'en',
+		[
+			{
+				col: 1,
+				line: 1,
+				message: "Required 'alt' on '<img>'",
+				raw: '<img src="/path/to/image.png">',
+				ruleId: 'required-attr',
+				severity: 'error',
+			},
+		],
 	);
-
-	expect(r).toStrictEqual([
-		{
-			col: 1,
-			line: 1,
-			message: "Required 'alt' on '<img>'",
-			raw: '<img src="/path/to/image.png">',
-			ruleId: 'required-attr',
-			severity: 'error',
-		},
-	]);
 });
 
 test('multiple required attributes', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="/path/to/image.png">',
 		{
 			rules: {
@@ -57,262 +56,235 @@ test('multiple required attributes', async () => {
 		},
 		[rule],
 		'en',
+		[
+			{
+				severity: 'error',
+				message: "Required 'alt' on '<img>'",
+				line: 1,
+				col: 1,
+				raw: '<img src="/path/to/image.png">',
+				ruleId: 'required-attr',
+			},
+			{
+				severity: 'error',
+				message: "Required 'height' on '<img>'",
+				line: 1,
+				col: 1,
+				raw: '<img src="/path/to/image.png">',
+				ruleId: 'required-attr',
+			},
+			{
+				severity: 'error',
+				message: "Required 'width' on '<img>'",
+				line: 1,
+				col: 1,
+				raw: '<img src="/path/to/image.png">',
+				ruleId: 'required-attr',
+			},
+		],
 	);
-
-	expect(r).toStrictEqual([
-		{
-			severity: 'error',
-			message: "Required 'alt' on '<img>'",
-			line: 1,
-			col: 1,
-			raw: '<img src="/path/to/image.png">',
-			ruleId: 'required-attr',
-		},
-		{
-			severity: 'error',
-			message: "Required 'height' on '<img>'",
-			line: 1,
-			col: 1,
-			raw: '<img src="/path/to/image.png">',
-			ruleId: 'required-attr',
-		},
-		{
-			severity: 'error',
-			message: "Required 'width' on '<img>'",
-			line: 1,
-			col: 1,
-			raw: '<img src="/path/to/image.png">',
-			ruleId: 'required-attr',
-		},
-	]);
 });
 
 test('"alt" attribute on "<area>" is required only if the href attribute is used', async () => {
-	expect(
-		(
-			await markuplint.verify(
-				'<area href="path/to">',
-				{
-					rules: {
-						'required-attr': true,
-					},
-					nodeRules: [],
-				},
-				[rule],
-				'en',
-			)
-		).length,
-	).toBe(1);
+	await testAsyncAndSyncVerify(
+		'<area href="path/to">',
+		{
+			rules: {
+				'required-attr': true,
+			},
+			nodeRules: [],
+		},
+		[rule],
+		'en',
+		1,
+		r => r.length,
+	);
 
-	expect(
-		(
-			await markuplint.verify(
-				'<area href="path/to" alt="alternate text">',
-				{
-					rules: {
-						'required-attr': true,
-					},
-					nodeRules: [],
-				},
-				[rule],
-				'en',
-			)
-		).length,
-	).toBe(0);
+	await testAsyncAndSyncVerify(
+		'<area href="path/to" alt="alternate text">',
+		{
+			rules: {
+				'required-attr': true,
+			},
+			nodeRules: [],
+		},
+		[rule],
+		'en',
+	);
 });
 
 test('At least one of data and type must be defined to <object>.', async () => {
-	expect(
-		(
-			await markuplint.verify(
-				'<object data="https://example.com/data">',
-				{
-					rules: {
-						'required-attr': true,
-					},
-					nodeRules: [],
-				},
-				[rule],
-				'en',
-			)
-		).length,
-	).toBe(0);
+	await testAsyncAndSyncVerify(
+		'<object data="https://example.com/data">',
+		{
+			rules: {
+				'required-attr': true,
+			},
+			nodeRules: [],
+		},
+		[rule],
+		'en',
+	);
 
-	expect(
-		(
-			await markuplint.verify(
-				'<object type="XXXX_YYYY_ZZZZ">',
-				{
-					rules: {
-						'required-attr': true,
-					},
-					nodeRules: [],
-				},
-				[rule],
-				'en',
-			)
-		).length,
-	).toBe(0);
+	await testAsyncAndSyncVerify(
+		'<object type="XXXX_YYYY_ZZZZ">',
+		{
+			rules: {
+				'required-attr': true,
+			},
+			nodeRules: [],
+		},
+		[rule],
+		'en',
+	);
 
-	expect(
-		(
-			await markuplint.verify(
-				'<object>',
-				{
-					rules: {
-						'required-attr': true,
-					},
-					nodeRules: [],
-				},
-				[rule],
-				'en',
-			)
-		).length,
-	).toBe(2);
+	await testAsyncAndSyncVerify(
+		'<object>',
+		{
+			rules: {
+				'required-attr': true,
+			},
+			nodeRules: [],
+		},
+		[rule],
+		'en',
+		2,
+		r => r.length,
+	);
 });
 
 test('The ancestors of the <source> element.', async () => {
-	expect(
-		await markuplint.verify(
-			'<audio><source></audio>',
-			{
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
-	).toStrictEqual([
+	await testAsyncAndSyncVerify(
+		'<audio><source></audio>',
 		{
-			ruleId: 'required-attr',
-			severity: 'error',
-			line: 1,
-			col: 8,
-			message: "Required 'src' on '<source>'",
-			raw: '<source>',
-		},
-	]);
-
-	expect(
-		await markuplint.verify(
-			'<video><source></video>',
-			{
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [],
+			rules: {
+				'required-attr': true,
 			},
-			[rule],
-			'en',
-		),
-	).toStrictEqual([
+			nodeRules: [],
+		},
+		[rule],
+		'en',
+		[
+			{
+				ruleId: 'required-attr',
+				severity: 'error',
+				line: 1,
+				col: 8,
+				message: "Required 'src' on '<source>'",
+				raw: '<source>',
+			},
+		],
+	);
+
+	await testAsyncAndSyncVerify(
+		'<video><source></video>',
 		{
-			ruleId: 'required-attr',
-			severity: 'error',
-			line: 1,
-			col: 8,
-			message: "Required 'src' on '<source>'",
-			raw: '<source>',
-		},
-	]);
-
-	expect(
-		await markuplint.verify(
-			'<picture><source></picture>',
-			{
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [],
+			rules: {
+				'required-attr': true,
 			},
-			[rule],
-			'en',
-		),
-	).toStrictEqual([]);
+			nodeRules: [],
+		},
+		[rule],
+		'en',
+		[
+			{
+				ruleId: 'required-attr',
+				severity: 'error',
+				line: 1,
+				col: 8,
+				message: "Required 'src' on '<source>'",
+				raw: '<source>',
+			},
+		],
+	);
+
+	await testAsyncAndSyncVerify(
+		'<picture><source></picture>',
+		{
+			rules: {
+				'required-attr': true,
+			},
+			nodeRules: [],
+		},
+		[rule],
+		'en',
+	);
 });
 
 test('Foreign element', async () => {
-	expect(
-		await markuplint.verify(
-			'<svg></svg>',
-			{
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [
-					{
-						tagName: 'svg',
-						rules: {
-							'required-attr': {
-								severity: 'error',
-								value: 'viewBox',
-							},
+	await testAsyncAndSyncVerify(
+		'<svg></svg>',
+		{
+			rules: {
+				'required-attr': true,
+			},
+			nodeRules: [
+				{
+					tagName: 'svg',
+					rules: {
+						'required-attr': {
+							severity: 'error',
+							value: 'viewBox',
 						},
 					},
-				],
-			},
-			[rule],
-			'en',
-		),
-	).toStrictEqual([
-		{
-			ruleId: 'required-attr',
-			severity: 'error',
-			line: 1,
-			col: 1,
-			message: "Required 'viewBox' on '<svg>'",
-			raw: '<svg>',
+				},
+			],
 		},
-	]);
+		[rule],
+		'en',
+		[
+			{
+				ruleId: 'required-attr',
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: "Required 'viewBox' on '<svg>'",
+				raw: '<svg>',
+			},
+		],
+	);
 });
 
 test('Pug', async () => {
-	expect(
-		await markuplint.verify(
-			'img',
-			{
-				parser: {
-					'.*': '@markuplint/pug-parser',
-				},
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
-	).toStrictEqual([
+	await testAsyncAndSyncVerify(
+		'img',
 		{
-			ruleId: 'required-attr',
-			severity: 'error',
-			line: 1,
-			col: 1,
-			message: "Required 'src' on '<img>'",
-			raw: 'img',
+			parser: {
+				'.*': '@markuplint/pug-parser',
+			},
+			rules: {
+				'required-attr': true,
+			},
+			nodeRules: [],
 		},
-	]);
+		[rule],
+		'en',
+		[
+			{
+				ruleId: 'required-attr',
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: "Required 'src' on '<img>'",
+				raw: 'img',
+			},
+		],
+	);
 });
 
 test('Vue', async () => {
-	expect(
-		(
-			await markuplint.verify(
-				'<template><img :src="src"></template>',
-				{
-					parser: {
-						'.*': '@markuplint/vue-parser',
-					},
-					rules: {
-						'required-attr': true,
-					},
-					nodeRules: [],
-				},
-				[rule],
-				'en',
-			)
-		).length,
-	).toBe(0);
+	await testAsyncAndSyncVerify(
+		'<template><img :src="src"></template>',
+		{
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+			rules: {
+				'required-attr': true,
+			},
+			nodeRules: [],
+		},
+		[rule],
+		'en',
+	);
 });

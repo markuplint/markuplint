@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { testAsyncAndSyncFix, testAsyncAndSyncVerify } from '../test-utils';
 import rule from './';
 
 describe('verify', () => {
 	test('lower case', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			'<div data-lowercase></div>',
 			{
 				rules: {
@@ -13,11 +13,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('upper case', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			'<div data-UPPERCASE="value"></div>',
 			{
 				rules: {
@@ -26,14 +25,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Attribute name of HTML elements should be lowercase',
+					raw: 'data-UPPERCASE',
+					ruleId: 'case-sensitive-attr-name',
+					line: 1,
+					col: 6,
+				},
+			],
 		);
-		expect(r[0].severity).toBe('warning');
-		expect(r[0].message).toBe('Attribute name of HTML elements should be lowercase');
-		expect(r[0].raw).toBe('data-UPPERCASE');
 	});
 
 	test('upper case', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			'<div data-UPPERCASE="value"></div>',
 			{
 				rules: {
@@ -46,13 +52,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'error',
+					message: 'Attribute name of HTML elements must be uppercase',
+					raw: 'data-UPPERCASE',
+					ruleId: 'case-sensitive-attr-name',
+					line: 1,
+					col: 6,
+				},
+			],
 		);
-		expect(r[0].severity).toBe('error');
-		expect(r[0].message).toBe('Attribute name of HTML elements must be uppercase');
 	});
 
 	test('upper case', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			'<div data-uppercase="value"></div>',
 			{
 				rules: {
@@ -65,50 +79,56 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'error',
+					message: 'Attribute name of HTML elements must be uppercase',
+					raw: 'data-uppercase',
+					ruleId: 'case-sensitive-attr-name',
+					line: 1,
+					col: 6,
+				},
+			],
 		);
-		expect(r[0].severity).toBe('error');
-		expect(r[0].message).toBe('Attribute name of HTML elements must be uppercase');
 	});
 
 	test('upper case', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			'<div DATA-UPPERCASE="value"></div>',
 			{ rules: { 'case-sensitive-attr-name': ['error', 'no-lower'] } },
 			[rule],
 			'en',
 		);
-		expect(r.length).toBe(0);
 	});
 
 	test('foreign elements', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			'<svg viewBox="0 0 100 100"></svg>',
 			{ rules: { 'case-sensitive-attr-name': true } },
 			[rule],
 			'en',
 		);
-		expect(r.length).toBe(0);
 	});
 });
 
 describe('fix', () => {
 	test('upper case', async () => {
-		const fixed = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			'<DIV DATA-LOWERCASE></DIV>',
 			{ rules: { 'case-sensitive-attr-name': true } },
 			[rule],
 			'en',
+			'<DIV data-lowercase></DIV>',
 		);
-		expect(fixed).toBe('<DIV data-lowercase></DIV>');
 	});
 
 	test('upper case', async () => {
-		const fixed = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			'<DIV data-lowercase></DIV>',
 			{ rules: { 'case-sensitive-attr-name': 'no-lower' } },
 			[rule],
 			'en',
+			'<DIV DATA-LOWERCASE></DIV>',
 		);
-		expect(fixed).toBe('<DIV DATA-LOWERCASE></DIV>');
 	});
 });

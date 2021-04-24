@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { testAsyncAndSyncVerify } from '../test-utils';
 
 test('normal', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<div></div><p><span></span></p>',
 		{
 			rules: {
@@ -12,11 +12,10 @@ test('normal', async () => {
 		[rule],
 		'en',
 	);
-	expect(r).toStrictEqual([]);
 });
 
 test('deprecated', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<font></font><big><blink></blink></big>',
 		{
 			rules: {
@@ -25,37 +24,37 @@ test('deprecated', async () => {
 		},
 		[rule],
 		'en',
+		[
+			{
+				severity: 'error',
+				message: 'Element is deprecated',
+				line: 1,
+				col: 1,
+				raw: '<font>',
+				ruleId: 'deprecated-element',
+			},
+			{
+				severity: 'error',
+				message: 'Element is deprecated',
+				line: 1,
+				col: 14,
+				raw: '<big>',
+				ruleId: 'deprecated-element',
+			},
+			{
+				severity: 'error',
+				message: 'Element is deprecated',
+				line: 1,
+				col: 19,
+				raw: '<blink>',
+				ruleId: 'deprecated-element',
+			},
+		],
 	);
-	expect(r).toStrictEqual([
-		{
-			severity: 'error',
-			message: 'Element is deprecated',
-			line: 1,
-			col: 1,
-			raw: '<font>',
-			ruleId: 'deprecated-element',
-		},
-		{
-			severity: 'error',
-			message: 'Element is deprecated',
-			line: 1,
-			col: 14,
-			raw: '<big>',
-			ruleId: 'deprecated-element',
-		},
-		{
-			severity: 'error',
-			message: 'Element is deprecated',
-			line: 1,
-			col: 19,
-			raw: '<blink>',
-			ruleId: 'deprecated-element',
-		},
-	]);
 });
 
 test('Foreign element', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<svg><g><image width="100" height="100" xlink:href="path/to"/></g></svg>',
 		{
 			rules: {
@@ -65,7 +64,7 @@ test('Foreign element', async () => {
 		[rule],
 		'en',
 	);
-	const r2 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<div><span><image width="100" height="100" xlink:href="path/to"/></span></div>',
 		{
 			rules: {
@@ -74,16 +73,15 @@ test('Foreign element', async () => {
 		},
 		[rule],
 		'en',
+		[
+			{
+				ruleId: 'deprecated-element',
+				severity: 'error',
+				line: 1,
+				col: 12,
+				raw: '<image width="100" height="100" xlink:href="path/to"/>',
+				message: 'Element is deprecated',
+			},
+		],
 	);
-	expect(r).toStrictEqual([]);
-	expect(r2).toStrictEqual([
-		{
-			ruleId: 'deprecated-element',
-			severity: 'error',
-			line: 1,
-			col: 12,
-			raw: '<image width="100" height="100" xlink:href="path/to"/>',
-			message: 'Element is deprecated',
-		},
-	]);
 });

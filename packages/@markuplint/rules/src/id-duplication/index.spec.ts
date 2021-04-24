@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { testAsyncAndSyncVerify } from '../test-utils';
 
 test('id-duplication', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<div id="a"><p id="a"></p></div>',
 		{
 			rules: {
@@ -11,21 +11,21 @@ test('id-duplication', async () => {
 		},
 		[rule],
 		'en',
+		[
+			{
+				severity: 'error',
+				message: 'Duplicate attribute id value',
+				line: 1,
+				col: 16,
+				raw: 'id="a"',
+				ruleId: 'id-duplication',
+			},
+		],
 	);
-	expect(r).toStrictEqual([
-		{
-			severity: 'error',
-			message: 'Duplicate attribute id value',
-			line: 1,
-			col: 16,
-			raw: 'id="a"',
-			ruleId: 'id-duplication',
-		},
-	]);
 });
 
 test('id-duplication', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<div id="a"></div>',
 		{
 			rules: {
@@ -35,11 +35,10 @@ test('id-duplication', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
 });
 
 test('id-duplication', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<div id="a"></div><div id="a"></div><div id="a"></div>',
 		{
 			rules: {
@@ -48,12 +47,13 @@ test('id-duplication', async () => {
 		},
 		[rule],
 		'en',
+		2,
+		r => r.length,
 	);
-	expect(r.length).toBe(2);
 });
 
 test('id-duplication', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<div id="a"></div><div id="b"></div><div id="c"></div>',
 		{
 			rules: {
@@ -63,11 +63,10 @@ test('id-duplication', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
 });
 
 test('in Vue', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		`<template>
 	<div v-if="bool"><span :id="uuid"></span></div>
 	<div v-else><span :id="uuid"></span></div>
@@ -83,5 +82,4 @@ test('in Vue', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
 });

@@ -1,6 +1,6 @@
-import * as markuplint from 'markuplint';
 import { floatCheck, intCheck, nonZeroUintCheck, uintCheck } from './type-check';
 import rule from './';
+import { testAsyncAndSyncVerify } from '../test-utils';
 
 test('intCheck', () => {
 	expect(intCheck('0')).toBe(true);
@@ -55,7 +55,7 @@ test('nonZeroUintCheck', () => {
 });
 
 test('warns if specified attribute value is invalid', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
 		{
 			rules: {
@@ -64,31 +64,30 @@ test('warns if specified attribute value is invalid', async () => {
 		},
 		[rule],
 		'en',
+		[
+			{
+				ruleId: 'invalid-attr',
+				severity: 'error',
+				line: 1,
+				col: 4,
+				message: 'The "invalid-attr" attribute is not allowed',
+				raw: 'invalid-attr',
+			},
+			{
+				ruleId: 'invalid-attr',
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message:
+					'The "referrerpolicy" attribute expect either "", "no-referrer", "no-referrer-when-downgrade", "same-origin", "origin", "strict-origin", "origin-when-cross-origin", "strict-origin-when-cross-origin", "unsafe-url"',
+				raw: 'invalid-value',
+			},
+		],
 	);
-
-	expect(r).toStrictEqual([
-		{
-			ruleId: 'invalid-attr',
-			severity: 'error',
-			line: 1,
-			col: 4,
-			message: 'The "invalid-attr" attribute is not allowed',
-			raw: 'invalid-attr',
-		},
-		{
-			ruleId: 'invalid-attr',
-			severity: 'error',
-			line: 1,
-			col: 33,
-			message:
-				'The "referrerpolicy" attribute expect either "", "no-referrer", "no-referrer-when-downgrade", "same-origin", "origin", "strict-origin", "origin-when-cross-origin", "strict-origin-when-cross-origin", "unsafe-url"',
-			raw: 'invalid-value',
-		},
-	]);
 });
 
 test('disable', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
 		{
 			rules: {
@@ -98,49 +97,44 @@ test('disable', async () => {
 		[rule],
 		'en',
 	);
-
-	expect(r.length).toBe(0);
 });
 
 test('ancestor condition', async () => {
-	expect(
-		await markuplint.verify(
-			'<picture><source media="print"></picture>',
-			{
-				rules: {
-					'invalid-attr': true,
-				},
-			},
-			[rule],
-			'en',
-		),
-	).toStrictEqual([]);
-
-	expect(
-		await markuplint.verify(
-			'<audio><source media="print"></audio>',
-			{
-				rules: {
-					'invalid-attr': true,
-				},
-			},
-			[rule],
-			'en',
-		),
-	).toStrictEqual([
+	await testAsyncAndSyncVerify(
+		'<picture><source media="print"></picture>',
 		{
-			ruleId: 'invalid-attr',
-			severity: 'error',
-			line: 1,
-			col: 16,
-			message: 'The "media" attribute is not allowed',
-			raw: 'media',
+			rules: {
+				'invalid-attr': true,
+			},
 		},
-	]);
+		[rule],
+		'en',
+	);
+
+	await testAsyncAndSyncVerify(
+		'<audio><source media="print"></audio>',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+		[
+			{
+				ruleId: 'invalid-attr',
+				severity: 'error',
+				line: 1,
+				col: 16,
+				message: 'The "media" attribute is not allowed',
+				raw: 'media',
+			},
+		],
+	);
 });
 
 test('custom rule', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>',
 		{
 			rules: {
@@ -157,22 +151,21 @@ test('custom rule', async () => {
 		},
 		[rule],
 		'en',
+		[
+			{
+				ruleId: 'invalid-attr',
+				severity: 'error',
+				line: 1,
+				col: 15,
+				message: 'The "x-attr" attribute expect custom pattern "/[a-z]+/"',
+				raw: '123',
+			},
+		],
 	);
-
-	expect(r).toStrictEqual([
-		{
-			ruleId: 'invalid-attr',
-			severity: 'error',
-			line: 1,
-			col: 15,
-			message: 'The "x-attr" attribute expect custom pattern "/[a-z]+/"',
-			raw: '123',
-		},
-	]);
 });
 
 test('custom rule: type', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>',
 		{
 			rules: {
@@ -189,22 +182,21 @@ test('custom rule: type', async () => {
 		},
 		[rule],
 		'en',
+		[
+			{
+				ruleId: 'invalid-attr',
+				severity: 'error',
+				line: 1,
+				col: 41,
+				message: 'The "x-attr" attribute expect integer',
+				raw: 'abc',
+			},
+		],
 	);
-
-	expect(r).toStrictEqual([
-		{
-			ruleId: 'invalid-attr',
-			severity: 'error',
-			line: 1,
-			col: 41,
-			message: 'The "x-attr" attribute expect integer',
-			raw: 'abc',
-		},
-	]);
 });
 
 test('custom element', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<custom-element any-attr></custom-element>',
 		{
 			rules: {
@@ -214,12 +206,10 @@ test('custom element', async () => {
 		[rule],
 		'en',
 	);
-
-	expect(r.length).toBe(0);
 });
 
 test('custom element and custom rule', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<custom-element any-attr="any-string"></custom-element>',
 		{
 			rules: {
@@ -244,13 +234,13 @@ test('custom element and custom rule', async () => {
 		},
 		[rule],
 		'en',
+		1,
+		r => r.length,
 	);
-
-	expect(r.length).toBe(1);
 });
 
 test('prefix attribute', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<div v-bind:title="title" :class="classes" @click="click"></div>',
 		{
 			rules: {
@@ -259,38 +249,37 @@ test('prefix attribute', async () => {
 		},
 		[rule],
 		'en',
+		[
+			{
+				ruleId: 'invalid-attr',
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'The "v-bind:title" attribute is not allowed',
+				raw: 'v-bind:title',
+			},
+			{
+				ruleId: 'invalid-attr',
+				severity: 'error',
+				line: 1,
+				col: 27,
+				message: 'The ":class" attribute is not allowed',
+				raw: ':class',
+			},
+			{
+				ruleId: 'invalid-attr',
+				severity: 'error',
+				col: 44,
+				line: 1,
+				message: 'The "@click" attribute is not allowed',
+				raw: '@click',
+			},
+		],
 	);
-
-	expect(r).toStrictEqual([
-		{
-			ruleId: 'invalid-attr',
-			severity: 'error',
-			line: 1,
-			col: 6,
-			message: 'The "v-bind:title" attribute is not allowed',
-			raw: 'v-bind:title',
-		},
-		{
-			ruleId: 'invalid-attr',
-			severity: 'error',
-			line: 1,
-			col: 27,
-			message: 'The ":class" attribute is not allowed',
-			raw: ':class',
-		},
-		{
-			ruleId: 'invalid-attr',
-			severity: 'error',
-			col: 44,
-			line: 1,
-			message: 'The "@click" attribute is not allowed',
-			raw: '@click',
-		},
-	]);
 });
 
 test('ignore prefix attribute', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<div v-bind:title="title" :class="classes" @click="click"></div>',
 		{
 			rules: {
@@ -304,12 +293,10 @@ test('ignore prefix attribute', async () => {
 		[rule],
 		'en',
 	);
-
-	expect(r.length).toBe(0);
 });
 
 test('URL attribute', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="https://sample.com/path/to">',
 		{
 			rules: {
@@ -319,9 +306,8 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
 
-	const r2 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="//sample.com/path/to">',
 		{
 			rules: {
@@ -331,9 +317,8 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r2.length).toBe(0);
 
-	const r3 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="//user:pass@sample.com/path/to">',
 		{
 			rules: {
@@ -343,9 +328,8 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r3.length).toBe(0);
 
-	const r4 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="/path/to">',
 		{
 			rules: {
@@ -355,9 +339,8 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r4.length).toBe(0);
 
-	const r5 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="/path/to?param=value">',
 		{
 			rules: {
@@ -367,9 +350,8 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r5.length).toBe(0);
 
-	const r6 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="/?param=value">',
 		{
 			rules: {
@@ -379,9 +361,8 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r6.length).toBe(0);
 
-	const r7 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="?param=value">',
 		{
 			rules: {
@@ -391,9 +372,8 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r7.length).toBe(0);
 
-	const r8 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="path/to">',
 		{
 			rules: {
@@ -403,9 +383,8 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r8.length).toBe(0);
 
-	const r9 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="./path/to">',
 		{
 			rules: {
@@ -415,9 +394,8 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r9.length).toBe(0);
 
-	const r10 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="../path/to">',
 		{
 			rules: {
@@ -427,9 +405,8 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r10.length).toBe(0);
 
-	const r11 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="/path/to#hash">',
 		{
 			rules: {
@@ -439,9 +416,8 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r11.length).toBe(0);
 
-	const r12 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="#hash">',
 		{
 			rules: {
@@ -451,11 +427,10 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r12.length).toBe(0);
 });
 
 test('Foreign element', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<div><svg width="10px" height="10px" viewBox="0 0 10 10"></svg></div>',
 		{
 			rules: {
@@ -465,12 +440,10 @@ test('Foreign element', async () => {
 		[rule],
 		'en',
 	);
-
-	expect(r.length).toBe(0);
 });
 
 test('Pug', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'button(type=buttonType)',
 		{
 			parser: {
@@ -483,12 +456,10 @@ test('Pug', async () => {
 		[rule],
 		'en',
 	);
-
-	expect(r.length).toBe(0);
 });
 
 test('Vue', async () => {
-	const r1 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<template><button type="buttonType"></button></template>',
 		{
 			parser: {
@@ -500,8 +471,10 @@ test('Vue', async () => {
 		},
 		[rule],
 		'en',
+		1,
+		r => r.length,
 	);
-	const r2 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<template><button :type="buttonType"></button></template>',
 		{
 			parser: {
@@ -514,13 +487,10 @@ test('Vue', async () => {
 		[rule],
 		'en',
 	);
-
-	expect(r1.length).toBe(1);
-	expect(r2.length).toBe(0);
 });
 
 test('Vue iterator', async () => {
-	const r1 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<template><ul ref="ul"><li key="key"></li></ul></template>',
 		{
 			parser: {
@@ -533,8 +503,10 @@ test('Vue iterator', async () => {
 		},
 		[rule],
 		'en',
+		1,
+		r => r.length,
 	);
-	const r2 = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<template><ul><li v-for="item of list" :key="key"></li></ul></template>',
 		{
 			parser: {
@@ -547,7 +519,4 @@ test('Vue iterator', async () => {
 		[rule],
 		'en',
 	);
-
-	expect(r1.length).toBe(1);
-	expect(r2.length).toBe(0);
 });

@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { testAsyncAndSyncVerify } from '../test-utils';
 
 test('character-reference', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<div id="a"> > < & " \' &amp;</div>',
 		{
 			rules: {
@@ -11,26 +11,45 @@ test('character-reference', async () => {
 		},
 		[rule],
 		'en',
+		[
+			{
+				col: 14,
+				line: 1,
+				message: 'Illegal characters must escape in character reference',
+				raw: '>',
+				ruleId: 'character-reference',
+				severity: 'error',
+			},
+			{
+				col: 16,
+				line: 1,
+				message: 'Illegal characters must escape in character reference',
+				raw: '<',
+				ruleId: 'character-reference',
+				severity: 'error',
+			},
+			{
+				col: 18,
+				line: 1,
+				message: 'Illegal characters must escape in character reference',
+				raw: '&',
+				ruleId: 'character-reference',
+				severity: 'error',
+			},
+			{
+				col: 20,
+				line: 1,
+				message: 'Illegal characters must escape in character reference',
+				raw: '"',
+				ruleId: 'character-reference',
+				severity: 'error',
+			},
+		],
 	);
-	expect(r.length).toBe(4);
-	expect(r[0]).toStrictEqual({
-		severity: 'error',
-		message: 'Illegal characters must escape in character reference',
-		line: 1,
-		col: 14,
-		raw: '>',
-		ruleId: 'character-reference',
-	});
-	expect(r[1].col).toBe(16);
-	expect(r[1].raw).toBe('<');
-	expect(r[2].col).toBe(18);
-	expect(r[2].raw).toBe('&');
-	expect(r[3].col).toBe(20);
-	expect(r[3].raw).toBe('"');
 });
 
 test('character-reference', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img src="path/to?a=b&c=d">',
 		{
 			rules: {
@@ -39,21 +58,21 @@ test('character-reference', async () => {
 		},
 		[rule],
 		'en',
+		[
+			{
+				severity: 'error',
+				message: 'Illegal characters must escape in character reference',
+				line: 1,
+				col: 22,
+				raw: '&',
+				ruleId: 'character-reference',
+			},
+		],
 	);
-	expect(r).toStrictEqual([
-		{
-			severity: 'error',
-			message: 'Illegal characters must escape in character reference',
-			line: 1,
-			col: 22,
-			raw: '&',
-			ruleId: 'character-reference',
-		},
-	]);
 });
 
 test('character-reference', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<script>if (i < 0) console.log("<markuplint>");</script>',
 		{
 			rules: {
@@ -63,11 +82,10 @@ test('character-reference', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
 });
 
 test('in Vue', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<template><div v-if="a < b"></div></template>',
 		{
 			parser: {
@@ -80,5 +98,4 @@ test('in Vue', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
 });

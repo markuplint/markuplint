@@ -20,6 +20,23 @@ function dummySchemas() {
 	return [{}, {}] as [MLMLSpec, ...ExtendedSpec[]];
 }
 
+export async function testAsyncAndSyncVerify(
+	html: string,
+	config: Config,
+	rules: MLRule<RuleConfigValue, unknown>[],
+	locale: string,
+	result?: VerifiedResult[],
+): Promise<void>
+// eslint-disable-next-line no-redeclare
+export async function testAsyncAndSyncVerify<T>(
+	html: string,
+	config: Config,
+	rules: MLRule<RuleConfigValue, unknown>[],
+	locale: string,
+	result: T,
+	mapper: (results: VerifiedResult[]) => T,
+): Promise<void>
+// eslint-disable-next-line no-redeclare
 export async function testAsyncAndSyncVerify<T = VerifiedResult[]>(
 	html: string,
 	config: Config,
@@ -27,7 +44,7 @@ export async function testAsyncAndSyncVerify<T = VerifiedResult[]>(
 	locale: string,
 	result: T = ([] as unknown) as T,
 	mapper?: (results: VerifiedResult[]) => T,
-) {
+): Promise<void> {
 	[await markuplint.verify(html, config, rules, locale), markuplint.verifySync(html, config, rules, locale)].forEach(
 		results => {
 			expect(mapper ? mapper(results) : results).toStrictEqual(result);

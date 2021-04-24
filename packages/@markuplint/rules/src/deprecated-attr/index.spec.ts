@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { testAsyncAndSyncVerify } from '../test-utils';
 
 test('deprecated attribute', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img align="top">',
 		{
 			rules: {
@@ -11,8 +11,7 @@ test('deprecated attribute', async () => {
 		},
 		[rule],
 		'en',
-	);
-	expect(r).toStrictEqual([
+	[
 		{
 			ruleId: 'deprecated-attr',
 			severity: 'error',
@@ -25,7 +24,7 @@ test('deprecated attribute', async () => {
 });
 
 test('deprecated global attribute', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<img xml:lang="en-US">',
 		{
 			rules: {
@@ -34,8 +33,7 @@ test('deprecated global attribute', async () => {
 		},
 		[rule],
 		'en',
-	);
-	expect(r).toStrictEqual([
+	[
 		{
 			ruleId: 'deprecated-attr',
 			severity: 'error',

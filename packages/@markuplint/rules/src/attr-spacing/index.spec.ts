@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
-import rule from '.';
+import { testAsyncAndSyncFix, testAsyncAndSyncVerify } from '../test-utils';
+import rule from './';
 
 describe('verify', () => {
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src="path/to" src="path/to2">
 		`,
@@ -15,11 +15,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src="path/to"src="path/to2">
 		`,
@@ -30,8 +29,7 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toStrictEqual([
+		[
 			{
 				severity: 'warning',
 				message: 'Required space',
@@ -44,7 +42,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src="path/to"src="path/to2">
 		`,
@@ -56,11 +54,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src="path/to"
 		src="path/to2">
@@ -73,11 +70,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('Never line break', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src="path/to"
 		src="path/to2">
@@ -93,8 +89,7 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toStrictEqual([
+		[
 			{
 				severity: 'error',
 				message: 'Never break line',
@@ -107,7 +102,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src="path/to" src="path/to2">
 		`,
@@ -123,11 +118,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src="path/to"
 		src="path/to2">
@@ -143,8 +137,7 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toStrictEqual([
+		[
 			{
 				severity: 'error',
 				message: 'Insert line break',
@@ -157,7 +150,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img
 		src="path/to"
@@ -175,11 +168,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src="path/to"  src="path/to2">
 		`,
@@ -194,8 +186,7 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toStrictEqual([
+		[
 			{
 				severity: 'error',
 				message: 'Space should be 1',
@@ -208,7 +199,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src="path/to"  src="path/to2">
 		`,
@@ -223,8 +214,7 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toStrictEqual([
+		[
 			{
 				severity: 'error',
 				message: 'Space should be 2',
@@ -237,7 +227,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img
 		src="path/to"   src="path/to2">
@@ -254,13 +244,12 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 });
 
 describe('fix', () => {
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -271,8 +260,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -280,7 +267,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img src="path/to"src="path/to2">
 			`,
@@ -291,8 +278,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -300,7 +285,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img src="path/to"src="path/to2">
 			`,
@@ -311,8 +296,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img src="path/to"src="path/to2">
 			`,
@@ -320,7 +303,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img src="path/to"
 			src="path/to2">
@@ -332,8 +315,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img src="path/to"
 			src="path/to2">
@@ -342,7 +323,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img src="path/to"
 			src="path/to2">
@@ -358,8 +339,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -367,7 +346,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -382,8 +361,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -391,7 +368,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img src="path/to"
 			src="path/to2">
@@ -407,8 +384,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img
 			src="path/to"
@@ -418,7 +393,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img
 			src="path/to"
@@ -435,8 +410,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img
 			src="path/to"
@@ -446,7 +419,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img src="path/to"  src="path/to2">
 			`,
@@ -461,8 +434,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -470,7 +441,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img src="path/to"  src="path/to2">
 			`,
@@ -485,8 +456,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img  src="path/to"  src="path/to2">
 			`,
@@ -494,7 +463,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img
 			src="path/to"   src="path/to2">
@@ -510,8 +479,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img
 			src="path/to"   src="path/to2">

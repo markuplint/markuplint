@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { testAsyncAndSyncVerify } from '../test-utils';
 
 test('No warning', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		`
 <html>
 <body>
@@ -26,11 +26,11 @@ test('No warning', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([]);
+	
 });
 
 test('Top level landmarks', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		`
 <html>
 <body>
@@ -52,9 +52,7 @@ test('Top level landmarks', async () => {
 		},
 		[rule],
 		'en',
-	);
-
-	expect(r).toStrictEqual([
+	[
 		{
 			ruleId: 'landmark-roles',
 			severity: 'warning',
@@ -67,7 +65,7 @@ test('Top level landmarks', async () => {
 });
 
 test('Top level landmarks: disabled', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		`
 <html>
 <body>
@@ -99,11 +97,11 @@ test('Top level landmarks: disabled', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([]);
+	
 });
 
 test('Top level landmarks: ignoreRoles option', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		`
 <html>
 <body>
@@ -131,11 +129,11 @@ test('Top level landmarks: ignoreRoles option', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([]);
+	
 });
 
 test('Duplicated area: has-label', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		`
 <html>
 <body>
@@ -163,11 +161,11 @@ test('Duplicated area: has-label', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([]);
+	
 });
 
 test('Duplicated area: no-label', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		`
 <html>
 <body>
@@ -193,9 +191,7 @@ test('Duplicated area: no-label', async () => {
 		},
 		[rule],
 		'en',
-	);
-
-	expect(r).toStrictEqual([
+	[
 		{
 			ruleId: 'landmark-roles',
 			severity: 'warning',

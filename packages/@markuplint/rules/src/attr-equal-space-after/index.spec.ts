@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { testAsyncAndSyncFix, testAsyncAndSyncVerify } from '../test-utils';
 import rule from './';
 
 describe('verify', () => {
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src="path/to">
 		`,
@@ -15,11 +15,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('space before and after', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src = "path/to">
 		`,
@@ -30,21 +29,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Never insert space after equal sign of attribute',
+					line: 2,
+					col: 11,
+					raw: ' = ',
+					ruleId: 'attr-equal-space-after',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				message: 'Never insert space after equal sign of attribute',
-				line: 2,
-				col: 11,
-				raw: ' = ',
-				ruleId: 'attr-equal-space-after',
-			},
-		]);
 	});
 
 	test('space before', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src ="path/to">
 		`,
@@ -56,11 +55,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('space after', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src= "path/to">
 		`,
@@ -71,21 +69,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Never insert space after equal sign of attribute',
+					line: 2,
+					col: 11,
+					raw: '= ',
+					ruleId: 'attr-equal-space-after',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				message: 'Never insert space after equal sign of attribute',
-				line: 2,
-				col: 11,
-				raw: '= ',
-				ruleId: 'attr-equal-space-after',
-			},
-		]);
 	});
 
 	test('line break before', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img
 		src
@@ -99,11 +97,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('line break after', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img
 		src=
@@ -116,21 +113,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Never insert space after equal sign of attribute',
+					line: 3,
+					col: 6,
+					raw: '=\n\t\t',
+					ruleId: 'attr-equal-space-after',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				message: 'Never insert space after equal sign of attribute',
-				line: 3,
-				col: 6,
-				raw: '=\n\t\t',
-				ruleId: 'attr-equal-space-after',
-			},
-		]);
 	});
 
 	test('always: no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src="path/to">
 		`,
@@ -141,21 +138,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Always insert space after equal sign of attribute',
+					line: 2,
+					col: 11,
+					raw: '=',
+					ruleId: 'attr-equal-space-after',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				message: 'Always insert space after equal sign of attribute',
-				line: 2,
-				col: 11,
-				raw: '=',
-				ruleId: 'attr-equal-space-after',
-			},
-		]);
 	});
 
 	test('always: space before and after', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src = "path/to">
 		`,
@@ -167,11 +164,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('always: space before', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src ="path/to">
 		`,
@@ -182,21 +178,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Always insert space after equal sign of attribute',
+					line: 2,
+					col: 11,
+					raw: ' =',
+					ruleId: 'attr-equal-space-after',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				message: 'Always insert space after equal sign of attribute',
-				line: 2,
-				col: 11,
-				raw: ' =',
-				ruleId: 'attr-equal-space-after',
-			},
-		]);
 	});
 
 	test('always: space after', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src= "path/to">
 		`,
@@ -208,11 +204,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('always: line break before', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img
 		src
@@ -225,21 +220,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Always insert space after equal sign of attribute',
+					line: 3,
+					col: 6,
+					raw: '\n\t\t=',
+					ruleId: 'attr-equal-space-after',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				message: 'Always insert space after equal sign of attribute',
-				line: 3,
-				col: 6,
-				raw: '\n\t\t=',
-				ruleId: 'attr-equal-space-after',
-			},
-		]);
 	});
 
 	test('always: line break after', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img
 		src=
@@ -253,11 +248,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('always-single-line: no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src="path/to">
 		`,
@@ -268,21 +262,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Always insert space after equal sign of attribute',
+					line: 2,
+					col: 11,
+					raw: '=',
+					ruleId: 'attr-equal-space-after',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				message: 'Always insert space after equal sign of attribute',
-				line: 2,
-				col: 11,
-				raw: '=',
-				ruleId: 'attr-equal-space-after',
-			},
-		]);
 	});
 
 	test('always-single-line: space before and after', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src = "path/to">
 		`,
@@ -294,11 +288,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('always-single-line: space before', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src ="path/to">
 		`,
@@ -309,21 +302,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Always insert space after equal sign of attribute',
+					line: 2,
+					col: 11,
+					raw: ' =',
+					ruleId: 'attr-equal-space-after',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				message: 'Always insert space after equal sign of attribute',
-				line: 2,
-				col: 11,
-				raw: ' =',
-				ruleId: 'attr-equal-space-after',
-			},
-		]);
 	});
 
 	test('always-single-line: space after', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src= "path/to">
 		`,
@@ -335,11 +328,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('always-single-line: line break before', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img
 		src
@@ -352,21 +344,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Always insert space after equal sign of attribute',
+					line: 3,
+					col: 6,
+					raw: '\n\t\t=',
+					ruleId: 'attr-equal-space-after',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				message: 'Always insert space after equal sign of attribute',
-				line: 3,
-				col: 6,
-				raw: '\n\t\t=',
-				ruleId: 'attr-equal-space-after',
-			},
-		]);
 	});
 
 	test('always: line break after', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img
 		src=
@@ -379,21 +371,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Always insert space after equal sign of attribute',
+					line: 3,
+					col: 6,
+					raw: '=\n\t\t',
+					ruleId: 'attr-equal-space-after',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				message: 'Always insert space after equal sign of attribute',
-				line: 3,
-				col: 6,
-				raw: '=\n\t\t',
-				ruleId: 'attr-equal-space-after',
-			},
-		]);
 	});
 
 	test('never-single-line: no-space', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src="path/to">
 		`,
@@ -405,11 +397,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('never-single-line: space before and after', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src = "path/to">
 		`,
@@ -420,21 +411,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Never insert space after equal sign of attribute',
+					line: 2,
+					col: 11,
+					raw: ' = ',
+					ruleId: 'attr-equal-space-after',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				message: 'Never insert space after equal sign of attribute',
-				line: 2,
-				col: 11,
-				raw: ' = ',
-				ruleId: 'attr-equal-space-after',
-			},
-		]);
 	});
 
 	test('never-single-line: space before', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src ="path/to">
 		`,
@@ -446,11 +437,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('never-single-line: space after', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img src= "path/to">
 		`,
@@ -461,21 +451,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Never insert space after equal sign of attribute',
+					line: 2,
+					col: 11,
+					raw: '= ',
+					ruleId: 'attr-equal-space-after',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				message: 'Never insert space after equal sign of attribute',
-				line: 2,
-				col: 11,
-				raw: '= ',
-				ruleId: 'attr-equal-space-after',
-			},
-		]);
 	});
 
 	test('never-single-line: line break before', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img
 		src
@@ -489,11 +479,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('never-single-line: line break after', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<img
 		src=
@@ -507,13 +496,12 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 });
 
 describe('fix', () => {
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 		<img src="path/to">
 		`,
@@ -524,8 +512,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 		<img src="path/to">
 		`,
@@ -533,7 +519,7 @@ describe('fix', () => {
 	});
 
 	test('space before and after', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img src = "path/to">
 			`,
@@ -544,8 +530,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img src ="path/to">
 			`,
@@ -553,7 +537,7 @@ describe('fix', () => {
 	});
 
 	test('space before', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img src ="path/to">
 			`,
@@ -564,8 +548,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img src ="path/to">
 			`,
@@ -573,7 +555,7 @@ describe('fix', () => {
 	});
 
 	test('space after', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img src= "path/to">
 			`,
@@ -584,8 +566,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img src="path/to">
 			`,
@@ -593,7 +573,7 @@ describe('fix', () => {
 	});
 
 	test('line break before', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img
 			src
@@ -606,8 +586,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img
 			src
@@ -617,7 +595,7 @@ describe('fix', () => {
 	});
 
 	test('line break after', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 			<img
 			src=
@@ -630,8 +608,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(r).toEqual(
 			`
 			<img
 			src="path/to">

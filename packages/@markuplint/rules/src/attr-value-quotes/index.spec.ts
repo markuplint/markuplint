@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { testAsyncAndSyncFix, testAsyncAndSyncVerify } from '../test-utils';
 import rule from './';
 
 describe('verify', () => {
 	test('default', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
@@ -17,29 +17,29 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					message: 'Attribute value is must quote on double quotation mark',
+					line: 2,
+					col: 26,
+					raw: "data-Attr='db'",
+					ruleId: 'attr-value-quotes',
+				},
+				{
+					severity: 'warning',
+					message: 'Attribute value is must quote on double quotation mark',
+					line: 2,
+					col: 41,
+					raw: 'data-attR=tr',
+					ruleId: 'attr-value-quotes',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				message: 'Attribute value is must quote on double quotation mark',
-				line: 2,
-				col: 26,
-				raw: "data-Attr='db'",
-				ruleId: 'attr-value-quotes',
-			},
-			{
-				severity: 'warning',
-				message: 'Attribute value is must quote on double quotation mark',
-				line: 2,
-				col: 41,
-				raw: 'data-attR=tr',
-				ruleId: 'attr-value-quotes',
-			},
-		]);
 	});
 
 	test('double', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
@@ -57,29 +57,29 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'error',
+					message: 'Attribute value is must quote on double quotation mark',
+					line: 2,
+					col: 26,
+					raw: "data-Attr='db'",
+					ruleId: 'attr-value-quotes',
+				},
+				{
+					severity: 'error',
+					message: 'Attribute value is must quote on double quotation mark',
+					line: 2,
+					col: 41,
+					raw: 'data-attR=tr',
+					ruleId: 'attr-value-quotes',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'error',
-				message: 'Attribute value is must quote on double quotation mark',
-				line: 2,
-				col: 26,
-				raw: "data-Attr='db'",
-				ruleId: 'attr-value-quotes',
-			},
-			{
-				severity: 'error',
-				message: 'Attribute value is must quote on double quotation mark',
-				line: 2,
-				col: 41,
-				raw: 'data-attR=tr',
-				ruleId: 'attr-value-quotes',
-			},
-		]);
 	});
 
 	test('single', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
@@ -97,29 +97,29 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'error',
+					message: 'Attribute value is must quote on single quotation mark',
+					line: 2,
+					col: 8,
+					raw: 'data-attr="value"',
+					ruleId: 'attr-value-quotes',
+				},
+				{
+					severity: 'error',
+					message: 'Attribute value is must quote on single quotation mark',
+					line: 2,
+					col: 41,
+					raw: 'data-attR=tr',
+					ruleId: 'attr-value-quotes',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'error',
-				message: 'Attribute value is must quote on single quotation mark',
-				line: 2,
-				col: 8,
-				raw: 'data-attr="value"',
-				ruleId: 'attr-value-quotes',
-			},
-			{
-				severity: 'error',
-				message: 'Attribute value is must quote on single quotation mark',
-				line: 2,
-				col: 41,
-				raw: 'data-attR=tr',
-				ruleId: 'attr-value-quotes',
-			},
-		]);
 	});
 
 	test('empty', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<div data-attr>
 			lorem
@@ -134,13 +134,12 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r.length).toBe(0);
 	});
 });
 
 describe('fix', () => {
 	test('empty', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			'<div attr noop=noop foo="bar" hoge=\'fuga\'>',
 			{
 				rules: {
@@ -149,12 +148,12 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			'<div attr noop="noop" foo="bar" hoge="fuga">',
 		);
-		expect(r).toEqual('<div attr noop="noop" foo="bar" hoge="fuga">');
 	});
 
 	test('empty', async () => {
-		const r = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			'<div attr noop=noop foo="bar" hoge=\'fuga\'>',
 			{
 				rules: {
@@ -163,7 +162,7 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			"<div attr noop='noop' foo='bar' hoge='fuga'>",
 		);
-		expect(r).toEqual("<div attr noop='noop' foo='bar' hoge='fuga'>");
 	});
 });

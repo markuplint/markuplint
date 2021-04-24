@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
 import rule from './';
+import { testAsyncAndSyncVerify } from '../test-utils';
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<html><body>text</body></html>',
 		{
 			rules: {
@@ -11,8 +11,7 @@ test('h1', async () => {
 		},
 		[rule],
 		'en',
-	);
-	expect(r).toStrictEqual([
+	[
 		{
 			severity: 'error',
 			message: 'Missing the h1 element',
@@ -25,7 +24,7 @@ test('h1', async () => {
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<html><body><h1>text</h1></body></html>',
 		{
 			rules: {
@@ -35,11 +34,11 @@ test('h1', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
+	
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<html><body><h1>text</h1><h1>text</h1></body></html>',
 		{
 			rules: {
@@ -48,8 +47,7 @@ test('h1', async () => {
 		},
 		[rule],
 		'en',
-	);
-	expect(r).toStrictEqual([
+	[
 		{
 			severity: 'error',
 			message: 'Duplicate the h1 element',
@@ -62,7 +60,7 @@ test('h1', async () => {
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<html><body><h1>text</h1><h1>text</h1></body></html>',
 		{
 			rules: {
@@ -78,11 +76,11 @@ test('h1', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
+	
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<div><h2>text</h2></div>',
 		{
 			rules: {
@@ -92,11 +90,11 @@ test('h1', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
+	
 });
 
 test('enable to opetion "in-document-fragment"', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'<div><h2>text</h2></div>',
 		{
 			rules: {
@@ -110,12 +108,13 @@ test('enable to opetion "in-document-fragment"', async () => {
 		},
 		[rule],
 		'en',
+		1,
+		r => r.length,
 	);
-	expect(r.length).toBe(1);
 });
 
 test('Issue #57', async () => {
-	const r = await markuplint.verify(
+	await testAsyncAndSyncVerify(
 		'',
 		{
 			rules: {
@@ -125,5 +124,5 @@ test('Issue #57', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
+	
 });

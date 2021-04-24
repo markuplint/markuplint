@@ -109,7 +109,5 @@ test('nodeRules disable', async () => {
 		},
 		[rule],
 		'en',
-		0,
-		r => r.length,
 	);
 });

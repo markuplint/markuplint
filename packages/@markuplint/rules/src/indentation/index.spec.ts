@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { testAsyncAndSyncFix, testAsyncAndSyncVerify } from '../test-utils';
 import rule from './';
 
 describe('verify', () => {
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<div>
 			lorem
@@ -21,11 +21,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
     <div>
         lorem
@@ -42,45 +41,45 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'error',
+					message: 'Indentation must be tab',
+					line: 2,
+					col: 1,
+					raw: '    ',
+					ruleId: 'indentation',
+				},
+				{
+					severity: 'error',
+					message: 'Indentation must be tab',
+					line: 3,
+					col: 1,
+					raw: '        ',
+					ruleId: 'indentation',
+				},
+				{
+					severity: 'error',
+					message: 'Indentation must be tab',
+					line: 4,
+					col: 1,
+					raw: '        ',
+					ruleId: 'indentation',
+				},
+				{
+					severity: 'error',
+					message: 'Indentation must be tab',
+					line: 5,
+					col: 1,
+					raw: '    ',
+					ruleId: 'indentation',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'error',
-				message: 'Indentation must be tab',
-				line: 2,
-				col: 1,
-				raw: '    ',
-				ruleId: 'indentation',
-			},
-			{
-				severity: 'error',
-				message: 'Indentation must be tab',
-				line: 3,
-				col: 1,
-				raw: '        ',
-				ruleId: 'indentation',
-			},
-			{
-				severity: 'error',
-				message: 'Indentation must be tab',
-				line: 4,
-				col: 1,
-				raw: '        ',
-				ruleId: 'indentation',
-			},
-			{
-				severity: 'error',
-				message: 'Indentation must be tab',
-				line: 5,
-				col: 1,
-				raw: '    ',
-				ruleId: 'indentation',
-			},
-		]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
     <div>
 
@@ -98,37 +97,37 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'error',
+					message: 'Indentation must be tab',
+					line: 2,
+					col: 1,
+					raw: '    ',
+					ruleId: 'indentation',
+				},
+				{
+					severity: 'error',
+					message: 'Indentation must be tab',
+					line: 4,
+					col: 1,
+					raw: '        ',
+					ruleId: 'indentation',
+				},
+				{
+					severity: 'error',
+					message: 'Indentation must be tab',
+					line: 6,
+					col: 1,
+					raw: '    ',
+					ruleId: 'indentation',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'error',
-				message: 'Indentation must be tab',
-				line: 2,
-				col: 1,
-				raw: '    ',
-				ruleId: 'indentation',
-			},
-			{
-				severity: 'error',
-				message: 'Indentation must be tab',
-				line: 4,
-				col: 1,
-				raw: '        ',
-				ruleId: 'indentation',
-			},
-			{
-				severity: 'error',
-				message: 'Indentation must be tab',
-				line: 6,
-				col: 1,
-				raw: '    ',
-				ruleId: 'indentation',
-			},
-		]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
     <div>
         lorem
@@ -143,11 +142,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
     <div>
       lorem
@@ -165,11 +163,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 	<div>
 		lorem
@@ -186,45 +183,45 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'error',
+					message: 'Indentation must be space',
+					line: 2,
+					col: 1,
+					raw: '	',
+					ruleId: 'indentation',
+				},
+				{
+					severity: 'error',
+					message: 'Indentation must be space',
+					line: 3,
+					col: 1,
+					raw: '		',
+					ruleId: 'indentation',
+				},
+				{
+					severity: 'error',
+					message: 'Indentation must be space',
+					line: 4,
+					col: 1,
+					raw: '		',
+					ruleId: 'indentation',
+				},
+				{
+					severity: 'error',
+					message: 'Indentation must be space',
+					line: 5,
+					col: 1,
+					raw: '	',
+					ruleId: 'indentation',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'error',
-				message: 'Indentation must be space',
-				line: 2,
-				col: 1,
-				raw: '	',
-				ruleId: 'indentation',
-			},
-			{
-				severity: 'error',
-				message: 'Indentation must be space',
-				line: 3,
-				col: 1,
-				raw: '		',
-				ruleId: 'indentation',
-			},
-			{
-				severity: 'error',
-				message: 'Indentation must be space',
-				line: 4,
-				col: 1,
-				raw: '		',
-				ruleId: 'indentation',
-			},
-			{
-				severity: 'error',
-				message: 'Indentation must be space',
-				line: 5,
-				col: 1,
-				raw: '	',
-				ruleId: 'indentation',
-			},
-		]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
    <div>
       lorem
@@ -244,29 +241,29 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'error',
+					message: 'Indentation must be 2 width spaces',
+					line: 2,
+					col: 1,
+					raw: '   ',
+					ruleId: 'indentation',
+				},
+				{
+					severity: 'error',
+					message: 'Indentation must be 2 width spaces',
+					line: 5,
+					col: 1,
+					raw: '   ',
+					ruleId: 'indentation',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'error',
-				message: 'Indentation must be 2 width spaces',
-				line: 2,
-				col: 1,
-				raw: '   ',
-				ruleId: 'indentation',
-			},
-			{
-				severity: 'error',
-				message: 'Indentation must be 2 width spaces',
-				line: 5,
-				col: 1,
-				raw: '   ',
-				ruleId: 'indentation',
-			},
-		]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
    <div>
       lorem
@@ -284,11 +281,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
    <div>
       lorem
@@ -308,21 +304,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					line: 4,
+					col: 1,
+					message: 'Indentation should be 3 width spaces',
+					raw: '          ',
+					ruleId: 'indentation',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				line: 4,
-				col: 1,
-				message: 'Indentation should be 3 width spaces',
-				raw: '          ',
-				ruleId: 'indentation',
-			},
-		]);
 	});
 
 	test('rawText', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 	<script>
     var text = 'lorem';
@@ -336,11 +332,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('options - align: false', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 	<div>
 		</div>
@@ -359,11 +354,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 	<div>
 		</div>
@@ -381,21 +375,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					line: 3,
+					col: 1,
+					message: 'Start tag and end tag indentation should align',
+					raw: '\t\t',
+					ruleId: 'indentation',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				line: 3,
-				col: 1,
-				message: 'Start tag and end tag indentation should align',
-				raw: '\t\t',
-				ruleId: 'indentation',
-			},
-		]);
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 	<div>
 </div>
@@ -413,21 +407,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					line: 3,
+					col: 1,
+					message: 'Start tag and end tag indentation should align',
+					raw: '',
+					ruleId: 'indentation',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				line: 3,
-				col: 1,
-				message: 'Start tag and end tag indentation should align',
-				raw: '',
-				ruleId: 'indentation',
-			},
-		]);
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 	<div>	</div>
 		`,
@@ -445,11 +439,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 	<div> </div>
 		`,
@@ -467,11 +460,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<div> text </div>
 		`,
@@ -489,11 +481,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<div>
 		<img>
@@ -512,29 +503,29 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					line: 3,
+					col: 1,
+					message: 'Should increase indentation',
+					raw: '\t\t',
+					ruleId: 'indentation',
+				},
+				{
+					severity: 'warning',
+					line: 4,
+					col: 1,
+					message: 'Start tag and end tag indentation should align',
+					raw: '\t\t\t',
+					ruleId: 'indentation',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				line: 3,
-				col: 1,
-				message: 'Should increase indentation',
-				raw: '\t\t',
-				ruleId: 'indentation',
-			},
-			{
-				severity: 'warning',
-				line: 4,
-				col: 1,
-				message: 'Start tag and end tag indentation should align',
-				raw: '\t\t\t',
-				ruleId: 'indentation',
-			},
-		]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<div>
 	<img>
@@ -553,21 +544,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					line: 3,
+					col: 1,
+					message: 'Should increase indentation',
+					raw: '\t',
+					ruleId: 'indentation',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				line: 3,
-				col: 1,
-				message: 'Should increase indentation',
-				raw: '\t',
-				ruleId: 'indentation',
-			},
-		]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<div>
 					<!-- comment -->
@@ -586,21 +577,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					line: 3,
+					col: 1,
+					message: 'Should decrease indentation',
+					raw: '\t\t\t\t\t',
+					ruleId: 'indentation',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				line: 3,
-				col: 1,
-				message: 'Should decrease indentation',
-				raw: '\t\t\t\t\t',
-				ruleId: 'indentation',
-			},
-		]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`<html>
 <body></body>
 </html>`,
@@ -611,21 +602,21 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					line: 2,
+					col: 1,
+					message: 'Should increase indentation',
+					raw: '',
+					ruleId: 'indentation',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				line: 2,
-				col: 1,
-				message: 'Should increase indentation',
-				raw: '',
-				ruleId: 'indentation',
-			},
-		]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`<html>
 <body>
 	<div>text
@@ -654,11 +645,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`<html>
 	<body>
 		<div>text
@@ -687,11 +677,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`<html>
 	<body>
 		<div>text
@@ -719,29 +708,29 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					line: 2,
+					col: 1,
+					message: 'Should decrease indentation',
+					raw: '\t',
+					ruleId: 'indentation',
+				},
+				{
+					severity: 'warning',
+					line: 5,
+					col: 1,
+					message: 'Should decrease indentation',
+					raw: '\t',
+					ruleId: 'indentation',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				line: 2,
-				col: 1,
-				message: 'Should decrease indentation',
-				raw: '\t',
-				ruleId: 'indentation',
-			},
-			{
-				severity: 'warning',
-				line: 5,
-				col: 1,
-				message: 'Should decrease indentation',
-				raw: '\t',
-				ruleId: 'indentation',
-			},
-		]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`\t<html>
 <body>
 	<div>text
@@ -769,29 +758,29 @@ describe('verify', () => {
 			},
 			[rule],
 			'en',
+			[
+				{
+					severity: 'warning',
+					line: 2,
+					col: 1,
+					message: 'Should increase indentation',
+					raw: '',
+					ruleId: 'indentation',
+				},
+				{
+					severity: 'warning',
+					line: 5,
+					col: 1,
+					message: 'Should increase indentation',
+					raw: '',
+					ruleId: 'indentation',
+				},
+			],
 		);
-		expect(r).toStrictEqual([
-			{
-				severity: 'warning',
-				line: 2,
-				col: 1,
-				message: 'Should increase indentation',
-				raw: '',
-				ruleId: 'indentation',
-			},
-			{
-				severity: 'warning',
-				line: 5,
-				col: 1,
-				message: 'Should increase indentation',
-				raw: '',
-				ruleId: 'indentation',
-			},
-		]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`\t<html>
 	<body>
 		<div>text
@@ -820,11 +809,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('no indent', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<div>
 			<p> ipsam </p>
@@ -843,11 +831,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('end tag', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<div>
 		<div no-rule>
@@ -874,11 +861,10 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 
 	test('childNodeRules', async () => {
-		const r = await markuplint.verify(
+		await testAsyncAndSyncVerify(
 			`
 		<div>
 			<div no-rule>
@@ -909,7 +895,6 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
 	});
 });
 
@@ -921,7 +906,7 @@ describe('fix', () => {
 		<p>ipsam</p>
 	</div>
 	`;
-		const fixed = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			fixture,
 			{
 				rules: {
@@ -933,8 +918,8 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			fixture,
 		);
-		expect(fixed).toBe(fixture);
 	});
 
 	test('tab', async () => {
@@ -944,7 +929,7 @@ describe('fix', () => {
         <p>ipsam</p>
     </div>
 	`;
-		const fixed = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			fixture,
 			{
 				rules: {
@@ -956,8 +941,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(fixed).toBe(
 			`
 	<div>
 		lorem
@@ -968,7 +951,7 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
 		<div>
 			lorem
@@ -985,8 +968,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(fixed).toBe(
 			`
         <div>
             lorem
@@ -997,7 +978,7 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
   <div>
     lorem
@@ -1014,8 +995,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(fixed).toBe(
 			`
 	<div>
 		lorem
@@ -1026,7 +1005,7 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
   <div>
     lorem
@@ -1043,8 +1022,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(fixed).toBe(
 			`
    <div>
       lorem
@@ -1055,7 +1032,7 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		await testAsyncAndSyncFix(
 			`
   <div>
     lorem
@@ -1073,8 +1050,6 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
-		);
-		expect(fixed).toBe(
 			`
 	<div>
 	lorem
