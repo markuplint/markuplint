@@ -40,4 +40,39 @@ export default createRule({
 		});
 		return reports;
 	},
+	verifySync(document, translate) {
+		const reports: Result[] = [];
+		const spec = getSpec(document.schemas);
+		document.walkOnSync('Element', element => {
+			const specs = attrSpecs(element.nodeName, spec);
+
+			if (!specs) {
+				return;
+			}
+
+			for (const attr of element.attributes) {
+				const name = attr.getName();
+				const attrSpec = specs.find(item => item.name === name.potential);
+				if (!attrSpec) {
+					return;
+				}
+				if (attrSpec.deprecated || attrSpec.obsolete) {
+					const message = translate(
+						'The {0} {1} is {2}',
+						name.potential,
+						'attribute',
+						attrSpec.obsolete ? 'obsolete' : 'deprecated',
+					);
+					reports.push({
+						severity: element.rule.severity,
+						message,
+						line: name.line,
+						col: name.col,
+						raw: name.raw,
+					});
+				}
+			}
+		});
+		return reports;
+	},
 });

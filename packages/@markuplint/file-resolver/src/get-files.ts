@@ -10,7 +10,7 @@ import glob from 'glob';
  */
 export async function getFiles(filePathOrGlob: string): Promise<MLFile[]> {
 	const fileList = await new Promise<string[]>((resolve, reject) => {
-		glob(filePathOrGlob, {}, (err, matches) => {
+		glob(filePathOrGlob, (err, matches) => {
 			if (err) {
 				reject(err);
 			}
@@ -19,4 +19,20 @@ export async function getFiles(filePathOrGlob: string): Promise<MLFile[]> {
 	}).catch<string[]>(() => []);
 
 	return fileList.map(fileName => getFile(fileName));
+}
+
+/**
+ * Get files
+ *
+ * Supported glob patterns
+ *
+ * @param filePathOrGlob
+ */
+export function getFilesSync(filePathOrGlob: string): MLFile[] {
+	try {
+		const fileList = glob.sync(filePathOrGlob);
+		return fileList.map(fileName => getFile(fileName));
+	} catch {
+		return [];
+	}
 }

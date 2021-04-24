@@ -138,6 +138,9 @@ test('rule', async () => {
 		async verify() {
 			throw new Error();
 		},
+		verifySync() {
+			throw new Error();
+		},
 	});
 	document.setRule(ruleA);
 	expect(document.nodeList[1].rule.disabled).toBe(true);
@@ -146,6 +149,9 @@ test('rule', async () => {
 		defaultValue: 'foo',
 		defaultOptions: null,
 		async verify() {
+			throw new Error();
+		},
+		verifySync() {
 			throw new Error();
 		},
 	});

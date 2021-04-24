@@ -143,6 +143,132 @@ export default createRule<TagRule[], Options>({
 		expMapOnNodeId.clear();
 		return reports;
 	},
+	verifySync(document, translate) {
+		const reports: Result[] = [];
+		let idCounter = 0;
+		document.walkOnSync('Element', node => {
+			if (!node.rule.value) {
+				return;
+			}
+
+			if (node.rule.option.ignoreHasMutableChildren && node.hasMutableChildren()) {
+				return;
+			}
+
+			const nodes = node.getChildElementsAndTextNodeWithoutWhitespaces();
+			const spec = htmlSpec(node.nodeName)?.permittedStructures;
+
+			const expGen = new ExpGenerator(idCounter++);
+
+			if (spec) {
+				if (spec.ancestor && !node.closest(spec.ancestor)) {
+					reports.push({
+						severity: node.rule.severity,
+						message: translate(
+							'The {0} element must be descendant of the {1} element',
+							node.nodeName,
+							spec.ancestor,
+						),
+						line: node.startLine,
+						col: node.startCol,
+						raw: node.raw,
+					});
+					return;
+				}
+
+				let matched = false;
+
+				if (spec.conditional) {
+					for (const conditional of spec.conditional) {
+						matched =
+							('hasAttr' in conditional.condition && node.hasAttribute(conditional.condition.hasAttr)) ||
+							('parent' in conditional.condition &&
+								!!node.parentNode &&
+								node.parentNode.type === 'Element' &&
+								node.parentNode.matches(conditional.condition.parent));
+						// console.log({ ...conditional, matched });
+						if (matched) {
+							try {
+								const parentExp = getRegExpFromParentNode(node, expGen);
+								const exp = expGen.specToRegExp(conditional.contents, parentExp);
+								const conditionalResult = match(exp, nodes);
+								if (!conditionalResult) {
+									reports.push({
+										severity: node.rule.severity,
+										message: translate(
+											'Invalid content of the {0} element in {1}',
+											node.nodeName,
+											'the HTML specification',
+										),
+										line: node.startLine,
+										col: node.startCol,
+										raw: node.raw,
+									});
+									break;
+								}
+							} catch (e) {
+								// eslint-disable-next-line no-console
+								console.warn(node.raw, 'conditional', conditional, e.message);
+							}
+						}
+					}
+				}
+
+				if (!matched) {
+					try {
+						const exp = getRegExpFromNode(node, expGen);
+						const specResult = match(exp, nodes);
+
+						if (!specResult) {
+							reports.push({
+								severity: node.rule.severity,
+								message: translate(
+									'Invalid content of the {0} element in {1}',
+									node.nodeName,
+									'the HTML specification',
+								),
+								line: node.startLine,
+								col: node.startCol,
+								raw: node.raw,
+							});
+						}
+					} catch (e) {
+						// eslint-disable-next-line no-console
+						console.warn(node.raw, 'HTML Spec', e.message);
+					}
+				}
+			}
+
+			for (const rule of node.rule.value) {
+				if (rule.tag.toLowerCase() !== node.nodeName.toLowerCase()) {
+					continue;
+				}
+
+				const parentExp = getRegExpFromParentNode(node, expGen);
+				try {
+					const exp = expGen.specToRegExp(rule.contents, parentExp);
+					const r = match(exp, nodes);
+
+					if (!r) {
+						reports.push({
+							severity: node.rule.severity,
+							message: translate('Invalid content of the {0} element in {1}', node.nodeName, 'settings'),
+							line: node.startLine,
+							col: node.startCol,
+							raw: node.raw,
+						});
+						return;
+					}
+				} catch (e) {
+					// eslint-disable-next-line no-console
+					console.warn(node.raw, 'rule', rule, e.message);
+				}
+			}
+		});
+
+		expMapOnNodeId.clear();
+		return reports;
+	},
 });
 
 type TargetNodes = ReturnType<Element<TagRule[], Options>['getChildElementsAndTextNodeWithoutWhitespaces']>;

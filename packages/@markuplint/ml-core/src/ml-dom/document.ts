@@ -3,7 +3,7 @@ import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 import { MLASTDocument, MLASTNode, MLASTNodeType } from '@markuplint/ml-ast';
 import { MLDOMComment, MLDOMDoctype, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
 import { NodeStore, createNode } from './helper';
-import { Walker, syncWalk } from './helper/walkers';
+import { SyncWalker, Walker, syncWalk } from './helper/walkers';
 import { MLRule } from '../';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import Ruleset from '../ruleset';
@@ -84,6 +84,12 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		}
 	}
 
+	walkSync(walker: SyncWalker<T, O>) {
+		for (const node of this.nodeList) {
+			walker(node);
+		}
+	}
+
 	/**
 	 *
 	 * @param type
@@ -114,6 +120,33 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				}
 				if (node.is(type)) {
 					await walker(node);
+				}
+			}
+		}
+	}
+
+	/**
+	 *
+	 * @param type
+	 * @param walker
+	 * @param skipWhenRuleIsDisabled
+	 */
+	walkOnSync(type: 'Element', walker: SyncWalker<T, O, MLDOMElement<T, O>>, skipWhenRuleIsDisabled?: boolean): void;
+	walkOnSync(type: 'Text', walker: SyncWalker<T, O, MLDOMText<T, O>>, skipWhenRuleIsDisabled?: boolean): void;
+	walkOnSync(type: 'Comment', walker: SyncWalker<T, O, MLDOMComment<T, O>>, skipWhenRuleIsDisabled?: boolean): void;
+	walkOnSync(
+		type: 'ElementCloseTag',
+		walker: SyncWalker<T, O, MLDOMElementCloseTag<T, O>>,
+		skipWhenRuleIsDisabled?: boolean,
+	): void;
+	walkOnSync(type: NodeType, walker: SyncWalker<T, O, any>, skipWhenRuleIsDisabled: boolean = true): void {
+		for (const node of this.nodeList) {
+			if (node instanceof MLDOMNode) {
+				if (skipWhenRuleIsDisabled && node.rule.disabled) {
+					continue;
+				}
+				if (node.is(type)) {
+					walker(node);
 				}
 			}
 		}

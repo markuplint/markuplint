@@ -21,6 +21,6 @@
 			"path": "../vue-parser"
 		}
 	],
-	"include": ["./src/**/*.spec.ts"],
+	"include": ["./src/**/*.spec.ts", "./src/test-utils.ts"],
 	"exclude": ["node_modules"]
 }

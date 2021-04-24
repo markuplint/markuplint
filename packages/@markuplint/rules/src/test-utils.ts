@@ -1,4 +1,6 @@
-import { Document, Element, convertRuleset } from '@markuplint/ml-core';
+import * as markuplint from 'markuplint';
+import { Config, RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
+import { Document, Element, MLRule, convertRuleset } from '@markuplint/ml-core';
 import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 import { parse } from '@markuplint/html-parser';
 
@@ -16,4 +18,33 @@ export function createElement(htmlFragmentString: string) {
 function dummySchemas() {
 	// @ts-ignore
 	return [{}, {}] as [MLMLSpec, ...ExtendedSpec[]];
+}
+
+export async function testAsyncAndSyncVerify<T = VerifiedResult[]>(
+	html: string,
+	config: Config,
+	rules: MLRule<RuleConfigValue, unknown>[],
+	locale: string,
+	result: T = ([] as unknown) as T,
+	mapper?: (results: VerifiedResult[]) => T,
+) {
+	[await markuplint.verify(html, config, rules, locale), markuplint.verifySync(html, config, rules, locale)].forEach(
+		results => {
+			expect(mapper ? mapper(results) : results).toStrictEqual(result);
+		},
+	);
+}
+
+export async function testAsyncAndSyncFix(
+	html: string,
+	config: Config,
+	rules: MLRule<RuleConfigValue, unknown>[],
+	locale: string,
+	result: string,
+) {
+	[await markuplint.fix(html, config, rules, locale), markuplint.fixSync(html, config, rules, locale)].forEach(
+		fixed => {
+			expect(fixed).toBe(result);
+		},
+	);
 }

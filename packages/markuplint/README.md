@@ -26,7 +26,7 @@ $ npx markuplint verifyee.html
 $ npx markuplint --help
 
 Usage
-	$ markuplint <HTML file pathes (glob format)>
+	$ markuplint <HTML file paths (glob format)>
 	$ <stdout> | markuplint
 
 Options

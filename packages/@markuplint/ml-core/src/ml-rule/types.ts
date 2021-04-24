@@ -8,5 +8,7 @@ export interface MLRuleOptions<T extends RuleConfigValue, O = null> {
 	defaultValue: T;
 	defaultOptions: O;
 	verify(document: Document<T, O>, translate: Translator, globalRule: RuleInfo<T, O>): Promise<Result[]>;
+	verifySync(document: Document<T, O>, translate: Translator, globalRule: RuleInfo<T, O>): Result[];
 	fix?(document: Document<T, O>, globalRule: RuleInfo<T, O>): Promise<void>;
+	fixSync?(document: Document<T, O>, globalRule: RuleInfo<T, O>): void;
 }

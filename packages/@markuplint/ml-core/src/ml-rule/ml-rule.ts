@@ -14,7 +14,9 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	readonly defaultOptions: O;
 
 	#v: MLRuleOptions<T, O>['verify'];
+	#vSync: MLRuleOptions<T, O>['verifySync'];
 	#f: MLRuleOptions<T, O>['fix'];
+	#fSync: MLRuleOptions<T, O>['fixSync'];
 
 	private constructor(o: MLRuleOptions<T, O>) {
 		this.name = o.name;
@@ -22,7 +24,9 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		this.defaultValue = o.defaultValue;
 		this.defaultOptions = o.defaultOptions;
 		this.#v = o.verify;
+		this.#vSync = o.verifySync;
 		this.#f = o.fix;
+		this.#fSync = o.fixSync;
 	}
 
 	async verify(document: Document<T, O>, i18n: I18n, rule: RuleInfo<T, O>): Promise<VerifiedResult[]> {
@@ -46,6 +50,27 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		});
 	}
 
+	verifySync(document: Document<T, O>, i18n: I18n, rule: RuleInfo<T, O>): VerifiedResult[] {
+		if (!this.#vSync) {
+			return [];
+		}
+
+		document.setRule(this);
+		const results = this.#vSync(document, i18n.translator(), rule);
+		document.setRule(null);
+
+		return results.map<VerifiedResult>(result => {
+			return {
+				severity: result.severity,
+				message: result.message,
+				line: result.line,
+				col: result.col,
+				raw: result.raw,
+				ruleId: this.name,
+			};
+		});
+	}
+
 	async fix(document: Document<T, O>, rule: RuleInfo<T, O>): Promise<void> {
 		if (!this.#f) {
 			return;
@@ -53,6 +78,16 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 
 		document.setRule(this);
 		await this.#f(document, rule);
+		document.setRule(null);
+	}
+
+	fixSync(document: Document<T, O>, rule: RuleInfo<T, O>): void {
+		if (!this.#fSync) {
+			return;
+		}
+
+		document.setRule(this);
+		this.#fSync(document, rule);
 		document.setRule(null);
 	}
 

@@ -2,7 +2,7 @@ import meow from 'meow';
 
 export const help = `
 Usage
-	$ markuplint <HTML file pathes (glob format)>
+	$ markuplint <HTML file paths (glob format)>
 	$ <stdout> | markuplint
 
 Options

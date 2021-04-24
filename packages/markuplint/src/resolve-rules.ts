@@ -12,3 +12,16 @@ export async function resolveRules(options: { rules?: MLRule<RuleConfigValue, un
 
 	return rules;
 }
+
+export function resolveRulesSync(options: { rules?: MLRule<RuleConfigValue, unknown>[] }) {
+	let rules: MLRule<RuleConfigValue, unknown>[];
+	if (options.rules) {
+		rules = options.rules;
+	} else {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const r = require('@markuplint/rules');
+		rules = r.default;
+	}
+
+	return rules;
+}

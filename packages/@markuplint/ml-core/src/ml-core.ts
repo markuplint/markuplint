@@ -24,7 +24,7 @@ export class MLCore {
 		rules: MLRule<RuleConfigValue, unknown>[],
 		i18n: I18n,
 		schemas: Readonly<[MLMLSpec, ...ExtendedSpec[]]>,
-		parserOptions: ParserOptions,
+		parserOptions: ParserOptions = {},
 	) {
 		this.#parser = parser;
 		this.#sourceCode = sourceCode;
@@ -56,6 +56,22 @@ export class MLCore {
 				await rule.fix(this.#document, ruleInfo);
 			}
 			const results = await rule.verify(this.#document, this.#i18n, ruleInfo);
+			reports.push(...results);
+		}
+		return reports;
+	}
+
+	verifySync(fix = false) {
+		const reports: VerifiedResult[] = [];
+		for (const rule of this.#rules) {
+			const ruleInfo = rule.optimizeOption(this.#ruleset.rules[rule.name] || false);
+			if (ruleInfo.disabled) {
+				continue;
+			}
+			if (fix) {
+				rule.fixSync(this.#document, ruleInfo);
+			}
+			const results = rule.verifySync(this.#document, this.#i18n, ruleInfo);
 			reports.push(...results);
 		}
 		return reports;
