@@ -5,9 +5,7 @@
 	"author": "Yusuke Hirao",
 	"license": "MIT",
 	"private": false,
-	"repository": {
-		"url": "git@github.com:YusukeHirao/markuplint.git"
-	},
+	"repository": "git@github.com:markuplint/markuplint.git",
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
 	"bin": {

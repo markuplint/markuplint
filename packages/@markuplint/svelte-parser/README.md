@@ -16,7 +16,7 @@ $ yarn add @markuplint/svelte-parser
 
 ## Usage
 
-Add `parser` option into your `.eslintrc.*` file.
+Add `parser` option into your `.markuplintrc.*` file.
 
 ```json
 {
