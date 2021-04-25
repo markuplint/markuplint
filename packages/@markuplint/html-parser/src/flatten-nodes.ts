@@ -3,7 +3,7 @@ import { getEndCol, getEndLine, uuid, walk } from '@markuplint/parser-utils';
 import { removeDeprecatedNode } from './remove-deprecated-node';
 import tagSplitter from './tag-splitter';
 
-export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
+export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastText = true) {
 	const nodeOrders: MLASTNode[] = arrayize(nodeTree, rawHtml);
 
 	{
@@ -73,7 +73,7 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string) {
 				lastNode.parentNode = null;
 				// next node: ? -> null
 				lastNode.nextNode = null;
-			} else {
+			} else if (createLastText) {
 				/**
 				 * create Last spaces
 				 */
