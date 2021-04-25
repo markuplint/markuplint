@@ -24,7 +24,7 @@ export class MLCore {
 		rules: MLRule<RuleConfigValue, unknown>[],
 		i18n: I18n,
 		schemas: Readonly<[MLMLSpec, ...ExtendedSpec[]]>,
-		parserOptions: ParserOptions = {},
+		parserOptions: ParserOptions,
 	) {
 		this.#parser = parser;
 		this.#sourceCode = sourceCode;

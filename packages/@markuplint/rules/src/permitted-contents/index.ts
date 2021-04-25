@@ -1,6 +1,5 @@
 import { ContentModel, PermittedStructuresSchema } from '@markuplint/ml-spec';
 import { Element, Result, createRule } from '@markuplint/ml-core';
-import { ElementVerifyWalkerFactory } from '../types';
 import ExpGenerator from './permitted-content.spec-to-regexp';
 import { htmlSpec } from '../helpers';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
@@ -12,57 +11,90 @@ type Options = {
 
 const expMapOnNodeId: Map<string, RegExp> = new Map();
 
-const verifyWalker: ElementVerifyWalkerFactory<TagRule[], Options, { id: number }> = (
-	reports,
-	translate,
-	idCounter,
-) => node => {
-	if (!node.rule.value) {
-		return;
-	}
+export default createRule<TagRule[], Options>({
+	name: 'permitted-contents',
+	defaultValue: [],
+	defaultOptions: {
+		ignoreHasMutableChildren: true,
+	},
+	verify(document, translate) {
+		const reports: Result[] = [];
+		let idCounter = 0;
 
-	if (node.rule.option.ignoreHasMutableChildren && node.hasMutableChildren()) {
-		return;
-	}
+		document.walkOn('Element', node => {
+			if (!node.rule.value) {
+				return;
+			}
 
-	const nodes = node.getChildElementsAndTextNodeWithoutWhitespaces();
-	const spec = htmlSpec(node.nodeName)?.permittedStructures;
+			if (node.rule.option.ignoreHasMutableChildren && node.hasMutableChildren()) {
+				return;
+			}
 
-	const expGen = new ExpGenerator(idCounter.id++);
+			const nodes = node.getChildElementsAndTextNodeWithoutWhitespaces();
+			const spec = htmlSpec(node.nodeName)?.permittedStructures;
 
-	if (spec) {
-		if (spec.ancestor && !node.closest(spec.ancestor)) {
-			reports.push({
-				severity: node.rule.severity,
-				message: translate(
-					'The {0} element must be descendant of the {1} element',
-					node.nodeName,
-					spec.ancestor,
-				),
-				line: node.startLine,
-				col: node.startCol,
-				raw: node.raw,
-			});
-			return;
-		}
+			const expGen = new ExpGenerator(idCounter++);
 
-		let matched = false;
+			if (spec) {
+				if (spec.ancestor && !node.closest(spec.ancestor)) {
+					reports.push({
+						severity: node.rule.severity,
+						message: translate(
+							'The {0} element must be descendant of the {1} element',
+							node.nodeName,
+							spec.ancestor,
+						),
+						line: node.startLine,
+						col: node.startCol,
+						raw: node.raw,
+					});
+					return;
+				}
 
-		if (spec.conditional) {
-			for (const conditional of spec.conditional) {
-				matched =
-					('hasAttr' in conditional.condition && node.hasAttribute(conditional.condition.hasAttr)) ||
-					('parent' in conditional.condition &&
-						!!node.parentNode &&
-						node.parentNode.type === 'Element' &&
-						node.parentNode.matches(conditional.condition.parent));
-				// console.log({ ...conditional, matched });
-				if (matched) {
+				let matched = false;
+
+				if (spec.conditional) {
+					for (const conditional of spec.conditional) {
+						matched =
+							('hasAttr' in conditional.condition && node.hasAttribute(conditional.condition.hasAttr)) ||
+							('parent' in conditional.condition &&
+								!!node.parentNode &&
+								node.parentNode.type === 'Element' &&
+								node.parentNode.matches(conditional.condition.parent));
+						// console.log({ ...conditional, matched });
+						if (matched) {
+							try {
+								const parentExp = getRegExpFromParentNode(node, expGen);
+								const exp = expGen.specToRegExp(conditional.contents, parentExp);
+								const conditionalResult = match(exp, nodes);
+								if (!conditionalResult) {
+									reports.push({
+										severity: node.rule.severity,
+										message: translate(
+											'Invalid content of the {0} element in {1}',
+											node.nodeName,
+											'the HTML specification',
+										),
+										line: node.startLine,
+										col: node.startCol,
+										raw: node.raw,
+									});
+									break;
+								}
+							} catch (e) {
+								// eslint-disable-next-line no-console
+								console.warn(node.raw, 'conditional', conditional, e.message);
+							}
+						}
+					}
+				}
+
+				if (!matched) {
 					try {
-						const parentExp = getRegExpFromParentNode(node, expGen);
-						const exp = expGen.specToRegExp(conditional.contents, parentExp);
-						const conditionalResult = match(exp, nodes);
-						if (!conditionalResult) {
+						const exp = getRegExpFromNode(node, expGen);
+						const specResult = match(exp, nodes);
+
+						if (!specResult) {
 							reports.push({
 								severity: node.rule.severity,
 								message: translate(
@@ -74,86 +106,43 @@ const verifyWalker: ElementVerifyWalkerFactory<TagRule[], Options, { id: number 
 								col: node.startCol,
 								raw: node.raw,
 							});
-							break;
 						}
 					} catch (e) {
 						// eslint-disable-next-line no-console
-						console.warn(node.raw, 'conditional', conditional, e.message);
+						console.warn(node.raw, 'HTML Spec', e.message);
 					}
 				}
 			}
-		}
 
-		if (!matched) {
-			try {
-				const exp = getRegExpFromNode(node, expGen);
-				const specResult = match(exp, nodes);
-
-				if (!specResult) {
-					reports.push({
-						severity: node.rule.severity,
-						message: translate(
-							'Invalid content of the {0} element in {1}',
-							node.nodeName,
-							'the HTML specification',
-						),
-						line: node.startLine,
-						col: node.startCol,
-						raw: node.raw,
-					});
+			for (const rule of node.rule.value) {
+				if (rule.tag.toLowerCase() !== node.nodeName.toLowerCase()) {
+					continue;
 				}
-			} catch (e) {
-				// eslint-disable-next-line no-console
-				console.warn(node.raw, 'HTML Spec', e.message);
+
+				const parentExp = getRegExpFromParentNode(node, expGen);
+				try {
+					const exp = expGen.specToRegExp(rule.contents, parentExp);
+					const r = match(exp, nodes);
+
+					if (!r) {
+						reports.push({
+							severity: node.rule.severity,
+							message: translate('Invalid content of the {0} element in {1}', node.nodeName, 'settings'),
+							line: node.startLine,
+							col: node.startCol,
+							raw: node.raw,
+						});
+						return;
+					}
+				} catch (e) {
+					// eslint-disable-next-line no-console
+					console.warn(node.raw, 'rule', rule, e.message);
+				}
 			}
-		}
-	}
+		});
 
-	for (const rule of node.rule.value) {
-		if (rule.tag.toLowerCase() !== node.nodeName.toLowerCase()) {
-			continue;
-		}
-
-		const parentExp = getRegExpFromParentNode(node, expGen);
-		try {
-			const exp = expGen.specToRegExp(rule.contents, parentExp);
-			const r = match(exp, nodes);
-
-			if (!r) {
-				reports.push({
-					severity: node.rule.severity,
-					message: translate('Invalid content of the {0} element in {1}', node.nodeName, 'settings'),
-					line: node.startLine,
-					col: node.startCol,
-					raw: node.raw,
-				});
-				return;
-			}
-		} catch (e) {
-			// eslint-disable-next-line no-console
-			console.warn(node.raw, 'rule', rule, e.message);
-		}
-	}
-};
-
-export default createRule<TagRule[], Options>({
-	name: 'permitted-contents',
-	defaultValue: [],
-	defaultOptions: {
-		ignoreHasMutableChildren: true,
-	},
-	async verify(document, translate) {
-		const reports: Result[] = [];
-		const idCounter = { id: 0 };
-		await document.walkOn('Element', verifyWalker(reports, translate, idCounter));
 		expMapOnNodeId.clear();
-		return reports;
-	},
-	verifySync(document, translate) {
-		const reports: Result[] = [];
-		const idCounter = { id: 0 };
-		document.walkOnSync('Element', verifyWalker(reports, translate, idCounter));
-		expMapOnNodeId.clear();
+
 		return reports;
 	},
 });

@@ -1,4 +1,4 @@
-import { AnonymousNode, NodeType, SyncWalker, Walker } from './types';
+import { AnonymousNode, NodeType, Walker } from './types';
 import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 import { MLASTDocument, MLASTNode, MLASTNodeType } from '@markuplint/ml-ast';
 import { MLDOMComment, MLDOMDoctype, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
@@ -78,16 +78,10 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		return treeRoots;
 	}
 
-	async walk(walker: Walker<T, O>) {
-		for (const node of this.nodeList) {
-			await walker(node);
-		}
-	}
-
-	walkSync(walker: SyncWalker<T, O>) {
-		for (const node of this.nodeList) {
-			walker(node);
-		}
+	walk(walker: Walker<T, O>): Promise<void[]> | void {
+		const results = this.nodeList.map(node => walker(node));
+		// sync API won't rely on the result
+		return Promise.all(results);
 	}
 
 	/**
@@ -96,60 +90,40 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	 * @param walker
 	 * @param skipWhenRuleIsDisabled
 	 */
-	async walkOn(
+	walkOn(
 		type: 'Element',
 		walker: Walker<T, O, MLDOMElement<T, O>>,
 		skipWhenRuleIsDisabled?: boolean,
-	): Promise<void>;
-	async walkOn(type: 'Text', walker: Walker<T, O, MLDOMText<T, O>>, skipWhenRuleIsDisabled?: boolean): Promise<void>;
-	async walkOn(
+	): Promise<void[]> | void;
+	walkOn(
+		type: 'Text',
+		walker: Walker<T, O, MLDOMText<T, O>>,
+		skipWhenRuleIsDisabled?: boolean,
+	): Promise<void[]> | void;
+	walkOn(
 		type: 'Comment',
 		walker: Walker<T, O, MLDOMComment<T, O>>,
 		skipWhenRuleIsDisabled?: boolean,
-	): Promise<void>;
-	async walkOn(
+	): Promise<void[]> | void;
+	walkOn(
 		type: 'ElementCloseTag',
 		walker: Walker<T, O, MLDOMElementCloseTag<T, O>>,
 		skipWhenRuleIsDisabled?: boolean,
-	): Promise<void>;
-	async walkOn(type: NodeType, walker: Walker<T, O, any>, skipWhenRuleIsDisabled: boolean = true): Promise<void> {
-		for (const node of this.nodeList) {
-			if (node instanceof MLDOMNode) {
-				if (skipWhenRuleIsDisabled && node.rule.disabled) {
-					continue;
+	): Promise<void[]> | void;
+	walkOn(type: NodeType, walker: Walker<T, O, any>, skipWhenRuleIsDisabled: boolean = true): Promise<void[]> | void {
+		// sync API won't rely on the result
+		return Promise.all(
+			this.nodeList.map(node => {
+				if (node instanceof MLDOMNode) {
+					if (skipWhenRuleIsDisabled && node.rule.disabled) {
+						return;
+					}
+					if (node.is(type)) {
+						return walker(node);
+					}
 				}
-				if (node.is(type)) {
-					await walker(node);
-				}
-			}
-		}
-	}
-
-	/**
-	 *
-	 * @param type
-	 * @param walker
-	 * @param skipWhenRuleIsDisabled
-	 */
-	walkOnSync(type: 'Element', walker: SyncWalker<T, O, MLDOMElement<T, O>>, skipWhenRuleIsDisabled?: boolean): void;
-	walkOnSync(type: 'Text', walker: SyncWalker<T, O, MLDOMText<T, O>>, skipWhenRuleIsDisabled?: boolean): void;
-	walkOnSync(type: 'Comment', walker: SyncWalker<T, O, MLDOMComment<T, O>>, skipWhenRuleIsDisabled?: boolean): void;
-	walkOnSync(
-		type: 'ElementCloseTag',
-		walker: SyncWalker<T, O, MLDOMElementCloseTag<T, O>>,
-		skipWhenRuleIsDisabled?: boolean,
-	): void;
-	walkOnSync(type: NodeType, walker: SyncWalker<T, O, any>, skipWhenRuleIsDisabled: boolean = true): void {
-		for (const node of this.nodeList) {
-			if (node instanceof MLDOMNode) {
-				if (skipWhenRuleIsDisabled && node.rule.disabled) {
-					continue;
-				}
-				if (node.is(type)) {
-					walker(node);
-				}
-			}
-		}
+			}),
+		);
 	}
 
 	setRule(rule: MLRule<T, O> | null) {

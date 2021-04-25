@@ -1,5 +1,5 @@
 export { default as Document } from './document';
-export { AnonymousNode, NodeType, SyncWalker, Walker } from './types';
+export { AnonymousNode, NodeType, Walker } from './types';
 export {
 	MLDOMAttribute as Attribute,
 	MLDOMComment as Comment,

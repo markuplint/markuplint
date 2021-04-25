@@ -16,7 +16,6 @@ export {
 	Node,
 	OmittedElement,
 	Text,
-	SyncWalker,
 	Walker,
 } from './ml-dom';
 export { getLocationFromChars } from './utils';

@@ -54,5 +54,3 @@ export type NodeType =
 	| 'PSBlock';
 
 export type Walker<T extends RuleConfigValue, O = null, N = AnonymousNode<T, O>> = (node: N) => Promise<void> | void;
-
-export type SyncWalker<T extends RuleConfigValue, O = null, N = AnonymousNode<T, O>> = (node: N) => void;

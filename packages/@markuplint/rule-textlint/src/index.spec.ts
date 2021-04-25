@@ -66,5 +66,5 @@ test('is test 1', async () => {
 			[],
 			'en',
 		),
-	).toThrow('textlint does not support sync API for now, so this rule can not be used in sync mode');
+	).toThrow('`verifySync` finished async. Use `verify` instead');
 });

@@ -25,7 +25,7 @@ export async function search<T = CosmiConfig>(dir: string, cacheClear: boolean) 
 
 export function searchSync<T = CosmiConfig>(dir: string, cacheClear: boolean) {
 	if (!cacheClear) {
-		explorer.clearCaches();
+		explorerSync.clearCaches();
 	}
 	dir = path.dirname(dir);
 	const result = explorerSync.search(dir);
@@ -54,7 +54,7 @@ export async function load<T = CosmiConfig>(filePath: string, cacheClear: boolea
 
 export function loadSync<T = CosmiConfig>(filePath: string, cacheClear: boolean) {
 	if (!cacheClear) {
-		explorer.clearCaches();
+		explorerSync.clearCaches();
 	}
 	const result = explorerSync.load(filePath);
 	if (!result || result.isEmpty) {

@@ -1,5 +1,6 @@
 import { MLFile } from './';
 
 export function getFile(filePath: string) {
-	return new MLFile(filePath);
+	const file = new MLFile(filePath);
+	return file;
 }

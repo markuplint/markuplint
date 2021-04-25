@@ -42,7 +42,4 @@ export default createRule<boolean, Option>({
 		}
 		return reports;
 	},
-	verifySync(document, translate, config) {
-		throw new Error('textlint does not support sync API for now, so this rule can not be used in sync mode');
-	},
 });
