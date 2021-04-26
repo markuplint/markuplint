@@ -17,10 +17,10 @@ export default createRule<TagRule[], Options>({
 	defaultOptions: {
 		ignoreHasMutableChildren: true,
 	},
-	async verify(document, translate) {
+	verify(document, translate) {
 		const reports: Result[] = [];
 		let idCounter = 0;
-		await document.walkOn('Element', async node => {
+		document.walkOn('Element', node => {
 			if (!node.rule.value) {
 				return;
 			}

@@ -26,11 +26,11 @@ export default createRule<true, Options>({
 		permittedAriaRoles: true,
 		disallowSetImplicitRole: true,
 	},
-	async verify(document, translate) {
+	verify(document, translate) {
 		const spec = getSpec(document.schemas);
 		const reports: Result[] = [];
 
-		await document.walkOn('Element', async node => {
+		document.walkOn('Element', node => {
 			const attributeSpecs = attrSpecs(node.nodeName, spec);
 			const html = htmlSpec(node.nodeName);
 			const { roles } = ariaSpec();

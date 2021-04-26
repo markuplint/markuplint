@@ -10,9 +10,9 @@ export default createRule<Value>({
 	defaultLevel: 'warning',
 	defaultValue: 'never',
 	defaultOptions: null,
-	async verify(document, translate) {
+	verify(document, translate) {
 		const reports: Result[] = [];
-		await document.walkOn('Element', async node => {
+		document.walkOn('Element', node => {
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'ps-attr' || !(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {
 					continue;
@@ -58,8 +58,8 @@ export default createRule<Value>({
 		});
 		return reports;
 	},
-	async fix(document) {
-		await document.walkOn('Element', async node => {
+	fix(document) {
+		document.walkOn('Element', node => {
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'ps-attr' || !(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {
 					continue;

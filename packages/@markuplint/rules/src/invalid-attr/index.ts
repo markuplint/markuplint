@@ -24,11 +24,11 @@ export default createRule<true, Option>({
 	defaultLevel: 'error',
 	defaultValue: true,
 	defaultOptions: {},
-	async verify(document, translate) {
+	verify(document, translate) {
 		const spec = getSpec(document.schemas);
 		const reports: Result[] = [];
 
-		await document.walkOn('Element', async node => {
+		document.walkOn('Element', node => {
 			const attributeSpecs = attrSpecs(node.nodeName, spec);
 
 			for (const attr of node.attributes) {

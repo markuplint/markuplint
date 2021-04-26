@@ -6,10 +6,10 @@ export default createRule({
 	name: 'deprecated-element',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, translate) {
+	verify(document, translate) {
 		const reports: Result[] = [];
 		const message = translate('{0} is {1}', 'Element', 'deprecated');
-		await document.walkOn('Element', async element => {
+		document.walkOn('Element', element => {
 			if (element.isForeignElement) {
 				return;
 			}

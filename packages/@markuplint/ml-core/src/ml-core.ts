@@ -61,6 +61,22 @@ export class MLCore {
 		return reports;
 	}
 
+	verifySync(fix = false) {
+		const reports: VerifiedResult[] = [];
+		for (const rule of this.#rules) {
+			const ruleInfo = rule.optimizeOption(this.#ruleset.rules[rule.name] || false);
+			if (ruleInfo.disabled) {
+				continue;
+			}
+			if (fix) {
+				rule.fixSync(this.#document, ruleInfo);
+			}
+			const results = rule.verifySync(this.#document, this.#i18n, ruleInfo);
+			reports.push(...results);
+		}
+		return reports;
+	}
+
 	setParser(parser: MLMarkupLanguageParser, parserOptions: ParserOptions) {
 		this.#parser = parser;
 		this.#ignoreFrontMatter = parserOptions.ignoreFrontMatter ?? this.#ignoreFrontMatter;

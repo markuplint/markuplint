@@ -66,7 +66,7 @@ describe('getRoleSpec', () => {
 });
 
 describe('getPermittedRoles', () => {
-	test('the a element', async () => {
+	test('the a element', () => {
 		expect(getPermittedRoles(createElement('<a></a>')!)).toBe(true);
 		expect(getPermittedRoles(createElement('<a href="path/to"></a>')!)).toStrictEqual([
 			'link',
@@ -83,17 +83,17 @@ describe('getPermittedRoles', () => {
 		]);
 	});
 
-	test('the area element', async () => {
+	test('the area element', () => {
 		expect(getPermittedRoles(createElement('<area></area>')!)).toBe(false);
 		expect(getPermittedRoles(createElement('<area href="path/to"></area>')!)).toStrictEqual(['link']);
 	});
 
-	test('the figure element', async () => {
+	test('the figure element', () => {
 		expect(getPermittedRoles(createElement('<figure></figure>')!)).toStrictEqual(['figure']);
 		expect(getPermittedRoles(createElement('<figure><figcaption></figcaption></figure>')!)).toBe(true);
 	});
 
-	test('the img element', async () => {
+	test('the img element', () => {
 		expect(getPermittedRoles(createElement('<img>')!)).toStrictEqual(['img']);
 		expect(getPermittedRoles(createElement('<img alt="">')!)).toStrictEqual(['none', 'presentation']);
 		expect(getPermittedRoles(createElement('<img alt="photo: something">')!)).toStrictEqual([
@@ -115,7 +115,7 @@ describe('getPermittedRoles', () => {
 		]);
 	});
 
-	test('the input element', async () => {
+	test('the input element', () => {
 		expect(getPermittedRoles(createElement('<input>')!)).toBe(false);
 		expect(getPermittedRoles(createElement('<input type="button">')!)).toStrictEqual([
 			'button',
@@ -136,7 +136,7 @@ describe('getPermittedRoles', () => {
 });
 
 describe('getImplicitRole', () => {
-	test('the a element', async () => {
+	test('the a element', () => {
 		expect(getImplicitRole(createElement('<a></a>')!)).toBe(false);
 		expect(getImplicitRole(createElement('<a name="foo"></a>')!)).toBe(false);
 		expect(getImplicitRole(createElement('<a href></a>')!)).toBe('link');
@@ -144,7 +144,7 @@ describe('getImplicitRole', () => {
 		expect(getImplicitRole(createElement('<a href="path/to"></a>')!)).toBe('link');
 	});
 
-	test('the area element', async () => {
+	test('the area element', () => {
 		expect(getImplicitRole(createElement('<area />')!)).toBe(false);
 		expect(getImplicitRole(createElement('<area shape="rect" />')!)).toBe(false);
 		expect(getImplicitRole(createElement('<area href />')!)).toBe('link');
@@ -152,23 +152,23 @@ describe('getImplicitRole', () => {
 		expect(getImplicitRole(createElement('<area href="path/to" />')!)).toBe('link');
 	});
 
-	test('the article element', async () => {
+	test('the article element', () => {
 		expect(getImplicitRole(createElement('<article></article>')!)).toBe('article');
 	});
 
-	test('the aside element', async () => {
+	test('the aside element', () => {
 		expect(getImplicitRole(createElement('<aside></aside>')!)).toBe('complementary');
 	});
 
-	test('the audio element', async () => {
+	test('the audio element', () => {
 		expect(getImplicitRole(createElement('<audio></audio>')!)).toBe(false);
 	});
 
-	test('the h1 element', async () => {
+	test('the h1 element', () => {
 		expect(getImplicitRole(createElement('<h1></h1>')!)).toBe('heading');
 	});
 
-	test('the header element', async () => {
+	test('the header element', () => {
 		expect(getImplicitRole(createElement('<header></header>')!)).toBe('banner');
 		expect(getImplicitRole(createElement('<header><article></article></header>')!)).toBe(false);
 		expect(getImplicitRole(createElement('<header><div></div></header>')!)).toBe('banner');
@@ -177,7 +177,7 @@ describe('getImplicitRole', () => {
 });
 
 describe('getComputedRole', () => {
-	test('the a element', async () => {
+	test('the a element', () => {
 		expect(getComputedRole(createElement('<a></a>')!)).toBe(false);
 		expect(getComputedRole(createElement('<a href></a>')!)).toBe('link');
 		expect(getComputedRole(createElement('<a role="button"></a>')!)).toBe('button');

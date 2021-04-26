@@ -53,4 +53,15 @@ test('is test 1', async () => {
 			message: 'Invalid text: jquery => jQuery',
 		},
 	]);
+
+	expect(() =>
+		markuplint.execSync({
+			sourceCodes: 'text',
+			config: {
+				rules: {
+					textlint: true,
+				},
+			},
+		}),
+	).toThrowError('`verifySync` finished async. Use `verify` instead');
 });

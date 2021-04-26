@@ -7,9 +7,9 @@ export default createRule<Value, null>({
 	defaultLevel: 'warning',
 	defaultValue: 'no-upper',
 	defaultOptions: null,
-	async verify(document, translate) {
+	verify(document, translate) {
 		const reports: Result[] = [];
-		await document.walkOn('Element', async node => {
+		document.walkOn('Element', node => {
 			const ms = node.rule.severity === 'error' ? 'must' : 'should';
 			const deny = node.rule.value === 'no-upper' ? /[A-Z]/ : /[a-z]/;
 			const cases = node.rule.value === 'no-upper' ? 'lower' : 'upper';
@@ -36,8 +36,8 @@ export default createRule<Value, null>({
 		});
 		return reports;
 	},
-	async fix(document) {
-		await document.walkOn('Element', async node => {
+	fix(document) {
+		document.walkOn('Element', node => {
 			if (node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
 				if (node.attributes) {
 					for (const attr of node.attributes) {

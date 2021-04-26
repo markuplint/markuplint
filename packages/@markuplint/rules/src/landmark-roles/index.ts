@@ -33,7 +33,7 @@ export default createRule<boolean, Options>({
 		ignoreRoles: [],
 		labelEachArea: true,
 	},
-	async verify(document, translate) {
+	verify(document, translate) {
 		if (document.isFragment) {
 			return [];
 		}

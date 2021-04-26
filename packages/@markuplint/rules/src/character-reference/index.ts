@@ -9,11 +9,11 @@ export default createRule<Value>({
 	name: 'character-reference',
 	defaultValue: true,
 	defaultOptions: null,
-	async verify(document, translate) {
+	verify(document, translate) {
 		const reports: Result[] = [];
 		const targetNodes: Result[] = [];
 
-		await document.walkOn('Text', async node => {
+		document.walkOn('Text', node => {
 			if (node.parentNode && ignoreParentElement.includes(node.parentNode.nodeName.toLowerCase())) {
 				return;
 			}
@@ -29,7 +29,7 @@ export default createRule<Value>({
 			});
 		});
 
-		await document.walkOn('Element', async node => {
+		document.walkOn('Element', node => {
 			const severity = node.rule.severity;
 			const ms = severity === 'error' ? 'must' : 'should';
 			const message = translate(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');

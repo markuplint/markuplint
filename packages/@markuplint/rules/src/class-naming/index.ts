@@ -8,9 +8,9 @@ export default createRule<Value>({
 	defaultLevel: 'warning',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, translate) {
+	verify(document, translate) {
 		const reports: Result[] = [];
-		await document.walkOn('Element', async node => {
+		document.walkOn('Element', node => {
 			if (node.rule.value) {
 				const classPatterns = Array.isArray(node.rule.value) ? node.rule.value : [node.rule.value];
 				const attrs = node.getAttributeToken('class');

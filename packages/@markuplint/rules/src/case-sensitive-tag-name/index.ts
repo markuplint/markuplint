@@ -7,9 +7,9 @@ export default createRule<Value, null>({
 	defaultLevel: 'warning',
 	defaultValue: 'lower',
 	defaultOptions: null,
-	async verify(document, translate) {
+	verify(document, translate) {
 		const reports: Result[] = [];
-		await document.walk(async node => {
+		document.walk(node => {
 			if ('fixNodeName' in node) {
 				if (node.isForeignElement) {
 					return;
@@ -36,8 +36,8 @@ export default createRule<Value, null>({
 		});
 		return reports;
 	},
-	async fix(document) {
-		await document.walk(async node => {
+	fix(document) {
+		document.walk(node => {
 			if ('fixNodeName' in node) {
 				if (node.isForeignElement) {
 					return;

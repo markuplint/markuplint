@@ -1,8 +1,10 @@
 import { Config, ConfigSet, loadConfigFile } from './';
-import { LoaderSync, cosmiconfig } from 'cosmiconfig';
+import { LoaderSync, cosmiconfig, cosmiconfigSync } from 'cosmiconfig';
+import { loadConfigFileSync } from './load-config-file';
 import path from 'path';
 
 const explorer = cosmiconfig('markuplint');
+const explorerSync = cosmiconfigSync('markuplint');
 
 type CosmiConfig = ReturnType<LoaderSync>;
 
@@ -21,11 +23,40 @@ export async function search<T = CosmiConfig>(dir: string, cacheClear: boolean) 
 	};
 }
 
+export function searchSync<T = CosmiConfig>(dir: string, cacheClear: boolean) {
+	if (!cacheClear) {
+		explorerSync.clearCaches();
+	}
+	dir = path.dirname(dir);
+	const result = explorerSync.search(dir);
+	if (!result || result.isEmpty) {
+		return null;
+	}
+	return {
+		filePath: result.filepath,
+		config: result.config as T,
+	};
+}
+
 export async function load<T = CosmiConfig>(filePath: string, cacheClear: boolean) {
 	if (!cacheClear) {
 		explorer.clearCaches();
 	}
 	const result = await explorer.load(filePath);
+	if (!result || result.isEmpty) {
+		return null;
+	}
+	return {
+		filePath: result.filepath,
+		config: result.config as T,
+	};
+}
+
+export function loadSync<T = CosmiConfig>(filePath: string, cacheClear: boolean) {
+	if (!cacheClear) {
+		explorerSync.clearCaches();
+	}
+	const result = explorerSync.load(filePath);
 	if (!result || result.isEmpty) {
 		return null;
 	}
@@ -60,6 +91,50 @@ export async function recursiveLoad(
 			} else {
 				try {
 					const mod: Config = await import(_file);
+					// @ts-ignore
+					delete mod.default;
+					files.add(_file);
+					config = margeConfig(mod, config);
+				} catch (err) {
+					errs.push(err);
+				}
+			}
+		}
+	}
+	delete config.extends;
+	return {
+		files,
+		config,
+		errs,
+	};
+}
+
+export function recursiveLoadSync(
+	config: Config,
+	filePath: string,
+	files: Set<string>,
+	cacheClear: boolean,
+): ConfigSet {
+	const errs: Error[] = [];
+	const baseDir = path.dirname(filePath);
+	if (config.extends) {
+		const extendFiles = Array.isArray(config.extends) ? config.extends : [config.extends];
+		for (const _file of extendFiles) {
+			if (/^\.+\//.test(_file)) {
+				const file = path.resolve(path.join(baseDir, _file));
+				if (files.has(file)) {
+					continue;
+				}
+				const extendFileResult = loadConfigFileSync(file, true, cacheClear);
+				if (!extendFileResult) {
+					continue;
+				}
+				files = new Set(files).add(file);
+				config = margeConfig(extendFileResult.config, config);
+			} else {
+				try {
+					// eslint-disable-next-line @typescript-eslint/no-var-requires
+					const mod: Config = require(_file);
 					// @ts-ignore
 					delete mod.default;
 					files.add(_file);

@@ -40,8 +40,18 @@ export class MLFile {
 		return fileCaches.get(this) || (await this._fetch());
 	}
 
+	getContextSync() {
+		return fileCaches.get(this) || this._fetchSync();
+	}
+
 	private async _fetch() {
 		const context = await readFile(this.#filePath, { encoding: 'utf-8' });
+		fileCaches.set(this, context);
+		return context;
+	}
+
+	private _fetchSync() {
+		const context = fs.readFileSync(this.#filePath, { encoding: 'utf-8' });
 		fileCaches.set(this, context);
 		return context;
 	}

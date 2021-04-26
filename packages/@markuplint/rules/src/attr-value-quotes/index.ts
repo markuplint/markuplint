@@ -14,9 +14,9 @@ export default createRule<Type>({
 	defaultLevel: 'warning',
 	defaultValue: 'double',
 	defaultOptions: null,
-	async verify(document, translate) {
+	verify(document, translate) {
 		const reports: Result[] = [];
-		await document.walkOn('Element', async node => {
+		document.walkOn('Element', node => {
 			const message = translate(
 				'{0} is must {1} on {2}',
 				'Attribute value',
@@ -41,8 +41,8 @@ export default createRule<Type>({
 		});
 		return reports;
 	},
-	async fix(document) {
-		await document.walkOn('Element', async node => {
+	fix(document) {
+		document.walkOn('Element', node => {
 			for (const attr of node.attributes) {
 				const quote = quoteList[node.rule.value];
 				if (attr.attrType === 'html-attr' && quote && attr.startQuote && attr.startQuote.raw !== quote) {

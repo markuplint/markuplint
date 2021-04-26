@@ -78,10 +78,9 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		return treeRoots;
 	}
 
-	async walk(walker: Walker<T, O>) {
-		for (const node of this.nodeList) {
-			await walker(node);
-		}
+	walk(walker: Walker<T, O>): void | Promise<void[]> {
+		// sync API won't rely on the result
+		return Promise.all(this.nodeList.map(walker));
 	}
 
 	/**
@@ -90,33 +89,40 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	 * @param walker
 	 * @param skipWhenRuleIsDisabled
 	 */
-	async walkOn(
+	walkOn(
 		type: 'Element',
 		walker: Walker<T, O, MLDOMElement<T, O>>,
 		skipWhenRuleIsDisabled?: boolean,
-	): Promise<void>;
-	async walkOn(type: 'Text', walker: Walker<T, O, MLDOMText<T, O>>, skipWhenRuleIsDisabled?: boolean): Promise<void>;
-	async walkOn(
+	): void | Promise<void[]>;
+	walkOn(
+		type: 'Text',
+		walker: Walker<T, O, MLDOMText<T, O>>,
+		skipWhenRuleIsDisabled?: boolean,
+	): void | Promise<void[]>;
+	walkOn(
 		type: 'Comment',
 		walker: Walker<T, O, MLDOMComment<T, O>>,
 		skipWhenRuleIsDisabled?: boolean,
-	): Promise<void>;
-	async walkOn(
+	): void | Promise<void[]>;
+	walkOn(
 		type: 'ElementCloseTag',
 		walker: Walker<T, O, MLDOMElementCloseTag<T, O>>,
 		skipWhenRuleIsDisabled?: boolean,
-	): Promise<void>;
-	async walkOn(type: NodeType, walker: Walker<T, O, any>, skipWhenRuleIsDisabled: boolean = true): Promise<void> {
-		for (const node of this.nodeList) {
-			if (node instanceof MLDOMNode) {
-				if (skipWhenRuleIsDisabled && node.rule.disabled) {
-					continue;
+	): void | Promise<void[]>;
+	walkOn(type: NodeType, walker: Walker<T, O, any>, skipWhenRuleIsDisabled: boolean = true): void | Promise<void[]> {
+		// sync API won't rely on the result
+		return Promise.all(
+			this.nodeList.map(node => {
+				if (node instanceof MLDOMNode) {
+					if (skipWhenRuleIsDisabled && node.rule.disabled) {
+						return;
+					}
+					if (node.is(type)) {
+						return walker(node);
+					}
 				}
-				if (node.is(type)) {
-					await walker(node);
-				}
-			}
-		}
+			}),
+		);
 	}
 
 	setRule(rule: MLRule<T, O> | null) {

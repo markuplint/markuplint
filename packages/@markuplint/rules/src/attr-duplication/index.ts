@@ -4,10 +4,10 @@ export default createRule({
 	name: 'attr-duplication',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, translate) {
+	verify(document, translate) {
 		const reports: Result[] = [];
 		const message = translate('Duplicate {0}', 'attribute name');
-		await document.walkOn('Element', async node => {
+		document.walkOn('Element', node => {
 			const attrNameStack: string[] = [];
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'ps-attr' && attr.isDuplicatable) {

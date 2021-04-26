@@ -14,7 +14,7 @@ export default createRule<Value, RequiredH1Options>({
 		'expected-once': true,
 		'in-document-fragment': false,
 	},
-	async verify(document, translate, globalRule) {
+	verify(document, translate, globalRule) {
 		const reports: Result[] = [];
 		const h1Stack: Element<Value, RequiredH1Options>[] = [];
 
@@ -26,7 +26,7 @@ export default createRule<Value, RequiredH1Options>({
 			return reports;
 		}
 
-		await document.walkOn('Element', async node => {
+		document.walkOn('Element', node => {
 			if (node.nodeName.toLowerCase() === 'h1') {
 				h1Stack.push(node);
 			}

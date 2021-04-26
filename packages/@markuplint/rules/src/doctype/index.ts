@@ -11,7 +11,7 @@ export default createRule<Value, Option>({
 	defaultOptions: {
 		denyObsolateType: true,
 	},
-	async verify(document, translate, rule) {
+	verify(document, translate, rule) {
 		if (document.isFragment) {
 			return [];
 		}

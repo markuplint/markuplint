@@ -5,10 +5,10 @@ export default createRule({
 	name: 'deprecated-attr',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, translate) {
+	verify(document, translate) {
 		const reports: Result[] = [];
 		const spec = getSpec(document.schemas);
-		await document.walkOn('Element', async element => {
+		document.walkOn('Element', element => {
 			const specs = attrSpecs(element.nodeName, spec);
 
 			if (!specs) {

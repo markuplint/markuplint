@@ -46,6 +46,32 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		});
 	}
 
+	verifySync(document: Document<T, O>, i18n: I18n, rule: RuleInfo<T, O>): VerifiedResult[] {
+		if (!this.#v) {
+			return [];
+		}
+
+		document.setRule(this);
+		const results = this.#v(document, i18n.translator(), rule);
+
+		if (results instanceof Promise) {
+			throw new Error('`verifySync` finished async. Use `verify` instead');
+		}
+
+		document.setRule(null);
+
+		return results.map<VerifiedResult>(result => {
+			return {
+				severity: result.severity,
+				message: result.message,
+				line: result.line,
+				col: result.col,
+				raw: result.raw,
+				ruleId: this.name,
+			};
+		});
+	}
+
 	async fix(document: Document<T, O>, rule: RuleInfo<T, O>): Promise<void> {
 		if (!this.#f) {
 			return;
@@ -53,6 +79,21 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 
 		document.setRule(this);
 		await this.#f(document, rule);
+		document.setRule(null);
+	}
+
+	fixSync(document: Document<T, O>, rule: RuleInfo<T, O>): void {
+		if (!this.#f) {
+			return;
+		}
+
+		document.setRule(this);
+		const result = this.#f(document, rule);
+
+		if (result instanceof Promise) {
+			throw new Error('`fixSync` finished async. Use `fix` instead');
+		}
+
 		document.setRule(null);
 	}
 

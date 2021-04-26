@@ -3,6 +3,7 @@ import { MLRule } from '@markuplint/ml-core';
 import { lint } from './lint';
 
 export { lint as exec } from './lint';
+export { lintSync as execSync } from './lint';
 
 /**
  * @deprecated

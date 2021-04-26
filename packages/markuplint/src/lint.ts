@@ -1,64 +1,10 @@
-import { Config, RuleConfigValue } from '@markuplint/ml-config';
-import { MLResultInfo } from './types';
-import { MLRule } from '@markuplint/ml-core';
-import { lintFile } from './lint-file';
-import { resolveConfigs } from './resolve-configs';
-import { resolveLintTargetFiles } from './resolve-lint-target-files';
-import { resolveRules } from './resolve-rules';
+import { MLOptions, MLResultInfo } from './types';
+import { lintFile, lintFileSync } from './lint-file';
+import { resolveConfigs, resolveConfigsSync } from './resolve-configs';
+import { resolveLintTargetFiles, resolveLintTargetFilesSync } from './resolve-lint-target-files';
+import { resolveRules, resolveRulesSync } from './resolve-rules';
 
-export async function lint(options: {
-	/**
-	 * Glob pattern
-	 */
-	files?: string | string[];
-
-	/**
-	 * Target source code of evaluation
-	 */
-	sourceCodes?: string | string[];
-
-	/**
-	 * File names when `sourceCodes`
-	 */
-	names?: string | string[];
-
-	/**
-	 * Workspace path when `sourceCodes`
-	 */
-	workspace?: string;
-
-	/**
-	 * Configure file or object
-	 */
-	config?: string | Config;
-
-	/**
-	 * The config applied when not resolved from files or set it explicitly.
-	 */
-	defaultConfig?: Config;
-
-	/**
-	 * Rules (default: `@markuplint/rules`)
-	 */
-	rules?: MLRule<RuleConfigValue, unknown>[];
-
-	/**
-	 * Auto resolve rules
-	 *
-	 * Auto importing form *node_modules* when set `@markuplint/rule-{RULE_NAME}` or `markuplint-rule-{RULE_NAME}` in config rules
-	 */
-	rulesAutoResolve?: boolean;
-
-	/**
-	 * Auto fix
-	 */
-	fix?: boolean;
-
-	/**
-	 * Locale
-	 */
-	locale?: string;
-}) {
+export async function lint(options: MLOptions) {
 	const rulesAutoResolve = options.rulesAutoResolve ?? true;
 
 	const files = await resolveLintTargetFiles(options);
@@ -69,6 +15,23 @@ export async function lint(options: {
 
 	for (const file of files) {
 		const result = await lintFile(file, configs, rulesAutoResolve, rules, options.locale, options.fix);
+		totalResults.push(result);
+	}
+
+	return totalResults;
+}
+
+export function lintSync(options: MLOptions) {
+	const rulesAutoResolve = options.rulesAutoResolve ?? true;
+
+	const files = resolveLintTargetFilesSync(options);
+	const configs = resolveConfigsSync(files, options);
+	const rules = resolveRulesSync(options);
+
+	const totalResults: MLResultInfo[] = [];
+
+	for (const file of files) {
+		const result = lintFileSync(file, configs, rulesAutoResolve, rules, options.locale, options.fix);
 		totalResults.push(result);
 	}
 

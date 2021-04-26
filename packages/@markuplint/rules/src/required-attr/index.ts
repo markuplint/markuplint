@@ -8,10 +8,10 @@ export default createRule<RequiredAttributes, null>({
 	defaultLevel: 'error',
 	defaultValue: [],
 	defaultOptions: null,
-	async verify(document, translate) {
+	verify(document, translate) {
 		const reports: Result[] = [];
 		const spec = getSpec(document.schemas);
-		await document.walkOn('Element', async node => {
+		document.walkOn('Element', node => {
 			const customRequiredAttrs = typeof node.rule.value === 'string' ? [node.rule.value] : node.rule.value;
 
 			const attrSpec = attrSpecs(node.nodeName, spec);
