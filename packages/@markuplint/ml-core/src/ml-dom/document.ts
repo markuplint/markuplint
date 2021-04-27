@@ -78,9 +78,33 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		return treeRoots;
 	}
 
-	walk(walker: Walker<T, O>): void | Promise<void[]> {
-		// sync API won't rely on the result
-		return Promise.all(this.nodeList.map(walker));
+	walk(walker: Walker<T, O>): void | Promise<void> {
+		let _resolve: () => void;
+		let _reject: (reason: unknown) => void;
+
+		const promise = new Promise<void>((resolve, reject) => {
+			_resolve = resolve;
+			_reject = reject;
+		});
+
+		const loop = (index = 0) => {
+			if (index >= this.nodeList.length) {
+				_resolve();
+				return;
+			}
+
+			const node = this.nodeList[index];
+			const result = walker(node);
+			if (result instanceof Promise) {
+				result.then(() => loop(index + 1)).catch(_reject);
+			} else {
+				loop(index + 1);
+			}
+		};
+
+		loop();
+
+		return promise;
 	}
 
 	/**
@@ -93,36 +117,52 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		type: 'Element',
 		walker: Walker<T, O, MLDOMElement<T, O>>,
 		skipWhenRuleIsDisabled?: boolean,
-	): void | Promise<void[]>;
-	walkOn(
-		type: 'Text',
-		walker: Walker<T, O, MLDOMText<T, O>>,
-		skipWhenRuleIsDisabled?: boolean,
-	): void | Promise<void[]>;
+	): void | Promise<void>;
+	walkOn(type: 'Text', walker: Walker<T, O, MLDOMText<T, O>>, skipWhenRuleIsDisabled?: boolean): void | Promise<void>;
 	walkOn(
 		type: 'Comment',
 		walker: Walker<T, O, MLDOMComment<T, O>>,
 		skipWhenRuleIsDisabled?: boolean,
-	): void | Promise<void[]>;
+	): void | Promise<void>;
 	walkOn(
 		type: 'ElementCloseTag',
 		walker: Walker<T, O, MLDOMElementCloseTag<T, O>>,
 		skipWhenRuleIsDisabled?: boolean,
-	): void | Promise<void[]>;
-	walkOn(type: NodeType, walker: Walker<T, O, any>, skipWhenRuleIsDisabled: boolean = true): void | Promise<void[]> {
-		// sync API won't rely on the result
-		return Promise.all(
-			this.nodeList.map(node => {
-				if (node instanceof MLDOMNode) {
-					if (skipWhenRuleIsDisabled && node.rule.disabled) {
-						return;
-					}
-					if (node.is(type)) {
-						return walker(node);
+	): void | Promise<void>;
+	walkOn(type: NodeType, walker: Walker<T, O, any>, skipWhenRuleIsDisabled: boolean = true): void | Promise<void> {
+		let _resolve: () => void;
+		let _reject: (reason: unknown) => void;
+
+		const promise = new Promise<void>((resolve, reject) => {
+			_resolve = resolve;
+			_reject = reject;
+		});
+
+		const loop = (index = 0) => {
+			if (index >= this.nodeList.length) {
+				_resolve();
+				return;
+			}
+			const node = this.nodeList[index];
+			if (node instanceof MLDOMNode) {
+				if (skipWhenRuleIsDisabled && node.rule.disabled) {
+					loop(index + 1);
+					return;
+				}
+				if (node.is(type)) {
+					const result = walker(node);
+					if (result instanceof Promise) {
+						result.then(() => loop(index + 1)).catch(_reject);
+					} else {
+						loop(index + 1);
 					}
 				}
-			}),
-		);
+			}
+		};
+
+		loop();
+
+		return promise;
 	}
 
 	setRule(rule: MLRule<T, O> | null) {
