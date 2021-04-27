@@ -78,7 +78,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		return treeRoots;
 	}
 
-	walk(walker: Walker<T, O>): void | Promise<void> {
+	walk(walker: Walker<T, O>): Promise<void> {
 		let _resolve: () => void;
 		let _reject: (reason: unknown) => void;
 
@@ -113,23 +113,15 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	 * @param walker
 	 * @param skipWhenRuleIsDisabled
 	 */
-	walkOn(
-		type: 'Element',
-		walker: Walker<T, O, MLDOMElement<T, O>>,
-		skipWhenRuleIsDisabled?: boolean,
-	): void | Promise<void>;
-	walkOn(type: 'Text', walker: Walker<T, O, MLDOMText<T, O>>, skipWhenRuleIsDisabled?: boolean): void | Promise<void>;
-	walkOn(
-		type: 'Comment',
-		walker: Walker<T, O, MLDOMComment<T, O>>,
-		skipWhenRuleIsDisabled?: boolean,
-	): void | Promise<void>;
+	walkOn(type: 'Element', walker: Walker<T, O, MLDOMElement<T, O>>, skipWhenRuleIsDisabled?: boolean): Promise<void>;
+	walkOn(type: 'Text', walker: Walker<T, O, MLDOMText<T, O>>, skipWhenRuleIsDisabled?: boolean): Promise<void>;
+	walkOn(type: 'Comment', walker: Walker<T, O, MLDOMComment<T, O>>, skipWhenRuleIsDisabled?: boolean): Promise<void>;
 	walkOn(
 		type: 'ElementCloseTag',
 		walker: Walker<T, O, MLDOMElementCloseTag<T, O>>,
 		skipWhenRuleIsDisabled?: boolean,
-	): void | Promise<void>;
-	walkOn(type: NodeType, walker: Walker<T, O, any>, skipWhenRuleIsDisabled: boolean = true): void | Promise<void> {
+	): Promise<void>;
+	walkOn(type: NodeType, walker: Walker<T, O, any>, skipWhenRuleIsDisabled: boolean = true): Promise<void> {
 		let _resolve: () => void;
 		let _reject: (reason: unknown) => void;
 
