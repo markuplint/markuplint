@@ -12501,7 +12501,7 @@
 				},
 				{
 					"name": "type",
-					"description": "A string specifying the type of control to render. For example, to create a checkbox, a value of checkbox is used. If omitted (or an unknown value is specified), the input type text is used, creating a plaintext input field. Permitted values are listed in <input> types above.",
+					"description": "A string specifying the type of control to render. For example, to create a checkbox, a value of checkbox is used. If omitted (or an unknown value is specified), the input type text is used, creating a plaintext input field. Permitted values are listed in Input types above.",
 					"type": "Boolean"
 				},
 				{
