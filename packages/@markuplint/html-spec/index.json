@@ -11697,7 +11697,6 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/image",
 			"description": "The obsolete HTML Image element (<image>) is an obsolete remnant of an ancient version of HTML lost in the mists of time; use the standard <img> element instead. Seriously, the specification even literally uses the words \"Don't ask\" when describing this element.",
 			"deprecated": true,
-			"nonStandard": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
@@ -13382,7 +13381,6 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/multicol",
 			"description": "The HTML Multi-Column Layout element (<multicol>) was an experimental element designed to allow multi-column layouts and must not be used. It never got any significant traction and is not implemented in any major browsers. It's covered here only to warn you off in case you stumble on it in any other documentation.",
 			"deprecated": true,
-			"nonStandard": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
@@ -13460,7 +13458,6 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nobr",
 			"description": "",
 			"deprecated": true,
-			"nonStandard": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
@@ -13483,7 +13480,6 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noembed",
 			"description": "The <noembed> element is an obsolete, non-standard way to provide alternative, or \"fallback\", content for browsers that do not support the <embed> element or do not support the type of embedded content an author wishes to use. This element was deprecated in HTML 4.01 and above in favor of placing fallback content between the opening and closing tags of an <object> element.",
 			"deprecated": true,
-			"nonStandard": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
@@ -14743,7 +14739,6 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/spacer",
 			"description": "<spacer> is an obsolete HTML element which allowed insertion of empty spaces on pages. It was devised by Netscape to accomplish the same effect as a single-pixel layout image, which was something web designers used to use to add white spaces to web pages without actually using an image. However, <spacer> no longer supported by any major browser and the same effects can now be achieved using simple CSS.",
 			"deprecated": true,
-			"nonStandard": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
