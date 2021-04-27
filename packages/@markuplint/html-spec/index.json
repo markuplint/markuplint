@@ -9574,7 +9574,6 @@
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bgsound",
 			"description": "The Internet Explorer only HTML Background Sound element (<bgsound>) sets up a sound file to play in the background while the page is used; use <audio> instead.",
 			"deprecated": true,
-			"nonStandard": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
