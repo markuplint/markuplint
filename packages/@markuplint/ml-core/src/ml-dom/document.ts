@@ -153,11 +153,11 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					const result = walker(node);
 					if (result instanceof Promise) {
 						result.then(() => loop(index + 1)).catch(_reject);
-					} else {
-						loop(index + 1);
+						return;
 					}
 				}
 			}
+			loop(index + 1);
 		};
 
 		loop();
