@@ -39,6 +39,7 @@
 						"type": "string",
 						"enum": [
 							"String",
+							"NonEmptyString",
 							"Boolean",
 							"Function", // JavaScript function body
 							"Date",

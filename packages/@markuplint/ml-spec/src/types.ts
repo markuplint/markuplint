@@ -161,6 +161,7 @@ export type AttributeCondition = {
 
 export type AttributeType =
 	| 'String'
+	| 'NonEmptyString'
 	| 'Boolean'
 	| 'Function' // JavaScript function body
 	| 'Date'

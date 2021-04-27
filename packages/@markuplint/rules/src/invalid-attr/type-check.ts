@@ -26,7 +26,14 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		};
 	}
 
-	if (spec.type === 'String') {
+	if (spec.type === 'String' || spec.type === 'NonEmptyString') {
+		if (spec.type === 'NonEmptyString' && value === '') {
+			return {
+				invalidType: 'invalid-value',
+				message: `The "${name}" attribute value must not be the empty string`,
+			};
+		}
+
 		// Valid because any string value is acceptable
 		if (!spec.enum) {
 			return false;
