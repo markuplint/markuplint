@@ -20,7 +20,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	 * The following getter is unused internally,
 	 * only for extending from 3rd party library
 	 */
-	private get v() {
+	protected get v(): MLRuleOptions<T, O>['verify'] {
 		return this.#v;
 	}
 
@@ -28,7 +28,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	 * The following getter is unused internally,
 	 * only for extending from 3rd party library
 	 */
-	private get f() {
+	protected get f(): MLRuleOptions<T, O>['fix'] {
 		return this.#f;
 	}
 
