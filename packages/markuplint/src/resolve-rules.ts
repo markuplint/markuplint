@@ -7,7 +7,7 @@ export async function resolveRules(options: { rules?: MLRule<RuleConfigValue, un
 		rules = options.rules;
 	} else {
 		const r = await import('@markuplint/rules');
-		rules = r.default as MLRule<RuleConfigValue, unknown>[];
+		rules = r.default;
 	}
 
 	return rules;
