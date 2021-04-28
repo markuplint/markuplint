@@ -87,6 +87,30 @@ test('warns if specified attribute value is invalid', async () => {
 	]);
 });
 
+test('Type check', async () => {
+	const r = await markuplint.verify(
+		'<form name=""></form>',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 13,
+			message: 'The "name" attribute value must not be the empty string',
+			raw: '',
+		},
+	]);
+});
+
 test('disable', async () => {
 	const r = await markuplint.verify(
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',

@@ -27,7 +27,7 @@
 		},
 		{
 			"name": "name",
-			"type": "String"
+			"type": "NonEmptyString"
 		},
 		{
 			"name": "novalidate",
