@@ -14,7 +14,7 @@ export interface LocalesKeywords {
 export class I18n {
 	private static _singleton: I18n | null = null;
 
-	static async create(localeSet: LocaleSet | null) {
+	static create(localeSet: LocaleSet | null) {
 		if (!I18n._singleton) {
 			I18n._singleton = new I18n(localeSet);
 		} else {

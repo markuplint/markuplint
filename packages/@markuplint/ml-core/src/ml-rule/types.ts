@@ -7,6 +7,6 @@ export interface MLRuleOptions<T extends RuleConfigValue, O = null> {
 	defaultLevel?: Severity;
 	defaultValue: T;
 	defaultOptions: O;
-	verify(document: Document<T, O>, translate: Translator, globalRule: RuleInfo<T, O>): Promise<Result[]>;
-	fix?(document: Document<T, O>, globalRule: RuleInfo<T, O>): Promise<void>;
+	verify(document: Document<T, O>, translate: Translator, globalRule: RuleInfo<T, O>): Result[] | Promise<Result[]>;
+	fix?(document: Document<T, O>, globalRule: RuleInfo<T, O>): void | Promise<void>;
 }

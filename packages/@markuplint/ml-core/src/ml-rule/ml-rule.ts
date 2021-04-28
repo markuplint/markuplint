@@ -16,6 +16,14 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	#v: MLRuleOptions<T, O>['verify'];
 	#f: MLRuleOptions<T, O>['fix'];
 
+	get v() {
+		return this.#v;
+	}
+
+	get f() {
+		return this.#f;
+	}
+
 	private constructor(o: MLRuleOptions<T, O>) {
 		this.name = o.name;
 		this.defaultServerity = o.defaultLevel || 'error';
