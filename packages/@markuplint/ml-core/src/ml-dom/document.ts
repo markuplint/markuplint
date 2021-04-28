@@ -79,6 +79,10 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	}
 
 	walk(walker: Walker<T, O>) {
+		/**
+		 * The following pattern is used to ensure that all rules run sequentially,
+		 * no matter it runs asynchronously or synchronously.
+		 */
 		let _resolve: () => void;
 		let _reject: (reason: unknown) => void;
 
