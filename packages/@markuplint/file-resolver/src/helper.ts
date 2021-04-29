@@ -78,7 +78,7 @@ export async function recursiveLoad(
 	};
 }
 
-function margeConfig(a: Config, b: Config): Config {
+export function margeConfig(a: Config, b: Config): Config {
 	return {
 		...a,
 		...b,

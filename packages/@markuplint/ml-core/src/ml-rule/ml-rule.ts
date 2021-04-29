@@ -16,6 +16,22 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	#v: MLRuleOptions<T, O>['verify'];
 	#f: MLRuleOptions<T, O>['fix'];
 
+	/**
+	 * The following getter is unused internally,
+	 * only for extending from 3rd party library
+	 */
+	protected get v(): MLRuleOptions<T, O>['verify'] {
+		return this.#v;
+	}
+
+	/**
+	 * The following getter is unused internally,
+	 * only for extending from 3rd party library
+	 */
+	protected get f(): MLRuleOptions<T, O>['fix'] {
+		return this.#f;
+	}
+
 	private constructor(o: MLRuleOptions<T, O>) {
 		this.name = o.name;
 		this.defaultServerity = o.defaultLevel || 'error';
