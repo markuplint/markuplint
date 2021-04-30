@@ -37,6 +37,15 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	 */
 	readonly nodeStore = new NodeStore();
 
+	#filename?: string;
+
+	/**
+	 * It could be used in rule, make sure it is immutable
+	 */
+	get filename() {
+		return this.#filename;
+	}
+
 	/**
 	 *
 	 * @param ast node list of markuplint AST
@@ -46,7 +55,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		ast: MLASTDocument,
 		ruleset: Ruleset,
 		schemas: readonly [MLMLSpec, ...ExtendedSpec[]],
-		readonly filename?: string,
+		filename?: string,
 	) {
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
 		this.nodeList = Object.freeze(
@@ -60,6 +69,8 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		this.isFragment = ast.isFragment;
 
 		this.specs = getSpec(schemas);
+
+		this.#filename = filename;
 
 		this._init(ruleset);
 	}
