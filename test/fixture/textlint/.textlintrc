@@ -1,7 +1,4 @@
 {
-	"plugins": [
-		"html"
-	],
 	"rules": {
 		"prh": {
 			"rulePaths": [

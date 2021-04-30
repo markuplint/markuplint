@@ -40,6 +40,10 @@ export default createRule<boolean, Option>({
 				const textlintConfig = Config.initWithAutoLoading({
 					cwd: document.filename && path.dirname(document.filename),
 				});
+				if (!textlintConfig.plugins.includes('html')) {
+					textlintConfig.plugins.push('html');
+					textlintConfig.pluginsConfig.html = true;
+				}
 				const lintEngine = new TextLintEngine(textlintConfig);
 				textlintResult = (await lintEngine.executeOnText(html, '.html'))[0];
 			} else {

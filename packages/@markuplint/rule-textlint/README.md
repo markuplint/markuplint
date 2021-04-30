@@ -36,8 +36,10 @@ $ yarn add -D textlint-rule-prh
 ```jsonc
 // `.textlintrc`
 {
-	// make sure textlint understand html correctly
-	"plugins": ["html"],
+	// `html` plugin will be used automatically by `markuplint`
+	// but make sure to enable it manually
+	// if you are using `textlint` as cli at the same time
+	// "plugins": ["html"],
 	"rules": {
 		"prh": {
 			"rulePaths": ["../prh.yml"]
