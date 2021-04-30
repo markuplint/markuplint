@@ -39,9 +39,9 @@ export class MLCore {
 		this.#i18n = i18n;
 		this.#schemas = schemas;
 		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
-		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, filename);
-		this.#rules = rules;
 		this.#filename = filename;
+		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, this.#filename);
+		this.#rules = rules;
 	}
 
 	get document() {
