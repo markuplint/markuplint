@@ -82,7 +82,7 @@ export async function lintFile(
 	let document: Document<RuleConfigValue, unknown> | null = null;
 
 	try {
-		const core = new MLCore(parser, sourceCode, ruleset, rules, i18nSettings, schemas, parserOptions);
+		const core = new MLCore(parser, sourceCode, ruleset, rules, i18nSettings, schemas, parserOptions, file.path);
 		results = await core.verify(fix);
 		fixedCode = core.document.toString();
 		document = core.document;

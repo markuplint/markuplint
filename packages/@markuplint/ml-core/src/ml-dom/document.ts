@@ -42,7 +42,12 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	 * @param ast node list of markuplint AST
 	 * @param ruleset ruleset object
 	 */
-	constructor(ast: MLASTDocument, ruleset: Ruleset, schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
+	constructor(
+		ast: MLASTDocument,
+		ruleset: Ruleset,
+		schemas: readonly [MLMLSpec, ...ExtendedSpec[]],
+		readonly filename?: string,
+	) {
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
 		this.nodeList = Object.freeze(
 			ast.nodeList.map(astNode => {
