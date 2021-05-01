@@ -7,27 +7,118 @@ import util from 'util';
 
 const writeFile = util.promisify(fs.writeFile);
 
-const defaultRules = {
-	'attr-duplication': true,
-	'character-reference': true,
-	'deprecated-attr': true,
-	'deprecated-element': true,
-	doctype: true,
-	'id-duplication': true,
-	'permitted-contents': true,
-	'required-attr': true,
-	'invalid-attr': true,
-	'landmark-roles': true,
-	'required-h1': true,
-	'class-naming': false,
-	'attr-equal-space-after': true,
-	'attr-equal-space-before': true,
-	'attr-spacing': true,
-	'attr-value-quotes': true,
-	'case-sensitive-attr-name': true,
-	'case-sensitive-tag-name': true,
-	indentation: false,
-	'wai-aria': true,
+type Category = 'validation' | 'a11y' | 'naming-convention' | 'style';
+
+const ruleCategories: Record<
+	Category,
+	{
+		message: string;
+	}
+> = {
+	validation: {
+		message: 'Are you going to conformance check according to HTML standard?',
+	},
+	a11y: {
+		message: 'Are you going to do with accessibility better practices?',
+	},
+	'naming-convention': {
+		message: 'Are you going to set the convention about naming?',
+	},
+	style: {
+		message: 'Are you going to check for the code styles?',
+	},
+};
+
+const defaultRules: Record<
+	string,
+	{
+		category: Category;
+		default: boolean;
+		recommendedValue?: string | number | boolean;
+	}
+> = {
+	'attr-duplication': {
+		category: 'validation',
+		default: true,
+	},
+	'character-reference': {
+		category: 'validation',
+		default: true,
+	},
+	'deprecated-attr': {
+		category: 'validation',
+		default: true,
+	},
+	'deprecated-element': {
+		category: 'validation',
+		default: true,
+	},
+	doctype: {
+		category: 'validation',
+		default: true,
+	},
+	'id-duplication': {
+		category: 'validation',
+		default: true,
+	},
+	'permitted-contents': {
+		category: 'validation',
+		default: true,
+	},
+	'required-attr': {
+		category: 'validation',
+		default: true,
+	},
+	'invalid-attr': {
+		category: 'validation',
+		default: true,
+	},
+	'landmark-roles': {
+		category: 'a11y',
+		default: true,
+	},
+	'required-h1': {
+		category: 'a11y',
+		default: true,
+	},
+	'wai-aria': {
+		category: 'a11y',
+		default: true,
+	},
+	'class-naming': {
+		category: 'naming-convention',
+		default: false,
+		recommendedValue: '/.+/',
+	},
+	'attr-equal-space-after': {
+		category: 'style',
+		default: true,
+	},
+	'attr-equal-space-before': {
+		category: 'style',
+		default: true,
+	},
+	'attr-spacing': {
+		category: 'style',
+		default: true,
+	},
+	'attr-value-quotes': {
+		category: 'style',
+		default: true,
+	},
+	'case-sensitive-attr-name': {
+		category: 'style',
+		default: true,
+	},
+	'case-sensitive-tag-name': {
+		category: 'style',
+		default: true,
+	},
+	indentation: {
+		category: 'style',
+		default: false,
+		recommendedValue: 2,
+	},
 };
 
 const extRExp = {
@@ -109,9 +200,39 @@ export async function initialize() {
 	}
 
 	if (res.customize) {
-		// TODO: Customization
+		const ruleNames = Object.keys(defaultRules);
+		const categories = Object.keys(ruleCategories) as Category[];
+
+		const res = await prompt<Record<string, boolean>>(
+			categories.map(catName => {
+				const cat = ruleCategories[catName];
+				return {
+					message: cat.message,
+					name: catName,
+					type: 'confirm',
+				};
+			}),
+		);
+
+		for (const ruleName of ruleNames) {
+			const rule = defaultRules[ruleName];
+			if (!rule) {
+				continue;
+			}
+			if (res[rule.category]) {
+				if (!config.rules) {
+					config.rules = {};
+				}
+				config.rules[ruleName] = rule.recommendedValue || true;
+			}
+		}
 	} else {
-		config.rules = defaultRules;
+		config.rules = {};
+		const ruleNames = Object.keys(defaultRules);
+		for (const ruleName of ruleNames) {
+			const rule = defaultRules[ruleName];
+			config.rules[ruleName] = rule.default;
+		}
 	}
 
 	const filePath = path.resolve(process.cwd(), '.markuplintrc');
@@ -121,7 +242,11 @@ export async function initialize() {
 	if (res.autoInstall) {
 		write('Insatll automatically');
 
-		const modules = res.langs.map(lang => `@markuplint/${lang}-parser`);
+		const modules = ['markuplint', ...res.langs.map(lang => `@markuplint/${lang}-parser`)];
+
+		if (res.langs.includes('vue')) {
+			modules.push('@markuplint/vue-spec');
+		}
 
 		const result = await installModule(modules, true).catch(e => new Error(e));
 		if (result instanceof Error) {
