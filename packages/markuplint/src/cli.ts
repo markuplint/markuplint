@@ -21,8 +21,18 @@ import { initialize } from './initialize';
 	}
 
 	const stdin = await getStdin();
-	const files = stdin ? cli.input.concat(stdin) : cli.input;
+	if (stdin) {
+		await command({
+			codes: stdin,
+			...cli.flags,
+		}).catch(err => {
+			process.stderr.write(err + '\n');
+			process.exit(1);
+		});
+		process.exit(0);
+	}
 
+	const files = cli.input;
 	if (files.length) {
 		await command({
 			files,
@@ -31,10 +41,9 @@ import { initialize } from './initialize';
 			process.stderr.write(err + '\n');
 			process.exit(1);
 		});
-	} else {
-		cli.showHelp(1); // And fail.
-		return;
+		process.exit(0);
 	}
-})().finally(() => {
-	process.exit();
-});
+
+	cli.showHelp(1); // And fail.
+	process.exit(1);
+})();

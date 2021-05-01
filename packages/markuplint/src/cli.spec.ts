@@ -7,6 +7,7 @@ const entryFilePath = path.resolve(__dirname, '../bin/markuplint');
 describe('STDIN Test', () => {
 	it('empty', async () => {
 		const { stdout } = await execa(entryFilePath, [], {
+			stdin: 'ignore',
 			reject: false,
 		});
 		expect(stdout).toBe(cli.help);
