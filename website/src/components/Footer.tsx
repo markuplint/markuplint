@@ -19,7 +19,7 @@ export default memo(() => {
 					</li>
 				</ul>
 				<p>
-					<small>&copy; 2020 markuplint.</small>
+					<small>&copy; 2021 markuplint.</small>
 				</p>
 			</footer>
 			<style jsx>{`
