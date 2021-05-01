@@ -74,7 +74,7 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 
 This linter is inspired by:
 
--   [HTMLHint](http://htmlhint.com/)
+-   [HTMLHint](https://htmlhint.com/)
 -   [ESLint](https://eslint.org/)
 -   [stylelint](https://stylelint.io/)
 -   [textlint](https://textlint.github.io/)
