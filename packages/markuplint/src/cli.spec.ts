@@ -7,36 +7,38 @@ const entryFilePath = path.resolve(__dirname, '../bin/markuplint');
 describe('STDIN Test', () => {
 	it('empty', async () => {
 		const { stdout } = await execa(entryFilePath, [], {
+			stdin: 'ignore',
 			reject: false,
 		});
 		expect(stdout).toBe(cli.help);
 	});
 
 	it('version', async () => {
-		const { stdout } = await execa(entryFilePath, ['--version']);
+		const { stdout } = await execa(entryFilePath, ['--version'], { stdin: 'ignore' });
 		expect(stdout).toBe(cli.pkg.version);
 	});
 
 	it('version', async () => {
-		const { stdout } = await execa(entryFilePath, ['-v']);
+		const { stdout } = await execa(entryFilePath, ['-v'], { stdin: 'ignore' });
 		expect(stdout).toBe(cli.pkg.version);
 	});
 
 	it('version', async () => {
 		const { stdout } = await execa(entryFilePath, ['--help']);
-		const { stdout: stdoutShort } = await execa(entryFilePath, ['-h']);
+		const { stdout: stdoutShort } = await execa(entryFilePath, ['-h'], { stdin: 'ignore' });
 		expect(stdout).toBe(stdoutShort);
 	});
 
 	it('verify', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../test/fixture/001.html');
-		const { stdout } = await execa(entryFilePath, ['--no-color', targetFilePath]);
+		const { stdout } = await execa(entryFilePath, ['--no-color', targetFilePath], { stdin: 'ignore' });
 		expect(stdout).toBe(`<markuplint> passed ${targetFilePath}`);
 	});
 
 	it('verify and feilure', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../test/fixture/002.html');
 		const { stdout, stderr } = await execa(entryFilePath, ['--no-color', targetFilePath], {
+			stdin: 'ignore',
 			reject: false,
 		});
 		expect(stdout).toBe('');
@@ -45,7 +47,9 @@ describe('STDIN Test', () => {
 
 	it('format', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../test/fixture/001.html');
-		const { stdout } = await execa(entryFilePath, ['--format', 'JSON', targetFilePath]);
+		const { stdout } = await execa(entryFilePath, ['--format', 'JSON', targetFilePath], {
+			stdin: 'ignore',
+		});
 		expect(stdout).toBe('[]');
 	});
 });

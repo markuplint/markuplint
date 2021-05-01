@@ -13,6 +13,8 @@ Options
 	--problem-only, -p            Output only problems, without passeds.
 	--verbose                     Output with detailed information.
 
+	--init                        Initialize settings interactively.
+
 	--help,         -h            Show help.
 	--version,      -v            Show version.
 
@@ -23,6 +25,9 @@ Examples
 
 export const cli = meow(help, {
 	flags: {
+		init: {
+			type: 'boolean',
+		},
 		configFile: {
 			type: 'string',
 			alias: 'c',
