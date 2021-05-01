@@ -84,7 +84,12 @@ export function nodeListToDebugMaps(nodeList: MLASTNode[]) {
 
 export function attributesToDebugMaps(attributes: MLASTAttr[]) {
 	return attributes.map(n => {
-		const r = [tokenDebug(n)];
+		const r = [
+			tokenDebug({
+				...n,
+				name: n.type === 'html-attr' ? n.name.raw : n.raw,
+			}),
+		];
 		if (n.type === 'html-attr') {
 			r.push(`  ${tokenDebug(n.spacesBeforeName, 'bN')}`);
 			r.push(`  ${tokenDebug(n.name, 'name')}`);
@@ -124,13 +129,14 @@ function tokenDebug<
 		startCol: number;
 		endCol: number;
 		nodeName?: string;
+		name?: string;
 		potentialName?: string;
 		type?: string;
 		raw: string;
 	}
 >(n: N, type = '') {
 	return `[${n.startLine}:${n.startCol}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${
-		n.nodeName || n.potentialName || n.type || type
+		n.nodeName || n.potentialName || n.name || n.type || type
 	}: ${visibleWhiteSpace(n.raw)}`;
 }
 
