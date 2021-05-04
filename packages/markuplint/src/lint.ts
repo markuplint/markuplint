@@ -58,8 +58,19 @@ export async function lint(options: {
 	 * Locale
 	 */
 	locale?: string;
+
+	/**
+	 * Confirm the extension of the target file to the regexp of parser plugins.
+	 * It doesn't run the linting if it doesn't match.
+	 * If you don't set a parser plugin and the target file is HTML, It confirms the regexp as `/\.html?$/i`.
+	 * Default is false.
+	 *
+	 * @default false
+	 */
+	extMatch?: boolean;
 }) {
 	const rulesAutoResolve = options.rulesAutoResolve ?? true;
+	const extMatch = options.extMatch ?? false;
 
 	const files = await resolveLintTargetFiles(options);
 	const configs = await resolveConfigs(files, options);
@@ -68,8 +79,10 @@ export async function lint(options: {
 	const totalResults: MLResultInfo[] = [];
 
 	for (const file of files) {
-		const result = await lintFile(file, configs, rulesAutoResolve, rules, options.locale, options.fix);
-		totalResults.push(result);
+		const result = await lintFile(file, configs, rulesAutoResolve, rules, options.locale, options.fix, extMatch);
+		if (result) {
+			totalResults.push(result);
+		}
 	}
 
 	return totalResults;

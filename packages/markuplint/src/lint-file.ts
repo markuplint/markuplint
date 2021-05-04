@@ -15,9 +15,10 @@ export async function lintFile(
 	configs: Map<MLFile, ConfigSet>,
 	rulesAutoResolve: boolean,
 	rules: MLRule<RuleConfigValue, unknown>[],
-	locale?: string,
-	fix?: boolean,
-): Promise<MLResultInfo> {
+	locale: string | undefined,
+	fix: boolean | undefined,
+	extMatch: boolean,
+): Promise<MLResultInfo | null> {
 	const configSet: ConfigSet = configs.get(file) || {
 		config: {},
 		files: new Set(),
@@ -26,15 +27,22 @@ export async function lintFile(
 
 	// Get parser
 	let parserModName = '@markuplint/html-parser';
+	let matched = false;
 	if (configSet.config.parser) {
 		for (const pattern of Object.keys(configSet.config.parser)) {
 			if (path.basename(file.path).match(toRegxp(pattern))) {
 				parserModName = configSet.config.parser[pattern];
+				matched = true;
 			}
 		}
 	}
 	const parser: MLMarkupLanguageParser = await import(parserModName);
 	const parserOptions = configSet.config.parserOptions || {};
+
+	// Ext Matching
+	if (extMatch && !matched && !path.basename(file.path).match(/\.html?$/i)) {
+		return null;
+	}
 
 	// Resolve ruleset
 	const ruleset = convertRuleset(configSet.config);
