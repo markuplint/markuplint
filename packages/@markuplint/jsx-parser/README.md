@@ -27,6 +27,10 @@ Add `parser` option into your `.markuplintrc.*` file.
 }
 ```
 
+### Unsupported rule
+
+-   [`indentation`](https://markuplint.dev/rules/indentation)
+
 ## Contributing
 
 ```
