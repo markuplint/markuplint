@@ -190,6 +190,28 @@ describe('parse', () => {
 		]);
 	});
 
+	it('Code 7', () => {
+		const ast = parse(`export default function () { return <div>default</div>; }
+export function fn () { return <div>fn</div>; }
+export const v = <div>v</div>;
+export class C { render () { return <div>C</div>; } }`);
+		const maps = nodeListToDebugMaps(ast.nodeList);
+		expect(maps).toStrictEqual([
+			'[1:37]>[1:42](36,41)div: <div>',
+			'[1:42]>[1:49](41,48)#text: default',
+			'[1:49]>[1:55](48,54)div: </div>',
+			'[2:32]>[2:37](89,94)div: <div>',
+			'[2:37]>[2:39](94,96)#text: fn',
+			'[2:39]>[2:45](96,102)div: </div>',
+			'[3:18]>[3:23](123,128)div: <div>',
+			'[3:23]>[3:24](128,129)#text: v',
+			'[3:24]>[3:30](129,135)div: </div>',
+			'[4:37]>[4:42](173,178)div: <div>',
+			'[4:42]>[4:43](178,179)#text: C',
+			'[4:43]>[4:49](179,185)div: </div>',
+		]);
+	});
+
 	it('Attribute', () => {
 		const ast = parse(
 			'<Component className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" theProp={variable} />',

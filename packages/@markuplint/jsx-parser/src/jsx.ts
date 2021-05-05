@@ -102,92 +102,94 @@ function recursiveSearchJSXElements(
 ) {
 	const jsxList: (JSXElement | JSXFragment)[] = [];
 	for (const node of tree) {
-		if (node.type === AST_NODE_TYPES.JSXElement) {
-			jsxList.push(node);
-			jsxList.push(...recursiveSearchJSXElements(node.children));
-			if (node.openingElement) {
-				let hasSpreadAttr = false;
-				const expressions = node.openingElement.attributes
-					.map(attr => {
-						if (
-							attr.type === AST_NODE_TYPES.JSXAttribute &&
-							attr.value?.type === AST_NODE_TYPES.JSXExpressionContainer
-						) {
-							return attr.value;
-						}
-						if (attr.type === AST_NODE_TYPES.JSXSpreadAttribute) {
-							hasSpreadAttr = true;
-						}
-					})
-					.filter((e): e is JSXExpressionContainer => !!e);
-				jsxList.push(...recursiveSearchJSXElements(expressions));
-				if (hasSpreadAttr) {
-					(node as JSXElementHasSpreadAttribute).__hasSpreadAttribute = true;
+		switch (node.type) {
+			case AST_NODE_TYPES.JSXElement: {
+				jsxList.push(node);
+				jsxList.push(...recursiveSearchJSXElements(node.children));
+				if (node.openingElement) {
+					let hasSpreadAttr = false;
+					const expressions = node.openingElement.attributes
+						.map(attr => {
+							if (
+								attr.type === AST_NODE_TYPES.JSXAttribute &&
+								attr.value?.type === AST_NODE_TYPES.JSXExpressionContainer
+							) {
+								return attr.value;
+							}
+							if (attr.type === AST_NODE_TYPES.JSXSpreadAttribute) {
+								hasSpreadAttr = true;
+							}
+						})
+						.filter((e): e is JSXExpressionContainer => !!e);
+					jsxList.push(...recursiveSearchJSXElements(expressions));
+					if (hasSpreadAttr) {
+						(node as JSXElementHasSpreadAttribute).__hasSpreadAttribute = true;
+					}
 				}
+				continue;
 			}
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.JSXFragment) {
-			jsxList.push(node);
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.VariableDeclarator && node.init) {
-			jsxList.push(...recursiveSearchJSXElements([node.init]));
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.VariableDeclaration) {
-			jsxList.push(...recursiveSearchJSXElements(node.declarations));
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.ObjectExpression) {
-			jsxList.push(...recursiveSearchJSXElements(node.properties));
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.Property) {
-			jsxList.push(...recursiveSearchJSXElements([node.value]));
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.FunctionExpression) {
-			jsxList.push(...recursiveSearchJSXElements([node.body]));
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.ArrowFunctionExpression) {
-			jsxList.push(...recursiveSearchJSXElements([node.body]));
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.BlockStatement) {
-			jsxList.push(...recursiveSearchJSXElements(node.body));
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.ReturnStatement) {
-			if (node.argument) {
-				jsxList.push(...recursiveSearchJSXElements([node.argument]));
+			case AST_NODE_TYPES.JSXFragment: {
+				jsxList.push(node);
+				continue;
 			}
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.JSXExpressionContainer) {
-			jsxList.push(...recursiveSearchJSXElements([node.expression]));
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.ExpressionStatement) {
-			jsxList.push(...recursiveSearchJSXElements([node.expression]));
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.CallExpression) {
-			jsxList.push(...recursiveSearchJSXElements(node.arguments));
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.ClassDeclaration) {
-			jsxList.push(...recursiveSearchJSXElements(node.body.body));
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.ClassProperty && node.value) {
-			jsxList.push(...recursiveSearchJSXElements([node.value]));
-			continue;
-		}
-		if (node.type === AST_NODE_TYPES.MethodDefinition) {
-			jsxList.push(...recursiveSearchJSXElements([node.value]));
-			continue;
+			case AST_NODE_TYPES.VariableDeclarator: {
+				if (node.init) {
+					jsxList.push(...recursiveSearchJSXElements([node.init]));
+				}
+				continue;
+			}
+			case AST_NODE_TYPES.VariableDeclaration: {
+				jsxList.push(...recursiveSearchJSXElements(node.declarations));
+				continue;
+			}
+			case AST_NODE_TYPES.FunctionDeclaration:
+			case AST_NODE_TYPES.FunctionExpression:
+			case AST_NODE_TYPES.ArrowFunctionExpression: {
+				jsxList.push(...recursiveSearchJSXElements([node.body]));
+				continue;
+			}
+			case AST_NODE_TYPES.ExportDefaultDeclaration:
+			case AST_NODE_TYPES.ExportNamedDeclaration: {
+				if (node.declaration) {
+					jsxList.push(...recursiveSearchJSXElements([node.declaration]));
+				}
+				continue;
+			}
+			case AST_NODE_TYPES.ObjectExpression: {
+				jsxList.push(...recursiveSearchJSXElements(node.properties));
+				continue;
+			}
+			case AST_NODE_TYPES.BlockStatement: {
+				jsxList.push(...recursiveSearchJSXElements(node.body));
+				continue;
+			}
+			case AST_NODE_TYPES.ReturnStatement: {
+				if (node.argument) {
+					jsxList.push(...recursiveSearchJSXElements([node.argument]));
+				}
+				continue;
+			}
+			case AST_NODE_TYPES.JSXExpressionContainer:
+			case AST_NODE_TYPES.ExpressionStatement: {
+				jsxList.push(...recursiveSearchJSXElements([node.expression]));
+				continue;
+			}
+			case AST_NODE_TYPES.CallExpression: {
+				jsxList.push(...recursiveSearchJSXElements(node.arguments));
+				continue;
+			}
+			case AST_NODE_TYPES.ClassDeclaration: {
+				jsxList.push(...recursiveSearchJSXElements(node.body.body));
+				continue;
+			}
+			case AST_NODE_TYPES.Property:
+			case AST_NODE_TYPES.ClassProperty:
+			case AST_NODE_TYPES.MethodDefinition: {
+				if (node.value) {
+					jsxList.push(...recursiveSearchJSXElements([node.value]));
+				}
+				continue;
+			}
 		}
 		// console.log(node);
 	}
