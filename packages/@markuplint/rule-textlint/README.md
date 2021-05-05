@@ -57,4 +57,4 @@ $ yarn test
 
 ---
 
-Copyright &copy; 2020 markuplint. Under the MIT License.
+Copyright &copy; 2021 markuplint. Under the MIT License.

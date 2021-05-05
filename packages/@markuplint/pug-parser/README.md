@@ -20,9 +20,8 @@ Add `parser` option into your `.markuplintrc.*` file.
 
 ```json
 {
-	"extends": "@markuplint/html-spec",
 	"parser": {
-		".{pug,jade}$": "@markuplint/pug-parser"
+		".(?:pug|jade)$": "@markuplint/pug-parser"
 	}
 }
 ```
@@ -38,4 +37,4 @@ $ yarn test
 
 ---
 
-Copyright &copy; 2020 markuplint. Under the MIT License.
+Copyright &copy; 2021 markuplint. Under the MIT License.

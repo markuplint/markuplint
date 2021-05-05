@@ -20,7 +20,6 @@ Add `parser` option into your `.markuplintrc.*` file.
 
 ```json
 {
-	"extends": "@markuplint/html-spec",
 	"parser": {
 		".[jt]sx?$": "@markuplint/jsx-parser"
 	}
