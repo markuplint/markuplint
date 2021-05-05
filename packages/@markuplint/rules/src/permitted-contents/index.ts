@@ -30,7 +30,7 @@ export default createRule<TagRule[], Options>({
 			}
 
 			const childNodes = node.getChildElementsAndTextNodeWithoutWhitespaces();
-			const spec = htmlSpec(node.nodeName)?.permittedStructures;
+			const spec = !node.isCustomElement && htmlSpec(node.nodeName)?.permittedStructures;
 
 			const expGen = new ExpGenerator(idCounter++);
 
@@ -65,7 +65,7 @@ export default createRule<TagRule[], Options>({
 							try {
 								const parentExp = getRegExpFromParentNode(node, expGen);
 								const exp = expGen.specToRegExp(conditional.contents, parentExp);
-								const conditionalResult = match(exp, childNodes);
+								const conditionalResult = match(exp, childNodes, false);
 								if (!conditionalResult) {
 									reports.push({
 										severity: node.rule.severity,
@@ -91,7 +91,7 @@ export default createRule<TagRule[], Options>({
 				if (!matched) {
 					try {
 						const exp = getRegExpFromNode(node, expGen);
-						const specResult = match(exp, childNodes);
+						const specResult = match(exp, childNodes, false);
 
 						if (!specResult) {
 							reports.push({
@@ -121,7 +121,8 @@ export default createRule<TagRule[], Options>({
 				const parentExp = getRegExpFromParentNode(node, expGen);
 				try {
 					const exp = expGen.specToRegExp(rule.contents, parentExp);
-					const r = match(exp, childNodes);
+					// Evaluate the custom element if the optional schema.
+					const r = match(exp, childNodes, node.isCustomElement);
 
 					if (!r) {
 						reports.push({
@@ -147,8 +148,15 @@ export default createRule<TagRule[], Options>({
 
 type TargetNodes = ReturnType<Element<TagRule[], Options>['getChildElementsAndTextNodeWithoutWhitespaces']>;
 
-function normalization(nodes: TargetNodes) {
-	return nodes.map(node => `<${node.type === 'Element' ? node.nodeName : '#text'}>`).join('');
+function normalization(nodes: TargetNodes, evalCustomElement: boolean) {
+	return nodes
+		.map(node => {
+			if (!evalCustomElement && node.type === 'Element' && node.isCustomElement) {
+				return '';
+			}
+			return `<${node.type === 'Element' ? node.nodeName : '#text'}>`;
+		})
+		.join('');
 }
 
 type El = {
@@ -177,8 +185,8 @@ function getRegExpFromParentNode(node: El, expGen: ExpGenerator) {
 	return parentExp;
 }
 
-function match(exp: RegExp, childNodes: TargetNodes) {
-	const target = normalization(childNodes);
+function match(exp: RegExp, childNodes: TargetNodes, evalCustomElement: boolean) {
+	const target = normalization(childNodes, evalCustomElement);
 	const result = exp.exec(target);
 	if (!result) {
 		return false;
@@ -188,102 +196,102 @@ function match(exp: RegExp, childNodes: TargetNodes) {
 	if (!capGroups) {
 		return true;
 	}
-		const groupNames = Object.keys(capGroups);
-		for (const groupName of groupNames) {
-			const matched = capGroups[groupName];
-			if (!matched) {
-				continue;
+	const groupNames = Object.keys(capGroups);
+	for (const groupName of groupNames) {
+		const matched = capGroups[groupName];
+		if (!matched) {
+			continue;
+		}
+		const [type, , ..._selector] = groupName.split(/(?<=[a-z0-9])_/gi);
+		// console.log({ type, _selector });
+		switch (type) {
+			case 'ACM': {
+				const [model, tag] = _selector;
+				const selectors = unfoldContentModelsToTags(`#${model}` as ContentModel).filter(selector => {
+					const [, tagName] = /^([^[\]]+)(?:\[[^\]]+\])?$/.exec(selector) || [];
+					return tagName.toLowerCase() === tag.toLowerCase();
+				});
+				for (const node of childNodes) {
+					if (node.type === 'Text') {
+						continue;
+					}
+					if (node.nodeName.toLowerCase() !== tag.toLowerCase()) {
+						continue;
+					}
+					for (const selector of selectors) {
+						const matched = node.matches(selector);
+						// console.log({ raw: node.raw, selector, matched });
+						if (matched) {
+							return true;
+						}
+					}
+					return false;
+				}
+				break;
 			}
-			const [type, , ..._selector] = groupName.split(/(?<=[a-z0-9])_/gi);
-			// console.log({ type, _selector });
-			switch (type) {
-				case 'ACM': {
-					const [model, tag] = _selector;
-					const selectors = unfoldContentModelsToTags(`#${model}` as ContentModel).filter(selector => {
-						const [, tagName] = /^([^[\]]+)(?:\[[^\]]+\])?$/.exec(selector) || [];
-						return tagName.toLowerCase() === tag.toLowerCase();
-					});
-					for (const node of childNodes) {
+			case 'NAD': {
+				let targetsMaybeIncludesNotAllowedDescendants = Array.from(
+					new Set(matched.split(/><|<|>/g).filter(_ => _)),
+				);
+				const contents: Set<string> = new Set();
+				const transparentGroupName = groupNames.find(name => /^TRANSPARENT_[0-9]+$/.test(name));
+				const inTransparent = _selector.includes('__InTRANSPARENT')
+					? transparentGroupName && capGroups[transparentGroupName]
+						? capGroups[transparentGroupName].split(/><|<|>/g).filter(_ => _)
+						: null
+					: null;
+				_selector.forEach(content => {
+					if (content[0] === '_') {
+						unfoldContentModelsToTags(content.replace('_', '#') as ContentModel).forEach(tag =>
+							contents.add(tag),
+						);
+						return;
+					}
+					contents.add(content);
+				});
+				const selectors = Array.from(contents);
+				targetsMaybeIncludesNotAllowedDescendants = targetsMaybeIncludesNotAllowedDescendants.filter(content =>
+					inTransparent ? inTransparent.includes(content) : true,
+				);
+				// console.log({
+				// 	groupName,
+				// 	matched,
+				// 	_selector,
+				// 	type,
+				// 	selectors,
+				// 	inTransparent,
+				// 	targetsMaybeIncludesNotAllowedDescendants,
+				// });
+				for (const node of childNodes) {
+					for (const target of targetsMaybeIncludesNotAllowedDescendants) {
 						if (node.type === 'Text') {
+							if (selectors.includes('#text')) {
+								return false;
+							}
 							continue;
 						}
-						if (node.nodeName.toLowerCase() !== tag.toLowerCase()) {
+						if (node.nodeName.toLowerCase() !== target.toLowerCase()) {
 							continue;
 						}
 						for (const selector of selectors) {
-							const matched = node.matches(selector);
-							// console.log({ raw: node.raw, selector, matched });
-							if (matched) {
-								return true;
-							}
-						}
-						return false;
-					}
-					break;
-				}
-				case 'NAD': {
-					let targetsMaybeIncludesNotAllowedDescendants = Array.from(
-						new Set(matched.split(/><|<|>/g).filter(_ => _)),
-					);
-					const contents: Set<string> = new Set();
-					const transparentGroupName = groupNames.find(name => /^TRANSPARENT_[0-9]+$/.test(name));
-					const inTransparent = _selector.includes('__InTRANSPARENT')
-						? transparentGroupName && capGroups[transparentGroupName]
-							? capGroups[transparentGroupName].split(/><|<|>/g).filter(_ => _)
-							: null
-						: null;
-					_selector.forEach(content => {
-						if (content[0] === '_') {
-							unfoldContentModelsToTags(content.replace('_', '#') as ContentModel).forEach(tag =>
-								contents.add(tag),
-							);
-							return;
-						}
-						contents.add(content);
-					});
-					const selectors = Array.from(contents);
-				targetsMaybeIncludesNotAllowedDescendants = targetsMaybeIncludesNotAllowedDescendants.filter(content =>
-					inTransparent ? inTransparent.includes(content) : true,
-					);
-					// console.log({
-					// 	groupName,
-					// 	matched,
-					// 	_selector,
-					// 	type,
-					// 	selectors,
-					// 	inTransparent,
-					// 	targetsMaybeIncludesNotAllowedDescendants,
-					// });
-					for (const node of childNodes) {
-						for (const target of targetsMaybeIncludesNotAllowedDescendants) {
-							if (node.type === 'Text') {
-								if (selectors.includes('#text')) {
-									return false;
-								}
-								continue;
-							}
-							if (node.nodeName.toLowerCase() !== target.toLowerCase()) {
-								continue;
-							}
-							for (const selector of selectors) {
-								// console.log({ selector, target });
+							// console.log({ selector, target });
 
-								// Self
-								if (node.matches(selector)) {
-									return false;
-								}
+							// Self
+							if (node.matches(selector)) {
+								return false;
+							}
 
-								// Descendants
-								const nodeList = node.querySelectorAll(selector);
-								if (nodeList.length) {
-									return false;
-								}
+							// Descendants
+							const nodeList = node.querySelectorAll(selector);
+							if (nodeList.length) {
+								return false;
 							}
 						}
 					}
-					break;
 				}
+				break;
 			}
 		}
+	}
 	return true;
 }

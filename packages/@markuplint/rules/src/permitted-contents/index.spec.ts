@@ -683,4 +683,15 @@ describe('React', () => {
 
 		expect(await markuplint.verify('<A><button></button></A>', jsxRuleOn, [rule], 'en')).toStrictEqual([]);
 	});
+
+	test('Components', async () => {
+		expect(
+			await markuplint.verify(
+				'<Html><Head /><body><p><Link href="path/to">SPA Link</Link></p></body></Html>',
+				jsxRuleOn,
+				[rule],
+				'en',
+			),
+		).toStrictEqual([]);
+	});
 });
