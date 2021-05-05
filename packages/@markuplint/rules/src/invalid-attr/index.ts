@@ -89,7 +89,13 @@ export default createRule<true, Option>({
 				} else if (!node.isCustomElement && attributeSpecs) {
 					const spec = attributeSpecs.find(s => s.name === name);
 					invalid = typeCheck(name, value, false, spec);
-					if (!invalid && spec && !attrMatches(node, spec.condition)) {
+					if (
+						!invalid &&
+						spec &&
+						spec.condition &&
+						!node.hasSpreadAttr &&
+						!attrMatches(node, spec.condition)
+					) {
 						invalid = {
 							invalidType: 'non-existent',
 							message: `The "${name}" attribute is not allowed`,

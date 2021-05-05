@@ -87,3 +87,13 @@ Example configuration that `alt` attribute must be required on `<img>` element:
 	]
 }
 ```
+
+## Note
+
+This rule doesn't evaluate the element that has the **spread attribute**. In the below code, it doesn't evaluate whether the `img` element includes the `src` attribute. Because markuplint can't know whether the spread attribute includes the `src` property.
+
+```jsx
+const Component = (props) => {
+	return <img {...props}>;
+}
+```

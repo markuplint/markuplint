@@ -613,3 +613,123 @@ test('React HTML', async () => {
 		},
 	]);
 });
+
+test('React', async () => {
+	const r = await markuplint.verify(
+		'<a href={href} target={target} invalidAttr={invalidAttr} />',
+		{
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: 'The "invalidAttr" attribute is not allowed',
+			raw: 'invalidAttr',
+		},
+	]);
+});
+
+test('React with spread attribute', async () => {
+	expect(
+		await markuplint.verify(
+			'<a target="_blank" />',
+			{
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rules: {
+					'invalid-attr': true,
+				},
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 4,
+			message: 'The "target" attribute is not allowed',
+			raw: 'target',
+		},
+	]);
+
+	expect(
+		await markuplint.verify(
+			'<a {...props} target="_blank" />',
+			{
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rules: {
+					'invalid-attr': true,
+				},
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([]);
+
+	expect(
+		await markuplint.verify(
+			'<img invalid />',
+			{
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rules: {
+					'invalid-attr': true,
+				},
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "invalid" attribute is not allowed',
+			raw: 'invalid',
+		},
+	]);
+
+	expect(
+		await markuplint.verify(
+			'<img {...props} invalid />',
+			{
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rules: {
+					'invalid-attr': true,
+				},
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 17,
+			message: 'The "invalid" attribute is not allowed',
+			raw: 'invalid',
+		},
+	]);
+});

@@ -316,3 +316,48 @@ test('Vue', async () => {
 		).length,
 	).toBe(0);
 });
+
+test('React', async () => {
+	expect(
+		await markuplint.verify(
+			'<img alt={alt} />',
+			{
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rules: {
+					'required-attr': true,
+				},
+				nodeRules: [],
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([
+		{
+			ruleId: 'required-attr',
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: "Required 'src' on '<img>'",
+			raw: '<img alt={alt} />',
+		},
+	]);
+
+	expect(
+		await markuplint.verify(
+			'<img {...props} />',
+			{
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rules: {
+					'required-attr': true,
+				},
+				nodeRules: [],
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([]);
+});

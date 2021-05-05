@@ -12,6 +12,10 @@ export default createRule<RequiredAttributes, null>({
 		const reports: Result[] = [];
 		const spec = getSpec(document.schemas);
 		await document.walkOn('Element', async node => {
+			if (node.hasSpreadAttr) {
+				return;
+			}
+
 			const customRequiredAttrs = typeof node.rule.value === 'string' ? [node.rule.value] : node.rule.value;
 
 			const attrSpec = attrSpecs(node.nodeName, spec);
