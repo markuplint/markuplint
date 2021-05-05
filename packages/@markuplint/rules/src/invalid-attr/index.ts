@@ -123,7 +123,7 @@ export default createRule<true, Option>({
 								message: invalid.message,
 								line: attrName.line,
 								col: attrName.col,
-								raw: name,
+								raw: attrName.raw,
 							});
 						}
 					}
