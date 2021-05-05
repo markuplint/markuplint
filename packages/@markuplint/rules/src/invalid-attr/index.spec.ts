@@ -551,3 +551,65 @@ test('Vue iterator', async () => {
 	expect(r1.length).toBe(1);
 	expect(r2.length).toBe(0);
 });
+
+test('React Component', async () => {
+	const r = await markuplint.verify(
+		'<Component className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
+		{
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 42,
+			message: 'The "tabindex" attribute is not allowed. Did you mean "tabIndex"?',
+			raw: 'tabindex',
+		},
+	]);
+});
+
+test('React HTML', async () => {
+	const r = await markuplint.verify(
+		'<img className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
+		{
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 36,
+			message: 'The "tabindex" attribute is not allowed. Did you mean "tabIndex"?',
+			raw: 'tabindex',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 71,
+			message: 'The "for" attribute is not allowed',
+			raw: 'htmlFor',
+		},
+	]);
+});
