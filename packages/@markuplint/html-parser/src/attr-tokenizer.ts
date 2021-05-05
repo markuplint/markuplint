@@ -64,9 +64,6 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 	offset = value.endOffset;
 
 	const endQuote = tokenizer(quoteChars, line, col, offset);
-	line = endQuote.endLine;
-	col = endQuote.endCol;
-	offset = endQuote.endOffset;
 
 	return {
 		type: 'html-attr',

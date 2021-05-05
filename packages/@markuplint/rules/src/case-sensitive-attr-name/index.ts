@@ -15,7 +15,6 @@ export default createRule<Value, null>({
 			const cases = node.rule.value === 'no-upper' ? 'lower' : 'upper';
 			const message = translate(`{0} of {1} ${ms} be {2}`, 'Attribute name', 'HTML elements', `${cases}case`);
 			if (node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
-				if (node.attributes) {
 					for (const attr of node.attributes) {
 						if (attr.attrType === 'ps-attr') {
 							continue;
@@ -32,7 +31,6 @@ export default createRule<Value, null>({
 						}
 					}
 				}
-			}
 		});
 		return reports;
 	},
