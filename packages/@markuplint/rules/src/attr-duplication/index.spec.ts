@@ -115,3 +115,48 @@ test('nodeRules disable', async () => {
 
 	expect(r.length).toStrictEqual(0);
 });
+
+test('Vue', async () => {
+	const r = await markuplint.verify(
+		'<template><div attr v-bind:attr /></template>',
+		{
+			rules: {
+				'attr-duplication': true,
+			},
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r).toStrictEqual([
+		{
+			ruleId: 'attr-duplication',
+			severity: 'error',
+			line: 1,
+			col: 21,
+			message: 'Duplicate attribute name',
+			raw: 'v-bind:attr',
+		},
+	]);
+});
+
+test('React', async () => {
+	const r = await markuplint.verify(
+		'<div tabindex tabIndex />',
+		{
+			rules: {
+				'attr-duplication': true,
+			},
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r).toStrictEqual([]);
+});
