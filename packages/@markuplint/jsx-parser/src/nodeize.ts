@@ -7,7 +7,7 @@ import {
 	MLASTTag,
 	MLASTText,
 } from '@markuplint/ml-ast';
-import { sliceFragment, uuid } from '@markuplint/parser-utils';
+import { isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
 import { attr } from './attr';
 import { parseRawTag } from '@markuplint/html-parser';
 import { traverse } from './traverse';
@@ -63,6 +63,7 @@ export function nodeize(
 				const endTagRaw = endTagLocation.raw;
 				const endTagStartOffset = endTagLocation.startOffset;
 				const endTagEndOffset = endTagLocation.endOffset;
+				const nodeName = getName(originNode.closingElement.name);
 				endTag = {
 					uuid: uuid(),
 					raw: endTagRaw,
@@ -72,7 +73,7 @@ export function nodeize(
 					endLine: endTagLocation.endLine,
 					startCol: endTagLocation.startCol,
 					endCol: endTagLocation.endCol,
-					nodeName: getName(originNode.closingElement.name),
+					nodeName,
 					type: MLASTNodeType.EndTag,
 					namespace: 'http://www.w3.org/1999/xhtml',
 					attributes: [],
@@ -84,6 +85,7 @@ export function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
+					isCustomElement: isJSXComponentName(nodeName),
 				};
 			}
 
@@ -94,11 +96,12 @@ export function nodeize(
 				startTagLocation.startCol,
 				startTagLocation.startOffset,
 			);
+			const nodeName = getName(originNode.openingElement.name);
 
 			const startTag: MLASTTag = {
 				uuid: uuid(),
 				...startTagLocation,
-				nodeName: getName(originNode.openingElement.name),
+				nodeName,
 				type: MLASTNodeType.StartTag,
 				namespace: 'http://www.w3.org/1999/xhtml',
 				attributes: attrs.map(a => attr(a, rawHtml)),
@@ -113,6 +116,7 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
+				isCustomElement: isJSXComponentName(nodeName),
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
@@ -162,6 +166,7 @@ export function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
+					isCustomElement: true,
 				};
 			}
 
@@ -181,6 +186,7 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
+				isCustomElement: true,
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
@@ -220,4 +226,8 @@ export function nodeize(
 			};
 		}
 	}
+}
+
+function isJSXComponentName(name: string) {
+	return isPotentialCustomElementName(name) || /[A-Z]|\./.test(name);
 }

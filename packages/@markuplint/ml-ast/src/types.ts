@@ -48,6 +48,7 @@ export interface MLASTElement extends MLASTAbstructNode {
 	endSpace?: MLToken;
 	tagOpenChar: string;
 	tagCloseChar: string;
+	isCustomElement: boolean;
 }
 
 export interface MLASTElementCloseTag extends MLASTAbstructNode {
@@ -58,12 +59,14 @@ export interface MLASTElementCloseTag extends MLASTAbstructNode {
 	pearNode: MLASTTag | null;
 	tagOpenChar: string;
 	tagCloseChar: string;
+	isCustomElement: boolean;
 }
 
 export interface MLASTOmittedElement extends MLASTAbstructNode {
 	type: MLASTNodeType.OmittedTag;
 	namespace: string;
 	childNodes?: MLASTNode[];
+	isCustomElement: boolean;
 }
 
 export interface MLASTPreprocessorSpecificBlock extends MLASTAbstructNode {

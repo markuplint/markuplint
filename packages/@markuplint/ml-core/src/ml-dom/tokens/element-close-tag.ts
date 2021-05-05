@@ -13,6 +13,7 @@ export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 	readonly nodeName: string;
 	readonly startTag: MLDOMElement<T, O>;
 	readonly isForeignElement: boolean;
+	readonly isCustomElement: boolean;
 
 	readonly #tagOpenChar: string;
 	// readonly #tagCloseChar: string;
@@ -25,6 +26,7 @@ export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 		this.#fixedNodeName = astNode.nodeName;
 		this.startTag = startTag;
 		this.isForeignElement = startTag.isForeignElement;
+		this.isCustomElement = astNode.isCustomElement;
 
 		this.#tagOpenChar = astNode.tagOpenChar;
 		// this.#tagCloseChar = astNode.tagCloseChar;

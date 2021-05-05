@@ -8,7 +8,7 @@ import {
 	MLASTText,
 } from '@markuplint/ml-ast';
 import { SvelteDirective, SvelteNode } from './svelte-parser';
-import { sliceFragment, uuid } from '@markuplint/parser-utils';
+import { isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
 import { attr } from './attr';
 import { parseRawTag } from '@markuplint/html-parser';
 import { traverse } from './traverse';
@@ -105,6 +105,7 @@ export function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
+					isCustomElement: isSvelteComponentName(originNode.name),
 				};
 			}
 
@@ -133,6 +134,7 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
+				isCustomElement: isSvelteComponentName(originNode.name),
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
@@ -375,4 +377,8 @@ function solveCtrlBlock(
 	}
 
 	return tags;
+}
+
+function isSvelteComponentName(name: string) {
+	return isPotentialCustomElementName(name) || /[A-Z]|\./.test(name);
 }

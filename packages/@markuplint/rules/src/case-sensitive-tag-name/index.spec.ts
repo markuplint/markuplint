@@ -140,7 +140,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r[0].message).toBe('Tag name of HTML elements should be lowercase');
+		expect(r.length).toBe(0);
 	});
 });
 

@@ -11,7 +11,7 @@ export default createRule<Value, null>({
 		const reports: Result[] = [];
 		await document.walk(async node => {
 			if ('fixNodeName' in node) {
-				if (node.isForeignElement) {
+				if (node.isForeignElement || node.isCustomElement) {
 					return;
 				}
 				const ms = node.rule.severity === 'error' ? 'must' : 'should';
@@ -39,7 +39,7 @@ export default createRule<Value, null>({
 	async fix(document) {
 		await document.walk(async node => {
 			if ('fixNodeName' in node) {
-				if (node.isForeignElement) {
+				if (node.isForeignElement || node.isCustomElement) {
 					return;
 				}
 				const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;

@@ -23,6 +23,7 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null>
 	readonly ownModels: Set<ContentModel> = new Set();
 	readonly childModels: Set<ContentModel> = new Set();
 	readonly descendantModels: Set<ContentModel> = new Set();
+	readonly isCustomElement: boolean;
 
 	readonly #tagOpenChar: string;
 	readonly #tagCloseChar: string;
@@ -41,6 +42,7 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null>
 		this.namespaceURI = astNode.namespace;
 		this.isForeignElement = this.namespaceURI !== 'http://www.w3.org/1999/xhtml';
 		this.closeTag = astNode.pearNode ? createNode(astNode.pearNode, document, this) : null;
+		this.isCustomElement = astNode.isCustomElement;
 
 		this.#tagOpenChar = astNode.tagOpenChar;
 		this.#tagCloseChar = astNode.tagCloseChar;

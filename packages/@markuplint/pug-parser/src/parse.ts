@@ -9,7 +9,7 @@ import {
 	Parse,
 } from '@markuplint/ml-ast';
 import { parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
-import { ignoreFrontMatter, tokenizer, uuid, walk } from '@markuplint/parser-utils';
+import { ignoreFrontMatter, isPotentialCustomElementName, tokenizer, uuid, walk } from '@markuplint/parser-utils';
 import attrTokenizer from './attr-tokenizer';
 
 export const parse: Parse = (rawCode, _, __, ___, isIgnoringFrontMatter) => {
@@ -204,6 +204,7 @@ class Parser {
 					isGhost: false,
 					tagOpenChar: '',
 					tagCloseChar: '',
+					isCustomElement: isPotentialCustomElementName(originNode.name),
 				};
 
 				if (originNode.block.nodes.length) {
