@@ -84,7 +84,7 @@ Type: `string`
 
 ##### `type`
 
-Only values that match the specified [type](https://github.com/markuplint/markuplint/blob/master/packages/%40markuplint/ml-spec/src/types.ts#L129-L163) are allowed.
+Only values that match the specified [type](https://github.com/markuplint/markuplint/blob/master/packages/@markuplint/ml-spec/src/types.ts#L162-L197) are allowed.
 
 Type: `string`
 

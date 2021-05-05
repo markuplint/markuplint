@@ -78,7 +78,7 @@
 
 ##### `type`
 
-指定した[型](https://github.com/markuplint/markuplint/blob/master/packages/%40markuplint/ml-spec/src/types.ts#L129-L163)にマッチする値のみ許可します。
+指定した[型](https://github.com/markuplint/markuplint/blob/master/packages/@markuplint/ml-spec/src/types.ts#L162-L197)にマッチする値のみ許可します。
 
 型: `string`
 
