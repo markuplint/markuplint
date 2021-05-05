@@ -106,6 +106,9 @@ export function attributesToDebugMaps(attributes: MLASTAttr[]) {
 		if (n.potentialName != null) {
 			r.push(`  potentialName: ${visibleWhiteSpace(n.potentialName)}`);
 		}
+		if (n.type === 'html-attr' && n.candidate) {
+			r.push(`  candidate: ${visibleWhiteSpace(n.candidate)}`);
+		}
 		return r;
 	});
 }

@@ -14,6 +14,7 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 	readonly isDynamicValue?: true;
 	readonly isDirective?: true;
 	readonly potentialName: string;
+	readonly candidate?: string;
 
 	constructor(astToken: MLASTHTMLAttr) {
 		super(astToken);
@@ -29,6 +30,7 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 		this.isDynamicValue = astToken.isDynamicValue;
 		this.isDirective = astToken.isDirective;
 		this.potentialName = astToken.potentialName || this.name.raw.toLowerCase();
+		this.candidate = astToken.candidate;
 	}
 
 	get raw() {
