@@ -154,6 +154,42 @@ describe('parse', () => {
 		expect(ast.nodeList[1].parentNode).toBeNull();
 	});
 
+	it('Code 5', () => {
+		const ast = parse(`const Component = {
+	prop: () => <div>prop</div>,
+	method () {
+		return <div>method</div>
+	}
+};`);
+		const maps = nodeListToDebugMaps(ast.nodeList);
+		expect(maps).toStrictEqual([
+			'[2:14]>[2:19](33,38)div: <div>',
+			'[2:19]>[2:23](38,42)#text: prop',
+			'[2:23]>[2:29](42,48)div: </div>',
+			'[4:10]>[4:15](72,77)div: <div>',
+			'[4:15]>[4:21](77,83)#text: method',
+			'[4:21]>[4:27](83,89)div: </div>',
+		]);
+	});
+
+	it('Code 6', () => {
+		const ast = parse(`class Component {
+	prop = () => <div>prop</div>;
+	method () {
+		return <div>method</div>
+	}
+}`);
+		const maps = nodeListToDebugMaps(ast.nodeList);
+		expect(maps).toStrictEqual([
+			'[2:15]>[2:20](32,37)div: <div>',
+			'[2:20]>[2:24](37,41)#text: prop',
+			'[2:24]>[2:30](41,47)div: </div>',
+			'[4:10]>[4:15](71,76)div: <div>',
+			'[4:15]>[4:21](76,82)#text: method',
+			'[4:21]>[4:27](82,88)div: </div>',
+		]);
+	});
+
 	it('Attribute', () => {
 		const ast = parse(
 			'<Component className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" theProp={variable} />',
