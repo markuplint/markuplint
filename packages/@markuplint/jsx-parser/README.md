@@ -22,12 +22,10 @@ Add `parser` option into your `.markuplintrc.*` file.
 {
 	"extends": "@markuplint/html-spec",
 	"parser": {
-		".vue$": "@markuplint/jsx-parser"
+		".[jt]sx?$": "@markuplint/jsx-parser"
 	}
 }
 ```
-
-`parserOptions` option is work in progress. current setting is `{ "sourceType": "module" }` that hard coded.
 
 ## Contributing
 
@@ -40,4 +38,4 @@ $ yarn test
 
 ---
 
-Copyright &copy; 2020 markuplint. Under the MIT License.
+Copyright &copy; 2021 markuplint. Under the MIT License.
