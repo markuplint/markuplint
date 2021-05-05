@@ -35,6 +35,14 @@ describe('STDIN Test', () => {
 		expect(stdout).toBe(`<markuplint> passed ${targetFilePath}`);
 	});
 
+	it('verify --problem-only', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../test/fixture/001.html');
+		const { stdout } = await execa(entryFilePath, ['--problem-only', targetFilePath], {
+			stdin: 'ignore',
+		});
+		expect(stdout).toBe('');
+	});
+
 	it('verify and feilure', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../test/fixture/002.html');
 		const { stdout, stderr } = await execa(entryFilePath, ['--no-color', targetFilePath], {
