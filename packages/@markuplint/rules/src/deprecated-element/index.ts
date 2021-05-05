@@ -10,7 +10,7 @@ export default createRule({
 		const reports: Result[] = [];
 		const message = translate('{0} is {1}', 'Element', 'deprecated');
 		await document.walkOn('Element', async element => {
-			if (element.isForeignElement) {
+			if (element.isForeignElement || element.isCustomElement) {
 				return;
 			}
 			const spec = getSpecByTagName(element.nodeName, specs);

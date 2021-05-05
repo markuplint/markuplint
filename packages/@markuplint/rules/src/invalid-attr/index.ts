@@ -1,5 +1,5 @@
 import { Result, createRule } from '@markuplint/ml-core';
-import { attrMatches, attrSpecs, getSpec, isCustomElement, match } from '../helpers';
+import { attrMatches, attrSpecs, getSpec, match } from '../helpers';
 import { AttributeType } from '@markuplint/ml-spec/src';
 import { typeCheck } from './type-check';
 
@@ -38,6 +38,21 @@ export default createRule<true, Option>({
 
 				const attrName = attr.getName();
 				const name = attrName.potential;
+
+				if (attr.attrType === 'html-attr' && attr.isInvalid) {
+					const candidate = attr.candidate;
+					const message =
+						`The "${attrName.raw}" attribute is not allowed.` +
+						(candidate ? ` Did you mean "${candidate}"?` : '');
+					reports.push({
+						severity: node.rule.severity,
+						message: message,
+						line: attrName.line,
+						col: attrName.col,
+						raw: attrName.raw,
+					});
+				}
+
 				const attrValue = attr.getValue();
 				const value = attrValue.raw;
 
@@ -71,10 +86,16 @@ export default createRule<true, Option>({
 					} else if ('type' in customRule) {
 						invalid = typeCheck(name, value, true, { name, type: customRule.type, description: '' });
 					}
-				} else if (!isCustomElement(node.nodeName) && attributeSpecs) {
+				} else if (!node.isCustomElement && attributeSpecs) {
 					const spec = attributeSpecs.find(s => s.name === name);
 					invalid = typeCheck(name, value, false, spec);
-					if (!invalid && spec && !attrMatches(node, spec.condition)) {
+					if (
+						!invalid &&
+						spec &&
+						spec.condition &&
+						!node.hasSpreadAttr &&
+						!attrMatches(node, spec.condition)
+					) {
 						invalid = {
 							invalidType: 'non-existent',
 							message: `The "${name}" attribute is not allowed`,
@@ -108,7 +129,7 @@ export default createRule<true, Option>({
 								message: invalid.message,
 								line: attrName.line,
 								col: attrName.col,
-								raw: name,
+								raw: attrName.raw,
 							});
 						}
 					}

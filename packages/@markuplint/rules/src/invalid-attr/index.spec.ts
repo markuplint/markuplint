@@ -575,3 +575,185 @@ test('Vue iterator', async () => {
 	expect(r1.length).toBe(1);
 	expect(r2.length).toBe(0);
 });
+
+test('React Component', async () => {
+	const r = await markuplint.verify(
+		'<Component className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
+		{
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 42,
+			message: 'The "tabindex" attribute is not allowed. Did you mean "tabIndex"?',
+			raw: 'tabindex',
+		},
+	]);
+});
+
+test('React HTML', async () => {
+	const r = await markuplint.verify(
+		'<img className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
+		{
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 36,
+			message: 'The "tabindex" attribute is not allowed. Did you mean "tabIndex"?',
+			raw: 'tabindex',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 71,
+			message: 'The "for" attribute is not allowed',
+			raw: 'htmlFor',
+		},
+	]);
+});
+
+test('React', async () => {
+	const r = await markuplint.verify(
+		'<a href={href} target={target} invalidAttr={invalidAttr} />',
+		{
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: 'The "invalidAttr" attribute is not allowed',
+			raw: 'invalidAttr',
+		},
+	]);
+});
+
+test('React with spread attribute', async () => {
+	expect(
+		await markuplint.verify(
+			'<a target="_blank" />',
+			{
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rules: {
+					'invalid-attr': true,
+				},
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 4,
+			message: 'The "target" attribute is not allowed',
+			raw: 'target',
+		},
+	]);
+
+	expect(
+		await markuplint.verify(
+			'<a {...props} target="_blank" />',
+			{
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rules: {
+					'invalid-attr': true,
+				},
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([]);
+
+	expect(
+		await markuplint.verify(
+			'<img invalid />',
+			{
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rules: {
+					'invalid-attr': true,
+				},
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "invalid" attribute is not allowed',
+			raw: 'invalid',
+		},
+	]);
+
+	expect(
+		await markuplint.verify(
+			'<img {...props} invalid />',
+			{
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rules: {
+					'invalid-attr': true,
+				},
+			},
+			[rule],
+			'en',
+		),
+	).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 1,
+			col: 17,
+			message: 'The "invalid" attribute is not allowed',
+			raw: 'invalid',
+		},
+	]);
+});

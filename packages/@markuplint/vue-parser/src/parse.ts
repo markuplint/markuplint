@@ -8,7 +8,7 @@ import {
 	Parse,
 } from '@markuplint/ml-ast';
 import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
-import { getEndCol, getEndLine, uuid } from '@markuplint/parser-utils';
+import { getEndCol, getEndLine, isPotentialCustomElementName, uuid } from '@markuplint/parser-utils';
 import vueParse, { ASTNode } from './vue-parser';
 import { attr } from './attr';
 
@@ -154,6 +154,7 @@ function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
+					isCustomElement: isVueComponentName(endTagName),
 				};
 			}
 			const startTag: MLASTTag = {
@@ -169,6 +170,7 @@ function nodeize(
 				type: MLASTNodeType.StartTag,
 				namespace: originNode.namespace,
 				attributes: tagTokens.attrs.map(attr),
+				hasSpreadAttr: false,
 				parentNode,
 				prevNode,
 				nextNode,
@@ -179,6 +181,7 @@ function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
+				isCustomElement: isVueComponentName(tagName),
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
@@ -187,4 +190,8 @@ function nodeize(
 			return startTag;
 		}
 	}
+}
+
+function isVueComponentName(name: string) {
+	return isPotentialCustomElementName(name) || /[A-Z]|\./.test(name);
 }

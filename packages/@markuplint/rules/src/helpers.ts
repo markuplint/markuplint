@@ -166,12 +166,6 @@ export const rePCENChar = [
 	'[\uD800-\uDBFF][\uDC00-\uDFFF]',
 ].join('|');
 
-const reCostomElement = new RegExp(`^(?:[a-z](?:${rePCENChar})*\\-(?:${rePCENChar})*)$`, 'i');
-
-export function isCustomElement(nodeName: string) {
-	return reCostomElement.test(nodeName);
-}
-
 export function htmlSpec(tag: string) {
 	tag = tag.toLowerCase();
 	const spec = html.specs.find(spec => spec.name === tag);

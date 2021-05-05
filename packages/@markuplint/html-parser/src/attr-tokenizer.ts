@@ -17,9 +17,6 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 	const spacesAfterEqualChars = attrMatchedMap[5] || '';
 	const quoteChars = attrMatchedMap[6] != null ? '"' : attrMatchedMap[7] != null ? "'" : null;
 	const valueChars = attrMatchedMap[6] || attrMatchedMap[7] || attrMatchedMap[8] || (quoteChars ? '' : null);
-	const invalid =
-		!!(valueChars && quoteChars === null && /["'=<>`]/.test(valueChars)) ||
-		!!(equalChars && quoteChars === null && valueChars === null);
 
 	let offset = startOffset;
 
@@ -64,9 +61,6 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 	offset = value.endOffset;
 
 	const endQuote = tokenizer(quoteChars, line, col, offset);
-	line = endQuote.endLine;
-	col = endQuote.endCol;
-	offset = endQuote.endOffset;
 
 	return {
 		type: 'html-attr',
@@ -86,6 +80,6 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 		startQuote,
 		value,
 		endQuote,
-		isInvalid: invalid,
+		isInvalid: false,
 	};
 }

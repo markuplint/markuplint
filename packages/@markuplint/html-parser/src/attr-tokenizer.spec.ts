@@ -384,7 +384,7 @@ test('empty', () => {
 	});
 });
 
-test('invalid: no value', () => {
+test('no value', () => {
 	expect(attrTokenizer('q=', 1, 1, 0)).toMatchObject({
 		startLine: 1,
 		endLine: 1,
@@ -393,7 +393,7 @@ test('invalid: no value', () => {
 		startOffset: 0,
 		endOffset: 2,
 		raw: 'q=',
-		isInvalid: true,
+		isInvalid: false,
 		name: {
 			raw: 'q',
 			startLine: 1,

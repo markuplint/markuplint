@@ -236,20 +236,20 @@ test('content model alias', () => {
 				require: '#transparent',
 			},
 		]).source,
-	).toEqual('^(?<TRANSPARENT_00><[^>]+>)$');
+	).toEqual('^(?<TRANSPARENT_00>(?:<[^>]+>)?)$');
 });
 
 test('a', () => {
 	const expGen = new ExpGenerator(0);
 	expect(expGen.specToRegExp(htmlSpec('a')!.permittedStructures.contents).source).toEqual(
-		'^(?<NAD_00__interactive___InTRANSPARENT>(?:(?<TRANSPARENT_01><[^>]+>))*)$',
+		'^(?<NAD_00__interactive___InTRANSPARENT>(?:(?<TRANSPARENT_01>(?:<[^>]+>)?))*)$',
 	);
 });
 
 test('audio', () => {
 	const expGen = new ExpGenerator(0);
 	expect(expGen.specToRegExp(htmlSpec('audio')!.permittedStructures.contents).source).toEqual(
-		'^(?<NAD_00_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01><[^>]+>))*)$',
+		'^(?<NAD_00_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01>(?:<[^>]+>)?))*)$',
 	);
 });
 
@@ -303,7 +303,7 @@ test('audio in audio / Duplicate capture group name', () => {
 			expGen.specToRegExp(htmlSpec('audio')!.permittedStructures.contents),
 		).source,
 	).toEqual(
-		'^(?<NAD_02_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_03>(?<NAD_00_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01><[^>]+>))*)))*)$',
+		'^(?<NAD_02_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_03>(?<NAD_00_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01>(?:<[^>]+>)?))*)))*)$',
 	);
 });
 

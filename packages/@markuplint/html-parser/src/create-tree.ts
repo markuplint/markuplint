@@ -8,7 +8,7 @@ import {
 	MLASTTag,
 	MLASTText,
 } from '@markuplint/ml-ast';
-import { getEndCol, getEndLine, uuid } from '@markuplint/parser-utils';
+import { getEndCol, getEndLine, isPotentialCustomElementName, uuid } from '@markuplint/parser-utils';
 import parse5, { CommentNode, Document, DocumentFragment, Element, Node, TextNode } from 'parse5';
 import parseRawTag from './parse-raw-tag';
 
@@ -103,6 +103,7 @@ function nodeize(
 			nextNode,
 			isFragment: false,
 			isGhost: true,
+			isCustomElement: false,
 		};
 		node.childNodes = createTreeRecursive(originNode, node, rawHtml, offsetOffset, offsetLine, offsetColumn);
 		return node;
@@ -190,6 +191,7 @@ function nodeize(
 				offsetColumn,
 			);
 			const tagName = tagTokens.tagName;
+			const isCustomElement = isPotentialCustomElementName(tagName);
 			let endTag: MLASTElementCloseTag | null = null;
 			const endTagLoc = 'endTag' in location ? location.endTag : null;
 			if (endTagLoc) {
@@ -226,6 +228,7 @@ function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
+					isCustomElement,
 				};
 			}
 			const _endOffset = startOffset + startTagRaw.length;
@@ -244,6 +247,7 @@ function nodeize(
 				type: MLASTNodeType.StartTag,
 				namespace: getNamespace(originNode),
 				attributes: tagTokens.attrs,
+				hasSpreadAttr: false,
 				parentNode,
 				prevNode,
 				nextNode,
@@ -254,6 +258,7 @@ function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
+				isCustomElement,
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;

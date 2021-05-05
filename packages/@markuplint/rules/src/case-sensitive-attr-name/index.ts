@@ -15,21 +15,28 @@ export default createRule<Value, null>({
 			const cases = node.rule.value === 'no-upper' ? 'lower' : 'upper';
 			const message = translate(`{0} of {1} ${ms} be {2}`, 'Attribute name', 'HTML elements', `${cases}case`);
 			if (node.namespaceURI === 'http://www.w3.org/1999/xhtml') {
-				if (node.attributes) {
-					for (const attr of node.attributes) {
-						if (attr.attrType === 'ps-attr') {
-							continue;
-						}
-						const name = attr.getName();
-						if (deny.test(name.raw)) {
-							reports.push({
-								severity: node.rule.severity,
-								message,
-								line: name.line,
-								col: name.col,
-								raw: name.raw,
-							});
-						}
+				for (const attr of node.attributes) {
+					if (attr.attrType === 'ps-attr') {
+						continue;
+					}
+
+					/**
+					 * Ignore when it has the potential name,
+					 * it Interprets `tabIndex` to `tabindex` in JSX for example.
+					 */
+					if (attr.name.raw !== attr.potentialName) {
+						continue;
+					}
+
+					const name = attr.getName();
+					if (deny.test(name.raw)) {
+						reports.push({
+							severity: node.rule.severity,
+							message,
+							line: name.line,
+							col: name.col,
+							raw: name.raw,
+						});
 					}
 				}
 			}

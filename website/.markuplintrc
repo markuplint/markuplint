@@ -1,4 +1,7 @@
 {
+	"parser": {
+		".tsx$": "@markuplint/jsx-parser"
+	},
 	"rules": {
 		"attr-duplication": true,
 		"character-reference": true,
@@ -11,27 +14,25 @@
 		"invalid-attr": true,
 		"landmark-roles": true,
 		"required-h1": true,
-		"class-naming": "/[a-z]+/",
+		"class-naming": false,
 		"attr-equal-space-after": true,
 		"attr-equal-space-before": true,
 		"attr-spacing": true,
 		"attr-value-quotes": true,
 		"case-sensitive-attr-name": true,
 		"case-sensitive-tag-name": true,
-		"indentation": false
+		"indentation": false,
+		"wai-aria": true
 	},
 	"nodeRules": [
 		{
-			"tagName": "meta",
+			"tagName": "style",
 			"rules": {
 				"invalid-attr": {
 					"option": {
 						"attrs": {
-							"property": {
-								"type": "String"
-							},
-							"content": {
-								"type": "String"
+							"jsx": {
+								"type": "Boolean"
 							}
 						}
 					}

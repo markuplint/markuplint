@@ -153,7 +153,7 @@ describe('parser', () => {
 		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
 		expect(attr).toStrictEqual([
 			[
-				'[1:5]>[1:22](4,21)html-attr: attr-name="value"',
+				'[1:5]>[1:22](4,21)attr-name: attr-name="value"',
 				'  [1:5]>[1:5](4,4)bN: ',
 				'  [1:5]>[1:14](4,13)name: attr-name',
 				'  [1:14]>[1:14](13,13)bE: ',
@@ -174,7 +174,7 @@ describe('parser', () => {
 		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
 		expect(attr).toStrictEqual([
 			[
-				'[1:5]>[1:36](4,35)html-attr: on:eventname={␣`abc${def}ghi`␣}',
+				'[1:5]>[1:36](4,35)on:eventname: on:eventname={␣`abc${def}ghi`␣}',
 				'  [1:5]>[1:5](4,4)bN: ',
 				'  [1:5]>[1:17](4,16)name: on:eventname',
 				'  [1:17]>[1:17](16,16)bE: ',
@@ -195,7 +195,7 @@ describe('parser', () => {
 		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
 		expect(attr).toStrictEqual([
 			[
-				'[1:5]>[1:39](4,38)html-attr: on:eventname|modifiers␣=␣{handler}',
+				'[1:5]>[1:39](4,38)on:eventname|modifiers: on:eventname|modifiers␣=␣{handler}',
 				'  [1:5]>[1:5](4,4)bN: ',
 				'  [1:5]>[1:27](4,26)name: on:eventname|modifiers',
 				'  [1:27]>[1:28](26,27)bE: ␣',
@@ -216,7 +216,7 @@ describe('parser', () => {
 		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
 		expect(attr).toStrictEqual([
 			[
-				'[1:5]>[1:17](4,16)html-attr: on:eventname',
+				'[1:5]>[1:17](4,16)on:eventname: on:eventname',
 				'  [1:5]>[1:5](4,4)bN: ',
 				'  [1:5]>[1:17](4,16)name: on:eventname',
 				'  [1:17]>[1:17](16,16)bE: ',
@@ -326,21 +326,8 @@ describe('parser', () => {
 	test('spread attributes', () => {
 		const r = parse('<el { ... attrs} />');
 		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
-		expect(attr).toStrictEqual([
-			[
-				'[1:5]>[1:17](4,16)html-attr: {␣...␣attrs}',
-				'  [1:5]>[1:5](4,4)bN: ',
-				'  [1:5]>[1:5](4,4)name: ',
-				'  [1:5]>[1:5](4,4)bE: ',
-				'  [1:5]>[1:5](4,4)equal: ',
-				'  [1:5]>[1:5](4,4)aE: ',
-				'  [1:5]>[1:6](4,5)sQ: {',
-				'  [1:6]>[1:16](5,15)value: ␣...␣attrs',
-				'  [1:16]>[1:17](15,16)eQ: }',
-				'  isDirective: true',
-				'  isDynamicValue: false',
-				'  isInvalid: false',
-			],
-		]);
+		expect(attr).toStrictEqual([]);
+		// @ts-ignore
+		expect(r.nodeList[0].hasSpreadAttr).toBeTruthy();
 	});
 });

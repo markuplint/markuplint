@@ -1,4 +1,5 @@
 import {
+	MLASTAttr,
 	MLASTElementCloseTag,
 	MLASTNode,
 	MLASTNodeType,
@@ -8,7 +9,7 @@ import {
 	MLASTText,
 } from '@markuplint/ml-ast';
 import { SvelteDirective, SvelteNode } from './svelte-parser';
-import { sliceFragment, uuid } from '@markuplint/parser-utils';
+import { isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
 import { attr } from './attr';
 import { parseRawTag } from '@markuplint/html-parser';
 import { traverse } from './traverse';
@@ -105,10 +106,14 @@ export function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
+					isCustomElement: isSvelteComponentName(originNode.name),
 				};
 			}
 
-			const attributes: SvelteDirective[] = originNode.attributes || [];
+			const directives = (originNode.attributes as SvelteDirective[]).map(a => attr(a, rawHtml)) || [];
+			const attributes = directives.filter((d): d is MLASTAttr => !('__spreadAttr' in d));
+			const hasSpreadAttr = directives.some(d => '__spreadAttr' in d);
+
 			const tagTokens = parseRawTag(
 				startTagLocation.raw,
 				startTagLocation.startLine,
@@ -122,7 +127,8 @@ export function nodeize(
 				nodeName: originNode.name,
 				type: MLASTNodeType.StartTag,
 				namespace: 'http://www.w3.org/1999/xhtml',
-				attributes: attributes.map(a => attr(a, rawHtml)),
+				attributes,
+				hasSpreadAttr,
 				parentNode,
 				prevNode,
 				nextNode,
@@ -133,6 +139,7 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
+				isCustomElement: isSvelteComponentName(originNode.name),
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
@@ -375,4 +382,8 @@ function solveCtrlBlock(
 	}
 
 	return tags;
+}
+
+function isSvelteComponentName(name: string) {
+	return isPotentialCustomElementName(name) || /[A-Z]|\./.test(name);
 }

@@ -15,14 +15,16 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null>
 	readonly type = 'Element';
 	readonly nodeName: string;
 	readonly attributes: (MLDOMAttribute | MLDOMPreprocessorSpecificAttribute)[];
+	readonly hasSpreadAttr: boolean;
 	readonly namespaceURI: string;
 	readonly isForeignElement: boolean;
 	readonly closeTag: MLDOMElementCloseTag<T, O> | null;
-	readonly selfClosingSolidus: MLDOMToken<MLToken>;
-	readonly endSpace: MLDOMToken<MLToken>;
+	readonly selfClosingSolidus: MLDOMToken<MLToken> | null;
+	readonly endSpace: MLDOMToken<MLToken> | null;
 	readonly ownModels: Set<ContentModel> = new Set();
 	readonly childModels: Set<ContentModel> = new Set();
 	readonly descendantModels: Set<ContentModel> = new Set();
+	readonly isCustomElement: boolean;
 
 	readonly #tagOpenChar: string;
 	readonly #tagCloseChar: string;
@@ -36,11 +38,13 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null>
 		this.attributes = astNode.attributes.map(attr =>
 			attr.type === 'html-attr' ? new MLDOMAttribute(attr) : new MLDOMPreprocessorSpecificAttribute(attr),
 		);
-		this.selfClosingSolidus = new MLDOMToken(astNode.selfClosingSolidus);
-		this.endSpace = new MLDOMToken(astNode.endSpace);
+		this.hasSpreadAttr = astNode.hasSpreadAttr;
+		this.selfClosingSolidus = astNode.selfClosingSolidus ? new MLDOMToken(astNode.selfClosingSolidus) : null;
+		this.endSpace = astNode.endSpace ? new MLDOMToken(astNode.endSpace) : null;
 		this.namespaceURI = astNode.namespace;
 		this.isForeignElement = this.namespaceURI !== 'http://www.w3.org/1999/xhtml';
 		this.closeTag = astNode.pearNode ? createNode(astNode.pearNode, document, this) : null;
+		this.isCustomElement = astNode.isCustomElement;
 
 		this.#tagOpenChar = astNode.tagOpenChar;
 		this.#tagCloseChar = astNode.tagCloseChar;

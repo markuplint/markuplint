@@ -13,7 +13,7 @@ import combination from './array.combination';
 import { rePCENChar } from '../helpers';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
-const ALL = '<[^>]+>';
+const ALL = '(?:<[^>]+>)?';
 const ___TRANSPARENT___ = '___TRANSPARENT___';
 const ___InTRANSPARENT = '___InTRANSPARENT';
 const CUSTOM_ELEMENT = `(?:<[a-z](?:${rePCENChar})*\\-(?:${rePCENChar})*>)`;

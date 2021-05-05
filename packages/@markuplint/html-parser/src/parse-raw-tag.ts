@@ -1,7 +1,7 @@
 import { MLASTAttr, MLToken } from '@markuplint/ml-ast';
-import { rePCEN, reTag, reTagName } from './const';
+import { isPotentialCustomElementName, tokenizer } from '@markuplint/parser-utils';
+import { reTag, reTagName } from './const';
 import attrTokenizer from './attr-tokenizer';
-import { tokenizer } from '@markuplint/parser-utils';
 
 // eslint-disable-next-line no-control-regex
 const reAttrsInStartTag = /\s*[^\x00-\x1f\x7f-\x9f "'>/=]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]*))?/;
@@ -36,7 +36,7 @@ export default function parseRawTag(
 	// eslint-disable-next-line no-control-regex
 	const tagNameSplited = tagWithAttrs.split(/[\u0000\u0009\u000A\u000C\u0020/>]/);
 	const tagName = tagNameSplited[0] || tagNameSplited[1];
-	if (!tagName || (!reTagName.test(tagName) && !rePCEN.test(tagName))) {
+	if (!tagName || (!reTagName.test(tagName) && !isPotentialCustomElementName(tagName))) {
 		throw new SyntaxError(`Invalid tag name: "${tagName}" in <${tagWithAttrs}>`);
 	}
 

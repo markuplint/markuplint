@@ -1,6 +1,6 @@
+import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
 import { isDocumentFragment, parse } from './';
 import { MLASTNodeType } from '@markuplint/ml-ast';
-import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 
 describe('isDocumentFragment', () => {
 	it('<!doctype>', () => {
@@ -1025,5 +1025,27 @@ describe('parser', () => {
 		const doc4 = parse('===\np: v\n===\n<div></div>', 0, 0, 0, false);
 		expect(doc4.nodeList[0].nodeName).toBe('#text');
 		expect(doc4.nodeList[1].nodeName).toBe('div');
+	});
+
+	it('Static attribute', () => {
+		const ast = parse('<a href=""/>');
+		// @ts-ignore
+		const attrMaps = attributesToDebugMaps(ast.nodeList[0].attributes);
+		expect(attrMaps).toStrictEqual([
+			[
+				'[1:3]>[1:11](2,10)href: ␣href=""',
+				'  [1:3]>[1:4](2,3)bN: ␣',
+				'  [1:4]>[1:8](3,7)name: href',
+				'  [1:8]>[1:8](7,7)bE: ',
+				'  [1:8]>[1:9](7,8)equal: =',
+				'  [1:9]>[1:9](8,8)aE: ',
+				'  [1:9]>[1:10](8,9)sQ: "',
+				'  [1:10]>[1:10](9,9)value: ',
+				'  [1:10]>[1:11](9,10)eQ: "',
+				'  isDirective: false',
+				'  isDynamicValue: false',
+				'  isInvalid: false',
+			],
+		]);
 	});
 });

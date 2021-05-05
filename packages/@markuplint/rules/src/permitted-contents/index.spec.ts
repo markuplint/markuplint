@@ -649,3 +649,49 @@ describe('verify', () => {
 		]);
 	});
 });
+
+describe('React', () => {
+	const jsxRuleOn = {
+		...ruleOn,
+		parser: {
+			'.*': '@markuplint/jsx-parser',
+		},
+	};
+
+	test('case-sensitive', async () => {
+		expect(await markuplint.verify('<A><button></button></A>', ruleOn, [rule], 'en')).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Invalid content of the A element in the HTML specification',
+				raw: '<A>',
+			},
+		]);
+
+		expect(await markuplint.verify('<a><button></button></a>', jsxRuleOn, [rule], 'en')).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Invalid content of the a element in the HTML specification',
+				raw: '<a>',
+			},
+		]);
+
+		expect(await markuplint.verify('<A><button></button></A>', jsxRuleOn, [rule], 'en')).toStrictEqual([]);
+	});
+
+	test('Components', async () => {
+		expect(
+			await markuplint.verify(
+				'<Html><Head /><body><p><Link href="path/to">SPA Link</Link></p></body></Html>',
+				jsxRuleOn,
+				[rule],
+				'en',
+			),
+		).toStrictEqual([]);
+	});
+});
