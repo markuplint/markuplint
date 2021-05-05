@@ -185,7 +185,9 @@ function match(exp: RegExp, childNodes: TargetNodes) {
 	}
 	const capGroups = result.groups;
 	// console.log({ exp, target, capGroups });
-	if (capGroups) {
+	if (!capGroups) {
+		return true;
+	}
 		const groupNames = Object.keys(capGroups);
 		for (const groupName of groupNames) {
 			const matched = capGroups[groupName];
@@ -240,8 +242,8 @@ function match(exp: RegExp, childNodes: TargetNodes) {
 						contents.add(content);
 					});
 					const selectors = Array.from(contents);
-					targetsMaybeIncludesNotAllowedDescendants = targetsMaybeIncludesNotAllowedDescendants.filter(
-						content => (inTransparent ? inTransparent.includes(content) : true),
+				targetsMaybeIncludesNotAllowedDescendants = targetsMaybeIncludesNotAllowedDescendants.filter(content =>
+					inTransparent ? inTransparent.includes(content) : true,
 					);
 					// console.log({
 					// 	groupName,
@@ -283,6 +285,5 @@ function match(exp: RegExp, childNodes: TargetNodes) {
 				}
 			}
 		}
-	}
 	return true;
 }
