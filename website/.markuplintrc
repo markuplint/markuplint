@@ -23,5 +23,21 @@
 		"case-sensitive-tag-name": true,
 		"indentation": false,
 		"wai-aria": true
-	}
+	},
+	"nodeRules": [
+		{
+			"tagName": "style",
+			"rules": {
+				"invalid-attr": {
+					"option": {
+						"attrs": {
+							"jsx": {
+								"type": "Boolean"
+							}
+						}
+					}
+				}
+			}
+		}
+	]
 }
