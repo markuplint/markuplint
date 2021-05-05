@@ -16,6 +16,11 @@ export async function output(params: ReportingData) {
 			out = standardReporter(params);
 		}
 	}
+
+	if (!out.length) {
+		return;
+	}
+
 	let msg = `${out.join('\n')}\n`;
 	msg = params.color ? msg : stripAnsi(msg);
 
