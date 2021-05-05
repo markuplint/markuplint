@@ -29,7 +29,7 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 		this.endQuote = new MLDOMToken(this._astToken.endQuote);
 		this.isDynamicValue = astToken.isDynamicValue;
 		this.isDirective = astToken.isDirective;
-		this.potentialName = astToken.potentialName || this.name.raw.toLowerCase();
+		this.potentialName = astToken.potentialName || this.name.raw;
 		this.candidate = astToken.candidate;
 	}
 
