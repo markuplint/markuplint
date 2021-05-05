@@ -136,7 +136,7 @@ export default createRule<true, Options>({
 						}
 					}
 
-					const requiredStateAndPropNames = role.statesAndProps.filter(s => s.required).map(s => s.name);
+					// const requiredStateAndPropNames = role.statesAndProps.filter(s => s.required).map(s => s.name);
 				}
 			} else {
 				// No role element
