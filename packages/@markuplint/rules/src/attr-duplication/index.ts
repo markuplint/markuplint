@@ -14,7 +14,8 @@ export default createRule({
 					continue;
 				}
 				const attrName = attr.getName();
-				if (attrNameStack.includes(attrName.raw.toLowerCase())) {
+				const name = node.isCustomElement ? attrName.potential : attrName.potential.toLowerCase();
+				if (attrNameStack.includes(name)) {
 					reports.push({
 						severity: node.rule.severity,
 						message,
@@ -23,7 +24,7 @@ export default createRule({
 						raw: attrName.raw,
 					});
 				} else {
-					attrNameStack.push(attrName.raw.toLowerCase());
+					attrNameStack.push(name);
 				}
 			}
 		});
