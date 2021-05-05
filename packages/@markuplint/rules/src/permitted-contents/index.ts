@@ -29,7 +29,7 @@ export default createRule<TagRule[], Options>({
 				return;
 			}
 
-			const nodes = node.getChildElementsAndTextNodeWithoutWhitespaces();
+			const childNodes = node.getChildElementsAndTextNodeWithoutWhitespaces();
 			const spec = htmlSpec(node.nodeName)?.permittedStructures;
 
 			const expGen = new ExpGenerator(idCounter++);
@@ -65,7 +65,7 @@ export default createRule<TagRule[], Options>({
 							try {
 								const parentExp = getRegExpFromParentNode(node, expGen);
 								const exp = expGen.specToRegExp(conditional.contents, parentExp);
-								const conditionalResult = match(exp, nodes);
+								const conditionalResult = match(exp, childNodes);
 								if (!conditionalResult) {
 									reports.push({
 										severity: node.rule.severity,
@@ -91,7 +91,7 @@ export default createRule<TagRule[], Options>({
 				if (!matched) {
 					try {
 						const exp = getRegExpFromNode(node, expGen);
-						const specResult = match(exp, nodes);
+						const specResult = match(exp, childNodes);
 
 						if (!specResult) {
 							reports.push({
@@ -121,7 +121,7 @@ export default createRule<TagRule[], Options>({
 				const parentExp = getRegExpFromParentNode(node, expGen);
 				try {
 					const exp = expGen.specToRegExp(rule.contents, parentExp);
-					const r = match(exp, nodes);
+					const r = match(exp, childNodes);
 
 					if (!r) {
 						reports.push({
@@ -176,8 +176,8 @@ function getRegExpFromParentNode(node: El, expGen: ExpGenerator) {
 	return parentExp;
 }
 
-function match(exp: RegExp, nodes: TargetNodes) {
-	const target = normalization(nodes);
+function match(exp: RegExp, childNodes: TargetNodes) {
+	const target = normalization(childNodes);
 	const result = exp.exec(target);
 	if (!result) {
 		return false;
@@ -200,7 +200,7 @@ function match(exp: RegExp, nodes: TargetNodes) {
 						const [, tagName] = /^([^[\]]+)(?:\[[^\]]+\])?$/.exec(selector) || [];
 						return tagName.toLowerCase() === tag.toLowerCase();
 					});
-					for (const node of nodes) {
+					for (const node of childNodes) {
 						if (node.type === 'Text') {
 							continue;
 						}
@@ -251,7 +251,7 @@ function match(exp: RegExp, nodes: TargetNodes) {
 					// 	inTransparent,
 					// 	targetsMaybeIncludesNotAllowedDescendants,
 					// });
-					for (const node of nodes) {
+					for (const node of childNodes) {
 						for (const target of targetsMaybeIncludesNotAllowedDescendants) {
 							if (node.type === 'Text') {
 								if (selectors.includes('#text')) {
