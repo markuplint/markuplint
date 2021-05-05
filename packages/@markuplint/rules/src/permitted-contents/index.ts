@@ -155,6 +155,7 @@ type El = {
 	uuid: string;
 	nodeName: string;
 	parentNode: El | null;
+	isCustomElement?: boolean;
 };
 
 function getRegExpFromNode(node: El, expGen: ExpGenerator) {
@@ -163,7 +164,7 @@ function getRegExpFromNode(node: El, expGen: ExpGenerator) {
 		return expMapOnNodeId.get(node.uuid)!;
 	}
 	const parentExp = node.parentNode ? getRegExpFromNode(node.parentNode, expGen) : null;
-	const spec = htmlSpec(node.nodeName)?.permittedStructures;
+	const spec = !node.isCustomElement && htmlSpec(node.nodeName)?.permittedStructures;
 	const contentRule = spec ? spec.contents : true;
 	const exp = expGen.specToRegExp(contentRule, parentExp);
 	expMapOnNodeId.set(node.uuid, exp);
