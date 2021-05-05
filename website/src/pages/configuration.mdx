@@ -35,8 +35,9 @@ Set a regular expression that can identify the target file name to the key, and 
 ```json
 {
 	"parser": {
-		".vue$": "@markuplint/vue-parser",
 		".pug$": "@markuplint/pug-parser",
+		".[jt]sx?$": "@markuplint/jsx-parser",
+		".vue$": "@markuplint/vue-parser",
 		".svelte$": "@markuplint/svelte-parser",
 		".any$": "./path/to/custom-parser/any-lang"
 	}
