@@ -98,6 +98,8 @@ export function nodeize(
 			);
 			const nodeName = getName(originNode.openingElement.name);
 
+			const hasSpreadAttr = '__hasSpreadAttribute' in originNode;
+
 			const startTag: MLASTTag = {
 				uuid: uuid(),
 				...startTagLocation,
@@ -105,6 +107,7 @@ export function nodeize(
 				type: MLASTNodeType.StartTag,
 				namespace: 'http://www.w3.org/1999/xhtml',
 				attributes: attrs.map(a => attr(a, rawHtml)),
+				hasSpreadAttr,
 				parentNode,
 				prevNode,
 				nextNode,
@@ -177,6 +180,7 @@ export function nodeize(
 				type: MLASTNodeType.StartTag,
 				namespace: 'http://www.w3.org/1999/xhtml',
 				attributes: [],
+				hasSpreadAttr: false,
 				parentNode,
 				prevNode,
 				nextNode,

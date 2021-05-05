@@ -1,5 +1,13 @@
 import jsxParser, { getName } from './jsx';
 
+describe('jsxParser', () => {
+	it('spraedAttribute', () => {
+		const ast = jsxParser('<div {...pros} />');
+		// @ts-ignore
+		expect(ast[0].__hasSpreadAttribute).toBeTruthy();
+	});
+});
+
 describe('getName', () => {
 	it('tags', () => {
 		// @ts-ignore

@@ -42,6 +42,7 @@ export interface MLASTElement extends MLASTAbstructNode {
 	type: MLASTNodeType.StartTag;
 	namespace: string;
 	attributes: MLASTAttr[];
+	hasSpreadAttr: boolean;
 	childNodes?: MLASTNode[];
 	pearNode: MLASTElementCloseTag | null;
 	selfClosingSolidus?: MLToken;

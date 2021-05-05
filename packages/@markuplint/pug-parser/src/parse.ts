@@ -194,6 +194,7 @@ class Parser {
 					// TODO: SVG
 					namespace: 'http://www.w3.org/1999/xhtml',
 					attributes: originNode.attrs.map(attr => attrTokenizer(attr)),
+					hasSpreadAttr: false,
 					parentNode,
 					prevNode,
 					nextNode,

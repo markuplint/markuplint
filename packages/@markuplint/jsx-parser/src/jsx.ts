@@ -21,7 +21,9 @@ import type {
 
 export type { JSXAttribute } from '@typescript-eslint/types/dist/ts-estree';
 
-export type JSXNode = JSXChild;
+export type JSXNode = JSXChild | JSXElementHasSpreadAttribute;
+
+export type JSXElementHasSpreadAttribute = JSXElement & { __hasSpreadAttribute?: true };
 
 export default function jsxParser(jsxCode: string): JSXNode[] {
 	const ast = parse(jsxCode, {
@@ -86,6 +88,7 @@ export function getAttrName(name: JSXIdentifier | JSXNamespacedName): string {
 
 function recursiveSearchJSXElements(
 	tree: (
+		| JSXElement
 		| Statement
 		| VariableDeclarator
 		| Expression
@@ -103,6 +106,7 @@ function recursiveSearchJSXElements(
 			jsxList.push(node);
 			jsxList.push(...recursiveSearchJSXElements(node.children));
 			if (node.openingElement) {
+				let hasSpreadAttr = false;
 				const expressions = node.openingElement.attributes
 					.map(attr => {
 						if (
@@ -111,9 +115,15 @@ function recursiveSearchJSXElements(
 						) {
 							return attr.value;
 						}
+						if (attr.type === AST_NODE_TYPES.JSXSpreadAttribute) {
+							hasSpreadAttr = true;
+						}
 					})
 					.filter((e): e is JSXExpressionContainer => !!e);
 				jsxList.push(...recursiveSearchJSXElements(expressions));
+				if (hasSpreadAttr) {
+					(node as JSXElementHasSpreadAttribute).__hasSpreadAttribute = true;
+				}
 			}
 			continue;
 		}

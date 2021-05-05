@@ -322,4 +322,11 @@ describe('parse', () => {
 			],
 		]);
 	});
+
+	it('Spread attributes', () => {
+		const ast = parse('<a {...props}/>');
+		// @ts-ignore
+		const attrMaps = attributesToDebugMaps(ast.nodeList[0].attributes);
+		expect(attrMaps).toStrictEqual([]);
+	});
 });

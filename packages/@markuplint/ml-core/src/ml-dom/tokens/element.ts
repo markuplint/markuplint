@@ -15,6 +15,7 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null>
 	readonly type = 'Element';
 	readonly nodeName: string;
 	readonly attributes: (MLDOMAttribute | MLDOMPreprocessorSpecificAttribute)[];
+	readonly hasSpreadAttr: boolean;
 	readonly namespaceURI: string;
 	readonly isForeignElement: boolean;
 	readonly closeTag: MLDOMElementCloseTag<T, O> | null;
@@ -37,6 +38,7 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null>
 		this.attributes = astNode.attributes.map(attr =>
 			attr.type === 'html-attr' ? new MLDOMAttribute(attr) : new MLDOMPreprocessorSpecificAttribute(attr),
 		);
+		this.hasSpreadAttr = astNode.hasSpreadAttr;
 		this.selfClosingSolidus = astNode.selfClosingSolidus ? new MLDOMToken(astNode.selfClosingSolidus) : null;
 		this.endSpace = astNode.endSpace ? new MLDOMToken(astNode.endSpace) : null;
 		this.namespaceURI = astNode.namespace;

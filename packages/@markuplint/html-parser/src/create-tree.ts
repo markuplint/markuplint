@@ -247,6 +247,7 @@ function nodeize(
 				type: MLASTNodeType.StartTag,
 				namespace: getNamespace(originNode),
 				attributes: tagTokens.attrs,
+				hasSpreadAttr: false,
 				parentNode,
 				prevNode,
 				nextNode,

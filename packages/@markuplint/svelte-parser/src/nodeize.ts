@@ -1,4 +1,5 @@
 import {
+	MLASTAttr,
 	MLASTElementCloseTag,
 	MLASTNode,
 	MLASTNodeType,
@@ -109,7 +110,10 @@ export function nodeize(
 				};
 			}
 
-			const attributes: SvelteDirective[] = originNode.attributes || [];
+			const directives = (originNode.attributes as SvelteDirective[]).map(a => attr(a, rawHtml)) || [];
+			const attributes = directives.filter((d): d is MLASTAttr => !('__spreadAttr' in d));
+			const hasSpreadAttr = directives.some(d => '__spreadAttr' in d);
+
 			const tagTokens = parseRawTag(
 				startTagLocation.raw,
 				startTagLocation.startLine,
@@ -123,7 +127,8 @@ export function nodeize(
 				nodeName: originNode.name,
 				type: MLASTNodeType.StartTag,
 				namespace: 'http://www.w3.org/1999/xhtml',
-				attributes: attributes.map(a => attr(a, rawHtml)),
+				attributes,
+				hasSpreadAttr,
 				parentNode,
 				prevNode,
 				nextNode,

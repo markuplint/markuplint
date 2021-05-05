@@ -6,13 +6,20 @@ import { sliceFragment } from '@markuplint/parser-utils';
 
 const specificBindDirective = ['bind:group', 'bind:this'];
 
-export function attr(attr: SvelteDirective, rawHTML: string): MLASTAttr {
+export function attr(attr: SvelteDirective, rawHTML: string): MLASTAttr | { __spreadAttr: true } {
 	const isShorthand =
 		attr.value && Array.isArray(attr.value)
 			? attr.value.some((val: any) => val.type === 'AttributeShorthand')
 			: false;
 
 	const { start, end } = attr;
+
+	// @ts-ignore
+	if (attr.type === 'Spread') {
+		return {
+			__spreadAttr: true,
+		};
+	}
 
 	// @ts-ignore TODO solve type
 	if (attr.type === 'Attribute' && !isShorthand) {

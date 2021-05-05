@@ -326,21 +326,8 @@ describe('parser', () => {
 	test('spread attributes', () => {
 		const r = parse('<el { ... attrs} />');
 		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
-		expect(attr).toStrictEqual([
-			[
-				'[1:5]>[1:17](4,16)html-attr: {␣...␣attrs}',
-				'  [1:5]>[1:5](4,4)bN: ',
-				'  [1:5]>[1:5](4,4)name: ',
-				'  [1:5]>[1:5](4,4)bE: ',
-				'  [1:5]>[1:5](4,4)equal: ',
-				'  [1:5]>[1:5](4,4)aE: ',
-				'  [1:5]>[1:6](4,5)sQ: {',
-				'  [1:6]>[1:16](5,15)value: ␣...␣attrs',
-				'  [1:16]>[1:17](15,16)eQ: }',
-				'  isDirective: true',
-				'  isDynamicValue: false',
-				'  isInvalid: false',
-			],
-		]);
+		expect(attr).toStrictEqual([]);
+		// @ts-ignore
+		expect(r.nodeList[0].hasSpreadAttr).toBeTruthy();
 	});
 });

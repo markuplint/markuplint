@@ -170,6 +170,7 @@ function nodeize(
 				type: MLASTNodeType.StartTag,
 				namespace: originNode.namespace,
 				attributes: tagTokens.attrs.map(attr),
+				hasSpreadAttr: false,
 				parentNode,
 				prevNode,
 				nextNode,
