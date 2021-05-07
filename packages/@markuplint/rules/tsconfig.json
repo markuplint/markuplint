@@ -17,10 +17,7 @@
 			"path": "../ml-spec"
 		},
 		{
-			"path": "../pug-parser"
-		},
-		{
-			"path": "../vue-parser"
+			"path": "../html-spec"
 		}
 	],
 	"include": ["./src/**/*"],
