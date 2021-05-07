@@ -21,9 +21,6 @@
 	},
 	"devDependencies": {
 		"@markuplint/html-spec": "^1.5.1",
-		"@markuplint/ml-core": "^1.5.1",
-		"@markuplint/pug-parser": "^1.0.1-beta.0",
-		"@markuplint/vue-parser": "^1.0.1-beta.0",
-		"@markuplint/vue-spec": "^1.0.1-beta.0"
+		"@markuplint/ml-core": "^1.5.1"
 	}
 }
