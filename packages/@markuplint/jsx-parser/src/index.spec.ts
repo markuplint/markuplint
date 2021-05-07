@@ -212,6 +212,59 @@ export class C { render () { return <div>C</div>; } }`);
 		]);
 	});
 
+	it('Code 8', () => {
+		const ast = parse(`const Component = React.memo(function () { return <div>Component</div>; });
+const Component2 = React.memo(() => { return <div>Component2</div>; });
+const Component3 = memo(() => <div>Component3</div>);`);
+		const maps = nodeListToDebugMaps(ast.nodeList);
+		expect(maps).toStrictEqual([
+			'[1:51]>[1:56](50,55)div: <div>',
+			'[1:56]>[1:65](55,64)#text: Component',
+			'[1:65]>[1:71](64,70)div: </div>',
+			'[2:46]>[2:51](121,126)div: <div>',
+			'[2:51]>[2:61](126,136)#text: Component2',
+			'[2:61]>[2:67](136,142)div: </div>',
+			'[3:31]>[3:36](178,183)div: <div>',
+			'[3:36]>[3:46](183,193)#text: Component3',
+			'[3:46]>[3:52](193,199)div: </div>',
+		]);
+	});
+
+	it('Code 9', () => {
+		const ast = parse(`fn(() => {
+	const Inner = () => <div>Component</div>;
+	return <Inner />;
+});`);
+		const maps = nodeListToDebugMaps(ast.nodeList);
+		expect(maps).toStrictEqual([
+			'[2:22]>[2:27](32,37)div: <div>',
+			'[2:27]>[2:36](37,46)#text: Component',
+			'[2:36]>[2:42](46,52)div: </div>',
+			'[3:9]>[3:18](62,71)Inner: <Inner␣/>',
+		]);
+	});
+
+	it('Code 10', () => {
+		const ast = parse(`fn((prop) => {
+	if (prop) {
+		return prop ? <El1 /> : null;
+	} else if (<El2 />) {
+		return <>{prop ? <El3 /> : null}</>;
+	} else {
+		return prop && <El4 />;
+	}
+});`);
+		const maps = nodeListToDebugMaps(ast.nodeList);
+		expect(maps).toStrictEqual([
+			'[3:17]>[3:24](44,51)El1: <El1␣/>',
+			'[4:13]>[4:20](72,79)El2: <El2␣/>',
+			'[5:10]>[5:12](92,94)#jsx-fragment: <>',
+			'[5:20]>[5:27](102,109)El3: <El3␣/>',
+			'[5:35]>[5:38](117,120)#jsx-fragment: </>',
+			'[7:18]>[7:25](149,156)El4: <El4␣/>',
+		]);
+	});
+
 	it('Attribute', () => {
 		const ast = parse(
 			'<Component className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" theProp={variable} />',
