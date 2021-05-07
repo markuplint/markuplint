@@ -1,5 +1,7 @@
+import { Document, Element, convertRuleset } from '@markuplint/ml-core';
+import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 import { checkAria, checkAriaValue, getComputedRole, getImplicitRole, getPermittedRoles, getRoleSpec } from './helpers';
-import { createElement } from './test-utils';
+import { parse } from '@markuplint/html-parser';
 
 describe('getRoleSpec', () => {
 	test('the button role', () => {
@@ -239,3 +241,19 @@ describe('checkAria', () => {
 		expect(checkAria('aria-autocomplete', 'foo').isValid).toBe(false);
 	});
 });
+
+export function createElement(htmlFragmentString: string) {
+	const ast = parse(htmlFragmentString.trim());
+	const ruleset = convertRuleset({});
+	const document = new Document(ast, ruleset, dummySchemas());
+	const el = document.nodeList[0];
+	if (el instanceof Element) {
+		return el;
+	}
+	return null;
+}
+
+function dummySchemas() {
+	// @ts-ignore
+	return [{}, {}] as [MLMLSpec, ...ExtendedSpec[]];
+}

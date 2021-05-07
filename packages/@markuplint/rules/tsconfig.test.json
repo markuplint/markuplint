@@ -15,10 +15,10 @@
 			"path": "../ml-spec"
 		},
 		{
-			"path": "../pug-parser"
+			"path": "../html-spec"
 		},
 		{
-			"path": "../vue-parser"
+			"path": "../html-parser"
 		}
 	],
 	"include": ["./src/**/*.spec.ts"],
