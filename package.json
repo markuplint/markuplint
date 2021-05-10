@@ -21,7 +21,19 @@
 		"pg:build": "cd playground; yarn pg:build",
 		"apidoc": "typedoc --ignoreCompilerErrors --exclude '**/*+(index|.spec|.e2e|.d).ts,node_modules/**/*' --mode file --out apidoc --media packages/markuplint/media --readme ./packages/markuplint/README.md ./packages/markuplint/",
 		"release": "lerna publish",
-		"prerelease": "yarn build; yarn test"
+		"prerelease": "yarn build; yarn test",
+		"prepare": "husky install"
+	},
+	"lint-staged": {
+		"./{packages,website,playground}/**/*.{ts,tsx,json}": [
+			"prettier --write"
+		],
+		"./{packages,website,playground}/**/*.{ts,tsx}": [
+			"eslint --fix"
+		],
+		"./test/**/*.{pug,html}": [
+			"yarn cli"
+		]
 	},
 	"jest": {
 		"verbose": true,
@@ -58,8 +70,10 @@
 		"eslint-plugin-jsdoc": "^31.4.0",
 		"eslint-plugin-node": "^11.1.0",
 		"heapdump": "^0.3.15",
+		"husky": "^6.0.0",
 		"jest": "^26.6.3",
 		"lerna": "^3.22.1",
+		"lint-staged": "^11.0.0",
 		"prettier": "^2.2.1",
 		"ts-jest": "^26.5.0",
 		"ts-node": "^9.1.1",
