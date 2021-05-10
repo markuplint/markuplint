@@ -20,18 +20,6 @@ import { initialize } from './initialize';
 		return;
 	}
 
-	const stdin = await getStdin();
-	if (stdin) {
-		await command({
-			codes: stdin,
-			...cli.flags,
-		}).catch(err => {
-			process.stderr.write(err + '\n');
-			process.exit(1);
-		});
-		process.exit(0);
-	}
-
 	const files = cli.input;
 	if (files.length) {
 		await command({
@@ -44,6 +32,32 @@ import { initialize } from './initialize';
 		process.exit(0);
 	}
 
-	cli.showHelp(1); // And fail.
-	process.exit(1);
+	if (usePipe()) {
+		getStdin()
+			.then(async stdin => {
+				if (stdin) {
+					await command({
+						codes: stdin,
+						...cli.flags,
+					}).catch(err => {
+						process.stderr.write(err + '\n');
+						process.exit(1);
+					});
+					process.exit(0);
+				}
+				// result is empty
+				cli.showHelp(1);
+			})
+			.catch(reason => {
+				// eslint-disable-next-line no-console
+				console.warn(reason);
+				process.exit(1);
+			});
+	} else {
+		cli.showHelp(1);
+	}
 })();
+
+function usePipe() {
+	return !process.stdin.isTTY && process.stdout.isTTY;
+}
