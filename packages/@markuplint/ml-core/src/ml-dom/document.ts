@@ -1,5 +1,5 @@
 import { AnonymousNode, NodeType } from './types';
-import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+import { ExtendedSpec, MLMLSpec, getSpec } from '@markuplint/ml-spec';
 import { MLASTDocument, MLASTNode, MLASTNodeType } from '@markuplint/ml-ast';
 import { MLDOMComment, MLDOMDoctype, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
 import { NodeStore, createNode } from './helper';
@@ -30,7 +30,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	/**
 	 *
 	 */
-	schemas: Readonly<[MLMLSpec, ...ExtendedSpec[]]>;
+	specs: Readonly<MLMLSpec>;
 
 	/**
 	 *
@@ -54,7 +54,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		);
 		this.isFragment = ast.isFragment;
 
-		this.schemas = schemas;
+		this.specs = getSpec(schemas);
 
 		this._init(ruleset);
 	}
