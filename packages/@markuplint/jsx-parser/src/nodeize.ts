@@ -7,9 +7,9 @@ import {
 	MLASTTag,
 	MLASTText,
 } from '@markuplint/ml-ast';
+import { getNamespace, parseRawTag } from '@markuplint/html-parser';
 import { isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
 import { attr } from './attr';
-import { parseRawTag } from '@markuplint/html-parser';
 import { traverse } from './traverse';
 
 export function nodeize(
@@ -19,6 +19,8 @@ export function nodeize(
 	rawHtml: string,
 ): MLASTNode | MLASTNode[] | null {
 	const nextNode = null;
+	const parentNamespace =
+		parentNode && 'namespace' in parentNode ? parentNode.namespace : 'http://www.w3.org/1999/xhtml';
 
 	switch (originNode.type) {
 		case 'JSXText': {
@@ -64,6 +66,7 @@ export function nodeize(
 				const endTagStartOffset = endTagLocation.startOffset;
 				const endTagEndOffset = endTagLocation.endOffset;
 				const nodeName = getName(originNode.closingElement.name);
+				const namespace = getNamespace(nodeName, parentNamespace);
 				endTag = {
 					uuid: uuid(),
 					raw: endTagRaw,
@@ -75,7 +78,7 @@ export function nodeize(
 					endCol: endTagLocation.endCol,
 					nodeName,
 					type: MLASTNodeType.EndTag,
-					namespace: 'http://www.w3.org/1999/xhtml',
+					namespace,
 					attributes: [],
 					parentNode,
 					prevNode,
@@ -97,6 +100,7 @@ export function nodeize(
 				startTagLocation.startOffset,
 			);
 			const nodeName = getName(originNode.openingElement.name);
+			const namespace = getNamespace(nodeName, parentNamespace);
 
 			const hasSpreadAttr = '__hasSpreadAttribute' in originNode;
 
@@ -105,7 +109,7 @@ export function nodeize(
 				...startTagLocation,
 				nodeName,
 				type: MLASTNodeType.StartTag,
-				namespace: 'http://www.w3.org/1999/xhtml',
+				namespace,
 				attributes: attrs.map(a => attr(a, rawHtml)),
 				hasSpreadAttr,
 				parentNode,
@@ -159,7 +163,7 @@ export function nodeize(
 					endCol: endTagLocation.endCol,
 					nodeName: '#jsx-fragment',
 					type: MLASTNodeType.EndTag,
-					namespace: 'http://www.w3.org/1999/xhtml',
+					namespace: parentNamespace,
 					attributes: [],
 					parentNode,
 					prevNode,
@@ -178,7 +182,7 @@ export function nodeize(
 				...startTagLocation,
 				nodeName: '#jsx-fragment',
 				type: MLASTNodeType.StartTag,
-				namespace: 'http://www.w3.org/1999/xhtml',
+				namespace: parentNamespace,
 				attributes: [],
 				hasSpreadAttr: false,
 				parentNode,

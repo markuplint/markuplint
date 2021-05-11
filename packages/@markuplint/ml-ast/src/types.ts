@@ -138,3 +138,8 @@ export interface MLMarkupLanguageParser {
 export type Parse = MLMarkupLanguageParser['parse'];
 
 export type Walker = (node: MLASTNode, depth: number) => void;
+
+export type NamespaceURI =
+	| 'http://www.w3.org/1999/xhtml'
+	| 'http://www.w3.org/2000/svg'
+	| 'http://www.w3.org/1998/Math/MathML';
