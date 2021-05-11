@@ -18,7 +18,7 @@ describe('getName', () => {
 		expect(getName(jsxParser('<XNode.Prop.xxx></XNode.Prop.xxx>')[0].openingElement.name)).toBe('XNode.Prop.xxx');
 		// @ts-ignore
 		expect(getName(jsxParser('<svg></svg>')[0].openingElement.name)).toBe('svg');
-
-		expect(() => jsxParser('<ns:tag></ns:tag>')).toThrow();
+		// @ts-ignore
+		expect(getName(jsxParser('<ns:tag></ns:tag>')[0].openingElement.name)).toBe('ns:tag');
 	});
 });

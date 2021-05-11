@@ -9,9 +9,9 @@ import type {
 	JSXSpreadAttribute,
 	JSXTagNameExpression,
 	Node,
-} from '@typescript-eslint/types/dist/ts-estree';
+} from '@typescript-eslint/types/dist/ast-spec';
 
-export type { JSXAttribute } from '@typescript-eslint/types/dist/ts-estree';
+export type { JSXAttribute } from '@typescript-eslint/types/dist/ast-spec';
 
 export type JSXNode = JSXChild | JSXElementHasSpreadAttribute;
 
