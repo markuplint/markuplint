@@ -17,13 +17,16 @@ $ npx markuplint target.html
 
 ## Using in your project
 
-Install markuplint to your project through NPM or Yarn on CLI:
+Create a [configuration](./configuration) file and install dependencies.
 
 ```
-$ npm install --save-dev markuplint
+$ npx markuplint --init
 # or
-$ yarn add -D markuplint
+$ yarn run markuplint --init
 ```
+
+Answer questions interactively.
+By doing this, needed modules are installed includes `markuplint`.
 
 Add a command to the `scripts` option on `package.json`:
 
