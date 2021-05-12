@@ -267,3 +267,22 @@ test('childNodeRules multi selectors (No error)', async () => {
 	);
 	expect(r.length).toBe(0);
 });
+
+test('Dynamic value', async () => {
+	const r = await markuplint.verify(
+		'<div className={style}></div>',
+		{
+			rules: {
+				'class-naming': {
+					value: '/^c-[a-z]+/',
+				},
+			},
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r.length).toBe(0);
+});
