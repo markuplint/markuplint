@@ -149,6 +149,7 @@ export async function initialize() {
 			name: 'langs',
 			type: 'multiselect',
 			choices: [
+				{ name: 'React (JSX)', value: 'jsx' },
 				{ name: 'Vue', value: 'vue' },
 				{ name: 'Svelte', value: 'svelte' },
 				{ name: 'Pug', value: 'pug' },
@@ -196,6 +197,9 @@ export async function initialize() {
 
 		if (lang === 'vue') {
 			config.specs = ['@markuplint/vue-spec'];
+		}
+		if (lang === 'jsx') {
+			config.specs = ['@markuplint/react-spec'];
 		}
 	}
 
@@ -246,6 +250,9 @@ export async function initialize() {
 
 		if (res.langs.includes('vue')) {
 			modules.push('@markuplint/vue-spec');
+		}
+		if (res.langs.includes('jsx')) {
+			modules.push('@markuplint/react-spec');
 		}
 
 		const result = await installModule(modules, true).catch(e => new Error(e));
