@@ -1,8 +1,9 @@
 import { tokenizer, uuid } from '@markuplint/parser-utils';
 import { MLASTHTMLAttr } from '@markuplint/ml-ast';
 
-// eslint-disable-next-line no-control-regex
-const reAttrsInStartTag = /(\s*)([^\x00-\x1f\x7f-\x9f "'>/=]+)(?:(\s*)(=)(\s*)(?:(?:"([^"]*)")|(?:'([^']*)')|([^\s]*)))?/;
+const reAttrsInStartTag =
+	// eslint-disable-next-line no-control-regex
+	/(\s*)([^\x00-\x1f\x7f-\x9f "'>/=]+)(?:(\s*)(=)(\s*)(?:(?:"([^"]*)")|(?:'([^']*)')|([^\s]*)))?/;
 
 export default function attrTokenizer(raw: string, line: number, col: number, startOffset: number): MLASTHTMLAttr {
 	const attrMatchedMap = raw.match(reAttrsInStartTag);

@@ -8,7 +8,8 @@ import { RuleConfigValue } from '@markuplint/ml-config';
 
 export default class MLDOMOmittedElement<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTOmittedElement>
-	implements IMLDOMOmittedElement {
+	implements IMLDOMOmittedElement
+{
 	readonly type = 'OmittedElement';
 	readonly nodeName: string;
 	readonly namespaceURI: string;

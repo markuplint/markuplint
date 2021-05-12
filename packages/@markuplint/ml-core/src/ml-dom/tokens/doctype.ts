@@ -6,7 +6,8 @@ import { RuleConfigValue } from '@markuplint/ml-config';
 
 export default class MLDOMDoctype<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTNode>
-	implements IMLDOMDoctype {
+	implements IMLDOMDoctype
+{
 	readonly type = 'Doctype';
 
 	#name: string;

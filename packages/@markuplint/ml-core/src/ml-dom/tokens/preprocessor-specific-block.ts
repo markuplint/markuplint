@@ -6,7 +6,8 @@ import { RuleConfigValue } from '@markuplint/ml-config';
 
 export default class MLDOMPreprocessorSpecificBlock<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTPreprocessorSpecificBlock>
-	implements IMLDOMPreprocessorSpecificBlock {
+	implements IMLDOMPreprocessorSpecificBlock
+{
 	readonly type = 'PSBlock';
 	readonly nodeName: string;
 

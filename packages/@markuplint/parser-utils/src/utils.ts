@@ -174,7 +174,7 @@ function tokenDebug<
 		potentialName?: string;
 		type?: string;
 		raw: string;
-	}
+	},
 >(n: N, type = '') {
 	return `[${n.startLine}:${n.startCol}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${
 		n.nodeName || n.potentialName || n.name || n.type || type

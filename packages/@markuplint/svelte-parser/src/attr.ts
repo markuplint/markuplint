@@ -33,8 +33,9 @@ export function attr(attr: SvelteDirective, rawHTML: string): MLASTAttr | { __sp
 		: // @ts-ignore TODO solve type
 		attr.type === 'Spread'
 		? raw.slice(1).slice(0, -1)
-		: attr.expression
-		? sliceFragment(rawHTML, attr.expression.start, attr.expression.end).raw
+		: attr.expression && 'start' in attr.expression && 'end' in attr.expression
+		? // @ts-ignore
+		  sliceFragment(rawHTML, attr.expression.start, attr.expression.end).raw
 		: '';
 
 	const token = directiveTokenizer(raw, valueToken, startLine, startCol, startOffset);

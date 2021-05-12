@@ -11,7 +11,8 @@ import { syncWalk } from '../helper/walkers';
 
 export default class MLDOMElement<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTElement>
-	implements IMLDOMElement {
+	implements IMLDOMElement
+{
 	readonly type = 'Element';
 	readonly nodeName: string;
 	readonly attributes: (MLDOMAttribute | MLDOMPreprocessorSpecificAttribute)[];
