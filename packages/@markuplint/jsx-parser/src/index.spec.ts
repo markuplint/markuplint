@@ -112,7 +112,9 @@ describe('parse', () => {
 		expect(maps).toStrictEqual([
 			'[3:3]>[3:7](38,42)ul: <ul>',
 			'[3:7]>[4:4](42,46)#text: ⏎→→→',
+			'[4:4]>[6:7](46,108)JSXExpressionContainer: {[1,␣2,␣3].map(item␣=>␣(⏎→→→→<li␣key={item}>{item}</li>⏎→→→))}',
 			'[5:5]>[5:20](75,90)li: <li␣key={item}>',
+			'[5:20]>[5:26](90,96)JSXExpressionContainer: {item}',
 			'[5:26]>[5:31](96,101)li: </li>',
 			'[6:7]>[7:3](108,111)#text: ⏎→→',
 			'[7:3]>[7:8](111,116)ul: </ul>',
@@ -130,11 +132,13 @@ describe('parse', () => {
 	);
 };`);
 		// @ts-ignore
-		expect(ast.nodeList[0].childNodes.length).toBe(2);
+		expect(ast.nodeList[0].childNodes.length).toBe(3);
 		// @ts-ignore
 		expect(ast.nodeList[0].childNodes[0].nodeName).toBe('#text');
 		// @ts-ignore
-		expect(ast.nodeList[0].childNodes[1].nodeName).toBe('#text');
+		expect(ast.nodeList[0].childNodes[1].nodeName).toBe('JSXExpressionContainer');
+		// @ts-ignore
+		expect(ast.nodeList[0].childNodes[2].nodeName).toBe('#text');
 		expect(ast.nodeList[3].parentNode).toBeNull();
 	});
 
@@ -259,6 +263,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 			'[3:17]>[3:24](44,51)El1: <El1␣/>',
 			'[4:13]>[4:20](72,79)El2: <El2␣/>',
 			'[5:10]>[5:12](92,94)#jsx-fragment: <>',
+			'[5:12]>[5:35](94,117)JSXExpressionContainer: {prop␣?␣<El3␣/>␣:␣null}',
 			'[5:20]>[5:27](102,109)El3: <El3␣/>',
 			'[5:35]>[5:38](117,120)#jsx-fragment: </>',
 			'[7:18]>[7:25](149,156)El4: <El4␣/>',

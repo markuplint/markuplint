@@ -206,9 +206,6 @@ export function nodeize(
 
 			return startTag;
 		}
-		case 'JSXExpressionContainer': {
-			return [];
-		}
 		default: {
 			const { startOffset, endOffset, startLine, endLine, startCol, endCol, raw } = sliceFragment(
 				rawHtml,

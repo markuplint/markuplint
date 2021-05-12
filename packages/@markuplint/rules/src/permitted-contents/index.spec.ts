@@ -694,4 +694,36 @@ describe('React', () => {
 			),
 		).toStrictEqual([]);
 	});
+
+	test('Expect to contain a text node', async () => {
+		expect(await markuplint.verify('<head><title>{variable}</title></head>', ruleOn, [rule], 'en')).toStrictEqual(
+			[],
+		);
+		expect(await markuplint.verify('<head><title>\n</title></head>', ruleOn, [rule], 'en')).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'Invalid content of the title element in the HTML specification',
+				raw: '<title>',
+			},
+		]);
+		expect(await markuplint.verify('<head><title>\n</title></head>', jsxRuleOn, [rule], 'en')).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'Invalid content of the title element in the HTML specification',
+				raw: '<title>',
+			},
+		]);
+		expect(
+			await markuplint.verify('<head><title>_variable_</title></head>', jsxRuleOn, [rule], 'en'),
+		).toStrictEqual([]);
+		expect(
+			await markuplint.verify('<head><title>{variable}</title></head>', jsxRuleOn, [rule], 'en'),
+		).toStrictEqual([]);
+	});
 });
