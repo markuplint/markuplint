@@ -159,6 +159,9 @@ export default createRule<true, Options>({
 			// Checking ARIA Value
 			if (node.rule.option.checkingValue) {
 				for (const attr of node.attributes) {
+					if (attr.attrType === 'html-attr' && attr.isDynamicValue) {
+						continue;
+					}
 					const attrName = attr.getName().potential.trim().toLowerCase();
 					if (/^aria-/i.test(attrName)) {
 						const value = attr.getValue().potential.trim().toLowerCase();
