@@ -15,7 +15,8 @@ const rawTextElements = ['script', 'style'];
 
 export default class MLDOMText<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTText>
-	implements IMLDOMText {
+	implements IMLDOMText
+{
 	readonly type = 'Text';
 	readonly isRawText: boolean;
 	readonly ownModels: Set<ContentModel> = new Set();

@@ -5,6 +5,7 @@ import { RuleConfigValue } from '@markuplint/ml-config';
 
 export default class MLDOMComment<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTComment>
-	implements IMLDOMComment {
+	implements IMLDOMComment
+{
 	readonly type = 'Comment';
 }

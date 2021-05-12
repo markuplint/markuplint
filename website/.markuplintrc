@@ -2,6 +2,9 @@
 	"parser": {
 		".tsx$": "@markuplint/jsx-parser"
 	},
+	"specs": [
+		"@markuplint/react-spec"
+	],
 	"rules": {
 		"attr-duplication": true,
 		"character-reference": true,
@@ -25,6 +28,23 @@
 		"wai-aria": true
 	},
 	"nodeRules": [
+		{
+			"selector": "meta[property]",
+			"rules": {
+				"invalid-attr": {
+					"option": {
+						"attrs": {
+							"property": {
+								"type": "String"
+							},
+							"content": {
+								"type": "String"
+							}
+						}
+					}
+				}
+			}
+		},
 		{
 			"tagName": "style",
 			"rules": {

@@ -1,5 +1,5 @@
 import { Result, createRule } from '@markuplint/ml-core';
-import { attrSpecs, getSpec } from '../helpers';
+import { getAttrSpecs } from '../helpers';
 
 export default createRule({
 	name: 'deprecated-attr',
@@ -7,17 +7,16 @@ export default createRule({
 	defaultOptions: null,
 	async verify(document, translate) {
 		const reports: Result[] = [];
-		const spec = getSpec(document.schemas);
 		await document.walkOn('Element', async element => {
-			const specs = attrSpecs(element.nodeName, spec);
+			const attrSpecs = getAttrSpecs(element.nodeName, document.specs);
 
-			if (!specs) {
+			if (!attrSpecs) {
 				return;
 			}
 
 			for (const attr of element.attributes) {
 				const name = attr.getName();
-				const attrSpec = specs.find(item => item.name === name.potential);
+				const attrSpec = attrSpecs.find(item => item.name === name.potential);
 				if (!attrSpec) {
 					return;
 				}

@@ -9,9 +9,9 @@ import {
 	MLASTText,
 } from '@markuplint/ml-ast';
 import { SvelteDirective, SvelteNode } from './svelte-parser';
+import { getNamespace, parseRawTag } from '@markuplint/html-parser';
 import { isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
 import { attr } from './attr';
-import { parseRawTag } from '@markuplint/html-parser';
 import { traverse } from './traverse';
 
 export function nodeize(
@@ -26,6 +26,8 @@ export function nodeize(
 		originNode.start,
 		originNode.end,
 	);
+	const parentNamespace =
+		parentNode && 'namespace' in parentNode ? parentNode.namespace : 'http://www.w3.org/1999/xhtml';
 
 	switch (originNode.type) {
 		case 'Text': {
@@ -85,6 +87,7 @@ export function nodeize(
 				const endTagStartOffset = startOffset + raw.indexOf(endTagRaw);
 				const endTagEndOffset = endTagStartOffset + endTagRaw.length;
 				const endTagLocation = sliceFragment(rawHtml, endTagStartOffset, endTagEndOffset);
+				const namespace = getNamespace(originNode.name, parentNamespace);
 				endTag = {
 					uuid: uuid(),
 					raw: endTagRaw,
@@ -96,7 +99,7 @@ export function nodeize(
 					endCol: endTagLocation.endCol,
 					nodeName: originNode.name,
 					type: MLASTNodeType.EndTag,
-					namespace: originNode.namespace,
+					namespace,
 					attributes: [],
 					parentNode,
 					prevNode,
@@ -121,12 +124,14 @@ export function nodeize(
 				startTagLocation.startOffset,
 			);
 
+			const namespace = getNamespace(originNode.name, parentNamespace);
+
 			const startTag: MLASTTag = {
 				uuid: uuid(),
 				...startTagLocation,
 				nodeName: originNode.name,
 				type: MLASTNodeType.StartTag,
-				namespace: 'http://www.w3.org/1999/xhtml',
+				namespace,
 				attributes,
 				hasSpreadAttr,
 				parentNode,

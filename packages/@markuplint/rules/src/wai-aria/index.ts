@@ -1,13 +1,12 @@
 import { Result, createRule } from '@markuplint/ml-core';
 import {
 	ariaSpec,
-	attrSpecs,
 	checkAria,
+	getAttrSpecs,
 	getComputedRole,
 	getImplicitRole,
 	getPermittedRoles,
 	getRoleSpec,
-	getSpec,
 	htmlSpec,
 } from '../helpers';
 
@@ -27,15 +26,14 @@ export default createRule<true, Options>({
 		disallowSetImplicitRole: true,
 	},
 	async verify(document, translate) {
-		const spec = getSpec(document.schemas);
 		const reports: Result[] = [];
 
 		await document.walkOn('Element', async node => {
-			const attributeSpecs = attrSpecs(node.nodeName, spec);
+			const attrSpecs = getAttrSpecs(node.nodeName, document.specs);
 			const html = htmlSpec(node.nodeName);
 			const { roles } = ariaSpec();
 
-			if (!html || !attributeSpecs) {
+			if (!html || !attrSpecs) {
 				return;
 			}
 
@@ -161,6 +159,9 @@ export default createRule<true, Options>({
 			// Checking ARIA Value
 			if (node.rule.option.checkingValue) {
 				for (const attr of node.attributes) {
+					if (attr.attrType === 'html-attr' && attr.isDynamicValue) {
+						continue;
+					}
 					const attrName = attr.getName().potential.trim().toLowerCase();
 					if (/^aria-/i.test(attrName)) {
 						const value = attr.getValue().potential.trim().toLowerCase();

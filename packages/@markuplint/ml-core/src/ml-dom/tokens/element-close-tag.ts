@@ -8,7 +8,8 @@ import { stringSplice } from '../../utils/string-splice';
 
 export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTElementCloseTag>
-	implements IMLDOMElementCloseTag {
+	implements IMLDOMElementCloseTag
+{
 	readonly type = 'ElementCloseTag';
 	readonly nodeName: string;
 	readonly startTag: MLDOMElement<T, O>;

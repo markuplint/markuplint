@@ -8,7 +8,7 @@ import {
 	MLASTTag,
 	Parse,
 } from '@markuplint/ml-ast';
-import { parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
+import { getNamespace, parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
 import { ignoreFrontMatter, isPotentialCustomElementName, tokenizer, uuid, walk } from '@markuplint/parser-utils';
 import attrTokenizer from './attr-tokenizer';
 
@@ -99,6 +99,8 @@ class Parser {
 		const endLine = originNode.endLine;
 		const startCol = originNode.column;
 		const endCol = originNode.endColumn;
+		const parentNamespace =
+			parentNode && 'namespace' in parentNode ? parentNode.namespace : 'http://www.w3.org/1999/xhtml';
 
 		switch (originNode.type) {
 			case 'Doctype': {
@@ -180,6 +182,7 @@ class Parser {
 				};
 			}
 			case 'Tag': {
+				const namespace = getNamespace(originNode.name, parentNamespace);
 				const tag: MLASTTag = {
 					uuid: uuid(),
 					raw: originNode.raw,
@@ -191,8 +194,7 @@ class Parser {
 					endCol,
 					nodeName: originNode.name,
 					type: MLASTNodeType.StartTag,
-					// TODO: SVG
-					namespace: 'http://www.w3.org/1999/xhtml',
+					namespace,
 					attributes: originNode.attrs.map(attr => attrTokenizer(attr)),
 					hasSpreadAttr: false,
 					parentNode,

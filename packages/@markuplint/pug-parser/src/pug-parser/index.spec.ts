@@ -325,8 +325,7 @@ describe('parser', () => {
 										{
 											type: 'Tag',
 											name: 'img',
-											raw:
-												'img#the-id2(\n\t\t\tsrc="path/to"\n\t\t\talt="image"\n\t\t).the-class3',
+											raw: 'img#the-id2(\n\t\t\tsrc="path/to"\n\t\t\talt="image"\n\t\t).the-class3',
 											offset: 218,
 											endOffset: 277,
 											line: 16,

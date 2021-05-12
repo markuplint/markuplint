@@ -68,7 +68,12 @@ export function attr(attr: JSXAttribute, rawHTML: string): MLASTAttr {
 			ast.potentialName = 'for';
 			break;
 		default:
-			if (attrs.includes(rawName)) {
+			if (
+				// JSX Supporting attributes
+				attrs.includes(rawName) ||
+				// Event attributes
+				/^on[a-z]/i.test(rawName)
+			) {
 				ast.potentialName = rawName.toLowerCase();
 			}
 	}

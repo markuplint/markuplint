@@ -757,3 +757,169 @@ test('React with spread attribute', async () => {
 		},
 	]);
 });
+
+test('React spec', async () => {
+	const jsx = `<>
+	<div value defaultValue></div>
+	<input defaultChecked />
+	<input type="checkbox" defaultChecked />
+	<select value defaultValue></select>
+	<textarea value defaultValue></textarea>
+	<select value={0} defaultValue={0}></select>
+	<textarea value={0} defaultValue={0}></textarea>
+</>`;
+	const rWithoutSpec = await markuplint.verify(
+		jsx,
+		{
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	const rWithSpec = await markuplint.verify(
+		jsx,
+		{
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			specs: ['@markuplint/react-spec'],
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(rWithoutSpec).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 2,
+			col: 7,
+			message: 'The "value" attribute is not allowed',
+			raw: 'value',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 2,
+			col: 13,
+			message: 'The "defaultValue" attribute is not allowed',
+			raw: 'defaultValue',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 3,
+			col: 9,
+			message: 'The "defaultChecked" attribute is not allowed',
+			raw: 'defaultChecked',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 4,
+			col: 25,
+			message: 'The "defaultChecked" attribute is not allowed',
+			raw: 'defaultChecked',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 5,
+			col: 10,
+			message: 'The "value" attribute is not allowed',
+			raw: 'value',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 5,
+			col: 16,
+			message: 'The "defaultValue" attribute is not allowed',
+			raw: 'defaultValue',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 6,
+			col: 12,
+			message: 'The "value" attribute is not allowed',
+			raw: 'value',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 6,
+			col: 18,
+			message: 'The "defaultValue" attribute is not allowed',
+			raw: 'defaultValue',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 7,
+			col: 10,
+			message: 'The "value" attribute is not allowed',
+			raw: 'value',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 7,
+			col: 20,
+			message: 'The "defaultValue" attribute is not allowed',
+			raw: 'defaultValue',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 8,
+			col: 12,
+			message: 'The "value" attribute is not allowed',
+			raw: 'value',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 8,
+			col: 22,
+			message: 'The "defaultValue" attribute is not allowed',
+			raw: 'defaultValue',
+		},
+	]);
+
+	expect(rWithSpec).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 2,
+			col: 7,
+			message: 'The "value" attribute is not allowed',
+			raw: 'value',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 2,
+			col: 13,
+			message: 'The "defaultValue" attribute is not allowed',
+			raw: 'defaultValue',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 3,
+			col: 9,
+			message: 'The "defaultChecked" attribute is not allowed',
+			raw: 'defaultChecked',
+		},
+	]);
+});

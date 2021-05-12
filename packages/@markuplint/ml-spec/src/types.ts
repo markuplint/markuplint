@@ -9,10 +9,12 @@ export interface MLMLSpec {
 	specs: ElementSpec[];
 }
 
+type ExtendedElementSpec = Partial<ElementSpec> & { name: ElementSpec['name'] };
+
 export type ExtendedSpec = {
 	cites?: Cites;
 	def?: Partial<SpecDefs>;
-	specs?: ElementSpec[];
+	specs?: ExtendedElementSpec[];
 };
 
 /**
@@ -141,6 +143,7 @@ export type Attribute = {
 	name: string;
 	type: AttributeType;
 	description: string;
+	caseSensitive?: true;
 	experimental?: true;
 	obsolete?: true;
 	deprecated?: true;
@@ -240,3 +243,17 @@ export type ARIAAttributeValue =
 	| 'token'
 	| 'token list'
 	| 'URI';
+
+export interface SpecOM {
+	[tagName: string]: MLDOMElementSpec;
+}
+
+export interface MLDOMElementSpec {
+	experimental: boolean;
+	obsolete: boolean | string;
+	deprecated: boolean;
+	nonStandard: boolean;
+	categories: ContentModel[];
+	permittedStructures: PermittedStructuresSchema;
+	attributes: Attribute[];
+}

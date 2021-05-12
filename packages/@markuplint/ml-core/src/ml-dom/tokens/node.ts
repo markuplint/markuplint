@@ -11,10 +11,11 @@ import { RuleInfo } from '../../';
 export default abstract class MLDOMNode<
 		T extends RuleConfigValue,
 		O = null,
-		A extends MLASTAbstructNode = MLASTAbstructNode
+		A extends MLASTAbstructNode = MLASTAbstructNode,
 	>
 	extends MLDOMToken<A>
-	implements IMLDOMNode {
+	implements IMLDOMNode
+{
 	readonly type: NodeType = 'Node';
 
 	protected _astToken: A;
