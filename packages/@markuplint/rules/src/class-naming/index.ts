@@ -15,6 +15,9 @@ export default createRule<Value>({
 				const classPatterns = Array.isArray(node.rule.value) ? node.rule.value : [node.rule.value];
 				const attrs = node.getAttributeToken('class');
 				for (const attr of attrs) {
+					if (attr.attrType === 'html-attr' && attr.isDynamicValue) {
+						continue;
+					}
 					const classAttr = attr.getValue();
 					const classList = classAttr.potential
 						.split(/\s+/g)
