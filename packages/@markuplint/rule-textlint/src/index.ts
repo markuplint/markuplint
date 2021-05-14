@@ -9,7 +9,7 @@ type TextLintEngine = import('textlint').TextLintEngine;
 
 type Option = Partial<TextlintKernelOptions> | true;
 
-const isNode = typeof process !== 'undefined' && !!process.versions.node;
+const isNode = typeof process !== 'undefined' && !!process?.versions?.node;
 
 let path: typeof import('path');
 let kernel: TextlintKernel;
