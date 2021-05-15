@@ -3,21 +3,11 @@ import * as markuplint from 'markuplint';
 import Prh from 'textlint-rule-prh';
 import path from 'path';
 
+import { text } from './test-utils';
+
 test('is test 1', async () => {
 	const r = await markuplint.verify(
-		/* HTML */ `<!DOCTYPE html>
-			<html lang="en">
-				<head>
-					<meta charset="UTF-8" />
-					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-					<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-					<title>Document</title>
-				</head>
-				<body>
-					<h1>Title</h1>
-					<p>This not use jquery.</p>
-				</body>
-			</html>`,
+		text,
 		{
 			rules: {
 				textlint: {
@@ -45,36 +35,30 @@ test('is test 1', async () => {
 			severity: 'warning',
 			ruleId: 'textlint',
 			line: 11,
-			col: 22,
+			col: 20,
 			raw: 'jquery',
 			message: 'Invalid text: jquery => jQuery',
 		},
 	]);
 });
 
+/* eslint-disable no-console */
+const originalErrorLogger = console.error;
+
+let errorLogger: jest.Mock;
+
+beforeEach(() => {
+	errorLogger = console.error = jest.fn();
+});
+
+afterAll(() => {
+	console.error = originalErrorLogger;
+});
+/* eslint-enable no-console */
+
 test('is test 2', async () => {
-	const originalErrorLogger = console.error;
-
-	const errorLogger = (console.error = jest.fn());
-
-	afterAll(() => {
-		console.error = originalErrorLogger;
-	});
-
-	await markuplint.exec({
-		sourceCodes: /* HTML */ `<!DOCTYPE html>
-			<html lang="en">
-				<head>
-					<meta charset="UTF-8" />
-					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-					<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-					<title>Document</title>
-				</head>
-				<body>
-					<h1>Title</h1>
-					<p>This not use jquery.</p>
-				</body>
-			</html>`,
+	const r = await markuplint.exec({
+		sourceCodes: text,
 		names: path.resolve('test/fixture/textlint/test.html'),
 		config: {
 			rules: {
@@ -83,6 +67,24 @@ test('is test 2', async () => {
 		},
 	});
 
+	expect(r[0].results).toStrictEqual([]);
+	expect(errorLogger).not.toBeCalled();
+});
+
+test('is test 3', async () => {
+	const r = await markuplint.exec({
+		sourceCodes: text,
+		names: path.resolve('test/fixture/textlint/test.html'),
+		config: {
+			rules: {
+				textlint: {
+					option: true,
+				},
+			},
+		},
+	});
+
+	expect(r[0].results).toStrictEqual([]);
 	expect(errorLogger).toBeCalledTimes(1);
 	expect(errorLogger).toBeCalledWith(
 		'`config.option` with `true` value is only available on Node.js, please use plain `TextlintKernelOptions` instead',

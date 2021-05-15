@@ -92,7 +92,10 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 						  // @ts-ignore for "as" casting
 						  this.defaultOptions.concat(configSettings.option) as O
 						: this.defaultOptions
-					: this.defaultOptions !== null && typeof this.defaultOptions === 'object'
+					: this.defaultOptions !== null &&
+					  typeof this.defaultOptions === 'object' &&
+					  // for example `configSettings.option === true`
+					  (configSettings.option == null || typeof configSettings.option === 'object')
 					? { ...this.defaultOptions, ...(configSettings.option || {}) }
 					: configSettings.option || this.defaultOptions,
 			};

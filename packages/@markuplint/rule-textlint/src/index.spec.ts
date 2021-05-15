@@ -3,24 +3,11 @@ import * as markuplint from 'markuplint';
 import Prh from 'textlint-rule-prh';
 import path from 'path';
 
-// Auto loading
-// import rule from './';
+import { text } from './test-utils';
 
 test('is test 1', async () => {
 	const r = await markuplint.verify(
-		/* HTML */ `<!DOCTYPE html>
-			<html lang="en">
-				<head>
-					<meta charset="UTF-8" />
-					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-					<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-					<title>Document</title>
-				</head>
-				<body>
-					<h1>Title</h1>
-					<p>This not use jquery.</p>
-				</body>
-			</html>`,
+		text,
 		{
 			rules: {
 				textlint: {
@@ -48,7 +35,7 @@ test('is test 1', async () => {
 			severity: 'warning',
 			ruleId: 'textlint',
 			line: 11,
-			col: 22,
+			col: 20,
 			raw: 'jquery',
 			message: 'Invalid text: jquery => jQuery',
 		},
@@ -57,19 +44,7 @@ test('is test 1', async () => {
 
 test('is test 2', async () => {
 	const r = await markuplint.exec({
-		sourceCodes: /* HTML */ `<!DOCTYPE html>
-			<html lang="en">
-				<head>
-					<meta charset="UTF-8" />
-					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-					<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-					<title>Document</title>
-				</head>
-				<body>
-					<h1>Title</h1>
-					<p>This not use jquery.</p>
-				</body>
-			</html>`,
+		sourceCodes: text,
 		names: path.resolve('test/fixture/textlint/test.html'),
 		config: {
 			rules: {
@@ -83,7 +58,7 @@ test('is test 2', async () => {
 			severity: 'warning',
 			ruleId: 'textlint',
 			line: 11,
-			col: 22,
+			col: 20,
 			raw: 'jquery',
 			message: 'Invalid text: jquery => jQuery',
 		},

@@ -1,18 +1,17 @@
 import { Result, createRule } from '@markuplint/ml-core';
 
+import { defaultOptions, textlintVerify } from './verify';
 import { Option } from './helper';
-import { textlintVerify } from './verify';
-
-const isNode = typeof process !== 'undefined' && !!process?.versions?.node;
 
 export default createRule<boolean, Option>({
 	defaultLevel: 'warning',
 	name: 'textlint',
 	defaultValue: true,
-	defaultOptions: isNode || {},
+	defaultOptions,
 	async verify(document, translate, config) {
 		const reports: Result[] = [];
 		const html = document.toString();
+
 		const textlintResult = await textlintVerify(document, translate, config);
 
 		if (!textlintResult) {

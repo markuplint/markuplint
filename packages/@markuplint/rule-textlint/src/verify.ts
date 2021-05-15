@@ -8,6 +8,8 @@ import path from 'path';
 
 const lintEngineCache = new Map<string, TextLintEngine>();
 
+export const defaultOptions = true;
+
 export const textlintVerify: (
 	...args: Parameters<MLRuleOptions<boolean, Option>['verify']>
 ) => Promise<TextlintResult | undefined> = async (document, translate, config) => {

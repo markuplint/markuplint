@@ -2,6 +2,8 @@ import { Option, lintText } from './helper';
 import { MLRuleOptions } from '@markuplint/ml-core';
 import { TextlintResult } from '@textlint/kernel';
 
+export const defaultOptions = {};
+
 export const textlintVerify: (
 	...args: Parameters<MLRuleOptions<boolean, Option>['verify']>
 ) => Promise<TextlintResult | undefined> = async (document, translate, config) => {
