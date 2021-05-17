@@ -15,7 +15,8 @@ export async function moduleAutoLoader<T extends RuleConfigValue, O = unknown>(r
 			errors.push(e);
 		}
 
-		if (!rule) {
+		if (rule) {
+			rules.push(rule);
 			continue;
 		}
 
