@@ -23,6 +23,7 @@
 	"dependencies": {
 		"@markuplint/ml-config": "^1.1.1",
 		"cosmiconfig": "^7.0.0",
-		"glob": "^7.1.6"
+		"glob": "^7.1.6",
+		"minimatch": "^3.0.4"
 	}
 }
