@@ -98,6 +98,14 @@ describe('basic test', () => {
 		});
 		expect(r[0].results.length).toEqual(16);
 	});
+
+	it('is ignoring 008.html', async () => {
+		const r = await markuplint.exec({
+			files: 'test/fixture/008.html',
+			locale: 'en',
+		});
+		expect(r.length).toEqual(0);
+	});
 });
 
 describe('async and sync rules', () => {
