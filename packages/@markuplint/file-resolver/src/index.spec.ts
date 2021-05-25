@@ -132,4 +132,14 @@ describe('FileResolver', () => {
 			],
 		});
 	});
+
+	it('optimizes path', async () => {
+		expect(FileResolver.optimizePath('/base/file', '/abs-dir/file')).toBe('/abs-dir/file');
+		expect(FileResolver.optimizePath('/base/file', 'file.ext')).toBe('/base/file.ext');
+		expect(FileResolver.optimizePath('/base/path/file', 'file.ext')).toBe('/base/path/file.ext');
+		expect(FileResolver.optimizePath('/base/path/file', './file.ext')).toBe('/base/path/file.ext');
+		expect(FileResolver.optimizePath('/base/path/file', './path/file.ext')).toBe('/base/path/path/file.ext');
+		expect(FileResolver.optimizePath('/base/path/file', './*.ext')).toBe('/base/path/*.ext');
+		expect(FileResolver.optimizePath('/base/path/file', './**/*.ext')).toBe('/base/path/**/*.ext');
+	});
 });
