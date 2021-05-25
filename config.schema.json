@@ -83,6 +83,12 @@
 					}
 				}
 			}
+		},
+		"excludeFiles": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
 		}
 	}
 }

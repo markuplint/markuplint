@@ -7,7 +7,7 @@ export interface Config {
 	rules?: Rules;
 	nodeRules?: NodeRule[];
 	childNodeRules?: ChildNodeRule[];
-	ignore?: string | string[];
+	excludeFiles?: string[];
 }
 
 export interface ParserConfig {
