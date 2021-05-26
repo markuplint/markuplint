@@ -301,6 +301,43 @@ describe('parser', () => {
 		expect(attrs.every(attr => (attr.type === 'html-attr' ? attr.isDirective : false))).toBe(true);
 	});
 
+	test('multiple class directives', () => {
+		const r = parse('<el class:selected="{isSelected}" class:focused="{isFocused}" />');
+		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		expect(attr).toStrictEqual([
+			[
+				'[1:5]>[1:34](4,33)class: class:selected="{isSelected}"',
+				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:5]>[1:19](4,18)name: class:selected',
+				'  [1:19]>[1:19](18,18)bE: ',
+				'  [1:19]>[1:20](18,19)equal: =',
+				'  [1:20]>[1:20](19,19)aE: ',
+				'  [1:20]>[1:21](19,20)sQ: "',
+				'  [1:21]>[1:33](20,32)value: {isSelected}',
+				'  [1:33]>[1:34](32,33)eQ: "',
+				'  isDirective: true',
+				'  isDynamicValue: true',
+				'  isInvalid: false',
+				'  potentialName: class',
+			],
+			[
+				'[1:35]>[1:62](34,61)class: class:focused="{isFocused}"',
+				'  [1:35]>[1:35](34,34)bN: ',
+				'  [1:35]>[1:48](34,47)name: class:focused',
+				'  [1:48]>[1:48](47,47)bE: ',
+				'  [1:48]>[1:49](47,48)equal: =',
+				'  [1:49]>[1:49](48,48)aE: ',
+				'  [1:49]>[1:50](48,49)sQ: "',
+				'  [1:50]>[1:61](49,60)value: {isFocused}',
+				'  [1:61]>[1:62](60,61)eQ: "',
+				'  isDirective: true',
+				'  isDynamicValue: true',
+				'  isInvalid: false',
+				'  potentialName: class',
+			],
+		]);
+	});
+
 	test('shorthand', () => {
 		const r = parse('<el {items} />');
 		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);

@@ -10,7 +10,7 @@ export default createRule({
 		await document.walkOn('Element', async node => {
 			const attrNameStack: string[] = [];
 			for (const attr of node.attributes) {
-				if (attr.attrType === 'ps-attr' && attr.isDuplicatable) {
+				if (attr.isDuplicatable) {
 					continue;
 				}
 				const attrName = attr.getName();

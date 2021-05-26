@@ -108,6 +108,11 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 	col = endQuote.endCol;
 	offset = endQuote.endOffset;
 
+	let isDuplicatable = false;
+	if (name.raw.toLowerCase() === 'class') {
+		isDuplicatable = true;
+	}
+
 	return {
 		type: 'html-attr',
 		uuid: uuid(),
@@ -128,5 +133,6 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 		endQuote,
 		isInvalid: invalid,
 		isDynamicValue,
+		isDuplicatable,
 	};
 }

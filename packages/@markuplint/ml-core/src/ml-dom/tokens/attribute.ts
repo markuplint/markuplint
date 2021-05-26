@@ -16,6 +16,7 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 	readonly potentialName: string;
 	readonly isInvalid?: boolean;
 	readonly candidate?: string;
+	readonly isDuplicatable: boolean;
 
 	constructor(astToken: MLASTHTMLAttr) {
 		super(astToken);
@@ -33,6 +34,7 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 		this.potentialName = astToken.potentialName || this.name.raw;
 		this.isInvalid = astToken.isInvalid;
 		this.candidate = astToken.candidate;
+		this.isDuplicatable = astToken.isDuplicatable;
 	}
 
 	get raw() {
