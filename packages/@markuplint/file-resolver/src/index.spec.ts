@@ -132,4 +132,30 @@ describe('FileResolver', () => {
 			],
 		});
 	});
+
+	it('file matches', async () => {
+		const file = new FileResolver.MLFile('/dir/file');
+		expect(file.matches('/dir/*')).toBeTruthy();
+		expect(file.matches('/**/*')).toBeTruthy();
+		expect(file.matches('/dir2/*')).toBeFalsy();
+
+		const file2 = new FileResolver.MLFile('/dir/dir2/file.html');
+		expect(file2.matches('/dir/*')).toBeFalsy();
+		expect(file2.matches('/**/*')).toBeTruthy();
+		expect(file2.matches('/dir2/*')).toBeFalsy();
+		expect(file2.matches('/dir/**/*')).toBeTruthy();
+		expect(file2.matches('/dir/**/*.html')).toBeTruthy();
+		expect(file2.matches('/dir/**/*.css')).toBeFalsy();
+		expect(file2.matches('/dir/**/*.{html,css}')).toBeTruthy();
+	});
+
+	it('optimizes path', async () => {
+		expect(FileResolver.optimizePath('/base/file', '/abs-dir/file')).toBe('/abs-dir/file');
+		expect(FileResolver.optimizePath('/base/file', 'file.ext')).toBe('/base/file.ext');
+		expect(FileResolver.optimizePath('/base/path/file', 'file.ext')).toBe('/base/path/file.ext');
+		expect(FileResolver.optimizePath('/base/path/file', './file.ext')).toBe('/base/path/file.ext');
+		expect(FileResolver.optimizePath('/base/path/file', './path/file.ext')).toBe('/base/path/path/file.ext');
+		expect(FileResolver.optimizePath('/base/path/file', './*.ext')).toBe('/base/path/*.ext');
+		expect(FileResolver.optimizePath('/base/path/file', './**/*.ext')).toBe('/base/path/**/*.ext');
+	});
 });

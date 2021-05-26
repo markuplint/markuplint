@@ -4,5 +4,6 @@ export { getFile } from './get-file';
 export { recursiveLoad, margeConfig } from './helper';
 export { loadConfigFile } from './load-config-file';
 export { MLFile } from './ml-file';
+export { optimizePath } from './optimize-path';
 export { searchConfigFile } from './search-config-file';
 export { Config, ConfigSet } from './types';

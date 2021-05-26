@@ -20,10 +20,24 @@ The priority applied names are:
 
 ## Properties
 
+```json
+{
+	"parser": {},
+	"parserOptions": {},
+	"specs": [],
+	"extends": [],
+	"excludeFiles": [],
+	"rules": {},
+	"nodeRules": [],
+	"childNodeRules": []
+}
+```
+
 -   [`parser`](#parser)
 -   [`parserOptions`](#parserOptions)
 -   [`specs`](#specs)
 -   [`extends`](#extends)
+-   [`excludeFiles`](#excludeFiles)
 -   [`rules`](#rules)
 -   [`nodeRules`](#nodeRules)
 -   [`childNodeRules`](#childNodeRules)
@@ -88,6 +102,18 @@ If set another configuration file path then the current setting is merged with i
 ```json
 {
 	"extends": ["../../.markuplintrc"]
+}
+```
+
+### `excludeFiles`
+
+It can exclude files if you need them.
+The values require the relative path from the configuration file or the absolute path.
+Paths can be glob format.
+
+```json
+{
+	"excludeFiles": ["./ignore.html", "./ignore/**/*.html"]
 }
 ```
 

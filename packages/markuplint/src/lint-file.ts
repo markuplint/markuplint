@@ -25,6 +25,14 @@ export async function lintFile(
 		errs: [],
 	};
 
+	// Exclude
+	const excludeFiles = configSet.config.excludeFiles || [];
+	for (const excludeFile of excludeFiles) {
+		if (file.matches(excludeFile)) {
+			return null;
+		}
+	}
+
 	// Get parser
 	let parserModName = '@markuplint/html-parser';
 	let matched = false;

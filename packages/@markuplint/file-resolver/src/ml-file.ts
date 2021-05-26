@@ -1,4 +1,5 @@
 import fs from 'fs';
+import minimatch from 'minimatch';
 import path from 'path';
 import util from 'util';
 
@@ -14,7 +15,7 @@ export class MLFile {
 	 *
 	 * @param filePathOrContext A file path or context
 	 * @param anonymous if 1st param is a context
-	 * @param workspace context of workspace
+	 * @param workspace context of workspace if anonymous is true
 	 * @param name context of name
 	 */
 	constructor(filePathOrContext: string, anonymous = false, workspace = process.cwd(), name = '<AnonymousFile>') {
@@ -38,6 +39,10 @@ export class MLFile {
 
 	async getContext() {
 		return fileCaches.get(this) || (await this._fetch());
+	}
+
+	matches(globPath: string) {
+		return minimatch(this.#filePath, globPath);
 	}
 
 	private async _fetch() {

@@ -1,5 +1,6 @@
 import { Config, ConfigSet } from './';
-import { recursiveLoad, search } from './helper';
+import { getConfigFile } from './get-config-file';
+import { search } from './helper';
 
 /**
  * Asynchronously search configuration file from linting target file.
@@ -17,18 +18,5 @@ export async function searchConfigFile(
 	if (!result) {
 		return;
 	}
-	let files: Set<string> = new Set([result.filePath]);
-	let config = result.config;
-	const errs: Error[] = [];
-	if (recursiveExtends) {
-		const extendsResult = await recursiveLoad(config, result.filePath, files, cacheClear);
-		files = extendsResult.files;
-		config = extendsResult.config;
-		errs.push(...extendsResult.errs);
-	}
-	return {
-		files,
-		config,
-		errs,
-	};
+	return getConfigFile(result.filePath, result.config, recursiveExtends, cacheClear);
 }

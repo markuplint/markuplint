@@ -1,4 +1,7 @@
 {
+	"excludeFiles": [
+		"./008.html"
+	],
 	"rules": {
 		"attr-duplication": true,
 		"character-reference": true,

@@ -1,5 +1,6 @@
 import { Config, ConfigSet } from './';
-import { load, recursiveLoad } from './helper';
+import { getConfigFile } from './get-config-file';
+import { load } from './helper';
 import path from 'path';
 
 /**
@@ -18,18 +19,5 @@ export async function loadConfigFile(
 	if (!result) {
 		return;
 	}
-	let files: Set<string> = new Set([result.filePath]);
-	let config = result.config;
-	const errs: Error[] = [];
-	if (recursiveExtends) {
-		const extendsResult = await recursiveLoad(config, result.filePath, files, cacheClear);
-		files = extendsResult.files;
-		config = extendsResult.config;
-		errs.push(...extendsResult.errs);
-	}
-	return {
-		files,
-		config,
-		errs,
-	};
+	return getConfigFile(result.filePath, result.config, recursiveExtends, cacheClear);
 }
