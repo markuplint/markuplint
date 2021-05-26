@@ -109,6 +109,7 @@ export interface MLASTHTMLAttr extends MLToken {
 	isDirective?: true;
 	potentialName?: string;
 	candidate?: string;
+	isDuplicatable: boolean;
 }
 
 export interface MLASTPreprocessorSpecificAttr extends MLToken {

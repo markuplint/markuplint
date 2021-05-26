@@ -160,3 +160,39 @@ test('React', async () => {
 
 	expect(r).toStrictEqual([]);
 });
+
+test('Pug', async () => {
+	const r = await markuplint.verify(
+		'.hoge(class="hoge2")&attributes({class: "hoge3"})',
+		{
+			rules: {
+				'attr-duplication': true,
+			},
+			parser: {
+				'.*': '@markuplint/pug-parser',
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r.length).toBe(0);
+});
+
+test('Svelte', async () => {
+	const r = await markuplint.verify(
+		'<div class:selected="{isSelected}" class:focused="{isFocused}"></div>',
+		{
+			rules: {
+				'attr-duplication': true,
+			},
+			parser: {
+				'.*': '@markuplint/svelte-parser',
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r.length).toBe(0);
+});

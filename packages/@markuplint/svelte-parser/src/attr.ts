@@ -53,6 +53,16 @@ export function attr(attr: SvelteDirective, rawHTML: string): MLASTAttr | { __sp
 		token.isDynamicValue = true;
 	}
 
+	const [baseName, subName] = token.name.raw.split(':');
+	if (baseName.toLowerCase() === 'class') {
+		token.isDuplicatable = true;
+
+		if (subName) {
+			token.potentialName = 'class';
+			token.isDynamicValue = true;
+		}
+	}
+
 	return {
 		...token,
 	};
