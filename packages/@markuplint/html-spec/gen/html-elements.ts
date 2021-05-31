@@ -139,17 +139,19 @@ export function getAttributes($: cheerio.Root, heading: string, tagName: string)
 				return null;
 			}
 			const $myHeading = getItsHeading($dt);
-			const experimental = !!$dt.find('.icon-beaker, .icon.experimental').length || undefined;
+			const experimental =
+				!!$dt.find('.icon-beaker, .icon.experimental, .icon.icon-experimental').length || undefined;
 			const obsolete =
-				!!$dt.find('.icon-trash, .icon.obsolete').length ||
+				!!$dt.find('.icon-trash, .icon.obsolete, .icon.icon-obsolete').length ||
 				!!$dt.find('.obsolete').length ||
 				$myHeading?.attr('id') === 'obsolete_attributes' ||
 				undefined;
 			const deprecated =
-				!!$dt.find('.icon-thumbs-down-alt, .icon.deprecated').length ||
+				!!$dt.find('.icon-thumbs-down-alt, .icon.deprecated, .icon.icon-deprecated').length ||
 				$myHeading?.attr('id') === 'deprecated_attributes' ||
 				undefined;
-			const nonStandard = !!$dt.find('.icon-warning-sign, .icon.non-standard').length || undefined;
+			const nonStandard =
+				!!$dt.find('.icon-warning-sign, .icon.non-standard, .icon.icon-nonstandard').length || undefined;
 			const description = $dt
 				.next('dd')
 				.toArray()
@@ -248,6 +250,14 @@ async function getHTMLElementLinks() {
 		.find('li a')
 		.toArray()
 		.map(el => `https://developer.mozilla.org${$(el).attr('href')}`);
+
+	// Deleted elements from the index page.
+	lists.push(
+		'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/isindex',
+		'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/listing',
+		'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/multicol',
+		'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nextid',
+	);
 
 	return lists;
 }
