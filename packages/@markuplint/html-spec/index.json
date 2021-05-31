@@ -9364,20 +9364,10 @@
 					"enum": ["anonymous", "use-credentials"]
 				},
 				{
-					"name": "currentTime",
-					"type": "String",
-					"description": "Reading currentTime returns a double-precision floating-point value indicating the current playback position, in seconds, of the audio. If the audio's metadata isn't available yet—thereby preventing you from knowing the media's start time or duration—currentTime instead indicates, and can be used to change, the time at which playback will begin. Otherwise, setting currentTime sets the current playback position to the given time and seeks the media to that position if the media is currently loaded. If the audio is being streamed, it's possible that the user agent may not be able to obtain some parts of the resource if that data has expired from the media buffer. Other audio may have a media timeline that doesn't start at 0 seconds, so setting currentTime to a time before that would fail. For example, if the audio's media timeline starts at 12 hours, setting currentTime to 3600 would be an attempt to set the current playback position well before the beginning of the media, and would fail. The getStartDate() method can be used to determine the beginning point of the media timeline's reference frame."
-				},
-				{
-					"name": "disableRemotePlayback",
+					"name": "disableremoteplayback",
 					"type": "String",
 					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc). See this proposed specification for more information. Note In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
 					"experimental": true
-				},
-				{
-					"name": "duration",
-					"type": "String",
-					"description": "A double-precision floating-point value which indicates the duration (total length) of the audio in seconds, on the media's timeline. If no media is present on the element, or the media is not valid, the returned value is NaN. If the media has no known end (such as for live streams of unknown duration, web radio, media incoming from WebRTC, and so forth), this value is +Infinity."
 				},
 				{
 					"name": "loop",
@@ -16031,7 +16021,7 @@
 				"#globalAttrs",
 				"#ariaAttrs",
 				{
-					"name": "autoPictureInPicture",
+					"name": "autopictureinpicture",
 					"type": "String",
 					"description": "A Boolean attribute which if true indicates that the element should automatically toggle picture-in-picture mode when the user switches back and forth between this document and another document or application.",
 					"experimental": true
@@ -16040,11 +16030,6 @@
 					"name": "autoplay",
 					"description": "A Boolean attribute; if specified, the video automatically begins to play back as soon as it can do so without stopping to finish loading the data. Note Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay. To disable video autoplay, autoplay=\"false\" will not work; the video will autoplay if the attribute is there in the <video> tag at all. To remove autoplay, the attribute needs to be removed altogether. In some browsers (e.g. Chrome 70.0) autoplay doesn't work if no muted attribute is present.",
 					"type": "Boolean"
-				},
-				{
-					"name": "buffered",
-					"type": "String",
-					"description": "An attribute you can read to determine the time ranges of the buffered media. This attribute contains a TimeRanges object."
 				},
 				{
 					"name": "controls",
@@ -16064,26 +16049,16 @@
 					"enum": ["anonymous", "use-credentials"]
 				},
 				{
-					"name": "currentTime",
-					"type": "String",
-					"description": "Reading currentTime returns a double-precision floating-point value indicating the current playback position of the media specified in seconds. If the media has not started playing yet, the time offset at which it will begin is returned. Setting currentTime sets the current playback position to the given time and seeks the media to that position if the media is currently loaded. If the media is being streamed, it's possible that the user agent may not be able to obtain some parts of the resource if that data has expired from the media buffer. Other media may have a media timeline that doesn't start at 0 seconds, so setting currentTime to a time before that would fail. The getStartDate() method can be used to determine the beginning point of the media timeline's reference frame."
-				},
-				{
-					"name": "disablePictureInPicture",
+					"name": "disablepictureinpicture",
 					"type": "String",
 					"description": "Prevents the browser from suggesting a Picture-in-Picture context menu or to request Picture-in-Picture automatically in some cases.",
 					"experimental": true
 				},
 				{
-					"name": "disableRemotePlayback",
+					"name": "disableremoteplayback",
 					"type": "String",
 					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc). In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
 					"experimental": true
-				},
-				{
-					"name": "duration",
-					"type": "String",
-					"description": "A double-precision floating-point value which indicates the duration (total length) of the media in seconds, on the media's timeline. If no media is present on the element, or the media is not valid, the returned value is NaN. If the media has no known end (such as for live streams of unknown duration, web radio, media incoming from WebRTC, and so forth), this value is +Infinity."
 				},
 				{
 					"name": "height",
