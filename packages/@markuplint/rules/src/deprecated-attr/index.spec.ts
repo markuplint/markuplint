@@ -19,7 +19,7 @@ test('deprecated attribute', async () => {
 			line: 1,
 			col: 6,
 			raw: 'align',
-			message: 'The align attribute is obsolete',
+			message: 'The align attribute is deprecated',
 		},
 	]);
 });

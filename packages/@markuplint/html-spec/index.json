@@ -176,7 +176,7 @@
 				"name": "contextmenu",
 				"type": "String",
 				"description": "The id of a <menu> to use as the contextual menu for this element.",
-				"obsolete": true
+				"deprecated": true
 			},
 			{
 				"name": "data-*",
@@ -9721,37 +9721,37 @@
 					"name": "alink",
 					"type": "String",
 					"description": "Color of text for hyperlinks when selected. This method is non-conforming, use CSS color property in conjunction with the :active pseudo-class instead.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "background",
 					"type": "String",
 					"description": "URI of a image to use as a background. This method is non-conforming, use CSS background property on the element instead.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "bgcolor",
 					"type": "String",
 					"description": "Background color for the document. This method is non-conforming, use CSS background-color property on the element instead.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "bottommargin",
 					"type": "String",
 					"description": "The margin of the bottom of the body. This method is non-conforming, use CSS margin-bottom property on the element instead.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "leftmargin",
 					"type": "String",
 					"description": "The margin of the left of the body. This method is non-conforming, use CSS margin-left property on the element instead.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "link",
 					"type": "String",
 					"description": "Color of text for unvisited hypertext links. This method is non-conforming, use CSS color property in conjunction with the :link pseudo-class instead.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "onafterprint",
@@ -9873,25 +9873,25 @@
 					"name": "rightmargin",
 					"type": "String",
 					"description": "The margin of the right of the body. This method is non-conforming, use CSS margin-right property on the element instead.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "text",
 					"type": "String",
 					"description": "Foreground color of text. This method is non-conforming, use CSS color property on the element instead.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "topmargin",
 					"type": "String",
 					"description": "The margin of the top of the body. This method is non-conforming, use CSS margin-top property on the element instead.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "vlink",
 					"type": "String",
 					"description": "Color of text for visited hypertext links. This method is non-conforming, use CSS color property in conjunction with the :visited pseudo-class instead.",
-					"obsolete": true
+					"deprecated": true
 				}
 			]
 		},
@@ -11031,7 +11031,7 @@
 					"name": "accept",
 					"type": "String",
 					"description": "Comma-separated content types the server accepts. Note This attribute was removed in HTML5 and should not be used. Instead, use the accept attribute on <input type=file> elements.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "accept-charset",
@@ -11346,7 +11346,7 @@
 					"name": "profile",
 					"type": "String",
 					"description": "The URIs of one or more metadata profiles, separated by white space.",
-					"obsolete": true
+					"deprecated": true
 				}
 			]
 		},
@@ -11505,13 +11505,13 @@
 					"name": "manifest",
 					"type": "String",
 					"description": "Specifies the URI of a resource manifest indicating resources that should be cached locally. See Using the application cache for details.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "version",
 					"type": "String",
 					"description": "Specifies the version of the HTML Document Type Definition that governs the current document. This attribute is not needed, because it is redundant with the version information in the document type declaration.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "xmlns",
@@ -11771,7 +11771,6 @@
 					"name": "align",
 					"type": "String",
 					"description": "Aligns the image with its surrounding context. Use the float and/or vertical-align CSS properties instead of this attribute. Allowed values:",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
@@ -11783,7 +11782,6 @@
 					"name": "border",
 					"type": "String",
 					"description": "The width of a border around the image. Use the border CSS property instead.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
@@ -11807,7 +11805,6 @@
 					"name": "hspace",
 					"type": "String",
 					"description": "The number of pixels of white space on the left and right of the image. Use the margin CSS property instead.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
@@ -11835,14 +11832,12 @@
 					"name": "longdesc",
 					"type": "String",
 					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG’s HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
 					"name": "name",
 					"type": "String",
 					"description": "A name for the element. Use the id attribute instead.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
@@ -11879,7 +11874,6 @@
 					"name": "vspace",
 					"type": "String",
 					"description": "The number of pixels of white space above and below the image. Use the margin CSS property instead.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
@@ -12835,7 +12829,8 @@
 					"name": "charset",
 					"type": "String",
 					"description": "This attribute defines the character encoding of the linked resource. The value is a space- and/or comma-delimited list of character sets as defined in RFC 2045. The default value is iso-8859-1. Usage note: To produce the same effect as this obsolete attribute, use the Content-Type HTTP header on the linked resource.",
-					"obsolete": true
+					"obsolete": true,
+					"deprecated": true
 				},
 				{
 					"name": "color",
@@ -12920,7 +12915,8 @@
 					"name": "rev",
 					"type": "String",
 					"description": "The value of this attribute shows the relationship of the current document to the linked document, as defined by the href attribute. The attribute thus defines the reverse relationship compared to the value of the rel attribute. Link type values for the attribute are similar to the possible values for rel.",
-					"obsolete": true
+					"obsolete": true,
+					"deprecated": true
 				},
 				{
 					"name": "sizes",
@@ -13590,31 +13586,31 @@
 					"name": "archive",
 					"type": "String",
 					"description": "A space-separated list of URIs for archives of resources for the object.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "border",
 					"type": "String",
 					"description": "The width of a border around the control, in pixels.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "classid",
 					"type": "String",
 					"description": "The URI of the object's implementation. It can be used together with, or in place of, the data attribute.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "codebase",
 					"type": "String",
 					"description": "The base path used to resolve relative URIs specified by classid, data, or archive. If not specified, the default is the base URI of the current document.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "codetype",
 					"type": "String",
 					"description": "The content type of the data specified by classid.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "data",
@@ -13626,7 +13622,7 @@
 					"name": "declare",
 					"type": "String",
 					"description": "The presence of this Boolean attribute makes this element a declaration only. The object must be instantiated by a subsequent <object> element. In HTML5, repeat the <object> element completely each time that the resource is reused.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "form",
@@ -13647,13 +13643,13 @@
 					"name": "standby",
 					"type": "String",
 					"description": "A message that the browser can show while loading the object's implementation and data.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "tabindex",
 					"type": "String",
 					"description": "The position of the element in the tabbing navigation order for the current document.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "type",
@@ -14082,14 +14078,14 @@
 					"name": "cols",
 					"type": "String",
 					"description": "Contains the preferred count of characters that a line should have. It was a non-standard synonym of width. To achieve such an effect, use CSS width instead.",
-					"obsolete": true,
+					"deprecated": true,
 					"nonStandard": true
 				},
 				{
 					"name": "width",
 					"type": "String",
 					"description": "Contains the preferred count of characters that a line should have. Though technically still implemented, this attribute has no visual effect; to achieve such an effect, use CSS width instead.",
-					"obsolete": true
+					"deprecated": true
 				},
 				{
 					"name": "wrap",
@@ -15544,14 +15540,12 @@
 					"name": "align",
 					"type": "String",
 					"description": "This enumerated attribute specifies how the cell content's horizontal alignment will be handled. Possible values are: left: The content is aligned to the left of the cell. center: The content is centered in the cell. right: The content is aligned to the right of the cell. justify (with text only): The content is stretched out inside the cell so that it covers its entire width. char (with text only): The content is aligned to a character inside the <th> element with minimal offset. This character is defined by the char and charoff attributes. The default value when this attribute is not specified is left. Note: Do not use this attribute as it is obsolete in the latest standard. To achieve the same effect as the left, center, right or justify values, apply the CSS text-align property to the element. To achieve the same effect as the char value, give the text-align property the same value you would use for the char. Unimplemented in CSS3.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
 					"name": "axis",
 					"type": "String",
 					"description": "This attribute contains a list of space-separated strings. Each string is the id of a group of cells that this header applies to. Note: Do not use this attribute as it is obsolete in the latest standard: use the scope attribute instead.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
@@ -15565,14 +15559,12 @@
 					"name": "char",
 					"type": "String",
 					"description": "The content in the cell element is aligned to a character. Typical values include a period (.) to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: Do not use this attribute as it is obsolete in the latest standard. To achieve the same effect, you can specify the character as the first value of the text-align property, Unimplemented in CSS3.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
 					"name": "charoff",
 					"type": "String",
 					"description": "This attribute is used to shift column data to the right of the character specified by the char attribute. Its value specifies the length of this shift. Note: Do not use this attribute as it is obsolete in the latest standard.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
@@ -15589,7 +15581,6 @@
 					"name": "height",
 					"type": "String",
 					"description": "This attribute is used to define a recommended cell height. Note: Do not use this attribute as it is obsolete in the latest standard: use the CSS height property instead.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
@@ -15607,14 +15598,12 @@
 					"name": "valign",
 					"type": "String",
 					"description": "This attribute specifies how a text is vertically aligned inside a cell. Possible values for this attribute are: baseline: Positions the text near the bottom of the cell and aligns it with the baseline of the characters instead of the bottom. If characters don't descend below the baseline, the baseline value achieves the same effect as bottom. bottom: Positions the text near the bottom of the cell. middle: Centers the text in the cell. and top: Positions the text near the top of the cell. Note: Do not use this attribute as it is obsolete in the latest standard: use the CSS vertical-align property instead.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
 					"name": "width",
 					"type": "String",
 					"description": "This attribute is used to define a recommended cell width. Additional space can be added with the cellspacing and cellpadding properties and the width of the <col> element can also create extra width. But, if a column's width is too narrow to show a particular cell properly, it will be widened when displayed. Note: Do not use this attribute as it is obsolete in the latest standard: use the CSS width property instead.",
-					"obsolete": true,
 					"deprecated": true
 				}
 			]
@@ -15649,7 +15638,6 @@
 					"name": "align",
 					"type": "String",
 					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes Unimplemented (see bug 2212). If this attribute is not set, the left value is assumed. Note: Do not use this attribute as it is obsolete (not supported) in the latest standard. To achieve the same effect as the left, center, right or justify values, use the CSS text-align property on it. To achieve the same effect as the char value, in CSS3, you can use the value of the char as the value of the text-align property Unimplemented.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
@@ -15663,21 +15651,18 @@
 					"name": "char",
 					"type": "String",
 					"description": "This attribute is used to set the character to align the cells in a column on. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard. To achieve the same effect as the char, in CSS3, you can use the character set using the char attribute as the value of the text-align property Unimplemented.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
 					"name": "charoff",
 					"type": "String",
 					"description": "This attribute is used to indicate the number of characters to offset the column data from the alignment characters specified by the char attribute. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
 					"name": "valign",
 					"type": "String",
 					"description": "This attribute specifies the vertical alignment of the text within each row of cells of the table header. Possible values for this attribute are: baseline, which will put the text as close to the bottom of the cell as it is possible, but align it on the baseline of the characters instead of the bottom of them. If characters are all of the size, this has the same effect as bottom. bottom, which will put the text as close to the bottom of the cell as it is possible; middle, which will center the text in the cell; top, which will put the text as close to the top of the cell as it is possible. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard: instead set the CSS vertical-align property on it.",
-					"obsolete": true,
 					"deprecated": true
 				}
 			]
@@ -15802,35 +15787,30 @@
 					"name": "align",
 					"type": "String",
 					"description": "A DOMString which specifies how the cell's context should be aligned horizontally within the cells in the row; this is shorthand for using align on every cell in the row individually. Possible values are: left Align the content of each cell at its left edge. center Center the contents of each cell between their left and right edges. right Align the content of each cell at its right edge. justify Widen whitespaces within the text of each cell so that the text fills the full width of each cell (full justification). char Align each cell in the row on a specific character (such that each row in the column that is configured this way will horizontally align its cells on that character). This uses the char and charoff to establish the alignment character (typically \".\" or \",\" when aligning numerical data) and the number of characters that should follow the alignment character. This alignment type was never widely supported. If no value is expressly set for align, the parent node's value is inherited. Instead of using the obsolete align attribute, you should instead use the CSS text-align property to establish left, center, right, or justify alignment for the row's cells. To apply character-based alignment, set the CSS text-align property to the alignment character (such as \".\" or \",\").",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
 					"name": "bgcolor",
 					"type": "String",
 					"description": "A DOMString specifying a color to apply to the backgrounds of each of the row's cells. This can be either an hexadecimal #RRGGBB or #RGB value or a color keyword. Omitting the attribute or setting it to null in JavaScript causes the row's cells to inherit the row's parent element's background color. The <tr> element should be styled using CSS. To give a similar effect as the bgcolor attribute, use the CSS property background-color.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
 					"name": "char",
 					"type": "String",
 					"description": "A DOMString which sets the character to align the cells in each of the row's columns on (each row's centering that uses the same character gets aligned with others using the same character . Typical values for this include a period (\".\") or comma (\",\") when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. This attribute is not only obsolete, but was rarely implemented anyway. To achieve the same effect as the char attribute, set the CSS text-align property to the same string you would specify for the char property, such as text-align: \".\".",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
 					"name": "charoff",
 					"type": "String",
 					"description": "A DOMString indicating the number of characters on the tail end of the column's data should be displayed after the alignment character specified by the char attribute. For example, when displaying money values for currencies that use hundredths of a unit (such as the dollar, which is divided into 100 cents), you would typically specify a value of 2, so that in tandem with char being set to \".\", the values in a column would be cleanly aligned on the decimal points, with the number of cents properly displayed to the right of the decimal point. This attribute is obsolete, and was never widely supported anyway.",
-					"obsolete": true,
 					"deprecated": true
 				},
 				{
 					"name": "valign",
 					"type": "String",
 					"description": "A DOMString specifying the vertical alignment of the text within each cell in the row. Possible values for this attribute are: baseline Aligns each cell's content text as closely as possible to the bottom of the cell, handling alignment of different fonts and font sizes by aligning the characters along the baseline of the font(s) used in the row. If all of the characters in the row are the same size, the effect is the same as bottom. bottom, Draws the text in each of the row's cells as closely as possible to the bottom edge of those cells. middle Each cell's text is vertically centered. top Each cell's text is drawn as closely as possible to the top edge of the containing cell. Don't use the obsolete valign attribute. Instead, add the CSS vertical-align property to the row.",
-					"obsolete": true,
 					"deprecated": true
 				}
 			]
