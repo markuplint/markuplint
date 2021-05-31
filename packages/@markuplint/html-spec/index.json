@@ -9233,12 +9233,6 @@
 					"enum": ["rect", "circle", "poly", "default"]
 				},
 				{
-					"name": "tabindex",
-					"type": "String",
-					"description": "A numeric value specifying the position of the defined area in the browser tabbing order. This attribute is global in HTML5.",
-					"deprecated": true
-				},
-				{
 					"name": "target",
 					"description": "A keyword or author-defined name of the browsing context to display the linked resource.",
 					"type": "Target",
