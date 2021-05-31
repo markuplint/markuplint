@@ -251,5 +251,13 @@ async function getHTMLElementLinks() {
 		.toArray()
 		.map(el => `https://developer.mozilla.org${$(el).attr('href')}`);
 
+	// Deleted elements from the index page.
+	lists.push(
+		'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/isindex',
+		'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/listing',
+		'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/multicol',
+		'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nextid',
+	);
+
 	return lists;
 }
