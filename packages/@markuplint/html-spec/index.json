@@ -158,8 +158,8 @@
 			},
 			{
 				"name": "autofocus",
-				"type": "Boolean",
-				"description": ""
+				"description": "Indicates that an element is to be focused on page load, or as soon as the <dialog> it is part of is displayed. This attribute is a boolean, initially false.",
+				"type": "Boolean"
 			},
 			{
 				"name": "class",
@@ -11769,7 +11769,7 @@
 				},
 				{
 					"name": "crossorigin",
-					"description": "Indicates if the fetching of the image must be done using a CORS request. Image data from a CORS-enabled image returned from a CORS request can be reused in the <canvas> element without being marked \"tainted\". If the crossorigin attribute is not specified, then a non-CORS request is sent (without the Origin request header), and the browser marks the image as tainted and restricts access to its image data, preventing its usage in <canvas> elements. If the crossorigin attribute is specified, then a CORS request is sent (with the Origin request header); but if the server does not opt into allowing cross-origin access to the image data by the origin site (by not sending any Access-Control-Allow-Origin response header, or by not including the site's origin in any Access-Control-Allow-Origin response header it does send), then the browser marks the image as tainted and restricts access to its image data, preventing its usage in <canvas> elements. Allowed values: anonymous A CORS request is sent with credentials omitted (that is, no cookies, X.509 certificates, or Authorization request header). use-credentials The CORS request is sent with any credentials included (that is, cookies, X.509 certificates, and the Authorization request header). If the server does not opt into sharing credentials with the origin site (by sending back the Access-Control-Allow-Credentials: true response header), then the browser marks the image as tainted and restricts access to its image data. If the attribute has an invalid value, browsers handle it as if the anonymous value was used. See CORS settings attributes for additional information.",
+					"description": "Indicates if the fetching of the image must be done using a CORS request. Image data from a CORS-enabled image returned from a CORS request can be reused in the <canvas> element without being marked \"tainted\". If the crossorigin attribute is not specified, then a non-CORS request is sent (without the Origin request header), and the browser marks the image as tainted and restricts access to its image data, preventing its usage in <canvas> elements. If the crossorigin attribute is specified, then a CORS request is sent (with the Origin request header); but if the server does not opt into allowing cross-origin access to the image data by the origin site (by not sending any Access-Control-Allow-Origin response header, or by not including the site's origin in any Access-Control-Allow-Origin response header it does send), then the browser blocks the image from loading, and logs a CORS error to the devtools console. Allowed values: anonymous A CORS request is sent with credentials omitted (that is, no cookies, X.509 certificates, or Authorization request header). use-credentials The CORS request is sent with any credentials included (that is, cookies, X.509 certificates, and the Authorization request header). If the server does not opt into sharing credentials with the origin site (by sending back the Access-Control-Allow-Credentials: true response header), then the browser marks the image as tainted and restricts access to its image data. If the attribute has an invalid value, browsers handle it as if the anonymous value was used. See CORS settings attributes for additional information.",
 					"type": "String",
 					"enum": ["anonymous", "use-credentials"]
 				},
@@ -11825,7 +11825,7 @@
 				},
 				{
 					"name": "referrerpolicy",
-					"description": "A string indicating which referrer to use when fetching the resource: no-referrer: The Referer header will not be sent. no-referrer-when-downgrade: No Referer header is sent when navigating to an origin without HTTPS. This is the default if no policy is otherwise specified. origin: The Referer header will include the page's origin (scheme, host, and port). origin-when-cross-origin: Navigating to other origins will limit the included referral data to the scheme, host, and port, while navigating from the same origin will include the full path and query string. unsafe-url: The Referer header will always include the origin, path and query string, but not the fragment, password, or username. This is unsafe because it can leak information from TLS-protected resources to insecure origins.",
+					"description": "A string indicating which referrer to use when fetching the resource: no-referrer: The Referer header will not be sent. no-referrer-when-downgrade: No Referer header is sent when navigating to an origin without HTTPS. This is the default if no policy is otherwise specified. origin: The Referer header will include the page's origin scheme, host, and port). origin-when-cross-origin: Navigating to other origins will limit the included referral data to the scheme, host, and port, while navigating from the same origin will include the full path and query string. unsafe-url: The Referer header will always include the origin, path and query string, but not the fragment, password, or username. This is unsafe because it can leak information from TLS-protected resources to insecure origins.",
 					"experimental": true,
 					"type": "ReferrerPolicy"
 				},
@@ -13629,12 +13629,6 @@
 					"deprecated": true
 				},
 				{
-					"name": "tabindex",
-					"type": "String",
-					"description": "The position of the element in the tabbing navigation order for the current document.",
-					"deprecated": true
-				},
-				{
 					"name": "type",
 					"description": "The content type of the resource specified by data. At least one of data and type must be defined.",
 					"type": "String",
@@ -14676,7 +14670,7 @@
 				"#ariaAttrs",
 				{
 					"name": "media",
-					"description": "Media query of the resource's intended media; this should be used only in a <picture> element.",
+					"description": "Media query of the resource's intended media.",
 					"type": "MediaQueryList",
 					"condition": {
 						"ancestor": "picture"
