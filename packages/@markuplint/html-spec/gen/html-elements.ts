@@ -36,12 +36,28 @@ export async function getHTMLElement(link: string) {
 		name = 'h1-h6';
 	}
 	const $article = $(MAIN_ARTICLE_SELECTOR);
-	const description = $article
-		.find('.seoSummary')
-		.closest('p')
-		.text()
-		.trim()
-		.replace(/(?:\r?\n|\s)+/gi, ' ');
+	$article.find('p:empty').remove();
+	const description =
+		$article
+			.find('h2#summary')
+			.next('div')
+			.find('> p:first-of-type')
+			.text()
+			.trim()
+			.replace(/(?:\r?\n|\s)+/gi, ' ') ||
+		$article
+			.find('.seoSummary')
+			.closest('p')
+			.text()
+			.trim()
+			.replace(/(?:\r?\n|\s)+/gi, ' ') ||
+		$article
+			.find('h1')
+			.next('div')
+			.find('> p:first-of-type')
+			.text()
+			.trim()
+			.replace(/(?:\r?\n|\s)+/gi, ' ');
 
 	const $bcTable = $article.find('.bc-table');
 	const $bcTableFirstRow = $bcTable.find('tbody tr:first-child th');
