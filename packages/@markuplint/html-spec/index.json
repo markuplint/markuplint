@@ -13116,7 +13116,7 @@
 			"experimental": true,
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
-				"summary": "If the element is in the list menu state: flow content, or alternatively, zero or more occurrences of <li>, <script>, and <template>. (list menu is the default state, unless the parent element is a <menu> in the context menu state.) If the element is in the context menu state: zero or more occurrences, in any order, of <menu> (context menu state only), <menuitem>, <hr>, <script>, and <template>.",
+				"summary": "Zero or more occurrences of <li>, <script>, and <template>.",
 				"tag": "menu",
 				"contents": [
 					{
@@ -13145,21 +13145,7 @@
 				"role": "list"
 			},
 			"omittion": false,
-			"attributes": [
-				"#globalAttrs",
-				"#ariaAttrs",
-				{
-					"name": "label",
-					"type": "String",
-					"description": "The name of the menu as shown to the user. Used within nested menus, to provide a label through which the submenu can be accessed. Must only be specified when the parent element is a <menu> in the context menu state.",
-					"deprecated": true
-				},
-				{
-					"name": "type",
-					"type": "String",
-					"description": "This attribute indicates the kind of menu being declared, and can be one of two values. context : Indicates the popup menu state, which represents a group of commands activated through another element. This might be as a button menu referenced by a menu attribute of a <button> element, or as context menu for an element with a contextmenu attribute. This value is the default if the attribute is missing and the parent element is also a <menu> element. toolbar: Indicates the toolbar state, which represents a toolbar consisting of a series of commands for user interaction. This might be in the form of an unordered list of <li> elements, or, if the element has no <li> element children, flow content describing available commands. This value is the default if the attribute is missing."
-				}
-			]
+			"attributes": ["#globalAttrs", "#ariaAttrs"]
 		},
 		{
 			"name": "menuitem",
