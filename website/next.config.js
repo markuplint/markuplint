@@ -8,5 +8,6 @@ module.exports = withMdxEnhanced({
 	defaultLayout: true,
 	rehypePlugins: [rehypePrism],
 })({
+	webpack5: false,
 	pageExtensions: ['mdx', 'tsx'],
 });
