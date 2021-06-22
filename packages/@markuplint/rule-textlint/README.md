@@ -22,10 +22,37 @@ $ yarn add @markuplint/rule-textlint
 $ yarn add -D textlint-rule-prh
 ```
 
-`markuplint.config.js`
+#### Load `.textlintrc.*` config automatically
+
+```jsonc
+// `.markuplintrc`
+{
+	"rules": {
+		"textlint": true
+	}
+}
+```
+
+```jsonc
+// `.textlintrc`
+{
+	// `html` plugin will be used automatically by `markuplint`
+	// but make sure to enable it manually
+	// if you are using `textlint` as cli at the same time
+	// "plugins": ["html"],
+	"rules": {
+		"prh": {
+			"rulePaths": ["../prh.yml"]
+		}
+	}
+}
+```
+
+#### Use independent textlint config
 
 ```js
-const path = reuqire('path');
+// `markuplint.config.js`
+const path = require('path');
 
 module.exports = {
 	rules: {

@@ -42,6 +42,20 @@ test('is test 1', async () => {
 	]);
 });
 
+/* eslint-disable no-console */
+const originalErrorLogger = console.error;
+
+let errorLogger: jest.Mock;
+
+beforeEach(() => {
+	errorLogger = console.error = jest.fn();
+});
+
+afterAll(() => {
+	console.error = originalErrorLogger;
+});
+/* eslint-enable no-console */
+
 test('is test 2', async () => {
 	const r = await markuplint.exec({
 		sourceCodes: text,
@@ -53,14 +67,26 @@ test('is test 2', async () => {
 		},
 	});
 
-	expect(r[0].results).toStrictEqual([
-		{
-			severity: 'warning',
-			ruleId: 'textlint',
-			line: 11,
-			col: 20,
-			raw: 'jquery',
-			message: 'Invalid text: jquery => jQuery',
+	expect(r[0].results).toStrictEqual([]);
+	expect(errorLogger).not.toBeCalled();
+});
+
+test('is test 3', async () => {
+	const r = await markuplint.exec({
+		sourceCodes: text,
+		names: path.resolve('test/fixture/textlint/test.html'),
+		config: {
+			rules: {
+				textlint: {
+					option: true,
+				},
+			},
 		},
-	]);
+	});
+
+	expect(r[0].results).toStrictEqual([]);
+	expect(errorLogger).toBeCalledTimes(1);
+	expect(errorLogger).toBeCalledWith(
+		'`config.option` with `true` value is only available on Node.js, please use plain `TextlintKernelOptions` instead',
+	);
 });

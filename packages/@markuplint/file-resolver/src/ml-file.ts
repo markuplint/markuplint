@@ -21,7 +21,7 @@ export class MLFile {
 	constructor(filePathOrContext: string, anonymous = false, workspace = process.cwd(), name = '<AnonymousFile>') {
 		this.anonymous = anonymous;
 		if (anonymous) {
-			this.#filePath = `${workspace}/${name}`;
+			this.#filePath = path.resolve(workspace, name);
 			// `filePath` is context
 			fileCaches.set(this, filePathOrContext);
 		} else {

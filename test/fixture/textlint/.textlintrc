@@ -1,0 +1,9 @@
+{
+	"rules": {
+		"prh": {
+			"rulePaths": [
+				"../../../packages/@markuplint/rule-textlint/prh.yml"
+			]
+		}
+	}
+}

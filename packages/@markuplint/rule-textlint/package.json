@@ -8,6 +8,9 @@
 	"private": false,
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
+	"browser": {
+		"./lib/verify.js": "./lib/verify-browser.js"
+	},
 	"publishConfig": {
 		"access": "public"
 	},
@@ -23,6 +26,7 @@
 	"dependencies": {
 		"@markuplint/ml-core": "^1.7.1",
 		"@textlint/kernel": "^3.4.1",
+		"textlint": "^11.9.1",
 		"textlint-plugin-html": "^0.2.0"
 	}
 }

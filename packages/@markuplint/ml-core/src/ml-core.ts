@@ -16,6 +16,7 @@ export class MLCore {
 	#rules: MLRule<RuleConfigValue, unknown>[];
 	#schemas: Readonly<[MLMLSpec, ...ExtendedSpec[]]>;
 	#ignoreFrontMatter: boolean;
+	#filename: string;
 
 	constructor(
 		parser: MLMarkupLanguageParser,
@@ -25,6 +26,7 @@ export class MLCore {
 		i18n: I18n,
 		schemas: Readonly<[MLMLSpec, ...ExtendedSpec[]]>,
 		parserOptions: ParserOptions,
+		filename: string,
 	) {
 		this.#parser = parser;
 		this.#sourceCode = sourceCode;
@@ -37,7 +39,8 @@ export class MLCore {
 		this.#i18n = i18n;
 		this.#schemas = schemas;
 		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
-		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas);
+		this.#filename = filename;
+		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, this.#filename);
 		this.#rules = rules;
 	}
 
@@ -65,18 +68,18 @@ export class MLCore {
 		this.#parser = parser;
 		this.#ignoreFrontMatter = parserOptions.ignoreFrontMatter ?? this.#ignoreFrontMatter;
 		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
-		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas);
+		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, this.#filename);
 	}
 
 	setCode(sourceCode: string) {
 		this.#sourceCode = sourceCode;
 		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
-		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas);
+		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, this.#filename);
 	}
 
 	setRuleset(ruleset: Ruleset, schemas: [MLMLSpec, ...ExtendedSpec[]]) {
 		this.#ruleset = ruleset;
 		this.#schemas = schemas;
-		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas);
+		this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, this.#filename);
 	}
 }
