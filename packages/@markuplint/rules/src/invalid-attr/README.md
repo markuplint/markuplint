@@ -8,7 +8,7 @@ category: style
 
 Warn if an attribute is a non-existent attribute or an invalid type value due to the specifications (or the custom rule).
 
-This rule refers the [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/master/packages/%40markuplint/html-spec/src/attributes).
+This rule refers the [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/attributes).
 
 ## Rule Details
 
@@ -84,7 +84,7 @@ Type: `string`
 
 ##### `type`
 
-Only values that match the specified [type](https://github.com/markuplint/markuplint/blob/master/packages/@markuplint/ml-spec/src/types.ts#L162-L197) are allowed.
+Only values that match the specified [type](https://github.com/markuplint/markuplint/blob/main/packages/@markuplint/ml-spec/src/types.ts#L162-L197) are allowed.
 
 Type: `string`
 
@@ -122,7 +122,7 @@ Type: `string | string[]`
 }
 ```
 
-In some parser, detect an attribute as a directive so ignored. (Ex: Ignore directive that starts `v-` string in the [vue-parser](https://github.com/markuplint/markuplint/tree/master/packages/@markuplint/vue-parser).)
+In some parser, detect an attribute as a directive so ignored. (Ex: Ignore directive that starts `v-` string in the [vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/vue-parser).)
 
 ### Default severity
 

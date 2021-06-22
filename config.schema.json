@@ -4,7 +4,7 @@
 	"additionalProperties": false,
 	"definitions": {
 		"rules": {
-			"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/schema.json#/definitions/rules"
+			"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/schema.json#/definitions/rules"
 		}
 	},
 	"properties": {

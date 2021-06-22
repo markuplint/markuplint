@@ -12,7 +12,7 @@
 		},
 		{
 			"fileMatch": ["/**/*.markuplintrc"],
-			"url": "https://raw.githubusercontent.com/markuplint/markuplint/master/config.schema.json"
+			"url": "https://raw.githubusercontent.com/markuplint/markuplint/main/config.schema.json"
 		},
 		{
 			"fileMatch": ["/packages/*markuplint/html-spec/src/permitted-structures/*.json"],

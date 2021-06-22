@@ -38,7 +38,7 @@
 				"value": { "$ref": "#/definitions/value" },
 				"option": { "$ref": "#/definitions/option" },
 				"severity": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
 				}
 			}
 		}

@@ -1,8 +1,8 @@
 # @markuplint/pug-parser
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Fpug-parser.svg)](https://www.npmjs.com/package/@markuplint/pug-parser)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=master)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=master)](https://coveralls.io/github/markuplint/markuplint?branch=master)
+[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=main)](https://travis-ci.org/markuplint/markuplint)
+[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
 
 ## Install
 
@@ -29,7 +29,7 @@ Add `parser` option into your `.markuplintrc.*` file.
 ## Contributing
 
 ```
-$ git clone git@github.com:markuplint/markuplint.git -b master
+$ git clone git@github.com:markuplint/markuplint.git -b main
 $ yarn
 $ yarn build
 $ yarn test

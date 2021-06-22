@@ -7,64 +7,64 @@
 			"additionalProperties": false,
 			"properties": {
 				"attr-duplication": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/attr-duplication/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-duplication/schema.json"
 				},
 				"attr-equal-space-after": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/attr-equal-space-after/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-equal-space-after/schema.json"
 				},
 				"attr-equal-space-before": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/attr-equal-space-before/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-equal-space-before/schema.json"
 				},
 				"attr-spacing": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/attr-spacing/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-spacing/schema.json"
 				},
 				"attr-value-quotes": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/attr-value-quotes/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-value-quotes/schema.json"
 				},
 				"case-sensitive-attr-name": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/case-sensitive-attr-name/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/case-sensitive-attr-name/schema.json"
 				},
 				"case-sensitive-tag-name": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/case-sensitive-tag-name/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/case-sensitive-tag-name/schema.json"
 				},
 				"character-reference": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/character-reference/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/character-reference/schema.json"
 				},
 				"class-naming": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/class-naming/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/class-naming/schema.json"
 				},
 				"deprecated-attr": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/deprecated-attr/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/deprecated-attr/schema.json"
 				},
 				"deprecated-element": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/deprecated-element/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/deprecated-element/schema.json"
 				},
 				"doctype": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/doctype/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/doctype/schema.json"
 				},
 				"id-duplication": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/id-duplication/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/id-duplication/schema.json"
 				},
 				"indentation": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/indentation/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/indentation/schema.json"
 				},
 				"invalid-attr": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/invalid-attr/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/invalid-attr/schema.json"
 				},
 				"landmark-roles": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/landmark-roles/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/landmark-roles/schema.json"
 				},
 				"permitted-contents": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/permitted-contents/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/permitted-contents/schema.json"
 				},
 				"required-attr": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/required-attr/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/required-attr/schema.json"
 				},
 				"required-h1": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/required-h1/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/required-h1/schema.json"
 				},
 				"wai-aria": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/master/packages/%40markuplint/rules/src/wai-aria/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria/schema.json"
 				}
 			}
 		}

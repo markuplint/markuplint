@@ -17,7 +17,7 @@ Warn if:
 -   [Optional] Use the not permitted role according to ARIA in HTML.
 -   [Optional] Set the implicit role explicitly.
 
-There are settings about **ARIA in HTML** on [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/master/packages/%40markuplint/html-spec/src/aria-in-html). And you can disable them because that is draft yet.
+There are settings about **ARIA in HTML** on [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/aria-in-html). And you can disable them because that is draft yet.
 
 ## Rule Details
 
