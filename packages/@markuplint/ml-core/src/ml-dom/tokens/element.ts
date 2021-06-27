@@ -1,13 +1,17 @@
-import { AnonymousNode, Document } from '../';
+import { AnonymousNode, IMLDOMElement } from '../types';
 import { MLASTElement, MLToken } from '@markuplint/ml-ast';
-import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode, MLDOMOmittedElement, MLDOMText, MLDOMToken } from './';
-import { createNode, createSelector } from '../helper';
+import { createNode, createSelector, syncWalk } from '../helper';
 import { ContentModel } from '@markuplint/ml-spec';
-import { IMLDOMElement } from '../types';
+import Document from '../document';
+import MLDOMAttribute from './attribute';
+import MLDOMElementCloseTag from './element-close-tag';
+import MLDOMNode from './node';
+import MLDOMOmittedElement from './omitted-element';
 import MLDOMPreprocessorSpecificAttribute from './preprocessor-specific-attribute';
+import MLDOMText from './text';
+import MLDOMToken from './token';
 import { RuleConfigValue } from '@markuplint/ml-config';
-import { stringSplice } from '../../utils/string-splice';
-import { syncWalk } from '../helper/walkers';
+import { stringSplice } from '../../utils';
 
 export default class MLDOMElement<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTElement>

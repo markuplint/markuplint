@@ -1,36 +1,10 @@
 {
-	"extends": "../../tsconfig.json",
+	"extends": "../../tsconfig.lib",
 	"compilerOptions": {
 		"composite": true,
-		"outDir": "./lib",
-		"rootDir": "./src"
+		"outDir": "lib",
+		"rootDir": "src"
 	},
-	"references": [
-		{
-			"path": "../@markuplint/file-resolver"
-		},
-		{
-			"path": "../@markuplint/ml-ast"
-		},
-		{
-			"path": "../@markuplint/ml-config"
-		},
-		{
-			"path": "../@markuplint/ml-core"
-		},
-		{
-			"path": "../@markuplint/ml-spec"
-		},
-		{
-			"path": "../@markuplint/rules"
-		},
-		{
-			"path": "../@markuplint/i18n"
-		},
-		{
-			"path": "../@markuplint/html-spec"
-		}
-	],
-	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
+	"include": ["src"],
+	"exclude": ["**/*.spec.ts"]
 }

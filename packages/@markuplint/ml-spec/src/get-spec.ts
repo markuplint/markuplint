@@ -1,10 +1,10 @@
-import { ElementSpec, ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+import { ElementSpec, ExtendedSpec, MLMLSpec } from './types';
 import { mergeArray } from './utils';
 
 /**
  * Merging HTML-spec schema and extended spec schemas
  *
- * Ex: `@markuplint/html-spec` + `{ specs: ["@markuplint/vue-spec"] }` in cofigure files.
+ * Ex: `@markuplint/html-spec` + `{ specs: ["@markuplint/vue-spec"] }` in configure files.
  *
  * @param schemas `MLDocument.schemas`
  */

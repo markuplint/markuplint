@@ -1,8 +1,7 @@
 <script lang="ts">
 	import MlPlayground from './ml-playground.svelte';
-	import rulsJSON from 'json-loader!../.markuplintrc';
-
-	const ruleset = JSON.stringify(rulsJSON);
+	import rulesJSON from 'json-loader!../.markuplintrc';
+	const ruleset = JSON.stringify(rulesJSON);
 </script>
 
 <style>

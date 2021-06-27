@@ -4,45 +4,11 @@
 	"version": "1.0.1-alpha.5",
 	"private": true,
 	"scripts": {
-		"pg:dev": "webpack-dev-server --progress --watch --colors",
-		"pg:build": "webpack --mode production"
+		"dev": "webpack-dev-server --progress --watch --colors",
+		"build": "webpack --mode production"
 	},
 	"author": "Yusuke Hirao",
 	"license": "MIT",
-	"devDependencies": {
-		"@types/mini-css-extract-plugin": "^0.9.1",
-		"@types/script-ext-html-webpack-plugin": "^2.1.1",
-		"@types/webpack-dev-server": "^3.11.0",
-		"autoprefixer": "^9.8.6",
-		"babel-loader": "^8.1.0",
-		"css-loader": "^4.2.1",
-		"cssnano": "^4.1.10",
-		"fiber": "^1.0.4",
-		"file-loader": "^6.0.0",
-		"html-inline-css-webpack-plugin": "^1.8.1",
-		"html-loader": "^1.1.0",
-		"html-webpack-plugin": "^4.3.0",
-		"json-loader": "^0.5.7",
-		"mini-css-extract-plugin": "^0.10.0",
-		"monaco-editor-webpack-plugin": "^1.9.0",
-		"postcss-base64": "^0.7.1",
-		"postcss-calc": "^7.0.3",
-		"postcss-custom-media": "^7.0.8",
-		"postcss-gap-properties": "^2.0.0",
-		"postcss-loader": "^3.0.0",
-		"postcss-math": "^0.0.10",
-		"sass": "^1.26.10",
-		"sass-loader": "^9.0.3",
-		"script-ext-html-webpack-plugin": "^2.1.4",
-		"style-loader": "^1.2.1",
-		"svelte-loader": "^2.13.6",
-		"svelte-preprocess": "^4.0.12",
-		"ts-loader": "^8.0.2",
-		"ttf-loader": "^1.0.2",
-		"webpack": "^4.44.1",
-		"webpack-cli": "^3.3.12",
-		"webpack-dev-server": "^3.11.0"
-	},
 	"dependencies": {
 		"@markuplint/html-parser": "^1.5.1",
 		"@markuplint/html-spec": "^1.6.1",
@@ -53,7 +19,7 @@
 		"@markuplint/ml-spec": "^1.5.0",
 		"@markuplint/rules": "^1.8.1",
 		"monaco-editor": "^0.20.0",
-		"svelte": "^3.24.1",
-		"tslib": "^2.0.1"
+		"svelte": "^3.38.3",
+		"tslib": "^2.3.0"
 	}
 }

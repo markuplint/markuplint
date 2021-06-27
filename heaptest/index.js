@@ -1,10 +1,8 @@
 require('heapdump');
-/* eslint-disable @typescript-eslint/no-var-requires */
 const markuplint = require('markuplint');
 const path = require('path');
-/* eslint-enable @typescript-eslint/no-var-requires */
 
-(async function() {
+(async function () {
 	const list = [
 		'./fixture/001.html',
 		'./fixture/002.html',

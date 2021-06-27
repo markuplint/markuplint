@@ -1,12 +1,7 @@
 {
-	"extends": "../../../tsconfig.json",
+	"extends": "../../../tsconfig.lib",
 	"compilerOptions": {
 		"composite": true
 	},
-	"references": [
-		{
-			"path": "../ml-spec"
-		}
-	],
-	"exclude": ["node_modules", "./test/**/*.spec.ts"]
+	"exclude": ["**/*.spec.ts"]
 }

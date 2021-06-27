@@ -1,24 +1,10 @@
 {
-	"extends": "../../../tsconfig.json",
+	"extends": "../../../tsconfig.lib",
 	"compilerOptions": {
 		"composite": true,
-		"outDir": "./lib",
-		"rootDir": "./src"
+		"outDir": "lib",
+		"rootDir": "src"
 	},
-	"references": [
-		{
-			"path": "../ml-ast"
-		},
-		{
-			"path": "../ml-config"
-		},
-		{
-			"path": "../ml-spec"
-		},
-		{
-			"path": "../i18n"
-		}
-	],
-	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
+	"include": ["src"],
+	"exclude": ["**/*.spec.ts"]
 }

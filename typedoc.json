@@ -1,0 +1,9 @@
+{
+	"name": "markuplint",
+	"exclude": ["**/*+(index|.spec|.e2e).ts", "**/lib/**/*", "**/node_modules/**/*"],
+	"ignoreCompilerErrors": true,
+	"out": "apidoc",
+	"mode": "file",
+	"media": "packages/markuplint/media",
+	"readme": "./packages/markuplint/README.md"
+}

@@ -56,7 +56,7 @@ export async function lintFile(
 	const ruleset = convertRuleset(configSet.config);
 
 	// Schemas
-	const specs = configSet.config.specs
+	const specs: string[] = configSet.config.specs
 		? Array.isArray(configSet.config.specs)
 			? configSet.config.specs
 			: [configSet.config.specs]

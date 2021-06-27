@@ -14,19 +14,11 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"scripts": {
-		"build": "tsc",
-		"dev": "tsc --build --watch",
-		"clean": "tsc --build --clean"
-	},
-	"devDependencies": {
-		"markuplint": "^1.9.1",
-		"textlint-rule-prh": "^5.3.0"
-	},
 	"dependencies": {
 		"@markuplint/ml-core": "^1.7.1",
 		"@textlint/kernel": "^3.4.1",
 		"textlint": "^11.9.1",
-		"textlint-plugin-html": "^0.2.0"
+		"textlint-plugin-html": "^0.2.0",
+		"tslib": "^2.3.0"
 	}
 }

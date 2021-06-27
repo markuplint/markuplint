@@ -67,6 +67,10 @@ async function build(mode: Mode): Promise<Configuration & DevServerConfiguration
 				{
 					test: /.js?$/,
 					loader: 'babel-loader',
+					options: {
+						cacheDirectory: true,
+					},
+					exclude: /node_modules/,
 				},
 				{
 					test: /\.scss$/i,
