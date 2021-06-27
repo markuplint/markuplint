@@ -1,4 +1,4 @@
-import webpack, { CliConfigOptions, Configuration } from 'webpack';
+import webpack, { Configuration } from 'webpack';
 import { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import HTMLInlineCSSWebpackPlugin from 'html-inline-css-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -18,12 +18,9 @@ const distDir = path.resolve(__dirname, 'dist');
 async function build(mode: Mode): Promise<Configuration & DevServerConfiguration> {
 	return {
 		mode,
-		devtool: mode === 'production' ? false : 'cheap-module-eval-source-map',
+		devtool: mode === 'production' ? false : 'eval-cheap-module-source-map',
 		devServer: {
-			contentBase: distDir,
-			watchContentBase: true,
 			hot: true,
-			inline: true,
 			compress: true,
 			port: 9000,
 			open: true,
@@ -44,7 +41,7 @@ async function build(mode: Mode): Promise<Configuration & DevServerConfiguration
 		module: {
 			rules: [
 				{
-					test: /\.(html)$/,
+					test: /\.html$/,
 					include: path.resolve(__dirname, 'src', 'pages'),
 					use: ['html-loader'],
 				},
@@ -52,8 +49,6 @@ async function build(mode: Mode): Promise<Configuration & DevServerConfiguration
 					test: /\.svelte$/,
 					loader: 'svelte-loader',
 					options: {
-						// ISSUE: https://github.com/sveltejs/svelte-loader/issues/74
-						hotReload: false,
 						preprocess: sveltePreprocess(),
 						hotOptions: {
 							noPreserveState: true,
@@ -99,23 +94,8 @@ async function build(mode: Mode): Promise<Configuration & DevServerConfiguration
 					use: ['style-loader', 'css-loader'],
 				},
 				{
-					test: /\.(png|jpe?g|gif|svg)$/i,
-					loader: 'file-loader',
-					options: {
-						name: '[hash].[ext]',
-					},
-				},
-				{
-					test: /\.ttf$/,
-					use: [
-						'file-loader',
-						{
-							loader: 'ttf-loader',
-							options: {
-								name: '[name]-[hash].[ext]',
-							},
-						},
-					],
+					test: /\.(png|jpe?g|gif|svg|ttf)$/i,
+					type: 'asset/resource',
 				},
 			],
 		},
@@ -171,7 +151,7 @@ async function htmlConfig() {
 	});
 }
 
-export default async (_: any, argv: CliConfigOptions): Promise<Configuration | Configuration[]> => {
+export default async (_: any, argv: Configuration): Promise<Configuration | Configuration[]> => {
 	const { mode } = argv;
 
 	const config = await build(mode || 'development');

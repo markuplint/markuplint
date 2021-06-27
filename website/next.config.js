@@ -6,6 +6,7 @@ module.exports = withMdxEnhanced({
 	defaultLayout: true,
 	rehypePlugins: [rehypePrism],
 })({
+	// https://github.com/vercel/next.js/discussions/26186
 	webpack5: false,
 	pageExtensions: ['mdx', 'tsx'],
 });

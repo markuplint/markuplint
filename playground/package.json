@@ -4,7 +4,7 @@
 	"version": "1.0.1-alpha.5",
 	"private": true,
 	"scripts": {
-		"dev": "webpack-dev-server --progress --watch --colors",
+		"dev": "webpack-dev-server --progress --color",
 		"build": "webpack --mode production"
 	},
 	"author": "Yusuke Hirao",
@@ -18,7 +18,7 @@
 		"@markuplint/ml-core": "^1.7.1",
 		"@markuplint/ml-spec": "^1.5.0",
 		"@markuplint/rules": "^1.8.1",
-		"monaco-editor": "^0.20.0",
+		"monaco-editor": "^0.25.2",
 		"svelte": "^3.38.3",
 		"tslib": "^2.3.0"
 	}
