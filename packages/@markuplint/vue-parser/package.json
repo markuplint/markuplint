@@ -19,9 +19,7 @@
 		"@markuplint/html-parser": "^1.5.1",
 		"@markuplint/ml-ast": "^1.5.1",
 		"@markuplint/parser-utils": "^1.4.1",
+		"tslib": "^2.3.0",
 		"vue-eslint-parser": "^7.4.1"
-	},
-	"devDependencies": {
-		"@markuplint/parser-utils": "^1.1.0"
 	}
 }

@@ -24,6 +24,7 @@
 		"@markuplint/ml-config": "^1.2.0",
 		"cosmiconfig": "^7.0.0",
 		"glob": "^7.1.6",
-		"minimatch": "^3.0.4"
+		"minimatch": "^3.0.4",
+		"tslib": "^2.3.0"
 	}
 }
