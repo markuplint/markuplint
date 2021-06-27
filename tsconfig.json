@@ -1,22 +1,77 @@
 {
+	"extends": "./tsconfig.base",
 	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es2017",
-		"strict": true,
-		"strictNullChecks": true,
-		"strictPropertyInitialization": true,
-		"allowSyntheticDefaultImports": true,
-		"experimentalDecorators": true,
-		"esModuleInterop": true,
-		"noImplicitAny": true,
-		"declaration": true,
-		"lib": ["dom", "es2015", "es2016", "es2017", "esnext"],
-		"skipLibCheck": true,
-		"baseUrl": ".",
-		"paths": {
-			"@markuplint/*": ["./packages/@markuplint/*/src"],
-			"*": ["./packages/*/src"]
-		}
+		"noEmit": true
 	},
-	"exclude": ["node_modules"]
+	"references": [
+		{
+			"path": "packages/@markuplint/i18n"
+		},
+		{
+			"path": "packages/@markuplint/ml-spec"
+		},
+		{
+			"path": "packages/@markuplint/ml-ast"
+		},
+		{
+			"path": "packages/@markuplint/ml-config"
+		},
+		{
+			"path": "packages/@markuplint/ml-core"
+		},
+		{
+			"path": "packages/@markuplint/parser-utils"
+		},
+		{
+			"path": "packages/@markuplint/html-parser"
+		},
+		{
+			"path": "packages/@markuplint/ejs-parser"
+		},
+		{
+			"path": "packages/@markuplint/erb-parser"
+		},
+		{
+			"path": "packages/@markuplint/file-resolver"
+		},
+		{
+			"path": "packages/@markuplint/jsx-parser"
+		},
+		{
+			"path": "packages/@markuplint/liquid-parser"
+		},
+		{
+			"path": "packages/@markuplint/mustache-parser"
+		},
+		{
+			"path": "packages/@markuplint/nunjucks-parser"
+		},
+		{
+			"path": "packages/@markuplint/php-parser"
+		},
+		{
+			"path": "packages/@markuplint/pug-parser"
+		},
+		{
+			"path": "packages/@markuplint/react-spec"
+		},
+		{
+			"path": "packages/@markuplint/rule-textlint"
+		},
+		{
+			"path": "packages/@markuplint/rules"
+		},
+		{
+			"path": "packages/@markuplint/svelte-parser"
+		},
+		{
+			"path": "packages/@markuplint/vue-parser"
+		},
+		{
+			"path": "packages/@markuplint/vue-spec"
+		},
+		{
+			"path": "packages/markuplint"
+		}
+	]
 }

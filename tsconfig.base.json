@@ -1,0 +1,12 @@
+{
+	// used by ESLint
+	"extends": "./tsconfig.lib",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"jsx": "preserve",
+		"paths": {
+			"@markuplint/*": ["packages/@markuplint/*/src"],
+			"markuplint": ["packages/markuplint/src"]
+		}
+	}
+}

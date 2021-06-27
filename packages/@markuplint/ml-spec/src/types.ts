@@ -1,7 +1,7 @@
-import { ContentModel, PermittedStructuresSchema } from './permitted-structres';
+import { ContentModel, PermittedStructuresSchema } from './permitted-structures';
 
 /**
- * markuplit Markup-language spec
+ * markuplint Markup-language spec
  */
 export interface MLMLSpec {
 	cites: Cites;

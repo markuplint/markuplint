@@ -1,9 +1,12 @@
 {
-	"extends": "../tsconfig.json",
+	"extends": "../tsconfig.base",
 	"compilerOptions": {
-		"resolveJsonModule": true,
 		"declaration": false,
-		"importHelpers": true
+		"module": "ESNext"
 	},
-	"exclude": ["node_modules"]
+	"ts-node": {
+		"compilerOptions": {
+			"module": "CommonJS"
+		}
+	}
 }

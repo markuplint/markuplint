@@ -44,10 +44,7 @@ jobs:
 
             - name: Install dependencies
               if: steps.cache.outputs.cache-hit != 'true'
-              run: yarn install
-
-            - name: Bootstrap
-              run: yarn bootstrap
+              run: yarn --frozen-lockfile
 
             - name: Build
               run: yarn build

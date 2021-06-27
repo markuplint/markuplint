@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
 const util = require('util');
-/* eslint-enable @typescript-eslint/no-var-requires */
 
 const asyncGlob = util.promisify(glob);
 const copyFile = util.promisify(fs.copyFile);

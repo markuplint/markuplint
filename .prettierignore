@@ -1,0 +1,9 @@
+**/dist
+**/fixture
+**/lib
+**/node_modules
+**/resources
+**/.next
+/apidoc
+/coverage
+/website/src/pages/rules
