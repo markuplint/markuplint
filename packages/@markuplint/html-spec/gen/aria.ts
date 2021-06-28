@@ -1,7 +1,41 @@
-import { ARIAAttribute, ARIAAttributeValue, ARIARoleOwnedPropOrState, ARIRRoleAttribute } from '@markuplint/ml-spec';
+import {
+	ARIAAttribute,
+	ARIAAttributeValue,
+	ARIARoleOwnedPropOrState,
+	ARIRRoleAttribute,
+	EquivalentHtmlAttr,
+} from '@markuplint/ml-spec';
 import { arrayUnique, nameCompare } from './utils';
 import type cheerio from 'cheerio';
 import fetch from './fetch';
+
+async function getAriaInHtml() {
+	const $ = await fetch('https://www.w3.org/TR/html-aria/');
+	const implicitProps: { name: string; value: string | null; htmlAttrName: string }[] = [];
+	const $implicitProps = $(
+		'#requirements-for-use-of-aria-attributes-in-place-of-equivalent-html-attributes table tbody tr',
+	).toArray();
+	for (const $implicitProp of $implicitProps) {
+		const htmlAttrName = $($implicitProp).find('th:nth-of-type(1) a').eq(0).text();
+		if (htmlAttrName === 'contenteditable') {
+			// FIXME:
+			// Cannot design yet because the contenteditable attribute is evaluated with ancestors.
+			continue;
+		}
+		const implicitProp = $($implicitProp).find('td:nth-of-type(1) code').eq(0).text();
+		const [name, _value] = implicitProp.split('=');
+		const value = _value.replace(/"|'/g, '').trim();
+		const data = {
+			name,
+			value: value === '...' ? null : value,
+			htmlAttrName,
+		};
+		implicitProps.push(data);
+	}
+	return {
+		implicitProps,
+	};
+}
 
 export async function getAria() {
 	const $ = await fetch('https://www.w3.org/TR/wai-aria-1.2/');
@@ -23,6 +57,9 @@ export async function getAria() {
 			deprecated: isDeprecated,
 		};
 	};
+
+	const { implicitProps } = await getAriaInHtml();
+
 	$roleList.each((_, el) => {
 		const $el = $(el);
 		const name = $el.find('.role-name').attr('title')?.trim() || '';
@@ -121,6 +158,16 @@ export async function getAria() {
 					.replace(/\(default\)/gi, '')
 					.trim() || undefined;
 			const isGlobal = globalStatesAndProperties.includes(name) || undefined;
+
+			let equivalentHtmlAttrs: EquivalentHtmlAttr[] | undefined;
+			const implicitOwnProps = implicitProps.filter(p => p.name === name);
+			if (implicitOwnProps.length) {
+				equivalentHtmlAttrs = implicitOwnProps.map(attr => ({
+					htmlAttrName: attr.htmlAttrName,
+					value: attr.value,
+				}));
+			}
+
 			return {
 				name,
 				type,
@@ -129,6 +176,7 @@ export async function getAria() {
 				enum: enumValues,
 				defaultValue,
 				isGlobal,
+				equivalentHtmlAttrs,
 			};
 		});
 

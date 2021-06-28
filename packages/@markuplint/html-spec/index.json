@@ -141,6 +141,7 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/xmp",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes",
+		"https://www.w3.org/TR/html-aria/",
 		"https://www.w3.org/TR/wai-aria-1.2/"
 	],
 	"def": {
@@ -8395,7 +8396,13 @@
 				"type": "state",
 				"value": "tristate",
 				"enum": [],
-				"defaultValue": "undefined"
+				"defaultValue": "undefined",
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "checked",
+						"value": "true"
+					}
+				]
 			},
 			{
 				"name": "aria-colcount",
@@ -8413,7 +8420,13 @@
 				"name": "aria-colspan",
 				"type": "property",
 				"value": "integer",
-				"enum": []
+				"enum": [],
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "colspan",
+						"value": null
+					}
+				]
 			},
 			{
 				"name": "aria-controls",
@@ -8450,7 +8463,13 @@
 				"value": "true/false",
 				"enum": [],
 				"defaultValue": "false",
-				"isGlobal": true
+				"isGlobal": true,
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "disabled",
+						"value": "true"
+					}
+				]
 			},
 			{
 				"name": "aria-dropeffect",
@@ -8505,7 +8524,13 @@
 				"value": "true/false/undefined",
 				"enum": [],
 				"defaultValue": "undefined",
-				"isGlobal": true
+				"isGlobal": true,
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "hidden",
+						"value": "true"
+					}
+				]
 			},
 			{
 				"name": "aria-invalid",
@@ -8589,7 +8614,13 @@
 				"name": "aria-placeholder",
 				"type": "property",
 				"value": "string",
-				"enum": []
+				"enum": [],
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "placeholder",
+						"value": null
+					}
+				]
 			},
 			{
 				"name": "aria-posinset",
@@ -8609,7 +8640,13 @@
 				"type": "property",
 				"value": "true/false",
 				"enum": [],
-				"defaultValue": "false"
+				"defaultValue": "false",
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "readonly",
+						"value": "true"
+					}
+				]
 			},
 			{
 				"name": "aria-relevant",
@@ -8624,7 +8661,13 @@
 				"type": "property",
 				"value": "true/false",
 				"enum": [],
-				"defaultValue": "false"
+				"defaultValue": "false",
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "required",
+						"value": "true"
+					}
+				]
 			},
 			{
 				"name": "aria-roledescription",
@@ -8649,7 +8692,13 @@
 				"name": "aria-rowspan",
 				"type": "property",
 				"value": "integer",
-				"enum": []
+				"enum": [],
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "rowspan",
+						"value": null
+					}
+				]
 			},
 			{
 				"name": "aria-selected",
@@ -8675,13 +8724,25 @@
 				"name": "aria-valuemax",
 				"type": "property",
 				"value": "number",
-				"enum": []
+				"enum": [],
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "max",
+						"value": null
+					}
+				]
 			},
 			{
 				"name": "aria-valuemin",
 				"type": "property",
 				"value": "number",
-				"enum": []
+				"enum": [],
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "min",
+						"value": null
+					}
+				]
 			},
 			{
 				"name": "aria-valuenow",
