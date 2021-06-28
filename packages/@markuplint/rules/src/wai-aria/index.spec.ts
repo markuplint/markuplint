@@ -383,6 +383,36 @@ describe('Set the implicit role explicitly', () => {
 	});
 });
 
+describe('Set the default value of the property/state explicitly', () => {
+	test('aria-live="off"', async () => {
+		const r = await markuplint.verify(
+			'<div aria-live="off"></div>',
+			{
+				rules: {
+					'wai-aria': {
+						option: {
+							disallowDefaultValue: true,
+						},
+					},
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'It is default value',
+				raw: 'aria-live="off"',
+			},
+		]);
+	});
+});
+
 describe('Set the deprecated property/state', () => {
 	test('aria-disabled is deprecated in article', async () => {
 		const r = await markuplint.verify(

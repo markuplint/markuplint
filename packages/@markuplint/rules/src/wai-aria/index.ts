@@ -16,6 +16,7 @@ type Options = {
 	permittedAriaRoles?: boolean;
 	disallowSetImplicitRole?: boolean;
 	disallowSetImplicitProps?: boolean;
+	disallowDefaultValue?: boolean;
 };
 
 export default createRule<true, Options>({
@@ -28,6 +29,7 @@ export default createRule<true, Options>({
 		permittedAriaRoles: true,
 		disallowSetImplicitRole: true,
 		disallowSetImplicitProps: true,
+		disallowDefaultValue: false,
 	},
 	async verify(document, translate) {
 		const reports: Result[] = [];
@@ -185,6 +187,7 @@ export default createRule<true, Options>({
 				const attrName = attr.getName().potential.trim().toLowerCase();
 				if (/^aria-/i.test(attrName)) {
 					const value = attr.getValue().potential.trim().toLowerCase();
+					const propSpec = ariaAttrs.find(p => p.name === attrName);
 
 					// Checking ARIA Value
 					if (node.rule.option.checkingValue) {
@@ -206,7 +209,6 @@ export default createRule<true, Options>({
 
 					// Checking implicit props
 					if (node.rule.option.disallowSetImplicitProps) {
-						const propSpec = ariaAttrs.find(p => p.name === attrName);
 						if (propSpec && propSpec.equivalentHtmlAttrs) {
 							for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
 								if (node.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
@@ -234,6 +236,17 @@ export default createRule<true, Options>({
 								}
 							}
 						}
+					}
+
+					// Default value
+					if (node.rule.option.disallowDefaultValue && propSpec && propSpec.defaultValue === value) {
+						reports.push({
+							severity: node.rule.severity,
+							message: 'It is default value',
+							line: attr.startLine,
+							col: attr.startCol,
+							raw: attr.raw,
+						});
 					}
 				}
 			}

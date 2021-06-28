@@ -15,6 +15,8 @@
     -   非推奨（廃止予定）のプロパティ/ステートを指定した場合。
     -   ARIA in HTML の仕様における要素の暗黙のロールを明示的に指定した場合。
     -   ARIA in HTML の仕様において、HTML の属性と同等の意味を持つプロパティ/ステートを指定した場合。
+-   プリファレンス
+    -   プロパティ/ステートのデフォルト値を明示的に指定した場合。
 
 **ARIA in HTML** に関しては [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/aria-in-html) に設定値を持っています。またこの仕様はまだドラフトであるため、任意に無効化できるようにしています。
 
@@ -87,6 +89,14 @@ ARIA in HTML の仕様において要素に許可されているロールかど�
 -   型: `boolean`
 -   省略可
 -   初期値: `true`
+
+##### `disallowDefaultValue`
+
+プロパティ/ステートのデフォルト値の明示的な設定を禁止します。
+
+-   型: `boolean`
+-   省略可
+-   初期値: `false`
 
 ### デフォルトの警告の厳しさ
 

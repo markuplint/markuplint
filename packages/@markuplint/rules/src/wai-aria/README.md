@@ -21,6 +21,8 @@ Warn if:
     -   Set the deprecated property/state.
     -   Set the implicit role explicitly according to ARIA in HTML.
     -   Set the property/state explicitly when its element has semantic HTML attribute equivalent to it according to ARIA in HTML.
+-   Preference
+    -   Set the default value of the property/state explicitly.
 
 There are settings about **ARIA in HTML** on [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/aria-in-html). And you can disable them because that is draft yet.
 
@@ -92,7 +94,16 @@ Disallow set the implicit property/state explicitly. This is based on the spec A
 
 -   Type: `boolean`
 -   Optional
--   Default: `true`### Default notification severity
+-   Default: `true`
+
+##### `disallowDefaultValue`
+
+Disallow set the default value of the property/state explicitly.
+
+-   Type: `boolean`
+-   Optional
+-   Default: `false`
+-   ### Default notification severity
 
 `error`
 
