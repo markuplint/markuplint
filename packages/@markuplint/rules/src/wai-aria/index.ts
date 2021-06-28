@@ -103,11 +103,11 @@ export default createRule<true, Options>({
 				}
 			}
 
-			// Checking aria-* on the role
 			const computedRole = getComputedRole(node);
 			if (computedRole) {
-				const role = getRoleSpec(computedRole);
+				const role = getRoleSpec(computedRole.name);
 				if (role) {
+					// Checking aria-* on the role
 					for (const attr of node.attributes) {
 						const attrName = attr.getName().potential.trim().toLowerCase();
 						if (/^aria-/i.test(attrName)) {
@@ -134,7 +134,25 @@ export default createRule<true, Options>({
 						}
 					}
 
-					// const requiredStateAndPropNames = role.statesAndProps.filter(s => s.required).map(s => s.name);
+					// Checing required props
+					if (!computedRole.isImplicit) {
+						const requiredProps = role.statesAndProps.filter(s => s.required).map(s => s.name);
+						for (const requiredProp of requiredProps) {
+							const has = node.attributes.some(attr => {
+								const attrName = attr.getName().potential.trim().toLowerCase();
+								return attrName === requiredProp;
+							});
+							if (!has) {
+								reports.push({
+									severity: node.rule.severity,
+									message: `The ${requiredProp} state/property is required on the ${role.name} role.`,
+									line: node.startLine,
+									col: node.startCol,
+									raw: node.raw,
+								});
+							}
+						}
+					}
 				}
 			} else {
 				// No role element

@@ -180,10 +180,10 @@ describe('getImplicitRole', () => {
 
 describe('getComputedRole', () => {
 	test('the a element', async () => {
-		expect(getComputedRole(createElement('<a></a>')!)).toBe(false);
-		expect(getComputedRole(createElement('<a href></a>')!)).toBe('link');
-		expect(getComputedRole(createElement('<a role="button"></a>')!)).toBe('button');
-		expect(getComputedRole(createElement('<a role="button" href></a>')!)).toBe('button');
+		expect(getComputedRole(createElement('<a></a>')!)).toBe(null);
+		expect(getComputedRole(createElement('<a href></a>')!)?.name).toBe('link');
+		expect(getComputedRole(createElement('<a role="button"></a>')!)?.name).toBe('button');
+		expect(getComputedRole(createElement('<a role="button" href></a>')!)?.name).toBe('button');
 	});
 });
 

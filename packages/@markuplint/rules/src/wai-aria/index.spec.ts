@@ -272,6 +272,47 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 	});
 });
 
+describe("Don't set the required property/state", () => {
+	test('heading needs aria-level', async () => {
+		const r = await markuplint.verify(
+			'<div role="heading"></div>',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The aria-level state/property is required on the heading role.',
+				raw: '<div role="heading">',
+			},
+		]);
+	});
+
+	test("h1 element doesn't needs aria-level", async () => {
+		const r = await markuplint.verify(
+			'<h1></h1>',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([]);
+	});
+});
+
 describe('Set the implicit role explicitly', () => {
 	test('a[href][role=link]', async () => {
 		const r = await markuplint.verify(

@@ -16,6 +16,7 @@ Warn if:
     -   Use the property/state that doesn't belong to a set role (or an implicit role).
     -   Use an invalid value of the property/state .
     -   Use the not permitted role according to ARIA in HTML.
+    -   Don't set the required property/state.
 -   Unrecommended.
     -   Set the implicit role explicitly according to ARIA in HTML.
 
