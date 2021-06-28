@@ -19,6 +19,9 @@
 				},
 				"disallowSetImplicitRole": {
 					"type": "boolean"
+				},
+				"disallowSetImplicitProps": {
+					"type": "boolean"
 				}
 			}
 		}

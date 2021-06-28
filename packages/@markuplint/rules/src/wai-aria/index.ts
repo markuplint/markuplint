@@ -15,6 +15,7 @@ type Options = {
 	checkingDeprecatedProps?: boolean;
 	permittedAriaRoles?: boolean;
 	disallowSetImplicitRole?: boolean;
+	disallowSetImplicitProps?: boolean;
 };
 
 export default createRule<true, Options>({
@@ -26,6 +27,7 @@ export default createRule<true, Options>({
 		checkingDeprecatedProps: true,
 		permittedAriaRoles: true,
 		disallowSetImplicitRole: true,
+		disallowSetImplicitProps: true,
 	},
 	async verify(document, translate) {
 		const reports: Result[] = [];
@@ -33,7 +35,7 @@ export default createRule<true, Options>({
 		await document.walkOn('Element', async node => {
 			const attrSpecs = getAttrSpecs(node.nodeName, document.specs);
 			const html = htmlSpec(node.nodeName);
-			const { roles } = ariaSpec();
+			const { roles, ariaAttrs } = ariaSpec();
 
 			if (!html || !attrSpecs) {
 				return;
@@ -176,15 +178,16 @@ export default createRule<true, Options>({
 				}
 			}
 
-			// Checking ARIA Value
-			if (node.rule.option.checkingValue) {
-				for (const attr of node.attributes) {
-					if (attr.attrType === 'html-attr' && attr.isDynamicValue) {
-						continue;
-					}
-					const attrName = attr.getName().potential.trim().toLowerCase();
-					if (/^aria-/i.test(attrName)) {
-						const value = attr.getValue().potential.trim().toLowerCase();
+			for (const attr of node.attributes) {
+				if (attr.attrType === 'html-attr' && attr.isDynamicValue) {
+					continue;
+				}
+				const attrName = attr.getName().potential.trim().toLowerCase();
+				if (/^aria-/i.test(attrName)) {
+					const value = attr.getValue().potential.trim().toLowerCase();
+
+					// Checking ARIA Value
+					if (node.rule.option.checkingValue) {
 						const result = checkAria(attrName, value);
 						if (!result.isValid) {
 							reports.push({
@@ -198,6 +201,38 @@ export default createRule<true, Options>({
 								col: attr.startCol,
 								raw: attr.raw,
 							});
+						}
+					}
+
+					// Checking implicit props
+					if (node.rule.option.disallowSetImplicitProps) {
+						const propSpec = ariaAttrs.find(p => p.name === attrName);
+						if (propSpec && propSpec.equivalentHtmlAttrs) {
+							for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
+								if (node.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
+									const targetAttrValue = node.getAttribute(equivalentHtmlAttr.htmlAttrName);
+									if (
+										(equivalentHtmlAttr.value == null && targetAttrValue === value) ||
+										equivalentHtmlAttr.value === value
+									) {
+										reports.push({
+											severity: node.rule.severity,
+											message: `Has the ${equivalentHtmlAttr.htmlAttrName} attribute that has equivalent semantic.`,
+											line: attr.startLine,
+											col: attr.startCol,
+											raw: attr.raw,
+										});
+										continue;
+									}
+									reports.push({
+										severity: node.rule.severity,
+										message: `Can be different from the value of the ${equivalentHtmlAttr.htmlAttrName} attribute.`,
+										line: attr.startLine,
+										col: attr.startCol,
+										raw: attr.raw,
+									});
+								}
+							}
 						}
 					}
 				}

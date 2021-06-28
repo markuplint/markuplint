@@ -452,6 +452,123 @@ describe('Set the deprecated property/state', () => {
 	});
 });
 
+describe('Set the property/state explicitly when its element has semantic HTML attribute equivalent to it according to ARIA in HTML.', () => {
+	test('checked and aria-checked="true"', async () => {
+		const r = await markuplint.verify(
+			'<input type="checkbox" checked aria-checked="true" />',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message: 'Has the checked attribute that has equivalent semantic.',
+				raw: 'aria-checked="true"',
+			},
+		]);
+	});
+
+	test('checked and aria-checked="false"', async () => {
+		const r = await markuplint.verify(
+			'<input type="checkbox" checked aria-checked="false" />',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message: 'Can be different from the value of the checked attribute.',
+				raw: 'aria-checked="false"',
+			},
+		]);
+	});
+
+	test('placeholder="type hints" and aria-placeholder="type hints"', async () => {
+		const r = await markuplint.verify(
+			'<input type="text" placeholder="type hints" aria-placeholder="type hints" />',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 45,
+				message: 'Has the placeholder attribute that has equivalent semantic.',
+				raw: 'aria-placeholder="type hints"',
+			},
+		]);
+	});
+
+	test('placeholder="type hints" and aria-placeholder="different value"', async () => {
+		const r = await markuplint.verify(
+			'<input type="text" placeholder="type hints" aria-placeholder="different value" />',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 45,
+				message: 'Can be different from the value of the placeholder attribute.',
+				raw: 'aria-placeholder="different value"',
+			},
+		]);
+	});
+
+	test('disable', async () => {
+		const r = await markuplint.verify(
+			'<input type="checkbox" checked aria-checked="true" />',
+			{
+				rules: {
+					'wai-aria': {
+						option: {
+							disallowSetImplicitProps: false,
+						},
+					},
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([]);
+	});
+});
+
 describe('childNodeRules', () => {
 	test('ex. For Safari + VoiceOver', async () => {
 		const r = await markuplint.verify(

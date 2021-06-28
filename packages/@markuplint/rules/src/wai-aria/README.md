@@ -20,6 +20,7 @@ Warn if:
 -   Unrecommended.
     -   Set the deprecated property/state.
     -   Set the implicit role explicitly according to ARIA in HTML.
+    -   Set the property/state explicitly when its element has semantic HTML attribute equivalent to it according to ARIA in HTML.
 
 There are settings about **ARIA in HTML** on [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/aria-in-html). And you can disable them because that is draft yet.
 
@@ -85,7 +86,13 @@ Disallow set the implicit role explicitly. This is based on the spec ARIA in HTM
 -   Optional
 -   Default: `true`
 
-### Default notification severity
+##### `disallowSetImplicitProps`
+
+Disallow set the implicit property/state explicitly. This is based on the spec ARIA in HTML and is not strictly the spec WAI-ARIA, so it is an option.
+
+-   Type: `boolean`
+-   Optional
+-   Default: `true`### Default notification severity
 
 `error`
 
