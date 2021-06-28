@@ -10,12 +10,14 @@ Warn if the `role` attribute and/or `aria-*` attributes don't set in accordance 
 
 Warn if:
 
--   Use the role that doesn't exist in the spec.
--   Use the abstract role.
--   Use the `aria-*` attribute that doesn't belong to a set role (or an implicit role).
--   [Optional] Use a bad value of the `aria-*` attribute.
--   [Optional] Use the not permitted role according to ARIA in HTML.
--   [Optional] Set the implicit role explicitly.
+-   Clear-cut violation.
+    -   Use the role that doesn't exist in the spec.
+    -   Use the abstract role.
+    -   Use the property/state that doesn't belong to a set role (or an implicit role).
+    -   Use an invalid value of the property/state .
+    -   Use the not permitted role according to ARIA in HTML.
+-   Unrecommended.
+    -   Set the implicit role explicitly according to ARIA in HTML.
 
 There are settings about **ARIA in HTML** on [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/aria-in-html). And you can disable them because that is draft yet.
 
@@ -51,7 +53,7 @@ Type: `boolean`
 
 #### `checkingValue`
 
-Warn if use a bad value of the `aria-*` attribute. This is optional but you should not disable it if you need to follow the spec. But you can disable it temporarily if you need when it happened to a problem on the spec was updated (ex: If a value was added to an allowed list on the spec, etc).
+Warn if use an invalid value of the property/state. You can temporarily disable this option if the WAI-ARIA spec update rather than markuplint add new value to the allowed list ahead. Don't recommend disabling basically.
 
 -   Type: `boolean`
 -   Optional

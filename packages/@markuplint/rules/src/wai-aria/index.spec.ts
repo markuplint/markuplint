@@ -53,7 +53,7 @@ describe('Use the abstract role', () => {
 	});
 });
 
-describe("Use the `aria-*` attribute that doesn't belong to a set role (or an implicit role)", () => {
+describe("Use the property/state that doesn't belong to a set role (or an implicit role)", () => {
 	test('[role=alert][aria-disabled=true]', async () => {
 		const r = await markuplint.verify(
 			'<div role="alert" aria-disabled="true"></div>',
@@ -142,7 +142,7 @@ describe("Use the `aria-*` attribute that doesn't belong to a set role (or an im
 	});
 });
 
-describe('Use a bad value of the `aria-*` attribute', () => {
+describe('Use an invalid value of the property/state', () => {
 	test('[aria-current=foo]', async () => {
 		const r = await markuplint.verify(
 			'<div aria-current="foo"></div>',
