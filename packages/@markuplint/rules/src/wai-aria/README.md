@@ -18,6 +18,7 @@ Warn if:
     -   Use the not permitted role according to ARIA in HTML.
     -   Don't set the required property/state.
 -   Unrecommended.
+    -   Set the deprecated property/state.
     -   Set the implicit role explicitly according to ARIA in HTML.
 
 There are settings about **ARIA in HTML** on [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/aria-in-html). And you can disable them because that is draft yet.
@@ -55,6 +56,14 @@ Type: `boolean`
 #### `checkingValue`
 
 Warn if use an invalid value of the property/state. You can temporarily disable this option if the WAI-ARIA spec update rather than markuplint add new value to the allowed list ahead. Don't recommend disabling basically.
+
+-   Type: `boolean`
+-   Optional
+-   Default: `true`
+
+#### `checkingDeprecatedProps`
+
+Warn if use deprecated property/state. You can temporarily disable this not to evaluate WAI-ARIA old version. Don't recommend disabling basically.
 
 -   Type: `boolean`
 -   Optional

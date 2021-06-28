@@ -12,6 +12,7 @@
     -   ARIA in HTML の仕様における要素に許可されていないロールを指定した場合。
     -   必須のプロパティ/ステートを指定していない場合。
 -   推奨されない使い方
+    -   非推奨（廃止予定）のプロパティ/ステートを指定した場合。
     -   ARIA in HTML の仕様における要素の暗黙のロールを明示的に指定した場合。
 
 **ARIA in HTML** に関しては [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/aria-in-html) に設定値を持っています。またこの仕様はまだドラフトであるため、任意に無効化できるようにしています。
@@ -49,6 +50,14 @@
 #### `checkingValue`
 
 プロパティ/ステートの値をチェックします。このオプションは、markuplint が許可リストに追加するよりも先に WAI-ARIA の仕様が更新された場合などに、必要に応じて一時的に無効化できるようにしています。基本的に無効化を推奨しません。
+
+-   型: `boolean`
+-   省略可
+-   初期値: `true`
+
+#### `checkingDeprecatedProps`
+
+非推奨（廃止予定）のプロパティ/ステートの値をチェックします。WAI-ARIA の古いバージョンのためにこの評価を無効化することができます。基本的に無効化を推奨しません。
 
 -   型: `boolean`
 -   省略可

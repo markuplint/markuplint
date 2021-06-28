@@ -54,30 +54,6 @@ describe('Use the abstract role', () => {
 });
 
 describe("Use the property/state that doesn't belong to a set role (or an implicit role)", () => {
-	test('[role=alert][aria-disabled=true]', async () => {
-		const r = await markuplint.verify(
-			'<div role="alert" aria-disabled="true"></div>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
-
-		expect(r).toStrictEqual([
-			{
-				ruleId: 'wai-aria',
-				severity: 'error',
-				line: 1,
-				col: 19,
-				message: 'The aria-disabled state/property is deprecated on the alert role.',
-				raw: 'aria-disabled="true"',
-			},
-		]);
-	});
-
 	test('[aria-checked=true]', async () => {
 		const r = await markuplint.verify(
 			'<div aria-checked="true"></div>',
@@ -404,6 +380,75 @@ describe('Set the implicit role explicitly', () => {
 		);
 
 		expect(r.length).toBe(0);
+	});
+});
+
+describe('Set the deprecated property/state', () => {
+	test('aria-disabled is deprecated in article', async () => {
+		const r = await markuplint.verify(
+			'<article aria-disabled="true"></article>',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 10,
+				message: 'The aria-disabled state/property is deprecated on the article role.',
+				raw: 'aria-disabled="true"',
+			},
+		]);
+	});
+
+	test('aria-disabled is deprecated in article role', async () => {
+		const r = await markuplint.verify(
+			'<div role="article" aria-disabled="true"></div>',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 21,
+				message: 'The aria-disabled state/property is deprecated on the article role.',
+				raw: 'aria-disabled="true"',
+			},
+		]);
+	});
+
+	test('disable', async () => {
+		const r = await markuplint.verify(
+			'<article aria-disabled="true"></article>',
+			{
+				rules: {
+					'wai-aria': {
+						option: {
+							checkingDeprecatedProps: false,
+						},
+					},
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([]);
 	});
 });
 

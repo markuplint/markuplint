@@ -12,6 +12,7 @@ import {
 
 type Options = {
 	checkingValue?: boolean;
+	checkingDeprecatedProps?: boolean;
 	permittedAriaRoles?: boolean;
 	disallowSetImplicitRole?: boolean;
 };
@@ -22,6 +23,7 @@ export default createRule<true, Options>({
 	defaultValue: true,
 	defaultOptions: {
 		checkingValue: true,
+		checkingDeprecatedProps: true,
 		permittedAriaRoles: true,
 		disallowSetImplicitRole: true,
 	},
@@ -113,7 +115,7 @@ export default createRule<true, Options>({
 						if (/^aria-/i.test(attrName)) {
 							const statesAndProp = role.statesAndProps.find(s => s.name === attrName);
 							if (statesAndProp) {
-								if (statesAndProp.deprecated) {
+								if (node.rule.option.checkingDeprecatedProps && statesAndProp.deprecated) {
 									reports.push({
 										severity: node.rule.severity,
 										message: `The ${attrName} state/property is deprecated on the ${role.name} role.`,

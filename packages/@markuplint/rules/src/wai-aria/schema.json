@@ -11,6 +11,9 @@
 				"checkingValue": {
 					"type": "boolean"
 				},
+				"checkingDeprecatedProps": {
+					"type": "boolean"
+				},
 				"permittedAriaRoles": {
 					"type": "boolean"
 				},
