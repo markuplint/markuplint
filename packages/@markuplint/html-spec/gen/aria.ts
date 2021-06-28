@@ -12,10 +12,12 @@ export async function getAria() {
 		const text = $li.text();
 		const isDeprecated = /deprecated/i.test(text) || undefined;
 		const $a = $li.find('a');
-		const name = $a
-			.text()
-			.replace(/\s*\(\s*state\s*\)\s*/i, '')
-			.trim();
+		const name = $a.length
+			? $a
+					.text()
+					.replace(/\s*\(\s*state\s*\)\s*/i, '')
+					.trim()
+			: text.trim();
 		return {
 			name,
 			deprecated: isDeprecated,
@@ -35,6 +37,12 @@ export async function getAria() {
 			.toArray()
 			.map(a => $(a).text().trim());
 		const isAbstract = $feaures.find('.role-abstract').text().trim().toLowerCase() === 'true' || undefined;
+		let $ownedRequiredProps = $feaures.find('.role-required-properties li').toArray();
+		if (!$ownedRequiredProps.length) {
+			$ownedRequiredProps = $feaures.find('.role-required-properties').toArray();
+		}
+		const ownedRequiredProps = $ownedRequiredProps.map(getAttr);
+		ownedRequiredProps.forEach(p => (p.required = true));
 		const ownedInheritedProps = $feaures.find('.role-inherited li').toArray().map(getAttr);
 		const ownedProps = $feaures.find('.role-properties li').toArray().map(getAttr);
 		const requiredContextRole = $feaures
@@ -56,7 +64,9 @@ export async function getAria() {
 			: $childrenPresentational.match(/false/i)
 			? false
 			: undefined;
-		const ownedAttribute = arrayUnique([...ownedInheritedProps, ...ownedProps].sort(nameCompare));
+		const ownedAttribute = arrayUnique(
+			[...ownedRequiredProps, ...ownedInheritedProps, ...ownedProps].sort(nameCompare),
+		);
 		roles.push({
 			name,
 			description,

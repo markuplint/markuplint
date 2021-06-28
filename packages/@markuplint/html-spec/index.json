@@ -1394,6 +1394,10 @@
 						"name": "aria-busy"
 					},
 					{
+						"name": "aria-checked",
+						"required": true
+					},
+					{
 						"name": "aria-controls"
 					},
 					{
@@ -1656,6 +1660,10 @@
 						"name": "aria-busy"
 					},
 					{
+						"name": "aria-controls",
+						"required": true
+					},
+					{
 						"name": "aria-current"
 					},
 					{
@@ -1672,6 +1680,10 @@
 					},
 					{
 						"name": "aria-errormessage"
+					},
+					{
+						"name": "aria-expanded",
+						"required": true
 					},
 					{
 						"name": "aria-flowto"
@@ -3137,6 +3149,10 @@
 						"name": "aria-labelledby"
 					},
 					{
+						"name": "aria-level",
+						"required": true
+					},
+					{
 						"name": "aria-live"
 					},
 					{
@@ -4377,6 +4393,10 @@
 						"name": "aria-busy"
 					},
 					{
+						"name": "aria-checked",
+						"required": true
+					},
+					{
 						"name": "aria-controls"
 					},
 					{
@@ -4617,6 +4637,10 @@
 					},
 					{
 						"name": "aria-valuemin"
+					},
+					{
+						"name": "aria-valuenow",
+						"required": true
 					},
 					{
 						"name": "aria-valuetext"
@@ -4870,6 +4894,10 @@
 					},
 					{
 						"name": "aria-roledescription"
+					},
+					{
+						"name": "aria-selected",
+						"required": true
 					},
 					{
 						"name": "aria-setsize"
@@ -5126,6 +5154,10 @@
 					},
 					{
 						"name": "aria-busy"
+					},
+					{
+						"name": "aria-checked",
+						"required": true
 					},
 					{
 						"name": "aria-controls"
@@ -5830,6 +5862,10 @@
 						"name": "aria-busy"
 					},
 					{
+						"name": "aria-controls",
+						"required": true
+					},
+					{
 						"name": "aria-current"
 					},
 					{
@@ -5894,6 +5930,10 @@
 					},
 					{
 						"name": "aria-valuemin"
+					},
+					{
+						"name": "aria-valuenow",
+						"required": true
 					},
 					{
 						"name": "aria-valuetext"
@@ -6396,6 +6436,10 @@
 						"name": "aria-valuemin"
 					},
 					{
+						"name": "aria-valuenow",
+						"required": true
+					},
+					{
 						"name": "aria-valuetext"
 					}
 				]
@@ -6483,6 +6527,10 @@
 					},
 					{
 						"name": "aria-valuemin"
+					},
+					{
+						"name": "aria-valuenow",
+						"required": true
 					},
 					{
 						"name": "aria-valuetext"
@@ -6974,6 +7022,10 @@
 					},
 					{
 						"name": "aria-busy"
+					},
+					{
+						"name": "aria-checked",
+						"required": true
 					},
 					{
 						"name": "aria-controls"
