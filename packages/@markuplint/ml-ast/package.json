@@ -14,5 +14,8 @@
 	"scripts": {
 		"build": "tsc",
 		"clean": "tsc --build --clean"
+	},
+	"dependencies": {
+		"tslib": "^2.3.0"
 	}
 }

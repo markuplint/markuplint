@@ -20,6 +20,7 @@
 		"@markuplint/ml-ast": "^1.5.1",
 		"@markuplint/parser-utils": "^1.4.1",
 		"@typescript-eslint/types": "^4.23.0",
-		"@typescript-eslint/typescript-estree": "^4.23.0"
+		"@typescript-eslint/typescript-estree": "^4.23.0",
+		"tslib": "^2.3.0"
 	}
 }
