@@ -192,7 +192,7 @@ export default createRule<true, Options>({
 
 					// Checking ARIA Value
 					if (node.rule.option.checkingValue) {
-						const result = checkAria(attrName, value);
+						const result = checkAria(attrName, value, computedRole?.name);
 						if (!result.isValid) {
 							reports.push({
 								severity: node.rule.severity,

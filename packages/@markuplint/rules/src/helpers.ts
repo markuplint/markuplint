@@ -303,7 +303,7 @@ export function checkAriaValue(type: string, value: string, tokenEnum: string[])
 	return true;
 }
 
-export function checkAria(attrName: string, currentValue: string) {
+export function checkAria(attrName: string, currentValue: string, role?: string) {
 	const ariaAttrs = html.def['#ariaAttrs'];
 	const aria = ariaAttrs.find(a => a.name === attrName);
 	if (!aria) {
@@ -313,7 +313,16 @@ export function checkAria(attrName: string, currentValue: string) {
 			isValid: true,
 		};
 	}
-	const isValid = checkAriaValue(aria.value, currentValue, aria.enum);
+	let valueType = aria.value;
+	if (role && aria.conditionalValue) {
+		for (const cond of aria.conditionalValue) {
+			if (cond.role.includes(role)) {
+				valueType = cond.value;
+				break;
+			}
+		}
+	}
+	const isValid = checkAriaValue(valueType, currentValue, aria.enum);
 	return {
 		...aria,
 		currentValue,
