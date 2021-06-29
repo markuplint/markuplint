@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ejs-parser",
-	"version": "1.0.1-beta.3",
+	"version": "1.0.1-beta.4",
 	"description": "EJS parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -16,8 +16,8 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "^1.5.1",
-		"@markuplint/ml-ast": "^1.5.1",
-		"@markuplint/parser-utils": "^1.4.1"
+		"@markuplint/html-parser": "^1.6.0",
+		"@markuplint/ml-ast": "^1.6.0",
+		"@markuplint/parser-utils": "^1.5.0"
 	}
 }
