@@ -8,6 +8,7 @@ import {
 	getPermittedRoles,
 	getRoleSpec,
 	htmlSpec,
+	isValidAttr,
 } from '../helpers';
 
 type Options = {
@@ -211,6 +212,16 @@ export default createRule<true, Options>({
 					if (node.rule.option.disallowSetImplicitProps) {
 						if (propSpec && propSpec.equivalentHtmlAttrs) {
 							for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
+								const isValid = isValidAttr(
+									equivalentHtmlAttr.htmlAttrName,
+									equivalentHtmlAttr.value || '',
+									false,
+									node,
+									attrSpecs,
+								);
+								if (isValid && isValid.invalidType === 'non-existent') {
+									continue;
+								}
 								if (node.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
 									const targetAttrValue = node.getAttribute(equivalentHtmlAttr.htmlAttrName);
 									if (
