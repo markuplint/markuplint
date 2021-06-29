@@ -181,7 +181,7 @@ export async function getAria() {
 				}));
 			}
 
-			return {
+			const aria: ARIAAttribute = {
 				name,
 				type,
 				deprecated,
@@ -192,6 +192,19 @@ export async function getAria() {
 				equivalentHtmlAttrs,
 				valueDescriptions: Object.keys(valueDescriptions).length ? valueDescriptions : undefined,
 			};
+
+			// Conditional Value
+			if (name === 'aria-checked') {
+				aria.value = 'true/false';
+				aria.conditionalValue = [
+					{
+						role: ['checkbox', 'menuitemcheckbox'],
+						value: 'tristate',
+					},
+				];
+			}
+
+			return aria;
 		});
 
 	return {

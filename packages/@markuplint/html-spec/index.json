@@ -8408,7 +8408,7 @@
 			{
 				"name": "aria-checked",
 				"type": "state",
-				"value": "tristate",
+				"value": "true/false",
 				"enum": [],
 				"defaultValue": "undefined",
 				"equivalentHtmlAttrs": [
@@ -8422,7 +8422,13 @@
 					"mixed": "Indicates a mixed mode value for a tri-state checkbox or menuitemcheckbox.",
 					"true": "The element is checked.",
 					"undefined": "The element does not support being checked."
-				}
+				},
+				"conditionalValue": [
+					{
+						"role": ["checkbox", "menuitemcheckbox"],
+						"value": "tristate"
+					}
+				]
 			},
 			{
 				"name": "aria-colcount",

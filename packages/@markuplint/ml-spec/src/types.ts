@@ -227,6 +227,10 @@ export type ARIAAttribute = {
 	deprecated?: true;
 	isGlobal?: true;
 	value: ARIAAttributeValue;
+	conditionalValue?: {
+		role: string[];
+		value: ARIAAttributeValue;
+	}[];
 	enum: string[];
 	defaultValue?: string;
 	equivalentHtmlAttrs?: EquivalentHtmlAttr[];
