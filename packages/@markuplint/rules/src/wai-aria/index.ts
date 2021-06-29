@@ -212,6 +212,7 @@ export default createRule<true, Options>({
 					if (node.rule.option.disallowSetImplicitProps) {
 						if (propSpec && propSpec.equivalentHtmlAttrs) {
 							for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
+								const htmlAttrSpec = attrSpecs.find(a => a.name === equivalentHtmlAttr.htmlAttrName);
 								const isValid = isValidAttr(
 									equivalentHtmlAttr.htmlAttrName,
 									equivalentHtmlAttr.value || '',
@@ -237,6 +238,9 @@ export default createRule<true, Options>({
 										});
 										continue;
 									}
+									if (htmlAttrSpec?.type === 'Boolean' && value !== 'false') {
+										continue;
+									}
 									reports.push({
 										severity: node.rule.severity,
 										message: `Can be different from the value of the ${equivalentHtmlAttr.htmlAttrName} attribute.`,
@@ -244,6 +248,16 @@ export default createRule<true, Options>({
 										col: attr.startCol,
 										raw: attr.raw,
 									});
+								} else if (value === 'true') {
+									if (htmlAttrSpec?.type === 'Boolean') {
+										reports.push({
+											severity: node.rule.severity,
+											message: `Can be in opposition to the value of the unset ${equivalentHtmlAttr.htmlAttrName} attribute.`,
+											line: attr.startLine,
+											col: attr.startCol,
+											raw: attr.raw,
+										});
+									}
 								}
 							}
 						}
