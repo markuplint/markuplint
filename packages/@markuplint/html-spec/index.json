@@ -12146,10 +12146,6 @@
 					},
 					{
 						"condition": "[type=radio]",
-						"role": false
-					},
-					{
-						"condition": "[type=radio]",
 						"role": "radio"
 					},
 					{
