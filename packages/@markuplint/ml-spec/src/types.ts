@@ -230,6 +230,7 @@ export type ARIAAttribute = {
 	enum: string[];
 	defaultValue?: string;
 	equivalentHtmlAttrs?: EquivalentHtmlAttr[];
+	valueDescriptions?: Record<string, string>;
 };
 
 export type ARIAAttributeValue =
