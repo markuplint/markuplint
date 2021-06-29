@@ -1,7 +1,7 @@
 import { Result, createRule } from '@markuplint/ml-core';
-import { attrMatches, getAttrSpecs, match } from '../helpers';
+import { getAttrSpecs, isValidAttr, match } from '../helpers';
 import { AttributeType } from '@markuplint/ml-spec/src';
-import { typeCheck } from './type-check';
+import { typeCheck } from '../type-check';
 
 type Option = {
 	attrs?: Record<string, Rule>;
@@ -86,28 +86,13 @@ export default createRule<true, Option>({
 						invalid = typeCheck(name, value, true, { name, type: customRule.type, description: '' });
 					}
 				} else if (!node.isCustomElement && attrSpecs) {
-					const spec = attrSpecs.find(s => s.name === name);
-					invalid = typeCheck(name, value, false, spec);
-					if (
-						!invalid &&
-						spec &&
-						spec.condition &&
-						!node.hasSpreadAttr &&
-						!attrMatches(node, spec.condition)
-					) {
-						invalid = {
-							invalidType: 'non-existent',
-							message: `The "${name}" attribute is not allowed`,
-						};
-					}
-					if (
-						invalid &&
-						invalid.invalidType === 'invalid-value' &&
-						attr.attrType === 'html-attr' &&
-						attr.isDynamicValue
-					) {
-						invalid = false;
-					}
+					invalid = isValidAttr(
+						name,
+						value,
+						(attr.attrType === 'html-attr' && attr.isDynamicValue) || false,
+						node,
+						attrSpecs,
+					);
 				}
 
 				if (invalid) {

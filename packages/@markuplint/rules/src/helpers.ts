@@ -1,6 +1,7 @@
 import { ARIRRoleAttribute, Attribute, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
 import { Element, RuleConfigValue } from '@markuplint/ml-core';
 import html from '@markuplint/html-spec';
+import { typeCheck } from './type-check';
 
 export function getAttrSpecs(tag: string, { specs, def }: MLMLSpec) {
 	tag = tag.toLowerCase();
@@ -111,6 +112,28 @@ export function htmlSpec(tag: string) {
 	tag = tag.toLowerCase();
 	const spec = html.specs.find(spec => spec.name === tag);
 	return spec || null;
+}
+
+export function isValidAttr(
+	name: string,
+	value: string,
+	isDynamicValue: boolean,
+	node: Element<any, any>,
+	attrSpecs: Attribute[],
+) {
+	let invalid: ReturnType<typeof typeCheck> = false;
+	const spec = attrSpecs.find(s => s.name === name);
+	invalid = typeCheck(name, value, false, spec);
+	if (!invalid && spec && spec.condition && !node.hasSpreadAttr && !attrMatches(node, spec.condition)) {
+		invalid = {
+			invalidType: 'non-existent',
+			message: `The "${name}" attribute is not allowed`,
+		};
+	}
+	if (invalid && invalid.invalidType === 'invalid-value' && isDynamicValue) {
+		invalid = false;
+	}
+	return invalid;
 }
 
 export function ariaSpec() {
@@ -280,7 +303,7 @@ export function checkAriaValue(type: string, value: string, tokenEnum: string[])
 	return true;
 }
 
-export function checkAria(attrName: string, currentValue: string) {
+export function checkAria(attrName: string, currentValue: string, role?: string) {
 	const ariaAttrs = html.def['#ariaAttrs'];
 	const aria = ariaAttrs.find(a => a.name === attrName);
 	if (!aria) {
@@ -290,7 +313,16 @@ export function checkAria(attrName: string, currentValue: string) {
 			isValid: true,
 		};
 	}
-	const isValid = checkAriaValue(aria.value, currentValue, aria.enum);
+	let valueType = aria.value;
+	if (role && aria.conditionalValue) {
+		for (const cond of aria.conditionalValue) {
+			if (cond.role.includes(role)) {
+				valueType = cond.value;
+				break;
+			}
+		}
+	}
+	const isValid = checkAriaValue(valueType, currentValue, aria.enum);
 	return {
 		...aria,
 		currentValue,

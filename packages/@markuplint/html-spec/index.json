@@ -8374,14 +8374,24 @@
 				"value": "true/false",
 				"enum": [],
 				"defaultValue": "false",
-				"isGlobal": true
+				"isGlobal": true,
+				"valueDescriptions": {
+					"false": "Assistive technologies will present only the changed node or nodes.",
+					"true": "Assistive technologies will present the entire changed region as a whole, including the author-defined label if one exists."
+				}
 			},
 			{
 				"name": "aria-autocomplete",
 				"type": "property",
 				"value": "token",
 				"enum": ["inline", "list", "both", "none"],
-				"defaultValue": "none"
+				"defaultValue": "none",
+				"valueDescriptions": {
+					"inline": "When a user is providing input, text suggesting one way to complete the provided input may be dynamically inserted after the caret.",
+					"list": "When a user is providing input, an element containing a collection of values that could complete the provided input may be displayed.",
+					"both": "When a user is providing input, an element containing a collection of values that could complete the provided input may be displayed. If displayed, one value in the collection is automatically selected, and the text needed to complete the automatically selected value appears after the caret in the input.",
+					"none": "When a user is providing input, an automatic suggestion that attempts to predict how the user intends to complete the input is not displayed."
+				}
 			},
 			{
 				"name": "aria-busy",
@@ -8389,18 +8399,34 @@
 				"value": "true/false",
 				"enum": [],
 				"defaultValue": "false",
-				"isGlobal": true
+				"isGlobal": true,
+				"valueDescriptions": {
+					"false": "There are no expected updates for the element.",
+					"true": "The element is being updated."
+				}
 			},
 			{
 				"name": "aria-checked",
 				"type": "state",
-				"value": "tristate",
+				"value": "true/false",
 				"enum": [],
 				"defaultValue": "undefined",
 				"equivalentHtmlAttrs": [
 					{
 						"htmlAttrName": "checked",
 						"value": "true"
+					}
+				],
+				"valueDescriptions": {
+					"false": "The element supports being checked but is not currently checked.",
+					"mixed": "Indicates a mixed mode value for a tri-state checkbox or menuitemcheckbox.",
+					"true": "The element is checked.",
+					"undefined": "The element does not support being checked."
+				},
+				"conditionalValue": [
+					{
+						"role": ["checkbox", "menuitemcheckbox"],
+						"value": "tristate"
 					}
 				]
 			},
@@ -8441,7 +8467,16 @@
 				"value": "token",
 				"enum": ["page", "step", "location", "date", "time", "true", "false"],
 				"defaultValue": "false",
-				"isGlobal": true
+				"isGlobal": true,
+				"valueDescriptions": {
+					"page": "Represents the current page within a set of pages.",
+					"step": "Represents the current step within a process.",
+					"location": "Represents the current location within an environment or context.",
+					"date": "Represents the current date within a collection of dates.",
+					"time": "Represents the current time within a set of times.",
+					"true": "Represents the current item within a set.",
+					"false": "Does not represent the current item within a set."
+				}
 			},
 			{
 				"name": "aria-describedby",
@@ -8469,7 +8504,11 @@
 						"htmlAttrName": "disabled",
 						"value": "true"
 					}
-				]
+				],
+				"valueDescriptions": {
+					"false": "The element is enabled.",
+					"true": "The element and all focusable descendants are disabled and its value cannot be changed by the user."
+				}
 			},
 			{
 				"name": "aria-dropeffect",
@@ -8478,7 +8517,15 @@
 				"value": "token list",
 				"enum": ["copy", "execute", "link", "move", "none", "popup"],
 				"defaultValue": "none",
-				"isGlobal": true
+				"isGlobal": true,
+				"valueDescriptions": {
+					"copy": "A duplicate of the source object will be dropped into the target.",
+					"execute": "A function supported by the drop target is executed, using the drag source as an input.",
+					"link": "A reference or shortcut to the dragged object will be created in the target object.",
+					"move": "The source object will be removed from its current location and dropped into the target.",
+					"none": "No operation can be performed; effectively cancels the drag operation if an attempt is made to drop on this object. Ignored if combined with any other token value. e.g., 'none copy' is equivalent to a 'copy' value.",
+					"popup": "There is a popup menu or dialog that allows the user to choose one of the drag operations (copy, move, link, execute) and any other drag functionality, such as cancel."
+				}
 			},
 			{
 				"name": "aria-errormessage",
@@ -8492,7 +8539,12 @@
 				"type": "state",
 				"value": "true/false/undefined",
 				"enum": [],
-				"defaultValue": "undefined"
+				"defaultValue": "undefined",
+				"valueDescriptions": {
+					"false": "The grouping element this element owns or controls is collapsed.",
+					"true": "The grouping element this element owns or controls is expanded.",
+					"undefined": "The element does not own or control a grouping element that is expandable."
+				}
 			},
 			{
 				"name": "aria-flowto",
@@ -8508,7 +8560,12 @@
 				"value": "true/false/undefined",
 				"enum": [],
 				"defaultValue": "undefined",
-				"isGlobal": true
+				"isGlobal": true,
+				"valueDescriptions": {
+					"false": "Indicates that the element supports being dragged.",
+					"true": "Indicates that the element has been \"grabbed\" for dragging.",
+					"undefined": "Indicates that the element does not support being dragged."
+				}
 			},
 			{
 				"name": "aria-haspopup",
@@ -8516,7 +8573,16 @@
 				"value": "token",
 				"enum": ["false", "true", "menu", "listbox", "tree", "grid", "dialog"],
 				"defaultValue": "false",
-				"isGlobal": true
+				"isGlobal": true,
+				"valueDescriptions": {
+					"false": "Indicates the element does not have a popup.",
+					"true": "Indicates the popup is a menu.",
+					"menu": "Indicates the popup is a menu.",
+					"listbox": "Indicates the popup is a listbox.",
+					"tree": "Indicates the popup is a tree.",
+					"grid": "Indicates the popup is a grid.",
+					"dialog": "Indicates the popup is a dialog."
+				}
 			},
 			{
 				"name": "aria-hidden",
@@ -8530,7 +8596,12 @@
 						"htmlAttrName": "hidden",
 						"value": "true"
 					}
-				]
+				],
+				"valueDescriptions": {
+					"false": "The element is exposed to the accessibility API as if it was rendered.",
+					"true": "The element is hidden from the accessibility API.",
+					"undefined": "The element's hidden state is determined by the user agent based on whether it is rendered."
+				}
 			},
 			{
 				"name": "aria-invalid",
@@ -8538,7 +8609,13 @@
 				"value": "token",
 				"enum": ["grammar", "false", "spelling", "true"],
 				"defaultValue": "false",
-				"isGlobal": true
+				"isGlobal": true,
+				"valueDescriptions": {
+					"grammar": "A grammatical error was detected.",
+					"false": "There are no detected errors in the value.",
+					"spelling": "A spelling error was detected.",
+					"true": "The value entered by the user has failed validation."
+				}
 			},
 			{
 				"name": "aria-keyshortcuts",
@@ -8573,35 +8650,57 @@
 				"value": "token",
 				"enum": ["assertive", "off", "polite"],
 				"defaultValue": "off",
-				"isGlobal": true
+				"isGlobal": true,
+				"valueDescriptions": {
+					"assertive": "Indicates that updates to the region have the highest priority and should be presented the user immediately.",
+					"off": "Indicates that updates to the region should not be presented to the user unless the user is currently focused on that region.",
+					"polite": "Indicates that updates to the region should be presented at the next graceful opportunity, such as at the end of speaking the current sentence or when the user pauses typing."
+				}
 			},
 			{
 				"name": "aria-modal",
 				"type": "property",
 				"value": "true/false",
 				"enum": [],
-				"defaultValue": "false"
+				"defaultValue": "false",
+				"valueDescriptions": {
+					"false": "Element is not modal.",
+					"true": "Element is modal."
+				}
 			},
 			{
 				"name": "aria-multiline",
 				"type": "property",
 				"value": "true/false",
 				"enum": [],
-				"defaultValue": "false"
+				"defaultValue": "false",
+				"valueDescriptions": {
+					"false": "This is a single-line text box.",
+					"true": "This is a multi-line text box."
+				}
 			},
 			{
 				"name": "aria-multiselectable",
 				"type": "property",
 				"value": "true/false",
 				"enum": [],
-				"defaultValue": "false"
+				"defaultValue": "false",
+				"valueDescriptions": {
+					"false": "Only one item can be selected.",
+					"true": "More than one item in the widget may be selected at a time."
+				}
 			},
 			{
 				"name": "aria-orientation",
 				"type": "property",
 				"value": "token",
 				"enum": ["horizontal", "undefined", "vertical"],
-				"defaultValue": "undefined"
+				"defaultValue": "undefined",
+				"valueDescriptions": {
+					"horizontal": "The element is oriented horizontally.",
+					"undefined": "The element's orientation is unknown/ambiguous.",
+					"vertical": "The element is oriented vertically."
+				}
 			},
 			{
 				"name": "aria-owns",
@@ -8633,7 +8732,13 @@
 				"type": "state",
 				"value": "tristate",
 				"enum": [],
-				"defaultValue": "undefined"
+				"defaultValue": "undefined",
+				"valueDescriptions": {
+					"false": "The element supports being pressed but is not currently pressed.",
+					"mixed": "Indicates a mixed mode value for a tri-state toggle button.",
+					"true": "The element is pressed.",
+					"undefined": "The element does not support being pressed."
+				}
 			},
 			{
 				"name": "aria-readonly",
@@ -8646,7 +8751,11 @@
 						"htmlAttrName": "readonly",
 						"value": "true"
 					}
-				]
+				],
+				"valueDescriptions": {
+					"false": "The user can set the value of the element.",
+					"true": "The user cannot change the value of the element."
+				}
 			},
 			{
 				"name": "aria-relevant",
@@ -8654,7 +8763,14 @@
 				"value": "token list",
 				"enum": ["additions", "additions text", "all", "removals", "text"],
 				"defaultValue": "additions text",
-				"isGlobal": true
+				"isGlobal": true,
+				"valueDescriptions": {
+					"additions": "Element nodes are added to the accessibility tree within the live region.",
+					"additions text": "Equivalent to the combination of values, \"additions text\".",
+					"all": "Equivalent to the combination of all values, \"additions removals text\".",
+					"removals": "Text content, a text alternative, or an element node within the live region is removed from the accessibility tree.",
+					"text": "Text content or a text alternative is added to any descendant in the accessibility tree of the live region."
+				}
 			},
 			{
 				"name": "aria-required",
@@ -8667,7 +8783,11 @@
 						"htmlAttrName": "required",
 						"value": "true"
 					}
-				]
+				],
+				"valueDescriptions": {
+					"false": "User input is not necessary to submit the form.",
+					"true": "Users need to provide input on an element before a form is submitted."
+				}
 			},
 			{
 				"name": "aria-roledescription",
@@ -8705,7 +8825,12 @@
 				"type": "state",
 				"value": "true/false/undefined",
 				"enum": [],
-				"defaultValue": "undefined"
+				"defaultValue": "undefined",
+				"valueDescriptions": {
+					"false": "The selectable element is not selected.",
+					"true": "The selectable element is selected.",
+					"undefined": "The element is not selectable."
+				}
 			},
 			{
 				"name": "aria-setsize",
@@ -8718,7 +8843,13 @@
 				"type": "property",
 				"value": "token",
 				"enum": ["ascending", "descending", "none", "other"],
-				"defaultValue": "none"
+				"defaultValue": "none",
+				"valueDescriptions": {
+					"ascending": "Items are sorted in ascending order by this column.",
+					"descending": "Items are sorted in descending order by this column.",
+					"none": "There is no defined sort applied to the column.",
+					"other": "A sort algorithm other than ascending or descending has been applied."
+				}
 			},
 			{
 				"name": "aria-valuemax",
@@ -12142,10 +12273,6 @@
 					},
 					{
 						"condition": "[type=password]",
-						"role": false
-					},
-					{
-						"condition": "[type=radio]",
 						"role": false
 					},
 					{

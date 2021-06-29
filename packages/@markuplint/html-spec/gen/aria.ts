@@ -140,15 +140,28 @@ export async function getAria() {
 			const deprecated = (className && /deprecated/i.test(className)) || undefined;
 			const $value = $section.find(`table.${type}-features .${type}-value, .state-features .property-value`);
 			const value = $value.text().trim() as ARIAAttributeValue;
-			const $defaultValues = $section.find('table.value-descriptions .value-name');
+			const $valueDescriptions = $section.find('table.value-descriptions tbody tr');
+			const valueDescriptions: Record<string, string> = {};
+			$valueDescriptions.each((_, $tr) => {
+				const name = $($tr)
+					.find('.value-name')
+					.text()
+					.replace(/\(default\)\s*:?/gi, '')
+					.trim();
+				const desc = $($tr).find('.value-description').text().trim();
+				valueDescriptions[name] = desc;
+			});
 			const enumValues: string[] = [];
 			if (value === 'token' || value === 'token list') {
-				const values = $defaultValues.toArray().map(el =>
-					$(el)
-						.text()
-						.replace(/\(default\)/gi, '')
-						.trim(),
-				);
+				const values = $valueDescriptions
+					.find('.value-name')
+					.toArray()
+					.map(el =>
+						$(el)
+							.text()
+							.replace(/\(default\)\s*:?/gi, '')
+							.trim(),
+					);
 				enumValues.push(...values);
 			}
 			const $defaultValue = $section.find('table.value-descriptions .value-name .default');
@@ -168,7 +181,7 @@ export async function getAria() {
 				}));
 			}
 
-			return {
+			const aria: ARIAAttribute = {
 				name,
 				type,
 				deprecated,
@@ -177,7 +190,21 @@ export async function getAria() {
 				defaultValue,
 				isGlobal,
 				equivalentHtmlAttrs,
+				valueDescriptions: Object.keys(valueDescriptions).length ? valueDescriptions : undefined,
 			};
+
+			// Conditional Value
+			if (name === 'aria-checked') {
+				aria.value = 'true/false';
+				aria.conditionalValue = [
+					{
+						role: ['checkbox', 'menuitemcheckbox'],
+						value: 'tristate',
+					},
+				];
+			}
+
+			return aria;
 		});
 
 	return {

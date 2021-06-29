@@ -531,6 +531,45 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 		]);
 	});
 
+	test('only aria-checked="true"', async () => {
+		const r = await markuplint.verify(
+			'<input type="checkbox" aria-checked="true" />',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 24,
+				message: 'Can be in opposition to the value of the unset checked attribute.',
+				raw: 'aria-checked="true"',
+			},
+		]);
+	});
+
+	test('check and aria-checked="mixed"', async () => {
+		const r = await markuplint.verify(
+			'<input type="checkbox" checked aria-checked="mixed" />',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([]);
+	});
+
 	test('placeholder="type hints" and aria-placeholder="type hints"', async () => {
 		const r = await markuplint.verify(
 			'<input type="text" placeholder="type hints" aria-placeholder="type hints" />',
