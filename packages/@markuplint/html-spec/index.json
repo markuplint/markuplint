@@ -141,6 +141,7 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/xmp",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes",
+		"https://www.w3.org/TR/html-aria/",
 		"https://www.w3.org/TR/wai-aria-1.2/"
 	],
 	"def": {
@@ -1394,6 +1395,10 @@
 						"name": "aria-busy"
 					},
 					{
+						"name": "aria-checked",
+						"required": true
+					},
+					{
 						"name": "aria-controls"
 					},
 					{
@@ -1656,6 +1661,10 @@
 						"name": "aria-busy"
 					},
 					{
+						"name": "aria-controls",
+						"required": true
+					},
+					{
 						"name": "aria-current"
 					},
 					{
@@ -1672,6 +1681,10 @@
 					},
 					{
 						"name": "aria-errormessage"
+					},
+					{
+						"name": "aria-expanded",
+						"required": true
 					},
 					{
 						"name": "aria-flowto"
@@ -3137,6 +3150,10 @@
 						"name": "aria-labelledby"
 					},
 					{
+						"name": "aria-level",
+						"required": true
+					},
+					{
 						"name": "aria-live"
 					},
 					{
@@ -4377,6 +4394,10 @@
 						"name": "aria-busy"
 					},
 					{
+						"name": "aria-checked",
+						"required": true
+					},
+					{
 						"name": "aria-controls"
 					},
 					{
@@ -4617,6 +4638,10 @@
 					},
 					{
 						"name": "aria-valuemin"
+					},
+					{
+						"name": "aria-valuenow",
+						"required": true
 					},
 					{
 						"name": "aria-valuetext"
@@ -4870,6 +4895,10 @@
 					},
 					{
 						"name": "aria-roledescription"
+					},
+					{
+						"name": "aria-selected",
+						"required": true
 					},
 					{
 						"name": "aria-setsize"
@@ -5126,6 +5155,10 @@
 					},
 					{
 						"name": "aria-busy"
+					},
+					{
+						"name": "aria-checked",
+						"required": true
 					},
 					{
 						"name": "aria-controls"
@@ -5830,6 +5863,10 @@
 						"name": "aria-busy"
 					},
 					{
+						"name": "aria-controls",
+						"required": true
+					},
+					{
 						"name": "aria-current"
 					},
 					{
@@ -5894,6 +5931,10 @@
 					},
 					{
 						"name": "aria-valuemin"
+					},
+					{
+						"name": "aria-valuenow",
+						"required": true
 					},
 					{
 						"name": "aria-valuetext"
@@ -6396,6 +6437,10 @@
 						"name": "aria-valuemin"
 					},
 					{
+						"name": "aria-valuenow",
+						"required": true
+					},
+					{
 						"name": "aria-valuetext"
 					}
 				]
@@ -6483,6 +6528,10 @@
 					},
 					{
 						"name": "aria-valuemin"
+					},
+					{
+						"name": "aria-valuenow",
+						"required": true
 					},
 					{
 						"name": "aria-valuetext"
@@ -6974,6 +7023,10 @@
 					},
 					{
 						"name": "aria-busy"
+					},
+					{
+						"name": "aria-checked",
+						"required": true
 					},
 					{
 						"name": "aria-controls"
@@ -8343,7 +8396,13 @@
 				"type": "state",
 				"value": "tristate",
 				"enum": [],
-				"defaultValue": "undefined"
+				"defaultValue": "undefined",
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "checked",
+						"value": "true"
+					}
+				]
 			},
 			{
 				"name": "aria-colcount",
@@ -8361,7 +8420,13 @@
 				"name": "aria-colspan",
 				"type": "property",
 				"value": "integer",
-				"enum": []
+				"enum": [],
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "colspan",
+						"value": null
+					}
+				]
 			},
 			{
 				"name": "aria-controls",
@@ -8398,7 +8463,13 @@
 				"value": "true/false",
 				"enum": [],
 				"defaultValue": "false",
-				"isGlobal": true
+				"isGlobal": true,
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "disabled",
+						"value": "true"
+					}
+				]
 			},
 			{
 				"name": "aria-dropeffect",
@@ -8453,7 +8524,13 @@
 				"value": "true/false/undefined",
 				"enum": [],
 				"defaultValue": "undefined",
-				"isGlobal": true
+				"isGlobal": true,
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "hidden",
+						"value": "true"
+					}
+				]
 			},
 			{
 				"name": "aria-invalid",
@@ -8537,7 +8614,13 @@
 				"name": "aria-placeholder",
 				"type": "property",
 				"value": "string",
-				"enum": []
+				"enum": [],
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "placeholder",
+						"value": null
+					}
+				]
 			},
 			{
 				"name": "aria-posinset",
@@ -8557,7 +8640,13 @@
 				"type": "property",
 				"value": "true/false",
 				"enum": [],
-				"defaultValue": "false"
+				"defaultValue": "false",
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "readonly",
+						"value": "true"
+					}
+				]
 			},
 			{
 				"name": "aria-relevant",
@@ -8572,7 +8661,13 @@
 				"type": "property",
 				"value": "true/false",
 				"enum": [],
-				"defaultValue": "false"
+				"defaultValue": "false",
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "required",
+						"value": "true"
+					}
+				]
 			},
 			{
 				"name": "aria-roledescription",
@@ -8597,7 +8692,13 @@
 				"name": "aria-rowspan",
 				"type": "property",
 				"value": "integer",
-				"enum": []
+				"enum": [],
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "rowspan",
+						"value": null
+					}
+				]
 			},
 			{
 				"name": "aria-selected",
@@ -8623,13 +8724,25 @@
 				"name": "aria-valuemax",
 				"type": "property",
 				"value": "number",
-				"enum": []
+				"enum": [],
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "max",
+						"value": null
+					}
+				]
 			},
 			{
 				"name": "aria-valuemin",
 				"type": "property",
 				"value": "number",
-				"enum": []
+				"enum": [],
+				"equivalentHtmlAttrs": [
+					{
+						"htmlAttrName": "min",
+						"value": null
+					}
+				]
 			},
 			{
 				"name": "aria-valuenow",

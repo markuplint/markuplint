@@ -96,7 +96,7 @@ describe('basic test', () => {
 			files: 'test/fixture/007.html',
 			locale: 'en',
 		});
-		expect(r[0].results.length).toEqual(16);
+		expect(r[0].results.length).toEqual(17);
 	});
 
 	it('is ignoring 008.html', async () => {

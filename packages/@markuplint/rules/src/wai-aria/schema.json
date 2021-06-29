@@ -11,10 +11,16 @@
 				"checkingValue": {
 					"type": "boolean"
 				},
+				"checkingDeprecatedProps": {
+					"type": "boolean"
+				},
 				"permittedAriaRoles": {
 					"type": "boolean"
 				},
 				"disallowSetImplicitRole": {
+					"type": "boolean"
+				},
+				"disallowSetImplicitProps": {
 					"type": "boolean"
 				}
 			}

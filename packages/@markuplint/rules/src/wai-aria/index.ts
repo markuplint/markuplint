@@ -12,8 +12,11 @@ import {
 
 type Options = {
 	checkingValue?: boolean;
+	checkingDeprecatedProps?: boolean;
 	permittedAriaRoles?: boolean;
 	disallowSetImplicitRole?: boolean;
+	disallowSetImplicitProps?: boolean;
+	disallowDefaultValue?: boolean;
 };
 
 export default createRule<true, Options>({
@@ -22,8 +25,11 @@ export default createRule<true, Options>({
 	defaultValue: true,
 	defaultOptions: {
 		checkingValue: true,
+		checkingDeprecatedProps: true,
 		permittedAriaRoles: true,
 		disallowSetImplicitRole: true,
+		disallowSetImplicitProps: true,
+		disallowDefaultValue: false,
 	},
 	async verify(document, translate) {
 		const reports: Result[] = [];
@@ -31,7 +37,7 @@ export default createRule<true, Options>({
 		await document.walkOn('Element', async node => {
 			const attrSpecs = getAttrSpecs(node.nodeName, document.specs);
 			const html = htmlSpec(node.nodeName);
-			const { roles } = ariaSpec();
+			const { roles, ariaAttrs } = ariaSpec();
 
 			if (!html || !attrSpecs) {
 				return;
@@ -103,17 +109,17 @@ export default createRule<true, Options>({
 				}
 			}
 
-			// Checking aria-* on the role
 			const computedRole = getComputedRole(node);
 			if (computedRole) {
-				const role = getRoleSpec(computedRole);
+				const role = getRoleSpec(computedRole.name);
 				if (role) {
+					// Checking aria-* on the role
 					for (const attr of node.attributes) {
 						const attrName = attr.getName().potential.trim().toLowerCase();
 						if (/^aria-/i.test(attrName)) {
 							const statesAndProp = role.statesAndProps.find(s => s.name === attrName);
 							if (statesAndProp) {
-								if (statesAndProp.deprecated) {
+								if (node.rule.option.checkingDeprecatedProps && statesAndProp.deprecated) {
 									reports.push({
 										severity: node.rule.severity,
 										message: `The ${attrName} state/property is deprecated on the ${role.name} role.`,
@@ -134,7 +140,25 @@ export default createRule<true, Options>({
 						}
 					}
 
-					// const requiredStateAndPropNames = role.statesAndProps.filter(s => s.required).map(s => s.name);
+					// Checing required props
+					if (!computedRole.isImplicit) {
+						const requiredProps = role.statesAndProps.filter(s => s.required).map(s => s.name);
+						for (const requiredProp of requiredProps) {
+							const has = node.attributes.some(attr => {
+								const attrName = attr.getName().potential.trim().toLowerCase();
+								return attrName === requiredProp;
+							});
+							if (!has) {
+								reports.push({
+									severity: node.rule.severity,
+									message: `The ${requiredProp} state/property is required on the ${role.name} role.`,
+									line: node.startLine,
+									col: node.startCol,
+									raw: node.raw,
+								});
+							}
+						}
+					}
 				}
 			} else {
 				// No role element
@@ -156,15 +180,17 @@ export default createRule<true, Options>({
 				}
 			}
 
-			// Checking ARIA Value
-			if (node.rule.option.checkingValue) {
-				for (const attr of node.attributes) {
-					if (attr.attrType === 'html-attr' && attr.isDynamicValue) {
-						continue;
-					}
-					const attrName = attr.getName().potential.trim().toLowerCase();
-					if (/^aria-/i.test(attrName)) {
-						const value = attr.getValue().potential.trim().toLowerCase();
+			for (const attr of node.attributes) {
+				if (attr.attrType === 'html-attr' && attr.isDynamicValue) {
+					continue;
+				}
+				const attrName = attr.getName().potential.trim().toLowerCase();
+				if (/^aria-/i.test(attrName)) {
+					const value = attr.getValue().potential.trim().toLowerCase();
+					const propSpec = ariaAttrs.find(p => p.name === attrName);
+
+					// Checking ARIA Value
+					if (node.rule.option.checkingValue) {
 						const result = checkAria(attrName, value);
 						if (!result.isValid) {
 							reports.push({
@@ -179,6 +205,48 @@ export default createRule<true, Options>({
 								raw: attr.raw,
 							});
 						}
+					}
+
+					// Checking implicit props
+					if (node.rule.option.disallowSetImplicitProps) {
+						if (propSpec && propSpec.equivalentHtmlAttrs) {
+							for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
+								if (node.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
+									const targetAttrValue = node.getAttribute(equivalentHtmlAttr.htmlAttrName);
+									if (
+										(equivalentHtmlAttr.value == null && targetAttrValue === value) ||
+										equivalentHtmlAttr.value === value
+									) {
+										reports.push({
+											severity: node.rule.severity,
+											message: `Has the ${equivalentHtmlAttr.htmlAttrName} attribute that has equivalent semantic.`,
+											line: attr.startLine,
+											col: attr.startCol,
+											raw: attr.raw,
+										});
+										continue;
+									}
+									reports.push({
+										severity: node.rule.severity,
+										message: `Can be different from the value of the ${equivalentHtmlAttr.htmlAttrName} attribute.`,
+										line: attr.startLine,
+										col: attr.startCol,
+										raw: attr.raw,
+									});
+								}
+							}
+						}
+					}
+
+					// Default value
+					if (node.rule.option.disallowDefaultValue && propSpec && propSpec.defaultValue === value) {
+						reports.push({
+							severity: node.rule.severity,
+							message: 'It is default value',
+							line: attr.startLine,
+							col: attr.startCol,
+							raw: attr.raw,
+						});
 					}
 				}
 			}

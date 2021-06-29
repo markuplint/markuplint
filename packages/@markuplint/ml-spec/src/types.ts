@@ -229,6 +229,7 @@ export type ARIAAttribute = {
 	value: ARIAAttributeValue;
 	enum: string[];
 	defaultValue?: string;
+	equivalentHtmlAttrs?: EquivalentHtmlAttr[];
 };
 
 export type ARIAAttributeValue =
@@ -243,6 +244,11 @@ export type ARIAAttributeValue =
 	| 'token'
 	| 'token list'
 	| 'URI';
+
+export type EquivalentHtmlAttr = {
+	htmlAttrName: string;
+	value: string | null;
+};
 
 export interface SpecOM {
 	[tagName: string]: MLDOMElementSpec;

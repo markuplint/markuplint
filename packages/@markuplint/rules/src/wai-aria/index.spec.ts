@@ -53,31 +53,7 @@ describe('Use the abstract role', () => {
 	});
 });
 
-describe("Use the `aria-*` attribute that doesn't belong to a set role (or an implicit role)", () => {
-	test('[role=alert][aria-disabled=true]', async () => {
-		const r = await markuplint.verify(
-			'<div role="alert" aria-disabled="true"></div>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
-
-		expect(r).toStrictEqual([
-			{
-				ruleId: 'wai-aria',
-				severity: 'error',
-				line: 1,
-				col: 19,
-				message: 'The aria-disabled state/property is deprecated on the alert role.',
-				raw: 'aria-disabled="true"',
-			},
-		]);
-	});
-
+describe("Use the property/state that doesn't belong to a set role (or an implicit role)", () => {
 	test('[aria-checked=true]', async () => {
 		const r = await markuplint.verify(
 			'<div aria-checked="true"></div>',
@@ -142,7 +118,7 @@ describe("Use the `aria-*` attribute that doesn't belong to a set role (or an im
 	});
 });
 
-describe('Use a bad value of the `aria-*` attribute', () => {
+describe('Use an invalid value of the property/state', () => {
 	test('[aria-current=foo]', async () => {
 		const r = await markuplint.verify(
 			'<div aria-current="foo"></div>',
@@ -272,6 +248,47 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 	});
 });
 
+describe("Don't set the required property/state", () => {
+	test('heading needs aria-level', async () => {
+		const r = await markuplint.verify(
+			'<div role="heading"></div>',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The aria-level state/property is required on the heading role.',
+				raw: '<div role="heading">',
+			},
+		]);
+	});
+
+	test("h1 element doesn't needs aria-level", async () => {
+		const r = await markuplint.verify(
+			'<h1></h1>',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([]);
+	});
+});
+
 describe('Set the implicit role explicitly', () => {
 	test('a[href][role=link]', async () => {
 		const r = await markuplint.verify(
@@ -363,6 +380,222 @@ describe('Set the implicit role explicitly', () => {
 		);
 
 		expect(r.length).toBe(0);
+	});
+});
+
+describe('Set the default value of the property/state explicitly', () => {
+	test('aria-live="off"', async () => {
+		const r = await markuplint.verify(
+			'<div aria-live="off"></div>',
+			{
+				rules: {
+					'wai-aria': {
+						option: {
+							disallowDefaultValue: true,
+						},
+					},
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'It is default value',
+				raw: 'aria-live="off"',
+			},
+		]);
+	});
+});
+
+describe('Set the deprecated property/state', () => {
+	test('aria-disabled is deprecated in article', async () => {
+		const r = await markuplint.verify(
+			'<article aria-disabled="true"></article>',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 10,
+				message: 'The aria-disabled state/property is deprecated on the article role.',
+				raw: 'aria-disabled="true"',
+			},
+		]);
+	});
+
+	test('aria-disabled is deprecated in article role', async () => {
+		const r = await markuplint.verify(
+			'<div role="article" aria-disabled="true"></div>',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 21,
+				message: 'The aria-disabled state/property is deprecated on the article role.',
+				raw: 'aria-disabled="true"',
+			},
+		]);
+	});
+
+	test('disable', async () => {
+		const r = await markuplint.verify(
+			'<article aria-disabled="true"></article>',
+			{
+				rules: {
+					'wai-aria': {
+						option: {
+							checkingDeprecatedProps: false,
+						},
+					},
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([]);
+	});
+});
+
+describe('Set the property/state explicitly when its element has semantic HTML attribute equivalent to it according to ARIA in HTML.', () => {
+	test('checked and aria-checked="true"', async () => {
+		const r = await markuplint.verify(
+			'<input type="checkbox" checked aria-checked="true" />',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message: 'Has the checked attribute that has equivalent semantic.',
+				raw: 'aria-checked="true"',
+			},
+		]);
+	});
+
+	test('checked and aria-checked="false"', async () => {
+		const r = await markuplint.verify(
+			'<input type="checkbox" checked aria-checked="false" />',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message: 'Can be different from the value of the checked attribute.',
+				raw: 'aria-checked="false"',
+			},
+		]);
+	});
+
+	test('placeholder="type hints" and aria-placeholder="type hints"', async () => {
+		const r = await markuplint.verify(
+			'<input type="text" placeholder="type hints" aria-placeholder="type hints" />',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 45,
+				message: 'Has the placeholder attribute that has equivalent semantic.',
+				raw: 'aria-placeholder="type hints"',
+			},
+		]);
+	});
+
+	test('placeholder="type hints" and aria-placeholder="different value"', async () => {
+		const r = await markuplint.verify(
+			'<input type="text" placeholder="type hints" aria-placeholder="different value" />',
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([
+			{
+				ruleId: 'wai-aria',
+				severity: 'error',
+				line: 1,
+				col: 45,
+				message: 'Can be different from the value of the placeholder attribute.',
+				raw: 'aria-placeholder="different value"',
+			},
+		]);
+	});
+
+	test('disable', async () => {
+		const r = await markuplint.verify(
+			'<input type="checkbox" checked aria-checked="true" />',
+			{
+				rules: {
+					'wai-aria': {
+						option: {
+							disallowSetImplicitProps: false,
+						},
+					},
+				},
+			},
+			[rule],
+			'en',
+		);
+
+		expect(r).toStrictEqual([]);
 	});
 });
 
