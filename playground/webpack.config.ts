@@ -1,4 +1,4 @@
-import webpack, { CliConfigOptions, Configuration } from 'webpack';
+import webpack, { Configuration, WebpackPluginInstance } from 'webpack';
 import { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import HTMLInlineCSSWebpackPlugin from 'html-inline-css-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -116,6 +116,7 @@ async function build(mode: Mode): Promise<Configuration & DevServerConfiguration
 			],
 		},
 		plugins: [
+			// @ts-ignore
 			...(mode === 'development'
 				? [
 						new webpack.SourceMapDevToolPlugin({
@@ -124,17 +125,22 @@ async function build(mode: Mode): Promise<Configuration & DevServerConfiguration
 						}),
 				  ]
 				: []),
+			// @ts-ignore
 			new MonacoWebpackPlugin({
 				languages: ['html'],
 			}),
+			// @ts-ignore
 			new MiniCssExtractPlugin({
 				filename: '[name].css',
 				chunkFilename: '[id].css',
-			}),
+			}) as WebpackPluginInstance,
+			// @ts-ignore
 			...(await htmlConfig()),
+			// @ts-ignore
 			new ScriptExtHtmlWebpackPlugin({
 				defaultAttribute: 'defer',
 			}),
+			// @ts-ignore
 			new HTMLInlineCSSWebpackPlugin(),
 		],
 	};
@@ -167,7 +173,7 @@ async function htmlConfig() {
 	});
 }
 
-export default async (_: any, argv: CliConfigOptions): Promise<Configuration | Configuration[]> => {
+export default async (_: any, argv: Configuration): Promise<Configuration | Configuration[]> => {
 	const { mode } = argv;
 
 	const config = await build(mode || 'development');
