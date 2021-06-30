@@ -1,7 +1,7 @@
 import * as HTMLParser from '@markuplint/html-parser';
 import { I18n, LocaleSet } from '@markuplint/i18n';
 import { MLCore, Ruleset } from '@markuplint/ml-core';
-import { getEndCol, getEndLine } from '@markuplint/ml-ast';
+import { getEndCol, getEndLine } from '@markuplint/parser-utils';
 import type { editor } from 'monaco-editor';
 import { encode } from './utils';
 import rules from '@markuplint/rules';
@@ -16,7 +16,7 @@ const lint = async (newCode: string, ruleset: Ruleset) => {
 			? await import('@markuplint/i18n/locales/ja.json')
 			: await import('@markuplint/i18n/locales/en.json');
 	const i18n = await I18n.create(localSet);
-	const linter = new MLCore(HTMLParser, newCode, ruleset, rules, i18n, [spec]);
+	const linter = new MLCore(HTMLParser, newCode, ruleset, rules, i18n, [spec], {}, '');
 	const reports = await linter.verify();
 	const diagnotics: editor.IMarkerData[] = [];
 	for (const report of reports) {
