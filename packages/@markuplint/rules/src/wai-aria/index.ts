@@ -249,7 +249,7 @@ export default createRule<true, Options>({
 										raw: attr.raw,
 									});
 								} else if (value === 'true') {
-									if (htmlAttrSpec?.type === 'Boolean') {
+									if (!equivalentHtmlAttr.isNotStrictEquivalent && htmlAttrSpec?.type === 'Boolean') {
 										reports.push({
 											severity: node.rule.severity,
 											message: `Can be in opposition to the value of the unset ${equivalentHtmlAttr.htmlAttrName} attribute.`,

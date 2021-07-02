@@ -618,6 +618,26 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 		]);
 	});
 
+	test('hidden vs aria-hidden', async () => {
+		const config = {
+			rules: {
+				'wai-aria': true,
+			},
+		};
+
+		const r1 = await markuplint.verify('<div hidden></div>', config, [rule], 'en');
+		const r2 = await markuplint.verify('<div hidden aria-hidden="true"></div>', config, [rule], 'en');
+		const r3 = await markuplint.verify('<div hidden aria-hidden="false"></div>', config, [rule], 'en');
+		const r4 = await markuplint.verify('<div aria-hidden="true"></div>', config, [rule], 'en');
+		const r5 = await markuplint.verify('<div aria-hidden="false"></div>', config, [rule], 'en');
+
+		expect(r1[0]?.message).toBe(undefined);
+		expect(r2[0]?.message).toBe('Has the hidden attribute that has equivalent semantic.');
+		expect(r3[0]?.message).toBe('Can be different from the value of the hidden attribute.');
+		expect(r4[0]?.message).toBe(undefined);
+		expect(r5[0]?.message).toBe(undefined);
+	});
+
 	test('disable', async () => {
 		const r = await markuplint.verify(
 			'<input type="checkbox" checked aria-checked="true" />',

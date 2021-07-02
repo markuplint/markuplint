@@ -194,14 +194,25 @@ export async function getAria() {
 			};
 
 			// Conditional Value
-			if (name === 'aria-checked') {
-				aria.value = 'true/false';
-				aria.conditionalValue = [
-					{
-						role: ['checkbox', 'menuitemcheckbox'],
-						value: 'tristate',
-					},
-				];
+			switch (name) {
+				case 'aria-checked': {
+					aria.value = 'true/false';
+					aria.conditionalValue = [
+						{
+							role: ['checkbox', 'menuitemcheckbox'],
+							value: 'tristate',
+						},
+					];
+					break;
+				}
+				case 'aria-hidden': {
+					aria.equivalentHtmlAttrs?.forEach(attr => {
+						if (attr.htmlAttrName === 'hidden') {
+							attr.isNotStrictEquivalent = true;
+						}
+					});
+					break;
+				}
 			}
 
 			return aria;
