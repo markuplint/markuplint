@@ -252,6 +252,7 @@ export type ARIAAttributeValue =
 
 export type EquivalentHtmlAttr = {
 	htmlAttrName: string;
+	isNotStrictEquivalent?: true;
 	value: string | null;
 };
 

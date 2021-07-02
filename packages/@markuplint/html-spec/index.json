@@ -8594,7 +8594,8 @@
 				"equivalentHtmlAttrs": [
 					{
 						"htmlAttrName": "hidden",
-						"value": "true"
+						"value": "true",
+						"isNotStrictEquivalent": true
 					}
 				],
 				"valueDescriptions": {
