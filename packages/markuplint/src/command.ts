@@ -1,7 +1,7 @@
 import { lint } from './lint';
 import { output } from './output';
 import path from 'path';
-import { writeFile } from 'fs';
+import { promises } from 'fs';
 
 export async function command(
 	options: {
@@ -39,12 +39,8 @@ export async function command(
 
 	if (fix) {
 		for (const report of reports) {
-			writeFile(report.filePath, report.fixedCode, { encoding: 'utf8' }, err => {
-				if (err) {
-					throw err;
-				}
-				process.stdout.write(`markuplint: Fix "${report.filePath}"\n`);
-			});
+			await promises.writeFile(report.filePath, report.fixedCode, { encoding: 'utf8' });
+			process.stdout.write(`markuplint: Fix "${report.filePath}"\n`);
 		}
 	} else {
 		for (const result of reports) {
