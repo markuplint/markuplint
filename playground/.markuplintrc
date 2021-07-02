@@ -1,4 +1,10 @@
 {
+	"parser": {
+		"tsx": "@markuplint/jsx-parser"
+	},
+	"specs": [
+		"@markuplint/react-spec"
+	],
 	"rules": {
 		"attr-duplication": true,
 		"character-reference": true,

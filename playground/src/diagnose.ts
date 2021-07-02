@@ -15,7 +15,7 @@ const lint = async (newCode: string, ruleset: Ruleset) => {
 		langCode === 'ja'
 			? await import('@markuplint/i18n/locales/ja.json')
 			: await import('@markuplint/i18n/locales/en.json');
-	const i18n = await I18n.create(localSet);
+	const i18n = I18n.create(localSet);
 	const linter = new MLCore(HTMLParser, newCode, ruleset, rules, i18n, [spec], {}, '');
 	const reports = await linter.verify();
 	const diagnotics: editor.IMarkerData[] = [];
@@ -26,7 +26,7 @@ const lint = async (newCode: string, ruleset: Ruleset) => {
 			startColumn: report.col,
 			endLineNumber: getEndLine(report.raw, report.line),
 			endColumn: getEndCol(report.raw, report.col),
-			message: `${report.message} (${report.ruleId}) <markuplint>`,
+			message: `${report.message} (${report.ruleId})`,
 		});
 	}
 	return diagnotics;
@@ -35,6 +35,16 @@ const lint = async (newCode: string, ruleset: Ruleset) => {
 export const diagnose = async (code: string, ruleset: Ruleset) => {
 	const diagnotics = await lint(code, ruleset);
 	const encoded = encode(code);
-	location.hash = encoded;
+	window.location.hash = encoded;
 	return diagnotics;
 };
+
+export function convertRuleset(ruleset?: string) {
+	return ruleset
+		? JSON.parse(ruleset)
+		: {
+				rules: {},
+				nodeRules: [],
+				childNodeRules: [],
+		  };
+}
