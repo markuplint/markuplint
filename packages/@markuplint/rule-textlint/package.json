@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/rule-textlint",
-	"version": "0.2.0-alpha.0",
+	"version": "0.2.0-alpha.1",
 	"description": "The textlint rule for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -20,11 +20,11 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"markuplint": "^1.10.0",
+		"markuplint": "^1.10.1",
 		"textlint-rule-prh": "^5.3.0"
 	},
 	"dependencies": {
-		"@markuplint/ml-core": "^1.8.0",
+		"@markuplint/ml-core": "^1.8.1",
 		"@textlint/kernel": "^3.4.1",
 		"textlint": "^11.9.1",
 		"textlint-plugin-html": "^0.2.0",
