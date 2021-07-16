@@ -12,6 +12,8 @@ const MAIN_ARTICLE_SELECTOR = 'article.main-page-content, article.article';
 export async function getHTMLElements() {
 	const links = await getHTMLElementLinks();
 	const specs = await Promise.all(links.map(getHTMLElement));
+	const obsoleteElements = getObsoleteElements(specs);
+	specs.push(...obsoleteElements);
 	// h1-h6
 	const headingElementSpec = specs.find(spec => spec.name === 'h1-h6');
 	if (headingElementSpec) {
@@ -267,13 +269,67 @@ async function getHTMLElementLinks() {
 		.toArray()
 		.map(el => `https://developer.mozilla.org${$(el).attr('href')}`);
 
-	// Deleted elements from the index page.
-	lists.push(
-		'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/isindex',
-		'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/listing',
-		'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/multicol',
-		'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nextid',
-	);
-
 	return lists;
+}
+
+function getObsoleteElements(specs: ElementSpec[]): ElementSpec[] {
+	return [
+		'applet',
+		'acronym',
+		'bgsound',
+		'dir',
+		'frame',
+		'frameset',
+		'noframes',
+		'isindex',
+		'keygen',
+		'listing',
+		'menuitem',
+		'nextid',
+		'noembed',
+		'plaintext',
+		'rb',
+		'rtc',
+		'strike',
+		'xmp',
+		'basefont',
+		'big',
+		'blink',
+		'center',
+		'font',
+		'marquee',
+		'multicol',
+		'nobr',
+		'spacer',
+		'tt',
+	]
+		.map<ElementSpec | null>(name => {
+			const found = specs.find(e => e.name === name);
+			if (found) {
+				return null;
+			}
+			return {
+				name,
+				cite: 'https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features',
+				description: 'Element is entirely obsolete, and must not be used by authors.',
+				obsolete: true,
+				categories: [],
+				permittedStructures: {
+					summary: '',
+					tag: name,
+					contents: true,
+				},
+				permittedRoles: {
+					summary: '',
+					roles: false,
+				},
+				implicitRole: {
+					summary: '',
+					role: false,
+				},
+				omittion: false,
+				attributes: [],
+			};
+		})
+		.filter((e): e is ElementSpec => !!e);
 }
