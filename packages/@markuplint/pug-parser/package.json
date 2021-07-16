@@ -19,7 +19,7 @@
 		"@markuplint/html-parser": "^1.6.0",
 		"@markuplint/ml-ast": "^1.6.0",
 		"@markuplint/parser-utils": "^1.5.0",
-		"pug-lexer": "^5.0.0",
+		"pug-lexer": "^5.0.1",
 		"pug-parser": "^6.0.0",
 		"tslib": "^2.3.0"
 	}

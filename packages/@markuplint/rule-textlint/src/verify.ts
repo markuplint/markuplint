@@ -1,5 +1,5 @@
 import { Option, lintText } from './helper';
-import { Config } from 'textlint/lib/config/config';
+import { Config } from 'textlint/lib/src/config/config';
 import { MLRuleOptions } from '@markuplint/ml-core';
 import { TextLintEngine } from 'textlint';
 import { TextlintResult } from '@textlint/kernel';
