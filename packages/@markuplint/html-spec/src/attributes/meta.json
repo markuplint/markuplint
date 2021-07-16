@@ -36,6 +36,13 @@
 			"condition": {
 				"self": [":not([itemprop])", ":not([name])", ":not([http-equiv])"]
 			}
+		},
+		{
+			"name": "media",
+			"type": "MediaQueryList",
+			"condition": {
+				"self": ["[name='theme-color']"]
+			}
 		}
 	]
 }

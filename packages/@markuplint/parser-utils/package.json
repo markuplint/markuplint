@@ -16,7 +16,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/uuid": "^8.3.0"
+		"@types/uuid": "^8.3.1"
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "^1.6.0",

@@ -63,14 +63,12 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/isindex",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/keygen",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/listing",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark",
@@ -79,9 +77,7 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/multicol",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nextid",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nobr",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noembed",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noframes",
@@ -182,7 +178,7 @@
 			{
 				"name": "data-*",
 				"type": "String",
-				"description": "Forms a class of attributes, called custom data attributes, that allow proprietary information to be exchanged between the HTML and its DOM representation that may be used by scripts. All such custom data are available via the HTMLElement interface of the element the attribute is set on. The HTMLOrForeignElement/dataset property gives access to them."
+				"description": "Forms a class of attributes, called custom data attributes, that allow proprietary information to be exchanged between the HTML and its DOM representation that may be used by scripts. All such custom data are available via the HTMLElement interface of the element the attribute is set on. The HTMLElement.dataset property gives access to them."
 			},
 			{
 				"name": "dir",
@@ -12783,9 +12779,9 @@
 		},
 		{
 			"name": "isindex",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/isindex",
-			"description": "<isindex> was an obsolete HTML element that put a text field in a page for querying the document. <isindex> provided a single line text input for entering a query string. When sent, the server would return a list of pages matching the query. Its support depended on both the browser and the server to react to the query.",
-			"deprecated": true,
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"description": "Element is entirely obsolete, and must not be used by authors.",
+			"obsolete": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
@@ -12794,27 +12790,14 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": true
+				"roles": false
 			},
 			"implicitRole": {
 				"summary": "",
 				"role": false
 			},
 			"omittion": false,
-			"attributes": [
-				"#globalAttrs",
-				"#ariaAttrs",
-				{
-					"name": "action",
-					"type": "String",
-					"description": "This attribute determined the server URL to which the query was sent."
-				},
-				{
-					"name": "prompt",
-					"type": "String",
-					"description": "This attribute added its value as a prompt for text field."
-				}
-			]
+			"attributes": []
 		},
 		{
 			"name": "kbd",
@@ -13167,9 +13150,9 @@
 		},
 		{
 			"name": "listing",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/listing",
-			"description": "The HTML Listing Element (<listing>) renders text between the start and end tags without interpreting the HTML in between and using a monospaced font. The HTML 2 standard recommended that lines shouldn't be broken when not greater than 132 characters.",
-			"deprecated": true,
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"description": "Element is entirely obsolete, and must not be used by authors.",
+			"obsolete": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
@@ -13178,14 +13161,14 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": true
+				"roles": false
 			},
 			"implicitRole": {
 				"summary": "",
 				"role": false
 			},
 			"omittion": false,
-			"attributes": ["#globalAttrs", "#ariaAttrs"]
+			"attributes": []
 		},
 		{
 			"name": "main",
@@ -13509,6 +13492,14 @@
 					"description": ""
 				},
 				{
+					"name": "media",
+					"type": "MediaQueryList",
+					"condition": {
+						"self": ["[name='theme-color']"]
+					},
+					"description": ""
+				},
+				{
 					"name": "name",
 					"description": "The name and content attributes can be used together to provide document metadata in terms of name-value pairs, with the name attribute giving the metadata name, and the content attribute giving the value. See standard metadata names for details about the set of standard metadata names defined in the HTML specification.",
 					"type": "String",
@@ -13584,9 +13575,9 @@
 		},
 		{
 			"name": "multicol",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/multicol",
-			"description": "The HTML Multi-Column Layout element (<multicol>) was an experimental element designed to allow multi-column layouts and must not be used. It never got any significant traction and is not implemented in any major browsers. It's covered here only to warn you off in case you stumble on it in any other documentation.",
-			"deprecated": true,
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"description": "Element is entirely obsolete, and must not be used by authors.",
+			"obsolete": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
@@ -13595,14 +13586,14 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": true
+				"roles": false
 			},
 			"implicitRole": {
 				"summary": "",
 				"role": false
 			},
 			"omittion": false,
-			"attributes": ["#globalAttrs", "#ariaAttrs"]
+			"attributes": []
 		},
 		{
 			"name": "nav",
@@ -13631,9 +13622,9 @@
 		},
 		{
 			"name": "nextid",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nextid",
-			"description": "<nextid> is an obsolete HTML element that served to enable the NeXT web designing tool to generate automatic NAME labels for its anchors. It was generated by that web editing tool automatically and was not to be adjusted or entered by hand. This element has the distinction of being the first element to become one of the \"Lost Tags\" by being eliminated from the official public DTD's of the HTML versions. It is also probably one of the least understood of all of the early HTML elements.",
-			"deprecated": true,
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"description": "Element is entirely obsolete, and must not be used by authors.",
+			"obsolete": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
@@ -13642,22 +13633,14 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": true
+				"roles": false
 			},
 			"implicitRole": {
 				"summary": "",
 				"role": false
 			},
 			"omittion": false,
-			"attributes": [
-				"#globalAttrs",
-				"#ariaAttrs",
-				{
-					"name": "n",
-					"type": "String",
-					"description": "Reference to anchor."
-				}
-			]
+			"attributes": []
 		},
 		{
 			"name": "nobr",
