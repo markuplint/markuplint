@@ -6,6 +6,15 @@ export function uuid() {
 	return uuid4();
 }
 
+/**
+ *
+ * @deprecated
+ * @param raw
+ * @param startLine
+ * @param startCol
+ * @param startOffset
+ * @returns
+ */
 export function tokenizer(raw: string | null, startLine: number, startCol: number, startOffset: number): MLToken {
 	raw = raw || '';
 	const endLine = getEndLine(raw, startLine);
@@ -20,6 +29,15 @@ export function tokenizer(raw: string | null, startLine: number, startCol: numbe
 		endLine,
 		startCol,
 		endCol,
+	};
+}
+
+export function tokenizer_v2(raw: string | null, startOffset: number, rawCode: string): MLToken {
+	raw = raw || '';
+	const loc = sliceFragment(rawCode, startOffset, startOffset + raw.length);
+	return {
+		uuid: uuid(),
+		...loc,
 	};
 }
 
@@ -73,14 +91,21 @@ export function walk(nodeList: MLASTNode[], walker: Walker, depth = 0) {
 	}
 }
 
-export function nodeListToDebugMaps(nodeList: MLASTNode[]) {
-	return nodeList.map(n => {
-		if (!n.isGhost) {
-			return tokenDebug(n);
-		} else {
-			return `[N/A]>[N/A](N/A)${n.nodeName}: ${visibleWhiteSpace(n.raw)}`;
-		}
-	});
+export function nodeListToDebugMaps(nodeList: MLASTNode[], withAttr = false) {
+	return nodeList
+		.map(n => {
+			const r: string[] = [];
+			if (!n.isGhost) {
+				r.push(tokenDebug(n));
+				if (withAttr && 'attributes' in n) {
+					r.push(...attributesToDebugMaps(n.attributes).flat());
+				}
+			} else {
+				r.push(`[N/A]>[N/A](N/A)${n.nodeName}: ${visibleWhiteSpace(n.raw)}`);
+			}
+			return r;
+		})
+		.flat();
 }
 
 export function attributesToDebugMaps(attributes: MLASTAttr[]) {
