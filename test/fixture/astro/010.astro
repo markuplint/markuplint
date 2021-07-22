@@ -1,0 +1,32 @@
+<!-- Example: MyComponent.astro -->
+<div id="my-component">
+  <slot /> <!-- children will go here -->
+</div>
+
+<!-- Usage -->
+<MyComponent>
+  <h1 X>Hello world!</h1>
+</MyComponent>
+
+<!-- Example: MyComponent.astro -->
+<div id="my-component">
+  <header>
+    <!-- children with the `slot="header"` attribute will go here -->
+    <slot name="header" />
+  </header>
+  <main>
+    <!-- children without a `slot` (or with the `slot="default"`) attribute will go here -->
+    <slot />
+  </main>
+  <footer>
+    <!-- children with the `slot="footer"` attribute will go here -->
+    <slot name="footer" />
+  </footer>
+</div>
+
+<!-- Usage -->
+<MyComponent>
+  <h1 slot="header" X>Hello world!</h1>
+  <p>Lorem ipsum ...</p>
+  <FooterComponent X slot="footer" />
+</MyComponent>

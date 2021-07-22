@@ -1,0 +1,7 @@
+---
+// Example: <SomeComponent greeting="(Optional) Hello" name="Required Name" />
+const { greeting = 'Hello', name } = Astro.props;
+---
+<div>
+    <h1>{greeting}, {name}!</h1>
+</div>
