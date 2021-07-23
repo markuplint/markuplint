@@ -292,18 +292,18 @@ function getChildNodes(rootNode: P5Node | P5Document | P5Fragment) {
 		const html: string = textNode.value;
 
 		// @ts-ignore
-		const { startOffset, startLine, startCol } = rootNode.sourceCodeLocation;
+		const { startOffset, startLine, startCol } = textNode.sourceCodeLocation;
 
 		const breakCount = startLine - 1;
 		const indentWidth = startCol - 1;
-		const spaces =
+		const offsetSpaces =
 			' '.repeat(startOffset - Math.max(breakCount, 0) - Math.max(indentWidth, 0)) +
 			'\n'.repeat(breakCount) +
 			' '.repeat(indentWidth);
 
-		const fragment = parse5.parseFragment(`${spaces}<x-script>${html}</x-script>`, P5_OPTIONS);
-		const _childNodes = fragment.childNodes[spaces ? 1 : 0];
-		const childNodes = ('childNodes' in _childNodes && _childNodes.childNodes) || [];
+		const fragment = parse5.parseFragment(`${offsetSpaces}${html}`, P5_OPTIONS);
+		const childNodes = fragment.childNodes.slice(offsetSpaces ? 1 : 0);
+		// const childNodes = ('childNodes' in _childNodes && _childNodes.childNodes) || [];
 
 		return childNodes;
 	}
