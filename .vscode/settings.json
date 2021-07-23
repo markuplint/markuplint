@@ -1,6 +1,17 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
-	"eslint.enable": true,
+	"editor.renderWhitespace": "all",
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	},
+	"eslint.validate": ["javascript", "javascriptreact"],
+	"eslint.workingDirectories": [
+		{
+			"mode": "auto"
+		}
+	],
 	"files.associations": {
 		".markuplintrc": "json",
 		"*.schema.json": "jsonc"
@@ -26,13 +37,5 @@
 			"fileMatch": ["/packages/*markuplint/html-spec/src/wai-aria/*.json"],
 			"url": "/packages/@markuplint/ml-spec/schemas/wai-aria.schema.json"
 		}
-	],
-	"eslint.workingDirectories": [
-		{
-			"mode": "auto"
-		}
-	],
-	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": true
-	}
+	]
 }
