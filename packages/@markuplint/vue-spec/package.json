@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/vue-spec",
-	"version": "1.0.1-beta.4",
+	"version": "1.0.1-beta.5",
 	"description": "Extended specification for tags and attributes in Vue",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -16,6 +16,6 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "^1.6.1"
+		"@markuplint/ml-spec": "^1.7.0"
 	}
 }
