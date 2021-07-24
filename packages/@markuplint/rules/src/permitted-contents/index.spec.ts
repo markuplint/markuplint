@@ -727,3 +727,43 @@ describe('React', () => {
 		).toStrictEqual([]);
 	});
 });
+
+describe('EJS', () => {
+	const ejsRuleOn = {
+		...ruleOn,
+		parser: {
+			'.*': '@markuplint/ejs-parser',
+		},
+	};
+
+	test('PSBlock', async () => {
+		expect(
+			await markuplint.verify(
+				`<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<%- include('path/to') _%>
+	</head>
+	<body>
+		<ul><%- include('path/to') _%></ul>
+		<ul><li>item</li></ul>
+		<ul><span>item</span></ul>
+	</body>
+</html>
+`,
+				ejsRuleOn,
+				[rule],
+				'en',
+			),
+		).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 9,
+				col: 3,
+				message: 'Invalid content of the ul element in the HTML specification',
+				raw: '<ul>',
+			},
+		]);
+	});
+});
