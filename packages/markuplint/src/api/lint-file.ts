@@ -4,11 +4,11 @@ import { MLCore, MLParseError, MLRule, convertRuleset } from '@markuplint/ml-cor
 import { RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
 import { Document } from '@markuplint/ml-core';
 import { MLMarkupLanguageParser } from '@markuplint/ml-ast';
-import { MLResultInfo } from './types';
-import { i18n } from './i18n';
-import { moduleAutoLoader } from './module-auto-loader';
+import { MLResultInfo } from '../types';
+import { i18n } from '../resolver/i18n';
+import { moduleAutoLoader } from '../resolver/module-auto-loader';
 import path from 'path';
-import { toRegxp } from './util';
+import { toRegxp } from '../util';
 
 export async function lintFile(
 	file: MLFile,

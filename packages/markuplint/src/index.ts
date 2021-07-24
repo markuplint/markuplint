@@ -1,8 +1,8 @@
 import { Config, RuleConfigValue } from '@markuplint/ml-config';
 import { MLRule } from '@markuplint/ml-core';
-import { lint } from './lint';
+import { lint } from './api/lint';
 
-export { lint as exec } from './lint';
+export { lint as exec } from './api/lint';
 
 /**
  * @deprecated

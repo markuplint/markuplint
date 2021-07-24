@@ -1,10 +1,10 @@
 import { Config, RuleConfigValue } from '@markuplint/ml-config';
-import { MLResultInfo } from './types';
+import { MLResultInfo } from '../types';
 import { MLRule } from '@markuplint/ml-core';
 import { lintFile } from './lint-file';
-import { resolveConfigs } from './resolve-configs';
-import { resolveLintTargetFiles } from './resolve-lint-target-files';
-import { resolveRules } from './resolve-rules';
+import { resolveConfigs } from '../resolver/resolve-configs';
+import { resolveLintTargetFiles } from '../resolver/resolve-lint-target-files';
+import { resolveRules } from '../resolver/resolve-rules';
 
 export async function lint(options: {
 	/**

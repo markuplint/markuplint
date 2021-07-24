@@ -1,4 +1,4 @@
-import { lint } from './lint';
+import { lint } from '../api/lint';
 import { output } from './output';
 import path from 'path';
 import { promises } from 'fs';

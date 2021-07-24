@@ -1,7 +1,7 @@
-import { cli } from './cli-bootstrap';
+import { cli } from './bootstrap';
 import { command } from './command';
 import getStdin from 'get-stdin';
-import { initialize } from './initialize';
+import { initialize } from './init';
 
 (async () => {
 	if (cli.flags.v) {

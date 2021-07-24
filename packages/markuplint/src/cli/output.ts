@@ -1,4 +1,4 @@
-import { ReportingData, simpleReporter, standardReporter } from './reporter';
+import { ReportingData, simpleReporter, standardReporter } from '../reporter';
 import stripAnsi from 'strip-ansi';
 
 export async function output(params: ReportingData) {
