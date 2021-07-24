@@ -90,6 +90,42 @@ describe('Node list', () => {
 		expect(el.nodeName).toBe(el2.nodeName);
 		expect(el.uuid).toBe(el2.uuid);
 	});
+
+	it('Full HTML', () => {
+		const doc = parse(`<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<%- include('path/to') _%>
+		<meta />
+	</head>
+	<body></body>
+</html>
+`);
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:16](0,15)#doctype: <!DOCTYPE␣html>',
+			'[1:16]>[2:1](15,16)#text: ⏎',
+			'[2:1]>[2:17](16,32)html: <html␣lang="en">',
+			'[2:17]>[3:2](32,34)#text: ⏎→',
+			'[3:2]>[3:8](34,40)head: <head>',
+			'[3:8]>[4:3](40,43)#text: ⏎→→',
+			"[4:3]>[4:29](43,69)#ps:ejs-output-unescaped: <%-␣include('path/to')␣_%>",
+			'[4:29]>[5:3](69,72)#text: ⏎→→',
+			'[5:3]>[5:11](72,80)meta: <meta␣/>',
+			'[5:11]>[6:2](80,82)#text: ⏎→',
+			'[6:2]>[6:9](82,89)head: </head>',
+			'[6:9]>[7:2](89,91)#text: ⏎→',
+			'[7:2]>[7:8](91,97)body: <body>',
+			'[7:8]>[7:15](97,104)body: </body>',
+			'[7:15]>[8:1](104,105)#text: ⏎',
+			'[8:1]>[8:8](105,112)html: </html>',
+			'[8:8]>[9:1](112,113)#text: ⏎',
+		]);
+
+		// const el = doc.nodeList[3];
+		// const el2 = doc.nodeList[3].parentNode!.childNodes![0];
+		// expect(el.nodeName).toBe(el2.nodeName);
+		// expect(el.uuid).toBe(el2.uuid);
+	});
 });
 
 describe('Tags', () => {
