@@ -29,7 +29,8 @@ export function ignoreBlock(source: string, tags: IgnoreTag[]): IgnoreBlock {
 				MASK_CHAR.repeat(startTag.length) +
 				taggedCode.replace(/[^\n]/g, MASK_CHAR) +
 				MASK_CHAR.repeat((endTag || '').length);
-			replaced = above + mask + (below || '');
+			const taggedMask = `<!${mask.slice(2).slice(0, -1)}>`;
+			replaced = above + taggedMask + (below || '');
 		}
 
 		stack.sort((a, b) => a.index - b.index);
@@ -45,7 +46,7 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 	nodeList = nodeList.slice();
 	const { source, stack } = ignoreBlock;
 	for (const node of nodeList) {
-		if (node.type === MLASTNodeType.Text) {
+		if (node.type === MLASTNodeType.Comment) {
 			if (!hasIgnoreBlock(node.raw)) {
 				continue;
 			}
@@ -70,6 +71,7 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 						const textNode: MLASTText = {
 							...node,
 							uuid: uuid(),
+							type: MLASTNodeType.Text,
 							raw,
 							startOffset,
 							endOffset,
@@ -120,6 +122,7 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 				const textNode: MLASTText = {
 					...node,
 					uuid: uuid(),
+					type: MLASTNodeType.Text,
 					raw,
 					startOffset,
 					endOffset,
