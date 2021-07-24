@@ -13,7 +13,7 @@ describe('ignoreBlock', () => {
 		const result = ignoreBlock('<div><%= test %></div>', tags);
 		expect(result).toStrictEqual({
 			source: '<div><%= test %></div>',
-			replaced: '<div></div>',
+			replaced: '<div><!></div>',
 			stack: [
 				{
 					type: 'ejs-tag',
@@ -30,7 +30,7 @@ describe('ignoreBlock', () => {
 		const result = ignoreBlock('<div><%= test %></div><div><%= test2 %></div>', tags);
 		expect(result).toStrictEqual({
 			source: '<div><%= test %></div><div><%= test2 %></div>',
-			replaced: '<div></div><div></div>',
+			replaced: '<div><!></div><div><!></div>',
 			stack: [
 				{
 					type: 'ejs-tag',
@@ -54,7 +54,7 @@ describe('ignoreBlock', () => {
 		const result = ignoreBlock('<div><%= test', tags);
 		expect(result).toStrictEqual({
 			source: '<div><%= test',
-			replaced: '<div>',
+			replaced: '<div><!>',
 			stack: [
 				{
 					type: 'ejs-tag',
@@ -71,7 +71,7 @@ describe('ignoreBlock', () => {
 		const result = ignoreBlock('<div><% if () {\n\t\n} %></div>', tags);
 		expect(result).toStrictEqual({
 			source: '<div><% if () {\n\t\n} %></div>',
-			replaced: '<div>\n\n</div>',
+			replaced: '<div><!\n\n></div>',
 			stack: [
 				{
 					type: 'ejs-tag',
@@ -115,7 +115,7 @@ describe('ignoreBlock', () => {
 
 		expect(result).toStrictEqual({
 			source: '<% 1 %>2<%= 3 %>4<%_ 5 _%>6<%- 7 -%>8<%% 9 %>',
-			replaced: '2468<%% 9 %>',
+			replaced: '<!>2<!>4<!>6<!>8<%% 9 %>',
 			stack: [
 				{
 					type: 'ejs-scriptlet',
