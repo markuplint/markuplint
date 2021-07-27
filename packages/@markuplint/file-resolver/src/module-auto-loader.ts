@@ -1,5 +1,5 @@
-import { MLRule, Ruleset } from '@markuplint/ml-core';
-import { RuleConfigValue } from '@markuplint/ml-config';
+import type { MLRule, Ruleset } from '@markuplint/ml-core';
+import type { RuleConfigValue } from '@markuplint/ml-config';
 
 export async function moduleAutoLoader<T extends RuleConfigValue, O = unknown>(ruleset: Ruleset) {
 	const rules: MLRule<T, O>[] = [];

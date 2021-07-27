@@ -1,10 +1,7 @@
-import fs from 'fs';
+import { promises as fs } from 'fs';
 import minimatch from 'minimatch';
 import path from 'path';
-import util from 'util';
 
-const stat = util.promisify(fs.stat);
-const readFile = util.promisify(fs.readFile);
 const fileCaches = new WeakMap<MLFile, string>();
 
 export class MLFile {
@@ -34,11 +31,11 @@ export class MLFile {
 	}
 
 	async isExist() {
-		return !!(await stat(this.#filePath));
+		return !!(await fs.stat(this.#filePath));
 	}
 
 	async getContext() {
-		return fileCaches.get(this) || (await this._fetch());
+		return fileCaches.get(this) ?? (await this._fetch());
 	}
 
 	matches(globPath: string) {
@@ -46,7 +43,7 @@ export class MLFile {
 	}
 
 	private async _fetch() {
-		const context = await readFile(this.#filePath, { encoding: 'utf-8' });
+		const context = await fs.readFile(this.#filePath, { encoding: 'utf-8' });
 		fileCaches.set(this, context);
 		return context;
 	}

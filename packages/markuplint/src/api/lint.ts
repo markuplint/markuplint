@@ -1,11 +1,12 @@
 import { Config, RuleConfigValue } from '@markuplint/ml-config';
-import { MLResultInfo } from '../types';
 import { MLRule } from '@markuplint/ml-core';
-import { lintFile } from './lint-file';
-import { resolveConfigs } from '../resolver/resolve-configs';
-import { resolveLintTargetFiles } from '../resolver/resolve-lint-target-files';
-import { resolveRules } from '../resolver/resolve-rules';
+import { api } from '.';
 
+/**
+ * @deprecated
+ * @param options
+ * @returns
+ */
 export async function lint(options: {
 	/**
 	 * Glob pattern
@@ -69,21 +70,38 @@ export async function lint(options: {
 	 */
 	extMatch?: boolean;
 }) {
-	const rulesAutoResolve = options.rulesAutoResolve ?? true;
-	const extMatch = options.extMatch ?? false;
+	const filePathList = options.files ? (Array.isArray(options.files) ? options.files : [options.files]) : [];
+	const codes = options.sourceCodes
+		? Array.isArray(options.sourceCodes)
+			? options.sourceCodes
+			: [options.sourceCodes]
+		: [];
 
-	const files = await resolveLintTargetFiles(options);
-	const configs = await resolveConfigs(files, options);
-	const rules = await resolveRules(options);
+	const files = [
+		...filePathList,
+		...codes.map((code, i) => ({
+			sourceCode: code,
+			name: Array.isArray(options.names) ? options.names?.[i] : options.names,
+			workspace: options.workspace?.[i],
+		})),
+	];
 
-	const totalResults: MLResultInfo[] = [];
-
-	for (const file of files) {
-		const result = await lintFile(file, configs, rulesAutoResolve, rules, options.locale, options.fix, extMatch);
-		if (result) {
-			totalResults.push(result);
-		}
+	let config: Config | undefined;
+	let configFile: string | undefined;
+	if (typeof options.config === 'string') {
+		configFile = options.config;
+	} else if (options.config) {
+		config = options.config;
 	}
 
-	return totalResults;
+	const result = await api(files, {
+		config,
+		configFile,
+		rules: options.rules,
+		autoLoad: options.rulesAutoResolve ?? true,
+		extMatch: options.extMatch,
+		locale: options.locale,
+	});
+
+	return result;
 }

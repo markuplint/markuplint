@@ -1,10 +1,13 @@
 import { Nullable } from './types';
-import { v4 } from 'uuid';
 
 export function nonNullableFilter<T>(item: Nullable<T>): item is T {
 	return !!item;
 }
 
+let uuidNum = 0;
+
 export function uuid() {
-	return v4();
+	const out = `${uuidNum}`;
+	uuidNum++;
+	return out;
 }

@@ -1,9 +1,9 @@
 export { RuleInfo, Result, RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
-export { convertRuleset } from './convert-ruleset';
-export { createRule } from './create-rule';
-export { MLCore } from './ml-core';
-export { MLRule, MLRuleOptions } from './ml-rule';
+export * from './convert-ruleset';
+export * from './create-rule';
+export * from './ml-core';
+export * from './ml-rule';
 export { default as MLParseError } from './ml-error/ml-parse-error';
 export { default as Ruleset } from './ruleset';
-export { Attribute, Comment, Doctype, Document, Element, ElementCloseTag, Node, OmittedElement, Text } from './ml-dom';
-export { getLocationFromChars } from './utils';
+export * from './ml-dom';
+export * from './utils';

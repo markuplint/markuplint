@@ -1,4 +1,4 @@
-import { ExtendedSpec } from '@markuplint/ml-spec';
+import type { ExtendedSpec } from '@markuplint/ml-spec';
 
 const spec: ExtendedSpec = {
 	def: {

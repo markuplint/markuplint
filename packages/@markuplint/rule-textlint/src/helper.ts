@@ -8,8 +8,8 @@ export type Option = Partial<TextlintKernelOptions> | true;
 
 const kernel = new TextlintKernel();
 
-export const lintText = async (html: string, option: Partial<TextlintKernelOptions>) =>
-	await kernel.lintText(html, {
+export const lintText = async (html: string, option: Partial<TextlintKernelOptions>) => {
+	return await kernel.lintText(html, {
 		...option,
 		ext: '.html',
 		plugins: [
@@ -20,3 +20,4 @@ export const lintText = async (html: string, option: Partial<TextlintKernelOptio
 			},
 		],
 	});
+};

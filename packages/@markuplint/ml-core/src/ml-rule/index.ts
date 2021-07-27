@@ -1,2 +1,2 @@
-export { MLRule } from './ml-rule';
-export { MLRuleOptions } from './types';
+export * from './ml-rule';
+export * from './types';

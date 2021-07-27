@@ -1,4 +1,4 @@
-import { ContentModel, PermittedStructuresSchema } from './permitted-structres';
+import type { ContentModel, PermittedStructuresSchema } from './permitted-structres';
 
 /**
  * markuplit Markup-language spec

@@ -1,59 +1,26 @@
-import { lint } from '../api/lint';
+import type { CLIOptions } from './bootstrap';
+import type { Target } from '@markuplint/file-resolver';
+import { api } from '../api';
+import { promises as fs } from 'fs';
 import { output } from './output';
 import path from 'path';
-import { promises } from 'fs';
 
-export async function command(
-	options: {
-		files?: string[];
-		codes?: string;
-		fix?: boolean;
-		workspace?: string;
-		configFile?: string;
-		format?: string;
-		color?: boolean;
-		problemOnly?: boolean;
-		verbose?: boolean;
-	},
-	/**
-	 * @deprecated
-	 */
-	exitCode?: number,
-) {
-	const fix = options.fix ?? false;
-	const workspace = options.workspace ?? process.cwd();
-	const configFile = options.configFile ? path.join(process.cwd(), options.configFile) : options.configFile;
-	const format = options.format ?? 'standard';
-	const color = options.color ?? true;
-	const problemOnly = options.problemOnly ?? false;
-	const verbose = options.verbose ?? false;
+export async function command(files: Target[], options: CLIOptions) {
+	const fix = options.fix;
+	const configFile = options.configFile && path.join(process.cwd(), options.configFile);
 
-	const reports = await lint({
-		files: options.files,
-		sourceCodes: options.codes,
-		workspace,
-		config: configFile,
-		fix,
-		rulesAutoResolve: true,
-	});
+	const reports = await api(files, { configFile });
 
 	if (fix) {
 		for (const report of reports) {
-			await promises.writeFile(report.filePath, report.fixedCode, { encoding: 'utf8' });
+			await fs.writeFile(report.filePath, report.fixedCode, { encoding: 'utf8' });
 			process.stdout.write(`markuplint: Fix "${report.filePath}"\n`);
 		}
 	} else {
 		for (const result of reports) {
-			await output({
-				...result,
-				format,
-				color,
-				problemOnly,
-				noStdOut: false,
-				verbose,
-			});
+			await output(result, options);
 		}
 	}
 
-	process.exit(exitCode ?? process.exitCode);
+	// process.exit(process.exitCode);
 }

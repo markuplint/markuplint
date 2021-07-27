@@ -22,12 +22,9 @@ import { initialize } from './init';
 
 	const files = cli.input;
 	if (files.length) {
-		await command({
-			files,
-			...cli.flags,
-		}).catch(err => {
-			process.stderr.write(err + '\n');
-			process.exit(1);
+		await command(files, cli.flags).catch(err => {
+			throw err;
+			// process.exit(1);
 		});
 		process.exit(0);
 	}
@@ -36,10 +33,7 @@ import { initialize } from './init';
 		getStdin()
 			.then(async stdin => {
 				if (stdin) {
-					await command({
-						codes: stdin,
-						...cli.flags,
-					}).catch(err => {
+					await command([{ sourceCode: stdin }], cli.flags).catch(err => {
 						process.stderr.write(err + '\n');
 						process.exit(1);
 					});

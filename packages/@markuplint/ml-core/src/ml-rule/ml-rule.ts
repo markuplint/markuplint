@@ -109,3 +109,5 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		};
 	}
 }
+
+export type AnyMLRule = MLRule<RuleConfigValue, unknown>;

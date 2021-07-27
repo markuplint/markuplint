@@ -27,6 +27,7 @@ export const cli = meow(help, {
 	flags: {
 		init: {
 			type: 'boolean',
+			default: false,
 		},
 		configFile: {
 			type: 'string',
@@ -34,6 +35,7 @@ export const cli = meow(help, {
 		},
 		fix: {
 			type: 'boolean',
+			default: false,
 		},
 		format: {
 			type: 'string',
@@ -46,9 +48,13 @@ export const cli = meow(help, {
 		problemOnly: {
 			type: 'boolean',
 			alias: 'p',
+			default: false,
 		},
 		verbose: {
 			type: 'boolean',
+			default: false,
 		},
 	},
 });
+
+export type CLIOptions = typeof cli.flags;
