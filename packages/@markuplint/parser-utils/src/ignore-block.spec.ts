@@ -1,14 +1,16 @@
-import { ignoreBlock } from './ignore-block';
+import { ignoreBlock, restoreNode } from './ignore-block';
+import { nodeListToDebugMaps } from './utils';
+import { parse } from '@markuplint/html-parser';
+
+const tags = [
+	{
+		type: 'ejs-tag',
+		start: /<%/,
+		end: /%>/,
+	},
+];
 
 describe('ignoreBlock', () => {
-	const tags = [
-		{
-			type: 'ejs-tag',
-			start: /<%/,
-			end: /%>/,
-		},
-	];
-
 	it('basic', () => {
 		const result = ignoreBlock('<div><%= test %></div>', tags);
 		expect(result).toStrictEqual({
@@ -147,5 +149,33 @@ describe('ignoreBlock', () => {
 				},
 			],
 		});
+	});
+});
+
+describe('restoreNode', () => {
+	it('basic', () => {
+		const code = '<div attr="<% attr %>"><% content %></div>';
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		const nodeMap = nodeListToDebugMaps(restoredAst, true);
+		// TODO: Remove the masks from Element.raw and Attribute.raw
+		expect(nodeMap).toStrictEqual([
+			'[1:1]>[1:24](0,23)div: <div␣attr="">',
+			'[1:5]>[1:23](4,22)attr: ␣attr=""',
+			'  [1:5]>[1:6](4,5)bN: ␣',
+			'  [1:6]>[1:10](5,9)name: attr',
+			'  [1:10]>[1:10](9,9)bE: ',
+			'  [1:10]>[1:11](9,10)equal: =',
+			'  [1:11]>[1:11](10,10)aE: ',
+			'  [1:11]>[1:12](10,11)sQ: "',
+			'  [1:12]>[1:22](11,21)value: <%␣attr␣%>',
+			'  [1:22]>[1:23](21,22)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'  isInvalid: false',
+			'[1:24]>[1:37](23,36)#ps:ejs-tag: <%␣content␣%>',
+			'[1:37]>[1:43](36,42)div: </div>',
+		]);
 	});
 });
