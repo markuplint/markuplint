@@ -1,3 +1,4 @@
+import type { MLASTElement, MLASTHTMLAttr } from '@markuplint/ml-ast';
 import { ignoreBlock, restoreNode } from './ignore-block';
 import { nodeListToDebugMaps } from './utils';
 import { parse } from '@markuplint/html-parser';
@@ -177,5 +178,59 @@ describe('restoreNode', () => {
 			'[1:24]>[1:37](23,36)#ps:ejs-tag: <%␣content␣%>',
 			'[1:37]>[1:43](36,42)div: </div>',
 		]);
+	});
+
+	it('attr', () => {
+		const code = '<div attr="<% attr %><% attr2 %>"></div>';
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe(
+			'<% attr %><% attr2 %>',
+		);
+	});
+
+	it('attr', () => {
+		const code = '<div attr="<% attr %> <% attr2 %>"></div>';
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe(
+			'<% attr %> <% attr2 %>',
+		);
+	});
+
+	it('attr', () => {
+		const code = '<div attr="<% attr %>A<% attr2 %>"></div>';
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe(
+			'<% attr %>A<% attr2 %>',
+		);
+	});
+
+	it('unexpect parsing', () => {
+		const code = '<div attr=" <% attr %>"></div>';
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe('"');
+	});
+
+	it('unexpect parsing', () => {
+		const code = '<div attr="<% attr %> "></div>';
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		expect(restoredAst).toStrictEqual([]);
+	});
+
+	it('unexpect parsing', () => {
+		const code = '<div attr=" <% attr %> "></div>';
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe('"');
 	});
 });
