@@ -26,7 +26,6 @@ Add `parser` option into your [confugration file](https://markuplint.dev/configu
 }
 ```
 
-`parserOptions` option is work in progress. current setting is `{ "sourceType": "module" }` that hard coded.
 
 ## Contributing
 
