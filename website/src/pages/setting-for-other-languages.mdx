@@ -92,3 +92,50 @@ const Component = ({ list }) => {
 	</ul>
 </template>
 ```
+
+## Note: Unsupported syntax
+
+Unsupported the syntax that is complex on the attribute value in some languages:
+
+-   [PHP](https://www.php.net/)
+-   [eRuby](https://docs.ruby-lang.org/ja/latest/class/ERB.html)
+-   [EJS](https://ejs.co/)
+-   [Mustache](https://mustache.github.io/)/[Handlebars](https://handlebarsjs.com/)
+-   [Nunjucks](https://mozilla.github.io/nunjucks/)
+-   [Liquid](https://liquidjs.com/)
+
+✅ Available code:
+
+```html
+<div attr="{{ value }}"></div>
+```
+
+<!-- prettier-ignore-start -->
+```html
+<div attr='{{ value }}'></div>
+```
+<!-- prettier-ignore-end -->
+
+```html
+<div attr="{{ value }}-{{ value2 }}-{{ value3 }}"></div>
+```
+
+❌ Unavailable code:
+
+Didn't nest by quotations.
+
+<!-- prettier-ignore-start -->
+```html
+<div attr={{ value }}></div>
+```
+<!-- prettier-ignore-end -->
+
+Mixed the tags and spaces.
+
+```html
+<div attr=" {{ value }} "></div>
+```
+
+```html
+<div attr="{{ value }} {{ value2 }}"></div>
+```

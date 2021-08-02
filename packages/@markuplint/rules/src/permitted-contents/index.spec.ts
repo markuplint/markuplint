@@ -766,4 +766,8 @@ describe('EJS', () => {
 			},
 		]);
 	});
+
+	test('PSBlock', async () => {
+		expect(await markuplint.verify('<title><%- "title" _%></title>', ejsRuleOn, [rule], 'en')).toStrictEqual([]);
+	});
 });
