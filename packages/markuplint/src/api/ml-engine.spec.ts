@@ -1,4 +1,4 @@
-import type { Config, VerifiedResult } from '@markuplint/ml-config';
+import type { Config, Violation } from '@markuplint/ml-config';
 import MLEngine from './ml-engine';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -39,7 +39,7 @@ describe('Watcher', () => {
 		const targetFile = files[0];
 		const targetFileOriginData = await fs.readFile(targetFile, { encoding: 'utf-8' });
 		const config: Config = JSON.parse(targetFileOriginData);
-		const result2ndPromise = new Promise<VerifiedResult[]>(resolve => {
+		const result2ndPromise = new Promise<Violation[]>(resolve => {
 			engine.on('lint', (_, __, violations) => {
 				resolve(violations);
 			});

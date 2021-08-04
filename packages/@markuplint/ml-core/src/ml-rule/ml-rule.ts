@@ -1,4 +1,4 @@
-import { RuleConfig, RuleConfigValue, RuleInfo, Severity, VerifiedResult } from '@markuplint/ml-config';
+import { RuleConfig, RuleConfigValue, RuleInfo, Severity, Violation } from '@markuplint/ml-config';
 import Document from '../ml-dom/document';
 import { I18n } from '@markuplint/i18n';
 import { MLRuleOptions } from './types';
@@ -41,7 +41,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		this.#f = o.fix;
 	}
 
-	async verify(document: Document<T, O>, i18n: I18n, rule: RuleInfo<T, O>): Promise<VerifiedResult[]> {
+	async verify(document: Document<T, O>, i18n: I18n, rule: RuleInfo<T, O>): Promise<Violation[]> {
 		if (!this.#v) {
 			return [];
 		}
@@ -50,7 +50,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		const results = await this.#v(document, i18n.translator(), rule);
 		document.setRule(null);
 
-		return results.map<VerifiedResult>(result => {
+		return results.map<Violation>(result => {
 			return {
 				severity: result.severity,
 				message: result.message,

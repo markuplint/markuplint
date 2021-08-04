@@ -1,6 +1,6 @@
 import type { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import type { MLFabric, MLSchema } from './types';
-import type { RuleConfigValue, VerifiedResult } from '@markuplint/ml-config';
+import type { RuleConfigValue, Violation } from '@markuplint/ml-config';
 import { Document } from './ml-dom';
 import type { I18n } from '@markuplint/i18n';
 import MLParseError from './ml-error/ml-parse-error';
@@ -46,9 +46,9 @@ export class MLCore {
 	}
 
 	async verify(fix = false) {
-		const reports: VerifiedResult[] = [];
+		const violations: Violation[] = [];
 		if (this.#document instanceof MLParseError) {
-			reports.push({
+			violations.push({
 				ruleId: 'parse-error',
 				severity: 'error',
 				message: this.#document.message,
@@ -56,7 +56,7 @@ export class MLCore {
 				line: this.#document.line,
 				raw: this.#document.raw,
 			});
-			return reports;
+			return violations;
 		}
 
 		for (const rule of this.#rules) {
@@ -68,9 +68,9 @@ export class MLCore {
 				await rule.fix(this.#document, ruleInfo);
 			}
 			const results = await rule.verify(this.#document, this.#i18n, ruleInfo);
-			reports.push(...results);
+			violations.push(...results);
 		}
-		return reports;
+		return violations;
 	}
 
 	setCode(sourceCode: string) {

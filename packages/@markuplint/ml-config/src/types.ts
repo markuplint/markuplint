@@ -68,7 +68,7 @@ export interface Result {
 	raw: string;
 }
 
-export interface VerifiedResult extends Result {
+export interface Violation extends Result {
 	ruleId: string;
 }
 

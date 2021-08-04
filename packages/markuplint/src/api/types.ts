@@ -1,5 +1,5 @@
 import type { AnyMLRule, MLSchema, Ruleset } from '@markuplint/ml-core';
-import type { Config, VerifiedResult } from '@markuplint/ml-config';
+import type { Config, Violation } from '@markuplint/ml-config';
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { I18n } from '@markuplint/i18n';
 import type { MLMarkupLanguageParser } from '@markuplint/ml-ast';
@@ -49,11 +49,5 @@ export type MLEngineEventMap = {
 	rules: (filePath: string, rules: AnyMLRule[], message?: string) => void;
 	i18n: (filePath: string, i18n: I18n, message?: string) => void;
 	code: (filePath: string, sourceCode: string, message?: string) => void;
-	lint: (
-		filePath: string,
-		sourceCode: string,
-		violations: VerifiedResult[],
-		fixedCode: string,
-		message?: string,
-	) => void;
+	lint: (filePath: string, sourceCode: string, violations: Violation[], fixedCode: string, message?: string) => void;
 };

@@ -1,8 +1,8 @@
-import { Config, VerifiedResult } from '@markuplint/ml-config';
+import { Config, Violation } from '@markuplint/ml-config';
 import { Document, Ruleset } from '@markuplint/ml-core';
 
 export interface MLResultInfo {
-	violations: VerifiedResult[];
+	violations: Violation[];
 	filePath: string;
 	sourceCode: string;
 	fixedCode: string;
@@ -12,7 +12,7 @@ export interface MLResultInfo {
  * @deprecated
  */
 export interface MLResultInfo_v1 {
-	results: VerifiedResult[];
+	results: Violation[];
 	filePath: string;
 	sourceCode: string;
 	fixedCode: string;
