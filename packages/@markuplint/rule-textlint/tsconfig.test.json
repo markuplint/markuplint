@@ -9,6 +9,9 @@
 	},
 	"references": [
 		{
+			"path": "../../markuplint"
+		},
+		{
 			"path": "../ml-core"
 		}
 	],

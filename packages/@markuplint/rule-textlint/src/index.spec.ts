@@ -53,7 +53,7 @@ test('is test 2', async () => {
 		},
 	});
 
-	expect(r[0].results).toStrictEqual([
+	expect(r[0].violations).toStrictEqual([
 		{
 			severity: 'warning',
 			ruleId: 'textlint',
