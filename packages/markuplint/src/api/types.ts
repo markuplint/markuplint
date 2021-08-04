@@ -27,18 +27,6 @@ export type MLFabric = {
 	i18n: I18n;
 };
 
-export type LintingParams = {
-	filePath: string;
-	sourceCode: string;
-	ruleset: Ruleset;
-	rules: AnyMLRule[];
-	schemas: MLSchema;
-	parser: MLMarkupLanguageParser;
-	parserOptions: ParserOptions;
-	i18nSettings: I18n;
-	fix: boolean;
-};
-
 export type MLEngineEventMap = {
 	log: (phase: string, message: string) => void;
 	config: (filePath: string, config: ConfigSet, message?: string) => void;
