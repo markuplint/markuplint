@@ -14,7 +14,7 @@ export async function test(html: string, config: Config, rules: AnyMLRule[], loc
 	const result = results[0];
 
 	return {
-		violations: result?.results ?? [],
+		violations: result?.violations ?? [],
 		fixedCode: result?.fixedCode ?? html,
 	};
 }

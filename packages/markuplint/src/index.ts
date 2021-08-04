@@ -1,4 +1,5 @@
-export { api as default } from './api';
+export { api as default, MLEngine } from './api';
+export * from './types';
 
 /**
  * @deprecated

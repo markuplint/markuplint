@@ -1,5 +1,4 @@
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
-import type { MLFile } from './ml-file';
 import path from 'path';
 import { toRegxp } from '@markuplint/ml-config';
 
@@ -7,7 +6,7 @@ type SpecConfig = Record<string, string> | string[] | string;
 
 const specs = new Map<string, MLMLSpec | ExtendedSpec>();
 
-export async function resolveSpecs(file: MLFile, specConfig?: SpecConfig) {
+export async function resolveSpecs(filePath: string, specConfig?: SpecConfig) {
 	const htmlSpec = await importSpecs<MLMLSpec>('@markuplint/html-spec');
 	const extendedSpecs: ExtendedSpec[] = [];
 
@@ -22,7 +21,7 @@ export async function resolveSpecs(file: MLFile, specConfig?: SpecConfig) {
 			}
 		} else {
 			for (const pattern of Object.keys(specConfig)) {
-				if (path.basename(file.path).match(toRegxp(pattern))) {
+				if (path.basename(filePath).match(toRegxp(pattern))) {
 					const specModName = specConfig[pattern];
 					const spec = await importSpecs<ExtendedSpec>(specModName);
 					extendedSpecs.push(spec);

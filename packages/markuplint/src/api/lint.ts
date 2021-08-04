@@ -97,6 +97,7 @@ export async function lint(options: {
 	const result = await api(files, {
 		config,
 		configFile,
+		noSearchConfig: !options.files,
 		rules: options.rules,
 		autoLoad: options.rulesAutoResolve ?? true,
 		extMatch: options.extMatch,

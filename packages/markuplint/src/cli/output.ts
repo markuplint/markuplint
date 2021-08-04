@@ -8,7 +8,7 @@ export async function output(results: MLResultInfo, options: CLIOptions) {
 	let out: string[];
 	switch (format.toLowerCase()) {
 		case 'json': {
-			process.stdout.write(JSON.stringify(results.results, null, 2));
+			process.stdout.write(JSON.stringify(results.violations, null, 2));
 			return;
 		}
 		case 'simple': {
@@ -28,7 +28,7 @@ export async function output(results: MLResultInfo, options: CLIOptions) {
 	msg = options.color ? msg : stripAnsi(msg);
 
 	// If it has errors, Write to `stderr` and failure and exit.
-	if (results.results.length) {
+	if (results.violations.length) {
 		process.stderr.write(msg);
 		process.exitCode = 1;
 		return;

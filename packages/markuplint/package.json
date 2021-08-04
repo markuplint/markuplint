@@ -42,6 +42,7 @@
 		"has-yarn": "^2.1.0",
 		"meow": "9",
 		"os-locale": "^5.0.0",
+		"strict-event-emitter": "^0.2.0",
 		"strip-ansi": "6",
 		"tslib": "^2.3.0",
 		"uuid": "^8.3.2"
