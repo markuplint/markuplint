@@ -7,3 +7,4 @@ export { default as MLParseError } from './ml-error/ml-parse-error';
 export { default as Ruleset } from './ruleset';
 export * from './ml-dom';
 export * from './utils';
+export * from './types';
