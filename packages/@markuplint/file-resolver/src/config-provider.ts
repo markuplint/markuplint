@@ -71,7 +71,7 @@ class ConfigProvider {
 	}
 
 	async search(targetFile: MLFile) {
-		if (targetFile.anonymous) {
+		if (!(await targetFile.dirExists())) {
 			return null;
 		}
 		const res = await search<Config>(targetFile.path, false);

@@ -43,10 +43,9 @@ it('001 + 002', async () => {
 
 it('001 + 002 + 003', async () => {
 	const filePath = path.resolve(__dirname, '..', 'test', 'fixtures', '003', 'dir', 'target.html');
-	const file = await getFile(filePath);
+	const file = getFile(filePath);
 	const key = await configProvider.search(file);
 	const configSet = await configProvider.resolve([key]);
-	console.log(configSet);
 	expect(configSet.config).toStrictEqual({
 		dummy: true,
 		dummy2: true,

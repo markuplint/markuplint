@@ -1,50 +1,85 @@
+import type { Target } from './types';
 import { promises as fs } from 'fs';
 import minimatch from 'minimatch';
 import path from 'path';
 
-const fileCaches = new WeakMap<MLFile, string>();
-
 export class MLFile {
-	readonly anonymous: boolean;
-	#filePath: string;
+	#type: 'file-base' | 'code-base';
+	#basename: string;
+	#dirname: string;
+	#code: string | null;
 
-	/**
-	 *
-	 * @param filePathOrContext A file path or context
-	 * @param anonymous if 1st param is a context
-	 * @param workspace context of workspace if anonymous is true
-	 * @param name context of name
-	 */
-	constructor(filePathOrContext: string, anonymous = false, workspace = process.cwd(), name = '<AnonymousFile>') {
-		this.anonymous = anonymous;
-		if (anonymous) {
-			this.#filePath = path.resolve(workspace, name);
-			// `filePath` is context
-			fileCaches.set(this, filePathOrContext);
-		} else {
-			this.#filePath = path.resolve(filePathOrContext);
+	constructor(target: Target) {
+		if (typeof target === 'string') {
+			this.#basename = path.basename(target);
+			this.#dirname = path.dirname(target);
+			this.#code = null;
+			this.#type = 'file-base';
+			return;
 		}
+		if (!target.workspace && target.name && path.isAbsolute(target.name)) {
+			this.#basename = path.basename(target.name);
+			this.#dirname = path.dirname(target.name);
+		} else {
+			this.#basename = target.name || '<AnonymousFile>';
+			this.#dirname = target.workspace || process.cwd();
+		}
+		this.#code = target.sourceCode;
+		this.#type = 'code-base';
 	}
 
 	get path() {
-		return this.#filePath;
+		return path.resolve(this.#dirname, this.#basename);
+	}
+
+	get dirname() {
+		return this.#dirname;
 	}
 
 	async isExist() {
-		return !!(await fs.stat(this.#filePath));
+		return await exist(this.path);
 	}
 
-	async getContext() {
-		return fileCaches.get(this) ?? (await this._fetch());
+	async dirExists() {
+		return await exist(this.#dirname);
+	}
+
+	async getCode() {
+		if (this.#code != null) {
+			return this.#code;
+		}
+		if (this.#type === 'file-base' && (await this.isExist())) {
+			return await this._fetch();
+		}
+		return '';
+	}
+
+	setCode(code: string) {
+		if (this.#type === 'file-base') {
+			throw new Error(`This file object is readonly (File-base: ${this.path})`);
+		}
+		this.#code = code;
 	}
 
 	matches(globPath: string) {
-		return minimatch(this.#filePath, globPath);
+		return minimatch(this.path, globPath);
 	}
 
 	private async _fetch() {
-		const context = await fs.readFile(this.#filePath, { encoding: 'utf-8' });
-		fileCaches.set(this, context);
-		return context;
+		const code = await fs.readFile(this.path, { encoding: 'utf-8' });
+		this.#code = code;
+		return code;
+	}
+}
+
+async function exist(filePath: string) {
+	try {
+		await fs.stat(filePath);
+		return true;
+	} catch (err) {
+		if ('code' in err && err.code === 'ENOENT') {
+			return false;
+		}
+		throw err;
 	}
 }

@@ -15,3 +15,8 @@ it('file matches', async () => {
 	expect(file2.matches('/dir/**/*.css')).toBeFalsy();
 	expect(file2.matches('/dir/**/*.{html,css}')).toBeTruthy();
 });
+
+it('file exists', async () => {
+	const file = new MLFile({ sourceCode: '<html></html>' });
+	expect(await file.isExist()).toBeFalsy();
+});
