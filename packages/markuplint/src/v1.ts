@@ -5,7 +5,7 @@ import { test } from './testing-tool';
 /**
  * @deprecated
  */
-export { lint as exec } from './api/lint';
+export { lint_v1 as exec } from './api/v1';
 
 /**
  * @deprecated

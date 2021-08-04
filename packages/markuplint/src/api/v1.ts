@@ -7,7 +7,7 @@ import { api } from '.';
  * @param options
  * @returns
  */
-export async function lint(options: {
+export async function lint_v1(options: {
 	/**
 	 * Glob pattern
 	 */
