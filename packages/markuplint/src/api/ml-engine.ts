@@ -36,7 +36,12 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		super();
 		this.#file = file;
 		this.#options = options;
-		this.#watcher.on('all', this.watch.bind(this));
+
+		if (options?.watch) {
+			this.#watcher.on('all', this.watch.bind(this));
+		} else {
+			this.#watcher.close();
+		}
 	}
 
 	async exec(): Promise<MLResultInfo | null> {
