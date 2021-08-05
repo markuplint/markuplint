@@ -67,7 +67,7 @@ test('is test 2', async () => {
 		},
 	});
 
-	expect(r[0].results).toStrictEqual([]);
+	expect(r[0].violations).toStrictEqual([]);
 	expect(errorLogger).not.toBeCalled();
 });
 
@@ -84,7 +84,7 @@ test('is test 3', async () => {
 		},
 	});
 
-	expect(r[0].results).toStrictEqual([]);
+	expect(r[0].violations).toStrictEqual([]);
 	expect(errorLogger).toBeCalledTimes(1);
 	expect(errorLogger).toBeCalledWith(
 		'`config.option` with `true` value is only available on Node.js, please use plain `TextlintKernelOptions` instead',

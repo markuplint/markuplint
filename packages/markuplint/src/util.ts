@@ -1,7 +1,10 @@
-export function toRegxp(pattern: string) {
-	const matched = pattern.match(/^\/(.+)\/([ig]*)$/i);
-	if (matched) {
-		return new RegExp(matched[1], matched[2]);
-	}
-	return pattern;
+import { Nullable } from './types';
+import { v4 } from 'uuid';
+
+export function nonNullableFilter<T>(item: Nullable<T>): item is T {
+	return !!item;
+}
+
+export function uuid() {
+	return v4();
 }

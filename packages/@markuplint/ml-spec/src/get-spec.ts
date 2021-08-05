@@ -1,4 +1,4 @@
-import { ElementSpec, ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+import type { ElementSpec, ExtendedSpec, MLMLSpec } from './types';
 import { mergeArray } from './utils';
 
 /**

@@ -7,7 +7,16 @@
 	},
 	"references": [
 		{
+			"path": "../ml-ast"
+		},
+		{
 			"path": "../ml-config"
+		},
+		{
+			"path": "../ml-core"
+		},
+		{
+			"path": "../ml-spec"
 		}
 	],
 	"include": ["./src/**/*"],

@@ -10,7 +10,6 @@ export default createRule<boolean, Option>({
 	defaultOptions,
 	async verify(document, translate, config) {
 		const reports: Result[] = [];
-		const html = document.toString();
 
 		const textlintResult = await textlintVerify(document, translate, config);
 
@@ -18,6 +17,7 @@ export default createRule<boolean, Option>({
 			return reports;
 		}
 
+		const html = document.toString();
 		for (const result of textlintResult.messages) {
 			const message = translate(`Invalid text: ${result.message}`);
 			const [s, e] = result.fix?.range || [result.index, result.index];
