@@ -1,7 +1,7 @@
-import { cli } from './cli-bootstrap';
+import { cli } from './bootstrap';
 import { command } from './command';
 import getStdin from 'get-stdin';
-import { initialize } from './initialize';
+import { initialize } from './init';
 
 (async () => {
 	if (cli.flags.v) {
@@ -22,12 +22,9 @@ import { initialize } from './initialize';
 
 	const files = cli.input;
 	if (files.length) {
-		await command({
-			files,
-			...cli.flags,
-		}).catch(err => {
-			process.stderr.write(err + '\n');
-			process.exit(1);
+		await command(files, cli.flags).catch(err => {
+			throw err;
+			// process.exit(1);
 		});
 		process.exit(0);
 	}
@@ -36,10 +33,7 @@ import { initialize } from './initialize';
 		getStdin()
 			.then(async stdin => {
 				if (stdin) {
-					await command({
-						codes: stdin,
-						...cli.flags,
-					}).catch(err => {
+					await command([{ sourceCode: stdin }], cli.flags).catch(err => {
 						process.stderr.write(err + '\n');
 						process.exit(1);
 					});

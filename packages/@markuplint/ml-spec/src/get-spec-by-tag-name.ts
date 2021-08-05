@@ -1,4 +1,4 @@
-import { Attribute, MLDOMElementSpec, MLMLSpec, SpecOM } from './types';
+import type { Attribute, MLDOMElementSpec, MLMLSpec, SpecOM } from './types';
 
 function getSpecOM({ specs }: MLMLSpec): SpecOM {
 	const som: SpecOM = {};

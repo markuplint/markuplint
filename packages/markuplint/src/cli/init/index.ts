@@ -1,4 +1,4 @@
-import { Config } from '@markuplint/ml-config';
+import { Config, mergeConfig } from '@markuplint/ml-config';
 import fs from 'fs';
 import { installModule } from './install-module';
 import path from 'path';
@@ -134,7 +134,7 @@ const extRExp = {
 };
 
 export async function initialize() {
-	const config: Config = {};
+	let config: Config = {};
 
 	write('markuplit initialization');
 	write.break();
@@ -196,10 +196,18 @@ export async function initialize() {
 		config.parser[ext] = `@markuplint/${lang}-parser`;
 
 		if (lang === 'vue') {
-			config.specs = ['@markuplint/vue-spec'];
+			config = mergeConfig(config, {
+				specs: {
+					'/\\.vue$/i': '@markuplint/vue-spec',
+				},
+			});
 		}
 		if (lang === 'jsx') {
-			config.specs = ['@markuplint/react-spec'];
+			config = mergeConfig(config, {
+				specs: {
+					'/\\.[jt]sx?$/i': '@markuplint/react-spec',
+				},
+			});
 		}
 	}
 

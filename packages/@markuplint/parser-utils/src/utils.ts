@@ -1,4 +1,5 @@
-import { MLASTAttr, MLASTNode, MLASTNodeType, MLToken, Walker } from '@markuplint/ml-ast';
+import type { MLASTAttr, MLASTNode, MLToken, Walker } from '@markuplint/ml-ast';
+import { MLASTNodeType } from '@markuplint/ml-ast';
 import { rePCEN } from './const';
 import { v4 as uuid4 } from 'uuid';
 

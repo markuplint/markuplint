@@ -6,7 +6,7 @@ describe('basic test', () => {
 		const r = await markuplint.exec({
 			files: 'test/fixture/001.html',
 		});
-		expect(r[0].results.length).toBe(0);
+		expect(r[0].violations.length).toBe(0);
 	});
 
 	it('is reported from 002.html', async () => {
@@ -14,7 +14,7 @@ describe('basic test', () => {
 			files: 'test/fixture/002.html',
 			locale: 'en',
 		});
-		expect(r[0].results).toEqual([
+		expect(r[0].violations).toEqual([
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
@@ -79,7 +79,7 @@ describe('basic test', () => {
 			files: 'test/fixture/006.html',
 			locale: 'en',
 		});
-		expect(r[0].results).toEqual([
+		expect(r[0].violations).toEqual([
 			{
 				severity: 'error',
 				message: 'The a is invalid element (7:6)',
@@ -96,7 +96,7 @@ describe('basic test', () => {
 			files: 'test/fixture/007.html',
 			locale: 'en',
 		});
-		expect(r[0].results.length).toEqual(31);
+		expect(r[0].violations.length).toEqual(31);
 	});
 
 	it('is ignoring 008.html', async () => {
@@ -160,7 +160,7 @@ describe('async and sync rules', () => {
 				},
 			},
 		});
-		expect(r[0].results).toMatchObject(asyncReports);
+		expect(r[0].violations).toMatchObject(asyncReports);
 	});
 
 	it('works correctly with sync rule', async () => {
@@ -174,7 +174,7 @@ describe('async and sync rules', () => {
 				},
 			},
 		});
-		expect(r[0].results).toMatchObject(syncReports);
+		expect(r[0].violations).toMatchObject(syncReports);
 	});
 
 	it('works correctly with async and sync mixed rules', async () => {
@@ -190,6 +190,6 @@ describe('async and sync rules', () => {
 			},
 		});
 		// This test also ensures that rules are executed sequentially
-		expect(r[0].results).toMatchObject([...asyncReports, ...syncReports]);
+		expect(r[0].violations).toMatchObject([...asyncReports, ...syncReports]);
 	});
 });
