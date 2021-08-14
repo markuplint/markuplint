@@ -84,7 +84,7 @@ test('in Vue', async () => {
 });
 
 test('in EJS', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<title><%- "title" _%></title>',
 		{
 			parser: {
@@ -97,5 +97,5 @@ test('in EJS', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
