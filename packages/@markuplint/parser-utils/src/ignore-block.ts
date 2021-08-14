@@ -81,7 +81,7 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 	nodeList = nodeList.slice();
 	const { source, stack } = ignoreBlock;
 	for (const node of nodeList) {
-		if (node.type === MLASTNodeType.Comment) {
+		if (node.type === MLASTNodeType.Comment || node.type === MLASTNodeType.Text) {
 			if (!hasIgnoreBlock(node.raw)) {
 				continue;
 			}
