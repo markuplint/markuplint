@@ -82,3 +82,20 @@ test('in Vue', async () => {
 	);
 	expect(r.length).toBe(0);
 });
+
+test('in EJS', async () => {
+	const r = await markuplint.verify(
+		'<title><%- "title" _%></title>',
+		{
+			parser: {
+				'.*': '@markuplint/ejs-parser',
+			},
+			rules: {
+				'character-reference': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(r.length).toBe(0);
+});

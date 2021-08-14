@@ -120,11 +120,15 @@ describe('Node list', () => {
 			'[8:1]>[8:8](105,112)html: </html>',
 			'[8:8]>[9:1](112,113)#text: ⏎',
 		]);
+	});
 
-		// const el = doc.nodeList[3];
-		// const el2 = doc.nodeList[3].parentNode!.childNodes![0];
-		// expect(el.nodeName).toBe(el2.nodeName);
-		// expect(el.uuid).toBe(el2.uuid);
+	it('mutable text node', () => {
+		const doc = parse('<title><%= title %></title>');
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:8](0,7)title: <title>',
+			'[1:8]>[1:20](7,19)#ps:ejs-output-value: <%=␣title␣%>',
+			'[1:20]>[1:28](19,27)title: </title>',
+		]);
 	});
 });
 
