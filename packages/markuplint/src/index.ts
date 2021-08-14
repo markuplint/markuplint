@@ -1,4 +1,5 @@
-export { api as default, MLEngine } from './api';
+export { MLEngine } from './api';
+export * from './testing-tool';
 export * from './types';
 
 /**

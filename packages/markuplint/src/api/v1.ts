@@ -1,6 +1,6 @@
 import { Config, RuleConfigValue } from '@markuplint/ml-config';
 import { MLRule } from '@markuplint/ml-core';
-import { api } from '.';
+import { lint } from './lint';
 
 /**
  * @deprecated
@@ -94,7 +94,7 @@ export async function lint_v1(options: {
 		config = options.config;
 	}
 
-	const result = await api(files, {
+	const result = await lint(files, {
 		config,
 		configFile,
 		noSearchConfig: !options.files,
