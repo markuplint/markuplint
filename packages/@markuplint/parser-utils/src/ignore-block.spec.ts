@@ -180,6 +180,19 @@ describe('restoreNode', () => {
 		]);
 	});
 
+	it('tag', () => {
+		const code = '<title><% content %></title>';
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		const nodeMap = nodeListToDebugMaps(restoredAst);
+		expect(nodeMap).toStrictEqual([
+			'[1:1]>[1:8](0,7)title: <title>',
+			'[1:8]>[1:21](7,20)#ps:ejs-tag: <%␣content␣%>',
+			'[1:21]>[1:29](20,28)title: </title>',
+		]);
+	});
+
 	it('attr', () => {
 		const code = '<div attr="<% attr %><% attr2 %>"></div>';
 		const masked = ignoreBlock(code, tags);
