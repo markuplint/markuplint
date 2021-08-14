@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { mlTest } from 'markuplint';
 import rule from './';
 
 describe('verify', () => {
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src="path/to">
 		`,
@@ -15,11 +15,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('space before and after', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src = "path/to">
 		`,
@@ -31,7 +31,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Never insert space before equal sign of attribute',
@@ -44,7 +44,7 @@ describe('verify', () => {
 	});
 
 	test('space before', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src ="path/to">
 		`,
@@ -56,7 +56,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Never insert space before equal sign of attribute',
@@ -69,7 +69,7 @@ describe('verify', () => {
 	});
 
 	test('space after', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src= "path/to">
 		`,
@@ -81,11 +81,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('line break before', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img
 		src
@@ -99,7 +99,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Never insert space before equal sign of attribute',
@@ -112,7 +112,7 @@ describe('verify', () => {
 	});
 
 	test('line break after', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img
 		src=
@@ -126,11 +126,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('always: no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src="path/to">
 		`,
@@ -142,7 +142,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Always insert space before equal sign of attribute',
@@ -155,7 +155,7 @@ describe('verify', () => {
 	});
 
 	test('always: space before and after', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src = "path/to">
 		`,
@@ -167,11 +167,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('always: space before', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src ="path/to">
 		`,
@@ -183,11 +183,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('always: space after', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src= "path/to">
 		`,
@@ -199,7 +199,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Always insert space before equal sign of attribute',
@@ -212,7 +212,7 @@ describe('verify', () => {
 	});
 
 	test('always: line break before', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img
 		src
@@ -226,11 +226,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('always: line break after', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img
 		src=
@@ -244,7 +244,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Always insert space before equal sign of attribute',
@@ -257,7 +257,7 @@ describe('verify', () => {
 	});
 
 	test('always-single-line: no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src="path/to">
 		`,
@@ -269,7 +269,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Always insert space before equal sign of attribute',
@@ -282,7 +282,7 @@ describe('verify', () => {
 	});
 
 	test('always-single-line: space before and after', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src = "path/to">
 		`,
@@ -294,11 +294,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('always-single-line: space before', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src ="path/to">
 		`,
@@ -310,11 +310,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('always-single-line: space after', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src= "path/to">
 		`,
@@ -326,7 +326,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Always insert space before equal sign of attribute',
@@ -339,7 +339,7 @@ describe('verify', () => {
 	});
 
 	test('always-single-line: line break before', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img
 		src
@@ -353,7 +353,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Always insert space before equal sign of attribute',
@@ -366,7 +366,7 @@ describe('verify', () => {
 	});
 
 	test('always: line break after', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img
 		src=
@@ -380,7 +380,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Always insert space before equal sign of attribute',
@@ -393,7 +393,7 @@ describe('verify', () => {
 	});
 
 	test('never-single-line: no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src="path/to">
 		`,
@@ -405,11 +405,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('never-single-line: space before and after', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src = "path/to">
 		`,
@@ -421,7 +421,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Never insert space before equal sign of attribute',
@@ -434,7 +434,7 @@ describe('verify', () => {
 	});
 
 	test('never-single-line: space before', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src ="path/to">
 		`,
@@ -446,7 +446,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Never insert space before equal sign of attribute',
@@ -459,7 +459,7 @@ describe('verify', () => {
 	});
 
 	test('never-single-line: space after', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src= "path/to">
 		`,
@@ -471,11 +471,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('never-single-line: line break before', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img
 		src
@@ -489,11 +489,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('never-single-line: line break after', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img
 		src=
@@ -507,13 +507,13 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
 describe('fix', () => {
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src="path/to">
 		`,
@@ -524,8 +524,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src="path/to">
 		`,
@@ -533,7 +534,7 @@ describe('fix', () => {
 	});
 
 	test('space before and after', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src = "path/to">
 		`,
@@ -544,8 +545,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src= "path/to">
 		`,
@@ -553,7 +555,7 @@ describe('fix', () => {
 	});
 
 	test('space before', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src ="path/to">
 		`,
@@ -564,8 +566,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src="path/to">
 		`,
@@ -573,7 +576,7 @@ describe('fix', () => {
 	});
 
 	test('space after', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src= "path/to">
 		`,
@@ -584,8 +587,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src= "path/to">
 		`,
@@ -593,7 +597,7 @@ describe('fix', () => {
 	});
 
 	test('line break before', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img
 		src
@@ -606,8 +610,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img
 		src="path/to">
@@ -616,7 +621,7 @@ describe('fix', () => {
 	});
 
 	test('line break after', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img
 		src=
@@ -629,8 +634,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img
 		src=
@@ -640,7 +646,7 @@ describe('fix', () => {
 	});
 
 	test('always: no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src="path/to">
 		`,
@@ -651,8 +657,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src ="path/to">
 		`,
@@ -660,7 +667,7 @@ describe('fix', () => {
 	});
 
 	test('always: space before and after', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src = "path/to">
 		`,
@@ -671,8 +678,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src = "path/to">
 		`,
@@ -680,7 +688,7 @@ describe('fix', () => {
 	});
 
 	test('always: space before', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src ="path/to">
 		`,
@@ -691,8 +699,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src ="path/to">
 		`,
@@ -700,7 +709,7 @@ describe('fix', () => {
 	});
 
 	test('always: space after', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src= "path/to">
 		`,
@@ -711,8 +720,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src = "path/to">
 		`,
@@ -720,7 +730,7 @@ describe('fix', () => {
 	});
 
 	test('always: line break before', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img
 		src
@@ -733,8 +743,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img
 		src
@@ -744,7 +755,7 @@ describe('fix', () => {
 	});
 
 	test('always: line break after', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img
 		src=
@@ -757,8 +768,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img
 		src =
@@ -768,7 +780,7 @@ describe('fix', () => {
 	});
 
 	test('always-single-line: no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src="path/to">
 		`,
@@ -779,8 +791,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src ="path/to">
 		`,
@@ -788,7 +801,7 @@ describe('fix', () => {
 	});
 
 	test('always-single-line: space before and after', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src = "path/to">
 		`,
@@ -799,8 +812,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src = "path/to">
 		`,
@@ -808,7 +822,7 @@ describe('fix', () => {
 	});
 
 	test('always-single-line: space before', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src ="path/to">
 		`,
@@ -819,8 +833,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src ="path/to">
 		`,
@@ -828,7 +843,7 @@ describe('fix', () => {
 	});
 
 	test('always-single-line: space after', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src= "path/to">
 		`,
@@ -839,8 +854,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src = "path/to">
 		`,
@@ -848,7 +864,7 @@ describe('fix', () => {
 	});
 
 	test('always-single-line: line break before', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img
 		src
@@ -861,8 +877,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img
 		src ="path/to">
@@ -871,7 +888,7 @@ describe('fix', () => {
 	});
 
 	test('always: line break after', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img
 		src=
@@ -884,8 +901,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img
 		src =
@@ -895,7 +913,7 @@ describe('fix', () => {
 	});
 
 	test('never-single-line: no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src="path/to">
 		`,
@@ -906,8 +924,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src="path/to">
 		`,
@@ -915,7 +934,7 @@ describe('fix', () => {
 	});
 
 	test('never-single-line: space before and after', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src = "path/to">
 		`,
@@ -926,8 +945,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src= "path/to">
 		`,
@@ -935,7 +955,7 @@ describe('fix', () => {
 	});
 
 	test('never-single-line: space before', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src ="path/to">
 		`,
@@ -946,8 +966,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src="path/to">
 		`,
@@ -955,7 +976,7 @@ describe('fix', () => {
 	});
 
 	test('never-single-line: space after', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img src= "path/to">
 		`,
@@ -966,8 +987,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img src= "path/to">
 		`,
@@ -975,7 +997,7 @@ describe('fix', () => {
 	});
 
 	test('never-single-line: line break before', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img
 		src
@@ -988,8 +1010,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img
 		src
@@ -999,7 +1022,7 @@ describe('fix', () => {
 	});
 
 	test('never-single-line: line break after', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<img
 		src=
@@ -1012,8 +1035,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 		<img
 		src=

@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { mlTest } from 'markuplint';
 import rule from './';
 
 describe('verify', () => {
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<div>
 			lorem
@@ -21,11 +21,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
     <div>
         lorem
@@ -43,7 +43,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Indentation must be tab',
@@ -80,7 +80,7 @@ describe('verify', () => {
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
     <div>
 
@@ -99,7 +99,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Indentation must be tab',
@@ -128,7 +128,7 @@ describe('verify', () => {
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
     <div>
         lorem
@@ -143,11 +143,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
     <div>
       lorem
@@ -165,11 +165,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 	<div>
 		lorem
@@ -187,7 +187,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Indentation must be space',
@@ -224,7 +224,7 @@ describe('verify', () => {
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
    <div>
       lorem
@@ -245,7 +245,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Indentation must be 2 width spaces',
@@ -266,7 +266,7 @@ describe('verify', () => {
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
    <div>
       lorem
@@ -284,11 +284,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
    <div>
       lorem
@@ -309,7 +309,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 4,
@@ -322,7 +322,7 @@ describe('verify', () => {
 	});
 
 	test('rawText', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 	<script>
     var text = 'lorem';
@@ -336,11 +336,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - align: false', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 	<div>
 		</div>
@@ -359,11 +359,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 	<div>
 		</div>
@@ -382,7 +382,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 3,
@@ -395,7 +395,7 @@ describe('verify', () => {
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 	<div>
 </div>
@@ -414,7 +414,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 3,
@@ -427,7 +427,7 @@ describe('verify', () => {
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 	<div>	</div>
 		`,
@@ -445,11 +445,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 	<div> </div>
 		`,
@@ -467,11 +467,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<div> text </div>
 		`,
@@ -489,11 +489,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<div>
 		<img>
@@ -513,7 +513,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 3,
@@ -534,7 +534,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<div>
 	<img>
@@ -554,7 +554,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 3,
@@ -567,7 +567,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<div>
 					<!-- comment -->
@@ -587,7 +587,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 3,
@@ -600,7 +600,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`<html>
 <body></body>
 </html>`,
@@ -612,7 +612,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 2,
@@ -625,7 +625,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`<html>
 <body>
 	<div>text
@@ -654,11 +654,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`<html>
 	<body>
 		<div>text
@@ -687,11 +687,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`<html>
 	<body>
 		<div>text
@@ -720,7 +720,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 2,
@@ -741,7 +741,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`\t<html>
 <body>
 	<div>text
@@ -770,7 +770,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 2,
@@ -791,7 +791,7 @@ describe('verify', () => {
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`\t<html>
 	<body>
 		<div>text
@@ -820,11 +820,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('no indent', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<div>
 			<p> ipsam </p>
@@ -843,11 +843,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('end tag', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<div>
 		<div no-rule>
@@ -874,11 +874,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('childNodeRules', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<div>
 			<div no-rule>
@@ -909,7 +909,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
@@ -921,7 +921,7 @@ describe('fix', () => {
 		<p>ipsam</p>
 	</div>
 	`;
-		const fixed = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			fixture,
 			{
 				rules: {
@@ -933,8 +933,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(fixed).toBe(fixture);
+		expect(fixedCode).toBe(fixture);
 	});
 
 	test('tab', async () => {
@@ -944,7 +945,7 @@ describe('fix', () => {
         <p>ipsam</p>
     </div>
 	`;
-		const fixed = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			fixture,
 			{
 				rules: {
@@ -956,8 +957,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(fixed).toBe(
+		expect(fixedCode).toBe(
 			`
 	<div>
 		lorem
@@ -968,7 +970,7 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 		<div>
 			lorem
@@ -985,8 +987,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(fixed).toBe(
+		expect(fixedCode).toBe(
 			`
         <div>
             lorem
@@ -997,7 +1000,7 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
   <div>
     lorem
@@ -1014,8 +1017,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(fixed).toBe(
+		expect(fixedCode).toBe(
 			`
 	<div>
 		lorem
@@ -1026,7 +1030,7 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
   <div>
     lorem
@@ -1043,8 +1047,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(fixed).toBe(
+		expect(fixedCode).toBe(
 			`
    <div>
       lorem
@@ -1055,7 +1060,7 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
   <div>
     lorem
@@ -1073,8 +1078,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(fixed).toBe(
+		expect(fixedCode).toBe(
 			`
 	<div>
 	lorem

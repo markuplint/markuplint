@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
+import { mlTest } from 'markuplint';
 import rule from './';
 
 test('is test 1', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
@@ -18,7 +18,7 @@ test('is test 1', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
 			message: 'Duplicate attribute name',
@@ -39,7 +39,7 @@ test('is test 1', async () => {
 });
 
 test('is test 2', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		`
 		<div
 			data-attr="value"
@@ -58,7 +58,7 @@ test('is test 2', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
 			message: 'Duplicate attribute name',
@@ -79,7 +79,7 @@ test('is test 2', async () => {
 });
 
 test('is test 3', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<img src="/" SRC="/" >',
 		{
 			rules: {
@@ -90,11 +90,11 @@ test('is test 3', async () => {
 		'ja',
 	);
 
-	expect(r.map(_ => _.message)).toStrictEqual(['属性名が重複しています']);
+	expect(violations.map(_ => _.message)).toStrictEqual(['属性名が重複しています']);
 });
 
 test('nodeRules disable', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<div><span attr attr></span></div>',
 		{
 			rules: {
@@ -113,11 +113,11 @@ test('nodeRules disable', async () => {
 		'en',
 	);
 
-	expect(r.length).toStrictEqual(0);
+	expect(violations.length).toStrictEqual(0);
 });
 
 test('Vue', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<template><div attr v-bind:attr /></template>',
 		{
 			rules: {
@@ -131,7 +131,7 @@ test('Vue', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			ruleId: 'attr-duplication',
 			severity: 'error',
@@ -144,7 +144,7 @@ test('Vue', async () => {
 });
 
 test('React', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<div tabindex tabIndex />',
 		{
 			rules: {
@@ -158,11 +158,11 @@ test('React', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('Pug', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'.hoge(class="hoge2")&attributes({class: "hoge3"})',
 		{
 			rules: {
@@ -176,11 +176,11 @@ test('Pug', async () => {
 		'en',
 	);
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
 
 test('Svelte', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<div class:selected="{isSelected}" class:focused="{isFocused}"></div>',
 		{
 			rules: {
@@ -194,5 +194,5 @@ test('Svelte', async () => {
 		'en',
 	);
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
