@@ -8,36 +8,70 @@ export function ignoreBlock(source: string, tags: IgnoreTag[]): IgnoreBlock {
 	let replaced = source;
 	const stack: Code[] = [];
 	for (const tag of tags) {
-		const start = removeGlobalOption(tag.start);
-		const end = removeGlobalOption(tag.end);
-		while (start.test(replaced)) {
-			const [index, above, startTag, _below] = snap(replaced, start);
-			if (!startTag || !_below) {
-				continue;
-			}
-			const [, taggedCode, endTag, below] = snap(_below, end);
-			stack.push({
-				type: tag.type,
-				index,
-				startTag,
-				taggedCode,
-				endTag: endTag || null,
-			});
-			/**
-			 * It will not replace line breaks because detects line number.
-			 */
+		// Replace tags in attributes
+		const attr = maskText(
+			prepend(tag.start, '(?<=(?:"|\'))'),
+			append(tag.end, '(?=(?:"|\'))'),
+			replaced,
+			(startTag, taggedCode, endTag) => {
+				const mask =
+					MASK_CHAR.repeat(startTag.length) +
+					taggedCode.replace(/[^\n]/g, MASK_CHAR) +
+					MASK_CHAR.repeat((endTag || '').length);
+				return mask;
+			},
+		);
+		replaced = attr.replaced;
+		stack.push(...attr.stack.map(res => ({ ...res, type: tag.type })));
+
+		// Replace tags in other nodes
+		const text = maskText(tag.start, tag.end, replaced, (startTag, taggedCode, endTag) => {
 			const mask =
 				MASK_CHAR.repeat(startTag.length) +
 				taggedCode.replace(/[^\n]/g, MASK_CHAR) +
 				MASK_CHAR.repeat((endTag || '').length);
 			const taggedMask = `<!${mask.slice(2).slice(0, -1)}>`;
-			replaced = above + taggedMask + (below || '');
-		}
-
-		stack.sort((a, b) => a.index - b.index);
+			return taggedMask;
+		});
+		replaced = text.replaced;
+		stack.push(...text.stack.map(res => ({ ...res, type: tag.type })));
 	}
+	stack.sort((a, b) => a.index - b.index);
+
 	return {
 		source,
+		replaced,
+		stack,
+	};
+}
+
+function maskText(
+	start: RegExp,
+	end: RegExp,
+	replaced: string,
+	masking: (startTag: string, taggedCode: string, endTag?: string) => string,
+) {
+	const stack: Omit<Code, 'type'>[] = [];
+	start = removeGlobalOption(start);
+	end = removeGlobalOption(end);
+	while (start.test(replaced)) {
+		const [index, above, startTag, _below] = snap(replaced, start);
+		if (!startTag || !_below) {
+			continue;
+		}
+		const [, taggedCode, endTag, below] = snap(_below, end);
+		stack.push({
+			index,
+			startTag,
+			taggedCode,
+			endTag: endTag || null,
+		});
+		/**
+		 * It will not replace line breaks because detects line number.
+		 */
+		replaced = above + masking(startTag, taggedCode, endTag) + (below || '');
+	}
+	return {
 		replaced,
 		stack,
 	};
@@ -47,7 +81,7 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 	nodeList = nodeList.slice();
 	const { source, stack } = ignoreBlock;
 	for (const node of nodeList) {
-		if (node.type === MLASTNodeType.Comment) {
+		if (node.type === MLASTNodeType.Comment || node.type === MLASTNodeType.Text) {
 			if (!hasIgnoreBlock(node.raw)) {
 				continue;
 			}
@@ -143,6 +177,19 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 
 			nodeList.splice(index, 1, ...insertList);
 		}
+		if (node.type === MLASTNodeType.StartTag) {
+			for (const attr of node.attributes) {
+				if (attr.type === 'ps-attr' || attr.value.raw === '' || !hasIgnoreBlock(attr.value.raw)) {
+					continue;
+				}
+				for (const tag of stack) {
+					if (attr.value.startOffset <= tag.index && tag.index < attr.value.endOffset) {
+						attr.value.raw = tag.startTag + tag.taggedCode + tag.endTag;
+						attr.isDynamicValue = true;
+					}
+				}
+			}
+		}
 	}
 
 	return nodeList;
@@ -162,6 +209,14 @@ function snap(str: string, reg: RegExp): [number, string] | [number, string, str
 
 function removeGlobalOption(reg: RegExp) {
 	return new RegExp(reg.source, reg.ignoreCase ? 'i' : '');
+}
+
+function prepend(reg: RegExp, str: string) {
+	return new RegExp(str + reg.source, reg.ignoreCase ? 'i' : '');
+}
+
+function append(reg: RegExp, str: string) {
+	return new RegExp(reg.source + str, reg.ignoreCase ? 'i' : '');
 }
 
 function hasIgnoreBlock(textContent: string) {

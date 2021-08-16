@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { mlTest } from 'markuplint';
 import rule from './';
 
 describe('verify', () => {
 	test('default', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
@@ -18,7 +18,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
@@ -39,7 +39,7 @@ describe('verify', () => {
 	});
 
 	test('double', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
@@ -58,7 +58,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Attribute value is must quote on double quotation mark',
@@ -79,7 +79,7 @@ describe('verify', () => {
 	});
 
 	test('single', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
@@ -98,7 +98,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Attribute value is must quote on single quotation mark',
@@ -119,7 +119,7 @@ describe('verify', () => {
 	});
 
 	test('empty', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<div data-attr>
 			lorem
@@ -134,13 +134,13 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r.length).toBe(0);
+		expect(violations.length).toBe(0);
 	});
 });
 
 describe('fix', () => {
 	test('empty', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			'<div attr noop=noop foo="bar" hoge=\'fuga\'>',
 			{
 				rules: {
@@ -149,12 +149,13 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual('<div attr noop="noop" foo="bar" hoge="fuga">');
+		expect(fixedCode).toEqual('<div attr noop="noop" foo="bar" hoge="fuga">');
 	});
 
 	test('empty', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			'<div attr noop=noop foo="bar" hoge=\'fuga\'>',
 			{
 				rules: {
@@ -163,7 +164,8 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual("<div attr noop='noop' foo='bar' hoge='fuga'>");
+		expect(fixedCode).toEqual("<div attr noop='noop' foo='bar' hoge='fuga'>");
 	});
 });

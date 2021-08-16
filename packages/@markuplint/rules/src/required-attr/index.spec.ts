@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
+import { mlTest } from 'markuplint';
 import rule from './';
 
 test('warns if specified attribute is not appeared', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<img src="/path/to/image.png">',
 		{
 			rules: {
@@ -24,7 +24,7 @@ test('warns if specified attribute is not appeared', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			col: 1,
 			line: 1,
@@ -37,7 +37,7 @@ test('warns if specified attribute is not appeared', async () => {
 });
 
 test('multiple required attributes', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<img src="/path/to/image.png">',
 		{
 			rules: {
@@ -59,7 +59,7 @@ test('multiple required attributes', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
 			message: "Required 'alt' on '<img>'",
@@ -90,7 +90,7 @@ test('multiple required attributes', async () => {
 test('"alt" attribute on "<area>" is required only if the href attribute is used', async () => {
 	expect(
 		(
-			await markuplint.verify(
+			await mlTest(
 				'<area href="path/to">',
 				{
 					rules: {
@@ -101,12 +101,12 @@ test('"alt" attribute on "<area>" is required only if the href attribute is used
 				[rule],
 				'en',
 			)
-		).length,
+		).violations.length,
 	).toBe(1);
 
 	expect(
 		(
-			await markuplint.verify(
+			await mlTest(
 				'<area href="path/to" alt="alternate text">',
 				{
 					rules: {
@@ -117,14 +117,14 @@ test('"alt" attribute on "<area>" is required only if the href attribute is used
 				[rule],
 				'en',
 			)
-		).length,
+		).violations.length,
 	).toBe(0);
 });
 
 test('At least one of data and type must be defined to <object>.', async () => {
 	expect(
 		(
-			await markuplint.verify(
+			await mlTest(
 				'<object data="https://example.com/data">',
 				{
 					rules: {
@@ -135,12 +135,12 @@ test('At least one of data and type must be defined to <object>.', async () => {
 				[rule],
 				'en',
 			)
-		).length,
+		).violations.length,
 	).toBe(0);
 
 	expect(
 		(
-			await markuplint.verify(
+			await mlTest(
 				'<object type="XXXX_YYYY_ZZZZ">',
 				{
 					rules: {
@@ -151,12 +151,12 @@ test('At least one of data and type must be defined to <object>.', async () => {
 				[rule],
 				'en',
 			)
-		).length,
+		).violations.length,
 	).toBe(0);
 
 	expect(
 		(
-			await markuplint.verify(
+			await mlTest(
 				'<object>',
 				{
 					rules: {
@@ -167,23 +167,25 @@ test('At least one of data and type must be defined to <object>.', async () => {
 				[rule],
 				'en',
 			)
-		).length,
+		).violations.length,
 	).toBe(2);
 });
 
 test('The ancestors of the <source> element.', async () => {
 	expect(
-		await markuplint.verify(
-			'<audio><source></audio>',
-			{
-				rules: {
-					'required-attr': true,
+		(
+			await mlTest(
+				'<audio><source></audio>',
+				{
+					rules: {
+						'required-attr': true,
+					},
+					nodeRules: [],
 				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
+				[rule],
+				'en',
+			)
+		).violations,
 	).toStrictEqual([
 		{
 			ruleId: 'required-attr',
@@ -196,17 +198,19 @@ test('The ancestors of the <source> element.', async () => {
 	]);
 
 	expect(
-		await markuplint.verify(
-			'<video><source></video>',
-			{
-				rules: {
-					'required-attr': true,
+		(
+			await mlTest(
+				'<video><source></video>',
+				{
+					rules: {
+						'required-attr': true,
+					},
+					nodeRules: [],
 				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
+				[rule],
+				'en',
+			)
+		).violations,
 	).toStrictEqual([
 		{
 			ruleId: 'required-attr',
@@ -219,43 +223,47 @@ test('The ancestors of the <source> element.', async () => {
 	]);
 
 	expect(
-		await markuplint.verify(
-			'<picture><source></picture>',
-			{
-				rules: {
-					'required-attr': true,
+		(
+			await mlTest(
+				'<picture><source></picture>',
+				{
+					rules: {
+						'required-attr': true,
+					},
+					nodeRules: [],
 				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
+				[rule],
+				'en',
+			)
+		).violations,
 	).toStrictEqual([]);
 });
 
 test('Foreign element', async () => {
 	expect(
-		await markuplint.verify(
-			'<svg></svg>',
-			{
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [
-					{
-						tagName: 'svg',
-						rules: {
-							'required-attr': {
-								severity: 'error',
-								value: 'viewBox',
+		(
+			await mlTest(
+				'<svg></svg>',
+				{
+					rules: {
+						'required-attr': true,
+					},
+					nodeRules: [
+						{
+							tagName: 'svg',
+							rules: {
+								'required-attr': {
+									severity: 'error',
+									value: 'viewBox',
+								},
 							},
 						},
-					},
-				],
-			},
-			[rule],
-			'en',
-		),
+					],
+				},
+				[rule],
+				'en',
+			)
+		).violations,
 	).toStrictEqual([
 		{
 			ruleId: 'required-attr',
@@ -270,20 +278,22 @@ test('Foreign element', async () => {
 
 test('Pug', async () => {
 	expect(
-		await markuplint.verify(
-			'img',
-			{
-				parser: {
-					'.*': '@markuplint/pug-parser',
+		(
+			await mlTest(
+				'img',
+				{
+					parser: {
+						'.*': '@markuplint/pug-parser',
+					},
+					rules: {
+						'required-attr': true,
+					},
+					nodeRules: [],
 				},
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
+				[rule],
+				'en',
+			)
+		).violations,
 	).toStrictEqual([
 		{
 			ruleId: 'required-attr',
@@ -299,7 +309,7 @@ test('Pug', async () => {
 test('Vue', async () => {
 	expect(
 		(
-			await markuplint.verify(
+			await mlTest(
 				'<template><img :src="src"></template>',
 				{
 					parser: {
@@ -313,26 +323,28 @@ test('Vue', async () => {
 				[rule],
 				'en',
 			)
-		).length,
+		).violations.length,
 	).toBe(0);
 });
 
 test('React', async () => {
 	expect(
-		await markuplint.verify(
-			'<img alt={alt} />',
-			{
-				parser: {
-					'.*': '@markuplint/jsx-parser',
+		(
+			await mlTest(
+				'<img alt={alt} />',
+				{
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					rules: {
+						'required-attr': true,
+					},
+					nodeRules: [],
 				},
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
+				[rule],
+				'en',
+			)
+		).violations,
 	).toStrictEqual([
 		{
 			ruleId: 'required-attr',
@@ -345,19 +357,21 @@ test('React', async () => {
 	]);
 
 	expect(
-		await markuplint.verify(
-			'<img {...props} />',
-			{
-				parser: {
-					'.*': '@markuplint/jsx-parser',
+		(
+			await mlTest(
+				'<img {...props} />',
+				{
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					rules: {
+						'required-attr': true,
+					},
+					nodeRules: [],
 				},
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
+				[rule],
+				'en',
+			)
+		).violations,
 	).toStrictEqual([]);
 });

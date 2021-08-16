@@ -252,7 +252,7 @@ export async function initialize() {
 	write(`✨Created: ${filePath}`);
 
 	if (res.autoInstall) {
-		write('Insatll automatically');
+		write('Install automatically');
 
 		const modules = ['markuplint', ...res.langs.map(lang => `@markuplint/${lang}-parser`)];
 

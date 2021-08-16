@@ -5,6 +5,9 @@
 	},
 	"references": [
 		{
+			"path": "../html-parser"
+		},
+		{
 			"path": "../ml-ast"
 		}
 	],

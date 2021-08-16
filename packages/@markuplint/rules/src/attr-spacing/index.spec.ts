@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { mlTest } from 'markuplint';
 import rule from '.';
 
 describe('verify', () => {
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src="path/to" src="path/to2">
 		`,
@@ -15,11 +15,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src="path/to"src="path/to2">
 		`,
@@ -31,7 +31,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Required space',
@@ -44,7 +44,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src="path/to"src="path/to2">
 		`,
@@ -56,11 +56,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src="path/to"
 		src="path/to2">
@@ -73,11 +73,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('Never line break', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src="path/to"
 		src="path/to2">
@@ -94,7 +94,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Never break line',
@@ -107,7 +107,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src="path/to" src="path/to2">
 		`,
@@ -123,11 +123,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src="path/to"
 		src="path/to2">
@@ -144,7 +144,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Insert line break',
@@ -157,7 +157,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img
 		src="path/to"
@@ -175,11 +175,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src="path/to"  src="path/to2">
 		`,
@@ -195,7 +195,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Space should be 1',
@@ -208,7 +208,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img src="path/to"  src="path/to2">
 		`,
@@ -224,7 +224,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Space should be 2',
@@ -237,7 +237,7 @@ describe('verify', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			`
 		<img
 		src="path/to"   src="path/to2">
@@ -254,13 +254,13 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
 describe('fix', () => {
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -271,8 +271,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -280,7 +281,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 			<img src="path/to"src="path/to2">
 			`,
@@ -291,8 +292,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -300,7 +302,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 			<img src="path/to"src="path/to2">
 			`,
@@ -311,8 +313,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to"src="path/to2">
 			`,
@@ -320,7 +323,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 			<img src="path/to"
 			src="path/to2">
@@ -332,8 +335,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to"
 			src="path/to2">
@@ -342,7 +346,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 			<img src="path/to"
 			src="path/to2">
@@ -358,8 +362,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -367,7 +372,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -382,8 +387,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -391,7 +397,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 			<img src="path/to"
 			src="path/to2">
@@ -407,8 +413,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img
 			src="path/to"
@@ -418,7 +425,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 			<img
 			src="path/to"
@@ -435,8 +442,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img
 			src="path/to"
@@ -446,7 +454,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 			<img src="path/to"  src="path/to2">
 			`,
@@ -461,8 +469,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -470,7 +479,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 			<img src="path/to"  src="path/to2">
 			`,
@@ -485,8 +494,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img  src="path/to"  src="path/to2">
 			`,
@@ -494,7 +504,7 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlTest(
 			`
 			<img
 			src="path/to"   src="path/to2">
@@ -510,8 +520,9 @@ describe('fix', () => {
 			},
 			[rule],
 			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img
 			src="path/to"   src="path/to2">

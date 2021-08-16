@@ -1,6 +1,6 @@
+import { Target, resolveFiles } from '@markuplint/file-resolver';
 import type { CLIOptions } from './bootstrap';
-import type { Target } from '@markuplint/file-resolver';
-import { api } from '../api';
+import { MLEngine } from '../api';
 import { promises as fs } from 'fs';
 import { output } from './output';
 import path from 'path';
@@ -9,18 +9,19 @@ export async function command(files: Target[], options: CLIOptions) {
 	const fix = options.fix;
 	const configFile = options.configFile && path.join(process.cwd(), options.configFile);
 
-	const reports = await api(files, { configFile });
+	const fileList = await resolveFiles(files);
 
-	if (fix) {
-		for (const report of reports) {
-			await fs.writeFile(report.filePath, report.fixedCode, { encoding: 'utf8' });
-			process.stdout.write(`markuplint: Fix "${report.filePath}"\n`);
+	for (const file of fileList) {
+		const engine = new MLEngine(file, { configFile });
+		const result = await engine.exec();
+		if (!result) {
+			continue;
 		}
-	} else {
-		for (const result of reports) {
+		if (fix) {
+			await fs.writeFile(result.filePath, result.fixedCode, { encoding: 'utf8' });
+			process.stdout.write(`markuplint: Fix "${result.filePath}"\n`);
+		} else {
 			await output(result, options);
 		}
 	}
-
-	// process.exit(process.exitCode);
 }

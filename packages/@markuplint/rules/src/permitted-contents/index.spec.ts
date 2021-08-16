@@ -1,4 +1,4 @@
-import * as markuplint from 'markuplint';
+import { mlTest } from 'markuplint';
 import rule from './';
 
 const ruleOn = {
@@ -9,14 +9,19 @@ const ruleOn = {
 
 describe('verify', () => {
 	test('a', async () => {
-		const r1 = await markuplint.verify('<a><div></div><span></span><em></em></a>', ruleOn, [rule], 'en');
-		expect(r1).toStrictEqual([]);
+		const { violations: violations1 } = await mlTest(
+			'<a><div></div><span></span><em></em></a>',
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(violations1).toStrictEqual([]);
 
-		const r2 = await markuplint.verify('<a><h1></h1></a>', ruleOn, [rule], 'en');
-		expect(r2).toStrictEqual([]);
+		const { violations: violations2 } = await mlTest('<a><h1></h1></a>', ruleOn, [rule], 'en');
+		expect(violations2).toStrictEqual([]);
 
-		const r3 = await markuplint.verify('<div><a><option></option></a><div>', ruleOn, [rule], 'en');
-		expect(r3).toStrictEqual([
+		const { violations: violations3 } = await mlTest('<div><a><option></option></a><div>', ruleOn, [rule], 'en');
+		expect(violations3).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -27,8 +32,8 @@ describe('verify', () => {
 			},
 		]);
 
-		const r4 = await markuplint.verify('<a><button></button></a>', ruleOn, [rule], 'en');
-		expect(r4).toStrictEqual([
+		const { violations: violations4 } = await mlTest('<a><button></button></a>', ruleOn, [rule], 'en');
+		expect(violations4).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -39,8 +44,13 @@ describe('verify', () => {
 			},
 		]);
 
-		const r5 = await markuplint.verify('<a><div><div><button></button></div></div></a>', ruleOn, [rule], 'en');
-		expect(r5).toStrictEqual([
+		const { violations: violations5 } = await mlTest(
+			'<a><div><div><button></button></div></div></a>',
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(violations5).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -51,8 +61,8 @@ describe('verify', () => {
 			},
 		]);
 
-		const r6 = await markuplint.verify('<span><a><div></div></a></span>', ruleOn, [rule], 'en');
-		expect(r6).toStrictEqual([
+		const { violations: violations6 } = await mlTest('<span><a><div></div></a></span>', ruleOn, [rule], 'en');
+		expect(violations6).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -65,8 +75,13 @@ describe('verify', () => {
 	});
 
 	test('address', async () => {
-		const r1 = await markuplint.verify('<address><address></address></address>', ruleOn, [rule], 'en');
-		expect(r1).toStrictEqual([
+		const { violations: violations1 } = await mlTest(
+			'<address><address></address></address>',
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(violations1).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -79,8 +94,13 @@ describe('verify', () => {
 	});
 
 	test('audio', async () => {
-		const r1 = await markuplint.verify('<div><audio src="path/to"><source></audio></div>', ruleOn, [rule], 'en');
-		expect(r1).toStrictEqual([
+		const { violations: violations1 } = await mlTest(
+			'<div><audio src="path/to"><source></audio></div>',
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(violations1).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -91,15 +111,20 @@ describe('verify', () => {
 			},
 		]);
 
-		const r2 = await markuplint.verify('<div><audio><source><div></div></audio></div>', ruleOn, [rule], 'en');
-		expect(r2).toStrictEqual([]);
+		const { violations: violations2 } = await mlTest(
+			'<div><audio><source><div></div></audio></div>',
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(violations2).toStrictEqual([]);
 
-		const r3 = await markuplint.verify('<div><audio><source></audio></div>', ruleOn, [rule], 'en');
-		expect(r3).toStrictEqual([]);
+		const { violations: violations3 } = await mlTest('<div><audio><source></audio></div>', ruleOn, [rule], 'en');
+		expect(violations3).toStrictEqual([]);
 	});
 
 	test('dl', async () => {
-		const r1 = await markuplint.verify(
+		const { violations: violations1 } = await mlTest(
 			`<dl>
 				<dt></dt>
 				<dd></dd>
@@ -108,9 +133,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r1).toStrictEqual([]);
+		expect(violations1).toStrictEqual([]);
 
-		const r2 = await markuplint.verify(
+		const { violations: violations2 } = await mlTest(
 			`<dl>
 				<dt></dt>
 				<dd></dd>
@@ -120,7 +145,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r2).toStrictEqual([
+		expect(violations2).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -139,7 +164,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const r3 = await markuplint.verify(
+		const { violations: violations3 } = await mlTest(
 			`<dl>
 				<dt></dt>
 				<div></div>
@@ -150,7 +175,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r3).toStrictEqual([
+		expect(violations3).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -177,7 +202,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const r4 = await markuplint.verify(
+		const { violations: violations4 } = await mlTest(
 			`<dl>
 				<div></div>
 				<div></div>
@@ -188,9 +213,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r4.length).toStrictEqual(4);
+		expect(violations4.length).toStrictEqual(4);
 
-		const r5 = await markuplint.verify(
+		const { violations: violations5 } = await mlTest(
 			`<dl>
 				<div>
 					<dt></dt>
@@ -201,9 +226,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r5).toStrictEqual([]);
+		expect(violations5).toStrictEqual([]);
 
-		const r6 = await markuplint.verify(
+		const { violations: violations6 } = await mlTest(
 			`<div>
 				<dt></dt>
 				<dd></dd>
@@ -212,7 +237,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r6).toStrictEqual([
+		expect(violations6).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -223,7 +248,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const r7 = await markuplint.verify(
+		const { violations: violations7 } = await mlTest(
 			`<dl>
 				<div>
 					<span></span>
@@ -233,7 +258,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r7).toStrictEqual([
+		expect(violations7).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -246,7 +271,7 @@ describe('verify', () => {
 	});
 
 	test('table', async () => {
-		const r1 = await markuplint.verify(
+		const { violations: violations1 } = await mlTest(
 			`<table>
 			<thead></thead>
 			<tr>
@@ -257,9 +282,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r1).toStrictEqual([]);
+		expect(violations1).toStrictEqual([]);
 
-		const r2 = await markuplint.verify(
+		const { violations: violations2 } = await mlTest(
 			`<table>
 			<tbody>
 				<tr>
@@ -272,7 +297,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r2).toStrictEqual([
+		expect(violations2).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -285,7 +310,7 @@ describe('verify', () => {
 	});
 
 	test('ruby', async () => {
-		const r1 = await markuplint.verify(
+		const { violations: violations1 } = await mlTest(
 			`<ruby>
 			<span>漢字</span>
 			<rp>(</rp>
@@ -296,9 +321,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r1).toStrictEqual([]);
+		expect(violations1).toStrictEqual([]);
 
-		const r2 = await markuplint.verify(
+		const { violations: violations2 } = await mlTest(
 			`<ruby>
 			<span>漢字</span>
 			<rp>(</rp>
@@ -308,7 +333,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r2).toStrictEqual([
+		expect(violations2).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -319,7 +344,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const r3 = await markuplint.verify(
+		const { violations: violations3 } = await mlTest(
 			`<ruby>
 				♥ <rt> Heart <rt lang=fr> Cœur </rt>
 				☘ <rt> Shamrock <rt lang=fr> Trèfle </rt>
@@ -329,12 +354,12 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r3).toStrictEqual([]);
+		expect(violations3).toStrictEqual([]);
 	});
 
 	test('ul', async () => {
-		const r1 = await markuplint.verify('<ul><div></div></ul>', ruleOn, [rule], 'en');
-		expect(r1).toStrictEqual([
+		const { violations: violations1 } = await mlTest('<ul><div></div></ul>', ruleOn, [rule], 'en');
+		expect(violations1).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -345,16 +370,16 @@ describe('verify', () => {
 			},
 		]);
 
-		const r2 = await markuplint.verify('<ul><li></li></ul>', ruleOn, [rule], 'en');
-		expect(r2).toStrictEqual([]);
+		const { violations: violations2 } = await mlTest('<ul><li></li></ul>', ruleOn, [rule], 'en');
+		expect(violations2).toStrictEqual([]);
 
-		const r3 = await markuplint.verify('<ul><li></li><li></li><li></li></ul>', ruleOn, [rule], 'en');
-		expect(r3).toStrictEqual([]);
+		const { violations: violations3 } = await mlTest('<ul><li></li><li></li><li></li></ul>', ruleOn, [rule], 'en');
+		expect(violations3).toStrictEqual([]);
 	});
 
 	test('area', async () => {
-		const r1 = await markuplint.verify('<div><area></div>', ruleOn, [rule], 'en');
-		expect(r1).toStrictEqual([
+		const { violations: violations1 } = await mlTest('<div><area></div>', ruleOn, [rule], 'en');
+		expect(violations1).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -365,15 +390,15 @@ describe('verify', () => {
 			},
 		]);
 
-		const r2 = await markuplint.verify('<map><area></map>', ruleOn, [rule], 'en');
-		expect(r2).toStrictEqual([]);
+		const { violations: violations2 } = await mlTest('<map><area></map>', ruleOn, [rule], 'en');
+		expect(violations2).toStrictEqual([]);
 
-		const r3 = await markuplint.verify('<map><div><area></div></map>', ruleOn, [rule], 'en');
-		expect(r3).toStrictEqual([]);
+		const { violations: violations3 } = await mlTest('<map><div><area></div></map>', ruleOn, [rule], 'en');
+		expect(violations3).toStrictEqual([]);
 	});
 
 	test('meta', async () => {
-		const r1 = await markuplint.verify(
+		const { violations: violations1 } = await mlTest(
 			`<ol>
 				<li>
 					<span>Award winners</span>
@@ -384,7 +409,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r1).toStrictEqual([
+		expect(violations1).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -395,7 +420,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const r2 = await markuplint.verify(
+		const { violations: violations2 } = await mlTest(
 			`<ol itemscope itemtype="https://schema.org/BreadcrumbList">
 				<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
 					<a itemprop="item" href="https://example.com/books">
@@ -418,11 +443,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r2).toStrictEqual([]);
+		expect(violations2).toStrictEqual([]);
 	});
 
 	test('hgroup', async () => {
-		const r1 = await markuplint.verify(
+		const { violations: violations1 } = await mlTest(
 			`<hgroup>
 				<h1>Heading</h1>
 			</hgroup>`,
@@ -430,9 +455,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r1).toStrictEqual([]);
+		expect(violations1).toStrictEqual([]);
 
-		const r2 = await markuplint.verify(
+		const { violations: violations2 } = await mlTest(
 			`<hgroup>
 				<h1>Heading</h1>
 				<h2>Sub</h2>
@@ -442,9 +467,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r2).toStrictEqual([]);
+		expect(violations2).toStrictEqual([]);
 
-		const r3 = await markuplint.verify(
+		const { violations: violations3 } = await mlTest(
 			`<hgroup>
 				<template></template>
 				<h1>Heading</h1>
@@ -458,9 +483,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r3).toStrictEqual([]);
+		expect(violations3).toStrictEqual([]);
 
-		const r4 = await markuplint.verify(
+		const { violations: violations4 } = await mlTest(
 			`<hgroup>
 				<template></template>
 			</hgroup>`,
@@ -468,7 +493,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r4).toStrictEqual([
+		expect(violations4).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -481,7 +506,7 @@ describe('verify', () => {
 	});
 
 	test('script', async () => {
-		const r1 = await markuplint.verify(
+		const { violations: violations1 } = await mlTest(
 			`<script>
 				alert("checking");
 			</script>`,
@@ -489,11 +514,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r1).toStrictEqual([]);
+		expect(violations1).toStrictEqual([]);
 	});
 
 	test('style', async () => {
-		const r1 = await markuplint.verify(
+		const { violations: violations1 } = await mlTest(
 			`<style>
 				#id {
 					prop: value;
@@ -503,11 +528,11 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r1).toStrictEqual([]);
+		expect(violations1).toStrictEqual([]);
 	});
 
 	test('template', async () => {
-		const r1 = await markuplint.verify(
+		const { violations: violations1 } = await mlTest(
 			`<div>
 				<a href="path/to">
 					<template>
@@ -519,9 +544,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r1).toStrictEqual([]);
+		expect(violations1).toStrictEqual([]);
 
-		const r2 = await markuplint.verify(
+		const { violations: violations2 } = await mlTest(
 			`<div>
 				<a href="path/to">
 					<template>
@@ -533,7 +558,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r2).toStrictEqual([
+		expect(violations2).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -554,13 +579,13 @@ describe('verify', () => {
 	});
 
 	test('Dep exp named capture in interleave', async () => {
-		const r1 = await markuplint.verify('<figure><img><figcaption></figure>', ruleOn, [rule], 'en');
-		expect(r1).toStrictEqual([]);
+		const { violations: violations1 } = await mlTest('<figure><img><figcaption></figure>', ruleOn, [rule], 'en');
+		expect(violations1).toStrictEqual([]);
 	});
 
 	test('Custom element', async () => {
-		const r1 = await markuplint.verify('<div><x-item></x-item></div>', ruleOn, [rule], 'en');
-		expect(r1).toStrictEqual([]);
+		const { violations: violations1 } = await mlTest('<div><x-item></x-item></div>', ruleOn, [rule], 'en');
+		expect(violations1).toStrictEqual([]);
 	});
 
 	test('Custom element', async () => {
@@ -581,15 +606,20 @@ describe('verify', () => {
 			},
 		};
 
-		const r1 = await markuplint.verify('<x-container></x-container>', o, [rule], 'en');
-		const r2 = await markuplint.verify('<x-container><x-item>0</x-item></x-container>', o, [rule], 'en');
-		const r3 = await markuplint.verify(
+		const { violations: violations1 } = await mlTest('<x-container></x-container>', o, [rule], 'en');
+		const { violations: violations2 } = await mlTest(
+			'<x-container><x-item>0</x-item></x-container>',
+			o,
+			[rule],
+			'en',
+		);
+		const { violations: violations3 } = await mlTest(
 			'<x-container><x-item>0</x-item><x-item>1</x-item><x-item>2</x-item></x-container>',
 			o,
 			[rule],
 			'en',
 		);
-		const r4 = await markuplint.verify(
+		const { violations: violations4 } = await mlTest(
 			`<x-container>
 					<x-item>0</x-item>
 					<x-item>1</x-item>
@@ -601,7 +631,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		const r5 = await markuplint.verify(
+		const { violations: violations5 } = await mlTest(
 			`<x-container>
 					<x-item>0</x-item>
 					<x-item>1</x-item>
@@ -615,7 +645,7 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r1).toStrictEqual([
+		expect(violations1).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -625,7 +655,7 @@ describe('verify', () => {
 				message: 'Invalid content of the x-container element in settings',
 			},
 		]);
-		expect(r2).toStrictEqual([
+		expect(violations2).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -635,9 +665,9 @@ describe('verify', () => {
 				message: 'Invalid content of the x-container element in settings',
 			},
 		]);
-		expect(r3).toStrictEqual([]);
-		expect(r4).toStrictEqual([]);
-		expect(r5).toStrictEqual([
+		expect(violations3).toStrictEqual([]);
+		expect(violations4).toStrictEqual([]);
+		expect(violations5).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -659,7 +689,7 @@ describe('React', () => {
 	};
 
 	test('case-sensitive', async () => {
-		expect(await markuplint.verify('<A><button></button></A>', ruleOn, [rule], 'en')).toStrictEqual([
+		expect((await mlTest('<A><button></button></A>', ruleOn, [rule], 'en')).violations).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -670,7 +700,7 @@ describe('React', () => {
 			},
 		]);
 
-		expect(await markuplint.verify('<a><button></button></a>', jsxRuleOn, [rule], 'en')).toStrictEqual([
+		expect((await mlTest('<a><button></button></a>', jsxRuleOn, [rule], 'en')).violations).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -681,25 +711,27 @@ describe('React', () => {
 			},
 		]);
 
-		expect(await markuplint.verify('<A><button></button></A>', jsxRuleOn, [rule], 'en')).toStrictEqual([]);
+		expect((await mlTest('<A><button></button></A>', jsxRuleOn, [rule], 'en')).violations).toStrictEqual([]);
 	});
 
 	test('Components', async () => {
 		expect(
-			await markuplint.verify(
-				'<Html><Head /><body><p><Link href="path/to">SPA Link</Link></p></body></Html>',
-				jsxRuleOn,
-				[rule],
-				'en',
-			),
+			(
+				await mlTest(
+					'<Html><Head /><body><p><Link href="path/to">SPA Link</Link></p></body></Html>',
+					jsxRuleOn,
+					[rule],
+					'en',
+				)
+			).violations,
 		).toStrictEqual([]);
 	});
 
 	test('Expect to contain a text node', async () => {
-		expect(await markuplint.verify('<head><title>{variable}</title></head>', ruleOn, [rule], 'en')).toStrictEqual(
+		expect((await mlTest('<head><title>{variable}</title></head>', ruleOn, [rule], 'en')).violations).toStrictEqual(
 			[],
 		);
-		expect(await markuplint.verify('<head><title>\n</title></head>', ruleOn, [rule], 'en')).toStrictEqual([
+		expect((await mlTest('<head><title>\n</title></head>', ruleOn, [rule], 'en')).violations).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -709,7 +741,7 @@ describe('React', () => {
 				raw: '<title>',
 			},
 		]);
-		expect(await markuplint.verify('<head><title>\n</title></head>', jsxRuleOn, [rule], 'en')).toStrictEqual([
+		expect((await mlTest('<head><title>\n</title></head>', jsxRuleOn, [rule], 'en')).violations).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
@@ -720,10 +752,10 @@ describe('React', () => {
 			},
 		]);
 		expect(
-			await markuplint.verify('<head><title>_variable_</title></head>', jsxRuleOn, [rule], 'en'),
+			(await mlTest('<head><title>_variable_</title></head>', jsxRuleOn, [rule], 'en')).violations,
 		).toStrictEqual([]);
 		expect(
-			await markuplint.verify('<head><title>{variable}</title></head>', jsxRuleOn, [rule], 'en'),
+			(await mlTest('<head><title>{variable}</title></head>', jsxRuleOn, [rule], 'en')).violations,
 		).toStrictEqual([]);
 	});
 });
@@ -738,8 +770,9 @@ describe('EJS', () => {
 
 	test('PSBlock', async () => {
 		expect(
-			await markuplint.verify(
-				`<!DOCTYPE html>
+			(
+				await mlTest(
+					`<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<%- include('path/to') _%>
@@ -751,10 +784,11 @@ describe('EJS', () => {
 	</body>
 </html>
 `,
-				ejsRuleOn,
-				[rule],
-				'en',
-			),
+					ejsRuleOn,
+					[rule],
+					'en',
+				)
+			).violations,
 		).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
@@ -765,5 +799,9 @@ describe('EJS', () => {
 				raw: '<ul>',
 			},
 		]);
+	});
+
+	test('PSBlock', async () => {
+		expect((await mlTest('<title><%- "title" _%></title>', ejsRuleOn, [rule], 'en')).violations).toStrictEqual([]);
 	});
 });
