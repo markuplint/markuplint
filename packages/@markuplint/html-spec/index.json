@@ -9129,7 +9129,7 @@
 				{
 					"name": "charset",
 					"type": "String",
-					"description": "Hinted at the character encoding of the linked URL. Note This attribute is deprecated and should not be used by authors. Use the HTTP Content-Type header on the linked URL.",
+					"description": "Hinted at the character encoding of the linked URL. Note: This attribute is deprecated and should not be used by authors. Use the HTTP Content-Type header on the linked URL.",
 					"deprecated": true
 				},
 				{
@@ -9156,7 +9156,7 @@
 				{
 					"name": "name",
 					"type": "String",
-					"description": "Was required to define a possible target location in a page. In HTML 4.01, id and name could both be used on <a>, as long as they had identical values. Note Use the global attribute id instead.",
+					"description": "Was required to define a possible target location in a page. In HTML 4.01, id and name could both be used on <a>, as long as they had identical values. Note: Use the global attribute id instead.",
 					"deprecated": true
 				},
 				{
@@ -9186,12 +9186,12 @@
 				{
 					"name": "shape",
 					"type": "String",
-					"description": "The shape of the hyperlink’s region in an image map. Note Use the <area> element for image maps instead.",
+					"description": "The shape of the hyperlink’s region in an image map. Note: Use the <area> element for image maps instead.",
 					"deprecated": true
 				},
 				{
 					"name": "target",
-					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: the current browsing context. (Default) _blank: usually a new tab, but users can configure browsers to open a new window instead. _parent: the parent browsing context of the current one. If no parent, behaves as _self. _top: the topmost browsing context (the \"highest\" context that’s an ancestor of the current one). If no ancestors, behaves as _self. Note Setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener. See browser compatibility for support status.",
+					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: the current browsing context. (Default) _blank: usually a new tab, but users can configure browsers to open a new window instead. _parent: the parent browsing context of the current one. If no parent, behaves as _self. _top: the topmost browsing context (the \"highest\" context that’s an ancestor of the current one). If no ancestors, behaves as _self. Note: Setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener. See browser compatibility for support status.",
 					"type": "Target",
 					"condition": {
 						"self": "[href]"
@@ -9444,7 +9444,7 @@
 				{
 					"name": "nohref",
 					"type": "String",
-					"description": "Indicates that no hyperlink exists for the associated area. Note Since HTML5, omitting the href attribute is sufficient.",
+					"description": "Indicates that no hyperlink exists for the associated area. Note: Since HTML5, omitting the href attribute is sufficient.",
 					"deprecated": true
 				},
 				{
@@ -9588,7 +9588,7 @@
 				"#ariaAttrs",
 				{
 					"name": "autoplay",
-					"description": "A Boolean attribute: if specified, the audio will automatically begin playback as soon as it can do so, without waiting for the entire audio file to finish downloading. Note Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay.",
+					"description": "A Boolean attribute: if specified, the audio will automatically begin playback as soon as it can do so, without waiting for the entire audio file to finish downloading. Note: Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay.",
 					"type": "Boolean"
 				},
 				{
@@ -9605,7 +9605,7 @@
 				{
 					"name": "disableremoteplayback",
 					"type": "String",
-					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc). See this proposed specification for more information. Note In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
+					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc). See this proposed specification for more information. Note: In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
 					"experimental": true
 				},
 				{
@@ -9620,7 +9620,7 @@
 				},
 				{
 					"name": "preload",
-					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience. It may have one of the following values: none: Indicates that the audio should not be preloaded. metadata: Indicates that only audio metadata (e.g. length) is fetched. auto: Indicates that the whole audio file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the audio for playback. The browser is not forced by the specification to follow the value of this attribute; it is a mere hint.",
+					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience. It may have one of the following values: none: Indicates that the audio should not be preloaded. metadata: Indicates that only audio metadata (e.g. length) is fetched. auto: Indicates that the whole audio file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the audio for playback. The browser is not forced by the specification to follow the value of this attribute; it is a mere hint.",
 					"type": "String",
 					"enum": ["none", "metadata", "auto", ""]
 				},
@@ -11253,7 +11253,7 @@
 				{
 					"name": "accept",
 					"type": "String",
-					"description": "Comma-separated content types the server accepts. Note This attribute was removed in HTML5 and should not be used. Instead, use the accept attribute on <input type=file> elements.",
+					"description": "Comma-separated content types the server accepts. Note: This attribute was removed in HTML5 and should not be used. Instead, use the accept attribute on <input type=file> elements.",
 					"deprecated": true
 				},
 				{
@@ -11306,7 +11306,7 @@
 				},
 				{
 					"name": "target",
-					"description": "Indicates where to display the response after submitting the form. In HTML 4, this is the name/keyword for a frame. In HTML5, it is a name/keyword for a browsing context (for example, tab, window, or iframe). The following keywords have special meanings: _self (default): Load into the same browsing context as the current one. _blank: Load into a new unnamed browsing context. _parent: Load into the parent browsing context of the current one. If no parent, behaves the same as _self. _top: Load into the top-level browsing context (i.e., the browsing context that is an ancestor of the current one and has no parent). If no parent, behaves the same as _self. This value can be overridden by a formtarget attribute on a <button>, <input type=\"submit\">, or <input type=\"image\"> element. Note Setting target=\"_blank\" on <form> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener.",
+					"description": "Indicates where to display the response after submitting the form. In HTML 4, this is the name/keyword for a frame. In HTML5, it is a name/keyword for a browsing context (for example, tab, window, or iframe). The following keywords have special meanings: _self (default): Load into the same browsing context as the current one. _blank: Load into a new unnamed browsing context. _parent: Load into the parent browsing context of the current one. If no parent, behaves the same as _self. _top: Load into the top-level browsing context (i.e., the browsing context that is an ancestor of the current one and has no parent). If no parent, behaves the same as _self. This value can be overridden by a formtarget attribute on a <button>, <input type=\"submit\">, or <input type=\"image\"> element. Note: Setting target=\"_blank\" on <form> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener.",
 					"type": "Target"
 				}
 			]
@@ -11997,7 +11997,7 @@
 				},
 				{
 					"name": "alt",
-					"description": "Defines an alternative text description of the image. Note Browsers do not always display images. There are a number of situations in which a browser might not display images, such as: Non-visual browsers (such as those used by people with visual impairments) The user chooses not to display images (saving bandwidth, privacy reasons) The image is invalid or an unsupported type In these cases, the browser may replace the image with the text in the element's alt attribute. For these reasons and others, provide a useful value for alt whenever possible. Omitting alt altogether indicates that the image is a key part of the content and no textual equivalent is available. Setting this attribute to an empty string (alt=\"\") indicates that this image is not a key part of the content (it’s decoration or a tracking pixel), and that non-visual browsers may omit it from rendering. Visual browsers will also hide the broken image icon if the alt is empty and the image failed to display. This attribute is also used when copying and pasting the image to text, or saving a linked image to a bookmark.",
+					"description": "Defines an alternative text description of the image. Note: Browsers do not always display images. There are a number of situations in which a browser might not display images, such as: Non-visual browsers (such as those used by people with visual impairments) The user chooses not to display images (saving bandwidth, privacy reasons) The image is invalid or an unsupported type In these cases, the browser may replace the image with the text in the element's alt attribute. For these reasons and others, provide a useful value for alt whenever possible. Omitting alt altogether indicates that the image is a key part of the content and no textual equivalent is available. Setting this attribute to an empty string (alt=\"\") indicates that this image is not a key part of the content (it’s decoration or a tracking pixel), and that non-visual browsers may omit it from rendering. Visual browsers will also hide the broken image icon if the alt is empty and the image failed to display. This attribute is also used when copying and pasting the image to text, or saving a linked image to a bookmark.",
 					"type": "String"
 				},
 				{
@@ -12037,7 +12037,7 @@
 				},
 				{
 					"name": "ismap",
-					"description": "This Boolean attribute indicates that the image is part of a server-side map. If so, the coordinates where the user clicked on the image are sent to the server. Note Note: This attribute is allowed only if the <img> element is a descendant of an <a> element with a valid href attribute. This gives users without pointing devices a fallback destination.",
+					"description": "This Boolean attribute indicates that the image is part of a server-side map. If so, the coordinates where the user clicked on the image are sent to the server. Note: Note: This attribute is allowed only if the <img> element is a descendant of an <a> element with a valid href attribute. This gives users without pointing devices a fallback destination.",
 					"type": "Boolean",
 					"condition": {
 						"ancestor": "a[href]"
@@ -12045,7 +12045,7 @@
 				},
 				{
 					"name": "loading",
-					"description": "Indicates how the browser should load the image: eager: Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy: Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. The intent is to avoid the network and storage bandwidth needed to handle the image until it's reasonably certain that it will be needed. This generally improves the performance of the content in most typical use cases. Note Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when.",
+					"description": "Indicates how the browser should load the image: eager: Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy: Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. The intent is to avoid the network and storage bandwidth needed to handle the image until it's reasonably certain that it will be needed. This generally improves the performance of the content in most typical use cases. Note: Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when.",
 					"experimental": true,
 					"type": "String",
 					"enum": ["eager", "lazy"]
@@ -12053,7 +12053,7 @@
 				{
 					"name": "longdesc",
 					"type": "String",
-					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG’s HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
+					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG’s HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
 					"deprecated": true
 				},
 				{
@@ -12085,7 +12085,7 @@
 				},
 				{
 					"name": "usemap",
-					"description": "The partial URL (starting with #) of an image map associated with the element. Note You cannot use this attribute if the <img> element is inside an <a> or <button> element.",
+					"description": "The partial URL (starting with #) of an image map associated with the element. Note: You cannot use this attribute if the <img> element is inside an <a> or <button> element.",
 					"type": "URLHash",
 					"condition": {
 						"ancestor": ":not(a):not(button)"
@@ -12329,7 +12329,7 @@
 				},
 				{
 					"name": "alt",
-					"description": "Valid for the image button only, the alt attribute provides alternative text for the image, displaying the value of the attribute if the image src is missing or otherwise fails to load. See the image input type.",
+					"description": "Valid for the image button only, the alt attribute provides alternative text for the image, displaying the value of the attribute if the image scr is missing or otherwise fails to load. See the image input type.",
 					"type": "String",
 					"condition": {
 						"self": "[type=image]"
@@ -12596,7 +12596,7 @@
 				},
 				{
 					"name": "placeholder",
-					"description": "The placeholder attribute is a string that provides a brief hint to the user as to what kind of information is expected in the field. It should be a word or short phrase that provides a hint as to the expected type of data, rather than an explanation or prompt. The text must not include carriage returns or line feeds. So for example if a field is expected to capture a user's first name, and its label is \"First Name\", a suitable placeholder might be \"e.g. Mustafa\". Note: The placeholder attribute is not as semantically useful as other ways to explain your form, and can cause unexpected technical issues with your content. See Labels in <input>: The Input (Form Input) element for more information.",
+					"description": "The placeholder attribute is a string that provides a brief hint to the user as to what kind of information is expected in the field. It should be a word or short phrase that provides a hint as to the expected type of data, rather than an explanation or prompt. The text must not include carriage returns or line feeds. So for example if a field is expected to capture a user's first name, and its label is \"First Name\", a suitable placeholder might be \"e.g. Mustafa\". Note: The placeholder attribute is not as semantically useful as other ways to explain your form, and can cause unexpected technical issues with your content. See Labels for more information.",
 					"type": "String",
 					"condition": {
 						"self": [
@@ -14620,7 +14620,7 @@
 				{
 					"name": "nonce",
 					"type": "String",
-					"description": "A cryptographic nonce (number used once) to whitelist scripts in a script-src Content-Security-Policy. The server must generate a unique nonce value each time it transmits a policy. It is critical to provide a nonce that cannot be guessed as bypassing a resource's policy is otherwise trivial."
+					"description": "A cryptographic nonce (number used once) to allow scripts in a script-src Content-Security-Policy. The server must generate a unique nonce value each time it transmits a policy. It is critical to provide a nonce that cannot be guessed as bypassing a resource's policy is otherwise trivial."
 				},
 				{
 					"name": "referrerpolicy",
@@ -15070,7 +15070,7 @@
 				{
 					"name": "nonce",
 					"type": "String",
-					"description": "A cryptographic nonce (number used once) used to whitelist inline styles in a style-src Content-Security-Policy. The server must generate a unique nonce value each time it transmits a policy. It is critical to provide a nonce that cannot be guessed as bypassing a resource’s policy is otherwise trivial."
+					"description": "A cryptographic nonce (number used once) used to allow inline styles in a style-src Content-Security-Policy. The server must generate a unique nonce value each time it transmits a policy. It is critical to provide a nonce that cannot be guessed as bypassing a resource’s policy is otherwise trivial."
 				},
 				{
 					"name": "scoped",
@@ -16229,7 +16229,7 @@
 				},
 				{
 					"name": "autoplay",
-					"description": "A Boolean attribute; if specified, the video automatically begins to play back as soon as it can do so without stopping to finish loading the data. Note Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay. To disable video autoplay, autoplay=\"false\" will not work; the video will autoplay if the attribute is there in the <video> tag at all. To remove autoplay, the attribute needs to be removed altogether. In some browsers (e.g. Chrome 70.0) autoplay doesn't work if no muted attribute is present.",
+					"description": "A Boolean attribute; if specified, the video automatically begins to play back as soon as it can do so without stopping to finish loading the data. Note: Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay. To disable video autoplay, autoplay=\"false\" will not work; the video will autoplay if the attribute is there in the <video> tag at all. To remove autoplay, the attribute needs to be removed altogether. In some browsers (e.g. Chrome 70.0) autoplay doesn't work if no muted attribute is present.",
 					"type": "Boolean"
 				},
 				{
@@ -16288,7 +16288,7 @@
 				},
 				{
 					"name": "preload",
-					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience with regards to what content is loaded before the video is played. It may have one of the following values: none: Indicates that the video should not be preloaded. metadata: Indicates that only video metadata (e.g. length) is fetched. auto: Indicates that the whole video file can be downloaded, even if the user is not expected to use it. empty string: Synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the video for playback. The specification does not force the browser to follow the value of this attribute; it is a mere hint.",
+					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience with regards to what content is loaded before the video is played. It may have one of the following values: none: Indicates that the video should not be preloaded. metadata: Indicates that only video metadata (e.g. length) is fetched. auto: Indicates that the whole video file can be downloaded, even if the user is not expected to use it. empty string: Synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the video for playback. The specification does not force the browser to follow the value of this attribute; it is a mere hint.",
 					"type": "String",
 					"enum": ["none", "metadata", "auto", ""]
 				},
