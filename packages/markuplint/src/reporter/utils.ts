@@ -28,3 +28,10 @@ export function space(str: string) {
 export function invisibleSpace(str: string) {
 	return str.replace(/\t/g, $0 => '    ').replace(/./g, $0 => ' ');
 }
+
+export function messageToString(message: string, reason?: string) {
+	if (!reason) {
+		return message;
+	}
+	return `${message} / ${reason}`;
+}
