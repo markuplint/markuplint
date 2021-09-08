@@ -1,4 +1,4 @@
-import { invisibleSpace, markuplint, p, space, w } from './utils';
+import { invisibleSpace, markuplint, messageToString, p, space, w } from './utils';
 import { CLIOptions } from '../cli/bootstrap';
 import { MLResultInfo } from '../types';
 import c from 'cli-color';
@@ -16,7 +16,8 @@ export function standardReporter(results: MLResultInfo, options: CLIOptions) {
 	for (const violation of results.violations) {
 		sizes.line = Math.max(sizes.line, violation.line.toString(10).length);
 		sizes.col = Math.max(sizes.col, violation.col.toString(10).length);
-		sizes.meg = Math.max(sizes.meg, w(violation.message));
+		const meg = messageToString(violation.message, violation.reason);
+		sizes.meg = Math.max(sizes.meg, w(meg));
 	}
 
 	const out: string[] = [];
@@ -30,10 +31,11 @@ export function standardReporter(results: MLResultInfo, options: CLIOptions) {
 			const before = line.substring(0, violation.col - 1);
 			const after = line.substring(violation.col - 1 + violation.raw.length);
 			const logger = violation.severity === 'error' ? loggerError : loggerWarning;
+			const meg = messageToString(violation.message, violation.reason);
 
 			out.push(
 				`<${markuplint}> ${logger(
-					`${violation.severity}: ${violation.message} (${violation.ruleId}) ${c.underline(
+					`${violation.severity}: ${meg} (${violation.ruleId}) ${c.underline(
 						`${results.filePath}:${violation.line}:${violation.col}`,
 					)}`,
 				)}`,

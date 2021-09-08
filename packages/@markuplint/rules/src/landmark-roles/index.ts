@@ -1,4 +1,4 @@
-import { Element, Result, createRule } from '@markuplint/ml-core';
+import { Element, createRule } from '@markuplint/ml-core';
 
 type Options = {
 	ignoreRoles: Roles[];
@@ -33,21 +33,19 @@ export default createRule<boolean, Options>({
 		ignoreRoles: [],
 		labelEachArea: true,
 	},
-	async verify(document, translate) {
-		if (document.isFragment) {
-			return [];
+	async verify(context) {
+		if (context.document.isFragment) {
+			return;
 		}
 
-		const reports: Result[] = [];
-
 		const roles: RoleSet = {
-			complementary: document.matchNodes(selectors.complementary.join(',')),
-			contentinfo: document.matchNodes(selectors.contentinfo.join(',')),
-			form: document.matchNodes(selectors.form.join(',')),
-			banner: document.matchNodes(selectors.banner.join(',')),
-			main: document.matchNodes(selectors.main.join(',')),
-			navigation: document.matchNodes(selectors.navigation.join(',')),
-			region: document.matchNodes(selectors.region.join(',')),
+			complementary: context.document.matchNodes(selectors.complementary.join(',')),
+			contentinfo: context.document.matchNodes(selectors.contentinfo.join(',')),
+			form: context.document.matchNodes(selectors.form.join(',')),
+			banner: context.document.matchNodes(selectors.banner.join(',')),
+			main: context.document.matchNodes(selectors.main.join(',')),
+			navigation: context.document.matchNodes(selectors.navigation.join(',')),
+			region: context.document.matchNodes(selectors.region.join(',')),
 		};
 
 		/**
@@ -62,7 +60,7 @@ export default createRule<boolean, Options>({
 		 * > - nav
 		 * > - section
 		 */
-		const headers = document.matchNodes('header').filter(header => {
+		const headers = context.document.matchNodes('header').filter(header => {
 			return !header.closest('article, aside, main, nav, section');
 		});
 		roles.banner.push(...headers);
@@ -79,7 +77,7 @@ export default createRule<boolean, Options>({
 		 * > - nav
 		 * > - section
 		 */
-		const footers = document.matchNodes('footer').filter(footer => {
+		const footers = context.document.matchNodes('footer').filter(footer => {
 			return !footer.closest('article, aside, main, nav, section');
 		});
 		roles.contentinfo.push(...footers);
@@ -100,12 +98,9 @@ export default createRule<boolean, Options>({
 				}
 
 				if (el.isDescendantByUUIDList(uuidList)) {
-					reports.push({
-						severity: el.rule.severity,
-						message: translate('{0} should be {1}', role, 'top level'),
-						line: el.startLine,
-						col: el.startCol,
-						raw: el.raw,
+					context.report({
+						scope: el,
+						message: context.translate('{0} should be {1}', role, 'top level'),
 					});
 				}
 			}
@@ -128,21 +123,16 @@ export default createRule<boolean, Options>({
 				}
 
 				if (!hasLabel(el)) {
-					reports.push({
-						severity: el.rule.severity,
-						message: translate(
+					context.report({
+						scope: el,
+						message: context.translate(
 							'Should have a unique label because {0} landmarks were markup more than once on a page',
 							role,
 						),
-						line: el.startLine,
-						col: el.startCol,
-						raw: el.raw,
 					});
 				}
 			}
 		}
-
-		return reports;
 	},
 });
 

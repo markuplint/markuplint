@@ -1,5 +1,5 @@
 import { ContentModel, PermittedStructuresSchema } from '@markuplint/ml-spec';
-import { Element, Result, createRule } from '@markuplint/ml-core';
+import { Element, createRule } from '@markuplint/ml-core';
 import ExpGenerator from './permitted-content.spec-to-regexp';
 import { htmlSpec } from '../helpers';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
@@ -17,10 +17,9 @@ export default createRule<TagRule[], Options>({
 	defaultOptions: {
 		ignoreHasMutableChildren: true,
 	},
-	async verify(document, translate) {
-		const reports: Result[] = [];
+	async verify(context) {
 		let idCounter = 0;
-		await document.walkOn('Element', async node => {
+		await context.document.walkOn('Element', async node => {
 			if (!node.rule.value) {
 				return;
 			}
@@ -36,16 +35,13 @@ export default createRule<TagRule[], Options>({
 
 			if (spec) {
 				if (spec.ancestor && !node.closest(spec.ancestor)) {
-					reports.push({
-						severity: node.rule.severity,
-						message: translate(
+					context.report({
+						scope: node,
+						message: context.translate(
 							'The {0} element must be descendant of the {1} element',
 							node.nodeName,
 							spec.ancestor,
 						),
-						line: node.startLine,
-						col: node.startCol,
-						raw: node.raw,
 					});
 					return;
 				}
@@ -67,9 +63,9 @@ export default createRule<TagRule[], Options>({
 								const exp = expGen.specToRegExp(conditional.contents, parentExp);
 								const conditionalResult = match(exp, childNodes, false);
 								if (!conditionalResult) {
-									reports.push({
-										severity: node.rule.severity,
-										message: translate(
+									context.report({
+										scope: node,
+										message: context.translate(
 											'Invalid content of the {0} element in {1}',
 											node.nodeName,
 											'the HTML specification',
@@ -81,8 +77,12 @@ export default createRule<TagRule[], Options>({
 									break;
 								}
 							} catch (e) {
-								// eslint-disable-next-line no-console
-								console.warn(node.raw, 'conditional', conditional, e.message);
+								if (e instanceof Error) {
+									// eslint-disable-next-line no-console
+									console.warn(node.raw, 'conditional', conditional, e.message);
+								} else {
+									throw e;
+								}
 							}
 						}
 					}
@@ -94,21 +94,22 @@ export default createRule<TagRule[], Options>({
 						const specResult = match(exp, childNodes, false);
 
 						if (!specResult) {
-							reports.push({
-								severity: node.rule.severity,
-								message: translate(
+							context.report({
+								scope: node,
+								message: context.translate(
 									'Invalid content of the {0} element in {1}',
 									node.nodeName,
 									'the HTML specification',
 								),
-								line: node.startLine,
-								col: node.startCol,
-								raw: node.raw,
 							});
 						}
 					} catch (e) {
-						// eslint-disable-next-line no-console
-						console.warn(node.raw, 'HTML Spec', e.message);
+						if (e instanceof Error) {
+							// eslint-disable-next-line no-console
+							console.warn(node.raw, 'HTML Spec', e.message);
+						} else {
+							throw e;
+						}
 					}
 				}
 			}
@@ -125,9 +126,13 @@ export default createRule<TagRule[], Options>({
 					const r = match(exp, childNodes, node.isCustomElement);
 
 					if (!r) {
-						reports.push({
-							severity: node.rule.severity,
-							message: translate('Invalid content of the {0} element in {1}', node.nodeName, 'settings'),
+						context.report({
+							scope: node,
+							message: context.translate(
+								'Invalid content of the {0} element in {1}',
+								node.nodeName,
+								'settings',
+							),
 							line: node.startLine,
 							col: node.startCol,
 							raw: node.raw,
@@ -135,14 +140,17 @@ export default createRule<TagRule[], Options>({
 						return;
 					}
 				} catch (e) {
-					// eslint-disable-next-line no-console
-					console.warn(node.raw, 'rule', rule, e.message);
+					if (e instanceof Error) {
+						// eslint-disable-next-line no-console
+						console.warn(node.raw, 'rule', rule, e.message);
+					} else {
+						throw e;
+					}
 				}
 			}
 		});
 
 		expMapOnNodeId.clear();
-		return reports;
 	},
 });
 

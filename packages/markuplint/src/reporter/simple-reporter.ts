@@ -1,4 +1,4 @@
-import { markuplint, p, w } from './utils';
+import { markuplint, messageToString, p, w } from './utils';
 import { CLIOptions } from '../cli/bootstrap';
 import { MLResultInfo } from '../types';
 import c from 'cli-color';
@@ -16,7 +16,8 @@ export function simpleReporter(results: MLResultInfo, options: CLIOptions) {
 	for (const violation of results.violations) {
 		sizes.line = Math.max(sizes.line, violation.line.toString(10).length);
 		sizes.col = Math.max(sizes.col, violation.col.toString(10).length);
-		sizes.meg = Math.max(sizes.meg, w(violation.message));
+		const meg = messageToString(violation.message, violation.reason);
+		sizes.meg = Math.max(sizes.meg, w(meg));
 	}
 
 	const out: string[] = [];
@@ -25,9 +26,10 @@ export function simpleReporter(results: MLResultInfo, options: CLIOptions) {
 		out.push(`<${markuplint}> ${c.underline(results.filePath)}: ${loggerError('✗')}`);
 		for (const violation of results.violations) {
 			const s = violation.severity === 'error' ? loggerError('✖') : loggerWarning('⚠️');
+			const meg = messageToString(violation.message, violation.reason);
 			out.push(
 				`  ${c.cyan(`${p(violation.line, sizes.line, true)}:${p(violation.col, sizes.col)}`)} ${s}  ${p(
-					violation.message,
+					meg,
 					sizes.meg,
 				)} ${c.xterm(8)(violation.ruleId)} `,
 			);

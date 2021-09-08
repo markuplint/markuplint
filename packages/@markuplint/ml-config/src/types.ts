@@ -38,6 +38,7 @@ export type RuleConfig<T extends RuleConfigValue, O = void> = {
 	severity?: Severity;
 	value?: T;
 	option?: O;
+	reason?: string;
 };
 
 export type Severity = 'error' | 'warning' | 'info';
@@ -60,16 +61,35 @@ export interface ChildNodeRule {
 	rules?: Rules;
 }
 
-export interface Result {
-	severity: Severity;
+export type Report<T extends RuleConfigValue, O = null> = Report1<T, O> | Report2 | (Report1<T, O> & Report2);
+
+export type Report1<T extends RuleConfigValue, O = null> = {
+	message: string;
+	scope: Scope<T, O>;
+};
+
+export type Report2 = {
 	message: string;
 	line: number;
 	col: number;
 	raw: string;
-}
+};
 
-export interface Violation extends Result {
+export type Scope<T extends RuleConfigValue, O = null> = {
+	rule: RuleInfo<T, O>;
+	startLine: number;
+	startCol: number;
+	raw: string;
+};
+
+export interface Violation {
 	ruleId: string;
+	severity: Severity;
+	message: string;
+	reason?: string;
+	line: number;
+	col: number;
+	raw: string;
 }
 
 export interface RuleInfo<T extends RuleConfigValue, O = null> {
@@ -77,6 +97,7 @@ export interface RuleInfo<T extends RuleConfigValue, O = null> {
 	severity: Severity;
 	value: T;
 	option: O;
+	reason?: string;
 }
 
 export type Nullable<T> = T | null | undefined;

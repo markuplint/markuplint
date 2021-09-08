@@ -1,4 +1,4 @@
-import { Result, createRule } from '@markuplint/ml-core';
+import { createRule } from '@markuplint/ml-core';
 
 export type Value = 'lower' | 'upper';
 
@@ -7,16 +7,15 @@ export default createRule<Value, null>({
 	defaultLevel: 'warning',
 	defaultValue: 'lower',
 	defaultOptions: null,
-	async verify(document, translate) {
-		const reports: Result[] = [];
-		await document.walk(async node => {
+	async verify(context) {
+		await context.document.walk(async node => {
 			if ('fixNodeName' in node) {
 				if (node.isForeignElement || node.isCustomElement) {
 					return;
 				}
 				const ms = node.rule.severity === 'error' ? 'must' : 'should';
 				const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
-				const message = translate(
+				const message = context.translate(
 					`{0} of {1} ${ms} be {2}`,
 					'Tag name',
 					'HTML elements',
@@ -24,8 +23,8 @@ export default createRule<Value, null>({
 				);
 				if (deny.test(node.nodeName)) {
 					const loc = node.getNameLocation();
-					reports.push({
-						severity: node.rule.severity,
+					context.report({
+						scope: node,
 						message,
 						line: loc.line,
 						col: loc.col,
@@ -34,9 +33,8 @@ export default createRule<Value, null>({
 				}
 			}
 		});
-		return reports;
 	},
-	async fix(document) {
+	async fix({ document }) {
 		await document.walk(async node => {
 			if ('fixNodeName' in node) {
 				if (node.isForeignElement || node.isCustomElement) {

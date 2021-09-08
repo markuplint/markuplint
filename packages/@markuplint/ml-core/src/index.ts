@@ -1,4 +1,4 @@
-export { RuleInfo, Result, RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
+export { RuleInfo, RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
 export * from './convert-ruleset';
 export * from './create-rule';
 export * from './ml-core';

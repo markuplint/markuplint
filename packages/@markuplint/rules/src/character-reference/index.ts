@@ -1,4 +1,4 @@
-import { Result, createRule, getLocationFromChars } from '@markuplint/ml-core';
+import { createRule, getLocationFromChars } from '@markuplint/ml-core';
 
 export type Value = boolean;
 
@@ -9,19 +9,18 @@ export default createRule<Value>({
 	name: 'character-reference',
 	defaultValue: true,
 	defaultOptions: null,
-	async verify(document, translate) {
-		const reports: Result[] = [];
-		const targetNodes: Result[] = [];
+	async verify(context) {
+		const targetNodes: Parameters<typeof context['report']>[0][] = [];
 
-		await document.walkOn('Text', async node => {
+		await context.document.walkOn('Text', async node => {
 			if (node.parentNode && ignoreParentElement.includes(node.parentNode.nodeName.toLowerCase())) {
 				return;
 			}
 			const severity = node.rule.severity;
 			const ms = severity === 'error' ? 'must' : 'should';
-			const message = translate(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
+			const message = context.translate(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			targetNodes.push({
-				severity,
+				scope: node,
 				line: node.startLine,
 				col: node.startCol,
 				raw: node.raw,
@@ -29,10 +28,10 @@ export default createRule<Value>({
 			});
 		});
 
-		await document.walkOn('Element', async node => {
+		await context.document.walkOn('Element', async node => {
 			const severity = node.rule.severity;
 			const ms = severity === 'error' ? 'must' : 'should';
-			const message = translate(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
+			const message = context.translate(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			for (const attr of node.attributes) {
 				if (
 					attr.attrType === 'ps-attr' ||
@@ -43,7 +42,7 @@ export default createRule<Value>({
 				}
 				const value = attr.getValue();
 				targetNodes.push({
-					severity,
+					scope: node,
 					line: value.line,
 					col: value.col,
 					raw: value.raw,
@@ -53,16 +52,17 @@ export default createRule<Value>({
 		});
 
 		for (const targetNode of targetNodes) {
+			if (!('scope' in targetNode && 'line' in targetNode)) {
+				continue;
+			}
 			const escapedText = targetNode.raw.replace(/&(?:[a-z]+|#[0-9]+|x[0-9]);/gi, $0 => '*'.repeat($0.length));
 			getLocationFromChars(defaultChars, escapedText, targetNode.line, targetNode.col).forEach(location => {
-				reports.push({
-					severity: targetNode.severity,
+				context.report({
+					scope: targetNode.scope,
 					message: targetNode.message,
 					...location,
 				});
 			});
 		}
-
-		return reports;
 	},
 });
