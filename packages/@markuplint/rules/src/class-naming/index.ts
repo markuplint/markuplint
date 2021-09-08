@@ -1,4 +1,4 @@
-import { Result, createRule } from '@markuplint/ml-core';
+import { createRule } from '@markuplint/ml-core';
 import { match } from '../helpers';
 
 export type Value = string | string[] | null;
@@ -8,9 +8,8 @@ export default createRule<Value>({
 	defaultLevel: 'warning',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, translate) {
-		const reports: Result[] = [];
-		await document.walkOn('Element', async node => {
+	async verify(context) {
+		await context.document.walkOn('Element', async node => {
 			if (node.rule.value) {
 				const classPatterns = Array.isArray(node.rule.value) ? node.rule.value : [node.rule.value];
 				const attrs = node.getAttributeToken('class');
@@ -25,9 +24,9 @@ export default createRule<Value>({
 						.filter(c => c);
 					for (const className of classList) {
 						if (!classPatterns.some(pattern => match(className, pattern))) {
-							reports.push({
-								severity: node.rule.severity,
-								message: translate(
+							context.report({
+								scope: node,
+								message: context.translate(
 									'{0} {1} is unmatched patterns ({2})',
 									`"${className}"`,
 									'class name',
@@ -42,6 +41,5 @@ export default createRule<Value>({
 				}
 			}
 		});
-		return reports;
 	},
 });

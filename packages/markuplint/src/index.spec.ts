@@ -1,5 +1,5 @@
-import { Result, createRule } from '@markuplint/ml-core';
 import { mlTest, mlTestFile } from './testing-tool';
+import { createRule } from '@markuplint/ml-core';
 import { setGlobal } from './global-settings';
 
 setGlobal({
@@ -18,6 +18,7 @@ describe('basic test', () => {
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
+				reason: 'For consistency',
 				line: 2,
 				col: 7,
 				raw: 'lang=en',
@@ -26,6 +27,7 @@ describe('basic test', () => {
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
+				reason: 'Another reason',
 				line: 4,
 				col: 8,
 				raw: 'charset=UTF-8',
@@ -34,6 +36,7 @@ describe('basic test', () => {
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
+				reason: 'Another reason',
 				line: 5,
 				col: 8,
 				raw: 'name=viewport',
@@ -42,6 +45,7 @@ describe('basic test', () => {
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
+				reason: 'Another reason',
 				line: 5,
 				col: 22,
 				raw: "content='width=device-width, initial-scale=1.0'",
@@ -50,6 +54,7 @@ describe('basic test', () => {
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
+				reason: 'Another reason',
 				line: 6,
 				col: 8,
 				raw: 'http-equiv=X-UA-Compatible',
@@ -58,6 +63,7 @@ describe('basic test', () => {
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
+				reason: 'Another reason',
 				line: 6,
 				col: 35,
 				raw: 'content=ie=edge',
@@ -100,33 +106,27 @@ describe('basic test', () => {
 });
 
 describe('async and sync rules', () => {
-	const asyncReports: Result[] = [
-		{
-			severity: 'error',
-			message: 'async error test',
-			line: 1,
-			col: 1,
-			raw: 'content',
-		},
-	];
+	const asyncReport = {
+		message: 'async error test',
+		line: 1,
+		col: 1,
+		raw: 'content',
+	};
 
-	const syncReports: Result[] = [
-		{
-			severity: 'error',
-			message: 'sync error test',
-			line: 1,
-			col: 1,
-			raw: 'content',
-		},
-	];
+	const syncReport = {
+		message: 'sync error test',
+		line: 1,
+		col: 1,
+		raw: 'content',
+	};
 
 	const asyncRule = createRule({
 		name: 'test-async-rule',
 		defaultValue: null,
 		defaultOptions: null,
-		async verify(document, translate, rule) {
-			await document.walk(async node => {});
-			return asyncReports;
+		async verify(context) {
+			await context.document.walk(async node => {});
+			context.report(asyncReport);
 		},
 	});
 
@@ -134,9 +134,9 @@ describe('async and sync rules', () => {
 		name: 'test-sync-rule',
 		defaultValue: null,
 		defaultOptions: null,
-		verify(document, translate, rule) {
-			document.walk(node => {});
-			return syncReports;
+		verify(context) {
+			context.document.walk(node => {});
+			context.report(syncReport);
 		},
 	});
 
@@ -150,7 +150,7 @@ describe('async and sync rules', () => {
 			},
 			[asyncRule],
 		);
-		expect(violations).toMatchObject(asyncReports);
+		expect(violations).toMatchObject([asyncReport]);
 	});
 
 	it('works correctly with sync rule', async () => {
@@ -163,7 +163,7 @@ describe('async and sync rules', () => {
 			},
 			[syncRule],
 		);
-		expect(violations).toMatchObject(syncReports);
+		expect(violations).toMatchObject([syncReport]);
 	});
 
 	it('works correctly with async and sync mixed rules', async () => {
@@ -178,6 +178,6 @@ describe('async and sync rules', () => {
 			[asyncRule, syncRule],
 		);
 		// This test also ensures that rules are executed sequentially
-		expect(violations).toMatchObject([...asyncReports, ...syncReports]);
+		expect(violations).toMatchObject([asyncReport, syncReport]);
 	});
 });

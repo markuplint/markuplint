@@ -18,7 +18,9 @@
 		"attr-equal-space-after": true,
 		"attr-equal-space-before": true,
 		"attr-spacing": true,
-		"attr-value-quotes": true,
+		"attr-value-quotes": {
+			"reason": "For consistency"
+		},
 		"case-sensitive-attr-name": true,
 		"case-sensitive-tag-name": true,
 		"indentation": "tab",
@@ -42,6 +44,14 @@
 					"option": {
 						"indent-nested-nodes": "never"
 					}
+				}
+			}
+		},
+		{
+			"tagName": "meta",
+			"rules": {
+				"attr-value-quotes": {
+					"reason": "Another reason"
 				}
 			}
 		},

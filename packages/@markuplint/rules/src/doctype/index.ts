@@ -11,37 +11,28 @@ export default createRule<Value, Option>({
 	defaultOptions: {
 		denyObsolateType: true,
 	},
-	async verify(document, translate, rule) {
-		if (document.isFragment) {
-			return [];
+	async verify(context) {
+		if (context.document.isFragment) {
+			return;
 		}
 
-		const doctype = document.doctype;
+		const doctype = context.document.doctype;
 
 		if (!doctype) {
-			return [
-				{
-					severity: rule.severity,
-					message: translate('Required {0}', 'doctype'),
-					line: 1,
-					col: 1,
-					raw: '',
-				},
-			];
+			context.report({
+				message: context.translate('Required {0}', 'doctype'),
+				line: 1,
+				col: 1,
+				raw: '',
+			});
+			return;
 		}
 
 		if ((doctype.name.toLowerCase() === 'html' && doctype.publicId) || doctype.systemId) {
-			return [
-				{
-					severity: rule.severity,
-					message: translate('Never {0} {1}', 'declarate', 'obsolete doctype'),
-					line: doctype.startLine,
-					col: doctype.startCol,
-					raw: doctype.raw,
-				},
-			];
+			context.report({
+				scope: doctype,
+				message: context.translate('Never {0} {1}', 'declarate', 'obsolete doctype'),
+			});
 		}
-
-		return [];
 	},
 });

@@ -21,9 +21,9 @@
 
 ## †2 Merge Rule Details
 
-| 0ptions     | Type            | Mergeing                                       |
-| ----------- | --------------- | ---------------------------------------------- |
-| value       | †1              | †1                                             |
-| severity    | Enum            | Merge(Overwrite)                               |
-| message(v2) | String / Object | Deep Merge                                     |
-| option      | Object          | Deep Merge(**An array is replaced, no added**) |
+| 0ptions  | Type   | Mergeing                                       |
+| -------- | ------ | ---------------------------------------------- |
+| value    | †1     | †1                                             |
+| severity | Enum   | Merge(Overwrite)                               |
+| option   | Object | Deep Merge(**An array is replaced, no added**) |
+| reason   | String | Merge(Overwrite)                               |

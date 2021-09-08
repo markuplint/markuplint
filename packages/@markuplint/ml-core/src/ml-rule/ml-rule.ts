@@ -1,6 +1,7 @@
 import { RuleConfig, RuleConfigValue, RuleInfo, Severity, Violation } from '@markuplint/ml-config';
 import Document from '../ml-dom/document';
 import { I18n } from '@markuplint/i18n';
+import { MLRuleContext } from './ml-rule-context';
 import { MLRuleOptions } from './types';
 
 export class MLRule<T extends RuleConfigValue, O = null> {
@@ -41,34 +42,69 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		this.#f = o.fix;
 	}
 
-	async verify(document: Document<T, O>, i18n: I18n, rule: RuleInfo<T, O>): Promise<Violation[]> {
+	async verify(document: Document<T, O>, i18n: I18n, globalRule: RuleInfo<T, O>): Promise<Violation[]> {
 		if (!this.#v) {
 			return [];
 		}
-
 		document.setRule(this);
-		const results = await this.#v(document, i18n.translator(), rule);
-		document.setRule(null);
 
-		return results.map<Violation>(result => {
-			return {
-				severity: result.severity,
-				message: result.message,
-				line: result.line,
-				col: result.col,
-				raw: result.raw,
+		const context = new MLRuleContext(document, i18n.translator(), globalRule);
+		await this.#v(context);
+
+		const violation = context.reports.map<Violation>(report => {
+			if ('scope' in report) {
+				let line = report.scope.startLine;
+				let col = report.scope.startCol;
+				let raw = report.scope.raw;
+				if ('line' in report) {
+					line = report.line;
+					col = report.col;
+					raw = report.raw;
+				}
+				const violation: Violation = {
+					severity: report.scope.rule.severity,
+					message: report.message,
+					line,
+					col,
+					raw,
+					ruleId: this.name,
+				};
+				if (report.scope.rule.reason || globalRule.reason) {
+					violation.reason = report.scope.rule.reason || globalRule.reason;
+				}
+				return violation;
+			}
+
+			const violation: Violation = {
+				severity: globalRule.severity,
+				message: report.message,
+				line: report.line,
+				col: report.col,
+				raw: report.raw,
 				ruleId: this.name,
 			};
+			if (globalRule.reason) {
+				violation.reason = globalRule.reason;
+			}
+			return violation;
 		});
+
+		document.setRule(null);
+
+		return violation;
 	}
 
-	async fix(document: Document<T, O>, rule: RuleInfo<T, O>): Promise<void> {
+	async fix(document: Document<T, O>, globalRule: RuleInfo<T, O>): Promise<void> {
 		if (!this.#f) {
 			return;
 		}
 
 		document.setRule(this);
-		await this.#f(document, rule);
+
+		// @ts-ignore TODO: translator
+		const context = new MLRuleContext(document, null, globalRule);
+		await this.#f(context);
+
 		document.setRule(null);
 	}
 
@@ -98,6 +134,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 					  (configSettings.option == null || typeof configSettings.option === 'object')
 					? { ...this.defaultOptions, ...(configSettings.option || {}) }
 					: configSettings.option || this.defaultOptions,
+				reason: configSettings.reason,
 			};
 		}
 		return {

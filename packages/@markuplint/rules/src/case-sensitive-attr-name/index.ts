@@ -1,4 +1,4 @@
-import { Result, createRule } from '@markuplint/ml-core';
+import { createRule } from '@markuplint/ml-core';
 import { getAttrSpecs } from '../helpers';
 
 export type Value = 'no-upper' | 'no-lower';
@@ -8,17 +8,21 @@ export default createRule<Value, null>({
 	defaultLevel: 'warning',
 	defaultValue: 'no-upper',
 	defaultOptions: null,
-	async verify(document, translate) {
-		const reports: Result[] = [];
-		await document.walkOn('Element', async node => {
+	async verify(context) {
+		await context.document.walkOn('Element', async node => {
 			if (node.namespaceURI !== 'http://www.w3.org/1999/xhtml' || node.isCustomElement) {
 				return;
 			}
 			const ms = node.rule.severity === 'error' ? 'must' : 'should';
 			const deny = node.rule.value === 'no-upper' ? /[A-Z]/ : /[a-z]/;
 			const cases = node.rule.value === 'no-upper' ? 'lower' : 'upper';
-			const message = translate(`{0} of {1} ${ms} be {2}`, 'Attribute name', 'HTML elements', `${cases}case`);
-			const attrSpecs = getAttrSpecs(node.nodeName.toLowerCase(), document.specs);
+			const message = context.translate(
+				`{0} of {1} ${ms} be {2}`,
+				'Attribute name',
+				'HTML elements',
+				`${cases}case`,
+			);
+			const attrSpecs = getAttrSpecs(node.nodeName.toLowerCase(), context.document.specs);
 
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'ps-attr') {
@@ -42,8 +46,8 @@ export default createRule<Value, null>({
 				}
 
 				if (deny.test(name.raw)) {
-					reports.push({
-						severity: node.rule.severity,
+					context.report({
+						scope: node,
 						message,
 						line: name.line,
 						col: name.col,
@@ -52,9 +56,8 @@ export default createRule<Value, null>({
 				}
 			}
 		});
-		return reports;
 	},
-	async fix(document) {
+	async fix({ document }) {
 		await document.walkOn('Element', async node => {
 			if (node.namespaceURI !== 'http://www.w3.org/1999/xhtml' || node.isCustomElement) {
 				return;

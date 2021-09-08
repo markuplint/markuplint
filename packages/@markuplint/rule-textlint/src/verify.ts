@@ -12,9 +12,9 @@ export const defaultOptions = true;
 
 export const textlintVerify: (
 	...args: Parameters<MLRuleOptions<boolean, Option>['verify']>
-) => Promise<TextlintResult | undefined> = async (document, translate, config) => {
+) => Promise<TextlintResult | undefined> = async ({ document, globalRule }) => {
 	const html = document.toString();
-	const option = config.option;
+	const option = globalRule.option;
 
 	if (typeof option === 'object') {
 		return await lintText(html, option);
