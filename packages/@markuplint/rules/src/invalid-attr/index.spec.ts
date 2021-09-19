@@ -538,16 +538,7 @@ test('React Component', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
-		{
-			ruleId: 'invalid-attr',
-			severity: 'error',
-			line: 1,
-			col: 42,
-			message: 'The "tabindex" attribute is not allowed. Did you mean "tabIndex"?',
-			raw: 'tabindex',
-		},
-	]);
+	expect(r).toStrictEqual([]);
 });
 
 test('React HTML', async () => {

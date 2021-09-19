@@ -38,7 +38,7 @@ export default createRule<true, Option>({
 				const attrName = attr.getName();
 				const name = attrName.potential;
 
-				if (attr.attrType === 'html-attr' && attr.isInvalid) {
+				if (!node.isCustomElement && attr.attrType === 'html-attr' && attr.isInvalid) {
 					const candidate = attr.candidate;
 					const message =
 						`The "${attrName.raw}" attribute is not allowed.` +
