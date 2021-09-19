@@ -46,6 +46,11 @@
 		{
 			"name": "width",
 			"type": "Uint"
+		},
+		{
+			"name": "controlslist",
+			"type": "String",
+			"enum": ["nodownload", "nofullscreen", "noremoteplayback"]
 		}
 	]
 }
