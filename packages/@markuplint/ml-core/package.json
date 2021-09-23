@@ -23,5 +23,8 @@
 		"@markuplint/ml-spec": "^1.7.0",
 		"css-selector-parser": "^1.4.1",
 		"tslib": "^2.3.0"
+	},
+	"devDependencies": {
+		"@markuplint/html-parser": "^1.7.3"
 	}
 }

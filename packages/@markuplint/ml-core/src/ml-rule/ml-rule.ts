@@ -5,10 +5,6 @@ import { MLRuleContext } from './ml-rule-context';
 import { MLRuleOptions } from './types';
 
 export class MLRule<T extends RuleConfigValue, O = null> {
-	static create<T extends RuleConfigValue, O = null>(options: MLRuleOptions<T, O>) {
-		return new MLRule<T, O>(options);
-	}
-
 	readonly name: string;
 	readonly defaultServerity: Severity;
 	readonly defaultValue: T;
@@ -33,7 +29,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		return this.#f;
 	}
 
-	private constructor(o: MLRuleOptions<T, O>) {
+	constructor(o: MLRuleOptions<T, O>) {
 		this.name = o.name;
 		this.defaultServerity = o.defaultLevel || 'error';
 		this.defaultValue = o.defaultValue;
