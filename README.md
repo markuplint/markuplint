@@ -73,6 +73,14 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmarkuplint%2Fmarkuplint.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmarkuplint%2Fmarkuplint?ref=badge_large)
 
+## Sponsors
+
+[:heart: Sponsor](https://github.com/sponsors/markuplint)
+
+### Personal Supporters
+
+[<img width="36" src="https://avatars.githubusercontent.com/u/6581173?v=4" alt="mikimhk"/>](https://github.com/mikimhk)
+
 ## Thanks
 
 This linter is inspired by:

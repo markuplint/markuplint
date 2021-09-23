@@ -1,6 +1,6 @@
 {
 	"name": "markuplint",
-	"version": "1.11.3",
+	"version": "1.11.4",
 	"description": "A Linter for All Markup Languages.",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
@@ -26,13 +26,13 @@
 	"dependencies": {
 		"@markuplint/file-resolver": "^1.5.0",
 		"@markuplint/html-parser": "^1.7.3",
-		"@markuplint/html-spec": "^1.8.1",
+		"@markuplint/html-spec": "^1.8.2",
 		"@markuplint/i18n": "^1.2.0",
 		"@markuplint/ml-ast": "^1.6.0",
 		"@markuplint/ml-config": "^1.3.0",
 		"@markuplint/ml-core": "^1.9.0",
 		"@markuplint/ml-spec": "^1.7.0",
-		"@markuplint/rules": "^1.10.3",
+		"@markuplint/rules": "^1.10.4",
 		"cli-color": "^2.0.0",
 		"chokidar": "^3.5.2",
 		"detect-installed": "^2.0.4",
