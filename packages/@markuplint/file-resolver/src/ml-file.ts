@@ -77,7 +77,12 @@ async function exist(filePath: string) {
 		await fs.stat(filePath);
 		return true;
 	} catch (err) {
-		if ('code' in err && err.code === 'ENOENT') {
+		if (
+			// @ts-ignore
+			'code' in err &&
+			// @ts-ignore
+			err.code === 'ENOENT'
+		) {
 			return false;
 		}
 		throw err;
