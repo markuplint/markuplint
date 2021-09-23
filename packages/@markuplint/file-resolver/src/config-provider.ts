@@ -160,7 +160,12 @@ function moduleExists(name: string) {
 	try {
 		require.resolve(name);
 	} catch (err) {
-		if (err.code === 'MODULE_NOT_FOUND') {
+		if (
+			// @ts-ignore
+			'code' in err &&
+			// @ts-ignore
+			err.code === 'MODULE_NOT_FOUND'
+		) {
 			return false;
 		}
 		throw err;
