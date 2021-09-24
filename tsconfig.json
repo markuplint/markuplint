@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"module": "commonjs",
-		"target": "es2017",
+		"target": "es2019",
 		"strict": true,
 		"strictNullChecks": true,
 		"strictPropertyInitialization": true,
@@ -10,7 +10,7 @@
 		"esModuleInterop": true,
 		"noImplicitAny": true,
 		"declaration": true,
-		"lib": ["dom", "es2015", "es2016", "es2017", "esnext"],
+		"lib": ["dom", "es2015", "es2016", "es2017", "es2018", "es2019", "esnext"],
 		"importHelpers": true,
 		"skipLibCheck": true,
 		"baseUrl": ".",
