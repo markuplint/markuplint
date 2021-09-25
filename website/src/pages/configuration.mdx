@@ -211,3 +211,153 @@ You can set the `rules` property of this property like the [`rules`](#rules) pro
 	]
 }
 ```
+
+#### `selector`
+
+Support syntax and operators:
+
+| Selctor Type                                     | Code Example                                                                                                                       | Support |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| Universal selector                               | `*`                                                                                                                                | ✅      |
+| Type selector                                    | `div`                                                                                                                              | ✅      |
+| ID selector                                      | `#id`                                                                                                                              | ✅      |
+| Class selector                                   | `.class`                                                                                                                           | ✅      |
+| Attribute selector                               | `[data-attr]`                                                                                                                      | ✅      |
+| Attribute selector, Exact match                  | `[data-attr=value]`                                                                                                                | ✅      |
+| Attribute selector, Include whitespace separated | `[data-attr~=value]`                                                                                                               | ❌      |
+| Attribute selector, Subcode match                | <code>[data-attr\|=value]</code>                                                                                                   | ❌      |
+| Attribute selector, Partial match                | `[data-attr*=value]`                                                                                                               | ✅      |
+| Attribute selector, Forward match                | `[data-attr^=value]`                                                                                                               | ✅      |
+| Attribute selector, Backward match               | `[data-attr$=value]`                                                                                                               | ✅      |
+| Negation pseudo-class                            | `:not(div)`                                                                                                                        | ✅      |
+| Matches-Any pseudo-class                         | `:is(div)`                                                                                                                         | ❌      |
+| Specificity-adjustment pseudo-class              | `:where(div)`                                                                                                                      | ❌      |
+| Relational pseudo-class                          | `:has(div)` `:has(> div)`                                                                                                          | ✅      |
+| Directionality pseudo-class                      | `:dir(ltr)`                                                                                                                        | ❌      |
+| Language pseudo-class                            | `:lang(en)`                                                                                                                        | ❌      |
+| Hyperlink pseudo-class                           | `:any-link`                                                                                                                        | ❌      |
+| Link History pseudo-class                        | `:link` `:visited`                                                                                                                 | ❌      |
+| Local link pseudo-class                          | `:local-link`                                                                                                                      | ❌      |
+| Target pseudo-class                              | `:target`                                                                                                                          | ❌      |
+| Target container pseudo-class                    | `:target-within`                                                                                                                   | ❌      |
+| Reference element pseudo-class                   | `:scope`                                                                                                                           | ❌      |
+| Current-element pseudo-class                     | `:current` `:current(div)`                                                                                                         | ❌      |
+| Past pseudo-class                                | `:past`                                                                                                                            | ❌      |
+| Future pseudo-class                              | `:future`                                                                                                                          | ❌      |
+| Interactive pseudo-class                         | `:active` `:hover` `:focus` `:focus-within` `:focus-visible`                                                                       | ❌      |
+| Enable and disable pseudo-class                  | `:enable` `:disable`                                                                                                               | ❌      |
+| Mutability pseudo-class                          | `:read-write` `:read-only`                                                                                                         | ❌      |
+| Placeholder-shown pseudo-class                   | `:placeholder-shown`                                                                                                               | ❌      |
+| Default-option pseudo-class                      | `:default`                                                                                                                         | ❌      |
+| Selected-option pseudo-class                     | `:checked`                                                                                                                         | ❌      |
+| Indeterminate value pseudo-class                 | `:indeterminate`                                                                                                                   | ❌      |
+| Validity pseudo-class                            | `:valid` `:invalid`                                                                                                                | ❌      |
+| Range pseudo-class                               | `:in-range` `:out-of-range`                                                                                                        | ❌      |
+| Optionality pseudo-class                         | `:required` `:optional`                                                                                                            | ❌      |
+| Empty-Value pseudo-class                         | `:blank`                                                                                                                           | ❌      |
+| User-interaction pseudo-class                    | `:user-invalid`                                                                                                                    | ❌      |
+| Root pseudo-class                                | `:root`                                                                                                                            | ✅      |
+| Empty pseudo-class                               | `:empty`                                                                                                                           | ❌      |
+| Nth-child pseudo-class                           | `:nth-child(2)` `:nth-child(2 of div)` `:nth-last-child(2)` `:nth-last-child(2 of div)` `:first-child` `:last-child` `:only-child` | ❌      |
+| Nth-of-type pseudo-class                         | `:nth-of-type(2)` `:nth-last-of-type(2)` `:first-of-type` `:last-of-type` `:only-of-type`                                          | ❌      |
+| Nth-col pseudo-class                             | `:nth-col(2)` `:nth-last-col(2)`                                                                                                   | ❌      |
+| Descendant combinator                            | `div span`                                                                                                                         | ❌      |
+| Child combinator                                 | `div > span`                                                                                                                       | ❌      |
+| Next-sibling combinator                          | `div + span`                                                                                                                       | ❌      |
+| Subsequent-sibling combinator                    | `div ~ span`                                                                                                                       | ❌      |
+| Column combinator                                | <code>div \|\| span</code>                                                                                                         | ❌      |
+| Multiple selectors                               | `div, span`                                                                                                                        | ✅      |
+| Pseudo elements                                  | `::before` `::after`                                                                                                               | ❌      |
+
+#### `regexSelector`
+
+You can select elements by using `regexSelector` instead of the `selector` property.
+
+The `regexSelector` property has `nodeName`, `attrName`, and `attrValue` properties
+that are optional regular expression.
+So each of these enables to omit.
+It is AND condition if combinate.
+
+```json
+{
+	"childNodeRules": [
+		{
+			"regexSelector": {
+				"nodeName": "/^[a-z]+$/",
+				"attrName": "/^[a-z]+$/",
+				"attrValue": "/^[a-z]+$/"
+			},
+			"rules": {
+				"any-rule": "any-value"
+			}
+		}
+	]
+}
+```
+
+You can use the capture of the regular expression.
+It will enable the captures in the rule values as variables of the [Mustache](https://mustache.github.io/) format.
+It will expand the variables as the number that prepended $ mark if the capture is a number.
+
+```json
+{
+	"childNodeRules": [
+		{
+			"regexSelector": {
+				"attrName": "/^data-([a-z]+)$/"
+			},
+			"rules": {
+				"any-rule": "It is {{ $1 }} data attribute",
+				"any-rule2": {
+					"value": "It is {{ $1 }} data attribute",
+					"severity": "error"
+				}
+			}
+		}
+	]
+}
+```
+
+Of course, you can use the named capture group. It will expand the name to a template as a variable.
+
+```json
+{
+	"childNodeRules": [
+		{
+			"regexSelector": {
+				"attrName": "/^data-(?<dataName>[a-z]+)$/"
+			},
+			"rules": {
+				"any-rule": "It is {{ dataName }} data attribute"
+			}
+		}
+	]
+}
+```
+
+Note: Recommend using named capture. The numbered capture may conflict.
+
+```json
+{
+	"childNodeRules": [
+		{
+			"regexSelector": {
+				"attrName": "/^data-([a-z]+)$/", // It will be `$1`.
+				"attrValue": "^(.+)$" // It will be `$1` too.
+			},
+			"rules": {
+				"any-rule": "It is {{ $1 }} data attribute, and value is {{ $1 }}"
+			}
+		},
+		{
+			"regexSelector": {
+				"attrName": "/^data-(?<dataName>[a-z]+)$/", // It will be `dataName`.
+				"attrValue": "^(?<dataValue>.+)$" // It will be `dataValue`.
+			},
+			"rules": {
+				"any-rule": "It is {{ dataName }} data attribute, and value is {{ dataValue }}"
+			}
+		}
+	]
+}
+```
