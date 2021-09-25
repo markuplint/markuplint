@@ -1,16 +1,6 @@
 import { Selector as CSSSelector, CssSelectorParser } from 'css-selector-parser';
-
-interface NodeLikeObject {
-	nodeName: string;
-	parentNode: this | null;
-}
-
-interface ElementLikeObject extends NodeLikeObject {
-	id?: string;
-	classList?: string[] | DOMTokenList;
-	childNodes: (NodeLikeObject | ElementLikeObject)[];
-	getAttribute?: (attrName: string) => string | null;
-}
+import { AnonymousNode } from '@markuplint/ml-core';
+import { MLDOMElement } from '../tokens';
 
 class Selector {
 	#rawSelector: string;
@@ -26,12 +16,12 @@ class Selector {
 		this.#ruleset = selectorParser.parse(selector);
 	}
 
-	match(element: ElementLikeObject) {
+	match(element: MLDOMElement<any, any>) {
 		return match(element, this.#ruleset, this.#rawSelector);
 	}
 }
 
-function match(element: ElementLikeObject, ruleset: CSSSelector, rawSelector: string) {
+function match(element: MLDOMElement<any, any>, ruleset: CSSSelector, rawSelector: string) {
 	const rules = ruleset.type === 'selectors' ? ruleset.selectors.map(ruleSet => ruleSet.rule) : [ruleset.rule];
 	const orMatch: boolean[] = [];
 
@@ -43,13 +33,7 @@ function match(element: ElementLikeObject, ruleset: CSSSelector, rawSelector: st
 		}
 
 		if (rule.classNames) {
-			andMatch.push(
-				rule.classNames.every(className =>
-					Array.isArray(element.classList)
-						? element.classList.includes(className)
-						: element.classList?.contains(className),
-				),
-			);
+			andMatch.push(rule.classNames.every(className => element.classList.includes(className)));
 		}
 
 		if (rule.tagName) {
@@ -176,10 +160,10 @@ export function createSelector(selector: string) {
 	return new Selector(selector);
 }
 
-function treeToArray(tree: (NodeLikeObject | ElementLikeObject)[], recursive = true) {
-	const array: ElementLikeObject[] = [];
+function treeToArray(tree: AnonymousNode<any, any>[], recursive = true) {
+	const array: MLDOMElement<any, any>[] = [];
 	for (const node of tree) {
-		if ('childNodes' in node) {
+		if (node.type === 'Element') {
 			array.push(node);
 			if (recursive) {
 				array.push(...treeToArray(node.childNodes));

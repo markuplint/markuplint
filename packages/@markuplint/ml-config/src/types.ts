@@ -48,6 +48,7 @@ export type RuleConfigValue = string | number | boolean | any[] | null;
 export interface NodeRule {
 	tagName?: string;
 	selector?: string;
+	regexSelector?: RegexSelector;
 	categories?: string[];
 	roles?: string[];
 	obsolete?: boolean;
@@ -57,9 +58,16 @@ export interface NodeRule {
 export interface ChildNodeRule {
 	tagName?: string;
 	selector?: string;
+	regexSelector?: RegexSelector;
 	inheritance?: boolean;
 	rules?: Rules;
 }
+
+export type RegexSelector = {
+	nodeName?: string;
+	attrName?: string;
+	attrValue?: string;
+};
 
 export type Report<T extends RuleConfigValue, O = null> = Report1<T, O> | Report2 | (Report1<T, O> & Report2);
 
