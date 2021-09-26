@@ -30,16 +30,18 @@ export function matchSelector(
 	}
 
 	if (selector.attrName) {
-		const matchedAttrNameList: ReturnType<typeof regexSelectorMatches>[] = [];
-		for (const attr of targetElement.attributes) {
+		const selectorAttrName = selector.attrName;
+		const matchedAttrNameList = targetElement.attributes.map(attr => {
 			const attrName = attr.getName().raw;
-			const matchedAttrName = regexSelectorMatches(selector.attrName, attrName);
-			matchedAttrNameList.push(matchedAttrName);
+			const matchedAttrName = regexSelectorMatches(selectorAttrName, attrName);
+
 			matchedMap = {
 				...matchedMap,
 				...matchedAttrName,
 			};
-		}
+
+			return matchedAttrName;
+		});
 
 		if (!matchedAttrNameList.some(_ => !!_)) {
 			return null;
@@ -47,16 +49,17 @@ export function matchSelector(
 	}
 
 	if (selector.attrValue) {
-		const matchedAttrValueList: ReturnType<typeof regexSelectorMatches>[] = [];
-		for (const attr of targetElement.attributes) {
+		const selectorAttrValue = selector.attrValue;
+		const matchedAttrValueList = targetElement.attributes.map(attr => {
 			const attrValue = attr.getValue().raw;
-			const matchedAttrValue = regexSelectorMatches(selector.attrValue, attrValue);
-			matchedAttrValueList.push(matchedAttrValue);
+			const matchedAttrValue = regexSelectorMatches(selectorAttrValue, attrValue);
 			matchedMap = {
 				...matchedMap,
 				...matchedAttrValue,
 			};
-		}
+
+			return matchedAttrValue;
+		});
 
 		if (!matchedAttrValueList.some(_ => !!_)) {
 			return null;
