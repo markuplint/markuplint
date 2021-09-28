@@ -73,6 +73,34 @@ test('disable', async () => {
 	expect(violations.length).toBe(0);
 });
 
+test('the input element type case-insensitive', async () => {
+	const { violations } = await mlTest(
+		'<input type="checkbox" checked>',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(violations.length).toBe(0);
+
+	const { violations: violations2 } = await mlTest(
+		'<input type="checkBox" checked>',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(violations2.length).toBe(0);
+});
+
 test('ancestor condition', async () => {
 	expect(
 		(
