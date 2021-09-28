@@ -74,7 +74,7 @@ test('disable', async () => {
 });
 
 test('the input element type case-insensitive', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<input type="checkbox" checked>',
 		{
 			rules: {
@@ -85,9 +85,9 @@ test('the input element type case-insensitive', async () => {
 		'en',
 	);
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 
-	const r2 = await markuplint.verify(
+	const { violations: violations2 } = await mlTest(
 		'<input type="checkBox" checked>',
 		{
 			rules: {
@@ -98,7 +98,7 @@ test('the input element type case-insensitive', async () => {
 		'en',
 	);
 
-	expect(r2.length).toBe(0);
+	expect(violations2.length).toBe(0);
 });
 
 test('ancestor condition', async () => {
