@@ -62,7 +62,7 @@ function match(element: ElementLikeObject, ruleset: CSSSelector, rawSelector: st
 
 		if (rule.attrs && element.getAttribute) {
 			for (const ruleAttr of rule.attrs) {
-				const value = element.getAttribute(ruleAttr.name);
+				let value = element.getAttribute(ruleAttr.name);
 				if (value == null) {
 					andMatch.push(false);
 					continue;
@@ -71,6 +71,11 @@ function match(element: ElementLikeObject, ruleset: CSSSelector, rawSelector: st
 				if (!('value' in ruleAttr && 'operator' in ruleAttr)) {
 					andMatch.push(true);
 					continue;
+				}
+
+				// FIXME: When it supports case-insensitive @see: https://github.com/markuplint/markuplint/issues/265
+				if (element.nodeName.toLowerCase() === 'input' && ruleAttr.name.toLowerCase() === 'type' && value) {
+					value = value.toLowerCase();
 				}
 
 				switch (ruleAttr.operator) {
