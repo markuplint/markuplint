@@ -73,6 +73,34 @@ test('disable', async () => {
 	expect(violations.length).toBe(0);
 });
 
+test('the input element type case-insensitive', async () => {
+	const r = await markuplint.verify(
+		'<input type="checkbox" checked>',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r.length).toBe(0);
+
+	const r2 = await markuplint.verify(
+		'<input type="checkBox" checked>',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(r2.length).toBe(0);
+});
+
 test('ancestor condition', async () => {
 	expect(
 		(
