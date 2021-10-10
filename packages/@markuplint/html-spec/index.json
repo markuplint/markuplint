@@ -9140,7 +9140,7 @@
 				},
 				{
 					"name": "download",
-					"description": "Prompts the user to save the linked URL instead of navigating to it. Can be used with or without a value: Without a value, the browser will suggest a filename/extension, generated from various sources: The Content-Disposition HTTP header The final segment in the URL path The media type (from the Content-Type header, the start of a data: URL, or Blob.type for a blob: URL) Defining a value suggests it as the filename. / and \\ characters are converted to underscores (_). Filesystems may forbid other characters in filenames, so browsers will adjust the suggested name if necessary. download only works for same-origin URLs, or the blob: and data: schemes. Notes: If the Content-Disposition header has different information from the download attribute, resulting behavior may differ: If the header specifies a filename, it takes priority over a filename specified in the download attribute. If the header specifies a disposition of inline, Chrome, and Firefox 82 and later, prioritize the attribute and treat it as a download. Firefox versions before 82 prioritize the header and will display the content inline.",
+					"description": "Prompts the user to save the linked URL instead of navigating to it. Can be used with or without a value: Without a value, the browser will suggest a filename/extension, generated from various sources: The Content-Disposition HTTP header The final segment in the URL path The media type (from the Content-Type header, the start of a data: URL, or Blob.type for a blob: URL) Defining a value suggests it as the filename. / and \\ characters are converted to underscores (_). Filesystems may forbid other characters in filenames, so browsers will adjust the suggested name if necessary. Note: download only works for same-origin URLs, or the blob: and data: schemes. If the Content-Disposition header has different information from the download attribute, resulting behavior may differ: If the header specifies a filename, it takes priority over a filename specified in the download attribute. If the header specifies a disposition of inline, Chrome, and Firefox 82 and later, prioritize the attribute and treat it as a download. Firefox versions before 82 prioritize the header and will display the content inline.",
 					"type": "String"
 				},
 				{
@@ -9543,7 +9543,7 @@
 			"description": "The <audio> HTML element is used to embed sound content in documents. It may contain one or more audio sources, represented using the src attribute or the <source> element: the browser will choose the most suitable one. It can also be the destination for streamed media, using a MediaStream.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"permittedStructures": {
-				"summary": "If the element has a src attribute: zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements. Else: zero or more <source> elements followed by zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.",
+				"summary": "If the element has a src attribute: zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.Else: zero or more <source> elements followed by zero or more <track> elements followed by transparent content that contains no <audio> or <video> media elements.",
 				"tag": "audio",
 				"conditional": [
 					{
@@ -9620,7 +9620,7 @@
 				},
 				{
 					"name": "preload",
-					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience. It may have one of the following values: none: Indicates that the audio should not be preloaded. metadata: Indicates that only audio metadata (e.g. length) is fetched. auto: Indicates that the whole audio file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the audio for playback. The browser is not forced by the specification to follow the value of this attribute; it is a mere hint.",
+					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience. It may have one of the following values: none: Indicates that the audio should not be preloaded. metadata: Indicates that only audio metadata (e.g. length) is fetched. auto: Indicates that the whole audio file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the audio for playback. The browser is not forced by the specification to follow the value of this attribute; it is a mere hint.",
 					"type": "String",
 					"enum": ["none", "metadata", "auto", ""]
 				},
@@ -10230,7 +10230,7 @@
 				},
 				{
 					"name": "formtarget",
-					"description": "If the button is a submit button, this attribute is a author-defined name or standardized, underscore-prefixed keyword indicating where to display the response from submitting the form. This is the name of, or keyword for, a browsing context (a tab, window, or <iframe>). If this attribute is specified, it overrides the target attribute of the button's form owner. The following keywords have special meanings: _self: Load the response into the same browsing context as the current one. This is the default if the attribute is not specified. _blank: Load the response into a new unnamed browsing context — usually a new tab or window, depending on the user’s browser settings. _parent: Load the response into the parent browsing context of the current one. If there is no parent, this option behaves the same way as _self. _top: Load the response into the top-level browsing context (that is, the browsing context that is an ancestor of the current one, and has no parent). If there is no parent, this option behaves the same way as _self.",
+					"description": "If the button is a submit button, this attribute is an author-defined name or standardized, underscore-prefixed keyword indicating where to display the response from submitting the form. This is the name of, or keyword for, a browsing context (a tab, window, or <iframe>). If this attribute is specified, it overrides the target attribute of the button's form owner. The following keywords have special meanings: _self: Load the response into the same browsing context as the current one. This is the default if the attribute is not specified. _blank: Load the response into a new unnamed browsing context — usually a new tab or window, depending on the user’s browser settings. _parent: Load the response into the parent browsing context of the current one. If there is no parent, this option behaves the same way as _self. _top: Load the response into the top-level browsing context (that is, the browsing context that is an ancestor of the current one, and has no parent). If there is no parent, this option behaves the same way as _self.",
 					"type": "Target"
 				},
 				{
@@ -10321,7 +10321,7 @@
 				{
 					"name": "align",
 					"type": "String",
-					"description": "This enumerated attribute indicates how the caption must be aligned with respect to the table. It may have one of the following values: left The caption is displayed to the left of the table. top The caption is displayed above the table. right The caption is displayed to the right of the table. bottom The caption is displayed below the table. Usage note: Do not use this attribute, as it has been deprecated. The <caption> element should be styled using the CSS properties caption-side and text-align.",
+					"description": "This enumerated attribute indicates how the caption must be aligned with respect to the table. It may have one of the following values: left The caption is displayed to the left of the table. top The caption is displayed above the table. right The caption is displayed to the right of the table. bottom The caption is displayed below the table. Warning: Do not use this attribute, as it has been deprecated. The <caption> element should be styled using the CSS properties caption-side and text-align.",
 					"deprecated": true
 				}
 			]
@@ -10423,7 +10423,7 @@
 				{
 					"name": "align",
 					"type": "String",
-					"description": "This enumerated attribute specifies how horizontal alignment of each column cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell If this attribute is not set, its value is inherited from the align of the <colgroup> element this <col> element belongs too. If there are none, the left value is assumed. Note: To achieve the same effect as the left, center, right or justify values: Do not try to set the text-align property on a selector giving a <col> element. Because <td> elements are not descendant of the <col> element, they won't inherit it. If the table doesn't use a colspan attribute, use the td:nth-child(an+b) CSS selector. Set a to zero and b to the position of the column in the table, e.g. td:nth-child(2) { text-align: right; } to right-align the second column. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
+					"description": "This enumerated attribute specifies how horizontal alignment of each column cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell If this attribute is not set, its value is inherited from the align of the <colgroup> element this <col> element belongs too. If there are none, the left value is assumed. Note: To achieve the same effect as the left, center, right or justify values, do not try to set the text-align property on a selector giving a <col> element. Because <td> elements are not descendant of the <col> element, they won't inherit it. If the table doesn't use a colspan attribute, use the td:nth-child(an+b) CSS selector. Set a to zero and b to the position of the column in the table, e.g. td:nth-child(2) { text-align: right; } to right-align the second column. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
 					"deprecated": true
 				},
 				{
@@ -10469,7 +10469,7 @@
 			"description": "The <colgroup> HTML element defines a group of columns within a table.",
 			"categories": [],
 			"permittedStructures": {
-				"summary": "If the span attribute is present: none, it is an empty element. If the attribute is not present: zero or more <col> element",
+				"summary": "If the span attribute is present: none, it is an empty element.If the attribute is not present: zero or more <col> element",
 				"tag": "colgroup",
 				"conditional": [
 					{
@@ -10523,7 +10523,7 @@
 				},
 				{
 					"name": "span",
-					"description": "This attribute contains a positive integer indicating the number of consecutive columns the <colgroup> element spans. If not present, its default value is 1. Note: This attribute is applied on the attributes of the column group, it has no effect on the CSS styling rules associated with it or, even more, to the cells of the column's members of the group. The span attribute is not permitted if there are one or more <col> elements within the <colgroup>.",
+					"description": "This attribute contains a positive integer indicating the number of consecutive columns the <colgroup> element spans. If not present, its default value is 1. This attribute is applied on the attributes of the column group, it has no effect on the CSS styling rules associated with it or, even more, to the cells of the column's members of the group. The span attribute is not permitted if there are one or more <col> elements within the <colgroup>.",
 					"type": "NonZeroUint"
 				},
 				{
@@ -10832,7 +10832,7 @@
 				{
 					"name": "compact",
 					"type": "String",
-					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent and it doesn't work in all browsers. Usage note: Do not use this attribute, as it has been deprecated: the <dir> element should be styled using CSS. To give a similar effect as that achieved with the compact attribute, the CSS property line-height can be used with a value of 80%."
+					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent and it doesn't work in all browsers."
 				}
 			]
 		},
@@ -10842,7 +10842,7 @@
 			"description": "The <div> HTML element is the generic container for flow content. It has no effect on the content or layout until styled in some way using CSS (e.g. styling is directly applied to it, or some kind of layout model like Flexbox is applied to its parent element).",
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
-				"summary": "Flow content. Or (in WHATWG HTML): If the parent is a <dl> element: one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.",
+				"summary": "Flow content.Or (in WHATWG HTML): If the parent is a <dl> element: one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.",
 				"tag": "div",
 				"conditional": [
 					{
@@ -10891,7 +10891,7 @@
 			"description": "The <dl> HTML element represents a description list. The element encloses a list of groups of terms (specified using the <dt> element) and descriptions (provided by <dd> elements). Common uses for this element are to implement a glossary or to display metadata (a list of key-value pairs).",
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
-				"summary": "Either: Zero or more groups each consisting of one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements. Or: (in WHATWG HTML, W3C HTML 5.2 and later) One or more <div> elements, optionally intermixed with <script> and <template> elements.",
+				"summary": "Either: Zero or more groups each consisting of one or more <dt> elements followed by one or more <dd> elements, optionally intermixed with <script> and <template> elements.Or: (in WHATWG HTML, W3C HTML 5.2 and later) One or more <div> elements, optionally intermixed with <script> and <template> elements.",
 				"tag": "dl",
 				"contents": [
 					{
@@ -11806,12 +11806,12 @@
 				},
 				{
 					"name": "allowfullscreen",
-					"description": "Set to true if the <iframe> can activate fullscreen mode by calling the requestFullscreen() method. This attribute is considered a legacy attribute and redefined as allow=\"fullscreen\".",
+					"description": "Set to true if the <iframe> can activate fullscreen mode by calling the requestFullscreen() method. Note: This attribute is considered a legacy attribute and redefined as allow=\"fullscreen\".",
 					"type": "Boolean"
 				},
 				{
 					"name": "allowpaymentrequest",
-					"description": "Set to true if a cross-origin <iframe> should be allowed to invoke the Payment Request API. This attribute is considered a legacy attribute and redefined as allow=\"payment\".",
+					"description": "Set to true if a cross-origin <iframe> should be allowed to invoke the Payment Request API. Note: This attribute is considered a legacy attribute and redefined as allow=\"payment\".",
 					"type": "Boolean"
 				},
 				{
@@ -11874,7 +11874,7 @@
 				},
 				{
 					"name": "sandbox",
-					"description": "Applies extra restrictions to the content in the frame. The value of the attribute can either be empty to apply all restrictions, or space-separated tokens to lift particular restrictions: allow-downloads-without-user-activation : Allows for downloads to occur without a gesture from the user. allow-downloads: Allows for downloads to occur with a gesture from the user. allow-forms: Allows the resource to submit forms. If this keyword is not used, form submission is blocked. allow-modals: Lets the resource open modal windows. allow-orientation-lock: Lets the resource lock the screen orientation. allow-pointer-lock: Lets the resource use the Pointer Lock API. allow-popups: Allows popups (such as window.open(), target=\"_blank\", or showModalDialog()). If this keyword is not used, the popup will silently fail to open. allow-popups-to-escape-sandbox: Lets the sandboxed document open new windows without those windows inheriting the sandboxing. For example, this can safely sandbox an advertisement without forcing the same restrictions upon the page the ad links to. allow-presentation: Lets the resource start a presentation session. allow-same-origin: If this token is not used, the resource is treated as being from a special origin that always fails the same-origin policy (potentially preventing access to data storage/cookies and some JavaScript APIs). allow-scripts: Lets the resource run scripts (but not create popup windows). allow-storage-access-by-user-activation : Lets the resource request access to the parent's storage capabilities with the Storage Access API. allow-top-navigation: Lets the resource navigate the top-level browsing context (the one named _top). allow-top-navigation-by-user-activation: Lets the resource navigate the top-level browsing context, but only if initiated by a user gesture. Notes about sandboxing: When the embedded document has the same origin as the embedding page, it is strongly discouraged to use both allow-scripts and allow-same-origin, as that lets the embedded document remove the sandbox attribute — making it no more secure than not using the sandbox attribute at all. Sandboxing is useless if the attacker can display content outside a sandboxed iframe — such as if the viewer opens the frame in a new tab. Such content should be also served from a separate origin to limit potential damage. The sandbox attribute is unsupported in Internet Explorer 9 and earlier.",
+					"description": "Applies extra restrictions to the content in the frame. The value of the attribute can either be empty to apply all restrictions, or space-separated tokens to lift particular restrictions: allow-downloads-without-user-activation : Allows for downloads to occur without a gesture from the user. allow-downloads: Allows for downloads to occur with a gesture from the user. allow-forms: Allows the resource to submit forms. If this keyword is not used, form submission is blocked. allow-modals: Lets the resource open modal windows. allow-orientation-lock: Lets the resource lock the screen orientation. allow-pointer-lock: Lets the resource use the Pointer Lock API. allow-popups: Allows popups (such as window.open(), target=\"_blank\", or showModalDialog()). If this keyword is not used, the popup will silently fail to open. allow-popups-to-escape-sandbox: Lets the sandboxed document open new windows without those windows inheriting the sandboxing. For example, this can safely sandbox an advertisement without forcing the same restrictions upon the page the ad links to. allow-presentation: Lets the resource start a presentation session. allow-same-origin: If this token is not used, the resource is treated as being from a special origin that always fails the same-origin policy (potentially preventing access to data storage/cookies and some JavaScript APIs). allow-scripts: Lets the resource run scripts (but not create popup windows). allow-storage-access-by-user-activation : Lets the resource request access to the parent's storage capabilities with the Storage Access API. allow-top-navigation: Lets the resource navigate the top-level browsing context (the one named _top). allow-top-navigation-by-user-activation: Lets the resource navigate the top-level browsing context, but only if initiated by a user gesture. Note: When the embedded document has the same origin as the embedding page, it is strongly discouraged to use both allow-scripts and allow-same-origin, as that lets the embedded document remove the sandbox attribute — making it no more secure than not using the sandbox attribute at all. Sandboxing is useless if the attacker can display content outside a sandboxed iframe — such as if the viewer opens the frame in a new tab. Such content should be also served from a separate origin to limit potential damage. The sandbox attribute is unsupported in Internet Explorer 9 and earlier.",
 					"type": "String",
 					"enum": [
 						"allow-forms",
@@ -12115,7 +12115,7 @@
 				"contents": false
 			},
 			"permittedRoles": {
-				"summary": "type=button: link, menuitem, menuitemcheckbox, menuitemradio, option, radio, switch, tab type=checkbox: button when used with aria-pressed, menuitemcheckbox, option, switch type=image: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch type=radio: menuitemradio type=text with no list attribute: combobox, searchbox, spinbutton type=color|date|datetime|datetime-local|email|file|hidden|month|number|password|range|reset|search|submit|tel|url|week or text with list attribute: no role permitted",
+				"summary": "type=button: link, menuitem, menuitemcheckbox, menuitemradio, option, radio, switch, tab type=checkbox: button when used with aria-pressed, menuitemcheckbox, option, switch type=image: link, menuitem, menuitemcheckbox, menuitemradio, radio, switch type=radio: menuitemradio type=text with no list attribute: combobox, searchbox, spinbutton type=color|date|datetime|datetime-local|email|file|hidden| month|number|password|range|reset|search|submit|tel|url|week or text with list attribute: no role permitted",
 				"roles": false,
 				"conditions": [
 					{
@@ -12462,7 +12462,7 @@
 				{
 					"name": "incremental",
 					"type": "String",
-					"description": "The Boolean attribute incremental is a WebKit and Blink extension (so supported by Safari, Opera, Chrome, etc.) which, if present, tells the user agent to process the input as a live search. As the user edits the value of the field, the user agent sends search events to the HTMLInputElement object representing the search box. This allows your code to update the search results in real time as the user edits the search.If incremental is not specified, the search event is only sent when the user explicitly initiates a search (such as by pressing the Enter or Return key while editing the field).The search event is rate-limited so that it is not sent more frequently than an implementation-defined interval.",
+					"description": "The Boolean attribute incremental is a WebKit and Blink extension (so supported by Safari, Opera, Chrome, etc.) which, if present, tells the user agent to process the input as a live search. As the user edits the value of the field, the user agent sends search events to the HTMLInputElement object representing the search box. This allows your code to update the search results in real time as the user edits the search. If incremental is not specified, the search event is only sent when the user explicitly initiates a search (such as by pressing the Enter or Return key while editing the field). The search event is rate-limited so that it is not sent more frequently than an implementation-defined interval.",
 					"nonStandard": true
 				},
 				{
@@ -12472,7 +12472,7 @@
 				},
 				{
 					"name": "list",
-					"description": "The value given to the list attribute should be the id of a <datalist> element located in the same document. The <datalist> provides a list of predefined values to suggest to the user for this input. Any values in the list that are not compatible with the type are not included in the suggested options. The values provided are suggestions, not requirements: users can select from this predefined list or provide a different value. <datalist id=\"colorsxx\"> <option>#ff0000</option> <option>#ee0000</option> <option>#dd0000</option> <option>#cc0000</option> <option>#bb0000</option> </datalist> <datalist id=\"numbersxx\"> <option>0</option> <option>2</option> <option>4</option> <option>8</option> <option>16</option> <option>32</option> <option>64</option> </datalist> <datalist id=\"fruitsxx\"> <option>cherry</option> <option>banana</option> <option>mango</option> <option>orange</option> <option>blueberry</option> </datalist> <datalist id=\"urlsxx\"> <option>https://developer.mozilla.org</option> <option>https://caniuse.com/</option> <option>https://mozilla.com</option> <option>https://mdn.github.io</option> <option>https://www.youtube.com/user/firefoxchannel</option> </datalist> <p><label for=\"textx\">Text</label> <input type=\"text\" list=\"fruitsxx\" id=\"textx\"/></p> <p><label for=\"colorx\">Color</label> <input type=\"color\" list=\"colorsxx\" id=\"colorx\"/></p> <p><label for=\"rangex\">Range</label> <input type=\"range\" min=\"0\" max=\"64\" list=\"numbersxx\" id=\"rangex\"/></p> <p><label for=\"numberx\">Number</label> <input type=\"number\" min=\"0\" max=\"64\" list=\"numbersxx\" id=\"numberx\"/></p> <p><label for=\"urlx\">URL</label> <input type=\"url\" list=\"urlsxx\" id=\"urlx\"/></p> It is valid on text, search, url, tel, email, date, month, week, time, datetime-local, number, range, and color. Per the specifications, the list attribute is not supported by the hidden, password, checkbox, radio, file, or any of the button types. Depending on the browser, the user may see a custom color palette suggested, tic marks along a range, or even a input that opens like a <select> but allows for non-listed values. Check out the browser compatibility table for the other input types. See the <datalist> element.",
+					"description": "The value given to the list attribute should be the id of a <datalist> element located in the same document. The <datalist> provides a list of predefined values to suggest to the user for this input. Any values in the list that are not compatible with the type are not included in the suggested options. The values provided are suggestions, not requirements: users can select from this predefined list or provide a different value. It is valid on text, search, url, tel, email, date, month, week, time, datetime-local, number, range, and color. Per the specifications, the list attribute is not supported by the hidden, password, checkbox, radio, file, or any of the button types. Depending on the browser, the user may see a custom color palette suggested, tic marks along a range, or even a input that opens like a <select> but allows for non-listed values. Check out the browser compatibility table for the other input types. See the <datalist> element.",
 					"type": "DOMID",
 					"condition": {
 						"self": [
@@ -12576,7 +12576,7 @@
 				{
 					"name": "orient",
 					"type": "String",
-					"description": "<progress><meter>orienthorizontalvertical",
+					"description": "Similar to the -moz-orient non-standard CSS property impacting the <progress> and <meter> elements, the orient attribute defines the orientation of the range slider. Values include horizontal, meaning the range is rendered horizontally, and vertical, where the range is rendered vertically.",
 					"nonStandard": true
 				},
 				{
@@ -12658,12 +12658,12 @@
 				{
 					"name": "results",
 					"type": "String",
-					"description": "The results attribute—supported only by Safari—is a numeric value that lets you override the maximum number of entries to be displayed in the <input> element's natively-provided drop-down menu of previous search queries.The value must be a non-negative decimal number. If not provided, or an invalid value is given, the browser's default maximum number of entries is used.",
+					"description": "The results attribute—supported only by Safari—is a numeric value that lets you override the maximum number of entries to be displayed in the <input> element's natively-provided drop-down menu of previous search queries. The value must be a non-negative decimal number. If not provided, or an invalid value is given, the browser's default maximum number of entries is used.",
 					"nonStandard": true
 				},
 				{
 					"name": "size",
-					"description": "Valid for email, password, tel, and text input types only. Specifies how much of the input is shown. Basically creates same result as setting CSS width property with a few specialities. The actual unit of the value depends on the input type. For password and text, it is a number of characters (or em units) with a default value of 20, and for others, it is pixels. CSS width takes precedence over size attribute.",
+					"description": "Valid for email, password, tel, url and text input types only. Specifies how much of the input is shown. Basically creates same result as setting CSS width property with a few specialities. The actual unit of the value depends on the input type. For password and text, it is a number of characters (or em units) with a default value of 20, and for others, it is pixels. CSS width takes precedence over size attribute.",
 					"type": "NonZeroUint",
 					"condition": {
 						"self": [
@@ -12723,7 +12723,7 @@
 				{
 					"name": "webkitdirectory",
 					"type": "String",
-					"description": "{{page(\"/en-US/docs/Web/HTML/Element/input/file\", \"webkitdirectory-include\")}}",
+					"description": "The Boolean webkitdirectory attribute, if present, indicates that only directories should be available to be selected by the user in the file picker interface. See HTMLInputElement.webkitdirectory for additional details and examples. Though originally implemented only for WebKit-based browsers, webkitdirectory is also usable in Microsoft Edge as well as Firefox 50 and later. However, even though it has relatively broad support, it is still not standard and should not be used unless you have no alternative.",
 					"nonStandard": true
 				},
 				{
@@ -12985,7 +12985,7 @@
 				},
 				{
 					"name": "value",
-					"description": "This integer attribute indicates the current ordinal value of the list item as defined by the <ol> element. The only allowed value for this attribute is a number, even if the list is displayed with Roman numerals or letters. List items that follow this one continue numbering from the value set. The value attribute has no meaning for unordered lists (<ul>) or for menus (<menu>). Note: This attribute was deprecated in HTML4, but reintroduced in HTML5.",
+					"description": "This integer attribute indicates the current ordinal value of the list item as defined by the <ol> element. The only allowed value for this attribute is a number, even if the list is displayed with Roman numerals or letters. List items that follow this one continue numbering from the value set. The value attribute has no meaning for unordered lists (<ul>) or for menus (<menu>).",
 					"type": "Int",
 					"condition": {
 						"ancestor": "ul, menu"
@@ -13023,7 +13023,7 @@
 				"#ariaAttrs",
 				{
 					"name": "as",
-					"description": "This attribute is only used when rel=\"preload\" or rel=\"prefetch\" has been set on the <link> element. It specifies the type of content being loaded by the <link>, which is necessary for request matching, application of correct content security policy, and setting of correct Accept request header. Furthermore, rel=\"preload\" uses this as a signal for request prioritization. The table below lists the valid values for this attribute and the elements or resources they apply to. Value Applies To audio <audio> elements document <iframe> and <frame> elements embed <embed> elements fetch fetch, XHR This value also requires <link> to contain the crossorigin attribute. font CSS @font-face image <img> and <picture> elements with srcset or imageset attributes, SVG <image> elements, CSS *-image rules object <object> elements script <script> elements, Worker importScripts style <link rel=stylesheet> elements, CSS @import track <track> elements video <video> elements worker Worker, SharedWorker",
+					"description": "This attribute is only used when rel=\"preload\" or rel=\"prefetch\" has been set on the <link> element. It specifies the type of content being loaded by the <link>, which is necessary for request matching, application of correct content security policy, and setting of correct Accept request header. Furthermore, rel=\"preload\" uses this as a signal for request prioritization. The table below lists the valid values for this attribute and the elements or resources they apply to. Value Applies To audio <audio> elements document <iframe> and <frame> elements embed <embed> elements fetch fetch, XHR Note: This value also requires <link> to contain the crossorigin attribute. font CSS @font-face image <img> and <picture> elements with srcset or imageset attributes, SVG <image> elements, CSS *-image rules object <object> elements script <script> elements, Worker importScripts style <link rel=stylesheet> elements, CSS @import track <track> elements video <video> elements worker Worker, SharedWorker",
 					"type": "Destination",
 					"condition": {
 						"self": ["[rel=preload]", "[rel=modulepreload]"]
@@ -13032,7 +13032,7 @@
 				{
 					"name": "charset",
 					"type": "String",
-					"description": "This attribute defines the character encoding of the linked resource. The value is a space- and/or comma-delimited list of character sets as defined in RFC 2045. The default value is iso-8859-1. Usage note: To produce the same effect as this obsolete attribute, use the Content-Type HTTP header on the linked resource.",
+					"description": "This attribute defines the character encoding of the linked resource. The value is a space- and/or comma-delimited list of character sets as defined in RFC 2045. The default value is iso-8859-1. Note: To produce the same effect as this obsolete attribute, use the Content-Type HTTP header on the linked resource.",
 					"obsolete": true,
 					"deprecated": true
 				},
@@ -13089,7 +13089,7 @@
 				},
 				{
 					"name": "media",
-					"description": "This attribute specifies the media that the linked resource applies to. Its value must be a media type / media query. This attribute is mainly useful when linking to external stylesheets — it allows the user agent to pick the best adapted one for the device it runs on. Notes: In HTML 4, this can only be a simple white-space-separated list of media description literals, i.e., media types and groups, where defined and allowed as values for this attribute, such as print, screen, aural, braille. HTML5 extended this to any kind of media queries, which are a superset of the allowed values of HTML 4. Browsers not supporting CSS3 Media Queries won't necessarily recognize the adequate link; do not forget to set fallback links, the restricted set of media queries defined in HTML 4.",
+					"description": "This attribute specifies the media that the linked resource applies to. Its value must be a media type / media query. This attribute is mainly useful when linking to external stylesheets — it allows the user agent to pick the best adapted one for the device it runs on. Note: In HTML 4, this can only be a simple white-space-separated list of media description literals, i.e., media types and groups, where defined and allowed as values for this attribute, such as print, screen, aural, braille. HTML5 extended this to any kind of media queries, which are a superset of the allowed values of HTML 4. Browsers not supporting CSS3 Media Queries won't necessarily recognize the adequate link; do not forget to set fallback links, the restricted set of media queries defined in HTML 4.",
 					"type": "MediaQueryList"
 				},
 				{
@@ -13118,7 +13118,7 @@
 				{
 					"name": "rev",
 					"type": "String",
-					"description": "The value of this attribute shows the relationship of the current document to the linked document, as defined by the href attribute. The attribute thus defines the reverse relationship compared to the value of the rel attribute. Link type values for the attribute are similar to the possible values for rel. Note: This attribute is considered obsolete by the WHATWG HTML living standard (which is the specification MDN treats as canonical). However, it's worth noting that rev is not considered obsolete in the W3C specification. That said, given the uncertainty, relying on rev is unwise. Instead, you should use the rel attribute with the opposite link type value. For example, to establish the reverse link for made, specify author. Also this attribute doesn't stand for \"revision\" and must not be used with a version number, even though many sites misuse it in this way.",
+					"description": "The value of this attribute shows the relationship of the current document to the linked document, as defined by the href attribute. The attribute thus defines the reverse relationship compared to the value of the rel attribute. Link type values for the attribute are similar to the possible values for rel. Note: This attribute is considered obsolete by the WHATWG HTML living standard (which is the specification MDN treats as canonical). However, it's worth noting that rev is not considered obsolete in the W3C specification. That said, given the uncertainty, relying on rev is unwise. Note: Instead, you should use the rel attribute with the opposite link type value. For example, to establish the reverse link for made, specify author. Also this attribute doesn't stand for \"revision\" and must not be used with a version number, even though many sites misuse it in this way.",
 					"obsolete": true,
 					"deprecated": true
 				},
@@ -13311,12 +13311,12 @@
 				{
 					"name": "scrolldelay",
 					"type": "String",
-					"description": "Sets the interval between each scroll movement in milliseconds. The default value is 85. Note that any value smaller than 60 is ignored and the value 60 is used instead, unless truespeed is specified."
+					"description": "Sets the interval between each scroll movement in milliseconds. The default value is 85. Note that any value smaller than 60 is ignored and the value 60 is used instead, unlesstruespeedis specified."
 				},
 				{
 					"name": "truespeed",
 					"type": "String",
-					"description": "By default, scrolldelay values lower than 60 are ignored. If truespeed is present, those values are not ignored."
+					"description": "By default,scrolldelayvalues lower than 60 are ignored. Iftruespeedis present, those values are not ignored."
 				},
 				{
 					"name": "vspace",
@@ -13473,7 +13473,7 @@
 				},
 				{
 					"name": "http-equiv",
-					"description": "Defines a pragma directive. The attribute is named http-equiv(alent) because all the allowed values are names of particular HTTP headers: content-security-policy Allows page authors to define a content policy for the current page. Content policies mostly specify allowed server origins and script endpoints which help guard against cross-site scripting attacks. content-type Declares the MIME type and character encoding of the document. If specified, the content attribute must have the value \"text/html; charset=utf-8\". This is equivalent to a <meta> element with the charset attribute specified, and carries the same restriction on placement within the document. Note: Can only be used in documents served with a text/html — not in documents served with an XML MIME type. default-style Sets the name of the default CSS style sheet set. x-ua-compatible If specified, the content attribute must have the value \"IE=edge\". User agents are required to ignore this pragma. refresh This instruction specifies: The number of seconds until the page should be reloaded - only if the content attribute contains a positive integer. The number of seconds until the page should redirect to another - only if the content attribute contains a positive integer followed by the string ';url=', and a valid URL. Accessibility concerns Pages set with a refresh value run the risk of having the time interval being too short. People navigating with the aid of assistive technology such as a screen reader may be unable to read through and understand the page's content before being automatically redirected. The abrupt, unannounced updating of the page content may also be disorienting for people experiencing low vision conditions. MDN Understanding WCAG, Guideline 2.1 explanations MDN Understanding WCAG, Guideline 3.1 explanations Understanding Success Criterion 2.2.1 | W3C Understanding WCAG 2.0 Understanding Success Criterion 2.2.4 | W3C Understanding WCAG 2.0 Understanding Success Criterion 3.2.5 | W3C Understanding WCAG 2.0",
+					"description": "Defines a pragma directive. The attribute is named http-equiv(alent) because all the allowed values are names of particular HTTP headers: content-security-policy Allows page authors to define a content policy for the current page. Content policies mostly specify allowed server origins and script endpoints which help guard against cross-site scripting attacks. content-type Declares the MIME type and character encoding of the document. If specified, the content attribute must have the value \"text/html; charset=utf-8\". This is equivalent to a <meta> element with the charset attribute specified, and carries the same restriction on placement within the document. Note: Can only be used in documents served with a text/html — not in documents served with an XML MIME type. default-style Sets the name of the default CSS style sheet set. x-ua-compatible If specified, the content attribute must have the value \"IE=edge\". User agents are required to ignore this pragma. refreshThis instruction specifies: The number of seconds until the page should be reloaded - only if the content attribute contains a non-negative integer. The number of seconds until the page should redirect to another - only if the content attribute contains a non-negative integer followed by the string ';url=', and a valid URL. Accessibility concernsPages set with a refresh value run the risk of having the time interval being too short. People navigating with the aid of assistive technology such as a screen reader may be unable to read through and understand the page's content before being automatically redirected. The abrupt, unannounced updating of the page content may also be disorienting for people experiencing low vision conditions. MDN Understanding WCAG, Guideline 2.1 explanations MDN Understanding WCAG, Guideline 3.1 explanations Understanding Success Criterion 2.2.1 | W3C Understanding WCAG 2.0 Understanding Success Criterion 2.2.4 | W3C Understanding WCAG 2.0 Understanding Success Criterion 3.2.5 | W3C Understanding WCAG 2.0",
 					"type": "String",
 					"enum": ["content-type", "default-style", "refresh", "x-ua-compatible", "content-security-policy"],
 					"condition": {
@@ -13711,7 +13711,7 @@
 			"description": "The <noscript> HTML element defines a section of HTML to be inserted if a script type on the page is unsupported or if scripting is currently turned off in the browser.",
 			"categories": ["#metadata", "#flow", "#phrasing"],
 			"permittedStructures": {
-				"summary": "When scripting is disabled and when it is a descendant of the <head> element: in any order, zero or more <link> elements, zero or more <style> elements, and zero or more <meta> elements. When scripting is disabled and when it isn't a descendant of the <head> element: any transparent content, but no <noscript> element must be among its descendants. Otherwise: flow content or phrasing content.",
+				"summary": "When scripting is disabled and when it is a descendant of the <head> element: in any order, zero or more <link> elements, zero or more <style> elements, and zero or more <meta> elements.When scripting is disabled and when it isn't a descendant of the <head> element: any transparent content, but no <noscript> element must be among its descendants.Otherwise: flow content or phrasing content.",
 				"tag": "noscript",
 				"conditional": [
 					{
@@ -14598,7 +14598,7 @@
 				},
 				{
 					"name": "defer",
-					"description": "This Boolean attribute is set to indicate to a browser that the script is meant to be executed after the document has been parsed, but before firing DOMContentLoaded. Scripts with the defer attribute will prevent the DOMContentLoaded event from firing until the script has loaded and finished evaluating. This attribute must not be used if the src attribute is absent (i.e. for inline scripts), in this case it would have no effect. The defer attribute has no effect on module scripts — they defer by default. Scripts with the defer attribute will execute in the order in which they appear in the document. This attribute allows the elimination of parser-blocking JavaScript where the browser would have to load and evaluate scripts before continuing to parse. async has a similar effect in this case.",
+					"description": "This Boolean attribute is set to indicate to a browser that the script is meant to be executed after the document has been parsed, but before firing DOMContentLoaded. Scripts with the defer attribute will prevent the DOMContentLoaded event from firing until the script has loaded and finished evaluating. Warning: This attribute must not be used if the src attribute is absent (i.e. for inline scripts), in this case it would have no effect. The defer attribute has no effect on module scripts — they defer by default. Scripts with the defer attribute will execute in the order in which they appear in the document. This attribute allows the elimination of parser-blocking JavaScript where the browser would have to load and evaluate scripts before continuing to parse. async has a similar effect in this case.",
 					"type": "Boolean"
 				},
 				{
@@ -15075,7 +15075,7 @@
 				{
 					"name": "scoped",
 					"type": "String",
-					"description": "This attribute specifies that the styles only apply to the elements of its parent(s) and children. This attribute may be re-introduced in the future per https://github.com/w3c/csswg-drafts/issues/3547. If you want to use the attribute now, you can use a polyfill.",
+					"description": "This attribute specifies that the styles only apply to the elements of its parent(s) and children. Note: This attribute may be re-introduced in the future per https://github.com/w3c/csswg-drafts/issues/3547. If you want to use the attribute now, you can use a polyfill.",
 					"deprecated": true,
 					"nonStandard": true
 				},
@@ -15821,13 +15821,13 @@
 				{
 					"name": "align",
 					"type": "String",
-					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Note: Do not use this attribute as it is obsolete (not supported) in the latest standard. To achieve the same effect as the left, center, right or justify values, use the CSS text-align property on it. To achieve the same effect as the char value, in CSS3, you can use the value of the char as the value of the text-align property.",
+					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Warning: Do not use this attribute as it is obsolete (not supported) in the latest standard. To achieve the same effect as the left, center, right or justify values, use the CSS text-align property on it. To achieve the same effect as the char value, in CSS3, you can use the value of the char as the value of the text-align property.",
 					"deprecated": true
 				},
 				{
 					"name": "bgcolor",
 					"type": "String",
-					"description": "This attribute defines the background color of each cell of the column. It is one of the 6-digit hexadecimal code as defined in sRGB, prefixed by a '#'. One of the sixteen predefined color strings may be used: black = \"#000000\" green = \"#008000\" silver = \"#C0C0C0\" lime = \"#00FF00\" gray = \"#808080\" olive = \"#808000\" white = \"#FFFFFF\" yellow = \"#FFFF00\" maroon = \"#800000\" navy = \"#000080\" red = \"#FF0000\" blue = \"#0000FF\" purple = \"#800080\" teal = \"#008080\" fuchsia = \"#FF00FF\" aqua = \"#00FFFF\" /ul> Usage note: Do not use this attribute, as it is non-standard and only implemented in some versions of Microsoft Internet Explorer: the <thead> element should be styled using CSS. To give a similar effect to the bgcolor attribute, use the CSS property background-color, on the relevant <td> or <th> elements.",
+					"description": "This attribute defines the background color of each cell of the column. It is one of the 6-digit hexadecimal code as defined in sRGB, prefixed by a '#'. One of the sixteen predefined color strings may be used: black = \"#000000\" green = \"#008000\" silver = \"#C0C0C0\" lime = \"#00FF00\" gray = \"#808080\" olive = \"#808000\" white = \"#FFFFFF\" yellow = \"#FFFF00\" maroon = \"#800000\" navy = \"#000080\" red = \"#FF0000\" blue = \"#0000FF\" purple = \"#800080\" teal = \"#008080\" fuchsia = \"#FF00FF\" aqua = \"#00FFFF\" Note: Do not use this attribute, as it is non-standard and only implemented in some versions of Microsoft Internet Explorer: the <thead> element should be styled using CSS. To give a similar effect to the bgcolor attribute, use the CSS property background-color, on the relevant <td> or <th> elements.",
 					"deprecated": true,
 					"nonStandard": true
 				},
@@ -15970,31 +15970,31 @@
 				{
 					"name": "align",
 					"type": "String",
-					"description": "A DOMString which specifies how the cell's context should be aligned horizontally within the cells in the row; this is shorthand for using align on every cell in the row individually. Possible values are: left Align the content of each cell at its left edge. center Center the contents of each cell between their left and right edges. right Align the content of each cell at its right edge. justify Widen whitespaces within the text of each cell so that the text fills the full width of each cell (full justification). char Align each cell in the row on a specific character (such that each row in the column that is configured this way will horizontally align its cells on that character). This uses the char and charoff to establish the alignment character (typically \".\" or \",\" when aligning numerical data) and the number of characters that should follow the alignment character. This alignment type was never widely supported. If no value is expressly set for align, the parent node's value is inherited. Instead of using the obsolete align attribute, you should instead use the CSS text-align property to establish left, center, right, or justify alignment for the row's cells. To apply character-based alignment, set the CSS text-align property to the alignment character (such as \".\" or \",\").",
+					"description": "A DOMString which specifies how the cell's context should be aligned horizontally within the cells in the row; this is shorthand for using align on every cell in the row individually. Possible values are: left Align the content of each cell at its left edge. center Center the contents of each cell between their left and right edges. right Align the content of each cell at its right edge. justify Widen whitespaces within the text of each cell so that the text fills the full width of each cell (full justification). char Align each cell in the row on a specific character (such that each row in the column that is configured this way will horizontally align its cells on that character). This uses the char and charoff to establish the alignment character (typically \".\" or \",\" when aligning numerical data) and the number of characters that should follow the alignment character. This alignment type was never widely supported. If no value is expressly set for align, the parent node's value is inherited. Note: Instead of using the obsolete align attribute, you should instead use the CSS text-align property to establish left, center, right, or justify alignment for the row's cells. To apply character-based alignment, set the CSS text-align property to the alignment character (such as \".\" or \",\").",
 					"deprecated": true
 				},
 				{
 					"name": "bgcolor",
 					"type": "String",
-					"description": "A DOMString specifying a color to apply to the backgrounds of each of the row's cells. This can be either an hexadecimal #RRGGBB or #RGB value or a color keyword. Omitting the attribute or setting it to null in JavaScript causes the row's cells to inherit the row's parent element's background color. The <tr> element should be styled using CSS. To give a similar effect as the bgcolor attribute, use the CSS property background-color.",
+					"description": "A DOMString specifying a color to apply to the backgrounds of each of the row's cells. This can be either an hexadecimal #RRGGBB or #RGB value or a color keyword. Omitting the attribute or setting it to null in JavaScript causes the row's cells to inherit the row's parent element's background color. Note: The <tr> element should be styled using CSS. To give a similar effect as the bgcolor attribute, use the CSS property background-color.",
 					"deprecated": true
 				},
 				{
 					"name": "char",
 					"type": "String",
-					"description": "A DOMString which sets the character to align the cells in each of the row's columns on (each row's centering that uses the same character gets aligned with others using the same character . Typical values for this include a period (\".\") or comma (\",\") when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. This attribute is not only obsolete, but was rarely implemented anyway. To achieve the same effect as the char attribute, set the CSS text-align property to the same string you would specify for the char property, such as text-align: \".\".",
+					"description": "A DOMString which sets the character to align the cells in each of the row's columns on (each row's centering that uses the same character gets aligned with others using the same character . Typical values for this include a period (\".\") or comma (\",\") when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: This attribute is not only obsolete, but was rarely implemented anyway. To achieve the same effect as the char attribute, set the CSS text-align property to the same string you would specify for the char property, such as text-align: \".\".",
 					"deprecated": true
 				},
 				{
 					"name": "charoff",
 					"type": "String",
-					"description": "A DOMString indicating the number of characters on the tail end of the column's data should be displayed after the alignment character specified by the char attribute. For example, when displaying money values for currencies that use hundredths of a unit (such as the dollar, which is divided into 100 cents), you would typically specify a value of 2, so that in tandem with char being set to \".\", the values in a column would be cleanly aligned on the decimal points, with the number of cents properly displayed to the right of the decimal point. This attribute is obsolete, and was never widely supported anyway.",
+					"description": "A DOMString indicating the number of characters on the tail end of the column's data should be displayed after the alignment character specified by the char attribute. For example, when displaying money values for currencies that use hundredths of a unit (such as the dollar, which is divided into 100 cents), you would typically specify a value of 2, so that in tandem with char being set to \".\", the values in a column would be cleanly aligned on the decimal points, with the number of cents properly displayed to the right of the decimal point. Note: This attribute is obsolete, and was never widely supported anyway.",
 					"deprecated": true
 				},
 				{
 					"name": "valign",
 					"type": "String",
-					"description": "A DOMString specifying the vertical alignment of the text within each cell in the row. Possible values for this attribute are: baseline Aligns each cell's content text as closely as possible to the bottom of the cell, handling alignment of different fonts and font sizes by aligning the characters along the baseline of the font(s) used in the row. If all of the characters in the row are the same size, the effect is the same as bottom. bottom, Draws the text in each of the row's cells as closely as possible to the bottom edge of those cells. middle Each cell's text is vertically centered. top Each cell's text is drawn as closely as possible to the top edge of the containing cell. Don't use the obsolete valign attribute. Instead, add the CSS vertical-align property to the row.",
+					"description": "A DOMString specifying the vertical alignment of the text within each cell in the row. Possible values for this attribute are: baseline Aligns each cell's content text as closely as possible to the bottom of the cell, handling alignment of different fonts and font sizes by aligning the characters along the baseline of the font(s) used in the row. If all of the characters in the row are the same size, the effect is the same as bottom. bottom, Draws the text in each of the row's cells as closely as possible to the bottom edge of those cells. middle Each cell's text is vertically centered. top Each cell's text is drawn as closely as possible to the top edge of the containing cell. Note: Don't use the obsolete valign attribute. Instead, add the CSS vertical-align property to the row.",
 					"deprecated": true
 				}
 			]
@@ -16289,7 +16289,7 @@
 				},
 				{
 					"name": "preload",
-					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience with regards to what content is loaded before the video is played. It may have one of the following values: none: Indicates that the video should not be preloaded. metadata: Indicates that only video metadata (e.g. length) is fetched. auto: Indicates that the whole video file can be downloaded, even if the user is not expected to use it. empty string: Synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the video for playback. The specification does not force the browser to follow the value of this attribute; it is a mere hint.",
+					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience with regards to what content is loaded before the video is played. It may have one of the following values: none: Indicates that the video should not be preloaded. metadata: Indicates that only video metadata (e.g. length) is fetched. auto: Indicates that the whole video file can be downloaded, even if the user is not expected to use it. empty string: Synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the video for playback. The specification does not force the browser to follow the value of this attribute; it is a mere hint.",
 					"type": "String",
 					"enum": ["none", "metadata", "auto", ""]
 				},
