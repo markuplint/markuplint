@@ -38,8 +38,9 @@
 		},
 		{
 			"name": "shape",
-			"type": "String",
-			"enum": ["rect", "circle", "poly", "default"]
+			"type": {
+				"enum": ["rect", "circle", "poly", "default"]
+			}
 		},
 		{
 			"name": "target",

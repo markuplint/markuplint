@@ -15,8 +15,9 @@
 		},
 		{
 			"name": "scope",
-			"type": "String",
-			"enum": ["row", "col", "rowgroup", "colgroup", "auto"]
+			"type": {
+				"enum": ["row", "col", "rowgroup", "colgroup", "auto"]
+			}
 		},
 		{
 			"name": "abbr",

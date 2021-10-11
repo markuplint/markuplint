@@ -11,8 +11,7 @@
 		},
 		{
 			"name": "crossorigin",
-			"type": "String",
-			"enum": ["anonymous", "use-credentials"]
+			"type": "Crossorigin"
 		},
 		{
 			"name": "loop",
@@ -24,8 +23,9 @@
 		},
 		{
 			"name": "preload",
-			"type": "String",
-			"enum": ["none", "metadata", "auto", ""]
+			"type": {
+				"enum": ["none", "metadata", "auto", ""]
+			}
 		},
 		{
 			"name": "src",

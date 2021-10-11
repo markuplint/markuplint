@@ -26,28 +26,26 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		};
 	}
 
-	if (spec.type === 'String' || spec.type === 'NonEmptyString') {
-		if (spec.type === 'NonEmptyString' && value === '') {
-			return {
-				invalidType: 'invalid-value',
-				message: `The "${name}" attribute value must not be the empty string`,
-			};
-		}
-
 		// Valid because any string value is acceptable
-		if (!spec.enum) {
-			return false;
-		}
-
+	if (typeof spec.type !== 'string' && 'enum' in spec.type) {
 		// has "enum"
-		const valid = spec.enum.includes(value.toLowerCase().trim());
+		const valid = spec.type.enum.includes(value.toLowerCase().trim());
 		if (valid) {
 			return false;
 		}
 		return {
 			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect either "${spec.enum.join('", "')}"`,
+			message: `The "${name}" attribute expect either "${spec.type.enum.join('", "')}"`,
 		};
+	}
+
+	if (spec.type === 'String' || spec.type === 'NonEmptyString') {
+		if (spec.type === 'NonEmptyString' && value === '') {
+			return {
+				invalidType: 'invalid-value',
+				message: `The "${name}" attribute value must not be the empty string`,
+		};
+	}
 	}
 
 	if (spec.type === 'Boolean') {
@@ -143,6 +141,11 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 
 	if (spec.type === 'Coords') {
 		// TODO: https://html.spec.whatwg.org/multipage/image-maps.html#attr-area-coords
+		return false;
+	}
+
+	if (spec.type === 'Crossorigin') {
+		// TODO: https://html.spec.whatwg.org/multipage/urls-and-fetching.html#cors-settings-attributes
 		return false;
 	}
 

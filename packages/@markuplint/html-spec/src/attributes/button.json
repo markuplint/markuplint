@@ -15,13 +15,15 @@
 		},
 		{
 			"name": "formenctype",
-			"type": "String",
-			"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
+			"type": {
+				"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
+			}
 		},
 		{
 			"name": "formmethod",
-			"type": "String",
-			"enum": ["post", "get", "dialog"]
+			"type": {
+				"enum": ["post", "get", "dialog"]
+			}
 		},
 		{
 			"name": "formnovalidate",
@@ -37,8 +39,9 @@
 		},
 		{
 			"name": "type",
-			"type": "String",
-			"enum": ["submit", "reset", "button"]
+			"type": {
+				"enum": ["submit", "reset", "button"]
+			}
 		},
 		{
 			"name": "value",

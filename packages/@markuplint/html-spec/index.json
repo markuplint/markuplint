@@ -9468,8 +9468,9 @@
 				{
 					"name": "shape",
 					"description": "The shape of the associated hot spot. The specifications for HTML defines the values rect, which defines a rectangular region; circle, which defines a circular region; poly, which defines a polygon; and default, which indicates the entire region beyond any defined shapes.",
-					"type": "String",
+					"type": {
 					"enum": ["rect", "circle", "poly", "default"]
+					}
 				},
 				{
 					"name": "target",
@@ -9599,8 +9600,7 @@
 				{
 					"name": "crossorigin",
 					"description": "This enumerated attribute indicates whether to use CORS to fetch the related audio file. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the image will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the image will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted used in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information.",
-					"type": "String",
-					"enum": ["anonymous", "use-credentials"]
+					"type": "Crossorigin"
 				},
 				{
 					"name": "disableremoteplayback",
@@ -9621,8 +9621,9 @@
 				{
 					"name": "preload",
 					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience. It may have one of the following values: none: Indicates that the audio should not be preloaded. metadata: Indicates that only audio metadata (e.g. length) is fetched. auto: Indicates that the whole audio file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the audio for playback. The browser is not forced by the specification to follow the value of this attribute; it is a mere hint.",
-					"type": "String",
+					"type": {
 					"enum": ["none", "metadata", "auto", ""]
+					}
 				},
 				{
 					"name": "src",
@@ -9787,8 +9788,9 @@
 				{
 					"name": "dir",
 					"description": "The direction in which text should be rendered in this element's contents. Possible values are: ltr: Indicates that the text should go in a left-to-right direction. rtl: Indicates that the text should go in a right-to-left direction.",
-					"type": "String",
+					"type": {
 					"enum": ["ltr", "rtl"]
+				}
 				}
 			]
 		},
@@ -10214,14 +10216,16 @@
 				{
 					"name": "formenctype",
 					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), specifies how to encode the form data that is submitted. Possible values: application/x-www-form-urlencoded: The default if the attribute is not used. multipart/form-data: Use to submit <input> elements with their type attributes set to file. text/plain: Specified as a debugging aid; shouldn’t be used for real form submission. If this attribute is specified, it overrides the enctype attribute of the button's form owner.",
-					"type": "String",
+					"type": {
 					"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
+					}
 				},
 				{
 					"name": "formmethod",
 					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), this attribute specifies the HTTP method used to submit the form. Possible values: post: The data from the form are included in the body of the HTTP request when sent to the server. Use when the form contains information that shouldn’t be public, like login credentials. get: The form data are appended to the form's action URL, with a ? as a separator, and the resulting URL is sent to the server. Use this method when the form has no side effects, like search forms. If specified, this attribute overrides the method attribute of the button's form owner.",
-					"type": "String",
+					"type": {
 					"enum": ["post", "get", "dialog"]
+					}
 				},
 				{
 					"name": "formnovalidate",
@@ -10241,8 +10245,9 @@
 				{
 					"name": "type",
 					"description": "The default behavior of the button. Possible values are: submit: The button submits the form data to the server. This is the default if the attribute is not specified for buttons associated with a <form>, or if the attribute is an empty or invalid value. reset: The button resets all the controls to their initial values, like <input type=\"reset\">. (This behavior tends to annoy users.) button: The button has no default behavior, and does nothing when pressed by default. It can have client-side scripts listen to the element's events, which are triggered when the events occur.",
-					"type": "String",
+					"type": {
 					"enum": ["submit", "reset", "button"]
+					}
 				},
 				{
 					"name": "value",
@@ -11280,14 +11285,16 @@
 				{
 					"name": "enctype",
 					"description": "If the value of the method attribute is post, enctype is the MIME type of the form submission. Possible values: application/x-www-form-urlencoded: The default value. multipart/form-data: Use this if the form contains <input> elements with type=file. text/plain: Introduced by HTML5 for debugging purposes. This value can be overridden by formenctype attributes on <button>, <input type=\"submit\">, or <input type=\"image\"> elements.",
-					"type": "String",
+					"type": {
 					"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
+					}
 				},
 				{
 					"name": "method",
 					"description": "The HTTP method to submit the form with. Possible (case insensitive) values: post: The POST method; form data sent as the request body. get: The GET method; form data appended to the action URL with a ? separator. Use this method when the form has no side-effects. dialog: When the form is inside a <dialog>, closes the dialog on submission. This value is overridden by formmethod attributes on <button>, <input type=\"submit\">, or <input type=\"image\"> elements.",
-					"type": "String",
+					"type": {
 					"enum": ["post", "get", "dialog"]
+					}
 				},
 				{
 					"name": "name",
@@ -11835,8 +11842,9 @@
 					"name": "loading",
 					"description": "Indicates how the browser should load the iframe: eager: Load the iframe immediately, regardless if it is outside the visible viewport (this is the default value). lazy: Defer loading of the iframe until it reaches a calculated distance from the viewport, as defined by the browser.",
 					"experimental": true,
-					"type": "String",
+					"type": {
 					"enum": ["eager", "lazy"]
+					}
 				},
 				{
 					"name": "longdesc",
@@ -11869,7 +11877,7 @@
 				{
 					"name": "sandbox",
 					"description": "Applies extra restrictions to the content in the frame. The value of the attribute can either be empty to apply all restrictions, or space-separated tokens to lift particular restrictions: allow-downloads-without-user-activation : Allows for downloads to occur without a gesture from the user. allow-downloads: Allows for downloads to occur with a gesture from the user. allow-forms: Allows the resource to submit forms. If this keyword is not used, form submission is blocked. allow-modals: Lets the resource open modal windows. allow-orientation-lock: Lets the resource lock the screen orientation. allow-pointer-lock: Lets the resource use the Pointer Lock API. allow-popups: Allows popups (such as window.open(), target=\"_blank\", or showModalDialog()). If this keyword is not used, the popup will silently fail to open. allow-popups-to-escape-sandbox: Lets the sandboxed document open new windows without those windows inheriting the sandboxing. For example, this can safely sandbox an advertisement without forcing the same restrictions upon the page the ad links to. allow-presentation: Lets the resource start a presentation session. allow-same-origin: If this token is not used, the resource is treated as being from a special origin that always fails the same-origin policy (potentially preventing access to data storage/cookies and some JavaScript APIs). allow-scripts: Lets the resource run scripts (but not create popup windows). allow-storage-access-by-user-activation : Lets the resource request access to the parent's storage capabilities with the Storage Access API. allow-top-navigation: Lets the resource navigate the top-level browsing context (the one named _top). allow-top-navigation-by-user-activation: Lets the resource navigate the top-level browsing context, but only if initiated by a user gesture. Note: When the embedded document has the same origin as the embedding page, it is strongly discouraged to use both allow-scripts and allow-same-origin, as that lets the embedded document remove the sandbox attribute — making it no more secure than not using the sandbox attribute at all. Sandboxing is useless if the attacker can display content outside a sandboxed iframe — such as if the viewer opens the frame in a new tab. Such content should be also served from a separate origin to limit potential damage. The sandbox attribute is unsupported in Internet Explorer 9 and earlier.",
-					"type": "String",
+					"type": {
 					"enum": [
 						"allow-forms",
 						"allow-modals",
@@ -11884,6 +11892,7 @@
 						"allow-top-navigation-by-user-activation",
 						"allow-downloads"
 					]
+					}
 				},
 				{
 					"name": "scrolling",
@@ -12003,14 +12012,14 @@
 				{
 					"name": "crossorigin",
 					"description": "Indicates if the fetching of the image must be done using a CORS request. Image data from a CORS-enabled image returned from a CORS request can be reused in the <canvas> element without being marked \"tainted\". If the crossorigin attribute is not specified, then a non-CORS request is sent (without the Origin request header), and the browser marks the image as tainted and restricts access to its image data, preventing its usage in <canvas> elements. If the crossorigin attribute is specified, then a CORS request is sent (with the Origin request header); but if the server does not opt into allowing cross-origin access to the image data by the origin site (by not sending any Access-Control-Allow-Origin response header, or by not including the site's origin in any Access-Control-Allow-Origin response header it does send), then the browser blocks the image from loading, and logs a CORS error to the devtools console. Allowed values: anonymous A CORS request is sent with credentials omitted (that is, no cookies, X.509 certificates, or Authorization request header). use-credentials The CORS request is sent with any credentials included (that is, cookies, X.509 certificates, and the Authorization request header). If the server does not opt into sharing credentials with the origin site (by sending back the Access-Control-Allow-Credentials: true response header), then the browser marks the image as tainted and restricts access to its image data. If the attribute has an invalid value, browsers handle it as if the anonymous value was used. See CORS settings attributes for additional information.",
-					"type": "String",
-					"enum": ["anonymous", "use-credentials"]
+					"type": "Crossorigin"
 				},
 				{
 					"name": "decoding",
 					"description": "Provides an image decoding hint to the browser. Allowed values: sync Decode the image synchronously, for atomic presentation with other content. async Decode the image asynchronously, to reduce delay in presenting other content. auto Default: no preference for the decoding mode. The browser decides what is best for the user.",
-					"type": "String",
+					"type": {
 					"enum": ["sync", "async", "auto"]
+					}
 				},
 				{
 					"name": "height",
@@ -12041,8 +12050,9 @@
 					"name": "loading",
 					"description": "Indicates how the browser should load the image: eager: Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy: Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. The intent is to avoid the network and storage bandwidth needed to handle the image until it's reasonably certain that it will be needed. This generally improves the performance of the content in most typical use cases. Note: Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when.",
 					"experimental": true,
-					"type": "String",
+					"type": {
 					"enum": ["eager", "lazy"]
+					}
 				},
 				{
 					"name": "longdesc",
@@ -12409,8 +12419,9 @@
 				{
 					"name": "formenctype",
 					"description": "Valid for the image and submit input types only. See the submit input type for more information.",
-					"type": "String",
-					"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"],
+					"type": {
+						"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
+					},
 					"condition": {
 						"self": ["[type=submit]", "[type=image]"]
 					}
@@ -12418,8 +12429,9 @@
 				{
 					"name": "formmethod",
 					"description": "Valid for the image and submit input types only. See the submit input type for more information.",
-					"type": "String",
-					"enum": ["post", "get", "dialog"],
+					"type": {
+						"enum": ["post", "get", "dialog"]
+					},
 					"condition": {
 						"self": ["[type=submit]", "[type=image]"]
 					}
@@ -13041,8 +13053,7 @@
 				{
 					"name": "crossorigin",
 					"description": "This enumerated attribute indicates whether CORS must be used when fetching the resource. CORS-enabled images can be reused in the <canvas> element without being tainted. The allowed values are: anonymous A cross-origin request (i.e. with an Origin HTTP header) is performed, but no credential is sent (i.e. no cookie, X.509 certificate, or HTTP Basic authentication). If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin HTTP header) the resource will be tainted and its usage restricted. use-credentials A cross-origin request (i.e. with an Origin HTTP header) is performed along with a credential sent (i.e. a cookie, certificate, and/or HTTP Basic authentication is performed). If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials HTTP header), the resource will be tainted and its usage restricted. If the attribute is not present, the resource is fetched without a CORS request (i.e. without sending the Origin HTTP header), preventing its non-tainted usage. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information.",
-					"type": "String",
-					"enum": ["anonymous", "use-credentials"]
+					"type": "Crossorigin"
 				},
 				{
 					"name": "disabled",
@@ -13468,8 +13479,15 @@
 				{
 					"name": "http-equiv",
 					"description": "Defines a pragma directive. The attribute is named http-equiv(alent) because all the allowed values are names of particular HTTP headers: content-security-policy Allows page authors to define a content policy for the current page. Content policies mostly specify allowed server origins and script endpoints which help guard against cross-site scripting attacks. content-type Declares the MIME type and character encoding of the document. If specified, the content attribute must have the value \"text/html; charset=utf-8\". This is equivalent to a <meta> element with the charset attribute specified, and carries the same restriction on placement within the document. Note: Can only be used in documents served with a text/html — not in documents served with an XML MIME type. default-style Sets the name of the default CSS style sheet set. x-ua-compatible If specified, the content attribute must have the value \"IE=edge\". User agents are required to ignore this pragma. refreshThis instruction specifies: The number of seconds until the page should be reloaded - only if the content attribute contains a non-negative integer. The number of seconds until the page should redirect to another - only if the content attribute contains a non-negative integer followed by the string ';url=', and a valid URL. Accessibility concernsPages set with a refresh value run the risk of having the time interval being too short. People navigating with the aid of assistive technology such as a screen reader may be unable to read through and understand the page's content before being automatically redirected. The abrupt, unannounced updating of the page content may also be disorienting for people experiencing low vision conditions. MDN Understanding WCAG, Guideline 2.1 explanations MDN Understanding WCAG, Guideline 3.1 explanations Understanding Success Criterion 2.2.1 | W3C Understanding WCAG 2.0 Understanding Success Criterion 2.2.4 | W3C Understanding WCAG 2.0 Understanding Success Criterion 3.2.5 | W3C Understanding WCAG 2.0",
-					"type": "String",
-					"enum": ["content-type", "default-style", "refresh", "x-ua-compatible", "content-security-policy"],
+					"type": {
+						"enum": [
+							"content-type",
+							"default-style",
+							"refresh",
+							"x-ua-compatible",
+							"content-security-policy"
+						]
+					},
 					"condition": {
 						"self": [":not([itemprop])", ":not([name])", ":not([charset])"]
 					}
@@ -13898,8 +13916,9 @@
 				{
 					"name": "type",
 					"description": "Sets the numbering type: a for lowercase letters A for uppercase letters i for lowercase Roman numerals I for uppercase Roman numerals 1 for numbers (default) The specified type is used for the entire list unless a different type attribute is used on an enclosed <li> element. Note: Unless the type of the list number matters (like legal or technical documents where items are referenced by their number/letter), use the CSS list-style-type property instead.",
-					"type": "String",
+					"type": {
 					"enum": ["1", "a", "A", "i", "I"]
+				}
 				}
 			]
 		},
@@ -14587,8 +14606,7 @@
 				{
 					"name": "crossorigin",
 					"description": "Normal script elements pass minimal information to the window.onerror for scripts which do not pass the standard CORS checks. To allow error logging for sites which use a separate domain for static media, use this attribute. See CORS settings attributes for a more descriptive explanation of its valid arguments.",
-					"type": "String",
-					"enum": ["anonymous", "use-credentials"]
+					"type": "Crossorigin"
 				},
 				{
 					"name": "defer",
@@ -15603,8 +15621,9 @@
 				{
 					"name": "wrap",
 					"description": "Indicates how the control wraps text. Possible values are: hard: The browser automatically inserts line breaks (CR+LF) so that each line has no more than the width of the control; the cols attribute must also be specified for this to take effect. soft: The browser ensures that all line breaks in the value consist of a CR+LF pair, but does not insert any additional line breaks. off : Like soft but changes appearance to white-space: pre so line segments exceeding cols are not wrapped and the <textarea> becomes horizontally scrollable. If this attribute is not specified, soft is its default value.",
-					"type": "String",
+					"type": {
 					"enum": ["soft", "hard"]
+				}
 				}
 			]
 		},
@@ -15769,8 +15788,9 @@
 				{
 					"name": "scope",
 					"description": "This enumerated attribute defines the cells that the header (defined in the <th>) element relates to. It may have the following values: row: The header relates to all cells of the row it belongs to. col: The header relates to all cells of the column it belongs to. rowgroup: The header belongs to a rowgroup and relates to all of its cells. These cells can be placed to the right or the left of the header, depending on the value of the dir attribute in the <table> element. colgroup: The header belongs to a colgroup and relates to all of its cells. If the scope attribute is not specified, or its value is not row, col, or rowgroup, or colgroup, then browsers automatically select the set of cells to which the header cell applies.",
-					"type": "String",
+					"type": {
 					"enum": ["row", "col", "rowgroup", "colgroup", "auto"]
+					}
 				},
 				{
 					"name": "valign",
@@ -15883,8 +15903,9 @@
 				},
 				{
 					"name": "kind",
-					"type": "String",
-					"enum": ["subtitles", "captions", "descriptions", "chapters", "metadata"],
+					"type": {
+						"enum": ["subtitles", "captions", "descriptions", "chapters", "metadata"]
+					},
 					"description": ""
 				},
 				{
@@ -16235,14 +16256,14 @@
 					"name": "controlslist",
 					"description": "The controlslist attribute, when specified, helps the browser select what controls to show on the media element whenever the browser shows its own set of controls (e.g. when the controls attribute is specified). The allowed values are nodownload, nofullscreen and noremoteplayback. Use the disablepictureinpicture attribute if you want to disable the Picture-In-Picture mode (and the control).",
 					"experimental": true,
-					"type": "String",
+					"type": {
 					"enum": ["nodownload", "nofullscreen", "noremoteplayback"]
+					}
 				},
 				{
 					"name": "crossorigin",
 					"description": "This enumerated attribute indicates whether to use CORS to fetch the related video. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the image will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the image will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted used in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information.",
-					"type": "String",
-					"enum": ["anonymous", "use-credentials"]
+					"type": "Crossorigin"
 				},
 				{
 					"name": "disablepictureinpicture",
@@ -16284,8 +16305,9 @@
 				{
 					"name": "preload",
 					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience with regards to what content is loaded before the video is played. It may have one of the following values: none: Indicates that the video should not be preloaded. metadata: Indicates that only video metadata (e.g. length) is fetched. auto: Indicates that the whole video file can be downloaded, even if the user is not expected to use it. empty string: Synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the video for playback. The specification does not force the browser to follow the value of this attribute; it is a mere hint.",
-					"type": "String",
+					"type": {
 					"enum": ["none", "metadata", "auto", ""]
+					}
 				},
 				{
 					"name": "src",

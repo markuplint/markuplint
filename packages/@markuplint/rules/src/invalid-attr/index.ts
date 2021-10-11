@@ -69,8 +69,9 @@ export default createRule<true, Option>({
 					if ('enum' in customRule) {
 						invalid = typeCheck(name.toLowerCase(), value, true, {
 							name,
-							type: 'String',
-							enum: customRule.enum,
+							type: {
+								enum: customRule.enum,
+							},
 							description: '',
 						});
 					} else if ('pattern' in customRule) {
