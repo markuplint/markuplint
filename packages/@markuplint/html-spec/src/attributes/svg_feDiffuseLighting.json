@@ -1,0 +1,40 @@
+{
+	"tag": "feDiffuseLighting",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		{
+			"name": "in",
+			"type": [
+				{
+					"enum": [
+						"SourceGraphic",
+						"SourceAlpha",
+						"BackgroundImage",
+						"BackgroundAlpha",
+						"FillPaint",
+						"StrokePaint"
+					]
+				},
+				"CSSCustomIdent"
+			]
+		},
+		{
+			"name": "surfaceScale",
+			"type": "Float",
+			"defaultValue": "1"
+		},
+		{
+			"name": "diffuseConstant",
+			"type": "Float",
+			"defaultValue": "1"
+		},
+		{
+			"name": "kernelUnitLength",
+			"type": "SVGNumberOptionalNumber",
+			"deprecated": true
+		}
+	]
+}

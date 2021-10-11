@@ -1,0 +1,8 @@
+{
+	"tag": "feComposite",
+	"contents": [
+		{
+			"zeroOrMore": ["svg:animate", "svg:set"]
+		}
+	]
+}

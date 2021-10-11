@@ -1,0 +1,23 @@
+{
+	"tag": "style",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		{
+			"name": "type",
+			"type": "String",
+			"defaultValue": "text/css"
+		},
+		{
+			"name": "media",
+			"type": "String",
+			"defaultValue": "all"
+		},
+		{
+			"name": "title",
+			"type": "String"
+		}
+	]
+}

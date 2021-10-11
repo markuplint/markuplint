@@ -1,0 +1,8 @@
+{
+	"tag": "view",
+	"contents": [
+		{
+			"zeroOrMore": "#SVGDescriptive"
+		}
+	]
+}

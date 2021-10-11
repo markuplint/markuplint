@@ -1,0 +1,8 @@
+{
+	"tag": "feGaussianBlur",
+	"contents": [
+		{
+			"zeroOrMore": ["svg:animate", "svg:set"]
+		}
+	]
+}

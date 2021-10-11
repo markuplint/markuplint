@@ -1,0 +1,8 @@
+{
+	"tag": "feSpotLight",
+	"contents": [
+		{
+			"zeroOrMore": ["svg:animate", "svg:set"]
+		}
+	]
+}

@@ -1,0 +1,16 @@
+{
+	"tag": "set",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGAnimationTimingAttrs",
+		"#SVGOtherAnimationAttrs",
+		"#SVGAnimationEventAttrs",
+		{
+			"name": "to",
+			"type": "String"
+		}
+	]
+}

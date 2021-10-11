@@ -1,0 +1,15 @@
+{
+	"tag": "mesh",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGGraphicalEventAttrs",
+		"#ariaAttrs",
+		{
+			"name": "href",
+			"type": "URL"
+		}
+	]
+}

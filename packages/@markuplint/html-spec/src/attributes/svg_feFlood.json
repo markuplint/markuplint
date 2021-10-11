@@ -1,0 +1,35 @@
+{
+	"tag": "feFlood",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		{
+			"name": "in",
+			"type": [
+				{
+					"enum": [
+						"SourceGraphic",
+						"SourceAlpha",
+						"BackgroundImage",
+						"BackgroundAlpha",
+						"FillPaint",
+						"StrokePaint"
+					]
+				},
+				"CSSCustomIdent"
+			]
+		},
+		{
+			"name": "flood-color",
+			"type": "Color",
+			"defaultValue": "black"
+		},
+		{
+			"name": "flood-opacity",
+			"type": "SVGAlphaValue",
+			"defaultValue": "1"
+		}
+	]
+}

@@ -1,0 +1,8 @@
+{
+	"tag": "feImage",
+	"contents": [
+		{
+			"zeroOrMore": ["svg:animate", "svg:animateTransform", "svg:set"]
+		}
+	]
+}

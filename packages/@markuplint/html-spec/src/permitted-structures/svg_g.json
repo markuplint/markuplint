@@ -1,5 +1,5 @@
 {
-	"tag": "svg",
+	"tag": "g",
 	"contents": [
 		{
 			"zeroOrMore": [
@@ -25,11 +25,7 @@
 				"svg:style",
 				"svg:switch",
 				"svg:text",
-				"svg:view",
-				"html:video",
-				"html:audio",
-				"html:iframe",
-				"html:canvas"
+				"svg:view"
 			]
 		}
 	]

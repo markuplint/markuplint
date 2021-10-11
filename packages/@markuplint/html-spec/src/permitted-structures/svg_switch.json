@@ -1,0 +1,20 @@
+{
+	"tag": "switch",
+	"contents": [
+		{
+			"zeroOrMore": [
+				"#SVGAnimation",
+				"#SVGDescriptive",
+				"#SVGShape",
+				"svg:a",
+				"svg:foreignObject",
+				"svg:g",
+				"svg:image",
+				"svg:svg",
+				"svg:switch",
+				"svg:text",
+				"svg:use"
+			]
+		}
+	]
+}

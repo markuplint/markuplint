@@ -1,0 +1,40 @@
+{
+	"tag": "feDropShadow",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		{
+			"name": "in",
+			"type": [
+				{
+					"enum": [
+						"SourceGraphic",
+						"SourceAlpha",
+						"BackgroundImage",
+						"BackgroundAlpha",
+						"FillPaint",
+						"StrokePaint"
+					]
+				},
+				"CSSCustomIdent"
+			]
+		},
+		{
+			"name": "dx",
+			"type": "Float",
+			"defaultValue": "2"
+		},
+		{
+			"name": "dy",
+			"type": "Float",
+			"defaultValue": "2"
+		},
+		{
+			"name": "stdDeviation",
+			"type": "SVGNumberOptionalNumber",
+			"defaultValue": "0"
+		}
+	]
+}

@@ -1,0 +1,68 @@
+{
+	"tag": "feComposite",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		{
+			"name": "in",
+			"type": [
+				{
+					"enum": [
+						"SourceGraphic",
+						"SourceAlpha",
+						"BackgroundImage",
+						"BackgroundAlpha",
+						"FillPaint",
+						"StrokePaint"
+					]
+				},
+				"CSSCustomIdent"
+			]
+		},
+		{
+			"name": "in2",
+			"type": [
+				{
+					"enum": [
+						"SourceGraphic",
+						"SourceAlpha",
+						"BackgroundImage",
+						"BackgroundAlpha",
+						"FillPaint",
+						"StrokePaint"
+					]
+				},
+				"CSSCustomIdent"
+			]
+		},
+		{
+			"name": "operator",
+			"type": {
+				"enum": ["over", "in", "out", "atop", "xor", "lighter", "arithmetic"]
+			},
+			"defaultValue": "over"
+		},
+		{
+			"name": "k1",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "k2",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "k3",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "k4",
+			"type": "Float",
+			"defaultValue": "0"
+		}
+	]
+}

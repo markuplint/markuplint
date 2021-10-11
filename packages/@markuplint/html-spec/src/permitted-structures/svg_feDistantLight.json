@@ -1,0 +1,8 @@
+{
+	"tag": "feDistantLight",
+	"contents": [
+		{
+			"zeroOrMore": ["svg:animate", "svg:set"]
+		}
+	]
+}

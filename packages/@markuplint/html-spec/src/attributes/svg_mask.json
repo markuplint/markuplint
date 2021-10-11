@@ -1,0 +1,43 @@
+{
+	"tag": "mask",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "x",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "-10%"
+		},
+		{
+			"name": "y",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "-10%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "120%"
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "120%"
+		},
+		{
+			"name": "maskUnits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+			},
+			"defaultValue": "objectBoundingBox"
+		},
+		{
+			"name": "maskContentUnits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+			},
+			"defaultValue": "userSpaceOnUse"
+		}
+	]
+}

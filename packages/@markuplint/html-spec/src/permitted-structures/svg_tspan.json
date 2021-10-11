@@ -1,0 +1,17 @@
+{
+	"tag": "tspan",
+	"contents": [
+		{
+			"zeroOrMore": [
+				"#SVGDescriptive",
+				"svg:a",
+				"svg:altGlyph",
+				"svg:animate",
+				"svg:animateColor",
+				"svg:set",
+				"svg:tref",
+				"svg:tspan"
+			]
+		}
+	]
+}

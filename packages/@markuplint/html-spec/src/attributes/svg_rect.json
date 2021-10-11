@@ -1,0 +1,46 @@
+{
+	"tag": "rect",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGGraphicalEventAttrs",
+		"#SVGPresentationAttrs",
+		"#ariaAttrs",
+		{
+			"name": "x",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "width",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "height",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "rx",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "ry",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "pathLength",
+			"type": "Float"
+		}
+	]
+}

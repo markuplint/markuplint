@@ -1,0 +1,4 @@
+{
+	"tag": "desc",
+	"attributes": ["#SVGCoreAttrs", "#SVGStylingAttrs", "#SVGGlobalEventAttrs", "#SVGDocumentElementEventAttrs"]
+}

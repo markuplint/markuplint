@@ -1,0 +1,8 @@
+{
+	"tag": "polygon",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+		}
+	]
+}

@@ -1,0 +1,20 @@
+{
+	"tag": "animateTransform",
+	"attributes": [
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGAnimationEventAttrs",
+		"#XLinkAttrs",
+		"#SVGAnimationAttributeTargetAttrs",
+		"#SVGAnimationTimingAttrs",
+		"#SVGAnimationValueAttrs",
+		"#SVGAnimationAdditionAttrs",
+		{
+			"name": "type",
+			"type": {
+				"enum": ["translate", "scale", "rotate", "skewX", "skewY"]
+			},
+			"defaultValue": "translate"
+		}
+	]
+}

@@ -1,0 +1,42 @@
+{
+	"tag": "use",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGGraphicalEventAttrs",
+		"#SVGPresentationAttrs",
+		"#ariaAttrs",
+		"#XLinkAttrs",
+		{
+			"name": "href",
+			"type": "URL"
+		},
+		{
+			"name": "xlink:href",
+			"type": "SVGIRI",
+			"deprecated": true
+		},
+		{
+			"name": "x",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "width",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "height",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		}
+	]
+}

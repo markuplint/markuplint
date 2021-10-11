@@ -1,0 +1,8 @@
+{
+	"tag": "text",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "#SVGTextContentChild", "svg:a"]
+		}
+	]
+}

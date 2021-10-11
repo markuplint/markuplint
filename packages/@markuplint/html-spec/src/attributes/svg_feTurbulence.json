@@ -1,0 +1,37 @@
+{
+	"tag": "feTurbulence",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		{
+			"name": "baseFrequency",
+			"type": "SVGNumberOptionalNumber",
+			"defaultValue": "0"
+		},
+		{
+			"name": "numOctaves",
+			"type": "Int",
+			"defaultValue": "1"
+		},
+		{
+			"name": "seed",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "stitchTiles",
+			"type": {
+				"enum": ["noStitch", "stitch"]
+			},
+			"defaultValue": "noStitch"
+		},
+		{
+			"name": "type",
+			"type": {
+				"enum": ["fractalNoise", "turbulence"]
+			}
+		}
+	]
+}

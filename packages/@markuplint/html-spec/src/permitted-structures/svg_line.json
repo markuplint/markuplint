@@ -1,0 +1,8 @@
+{
+	"tag": "line",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+		}
+	]
+}

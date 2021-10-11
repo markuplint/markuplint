@@ -1,0 +1,8 @@
+{
+	"tag": "feColorMatrix",
+	"contents": [
+		{
+			"zeroOrMore": ["svg:animate", "svg:set"]
+		}
+	]
+}

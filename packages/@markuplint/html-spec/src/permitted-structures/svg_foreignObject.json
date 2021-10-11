@@ -1,0 +1,21 @@
+{
+	"tag": "foreignObject",
+	"contents": [
+		{
+			"zeroOrMore": [
+				"#phrasing",
+				"#flow",
+				"#interactive",
+				"#heading",
+				"#sectioning",
+				"#metadata",
+				"#transparent",
+				"#embedded",
+				"#palpable",
+				"#script-supporting",
+				"#text",
+				"#SVGOtherXMLNamespace"
+			]
+		}
+	]
+}

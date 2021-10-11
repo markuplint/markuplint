@@ -1,0 +1,8 @@
+{
+	"tag": "feBlend",
+	"contents": [
+		{
+			"zeroOrMore": ["svg:animate", "svg:set"]
+		}
+	]
+}

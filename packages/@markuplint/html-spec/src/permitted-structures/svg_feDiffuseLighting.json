@@ -1,0 +1,14 @@
+{
+	"tag": "feDiffuseLighting",
+	"contents": [
+		{
+			"zeroOrMore": "#SVGDescriptive"
+		},
+		{
+			"require": "#SVGLightSource"
+		},
+		{
+			"zeroOrMore": "#SVGDescriptive"
+		}
+	]
+}

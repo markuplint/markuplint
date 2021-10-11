@@ -1,0 +1,4 @@
+{
+	"tag": "meshpatch",
+	"attributes": ["#SVGCoreAttrs", "#SVGStylingAttrs", "#SVGPresentationAttrs", "#SVGGlobalEventAttrs"]
+}

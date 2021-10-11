@@ -1,0 +1,8 @@
+{
+	"tag": "polyline",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+		}
+	]
+}

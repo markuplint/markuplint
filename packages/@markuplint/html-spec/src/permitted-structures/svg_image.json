@@ -1,0 +1,8 @@
+{
+	"tag": "image",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+		}
+	]
+}

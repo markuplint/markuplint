@@ -1,0 +1,41 @@
+{
+	"tag": "hatch",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "x",
+			"type": "String"
+		},
+		{
+			"name": "y",
+			"type": "String"
+		},
+		{
+			"name": "pitch",
+			"type": "String"
+		},
+		{
+			"name": "rotate",
+			"type": "String"
+		},
+		{
+			"name": "hatchUnits",
+			"type": "String"
+		},
+		{
+			"name": "hatchContentUnits",
+			"type": "String"
+		},
+		{
+			"name": "transform",
+			"type": "String"
+		},
+		{
+			"name": "href",
+			"type": "String"
+		}
+	]
+}

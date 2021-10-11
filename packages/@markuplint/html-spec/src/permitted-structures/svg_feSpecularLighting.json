@@ -1,0 +1,14 @@
+{
+	"tag": "feSpecularLighting",
+	"contents": [
+		{
+			"zeroOrMore": "#SVGDescriptive"
+		},
+		{
+			"require": "#SVGLightSource"
+		},
+		{
+			"zeroOrMore": "#SVGDescriptive"
+		}
+	]
+}

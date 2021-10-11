@@ -1,0 +1,8 @@
+{
+	"tag": "circle",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+		}
+	]
+}

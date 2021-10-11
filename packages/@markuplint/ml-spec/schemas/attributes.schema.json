@@ -5,6 +5,7 @@
 				{
 					"type": "object",
 					"additionalProperties": false,
+					"required": ["ancestor"],
 					"properties": {
 						"ancestor": {
 							"type": "string"
@@ -14,6 +15,7 @@
 				{
 					"type": "object",
 					"additionalProperties": false,
+					"required": ["self"],
 					"properties": {
 						"self": {
 							"type": ["string", "array"],
@@ -66,7 +68,25 @@
 						"Target",
 						"URL",
 						"URLHash",
-						"URLList"
+						"URLList",
+						"CSSAngle",
+						"CSSBlendMode",
+						"CSSCustomIdent",
+						"CSSTransformList",
+						"SVGAlphaValue",
+						"SVGBeginValueList",
+						"SVGColorMatrix",
+						"SVGIRI",
+						"SVGKernelMatrix",
+						"SVGKeyPoints",
+						"SVGLength",
+						"SVGNumberOptionalNumber",
+						"SVGOpacityValue",
+						"SVGPathCommands",
+						"SVGPercentage",
+						"SVGPoints",
+						"SVGPreserveAspectRatio",
+						"SVGViewBox"
 					]
 				},
 				{
@@ -159,7 +179,24 @@
 						"type": "string",
 						"enum": [
 							"#globalAttrs",
-							"#ariaAttrs"
+							"#ariaAttrs",
+							"#SVGAnimationAdditionAttrs",
+							"#SVGAnimationAttributeTargetAttrs",
+							"#SVGAnimationEventAttrs",
+							"#SVGAnimationTimingAttrs",
+							"#SVGAnimationValueAttrs",
+							"#SVGConditionalProcessingAttrs",
+							"#SVGCoreAttrs",
+							"#SVGDocumentElementEventAttrs",
+							"#SVGDocumentEventAttrs",
+							"#SVGFilterPrimitiveAttrs",
+							"#SVGGlobalEventAttrs",
+							"#SVGGraphicalEventAttrs",
+							"#SVGOtherAnimationAttrs",
+							"#SVGPresentationAttrs",
+							"#SVGStylingAttrs",
+							"#SVGTransferFunctionAttrs",
+							"#XLinkAttrs"
 						]
 					},
 					{

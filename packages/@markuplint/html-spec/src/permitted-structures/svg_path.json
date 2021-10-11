@@ -1,0 +1,8 @@
+{
+	"tag": "path",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+		}
+	]
+}

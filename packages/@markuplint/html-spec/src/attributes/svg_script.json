@@ -1,0 +1,26 @@
+{
+	"tag": "script",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		{
+			"name": "crossorigin",
+			"type": "Crossorigin"
+		},
+		{
+			"name": "href",
+			"type": "URL"
+		},
+		{
+			"name": "type",
+			"type": "String",
+			"defaultValue": "application/ecmascript"
+		},
+		{
+			"name": "xlink:href",
+			"type": "URL"
+		}
+	]
+}

@@ -1,0 +1,8 @@
+{
+	"tag": "feMorphology",
+	"contents": [
+		{
+			"zeroOrMore": ["svg:animate", "svg:set"]
+		}
+	]
+}

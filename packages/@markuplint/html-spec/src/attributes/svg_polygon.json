@@ -1,0 +1,20 @@
+{
+	"tag": "polygon",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGGraphicalEventAttrs",
+		"#SVGPresentationAttrs",
+		"#ariaAttrs",
+		{
+			"name": "points",
+			"type": "SVGPoints"
+		},
+		{
+			"name": "pathLength",
+			"type": "Float"
+		}
+	]
+}

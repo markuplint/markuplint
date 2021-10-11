@@ -1,0 +1,45 @@
+{
+	"tag": "feSpecularLighting",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		{
+			"name": "in",
+			"type": [
+				{
+					"enum": [
+						"SourceGraphic",
+						"SourceAlpha",
+						"BackgroundImage",
+						"BackgroundAlpha",
+						"FillPaint",
+						"StrokePaint"
+					]
+				},
+				"CSSCustomIdent"
+			]
+		},
+		{
+			"name": "surfaceScale",
+			"type": "Float",
+			"defaultValue": "1"
+		},
+		{
+			"name": "specularConstant",
+			"type": "Float",
+			"defaultValue": "1"
+		},
+		{
+			"name": "specularExponent",
+			"type": "Float",
+			"defaultValue": "1"
+		},
+		{
+			"name": "kernelUnitLength",
+			"type": "SVGNumberOptionalNumber",
+			"deprecated": true
+		}
+	]
+}

@@ -1,0 +1,11 @@
+{
+	"tag": "mpath",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#XLinkAttrs",
+		{
+			"name": "xlink:href",
+			"type": "SVGIRI"
+		}
+	]
+}

@@ -1,0 +1,65 @@
+{
+	"tag": "svg",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGGraphicalEventAttrs",
+		"#SVGDocumentEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs",
+		"#ariaAttrs",
+		{
+			"name": "x",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "width",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "height",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "preserveAspectRatio",
+			"type": "SVGPreserveAspectRatio",
+			"defaultValue": "xMidYMid meet"
+		},
+		{
+			"name": "viewBox",
+			"type": "SVGViewBox"
+		},
+		{
+			"name": "baseProfile",
+			"type": "String",
+			"deprecated": true
+		},
+		{
+			"name": "contentScriptType",
+			"type": "String",
+			"defaultValue": "application/ecmascript",
+			"deprecated": true
+		},
+		{
+			"name": "contentStyleType",
+			"type": "String",
+			"defaultValue": "text/css",
+			"deprecated": true
+		},
+		{
+			"name": "version",
+			"type": "String",
+			"deprecated": true
+		}
+	]
+}

@@ -1,0 +1,29 @@
+{
+	"tag": "animateMotion",
+	"conditional": [
+		{
+			"condition": {
+				"hasAttr": "path"
+			},
+			"contents": [
+				{
+					"zeroOrMore": "#SVGDescriptive"
+				}
+			]
+		}
+	],
+	"contents": [
+		{
+			"zeroOrMore": "#SVGDescriptive"
+		},
+		{
+			"oneOrMore": "svg:mpath"
+		},
+		{
+			"zeroOrMore": "#SVGDescriptive"
+		},
+		{
+			"zeroOrMore": "svg:mpath"
+		}
+	]
+}

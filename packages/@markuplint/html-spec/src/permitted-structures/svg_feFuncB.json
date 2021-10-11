@@ -1,0 +1,8 @@
+{
+	"tag": "feFuncB",
+	"contents": [
+		{
+			"zeroOrMore": ["svg:animate", "svg:set"]
+		}
+	]
+}

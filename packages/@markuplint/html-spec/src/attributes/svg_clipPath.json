@@ -1,0 +1,16 @@
+{
+	"tag": "clipPath",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "clipPathUnits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+			},
+			"defaultValue": "userSpaceOnUse"
+		}
+	]
+}

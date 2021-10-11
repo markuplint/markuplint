@@ -1,0 +1,25 @@
+{
+	"tag": "stop",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "offset",
+			"type": ["Float", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "stop-color",
+			"type": "Color",
+			"defaultValue": "black"
+		},
+		{
+			"name": "stop-opacity",
+			"type": "SVGOpacityValue",
+			"defaultValue": "1"
+		}
+	]
+}

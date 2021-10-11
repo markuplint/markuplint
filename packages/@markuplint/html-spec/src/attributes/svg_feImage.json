@@ -1,0 +1,24 @@
+{
+	"tag": "feImage",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		"#XLinkAttrs",
+		{
+			"name": "preserveAspectRatio",
+			"type": "SVGPreserveAspectRatio",
+			"defaultValue": "xMidYMid meet"
+		},
+		{
+			"name": "href",
+			"type": "SVGIRI"
+		},
+		{
+			"name": "xlink:href",
+			"type": "SVGIRI",
+			"deprecated": true
+		}
+	]
+}

@@ -1,0 +1,65 @@
+{
+	"tag": "pattern",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGPresentationAttrs",
+		"#XLinkAttrs",
+		{
+			"name": "x",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "href",
+			"type": "URL"
+		},
+		{
+			"name": "patternContentUnits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+			},
+			"defaultValue": "userSpaceOnUse"
+		},
+		{
+			"name": "patternUnits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+			},
+			"defaultValue": "objectBoundingBox"
+		},
+		{
+			"name": "patternTransform",
+			"type": "CSSTransformList"
+		},
+		{
+			"name": "preserveAspectRatio",
+			"type": "SVGPreserveAspectRatio"
+		},
+		{
+			"name": "viewBox",
+			"type": "SVGViewBox"
+		},
+		{
+			"name": "xlink:href",
+			"type": "URL",
+			"deprecated": true
+		}
+	]
+}

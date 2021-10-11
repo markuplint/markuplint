@@ -1,0 +1,36 @@
+{
+	"tag": "feColorMatrix",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		{
+			"name": "in",
+			"type": [
+				{
+					"enum": [
+						"SourceGraphic",
+						"SourceAlpha",
+						"BackgroundImage",
+						"BackgroundAlpha",
+						"FillPaint",
+						"StrokePaint"
+					]
+				},
+				"CSSCustomIdent"
+			]
+		},
+		{
+			"name": "type",
+			"type": {
+				"enum": ["matrix", "saturate", "hueRotate", "luminanceToAlpha"]
+			},
+			"defaultValue": "matrix"
+		},
+		{
+			"name": "values",
+			"type": "SVGColorMatrix"
+		}
+	]
+}

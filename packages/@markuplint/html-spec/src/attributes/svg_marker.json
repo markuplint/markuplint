@@ -1,0 +1,71 @@
+{
+	"tag": "marker",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGPresentationAttrs",
+		"#ariaAttrs",
+		{
+			"name": "markerWidth",
+			"type": ["SVGLength", "SVGPercentage", "Float"],
+			"defaultValue": "3"
+		},
+		{
+			"name": "markerHeight",
+			"type": ["SVGLength", "SVGPercentage", "Float"],
+			"defaultValue": "3"
+		},
+		{
+			"name": "markerUnits",
+			"type": {
+				"enum": ["userSpaceOnUse", "strokeWidth"]
+			},
+			"defaultValue": "strokeWidth"
+		},
+		{
+			"name": "orient",
+			"type": [
+				{
+					"enum": ["auto", "auto-start-reverse"]
+				},
+				"CSSAngle",
+				"Float"
+			],
+			"defaultValue": "0"
+		},
+		{
+			"name": "preserveAspectRatio",
+			"type": "SVGPreserveAspectRatio",
+			"defaultValue": "xMidYMid meet"
+		},
+		{
+			"name": "refX",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				"Float",
+				{
+					"enum": ["left", "center", "right"]
+				}
+			],
+			"defaultValue": "0"
+		},
+		{
+			"name": "refY",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				"Float",
+				{
+					"enum": ["top", "center", "bottom"]
+				}
+			],
+			"defaultValue": "0"
+		},
+		{
+			"name": "viewBox",
+			"type": "SVGViewBox"
+		}
+	]
+}

@@ -1,0 +1,8 @@
+{
+	"tag": "feConvolveMatrix",
+	"contents": [
+		{
+			"zeroOrMore": ["svg:animate", "svg:set"]
+		}
+	]
+}

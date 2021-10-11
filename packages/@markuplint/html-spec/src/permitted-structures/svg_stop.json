@@ -1,0 +1,8 @@
+{
+	"tag": "stop",
+	"contents": [
+		{
+			"zeroOrMore": ["svg:animate", "svg:animateColor", "svg:set"]
+		}
+	]
+}

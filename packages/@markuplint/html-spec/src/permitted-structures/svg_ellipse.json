@@ -1,0 +1,8 @@
+{
+	"tag": "ellipse",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+		}
+	]
+}

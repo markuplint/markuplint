@@ -1,0 +1,8 @@
+{
+	"tag": "rect",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+		}
+	]
+}

@@ -1,0 +1,8 @@
+{
+	"tag": "feOffset",
+	"contents": [
+		{
+			"zeroOrMore": ["svg:animate", "svg:set"]
+		}
+	]
+}
