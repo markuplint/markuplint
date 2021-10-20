@@ -26,7 +26,7 @@ export default createRule<true, Option>({
 	defaultOptions: {},
 	async verify(context) {
 		await context.document.walkOn('Element', async node => {
-			const attrSpecs = getAttrSpecs(node.nodeName, context.document.specs);
+			const attrSpecs = getAttrSpecs(node.nodeName, node.namespaceURI, context.document.specs);
 
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'html-attr' && attr.isDirective) {

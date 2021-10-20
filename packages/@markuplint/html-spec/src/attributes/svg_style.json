@@ -7,7 +7,7 @@
 		"#SVGDocumentElementEventAttrs",
 		{
 			"name": "type",
-			"type": "String",
+			"type": "MIMEType",
 			"defaultValue": "text/css"
 		},
 		{

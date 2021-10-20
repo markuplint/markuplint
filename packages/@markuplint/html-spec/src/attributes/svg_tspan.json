@@ -9,16 +9,6 @@
 		"#SVGPresentationAttrs",
 		"#ariaAttrs",
 		{
-			"name": "x",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0"
-		},
-		{
-			"name": "y",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0"
-		},
-		{
 			"name": "dx",
 			"type": ["SVGLength", "SVGPercentage"]
 		},
@@ -38,6 +28,16 @@
 		{
 			"name": "textLength",
 			"type": ["SVGLength", "SVGPercentage", "Float"]
+		},
+		{
+			"name": "x",
+			"type": ["SVGLengthList", "SVGPercentageList"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"type": ["SVGLengthList", "SVGPercentageList"],
+			"defaultValue": "0"
 		}
 	]
 }

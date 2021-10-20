@@ -19,8 +19,11 @@ export function getSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 			if (extendedSpec.def['#ariaAttrs']) {
 				result.def['#ariaAttrs'] = [...result.def['#ariaAttrs'], ...extendedSpec.def['#ariaAttrs']];
 			}
-			if (extendedSpec.def['#globalAttrs']) {
-				result.def['#globalAttrs'] = [...result.def['#globalAttrs'], ...extendedSpec.def['#globalAttrs']];
+			if (extendedSpec.def['#globalAttrs']?.['#extends']) {
+				result.def['#globalAttrs']['#HTMLGlobalAttrs'] = [
+					...(result.def['#globalAttrs']?.['#HTMLGlobalAttrs'] || []),
+					...extendedSpec.def['#globalAttrs']?.['#extends'],
+				];
 			}
 			if (extendedSpec.def['#roles']) {
 				result.def['#roles'] = [...result.def['#roles'], ...extendedSpec.def['#roles']];

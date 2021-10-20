@@ -1,4 +1,19 @@
 {
 	"tag": "feMerge",
-	"attributes": ["#SVGCoreAttrs", "#SVGStylingAttrs", "#SVGPresentationAttrs", "#SVGFilterPrimitiveAttrs"]
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGStylingAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		}
+	]
 }

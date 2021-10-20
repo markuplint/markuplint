@@ -15,27 +15,15 @@
 		},
 		{
 			"name": "xlink:href",
-			"type": "SVGIRI",
+			"type": "IRI",
 			"deprecated": true
 		},
 		{
 			"name": "x",
-			"type": ["SVGLength", "SVGPercentage"],
 			"defaultValue": "0"
 		},
 		{
 			"name": "y",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0"
-		},
-		{
-			"name": "width",
-			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
-			"defaultValue": "0"
-		},
-		{
-			"name": "height",
-			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
 			"defaultValue": "0"
 		}
 	]

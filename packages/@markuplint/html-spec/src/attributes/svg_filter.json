@@ -6,26 +6,6 @@
 		"#SVGPresentationAttrs",
 		"#XLinkAttrs",
 		{
-			"name": "x",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "-10%"
-		},
-		{
-			"name": "y",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "-10%"
-		},
-		{
-			"name": "width",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "120%"
-		},
-		{
-			"name": "height",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "120%"
-		},
-		{
 			"name": "filterRes",
 			"type": "SVGNumberOptionalNumber"
 		},
@@ -45,8 +25,26 @@
 		},
 		{
 			"name": "xlink:href",
-			"type": "SVGIRI",
+			"type": "IRI",
 			"deprecated": true
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "120%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "120%"
+		},
+		{
+			"name": "x",
+			"defaultValue": "-10%"
+		},
+		{
+			"name": "y",
+			"defaultValue": "-10%"
 		}
 	]
 }

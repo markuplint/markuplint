@@ -3,22 +3,33 @@ import { Element, RuleConfigValue } from '@markuplint/ml-core';
 import html from '@markuplint/html-spec';
 import { typeCheck } from './type-check';
 
-export function getAttrSpecs(tag: string, { specs, def }: MLMLSpec) {
-	tag = tag.toLowerCase();
+export function getAttrSpecs(tag: string, namespaceURI: string, { specs, def }: MLMLSpec) {
+	const namespace = namespaceURI === 'http://www.w3.org/2000/svg' ? 'svg:' : '';
+	tag = namespace + tag.toLowerCase();
+
 	const spec = specs.find(spec => spec.name === tag);
+
 	if (!spec) {
 		return null;
 	}
-	const hasGlobalAttr = spec.attributes.some(attr => attr === '#globalAttrs');
-
+	const globalAttrs = def['#globalAttrs'];
 	const attrs: Attribute[] = [];
 
-	if (hasGlobalAttr) {
-		attrs.push(...def['#globalAttrs']);
+	if (namespace === '') {
+		// It's HTML tag
+		const hasGlobalAttr = spec.attributes.some(attr => attr === '#globalAttrs');
+		if (hasGlobalAttr) {
+			attrs.push(...(globalAttrs['#HTMLGlobalAttrs'] || []));
+		}
 	}
 
 	for (const attr of spec.attributes) {
 		if (typeof attr === 'string') {
+			const globalAttr = globalAttrs[attr];
+			if (!globalAttr) {
+				continue;
+			}
+			attrs.push(...globalAttr);
 			continue;
 		}
 
@@ -34,6 +45,8 @@ export function getAttrSpecs(tag: string, { specs, def }: MLMLSpec) {
 		attrs.push(attr);
 	}
 
+	attrs.push(...(globalAttrs['#extends'] || []));
+
 	return attrs;
 }
 
@@ -43,11 +56,11 @@ export function attrMatches<T extends RuleConfigValue, R>(node: Element<T, R>, c
 	}
 
 	let matched = false;
-	if (condition.self) {
+	if ('self' in condition && condition.self) {
 		const condSelector = Array.isArray(condition.self) ? condition.self.join(',') : condition.self;
 		matched = node.matches(condSelector);
 	}
-	if (condition.ancestor) {
+	if ('ancestor' in condition && condition.ancestor) {
 		let _node = node.parentNode;
 		while (_node) {
 			if (_node.type === 'Element') {

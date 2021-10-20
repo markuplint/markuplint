@@ -13,12 +13,22 @@
 		},
 		{
 			"name": "href",
-			"type": "SVGIRI"
+			"type": "IRI"
 		},
 		{
 			"name": "xlink:href",
-			"type": "SVGIRI",
+			"type": "IRI",
 			"deprecated": true
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
 		}
 	]
 }

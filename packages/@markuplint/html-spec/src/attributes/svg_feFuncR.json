@@ -1,4 +1,13 @@
 {
 	"tag": "feFuncR",
-	"attributes": ["#SVGCoreAttrs", "#SVGTransferFunctionAttrs"]
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGTransferFunctionAttrs",
+		{
+			"name": "type",
+			"type": {
+				"enum": ["identity", "table", "discrete", "linear", "gamma"]
+			}
+		}
+	]
 }

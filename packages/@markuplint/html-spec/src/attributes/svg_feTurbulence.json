@@ -31,7 +31,18 @@
 			"name": "type",
 			"type": {
 				"enum": ["fractalNoise", "turbulence"]
-			}
+			},
+			"defaultValue": "turbulence"
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
 		}
 	]
 }

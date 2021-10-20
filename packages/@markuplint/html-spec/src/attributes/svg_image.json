@@ -8,26 +8,6 @@
 		"#SVGPresentationAttrs",
 		"#XLinkAttrs",
 		{
-			"name": "x",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0"
-		},
-		{
-			"name": "y",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0"
-		},
-		{
-			"name": "width",
-			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
-			"defaultValue": "auto"
-		},
-		{
-			"name": "height",
-			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
-			"defaultValue": "auto"
-		},
-		{
 			"name": "href",
 			"type": "URL"
 		},
@@ -39,6 +19,14 @@
 		{
 			"name": "crossorigin",
 			"type": "Crossorigin"
+		},
+		{
+			"name": "x",
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"defaultValue": "0"
 		}
 	]
 }

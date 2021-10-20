@@ -22,7 +22,7 @@ export default createRule<Value, null>({
 				'HTML elements',
 				`${cases}case`,
 			);
-			const attrSpecs = getAttrSpecs(node.nodeName.toLowerCase(), context.document.specs);
+			const attrSpecs = getAttrSpecs(node.nodeName.toLowerCase(), node.namespaceURI, context.document.specs);
 
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'ps-attr') {
@@ -63,7 +63,7 @@ export default createRule<Value, null>({
 				return;
 			}
 
-			const attrSpecs = getAttrSpecs(node.nodeName.toLowerCase(), document.specs);
+			const attrSpecs = getAttrSpecs(node.nodeName.toLowerCase(), node.namespaceURI, document.specs);
 
 			if (node.attributes) {
 				for (const attr of node.attributes) {

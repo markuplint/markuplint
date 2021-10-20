@@ -28,8 +28,18 @@
 		},
 		{
 			"name": "flood-opacity",
-			"type": "SVGAlphaValue",
+			"type": "CSSOpacity",
 			"defaultValue": "1"
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
 		}
 	]
 }

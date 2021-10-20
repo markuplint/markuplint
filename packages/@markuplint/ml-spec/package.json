@@ -15,7 +15,9 @@
 		"build": "tsc",
 		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean",
-		"schema": "json2ts ./schemas/permitted-structures.schema.json > ./src/permitted-structres.ts; prettier --write ./src/permitted-structres.ts; eslint --fix --config ../../../.eslintrc ./src/permitted-structres.ts"
+		"schema:structures": "json2ts ./schemas/permitted-structures.schema.json > ./src/permitted-structres.ts; prettier --write ./src/permitted-structres.ts; eslint --fix --config ../../../.eslintrc ./src/permitted-structres.ts",
+		"schema:attributes": "json2ts ./schemas/attributes.schema.json > ./src/attributes.ts; prettier --write ./src/attributes.ts; eslint --fix --config ../../../.eslintrc ./src/attributes.ts",
+		"schema": "yarn schema:structures; yarn schema:attributes;"
 	},
 	"dependencies": {
 		"tslib": "^2.3.0"

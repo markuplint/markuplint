@@ -15,7 +15,7 @@ export default createRule<RequiredAttributes, null>({
 			}
 
 			const customRequiredAttrs = typeof node.rule.value === 'string' ? [node.rule.value] : node.rule.value;
-			const attrSpec = getAttrSpecs(node.nodeName, context.document.specs);
+			const attrSpec = getAttrSpecs(node.nodeName, node.namespaceURI, context.document.specs);
 
 			const attributeSpecs = attrSpec
 				? attrSpec.map(attr => {
@@ -46,7 +46,7 @@ export default createRule<RequiredAttributes, null>({
 				} else if (spec.required === true) {
 					invalid = attrMatches(node, spec.condition) && didntHave;
 				} else if (spec.required) {
-					if (spec.required.ancestor) {
+					if ('ancestor' in spec.required && spec.required.ancestor) {
 						const ancestors = spec.required.ancestor.split(',').map(a => a.trim());
 						invalid = ancestors.some(a => node.closest(a)) && didntHave;
 					}

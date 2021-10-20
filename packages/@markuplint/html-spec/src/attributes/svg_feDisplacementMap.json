@@ -54,6 +54,16 @@
 				"enum": ["R", "G", "B", "A"]
 			},
 			"defaultValue": "A"
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
 		}
 	]
 }

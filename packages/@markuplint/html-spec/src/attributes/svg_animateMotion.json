@@ -3,7 +3,7 @@
 	"attributes": [
 		"#SVGAnimationTimingAttrs",
 		"#SVGAnimationValueAttrs",
-		"#SVGOtherAnimationAttrs",
+		"#SVGAnimationAdditionAttrs",
 		"#SVGAnimationEventAttrs",
 		"#SVGCoreAttrs",
 		"#SVGStylingAttrs",

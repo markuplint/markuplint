@@ -1,5 +1,5 @@
+import type { AttributeCondition, AttributeType } from './attributes';
 import type { ContentModel, PermittedStructuresSchema } from './permitted-structres';
-import type { AttributeType } from './attributes';
 
 /**
  * markuplit Markup-language spec
@@ -24,9 +24,13 @@ export type ExtendedSpec = {
 export type Cites = string[];
 
 export type SpecDefs = {
-	'#globalAttrs': Attribute[];
-	'#roles': ARIRRoleAttribute[];
+	'#globalAttrs': Partial<{
+		'#extends': Attribute[];
+		'#HTMLGlobalAttrs': Attribute[];
+		[OtherGlobalAttrs: string]: Attribute[];
+	}>;
 	'#ariaAttrs': ARIAAttribute[];
+	'#roles': ARIRRoleAttribute[];
 	'#contentModels': { [model in ContentModel]?: string[] };
 };
 
@@ -38,6 +42,12 @@ export type ElementSpec = {
 	 * Tag name
 	 */
 	name: string;
+
+	/**
+	 * Namespaces in XML
+	 * @see https://www.w3.org/TR/xml-names/
+	 */
+	namespace?: 'http://www.w3.org/1999/xhtml' | 'http://www.w3.org/2000/svg' | 'http://www.w3.org/1998/Math/MathML';
 
 	/**
 	 * Reference URL
@@ -142,25 +152,18 @@ type ElementCondition = {
 
 export type Attribute = {
 	name: string;
-	type: AttributeType;
+	type: AttributeType | [AttributeType, ...AttributeType[]];
 	description: string;
 	caseSensitive?: true;
 	experimental?: true;
 	obsolete?: true;
-	deprecated?: true;
+	deprecated?: boolean;
 	nonStandard?: true;
-	required?: true | AttributeCondition;
+	required?: boolean | AttributeCondition;
 	requiredEither?: string[];
 	noUse?: boolean;
 	condition?: AttributeCondition;
 };
-
-export type AttributeCondition = {
-	ancestor?: string;
-	self?: string | string[];
-};
-
-// type AttributeCtegory = 'global' | 'xml' | 'aria' | 'eventhandler' | 'form' | 'particular';
 
 export type ARIRRoleAttribute = {
 	name: string;

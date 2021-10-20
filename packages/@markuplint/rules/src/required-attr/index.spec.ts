@@ -239,6 +239,38 @@ test('The ancestors of the <source> element.', async () => {
 	).toStrictEqual([]);
 });
 
+test('nodeRules', async () => {
+	const { violations } = await mlTest(
+		'<img src="path/to.svg" alt="text" />',
+		{
+			rules: {
+				'required-attr': true,
+			},
+			nodeRules: [
+				{
+					selector: 'img[src$=.svg]',
+					rules: {
+						'required-attr': 'role',
+					},
+				},
+			],
+		},
+		[rule],
+		'en',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			ruleId: 'required-attr',
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: "Required 'role' on '<img>'",
+			raw: '<img src="path/to.svg" alt="text" />',
+		},
+	]);
+});
+
 test('Foreign element', async () => {
 	expect(
 		(

@@ -41,6 +41,16 @@
 			"name": "mode",
 			"type": "CSSBlendMode",
 			"defaultValue": "normal"
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
 		}
 	]
 }

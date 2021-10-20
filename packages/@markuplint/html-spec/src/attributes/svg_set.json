@@ -6,11 +6,7 @@
 		"#SVGGlobalEventAttrs",
 		"#SVGDocumentElementEventAttrs",
 		"#SVGAnimationTimingAttrs",
-		"#SVGOtherAnimationAttrs",
-		"#SVGAnimationEventAttrs",
-		{
-			"name": "to",
-			"type": "String"
-		}
+		"#SVGAnimationAdditionAttrs",
+		"#SVGAnimationEventAttrs"
 	]
 }
