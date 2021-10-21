@@ -15,7 +15,7 @@ export default createRule<RequiredAttributes, null>({
 			}
 
 			const customRequiredAttrs = typeof node.rule.value === 'string' ? [node.rule.value] : node.rule.value;
-			const attrSpec = getAttrSpecs(node.nodeName, node.namespaceURI, context.document.specs);
+			const attrSpec = getAttrSpecs(node.nameWithNS, context.document.specs);
 
 			const attributeSpecs = attrSpec
 				? attrSpec.map(attr => {

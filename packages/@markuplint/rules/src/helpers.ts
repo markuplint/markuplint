@@ -3,11 +3,8 @@ import { Element, RuleConfigValue } from '@markuplint/ml-core';
 import html from '@markuplint/html-spec';
 import { typeCheck } from './type-check';
 
-export function getAttrSpecs(tag: string, namespaceURI: string, { specs, def }: MLMLSpec) {
-	const namespace = namespaceURI === 'http://www.w3.org/2000/svg' ? 'svg:' : '';
-	tag = namespace + tag.toLowerCase();
-
-	const spec = specs.find(spec => spec.name === tag);
+export function getAttrSpecs(nameWithNS: string, { specs, def }: MLMLSpec) {
+	const spec = specs.find(spec => spec.name === nameWithNS);
 
 	if (!spec) {
 		return null;
@@ -15,7 +12,7 @@ export function getAttrSpecs(tag: string, namespaceURI: string, { specs, def }: 
 	const globalAttrs = def['#globalAttrs'];
 	const attrs: Attribute[] = [];
 
-	if (namespace === '') {
+	if (!/[a-z]:[a-z]/i.test(nameWithNS)) {
 		// It's HTML tag
 		const hasGlobalAttr = spec.attributes.some(attr => attr === '#globalAttrs');
 		if (hasGlobalAttr) {

@@ -26,7 +26,7 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		};
 	}
 
-		// Valid because any string value is acceptable
+	// Valid because any string value is acceptable
 	if (typeof spec.type !== 'string' && 'enum' in spec.type) {
 		// has "enum"
 		const valid = spec.type.enum.includes(value.toLowerCase().trim());
@@ -39,13 +39,11 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		};
 	}
 
-	if (spec.type === 'String' || spec.type === 'NonEmptyString') {
-		if (spec.type === 'NonEmptyString' && value === '') {
-			return {
-				invalidType: 'invalid-value',
-				message: `The "${name}" attribute value must not be the empty string`,
+	if (spec.type === 'NonEmptyString' && value === '') {
+		return {
+			invalidType: 'invalid-value',
+			message: `The "${name}" attribute value must not be the empty string`,
 		};
-	}
 	}
 
 	if (spec.type === 'Boolean') {
@@ -103,6 +101,16 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		};
 	}
 
+	if (spec.type === 'ZeroToOne') {
+		if (range(value, 0, 1)) {
+			return false;
+		}
+		return {
+			invalidType: 'invalid-value',
+			message: `The "${name}" attribute expect in the range between zero and one`,
+		};
+	}
+
 	if (spec.type === 'AcceptList') {
 		// TODO: https://html.spec.whatwg.org/multipage/input.html#attr-input-accept
 		return false;
@@ -129,8 +137,7 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/tables.html#attr-tdth-colspan
 		 */
-		const i = parseInt(value);
-		if (intCheck(value) && 0 < i && i <= 1000) {
+		if (intCheck(value) && range(value, 0, 1000)) {
 			return false;
 		}
 		return {
@@ -166,6 +173,11 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 
 	if (spec.type === 'DOMIDList') {
 		// TODO: Searching ID in Document
+		return false;
+	}
+
+	if (spec.type === 'IRI') {
+		// TODO: https://developer.mozilla.org/ja/docs/Web/SVG/Content_type#iri
 		return false;
 	}
 
@@ -235,8 +247,7 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/tables.html#attr-tdth-rowspan
 		 */
-		const i = parseInt(value);
-		if (intCheck(value) && 0 <= i && i <= 65534) {
+		if (intCheck(value) && range(value, 0, 65534)) {
 			return false;
 		}
 		return {
@@ -299,9 +310,7 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 	}
 
 	if (spec.type === 'URL') {
-		/**
-		 * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces
-		 */
+		// TODO: https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces
 		return false;
 	}
 
@@ -320,9 +329,191 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 	}
 
 	if (spec.type === 'URLList') {
+		// TODO: https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces
+		return false;
+	}
+
+	if (spec.type === 'CSSAngle') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/angle
+		return false;
+	}
+
+	if (spec.type === 'CSSBlendMode') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/blend-mode
+		return false;
+	}
+
+	if (spec.type === 'CSSClipPath') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path
+		return false;
+	}
+
+	if (spec.type === 'CSSCustomIdent') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/custom-ident
+		return false;
+	}
+
+	if (spec.type === 'CSSDisplay') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/display
+		return false;
+	}
+
+	if (spec.type === 'CSSFilter') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/filter
+		return false;
+	}
+
+	if (spec.type === 'CSSFontFamily') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/font-family
+		return false;
+	}
+
+	if (spec.type === 'CSSFontSize') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/font-size
+		return false;
+	}
+
+	if (spec.type === 'CSSFontVariant') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant
+		return false;
+	}
+
+	if (spec.type === 'CSSFontWeight') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight
+		return false;
+	}
+
+	if (spec.type === 'CSSMask') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/mask
+		return false;
+	}
+
+	if (spec.type === 'CSSOpacity') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/opacity
+		return false;
+	}
+
+	if (spec.type === 'CSSTextDecoration') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration
+		return false;
+	}
+
+	if (spec.type === 'CSSTransformList') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function
+		return false;
+	}
+
+	if (spec.type === 'CSSTransformOrigin') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/transform-origin
+		return false;
+	}
+
+	if (spec.type === 'SVGAngle') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#angle
+		return false;
+	}
+
+	if (spec.type === 'SVGAnimatableValue') {
+		// TODO
 		/**
-		 * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces
+		 * The exact value type for this attribute depends on the value of the attribute
+		 * that will be animated.
+		 *
+		 * ```svg
+		 * <rect x="10" y="10" height="100">
+		 *   <animate attributeName="width" fill="freeze" from="100" to="150" dur="3s"/>
+		 * </rect>
+		 * ```
+		 *
+		 * The `from` and `to` attributes of the `animate` element are SVGAnimatableValue.
 		 */
+		return false;
+	}
+
+	if (spec.type === 'SVGBeginValueList') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/begin
+		return false;
+	}
+
+	if (spec.type === 'SVGClockValue') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#clock-value
+		return false;
+	}
+
+	if (spec.type === 'SVGColorMatrix') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feColorMatrix
+		return false;
+	}
+
+	if (spec.type === 'SVGDashArray') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray
+		return false;
+	}
+
+	if (spec.type === 'SVGEndValueList') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/end
+		return false;
+	}
+
+	if (spec.type === 'SVGFilterPrimitiveReference') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/result#usage_notes
+		return false;
+	}
+
+	if (spec.type === 'SVGKernelMatrix') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/kernelMatrix
+		return false;
+	}
+
+	if (spec.type === 'SVGKeyPoints') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/keyPoints
+		return false;
+	}
+
+	('SVGKeySplines');
+	('SVGKeyTimes');
+	('SVGLanguageTags');
+
+	if (spec.type === 'SVGLength') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#length
+		return false;
+	}
+
+	('SVGLengthList');
+	('SVGMarkerRef');
+	('SVGNumberList');
+
+	if (spec.type === 'SVGNumberOptionalNumber') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#number-optional-number
+		return false;
+	}
+
+	('SVGPaint');
+
+	if (spec.type === 'SVGPathCommands') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/d#path_commands
+		return false;
+	}
+
+	if (spec.type === 'SVGPercentage') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#percentage
+		return false;
+	}
+
+	('SVGPercentageList');
+
+	if (spec.type === 'SVGPoints') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/points
+		return false;
+	}
+
+	if (spec.type === 'SVGPreserveAspectRatio') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/preserveAspectRatio
+		return false;
+	}
+
+	if (spec.type === 'SVGViewBox') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewBox
 		return false;
 	}
 
@@ -363,4 +554,19 @@ export function floatCheck(value: string) {
  */
 export function nonZeroUintCheck(value: string) {
 	return /^[0-9]+$/.test(value) && !/^0+$/.test(value);
+}
+
+/**
+ * It is in the range between `from` and `to`.
+ *
+ * @param value
+ * @param from
+ * @param to
+ */
+export function range(value: string, from: number, to: number) {
+	const num = parseFloat(value);
+	if (isNaN(num)) {
+		return false;
+	}
+	return from <= num && num <= to;
 }

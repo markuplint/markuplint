@@ -34,7 +34,7 @@ export default createRule<true, Options>({
 	},
 	async verify(context) {
 		await context.document.walkOn('Element', async node => {
-			const attrSpecs = getAttrSpecs(node.nodeName, node.namespaceURI, context.document.specs);
+			const attrSpecs = getAttrSpecs(node.nameWithNS, context.document.specs);
 			const html = htmlSpec(node.nodeName);
 			const { roles, ariaAttrs } = ariaSpec();
 

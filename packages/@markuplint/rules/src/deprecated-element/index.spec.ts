@@ -87,3 +87,26 @@ test('Foreign element', async () => {
 		},
 	]);
 });
+
+test('svg', async () => {
+	const { violations } = await mlTest(
+		'<svg><altGlyph>text</altGlyph></svg>',
+		{
+			rules: {
+				'deprecated-element': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			message: 'Element is deprecated',
+			line: 1,
+			col: 6,
+			raw: '<altGlyph>',
+			ruleId: 'deprecated-element',
+		},
+	]);
+});
