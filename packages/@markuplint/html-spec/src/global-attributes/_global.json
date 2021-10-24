@@ -1166,7 +1166,7 @@
 		{
 			"name": "marker-end",
 			"type": [
-				"SVGMarkerRef",
+				"CSSURL",
 				{
 					"enum": ["none"]
 				}
@@ -1176,7 +1176,7 @@
 		{
 			"name": "marker-mid",
 			"type": [
-				"SVGMarkerRef",
+				"CSSURL",
 				{
 					"enum": ["none"]
 				}
@@ -1186,7 +1186,7 @@
 		{
 			"name": "marker-start",
 			"type": [
-				"SVGMarkerRef",
+				"CSSURL",
 				{
 					"enum": ["none"]
 				}

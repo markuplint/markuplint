@@ -408,6 +408,11 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		return false;
 	}
 
+	if (spec.type === 'CSSURL') {
+		// TODO: https://www.w3.org/TR/css3-values/#url-value
+		return false;
+	}
+
 	if (spec.type === 'SVGAngle') {
 		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#angle
 		return false;
@@ -470,25 +475,51 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		return false;
 	}
 
-	('SVGKeySplines');
-	('SVGKeyTimes');
-	('SVGLanguageTags');
+	if (spec.type === 'SVGKeySplines') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/keySplines
+		return false;
+	}
+
+	if (spec.type === 'SVGKeyTimes') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/keyTimes
+		return false;
+	}
+
+	if (spec.type === 'SVGLanguageTags') {
+		/**
+		 * @see https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/systemLanguage
+		 */
+		// TODO: List of BCP47
+		return false;
+	}
 
 	if (spec.type === 'SVGLength') {
 		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#length
 		return false;
 	}
 
-	('SVGLengthList');
-	('SVGMarkerRef');
-	('SVGNumberList');
+	if (spec.type === 'SVGLengthList') {
+		/**
+		 * @see https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#length
+		 */
+		// TODO: List of SVGLength
+		return false;
+	}
+
+	if (spec.type === 'SVGNumberList') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/tableValues#usage_notes
+		return false;
+	}
 
 	if (spec.type === 'SVGNumberOptionalNumber') {
 		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#number-optional-number
 		return false;
 	}
 
-	('SVGPaint');
+	if (spec.type === 'SVGPaint') {
+		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#paint
+		return false;
+	}
 
 	if (spec.type === 'SVGPathCommands') {
 		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/d#path_commands
@@ -500,7 +531,13 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		return false;
 	}
 
-	('SVGPercentageList');
+	if (spec.type === 'SVGPercentageList') {
+		/**
+		 * @see https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#percentage
+		 */
+		// TODO: List of SVGPercentage
+		return false;
+	}
 
 	if (spec.type === 'SVGPoints') {
 		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/points
