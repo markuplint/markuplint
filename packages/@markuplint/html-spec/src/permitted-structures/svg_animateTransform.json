@@ -2,7 +2,7 @@
 	"tag": "animateTransform",
 	"contents": [
 		{
-			"zeroOrMore": "#SVGDescriptive"
+			"zeroOrMore": ["#SVGDescriptive", "svg:script"]
 		}
 	]
 }

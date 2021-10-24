@@ -2,7 +2,7 @@
 	"tag": "desc",
 	"contents": [
 		{
-			"require": "#text"
+			"require": ["#SVGOtherXMLNamespace", "#text"]
 		}
 	]
 }

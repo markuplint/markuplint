@@ -1,32 +1,24 @@
 {
 	"tag": "a",
+	"conditional": [
+		{
+			"condition": {
+				"_TODO_": "WAIT: The selector parser supports namespace",
+				"_parent": "svg|switch",
+				"parent": "svg-switch"
+			},
+			"contents": [
+				{
+					"_TODO_": "If the parent is a switch element, use the content model of the nearest ancestor that isn't a switch.",
+					"zeroOrMore": "#transparent"
+				}
+			]
+		}
+	],
 	"contents": [
 		{
-			"zeroOrMore": [
-				"#SVGAnimation",
-				"#SVGDescriptive",
-				"#SVGShape",
-				"#SVGStructural",
-				"#SVGGradient",
-				"svg:a",
-				"svg:altGlyphDef",
-				"svg:clipPath",
-				"svg:color-profile",
-				"svg:cursor",
-				"svg:filter",
-				"svg:font",
-				"svg:font-face",
-				"svg:foreignObject",
-				"svg:image",
-				"svg:marker",
-				"svg:mask",
-				"svg:pattern",
-				"svg:script",
-				"svg:style",
-				"svg:switch",
-				"svg:text",
-				"svg:view"
-			]
+			"zeroOrMore": ["#SVGDescriptive", "#transparent"],
+			"ignore": "svg:a"
 		}
 	]
 }

@@ -2,7 +2,7 @@
 	"tag": "style",
 	"contents": [
 		{
-			"zeroOrMore": ["#SVGOtherXMLNamespace", "#text"]
+			"zeroOrMore": "#text"
 		}
 	]
 }

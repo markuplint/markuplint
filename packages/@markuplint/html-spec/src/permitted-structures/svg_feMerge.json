@@ -2,7 +2,7 @@
 	"tag": "feMerge",
 	"contents": [
 		{
-			"zeroOrMore": ["svg:feMergeNode"]
+			"zeroOrMore": ["#SVGDescriptive", "svg:feMergeNode", "svg:script"]
 		}
 	]
 }

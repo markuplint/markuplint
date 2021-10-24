@@ -2,7 +2,7 @@
 	"tag": "mpath",
 	"contents": [
 		{
-			"zeroOrMore": "#SVGDescriptive"
+			"zeroOrMore": ["#SVGDescriptive", "svg:script"]
 		}
 	]
 }

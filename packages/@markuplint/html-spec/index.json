@@ -17659,33 +17659,25 @@
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elementsShape elementsStructural elementsGradient elements<a>, <altGlyphDef>, <clipPath>, <color-profile>, <cursor>, <filter>, <font>, <font-face>, <foreignObject>, <image>, <marker>, <mask>, <pattern>, <script>, <style>, <switch>, <text>, <view>",
 				"tag": "a",
+				"conditional": [
+					{
+						"condition": {
+							"_TODO_": "WAIT: The selector parser supports namespace",
+							"_parent": "svg|switch",
+							"parent": "svg-switch"
+						},
+						"contents": [
+							{
+								"_TODO_": "If the parent is a switch element, use the content model of the nearest ancestor that isn't a switch.",
+								"zeroOrMore": "#transparent"
+							}
+						]
+					}
+				],
 				"contents": [
 					{
-						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGShape",
-							"#SVGStructural",
-							"#SVGGradient",
-							"svg:a",
-							"svg:altGlyphDef",
-							"svg:clipPath",
-							"svg:color-profile",
-							"svg:cursor",
-							"svg:filter",
-							"svg:font",
-							"svg:font-face",
-							"svg:foreignObject",
-							"svg:image",
-							"svg:marker",
-							"svg:mask",
-							"svg:pattern",
-							"svg:script",
-							"svg:style",
-							"svg:switch",
-							"svg:text",
-							"svg:view"
-						]
+						"zeroOrMore": ["#SVGDescriptive", "#transparent"],
+						"ignore": "svg:a"
 					}
 				]
 			},
@@ -17890,30 +17882,26 @@
 			"permittedStructures": {
 				"summary": "",
 				"tag": "animateMotion",
-				"conditional": [
-					{
-						"condition": {
-							"hasAttr": "path"
-						},
-						"contents": [
-							{
-								"zeroOrMore": "#SVGDescriptive"
-							}
-						]
-					}
-				],
 				"contents": [
 					{
-						"zeroOrMore": "#SVGDescriptive"
-					},
-					{
-						"oneOrMore": "svg:mpath"
-					},
-					{
-						"zeroOrMore": "#SVGDescriptive"
-					},
-					{
-						"zeroOrMore": "svg:mpath"
+						"interleave": [
+							[
+								{
+									"oneOrMore": ["#SVGDescriptive", "svg:script"]
+								},
+								{
+									"optional": "svg:mpath"
+								}
+							],
+							[
+								{
+									"optional": "svg:mpath"
+								},
+								{
+									"oneOrMore": ["#SVGDescriptive", "svg:script"]
+								}
+							]
+						]
 					}
 				]
 			},
@@ -17973,7 +17961,7 @@
 				"tag": "animateTransform",
 				"contents": [
 					{
-						"zeroOrMore": "#SVGDescriptive"
+						"zeroOrMore": ["#SVGDescriptive", "svg:script"]
 					}
 				]
 			},
@@ -18015,7 +18003,16 @@
 				"tag": "circle",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+						"zeroOrMore": [
+							"#SVGAnimation",
+							"#SVGDescriptive",
+							"#SVGPaintServer",
+							"svg:clipPath",
+							"svg:marker",
+							"svg:mask",
+							"svg:script",
+							"svg:style"
+						]
 					}
 				]
 			},
@@ -18071,7 +18068,14 @@
 				"tag": "clipPath",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "#SVGShape", "svg:text", "svg:use"]
+						"zeroOrMore": [
+							"#SVGAnimation",
+							"#SVGDescriptive",
+							"#SVGShape",
+							"svg:text",
+							"svg:use",
+							"svg:script"
+						]
 					}
 				]
 			},
@@ -18134,22 +18138,16 @@
 						"zeroOrMore": [
 							"#SVGAnimation",
 							"#SVGDescriptive",
+							"#SVGPaintServer",
 							"#SVGShape",
 							"#SVGStructural",
-							"#SVGGradient",
 							"svg:a",
-							"svg:altGlyphDef",
 							"svg:clipPath",
-							"svg:color-profile",
-							"svg:cursor",
 							"svg:filter",
-							"svg:font",
-							"svg:font-face",
 							"svg:foreignObject",
 							"svg:image",
 							"svg:marker",
 							"svg:mask",
-							"svg:pattern",
 							"svg:script",
 							"svg:style",
 							"svg:switch",
@@ -18187,7 +18185,7 @@
 				"tag": "desc",
 				"contents": [
 					{
-						"require": "#text"
+						"require": ["#SVGOtherXMLNamespace", "#text"]
 					}
 				]
 			},
@@ -18252,7 +18250,16 @@
 				"tag": "ellipse",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+						"zeroOrMore": [
+							"#SVGAnimation",
+							"#SVGDescriptive",
+							"#SVGPaintServer",
+							"svg:clipPath",
+							"svg:marker",
+							"svg:mask",
+							"svg:script",
+							"svg:style"
+						]
 					}
 				]
 			},
@@ -18315,7 +18322,7 @@
 				"tag": "feBlend",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -18397,7 +18404,7 @@
 				"tag": "feColorMatrix",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -18469,7 +18476,14 @@
 				"tag": "feComponentTransfer",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:feFuncA", "svg:feFuncR", "svg:feFuncB", "svg:feFuncG"]
+						"zeroOrMore": [
+							"#SVGDescriptive",
+							"svg:feFuncA",
+							"svg:feFuncR",
+							"svg:feFuncB",
+							"svg:feFuncG",
+							"svg:script"
+						]
 					}
 				]
 			},
@@ -18528,7 +18542,7 @@
 				"tag": "feComposite",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -18636,7 +18650,7 @@
 				"tag": "feConvolveMatrix",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -18749,13 +18763,24 @@
 				"tag": "feDiffuseLighting",
 				"contents": [
 					{
-						"zeroOrMore": "#SVGDescriptive"
-					},
-					{
-						"require": "#SVGLightSource"
-					},
-					{
-						"zeroOrMore": "#SVGDescriptive"
+						"interleave": [
+							[
+								{
+									"zeroOrMore": ["#SVGDescriptive", "svg:script"]
+								},
+								{
+									"require": "#SVGLightSource"
+								}
+							],
+							[
+								{
+									"require": "#SVGLightSource"
+								},
+								{
+									"zeroOrMore": ["#SVGDescriptive", "svg:script"]
+								}
+							]
+						]
 					}
 				]
 			},
@@ -18832,7 +18857,7 @@
 				"tag": "feDisplacementMap",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -18929,7 +18954,7 @@
 				"tag": "feDistantLight",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -18968,7 +18993,7 @@
 				"tag": "feDropShadow",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:script", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19045,7 +19070,7 @@
 				"tag": "feDropShadow",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:animateColor", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19116,7 +19141,7 @@
 				"tag": "feFuncA",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19151,7 +19176,7 @@
 				"tag": "feFuncB",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19186,7 +19211,7 @@
 				"tag": "feFuncB",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19221,7 +19246,7 @@
 				"tag": "feFuncR",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19256,7 +19281,7 @@
 				"tag": "feGaussianBlur",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19329,7 +19354,13 @@
 				"tag": "feImage",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:animateTransform", "svg:set"]
+						"zeroOrMore": [
+							"#SVGDescriptive",
+							"svg:animate",
+							"svg:animateTransform",
+							"svg:script",
+							"svg:set"
+						]
 					}
 				]
 			},
@@ -19389,7 +19420,7 @@
 				"tag": "feMerge",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:feMergeNode"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:feMergeNode", "svg:script"]
 					}
 				]
 			},
@@ -19431,7 +19462,7 @@
 				"tag": "feMergeNode",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19487,7 +19518,7 @@
 				"tag": "feMorphology",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19548,7 +19579,7 @@
 				"tag": "feOffset",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19619,7 +19650,7 @@
 				"tag": "fePointLight",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19664,13 +19695,24 @@
 				"tag": "feSpecularLighting",
 				"contents": [
 					{
-						"zeroOrMore": "#SVGDescriptive"
-					},
-					{
-						"require": "#SVGLightSource"
-					},
-					{
-						"zeroOrMore": "#SVGDescriptive"
+						"interleave": [
+							[
+								{
+									"zeroOrMore": ["#SVGDescriptive", "svg:script"]
+								},
+								{
+									"require": "#SVGLightSource"
+								}
+							],
+							[
+								{
+									"require": "#SVGLightSource"
+								},
+								{
+									"zeroOrMore": ["#SVGDescriptive", "svg:script"]
+								}
+							]
+						]
 					}
 				]
 			},
@@ -19753,7 +19795,7 @@
 				"tag": "feSpotLight",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19845,7 +19887,7 @@
 				"tag": "feTile",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19904,7 +19946,7 @@
 				"tag": "feTurbulence",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -19980,7 +20022,7 @@
 				"tag": "filter",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "#SVGFilterPrimitive", "svg:animate", "svg:set"]
+						"zeroOrMore": ["#SVGDescriptive", "#SVGFilterPrimitive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
 			},
@@ -20191,24 +20233,7 @@
 			"permittedStructures": {
 				"summary": "Any elements or character data",
 				"tag": "foreignObject",
-				"contents": [
-					{
-						"zeroOrMore": [
-							"#phrasing",
-							"#flow",
-							"#interactive",
-							"#heading",
-							"#sectioning",
-							"#metadata",
-							"#transparent",
-							"#embedded",
-							"#palpable",
-							"#script-supporting",
-							"#text",
-							"#SVGOtherXMLNamespace"
-						]
-					}
-				]
+				"contents": true
 			},
 			"omittion": false,
 			"attributes": [
@@ -20266,22 +20291,16 @@
 						"zeroOrMore": [
 							"#SVGAnimation",
 							"#SVGDescriptive",
+							"#SVGPaintServer",
 							"#SVGShape",
 							"#SVGStructural",
-							"#SVGGradient",
 							"svg:a",
-							"svg:altGlyphDef",
 							"svg:clipPath",
-							"svg:color-profile",
-							"svg:cursor",
 							"svg:filter",
-							"svg:font",
-							"svg:font-face",
 							"svg:foreignObject",
 							"svg:image",
 							"svg:marker",
 							"svg:mask",
-							"svg:pattern",
 							"svg:script",
 							"svg:style",
 							"svg:switch",
@@ -20496,7 +20515,14 @@
 				"tag": "image",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+						"zeroOrMore": [
+							"#SVGAnimation",
+							"#SVGDescriptive",
+							"svg:clipPath",
+							"svg:mask",
+							"svg:script",
+							"svg:style"
+						]
 					}
 				]
 			},
@@ -20556,7 +20582,16 @@
 				"tag": "line",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+						"zeroOrMore": [
+							"#SVGAnimation",
+							"#SVGDescriptive",
+							"#SVGPaintServer",
+							"svg:clipPath",
+							"svg:marker",
+							"svg:mask",
+							"svg:script",
+							"svg:style"
+						]
 					}
 				]
 			},
@@ -20618,7 +20653,15 @@
 				"tag": "linearGradient",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:animateTransform", "svg:set", "svg:stop"]
+						"zeroOrMore": [
+							"#SVGDescriptive",
+							"svg:animate",
+							"svg:animateTransform",
+							"svg:script",
+							"svg:set",
+							"svg:stop",
+							"svg:style"
+						]
 					}
 				]
 			},
@@ -20708,22 +20751,16 @@
 						"zeroOrMore": [
 							"#SVGAnimation",
 							"#SVGDescriptive",
+							"#SVGPaintServer",
 							"#SVGShape",
 							"#SVGStructural",
-							"#SVGGradient",
 							"svg:a",
-							"svg:altGlyphDef",
 							"svg:clipPath",
-							"svg:color-profile",
-							"svg:cursor",
 							"svg:filter",
-							"svg:font",
-							"svg:font-face",
 							"svg:foreignObject",
 							"svg:image",
 							"svg:marker",
 							"svg:mask",
-							"svg:pattern",
 							"svg:script",
 							"svg:style",
 							"svg:switch",
@@ -20970,7 +21007,7 @@
 				"tag": "mpath",
 				"contents": [
 					{
-						"zeroOrMore": "#SVGDescriptive"
+						"zeroOrMore": ["#SVGDescriptive", "svg:script"]
 					}
 				]
 			},
@@ -21003,7 +21040,16 @@
 				"tag": "path",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+						"zeroOrMore": [
+							"#SVGAnimation",
+							"#SVGDescriptive",
+							"#SVGPaintServer",
+							"svg:clipPath",
+							"svg:marker",
+							"svg:mask",
+							"svg:script",
+							"svg:style"
+						]
 					}
 				]
 			},
@@ -21049,22 +21095,16 @@
 						"zeroOrMore": [
 							"#SVGAnimation",
 							"#SVGDescriptive",
+							"#SVGPaintServer",
 							"#SVGShape",
 							"#SVGStructural",
-							"#SVGGradient",
 							"svg:a",
-							"svg:altGlyphDef",
 							"svg:clipPath",
-							"svg:color-profile",
-							"svg:cursor",
 							"svg:filter",
-							"svg:font",
-							"svg:font-face",
 							"svg:foreignObject",
 							"svg:image",
 							"svg:marker",
 							"svg:mask",
-							"svg:pattern",
 							"svg:script",
 							"svg:style",
 							"svg:switch",
@@ -21167,7 +21207,16 @@
 				"tag": "polygon",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+						"zeroOrMore": [
+							"#SVGAnimation",
+							"#SVGDescriptive",
+							"#SVGPaintServer",
+							"svg:clipPath",
+							"svg:marker",
+							"svg:mask",
+							"svg:script",
+							"svg:style"
+						]
 					}
 				]
 			},
@@ -21210,7 +21259,16 @@
 				"tag": "polyline",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+						"zeroOrMore": [
+							"#SVGAnimation",
+							"#SVGDescriptive",
+							"#SVGPaintServer",
+							"svg:clipPath",
+							"svg:marker",
+							"svg:mask",
+							"svg:script",
+							"svg:style"
+						]
 					}
 				]
 			},
@@ -21253,7 +21311,15 @@
 				"tag": "radialGradient",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:animateTransform", "svg:set", "svg:stop"]
+						"zeroOrMore": [
+							"#SVGDescriptive",
+							"svg:animate",
+							"svg:animateTransform",
+							"svg:script",
+							"svg:set",
+							"svg:stop",
+							"svg:style"
+						]
 					}
 				]
 			},
@@ -21349,7 +21415,16 @@
 				"tag": "rect",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+						"zeroOrMore": [
+							"#SVGAnimation",
+							"#SVGDescriptive",
+							"#SVGPaintServer",
+							"svg:clipPath",
+							"svg:marker",
+							"svg:mask",
+							"svg:script",
+							"svg:style"
+						]
 					}
 				]
 			},
@@ -21484,7 +21559,7 @@
 				"tag": "set",
 				"contents": [
 					{
-						"zeroOrMore": "#SVGDescriptive"
+						"zeroOrMore": ["#SVGDescriptive", "svg:script"]
 					}
 				]
 			},
@@ -21522,7 +21597,7 @@
 				"tag": "stop",
 				"contents": [
 					{
-						"zeroOrMore": ["svg:animate", "svg:animateColor", "svg:set"]
+						"zeroOrMore": ["svg:animate", "svg:animateColor", "svg:script", "svg:set", "svg:style"]
 					}
 				]
 			},
@@ -21571,7 +21646,7 @@
 				"tag": "style",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGOtherXMLNamespace", "#text"]
+						"zeroOrMore": "#text"
 					}
 				]
 			},
@@ -21621,22 +21696,16 @@
 						"zeroOrMore": [
 							"#SVGAnimation",
 							"#SVGDescriptive",
+							"#SVGPaintServer",
 							"#SVGShape",
 							"#SVGStructural",
-							"#SVGGradient",
 							"svg:a",
-							"svg:altGlyphDef",
 							"svg:clipPath",
-							"svg:color-profile",
-							"svg:cursor",
 							"svg:filter",
-							"svg:font",
-							"svg:font-face",
 							"svg:foreignObject",
 							"svg:image",
 							"svg:marker",
 							"svg:mask",
-							"svg:pattern",
 							"svg:script",
 							"svg:style",
 							"svg:switch",
@@ -21747,7 +21816,6 @@
 					{
 						"zeroOrMore": [
 							"#SVGAnimation",
-							"#SVGDescriptive",
 							"#SVGShape",
 							"svg:a",
 							"svg:foreignObject",
@@ -21796,22 +21864,16 @@
 						"zeroOrMore": [
 							"#SVGAnimation",
 							"#SVGDescriptive",
+							"#SVGPaintServer",
 							"#SVGShape",
 							"#SVGStructural",
-							"#SVGGradient",
 							"svg:a",
-							"svg:altGlyphDef",
 							"svg:clipPath",
-							"svg:color-profile",
-							"svg:cursor",
 							"svg:filter",
-							"svg:font",
-							"svg:font-face",
 							"svg:foreignObject",
 							"svg:image",
 							"svg:marker",
 							"svg:mask",
-							"svg:pattern",
 							"svg:script",
 							"svg:style",
 							"svg:switch",
@@ -21923,7 +21985,19 @@
 				"tag": "text",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "#SVGTextContentChild", "svg:a"]
+						"zeroOrMore": [
+							"#text",
+							"#SVGAnimation",
+							"#SVGDescriptive",
+							"#SVGPaintServer",
+							"#SVGTextContentChild",
+							"svg:a",
+							"svg:clipPath",
+							"svg:marker",
+							"svg:mask",
+							"svg:script",
+							"svg:style"
+						]
 					}
 				]
 			},
@@ -21997,13 +22071,17 @@
 				"contents": [
 					{
 						"zeroOrMore": [
+							"#text",
 							"#SVGDescriptive",
+							"#SVGPaintServer",
 							"svg:a",
-							"svg:altGlyph",
 							"svg:animate",
-							"svg:animateColor",
+							"svg:clipPath",
+							"svg:marker",
+							"svg:mask",
+							"svg:script",
 							"svg:set",
-							"svg:tref",
+							"svg:style",
 							"svg:tspan"
 						]
 					}
@@ -22120,12 +22198,12 @@
 					{
 						"zeroOrMore": [
 							"#SVGDescriptive",
+							"#SVGPaintServer",
 							"svg:a",
-							"svg:altGlyph",
 							"svg:animate",
-							"svg:animateColor",
+							"svg:script",
 							"svg:set",
-							"svg:tref",
+							"svg:style",
 							"svg:tspan"
 						]
 					}
@@ -22200,7 +22278,14 @@
 				"tag": "use",
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive"]
+						"zeroOrMore": [
+							"#SVGAnimation",
+							"#SVGDescriptive",
+							"svg:clipPath",
+							"svg:mask",
+							"svg:script",
+							"svg:style"
+						]
 					}
 				]
 			},
@@ -22267,7 +22352,7 @@
 				"tag": "view",
 				"contents": [
 					{
-						"zeroOrMore": "#SVGDescriptive"
+						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "svg:script", "svg:style"]
 					}
 				]
 			},

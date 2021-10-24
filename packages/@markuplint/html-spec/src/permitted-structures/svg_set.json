@@ -2,7 +2,7 @@
 	"tag": "set",
 	"contents": [
 		{
-			"zeroOrMore": "#SVGDescriptive"
+			"zeroOrMore": ["#SVGDescriptive", "svg:script"]
 		}
 	]
 }

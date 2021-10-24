@@ -2,7 +2,7 @@
 	"tag": "view",
 	"contents": [
 		{
-			"zeroOrMore": "#SVGDescriptive"
+			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "svg:script", "svg:style"]
 		}
 	]
 }

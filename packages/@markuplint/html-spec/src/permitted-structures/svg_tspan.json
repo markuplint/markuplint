@@ -4,12 +4,12 @@
 		{
 			"zeroOrMore": [
 				"#SVGDescriptive",
+				"#SVGPaintServer",
 				"svg:a",
-				"svg:altGlyph",
 				"svg:animate",
-				"svg:animateColor",
+				"svg:script",
 				"svg:set",
-				"svg:tref",
+				"svg:style",
 				"svg:tspan"
 			]
 		}

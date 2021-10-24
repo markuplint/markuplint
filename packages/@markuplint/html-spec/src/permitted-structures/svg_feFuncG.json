@@ -2,7 +2,7 @@
 	"tag": "feFuncB",
 	"contents": [
 		{
-			"zeroOrMore": ["svg:animate", "svg:set"]
+			"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 		}
 	]
 }

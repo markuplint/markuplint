@@ -2,13 +2,24 @@
 	"tag": "feDiffuseLighting",
 	"contents": [
 		{
-			"zeroOrMore": "#SVGDescriptive"
-		},
-		{
-			"require": "#SVGLightSource"
-		},
-		{
-			"zeroOrMore": "#SVGDescriptive"
+			"interleave": [
+				[
+					{
+						"zeroOrMore": ["#SVGDescriptive", "svg:script"]
+					},
+					{
+						"require": "#SVGLightSource"
+					}
+				],
+				[
+					{
+						"require": "#SVGLightSource"
+					},
+					{
+						"zeroOrMore": ["#SVGDescriptive", "svg:script"]
+					}
+				]
+			]
 		}
 	]
 }

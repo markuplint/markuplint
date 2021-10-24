@@ -2,7 +2,7 @@
 	"tag": "feImage",
 	"contents": [
 		{
-			"zeroOrMore": ["svg:animate", "svg:animateTransform", "svg:set"]
+			"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:animateTransform", "svg:script", "svg:set"]
 		}
 	]
 }

@@ -2,7 +2,7 @@
 	"tag": "feComponentTransfer",
 	"contents": [
 		{
-			"zeroOrMore": ["svg:feFuncA", "svg:feFuncR", "svg:feFuncB", "svg:feFuncG"]
+			"zeroOrMore": ["#SVGDescriptive", "svg:feFuncA", "svg:feFuncR", "svg:feFuncB", "svg:feFuncG", "svg:script"]
 		}
 	]
 }
