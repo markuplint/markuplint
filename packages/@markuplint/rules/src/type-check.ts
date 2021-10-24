@@ -26,10 +26,18 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		};
 	}
 
-	return valueCheck(name, value, isCustomRule, spec);
+	const invalid = valueCheck(name, value, spec);
+	if (invalid) {
+		return {
+			invalidType: 'invalid-value',
+			message: invalid,
+		};
+	}
+
+	return false;
 }
 
-function valueCheck(name: string, value: string, isCustomRule: boolean, spec: AttrSpec): Invalid | false {
+function valueCheck(name: string, value: string, spec: AttrSpec): string | false {
 	// Valid because any string value is acceptable
 	if (typeof spec.type !== 'string' && 'enum' in spec.type) {
 		// has "enum"
@@ -37,10 +45,7 @@ function valueCheck(name: string, value: string, isCustomRule: boolean, spec: At
 	}
 
 	if (spec.type === 'NonEmptyString' && value === '') {
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute value must not be the empty string`,
-		};
+		return `The "${name}" attribute value must not be the empty string`;
 	}
 
 	if (spec.type === 'Boolean') {
@@ -62,50 +67,35 @@ function valueCheck(name: string, value: string, isCustomRule: boolean, spec: At
 		if (intCheck(value)) {
 			return false;
 		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect integer`,
-		};
+		return `The "${name}" attribute expect integer`;
 	}
 
 	if (spec.type === 'Uint') {
 		if (uintCheck(value)) {
 			return false;
 		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect non-negative integer`,
-		};
+		return `The "${name}" attribute expect non-negative integer`;
 	}
 
 	if (spec.type === 'Float') {
 		if (floatCheck(value)) {
 			return false;
 		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect floating-point number`,
-		};
+		return `The "${name}" attribute expect floating-point number`;
 	}
 
 	if (spec.type === 'NonZeroUint') {
 		if (nonZeroUintCheck(value)) {
 			return false;
 		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect floating-point number`,
-		};
+		return `The "${name}" attribute expect floating-point number`;
 	}
 
 	if (spec.type === 'ZeroToOne') {
 		if (range(value, 0, 1)) {
 			return false;
 		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect in the range between zero and one`,
-		};
+		return `The "${name}" attribute expect in the range between zero and one`;
 	}
 
 	if (spec.type === 'AcceptList') {
@@ -137,10 +127,7 @@ function valueCheck(name: string, value: string, isCustomRule: boolean, spec: At
 		if (intCheck(value) && range(value, 0, 1000)) {
 			return false;
 		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect non-negative integer greater than zero and less than or equal to 1000`,
-		};
+		return `The "${name}" attribute expect non-negative integer greater than zero and less than or equal to 1000`;
 	}
 
 	if (spec.type === 'Coords') {
@@ -239,10 +226,7 @@ function valueCheck(name: string, value: string, isCustomRule: boolean, spec: At
 		if (intCheck(value) && range(value, 0, 65534)) {
 			return false;
 		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect non-negative integer less than or equal to 65534`,
-		};
+		return `The "${name}" attribute expect non-negative integer less than or equal to 65534`;
 	}
 
 	if (spec.type === 'SourceSizeList') {
@@ -281,16 +265,10 @@ function valueCheck(name: string, value: string, isCustomRule: boolean, spec: At
 				return false;
 			}
 			if (-1 > i) {
-				return {
-					invalidType: 'invalid-value',
-					message: 'Value is ​​less than -1 behave the same as -1',
-				};
+				return 'Value is ​​less than -1 behave the same as -1';
 			}
 		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect either -1, 0, positive integer`,
-		};
+		return `The "${name}" attribute expect either -1, 0, positive integer`;
 	}
 
 	if (spec.type === 'Target') {
@@ -311,10 +289,7 @@ function valueCheck(name: string, value: string, isCustomRule: boolean, spec: At
 		if (valid) {
 			return false;
 		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect valid hash name reference`,
-		};
+		return `The "${name}" attribute expect valid hash name reference`;
 	}
 
 	if (spec.type === 'URLList') {
@@ -330,10 +305,7 @@ function valueCheck(name: string, value: string, isCustomRule: boolean, spec: At
 		if (valid) {
 			return false;
 		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect angle value`,
-		};
+		return `The "${name}" attribute expect angle value`;
 	}
 
 	if (spec.type === 'CSSBlendMode') {
@@ -415,19 +387,13 @@ function valueCheck(name: string, value: string, isCustomRule: boolean, spec: At
 			if (vaild) {
 				return false;
 			}
-			return {
-				invalidType: 'invalid-value',
-				message: `The ${name} attribute expects 0% to 100% as alpha value`,
-			};
+			return `The ${name} attribute expects 0% to 100% as alpha value`;
 		}
 		const vaild = range(num, 0, 1);
 		if (vaild) {
 			return false;
 		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The ${name} attribute expects 0 to 1 as alpha value`,
-		};
+		return `The ${name} attribute expects 0 to 1 as alpha value`;
 	}
 
 	if (spec.type === 'CSSTextDecoration') {
@@ -701,8 +667,5 @@ function includesEnum(name: string, value: string, enumValues: string[]) {
 	if (valid) {
 		return false;
 	}
-	return {
-		invalidType: 'invalid-value' as const,
-		message: `The "${name}" attribute expect either "${enumValues.join('", "')}"`,
-	};
+	return `The "${name}" attribute expect either "${enumValues.join('", "')}"`;
 }
