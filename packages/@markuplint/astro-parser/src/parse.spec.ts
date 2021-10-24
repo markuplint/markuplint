@@ -1,25 +1,6 @@
+import { MLASTElement } from '@markuplint/ml-ast';
 import { nodeListToDebugMaps } from '../../parser-utils/lib';
 import { parse } from './parse';
-
-it('Parse error', () => {
-	const ast = parse(`---
-const name = "World";
----
-<!-- Comment -->
-<style>
-div {
-    color: red;
-}
-</style>
-<div>Hello {name}!</div>
-<style>
-div {
-    background: #000;
-}
-</style>
-`);
-	expect(ast.parseError).toBeTruthy();
-});
 
 it('Basic', () => {
 	const ast = parse(`---

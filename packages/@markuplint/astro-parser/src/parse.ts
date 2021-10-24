@@ -1,5 +1,6 @@
 import { ASTAttribute, ASTNode, ASTStyleNode, AstroCompileError, astroParse } from './astro-parser';
 import {
+	MLASTElement,
 	MLASTElementCloseTag,
 	MLASTNode,
 	MLASTNodeType,
@@ -33,8 +34,8 @@ export const parse: Parse = rawCode => {
 
 	const htmlRawNodeList = traverse(ast.html, null, rawCode);
 	if (ast.style) {
-		const styleNode = parseStyle(ast.style, rawCode, 0);
-		htmlRawNodeList.push(styleNode);
+		const styleNodes = parseStyle(ast.style, rawCode, 0);
+		htmlRawNodeList.push(...styleNodes);
 	}
 
 	const nodeList: MLASTNode[] = flattenNodes(htmlRawNodeList, rawCode);
@@ -350,9 +351,25 @@ function parseElement(
 	return startTag;
 }
 
-function parseStyle(node: ASTStyleNode, rawHtml: string, offset: number) {
-	const { startLine, startCol, startOffset } = sliceFragment(rawHtml, node.start, node.end);
-	return parseElement('style', node, rawHtml, startLine, startCol, startOffset, null, null, null, offset);
+function parseStyle(nodes: ASTStyleNode[], rawHtml: string, offset: number) {
+	const result: MLASTElement[] = [];
+	for (const node of nodes) {
+		const { startLine, startCol, startOffset } = sliceFragment(rawHtml, node.start, node.end);
+		const styleEl = parseElement(
+			'style',
+			node,
+			rawHtml,
+			startLine,
+			startCol,
+			startOffset,
+			null,
+			null,
+			null,
+			offset,
+		);
+		result.push(styleEl);
+	}
+	return result;
 }
 
 function isCustomComponentName(name: string) {
