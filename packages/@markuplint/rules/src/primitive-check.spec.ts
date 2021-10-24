@@ -1,4 +1,4 @@
-import { floatCheck, intCheck, nonZeroUintCheck, numberCheckWithUnit, uintCheck } from './type-check';
+import { floatCheck, intCheck, nonZeroUintCheck, numberCheckWithUnit, uintCheck } from './primitive-check';
 
 test('intCheck', () => {
 	expect(intCheck('0')).toBe(true);

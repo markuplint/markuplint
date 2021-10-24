@@ -1,7 +1,7 @@
 import { ARIRRoleAttribute, Attribute, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
 import { Element, RuleConfigValue } from '@markuplint/ml-core';
+import { attrCheck } from './attr-check';
 import html from '@markuplint/html-spec';
-import { typeCheck } from './type-check';
 
 export function getAttrSpecs(nameWithNS: string, { specs, def }: MLMLSpec) {
 	const spec = specs.find(spec => spec.name === nameWithNS);
@@ -130,9 +130,9 @@ export function isValidAttr(
 	node: Element<any, any>,
 	attrSpecs: Attribute[],
 ) {
-	let invalid: ReturnType<typeof typeCheck> = false;
+	let invalid: ReturnType<typeof attrCheck> = false;
 	const spec = attrSpecs.find(s => s.name === name);
-	invalid = typeCheck(name, value, false, spec);
+	invalid = attrCheck(name, value, false, spec);
 	if (!invalid && spec && spec.condition && !node.hasSpreadAttr && !attrMatches(node, spec.condition)) {
 		invalid = {
 			invalidType: 'non-existent',
