@@ -413,11 +413,6 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		return false;
 	}
 
-	if (spec.type === 'SVGAngle') {
-		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#angle
-		return false;
-	}
-
 	if (spec.type === 'SVGAnimatableValue') {
 		// TODO
 		/**

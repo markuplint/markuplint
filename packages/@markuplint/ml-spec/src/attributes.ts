@@ -61,7 +61,6 @@ export type AttributeType =
 			| 'CSSTransformList'
 			| 'CSSTransformOrigin'
 			| 'CSSURL'
-			| 'SVGAngle'
 			| 'SVGAnimatableValue'
 			| 'SVGBeginValueList'
 			| 'SVGClockValue'

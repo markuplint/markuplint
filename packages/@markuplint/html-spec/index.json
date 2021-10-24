@@ -1453,14 +1453,14 @@
 				},
 				{
 					"name": "glyph-orientation-horizontal",
-					"type": "SVGAngle",
+					"type": "CSSAngle",
 					"defaultValue": "0deg",
 					"deprecated": true
 				},
 				{
 					"name": "glyph-orientation-vertical",
 					"type": [
-						"SVGAngle",
+						"CSSAngle",
 						{
 							"enum": ["auto"]
 						}
