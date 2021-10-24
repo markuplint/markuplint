@@ -640,6 +640,23 @@ describe('verify', () => {
 		]);
 	});
 
+	test('Interactive Element in SVG', async () => {
+		const { violations: violations1 } = await mlTest('<svg><video></video></svg>', ruleOn, [rule], 'en');
+		expect(violations1).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Invalid content of the svg element in SVG specification',
+				raw: '<svg>',
+			},
+		]);
+
+		const { violations: violations2 } = await mlTest('<svg><html:video></html:video></svg>', ruleOn, [rule], 'en');
+		expect(violations2).toStrictEqual([]);
+	});
+
 	test('with namespace', async () => {
 		const { violations: violations1 } = await mlTest(
 			'<html:div><svg:svg><svg:a><svg:text>text</svg:text></svg:a></svg:svg><html:div>',
