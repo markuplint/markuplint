@@ -26,17 +26,14 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		};
 	}
 
+	return valueCheck(name, value, isCustomRule, spec);
+}
+
+function valueCheck(name: string, value: string, isCustomRule: boolean, spec: AttrSpec): Invalid | false {
 	// Valid because any string value is acceptable
 	if (typeof spec.type !== 'string' && 'enum' in spec.type) {
 		// has "enum"
-		const valid = spec.type.enum.includes(value.toLowerCase().trim());
-		if (valid) {
-			return false;
-		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect either "${spec.type.enum.join('", "')}"`,
-		};
+		return includesEnum(name, value, spec.type.enum);
 	}
 
 	if (spec.type === 'NonEmptyString' && value === '') {
@@ -220,7 +217,7 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 		/**
 		 * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#referrer-policy-attributes
 		 */
-		const enumValues = [
+		return includesEnum(name, value, [
 			'',
 			'no-referrer',
 			'no-referrer-when-downgrade',
@@ -230,15 +227,7 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 			'origin-when-cross-origin',
 			'strict-origin-when-cross-origin',
 			'unsafe-url',
-		];
-		const valid = enumValues.includes(value.toLowerCase());
-		if (valid) {
-			return false;
-		}
-		return {
-			invalidType: 'invalid-value',
-			message: `The "${name}" attribute expect either "${enumValues.join('", "')}"`,
-		};
+		]);
 	}
 
 	if (spec.type === 'RowSpan') {
@@ -334,13 +323,41 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 	}
 
 	if (spec.type === 'CSSAngle') {
-		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/angle
-		return false;
+		/**
+		 * @see https://drafts.csswg.org/css-values/#angles
+		 */
+		const valid = numberCheckWithUnit(value, ['deg', 'grad', 'rad', 'turn']);
+		if (valid) {
+			return false;
+		}
+		return {
+			invalidType: 'invalid-value',
+			message: `The "${name}" attribute expect angle value`,
+		};
 	}
 
 	if (spec.type === 'CSSBlendMode') {
-		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/blend-mode
-		return false;
+		/**
+		 * @see https://drafts.fxtf.org/compositing/#ltblendmodegt
+		 */
+		return includesEnum(name, value, [
+			'normal',
+			'multiply',
+			'screen',
+			'overlay',
+			'darken',
+			'lighten',
+			'color-dodge',
+			'color-burn',
+			'hard-light',
+			'soft-light',
+			'difference',
+			'exclusion',
+			'hue',
+			'saturation',
+			'color',
+			'luminosity',
+		]);
 	}
 
 	if (spec.type === 'CSSClipPath') {
@@ -389,8 +406,28 @@ export function typeCheck(name: string, value: string, isCustomRule: boolean, sp
 	}
 
 	if (spec.type === 'CSSOpacity') {
-		// TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/opacity
-		return false;
+		/**
+		 * @see https://drafts.csswg.org/css-color/#typedef-alpha-value
+		 */
+		const { num, unit } = splitUnit(value);
+		if (unit === '%') {
+			const vaild = range(num, 0, 100);
+			if (vaild) {
+				return false;
+			}
+			return {
+				invalidType: 'invalid-value',
+				message: `The ${name} attribute expects 0% to 100% as alpha value`,
+			};
+		}
+		const vaild = range(num, 0, 1);
+		if (vaild) {
+			return false;
+		}
+		return {
+			invalidType: 'invalid-value',
+			message: `The ${name} attribute expects 0 to 1 as alpha value`,
+		};
 	}
 
 	if (spec.type === 'CSSTextDecoration') {
@@ -601,4 +638,71 @@ export function range(value: string, from: number, to: number) {
 		return false;
 	}
 	return from <= num && num <= to;
+}
+
+function splitUnit(value: string) {
+	value = value.trim().toLowerCase();
+	const matched = value.match(/(^-?\.[0-9]+|^-?[0-9]+(?:\.[0-9]+(?:e[+-][0-9]+)?)?)([a-z]+$)/i);
+	if (!matched) {
+		return {
+			num: value,
+			unit: '',
+		};
+	}
+	const [, num, unit] = matched;
+	return {
+		num,
+		unit,
+	};
+}
+
+/**
+ *
+ * @param value
+ * @param units
+ * @param numberType
+ */
+export function numberCheckWithUnit(value: string, units: string[], numberType: 'int' | 'uint' | 'float' = 'float') {
+	const { num, unit } = splitUnit(value);
+	if (!units.includes(unit.toLowerCase())) {
+		return false;
+	}
+	switch (numberType) {
+		case 'int': {
+			if (!intCheck(num)) {
+				return false;
+			}
+			break;
+		}
+		case 'uint': {
+			if (!uintCheck(num)) {
+				return false;
+			}
+			break;
+		}
+		case 'float': {
+			if (!floatCheck(num)) {
+				return false;
+			}
+			break;
+		}
+	}
+	return true;
+}
+
+/**
+ *
+ * @param name
+ * @param value
+ * @param enumValues
+ */
+function includesEnum(name: string, value: string, enumValues: string[]) {
+	const valid = enumValues.includes(value.toLowerCase());
+	if (valid) {
+		return false;
+	}
+	return {
+		invalidType: 'invalid-value' as const,
+		message: `The "${name}" attribute expect either "${enumValues.join('", "')}"`,
+	};
 }
