@@ -63,7 +63,7 @@ export default createRule<TagRule[], Options>({
 							try {
 								const parentExp = getRegExpFromParentNode(node, expGen);
 								const exp = expGen.specToRegExp(conditional.contents, parentExp, node.ns);
-								const conditionalResult = match(exp, childNodes, false);
+								const conditionalResult = match(exp, childNodes, node.ns, false);
 								if (!conditionalResult) {
 									context.report({
 										scope: node,
@@ -93,7 +93,7 @@ export default createRule<TagRule[], Options>({
 				if (!matched) {
 					try {
 						const exp = getRegExpFromNode(node, expGen);
-						const specResult = match(exp, childNodes, false);
+						const specResult = match(exp, childNodes, node.ns, false);
 
 						if (!specResult) {
 							context.report({
@@ -125,7 +125,7 @@ export default createRule<TagRule[], Options>({
 				try {
 					const exp = expGen.specToRegExp(rule.contents, parentExp, node.ns);
 					// Evaluate the custom element if the optional schema.
-					const r = match(exp, childNodes, node.isCustomElement);
+					const r = match(exp, childNodes, node.ns, node.isCustomElement);
 
 					if (!r) {
 						context.report({
@@ -158,13 +158,18 @@ export default createRule<TagRule[], Options>({
 
 type TargetNodes = ReturnType<Element<TagRule[], Options>['getChildElementsAndTextNodeWithoutWhitespaces']>;
 
-function normalization(nodes: TargetNodes, evalCustomElement: boolean) {
+function normalization(nodes: TargetNodes, ownNS: string | null, evalCustomElement: boolean) {
 	return nodes
 		.map(node => {
 			if (!evalCustomElement && node.type === 'Element' && node.isCustomElement) {
 				return '';
 			}
-			return `<${node.type === 'Element' ? node.nodeName : '#text'}>`;
+			if (node.type !== 'Element') {
+				return '<#text>';
+			}
+			ownNS = ownNS || 'html';
+			const name = node.nameWithNS.replace(new RegExp(`^${ownNS}:`), '');
+			return `<${name}>`;
 		})
 		.join('');
 }
@@ -197,8 +202,8 @@ function getRegExpFromParentNode(node: El, expGen: ExpGenerator) {
 	return parentExp;
 }
 
-function match(exp: RegExp, childNodes: TargetNodes, evalCustomElement: boolean) {
-	const target = normalization(childNodes, evalCustomElement);
+function match(exp: RegExp, childNodes: TargetNodes, ownNS: string | null, evalCustomElement: boolean) {
+	const target = normalization(childNodes, ownNS, evalCustomElement);
 	const result = exp.exec(target);
 	if (!result) {
 		return false;

@@ -640,6 +640,33 @@ describe('verify', () => {
 		]);
 	});
 
+	test('with namespace', async () => {
+		const { violations: violations1 } = await mlTest(
+			'<html:div><svg:svg><svg:a><svg:text>text</svg:text></svg:a></svg:svg><html:div>',
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(violations1).toStrictEqual([]);
+
+		const { violations: violations2 } = await mlTest(
+			'<html:div><svg:svg><svg:a><svg:feBlend /></svg:a></svg:svg><html:div>',
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(violations2).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 20,
+				message: 'Invalid content of the svg:a element in SVG specification',
+				raw: '<svg:a>',
+			},
+		]);
+	});
+
 	test('Custom element', async () => {
 		const o = {
 			rules: {
