@@ -1,4 +1,5 @@
 import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
+import { MLASTElement } from '@markuplint/ml-ast';
 import { parse } from './parse';
 
 describe('parse', () => {
@@ -408,5 +409,15 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		// @ts-ignore
 		const attrMaps = attributesToDebugMaps(ast.nodeList[0].attributes);
 		expect(attrMaps).toStrictEqual([]);
+	});
+
+	it('namespace', () => {
+		const doc = parse('<div><svg><text /></svg></div>');
+		expect(doc.nodeList[0].nodeName).toBe('div');
+		expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[1].nodeName).toBe('svg');
+		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].nodeName).toBe('text');
+		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
 	});
 });
