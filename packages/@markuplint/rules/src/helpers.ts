@@ -118,9 +118,8 @@ export const rePCENChar = [
 	'[\uD800-\uDBFF][\uDC00-\uDFFF]',
 ].join('|');
 
-export function htmlSpec(tag: string) {
-	tag = tag.toLowerCase();
-	const spec = html.specs.find(spec => spec.name === tag);
+export function htmlSpec(nameWithNS: string) {
+	const spec = html.specs.find(spec => spec.name === nameWithNS);
 	return spec || null;
 }
 

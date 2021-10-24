@@ -28,7 +28,7 @@ describe('verify', () => {
 				line: 1,
 				col: 6,
 				raw: '<a>',
-				message: 'Invalid content of the a element in the HTML specification',
+				message: 'Invalid content of the a element in HTML specification',
 			},
 		]);
 
@@ -40,7 +40,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<a>',
-				message: 'Invalid content of the a element in the HTML specification',
+				message: 'Invalid content of the a element in HTML specification',
 			},
 		]);
 
@@ -57,7 +57,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<a>',
-				message: 'Invalid content of the a element in the HTML specification',
+				message: 'Invalid content of the a element in HTML specification',
 			},
 		]);
 
@@ -69,7 +69,7 @@ describe('verify', () => {
 				line: 1,
 				col: 7,
 				raw: '<a>',
-				message: 'Invalid content of the a element in the HTML specification',
+				message: 'Invalid content of the a element in HTML specification',
 			},
 		]);
 	});
@@ -88,7 +88,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<address>',
-				message: 'Invalid content of the address element in the HTML specification',
+				message: 'Invalid content of the address element in HTML specification',
 			},
 		]);
 	});
@@ -107,7 +107,7 @@ describe('verify', () => {
 				line: 1,
 				col: 6,
 				raw: '<audio src="path/to">',
-				message: 'Invalid content of the audio element in the HTML specification',
+				message: 'Invalid content of the audio element in HTML specification',
 			},
 		]);
 
@@ -152,7 +152,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<dl>',
-				message: 'Invalid content of the dl element in the HTML specification',
+				message: 'Invalid content of the dl element in HTML specification',
 			},
 			{
 				ruleId: 'permitted-contents',
@@ -160,7 +160,7 @@ describe('verify', () => {
 				line: 4,
 				col: 5,
 				raw: '<div>',
-				message: 'Invalid content of the div element in the HTML specification',
+				message: 'Invalid content of the div element in HTML specification',
 			},
 		]);
 
@@ -182,7 +182,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<dl>',
-				message: 'Invalid content of the dl element in the HTML specification',
+				message: 'Invalid content of the dl element in HTML specification',
 			},
 			{
 				ruleId: 'permitted-contents',
@@ -190,7 +190,7 @@ describe('verify', () => {
 				line: 3,
 				col: 5,
 				raw: '<div>',
-				message: 'Invalid content of the div element in the HTML specification',
+				message: 'Invalid content of the div element in HTML specification',
 			},
 			{
 				ruleId: 'permitted-contents',
@@ -198,7 +198,7 @@ describe('verify', () => {
 				line: 5,
 				col: 5,
 				raw: '<div>',
-				message: 'Invalid content of the div element in the HTML specification',
+				message: 'Invalid content of the div element in HTML specification',
 			},
 		]);
 
@@ -244,7 +244,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<div>',
-				message: 'Invalid content of the div element in the HTML specification',
+				message: 'Invalid content of the div element in HTML specification',
 			},
 		]);
 
@@ -265,7 +265,7 @@ describe('verify', () => {
 				line: 2,
 				col: 5,
 				raw: '<div>',
-				message: 'Invalid content of the div element in the HTML specification',
+				message: 'Invalid content of the div element in HTML specification',
 			},
 		]);
 	});
@@ -304,7 +304,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<table>',
-				message: 'Invalid content of the table element in the HTML specification',
+				message: 'Invalid content of the table element in HTML specification',
 			},
 		]);
 	});
@@ -340,7 +340,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<ruby>',
-				message: 'Invalid content of the ruby element in the HTML specification',
+				message: 'Invalid content of the ruby element in HTML specification',
 			},
 		]);
 
@@ -366,7 +366,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<ul>',
-				message: 'Invalid content of the ul element in the HTML specification',
+				message: 'Invalid content of the ul element in HTML specification',
 			},
 		]);
 
@@ -416,7 +416,7 @@ describe('verify', () => {
 				line: 2,
 				col: 5,
 				raw: '<li>',
-				message: 'Invalid content of the li element in the HTML specification',
+				message: 'Invalid content of the li element in HTML specification',
 			},
 		]);
 
@@ -500,7 +500,7 @@ describe('verify', () => {
 				line: 1,
 				col: 1,
 				raw: '<hgroup>',
-				message: 'Invalid content of the hgroup element in the HTML specification',
+				message: 'Invalid content of the hgroup element in HTML specification',
 			},
 		]);
 	});
@@ -565,7 +565,7 @@ describe('verify', () => {
 				line: 2,
 				col: 5,
 				raw: '<a href="path/to">',
-				message: 'Invalid content of the a element in the HTML specification',
+				message: 'Invalid content of the a element in HTML specification',
 			},
 			{
 				ruleId: 'permitted-contents',
@@ -573,7 +573,7 @@ describe('verify', () => {
 				line: 3,
 				col: 6,
 				raw: '<template>',
-				message: 'Invalid content of the template element in the HTML specification',
+				message: 'Invalid content of the template element in HTML specification',
 			},
 		]);
 	});
@@ -586,6 +586,58 @@ describe('verify', () => {
 	test('Custom element', async () => {
 		const { violations: violations1 } = await mlTest('<div><x-item></x-item></div>', ruleOn, [rule], 'en');
 		expect(violations1).toStrictEqual([]);
+	});
+
+	test('svg:a', async () => {
+		const { violations: violations1 } = await mlTest('<svg><a><text>text</text></a></svg>', ruleOn, [rule], 'en');
+		expect(violations1).toStrictEqual([]);
+
+		const { violations: violations2 } = await mlTest('<svg><a><feBlend /></a></svg>', ruleOn, [rule], 'en');
+		expect(violations2).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'Invalid content of the a element in SVG specification',
+				raw: '<a>',
+			},
+		]);
+	});
+
+	test('svg:foreignObject', async () => {
+		const { violations: violations1 } = await mlTest(
+			'<svg><foreignObject><div>text</div></foreignObject></svg>',
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(violations1).toStrictEqual([]);
+
+		const { violations: violations2 } = await mlTest(
+			'<svg><foreignObject><rect /></foreignObject></svg>',
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(violations2).toStrictEqual([]);
+
+		const { violations: violations3 } = await mlTest(
+			'<svg><foreignObject><div><rect /></div></foreignObject></svg>',
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(violations3).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 21,
+				message: 'Invalid content of the div element in HTML specification',
+				raw: '<div>',
+			},
+		]);
 	});
 
 	test('Custom element', async () => {
@@ -695,7 +747,7 @@ describe('React', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Invalid content of the A element in the HTML specification',
+				message: 'Invalid content of the A element in HTML specification',
 				raw: '<A>',
 			},
 		]);
@@ -706,7 +758,7 @@ describe('React', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Invalid content of the a element in the HTML specification',
+				message: 'Invalid content of the a element in HTML specification',
 				raw: '<a>',
 			},
 		]);
@@ -737,7 +789,7 @@ describe('React', () => {
 				severity: 'error',
 				line: 1,
 				col: 7,
-				message: 'Invalid content of the title element in the HTML specification',
+				message: 'Invalid content of the title element in HTML specification',
 				raw: '<title>',
 			},
 		]);
@@ -747,7 +799,7 @@ describe('React', () => {
 				severity: 'error',
 				line: 1,
 				col: 7,
-				message: 'Invalid content of the title element in the HTML specification',
+				message: 'Invalid content of the title element in HTML specification',
 				raw: '<title>',
 			},
 		]);
@@ -795,7 +847,7 @@ describe('EJS', () => {
 				severity: 'error',
 				line: 9,
 				col: 3,
-				message: 'Invalid content of the ul element in the HTML specification',
+				message: 'Invalid content of the ul element in HTML specification',
 				raw: '<ul>',
 			},
 		]);

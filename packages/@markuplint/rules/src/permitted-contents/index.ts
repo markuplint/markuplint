@@ -28,8 +28,10 @@ export default createRule<TagRule[], Options>({
 				return;
 			}
 
+			const specType = node.ns === 'html' ? 'HTML' : node.ns === 'svg' ? 'SVG' : 'Any Language';
+
 			const childNodes = node.getChildElementsAndTextNodeWithoutWhitespaces();
-			const spec = !node.isCustomElement && htmlSpec(node.nodeName)?.permittedStructures;
+			const spec = !node.isCustomElement && htmlSpec(node.nameWithNS)?.permittedStructures;
 
 			const expGen = new ExpGenerator(idCounter++);
 
@@ -60,7 +62,7 @@ export default createRule<TagRule[], Options>({
 						if (matched) {
 							try {
 								const parentExp = getRegExpFromParentNode(node, expGen);
-								const exp = expGen.specToRegExp(conditional.contents, parentExp);
+								const exp = expGen.specToRegExp(conditional.contents, parentExp, node.ns);
 								const conditionalResult = match(exp, childNodes, false);
 								if (!conditionalResult) {
 									context.report({
@@ -68,7 +70,7 @@ export default createRule<TagRule[], Options>({
 										message: context.translate(
 											'Invalid content of the {0} element in {1}',
 											node.nodeName,
-											'the HTML specification',
+											`${specType} specification`,
 										),
 										line: node.startLine,
 										col: node.startCol,
@@ -99,7 +101,7 @@ export default createRule<TagRule[], Options>({
 								message: context.translate(
 									'Invalid content of the {0} element in {1}',
 									node.nodeName,
-									'the HTML specification',
+									`${specType} specification`,
 								),
 							});
 						}
@@ -121,7 +123,7 @@ export default createRule<TagRule[], Options>({
 
 				const parentExp = getRegExpFromParentNode(node, expGen);
 				try {
-					const exp = expGen.specToRegExp(rule.contents, parentExp);
+					const exp = expGen.specToRegExp(rule.contents, parentExp, node.ns);
 					// Evaluate the custom element if the optional schema.
 					const r = match(exp, childNodes, node.isCustomElement);
 
@@ -172,6 +174,8 @@ type El = {
 	nodeName: string;
 	parentNode: El | null;
 	isCustomElement?: boolean;
+	nameWithNS?: string;
+	ns?: string | null;
 };
 
 function getRegExpFromNode(node: El, expGen: ExpGenerator) {
@@ -180,9 +184,9 @@ function getRegExpFromNode(node: El, expGen: ExpGenerator) {
 		return expMapOnNodeId.get(node.uuid)!;
 	}
 	const parentExp = node.parentNode ? getRegExpFromNode(node.parentNode, expGen) : null;
-	const spec = !node.isCustomElement && htmlSpec(node.nodeName)?.permittedStructures;
+	const spec = !node.isCustomElement && htmlSpec(node.nameWithNS || node.nodeName.toLowerCase())?.permittedStructures;
 	const contentRule = spec ? spec.contents : true;
-	const exp = expGen.specToRegExp(contentRule, parentExp);
+	const exp = expGen.specToRegExp(contentRule, parentExp, node.ns || null);
 	expMapOnNodeId.set(node.uuid, exp);
 	return exp;
 }
