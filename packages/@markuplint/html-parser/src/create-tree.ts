@@ -8,7 +8,7 @@ import {
 	MLASTTag,
 	MLASTText,
 } from '@markuplint/ml-ast';
-import { getEndCol, getEndLine, isPotentialCustomElementName, uuid } from '@markuplint/parser-utils';
+import { getEndCol, getEndLine, isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
 import parse5, { CommentNode, Document, DocumentFragment, Element, Node, TextNode } from 'parse5';
 import parseRawTag from './parse-raw-tag';
 
@@ -193,7 +193,25 @@ function nodeize(
 			const tagName = tagTokens.tagName;
 			const isCustomElement = isPotentialCustomElementName(tagName);
 			let endTag: MLASTElementCloseTag | null = null;
-			const endTagLoc = 'endTag' in location ? location.endTag : null;
+			let endTagLoc = 'endTag' in location ? location.endTag : null;
+
+			/**
+			 * Patch: Create endTag for SVG Element
+			 * @see https://github.com/inikulin/parse5/issues/352
+			 */
+			if (
+				!endTagLoc &&
+				'namespaceURI' in originNode &&
+				originNode.namespaceURI === 'http://www.w3.org/2000/svg'
+			) {
+				const belowRawHTMLFromStartTagEnd = rawHtml.slice(location.endOffset);
+				const endTagMatched = belowRawHTMLFromStartTagEnd.match(new RegExp(`^</\\s*${tagName}[^>]*>`, 'm'));
+				const endTag = endTagMatched && endTagMatched[0];
+				if (endTag) {
+					endTagLoc = sliceFragment(rawHtml, location.endOffset, location.endOffset + endTag.length);
+				}
+			}
+
 			if (endTagLoc) {
 				const { startOffset, endOffset, startLine, endLine, startCol, endCol } = endTagLoc;
 				const endTagRaw = rawHtml.slice(startOffset, endOffset);
