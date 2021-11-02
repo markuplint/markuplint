@@ -1,6 +1,6 @@
 {
 	"name": "markuplint",
-	"version": "1.11.4",
+	"version": "2.0.0-alpha.0",
 	"description": "A Linter for All Markup Languages.",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
