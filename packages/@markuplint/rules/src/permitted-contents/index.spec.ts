@@ -506,16 +506,16 @@ describe('verify', () => {
 	});
 
 	test('select', async () => {
-		const r1 = await markuplint.verify(
+		const { violations: violations1 } = await mlTest(
 			`<select>
 			</select>`,
 			ruleOn,
 			[rule],
 			'en',
 		);
-		expect(r1).toStrictEqual([]);
+		expect(violations1).toStrictEqual([]);
 
-		const r2 = await markuplint.verify(
+		const { violations: violations2 } = await mlTest(
 			`<select>
 				<option>1</option>
 			</select>`,
@@ -523,9 +523,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r2).toStrictEqual([]);
+		expect(violations2).toStrictEqual([]);
 
-		const r3 = await markuplint.verify(
+		const { violations: violations3 } = await mlTest(
 			`<select>
 				<option>1</option>
 				<option>2</option>
@@ -535,9 +535,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r3).toStrictEqual([]);
+		expect(violations3).toStrictEqual([]);
 
-		const r4 = await markuplint.verify(
+		const { violations: violations4 } = await mlTest(
 			`<select>
 				<optgroup>
 				</optgroup>
@@ -546,9 +546,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r4).toStrictEqual([]);
+		expect(violations4).toStrictEqual([]);
 
-		const r5 = await markuplint.verify(
+		const { violations: violations5 } = await mlTest(
 			`<select>
 				<optgroup>
 					<option>1</option>
@@ -558,9 +558,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r5).toStrictEqual([]);
+		expect(violations5).toStrictEqual([]);
 
-		const r6 = await markuplint.verify(
+		const { violations: violations6 } = await mlTest(
 			`<select>
 				<optgroup>
 					<option>1</option>
@@ -572,9 +572,9 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r6).toStrictEqual([]);
+		expect(violations6).toStrictEqual([]);
 
-		const r7 = await markuplint.verify(
+		const { violations: violations7 } = await mlTest(
 			`<select>
 				<div>1</div>
 			</select>`,
@@ -582,18 +582,18 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r7).toStrictEqual([
+		expect(violations7).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Invalid content of the select element in the HTML specification',
+				message: 'Invalid content of the select element in HTML specification',
 				raw: '<select>',
 			},
 		]);
 
-		const r8 = await markuplint.verify(
+		const { violations: violations8 } = await mlTest(
 			`<select>
 				<optgroup>
 					<div>1</div>
@@ -603,13 +603,13 @@ describe('verify', () => {
 			[rule],
 			'en',
 		);
-		expect(r8).toStrictEqual([
+		expect(violations8).toStrictEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
 				line: 2,
 				col: 5,
-				message: 'Invalid content of the optgroup element in the HTML specification',
+				message: 'Invalid content of the optgroup element in HTML specification',
 				raw: '<optgroup>',
 			},
 		]);
