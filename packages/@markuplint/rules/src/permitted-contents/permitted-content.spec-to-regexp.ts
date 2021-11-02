@@ -25,7 +25,7 @@ export default class ExpGenerator {
 
 	public specToRegExp(contentRule: PermittedContent[] | boolean, parentExp: RegExp | null = null) {
 		if (contentRule === true) {
-			return new RegExp(`^(?:${ALL})$`);
+			return new RegExp(`^(?:${ALL})+$`);
 		}
 		if (contentRule === false) {
 			return new RegExp('^$');

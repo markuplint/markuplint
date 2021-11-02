@@ -255,7 +255,7 @@
 			},
 			{
 				"name": "lang",
-				"description": "Helps define the language of an element: the language that non-editable elements are in, or the language that editable elements should be written in by the user. The attribute contains one “language tag” (made of hyphen-separated “language subtags”) in the format defined in Tags for Identifying Languages (BCP47). xml:lang has priority over it.",
+				"description": "Helps define the language of an element: the language that non-editable elements are in, or the language that editable elements should be written in by the user. The attribute contains one “language tag” (made of hyphen-separated “language subtags”) in the format defined in RFC 5646: Tags for Identifying Languages (also known as BCP 47). xml:lang has priority over it.",
 				"type": "BCP47"
 			},
 			{
@@ -9433,7 +9433,7 @@
 				{
 					"name": "hreflang",
 					"type": "String",
-					"description": "Indicates the language of the linked resource. Allowed values are determined by BCP47. Use this attribute only if the href attribute is present."
+					"description": "Indicates the language of the linked resource. Allowed values are defined by RFC 5646: Tags for Identifying Languages (also known as BCP 47). Use this attribute only if the href attribute is present."
 				},
 				{
 					"name": "name",
@@ -13056,7 +13056,7 @@
 				},
 				{
 					"name": "hreflang",
-					"description": "This attribute indicates the language of the linked resource. It is purely advisory. Allowed values are determined by BCP47. Use this attribute only if the href attribute is present.",
+					"description": "This attribute indicates the language of the linked resource. It is purely advisory. Allowed values are specified by RFC 5646: Tags for Identifying Languages (also known as BCP 47). Use this attribute only if the href attribute is present.",
 					"type": "BCP47"
 				},
 				{
@@ -13911,7 +13911,11 @@
 			"permittedStructures": {
 				"summary": "Zero or more <option> elements.",
 				"tag": "optgroup",
-				"contents": true
+				"contents": [
+					{
+						"zeroOrMore": "option"
+					}
+				]
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
@@ -14090,8 +14094,8 @@
 			"categories": [],
 			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"tag": "param",
-				"contents": true
+				"tag": "optgroup",
+				"contents": false
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
