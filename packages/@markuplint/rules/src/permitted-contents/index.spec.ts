@@ -505,6 +505,116 @@ describe('verify', () => {
 		]);
 	});
 
+	test('select', async () => {
+		const r1 = await markuplint.verify(
+			`<select>
+			</select>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r1).toStrictEqual([]);
+
+		const r2 = await markuplint.verify(
+			`<select>
+				<option>1</option>
+			</select>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r2).toStrictEqual([]);
+
+		const r3 = await markuplint.verify(
+			`<select>
+				<option>1</option>
+				<option>2</option>
+				<option>3</option>
+			</select>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r3).toStrictEqual([]);
+
+		const r4 = await markuplint.verify(
+			`<select>
+				<optgroup>
+				</optgroup>
+			</select>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r4).toStrictEqual([]);
+
+		const r5 = await markuplint.verify(
+			`<select>
+				<optgroup>
+					<option>1</option>
+				</optgroup>
+			</select>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r5).toStrictEqual([]);
+
+		const r6 = await markuplint.verify(
+			`<select>
+				<optgroup>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+				</optgroup>
+			</select>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r6).toStrictEqual([]);
+
+		const r7 = await markuplint.verify(
+			`<select>
+				<div>1</div>
+			</select>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r7).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Invalid content of the select element in the HTML specification',
+				raw: '<select>',
+			},
+		]);
+
+		const r8 = await markuplint.verify(
+			`<select>
+				<optgroup>
+					<div>1</div>
+				</optgroup>
+			</select>`,
+			ruleOn,
+			[rule],
+			'en',
+		);
+		expect(r8).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 2,
+				col: 5,
+				message: 'Invalid content of the optgroup element in the HTML specification',
+				raw: '<optgroup>',
+			},
+		]);
+	});
+
 	test('script', async () => {
 		const { violations: violations1 } = await mlTest(
 			`<script>

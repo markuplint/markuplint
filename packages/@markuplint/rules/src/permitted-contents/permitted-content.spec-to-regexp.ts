@@ -29,7 +29,7 @@ export default class ExpGenerator {
 		ownNS: string | null = null,
 	) {
 		if (contentRule === true) {
-			return new RegExp(`^(?:${ALL})$`);
+			return new RegExp(`^(?:${ALL})+$`);
 		}
 		if (contentRule === false) {
 			return new RegExp('^$');
