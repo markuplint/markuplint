@@ -1,0 +1,44 @@
+{
+	"tag": "feOffset",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		{
+			"name": "in",
+			"type": [
+				{
+					"enum": [
+						"SourceGraphic",
+						"SourceAlpha",
+						"BackgroundImage",
+						"BackgroundAlpha",
+						"FillPaint",
+						"StrokePaint"
+					]
+				},
+				"CSSCustomIdent"
+			]
+		},
+		{
+			"name": "dx",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "dy",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		}
+	]
+}

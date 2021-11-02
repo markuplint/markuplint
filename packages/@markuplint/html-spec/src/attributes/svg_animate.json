@@ -1,0 +1,16 @@
+{
+	"tag": "animate",
+	"attributes": [
+		"#SVGAnimationAdditionAttrs",
+		"#SVGAnimationEventAttrs",
+		"#SVGAnimationTargetElementAttrs",
+		"#SVGAnimationAttributeTargetAttrs",
+		"#SVGAnimationTimingAttrs",
+		"#SVGAnimationValueAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs"
+	]
+}

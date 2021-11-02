@@ -1,0 +1,26 @@
+{
+	"tag": "defs",
+	"contents": [
+		{
+			"zeroOrMore": [
+				"#SVGAnimation",
+				"#SVGDescriptive",
+				"#SVGPaintServer",
+				"#SVGShape",
+				"#SVGStructural",
+				"svg:a",
+				"svg:clipPath",
+				"svg:filter",
+				"svg:foreignObject",
+				"svg:image",
+				"svg:marker",
+				"svg:mask",
+				"svg:script",
+				"svg:style",
+				"svg:switch",
+				"svg:text",
+				"svg:view"
+			]
+		}
+	]
+}

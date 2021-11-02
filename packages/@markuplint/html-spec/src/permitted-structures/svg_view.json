@@ -1,0 +1,8 @@
+{
+	"tag": "view",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "svg:script", "svg:style"]
+		}
+	]
+}

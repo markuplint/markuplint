@@ -1,0 +1,31 @@
+{
+	"tag": "ellipse",
+	"attributes": [
+		"#ariaAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "pathLength",
+			"type": "Float"
+		},
+		{
+			"name": "cx",
+			"type": ["SVGLength", "SVGPercentage"]
+		},
+		{
+			"name": "cy",
+			"type": ["SVGLength", "SVGPercentage"]
+		},
+		{
+			"name": "r",
+			"type": "SVGLength"
+		},
+		{
+			"name": "pathLength",
+			"type": "Float"
+		}
+	]
+}

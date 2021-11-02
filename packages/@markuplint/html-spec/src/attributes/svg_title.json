@@ -1,0 +1,4 @@
+{
+	"tag": "title",
+	"attributes": ["#SVGCoreAttrs", "#SVGGlobalEventAttrs", "#SVGDocumentElementEventAttrs"]
+}

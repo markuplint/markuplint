@@ -1,0 +1,54 @@
+{
+	"tag": "tspan",
+	"attributes": [
+		"#ariaAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs",
+		"#XLinkAttrs",
+		{
+			"name": "lengthAdjust",
+			"type": { "enum": ["spacing", "spacingAndGlyphs"] },
+			"defaultValue": "spacing"
+		},
+		{
+			"name": "textLength",
+			"type": ["SVGLength", "SVGPercentage", "Float"]
+		},
+		{
+			"name": "path",
+			"type": "SVGPathCommands"
+		},
+		{
+			"name": "href",
+			"type": "URL"
+		},
+		{
+			"name": "startOffset",
+			"type": ["SVGLength", "SVGPercentage", "Float"]
+		},
+		{
+			"name": "method",
+			"type": {
+				"enum": ["align", "stretch"]
+			},
+			"defaultValue": "align"
+		},
+		{
+			"name": "spacing",
+			"type": {
+				"enum": ["auto", "exact"]
+			},
+			"defaultValue": "exact"
+		},
+		{
+			"name": "side",
+			"type": {
+				"enum": ["left", "right"]
+			},
+			"defaultValue": "left"
+		}
+	]
+}

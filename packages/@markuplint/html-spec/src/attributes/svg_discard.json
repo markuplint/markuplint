@@ -1,0 +1,17 @@
+{
+	"tag": "discard",
+	"attributes": [
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#ariaAttrs",
+		{
+			"name": "begin",
+			"type": "SVGBeginValueList",
+			"defaultValue": "0s"
+		},
+		{
+			"name": "href",
+			"type": "URL"
+		}
+	]
+}

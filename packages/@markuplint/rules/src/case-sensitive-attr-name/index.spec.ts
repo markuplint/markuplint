@@ -80,7 +80,7 @@ describe('verify', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('foreign elements', async () => {
+	test('svg', async () => {
 		const { violations } = await mlTest(
 			'<svg viewBox="0 0 100 100"></svg>',
 			{ rules: { 'case-sensitive-attr-name': true } },

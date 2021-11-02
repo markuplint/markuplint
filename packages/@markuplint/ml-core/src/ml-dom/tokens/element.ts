@@ -1,8 +1,8 @@
 import { AnonymousNode, Document } from '../';
+import { ContentModel, getNS } from '@markuplint/ml-spec';
 import { MLASTElement, MLToken } from '@markuplint/ml-ast';
 import { MLDOMAttribute, MLDOMElementCloseTag, MLDOMNode, MLDOMOmittedElement, MLDOMText, MLDOMToken } from './';
 import { createNode, createSelector } from '../helper';
-import { ContentModel } from '@markuplint/ml-spec';
 import { IMLDOMElement } from '../types';
 import MLDOMPreprocessorSpecificAttribute from './preprocessor-specific-attribute';
 import { RuleConfigValue } from '@markuplint/ml-config';
@@ -75,6 +75,24 @@ export default class MLDOMElement<T extends RuleConfigValue, O = null>
 	get childNodes(): AnonymousNode<T, O>[] {
 		const astChildren = this._astToken.childNodes || [];
 		return astChildren.map(node => this.nodeStore.getNode<typeof node, T, O>(node));
+	}
+
+	get ns() {
+		if (/[a-z]:[a-z]/i.test(this.nodeName)) {
+			return this.nodeName.split(':')[0];
+		}
+		return getNS(this.namespaceURI);
+	}
+
+	get nameWithNS() {
+		if (/[a-z]:[a-z]/i.test(this.nodeName)) {
+			return this.nodeName;
+		}
+		const ns = getNS(this.namespaceURI);
+		if (ns === 'html') {
+			return this.nodeName.toLowerCase();
+		}
+		return `${ns}:${this.nodeName}`;
 	}
 
 	querySelectorAll(selector: string) {

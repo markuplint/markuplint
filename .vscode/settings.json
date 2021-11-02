@@ -34,6 +34,10 @@
 			"url": "/packages/@markuplint/ml-spec/schemas/attributes.schema.json"
 		},
 		{
+			"fileMatch": ["/packages/*markuplint/html-spec/src/global-attributes/*.json"],
+			"url": "/packages/@markuplint/ml-spec/schemas/global-attributes.schema.json"
+		},
+		{
 			"fileMatch": ["/packages/*markuplint/html-spec/src/wai-aria/*.json"],
 			"url": "/packages/@markuplint/ml-spec/schemas/wai-aria.schema.json"
 		}

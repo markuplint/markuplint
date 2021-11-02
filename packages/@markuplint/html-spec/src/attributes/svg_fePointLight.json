@@ -1,0 +1,21 @@
+{
+	"tag": "fePointLight",
+	"attributes": [
+		"#SVGCoreAttrs",
+		{
+			"name": "x",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "z",
+			"type": "Float",
+			"defaultValue": "1"
+		}
+	]
+}

@@ -1,25 +1,192 @@
 {
 	"definitions": {
-		"condition": {
+		"AttributeCondition": {
 			"oneOf": [
 				{
 					"type": "object",
 					"additionalProperties": false,
+					"required": ["ancestor"],
 					"properties": {
-						"ancestor": { "type": "string" }
+						"ancestor": {
+							"type": "string"
+						}
 					}
 				},
 				{
 					"type": "object",
 					"additionalProperties": false,
+					"required": ["self"],
 					"properties": {
 						"self": {
 							"type": ["string", "array"],
-							"items": { "type": "string", "minItems": 2 }
+							"items": {
+								"type": "string",
+								"minItems": 2
+							}
 						}
 					}
 				}
 			]
+		},
+		"AttributeType": {
+			"oneOf": [
+				{
+					"type": "string",
+					"enum": [
+						"String",
+						"NonEmptyString",
+						"Boolean",
+						"Function",
+						"Date",
+						"Int",
+						"Uint",
+						"Float",
+						"NonZeroUint",
+						"ZeroToOne",
+						"AcceptList",
+						"AutoComplete",
+						"BCP47",
+						"Color",
+						"ColSpan",
+						"Coords",
+						"Crossorigin",
+						"DateTime",
+						"Destination",
+						"DOMID",
+						"DOMIDList",
+						"IRI",
+						"ItemType",
+						"LinkSizes",
+						"LinkType",
+						"LinkTypeList",
+						"MediaQuery",
+						"MediaQueryList",
+						"MIMEType",
+						"ReferrerPolicy",
+						"RowSpan",
+						"SourceSizeList",
+						"SrcSet",
+						"TabIndex",
+						"Target",
+						"URL",
+						"URLHash",
+						"URLList",
+						"CSSAngle",
+						"CSSBlendMode",
+						"CSSClipPath",
+						"CSSCustomIdent",
+						"CSSDisplay",
+						"CSSFilter",
+						"CSSFontFamily",
+						"CSSFontSize",
+						"CSSFontVariant",
+						"CSSFontWeight",
+						"CSSMask",
+						"CSSOpacity",
+						"CSSTextDecoration",
+						"CSSTransformList",
+						"CSSTransformOrigin",
+						"CSSURL",
+						"SVGAnimatableValue",
+						"SVGBeginValueList",
+						"SVGClockValue",
+						"SVGColorMatrix",
+						"SVGDashArray",
+						"SVGEndValueList",
+						"SVGFilterPrimitiveReference",
+						"SVGKernelMatrix",
+						"SVGKeyPoints",
+						"SVGKeySplines",
+						"SVGKeyTimes",
+						"SVGLanguageTags",
+						"SVGLength",
+						"SVGLengthList",
+						"SVGNumberList",
+						"SVGNumberOptionalNumber",
+						"SVGOrigin",
+						"SVGPaint",
+						"SVGPathCommands",
+						"SVGPercentage",
+						"SVGPercentageList",
+						"SVGPoints",
+						"SVGPreserveAspectRatio",
+						"SVGViewBox"
+					]
+				},
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"required": ["enum"],
+					"properties": {
+						"enum": {
+							"type": "array",
+							"minLength": 1,
+							"uniqueItems": true,
+							"items": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			]
+		},
+		"AttributeJSON": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["name", "type"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"type": {
+					"oneOf": [
+						{
+							"$ref": "#/definitions/AttributeType"
+						},
+						{
+							"type": "array",
+							"minItems": 1,
+							"uniqueItems": true,
+							"items": {
+								"$ref": "#/definitions/AttributeType"
+							}
+						}
+					]
+				},
+				"defaultValue": { "type": "string" },
+				"deprecated": { "type": "boolean" },
+				"required": {
+					"oneOf": [
+						{
+							"type": "boolean"
+						},
+						{
+							"$ref": "#/definitions/AttributeCondition"
+						}
+					]
+				},
+				"requiredEither": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"noUse": {
+					"type": "boolean"
+				},
+				"condition": {
+					"$ref": "#/definitions/AttributeCondition"
+				}
+			}
+		},
+		"DefineDefaultAttributeType": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["name", "defaultValue"],
+			"properties": {
+				"name": { "type": "string" },
+				"defaultValue": { "type": "string" }
+			}
 		}
 	},
 	"type": "object",
@@ -29,65 +196,39 @@
 		"tag": { "type": "string" },
 		"attributes": {
 			"type": "array",
+			"uniqueItems": true,
 			"items": {
-				"type": "object",
-				"additionalProperties": false,
-				"required": ["name", "type"],
-				"properties": {
-					"name": { "type": "string" },
-					"type": {
+				"anyOf": [
+					{
 						"type": "string",
 						"enum": [
-							"String",
-							"NonEmptyString",
-							"Boolean",
-							"Function", // JavaScript function body
-							"Date",
-							"Int", // Integer
-							"Uint", // Non-negative integer
-							"Float", // Floating-point number
-							"NonZeroUint", // Non-negative integer greater than zero
-							"AcceptList", // https://html.spec.whatwg.org/multipage/input.html#attr-input-accept
-							"AutoComplete", // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens
-							"BCP47", // https://tools.ietf.org/html/bcp47
-							"Color", // https://drafts.csswg.org/css-color/#typedef-color
-							"ColSpan", // https://html.spec.whatwg.org/multipage/tables.html#attr-tdth-colspan
-							"Coords", // https://html.spec.whatwg.org/multipage/image-maps.html#attr-area-coords
-							"DateTime", // https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value
-							"Destination", // https://html.spec.whatwg.org/multipage/semantics.html#attr-link-as
-							"DOMID",
-							"DOMIDList",
-							"ItemType", // https://html.spec.whatwg.org/multipage/microdata.html#attr-itemtype
-							"LinkSizes", // https://html.spec.whatwg.org/multipage/semantics.html#attr-link-sizes
-							"LinkType", // https://html.spec.whatwg.org/multipage/links.html#linkTypes
-							"LinkTypeList", // https://html.spec.whatwg.org/multipage/links.html#linkTypes
-							"MediaQuery", // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-media-query-list
-							"MediaQueryList", // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-media-query-list
-							"MIMEType", // https://mimesniff.spec.whatwg.org/#valid-mime-type
-							"ReferrerPolicy", // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#referrer-policy-attribute
-							"RowSpan", // https://html.spec.whatwg.org/multipage/tables.html#attr-tdth-rowspan
-							"SourceSizeList", // https://html.spec.whatwg.org/multipage/images.html#sizes-attributes
-							"SrcSet", // https://html.spec.whatwg.org/multipage/images.html#srcset-attribute
-							"TabIndex", // https://html.spec.whatwg.org/multipage/interaction.html#attr-tabindex
-							"Target", // https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-target
-							"URL", // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces
-							"URLHash", // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-hash-name-reference
-							"URLList" // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces
+							"#globalAttrs",
+							"#ariaAttrs",
+							"#SVGAnimationAdditionAttrs",
+							"#SVGAnimationAttributeTargetAttrs",
+							"#SVGAnimationEventAttrs",
+							"#SVGAnimationTargetElementAttrs",
+							"#SVGAnimationTimingAttrs",
+							"#SVGAnimationValueAttrs",
+							"#SVGConditionalProcessingAttrs",
+							"#SVGCoreAttrs",
+							"#SVGDocumentElementEventAttrs",
+							"#SVGDocumentEventAttrs",
+							"#SVGFilterPrimitiveAttrs",
+							"#SVGGlobalEventAttrs",
+							"#SVGGraphicalEventAttrs",
+							"#SVGPresentationAttrs",
+							"#SVGTransferFunctionAttrs",
+							"#XLinkAttrs"
 						]
 					},
-					"deprecated": { "type": "boolean" },
-					"required": {
-						"oneOf": [{ "type": "boolean" }, { "$ref": "#/definitions/condition" }]
+					{
+						"$ref": "#/definitions/AttributeJSON"
 					},
-					"requiredEither": { "type": "array", "items": { "type": "string" } },
-					"enum": { "type": "array", "items": { "type": "string" }, "minLength": 1 },
-					"noUse": {
-						"type": "boolean"
-					},
-					"condition": {
-						"$ref": "#/definitions/condition"
+					{
+						"$ref": "#/definitions/DefineDefaultAttributeType"
 					}
-				}
+				]
 			}
 		}
 	}

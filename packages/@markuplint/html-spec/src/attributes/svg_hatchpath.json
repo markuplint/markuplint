@@ -1,0 +1,16 @@
+{
+	"tag": "hatch",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "d",
+			"type": "String"
+		},
+		{
+			"name": "offset",
+			"type": "String"
+		}
+	]
+}

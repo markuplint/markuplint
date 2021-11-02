@@ -1,4 +1,4 @@
-import { floatCheck, intCheck, nonZeroUintCheck, uintCheck } from './type-check';
+import { floatCheck, intCheck, nonZeroUintCheck, numberCheckWithUnit, uintCheck } from './primitive-check';
 
 test('intCheck', () => {
 	expect(intCheck('0')).toBe(true);
@@ -50,4 +50,16 @@ test('nonZeroUintCheck', () => {
 	expect(nonZeroUintCheck('.001')).toBe(false);
 	expect(nonZeroUintCheck(' 1 ')).toBe(false);
 	expect(nonZeroUintCheck('- 1')).toBe(false);
+});
+
+test('numberCheckWithUnit', () => {
+	expect(numberCheckWithUnit('0px', ['px', 'em'])).toBe(true);
+	expect(numberCheckWithUnit('.5px', ['px', 'em'])).toBe(true);
+	expect(numberCheckWithUnit('1.5em', ['px', 'em'])).toBe(true);
+	expect(numberCheckWithUnit('1.5cm', ['px', 'em'])).toBe(false);
+	expect(numberCheckWithUnit('1.5px', ['px', 'em'], 'int')).toBe(false);
+	expect(numberCheckWithUnit('-5px', ['px', 'em'], 'int')).toBe(true);
+	expect(numberCheckWithUnit('-5px', ['px', 'em'], 'uint')).toBe(false);
+	expect(numberCheckWithUnit('1.12e+21px', ['px', 'em'], 'float')).toBe(true);
+	expect(numberCheckWithUnit('1.12e+21px', ['px', 'em'], 'int')).toBe(false);
 });

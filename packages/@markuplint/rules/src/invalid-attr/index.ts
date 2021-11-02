@@ -1,7 +1,7 @@
 import { getAttrSpecs, isValidAttr, match } from '../helpers';
 import { AttributeType } from '@markuplint/ml-spec/src';
+import { attrCheck } from '../attr-check';
 import { createRule } from '@markuplint/ml-core';
-import { typeCheck } from '../type-check';
 
 type Option = {
 	attrs?: Record<string, Rule>;
@@ -26,7 +26,7 @@ export default createRule<true, Option>({
 	defaultOptions: {},
 	async verify(context) {
 		await context.document.walkOn('Element', async node => {
-			const attrSpecs = getAttrSpecs(node.nodeName, context.document.specs);
+			const attrSpecs = getAttrSpecs(node.nameWithNS, context.document.specs);
 
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'html-attr' && attr.isDirective) {
@@ -62,15 +62,16 @@ export default createRule<true, Option>({
 					}
 				}
 
-				let invalid: ReturnType<typeof typeCheck> = false;
+				let invalid: ReturnType<typeof attrCheck> = false;
 				const customRule = node.rule.option.attrs ? node.rule.option.attrs[name] : null;
 
 				if (customRule) {
 					if ('enum' in customRule) {
-						invalid = typeCheck(name.toLowerCase(), value, true, {
+						invalid = attrCheck(name.toLowerCase(), value, true, {
 							name,
-							type: 'String',
-							enum: customRule.enum,
+							type: {
+								enum: customRule.enum,
+							},
 							description: '',
 						});
 					} else if ('pattern' in customRule) {
@@ -81,7 +82,7 @@ export default createRule<true, Option>({
 							};
 						}
 					} else if ('type' in customRule) {
-						invalid = typeCheck(name, value, true, { name, type: customRule.type, description: '' });
+						invalid = attrCheck(name, value, true, { name, type: customRule.type, description: '' });
 					}
 				} else if (!node.isCustomElement && attrSpecs) {
 					invalid = isValidAttr(

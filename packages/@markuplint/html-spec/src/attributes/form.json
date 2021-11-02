@@ -17,13 +17,15 @@
 		},
 		{
 			"name": "enctype",
-			"type": "String",
-			"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
+			"type": {
+				"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
+			}
 		},
 		{
 			"name": "method",
-			"type": "String",
-			"enum": ["post", "get", "dialog"]
+			"type": {
+				"enum": ["post", "get", "dialog"]
+			}
 		},
 		{
 			"name": "name",

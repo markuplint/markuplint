@@ -1,0 +1,25 @@
+{
+	"tag": "animateMotion",
+	"contents": [
+		{
+			"interleave": [
+				[
+					{
+						"oneOrMore": ["#SVGDescriptive", "svg:script"]
+					},
+					{
+						"optional": "svg:mpath"
+					}
+				],
+				[
+					{
+						"optional": "svg:mpath"
+					},
+					{
+						"oneOrMore": ["#SVGDescriptive", "svg:script"]
+					}
+				]
+			]
+		}
+	]
+}

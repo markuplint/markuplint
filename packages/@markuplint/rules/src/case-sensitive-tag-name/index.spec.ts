@@ -101,7 +101,7 @@ describe('verify', () => {
 		expect(violations.length).toBe(1);
 	});
 
-	test('foreign elements', async () => {
+	test('svg', async () => {
 		const { violations } = await mlTest(
 			'<svg viewBox="0 0 100 100"><textPath></textPath></svg>',
 			{

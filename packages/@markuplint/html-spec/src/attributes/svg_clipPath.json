@@ -1,0 +1,26 @@
+{
+	"tag": "clipPath",
+	"attributes": [
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "externalResourcesRequired",
+			"type": {
+				"enum": ["true", "false"]
+			},
+			"defaultValue": "true"
+		},
+		{
+			"name": "transform",
+			"type": "CSSTransformList"
+		},
+		{
+			"name": "clipPathUnits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+			},
+			"defaultValue": "userSpaceOnUse"
+		}
+	]
+}

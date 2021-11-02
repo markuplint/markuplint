@@ -1,0 +1,25 @@
+{
+	"tag": "feSpecularLighting",
+	"contents": [
+		{
+			"interleave": [
+				[
+					{
+						"zeroOrMore": ["#SVGDescriptive", "svg:script"]
+					},
+					{
+						"require": "#SVGLightSource"
+					}
+				],
+				[
+					{
+						"require": "#SVGLightSource"
+					},
+					{
+						"zeroOrMore": ["#SVGDescriptive", "svg:script"]
+					}
+				]
+			]
+		}
+	]
+}

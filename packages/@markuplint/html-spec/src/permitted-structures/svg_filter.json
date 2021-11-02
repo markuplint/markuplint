@@ -1,0 +1,8 @@
+{
+	"tag": "filter",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGDescriptive", "#SVGFilterPrimitive", "svg:animate", "svg:script", "svg:set"]
+		}
+	]
+}

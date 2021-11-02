@@ -10,7 +10,7 @@ export default createRule<Value, null>({
 	defaultOptions: null,
 	async verify(context) {
 		await context.document.walkOn('Element', async node => {
-			if (node.namespaceURI !== 'http://www.w3.org/1999/xhtml' || node.isCustomElement) {
+			if (node.isForeignElement || node.isCustomElement) {
 				return;
 			}
 			const ms = node.rule.severity === 'error' ? 'must' : 'should';
@@ -22,7 +22,7 @@ export default createRule<Value, null>({
 				'HTML elements',
 				`${cases}case`,
 			);
-			const attrSpecs = getAttrSpecs(node.nodeName.toLowerCase(), context.document.specs);
+			const attrSpecs = getAttrSpecs(node.nameWithNS, context.document.specs);
 
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'ps-attr') {
@@ -59,11 +59,11 @@ export default createRule<Value, null>({
 	},
 	async fix({ document }) {
 		await document.walkOn('Element', async node => {
-			if (node.namespaceURI !== 'http://www.w3.org/1999/xhtml' || node.isCustomElement) {
+			if (node.isForeignElement || node.isCustomElement) {
 				return;
 			}
 
-			const attrSpecs = getAttrSpecs(node.nodeName.toLowerCase(), document.specs);
+			const attrSpecs = getAttrSpecs(node.nameWithNS, document.specs);
 
 			if (node.attributes) {
 				for (const attr of node.attributes) {

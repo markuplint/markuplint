@@ -1,0 +1,51 @@
+{
+	"tag": "use",
+	"attributes": [
+		"#ariaAttrs",
+		"#SVGCoreAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs",
+		"#XLinkAttrs",
+		{
+			"name": "href",
+			"type": "URL"
+		},
+		{
+			"name": "xlink:href",
+			"type": "IRI",
+			"deprecated": true
+		},
+		{
+			"name": "x",
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"defaultValue": "0"
+		},
+		{
+			"name": "width",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "height",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
+		}
+	]
+}

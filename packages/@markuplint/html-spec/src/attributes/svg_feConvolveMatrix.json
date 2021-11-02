@@ -1,0 +1,79 @@
+{
+	"tag": "feConvolveMatrix",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		{
+			"name": "in",
+			"type": [
+				{
+					"enum": [
+						"SourceGraphic",
+						"SourceAlpha",
+						"BackgroundImage",
+						"BackgroundAlpha",
+						"FillPaint",
+						"StrokePaint"
+					]
+				},
+				"CSSCustomIdent"
+			]
+		},
+		{
+			"name": "order",
+			"type": "SVGNumberOptionalNumber",
+			"defaultValue": "3"
+		},
+		{
+			"name": "kernelMatrix",
+			"type": "SVGKernelMatrix"
+		},
+		{
+			"name": "divisor",
+			"type": "Float"
+		},
+		{
+			"name": "bias",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "targetX",
+			"type": "Int"
+		},
+		{
+			"name": "targetY",
+			"type": "Int"
+		},
+		{
+			"name": "edgeMode",
+			"type": {
+				"enum": ["duplicate", "wrap", "none"]
+			},
+			"defaultValue": "duplicate"
+		},
+		{
+			"name": "kernelUnitLength",
+			"type": "SVGNumberOptionalNumber",
+			"deprecated": true
+		},
+		{
+			"name": "preserveAlpha",
+			"type": {
+				"enum": ["true", "false"]
+			},
+			"defaultValue": "false"
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		}
+	]
+}

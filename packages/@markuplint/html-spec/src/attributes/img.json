@@ -7,13 +7,13 @@
 		},
 		{
 			"name": "crossorigin",
-			"type": "String",
-			"enum": ["anonymous", "use-credentials"]
+			"type": "Crossorigin"
 		},
 		{
 			"name": "decoding",
-			"type": "String",
-			"enum": ["sync", "async", "auto"]
+			"type": {
+				"enum": ["sync", "async", "auto"]
+			}
 		},
 		{
 			"name": "height",
@@ -28,8 +28,9 @@
 		},
 		{
 			"name": "loading",
-			"type": "String",
-			"enum": ["eager", "lazy"]
+			"type": {
+				"enum": ["eager", "lazy"]
+			}
 		},
 		{
 			"name": "referrerpolicy",

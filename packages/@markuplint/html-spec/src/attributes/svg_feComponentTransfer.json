@@ -1,0 +1,34 @@
+{
+	"tag": "feComponentTransfer",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		{
+			"name": "in",
+			"type": [
+				{
+					"enum": [
+						"SourceGraphic",
+						"SourceAlpha",
+						"BackgroundImage",
+						"BackgroundAlpha",
+						"FillPaint",
+						"StrokePaint"
+					]
+				},
+				"CSSCustomIdent"
+			]
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		}
+	]
+}

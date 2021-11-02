@@ -1,0 +1,30 @@
+{
+	"tag": "view",
+	"attributes": [
+		"#ariaAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		{
+			"name": "viewBox",
+			"type": "SVGViewBox"
+		},
+		{
+			"name": "preserveAspectRatio",
+			"type": "SVGPreserveAspectRatio"
+		},
+		{
+			"name": "zoomAndPan",
+			"type": {
+				"enum": ["disable", "magnify"]
+			},
+			"defaultValue": "magnify",
+			"deprecated": true
+		},
+		{
+			"name": "viewTarget",
+			"type": "String",
+			"deprecated": true
+		}
+	]
+}

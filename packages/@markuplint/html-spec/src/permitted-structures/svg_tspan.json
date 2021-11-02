@@ -1,0 +1,17 @@
+{
+	"tag": "tspan",
+	"contents": [
+		{
+			"zeroOrMore": [
+				"#SVGDescriptive",
+				"#SVGPaintServer",
+				"svg:a",
+				"svg:animate",
+				"svg:script",
+				"svg:set",
+				"svg:style",
+				"svg:tspan"
+			]
+		}
+	]
+}

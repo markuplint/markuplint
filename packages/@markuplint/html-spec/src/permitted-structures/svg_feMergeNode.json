@@ -1,0 +1,8 @@
+{
+	"tag": "feMergeNode",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
+		}
+	]
+}

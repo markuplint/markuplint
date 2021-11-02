@@ -8,14 +8,15 @@ export default createRule({
 	defaultOptions: null,
 	async verify(context) {
 		const message = context.translate('{0} is {1}', 'Element', 'deprecated');
-		await context.document.walkOn('Element', async element => {
-			if (element.isForeignElement || element.isCustomElement) {
+		await context.document.walkOn('Element', async el => {
+			const ns = el.ns;
+			if (!(ns === 'html' || ns === 'svg') || el.isCustomElement) {
 				return;
 			}
-			const spec = getSpecByTagName(element.nodeName, specs);
+			const spec = getSpecByTagName(el.nameWithNS, specs);
 			if (spec && (spec.obsolete || spec.deprecated || spec.nonStandard)) {
 				context.report({
-					scope: element,
+					scope: el,
 					message,
 				});
 			}

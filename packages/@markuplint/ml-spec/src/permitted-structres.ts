@@ -24,7 +24,27 @@ export type ContentModel =
 	| '#transparent'
 	| '#embedded'
 	| '#palpable'
-	| '#script-supporting';
+	| '#script-supporting'
+	| '#SVGAnimation'
+	| '#SVGBasicShapes'
+	| '#SVGContainer'
+	| '#SVGDescriptive'
+	| '#SVGFilterPrimitive'
+	| '#SVGFont'
+	| '#SVGGradient'
+	| '#SVGGraphics'
+	| '#SVGGraphicsReferencing'
+	| '#SVGLightSource'
+	| '#SVGNeverRendered'
+	| '#SVGNone'
+	| '#SVGPaintServer'
+	| '#SVGRenderable'
+	| '#SVGShape'
+	| '#SVGStructural'
+	| '#SVGStructurallyExternal'
+	| '#SVGTextContent'
+	| '#SVGTextContentChild'
+	| '#SVGOtherXMLNamespace';
 export type PermittedContentSpec = PermittedContent[];
 
 export interface PermittedStructuresSchema {

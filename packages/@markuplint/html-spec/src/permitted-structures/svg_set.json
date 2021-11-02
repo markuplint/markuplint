@@ -1,0 +1,8 @@
+{
+	"tag": "set",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGDescriptive", "svg:script"]
+		}
+	]
+}

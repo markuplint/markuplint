@@ -1,0 +1,40 @@
+{
+	"tag": "meshgradient",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "x",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0%"
+		},
+		{
+			"name": "y",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0%"
+		},
+		{
+			"name": "gradientUnits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+			},
+			"defaultValue": "objectBoundingBox"
+		},
+		{
+			"name": "transform",
+			"type": "CSSTransformList"
+		},
+		{
+			"name": "href",
+			"type": "URL"
+		},
+		{
+			"name": "type",
+			"type": {
+				"enum": ["bilinear", "bicubic"]
+			},
+			"defaultValue": "bilinear"
+		}
+	]
+}
