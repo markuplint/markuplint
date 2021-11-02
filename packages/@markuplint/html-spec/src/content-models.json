@@ -86,7 +86,7 @@
 			"strong",
 			"sub",
 			"sup",
-			"svg",
+			"svg:svg",
 			"table",
 			"template",
 			"textarea",
@@ -158,7 +158,7 @@
 			"strong",
 			"sub",
 			"sup",
-			"svg",
+			"svg:svg",
 			"template",
 			"textarea",
 			"time",
@@ -169,7 +169,7 @@
 			"#custom",
 			"#text"
 		],
-		"#embedded": ["audio", "canvas", "embed", "iframe", "img", "math", "object", "picture", "svg", "video"],
+		"#embedded": ["audio", "canvas", "embed", "iframe", "img", "math", "object", "picture", "svg:svg", "video"],
 		"#interactive": [
 			"a[href]",
 			"audio[controls]",

@@ -1,33 +1,21 @@
 {
 	"tag": "symbol",
 	"attributes": [
+		"#ariaAttrs",
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGGlobalEventAttrs",
 		"#SVGDocumentEventAttrs",
-		"#SVGGraphicalEventAttrs",
 		"#SVGPresentationAttrs",
-		"#ariaAttrs",
 		{
-			"name": "x",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0"
+			"name": "preserveAspectRatio",
+			"type": "SVGPreserveAspectRatio",
+			"defaultValue": "xMidYMid meet"
 		},
 		{
-			"name": "y",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0"
+			"name": "viewBox",
+			"type": "SVGViewBox"
 		},
-		{
-			"name": "width",
-			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
-			"defaultValue": "auto"
-		},
-		{
-			"name": "height",
-			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
-			"defaultValue": "auto"
-		},
+
 		{
 			"name": "refX",
 			"type": [
@@ -53,13 +41,24 @@
 			"defaultValue": "0"
 		},
 		{
-			"name": "preserveAspectRatio",
-			"type": "SVGPreserveAspectRatio",
-			"defaultValue": "xMidYMid meet"
+			"name": "x",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
 		},
 		{
-			"name": "viewBox",
-			"type": "SVGViewBox"
+			"name": "y",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "width",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "height",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "auto"
 		}
 	]
 }

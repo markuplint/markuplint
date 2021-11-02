@@ -568,12 +568,24 @@
 			"type": "DOMID"
 		},
 		{
+			"name": "tabindex",
+			"type": "TabIndex"
+		},
+		{
+			"name": "autofocus",
+			"type": "Boolean"
+		},
+		{
 			"name": "lang",
 			"type": "BCP47"
 		},
 		{
-			"name": "tabindex",
-			"type": "TabIndex"
+			"name": "class",
+			"type": "String"
+		},
+		{
+			"name": "style",
+			"type": "String"
 		},
 		{
 			"name": "xml:base",
@@ -895,10 +907,6 @@
 		}
 	],
 	"#SVGGraphicalEventAttrs": [
-		{
-			"name": "onactivate",
-			"type": "Function"
-		},
 		{
 			"name": "onfocusin",
 			"type": "Function"
@@ -1359,16 +1367,6 @@
 				"enum": ["horizontal-tb", "vertical-rl", "vertical-lr"]
 			},
 			"defaultValue": "horizontal-tb"
-		}
-	],
-	"#SVGStylingAttrs": [
-		{
-			"name": "class",
-			"type": "String"
-		},
-		{
-			"name": "style",
-			"type": "String"
 		}
 	],
 	"#SVGTransferFunctionAttrs": [

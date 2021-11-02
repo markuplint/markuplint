@@ -1,20 +1,19 @@
 {
 	"tag": "path",
 	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
-		"#SVGConditionalProcessingAttrs",
-		"#SVGGlobalEventAttrs",
-		"#SVGGraphicalEventAttrs",
-		"#SVGPresentationAttrs",
 		"#ariaAttrs",
-		{
-			"name": "d",
-			"type": "SVGPathCommands"
-		},
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs",
 		{
 			"name": "pathLength",
 			"type": "Float"
+		},
+		{
+			"name": "d",
+			"type": "SVGPathCommands"
 		}
 	]
 }

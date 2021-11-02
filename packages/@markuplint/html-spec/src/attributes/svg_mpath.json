@@ -2,10 +2,11 @@
 	"tag": "mpath",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#XLinkAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
 		{
-			"name": "xlink:href",
-			"type": "SVGIRI"
+			"name": "href",
+			"type": "IRI"
 		}
 	]
 }

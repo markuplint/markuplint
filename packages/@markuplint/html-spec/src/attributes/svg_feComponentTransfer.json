@@ -2,7 +2,6 @@
 	"tag": "feComponentTransfer",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGPresentationAttrs",
 		"#SVGFilterPrimitiveAttrs",
 		{

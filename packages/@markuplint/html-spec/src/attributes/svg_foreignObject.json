@@ -1,15 +1,12 @@
 {
 	"tag": "foreignObject",
 	"attributes": [
+		"#ariaAttrs",
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGConditionalProcessingAttrs",
 		"#SVGGlobalEventAttrs",
-		"#SVGGraphicalEventAttrs",
-		"#SVGDocumentEventAttrs",
 		"#SVGDocumentElementEventAttrs",
 		"#SVGPresentationAttrs",
-		"#ariaAttrs",
 		{
 			"name": "x",
 			"defaultValue": "0"
@@ -17,6 +14,28 @@
 		{
 			"name": "y",
 			"defaultValue": "0"
+		},
+		{
+			"name": "width",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "height",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
 		}
 	]
 }

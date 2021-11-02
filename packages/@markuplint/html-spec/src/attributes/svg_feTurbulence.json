@@ -2,7 +2,6 @@
 	"tag": "feTurbulence",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGPresentationAttrs",
 		"#SVGFilterPrimitiveAttrs",
 		{

@@ -103,6 +103,7 @@
 						"SVGLengthList",
 						"SVGNumberList",
 						"SVGNumberOptionalNumber",
+						"SVGOrigin",
 						"SVGPaint",
 						"SVGPathCommands",
 						"SVGPercentage",
@@ -206,6 +207,7 @@
 							"#SVGAnimationAdditionAttrs",
 							"#SVGAnimationAttributeTargetAttrs",
 							"#SVGAnimationEventAttrs",
+							"#SVGAnimationTargetElementAttrs",
 							"#SVGAnimationTimingAttrs",
 							"#SVGAnimationValueAttrs",
 							"#SVGConditionalProcessingAttrs",
@@ -216,7 +218,6 @@
 							"#SVGGlobalEventAttrs",
 							"#SVGGraphicalEventAttrs",
 							"#SVGPresentationAttrs",
-							"#SVGStylingAttrs",
 							"#SVGTransferFunctionAttrs",
 							"#XLinkAttrs"
 						]

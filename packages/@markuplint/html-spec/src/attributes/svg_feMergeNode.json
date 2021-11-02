@@ -17,16 +17,6 @@
 				},
 				"CSSCustomIdent"
 			]
-		},
-		{
-			"name": "height",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "100%"
-		},
-		{
-			"name": "width",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "100%"
 		}
 	]
 }

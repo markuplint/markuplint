@@ -1,21 +1,22 @@
 {
 	"tag": "animateMotion",
 	"attributes": [
-		"#SVGAnimationTimingAttrs",
-		"#SVGAnimationValueAttrs",
 		"#SVGAnimationAdditionAttrs",
 		"#SVGAnimationEventAttrs",
+		"#SVGAnimationTargetElementAttrs",
+		"#SVGAnimationTimingAttrs",
+		"#SVGAnimationValueAttrs",
+		"#SVGConditionalProcessingAttrs",
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGGlobalEventAttrs",
 		"#SVGDocumentElementEventAttrs",
 		{
-			"name": "keyPoints",
-			"type": "SVGKeyPoints"
-		},
-		{
 			"name": "path",
 			"type": "SVGPathCommands"
+		},
+		{
+			"name": "keyPoints",
+			"type": "SVGKeyPoints"
 		},
 		{
 			"name": "rotate",
@@ -25,6 +26,11 @@
 					"enum": ["auto", "auto-reverse"]
 				}
 			]
+		},
+		{
+			"name": "origin",
+			"type": "SVGOrigin",
+			"defaultValue": "default"
 		},
 		{
 			"name": "calcMode",

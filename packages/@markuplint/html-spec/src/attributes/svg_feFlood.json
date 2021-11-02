@@ -2,7 +2,6 @@
 	"tag": "feFlood",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGPresentationAttrs",
 		"#SVGFilterPrimitiveAttrs",
 		{

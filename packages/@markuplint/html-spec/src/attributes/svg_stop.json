@@ -2,7 +2,6 @@
 	"tag": "stop",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGGlobalEventAttrs",
 		"#SVGDocumentElementEventAttrs",
 		"#SVGPresentationAttrs",

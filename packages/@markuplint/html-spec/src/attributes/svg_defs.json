@@ -1,11 +1,4 @@
 {
 	"tag": "defs",
-	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
-		"#SVGGlobalEventAttrs",
-		"#SVGDocumentElementEventAttrs",
-		"#SVGGraphicalEventAttrs",
-		"#SVGPresentationAttrs"
-	]
+	"attributes": ["#SVGCoreAttrs", "#SVGGlobalEventAttrs", "#SVGDocumentElementEventAttrs", "#SVGPresentationAttrs"]
 }

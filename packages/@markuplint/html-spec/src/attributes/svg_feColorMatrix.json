@@ -2,7 +2,6 @@
 	"tag": "feColorMatrix",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGPresentationAttrs",
 		"#SVGFilterPrimitiveAttrs",
 		{

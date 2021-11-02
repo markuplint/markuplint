@@ -1,13 +1,27 @@
 {
 	"tag": "text",
 	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
-		"#SVGConditionalProcessingAttrs",
-		"#SVGGlobalEventAttrs",
-		"#SVGGraphicalEventAttrs",
-		"#SVGPresentationAttrs",
 		"#ariaAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "lengthAdjust",
+			"type": { "enum": ["spacing", "spacingAndGlyphs"] },
+			"defaultValue": "spacing"
+		},
+		{
+			"name": "x",
+			"type": ["SVGLengthList", "SVGPercentageList"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"type": ["SVGLengthList", "SVGPercentageList"],
+			"defaultValue": "0"
+		},
 		{
 			"name": "dx",
 			"type": ["SVGLength", "SVGPercentage"]
@@ -21,23 +35,8 @@
 			"type": "String"
 		},
 		{
-			"name": "lengthAdjust",
-			"type": { "enum": ["spacing", "spacingAndGlyphs"] },
-			"defaultValue": "spacing"
-		},
-		{
 			"name": "textLength",
 			"type": ["SVGLength", "SVGPercentage", "Float"]
-		},
-		{
-			"name": "x",
-			"type": ["SVGLengthList", "SVGPercentageList"],
-			"defaultValue": "0"
-		},
-		{
-			"name": "y",
-			"type": ["SVGLengthList", "SVGPercentageList"],
-			"defaultValue": "0"
 		}
 	]
 }

@@ -1,18 +1,16 @@
 {
 	"tag": "svg",
 	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
+		"#ariaAttrs",
 		"#SVGConditionalProcessingAttrs",
-		"#SVGGlobalEventAttrs",
-		"#SVGGraphicalEventAttrs",
+		"#SVGCoreAttrs",
 		"#SVGDocumentEventAttrs",
+		"#SVGGlobalEventAttrs",
 		"#SVGDocumentElementEventAttrs",
 		"#SVGPresentationAttrs",
-		"#ariaAttrs",
 		{
-			"name": "xmlns",
-			"type": "URL"
+			"name": "viewBox",
+			"type": "SVGViewBox"
 		},
 		{
 			"name": "preserveAspectRatio",
@@ -20,8 +18,38 @@
 			"defaultValue": "xMidYMid meet"
 		},
 		{
-			"name": "viewBox",
-			"type": "SVGViewBox"
+			"name": "transform",
+			"type": "CSSTransformList"
+		},
+		{
+			"name": "x",
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"defaultValue": "0"
+		},
+		{
+			"name": "width",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "height",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
 		},
 		{
 			"name": "baseProfile",
@@ -46,12 +74,8 @@
 			"deprecated": true
 		},
 		{
-			"name": "x",
-			"defaultValue": "0"
-		},
-		{
-			"name": "y",
-			"defaultValue": "0"
+			"name": "xmlns",
+			"type": "URL"
 		}
 	]
 }

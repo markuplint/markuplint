@@ -1,8 +1,8 @@
 {
 	"tag": "discard",
 	"attributes": [
-		"#SVGCoreAttrs",
 		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
 		"#ariaAttrs",
 		{
 			"name": "begin",

@@ -1,4 +1,4 @@
 {
 	"tag": "metadata",
-	"attributes": ["#SVGCoreAttrs", "#SVGGlobalEventAttrs"]
+	"attributes": ["#SVGCoreAttrs", "#SVGGlobalEventAttrs", "#SVGDocumentElementEventAttrs"]
 }

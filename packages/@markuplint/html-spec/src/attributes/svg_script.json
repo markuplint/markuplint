@@ -2,21 +2,21 @@
 	"tag": "script",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGGlobalEventAttrs",
 		"#SVGDocumentElementEventAttrs",
+		"#XLinkAttrs",
 		{
-			"name": "crossorigin",
-			"type": "Crossorigin"
+			"name": "type",
+			"type": "MIMEType",
+			"defaultValue": "application/ecmascript"
 		},
 		{
 			"name": "href",
 			"type": "URL"
 		},
 		{
-			"name": "type",
-			"type": "MIMEType",
-			"defaultValue": "application/ecmascript"
+			"name": "crossorigin",
+			"type": "Crossorigin"
 		},
 		{
 			"name": "xlink:href",

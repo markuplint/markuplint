@@ -2,11 +2,30 @@
 	"tag": "linearGradient",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGGlobalEventAttrs",
 		"#SVGDocumentElementEventAttrs",
 		"#SVGPresentationAttrs",
 		"#XLinkAttrs",
+		{
+			"name": "x1",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0%"
+		},
+		{
+			"name": "y1",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0%"
+		},
+		{
+			"name": "x2",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		},
+		{
+			"name": "y2",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0%"
+		},
 		{
 			"name": "gradientUnits",
 			"type": {
@@ -19,10 +38,6 @@
 			"type": "CSSTransformList"
 		},
 		{
-			"name": "href",
-			"type": "URL"
-		},
-		{
 			"name": "spreadMethod",
 			"type": {
 				"enum": ["pad", "reflect", "repeat"]
@@ -30,24 +45,8 @@
 			"defaultValue": "pad"
 		},
 		{
-			"name": "x1",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0%"
-		},
-		{
-			"name": "x2",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "100%"
-		},
-		{
-			"name": "y1",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0%"
-		},
-		{
-			"name": "y2",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0%"
+			"name": "href",
+			"type": "URL"
 		}
 	]
 }

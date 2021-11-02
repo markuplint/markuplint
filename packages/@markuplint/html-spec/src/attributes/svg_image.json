@@ -1,20 +1,21 @@
 {
 	"tag": "image",
 	"attributes": [
+		"#ariaAttrs",
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGConditionalProcessingAttrs",
-		"#SVGGraphicalEventAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
 		"#SVGPresentationAttrs",
 		"#XLinkAttrs",
-		{
-			"name": "href",
-			"type": "URL"
-		},
 		{
 			"name": "preserveAspectRatio",
 			"type": "SVGPreserveAspectRatio",
 			"defaultValue": "xMidYMid meet"
+		},
+		{
+			"name": "href",
+			"type": "URL"
 		},
 		{
 			"name": "crossorigin",
@@ -27,6 +28,28 @@
 		{
 			"name": "y",
 			"defaultValue": "0"
+		},
+		{
+			"name": "width",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "height",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
 		}
 	]
 }

@@ -1,10 +1,20 @@
 {
 	"tag": "clipPath",
 	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
 		"#SVGPresentationAttrs",
+		{
+			"name": "externalResourcesRequired",
+			"type": {
+				"enum": ["true", "false"]
+			},
+			"defaultValue": "true"
+		},
+		{
+			"name": "transform",
+			"type": "CSSTransformList"
+		},
 		{
 			"name": "clipPathUnits",
 			"type": {

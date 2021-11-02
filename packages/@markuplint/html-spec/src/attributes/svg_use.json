@@ -1,13 +1,12 @@
 {
 	"tag": "use",
 	"attributes": [
+		"#ariaAttrs",
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGConditionalProcessingAttrs",
 		"#SVGGlobalEventAttrs",
-		"#SVGGraphicalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
 		"#SVGPresentationAttrs",
-		"#ariaAttrs",
 		"#XLinkAttrs",
 		{
 			"name": "href",
@@ -25,6 +24,28 @@
 		{
 			"name": "y",
 			"defaultValue": "0"
+		},
+		{
+			"name": "width",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "height",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
 		}
 	]
 }

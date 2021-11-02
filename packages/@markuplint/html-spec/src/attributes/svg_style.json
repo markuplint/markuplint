@@ -2,7 +2,6 @@
 	"tag": "style",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGGlobalEventAttrs",
 		"#SVGDocumentElementEventAttrs",
 		{

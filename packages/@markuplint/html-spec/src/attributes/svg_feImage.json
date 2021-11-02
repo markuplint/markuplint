@@ -2,23 +2,34 @@
 	"tag": "feImage",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGPresentationAttrs",
 		"#SVGFilterPrimitiveAttrs",
-		"#XLinkAttrs",
+		{
+			"name": "externalResourcesRequired",
+			"type": {
+				"enum": ["true", "false"]
+			},
+			"defaultValue": "true"
+		},
 		{
 			"name": "preserveAspectRatio",
 			"type": "SVGPreserveAspectRatio",
 			"defaultValue": "xMidYMid meet"
 		},
 		{
+			"name": "xlink:href",
+			"type": "IRI",
+			"deprecated": true
+		},
+		{
 			"name": "href",
 			"type": "IRI"
 		},
 		{
-			"name": "xlink:href",
-			"type": "IRI",
-			"deprecated": true
+			"name": "crossorigin",
+			"type": {
+				"enum": ["anonymous", "use-credentials"]
+			}
 		},
 		{
 			"name": "height",

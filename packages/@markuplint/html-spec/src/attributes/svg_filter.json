@@ -2,12 +2,31 @@
 	"tag": "filter",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGPresentationAttrs",
-		"#XLinkAttrs",
 		{
-			"name": "filterRes",
-			"type": "SVGNumberOptionalNumber"
+			"name": "externalResourcesRequired",
+			"type": {
+				"enum": ["true", "false"]
+			},
+			"defaultValue": "true"
+		},
+		{
+			"name": "x",
+			"defaultValue": "-10%"
+		},
+		{
+			"name": "y",
+			"defaultValue": "-10%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "120%"
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "120%"
 		},
 		{
 			"name": "filterUnits",
@@ -24,27 +43,9 @@
 			"defaultValue": "userSpaceOnUse"
 		},
 		{
-			"name": "xlink:href",
-			"type": "IRI",
+			"name": "filterRes",
+			"type": "SVGNumberOptionalNumber",
 			"deprecated": true
-		},
-		{
-			"name": "height",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "120%"
-		},
-		{
-			"name": "width",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "120%"
-		},
-		{
-			"name": "x",
-			"defaultValue": "-10%"
-		},
-		{
-			"name": "y",
-			"defaultValue": "-10%"
 		}
 	]
 }

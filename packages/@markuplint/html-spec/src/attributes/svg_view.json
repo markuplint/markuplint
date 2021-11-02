@@ -1,9 +1,10 @@
 {
 	"tag": "view",
 	"attributes": [
+		"#ariaAttrs",
 		"#SVGCoreAttrs",
 		"#SVGGlobalEventAttrs",
-		"#ariaAttrs",
+		"#SVGDocumentElementEventAttrs",
 		{
 			"name": "viewBox",
 			"type": "SVGViewBox"

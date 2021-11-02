@@ -531,6 +531,11 @@ function valueCheck(name: string, value: string, spec: AttrSpec): string | false
 		return false;
 	}
 
+	if (spec.type === 'SVGOrigin') {
+		// TODO: https://www.w3.org/TR/2001/REC-smil-animation-20010904/#MotionOriginAttribute
+		return false;
+	}
+
 	if (spec.type === 'SVGPaint') {
 		// TODO: https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#paint
 		return false;

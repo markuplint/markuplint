@@ -2,9 +2,8 @@
 	"tag": "meshgradient",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
-		"#SVGPresentationAttrs",
 		"#SVGGlobalEventAttrs",
+		"#SVGPresentationAttrs",
 		{
 			"name": "x",
 			"type": ["SVGLength", "SVGPercentage"],

@@ -2,11 +2,38 @@
 	"tag": "radialGradient",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGGlobalEventAttrs",
 		"#SVGDocumentElementEventAttrs",
 		"#SVGPresentationAttrs",
 		"#XLinkAttrs",
+		{
+			"name": "cx",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "50%"
+		},
+		{
+			"name": "cy",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "50%"
+		},
+		{
+			"name": "r",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "50%"
+		},
+		{
+			"name": "fx",
+			"type": ["SVGLength", "SVGPercentage"]
+		},
+		{
+			"name": "fy",
+			"type": ["SVGLength", "SVGPercentage"]
+		},
+		{
+			"name": "fr",
+			"type": "SVGLength",
+			"defaultValue": "0"
+		},
 		{
 			"name": "gradientUnits",
 			"type": {
@@ -19,10 +46,6 @@
 			"type": "CSSTransformList"
 		},
 		{
-			"name": "href",
-			"type": "URL"
-		},
-		{
 			"name": "spreadMethod",
 			"type": {
 				"enum": ["pad", "reflect", "repeat"]
@@ -30,27 +53,8 @@
 			"defaultValue": "pad"
 		},
 		{
-			"name": "cx",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "50%"
-		},
-		{
-			"name": "cy",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "50%"
-		},
-		{
-			"name": "fr",
-			"type": "SVGLength",
-			"defaultValue": "0"
-		},
-		{
-			"name": "fx",
-			"type": ["SVGLength", "SVGPercentage"]
-		},
-		{
-			"name": "fy",
-			"type": ["SVGLength", "SVGPercentage"]
+			"name": "href",
+			"type": "URL"
 		}
 	]
 }

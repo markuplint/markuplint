@@ -1,23 +1,12 @@
 {
 	"tag": "rect",
 	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
-		"#SVGConditionalProcessingAttrs",
-		"#SVGGlobalEventAttrs",
-		"#SVGGraphicalEventAttrs",
-		"#SVGPresentationAttrs",
 		"#ariaAttrs",
-		{
-			"name": "rx",
-			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
-			"defaultValue": "auto"
-		},
-		{
-			"name": "ry",
-			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
-			"defaultValue": "auto"
-		},
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs",
 		{
 			"name": "pathLength",
 			"type": "Float"
@@ -29,6 +18,38 @@
 		{
 			"name": "y",
 			"defaultValue": "0"
+		},
+		{
+			"name": "width",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "height",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "rx",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "ry",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "auto"
 		}
 	]
 }

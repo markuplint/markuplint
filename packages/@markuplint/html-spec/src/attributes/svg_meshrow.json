@@ -1,4 +1,4 @@
 {
 	"tag": "meshrow",
-	"attributes": ["#SVGCoreAttrs", "#SVGStylingAttrs", "#SVGPresentationAttrs", "#SVGGlobalEventAttrs"]
+	"attributes": ["#SVGCoreAttrs", "#SVGGlobalEventAttrs", "#SVGPresentationAttrs"]
 }

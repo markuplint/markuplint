@@ -1,14 +1,16 @@
 {
 	"tag": "animateTransform",
 	"attributes": [
-		"#SVGConditionalProcessingAttrs",
-		"#SVGCoreAttrs",
+		"#SVGAnimationAdditionAttrs",
 		"#SVGAnimationEventAttrs",
-		"#XLinkAttrs",
+		"#SVGAnimationTargetElementAttrs",
 		"#SVGAnimationAttributeTargetAttrs",
 		"#SVGAnimationTimingAttrs",
 		"#SVGAnimationValueAttrs",
-		"#SVGAnimationAdditionAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
 		{
 			"name": "type",
 			"type": {

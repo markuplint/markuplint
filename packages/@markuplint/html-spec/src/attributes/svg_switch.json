@@ -1,14 +1,11 @@
 {
 	"tag": "switch",
 	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
+		"#ariaAttrs",
 		"#SVGConditionalProcessingAttrs",
-		"#SVGGraphicalEventAttrs",
-		"#SVGPresentationAttrs",
-		{
-			"name": "transform",
-			"type": "CSSTransformList"
-		}
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs"
 	]
 }

@@ -77,6 +77,7 @@ export type AttributeType =
 			| 'SVGLengthList'
 			| 'SVGNumberList'
 			| 'SVGNumberOptionalNumber'
+			| 'SVGOrigin'
 			| 'SVGPaint'
 			| 'SVGPathCommands'
 			| 'SVGPercentage'
@@ -105,6 +106,7 @@ export interface AttributesSchema {
 				| '#SVGAnimationAdditionAttrs'
 				| '#SVGAnimationAttributeTargetAttrs'
 				| '#SVGAnimationEventAttrs'
+				| '#SVGAnimationTargetElementAttrs'
 				| '#SVGAnimationTimingAttrs'
 				| '#SVGAnimationValueAttrs'
 				| '#SVGConditionalProcessingAttrs'
@@ -115,7 +117,6 @@ export interface AttributesSchema {
 				| '#SVGGlobalEventAttrs'
 				| '#SVGGraphicalEventAttrs'
 				| '#SVGPresentationAttrs'
-				| '#SVGStylingAttrs'
 				| '#SVGTransferFunctionAttrs'
 				| '#XLinkAttrs'
 		  )

@@ -2,7 +2,6 @@
 	"tag": "hatch",
 	"attributes": [
 		"#SVGCoreAttrs",
-		"#SVGStylingAttrs",
 		"#SVGGlobalEventAttrs",
 		"#SVGPresentationAttrs",
 		{
