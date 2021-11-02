@@ -1,0 +1,64 @@
+{
+	"tag": "symbol",
+	"attributes": [
+		"#ariaAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentEventAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "preserveAspectRatio",
+			"type": "SVGPreserveAspectRatio",
+			"defaultValue": "xMidYMid meet"
+		},
+		{
+			"name": "viewBox",
+			"type": "SVGViewBox"
+		},
+
+		{
+			"name": "refX",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				"Float",
+				{
+					"enum": ["left", "center", "right"]
+				}
+			],
+			"defaultValue": "0"
+		},
+		{
+			"name": "refY",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				"Float",
+				{
+					"enum": ["top", "center", "bottom"]
+				}
+			],
+			"defaultValue": "0"
+		},
+		{
+			"name": "x",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "width",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "height",
+			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
+			"defaultValue": "auto"
+		}
+	]
+}

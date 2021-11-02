@@ -1,5 +1,5 @@
 {
-	"tag": "li",
+	"tag": "link",
 	"attributes": [
 		{
 			"name": "href",
@@ -7,8 +7,7 @@
 		},
 		{
 			"name": "crossorigin",
-			"type": "String",
-			"enum": ["anonymous", "use-credentials"]
+			"type": "Crossorigin"
 		},
 		{
 			"name": "rel",

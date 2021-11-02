@@ -1,0 +1,8 @@
+{
+	"tag": "mpath",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGDescriptive", "svg:script"]
+		}
+	]
+}

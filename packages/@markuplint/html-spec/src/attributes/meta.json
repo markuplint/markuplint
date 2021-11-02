@@ -17,8 +17,9 @@
 		},
 		{
 			"name": "http-equiv",
-			"type": "String",
-			"enum": ["content-type", "default-style", "refresh", "x-ua-compatible", "content-security-policy"],
+			"type": {
+				"enum": ["content-type", "default-style", "refresh", "x-ua-compatible", "content-security-policy"]
+			},
 			"condition": {
 				"self": [":not([itemprop])", ":not([name])", ":not([charset])"]
 			}

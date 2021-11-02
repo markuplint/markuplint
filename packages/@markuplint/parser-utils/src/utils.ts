@@ -1,5 +1,6 @@
-import { MLASTAttr, MLASTNode, MLASTNodeType, MLToken, Walker } from '@markuplint/ml-ast';
-import { rePCEN } from './const';
+import type { MLASTAttr, MLASTNode, MLToken, Walker } from '@markuplint/ml-ast';
+import { rePCEN, svgElementList } from './const';
+import { MLASTNodeType } from '@markuplint/ml-ast';
 import { v4 as uuid4 } from 'uuid';
 
 export function uuid() {
@@ -147,6 +148,16 @@ export function siblingsCorrection(nodeList: MLASTNode[]) {
 		node.prevNode = prevNode;
 		node.nextNode = nextNode;
 	}
+}
+
+/**
+ *
+ *
+ * @param nodeName
+ * @returns
+ */
+export function isSVGElement(nodeName: string) {
+	return svgElementList.includes(nodeName);
 }
 
 /**

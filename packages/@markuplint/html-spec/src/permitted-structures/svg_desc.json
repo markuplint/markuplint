@@ -1,0 +1,8 @@
+{
+	"tag": "desc",
+	"contents": [
+		{
+			"require": ["#SVGOtherXMLNamespace", "#text"]
+		}
+	]
+}

@@ -1,0 +1,16 @@
+{
+	"tag": "meshgradient",
+	"summary": "Ref: https://www.w3.org/TR/2016/CR-SVG2-20160915/pservers.html#MeshGradientElement",
+	"contents": [
+		{
+			"zeroOrMore": [
+				"#SVGDescriptive",
+				"svg:animate",
+				"svg:animateTransform",
+				"svg:meshrow",
+				"svg:script",
+				"svg:set"
+			]
+		}
+	]
+}

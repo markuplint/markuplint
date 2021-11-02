@@ -12,26 +12,27 @@
 | -------- | ---- | -------- | ------------------------------------------------- | ------- |
 | ✅       | ✅   | ✅       | [attr-duplication](./src/attr-duplication/)       | 🚧      |
 | ✅       | ✅   | ✅       | [character-reference](./src/character-reference/) | 🚧      |
-| 🚧       | 🚧   | 🚧       | [comment](./src/comment/)                         |
-| ✅       | ✅   | ✅       | [deprecated-attr](./src/deprecated-attr/)         |
-| ✅       | ✅   | ✅       | [deprecated-element](./src/deprecated-element/)   |
+| 🚧       | 🚧   | 🚧       | [comment](./src/comment/)                         |         |
+| ✅       | ✅   | ✅       | [deprecated-attr](./src/deprecated-attr/)         |         |
+| ✅       | ✅   | ✅       | [deprecated-element](./src/deprecated-element/)   |         |
 | ✅       | ✅   | ✅       | [doctype](./src/doctype/)                         | 🚧      |
-| ✅       | ✅   | ✅       | [id-duplication](./src/id-duplication/)           |
-| ✅       | ✅   | ✅       | [permitted-contents](./src/permitted-contents/)   |
-| ✅       | ✅   | ✅       | [required-attr](./src/required-attr/)             |
+| ✅       | ✅   | ✅       | [id-duplication](./src/id-duplication/)           |         |
+| ✅       | ✅   | ✅       | [permitted-contents](./src/permitted-contents/)   |         |
+| ✅       | ✅   | ✅       | [required-attr](./src/required-attr/)             |         |
+| ✅       | ✅   | ✅       | [invalid-attr](./src/invalid-attr/)               |         |
 
 ### Accessibility
 
 | Avaiable | Docs | Docs(ja) | Rule                                                                  | Fixable |
 | -------- | ---- | -------- | --------------------------------------------------------------------- | ------- |
-| 🚧       | 🚧   | 🚧       | [accessible-text](./src/accessible-text/)                             |
-| 🚧       | 🚧   | 🚧       | [attr-role](./src/permitted-role/)                                    |
-| 🚧       | 🚧   | 🚧       | [heading-in-sectioning-content](./src/heading-in-sectioning-content/) |
-| 🚧       | 🚧   | 🚧       | [heading-in-sectioning-root](./src/heading-in-sectioning-root/)       |
-| 🚧       | 🚧   | 🚧       | [heading-levels-skipping](./src/heading-levels-skipping/)             |
-| 🚧       | 🚧   | 🚧       | [labeling-controls](./src/labeling-controls/)                         |
-| ✅       | ✅   | ✅       | [landmark-roles](./src/landmark-roles/)                               |
-| ✅       | ✅   | ✅       | [required-h1](./src/required-h1/)                                     |
+| 🚧       | 🚧   | 🚧       | [accessible-text](./src/accessible-text/)                             |         |
+| 🚧       | 🚧   | 🚧       | [attr-role](./src/permitted-role/)                                    |         |
+| 🚧       | 🚧   | 🚧       | [heading-in-sectioning-content](./src/heading-in-sectioning-content/) |         |
+| 🚧       | 🚧   | 🚧       | [heading-in-sectioning-root](./src/heading-in-sectioning-root/)       |         |
+| 🚧       | 🚧   | 🚧       | [heading-levels-skipping](./src/heading-levels-skipping/)             |         |
+| 🚧       | 🚧   | 🚧       | [labeling-controls](./src/labeling-controls/)                         |         |
+| ✅       | ✅   | ✅       | [landmark-roles](./src/landmark-roles/)                               |         |
+| ✅       | ✅   | ✅       | [required-h1](./src/required-h1/)                                     |         |
 
 ### Usability
 
@@ -43,10 +44,10 @@
 
 | Avaiable | Docs | Docs(ja) | Rule                                                  | Fixable |
 | -------- | ---- | -------- | ----------------------------------------------------- | ------- |
-| ✅       | ✅   | ✅       | [class-naming](./src/class-naming/)                   |
-| 🚧       | 🚧   | 🚧       | [custom-element-naming](./src/custom-element-naming/) |
-| 🚧       | 🚧   | 🚧       | [data-attr-naming](./src/data-attr-naming/)           |
-| 🚧       | 🚧   | 🚧       | [required-element](./src/required-element/)           |
+| ✅       | ✅   | ✅       | [class-naming](./src/class-naming/)                   |         |
+| 🚧       | 🚧   | 🚧       | [custom-element-naming](./src/custom-element-naming/) |         |
+| 🚧       | 🚧   | 🚧       | [data-attr-naming](./src/data-attr-naming/)           |         |
+| 🚧       | 🚧   | 🚧       | [required-element](./src/required-element/)           |         |
 
 ### Style
 
@@ -59,10 +60,10 @@
 | ✅       | ✅   | ✅       | [case-sensitive-attr-name](./src/case-sensitive-attr-name/) | ✅      |
 | ✅       | ✅   | ✅       | [case-sensitive-tag-name](./src/case-sensitive-tag-name/)   | ✅      |
 | 🚧       | 🚧   | 🚧       | [comment-spasing](./src/comment-spasing/)                   | 🚧      |
-| 🚧       | 🚧   | 🚧       | [event-attr](./src/event-attr/)                             |
+| 🚧       | 🚧   | 🚧       | [event-attr](./src/event-attr/)                             |         |
 | ✅       | ✅   | ✅       | [indentation](./src/indentation/)                           | ✅      |
 | 🚧       | 🚧   | 🚧       | [indentation-attr](./src/indentation-attr/)                 | 🚧      |
-| 🚧       | 🚧   | 🚧       | [path](./src/path/)                                         |
+| 🚧       | 🚧   | 🚧       | [path](./src/path/)                                         |         |
 | 🚧       | 🚧   | ✅       | [self-closing-tag](./src/self-closing-tag/)                 | 🚧      |
 | 🚧       | 🚧   | 🚧       | [tag-omission](./src/tag-omission/)                         | 🚧      |
 

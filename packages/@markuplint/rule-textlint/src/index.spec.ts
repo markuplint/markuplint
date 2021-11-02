@@ -1,4 +1,4 @@
-import * as markuplint from 'markuplint';
+import { mlTest, mlTestFile } from 'markuplint';
 // @ts-ignore This has not types
 import Prh from 'textlint-rule-prh';
 import path from 'path';
@@ -6,7 +6,7 @@ import path from 'path';
 import { text } from './test-utils';
 
 test('is test 1', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		text,
 		{
 			rules: {
@@ -30,7 +30,7 @@ test('is test 1', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			severity: 'warning',
 			ruleId: 'textlint',
@@ -43,17 +43,19 @@ test('is test 1', async () => {
 });
 
 test('is test 2', async () => {
-	const r = await markuplint.exec({
-		sourceCodes: text,
-		names: path.resolve('test/fixture/textlint/test.html'),
-		config: {
+	const { violations } = await mlTestFile(
+		{
+			sourceCode: text,
+			name: path.resolve('test/fixture/textlint/test.html'),
+		},
+		{
 			rules: {
 				textlint: true,
 			},
 		},
-	});
+	);
 
-	expect(r[0].results).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			severity: 'warning',
 			ruleId: 'textlint',

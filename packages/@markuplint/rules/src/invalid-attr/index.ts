@@ -1,7 +1,7 @@
-import { Result, createRule } from '@markuplint/ml-core';
 import { getAttrSpecs, isValidAttr, match } from '../helpers';
 import { AttributeType } from '@markuplint/ml-spec/src';
-import { typeCheck } from '../type-check';
+import { attrCheck } from '../attr-check';
+import { createRule } from '@markuplint/ml-core';
 
 type Option = {
 	attrs?: Record<string, Rule>;
@@ -24,11 +24,9 @@ export default createRule<true, Option>({
 	defaultLevel: 'error',
 	defaultValue: true,
 	defaultOptions: {},
-	async verify(document, translate) {
-		const reports: Result[] = [];
-
-		await document.walkOn('Element', async node => {
-			const attrSpecs = getAttrSpecs(node.nodeName, document.specs);
+	async verify(context) {
+		await context.document.walkOn('Element', async node => {
+			const attrSpecs = getAttrSpecs(node.nameWithNS, context.document.specs);
 
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'html-attr' && attr.isDirective) {
@@ -43,8 +41,8 @@ export default createRule<true, Option>({
 					const message =
 						`The "${attrName.raw}" attribute is not allowed.` +
 						(candidate ? ` Did you mean "${candidate}"?` : '');
-					reports.push({
-						severity: node.rule.severity,
+					context.report({
+						scope: node,
 						message: message,
 						line: attrName.line,
 						col: attrName.col,
@@ -64,15 +62,16 @@ export default createRule<true, Option>({
 					}
 				}
 
-				let invalid: ReturnType<typeof typeCheck> = false;
+				let invalid: ReturnType<typeof attrCheck> = false;
 				const customRule = node.rule.option.attrs ? node.rule.option.attrs[name] : null;
 
 				if (customRule) {
 					if ('enum' in customRule) {
-						invalid = typeCheck(name.toLowerCase(), value, true, {
+						invalid = attrCheck(name.toLowerCase(), value, true, {
 							name,
-							type: 'String',
-							enum: customRule.enum,
+							type: {
+								enum: customRule.enum,
+							},
 							description: '',
 						});
 					} else if ('pattern' in customRule) {
@@ -83,7 +82,7 @@ export default createRule<true, Option>({
 							};
 						}
 					} else if ('type' in customRule) {
-						invalid = typeCheck(name, value, true, { name, type: customRule.type, description: '' });
+						invalid = attrCheck(name, value, true, { name, type: customRule.type, description: '' });
 					}
 				} else if (!node.isCustomElement && attrSpecs) {
 					invalid = isValidAttr(
@@ -98,8 +97,8 @@ export default createRule<true, Option>({
 				if (invalid) {
 					switch (invalid.invalidType) {
 						case 'invalid-value': {
-							reports.push({
-								severity: node.rule.severity,
+							context.report({
+								scope: node,
 								message: invalid.message,
 								line: attrValue.line,
 								col: attrValue.col,
@@ -108,8 +107,8 @@ export default createRule<true, Option>({
 							break;
 						}
 						case 'non-existent': {
-							reports.push({
-								severity: node.rule.severity,
+							context.report({
+								scope: node,
 								message: invalid.message,
 								line: attrName.line,
 								col: attrName.col,
@@ -120,7 +119,5 @@ export default createRule<true, Option>({
 				}
 			}
 		});
-
-		return reports;
 	},
 });

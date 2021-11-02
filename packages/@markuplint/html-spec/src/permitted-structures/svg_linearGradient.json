@@ -1,0 +1,16 @@
+{
+	"tag": "linearGradient",
+	"contents": [
+		{
+			"zeroOrMore": [
+				"#SVGDescriptive",
+				"svg:animate",
+				"svg:animateTransform",
+				"svg:script",
+				"svg:set",
+				"svg:stop",
+				"svg:style"
+			]
+		}
+	]
+}

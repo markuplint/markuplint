@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
+import { mlTest } from 'markuplint';
 import rule from './';
 
 test('valid', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		`
 		<!doctype html>
 		<html></html>
@@ -15,11 +15,11 @@ test('valid', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
 
 test('missing doctype', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<html></html>',
 		{
 			rules: {
@@ -29,7 +29,7 @@ test('missing doctype', async () => {
 		[rule],
 		'en',
 	);
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
 			message: 'Required doctype',
@@ -42,7 +42,7 @@ test('missing doctype', async () => {
 });
 
 test('document fragment', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<div></div>',
 		{
 			rules: {
@@ -52,11 +52,11 @@ test('document fragment', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
 
 test('obsolete doctypes', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		`
 		<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 		<div></div>
@@ -69,7 +69,7 @@ test('obsolete doctypes', async () => {
 		[rule],
 		'en',
 	);
-	expect(r[0]).toStrictEqual({
+	expect(violations[0]).toStrictEqual({
 		severity: 'error',
 		raw: '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">',
 		line: 2,

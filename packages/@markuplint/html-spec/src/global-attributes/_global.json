@@ -1,0 +1,1446 @@
+{
+	"#HTMLGlobalAttrs": [
+		{
+			"name": "xml:lang",
+			"type": "BCP47",
+			"deprecated": true
+		},
+		{
+			"name": "xml:base",
+			"type": "IRI",
+			"deprecated": true
+		},
+		{
+			"name": "accesskey",
+			"type": "String"
+		},
+		{
+			"name": "autocapitalize",
+			"type": {
+				"enum": ["off", "on", "none", "sentences", "words", "characters"]
+			}
+		},
+		{
+			"name": "autofocus",
+			"type": "Boolean"
+		},
+		{
+			"name": "contenteditable",
+			"type": {
+				"enum": ["true", "false"]
+			}
+		},
+		{
+			"name": "dir",
+			"type": {
+				"enum": ["ltr", "rtl", "auto"]
+			}
+		},
+		{
+			"name": "draggable",
+			"type": {
+				"enum": ["true", "false"]
+			}
+		},
+		{
+			"name": "enterkeyhint",
+			"type": {
+				"enum": ["enter", "done", "go", "next", "previous", "search", "send"]
+			}
+		},
+		{
+			"name": "hidden",
+			"type": "Boolean"
+		},
+		{
+			"name": "inputmode",
+			"type": {
+				"enum": ["none", "text", "tel", "url", "email", "numeric", "decimal", "search"]
+			}
+		},
+		{
+			"name": "is",
+			"type": "String"
+		},
+		{
+			"name": "itemid",
+			"type": "String"
+		},
+		{
+			"name": "itemprop",
+			"type": "String"
+		},
+		{
+			"name": "itemref",
+			"type": "DOMIDList",
+			"condition": {
+				"self": "[itemscope]"
+			}
+		},
+		{
+			"name": "itemscope",
+			"type": "Boolean"
+		},
+		{
+			"name": "itemtype",
+			"type": "ItemType"
+		},
+		{
+			"name": "lang",
+			"type": "BCP47"
+		},
+		{
+			"name": "nonce",
+			"type": "String"
+		},
+		{
+			"name": "spellcheck",
+			"type": {
+				"enum": ["true", "false"]
+			}
+		},
+		{
+			"name": "style",
+			"type": "String"
+		},
+		{
+			"name": "tabindex",
+			"type": "TabIndex"
+		},
+		{
+			"name": "title",
+			"type": "String"
+		},
+		{
+			"name": "translate",
+			"type": {
+				"enum": ["true", "false"]
+			}
+		},
+		{
+			"name": "onabort",
+			"type": "Function"
+		},
+		{
+			"name": "onauxclick",
+			"type": "Function"
+		},
+		{
+			"name": "onblur",
+			"type": "Function"
+		},
+		{
+			"name": "oncancel",
+			"type": "Function"
+		},
+		{
+			"name": "oncanplay",
+			"type": "Function"
+		},
+		{
+			"name": "oncanplaythrough",
+			"type": "Function"
+		},
+		{
+			"name": "onchange",
+			"type": "Function"
+		},
+		{
+			"name": "onclick",
+			"type": "Function"
+		},
+		{
+			"name": "onclose",
+			"type": "Function"
+		},
+		{
+			"name": "oncontextmenu",
+			"type": "Function"
+		},
+		{
+			"name": "oncopy",
+			"type": "Function"
+		},
+		{
+			"name": "oncuechange",
+			"type": "Function"
+		},
+		{
+			"name": "oncut",
+			"type": "Function"
+		},
+		{
+			"name": "ondblclick",
+			"type": "Function"
+		},
+		{
+			"name": "ondrag",
+			"type": "Function"
+		},
+		{
+			"name": "ondragend",
+			"type": "Function"
+		},
+		{
+			"name": "ondragenter",
+			"type": "Function"
+		},
+		{
+			"name": "ondragexit",
+			"type": "Function"
+		},
+		{
+			"name": "ondragleave",
+			"type": "Function"
+		},
+		{
+			"name": "ondragover",
+			"type": "Function"
+		},
+		{
+			"name": "ondragstart",
+			"type": "Function"
+		},
+		{
+			"name": "ondrop",
+			"type": "Function"
+		},
+		{
+			"name": "ondurationchange",
+			"type": "Function"
+		},
+		{
+			"name": "onemptied",
+			"type": "Function"
+		},
+		{
+			"name": "onended",
+			"type": "Function"
+		},
+		{
+			"name": "onerror",
+			"type": "Function"
+		},
+		{
+			"name": "onfocus",
+			"type": "Function"
+		},
+		{
+			"name": "onformdata",
+			"type": "Function"
+		},
+		{
+			"name": "oninput",
+			"type": "Function"
+		},
+		{
+			"name": "oninvalid",
+			"type": "Function"
+		},
+		{
+			"name": "onkeydown",
+			"type": "Function"
+		},
+		{
+			"name": "onkeypress",
+			"type": "Function"
+		},
+		{
+			"name": "onkeyup",
+			"type": "Function"
+		},
+		{
+			"name": "onload",
+			"type": "Function"
+		},
+		{
+			"name": "onloadeddata",
+			"type": "Function"
+		},
+		{
+			"name": "onloadedmetadata",
+			"type": "Function"
+		},
+		{
+			"name": "onloadstart",
+			"type": "Function"
+		},
+		{
+			"name": "onmousedown",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseenter",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseleave",
+			"type": "Function"
+		},
+		{
+			"name": "onmousemove",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseout",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseover",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseup",
+			"type": "Function"
+		},
+		{
+			"name": "onpaste",
+			"type": "Function"
+		},
+		{
+			"name": "onpause",
+			"type": "Function"
+		},
+		{
+			"name": "onplay",
+			"type": "Function"
+		},
+		{
+			"name": "onplaying",
+			"type": "Function"
+		},
+		{
+			"name": "onprogress",
+			"type": "Function"
+		},
+		{
+			"name": "onratechange",
+			"type": "Function"
+		},
+		{
+			"name": "onreset",
+			"type": "Function"
+		},
+		{
+			"name": "onresize",
+			"type": "Function"
+		},
+		{
+			"name": "onscroll",
+			"type": "Function"
+		},
+		{
+			"name": "onsecuritypolicyviolation",
+			"type": "Function"
+		},
+		{
+			"name": "onseeked",
+			"type": "Function"
+		},
+		{
+			"name": "onseeking",
+			"type": "Function"
+		},
+		{
+			"name": "onselect",
+			"type": "Function"
+		},
+		{
+			"name": "onslotchange",
+			"type": "Function"
+		},
+		{
+			"name": "onstalled",
+			"type": "Function"
+		},
+		{
+			"name": "onsubmit",
+			"type": "Function"
+		},
+		{
+			"name": "onsuspend",
+			"type": "Function"
+		},
+		{
+			"name": "ontimeupdate",
+			"type": "Function"
+		},
+		{
+			"name": "ontoggle",
+			"type": "Function"
+		},
+		{
+			"name": "onvolumechange",
+			"type": "Function"
+		},
+		{
+			"name": "onwaiting",
+			"type": "Function"
+		},
+		{
+			"name": "onwheel",
+			"type": "Function"
+		},
+		{
+			"name": "role",
+			"type": "String"
+		}
+	],
+	"#SVGAnimationAdditionAttrs": [
+		{
+			"name": "additive",
+			"type": {
+				"enum": ["replace", "sum"]
+			},
+			"defaultValue": "replace"
+		},
+		{
+			"name": "accumulate",
+			"type": {
+				"enum": ["none", "sum"]
+			},
+			"defaultValue": "none"
+		}
+	],
+	"#SVGAnimationAttributeTargetAttrs": [
+		{
+			"name": "attributeType",
+			"type": {
+				"enum": ["CSS", "XML", "auto"]
+			},
+			"defaultValue": "auto"
+		},
+		{
+			"name": "attributeName",
+			"type": "String"
+		}
+	],
+	"#SVGAnimationEventAttrs": [
+		{
+			"name": "onbegin",
+			"type": "Function"
+		},
+		{
+			"name": "onend",
+			"type": "Function"
+		},
+		{
+			"name": "onrepeat",
+			"type": "Function"
+		}
+	],
+	"#SVGAnimationTargetElementAttrs": [
+		{
+			"name": "href",
+			"type": "URL"
+		}
+	],
+	"#SVGAnimationTimingAttrs": [
+		{
+			"name": "begin",
+			"type": "SVGBeginValueList",
+			"defaultValue": "0s"
+		},
+		{
+			"name": "dur",
+			"type": [
+				"SVGClockValue",
+				{
+					"enum": ["media", "indefinite"]
+				}
+			],
+			"defaultValue": "indefinite"
+		},
+		{
+			"name": "end",
+			"type": "SVGEndValueList"
+		},
+		{
+			"name": "min",
+			"type": "SVGClockValue",
+			"defaultValue": "0"
+		},
+		{
+			"name": "max",
+			"type": "SVGClockValue"
+		},
+		{
+			"name": "restart",
+			"type": {
+				"enum": ["always", "whenNotActive", "never"]
+			},
+			"defaultValue": "always"
+		},
+		{
+			"name": "repeatCount",
+			"type": [
+				"Float",
+				{
+					"enum": ["indefinite"]
+				}
+			]
+		},
+		{
+			"name": "repeatDur",
+			"type": [
+				"SVGClockValue",
+				{
+					"enum": ["indefinite"]
+				}
+			]
+		},
+		{
+			"name": "fill",
+			"type": {
+				"enum": ["freeze", "remove"]
+			},
+			"defaultValue": "remove"
+		}
+	],
+	"#SVGAnimationValueAttrs": [
+		{
+			"name": "calcMode",
+			"type": {
+				"enum": ["discrete", "linear", "paced", "spline"]
+			},
+			"defaultValue": "linear"
+		},
+		{
+			"name": "values",
+			"type": "String"
+		},
+		{
+			"name": "keyTimes",
+			"type": "SVGKeyTimes"
+		},
+		{
+			"name": "keySplines",
+			"type": "SVGKeySplines"
+		},
+		{
+			"name": "from",
+			"type": "SVGAnimatableValue"
+		},
+		{
+			"name": "to",
+			"type": "SVGAnimatableValue"
+		},
+		{
+			"name": "by",
+			"type": "SVGAnimatableValue"
+		},
+		{
+			"name": "autoReverse",
+			"type": {
+				"enum": ["true", "false"]
+			},
+			"defaultValue": "false"
+		},
+		{
+			"name": "accelerate",
+			"type": "ZeroToOne",
+			"defaultValue": "0"
+		},
+		{
+			"name": "decelerate",
+			"type": "ZeroToOne",
+			"defaultValue": "0"
+		}
+	],
+	"#SVGConditionalProcessingAttrs": [
+		{
+			"name": "requiredExtensions",
+			"type": "URLList"
+		},
+		{
+			"name": "systemLanguage",
+			"type": "SVGLanguageTags"
+		},
+		{
+			"name": "requiredFeatures",
+			"type": "String",
+			"deprecated": true
+		}
+	],
+	"#SVGCoreAttrs": [
+		{
+			"name": "id",
+			"type": "DOMID"
+		},
+		{
+			"name": "tabindex",
+			"type": "TabIndex"
+		},
+		{
+			"name": "autofocus",
+			"type": "Boolean"
+		},
+		{
+			"name": "lang",
+			"type": "BCP47"
+		},
+		{
+			"name": "class",
+			"type": "String"
+		},
+		{
+			"name": "style",
+			"type": "String"
+		},
+		{
+			"name": "xml:base",
+			"type": "IRI",
+			"deprecated": true
+		},
+		{
+			"name": "xml:lang",
+			"type": "BCP47",
+			"deprecated": true
+		},
+		{
+			"name": "xml:space",
+			"type": {
+				"enum": ["default", "preserve"]
+			},
+			"defaultValue": "default",
+			"deprecated": true
+		}
+	],
+	"#SVGDocumentElementEventAttrs": [
+		{
+			"name": "oncopy",
+			"type": "Function"
+		},
+		{
+			"name": "oncut",
+			"type": "Function"
+		},
+		{
+			"name": "onpaste",
+			"type": "Function"
+		}
+	],
+	"#SVGDocumentEventAttrs": [
+		{
+			"name": "onabort",
+			"type": "Function"
+		},
+		{
+			"name": "onerror",
+			"type": "Function"
+		},
+		{
+			"name": "onresize",
+			"type": "Function"
+		},
+		{
+			"name": "onscroll",
+			"type": "Function"
+		},
+		{
+			"name": "onunload",
+			"type": "Function"
+		}
+	],
+	"#SVGFilterPrimitiveAttrs": [
+		{
+			"name": "height",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "result",
+			"type": "SVGFilterPrimitiveReference"
+		},
+		{
+			"name": "width",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto"
+		},
+		{
+			"name": "x",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0%"
+		},
+		{
+			"name": "y",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0%"
+		}
+	],
+	"#SVGGlobalEventAttrs": [
+		{
+			"name": "oncancel",
+			"type": "Function"
+		},
+		{
+			"name": "oncanplay",
+			"type": "Function"
+		},
+		{
+			"name": "oncanplaythrough",
+			"type": "Function"
+		},
+		{
+			"name": "onchange",
+			"type": "Function"
+		},
+		{
+			"name": "onclick",
+			"type": "Function"
+		},
+		{
+			"name": "onclose",
+			"type": "Function"
+		},
+		{
+			"name": "oncuechange",
+			"type": "Function"
+		},
+		{
+			"name": "ondblclick",
+			"type": "Function"
+		},
+		{
+			"name": "ondrag",
+			"type": "Function"
+		},
+		{
+			"name": "ondragend",
+			"type": "Function"
+		},
+		{
+			"name": "ondragenter",
+			"type": "Function"
+		},
+		{
+			"name": "ondragleave",
+			"type": "Function"
+		},
+		{
+			"name": "ondragover",
+			"type": "Function"
+		},
+		{
+			"name": "ondragstart",
+			"type": "Function"
+		},
+		{
+			"name": "ondrop",
+			"type": "Function"
+		},
+		{
+			"name": "ondurationchange",
+			"type": "Function"
+		},
+		{
+			"name": "onemptied",
+			"type": "Function"
+		},
+		{
+			"name": "onended",
+			"type": "Function"
+		},
+		{
+			"name": "onerror",
+			"type": "Function"
+		},
+		{
+			"name": "onfocus",
+			"type": "Function"
+		},
+		{
+			"name": "oninput",
+			"type": "Function"
+		},
+		{
+			"name": "oninvalid",
+			"type": "Function"
+		},
+		{
+			"name": "onkeydown",
+			"type": "Function"
+		},
+		{
+			"name": "onkeypress",
+			"type": "Function"
+		},
+		{
+			"name": "onkeyup",
+			"type": "Function"
+		},
+		{
+			"name": "onload",
+			"type": "Function"
+		},
+		{
+			"name": "onloadeddata",
+			"type": "Function"
+		},
+		{
+			"name": "onloadedmetadata",
+			"type": "Function"
+		},
+		{
+			"name": "onloadstart",
+			"type": "Function"
+		},
+		{
+			"name": "onmousedown",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseenter",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseleave",
+			"type": "Function"
+		},
+		{
+			"name": "onmousemove",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseout",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseover",
+			"type": "Function"
+		},
+		{
+			"name": "onmouseup",
+			"type": "Function"
+		},
+		{
+			"name": "onmousewheel",
+			"type": "Function"
+		},
+		{
+			"name": "onpause",
+			"type": "Function"
+		},
+		{
+			"name": "onplay",
+			"type": "Function"
+		},
+		{
+			"name": "onplaying",
+			"type": "Function"
+		},
+		{
+			"name": "onprogress",
+			"type": "Function"
+		},
+		{
+			"name": "onratechange",
+			"type": "Function"
+		},
+		{
+			"name": "onreset",
+			"type": "Function"
+		},
+		{
+			"name": "onresize",
+			"type": "Function"
+		},
+		{
+			"name": "onscroll",
+			"type": "Function"
+		},
+		{
+			"name": "onseeked",
+			"type": "Function"
+		},
+		{
+			"name": "onseeking",
+			"type": "Function"
+		},
+		{
+			"name": "onselect",
+			"type": "Function"
+		},
+		{
+			"name": "onshow",
+			"type": "Function"
+		},
+		{
+			"name": "onstalled",
+			"type": "Function"
+		},
+		{
+			"name": "onsubmit",
+			"type": "Function"
+		},
+		{
+			"name": "onsuspend",
+			"type": "Function"
+		},
+		{
+			"name": "ontimeupdate",
+			"type": "Function"
+		},
+		{
+			"name": "ontoggle",
+			"type": "Function"
+		},
+		{
+			"name": "onvolumechange",
+			"type": "Function"
+		},
+		{
+			"name": "onwaiting",
+			"type": "Function"
+		}
+	],
+	"#SVGGraphicalEventAttrs": [
+		{
+			"name": "onfocusin",
+			"type": "Function"
+		},
+		{
+			"name": "onfocusout",
+			"type": "Function"
+		}
+	],
+	"#SVGPresentationAttrs": [
+		{
+			"name": "alignment-baseline",
+			"type": {
+				"enum": [
+					"auto",
+					"baseline",
+					"before-edge",
+					"text-before-edge",
+					"middle",
+					"central",
+					"after-edge",
+					"text-after-edge",
+					"ideographic",
+					"alphabetic",
+					"hanging",
+					"mathematical",
+					"top",
+					"center",
+					"bottom"
+				]
+			},
+			"defaultValue": "auto"
+		},
+		{
+			"name": "baseline-shift",
+			"type": [
+				"SVGLength",
+				"SVGPercentage",
+				{
+					"enum": ["sub", "super"]
+				}
+			]
+		},
+		{
+			"name": "clip",
+			"type": "String",
+			"deprecated": true
+		},
+		{
+			"name": "clip-path",
+			"type": "CSSClipPath",
+			"defaultValue": "none"
+		},
+		{
+			"name": "clip-rule",
+			"type": {
+				"enum": ["nonzero", "evenodd", "inherit"]
+			},
+			"defaultValue": "nonzero"
+		},
+		{
+			"name": "color",
+			"type": "Color"
+		},
+		{
+			"name": "color-interpolation",
+			"type": {
+				"enum": ["auto", "sRGB", "linearRGB"]
+			},
+			"defaultValue": "sRGB"
+		},
+		{
+			"name": "color-interpolation-filters",
+			"type": {
+				"enum": ["auto", "sRGB", "linearRGB"]
+			},
+			"defaultValue": "sRGB"
+		},
+		{
+			"name": "color-profile",
+			"type": "String",
+			"defaultValue": "auto",
+			"deprecated": true
+		},
+		{
+			"name": "color-rendering",
+			"type": {
+				"enum": ["auto", "optimizeSpeed", "optimizeQuality"]
+			},
+			"defaultValue": "auto",
+			"deprecated": true
+		},
+		{
+			"name": "cursor",
+			"type": "String"
+		},
+		{
+			"name": "direction",
+			"type": {
+				"enum": ["ltr", "rtl"]
+			},
+			"defaultValue": "ltr"
+		},
+		{
+			"name": "display",
+			"type": "CSSDisplay"
+		},
+		{
+			"name": "dominant-baseline",
+			"type": {
+				"enum": [
+					"auto",
+					"text-bottom",
+					"alphabetic",
+					"ideographic",
+					"middle",
+					"central",
+					"mathematical",
+					"hanging",
+					"text-top"
+				]
+			},
+			"defaultValue": "auto"
+		},
+		{
+			"name": "enable-background",
+			"type": "String",
+			"deprecated": true
+		},
+		{
+			"name": "fill",
+			"type": "SVGPaint",
+			"defaultValue": "black"
+		},
+		{
+			"name": "fill-opacity",
+			"type": "CSSOpacity",
+			"defaultValue": "1"
+		},
+		{
+			"name": "fill-rule",
+			"type": {
+				"enum": ["nonzero", "evenodd"]
+			},
+			"defaultValue": "nonzero"
+		},
+		{
+			"name": "filter",
+			"type": "CSSFilter",
+			"defaultValue": "none"
+		},
+		{
+			"name": "flood-color",
+			"type": "Color",
+			"defaultValue": "black"
+		},
+		{
+			"name": "flood-opacity",
+			"type": "CSSOpacity",
+			"defaultValue": "1"
+		},
+		{
+			"name": "font-family",
+			"type": "CSSFontFamily"
+		},
+		{
+			"name": "font-size",
+			"type": "CSSFontSize",
+			"defaultValue": "medium"
+		},
+		{
+			"name": "font-size-adjust",
+			"type": [
+				"Float",
+				{
+					"enum": ["none"]
+				}
+			],
+			"defaultValue": "none"
+		},
+		{
+			"name": "font-stretch",
+			"type": [
+				"SVGPercentage",
+				{
+					"enum": [
+						"normal",
+						"ultra-condensed",
+						"extra-condensed",
+						"condensed",
+						"semi-condensed",
+						"semi-expanded",
+						"expanded",
+						"extra-expanded",
+						"ultra-expanded"
+					]
+				}
+			],
+			"defaultValue": "normal"
+		},
+		{
+			"name": "font-style",
+			"type": {
+				"enum": ["normal", "italic", "oblique"]
+			}
+		},
+		{
+			"name": "font-variant",
+			"type": "CSSFontVariant"
+		},
+		{
+			"name": "font-weight",
+			"type": "CSSFontWeight"
+		},
+		{
+			"name": "glyph-orientation-horizontal",
+			"type": "CSSAngle",
+			"defaultValue": "0deg",
+			"deprecated": true
+		},
+		{
+			"name": "glyph-orientation-vertical",
+			"type": [
+				"CSSAngle",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto",
+			"deprecated": true
+		},
+		{
+			"name": "image-rendering",
+			"type": {
+				"enum": ["auto", "optimizeSpeed", "optimizeQuality"]
+			},
+			"defaultValue": "auto"
+		},
+		{
+			"name": "kerning",
+			"type": [
+				"SVGLength",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto",
+			"deprecated": true
+		},
+		{
+			"name": "letter-spacing",
+			"type": [
+				"SVGLength",
+				{
+					"enum": ["normal"]
+				}
+			],
+			"defaultValue": "normal"
+		},
+		{
+			"name": "lighting-color",
+			"type": "Color",
+			"defaultValue": "white"
+		},
+		{
+			"name": "marker-end",
+			"type": [
+				"CSSURL",
+				{
+					"enum": ["none"]
+				}
+			],
+			"defaultValue": "none"
+		},
+		{
+			"name": "marker-mid",
+			"type": [
+				"CSSURL",
+				{
+					"enum": ["none"]
+				}
+			],
+			"defaultValue": "none"
+		},
+		{
+			"name": "marker-start",
+			"type": [
+				"CSSURL",
+				{
+					"enum": ["none"]
+				}
+			],
+			"defaultValue": "none"
+		},
+		{
+			"name": "mask",
+			"type": "CSSMask",
+			"defaultValue": "none"
+		},
+		{
+			"name": "opacity",
+			"type": "CSSOpacity",
+			"defaultValue": "1"
+		},
+		{
+			"name": "overflow",
+			"type": {
+				"enum": ["visible", "hidden", "scroll", "auto"]
+			},
+			"defaultValue": "visible"
+		},
+		{
+			"name": "pointer-events",
+			"type": {
+				"enum": [
+					"bounding-box",
+					"visiblePainted",
+					"visibleFill",
+					"visibleStroke",
+					"visible",
+					"painted",
+					"fill",
+					"stroke",
+					"all",
+					"none"
+				]
+			},
+			"defaultValue": "visiblePainted"
+		},
+		{
+			"name": "shape-rendering",
+			"type": {
+				"enum": ["auto", "optimizeSpeed", "crispEdges", "geometricPrecision"]
+			},
+			"defaultValue": "auto"
+		},
+		{
+			"name": "stop-color",
+			"type": "Color",
+			"defaultValue": "black"
+		},
+		{
+			"name": "stop-opacity",
+			"type": "CSSOpacity",
+			"defaultValue": "1"
+		},
+		{
+			"name": "stroke",
+			"type": "SVGPaint",
+			"defaultValue": "none"
+		},
+		{
+			"name": "stroke-dasharray",
+			"type": [
+				"SVGDashArray",
+				{
+					"enum": ["none"]
+				}
+			],
+			"defaultValue": "none"
+		},
+		{
+			"name": "stroke-dashoffset",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "stroke-linecap",
+			"type": {
+				"enum": ["butt", "round", "square"]
+			},
+			"defaultValue": "butt"
+		},
+		{
+			"name": "stroke-linejoin",
+			"type": {
+				"enum": ["arcs", "bevel", "miter", "miter-clip", "round"]
+			},
+			"defaultValue": "miter"
+		},
+		{
+			"name": "stroke-miterlimit",
+			"type": "Float",
+			"defaultValue": "4"
+		},
+		{
+			"name": "stroke-opacity",
+			"type": "CSSOpacity",
+			"defaultValue": "1"
+		},
+		{
+			"name": "stroke-width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "1px"
+		},
+		{
+			"name": "text-anchor",
+			"type": {
+				"enum": ["start", "middle", "end"]
+			},
+			"defaultValue": "start"
+		},
+		{
+			"name": "text-decoration",
+			"type": "CSSTextDecoration"
+		},
+		{
+			"name": "text-rendering",
+			"type": {
+				"enum": ["auto", "optimizeSpeed", "optimizeLegibility", "geometricPrecision"]
+			},
+			"defaultValue": "auto"
+		},
+		{
+			"name": "transform",
+			"type": "CSSTransformList",
+			"defaultValue": "none"
+		},
+		{
+			"name": "transform-origin",
+			"type": "CSSTransformOrigin",
+			"defaultValue": "0, 0"
+		},
+		{
+			"name": "unicode-bidi",
+			"type": {
+				"enum": ["normal", "embed", "isolate", "bidi-override", "isolate-override", "plaintext"]
+			},
+			"defaultValue": "normal"
+		},
+		{
+			"name": "vector-effect",
+			"type": {
+				"enum": ["none", "non-scaling-stroke", "non-scaling-size", "non-rotation", "fixed-position"]
+			},
+			"defaultValue": "none"
+		},
+		{
+			"name": "visibility",
+			"type": {
+				"enum": ["visible", "hidden", "collapse"]
+			},
+			"defaultValue": "visible"
+		},
+		{
+			"name": "word-spacing",
+			"type": [
+				"SVGLength",
+				{
+					"enum": ["normal"]
+				}
+			],
+			"defaultValue": "normal"
+		},
+		{
+			"name": "writing-mode",
+			"type": {
+				"enum": ["horizontal-tb", "vertical-rl", "vertical-lr"]
+			},
+			"defaultValue": "horizontal-tb"
+		}
+	],
+	"#SVGTransferFunctionAttrs": [
+		{
+			"name": "type",
+			"type": "String"
+		},
+		{
+			"name": "tableValues",
+			"type": "SVGNumberList"
+		},
+		{
+			"name": "slope",
+			"type": "Float",
+			"defaultValue": "0",
+			"deprecated": true
+		},
+		{
+			"name": "intercept",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "amplitude",
+			"type": "Float",
+			"defaultValue": "1"
+		},
+		{
+			"name": "exponent",
+			"type": "Float",
+			"defaultValue": "1"
+		}
+	],
+	"#XLinkAttrs": [
+		{
+			"name": "xlink:href",
+			"type": "IRI",
+			"deprecated": true
+		},
+		{
+			"name": "xlink:type",
+			"type": {
+				"enum": ["simple"]
+			},
+			"defaultValue": "simple",
+			"deprecated": true
+		},
+		{
+			"name": "xlink:role",
+			"type": "String",
+			"deprecated": true
+		},
+		{
+			"name": "xlink:arcrole",
+			"type": "IRI",
+			"deprecated": true
+		},
+		{
+			"name": "xlink:title",
+			"type": "String",
+			"deprecated": true
+		},
+		{
+			"name": "xlink:show",
+			"type": {
+				"enum": ["new", "replace", "embed", "other", "none"]
+			},
+			"defaultValue": "replace",
+			"deprecated": true
+		},
+		{
+			"name": "xlink:actuate",
+			"type": "String",
+			"deprecated": true
+		}
+	]
+}

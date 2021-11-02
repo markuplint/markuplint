@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
+import { mlTest } from 'markuplint';
 import rule from './';
 
 test('warns if specified attribute value is invalid', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
 		{
 			rules: {
@@ -13,7 +13,7 @@ test('warns if specified attribute value is invalid', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			ruleId: 'invalid-attr',
 			severity: 'error',
@@ -35,7 +35,7 @@ test('warns if specified attribute value is invalid', async () => {
 });
 
 test('Type check', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<form name=""></form>',
 		{
 			rules: {
@@ -46,7 +46,7 @@ test('Type check', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			ruleId: 'invalid-attr',
 			severity: 'error',
@@ -59,7 +59,7 @@ test('Type check', async () => {
 });
 
 test('disable', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
 		{
 			rules: {
@@ -70,34 +70,66 @@ test('disable', async () => {
 		'en',
 	);
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
+});
+
+test('the input element type case-insensitive', async () => {
+	const { violations } = await mlTest(
+		'<input type="checkbox" checked>',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(violations.length).toBe(0);
+
+	const { violations: violations2 } = await mlTest(
+		'<input type="checkBox" checked>',
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+
+	expect(violations2.length).toBe(0);
 });
 
 test('ancestor condition', async () => {
 	expect(
-		await markuplint.verify(
-			'<picture><source media="print"></picture>',
-			{
-				rules: {
-					'invalid-attr': true,
+		(
+			await mlTest(
+				'<picture><source media="print"></picture>',
+				{
+					rules: {
+						'invalid-attr': true,
+					},
 				},
-			},
-			[rule],
-			'en',
-		),
+				[rule],
+				'en',
+			)
+		).violations,
 	).toStrictEqual([]);
 
 	expect(
-		await markuplint.verify(
-			'<audio><source media="print"></audio>',
-			{
-				rules: {
-					'invalid-attr': true,
+		(
+			await mlTest(
+				'<audio><source media="print"></audio>',
+				{
+					rules: {
+						'invalid-attr': true,
+					},
 				},
-			},
-			[rule],
-			'en',
-		),
+				[rule],
+				'en',
+			)
+		).violations,
 	).toStrictEqual([
 		{
 			ruleId: 'invalid-attr',
@@ -111,7 +143,7 @@ test('ancestor condition', async () => {
 });
 
 test('custom rule', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>',
 		{
 			rules: {
@@ -130,7 +162,7 @@ test('custom rule', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			ruleId: 'invalid-attr',
 			severity: 'error',
@@ -143,7 +175,7 @@ test('custom rule', async () => {
 });
 
 test('custom rule: type', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>',
 		{
 			rules: {
@@ -162,7 +194,7 @@ test('custom rule: type', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			ruleId: 'invalid-attr',
 			severity: 'error',
@@ -175,7 +207,7 @@ test('custom rule: type', async () => {
 });
 
 test('custom element', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<custom-element any-attr></custom-element>',
 		{
 			rules: {
@@ -186,11 +218,11 @@ test('custom element', async () => {
 		'en',
 	);
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
 
 test('custom element and custom rule', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<custom-element any-attr="any-string"></custom-element>',
 		{
 			rules: {
@@ -217,11 +249,11 @@ test('custom element and custom rule', async () => {
 		'en',
 	);
 
-	expect(r.length).toBe(1);
+	expect(violations.length).toBe(1);
 });
 
 test('prefix attribute', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<div v-bind:title="title" :class="classes" @click="click"></div>',
 		{
 			rules: {
@@ -232,7 +264,7 @@ test('prefix attribute', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			ruleId: 'invalid-attr',
 			severity: 'error',
@@ -261,7 +293,7 @@ test('prefix attribute', async () => {
 });
 
 test('ignore prefix attribute', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<div v-bind:title="title" :class="classes" @click="click"></div>',
 		{
 			rules: {
@@ -276,11 +308,11 @@ test('ignore prefix attribute', async () => {
 		'en',
 	);
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
 
 test('URL attribute', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<img src="https://sample.com/path/to">',
 		{
 			rules: {
@@ -290,9 +322,9 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 
-	const r2 = await markuplint.verify(
+	const { violations: violations2 } = await mlTest(
 		'<img src="//sample.com/path/to">',
 		{
 			rules: {
@@ -302,9 +334,9 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r2.length).toBe(0);
+	expect(violations2.length).toBe(0);
 
-	const r3 = await markuplint.verify(
+	const { violations: violations3 } = await mlTest(
 		'<img src="//user:pass@sample.com/path/to">',
 		{
 			rules: {
@@ -314,9 +346,9 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r3.length).toBe(0);
+	expect(violations3.length).toBe(0);
 
-	const r4 = await markuplint.verify(
+	const { violations: violations4 } = await mlTest(
 		'<img src="/path/to">',
 		{
 			rules: {
@@ -326,9 +358,9 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r4.length).toBe(0);
+	expect(violations4.length).toBe(0);
 
-	const r5 = await markuplint.verify(
+	const { violations: violations5 } = await mlTest(
 		'<img src="/path/to?param=value">',
 		{
 			rules: {
@@ -338,9 +370,9 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r5.length).toBe(0);
+	expect(violations5.length).toBe(0);
 
-	const r6 = await markuplint.verify(
+	const { violations: violations6 } = await mlTest(
 		'<img src="/?param=value">',
 		{
 			rules: {
@@ -350,9 +382,9 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r6.length).toBe(0);
+	expect(violations6.length).toBe(0);
 
-	const r7 = await markuplint.verify(
+	const { violations: violations7 } = await mlTest(
 		'<img src="?param=value">',
 		{
 			rules: {
@@ -362,9 +394,9 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r7.length).toBe(0);
+	expect(violations7.length).toBe(0);
 
-	const r8 = await markuplint.verify(
+	const { violations: violations8 } = await mlTest(
 		'<img src="path/to">',
 		{
 			rules: {
@@ -374,9 +406,9 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r8.length).toBe(0);
+	expect(violations8.length).toBe(0);
 
-	const r9 = await markuplint.verify(
+	const { violations: violations9 } = await mlTest(
 		'<img src="./path/to">',
 		{
 			rules: {
@@ -386,9 +418,9 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r9.length).toBe(0);
+	expect(violations9.length).toBe(0);
 
-	const r10 = await markuplint.verify(
+	const { violations: violations10 } = await mlTest(
 		'<img src="../path/to">',
 		{
 			rules: {
@@ -398,9 +430,9 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r10.length).toBe(0);
+	expect(violations10.length).toBe(0);
 
-	const r11 = await markuplint.verify(
+	const { violations: violations11 } = await mlTest(
 		'<img src="/path/to#hash">',
 		{
 			rules: {
@@ -410,9 +442,9 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r11.length).toBe(0);
+	expect(violations11.length).toBe(0);
 
-	const r12 = await markuplint.verify(
+	const { violations: violations12 } = await mlTest(
 		'<img src="#hash">',
 		{
 			rules: {
@@ -422,11 +454,11 @@ test('URL attribute', async () => {
 		[rule],
 		'en',
 	);
-	expect(r12.length).toBe(0);
+	expect(violations12.length).toBe(0);
 });
 
 test('Foreign element', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<div><svg width="10px" height="10px" viewBox="0 0 10 10"></svg></div>',
 		{
 			rules: {
@@ -437,11 +469,44 @@ test('Foreign element', async () => {
 		'en',
 	);
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
+});
+
+test('svg', async () => {
+	expect(
+		(
+			await mlTest(
+				`<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg" stroke="red" fill="grey">
+					<circle cx="50" cy="50" cz="50" r="40" />
+					<circle cx="150" cy="50" r="4" />
+					<svg viewBox="0 0 10 10" x="200" width="100">
+						<circle cx="5" cy="5" r="4" />
+					</svg>
+				</svg>
+				`,
+				{
+					rules: {
+						'invalid-attr': true,
+					},
+				},
+				[rule],
+				'en',
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 2,
+			col: 30,
+			message: 'The "cz" attribute is not allowed',
+			raw: 'cz',
+		},
+	]);
 });
 
 test('Pug', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'button(type=buttonType)',
 		{
 			parser: {
@@ -455,11 +520,11 @@ test('Pug', async () => {
 		'en',
 	);
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
 
 test('Vue', async () => {
-	const r1 = await markuplint.verify(
+	const { violations: violations1 } = await mlTest(
 		'<template><button type="buttonType"></button></template>',
 		{
 			parser: {
@@ -472,7 +537,7 @@ test('Vue', async () => {
 		[rule],
 		'en',
 	);
-	const r2 = await markuplint.verify(
+	const { violations: violations2 } = await mlTest(
 		'<template><button :type="buttonType"></button></template>',
 		{
 			parser: {
@@ -486,12 +551,12 @@ test('Vue', async () => {
 		'en',
 	);
 
-	expect(r1.length).toBe(1);
-	expect(r2.length).toBe(0);
+	expect(violations1.length).toBe(1);
+	expect(violations2.length).toBe(0);
 });
 
 test('Vue iterator', async () => {
-	const r1 = await markuplint.verify(
+	const { violations: violations1 } = await mlTest(
 		'<template><ul ref="ul"><li key="key"></li></ul></template>',
 		{
 			parser: {
@@ -505,7 +570,7 @@ test('Vue iterator', async () => {
 		[rule],
 		'en',
 	);
-	const r2 = await markuplint.verify(
+	const { violations: violations2 } = await mlTest(
 		'<template><ul><li v-for="item of list" :key="key"></li></ul></template>',
 		{
 			parser: {
@@ -519,12 +584,12 @@ test('Vue iterator', async () => {
 		'en',
 	);
 
-	expect(r1.length).toBe(1);
-	expect(r2.length).toBe(0);
+	expect(violations1.length).toBe(1);
+	expect(violations2.length).toBe(0);
 });
 
 test('React Component', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<Component className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
 		{
 			parser: {
@@ -538,11 +603,11 @@ test('React Component', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('React HTML', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<img className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
 		{
 			parser: {
@@ -556,7 +621,7 @@ test('React HTML', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			ruleId: 'invalid-attr',
 			severity: 'error',
@@ -577,7 +642,7 @@ test('React HTML', async () => {
 });
 
 test('React', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<a href={href} target={target} invalidAttr={invalidAttr} />',
 		{
 			parser: {
@@ -591,7 +656,7 @@ test('React', async () => {
 		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			ruleId: 'invalid-attr',
 			severity: 'error',
@@ -605,19 +670,21 @@ test('React', async () => {
 
 test('React with spread attribute', async () => {
 	expect(
-		await markuplint.verify(
-			'<a target="_blank" />',
-			{
-				parser: {
-					'.*': '@markuplint/jsx-parser',
+		(
+			await mlTest(
+				'<a target="_blank" />',
+				{
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					rules: {
+						'invalid-attr': true,
+					},
 				},
-				rules: {
-					'invalid-attr': true,
-				},
-			},
-			[rule],
-			'en',
-		),
+				[rule],
+				'en',
+			)
+		).violations,
 	).toStrictEqual([
 		{
 			ruleId: 'invalid-attr',
@@ -630,35 +697,39 @@ test('React with spread attribute', async () => {
 	]);
 
 	expect(
-		await markuplint.verify(
-			'<a {...props} target="_blank" />',
-			{
-				parser: {
-					'.*': '@markuplint/jsx-parser',
+		(
+			await mlTest(
+				'<a {...props} target="_blank" />',
+				{
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					rules: {
+						'invalid-attr': true,
+					},
 				},
-				rules: {
-					'invalid-attr': true,
-				},
-			},
-			[rule],
-			'en',
-		),
+				[rule],
+				'en',
+			)
+		).violations,
 	).toStrictEqual([]);
 
 	expect(
-		await markuplint.verify(
-			'<img invalid />',
-			{
-				parser: {
-					'.*': '@markuplint/jsx-parser',
+		(
+			await mlTest(
+				'<img invalid />',
+				{
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					rules: {
+						'invalid-attr': true,
+					},
 				},
-				rules: {
-					'invalid-attr': true,
-				},
-			},
-			[rule],
-			'en',
-		),
+				[rule],
+				'en',
+			)
+		).violations,
 	).toStrictEqual([
 		{
 			ruleId: 'invalid-attr',
@@ -671,19 +742,21 @@ test('React with spread attribute', async () => {
 	]);
 
 	expect(
-		await markuplint.verify(
-			'<img {...props} invalid />',
-			{
-				parser: {
-					'.*': '@markuplint/jsx-parser',
+		(
+			await mlTest(
+				'<img {...props} invalid />',
+				{
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					rules: {
+						'invalid-attr': true,
+					},
 				},
-				rules: {
-					'invalid-attr': true,
-				},
-			},
-			[rule],
-			'en',
-		),
+				[rule],
+				'en',
+			)
+		).violations,
 	).toStrictEqual([
 		{
 			ruleId: 'invalid-attr',
@@ -706,7 +779,7 @@ test('React spec', async () => {
 	<select value={0} defaultValue={0}></select>
 	<textarea value={0} defaultValue={0}></textarea>
 </>`;
-	const rWithoutSpec = await markuplint.verify(
+	const { violations: violations1 } = await mlTest(
 		jsx,
 		{
 			parser: {
@@ -720,7 +793,7 @@ test('React spec', async () => {
 		'en',
 	);
 
-	const rWithSpec = await markuplint.verify(
+	const { violations: violations2 } = await mlTest(
 		jsx,
 		{
 			parser: {
@@ -735,7 +808,7 @@ test('React spec', async () => {
 		'en',
 	);
 
-	expect(rWithoutSpec).toStrictEqual([
+	expect(violations1).toStrictEqual([
 		{
 			ruleId: 'invalid-attr',
 			severity: 'error',
@@ -834,7 +907,7 @@ test('React spec', async () => {
 		},
 	]);
 
-	expect(rWithSpec).toStrictEqual([
+	expect(violations2).toStrictEqual([
 		{
 			ruleId: 'invalid-attr',
 			severity: 'error',

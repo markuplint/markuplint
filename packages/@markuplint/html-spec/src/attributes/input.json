@@ -72,16 +72,18 @@
 		},
 		{
 			"name": "formenctype",
-			"type": "String",
-			"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"],
+			"type": {
+				"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
+			},
 			"condition": {
 				"self": ["[type='submit' i]", "[type='image' i]"]
 			}
 		},
 		{
 			"name": "formmethod",
-			"type": "String",
-			"enum": ["post", "get", "dialog"],
+			"type": {
+				"enum": ["post", "get", "dialog"]
+			},
 			"condition": {
 				"self": ["[type='submit' i]", "[type='image' i]"]
 			}

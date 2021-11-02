@@ -1,5 +1,5 @@
 import { ContentModel, PermittedStructuresSchema } from '@markuplint/ml-spec';
-import { Element, Result, createRule } from '@markuplint/ml-core';
+import { Element, createRule } from '@markuplint/ml-core';
 import ExpGenerator from './permitted-content.spec-to-regexp';
 import { htmlSpec } from '../helpers';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
@@ -17,10 +17,9 @@ export default createRule<TagRule[], Options>({
 	defaultOptions: {
 		ignoreHasMutableChildren: true,
 	},
-	async verify(document, translate) {
-		const reports: Result[] = [];
+	async verify(context) {
 		let idCounter = 0;
-		await document.walkOn('Element', async node => {
+		await context.document.walkOn('Element', async node => {
 			if (!node.rule.value) {
 				return;
 			}
@@ -29,23 +28,22 @@ export default createRule<TagRule[], Options>({
 				return;
 			}
 
+			const specType = node.ns === 'html' ? 'HTML' : node.ns === 'svg' ? 'SVG' : 'Any Language';
+
 			const childNodes = node.getChildElementsAndTextNodeWithoutWhitespaces();
-			const spec = !node.isCustomElement && htmlSpec(node.nodeName)?.permittedStructures;
+			const spec = !node.isCustomElement && htmlSpec(node.nameWithNS)?.permittedStructures;
 
 			const expGen = new ExpGenerator(idCounter++);
 
 			if (spec) {
 				if (spec.ancestor && !node.closest(spec.ancestor)) {
-					reports.push({
-						severity: node.rule.severity,
-						message: translate(
+					context.report({
+						scope: node,
+						message: context.translate(
 							'The {0} element must be descendant of the {1} element',
 							node.nodeName,
 							spec.ancestor,
 						),
-						line: node.startLine,
-						col: node.startCol,
-						raw: node.raw,
 					});
 					return;
 				}
@@ -64,15 +62,15 @@ export default createRule<TagRule[], Options>({
 						if (matched) {
 							try {
 								const parentExp = getRegExpFromParentNode(node, expGen);
-								const exp = expGen.specToRegExp(conditional.contents, parentExp);
-								const conditionalResult = match(exp, childNodes, false);
+								const exp = expGen.specToRegExp(conditional.contents, parentExp, node.ns);
+								const conditionalResult = match(exp, childNodes, node.ns, false);
 								if (!conditionalResult) {
-									reports.push({
-										severity: node.rule.severity,
-										message: translate(
+									context.report({
+										scope: node,
+										message: context.translate(
 											'Invalid content of the {0} element in {1}',
 											node.nodeName,
-											'the HTML specification',
+											`${specType} specification`,
 										),
 										line: node.startLine,
 										col: node.startCol,
@@ -81,8 +79,12 @@ export default createRule<TagRule[], Options>({
 									break;
 								}
 							} catch (e) {
-								// eslint-disable-next-line no-console
-								console.warn(node.raw, 'conditional', conditional, e.message);
+								if (e instanceof Error) {
+									// eslint-disable-next-line no-console
+									console.warn(node.raw, 'conditional', conditional, e.message);
+								} else {
+									throw e;
+								}
 							}
 						}
 					}
@@ -91,24 +93,25 @@ export default createRule<TagRule[], Options>({
 				if (!matched) {
 					try {
 						const exp = getRegExpFromNode(node, expGen);
-						const specResult = match(exp, childNodes, false);
+						const specResult = match(exp, childNodes, node.ns, false);
 
 						if (!specResult) {
-							reports.push({
-								severity: node.rule.severity,
-								message: translate(
+							context.report({
+								scope: node,
+								message: context.translate(
 									'Invalid content of the {0} element in {1}',
 									node.nodeName,
-									'the HTML specification',
+									`${specType} specification`,
 								),
-								line: node.startLine,
-								col: node.startCol,
-								raw: node.raw,
 							});
 						}
 					} catch (e) {
-						// eslint-disable-next-line no-console
-						console.warn(node.raw, 'HTML Spec', e.message);
+						if (e instanceof Error) {
+							// eslint-disable-next-line no-console
+							console.warn(node.raw, 'HTML Spec', e.message);
+						} else {
+							throw e;
+						}
 					}
 				}
 			}
@@ -120,14 +123,18 @@ export default createRule<TagRule[], Options>({
 
 				const parentExp = getRegExpFromParentNode(node, expGen);
 				try {
-					const exp = expGen.specToRegExp(rule.contents, parentExp);
+					const exp = expGen.specToRegExp(rule.contents, parentExp, node.ns);
 					// Evaluate the custom element if the optional schema.
-					const r = match(exp, childNodes, node.isCustomElement);
+					const r = match(exp, childNodes, node.ns, node.isCustomElement);
 
 					if (!r) {
-						reports.push({
-							severity: node.rule.severity,
-							message: translate('Invalid content of the {0} element in {1}', node.nodeName, 'settings'),
+						context.report({
+							scope: node,
+							message: context.translate(
+								'Invalid content of the {0} element in {1}',
+								node.nodeName,
+								'settings',
+							),
 							line: node.startLine,
 							col: node.startCol,
 							raw: node.raw,
@@ -135,26 +142,34 @@ export default createRule<TagRule[], Options>({
 						return;
 					}
 				} catch (e) {
-					// eslint-disable-next-line no-console
-					console.warn(node.raw, 'rule', rule, e.message);
+					if (e instanceof Error) {
+						// eslint-disable-next-line no-console
+						console.warn(node.raw, 'rule', rule, e.message);
+					} else {
+						throw e;
+					}
 				}
 			}
 		});
 
 		expMapOnNodeId.clear();
-		return reports;
 	},
 });
 
 type TargetNodes = ReturnType<Element<TagRule[], Options>['getChildElementsAndTextNodeWithoutWhitespaces']>;
 
-function normalization(nodes: TargetNodes, evalCustomElement: boolean) {
+function normalization(nodes: TargetNodes, ownNS: string | null, evalCustomElement: boolean) {
 	return nodes
 		.map(node => {
 			if (!evalCustomElement && node.type === 'Element' && node.isCustomElement) {
 				return '';
 			}
-			return `<${node.type === 'Element' ? node.nodeName : '#text'}>`;
+			if (node.type !== 'Element') {
+				return '<#text>';
+			}
+			ownNS = ownNS || 'html';
+			const name = node.nameWithNS.replace(new RegExp(`^${ownNS}:`), '');
+			return `<${name}>`;
 		})
 		.join('');
 }
@@ -164,6 +179,8 @@ type El = {
 	nodeName: string;
 	parentNode: El | null;
 	isCustomElement?: boolean;
+	nameWithNS?: string;
+	ns?: string | null;
 };
 
 function getRegExpFromNode(node: El, expGen: ExpGenerator) {
@@ -172,9 +189,9 @@ function getRegExpFromNode(node: El, expGen: ExpGenerator) {
 		return expMapOnNodeId.get(node.uuid)!;
 	}
 	const parentExp = node.parentNode ? getRegExpFromNode(node.parentNode, expGen) : null;
-	const spec = !node.isCustomElement && htmlSpec(node.nodeName)?.permittedStructures;
+	const spec = !node.isCustomElement && htmlSpec(node.nameWithNS || node.nodeName.toLowerCase())?.permittedStructures;
 	const contentRule = spec ? spec.contents : true;
-	const exp = expGen.specToRegExp(contentRule, parentExp);
+	const exp = expGen.specToRegExp(contentRule, parentExp, node.ns || null);
 	expMapOnNodeId.set(node.uuid, exp);
 	return exp;
 }
@@ -185,8 +202,8 @@ function getRegExpFromParentNode(node: El, expGen: ExpGenerator) {
 	return parentExp;
 }
 
-function match(exp: RegExp, childNodes: TargetNodes, evalCustomElement: boolean) {
-	const target = normalization(childNodes, evalCustomElement);
+function match(exp: RegExp, childNodes: TargetNodes, ownNS: string | null, evalCustomElement: boolean) {
+	const target = normalization(childNodes, ownNS, evalCustomElement);
 	const result = exp.exec(target);
 	if (!result) {
 		return false;

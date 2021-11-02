@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
+import { mlTest } from 'markuplint';
 import rule from './';
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<html><body>text</body></html>',
 		{
 			rules: {
@@ -12,7 +12,7 @@ test('h1', async () => {
 		[rule],
 		'en',
 	);
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
 			message: 'Missing the h1 element',
@@ -25,7 +25,7 @@ test('h1', async () => {
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<html><body><h1>text</h1></body></html>',
 		{
 			rules: {
@@ -35,11 +35,11 @@ test('h1', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<html><body><h1>text</h1><h1>text</h1></body></html>',
 		{
 			rules: {
@@ -49,7 +49,7 @@ test('h1', async () => {
 		[rule],
 		'en',
 	);
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
 			message: 'Duplicate the h1 element',
@@ -62,7 +62,7 @@ test('h1', async () => {
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<html><body><h1>text</h1><h1>text</h1></body></html>',
 		{
 			rules: {
@@ -78,11 +78,11 @@ test('h1', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<div><h2>text</h2></div>',
 		{
 			rules: {
@@ -92,11 +92,11 @@ test('h1', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
 
 test('enable to opetion "in-document-fragment"', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<div><h2>text</h2></div>',
 		{
 			rules: {
@@ -111,11 +111,11 @@ test('enable to opetion "in-document-fragment"', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(1);
+	expect(violations.length).toBe(1);
 });
 
 test('Issue #57', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'',
 		{
 			rules: {
@@ -125,5 +125,5 @@ test('Issue #57', async () => {
 		[rule],
 		'en',
 	);
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });

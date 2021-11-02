@@ -1,23 +1,24 @@
-import * as markuplint from './';
-import { Result, createRule } from '@markuplint/ml-core';
+import { mlTest, mlTestFile } from './testing-tool';
+import { createRule } from '@markuplint/ml-core';
+import { setGlobal } from './global-settings';
+
+setGlobal({
+	locale: 'en',
+});
 
 describe('basic test', () => {
 	it('is empty result of 001.html', async () => {
-		const r = await markuplint.exec({
-			files: 'test/fixture/001.html',
-		});
-		expect(r[0].results.length).toBe(0);
+		const { violations } = await mlTestFile('test/fixture/001.html');
+		expect(violations.length).toBe(0);
 	});
 
 	it('is reported from 002.html', async () => {
-		const r = await markuplint.exec({
-			files: 'test/fixture/002.html',
-			locale: 'en',
-		});
-		expect(r[0].results).toEqual([
+		const { violations } = await mlTestFile('test/fixture/002.html');
+		expect(violations).toEqual([
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
+				reason: 'For consistency',
 				line: 2,
 				col: 7,
 				raw: 'lang=en',
@@ -26,6 +27,7 @@ describe('basic test', () => {
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
+				reason: 'Another reason',
 				line: 4,
 				col: 8,
 				raw: 'charset=UTF-8',
@@ -34,6 +36,7 @@ describe('basic test', () => {
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
+				reason: 'Another reason',
 				line: 5,
 				col: 8,
 				raw: 'name=viewport',
@@ -42,6 +45,7 @@ describe('basic test', () => {
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
+				reason: 'Another reason',
 				line: 5,
 				col: 22,
 				raw: "content='width=device-width, initial-scale=1.0'",
@@ -50,6 +54,7 @@ describe('basic test', () => {
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
+				reason: 'Another reason',
 				line: 6,
 				col: 8,
 				raw: 'http-equiv=X-UA-Compatible',
@@ -58,6 +63,7 @@ describe('basic test', () => {
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
+				reason: 'Another reason',
 				line: 6,
 				col: 35,
 				raw: 'content=ie=edge',
@@ -75,11 +81,8 @@ describe('basic test', () => {
 	});
 
 	it('is reported from 006.html', async () => {
-		const r = await markuplint.exec({
-			files: 'test/fixture/006.html',
-			locale: 'en',
-		});
-		expect(r[0].results).toEqual([
+		const { violations } = await mlTestFile('test/fixture/006.html');
+		expect(violations).toEqual([
 			{
 				severity: 'error',
 				message: 'The a is invalid element (7:6)',
@@ -92,50 +95,38 @@ describe('basic test', () => {
 	});
 
 	it('is reported from 007.html', async () => {
-		const r = await markuplint.exec({
-			files: 'test/fixture/007.html',
-			locale: 'en',
-		});
-		expect(r[0].results.length).toEqual(31);
+		const { violations } = await mlTestFile('test/fixture/007.html');
+		expect(violations.length).toEqual(31);
 	});
 
 	it('is ignoring 008.html', async () => {
-		const r = await markuplint.exec({
-			files: 'test/fixture/008.html',
-			locale: 'en',
-		});
-		expect(r.length).toEqual(0);
+		const { violations } = await mlTestFile('test/fixture/008.html');
+		expect(violations.length).toEqual(0);
 	});
 });
 
 describe('async and sync rules', () => {
-	const asyncReports: Result[] = [
-		{
-			severity: 'error',
-			message: 'async error test',
-			line: 1,
-			col: 1,
-			raw: 'content',
-		},
-	];
+	const asyncReport = {
+		message: 'async error test',
+		line: 1,
+		col: 1,
+		raw: 'content',
+	};
 
-	const syncReports: Result[] = [
-		{
-			severity: 'error',
-			message: 'sync error test',
-			line: 1,
-			col: 1,
-			raw: 'content',
-		},
-	];
+	const syncReport = {
+		message: 'sync error test',
+		line: 1,
+		col: 1,
+		raw: 'content',
+	};
 
 	const asyncRule = createRule({
 		name: 'test-async-rule',
 		defaultValue: null,
 		defaultOptions: null,
-		async verify(document, translate, rule) {
-			await document.walk(async node => {});
-			return asyncReports;
+		async verify(context) {
+			await context.document.walk(async node => {});
+			context.report(asyncReport);
 		},
 	});
 
@@ -143,53 +134,50 @@ describe('async and sync rules', () => {
 		name: 'test-sync-rule',
 		defaultValue: null,
 		defaultOptions: null,
-		verify(document, translate, rule) {
-			document.walk(node => {});
-			return syncReports;
+		verify(context) {
+			context.document.walk(node => {});
+			context.report(syncReport);
 		},
 	});
 
 	it('works correctly with async rule', async () => {
-		const r = await markuplint.exec({
-			sourceCodes: /*HTML*/ 'content',
-			locale: 'en',
-			rules: [asyncRule],
-			config: {
+		const { violations } = await mlTest(
+			'content',
+			{
 				rules: {
 					'test-async-rule': true,
 				},
 			},
-		});
-		expect(r[0].results).toMatchObject(asyncReports);
+			[asyncRule],
+		);
+		expect(violations).toMatchObject([asyncReport]);
 	});
 
 	it('works correctly with sync rule', async () => {
-		const r = await markuplint.exec({
-			sourceCodes: /*HTML*/ 'content',
-			locale: 'en',
-			rules: [syncRule],
-			config: {
+		const { violations } = await mlTest(
+			'content',
+			{
 				rules: {
 					'test-sync-rule': true,
 				},
 			},
-		});
-		expect(r[0].results).toMatchObject(syncReports);
+			[syncRule],
+		);
+		expect(violations).toMatchObject([syncReport]);
 	});
 
 	it('works correctly with async and sync mixed rules', async () => {
-		const r = await markuplint.exec({
-			sourceCodes: /*HTML*/ 'content',
-			locale: 'en',
-			rules: [asyncRule, syncRule],
-			config: {
+		const { violations } = await mlTest(
+			'content',
+			{
 				rules: {
 					'test-async-rule': true,
 					'test-sync-rule': true,
 				},
 			},
-		});
+			[asyncRule, syncRule],
+		);
 		// This test also ensures that rules are executed sequentially
-		expect(r[0].results).toMatchObject([...asyncReports, ...syncReports]);
+		expect(violations).toMatchObject([asyncReport, syncReport]);
 	});
 });

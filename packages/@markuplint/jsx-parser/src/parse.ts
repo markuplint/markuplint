@@ -11,7 +11,7 @@ export const parse: Parse = rawCode => {
 		return {
 			nodeList: [],
 			isFragment: true,
-			parseError: new Error(err).message,
+			parseError: err instanceof Error ? err.message : new Error(`${err}`).message,
 		};
 	}
 

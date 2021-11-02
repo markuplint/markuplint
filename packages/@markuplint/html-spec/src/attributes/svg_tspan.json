@@ -1,0 +1,44 @@
+{
+	"tag": "tspan",
+	"attributes": [
+		"#ariaAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "x",
+			"type": ["SVGLengthList", "SVGPercentageList"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"type": ["SVGLengthList", "SVGPercentageList"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "dx",
+			"type": ["SVGLength", "SVGPercentage"]
+		},
+		{
+			"name": "dy",
+			"type": ["SVGLength", "SVGPercentage"]
+		},
+		{
+			"name": "rotate",
+			"type": "String"
+		},
+		{
+			"name": "textLength",
+			"type": ["SVGLength", "SVGPercentage", "Float"]
+		},
+		{
+			"name": "lengthAdjust",
+			"type": {
+				"enum": ["spacing", "spacingAndGlyphs"]
+			},
+			"defaultValue": "spacing"
+		}
+	]
+}

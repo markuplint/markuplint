@@ -1,7 +1,8 @@
-import { Code, IgnoreBlock, IgnoreTag } from './types';
-import { MLASTNode, MLASTNodeType, MLASTPreprocessorSpecificBlock, MLASTText } from '@markuplint/ml-ast';
+import type { Code, IgnoreBlock, IgnoreTag } from './types';
+import type { MLASTNode, MLASTPreprocessorSpecificBlock, MLASTText } from '@markuplint/ml-ast';
 import { siblingsCorrection, sliceFragment, uuid } from './utils';
 import { MASK_CHAR } from './const';
+import { MLASTNodeType } from '@markuplint/ml-ast';
 
 export function ignoreBlock(source: string, tags: IgnoreTag[]): IgnoreBlock {
 	let replaced = source;

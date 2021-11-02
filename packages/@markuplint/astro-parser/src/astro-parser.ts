@@ -6,7 +6,7 @@ export type ASTStyleNode = Style;
 export type ASTAttribute = Attribute;
 export type AstroAST = {
 	html?: ASTNode;
-	style?: ASTStyleNode;
+	style?: ASTStyleNode[];
 };
 
 export function astroParse(code: string): AstroAST | AstroCompileError {

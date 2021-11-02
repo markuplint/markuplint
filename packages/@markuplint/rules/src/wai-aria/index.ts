@@ -1,4 +1,3 @@
-import { Result, createRule } from '@markuplint/ml-core';
 import {
 	ariaSpec,
 	checkAria,
@@ -10,6 +9,7 @@ import {
 	htmlSpec,
 	isValidAttr,
 } from '../helpers';
+import { createRule } from '@markuplint/ml-core';
 
 type Options = {
 	checkingValue?: boolean;
@@ -32,11 +32,9 @@ export default createRule<true, Options>({
 		disallowSetImplicitProps: true,
 		disallowDefaultValue: false,
 	},
-	async verify(document, translate) {
-		const reports: Result[] = [];
-
-		await document.walkOn('Element', async node => {
-			const attrSpecs = getAttrSpecs(node.nodeName, document.specs);
+	async verify(context) {
+		await context.document.walkOn('Element', async node => {
+			const attrSpecs = getAttrSpecs(node.nameWithNS, context.document.specs);
 			const html = htmlSpec(node.nodeName);
 			const { roles, ariaAttrs } = ariaSpec();
 
@@ -54,8 +52,8 @@ export default createRule<true, Options>({
 
 				if (!existedRole) {
 					// Not exist
-					reports.push({
-						severity: node.rule.severity,
+					context.report({
+						scope: node,
 						message: `This "${value}" role does not exist in WAI-ARIA.`,
 						line: roleAttr.startLine,
 						col: roleAttr.startCol,
@@ -63,8 +61,8 @@ export default createRule<true, Options>({
 					});
 				} else if (existedRole.isAbstract) {
 					// Abstract role
-					reports.push({
-						severity: node.rule.severity,
+					context.report({
+						scope: node,
 						message: `This "${value}" role is the abstract role.`,
 						line: roleAttr.startLine,
 						col: roleAttr.startCol,
@@ -77,8 +75,8 @@ export default createRule<true, Options>({
 					const implictRole = getImplicitRole(node);
 					if (implictRole && implictRole === value) {
 						// Abstract role
-						reports.push({
-							severity: node.rule.severity,
+						context.report({
+							scope: node,
 							message: `Don't set the implicit role explicitly because the "${value}" role is the implicit role of the ${node.nodeName} element.`,
 							line: roleAttr.startLine,
 							col: roleAttr.startCol,
@@ -91,16 +89,16 @@ export default createRule<true, Options>({
 				if (node.rule.option.permittedAriaRoles) {
 					const permittedRoles = getPermittedRoles(node);
 					if (permittedRoles === false) {
-						reports.push({
-							severity: node.rule.severity,
+						context.report({
+							scope: node,
 							message: `The ARIA Role of the ${node.nodeName} element cannot overwrite according to ARIA in HTML spec.`,
 							line: roleAttr.startLine,
 							col: roleAttr.startCol,
 							raw: roleAttr.raw,
 						});
 					} else if (Array.isArray(permittedRoles) && !permittedRoles.includes(value)) {
-						reports.push({
-							severity: node.rule.severity,
+						context.report({
+							scope: node,
 							message: `The ARIA Role of the ${node.nodeName} element cannot overwrite "${value}" according to ARIA in HTML spec.`,
 							line: roleAttr.startLine,
 							col: roleAttr.startCol,
@@ -121,8 +119,8 @@ export default createRule<true, Options>({
 							const statesAndProp = role.statesAndProps.find(s => s.name === attrName);
 							if (statesAndProp) {
 								if (node.rule.option.checkingDeprecatedProps && statesAndProp.deprecated) {
-									reports.push({
-										severity: node.rule.severity,
+									context.report({
+										scope: node,
 										message: `The ${attrName} state/property is deprecated on the ${role.name} role.`,
 										line: attr.startLine,
 										col: attr.startCol,
@@ -130,8 +128,8 @@ export default createRule<true, Options>({
 									});
 								}
 							} else {
-								reports.push({
-									severity: node.rule.severity,
+								context.report({
+									scope: node,
 									message: `Cannot use the ${attrName} state/property on the ${role.name} role.`,
 									line: attr.startLine,
 									col: attr.startCol,
@@ -150,12 +148,9 @@ export default createRule<true, Options>({
 								return attrName === requiredProp;
 							});
 							if (!has) {
-								reports.push({
-									severity: node.rule.severity,
+								context.report({
+									scope: node,
 									message: `The ${requiredProp} state/property is required on the ${role.name} role.`,
-									line: node.startLine,
-									col: node.startCol,
-									raw: node.raw,
 								});
 							}
 						}
@@ -169,8 +164,8 @@ export default createRule<true, Options>({
 					if (/^aria-/i.test(attrName)) {
 						const ariaAttr = ariaAttrs.find(attr => attr.name === attrName);
 						if (ariaAttr && !ariaAttr.isGlobal) {
-							reports.push({
-								severity: node.rule.severity,
+							context.report({
+								scope: node,
 								message: `The ${attrName} is not global state/property.`,
 								line: attr.startLine,
 								col: attr.startCol,
@@ -194,8 +189,8 @@ export default createRule<true, Options>({
 					if (node.rule.option.checkingValue) {
 						const result = checkAria(attrName, value, computedRole?.name);
 						if (!result.isValid) {
-							reports.push({
-								severity: node.rule.severity,
+							context.report({
+								scope: node,
 								message:
 									`The "${value}" is disallowed in the ${attrName} state/property.` +
 									('enum' in result && result.enum.length
@@ -229,8 +224,8 @@ export default createRule<true, Options>({
 										(equivalentHtmlAttr.value == null && targetAttrValue === value) ||
 										equivalentHtmlAttr.value === value
 									) {
-										reports.push({
-											severity: node.rule.severity,
+										context.report({
+											scope: node,
 											message: `Has the ${equivalentHtmlAttr.htmlAttrName} attribute that has equivalent semantic.`,
 											line: attr.startLine,
 											col: attr.startCol,
@@ -241,8 +236,8 @@ export default createRule<true, Options>({
 									if (htmlAttrSpec?.type === 'Boolean' && value !== 'false') {
 										continue;
 									}
-									reports.push({
-										severity: node.rule.severity,
+									context.report({
+										scope: node,
 										message: `Can be different from the value of the ${equivalentHtmlAttr.htmlAttrName} attribute.`,
 										line: attr.startLine,
 										col: attr.startCol,
@@ -250,8 +245,8 @@ export default createRule<true, Options>({
 									});
 								} else if (value === 'true') {
 									if (!equivalentHtmlAttr.isNotStrictEquivalent && htmlAttrSpec?.type === 'Boolean') {
-										reports.push({
-											severity: node.rule.severity,
+										context.report({
+											scope: node,
 											message: `Can be in opposition to the value of the unset ${equivalentHtmlAttr.htmlAttrName} attribute.`,
 											line: attr.startLine,
 											col: attr.startCol,
@@ -265,8 +260,8 @@ export default createRule<true, Options>({
 
 					// Default value
 					if (node.rule.option.disallowDefaultValue && propSpec && propSpec.defaultValue === value) {
-						reports.push({
-							severity: node.rule.severity,
+						context.report({
+							scope: node,
 							message: 'It is default value',
 							line: attr.startLine,
 							col: attr.startCol,
@@ -276,7 +271,5 @@ export default createRule<true, Options>({
 				}
 			}
 		});
-
-		return reports;
 	},
 });

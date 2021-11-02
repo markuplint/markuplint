@@ -23,8 +23,7 @@
 		},
 		{
 			"name": "crossorigin",
-			"type": "String",
-			"enum": ["anonymous", "use-credentials"]
+			"type": "Crossorigin"
 		},
 		{
 			"name": "integrity",

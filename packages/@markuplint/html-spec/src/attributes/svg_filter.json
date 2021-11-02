@@ -1,0 +1,51 @@
+{
+	"tag": "filter",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "externalResourcesRequired",
+			"type": {
+				"enum": ["true", "false"]
+			},
+			"defaultValue": "true"
+		},
+		{
+			"name": "x",
+			"defaultValue": "-10%"
+		},
+		{
+			"name": "y",
+			"defaultValue": "-10%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "120%"
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "120%"
+		},
+		{
+			"name": "filterUnits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+			},
+			"defaultValue": "objectBoundingBox"
+		},
+		{
+			"name": "primitiveUnits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+			},
+			"defaultValue": "userSpaceOnUse"
+		},
+		{
+			"name": "filterRes",
+			"type": "SVGNumberOptionalNumber",
+			"deprecated": true
+		}
+	]
+}

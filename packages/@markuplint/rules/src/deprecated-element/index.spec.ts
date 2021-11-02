@@ -1,8 +1,8 @@
-import * as markuplint from 'markuplint';
+import { mlTest } from 'markuplint';
 import rule from './';
 
 test('normal', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<div></div><p><span></span></p>',
 		{
 			rules: {
@@ -12,11 +12,11 @@ test('normal', async () => {
 		[rule],
 		'en',
 	);
-	expect(r).toStrictEqual([]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('deprecated', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<font></font><big><blink></blink></big>',
 		{
 			rules: {
@@ -26,7 +26,7 @@ test('deprecated', async () => {
 		[rule],
 		'en',
 	);
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
 			message: 'Element is deprecated',
@@ -55,7 +55,7 @@ test('deprecated', async () => {
 });
 
 test('Foreign element', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlTest(
 		'<svg><g><image width="100" height="100" xlink:href="path/to"/></g></svg>',
 		{
 			rules: {
@@ -65,7 +65,7 @@ test('Foreign element', async () => {
 		[rule],
 		'en',
 	);
-	const r2 = await markuplint.verify(
+	const { violations: violations2 } = await mlTest(
 		'<div><span><image width="100" height="100" xlink:href="path/to"/></span></div>',
 		{
 			rules: {
@@ -75,8 +75,8 @@ test('Foreign element', async () => {
 		[rule],
 		'en',
 	);
-	expect(r).toStrictEqual([]);
-	expect(r2).toStrictEqual([
+	expect(violations).toStrictEqual([]);
+	expect(violations2).toStrictEqual([
 		{
 			ruleId: 'deprecated-element',
 			severity: 'error',
@@ -84,6 +84,29 @@ test('Foreign element', async () => {
 			col: 12,
 			raw: '<image width="100" height="100" xlink:href="path/to"/>',
 			message: 'Element is deprecated',
+		},
+	]);
+});
+
+test('svg', async () => {
+	const { violations } = await mlTest(
+		'<svg><altGlyph>text</altGlyph></svg>',
+		{
+			rules: {
+				'deprecated-element': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			message: 'Element is deprecated',
+			line: 1,
+			col: 6,
+			raw: '<altGlyph>',
+			ruleId: 'deprecated-element',
 		},
 	]);
 });

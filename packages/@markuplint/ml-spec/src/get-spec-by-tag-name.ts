@@ -1,4 +1,4 @@
-import { Attribute, MLDOMElementSpec, MLMLSpec, SpecOM } from './types';
+import type { Attribute, MLDOMElementSpec, MLMLSpec, SpecOM } from './types';
 
 function getSpecOM({ specs }: MLMLSpec): SpecOM {
 	const som: SpecOM = {};
@@ -18,8 +18,7 @@ function getSpecOM({ specs }: MLMLSpec): SpecOM {
 	return som;
 }
 
-export function getSpecByTagName(tagName: string, specs: MLMLSpec): MLDOMElementSpec | null {
+export function getSpecByTagName(nameWithNS: string, specs: MLMLSpec): MLDOMElementSpec | null {
 	const specOM = getSpecOM(specs);
-	tagName = tagName.toLowerCase();
-	return specOM[tagName] || null;
+	return specOM[nameWithNS] || null;
 }

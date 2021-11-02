@@ -556,4 +556,14 @@ html
 			'[8:6]>[9:1](56,62)#text: Title⏎',
 		]);
 	});
+
+	it('namespace', () => {
+		const doc = parse('div: svg: text');
+		expect(doc.nodeList[0].nodeName).toBe('div');
+		expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[1].nodeName).toBe('svg');
+		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].nodeName).toBe('text');
+		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+	});
 });

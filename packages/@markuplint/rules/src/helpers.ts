@@ -1,24 +1,32 @@
 import { ARIRRoleAttribute, Attribute, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
 import { Element, RuleConfigValue } from '@markuplint/ml-core';
+import { attrCheck } from './attr-check';
 import html from '@markuplint/html-spec';
-import { typeCheck } from './type-check';
 
-export function getAttrSpecs(tag: string, { specs, def }: MLMLSpec) {
-	tag = tag.toLowerCase();
-	const spec = specs.find(spec => spec.name === tag);
+export function getAttrSpecs(nameWithNS: string, { specs, def }: MLMLSpec) {
+	const spec = specs.find(spec => spec.name === nameWithNS);
+
 	if (!spec) {
 		return null;
 	}
-	const hasGlobalAttr = spec.attributes.some(attr => attr === '#globalAttrs');
-
+	const globalAttrs = def['#globalAttrs'];
 	const attrs: Attribute[] = [];
 
-	if (hasGlobalAttr) {
-		attrs.push(...def['#globalAttrs']);
+	if (!/[a-z]:[a-z]/i.test(nameWithNS)) {
+		// It's HTML tag
+		const hasGlobalAttr = spec.attributes.some(attr => attr === '#globalAttrs');
+		if (hasGlobalAttr) {
+			attrs.push(...(globalAttrs['#HTMLGlobalAttrs'] || []));
+		}
 	}
 
 	for (const attr of spec.attributes) {
 		if (typeof attr === 'string') {
+			const globalAttr = globalAttrs[attr];
+			if (!globalAttr) {
+				continue;
+			}
+			attrs.push(...globalAttr);
 			continue;
 		}
 
@@ -34,6 +42,8 @@ export function getAttrSpecs(tag: string, { specs, def }: MLMLSpec) {
 		attrs.push(attr);
 	}
 
+	attrs.push(...(globalAttrs['#extends'] || []));
+
 	return attrs;
 }
 
@@ -43,11 +53,11 @@ export function attrMatches<T extends RuleConfigValue, R>(node: Element<T, R>, c
 	}
 
 	let matched = false;
-	if (condition.self) {
+	if ('self' in condition && condition.self) {
 		const condSelector = Array.isArray(condition.self) ? condition.self.join(',') : condition.self;
 		matched = node.matches(condSelector);
 	}
-	if (condition.ancestor) {
+	if ('ancestor' in condition && condition.ancestor) {
 		let _node = node.parentNode;
 		while (_node) {
 			if (_node.type === 'Element') {
@@ -108,9 +118,8 @@ export const rePCENChar = [
 	'[\uD800-\uDBFF][\uDC00-\uDFFF]',
 ].join('|');
 
-export function htmlSpec(tag: string) {
-	tag = tag.toLowerCase();
-	const spec = html.specs.find(spec => spec.name === tag);
+export function htmlSpec(nameWithNS: string) {
+	const spec = html.specs.find(spec => spec.name === nameWithNS);
 	return spec || null;
 }
 
@@ -121,9 +130,9 @@ export function isValidAttr(
 	node: Element<any, any>,
 	attrSpecs: Attribute[],
 ) {
-	let invalid: ReturnType<typeof typeCheck> = false;
+	let invalid: ReturnType<typeof attrCheck> = false;
 	const spec = attrSpecs.find(s => s.name === name);
-	invalid = typeCheck(name, value, false, spec);
+	invalid = attrCheck(name, value, false, spec);
 	if (!invalid && spec && spec.condition && !node.hasSpreadAttr && !attrMatches(node, spec.condition)) {
 		invalid = {
 			invalidType: 'non-existent',

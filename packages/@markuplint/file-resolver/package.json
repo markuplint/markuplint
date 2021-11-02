@@ -16,6 +16,9 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
+		"@markuplint/ml-ast": "^1.6.0",
+		"@markuplint/ml-core": "^1.9.0",
+		"@markuplint/ml-spec": "^1.7.0",
 		"@types/cosmiconfig": "^6.0.0",
 		"@types/glob": "^7.1.4",
 		"@types/node": "^16.3.2"

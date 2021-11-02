@@ -1,0 +1,16 @@
+{
+	"tag": "feDistantLight",
+	"attributes": [
+		"#SVGCoreAttrs",
+		{
+			"name": "azimuth",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "elevation",
+			"type": "Float",
+			"defaultValue": "0"
+		}
+	]
+}

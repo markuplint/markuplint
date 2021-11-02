@@ -1,0 +1,40 @@
+{
+	"tag": "animateMotion",
+	"attributes": [
+		"#SVGAnimationAdditionAttrs",
+		"#SVGAnimationEventAttrs",
+		"#SVGAnimationTargetElementAttrs",
+		"#SVGAnimationTimingAttrs",
+		"#SVGAnimationValueAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		{
+			"name": "path",
+			"type": "SVGPathCommands"
+		},
+		{
+			"name": "keyPoints",
+			"type": "SVGKeyPoints"
+		},
+		{
+			"name": "rotate",
+			"type": [
+				"Float",
+				{
+					"enum": ["auto", "auto-reverse"]
+				}
+			]
+		},
+		{
+			"name": "origin",
+			"type": "SVGOrigin",
+			"defaultValue": "default"
+		},
+		{
+			"name": "calcMode",
+			"defaultValue": "paced"
+		}
+	]
+}

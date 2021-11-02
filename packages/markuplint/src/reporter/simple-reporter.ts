@@ -1,38 +1,41 @@
-import { markuplint, p, w } from './utils';
-import { ReportingData } from './types';
+import { markuplint, messageToString, p, w } from './utils';
+import { CLIOptions } from '../cli/bootstrap';
+import { MLResultInfo } from '../types';
 import c from 'cli-color';
 
 const loggerError = c.red;
 const loggerWarning = c.xterm(208);
 
-export function simpleReporter(data: ReportingData) {
+export function simpleReporter(results: MLResultInfo, options: CLIOptions) {
 	const sizes = {
 		line: 0,
 		col: 0,
 		meg: 0,
 	};
 
-	for (const result of data.results) {
-		sizes.line = Math.max(sizes.line, result.line.toString(10).length);
-		sizes.col = Math.max(sizes.col, result.col.toString(10).length);
-		sizes.meg = Math.max(sizes.meg, w(result.message));
+	for (const violation of results.violations) {
+		sizes.line = Math.max(sizes.line, violation.line.toString(10).length);
+		sizes.col = Math.max(sizes.col, violation.col.toString(10).length);
+		const meg = messageToString(violation.message, violation.reason);
+		sizes.meg = Math.max(sizes.meg, w(meg));
 	}
 
 	const out: string[] = [];
 
-	if (data.results.length) {
-		out.push(`<${markuplint}> ${c.underline(data.filePath)}: ${loggerError('✗')}`);
-		for (const result of data.results) {
-			const s = result.severity === 'error' ? loggerError('✖') : loggerWarning('⚠️');
+	if (results.violations.length) {
+		out.push(`<${markuplint}> ${c.underline(results.filePath)}: ${loggerError('✗')}`);
+		for (const violation of results.violations) {
+			const s = violation.severity === 'error' ? loggerError('✖') : loggerWarning('⚠️');
+			const meg = messageToString(violation.message, violation.reason);
 			out.push(
-				`  ${c.cyan(`${p(result.line, sizes.line, true)}:${p(result.col, sizes.col)}`)} ${s}  ${p(
-					result.message,
+				`  ${c.cyan(`${p(violation.line, sizes.line, true)}:${p(violation.col, sizes.col)}`)} ${s}  ${p(
+					meg,
 					sizes.meg,
-				)} ${c.xterm(8)(result.ruleId)} `,
+				)} ${c.xterm(8)(violation.ruleId)} `,
 			);
 		}
-	} else if (!data.problemOnly) {
-		out.push(`<${markuplint}> ${c.underline(data.filePath)}: ${c.green('✓')}`);
+	} else if (!options.problemOnly) {
+		out.push(`<${markuplint}> ${c.underline(results.filePath)}: ${c.green('✓')}`);
 	}
 
 	return out;

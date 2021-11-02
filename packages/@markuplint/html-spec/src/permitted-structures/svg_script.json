@@ -1,0 +1,8 @@
+{
+	"tag": "script",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGOtherXMLNamespace", "#text"]
+		}
+	]
+}

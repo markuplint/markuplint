@@ -1,0 +1,9 @@
+{
+	"tag": "meshpatch",
+	"summary": "Ref: https://www.w3.org/TR/2016/CR-SVG2-20160915/pservers.html#MeshpatchElement",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGDescriptive", "svg:script", "svg:stop"]
+		}
+	]
+}

@@ -3,35 +3,37 @@ import { ExtendedSpec } from '@markuplint/ml-spec';
 const spec: ExtendedSpec = {
 	cites: ['https://reactjs.org/docs/dom-elements.html'],
 	def: {
-		'#globalAttrs': [
-			{
-				name: 'key',
-				type: 'String',
-				description: 'A special attribute for list rendering',
-			},
-			{
-				name: 'ref',
-				type: 'String',
-				description: 'A special attribute for accessing child component instances and child elements',
-			},
-			{
-				name: 'dangerouslySetInnerHTML',
-				type: 'String',
-				description: 'React’s replacement for using innerHTML in the browser DOM',
-			},
-			{
-				name: 'suppressContentEditableWarning',
-				type: 'Boolean',
-				description:
-					'Normally, there is a warning when an element with children is also marked as contentEditable, because it won’t work. This attribute suppresses that warning.',
-			},
-			{
-				name: 'suppressHydrationWarning',
-				type: 'Boolean',
-				description:
-					'If you set suppressHydrationWarning to true, React will not warn you about mismatches in the attributes and the content of that element.',
-			},
-		],
+		'#globalAttrs': {
+			'#extends': [
+				{
+					name: 'key',
+					type: 'String',
+					description: 'A special attribute for list rendering',
+				},
+				{
+					name: 'ref',
+					type: 'String',
+					description: 'A special attribute for accessing child component instances and child elements',
+				},
+				{
+					name: 'dangerouslySetInnerHTML',
+					type: 'String',
+					description: 'React’s replacement for using innerHTML in the browser DOM',
+				},
+				{
+					name: 'suppressContentEditableWarning',
+					type: 'Boolean',
+					description:
+						'Normally, there is a warning when an element with children is also marked as contentEditable, because it won’t work. This attribute suppresses that warning.',
+				},
+				{
+					name: 'suppressHydrationWarning',
+					type: 'Boolean',
+					description:
+						'If you set suppressHydrationWarning to true, React will not warn you about mismatches in the attributes and the content of that element.',
+				},
+			],
+		},
 	},
 	specs: [
 		{

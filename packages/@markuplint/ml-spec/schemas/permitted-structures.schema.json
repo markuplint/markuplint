@@ -3,10 +3,22 @@
 		"Node": {
 			"oneOf": [
 				{
+					"description": "HTML Element",
 					"type": "string",
-					"pattern": "^[a-z][a-z0-9]+$"
+					"pattern": "^[a-z][a-z0-9]*$"
 				},
 				{
+					"description": "Namespaced HTML Element",
+					"type": "string",
+					"pattern": "^html:[a-z][a-z0-9]*$"
+				},
+				{
+					"description": "SVG Element",
+					"type": "string",
+					"pattern": "^svg:(?:[a-z][a-zA-Z0-9]*|[a-z][a-z0-9]*-[a-z][a-z0-9]*)$"
+				},
+				{
+					"description": "Text Node",
 					"type": "string",
 					"enum": ["#text"]
 				},
@@ -25,7 +37,27 @@
 				"#transparent",
 				"#embedded",
 				"#palpable",
-				"#script-supporting"
+				"#script-supporting",
+				"#SVGAnimation",
+				"#SVGBasicShapes",
+				"#SVGContainer",
+				"#SVGDescriptive",
+				"#SVGFilterPrimitive",
+				"#SVGFont",
+				"#SVGGradient",
+				"#SVGGraphics",
+				"#SVGGraphicsReferencing",
+				"#SVGLightSource",
+				"#SVGNeverRendered",
+				"#SVGNone",
+				"#SVGPaintServer",
+				"#SVGRenderable",
+				"#SVGShape",
+				"#SVGStructural",
+				"#SVGStructurallyExternal",
+				"#SVGTextContent",
+				"#SVGTextContentChild",
+				"#SVGOtherXMLNamespace"
 			]
 		},
 		"Target": {

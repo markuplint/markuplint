@@ -1,9 +1,9 @@
-import * as markuplint from 'markuplint';
+import { mlTest } from 'markuplint';
 import rule from './';
 
 describe("Use the role that doesn't exist in the spec", () => {
 	test('[role=hoge]', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<div role="hoge"></div>',
 			{
 				rules: {
@@ -14,7 +14,7 @@ describe("Use the role that doesn't exist in the spec", () => {
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -29,7 +29,7 @@ describe("Use the role that doesn't exist in the spec", () => {
 
 describe('Use the abstract role', () => {
 	test('[role=roletype]', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<div role="roletype"></div>',
 			{
 				rules: {
@@ -40,7 +40,7 @@ describe('Use the abstract role', () => {
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -55,7 +55,7 @@ describe('Use the abstract role', () => {
 
 describe("Use the property/state that doesn't belong to a set role (or an implicit role)", () => {
 	test('[aria-checked=true]', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<div aria-checked="true"></div>',
 			{
 				rules: {
@@ -66,7 +66,7 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -79,7 +79,7 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 	});
 
 	test('button[aria-checked=true]', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<button aria-checked="true"></button>',
 			{
 				rules: {
@@ -90,7 +90,7 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -103,7 +103,7 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 	});
 
 	test('button[aria-pressed=true]', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<button aria-pressed="true"></button>',
 			{
 				rules: {
@@ -114,13 +114,13 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 			'en',
 		);
 
-		expect(r.length).toBe(0);
+		expect(violations.length).toBe(0);
 	});
 });
 
 describe('Use an invalid value of the property/state', () => {
 	test('[aria-current=foo]', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<div aria-current="foo"></div>',
 			{
 				rules: {
@@ -131,7 +131,7 @@ describe('Use an invalid value of the property/state', () => {
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -145,7 +145,7 @@ describe('Use an invalid value of the property/state', () => {
 	});
 
 	test('[aria-current=page]', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<div aria-current="page"></div>',
 			{
 				rules: {
@@ -156,11 +156,11 @@ describe('Use an invalid value of the property/state', () => {
 			'en',
 		);
 
-		expect(r.length).toBe(0);
+		expect(violations.length).toBe(0);
 	});
 
 	test('disabled', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<div aria-current="foo"></div>',
 			{
 				rules: {
@@ -175,13 +175,13 @@ describe('Use an invalid value of the property/state', () => {
 			'en',
 		);
 
-		expect(r.length).toBe(0);
+		expect(violations.length).toBe(0);
 	});
 });
 
 describe('Use the not permitted role according to ARIA in HTML', () => {
 	test('script[role=link]', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<script role="link"></script>',
 			{
 				rules: {
@@ -192,7 +192,7 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -205,7 +205,7 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 	});
 
 	test('a[role=document]', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<a href role="document"></a>',
 			{
 				rules: {
@@ -216,7 +216,7 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -229,7 +229,7 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 	});
 
 	test('disabled', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<script role="link"></script>',
 			{
 				rules: {
@@ -244,13 +244,13 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 			'en',
 		);
 
-		expect(r.length).toBe(0);
+		expect(violations.length).toBe(0);
 	});
 });
 
 describe("Don't set the required property/state", () => {
 	test('heading needs aria-level', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<div role="heading"></div>',
 			{
 				rules: {
@@ -261,7 +261,7 @@ describe("Don't set the required property/state", () => {
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -274,7 +274,7 @@ describe("Don't set the required property/state", () => {
 	});
 
 	test("h1 element doesn't needs aria-level", async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<h1></h1>',
 			{
 				rules: {
@@ -285,13 +285,13 @@ describe("Don't set the required property/state", () => {
 			'en',
 		);
 
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
 describe('Set the implicit role explicitly', () => {
 	test('a[href][role=link]', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<a href="path/to" role="link"></a>',
 			{
 				rules: {
@@ -302,7 +302,7 @@ describe('Set the implicit role explicitly', () => {
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -316,7 +316,7 @@ describe('Set the implicit role explicitly', () => {
 	});
 
 	test('header[role=banner]', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<header role="banner"></header>',
 			{
 				rules: {
@@ -327,7 +327,7 @@ describe('Set the implicit role explicitly', () => {
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -339,7 +339,7 @@ describe('Set the implicit role explicitly', () => {
 			},
 		]);
 
-		const r2 = await markuplint.verify(
+		const { violations: violations2 } = await mlTest(
 			'<header role="banner"><article></article></header>',
 			{
 				rules: {
@@ -350,7 +350,7 @@ describe('Set the implicit role explicitly', () => {
 			'en',
 		);
 
-		expect(r2).toStrictEqual([
+		expect(violations2).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -364,7 +364,7 @@ describe('Set the implicit role explicitly', () => {
 	});
 
 	test('disabled', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<a href="path/to" role="link"></a>',
 			{
 				rules: {
@@ -379,13 +379,13 @@ describe('Set the implicit role explicitly', () => {
 			'en',
 		);
 
-		expect(r.length).toBe(0);
+		expect(violations.length).toBe(0);
 	});
 });
 
 describe('Set the default value of the property/state explicitly', () => {
 	test('aria-live="off"', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<div aria-live="off"></div>',
 			{
 				rules: {
@@ -400,7 +400,7 @@ describe('Set the default value of the property/state explicitly', () => {
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -415,7 +415,7 @@ describe('Set the default value of the property/state explicitly', () => {
 
 describe('Set the deprecated property/state', () => {
 	test('aria-disabled is deprecated in article', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<article aria-disabled="true"></article>',
 			{
 				rules: {
@@ -426,7 +426,7 @@ describe('Set the deprecated property/state', () => {
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -439,7 +439,7 @@ describe('Set the deprecated property/state', () => {
 	});
 
 	test('aria-disabled is deprecated in article role', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<div role="article" aria-disabled="true"></div>',
 			{
 				rules: {
@@ -450,7 +450,7 @@ describe('Set the deprecated property/state', () => {
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -463,7 +463,7 @@ describe('Set the deprecated property/state', () => {
 	});
 
 	test('disable', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<article aria-disabled="true"></article>',
 			{
 				rules: {
@@ -478,13 +478,13 @@ describe('Set the deprecated property/state', () => {
 			'en',
 		);
 
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
 describe('Set the property/state explicitly when its element has semantic HTML attribute equivalent to it according to ARIA in HTML.', () => {
 	test('checked and aria-checked="true"', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<input type="checkbox" checked aria-checked="true" />',
 			{
 				rules: {
@@ -495,7 +495,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -508,7 +508,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	});
 
 	test('checked and aria-checked="false"', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<input type="checkbox" checked aria-checked="false" />',
 			{
 				rules: {
@@ -519,7 +519,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -532,7 +532,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	});
 
 	test('only aria-checked="true"', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<input type="checkbox" aria-checked="true" />',
 			{
 				rules: {
@@ -543,7 +543,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -556,7 +556,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	});
 
 	test('check and aria-checked="mixed"', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<input type="checkbox" checked aria-checked="mixed" />',
 			{
 				rules: {
@@ -567,11 +567,11 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 			'en',
 		);
 
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('placeholder="type hints" and aria-placeholder="type hints"', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<input type="text" placeholder="type hints" aria-placeholder="type hints" />',
 			{
 				rules: {
@@ -582,7 +582,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -595,7 +595,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	});
 
 	test('placeholder="type hints" and aria-placeholder="different value"', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<input type="text" placeholder="type hints" aria-placeholder="different value" />',
 			{
 				rules: {
@@ -606,7 +606,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 			'en',
 		);
 
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				ruleId: 'wai-aria',
 				severity: 'error',
@@ -625,21 +625,26 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 			},
 		};
 
-		const r1 = await markuplint.verify('<div hidden></div>', config, [rule], 'en');
-		const r2 = await markuplint.verify('<div hidden aria-hidden="true"></div>', config, [rule], 'en');
-		const r3 = await markuplint.verify('<div hidden aria-hidden="false"></div>', config, [rule], 'en');
-		const r4 = await markuplint.verify('<div aria-hidden="true"></div>', config, [rule], 'en');
-		const r5 = await markuplint.verify('<div aria-hidden="false"></div>', config, [rule], 'en');
+		const { violations: violations1 } = await mlTest('<div hidden></div>', config, [rule], 'en');
+		const { violations: violations2 } = await mlTest('<div hidden aria-hidden="true"></div>', config, [rule], 'en');
+		const { violations: violations3 } = await mlTest(
+			'<div hidden aria-hidden="false"></div>',
+			config,
+			[rule],
+			'en',
+		);
+		const { violations: violations4 } = await mlTest('<div aria-hidden="true"></div>', config, [rule], 'en');
+		const { violations: violations5 } = await mlTest('<div aria-hidden="false"></div>', config, [rule], 'en');
 
-		expect(r1[0]?.message).toBe(undefined);
-		expect(r2[0]?.message).toBe('Has the hidden attribute that has equivalent semantic.');
-		expect(r3[0]?.message).toBe('Can be different from the value of the hidden attribute.');
-		expect(r4[0]?.message).toBe(undefined);
-		expect(r5[0]?.message).toBe(undefined);
+		expect(violations1[0]?.message).toBe(undefined);
+		expect(violations2[0]?.message).toBe('Has the hidden attribute that has equivalent semantic.');
+		expect(violations3[0]?.message).toBe('Can be different from the value of the hidden attribute.');
+		expect(violations4[0]?.message).toBe(undefined);
+		expect(violations5[0]?.message).toBe(undefined);
 	});
 
 	test('disable', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<input type="checkbox" checked aria-checked="true" />',
 			{
 				rules: {
@@ -654,13 +659,13 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 			'en',
 		);
 
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
 describe('childNodeRules', () => {
 	test('ex. For Safari + VoiceOver', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlTest(
 			'<img src="path/to.svg" alt="text" role="img" />',
 			{
 				rules: {
@@ -683,6 +688,6 @@ describe('childNodeRules', () => {
 			'en',
 		);
 
-		expect(r.length).toBe(0);
+		expect(violations.length).toBe(0);
 	});
 });

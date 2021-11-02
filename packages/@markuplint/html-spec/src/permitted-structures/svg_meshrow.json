@@ -1,0 +1,9 @@
+{
+	"tag": "meshrow",
+	"summary": "Ref: https://www.w3.org/TR/2016/CR-SVG2-20160915/pservers.html#MeshrowElement",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGDescriptive", "svg:meshpatch", "svg:script", "svg:style"]
+		}
+	]
+}

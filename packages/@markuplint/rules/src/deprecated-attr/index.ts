@@ -1,14 +1,13 @@
-import { Result, createRule } from '@markuplint/ml-core';
+import { createRule } from '@markuplint/ml-core';
 import { getAttrSpecs } from '../helpers';
 
 export default createRule({
 	name: 'deprecated-attr',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, translate) {
-		const reports: Result[] = [];
-		await document.walkOn('Element', async element => {
-			const attrSpecs = getAttrSpecs(element.nodeName, document.specs);
+	async verify(context) {
+		await context.document.walkOn('Element', async element => {
+			const attrSpecs = getAttrSpecs(element.nameWithNS, context.document.specs);
 
 			if (!attrSpecs) {
 				return;
@@ -21,14 +20,14 @@ export default createRule({
 					return;
 				}
 				if (attrSpec.deprecated || attrSpec.obsolete) {
-					const message = translate(
+					const message = context.translate(
 						'The {0} {1} is {2}',
 						name.potential,
 						'attribute',
 						attrSpec.obsolete ? 'obsolete' : 'deprecated',
 					);
-					reports.push({
-						severity: element.rule.severity,
+					context.report({
+						scope: element,
 						message,
 						line: name.line,
 						col: name.col,
@@ -37,6 +36,5 @@ export default createRule({
 				}
 			}
 		});
-		return reports;
 	},
 });

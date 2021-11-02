@@ -1,5 +1,5 @@
-import { Result, createRule } from '@markuplint/ml-core';
 import { attrMatches, getAttrSpecs } from '../helpers';
+import { createRule } from '@markuplint/ml-core';
 
 type RequiredAttributes = string | string[];
 
@@ -8,15 +8,14 @@ export default createRule<RequiredAttributes, null>({
 	defaultLevel: 'error',
 	defaultValue: [],
 	defaultOptions: null,
-	async verify(document, translate) {
-		const reports: Result[] = [];
-		await document.walkOn('Element', async node => {
+	async verify(context) {
+		await context.document.walkOn('Element', async node => {
 			if (node.hasSpreadAttr) {
 				return;
 			}
 
 			const customRequiredAttrs = typeof node.rule.value === 'string' ? [node.rule.value] : node.rule.value;
-			const attrSpec = getAttrSpecs(node.nodeName, document.specs);
+			const attrSpec = getAttrSpecs(node.nameWithNS, context.document.specs);
 
 			const attributeSpecs = attrSpec
 				? attrSpec.map(attr => {
@@ -47,25 +46,20 @@ export default createRule<RequiredAttributes, null>({
 				} else if (spec.required === true) {
 					invalid = attrMatches(node, spec.condition) && didntHave;
 				} else if (spec.required) {
-					if (spec.required.ancestor) {
+					if ('ancestor' in spec.required && spec.required.ancestor) {
 						const ancestors = spec.required.ancestor.split(',').map(a => a.trim());
 						invalid = ancestors.some(a => node.closest(a)) && didntHave;
 					}
 				}
 
 				if (invalid) {
-					const message = translate('Required {0} on {1}', `'${spec.name}'`, `'<${node.nodeName}>'`);
-					reports.push({
-						severity: node.rule.severity,
+					const message = context.translate('Required {0} on {1}', `'${spec.name}'`, `'<${node.nodeName}>'`);
+					context.report({
+						scope: node,
 						message,
-						line: node.startLine,
-						col: node.startCol,
-						raw: node.raw,
 					});
 				}
 			}
 		});
-
-		return reports;
 	},
 });
