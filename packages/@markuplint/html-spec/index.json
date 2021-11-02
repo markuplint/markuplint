@@ -329,7 +329,7 @@
 				},
 				{
 					"name": "lang",
-					"description": "Helps define the language of an element: the language that non-editable elements are in, or the language that editable elements should be written in by the user. The attribute contains one “language tag” (made of hyphen-separated “language subtags”) in the format defined in Tags for Identifying Languages (BCP47). xml:lang has priority over it.",
+					"description": "Helps define the language of an element: the language that non-editable elements are in, or the language that editable elements should be written in by the user. The attribute contains one “language tag” (made of hyphen-separated “language subtags”) in the format defined in RFC 5646: Tags for Identifying Languages (also known as BCP 47). xml:lang has priority over it.",
 					"type": "BCP47"
 				},
 				{
@@ -902,12 +902,24 @@
 			],
 			"#SVGCoreAttrs": [
 				{
+					"name": "autofocus",
+					"type": "Boolean"
+				},
+				{
+					"name": "class",
+					"type": "String"
+				},
+				{
 					"name": "id",
 					"type": "DOMID"
 				},
 				{
 					"name": "lang",
 					"type": "BCP47"
+				},
+				{
+					"name": "style",
+					"type": "String"
 				},
 				{
 					"name": "tabindex",
@@ -1233,10 +1245,6 @@
 				}
 			],
 			"#SVGGraphicalEventAttrs": [
-				{
-					"name": "onactivate",
-					"type": "Function"
-				},
 				{
 					"name": "onfocusin",
 					"type": "Function"
@@ -1697,16 +1705,6 @@
 						"enum": ["horizontal-tb", "vertical-rl", "vertical-lr"]
 					},
 					"defaultValue": "horizontal-tb"
-				}
-			],
-			"#SVGStylingAttrs": [
-				{
-					"name": "class",
-					"type": "String"
-				},
-				{
-					"name": "style",
-					"type": "String"
 				}
 			],
 			"#SVGTransferFunctionAttrs": [
@@ -10108,7 +10106,7 @@
 				"strong",
 				"sub",
 				"sup",
-				"svg",
+				"svg:svg",
 				"table",
 				"template",
 				"textarea",
@@ -10180,7 +10178,7 @@
 				"strong",
 				"sub",
 				"sup",
-				"svg",
+				"svg:svg",
 				"template",
 				"textarea",
 				"time",
@@ -10191,7 +10189,7 @@
 				"#custom",
 				"#text"
 			],
-			"#embedded": ["audio", "canvas", "embed", "iframe", "img", "math", "object", "picture", "svg", "video"],
+			"#embedded": ["audio", "canvas", "embed", "iframe", "img", "math", "object", "picture", "svg:svg", "video"],
 			"#interactive": [
 				"a[href]",
 				"audio[controls]",
@@ -10712,7 +10710,7 @@
 				{
 					"name": "hreflang",
 					"type": "String",
-					"description": "Indicates the language of the linked resource. Allowed values are determined by BCP47. Use this attribute only if the href attribute is present."
+					"description": "Indicates the language of the linked resource. Allowed values are defined by RFC 5646: Tags for Identifying Languages (also known as BCP 47). Use this attribute only if the href attribute is present."
 				},
 				{
 					"name": "name",
@@ -14346,7 +14344,7 @@
 				},
 				{
 					"name": "hreflang",
-					"description": "This attribute indicates the language of the linked resource. It is purely advisory. Allowed values are determined by BCP47. Use this attribute only if the href attribute is present.",
+					"description": "This attribute indicates the language of the linked resource. It is purely advisory. Allowed values are specified by RFC 5646: Tags for Identifying Languages (also known as BCP 47). Use this attribute only if the href attribute is present.",
 					"type": "BCP47"
 				},
 				{
@@ -17687,8 +17685,7 @@
 				"#SVGCoreAttrs",
 				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
-				"#SVGStylingAttrs",
+				"#SVGPresentationAttrs",
 				"#XLinkAttrs",
 				"#ariaAttrs",
 				{
@@ -17835,13 +17832,16 @@
 			"omittion": false,
 			"attributes": [
 				"#SVGAnimationAdditionAttrs",
+				"#SVGAnimationAttributeTargetAttrs",
 				"#SVGAnimationEventAttrs",
+				"#SVGAnimationTargetElementAttrs",
 				"#SVGAnimationTimingAttrs",
 				"#SVGAnimationValueAttrs",
+				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
 				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGStylingAttrs"
+				"#SVGPresentationAttrs"
 			]
 		},
 		{
@@ -17909,12 +17909,13 @@
 			"attributes": [
 				"#SVGAnimationAdditionAttrs",
 				"#SVGAnimationEventAttrs",
+				"#SVGAnimationTargetElementAttrs",
 				"#SVGAnimationTimingAttrs",
 				"#SVGAnimationValueAttrs",
+				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
 				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "calcMode",
 					"description": "",
@@ -17925,6 +17926,12 @@
 					"name": "keyPoints",
 					"description": "This attribute indicate, in the range [0,1], how far is the object along the path for each keyTimes associated values. Value type: <number>*; Default value: none; Animatable: no",
 					"type": "SVGKeyPoints"
+				},
+				{
+					"name": "origin",
+					"description": "",
+					"type": "SVGOrigin",
+					"defaultValue": "default"
 				},
 				{
 					"name": "path",
@@ -17970,11 +17977,13 @@
 				"#SVGAnimationAdditionAttrs",
 				"#SVGAnimationAttributeTargetAttrs",
 				"#SVGAnimationEventAttrs",
+				"#SVGAnimationTargetElementAttrs",
 				"#SVGAnimationTimingAttrs",
 				"#SVGAnimationValueAttrs",
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
-				"#XLinkAttrs",
+				"#SVGDocumentElementEventAttrs",
+				"#SVGGlobalEventAttrs",
 				{
 					"name": "type",
 					"description": "",
@@ -18020,10 +18029,9 @@
 			"attributes": [
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#ariaAttrs",
 				{
 					"name": "cx",
@@ -18084,7 +18092,6 @@
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "clipPathUnits",
 					"description": "Defines the coordinate system for the contents of the <clipPath> element. Value type: userSpaceOnUse|objectBoundingBox ; Default value: userSpaceOnUse; Animatable: yes",
@@ -18092,6 +18099,19 @@
 						"enum": ["userSpaceOnUse", "objectBoundingBox"]
 					},
 					"defaultValue": "userSpaceOnUse"
+				},
+				{
+					"name": "externalResourcesRequired",
+					"description": "",
+					"type": {
+						"enum": ["true", "false"]
+					},
+					"defaultValue": "true"
+				},
+				{
+					"name": "transform",
+					"description": "",
+					"type": "CSSTransformList"
 				}
 			]
 		},
@@ -18162,9 +18182,7 @@
 				"#SVGCoreAttrs",
 				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
-				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs"
+				"#SVGPresentationAttrs"
 			]
 		},
 		{
@@ -18190,7 +18208,7 @@
 				]
 			},
 			"omittion": false,
-			"attributes": ["#SVGCoreAttrs", "#SVGDocumentElementEventAttrs", "#SVGGlobalEventAttrs", "#SVGStylingAttrs"]
+			"attributes": ["#SVGCoreAttrs", "#SVGDocumentElementEventAttrs", "#SVGGlobalEventAttrs"]
 		},
 		{
 			"name": "svg:discard",
@@ -18267,10 +18285,9 @@
 			"attributes": [
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#ariaAttrs",
 				{
 					"name": "cx",
@@ -18285,6 +18302,11 @@
 				{
 					"name": "pathLength",
 					"description": "This attribute lets specify the total length for the path, in user units. Value type: <number> ; Default value: none; Animatable: yes",
+					"type": "Float"
+				},
+				{
+					"name": "pathLength",
+					"description": "",
 					"type": "Float"
 				},
 				{
@@ -18331,7 +18353,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "height",
 					"description": "",
@@ -18413,7 +18434,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "height",
 					"description": "",
@@ -18492,7 +18512,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "height",
 					"description": "",
@@ -18551,7 +18570,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "height",
 					"description": "",
@@ -18659,7 +18677,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "bias",
 					"description": "",
@@ -18789,7 +18806,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "diffuseConstant",
 					"description": "",
@@ -18866,7 +18882,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "height",
 					"description": "",
@@ -19002,7 +19017,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "dx",
 					"description": "This attribute defines the x offset of the drop shadow. Value type: <number>; Default value: 2; Animatable: yes",
@@ -19079,7 +19093,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "flood-color",
 					"description": "",
@@ -19290,7 +19303,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "edgeMode",
 					"description": "",
@@ -19369,8 +19381,21 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
-				"#XLinkAttrs",
+				{
+					"name": "crossorigin",
+					"description": "",
+					"type": {
+						"enum": ["anonymous", "use-credentials"]
+					}
+				},
+				{
+					"name": "externalResourcesRequired",
+					"description": "",
+					"type": {
+						"enum": ["true", "false"]
+					},
+					"defaultValue": "true"
+				},
 				{
 					"name": "height",
 					"description": "",
@@ -19429,7 +19454,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "height",
 					"description": "",
@@ -19470,12 +19494,6 @@
 			"attributes": [
 				"#SVGCoreAttrs",
 				{
-					"name": "height",
-					"description": "",
-					"type": ["SVGLength", "SVGPercentage"],
-					"defaultValue": "100%"
-				},
-				{
 					"name": "in",
 					"description": "",
 					"type": [
@@ -19491,12 +19509,6 @@
 						},
 						"CSSCustomIdent"
 					]
-				},
-				{
-					"name": "width",
-					"description": "",
-					"type": ["SVGLength", "SVGPercentage"],
-					"defaultValue": "100%"
 				}
 			]
 		},
@@ -19527,7 +19539,12 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
+				{
+					"name": "height",
+					"description": "",
+					"type": ["SVGLength", "SVGPercentage"],
+					"defaultValue": "100%"
+				},
 				{
 					"name": "in",
 					"description": "",
@@ -19558,6 +19575,12 @@
 					"description": "",
 					"type": "SVGNumberOptionalNumber",
 					"defaultValue": "0"
+				},
+				{
+					"name": "width",
+					"description": "",
+					"type": ["SVGLength", "SVGPercentage"],
+					"defaultValue": "100%"
 				}
 			]
 		},
@@ -19588,7 +19611,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "dx",
 					"description": "",
@@ -19721,7 +19743,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "height",
 					"description": "",
@@ -19896,7 +19917,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "height",
 					"description": "",
@@ -19955,7 +19975,6 @@
 				"#SVGCoreAttrs",
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "baseFrequency",
 					"description": "",
@@ -20030,12 +20049,19 @@
 			"attributes": [
 				"#SVGCoreAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
-				"#XLinkAttrs",
+				{
+					"name": "externalResourcesRequired",
+					"description": "",
+					"type": {
+						"enum": ["true", "false"]
+					},
+					"defaultValue": "true"
+				},
 				{
 					"name": "filterRes",
 					"description": "",
-					"type": "SVGNumberOptionalNumber"
+					"type": "SVGNumberOptionalNumber",
+					"deprecated": true
 				},
 				{
 					"name": "filterUnits",
@@ -20070,12 +20096,6 @@
 					"description": "",
 					"type": "",
 					"defaultValue": "-10%"
-				},
-				{
-					"name": "xlink:href",
-					"description": "",
-					"type": "IRI",
-					"deprecated": true
 				},
 				{
 					"name": "y",
@@ -20240,21 +20260,32 @@
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
 				"#SVGDocumentElementEventAttrs",
-				"#SVGDocumentEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#ariaAttrs",
 				{
 					"name": "height",
-					"type": "String",
-					"description": "The height of the foreignObject. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The height of the foreignObject. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes",
+					"type": [
+						"SVGLength",
+						"SVGPercentage",
+						{
+							"enum": ["auto"]
+						}
+					],
+					"defaultValue": "auto"
 				},
 				{
 					"name": "width",
-					"type": "String",
-					"description": "The width of the foreignObject. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The width of the foreignObject. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes",
+					"type": [
+						"SVGLength",
+						"SVGPercentage",
+						{
+							"enum": ["auto"]
+						}
+					],
+					"defaultValue": "auto"
 				},
 				{
 					"name": "x",
@@ -20314,10 +20345,9 @@
 			"attributes": [
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#ariaAttrs"
 			]
 		},
@@ -20392,7 +20422,6 @@
 				"#SVGCoreAttrs",
 				"#SVGGlobalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "hatchContentUnits",
 					"description": "",
@@ -20462,7 +20491,6 @@
 				"#SVGCoreAttrs",
 				"#SVGGlobalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "d",
 					"description": "",
@@ -20530,14 +20558,27 @@
 			"attributes": [
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
-				"#SVGGraphicalEventAttrs",
+				"#SVGDocumentElementEventAttrs",
+				"#SVGGlobalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#XLinkAttrs",
+				"#ariaAttrs",
 				{
 					"name": "crossorigin",
 					"description": "",
 					"type": "Crossorigin"
+				},
+				{
+					"name": "height",
+					"description": "",
+					"type": [
+						"SVGLength",
+						"SVGPercentage",
+						{
+							"enum": ["auto"]
+						}
+					],
+					"defaultValue": "auto"
 				},
 				{
 					"name": "href",
@@ -20549,6 +20590,18 @@
 					"description": "",
 					"type": "SVGPreserveAspectRatio",
 					"defaultValue": "xMidYMid meet"
+				},
+				{
+					"name": "width",
+					"description": "",
+					"type": [
+						"SVGLength",
+						"SVGPercentage",
+						{
+							"enum": ["auto"]
+						}
+					],
+					"defaultValue": "auto"
 				},
 				{
 					"name": "x",
@@ -20599,10 +20652,9 @@
 			"attributes": [
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#ariaAttrs",
 				{
 					"name": "pathLength",
@@ -20671,7 +20723,6 @@
 				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#XLinkAttrs",
 				{
 					"name": "gradientTransform",
@@ -20772,11 +20823,10 @@
 			},
 			"omittion": false,
 			"attributes": [
-				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
+				"#SVGGlobalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
-				"#ariaAttrs",
 				{
 					"name": "markerHeight",
 					"description": "This attribute defines the height of the marker viewport. Value type: <length> ; Default value: 3; Animatable: yes",
@@ -20899,7 +20949,6 @@
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "height",
 					"description": "This attribute defines the height of the masking area. Value type: <length> ; Default value: 120%; Animatable: yes",
@@ -20965,7 +21014,7 @@
 				]
 			},
 			"omittion": false,
-			"attributes": ["#SVGCoreAttrs", "#SVGGlobalEventAttrs"]
+			"attributes": ["#SVGCoreAttrs", "#SVGDocumentElementEventAttrs", "#SVGGlobalEventAttrs"]
 		},
 		{
 			"name": "svg:missing-glyph",
@@ -21014,11 +21063,12 @@
 			"omittion": false,
 			"attributes": [
 				"#SVGCoreAttrs",
-				"#XLinkAttrs",
+				"#SVGDocumentElementEventAttrs",
+				"#SVGGlobalEventAttrs",
 				{
-					"name": "xlink:href",
+					"name": "href",
 					"description": "",
-					"type": "SVGIRI"
+					"type": "IRI"
 				}
 			]
 		},
@@ -21057,10 +21107,9 @@
 			"attributes": [
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#ariaAttrs",
 				{
 					"name": "d",
@@ -21116,10 +21165,9 @@
 			},
 			"omittion": false,
 			"attributes": [
-				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
+				"#SVGGlobalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#XLinkAttrs",
 				{
 					"name": "height",
@@ -21224,10 +21272,9 @@
 			"attributes": [
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#ariaAttrs",
 				{
 					"name": "pathLength",
@@ -21276,10 +21323,9 @@
 			"attributes": [
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#ariaAttrs",
 				{
 					"name": "pathLength",
@@ -21329,7 +21375,6 @@
 				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#XLinkAttrs",
 				{
 					"name": "cx",
@@ -21379,8 +21424,9 @@
 				},
 				{
 					"name": "r",
-					"type": "String",
-					"description": "This attribute defines the radius of the end circle of the radial gradient. The gradient will be drawn such that the 100% <stop> is mapped to the perimeter of the end circle. Value type: <length> ; Default value: 50%; Animatable: yes"
+					"description": "This attribute defines the radius of the end circle of the radial gradient. The gradient will be drawn such that the 100% <stop> is mapped to the perimeter of the end circle. Value type: <length> ; Default value: 50%; Animatable: yes",
+					"type": ["SVGLength", "SVGPercentage"],
+					"defaultValue": "50%"
 				},
 				{
 					"name": "spreadMethod",
@@ -21432,15 +21478,21 @@
 			"attributes": [
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#ariaAttrs",
 				{
 					"name": "height",
-					"type": "String",
-					"description": "The height of the rect. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The height of the rect. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes",
+					"type": [
+						"SVGLength",
+						"SVGPercentage",
+						{
+							"enum": ["auto"]
+						}
+					],
+					"defaultValue": "auto"
 				},
 				{
 					"name": "pathLength",
@@ -21473,8 +21525,15 @@
 				},
 				{
 					"name": "width",
-					"type": "String",
-					"description": "The width of the rect. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The width of the rect. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes",
+					"type": [
+						"SVGLength",
+						"SVGPercentage",
+						{
+							"enum": ["auto"]
+						}
+					],
+					"defaultValue": "auto"
 				},
 				{
 					"name": "x",
@@ -21517,7 +21576,7 @@
 				"#SVGCoreAttrs",
 				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGStylingAttrs",
+				"#XLinkAttrs",
 				{
 					"name": "crossorigin",
 					"description": "This attribute defines CORS settings as define for the HTML <script> element. Value type: <string>; Default value: ?; Animatable: yes",
@@ -21565,17 +21624,18 @@
 			},
 			"omittion": false,
 			"attributes": [
-				"#SVGAnimationAdditionAttrs",
+				"#SVGAnimationAttributeTargetAttrs",
 				"#SVGAnimationEventAttrs",
+				"#SVGAnimationTargetElementAttrs",
 				"#SVGAnimationTimingAttrs",
+				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
 				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "to",
-					"type": "String",
-					"description": "This attribute defines the value to be applied to the target attribute for the duration of the animation. The value must match the requirements of the target attribute. Value type: <anything>; Default value: none; Animatable: no"
+					"description": "This attribute defines the value to be applied to the target attribute for the duration of the animation. The value must match the requirements of the target attribute. Value type: <anything>; Default value: none; Animatable: no",
+					"type": "SVGAnimatableValue"
 				}
 			]
 		},
@@ -21607,7 +21667,6 @@
 				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "offset",
 					"description": "This attribute defines where the gradient stop is placed along the gradient vector. Value type: <number>|<percentage>; Default value: 0; Animatable: yes",
@@ -21655,7 +21714,6 @@
 				"#SVGCoreAttrs",
 				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGStylingAttrs",
 				{
 					"name": "media",
 					"description": "This attribute defines to which media the style applies. Value type: <string>; Default value: all; Animatable: no",
@@ -21726,9 +21784,7 @@
 				"#SVGDocumentElementEventAttrs",
 				"#SVGDocumentEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#ariaAttrs",
 				{
 					"name": "baseProfile",
@@ -21752,14 +21808,26 @@
 				},
 				{
 					"name": "height",
-					"type": "String",
-					"description": "The displayed height of the rectangular viewport. (Not the height of its coordinate system.) Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The displayed height of the rectangular viewport. (Not the height of its coordinate system.) Value type: <length>|<percentage> ; Default value: auto; Animatable: yes",
+					"type": [
+						"SVGLength",
+						"SVGPercentage",
+						{
+							"enum": ["auto"]
+						}
+					],
+					"defaultValue": "auto"
 				},
 				{
 					"name": "preserveAspectRatio",
 					"description": "How the svg fragment must be deformed if it is displayed with a different aspect ratio. Value type: (none| xMinYMin| xMidYMin| xMaxYMin| xMinYMid| xMidYMid| xMaxYMid| xMinYMax| xMidYMax| xMaxYMax) (meet|slice)? ; Default value: xMidYMid meet; Animatable: yes",
 					"type": "SVGPreserveAspectRatio",
 					"defaultValue": "xMidYMid meet"
+				},
+				{
+					"name": "transform",
+					"description": "",
+					"type": "CSSTransformList"
 				},
 				{
 					"name": "version",
@@ -21774,8 +21842,15 @@
 				},
 				{
 					"name": "width",
-					"type": "String",
-					"description": "The displayed width of the rectangular viewport. (Not the width of its coordinate system.) Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The displayed width of the rectangular viewport. (Not the width of its coordinate system.) Value type: <length>|<percentage> ; Default value: auto; Animatable: yes",
+					"type": [
+						"SVGLength",
+						"SVGPercentage",
+						{
+							"enum": ["auto"]
+						}
+					],
+					"defaultValue": "auto"
 				},
 				{
 					"name": "x",
@@ -21833,14 +21908,10 @@
 			"attributes": [
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
-				"#SVGGraphicalEventAttrs",
+				"#SVGDocumentElementEventAttrs",
+				"#SVGGlobalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
-				{
-					"name": "transform",
-					"description": "",
-					"type": "CSSTransformList"
-				}
+				"#ariaAttrs"
 			]
 		},
 		{
@@ -21888,9 +21959,7 @@
 				"#SVGCoreAttrs",
 				"#SVGDocumentEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#ariaAttrs",
 				{
 					"name": "height",
@@ -22005,10 +22074,9 @@
 			"attributes": [
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#ariaAttrs",
 				{
 					"name": "dx",
@@ -22089,45 +22157,64 @@
 			},
 			"omittion": false,
 			"attributes": [
+				"#SVGConditionalProcessingAttrs",
+				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
+				"#SVGGlobalEventAttrs",
+				"#SVGPresentationAttrs",
+				"#XLinkAttrs",
+				"#ariaAttrs",
 				{
 					"name": "href",
-					"type": "String",
-					"description": "The URL to the path or basic shape on which to render the text. If the path attribute is set, href has no effect. Value type: <URL> ; Default value: none; Animatable: yes"
+					"description": "The URL to the path or basic shape on which to render the text. If the path attribute is set, href has no effect. Value type: <URL> ; Default value: none; Animatable: yes",
+					"type": "URL"
 				},
 				{
 					"name": "lengthAdjust",
-					"type": "String",
-					"description": "Where length adjustment should be applied to the text: the space between glyphs, or both the space and the glyphs themselves. Value type: spacing|spacingAndGlyphs; Default value: spacing; Animatable: yes"
+					"description": "Where length adjustment should be applied to the text: the space between glyphs, or both the space and the glyphs themselves. Value type: spacing|spacingAndGlyphs; Default value: spacing; Animatable: yes",
+					"type": {
+						"enum": ["spacing", "spacingAndGlyphs"]
+					},
+					"defaultValue": "spacing"
 				},
 				{
 					"name": "method",
-					"type": "String",
-					"description": "Which method to render individual glyphs along the path. Value type: align|stretch ; Default value: align; Animatable: yes"
+					"description": "Which method to render individual glyphs along the path. Value type: align|stretch ; Default value: align; Animatable: yes",
+					"type": {
+						"enum": ["align", "stretch"]
+					},
+					"defaultValue": "align"
 				},
 				{
 					"name": "path",
-					"type": "String",
-					"description": "The path on which the text should be rendered. Value type: <path_data> ; Default value: none; Animatable: yes"
+					"description": "The path on which the text should be rendered. Value type: <path_data> ; Default value: none; Animatable: yes",
+					"type": "SVGPathCommands"
 				},
 				{
 					"name": "side",
-					"type": "String",
-					"description": "Which side of the path the text should be rendered. Value type: left|right ; Default value: left; Animatable: yes"
+					"description": "Which side of the path the text should be rendered. Value type: left|right ; Default value: left; Animatable: yes",
+					"type": {
+						"enum": ["left", "right"]
+					},
+					"defaultValue": "left"
 				},
 				{
 					"name": "spacing",
-					"type": "String",
-					"description": "How space between glyphs should be handled. Value type: auto|exact ; Default value: exact; Animatable: yes"
+					"description": "How space between glyphs should be handled. Value type: auto|exact ; Default value: exact; Animatable: yes",
+					"type": {
+						"enum": ["auto", "exact"]
+					},
+					"defaultValue": "exact"
 				},
 				{
 					"name": "startOffset",
-					"type": "String",
-					"description": "How far the beginning of the text should be offset from the beginning of the path. Value type: <length>|<percentage>|<number> ; Default value: 0; Animatable: yes"
+					"description": "How far the beginning of the text should be offset from the beginning of the path. Value type: <length>|<percentage>|<number> ; Default value: 0; Animatable: yes",
+					"type": ["SVGLength", "SVGPercentage", "Float"]
 				},
 				{
 					"name": "textLength",
-					"type": "String",
-					"description": "The width of the space into which the text will render. Value type: <length>|<percentage>|<number> ; Default value: auto; Animatable: yes"
+					"description": "The width of the space into which the text will render. Value type: <length>|<percentage>|<number> ; Default value: auto; Animatable: yes",
+					"type": ["SVGLength", "SVGPercentage", "Float"]
 				}
 			]
 		},
@@ -22154,7 +22241,7 @@
 				]
 			},
 			"omittion": false,
-			"attributes": ["#SVGCoreAttrs", "#SVGDocumentElementEventAttrs", "#SVGGlobalEventAttrs", "#SVGStylingAttrs"]
+			"attributes": ["#SVGCoreAttrs", "#SVGDocumentElementEventAttrs", "#SVGGlobalEventAttrs"]
 		},
 		{
 			"name": "svg:tref",
@@ -22213,10 +22300,9 @@
 			"attributes": [
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#ariaAttrs",
 				{
 					"name": "dx",
@@ -22293,16 +22379,22 @@
 			"attributes": [
 				"#SVGConditionalProcessingAttrs",
 				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
-				"#SVGGraphicalEventAttrs",
 				"#SVGPresentationAttrs",
-				"#SVGStylingAttrs",
 				"#XLinkAttrs",
 				"#ariaAttrs",
 				{
 					"name": "height",
-					"type": "String",
-					"description": "The height of the use element. Value type: <length> ; Default value: 0; Animatable: yes"
+					"description": "The height of the use element. Value type: <length> ; Default value: 0; Animatable: yes",
+					"type": [
+						"SVGLength",
+						"SVGPercentage",
+						{
+							"enum": ["auto"]
+						}
+					],
+					"defaultValue": "auto"
 				},
 				{
 					"name": "href",
@@ -22311,8 +22403,15 @@
 				},
 				{
 					"name": "width",
-					"type": "String",
-					"description": "The width of the use element. Value type: <length> ; Default value: 0; Animatable: yes"
+					"description": "The width of the use element. Value type: <length> ; Default value: 0; Animatable: yes",
+					"type": [
+						"SVGLength",
+						"SVGPercentage",
+						{
+							"enum": ["auto"]
+						}
+					],
+					"defaultValue": "auto"
 				},
 				{
 					"name": "x",
@@ -22359,6 +22458,7 @@
 			"omittion": false,
 			"attributes": [
 				"#SVGCoreAttrs",
+				"#SVGDocumentElementEventAttrs",
 				"#SVGGlobalEventAttrs",
 				"#ariaAttrs",
 				{
