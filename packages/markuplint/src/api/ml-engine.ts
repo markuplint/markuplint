@@ -52,8 +52,23 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		}
 
 		const sourceCode = await this.#file.getCode();
-		const violations = await core.verify(this.#options?.fix);
+		const violations = await core.verify(this.#options?.fix).catch(e => {
+			if (e instanceof Error) {
+				return e;
+			}
+			throw e;
+		});
 		const fixedCode = core.document.toString();
+
+		if (violations instanceof Error) {
+			this.emit('lint-error', this.#file.path, sourceCode, violations);
+			return {
+				violations: [],
+				filePath: this.#file.path,
+				sourceCode,
+				fixedCode,
+			};
+		}
 
 		this.emit('lint', this.#file.path, sourceCode, violations, fixedCode);
 		return {
