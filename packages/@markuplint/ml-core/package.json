@@ -21,7 +21,7 @@
 		"@markuplint/ml-ast": "^1.6.0",
 		"@markuplint/ml-config": "^1.3.0",
 		"@markuplint/ml-spec": "^1.7.0",
-		"css-selector-parser": "^1.4.1",
+		"postcss-selector-parser": "^6.0.6",
 		"tslib": "^2.3.0"
 	},
 	"devDependencies": {
