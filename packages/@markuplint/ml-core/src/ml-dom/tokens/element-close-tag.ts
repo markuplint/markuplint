@@ -1,9 +1,9 @@
-import Document from '../document';
-import { IMLDOMElementCloseTag } from '../types';
-import { MLASTElementCloseTag } from '@markuplint/ml-ast';
-import MLDOMElement from './element';
+import type { Document } from '../';
+import type { IMLDOMElementCloseTag } from '../types';
+import type { MLASTElementCloseTag } from '@markuplint/ml-ast';
+import type { MLDOMElement } from './';
 import MLDOMNode from './node';
-import { RuleConfigValue } from '@markuplint/ml-config';
+import type { RuleConfigValue } from '@markuplint/ml-config';
 import { stringSplice } from '../../utils/string-splice';
 
 export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>

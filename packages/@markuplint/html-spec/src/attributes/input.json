@@ -5,14 +5,14 @@
 			"name": "accept",
 			"type": "AcceptList",
 			"condition": {
-				"self": "[type=file]"
+				"self": "[type='file' i]"
 			}
 		},
 		{
 			"name": "alt",
 			"type": "String",
 			"condition": {
-				"self": "[type=image]"
+				"self": "[type='image' i]"
 			}
 		},
 		{
@@ -20,21 +20,21 @@
 			"type": "AutoComplete",
 			"condition": {
 				"self": [
-					"[type=hidden]",
-					"[type=text]",
-					"[type=search]",
-					"[type=url]",
-					"[type=tel]",
-					"[type=email]",
-					"[type=password]",
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]",
-					"[type=range]",
-					"[type=color]"
+					"[type='hidden' i]",
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]",
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]",
+					"[type='range' i]",
+					"[type='color' i]"
 				]
 			}
 		},
@@ -42,14 +42,14 @@
 			"name": "checked",
 			"type": "Boolean",
 			"condition": {
-				"self": ["[type=checkbox]", "[type=radio]"]
+				"self": ["[type='checkbox' i]", "[type='radio' i]"]
 			}
 		},
 		{
 			"name": "dirname",
 			"type": "String",
 			"condition": {
-				"self": ["[type=text]", "[type=search]"]
+				"self": ["[type='text' i]", "[type='search' i]"]
 			}
 		},
 		{
@@ -60,14 +60,14 @@
 			"name": "form",
 			"type": "DOMID",
 			"condition": {
-				"self": ["[type=file]", "[type=file]"]
+				"self": ["[type='file' i]", "[type='file' i]"]
 			}
 		},
 		{
 			"name": "formaction",
 			"type": "URL",
 			"condition": {
-				"self": ["[type=submit]", "[type=image]"]
+				"self": ["[type='submit' i]", "[type='image' i]"]
 			}
 		},
 		{
@@ -76,7 +76,7 @@
 				"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
 			},
 			"condition": {
-				"self": ["[type=submit]", "[type=image]"]
+				"self": ["[type='submit' i]", "[type='image' i]"]
 			}
 		},
 		{
@@ -85,28 +85,28 @@
 				"enum": ["post", "get", "dialog"]
 			},
 			"condition": {
-				"self": ["[type=submit]", "[type=image]"]
+				"self": ["[type='submit' i]", "[type='image' i]"]
 			}
 		},
 		{
 			"name": "formnovalidate",
 			"type": "Boolean",
 			"condition": {
-				"self": ["[type=submit]", "[type=image]"]
+				"self": ["[type='submit' i]", "[type='image' i]"]
 			}
 		},
 		{
 			"name": "formtarget",
 			"type": "Target",
 			"condition": {
-				"self": ["[type=submit]", "[type=image]"]
+				"self": ["[type='submit' i]", "[type='image' i]"]
 			}
 		},
 		{
 			"name": "height",
 			"type": "Uint",
 			"condition": {
-				"self": "[type=image]"
+				"self": "[type='image' i]"
 			}
 		},
 		{
@@ -114,19 +114,19 @@
 			"type": "DOMID",
 			"condition": {
 				"self": [
-					"[type=text]",
-					"[type=search]",
-					"[type=url]",
-					"[type=tel]",
-					"[type=email]",
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]",
-					"[type=range]",
-					"[type=color]"
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]",
+					"[type='range' i]",
+					"[type='color' i]"
 				]
 			}
 		},
@@ -135,13 +135,13 @@
 			"type": "String",
 			"condition": {
 				"self": [
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]",
-					"[type=range]"
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]",
+					"[type='range' i]"
 				]
 			}
 		},
@@ -149,7 +149,14 @@
 			"name": "maxlength",
 			"type": "Uint",
 			"condition": {
-				"self": ["[type=text]", "[type=search]", "[type=url]", "[type=tel]", "[type=email]", "[type=password]"]
+				"self": [
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]"
+				]
 			}
 		},
 		{
@@ -157,13 +164,13 @@
 			"type": "String",
 			"condition": {
 				"self": [
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]",
-					"[type=range]"
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]",
+					"[type='range' i]"
 				]
 			}
 		},
@@ -171,14 +178,21 @@
 			"name": "minlength",
 			"type": "Uint",
 			"condition": {
-				"self": ["[type=text]", "[type=search]", "[type=url]", "[type=tel]", "[type=email]", "[type=password]"]
+				"self": [
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]"
+				]
 			}
 		},
 		{
 			"name": "multiple",
 			"type": "Boolean",
 			"condition": {
-				"self": ["[type=email]", "[type=file]"]
+				"self": ["[type='email' i]", "[type='file' i]"]
 			}
 		},
 		{
@@ -189,7 +203,14 @@
 			"name": "pattern",
 			"type": "String",
 			"condition": {
-				"self": ["[type=text]", "[type=search]", "[type=url]", "[type=tel]", "[type=email]", "[type=password]"]
+				"self": [
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]"
+				]
 			}
 		},
 		{
@@ -197,13 +218,13 @@
 			"type": "String",
 			"condition": {
 				"self": [
-					"[type=text]",
-					"[type=search]",
-					"[type=url]",
-					"[type=tel]",
-					"[type=email]",
-					"[type=password]",
-					"[type=number]"
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]",
+					"[type='number' i]"
 				]
 			}
 		},
@@ -212,18 +233,18 @@
 			"type": "Boolean",
 			"condition": {
 				"self": [
-					"[type=text]",
-					"[type=search]",
-					"[type=url]",
-					"[type=tel]",
-					"[type=email]",
-					"[type=password]",
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]"
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]",
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]"
 				]
 			}
 		},
@@ -232,21 +253,21 @@
 			"type": "Boolean",
 			"condition": {
 				"self": [
-					"[type=text]",
-					"[type=search]",
-					"[type=url]",
-					"[type=tel]",
-					"[type=email]",
-					"[type=password]",
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]",
-					"[type=checkbox]",
-					"[type=radio]",
-					"[type=file]"
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]",
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]",
+					"[type='checkbox' i]",
+					"[type='radio' i]",
+					"[type='file' i]"
 				]
 			}
 		},
@@ -254,14 +275,21 @@
 			"name": "size",
 			"type": "NonZeroUint",
 			"condition": {
-				"self": ["[type=text]", "[type=search]", "[type=url]", "[type=tel]", "[type=email]", "[type=password]"]
+				"self": [
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]"
+				]
 			}
 		},
 		{
 			"name": "src",
 			"type": "URL",
 			"condition": {
-				"self": "[type=image]"
+				"self": "[type='image' i]"
 			}
 		},
 		{
@@ -269,13 +297,13 @@
 			"type": "String",
 			"condition": {
 				"self": [
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]",
-					"[type=range]"
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]",
+					"[type='range' i]"
 				]
 			}
 		},
@@ -291,7 +319,7 @@
 			"name": "width",
 			"type": "Uint",
 			"condition": {
-				"self": "[type=image]"
+				"self": "[type='image' i]"
 			}
 		}
 	]

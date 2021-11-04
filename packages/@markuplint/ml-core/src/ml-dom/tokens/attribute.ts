@@ -1,4 +1,4 @@
-import { MLASTHTMLAttr, MLToken } from '@markuplint/ml-ast';
+import type { MLASTHTMLAttr, MLToken } from '@markuplint/ml-ast';
 import MLDOMToken from './token';
 
 export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {

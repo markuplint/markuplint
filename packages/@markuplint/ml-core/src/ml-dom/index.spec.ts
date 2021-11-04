@@ -1,4 +1,4 @@
-import { createTestDocument, createTestNodeList } from '../test';
+import { createTestDocument, createTestElement, createTestNodeList } from '../test';
 import { MLDOMElement } from './tokens';
 import { createRule } from '../create-rule';
 
@@ -91,6 +91,13 @@ test('raw', async () => {
 	expect(nodeList[5].indentation!).toBe(null);
 	expect(nodeList[6].indentation!).toBe(null);
 	expect(nodeList[7].indentation!.width).toBe(0);
+});
+
+test('raw', async () => {
+	const el = createTestElement('<div></div>');
+	expect(el.raw).toBe('<div>');
+	el.fixNodeName('x-div');
+	expect(el.raw).toBe('<x-div>');
 });
 
 test('namespace', async () => {

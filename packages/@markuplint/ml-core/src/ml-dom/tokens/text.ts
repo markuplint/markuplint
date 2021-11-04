@@ -1,10 +1,10 @@
-import { ContentModel } from '@markuplint/ml-spec';
-import { Document } from '../';
-import { IMLDOMText } from '../types';
-import { MLASTText } from '@markuplint/ml-ast';
+import type { ContentModel } from '@markuplint/ml-spec';
+import type { Document } from '../';
+import type { IMLDOMText } from '../types';
+import type { MLASTText } from '@markuplint/ml-ast';
 import MLDOMIndentation from './indentation';
 import MLDOMNode from './node';
-import { RuleConfigValue } from '@markuplint/ml-config';
+import type { RuleConfigValue } from '@markuplint/ml-config';
 
 /**
  * Raw text elements
