@@ -1,4 +1,4 @@
-import { MLASTPreprocessorSpecificAttr } from '@markuplint/ml-ast';
+import type { MLASTPreprocessorSpecificAttr } from '@markuplint/ml-ast';
 import MLDOMToken from './token';
 
 export default class MLDOMPreprocessorSpecificAttribute extends MLDOMToken<MLASTPreprocessorSpecificAttr> {
