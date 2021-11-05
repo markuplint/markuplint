@@ -193,7 +193,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					continue;
 				}
 
-				const selector = nodeRule.selector || nodeRule.tagName;
+				const selector = nodeRule.selector || nodeRule.tagName || nodeRule.regexSelector;
 				if (!selector) {
 					continue;
 				}

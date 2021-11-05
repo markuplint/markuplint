@@ -77,4 +77,31 @@ it('exchangeValueOnRule', () => {
 		value: 'The name is hoge',
 		reason: 'For xxx',
 	});
+
+	expect(
+		exchangeValueOnRule(
+			{
+				value: 'The name is {{ dataName }}',
+				option: {
+					propA: 'The name is {{ dataName }}',
+					propB: ['The name is {{ dataName }}'],
+					propC: {
+						prop: 'The name is {{ dataName }}',
+					},
+				},
+			},
+			{
+				dataName: 'hoge',
+			},
+		),
+	).toStrictEqual({
+		value: 'The name is hoge',
+		option: {
+			propA: 'The name is hoge',
+			propB: ['The name is hoge'],
+			propC: {
+				prop: 'The name is hoge',
+			},
+		},
+	});
 });

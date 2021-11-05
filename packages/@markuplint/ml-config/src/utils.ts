@@ -24,6 +24,17 @@ export function regexSelectorMatches(reg: string, raw: string) {
 	};
 }
 
+type PlainData =
+	| string
+	| number
+	| boolean
+	| null
+	| undefined
+	| PlainData[]
+	| {
+			[key: string]: PlainData;
+	  };
+
 /**
  * Return undefined if the template doesn't include the variable that is set as a property in data.
  * But return template string without changes if it doesn't have a variable.
@@ -48,14 +59,19 @@ export function provideValue(template: string, data: Record<string, string>) {
 
 export function exchangeValueOnRule(rule: Rule, data: Record<string, string>): Rule | undefined {
 	if (rule != null && typeof rule === 'object' && !Array.isArray(rule)) {
-		if ('value' in rule && rule.value != null) {
-			return {
+		if (rule.value != null) {
+			rule = {
 				...rule,
 				value: exchangeValue(rule.value, data),
 			};
-		} else {
-			return rule;
 		}
+		if (rule.option) {
+			rule = {
+				...rule,
+				option: exchangeOption(rule.option as PlainData, data),
+			};
+		}
+		return rule;
 	}
 	return exchangeValue(rule, data);
 }
@@ -79,4 +95,24 @@ function exchangeValue(rule: RuleConfigValue, data: Record<string, string>): Rul
 		return ruleArray.length ? ruleArray : undefined;
 	}
 	return rule;
+}
+
+function exchangeOption(optionValue: PlainData, data: Record<string, string>): PlainData | undefined {
+	if (optionValue == null) {
+		return optionValue;
+	}
+	if (typeof optionValue === 'boolean' || typeof optionValue === 'number') {
+		return optionValue;
+	}
+	if (typeof optionValue === 'string') {
+		return provideValue(optionValue, data);
+	}
+	if (Array.isArray(optionValue)) {
+		return optionValue.map(v => exchangeOption(v, data));
+	}
+	const result: Record<string, PlainData> = {};
+	Object.keys(optionValue).forEach(key => {
+		result[key] = exchangeOption(optionValue[key], data);
+	});
+	return result;
 }
