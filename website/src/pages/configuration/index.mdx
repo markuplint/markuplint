@@ -374,3 +374,69 @@ Note: Recommend using named capture. The numbered capture may conflict.
 	]
 }
 ```
+
+You can select the element in complex conditions if you use the `combination` prop.
+
+```json
+{
+	"childNodeRules": [
+		{
+			"regexSelector": {
+				"attrName": "img",
+				"combination": {
+					"combinator": ":has(~)",
+					"nodeName": "source"
+				}
+			}
+		}
+	]
+}
+```
+
+The regexSelector above is the same as CSS selector `img:has(~ source)`.
+
+The `combinator` prop supports below:
+
+-   `" "`: Descendant combinator
+-   `">"`: Child combinator
+-   `"+"`: Next-sibling combinator
+-   `":has(+)"`: Prev-sibling combinator
+-   `"~"`: Subsequent-sibling combinator
+-   `":has(~)"`: Preceding-sibling
+
+You can define nodes unlimitedly deeply.
+
+```json
+{
+	"childNodeRules": [
+		{
+			"regexSelector": {
+				"attrName": "el1",
+				"combination": {
+					"combinator": " ",
+					"attrName": "el2",
+					"combination": {
+						"combinator": ">",
+						"attrName": "el3",
+						"combination": {
+							"combinator": "+",
+							"attrName": "el4",
+							"combination": {
+								"combinator": "~",
+								"attrName": "el5"
+							}
+						}
+					}
+				}
+			}
+		}
+	]
+}
+```
+
+The above is the same as CSS selector `el1 el2 > el3 + el4 ~ el5`.
+
+##### Usecase of `regexSelector`
+
+-   [Check designed CSS class name](/configuration/regex-selector-sample#Case%201:%20Check%20designed%20CSS%20class%20name)
+-   [Check filenames of images](/configuration/regex-selector-sample#Case%202:%20Check%20filenames%20of%20images)
