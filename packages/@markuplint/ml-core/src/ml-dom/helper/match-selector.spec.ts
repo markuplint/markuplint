@@ -22,7 +22,7 @@ test('nodeName', async () => {
 			nodeName: '/^[a-z]+$/',
 		}),
 	).toStrictEqual({
-		__nodeName: 'div',
+		__node: 'div',
 	});
 });
 
@@ -33,7 +33,7 @@ test('nodeName named group capture', async () => {
 			nodeName: '/^h(?<level>[1-6])$/',
 		}),
 	).toStrictEqual({
-		__nodeName: 'h6',
+		__node: 'h6',
 		$1: '6',
 		level: '6',
 	});
@@ -46,7 +46,7 @@ test('nodeName (No RegExp)', async () => {
 			nodeName: 'div',
 		}),
 	).toStrictEqual({
-		__nodeName: 'div',
+		__node: 'div',
 	});
 });
 
@@ -57,7 +57,7 @@ test('attrName', async () => {
 			attrName: '/^data-([a-z]+)$/',
 		}),
 	).toStrictEqual({
-		__attrName0: 'data-attr',
+		__node: '[data-attr]',
 		$1: 'attr',
 	});
 });
@@ -69,7 +69,7 @@ test('attrValue', async () => {
 			attrValue: '/^[a-z]+$/',
 		}),
 	).toStrictEqual({
-		__attrValue0: 'abc',
+		__node: '[data-attr="abc"]',
 	});
 });
 
@@ -92,8 +92,7 @@ test('nodeName & attrName', async () => {
 			attrName: 'data-attr',
 		}),
 	).toStrictEqual({
-		__nodeName: 'div',
-		__attrName0: 'data-attr',
+		__node: 'div[data-attr]',
 	});
 });
 
@@ -105,8 +104,7 @@ test('attrName & attrValue', async () => {
 			attrValue: '/^[a-z]+$/',
 		}),
 	).toStrictEqual({
-		__attrName0: 'data-attr',
-		__attrValue0: 'abc',
+		__node: '[data-attr][data-attr="abc"]',
 	});
 });
 
@@ -119,8 +117,6 @@ test('nodeName & attrName & attrValue', async () => {
 			attrValue: 'abc',
 		}),
 	).toStrictEqual({
-		__nodeName: 'div',
-		__attrName0: 'data-attr',
-		__attrValue0: 'abc',
+		__node: 'div[data-attr][data-attr="abc"]',
 	});
 });

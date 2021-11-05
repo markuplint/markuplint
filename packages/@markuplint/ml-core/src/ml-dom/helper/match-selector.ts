@@ -23,29 +23,26 @@ export function matchSelector(
 		if (!matchedNodeName) {
 			return null;
 		}
-		const $0 = matchedNodeName.$0;
 		delete matchedNodeName.$0;
 		matchedMap = {
-			__nodeName: $0,
 			...matchedMap,
 			...matchedNodeName,
+			__node: targetElement.nodeName,
 		};
 	}
 
 	if (selector.attrName) {
 		const selectorAttrName = selector.attrName;
-		let count = 0;
-		const matchedAttrNameList = targetElement.attributes.map(attr => {
+		const matchedAttrNameList = el.attributes.map(attr => {
 			const attrName = attr.getName().raw;
 			const matchedAttrName = regexSelectorMatches(selectorAttrName, attrName);
 
 			if (matchedAttrName) {
-				const $0 = matchedAttrName.$0;
 				delete matchedAttrName.$0;
 				matchedMap = {
-					[`__attrName${count++}`]: $0,
 					...matchedMap,
 					...matchedAttrName,
+					__node: matchedMap.__node ? `${matchedMap.__node}[${attrName}]` : `[${attrName}]`,
 				};
 			}
 
@@ -59,18 +56,19 @@ export function matchSelector(
 
 	if (selector.attrValue) {
 		const selectorAttrValue = selector.attrValue;
-		let count = 0;
-		const matchedAttrValueList = targetElement.attributes.map(attr => {
+		const matchedAttrValueList = el.attributes.map(attr => {
+			const attrName = attr.getName().raw;
 			const attrValue = attr.getValue().raw;
 			const matchedAttrValue = regexSelectorMatches(selectorAttrValue, attrValue);
 
 			if (matchedAttrValue) {
-				const $0 = matchedAttrValue.$0;
 				delete matchedAttrValue.$0;
 				matchedMap = {
-					[`__attrValue${count++}`]: $0,
 					...matchedMap,
 					...matchedAttrValue,
+					__node: matchedMap.__node
+						? `${matchedMap.__node}[${attrName}="${attrValue}"]`
+						: `[${attrName}="${attrValue}"]`,
 				};
 			}
 
