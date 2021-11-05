@@ -934,3 +934,65 @@ test('React spec', async () => {
 		},
 	]);
 });
+
+test('regexSelector', async () => {
+	const { violations } = await mlTest(
+		`<picture>
+	<source srcset="logo-3x.png 3x">
+	<source srcset="logo@3x.png 3x">
+	<source srcset="logo-2x.png 2x">
+	<source srcset="logo@2x.png 2x">
+	<img src="logo.png" alt="logo">
+</picture>
+`,
+		{
+			rules: {
+				'invalid-attr': true,
+			},
+			nodeRules: [
+				{
+					regexSelector: {
+						nodeName: 'img',
+						attrName: 'src',
+						attrValue: '/^(?<FileName>.+)\\.(?<Exp>png|jpg|webp|gif)$/',
+						combination: {
+							combinator: ':has(~)',
+							nodeName: 'source',
+						},
+					},
+					rules: {
+						'invalid-attr': {
+							option: {
+								attrs: {
+									srcset: {
+										enum: ['{{FileName}}@2x.{{Exp}} 2x', '{{FileName}}@3x.{{Exp}} 3x'],
+									},
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+		[rule],
+		'en',
+	);
+	expect(violations).toStrictEqual([
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 2,
+			col: 18,
+			message: 'The "srcset" attribute expect either "logo@2x.png 2x", "logo@3x.png 3x"',
+			raw: 'logo-3x.png 3x',
+		},
+		{
+			ruleId: 'invalid-attr',
+			severity: 'error',
+			line: 4,
+			col: 18,
+			message: 'The "srcset" attribute expect either "logo@2x.png 2x", "logo@3x.png 3x"',
+			raw: 'logo-2x.png 2x',
+		},
+	]);
+});
