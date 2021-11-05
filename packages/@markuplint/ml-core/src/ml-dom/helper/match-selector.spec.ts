@@ -120,3 +120,134 @@ test('nodeName & attrName & attrValue', async () => {
 		__node: 'div[data-attr][data-attr="abc"]',
 	});
 });
+
+test('combination " "', async () => {
+	const el = createTestElement('<div data-attr="abc"><span></span></div>');
+	const span = el.children[0];
+	expect(
+		matchSelector(span, {
+			nodeName: 'div',
+			attrName: 'data-attr',
+			attrValue: 'abc',
+			combination: {
+				combinator: ' ',
+				nodeName: 'span',
+			},
+		}),
+	).toStrictEqual({
+		__node: 'div[data-attr][data-attr="abc"] span',
+	});
+});
+
+test('combination >', async () => {
+	const el = createTestElement('<div data-attr="abc"><span><a></a></span></div>');
+	const span = el.children[0];
+	const a = span.children[0];
+	expect(
+		matchSelector(a, {
+			nodeName: 'div',
+			attrName: 'data-attr',
+			attrValue: 'abc',
+			combination: {
+				combinator: '>',
+				nodeName: 'span',
+				combination: {
+					combinator: '>',
+					nodeName: '/^(?<EdgeNodeName>[a-z]+)$/',
+				},
+			},
+		}),
+	).toStrictEqual({
+		__node: 'div[data-attr][data-attr="abc"] > span > a',
+		$1: 'a',
+		EdgeNodeName: 'a',
+	});
+});
+
+test('combination +', async () => {
+	const el = createTestElement(`<ul>
+	<li class="i1"><a class="a1">1</a></li>
+	<li class="i2"><a class="a2">2</a></li>
+	<li class="i3"><a class="a3">3</a></li>
+	<li class="i4"><a class="a4">4</a></li>
+	<li class="i5"><a class="a5">5</a></li>
+</ul>`);
+	const i4 = el.children[3];
+	expect(
+		matchSelector(i4, {
+			attrValue: 'i3',
+			combination: {
+				combinator: '+',
+				nodeName: 'li',
+			},
+		}),
+	).toStrictEqual({
+		__node: '[class="i3"] + li',
+	});
+});
+
+test('combination ~', async () => {
+	const el = createTestElement(`<ul>
+	<li class="i1"><a class="a1">1</a></li>
+	<li class="i2"><a class="a2">2</a></li>
+	<li class="i3"><a class="a3">3</a></li>
+	<li class="i4"><a class="a4">4</a></li>
+	<li class="i5"><a class="a5">5</a></li>
+</ul>`);
+	const i5 = el.children[4];
+	expect(
+		matchSelector(i5, {
+			attrValue: 'i3',
+			combination: {
+				combinator: '~',
+				nodeName: 'li',
+			},
+		}),
+	).toStrictEqual({
+		__node: '[class="i3"] ~ li',
+	});
+});
+
+test('combination :has(+)', async () => {
+	const el = createTestElement(`<ul>
+	<li class="i1"><a class="a1">1</a></li>
+	<li class="i2"><a class="a2">2</a></li>
+	<li class="i3"><a class="a3">3</a></li>
+	<li class="i4"><a class="a4">4</a></li>
+	<li class="i5"><a class="a5">5</a></li>
+</ul>`);
+	const i3 = el.children[2];
+	expect(
+		matchSelector(i3, {
+			attrValue: 'i4',
+			combination: {
+				combinator: ':has(+)',
+				nodeName: 'li',
+			},
+		}),
+	).toStrictEqual({
+		__node: '[class="i4"]:has(+ li)',
+	});
+});
+
+test('combination :has(~)', async () => {
+	const el = createTestElement(`<ul>
+	<li class="i1"><a class="a1">1</a></li>
+	<li class="i2"><a class="a2">2</a></li>
+	<li class="i3"><a class="a3">3</a></li>
+	<li class="i4"><a class="a4">4</a></li>
+	<li class="i5"><a class="a5">5</a></li>
+</ul>`);
+	const i3 = el.children[2];
+	expect(
+		matchSelector(i3, {
+			attrValue: 'i5',
+			combination: {
+				combinator: ':has(~)',
+				nodeName: 'li',
+			},
+		}),
+	).toStrictEqual({
+		__node: '[class="i5"]:has(~ li)',
+	});
+});

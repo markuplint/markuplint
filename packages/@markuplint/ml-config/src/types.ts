@@ -63,7 +63,15 @@ export interface ChildNodeRule {
 	rules?: Rules;
 }
 
-export type RegexSelector = {
+export type RegexSelector = RegexSelectorWithoutCompination & {
+	combination?: {
+		combinator: RegexSelectorCombinator;
+	} & RegexSelector;
+};
+
+export type RegexSelectorCombinator = ' ' | '>' | '+' | '~' | ':has(+)' | ':has(~)';
+
+export type RegexSelectorWithoutCompination = {
 	nodeName?: string;
 	attrName?: string;
 	attrValue?: string;
