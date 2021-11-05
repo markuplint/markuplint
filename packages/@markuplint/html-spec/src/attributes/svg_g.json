@@ -1,0 +1,11 @@
+{
+	"tag": "g",
+	"attributes": [
+		"#ariaAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs"
+	]
+}

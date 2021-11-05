@@ -10,7 +10,7 @@ export default createRule<Value, null>({
 	async verify(context) {
 		await context.document.walk(async node => {
 			if ('fixNodeName' in node) {
-				if (node.isForeignElement || node.isCustomElement) {
+				if (node.isForeignElement || node.isCustomElement || node.type === 'OmittedElement') {
 					return;
 				}
 				const ms = node.rule.severity === 'error' ? 'must' : 'should';

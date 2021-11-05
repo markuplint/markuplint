@@ -46,3 +46,29 @@ test('deprecated global attribute', async () => {
 		},
 	]);
 });
+
+test('svg', async () => {
+	const { violations } = await mlTest(
+		`<svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg">
+          <a xlink:href="https://developer.mozilla.org/">
+          <text x="10" y="25">MDN Web Docs</text></a>
+        </svg>`,
+		{
+			rules: {
+				'deprecated-attr': true,
+			},
+		},
+		[rule],
+		'en',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			ruleId: 'deprecated-attr',
+			line: 2,
+			col: 14,
+			message: 'The xlink:href attribute is deprecated',
+			raw: 'xlink:href',
+		},
+	]);
+});

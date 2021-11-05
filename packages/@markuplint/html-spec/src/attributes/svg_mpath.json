@@ -1,0 +1,12 @@
+{
+	"tag": "mpath",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		{
+			"name": "href",
+			"type": "IRI"
+		}
+	]
+}

@@ -1,4 +1,5 @@
-import { createTestDocument, createTestNodeList } from '../test';
+import { createTestDocument, createTestElement, createTestNodeList } from '../test';
+import { MLDOMElement } from './tokens';
 import { createRule } from '../create-rule';
 
 test('node count', async () => {
@@ -90,6 +91,38 @@ test('raw', async () => {
 	expect(nodeList[5].indentation!).toBe(null);
 	expect(nodeList[6].indentation!).toBe(null);
 	expect(nodeList[7].indentation!.width).toBe(0);
+});
+
+test('raw', async () => {
+	const el = createTestElement('<div></div>');
+	expect(el.raw).toBe('<div>');
+	el.fixNodeName('x-div');
+	expect(el.raw).toBe('<x-div>');
+});
+
+test('namespace', async () => {
+	const nodeList = createTestNodeList(`<div>
+	<svg>
+		<a></a>
+		<foreignObject>
+			<div></div>
+		</foreignObject>
+	</svg>
+	<a></a>
+</div>
+`);
+	expect((nodeList[0] as MLDOMElement<any, any>).nodeName).toBe('div');
+	expect((nodeList[0] as MLDOMElement<any, any>).namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+	expect((nodeList[2] as MLDOMElement<any, any>).nodeName).toBe('svg');
+	expect((nodeList[2] as MLDOMElement<any, any>).namespaceURI).toBe('http://www.w3.org/2000/svg');
+	expect((nodeList[4] as MLDOMElement<any, any>).nodeName).toBe('a');
+	expect((nodeList[4] as MLDOMElement<any, any>).namespaceURI).toBe('http://www.w3.org/2000/svg');
+	expect((nodeList[7] as MLDOMElement<any, any>).nodeName).toBe('foreignObject');
+	expect((nodeList[7] as MLDOMElement<any, any>).namespaceURI).toBe('http://www.w3.org/2000/svg');
+	expect((nodeList[9] as MLDOMElement<any, any>).nodeName).toBe('div');
+	expect((nodeList[9] as MLDOMElement<any, any>).namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+	expect((nodeList[16] as MLDOMElement<any, any>).nodeName).toBe('a');
+	expect((nodeList[16] as MLDOMElement<any, any>).namespaceURI).toBe('http://www.w3.org/1999/xhtml');
 });
 
 test('rule', async () => {

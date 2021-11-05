@@ -1,0 +1,30 @@
+{
+	"tag": "circle",
+	"attributes": [
+		"#ariaAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "pathLength",
+			"type": "Float"
+		},
+		{
+			"name": "cx",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "cy",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "r",
+			"type": "SVGLength",
+			"defaultValue": "0"
+		}
+	]
+}

@@ -1,0 +1,17 @@
+{
+	"tag": "set",
+	"attributes": [
+		"#SVGAnimationEventAttrs",
+		"#SVGAnimationTargetElementAttrs",
+		"#SVGAnimationAttributeTargetAttrs",
+		"#SVGAnimationTimingAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		{
+			"name": "to",
+			"type": "SVGAnimatableValue"
+		}
+	]
+}

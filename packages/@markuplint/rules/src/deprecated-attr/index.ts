@@ -7,7 +7,7 @@ export default createRule({
 	defaultOptions: null,
 	async verify(context) {
 		await context.document.walkOn('Element', async element => {
-			const attrSpecs = getAttrSpecs(element.nodeName, context.document.specs);
+			const attrSpecs = getAttrSpecs(element.nameWithNS, context.document.specs);
 
 			if (!attrSpecs) {
 				return;

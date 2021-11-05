@@ -1,0 +1,12 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+	"patternProperties": {
+		"^#[a-zA-Z]+Attrs$": {
+			"type": "array",
+			"items": {
+				"$ref": "./attributes.schema.json#/definitions/AttributeJSON"
+			}
+		}
+	}
+}

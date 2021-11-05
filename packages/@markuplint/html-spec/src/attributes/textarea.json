@@ -51,8 +51,9 @@
 		},
 		{
 			"name": "wrap",
-			"type": "String",
-			"enum": ["soft", "hard"]
+			"type": {
+				"enum": ["soft", "hard"]
+			}
 		}
 	]
 }

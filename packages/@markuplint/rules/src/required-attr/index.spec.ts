@@ -239,6 +239,38 @@ test('The ancestors of the <source> element.', async () => {
 	).toStrictEqual([]);
 });
 
+test('nodeRules', async () => {
+	const { violations } = await mlTest(
+		'<img src="path/to.svg" alt="text" />',
+		{
+			rules: {
+				'required-attr': true,
+			},
+			nodeRules: [
+				{
+					selector: 'img[src$=.svg]',
+					rules: {
+						'required-attr': 'role',
+					},
+				},
+			],
+		},
+		[rule],
+		'en',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			ruleId: 'required-attr',
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: "Required 'role' on '<img>'",
+			raw: '<img src="path/to.svg" alt="text" />',
+		},
+	]);
+});
+
 test('Foreign element', async () => {
 	expect(
 		(
@@ -272,6 +304,62 @@ test('Foreign element', async () => {
 			col: 1,
 			message: "Required 'viewBox' on '<svg>'",
 			raw: '<svg>',
+		},
+	]);
+});
+
+test('svg', async () => {
+	expect(
+		(
+			await mlTest(
+				`<svg>
+					<circle cx="50" cy="50" r="40" />
+					<circle cx="150" cy="50" r="4" />
+					<circle cx="5" cy="5" r="4" />
+					<circle />
+				</svg>
+				`,
+				{
+					rules: {
+						'required-attr': true,
+					},
+					nodeRules: [
+						{
+							selector: 'circle',
+							rules: {
+								'required-attr': ['cx', 'cy', 'r'],
+							},
+						},
+					],
+				},
+				[rule],
+				'en',
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			ruleId: 'required-attr',
+			severity: 'error',
+			line: 5,
+			col: 6,
+			message: "Required 'cx' on '<circle>'",
+			raw: '<circle />',
+		},
+		{
+			ruleId: 'required-attr',
+			severity: 'error',
+			line: 5,
+			col: 6,
+			message: "Required 'cy' on '<circle>'",
+			raw: '<circle />',
+		},
+		{
+			ruleId: 'required-attr',
+			severity: 'error',
+			line: 5,
+			col: 6,
+			message: "Required 'r' on '<circle>'",
+			raw: '<circle />',
 		},
 	]);
 });

@@ -1,3 +1,5 @@
+/* global cheerio */
+
 import {
 	ARIAAttribute,
 	ARIAAttributeValue,
@@ -6,7 +8,6 @@ import {
 	EquivalentHtmlAttr,
 } from '@markuplint/ml-spec';
 import { arrayUnique, nameCompare } from './utils';
-import type cheerio from 'cheerio';
 import fetch from './fetch';
 
 async function getAriaInHtml() {

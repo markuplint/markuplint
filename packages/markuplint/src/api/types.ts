@@ -38,4 +38,5 @@ export type MLEngineEventMap = {
 	i18n: (filePath: string, i18n: I18n, message?: string) => void;
 	code: (filePath: string, sourceCode: string, message?: string) => void;
 	lint: (filePath: string, sourceCode: string, violations: Violation[], fixedCode: string, message?: string) => void;
+	'lint-error': (filePath: string, sourceCode: string, error: Error) => void;
 };

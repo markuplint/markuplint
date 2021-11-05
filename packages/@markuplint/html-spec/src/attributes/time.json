@@ -3,8 +3,9 @@
 	"attributes": [
 		{
 			"name": "kind",
-			"type": "String",
-			"enum": ["subtitles", "captions", "descriptions", "chapters", "metadata"]
+			"type": {
+				"enum": ["subtitles", "captions", "descriptions", "chapters", "metadata"]
+			}
 		},
 		{
 			"name": "src",

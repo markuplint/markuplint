@@ -87,10 +87,22 @@ prop: value
 
 ### `specs`
 
-Add the spec module path to this array.
+Set a regular expression that can identify the target file name to the key, and the spec module path to the value.
 
 ```json
 {
+	"specs": {
+		".vue$": "@markuplint/vue-spec",
+		".any$": "./path/to/custom-specs/any-lang"
+	}
+}
+```
+
+Or, Add the spec module path to this array. But this is the format for version `1.x`, so it's **deprecated**.
+
+```json
+{
+	// Depraceted
 	"specs": ["@markuplint/vue-spec", "./path/to/custom-specs/any-lang"]
 }
 ```

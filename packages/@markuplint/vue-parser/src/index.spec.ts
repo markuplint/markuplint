@@ -1,3 +1,4 @@
+import { MLASTElement } from '@markuplint/ml-ast';
 import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 import { parse } from './';
 
@@ -332,5 +333,15 @@ describe('parser', () => {
 		expect(doc.nodeList[0].attributes[3].isDirective).toBeTruthy();
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[4].isDirective).toBeTruthy();
+	});
+
+	it('namespace', () => {
+		const doc = parse('<template><div><svg><text /></svg></div></template>');
+		expect(doc.nodeList[0].nodeName).toBe('div');
+		expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[1].nodeName).toBe('svg');
+		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].nodeName).toBe('text');
+		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
 	});
 });

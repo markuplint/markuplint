@@ -1,0 +1,50 @@
+{
+	"tag": "a",
+	"attributes": [
+		"#ariaAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs",
+		"#XLinkAttrs",
+		{
+			"name": "href",
+			"type": "URL"
+		},
+		{
+			"name": "target",
+			"type": "Target",
+			"defaultValue": "_self"
+		},
+		{
+			"name": "download",
+			"type": "String"
+		},
+		{
+			"name": "ping",
+			"type": "URLList"
+		},
+		{
+			"name": "rel",
+			"type": "LinkTypeList"
+		},
+		{
+			"name": "hreflang",
+			"type": "String"
+		},
+		{
+			"name": "type",
+			"type": "String"
+		},
+		{
+			"name": "referrerpolicy",
+			"type": "ReferrerPolicy"
+		},
+		{
+			"name": "xlink:href",
+			"type": "URL",
+			"deprecated": true
+		}
+	]
+}

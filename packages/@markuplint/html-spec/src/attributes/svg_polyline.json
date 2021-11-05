@@ -1,0 +1,19 @@
+{
+	"tag": "polyline",
+	"attributes": [
+		"#ariaAttrs",
+		"#SVGConditionalProcessingAttrs",
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGDocumentElementEventAttrs",
+		"#SVGPresentationAttrs",
+		{
+			"name": "pathLength",
+			"type": "Float"
+		},
+		{
+			"name": "points",
+			"type": "SVGPoints"
+		}
+	]
+}

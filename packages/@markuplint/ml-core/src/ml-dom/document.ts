@@ -58,6 +58,10 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		schemas: readonly [MLMLSpec, ...ExtendedSpec[]],
 		filename?: string,
 	) {
+		this.isFragment = ast.isFragment;
+		this.specs = getSpec(schemas);
+		this.#filename = filename;
+
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
 		this.nodeList = Object.freeze(
 			ast.nodeList.map(astNode => {
@@ -67,11 +71,6 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				return createNode<MLASTNode, T, O>(astNode, this);
 			}),
 		);
-		this.isFragment = ast.isFragment;
-
-		this.specs = getSpec(schemas);
-
-		this.#filename = filename;
 
 		this._init(ruleset);
 	}

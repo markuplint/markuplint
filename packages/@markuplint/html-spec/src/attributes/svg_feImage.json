@@ -1,0 +1,45 @@
+{
+	"tag": "feImage",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		{
+			"name": "externalResourcesRequired",
+			"type": {
+				"enum": ["true", "false"]
+			},
+			"defaultValue": "true"
+		},
+		{
+			"name": "preserveAspectRatio",
+			"type": "SVGPreserveAspectRatio",
+			"defaultValue": "xMidYMid meet"
+		},
+		{
+			"name": "xlink:href",
+			"type": "IRI",
+			"deprecated": true
+		},
+		{
+			"name": "href",
+			"type": "IRI"
+		},
+		{
+			"name": "crossorigin",
+			"type": {
+				"enum": ["anonymous", "use-credentials"]
+			}
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		}
+	]
+}

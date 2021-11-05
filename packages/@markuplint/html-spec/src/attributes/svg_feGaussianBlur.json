@@ -1,0 +1,46 @@
+{
+	"tag": "feGaussianBlur",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGPresentationAttrs",
+		"#SVGFilterPrimitiveAttrs",
+		{
+			"name": "in",
+			"type": [
+				{
+					"enum": [
+						"SourceGraphic",
+						"SourceAlpha",
+						"BackgroundImage",
+						"BackgroundAlpha",
+						"FillPaint",
+						"StrokePaint"
+					]
+				},
+				"CSSCustomIdent"
+			]
+		},
+		{
+			"name": "stdDeviation",
+			"type": "SVGNumberOptionalNumber",
+			"defaultValue": "0"
+		},
+		{
+			"name": "edgeMode",
+			"type": {
+				"enum": ["duplicate", "wrap", "none"]
+			},
+			"defaultValue": "none"
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "100%"
+		}
+	]
+}

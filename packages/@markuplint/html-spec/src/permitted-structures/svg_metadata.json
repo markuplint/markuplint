@@ -1,0 +1,8 @@
+{
+	"tag": "metadata",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGOtherXMLNamespace", "#text"]
+		}
+	]
+}

@@ -11,8 +11,7 @@
 		},
 		{
 			"name": "crossorigin",
-			"type": "String",
-			"enum": ["anonymous", "use-credentials"]
+			"type": "Crossorigin"
 		},
 		{
 			"name": "height",
@@ -28,8 +27,9 @@
 		},
 		{
 			"name": "preload",
-			"type": "String",
-			"enum": ["none", "metadata", "auto", ""]
+			"type": {
+				"enum": ["none", "metadata", "auto", ""]
+			}
 		},
 		{
 			"name": "playsinline",
@@ -49,8 +49,9 @@
 		},
 		{
 			"name": "controlslist",
-			"type": "String",
-			"enum": ["nodownload", "nofullscreen", "noremoteplayback"]
+			"type": {
+				"enum": ["nodownload", "nofullscreen", "noremoteplayback"]
+			}
 		}
 	]
 }

@@ -1,11 +1,11 @@
 /* global cheerio */
 
-import { Attribute, ContentModel, ElementSpec } from '@markuplint/ml-spec';
+import type { Attribute, AttributeJSON, ContentModel, ElementSpec } from '@markuplint/ml-spec';
+import { getThisOutline, nameCompare } from './utils';
 import fetch from './fetch';
 import { getAriaInHtml } from './get-aria-in-html';
 import { getAttribute } from './get-attribute';
 import { getPermittedStructures } from './get-permitted-structures';
-import { nameCompare } from './utils';
 
 const MAIN_ARTICLE_SELECTOR = 'article.main-page-content, article.article';
 
@@ -142,11 +142,16 @@ export async function getHTMLElement(link: string) {
 	return spec;
 }
 
-export function getAttributes($: cheerio.Root, heading: string, tagName: string): Attribute[] {
+export function getAttributes($: cheerio.Root, heading: string, tagName: string): (Attribute | string)[] {
 	const $heading = $(heading);
 	const $outline = getThisOutline($, $heading);
 	const { attributes } = getAttribute(tagName);
-	const result: Attribute[] = attributes.map(a => ({ ...a, description: '' }));
+	const result: (Attribute | string)[] = attributes.map(a => {
+		if (typeof a === 'string') {
+			return a;
+		}
+		return { ...a, description: '' };
+	});
 	$outline
 		.find('> div > dl > dt')
 		.toArray()
@@ -178,7 +183,7 @@ export function getAttributes($: cheerio.Root, heading: string, tagName: string)
 				.trim()
 				.replace(/(?:\r?\n|\s)+/gi, ' ');
 
-			const specIndex = result.findIndex(attr => attr.name === name);
+			const specIndex = result.findIndex(attr => typeof attr !== 'string' && attr.name === name);
 			if (specIndex === -1) {
 				result.push({
 					name,
@@ -191,6 +196,10 @@ export function getAttributes($: cheerio.Root, heading: string, tagName: string)
 				});
 				return;
 			}
+
+			const _attr = attributes[specIndex];
+			const attr = typeof _attr !== 'string' ? _attr : ({} as AttributeJSON);
+
 			result[specIndex] = {
 				// @ts-ignore for key order that "name" is first
 				name,
@@ -199,7 +208,7 @@ export function getAttributes($: cheerio.Root, heading: string, tagName: string)
 				obsolete,
 				deprecated,
 				nonStandard,
-				...attributes[specIndex],
+				...attr,
 			};
 		});
 	return result;
@@ -218,18 +227,6 @@ function getProperty($: cheerio.Root, prop: string) {
 		.text()
 		.trim()
 		.replace(/(?:\r?\n|\s)+/gi, ' ');
-}
-
-function getThisOutline($: cheerio.Root, $start: cheerio.Cheerio) {
-	const $container = $('<div></div>');
-	let $next = $start.next();
-	const els = [$start.clone()];
-	while (!!$next.length && !$next.filter('h2').length) {
-		els.push($next.clone());
-		$next = $next.next();
-	}
-	els.forEach(el => $container.append(el));
-	return $container;
 }
 
 function getItsHeading($start: cheerio.Cheerio) {

@@ -11,8 +11,9 @@
 		},
 		{
 			"name": "type",
-			"type": "String",
-			"enum": ["1", "a", "A", "i", "I"]
+			"type": {
+				"enum": ["1", "a", "A", "i", "I"]
+			}
 		}
 	]
 }

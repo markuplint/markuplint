@@ -1,0 +1,62 @@
+{
+	"tag": "feSpotLight",
+	"attributes": [
+		"#SVGCoreAttrs",
+		{
+			"name": "in",
+			"type": [
+				{
+					"enum": [
+						"SourceGraphic",
+						"SourceAlpha",
+						"BackgroundImage",
+						"BackgroundAlpha",
+						"FillPaint",
+						"StrokePaint"
+					]
+				},
+				"CSSCustomIdent"
+			]
+		},
+		{
+			"name": "x",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "z",
+			"type": "Float",
+			"defaultValue": "1"
+		},
+		{
+			"name": "pointsAtX",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "pointsAtY",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "pointsAtZ",
+			"type": "Float",
+			"defaultValue": "0"
+		},
+		{
+			"name": "specularExponent",
+			"type": "Float",
+			"defaultValue": "1"
+		},
+		{
+			"name": "limitingConeAngle",
+			"type": "Float",
+			"defaultValue": "0"
+		}
+	]
+}

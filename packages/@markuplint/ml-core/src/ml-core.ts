@@ -67,8 +67,25 @@ export class MLCore {
 			if (fix) {
 				await rule.fix(this.#document, ruleInfo);
 			}
-			const results = await rule.verify(this.#document, this.#i18n, ruleInfo);
-			violations.push(...results);
+			const results = await rule.verify(this.#document, this.#i18n, ruleInfo).catch(e => {
+				if (e instanceof MLParseError) {
+					return e;
+				}
+				throw e;
+			});
+
+			if (results instanceof MLParseError) {
+				violations.push({
+					ruleId: 'parse-error',
+					severity: 'error',
+					message: results.message,
+					col: results.col,
+					line: results.line,
+					raw: results.raw,
+				});
+			} else {
+				violations.push(...results);
+			}
 		}
 		return violations;
 	}

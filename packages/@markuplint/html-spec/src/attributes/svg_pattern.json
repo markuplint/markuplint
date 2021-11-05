@@ -1,0 +1,64 @@
+{
+	"tag": "pattern",
+	"attributes": [
+		"#SVGCoreAttrs",
+		"#SVGGlobalEventAttrs",
+		"#SVGPresentationAttrs",
+		"#XLinkAttrs",
+		{
+			"name": "viewBox",
+			"type": "SVGViewBox"
+		},
+		{
+			"name": "preserveAspectRatio",
+			"type": "SVGPreserveAspectRatio"
+		},
+		{
+			"name": "x",
+			"type": "SVGLength",
+			"defaultValue": "0"
+		},
+		{
+			"name": "y",
+			"type": "SVGLength",
+			"defaultValue": "0"
+		},
+		{
+			"name": "width",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "height",
+			"type": ["SVGLength", "SVGPercentage"],
+			"defaultValue": "0"
+		},
+		{
+			"name": "patternUnits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+			},
+			"defaultValue": "objectBoundingBox"
+		},
+		{
+			"name": "patternContentUnits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+			},
+			"defaultValue": "userSpaceOnUse"
+		},
+		{
+			"name": "patternTransform",
+			"type": "CSSTransformList"
+		},
+		{
+			"name": "href",
+			"type": "URL"
+		},
+		{
+			"name": "xlink:href",
+			"type": "URL",
+			"deprecated": true
+		}
+	]
+}
