@@ -22,7 +22,7 @@ test('nodeName', async () => {
 			nodeName: '/^[a-z]+$/',
 		}),
 	).toStrictEqual({
-		$0: 'div',
+		__nodeName: 'div',
 	});
 });
 
@@ -33,7 +33,7 @@ test('nodeName named group capture', async () => {
 			nodeName: '/^h(?<level>[1-6])$/',
 		}),
 	).toStrictEqual({
-		$0: 'h6',
+		__nodeName: 'h6',
 		$1: '6',
 		level: '6',
 	});
@@ -46,7 +46,7 @@ test('nodeName (No RegExp)', async () => {
 			nodeName: 'div',
 		}),
 	).toStrictEqual({
-		$0: 'div',
+		__nodeName: 'div',
 	});
 });
 
@@ -57,7 +57,7 @@ test('attrName', async () => {
 			attrName: '/^data-([a-z]+)$/',
 		}),
 	).toStrictEqual({
-		$0: 'data-attr',
+		__attrName0: 'data-attr',
 		$1: 'attr',
 	});
 });
@@ -69,7 +69,7 @@ test('attrValue', async () => {
 			attrValue: '/^[a-z]+$/',
 		}),
 	).toStrictEqual({
-		$0: 'abc',
+		__attrValue0: 'abc',
 	});
 });
 
@@ -84,6 +84,32 @@ test('No matched', async () => {
 	).toStrictEqual(null);
 });
 
+test('nodeName & attrName', async () => {
+	const el = createTestElement('<div data-attr="abc"></div>');
+	expect(
+		matchSelector(el, {
+			nodeName: 'div',
+			attrName: 'data-attr',
+		}),
+	).toStrictEqual({
+		__nodeName: 'div',
+		__attrName0: 'data-attr',
+	});
+});
+
+test('attrName & attrValue', async () => {
+	const el = createTestElement('<div data-attr="abc"></div>');
+	expect(
+		matchSelector(el, {
+			attrName: 'data-attr',
+			attrValue: '/^[a-z]+$/',
+		}),
+	).toStrictEqual({
+		__attrName0: 'data-attr',
+		__attrValue0: 'abc',
+	});
+});
+
 test('nodeName & attrName & attrValue', async () => {
 	const el = createTestElement('<div data-attr="abc"></div>');
 	expect(
@@ -93,6 +119,8 @@ test('nodeName & attrName & attrValue', async () => {
 			attrValue: 'abc',
 		}),
 	).toStrictEqual({
-		$0: 'abc',
+		__nodeName: 'div',
+		__attrName0: 'data-attr',
+		__attrValue0: 'abc',
 	});
 });
