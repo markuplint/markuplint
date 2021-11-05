@@ -154,9 +154,9 @@ describe('selector matching', () => {
 		const el2 = createTestElement('<div><a></a></div>');
 		expect(createSelector(':has(> span)').match(el2)).toBe(false);
 
+		const el3 = createTestElement('<header><article></article></header>');
 		const selector =
 			':has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])';
-		const el3 = createTestElement('<header><article></article></header>');
 		expect(createSelector(selector).match(el3)).toBe(true);
 		const el4 = createTestElement('<header><div><article></article></div></header>');
 		expect(createSelector(selector).match(el4)).toBe(true);

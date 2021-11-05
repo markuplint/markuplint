@@ -161,3 +161,54 @@ test('rule', async () => {
 	document.setRule(ruleB);
 	expect(document.nodeList[1].rule.disabled).toBe(false);
 });
+
+test('regexSelector', async () => {
+	const document = createTestDocument('<img src="path/to/name.png" />', {
+		rules: {
+			ruleA: true,
+		},
+		nodeRules: [
+			{
+				regexSelector: {
+					nodeName: 'img',
+					attrName: 'src',
+					attrValue: '/(?<fileName>[a-z0-9_-]+)\\.png$/',
+				},
+				rules: {
+					ruleA: {
+						value: 'fileName is {{ fileName }}',
+						option: {
+							propA: 'fileName is {{ fileName }}',
+							propB: ['fileName is {{ fileName }}'],
+							propC: {
+								prop: 'fileName is {{ fileName }}',
+							},
+						},
+					},
+				},
+			},
+		],
+	});
+	const ruleA = createRule({
+		name: 'ruleA',
+		defaultValue: 'foo',
+		defaultOptions: null,
+		async verify() {
+			throw new Error();
+		},
+	});
+	document.setRule(ruleA);
+	expect(document.nodeList[0].rule).toStrictEqual({
+		disabled: false,
+		reason: undefined,
+		severity: 'error',
+		value: 'fileName is name',
+		option: {
+			propA: 'fileName is name',
+			propB: ['fileName is name'],
+			propC: {
+				prop: 'fileName is name',
+			},
+		},
+	});
+});

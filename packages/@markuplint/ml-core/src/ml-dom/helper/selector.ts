@@ -98,7 +98,7 @@ class SelectorTarget {
 		switch (combinator.value) {
 			// Descendant combinator
 			case ' ': {
-				let ancestor: TargetElement | null = el.parentNode;
+				let ancestor = el.parentNode;
 				while (ancestor) {
 					const ancestorMatched = target._matchWithoutCombinateChecking(ancestor, caller);
 					if (ancestorMatched) {
@@ -132,10 +132,10 @@ class SelectorTarget {
 			}
 			// Subsequent-sibling combinator
 			case '~': {
-				let prev: TargetElement | null = el.previousElementSibling;
+				let prev = el.previousElementSibling;
 				while (prev) {
-					const nextMatched = target._matchWithoutCombinateChecking(prev, caller);
-					if (nextMatched) {
+					const prevMatched = target._matchWithoutCombinateChecking(prev, caller);
+					if (prevMatched) {
 						return target.match(prev, caller);
 					}
 					prev = prev.previousElementSibling;

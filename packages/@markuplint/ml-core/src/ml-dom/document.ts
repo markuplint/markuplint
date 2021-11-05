@@ -3,10 +3,11 @@ import { ExtendedSpec, MLMLSpec, getSpec } from '@markuplint/ml-spec';
 import { MLASTDocument, MLASTNode, MLASTNodeType } from '@markuplint/ml-ast';
 import { MLDOMComment, MLDOMDoctype, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
 import { NodeStore, createNode } from './helper';
+import { RuleConfigValue, exchangeValueOnRule } from '@markuplint/ml-config';
 import { Walker, syncWalk } from './helper/walkers';
 import { MLRule } from '../';
-import { RuleConfigValue } from '@markuplint/ml-config';
 import Ruleset from '../ruleset';
+import { matchSelector } from './helper/match-selector';
 
 /**
  * markuplint DOM Document
@@ -192,12 +193,12 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					continue;
 				}
 
-				const selector = nodeRule.selector || nodeRule.tagName;
+				const selector = nodeRule.selector || nodeRule.tagName || nodeRule.regexSelector;
 				if (!selector) {
 					continue;
 				}
 
-				const matched = selectorTarget.matches(selector);
+				const matched = matchSelector(selectorTarget, selector);
 
 				if (!matched) {
 					continue;
@@ -206,14 +207,18 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				// special rules
 				for (const ruleName of Object.keys(nodeRule.rules)) {
 					const rule = nodeRule.rules[ruleName];
-					node.rules[ruleName] = rule;
+					const convertedRule = exchangeValueOnRule(rule, matched);
+					if (convertedRule === undefined) {
+						continue;
+					}
+					node.rules[ruleName] = convertedRule;
 				}
 			}
 		}
 
 		// overwrite rule to child node
 		for (const nodeRule of ruleset.childNodeRules) {
-			if (!nodeRule.rules || !nodeRule.selector) {
+			if (!nodeRule.rules) {
 				break;
 			}
 			for (const ruleName of Object.keys(nodeRule.rules)) {
@@ -222,14 +227,19 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					if (node.type !== 'Element') {
 						continue;
 					}
-					if (node.matches(nodeRule.selector)) {
+					const matched = matchSelector(node, nodeRule.selector || nodeRule.regexSelector);
+					if (matched) {
+						const convertedRule = exchangeValueOnRule(rule, matched);
+						if (convertedRule === undefined) {
+							continue;
+						}
 						if (nodeRule.inheritance) {
 							syncWalk(node.childNodes, childNode => {
-								childNode.rules[ruleName] = rule;
+								childNode.rules[ruleName] = convertedRule;
 							});
 						} else {
 							for (const childNode of node.childNodes) {
-								childNode.rules[ruleName] = rule;
+								childNode.rules[ruleName] = convertedRule;
 							}
 						}
 					}
