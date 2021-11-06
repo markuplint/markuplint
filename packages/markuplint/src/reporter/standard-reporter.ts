@@ -56,17 +56,7 @@ export function standardReporter(results: MLResultInfo, options: CLIOptions) {
 			out.push(`  ${c.cyan(p(violation.line + 1, sizes.col, true))}: ${space(next)}`);
 		}
 	} else if (!options.problemOnly) {
-		if (options.verbose) {
-			out.push(`<${markuplint}> ${c.green('passed')}🎉`);
-			// out.push(`  Filepath: ${results.filePath}`);
-			// out.push(`  Parser: ${results.parser}`);
-			out.push('  Config: [');
-			// out.push(`    ${results.configSet.files.join('\n    ')}`);
-			out.push('  ]');
-			// out.push(JSON.stringify(data, null, 2));
-		} else {
-			out.push(`<${markuplint}> ${c.green('passed')} ${c.underline(results.filePath)}`);
-		}
+		out.push(`<${markuplint}> ${c.green('passed')} ${c.underline(results.filePath)}`);
 	}
 
 	return out;
