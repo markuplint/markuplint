@@ -1,4 +1,5 @@
 import { Config, RuleConfigValue } from '@markuplint/ml-config';
+import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 import { Document } from '../ml-dom';
 import { convertRuleset } from '../convert-ruleset';
 import { parse } from '@markuplint/html-parser';
@@ -51,3 +52,11 @@ type Alphabet =
 	| 'x'
 	| 'y'
 	| 'z';
+
+/**
+ * for test suite
+ */
+export function dummySchemas() {
+	// @ts-ignore
+	return [{}, {}] as [MLMLSpec, ...ExtendedSpec[]];
+}
