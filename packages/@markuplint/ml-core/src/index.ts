@@ -9,3 +9,4 @@ export * from './ml-dom';
 export * from './utils';
 export * from './types';
 export * from './test';
+export { enableDebug } from './debug';

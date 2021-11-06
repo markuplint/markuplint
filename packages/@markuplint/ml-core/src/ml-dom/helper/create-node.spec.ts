@@ -1,7 +1,7 @@
 import { Document } from '../';
 import { convertRuleset } from '../../';
 import { createNode } from './create-node';
-import { dummySchemas } from '../debug-utils';
+import { dummySchemas } from '../../test';
 import { parse } from '@markuplint/html-parser';
 
 describe('create Node', () => {

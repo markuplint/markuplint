@@ -20,7 +20,7 @@ export function matchSelector(
 	if (typeof selector === 'string') {
 		const sel = createSelector(selector);
 		const matched = sel.match(el);
-		return matched ? {} : null;
+		return matched ? { __node: selector } : null;
 	}
 
 	return regexSelect(el, selector);

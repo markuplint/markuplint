@@ -15,7 +15,11 @@ import { FSWatcher } from 'chokidar';
 import { MLResultInfo } from '../types';
 import { RuleConfigValue } from '@markuplint/ml-config';
 import { StrictEventEmitter } from 'strict-event-emitter';
+import { log as coreLog } from '../debug';
 import { i18n } from '../i18n';
+
+const log = coreLog.extend('ml-engine');
+const fileLog = log.extend('file');
 
 type MLEngineOptions = {
 	watch?: boolean;
@@ -45,23 +49,27 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 	}
 
 	async exec(): Promise<MLResultInfo | null> {
+		log('exec: start');
 		const core = await this.setup();
 
 		if (!core) {
+			log('exec: cancel (unsetuped yet)');
 			return null;
 		}
 
-		const sourceCode = await this.#file.getCode();
 		const violations = await core.verify(this.#options?.fix).catch(e => {
 			if (e instanceof Error) {
 				return e;
 			}
 			throw e;
 		});
+
+		const sourceCode = await this.#file.getCode();
 		const fixedCode = core.document.toString();
 
 		if (violations instanceof Error) {
 			this.emit('lint-error', this.#file.path, sourceCode, violations);
+			log('exec: error %o', violations.message);
 			return {
 				violations: [],
 				filePath: this.#file.path,
@@ -71,6 +79,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		}
 
 		this.emit('lint', this.#file.path, sourceCode, violations, fixedCode);
+		log('exec: end');
 		return {
 			violations,
 			filePath: this.#file.path,
@@ -111,6 +120,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 
 	private async provide(remerge: boolean): Promise<MLFabric | null> {
 		const configSet = await this.resolveConfig(remerge);
+		fileLog('Fetched Config files: %O', configSet.files);
 
 		// Exclude
 		const excludeFiles = configSet.config.excludeFiles || [];
@@ -145,7 +155,10 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 	}
 
 	private async cretateCore(fabric: MLFabric) {
+		fileLog('Get source code');
 		const sourceCode = await this.#file.getCode();
+		fileLog('Source code path: %s', this.#file.path);
+		fileLog('Source code size: %dbyte', sourceCode.length);
 		this.emit('code', this.#file.path, sourceCode);
 
 		const core = new MLCore({
@@ -181,6 +194,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 	private async resolveParser(configSet: ConfigSet) {
 		const parser = await resolveParser(this.#file, configSet.config.parser, configSet.config.parserOptions);
 		this.emit('parser', this.#file.path, parser.parserModName);
+		fileLog('Fetched Parser module: %s', parser.parserModName);
 		return parser;
 	}
 

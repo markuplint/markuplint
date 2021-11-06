@@ -7,7 +7,11 @@ import { RuleConfigValue, exchangeValueOnRule } from '@markuplint/ml-config';
 import { Walker, syncWalk } from './helper/walkers';
 import { MLRule } from '../';
 import Ruleset from '../ruleset';
+import { log as coreLog } from '../debug';
 import { matchSelector } from './helper/match-selector';
+
+const log = coreLog.extend('ml-dom');
+const docLog = log.extend('document');
 
 /**
  * markuplint DOM Document
@@ -173,8 +177,10 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	}
 
 	private _init(ruleset: Ruleset) {
+		docLog('Initialize');
 		// add rules to node
 		for (const node of this.nodeList) {
+			docLog('Add rules to node <%s>', 'nodeName' in node ? node.nodeName : `#${node.type}`);
 			// global rules
 			for (const ruleName of Object.keys(ruleset.rules)) {
 				const rule = ruleset.rules[ruleName];
@@ -204,8 +210,16 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					continue;
 				}
 
+				const ruleList = Object.keys(nodeRule.rules);
+				docLog(
+					'Matched nodeRule: <%s>(%s) <- Rules: %o',
+					node.nodeName,
+					matched.__node || 'No Selector',
+					ruleList,
+				);
+
 				// special rules
-				for (const ruleName of Object.keys(nodeRule.rules)) {
+				for (const ruleName of ruleList) {
 					const rule = nodeRule.rules[ruleName];
 					const convertedRule = exchangeValueOnRule(rule, matched);
 					if (convertedRule === undefined) {
@@ -227,12 +241,19 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					if (node.type !== 'Element') {
 						continue;
 					}
+
 					const matched = matchSelector(node, nodeRule.selector || nodeRule.regexSelector);
 					if (matched) {
 						const convertedRule = exchangeValueOnRule(rule, matched);
 						if (convertedRule === undefined) {
 							continue;
 						}
+						docLog(
+							'Matched childNodeRule: <%s>(%s) <- Rule: %s',
+							node.nodeName,
+							matched.__node || 'No Selector',
+							ruleName,
+						);
 						if (nodeRule.inheritance) {
 							syncWalk(node.childNodes, childNode => {
 								childNode.rules[ruleName] = convertedRule;
