@@ -6,6 +6,9 @@ import type { I18n } from '@markuplint/i18n';
 import MLParseError from './ml-error/ml-parse-error';
 import type { MLRule } from './ml-rule';
 import type Ruleset from './ruleset';
+import { log } from './debug';
+
+const resultLog = log.extend('result');
 
 export type MLCoreParams = {
 	sourceCode: string;
@@ -46,6 +49,7 @@ export class MLCore {
 	}
 
 	async verify(fix = false) {
+		log('verify: start');
 		const violations: Violation[] = [];
 		if (this.#document instanceof MLParseError) {
 			violations.push({
@@ -56,6 +60,7 @@ export class MLCore {
 				line: this.#document.line,
 				raw: this.#document.raw,
 			});
+			log('verify: error %o', this.#document.message);
 			return violations;
 		}
 
@@ -65,8 +70,11 @@ export class MLCore {
 				continue;
 			}
 			if (fix) {
+				log('%s Rule: fix', rule.name);
 				await rule.fix(this.#document, ruleInfo);
+				log('%s Rule: end fix', rule.name);
 			}
+			log('%s Rule: verify', rule.name);
 			const results = await rule.verify(this.#document, this.#i18n, ruleInfo).catch(e => {
 				if (e instanceof MLParseError) {
 					return e;
@@ -75,6 +83,7 @@ export class MLCore {
 			});
 
 			if (results instanceof MLParseError) {
+				log('%s Rule: verify error %o', rule.name, results.message);
 				violations.push({
 					ruleId: 'parse-error',
 					severity: 'error',
@@ -86,7 +95,21 @@ export class MLCore {
 			} else {
 				violations.push(...results);
 			}
+			log('%s Rule: verify end', rule.name);
 		}
+		const { e, w, i } = violations.reduce(
+			(c, v) => {
+				if (v.severity === 'error') c.e += 1;
+				if (v.severity === 'warning') c.w += 1;
+				if (v.severity === 'info') c.i += 1;
+				return c;
+			},
+			{ e: 0, w: 0, i: 0 },
+		);
+		resultLog('Error: %d', e);
+		resultLog('Warning: %d', w);
+		resultLog('Info: %d', i);
+		log('verify: end');
 		return violations;
 	}
 
