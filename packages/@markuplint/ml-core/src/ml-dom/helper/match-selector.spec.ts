@@ -3,15 +3,15 @@ import { matchSelector } from './match-selector';
 
 test('CSS Selector', async () => {
 	const el = createTestElement('<div id="hoge" class="foo bar"></div>');
-	expect(matchSelector(el, '*')).toStrictEqual({});
-	expect(matchSelector(el, 'div')).toStrictEqual({});
-	expect(matchSelector(el, 'div#hoge')).toStrictEqual({});
+	expect(matchSelector(el, '*')).toStrictEqual({ __node: '*' });
+	expect(matchSelector(el, 'div')).toStrictEqual({ __node: 'div' });
+	expect(matchSelector(el, 'div#hoge')).toStrictEqual({ __node: 'div#hoge' });
 	expect(matchSelector(el, 'div#fuga')).toStrictEqual(null);
-	expect(matchSelector(el, '#hoge')).toStrictEqual({});
-	expect(matchSelector(el, 'div.foo')).toStrictEqual({});
-	expect(matchSelector(el, 'div.bar')).toStrictEqual({});
-	expect(matchSelector(el, '.foo')).toStrictEqual({});
-	expect(matchSelector(el, '.foo.bar')).toStrictEqual({});
+	expect(matchSelector(el, '#hoge')).toStrictEqual({ __node: '#hoge' });
+	expect(matchSelector(el, 'div.foo')).toStrictEqual({ __node: 'div.foo' });
+	expect(matchSelector(el, 'div.bar')).toStrictEqual({ __node: 'div.bar' });
+	expect(matchSelector(el, '.foo')).toStrictEqual({ __node: '.foo' });
+	expect(matchSelector(el, '.foo.bar')).toStrictEqual({ __node: '.foo.bar' });
 	expect(matchSelector(el, '.any')).toStrictEqual(null);
 });
 
