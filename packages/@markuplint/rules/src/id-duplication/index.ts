@@ -4,10 +4,14 @@ export default createRule({
 	name: 'id-duplication',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(context) {
-		const message = context.translate('Duplicate {0}', 'attribute id value');
+	async verify({ document, report, t }) {
+		const message = t(
+			'{0} is {1:c}',
+			t('{0} of {1}', t('the {0}', 'value'), t('the "{0}" {1}', 'id', 'attribute')),
+			'duplicated',
+		);
 		const idStack: string[] = [];
-		await context.document.walkOn('Element', async node => {
+		await document.walkOn('Element', async node => {
 			const idAttrs = node.getAttributeToken('id');
 			for (const idAttr of idAttrs) {
 				if (
@@ -19,7 +23,7 @@ export default createRule({
 				}
 				const id = idAttr.getValue();
 				if (idStack.includes(id.raw)) {
-					context.report({
+					report({
 						scope: node,
 						message,
 						line: idAttr.startLine,

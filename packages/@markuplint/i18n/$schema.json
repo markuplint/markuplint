@@ -15,7 +15,7 @@
 				"attribute name": { "type": "string" },
 				"attribute names": { "type": "string" },
 				"attribute value": { "type": "string" },
-				"attribute id value": { "type": "string" },
+				"value": { "type": "string" },
 				"element": { "type": "string" },
 				"html elements": { "type": "string" },
 				"class name": { "type": "string" },
