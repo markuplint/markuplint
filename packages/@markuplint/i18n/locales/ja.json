@@ -5,6 +5,7 @@
 		"attribute": "属性",
 		"attributes": "属性",
 		"attribute name": "属性名",
+		"attribute names": "属性名",
 		"attribute value": "属性値",
 		"attribute id value": "id属性の値",
 		"element": "要素",
@@ -38,6 +39,7 @@
 	},
 	"sentences": {
 		"the {0}": "その{0}",
+		"{0} of {1}": "{1}の{0}",
 		"{0} is {1}": "{0}は{1}です",
 		"{0} is {1:c}": "{0}{1:c}",
 		"The {0} {1} is {2}": "{0}{1}は{2}です",

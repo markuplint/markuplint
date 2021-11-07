@@ -8,21 +8,16 @@ export default createRule<Value, null>({
 	defaultLevel: 'warning',
 	defaultValue: 'no-upper',
 	defaultOptions: null,
-	async verify(context) {
-		await context.document.walkOn('Element', async node => {
+	async verify({ document, report, t }) {
+		await document.walkOn('Element', async node => {
 			if (node.isForeignElement || node.isCustomElement) {
 				return;
 			}
 			const ms = node.rule.severity === 'error' ? 'must' : 'should';
 			const deny = node.rule.value === 'no-upper' ? /[A-Z]/ : /[a-z]/;
 			const cases = node.rule.value === 'no-upper' ? 'lower' : 'upper';
-			const message = context.translate(
-				`{0} of {1} ${ms} be {2}`,
-				'Attribute name',
-				'HTML elements',
-				`${cases}case`,
-			);
-			const attrSpecs = getAttrSpecs(node.nameWithNS, context.document.specs);
+			const message = t(`{0} ${ms} be {1}`, t('{0} of {1}', 'attribute names', 'HTML elements'), `${cases}case`);
+			const attrSpecs = getAttrSpecs(node.nameWithNS, document.specs);
 
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'ps-attr') {
@@ -46,7 +41,7 @@ export default createRule<Value, null>({
 				}
 
 				if (deny.test(name.raw)) {
-					context.report({
+					report({
 						scope: node,
 						message,
 						line: name.line,

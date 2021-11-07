@@ -12,6 +12,7 @@
 				"attribute": { "type": "string" },
 				"attributes": { "type": "string" },
 				"attribute name": { "type": "string" },
+				"attribute names": { "type": "string" },
 				"attribute value": { "type": "string" },
 				"attribute id value": { "type": "string" },
 				"element": { "type": "string" },
@@ -49,6 +50,7 @@
 			"additionalProperties": false,
 			"properties": {
 				"the {0}": { "type": "string" },
+				"{0} of {1}": { "type": "string" },
 				"{0} is {1}": { "type": "string" },
 				"{0} is {1:c}": { "type": "string" },
 				"The {0} {1} is {2}": { "type": "string" },
