@@ -9,6 +9,7 @@
 			"properties": {
 				"tag": { "type": "string" },
 				"tag name": { "type": "string" },
+				"tag names": { "type": "string" },
 				"attribute": { "type": "string" },
 				"attributes": { "type": "string" },
 				"attribute name": { "type": "string" },
