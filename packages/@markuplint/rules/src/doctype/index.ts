@@ -20,7 +20,7 @@ export default createRule<Value, Option>({
 
 		if (!doctype) {
 			context.report({
-				message: context.translate('Required {0}', 'doctype'),
+				message: context.translate('Require {0}', 'doctype'),
 				line: 1,
 				col: 1,
 				raw: '',
