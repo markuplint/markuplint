@@ -40,6 +40,7 @@
 	},
 	"sentences": {
 		"the {0}": "その{0}",
+		"the \"{0}\" {1}": "{1}「{0}」",
 		"{0} of {1}": "{1}の{0}",
 		"{0} is {1}": "{0}は{1}です",
 		"{0} is {1:c}": "{0}{1:c}",
@@ -66,7 +67,7 @@
 		"Never insert {0} before {1} of {2}": "{2}の{1}の前には{0}を入れないでください",
 		"Always insert {0} after {1} of {2}": "{2}の{1}の後には{0}を入れてください",
 		"Never insert {0} after {1} of {2}": "{2}の{1}の後には{0}を入れないでください",
-		"{0} {1} is unmatched patterns ({2})": "{1}{0}は次のパターンにマッチしませんでした {2}",
+		"{0} is unmatched with the below patterns: {1}": "{0}は次のパターンにマッチしませんでした {1}",
 		"Should increase indentation": "インデントを深くしてください",
 		"Should decrease indentation": "インデントを浅くしてください",
 		"Start tag and end tag indentation should align": "開始タグと終了タグのインデントを揃えてください",

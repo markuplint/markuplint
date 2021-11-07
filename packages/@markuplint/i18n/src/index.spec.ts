@@ -23,3 +23,11 @@ test('Nesting', () => {
 		'HTML要素の属性名は小文字にするべきです',
 	);
 });
+
+test('ja', () => {
+	const t = translator(ja);
+
+	expect(
+		t('{0} is unmatched with the below patterns: {1}', t('the "{0}" {1}', 'foo', 'class name'), '"bar", "boo"'),
+	).toBe('クラス名「foo」は次のパターンにマッチしませんでした "bar", "boo"');
+});

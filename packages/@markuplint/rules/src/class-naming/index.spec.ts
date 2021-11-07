@@ -56,7 +56,7 @@ test('unmatched class name', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: '"c-root" class name is unmatched patterns ("/^c-[a-z]+__[a-z0-9]+/")',
+			message: 'The "c-root" class name is unmatched with the below patterns: "/^c-[a-z]+__[a-z0-9]+/"',
 			line: 2,
 			col: 15,
 			raw: 'c-root',
@@ -97,7 +97,7 @@ test('childNodeRules', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: '"c-root_x" class name is unmatched patterns ("/^c-[a-z]+__[a-z0-9]+/")',
+			message: 'The "c-root_x" class name is unmatched with the below patterns: "/^c-[a-z]+__[a-z0-9]+/"',
 			line: 3,
 			col: 16,
 			raw: 'c-root_x',
@@ -132,7 +132,7 @@ test('unmatched class name (2)', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: '"hoge" class name is unmatched patterns ("/^c-[a-z]+/")',
+			message: 'The "hoge" class name is unmatched with the below patterns: "/^c-[a-z]+/"',
 			line: 6,
 			col: 18,
 			raw: 'hoge',
@@ -211,7 +211,7 @@ test('childNodeRules multi selectors', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: '"hoge" class name is unmatched patterns ("hoge2")',
+			message: 'The "hoge" class name is unmatched with the below patterns: "hoge2"',
 			line: 6,
 			col: 18,
 			raw: 'hoge',
@@ -358,7 +358,7 @@ test('regexSelector', async () => {
 			col: 14,
 			raw: 'Heading__lv3',
 			message:
-				'"Heading__lv3" class name is unmatched patterns ("/^Card__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/")',
+				'The "Heading__lv3" class name is unmatched with the below patterns: "/^Card__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/"',
 			reason: 'Do not allow include the element in a no-own block.',
 		},
 		{
@@ -368,7 +368,7 @@ test('regexSelector', async () => {
 			col: 14,
 			raw: 'List__group',
 			message:
-				'"List__group" class name is unmatched patterns ("/^Card__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/")',
+				'The "List__group" class name is unmatched with the below patterns: "/^Card__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/"',
 			reason: 'Do not allow include the element in a no-own block.',
 		},
 		{
@@ -378,7 +378,7 @@ test('regexSelector', async () => {
 			col: 15,
 			raw: 'Card__list',
 			message:
-				'"Card__list" class name is unmatched patterns ("/^List__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/")',
+				'The "Card__list" class name is unmatched with the below patterns: "/^List__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/"',
 			reason: 'Do not allow include the element in a no-own block.',
 		},
 	]);

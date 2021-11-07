@@ -8,8 +8,8 @@ export default createRule<Value>({
 	defaultLevel: 'warning',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(context) {
-		await context.document.walkOn('Element', async node => {
+	async verify({ document, report, t }) {
+		await document.walkOn('Element', async node => {
 			if (node.rule.value) {
 				const classPatterns = Array.isArray(node.rule.value) ? node.rule.value : [node.rule.value];
 				const attrs = node.getAttributeToken('class');
@@ -24,12 +24,11 @@ export default createRule<Value>({
 						.filter(c => c);
 					for (const className of classList) {
 						if (!classPatterns.some(pattern => match(className, pattern))) {
-							context.report({
+							report({
 								scope: node,
-								message: context.translate(
-									'{0} {1} is unmatched patterns ({2})',
-									`"${className}"`,
-									'class name',
+								message: t(
+									'{0} is unmatched with the below patterns: {1}',
+									t('the "{0}" {1}', className, 'class name'),
 									`"${classPatterns.join('", "')}"`,
 								),
 								line: classAttr.line,
