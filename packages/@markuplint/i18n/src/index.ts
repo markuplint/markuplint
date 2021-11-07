@@ -3,8 +3,8 @@ export type Primitive = string | number | boolean;
 export type Translator = (messageTmpl: string, ...keywords: Primitive[]) => string;
 
 export interface LocaleSet {
-	keywords: LocalesKeywords;
-	[messageId: string]: string | void | LocalesKeywords;
+	keywords?: LocalesKeywords;
+	sentences?: LocalesKeywords;
 }
 
 export interface LocalesKeywords {
@@ -34,7 +34,7 @@ export class I18n {
 		return (messageTmpl: string, ...keywords: Primitive[]) => {
 			let message = messageTmpl;
 			if (localeSet) {
-				const t = localeSet[messageTmpl];
+				const t = localeSet.sentences?.[messageTmpl];
 				if (typeof t === 'string') {
 					messageTmpl = t;
 				}
@@ -43,7 +43,7 @@ export class I18n {
 			message = messageTmpl.replace(/\{([0-9]+)\}/g, ($0, $1) => {
 				const keyword = `${keywords[+$1]}` || '';
 				if (localeSet) {
-					return localeSet.keywords[keyword.toLowerCase()] || keyword;
+					return localeSet.keywords?.[keyword.toLowerCase()] || keyword;
 				}
 				return keyword;
 			});
