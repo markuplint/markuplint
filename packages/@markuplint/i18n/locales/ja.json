@@ -18,7 +18,7 @@
 		"lowercase": "小文字",
 		"uppercase": "大文字",
 		"illegal characters": "不正な文字",
-		"escape in character reference": "参照文字でエスケープ",
+		"escape in character reference": "文字参照でエスケープ",
 		"declarate": "宣言",
 		"deprecated": "非推奨",
 		"c:deprecated": "は非推奨です",
