@@ -15,13 +15,10 @@ export interface LocalesKeywords {
 export function translator(localeSet?: LocaleSet): Translator {
 	return (messageTmpl: string, ...keywords: Primitive[]) => {
 		let message = messageTmpl;
-		if (!localeSet) {
-			return message;
-		}
 
-		const t = localeSet.sentences?.[messageTmpl];
-		if (typeof t === 'string') {
-			messageTmpl = t;
+		const sentence = localeSet?.sentences?.[messageTmpl];
+		if (sentence) {
+			messageTmpl = sentence;
 		}
 
 		message = messageTmpl.replace(/\{([0-9]+)(?::([c]))?\}/g, ($0, number, flag) => {
@@ -33,9 +30,9 @@ export function translator(localeSet?: LocaleSet): Translator {
 			const key = flag ? `${flag}:${keyword}` : keyword;
 			const replacedWord =
 				// finding with flag
-				localeSet.keywords?.[key.toLowerCase()] ||
+				localeSet?.keywords?.[key.toLowerCase()] ||
 				// finding without flag
-				localeSet.keywords?.[keyword.toLowerCase()];
+				localeSet?.keywords?.[keyword.toLowerCase()];
 			return replacedWord || keyword;
 		});
 
