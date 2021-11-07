@@ -33,6 +33,8 @@
 				"c:obsolete": { "type": "string" },
 				"duplicated": { "type": "string" },
 				"c:duplicated": { "type": "string" },
+				"non-standard": { "type": "string" },
+				"c:non-standard": { "type": "string" },
 				"indentation": { "type": "string" },
 				"tab": { "type": "string" },
 				"space": { "type": "string" },

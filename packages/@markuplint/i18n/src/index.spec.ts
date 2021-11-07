@@ -33,4 +33,5 @@ test('ja', () => {
 	expect(t('{0} is {1:c}', t('the "{0}" {1}', 'color', 'attribute'), 'obsolete')).toBe(
 		'属性「color」は廃止されています',
 	);
+	expect(t('{0} is {1:c}', t('the "{0}" {1}', 'foo', 'element'), 'non-standard')).toBe('要素「foo」は非標準です');
 });

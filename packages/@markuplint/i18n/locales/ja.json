@@ -24,6 +24,8 @@
 		"c:deprecated": "は非推奨です",
 		"obsolete": "廃止ずみ",
 		"c:obsolete": "は廃止されています",
+		"non-standard": "非標準",
+		"c:non-standard": "は非標準です",
 		"duplicated": "重複",
 		"c:duplicated": "は重複しています",
 		"indentation": "インデント",
