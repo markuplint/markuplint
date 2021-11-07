@@ -30,23 +30,33 @@ export class I18n {
 	}
 
 	translator(): Translator {
-		const localeSet = this.localeSet;
 		return (messageTmpl: string, ...keywords: Primitive[]) => {
 			let message = messageTmpl;
-			if (localeSet) {
-				const t = localeSet.sentences?.[messageTmpl];
-				if (typeof t === 'string') {
-					messageTmpl = t;
-				}
+			if (!this.localeSet) {
+				return message;
 			}
 
-			message = messageTmpl.replace(/\{([0-9]+)\}/g, ($0, $1) => {
-				const keyword = `${keywords[+$1]}` || '';
-				if (localeSet) {
-					return localeSet.keywords?.[keyword.toLowerCase()] || keyword;
+			const localeSet = this.localeSet;
+			const t = localeSet.sentences?.[messageTmpl];
+			if (typeof t === 'string') {
+				messageTmpl = t;
+			}
+
+			message = messageTmpl.replace(/\{([0-9]+)(?::([c]))?\}/g, ($0, number, flag) => {
+				const num = parseInt(number);
+				if (isNaN(num)) {
+					return $0;
 				}
-				return keyword;
+				const keyword = keywords[num] != null ? `${keywords[num]}` : '';
+				const key = flag ? `${flag}:${keyword}` : keyword;
+				const replacedWord =
+					// finding with flag
+					localeSet.keywords?.[key.toLowerCase()] ||
+					// finding without flag
+					localeSet.keywords?.[keyword.toLowerCase()];
+				return replacedWord || keyword;
 			});
+
 			return message;
 		};
 	}

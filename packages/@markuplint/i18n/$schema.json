@@ -26,7 +26,9 @@
 				"escape in character reference": { "type": "string" },
 				"declarate": { "type": "string" },
 				"deprecated": { "type": "string" },
+				"c:deprecated": { "type": "string" },
 				"obsolete": { "type": "string" },
+				"c:obsolete": { "type": "string" },
 				"indentation": { "type": "string" },
 				"tab": { "type": "string" },
 				"space": { "type": "string" },
@@ -45,6 +47,7 @@
 			"additionalProperties": false,
 			"properties": {
 				"{0} is {1}": { "type": "string" },
+				"{0} is {1:c}": { "type": "string" },
 				"The {0} {1} is {2}": { "type": "string" },
 				"Required {0}": { "type": "string" },
 				"Required {0} on {1}": { "type": "string" },

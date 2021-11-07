@@ -19,7 +19,9 @@
 		"escape in character reference": "参照文字でエスケープ",
 		"declarate": "宣言",
 		"deprecated": "非推奨",
+		"c:deprecated": "は非推奨です",
 		"obsolete": "廃止ずみ",
+		"c:obsolete": "は廃止されています",
 		"indentation": "インデント",
 		"tab": "タブ",
 		"space": "スペース",
@@ -34,6 +36,7 @@
 	},
 	"sentences": {
 		"{0} is {1}": "{0}は{1}です",
+		"{0} is {1:c}": "{0}{1:c}",
 		"The {0} {1} is {2}": "{0}{1}は{2}です",
 		"Required {0}": "{0}が必要です",
 		"Required {0} on {1}": "{1}には{0}が必要です",
