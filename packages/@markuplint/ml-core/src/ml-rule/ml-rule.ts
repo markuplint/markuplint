@@ -45,7 +45,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		document.setRule(this);
 
 		const context = new MLRuleContext(document, i18n.translator(), globalRule);
-		await this.#v(context);
+		await this.#v(context.provide());
 
 		const violation = context.reports.map<Violation>(report => {
 			if ('scope' in report) {
@@ -99,7 +99,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 
 		// @ts-ignore TODO: translator
 		const context = new MLRuleContext(document, null, globalRule);
-		await this.#f(context);
+		await this.#f(context.provide());
 
 		document.setRule(null);
 	}

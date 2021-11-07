@@ -6,6 +6,6 @@ export interface MLRuleOptions<T extends RuleConfigValue, O = null> {
 	defaultLevel?: Severity;
 	defaultValue: T;
 	defaultOptions: O;
-	verify(context: MLRuleContext<T, O>): void | Promise<void>;
-	fix?(context: MLRuleContext<T, O>): void | Promise<void>;
+	verify(context: ReturnType<MLRuleContext<T, O>['provide']>): void | Promise<void>;
+	fix?(context: ReturnType<MLRuleContext<T, O>['provide']>): void | Promise<void>;
 }

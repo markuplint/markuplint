@@ -22,4 +22,15 @@ export class MLRuleContext<T extends RuleConfigValue, O = null> {
 	report(report: Report<T, O>) {
 		this.#reports.push(report);
 	}
+
+	provide() {
+		return {
+			document: this.document,
+			translate: this.translate,
+			t: this.translate,
+			globalRule: this.globalRule,
+			reports: this.reports,
+			report: this.report.bind(this),
+		};
+	}
 }
