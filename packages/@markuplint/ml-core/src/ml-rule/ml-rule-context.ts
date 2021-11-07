@@ -1,22 +1,27 @@
-import { Report, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
-import Document from '../ml-dom/document';
-import { Translator } from '@markuplint/i18n';
+import { LocaleSet, Translator, translator } from '@markuplint/i18n';
+import type { Report, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
+import type Document from '../ml-dom/document';
 
 export class MLRuleContext<T extends RuleConfigValue, O = null> {
 	readonly document: Document<T, O>;
-	readonly translate: Translator;
 	readonly globalRule: RuleInfo<T, O>;
+	readonly translate: Translator;
+	readonly locale: string;
 
 	#reports: Report<T, O>[] = [];
 
-	constructor(document: Document<T, O>, translator: Translator, rule: RuleInfo<T, O>) {
+	constructor(document: Document<T, O>, locale: LocaleSet, rule: RuleInfo<T, O>) {
 		this.document = document;
-		this.translate = translator;
 		this.globalRule = rule;
+		this.translate = translator(locale);
+		this.locale = locale.locale;
 	}
 
 	get reports() {
-		return this.#reports.slice();
+		return this.#reports.map(report => ({
+			...report,
+			message: finish(report.message),
+		}));
 	}
 
 	report(report: Report<T, O>) {
@@ -33,4 +38,13 @@ export class MLRuleContext<T extends RuleConfigValue, O = null> {
 			report: this.report.bind(this),
 		};
 	}
+}
+
+function finish(message: string, locale = 'en') {
+	switch (locale) {
+		case 'en': {
+			return message.replace(/^[a-z]/, $0 => $0.toUpperCase());
+		}
+	}
+	return message;
 }

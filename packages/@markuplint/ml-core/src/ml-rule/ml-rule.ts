@@ -1,8 +1,8 @@
-import { RuleConfig, RuleConfigValue, RuleInfo, Severity, Violation } from '@markuplint/ml-config';
-import Document from '../ml-dom/document';
-import { I18n } from '@markuplint/i18n';
+import type { RuleConfig, RuleConfigValue, RuleInfo, Severity, Violation } from '@markuplint/ml-config';
+import type Document from '../ml-dom/document';
+import type { LocaleSet } from '@markuplint/i18n';
 import { MLRuleContext } from './ml-rule-context';
-import { MLRuleOptions } from './types';
+import type { MLRuleOptions } from './types';
 
 export class MLRule<T extends RuleConfigValue, O = null> {
 	readonly name: string;
@@ -38,14 +38,24 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		this.#f = o.fix;
 	}
 
-	async verify(document: Document<T, O>, i18n: I18n, globalRule: RuleInfo<T, O>): Promise<Violation[]> {
+	async verify(
+		document: Document<T, O>,
+		locale: LocaleSet,
+		globalRule: RuleInfo<T, O>,
+		fix: boolean,
+	): Promise<Violation[]> {
 		if (!this.#v) {
 			return [];
 		}
 		document.setRule(this);
 
-		const context = new MLRuleContext(document, i18n.translator(), globalRule);
-		await this.#v(context.provide());
+		const context = new MLRuleContext(document, locale, globalRule);
+		const providableContext = context.provide();
+
+		await this.#v(providableContext);
+		if (this.#f && fix) {
+			await this.#f(providableContext);
+		}
 
 		const violation = context.reports.map<Violation>(report => {
 			if ('scope' in report) {
@@ -88,20 +98,6 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		document.setRule(null);
 
 		return violation;
-	}
-
-	async fix(document: Document<T, O>, globalRule: RuleInfo<T, O>): Promise<void> {
-		if (!this.#f) {
-			return;
-		}
-
-		document.setRule(this);
-
-		// @ts-ignore TODO: translator
-		const context = new MLRuleContext(document, null, globalRule);
-		await this.#f(context.provide());
-
-		document.setRule(null);
 	}
 
 	optimizeOption(configSettings: T | RuleConfig<T, O>): RuleInfo<T, O> {

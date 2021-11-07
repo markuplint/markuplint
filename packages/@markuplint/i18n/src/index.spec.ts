@@ -1,9 +1,9 @@
-import { I18n } from './';
+import { translator } from './';
 
 test('Complementize', async () => {
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const ja = require('../locales/ja.json');
-	const t = I18n.create(ja).translator();
+	const t = translator(ja);
 
 	expect(t('{0} is {1}', 'attribute', 'deprecated')).toBe('属性は非推奨です');
 	expect(t('{0} is {1:c}', 'attribute', 'deprecated')).toBe('属性は非推奨です');

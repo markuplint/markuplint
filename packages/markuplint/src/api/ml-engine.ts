@@ -142,7 +142,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		const ruleset = this.resolveRuleset(configSet);
 		const schemas = await this.resolveSchemas(configSet);
 		const rules = await this.resolveRules(configSet, ruleset);
-		const i18n = await this.i18n();
+		const locale = await i18n(this.#options?.locale);
 
 		return {
 			parser,
@@ -150,7 +150,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 			ruleset,
 			schemas,
 			rules,
-			i18n,
+			locale,
 		};
 	}
 
