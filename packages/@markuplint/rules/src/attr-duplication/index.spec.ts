@@ -21,7 +21,7 @@ test('is test 1', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Duplicate attribute name',
+			message: 'The attribute name is duplicated',
 			line: 2,
 			col: 26,
 			raw: 'data-Attr',
@@ -29,7 +29,7 @@ test('is test 1', async () => {
 		},
 		{
 			severity: 'error',
-			message: 'Duplicate attribute name',
+			message: 'The attribute name is duplicated',
 			line: 2,
 			col: 41,
 			raw: 'data-attR',
@@ -61,7 +61,7 @@ test('is test 2', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Duplicate attribute name',
+			message: 'The attribute name is duplicated',
 			line: 4,
 			col: 4,
 			raw: 'data-Attr',
@@ -69,7 +69,7 @@ test('is test 2', async () => {
 		},
 		{
 			severity: 'error',
-			message: 'Duplicate attribute name',
+			message: 'The attribute name is duplicated',
 			line: 5,
 			col: 4,
 			raw: 'data-attR',
@@ -90,7 +90,7 @@ test('is test 3', async () => {
 		'ja',
 	);
 
-	expect(violations.map(_ => _.message)).toStrictEqual(['属性名が重複しています']);
+	expect(violations.map(_ => _.message)).toStrictEqual(['その属性名は重複しています']);
 });
 
 test('nodeRules disable', async () => {
@@ -137,7 +137,7 @@ test('Vue', async () => {
 			severity: 'error',
 			line: 1,
 			col: 21,
-			message: 'Duplicate attribute name',
+			message: 'The attribute name is duplicated',
 			raw: 'v-bind:attr',
 		},
 	]);
