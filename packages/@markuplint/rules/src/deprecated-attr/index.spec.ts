@@ -19,7 +19,7 @@ test('deprecated attribute', async () => {
 			line: 1,
 			col: 6,
 			raw: 'align',
-			message: 'The align attribute is deprecated',
+			message: 'The "align" attribute is deprecated',
 		},
 	]);
 });
@@ -42,7 +42,7 @@ test('deprecated global attribute', async () => {
 			line: 1,
 			col: 6,
 			raw: 'xml:lang',
-			message: 'The xml:lang attribute is deprecated',
+			message: 'The "xml:lang" attribute is deprecated',
 		},
 	]);
 });
@@ -67,7 +67,7 @@ test('svg', async () => {
 			ruleId: 'deprecated-attr',
 			line: 2,
 			col: 14,
-			message: 'The xlink:href attribute is deprecated',
+			message: 'The "xlink:href" attribute is deprecated',
 			raw: 'xlink:href',
 		},
 	]);

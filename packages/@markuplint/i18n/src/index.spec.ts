@@ -30,4 +30,7 @@ test('ja', () => {
 	expect(
 		t('{0} is unmatched with the below patterns: {1}', t('the "{0}" {1}', 'foo', 'class name'), '"bar", "boo"'),
 	).toBe('クラス名「foo」は次のパターンにマッチしませんでした "bar", "boo"');
+	expect(t('{0} is {1:c}', t('the "{0}" {1}', 'color', 'attribute'), 'obsolete')).toBe(
+		'属性「color」は廃止されています',
+	);
 });

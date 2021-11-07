@@ -55,7 +55,6 @@
 				"{0} of {1}": { "type": "string" },
 				"{0} is {1}": { "type": "string" },
 				"{0} is {1:c}": { "type": "string" },
-				"The {0} {1} is {2}": { "type": "string" },
 				"Required {0}": { "type": "string" },
 				"Required {0} on {1}": { "type": "string" },
 				"Not required {0}": { "type": "string" },
