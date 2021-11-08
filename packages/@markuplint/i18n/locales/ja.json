@@ -1,4 +1,9 @@
 {
+	"listFormat": {
+		"quoteStart": "「",
+		"quoteEnd": "」",
+		"separator": ""
+	},
 	"keywords": {
 		"tag": "タグ",
 		"tag name": "タグ名",

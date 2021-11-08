@@ -3,6 +3,16 @@
 	"additionalProperties": false,
 	"properties": {
 		"$schema": { "type": "string" },
+		"listFormat": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["quoteStart", "quoteEnd", "separator"],
+			"properties": {
+				"quoteStart": { "type": "string" },
+				"quoteEnd": { "type": "string" },
+				"separator": { "type": "string" }
+			}
+		},
 		"keywords": {
 			"type": "object",
 			"additionalProperties": false,

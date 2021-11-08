@@ -1,7 +1,14 @@
-import { translator } from './';
+import { translator } from './translator';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ja = require('../locales/ja.json');
+
+test('Listup', () => {
+	// const t1 = translator();
+	// expect(t1(['1', '2', '3'])).toBe('"1", "2", "3"');
+	const t2 = translator(ja);
+	expect(t2(['1', '2', '3'])).toBe('「1」「2」「3」');
+});
 
 test('Complementize', () => {
 	const t = translator(ja);
