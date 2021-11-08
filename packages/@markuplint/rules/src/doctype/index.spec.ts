@@ -32,7 +32,7 @@ test('missing doctype', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Required doctype',
+			message: 'Require doctype',
 			line: 1,
 			col: 1,
 			raw: '',

@@ -39,7 +39,7 @@ export default createRule<true, Option>({
 				if (!node.isCustomElement && attr.attrType === 'html-attr' && attr.isInvalid) {
 					const candidate = attr.candidate;
 					const message =
-						t('{0} is {1:c}', t('the "{0}" {1}', attrName.raw, 'attribute'), 'disallow') +
+						t('{0} is {1:c}', t('the "{0}" {1}', attrName.raw, 'attribute'), 'disallowed') +
 						(candidate ? t('. ') + t('Did you mean "{0}"?', candidate) : '');
 					report({
 						scope: node,

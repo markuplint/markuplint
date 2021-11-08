@@ -90,7 +90,7 @@ test('is test 3', async () => {
 		'ja',
 	);
 
-	expect(violations.map(_ => _.message)).toStrictEqual(['その属性名は重複しています']);
+	expect(violations.map(_ => _.message)).toStrictEqual(['その属性名が重複しています']);
 });
 
 test('nodeRules disable', async () => {

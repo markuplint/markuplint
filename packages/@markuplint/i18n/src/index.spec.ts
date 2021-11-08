@@ -56,7 +56,7 @@ test('ja', () => {
 		t('{0} is {1:c}', t('{0} of {1}', t('the {0}', 'value'), t('the "{0}" {1}', 'id', 'attribute')), 'duplicated'),
 	).toBe('属性「id」のその値が重複しています');
 	expect(
-		t('{0} is {1:c}', t('the "{0}" {1}', 'foo', 'attribute'), 'disallow') +
+		t('{0} is {1:c}', t('the "{0}" {1}', 'foo', 'attribute'), 'disallowed') +
 			t('. ') +
 			t('Did you mean "{0}"?', 'bar'),
 	).toBe('属性「foo」は許可されていません。「bar」ですか？');

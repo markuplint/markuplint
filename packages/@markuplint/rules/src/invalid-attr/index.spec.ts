@@ -19,7 +19,7 @@ test('warns if specified attribute value is invalid', async () => {
 			severity: 'error',
 			line: 1,
 			col: 4,
-			message: 'The "invalid-attr" attribute is disallow',
+			message: 'The "invalid-attr" attribute is disallowed',
 			raw: 'invalid-attr',
 		},
 		{
@@ -136,7 +136,7 @@ test('ancestor condition', async () => {
 			severity: 'error',
 			line: 1,
 			col: 16,
-			message: 'The "media" attribute is disallow',
+			message: 'The "media" attribute is disallowed',
 			raw: 'media',
 		},
 	]);
@@ -270,7 +270,7 @@ test('prefix attribute', async () => {
 			severity: 'error',
 			line: 1,
 			col: 6,
-			message: 'The "v-bind:title" attribute is disallow',
+			message: 'The "v-bind:title" attribute is disallowed',
 			raw: 'v-bind:title',
 		},
 		{
@@ -278,7 +278,7 @@ test('prefix attribute', async () => {
 			severity: 'error',
 			line: 1,
 			col: 27,
-			message: 'The ":class" attribute is disallow',
+			message: 'The ":class" attribute is disallowed',
 			raw: ':class',
 		},
 		{
@@ -286,7 +286,7 @@ test('prefix attribute', async () => {
 			severity: 'error',
 			col: 44,
 			line: 1,
-			message: 'The "@click" attribute is disallow',
+			message: 'The "@click" attribute is disallowed',
 			raw: '@click',
 		},
 	]);
@@ -499,7 +499,7 @@ test('svg', async () => {
 			severity: 'error',
 			line: 2,
 			col: 30,
-			message: 'The "cz" attribute is disallow',
+			message: 'The "cz" attribute is disallowed',
 			raw: 'cz',
 		},
 	]);
@@ -627,7 +627,7 @@ test('React HTML', async () => {
 			severity: 'error',
 			line: 1,
 			col: 36,
-			message: 'The "tabindex" attribute is disallow. Did you mean "tabIndex"?',
+			message: 'The "tabindex" attribute is disallowed. Did you mean "tabIndex"?',
 			raw: 'tabindex',
 		},
 		{
@@ -635,7 +635,7 @@ test('React HTML', async () => {
 			severity: 'error',
 			line: 1,
 			col: 71,
-			message: 'The "for" attribute is disallow',
+			message: 'The "for" attribute is disallowed',
 			raw: 'htmlFor',
 		},
 	]);
@@ -662,7 +662,7 @@ test('React', async () => {
 			severity: 'error',
 			line: 1,
 			col: 32,
-			message: 'The "invalidAttr" attribute is disallow',
+			message: 'The "invalidAttr" attribute is disallowed',
 			raw: 'invalidAttr',
 		},
 	]);
@@ -691,7 +691,7 @@ test('React with spread attribute', async () => {
 			severity: 'error',
 			line: 1,
 			col: 4,
-			message: 'The "target" attribute is disallow',
+			message: 'The "target" attribute is disallowed',
 			raw: 'target',
 		},
 	]);
@@ -736,7 +736,7 @@ test('React with spread attribute', async () => {
 			severity: 'error',
 			line: 1,
 			col: 6,
-			message: 'The "invalid" attribute is disallow',
+			message: 'The "invalid" attribute is disallowed',
 			raw: 'invalid',
 		},
 	]);
@@ -763,7 +763,7 @@ test('React with spread attribute', async () => {
 			severity: 'error',
 			line: 1,
 			col: 17,
-			message: 'The "invalid" attribute is disallow',
+			message: 'The "invalid" attribute is disallowed',
 			raw: 'invalid',
 		},
 	]);
@@ -814,7 +814,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 2,
 			col: 7,
-			message: 'The "value" attribute is disallow',
+			message: 'The "value" attribute is disallowed',
 			raw: 'value',
 		},
 		{
@@ -822,7 +822,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 2,
 			col: 13,
-			message: 'The "defaultValue" attribute is disallow',
+			message: 'The "defaultValue" attribute is disallowed',
 			raw: 'defaultValue',
 		},
 		{
@@ -830,7 +830,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 3,
 			col: 9,
-			message: 'The "defaultChecked" attribute is disallow',
+			message: 'The "defaultChecked" attribute is disallowed',
 			raw: 'defaultChecked',
 		},
 		{
@@ -838,7 +838,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 4,
 			col: 25,
-			message: 'The "defaultChecked" attribute is disallow',
+			message: 'The "defaultChecked" attribute is disallowed',
 			raw: 'defaultChecked',
 		},
 		{
@@ -846,7 +846,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 5,
 			col: 10,
-			message: 'The "value" attribute is disallow',
+			message: 'The "value" attribute is disallowed',
 			raw: 'value',
 		},
 		{
@@ -854,7 +854,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 5,
 			col: 16,
-			message: 'The "defaultValue" attribute is disallow',
+			message: 'The "defaultValue" attribute is disallowed',
 			raw: 'defaultValue',
 		},
 		{
@@ -862,7 +862,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 6,
 			col: 12,
-			message: 'The "value" attribute is disallow',
+			message: 'The "value" attribute is disallowed',
 			raw: 'value',
 		},
 		{
@@ -870,7 +870,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 6,
 			col: 18,
-			message: 'The "defaultValue" attribute is disallow',
+			message: 'The "defaultValue" attribute is disallowed',
 			raw: 'defaultValue',
 		},
 		{
@@ -878,7 +878,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 7,
 			col: 10,
-			message: 'The "value" attribute is disallow',
+			message: 'The "value" attribute is disallowed',
 			raw: 'value',
 		},
 		{
@@ -886,7 +886,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 7,
 			col: 20,
-			message: 'The "defaultValue" attribute is disallow',
+			message: 'The "defaultValue" attribute is disallowed',
 			raw: 'defaultValue',
 		},
 		{
@@ -894,7 +894,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 8,
 			col: 12,
-			message: 'The "value" attribute is disallow',
+			message: 'The "value" attribute is disallowed',
 			raw: 'value',
 		},
 		{
@@ -902,7 +902,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 8,
 			col: 22,
-			message: 'The "defaultValue" attribute is disallow',
+			message: 'The "defaultValue" attribute is disallowed',
 			raw: 'defaultValue',
 		},
 	]);
@@ -913,7 +913,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 2,
 			col: 7,
-			message: 'The "value" attribute is disallow',
+			message: 'The "value" attribute is disallowed',
 			raw: 'value',
 		},
 		{
@@ -921,7 +921,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 2,
 			col: 13,
-			message: 'The "defaultValue" attribute is disallow',
+			message: 'The "defaultValue" attribute is disallowed',
 			raw: 'defaultValue',
 		},
 		{
@@ -929,7 +929,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 3,
 			col: 9,
-			message: 'The "defaultChecked" attribute is disallow',
+			message: 'The "defaultChecked" attribute is disallowed',
 			raw: 'defaultChecked',
 		},
 	]);
