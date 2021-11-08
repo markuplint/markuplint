@@ -109,4 +109,8 @@ test('ja', () => {
 			t('{0} as {1}', t('{0} to {1}', '0%', '100%'), 'alpha channel value'),
 		),
 	).toBe('属性「foo」は不透明度として0%から100%である必要があります');
+	expect(t('{0} should be {1}', t('the "{0}" {1}', 'foo', 'role'), 'top level')).toBe(
+		'ロール「foo」はトップレベルにしたほうがよいです',
+	);
+	expect(t('Require {0}', t('unique {0}', 'accessible name'))).toBe('一意のアクセシブルな名前が必要です');
 });
