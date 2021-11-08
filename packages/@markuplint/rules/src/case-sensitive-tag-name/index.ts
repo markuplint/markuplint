@@ -7,23 +7,22 @@ export default createRule<Value, null>({
 	defaultLevel: 'warning',
 	defaultValue: 'lower',
 	defaultOptions: null,
-	async verify(context) {
-		await context.document.walk(async node => {
+	async verify({ document, report, t }) {
+		await document.walk(async node => {
 			if ('fixNodeName' in node) {
 				if (node.isForeignElement || node.isCustomElement || node.type === 'OmittedElement') {
 					return;
 				}
 				const ms = node.rule.severity === 'error' ? 'must' : 'should';
 				const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
-				const message = context.translate(
-					`{0} of {1} ${ms} be {2}`,
-					'Tag name',
-					'HTML elements',
+				const message = t(
+					`{0} ${ms} be {1}`,
+					t('{0} of {1}', 'tag names', 'HTML elements'),
 					`${node.rule.value}case`,
 				);
 				if (deny.test(node.nodeName)) {
 					const loc = node.getNameLocation();
-					context.report({
+					report({
 						scope: node,
 						message,
 						line: loc.line,

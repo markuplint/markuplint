@@ -33,19 +33,19 @@ export default createRule<boolean, Options>({
 		ignoreRoles: [],
 		labelEachArea: true,
 	},
-	async verify(context) {
-		if (context.document.isFragment) {
+	async verify({ document, report, t }) {
+		if (document.isFragment) {
 			return;
 		}
 
 		const roles: RoleSet = {
-			complementary: context.document.matchNodes(selectors.complementary.join(',')),
-			contentinfo: context.document.matchNodes(selectors.contentinfo.join(',')),
-			form: context.document.matchNodes(selectors.form.join(',')),
-			banner: context.document.matchNodes(selectors.banner.join(',')),
-			main: context.document.matchNodes(selectors.main.join(',')),
-			navigation: context.document.matchNodes(selectors.navigation.join(',')),
-			region: context.document.matchNodes(selectors.region.join(',')),
+			complementary: document.matchNodes(selectors.complementary.join(',')),
+			contentinfo: document.matchNodes(selectors.contentinfo.join(',')),
+			form: document.matchNodes(selectors.form.join(',')),
+			banner: document.matchNodes(selectors.banner.join(',')),
+			main: document.matchNodes(selectors.main.join(',')),
+			navigation: document.matchNodes(selectors.navigation.join(',')),
+			region: document.matchNodes(selectors.region.join(',')),
 		};
 
 		/**
@@ -60,7 +60,7 @@ export default createRule<boolean, Options>({
 		 * > - nav
 		 * > - section
 		 */
-		const headers = context.document.matchNodes('header').filter(header => {
+		const headers = document.matchNodes('header').filter(header => {
 			return !header.closest('article, aside, main, nav, section');
 		});
 		roles.banner.push(...headers);
@@ -77,7 +77,7 @@ export default createRule<boolean, Options>({
 		 * > - nav
 		 * > - section
 		 */
-		const footers = context.document.matchNodes('footer').filter(footer => {
+		const footers = document.matchNodes('footer').filter(footer => {
 			return !footer.closest('article, aside, main, nav, section');
 		});
 		roles.contentinfo.push(...footers);
@@ -98,9 +98,9 @@ export default createRule<boolean, Options>({
 				}
 
 				if (el.isDescendantByUUIDList(uuidList)) {
-					context.report({
+					report({
 						scope: el,
-						message: context.translate('{0} should be {1}', role, 'top level'),
+						message: t('{0} should be {1}', t('the "{0}" {1}', role, 'role'), 'top level'),
 					});
 				}
 			}
@@ -123,12 +123,9 @@ export default createRule<boolean, Options>({
 				}
 
 				if (!hasLabel(el)) {
-					context.report({
+					report({
 						scope: el,
-						message: context.translate(
-							'Should have a unique label because {0} landmarks were markup more than once on a page',
-							role,
-						),
+						message: t('Require {0}', t('unique {0}', 'accessible name')),
 					});
 				}
 			}

@@ -17,9 +17,9 @@ export default createRule<TagRule[], Options>({
 	defaultOptions: {
 		ignoreHasMutableChildren: true,
 	},
-	async verify(context) {
+	async verify({ document, report, t }) {
 		let idCounter = 0;
-		await context.document.walkOn('Element', async node => {
+		await document.walkOn('Element', async node => {
 			if (!node.rule.value) {
 				return;
 			}
@@ -37,12 +37,12 @@ export default createRule<TagRule[], Options>({
 
 			if (spec) {
 				if (spec.ancestor && !node.closest(spec.ancestor)) {
-					context.report({
+					report({
 						scope: node,
-						message: context.translate(
-							'The {0} element must be descendant of the {1} element',
-							node.nodeName,
-							spec.ancestor,
+						message: t(
+							'{0} must be {1}',
+							t('the "{0}" {1}', node.nodeName, 'element'),
+							t('{0} of {1}', 'descendant', t('the "{0}" {1}', spec.ancestor, 'element')),
 						),
 					});
 					return;
@@ -65,13 +65,21 @@ export default createRule<TagRule[], Options>({
 								const exp = expGen.specToRegExp(conditional.contents, parentExp, node.ns);
 								const conditionalResult = match(exp, childNodes, node.ns, false);
 								if (!conditionalResult) {
-									context.report({
-										scope: node,
-										message: context.translate(
-											'Invalid content of the {0} element in {1}',
-											node.nodeName,
-											`${specType} specification`,
+									const message = t(
+										'{0} is {1:c}',
+										t(
+											'{0} of {1}',
+											t('the {0}', 'content'),
+											t('the "{0}" {1}', node.nodeName, 'element'),
 										),
+										'invalid',
+									);
+									report({
+										scope: node,
+										message:
+											specType !== 'Any Language'
+												? t('{0} according to {1}', message, `the ${specType} specification`)
+												: message,
 										line: node.startLine,
 										col: node.startCol,
 										raw: node.raw,
@@ -96,13 +104,17 @@ export default createRule<TagRule[], Options>({
 						const specResult = match(exp, childNodes, node.ns, false);
 
 						if (!specResult) {
-							context.report({
+							const message = t(
+								'{0} is {1:c}',
+								t('{0} of {1}', t('the {0}', 'content'), t('the "{0}" {1}', node.nodeName, 'element')),
+								'invalid',
+							);
+							report({
 								scope: node,
-								message: context.translate(
-									'Invalid content of the {0} element in {1}',
-									node.nodeName,
-									`${specType} specification`,
-								),
+								message:
+									specType !== 'Any Language'
+										? t('{0} according to {1}', message, `the ${specType} specification`)
+										: message,
 							});
 						}
 					} catch (e) {
@@ -128,12 +140,12 @@ export default createRule<TagRule[], Options>({
 					const r = match(exp, childNodes, node.ns, node.isCustomElement);
 
 					if (!r) {
-						context.report({
+						report({
 							scope: node,
-							message: context.translate(
-								'Invalid content of the {0} element in {1}',
-								node.nodeName,
-								'settings',
+							message: t(
+								'{0} is {1:c}',
+								t('{0} of {1}', t('the {0}', 'content'), t('the "{0}" {1}', node.nodeName, 'element')),
+								'invalid',
 							),
 							line: node.startLine,
 							col: node.startCol,

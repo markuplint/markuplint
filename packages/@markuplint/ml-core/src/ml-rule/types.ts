@@ -1,11 +1,11 @@
-import { RuleConfigValue, Severity } from '@markuplint/ml-config';
-import { MLRuleContext } from './ml-rule-context';
+import type { RuleConfigValue, Severity } from '@markuplint/ml-config';
+import type { MLRuleContext } from './ml-rule-context';
 
 export interface MLRuleOptions<T extends RuleConfigValue, O = null> {
 	name: string;
 	defaultLevel?: Severity;
 	defaultValue: T;
 	defaultOptions: O;
-	verify(context: MLRuleContext<T, O>): void | Promise<void>;
-	fix?(context: MLRuleContext<T, O>): void | Promise<void>;
+	verify(context: ReturnType<MLRuleContext<T, O>['provide']>): void | Promise<void>;
+	fix?(context: ReturnType<MLRuleContext<T, O>['provide']>): void | Promise<void>;
 }

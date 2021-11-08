@@ -15,7 +15,7 @@ test('h1', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Missing the h1 element',
+			message: 'Require the "h1" element',
 			line: 1,
 			col: 1,
 			raw: '<',
@@ -52,7 +52,7 @@ test('h1', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Duplicate the h1 element',
+			message: 'The "h1" element is duplicated',
 			line: 1,
 			col: 26,
 			raw: '<h1>',

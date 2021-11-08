@@ -24,9 +24,9 @@ export default createRule<true, Option>({
 	defaultLevel: 'error',
 	defaultValue: true,
 	defaultOptions: {},
-	async verify(context) {
-		await context.document.walkOn('Element', async node => {
-			const attrSpecs = getAttrSpecs(node.nameWithNS, context.document.specs);
+	async verify({ document, report, t }) {
+		await document.walkOn('Element', async node => {
+			const attrSpecs = getAttrSpecs(node.nameWithNS, document.specs);
 
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'html-attr' && attr.isDirective) {
@@ -39,9 +39,9 @@ export default createRule<true, Option>({
 				if (!node.isCustomElement && attr.attrType === 'html-attr' && attr.isInvalid) {
 					const candidate = attr.candidate;
 					const message =
-						`The "${attrName.raw}" attribute is not allowed.` +
-						(candidate ? ` Did you mean "${candidate}"?` : '');
-					context.report({
+						t('{0} is {1:c}', t('the "{0}" {1}', attrName.raw, 'attribute'), 'disallowed') +
+						(candidate ? t('. ') + t('Did you mean "{0}"?', candidate) : '');
+					report({
 						scope: node,
 						message: message,
 						line: attrName.line,
@@ -67,7 +67,7 @@ export default createRule<true, Option>({
 
 				if (customRule) {
 					if ('enum' in customRule) {
-						invalid = attrCheck(name.toLowerCase(), value, true, {
+						invalid = attrCheck(t, name.toLowerCase(), value, true, {
 							name,
 							type: {
 								enum: customRule.enum,
@@ -78,14 +78,20 @@ export default createRule<true, Option>({
 						if (!match(value, customRule.pattern)) {
 							invalid = {
 								invalidType: 'invalid-value',
-								message: `The "${name}" attribute expect custom pattern "${customRule.pattern}"`,
+
+								message: t(
+									'{0} is unmatched with the below patterns: {1}',
+									t('the "{0}" {1}', name, 'attribute'),
+									customRule.pattern,
+								),
 							};
 						}
 					} else if ('type' in customRule) {
-						invalid = attrCheck(name, value, true, { name, type: customRule.type, description: '' });
+						invalid = attrCheck(t, name, value, true, { name, type: customRule.type, description: '' });
 					}
 				} else if (!node.isCustomElement && attrSpecs) {
 					invalid = isValidAttr(
+						t,
 						name,
 						value,
 						(attr.attrType === 'html-attr' && attr.isDynamicValue) || false,
@@ -97,7 +103,7 @@ export default createRule<true, Option>({
 				if (invalid) {
 					switch (invalid.invalidType) {
 						case 'invalid-value': {
-							context.report({
+							report({
 								scope: node,
 								message: invalid.message,
 								line: attrValue.line,
@@ -107,7 +113,7 @@ export default createRule<true, Option>({
 							break;
 						}
 						case 'non-existent': {
-							context.report({
+							report({
 								scope: node,
 								message: invalid.message,
 								line: attrName.line,

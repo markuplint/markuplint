@@ -8,14 +8,14 @@ export default createRule<RequiredAttributes, null>({
 	defaultLevel: 'error',
 	defaultValue: [],
 	defaultOptions: null,
-	async verify(context) {
-		await context.document.walkOn('Element', async node => {
+	async verify({ document, report, t }) {
+		await document.walkOn('Element', async node => {
 			if (node.hasSpreadAttr) {
 				return;
 			}
 
 			const customRequiredAttrs = typeof node.rule.value === 'string' ? [node.rule.value] : node.rule.value;
-			const attrSpec = getAttrSpecs(node.nameWithNS, context.document.specs);
+			const attrSpec = getAttrSpecs(node.nameWithNS, document.specs);
 
 			const attributeSpecs = attrSpec
 				? attrSpec.map(attr => {
@@ -53,8 +53,12 @@ export default createRule<RequiredAttributes, null>({
 				}
 
 				if (invalid) {
-					const message = context.translate('Required {0} on {1}', `'${spec.name}'`, `'<${node.nodeName}>'`);
-					context.report({
+					const message = t(
+						'{0} expects {1}',
+						t('the "{0}" {1}', spec.name, 'attribute'),
+						t('the "{0}" {1}', node.nodeName, 'element'),
+					);
+					report({
 						scope: node,
 						message,
 					});

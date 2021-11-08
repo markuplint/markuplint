@@ -15,7 +15,7 @@ test('id-duplication', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Duplicate attribute id value',
+			message: 'The value of the "id" attribute is duplicated',
 			line: 1,
 			col: 16,
 			raw: 'id="a"',

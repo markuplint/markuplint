@@ -6,16 +6,20 @@ export default createRule({
 	name: 'deprecated-element',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(context) {
-		const message = context.translate('{0} is {1}', 'Element', 'deprecated');
-		await context.document.walkOn('Element', async el => {
+	async verify({ document, report, t }) {
+		await document.walkOn('Element', async el => {
 			const ns = el.ns;
 			if (!(ns === 'html' || ns === 'svg') || el.isCustomElement) {
 				return;
 			}
 			const spec = getSpecByTagName(el.nameWithNS, specs);
 			if (spec && (spec.obsolete || spec.deprecated || spec.nonStandard)) {
-				context.report({
+				const message = t(
+					'{0} is {1:c}',
+					t('the "{0}" {1}', el.nodeName, 'element'),
+					spec.deprecated ? 'deprecated' : spec.obsolete ? 'obsolete' : 'non-standard',
+				);
+				report({
 					scope: el,
 					message,
 				});

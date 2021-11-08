@@ -14,33 +14,33 @@ export default createRule<Value, RequiredH1Options>({
 		'expected-once': true,
 		'in-document-fragment': false,
 	},
-	async verify(context) {
+	async verify({ document, report, globalRule, t }) {
 		const h1Stack: Element<Value, RequiredH1Options>[] = [];
 
-		if (context.document.nodeList.length === 0) {
+		if (document.nodeList.length === 0) {
 			return;
 		}
 
-		if (!context.globalRule.option['in-document-fragment'] && context.document.isFragment) {
+		if (!globalRule.option['in-document-fragment'] && document.isFragment) {
 			return;
 		}
 
-		await context.document.walkOn('Element', async node => {
+		await document.walkOn('Element', async node => {
 			if (node.nodeName.toLowerCase() === 'h1') {
 				h1Stack.push(node);
 			}
 		});
 		if (h1Stack.length === 0) {
-			const message = context.translate('Missing the {0} {1}', 'h1', 'element');
-			context.report({
+			const message = t('Require {0}', t('the "{0}" {1}', 'h1', 'element'));
+			report({
 				message,
 				line: 1,
 				col: 1,
-				raw: context.document.nodeList[0].raw.slice(0, 1),
+				raw: document.nodeList[0].raw.slice(0, 1),
 			});
-		} else if (context.globalRule.option['expected-once'] && h1Stack.length > 1) {
-			const message = context.translate('Duplicate the {0} {1}', 'h1', 'element');
-			context.report({
+		} else if (globalRule.option['expected-once'] && h1Stack.length > 1) {
+			const message = t('{0} is {1:c}', t('the "{0}" {1}', 'h1', 'element'), 'duplicated');
+			report({
 				message,
 				line: h1Stack[1].startLine,
 				col: h1Stack[1].startCol,

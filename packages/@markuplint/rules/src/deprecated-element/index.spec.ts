@@ -29,7 +29,7 @@ test('deprecated', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Element is deprecated',
+			message: 'The "font" element is deprecated',
 			line: 1,
 			col: 1,
 			raw: '<font>',
@@ -37,7 +37,7 @@ test('deprecated', async () => {
 		},
 		{
 			severity: 'error',
-			message: 'Element is deprecated',
+			message: 'The "big" element is deprecated',
 			line: 1,
 			col: 14,
 			raw: '<big>',
@@ -45,7 +45,7 @@ test('deprecated', async () => {
 		},
 		{
 			severity: 'error',
-			message: 'Element is deprecated',
+			message: 'The "blink" element is deprecated',
 			line: 1,
 			col: 19,
 			raw: '<blink>',
@@ -83,7 +83,7 @@ test('Foreign element', async () => {
 			line: 1,
 			col: 12,
 			raw: '<image width="100" height="100" xlink:href="path/to"/>',
-			message: 'Element is deprecated',
+			message: 'The "image" element is deprecated',
 		},
 	]);
 });
@@ -102,7 +102,7 @@ test('svg', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Element is deprecated',
+			message: 'The "altGlyph" element is deprecated',
 			line: 1,
 			col: 6,
 			raw: '<altGlyph>',

@@ -20,7 +20,8 @@ describe("Use the role that doesn't exist in the spec", () => {
 				severity: 'error',
 				line: 1,
 				col: 6,
-				message: 'This "hoge" role does not exist in WAI-ARIA.',
+				message:
+					'The "hoge" role does not exist according to the WAI-ARIA specificationThis "hoge" role does not exist in WAI-ARIA.',
 				raw: 'role="hoge"',
 			},
 		]);
@@ -46,7 +47,7 @@ describe('Use the abstract role', () => {
 				severity: 'error',
 				line: 1,
 				col: 6,
-				message: 'This "roletype" role is the abstract role.',
+				message: 'The "roletype" role is the abstract role',
 				raw: 'role="roletype"',
 			},
 		]);
@@ -72,7 +73,7 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 				severity: 'error',
 				line: 1,
 				col: 6,
-				message: 'The aria-checked is not global state/property.',
+				message: 'The "aria-checked" ARIA state/property is not global state/property',
 				raw: 'aria-checked="true"',
 			},
 		]);
@@ -96,7 +97,7 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 				severity: 'error',
 				line: 1,
 				col: 9,
-				message: 'Cannot use the aria-checked state/property on the button role.',
+				message: 'The "aria-checked" ARIA state/property is disallowed on the "button" role',
 				raw: 'aria-checked="true"',
 			},
 		]);
@@ -138,7 +139,7 @@ describe('Use an invalid value of the property/state', () => {
 				line: 1,
 				col: 6,
 				message:
-					'The "foo" is disallowed in the aria-current state/property. Allow values are page, step, location, date, time, true, false.',
+					'The "foo" is disallowed on the "aria-current" ARIA state/property. Arrowed values are: "page", "step", "location", "date", "time", "true", "false"',
 				raw: 'aria-current="foo"',
 			},
 		]);
@@ -198,7 +199,7 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 				severity: 'error',
 				line: 1,
 				col: 9,
-				message: 'The ARIA Role of the script element cannot overwrite according to ARIA in HTML spec.',
+				message: 'Cannot overwrite the role of the "script" element according to ARIA in HTML specification',
 				raw: 'role="link"',
 			},
 		]);
@@ -222,7 +223,8 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 				severity: 'error',
 				line: 1,
 				col: 9,
-				message: 'The ARIA Role of the a element cannot overwrite "document" according to ARIA in HTML spec.',
+				message:
+					'Cannot overwrite the "document" role to the "a" element according to ARIA in HTML specification',
 				raw: 'role="document"',
 			},
 		]);
@@ -267,7 +269,7 @@ describe("Don't set the required property/state", () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'The aria-level state/property is required on the heading role.',
+				message: 'Require the "aria-level" ARIA state/property on the "heading" role',
 				raw: '<div role="heading">',
 			},
 		]);
@@ -308,8 +310,7 @@ describe('Set the implicit role explicitly', () => {
 				severity: 'error',
 				line: 1,
 				col: 19,
-				message:
-					'Don\'t set the implicit role explicitly because the "link" role is the implicit role of the a element.',
+				message: 'The "link" role is the implicit role of the "a" element',
 				raw: 'role="link"',
 			},
 		]);
@@ -333,8 +334,7 @@ describe('Set the implicit role explicitly', () => {
 				severity: 'error',
 				line: 1,
 				col: 9,
-				message:
-					'Don\'t set the implicit role explicitly because the "banner" role is the implicit role of the header element.',
+				message: 'The "banner" role is the implicit role of the "header" element',
 				raw: 'role="banner"',
 			},
 		]);
@@ -357,7 +357,7 @@ describe('Set the implicit role explicitly', () => {
 				line: 1,
 				col: 9,
 				message:
-					'The ARIA Role of the header element cannot overwrite "banner" according to ARIA in HTML spec.',
+					'Cannot overwrite the "banner" role to the "header" element according to ARIA in HTML specification',
 				raw: 'role="banner"',
 			},
 		]);
@@ -432,7 +432,7 @@ describe('Set the deprecated property/state', () => {
 				severity: 'error',
 				line: 1,
 				col: 10,
-				message: 'The aria-disabled state/property is deprecated on the article role.',
+				message: 'The "aria-disabled" ARIA state/property is deprecated on the "article" role',
 				raw: 'aria-disabled="true"',
 			},
 		]);
@@ -456,7 +456,7 @@ describe('Set the deprecated property/state', () => {
 				severity: 'error',
 				line: 1,
 				col: 21,
-				message: 'The aria-disabled state/property is deprecated on the article role.',
+				message: 'The "aria-disabled" ARIA state/property is deprecated on the "article" role',
 				raw: 'aria-disabled="true"',
 			},
 		]);
@@ -501,7 +501,8 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				severity: 'error',
 				line: 1,
 				col: 32,
-				message: 'Has the checked attribute that has equivalent semantic.',
+				message:
+					'The "aria-checked" ARIA state/property has the same semantics as the current "checked" attribute or the implicit "checked" attribute',
 				raw: 'aria-checked="true"',
 			},
 		]);
@@ -525,7 +526,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				severity: 'error',
 				line: 1,
 				col: 32,
-				message: 'Can be different from the value of the checked attribute.',
+				message: 'The "aria-checked" ARIA state/property contradicts the current "checked" attribute',
 				raw: 'aria-checked="false"',
 			},
 		]);
@@ -549,7 +550,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				severity: 'error',
 				line: 1,
 				col: 24,
-				message: 'Can be in opposition to the value of the unset checked attribute.',
+				message: 'The "aria-checked" ARIA state/property contradicts the implicit "checked" attribute',
 				raw: 'aria-checked="true"',
 			},
 		]);
@@ -588,7 +589,8 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				severity: 'error',
 				line: 1,
 				col: 45,
-				message: 'Has the placeholder attribute that has equivalent semantic.',
+				message:
+					'The "aria-placeholder" ARIA state/property has the same semantics as the current "placeholder" attribute or the implicit "placeholder" attribute',
 				raw: 'aria-placeholder="type hints"',
 			},
 		]);
@@ -612,7 +614,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				severity: 'error',
 				line: 1,
 				col: 45,
-				message: 'Can be different from the value of the placeholder attribute.',
+				message: 'The "aria-placeholder" ARIA state/property contradicts the current "placeholder" attribute',
 				raw: 'aria-placeholder="different value"',
 			},
 		]);
@@ -637,8 +639,12 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 		const { violations: violations5 } = await mlTest('<div aria-hidden="false"></div>', config, [rule], 'en');
 
 		expect(violations1[0]?.message).toBe(undefined);
-		expect(violations2[0]?.message).toBe('Has the hidden attribute that has equivalent semantic.');
-		expect(violations3[0]?.message).toBe('Can be different from the value of the hidden attribute.');
+		expect(violations2[0]?.message).toBe(
+			'The "aria-hidden" ARIA state/property has the same semantics as the current "hidden" attribute or the implicit "hidden" attribute',
+		);
+		expect(violations3[0]?.message).toBe(
+			'The "aria-hidden" ARIA state/property contradicts the current "hidden" attribute',
+		);
 		expect(violations4[0]?.message).toBe(undefined);
 		expect(violations5[0]?.message).toBe(undefined);
 	});

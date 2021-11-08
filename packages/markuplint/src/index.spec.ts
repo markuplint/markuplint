@@ -71,7 +71,7 @@ describe('basic test', () => {
 			},
 			{
 				severity: 'error',
-				message: 'Missing the h1 element',
+				message: 'Require the "h1" element',
 				line: 1,
 				col: 1,
 				raw: '<',
@@ -107,14 +107,14 @@ describe('basic test', () => {
 
 describe('async and sync rules', () => {
 	const asyncReport = {
-		message: 'async error test',
+		message: 'Async error test',
 		line: 1,
 		col: 1,
 		raw: 'content',
 	};
 
 	const syncReport = {
-		message: 'sync error test',
+		message: 'Sync error test',
 		line: 1,
 		col: 1,
 		raw: 'content',

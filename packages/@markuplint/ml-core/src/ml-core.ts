@@ -2,7 +2,7 @@ import type { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import type { MLFabric, MLSchema } from './types';
 import type { RuleConfigValue, Violation } from '@markuplint/ml-config';
 import { Document } from './ml-dom';
-import type { I18n } from '@markuplint/i18n';
+import type { LocaleSet } from '@markuplint/i18n';
 import MLParseError from './ml-error/ml-parse-error';
 import type { MLRule } from './ml-rule';
 import type Ruleset from './ruleset';
@@ -22,12 +22,12 @@ export class MLCore {
 	#sourceCode: string;
 	#ast: MLASTDocument;
 	#ruleset: Ruleset;
-	#i18n: I18n;
+	#locale: LocaleSet;
 	#rules: MLRule<RuleConfigValue, unknown>[];
 	#schemas: MLSchema;
 	#ignoreFrontMatter: boolean;
 
-	constructor({ parser, sourceCode, ruleset, rules, i18n, schemas, parserOptions, filename }: MLCoreParams) {
+	constructor({ parser, sourceCode, ruleset, rules, locale, schemas, parserOptions, filename }: MLCoreParams) {
 		this.#parser = parser;
 		this.#sourceCode = sourceCode;
 		this.#ignoreFrontMatter = !!parserOptions.ignoreFrontMatter;
@@ -36,7 +36,7 @@ export class MLCore {
 			nodeRules: ruleset.nodeRules ?? [],
 			childNodeRules: ruleset.childNodeRules ?? [],
 		};
-		this.#i18n = i18n;
+		this.#locale = locale;
 		this.#schemas = schemas;
 		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
 		this.#filename = filename;
@@ -69,13 +69,9 @@ export class MLCore {
 			if (ruleInfo.disabled) {
 				continue;
 			}
-			if (fix) {
-				log('%s Rule: fix', rule.name);
-				await rule.fix(this.#document, ruleInfo);
-				log('%s Rule: end fix', rule.name);
-			}
+
 			log('%s Rule: verify', rule.name);
-			const results = await rule.verify(this.#document, this.#i18n, ruleInfo).catch(e => {
+			const results = await rule.verify(this.#document, this.#locale, ruleInfo, fix).catch(e => {
 				if (e instanceof MLParseError) {
 					return e;
 				}
@@ -119,7 +115,7 @@ export class MLCore {
 		this.createDocument();
 	}
 
-	update({ parser, ruleset, rules, i18n, schemas, parserOptions }: Partial<MLFabric>) {
+	update({ parser, ruleset, rules, locale, schemas, parserOptions }: Partial<MLFabric>) {
 		this.#parser = parser ?? this.#parser;
 		this.#ruleset = {
 			rules: ruleset?.rules ?? this.#ruleset.rules,
@@ -127,7 +123,7 @@ export class MLCore {
 			childNodeRules: ruleset?.childNodeRules ?? this.#ruleset.childNodeRules,
 		};
 		this.#rules = rules ?? this.#rules;
-		this.#i18n = i18n ?? this.#i18n;
+		this.#locale = locale ?? this.#locale;
 		this.#schemas = schemas ?? this.#schemas;
 		if (parserOptions && parserOptions.ignoreFrontMatter !== this.#ignoreFrontMatter) {
 			this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);

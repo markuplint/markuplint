@@ -5,9 +5,9 @@ export default createRule({
 	name: 'deprecated-attr',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(context) {
-		await context.document.walkOn('Element', async element => {
-			const attrSpecs = getAttrSpecs(element.nameWithNS, context.document.specs);
+	async verify({ document, report, t }) {
+		await document.walkOn('Element', async element => {
+			const attrSpecs = getAttrSpecs(element.nameWithNS, document.specs);
 
 			if (!attrSpecs) {
 				return;
@@ -20,13 +20,12 @@ export default createRule({
 					return;
 				}
 				if (attrSpec.deprecated || attrSpec.obsolete) {
-					const message = context.translate(
-						'The {0} {1} is {2}',
-						name.potential,
-						'attribute',
+					const message = t(
+						'{0} is {1:c}',
+						t('the "{0}" {1}', name.potential, 'attribute'),
 						attrSpec.obsolete ? 'obsolete' : 'deprecated',
 					);
-					context.report({
+					report({
 						scope: element,
 						message,
 						line: name.line,

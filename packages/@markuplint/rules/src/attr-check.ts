@@ -8,6 +8,7 @@ import {
 	uintCheck,
 } from './primitive-check';
 import { Attribute as AttrSpec } from '@markuplint/ml-spec';
+import type { Translator } from '@markuplint/i18n';
 
 type Invalid = {
 	invalidType: 'non-existent' | 'invalid-value';
@@ -22,7 +23,13 @@ type Invalid = {
  * @param isCustomRule
  * @param spec
  */
-export function attrCheck(name: string, value: string, isCustomRule: boolean, spec?: AttrSpec): Invalid | false {
+export function attrCheck(
+	t: Translator,
+	name: string,
+	value: string,
+	isCustomRule: boolean,
+	spec?: AttrSpec,
+): Invalid | false {
 	if (!isCustomRule) {
 		if (/^data-.+$/.test(name)) {
 			// Ignore checking because "data-*" attribute is any type
@@ -39,11 +46,11 @@ export function attrCheck(name: string, value: string, isCustomRule: boolean, sp
 	if (!spec) {
 		return {
 			invalidType: 'non-existent',
-			message: `The "${name}" attribute is not allowed`,
+			message: t('{0} is {1}', t('the "{0}" {1}', name, 'attribute'), 'disallowed'),
 		};
 	}
 
-	const invalid = valueCheck(name, value, spec);
+	const invalid = valueCheck(t, name, value, spec);
 	if (invalid) {
 		return {
 			invalidType: 'invalid-value',
@@ -54,15 +61,17 @@ export function attrCheck(name: string, value: string, isCustomRule: boolean, sp
 	return false;
 }
 
-function valueCheck(name: string, value: string, spec: AttrSpec): string | false {
+function valueCheck(t: Translator, name: string, value: string, spec: AttrSpec): string | false {
 	// Valid because any string value is acceptable
 	if (typeof spec.type !== 'string' && 'enum' in spec.type) {
 		// has "enum"
-		return includesEnum(name, value, spec.type.enum);
+		return includesEnum(t, name, value, spec.type.enum);
 	}
 
+	const t_theNameAttribute = t('the "{0}" {1}', name, 'attribute');
+
 	if (spec.type === 'NonEmptyString' && value === '') {
-		return `The "${name}" attribute value must not be the empty string`;
+		return t('{0} must not be {1}', t('{0} of {1}', t('the {0}', 'value'), t_theNameAttribute), 'empty string');
 	}
 
 	if (spec.type === 'Boolean') {
@@ -84,35 +93,35 @@ function valueCheck(name: string, value: string, spec: AttrSpec): string | false
 		if (intCheck(value)) {
 			return false;
 		}
-		return `The "${name}" attribute expect integer`;
+		return t('{0} expects {1}', t_theNameAttribute, 'integer');
 	}
 
 	if (spec.type === 'Uint') {
 		if (uintCheck(value)) {
 			return false;
 		}
-		return `The "${name}" attribute expect non-negative integer`;
+		return t('{0} expects {1}', t_theNameAttribute, 'non-negative integer');
 	}
 
 	if (spec.type === 'Float') {
 		if (floatCheck(value)) {
 			return false;
 		}
-		return `The "${name}" attribute expect floating-point number`;
+		return t('{0} expects {1}', t_theNameAttribute, 'floating-point number');
 	}
 
 	if (spec.type === 'NonZeroUint') {
 		if (nonZeroUintCheck(value)) {
 			return false;
 		}
-		return `The "${name}" attribute expect floating-point number`;
+		return t('{0} expects {1}', t_theNameAttribute, t('{0} greater than {1}', 'floating-point number', 'zero'));
 	}
 
 	if (spec.type === 'ZeroToOne') {
 		if (range(value, 0, 1)) {
 			return false;
 		}
-		return `The "${name}" attribute expect in the range between zero and one`;
+		return t('{0} expects {1:c}', t_theNameAttribute, t('in the range between {0} and {1}', 'zero', 'one'));
 	}
 
 	if (spec.type === 'AcceptList') {
@@ -144,7 +153,15 @@ function valueCheck(name: string, value: string, spec: AttrSpec): string | false
 		if (intCheck(value) && range(value, 0, 1000)) {
 			return false;
 		}
-		return `The "${name}" attribute expect non-negative integer greater than zero and less than or equal to 1000`;
+		return t(
+			'{0} expects {1:c}',
+			t_theNameAttribute,
+			t(
+				'{0:c} and {1:c}',
+				t('{0} greater than {1}', 'non-negative integer', 'zero'),
+				t('less than or equal to {0}', 1000),
+			),
+		);
 	}
 
 	if (spec.type === 'Coords') {
@@ -221,7 +238,7 @@ function valueCheck(name: string, value: string, spec: AttrSpec): string | false
 		/**
 		 * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#referrer-policy-attributes
 		 */
-		return includesEnum(name, value, [
+		return includesEnum(t, name, value, [
 			'',
 			'no-referrer',
 			'no-referrer-when-downgrade',
@@ -243,7 +260,15 @@ function valueCheck(name: string, value: string, spec: AttrSpec): string | false
 		if (intCheck(value) && range(value, 0, 65534)) {
 			return false;
 		}
-		return `The "${name}" attribute expect non-negative integer less than or equal to 65534`;
+		return t(
+			'{0} expects {1:c}',
+			t_theNameAttribute,
+			t(
+				'{0:c} and {1:c}',
+				t('{0} greater than {1}', 'non-negative integer', 'zero'),
+				t('less than or equal to {0}', 65534),
+			),
+		);
 	}
 
 	if (spec.type === 'SourceSizeList') {
@@ -282,10 +307,10 @@ function valueCheck(name: string, value: string, spec: AttrSpec): string | false
 				return false;
 			}
 			if (-1 > i) {
-				return 'Value is ​​less than -1 behave the same as -1';
+				return t('{0} behaves the same as {1} if {2}', t_theNameAttribute, '-1', t('less than {0}', '-1'));
 			}
 		}
-		return `The "${name}" attribute expect either -1, 0, positive integer`;
+		return t('{0} expects {1:c}', t_theNameAttribute, t('either {0}', t(['-1', 'zero', 'non-negative integer'])));
 	}
 
 	if (spec.type === 'Target') {
@@ -306,7 +331,7 @@ function valueCheck(name: string, value: string, spec: AttrSpec): string | false
 		if (valid) {
 			return false;
 		}
-		return `The "${name}" attribute expect valid hash name reference`;
+		return t('{0} expects {1:c}', t_theNameAttribute, t('valid {0}', 'hash-name reference'));
 	}
 
 	if (spec.type === 'URLList') {
@@ -322,14 +347,14 @@ function valueCheck(name: string, value: string, spec: AttrSpec): string | false
 		if (valid) {
 			return false;
 		}
-		return `The "${name}" attribute expect angle value`;
+		return t('{0} expects {1}', t_theNameAttribute, 'angle');
 	}
 
 	if (spec.type === 'CSSBlendMode') {
 		/**
 		 * @see https://drafts.fxtf.org/compositing/#ltblendmodegt
 		 */
-		return includesEnum(name, value, [
+		return includesEnum(t, name, value, [
 			'normal',
 			'multiply',
 			'screen',
@@ -404,13 +429,21 @@ function valueCheck(name: string, value: string, spec: AttrSpec): string | false
 			if (vaild) {
 				return false;
 			}
-			return `The ${name} attribute expects 0% to 100% as alpha value`;
+			return t(
+				'{0} expects {1:c}',
+				t_theNameAttribute,
+				t('{0} as {1}', t('{0} to {1}', '0%', '100%'), 'alpha channel value'),
+			);
 		}
 		const vaild = range(num, 0, 1);
 		if (vaild) {
 			return false;
 		}
-		return `The ${name} attribute expects 0 to 1 as alpha value`;
+		return t(
+			'{0} expects {1:c}',
+			t_theNameAttribute,
+			t('{0} as {1}', t('{0} to {1}', '0', '1'), 'alpha channel value'),
+		);
 	}
 
 	if (spec.type === 'CSSTextDecoration') {
@@ -583,10 +616,10 @@ function valueCheck(name: string, value: string, spec: AttrSpec): string | false
  * @param value
  * @param enumValues
  */
-function includesEnum(name: string, value: string, enumValues: string[]) {
+function includesEnum(t: Translator, name: string, value: string, enumValues: string[]) {
 	const valid = enumValues.includes(value.toLowerCase());
 	if (valid) {
 		return false;
 	}
-	return `The "${name}" attribute expect either "${enumValues.join('", "')}"`;
+	return t('{0} expects {1:c}', t('the "{0}" {1}', name, 'attribute'), t('either {0}', t(enumValues)));
 }
