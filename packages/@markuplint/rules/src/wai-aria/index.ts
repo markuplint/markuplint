@@ -32,9 +32,9 @@ export default createRule<true, Options>({
 		disallowSetImplicitProps: true,
 		disallowDefaultValue: false,
 	},
-	async verify(context) {
-		await context.document.walkOn('Element', async node => {
-			const attrSpecs = getAttrSpecs(node.nameWithNS, context.document.specs);
+	async verify({ document, report, t }) {
+		await document.walkOn('Element', async node => {
+			const attrSpecs = getAttrSpecs(node.nameWithNS, document.specs);
 			const html = htmlSpec(node.nodeName);
 			const { roles, ariaAttrs } = ariaSpec();
 
@@ -52,18 +52,23 @@ export default createRule<true, Options>({
 
 				if (!existedRole) {
 					// Not exist
-					context.report({
+					report({
 						scope: node,
-						message: `This "${value}" role does not exist in WAI-ARIA.`,
+						message:
+							t(
+								'{0} according to {1}',
+								t('{0} does not exist', t('the "{0}" {1}', value, 'role')),
+								'the WAI-ARIA specification',
+							) + `This "${value}" role does not exist in WAI-ARIA.`,
 						line: roleAttr.startLine,
 						col: roleAttr.startCol,
 						raw: roleAttr.raw,
 					});
 				} else if (existedRole.isAbstract) {
-					// Abstract role
-					context.report({
+					// the abstract role
+					report({
 						scope: node,
-						message: `This "${value}" role is the abstract role.`,
+						message: t('{0} is {1}', t('the "{0}" {1}', value, 'role'), 'the abstract role'),
 						line: roleAttr.startLine,
 						col: roleAttr.startCol,
 						raw: roleAttr.raw,
@@ -74,10 +79,14 @@ export default createRule<true, Options>({
 				if (node.rule.option.disallowSetImplicitRole) {
 					const implictRole = getImplicitRole(node);
 					if (implictRole && implictRole === value) {
-						// Abstract role
-						context.report({
+						// the implicit role
+						report({
 							scope: node,
-							message: `Don't set the implicit role explicitly because the "${value}" role is the implicit role of the ${node.nodeName} element.`,
+							message: t(
+								'{0} is {1}',
+								t('the "{0}" {1}', value, 'role'),
+								t('{0} of {1}', 'the implicit role', t('the "{0}" {1}', node.nodeName, 'element')),
+							),
 							line: roleAttr.startLine,
 							col: roleAttr.startCol,
 							raw: roleAttr.raw,
@@ -89,17 +98,32 @@ export default createRule<true, Options>({
 				if (node.rule.option.permittedAriaRoles) {
 					const permittedRoles = getPermittedRoles(node);
 					if (permittedRoles === false) {
-						context.report({
+						report({
 							scope: node,
-							message: `The ARIA Role of the ${node.nodeName} element cannot overwrite according to ARIA in HTML spec.`,
+							message: t(
+								'{0} according to {1}',
+								t(
+									'Cannot overwrite {0}',
+									t('{0} of {1}', t('the {0}', 'role'), t('the "{0}" {1}', node.nodeName, 'element')),
+								),
+								'ARIA in HTML specification',
+							),
 							line: roleAttr.startLine,
 							col: roleAttr.startCol,
 							raw: roleAttr.raw,
 						});
 					} else if (Array.isArray(permittedRoles) && !permittedRoles.includes(value)) {
-						context.report({
+						report({
 							scope: node,
-							message: `The ARIA Role of the ${node.nodeName} element cannot overwrite "${value}" according to ARIA in HTML spec.`,
+							message: t(
+								'{0} according to {1}',
+								t(
+									'Cannot overwrite {0} to {1}',
+									t('the "{0}" {1}', value, 'role'),
+									t('the "{0}" {1}', node.nodeName, 'element'),
+								),
+								'ARIA in HTML specification',
+							),
 							line: roleAttr.startLine,
 							col: roleAttr.startCol,
 							raw: roleAttr.raw,
@@ -119,18 +143,34 @@ export default createRule<true, Options>({
 							const statesAndProp = role.statesAndProps.find(s => s.name === attrName);
 							if (statesAndProp) {
 								if (node.rule.option.checkingDeprecatedProps && statesAndProp.deprecated) {
-									context.report({
+									report({
 										scope: node,
-										message: `The ${attrName} state/property is deprecated on the ${role.name} role.`,
+										message: t(
+											'{0:c} on {1}',
+											t(
+												'{0} is {1:c}',
+												t('the "{0}" {1}', attrName, 'ARIA state/property'),
+												'deprecated',
+											),
+											t('the "{0}" {1}', role.name, 'role'),
+										),
 										line: attr.startLine,
 										col: attr.startCol,
 										raw: attr.raw,
 									});
 								}
 							} else {
-								context.report({
+								report({
 									scope: node,
-									message: `Cannot use the ${attrName} state/property on the ${role.name} role.`,
+									message: t(
+										'{0:c} on {1}',
+										t(
+											'{0} is {1:c}',
+											t('the "{0}" {1}', attrName, 'ARIA state/property'),
+											'disallowed',
+										),
+										t('the "{0}" {1}', role.name, 'role'),
+									),
 									line: attr.startLine,
 									col: attr.startCol,
 									raw: attr.raw,
@@ -148,9 +188,13 @@ export default createRule<true, Options>({
 								return attrName === requiredProp;
 							});
 							if (!has) {
-								context.report({
+								report({
 									scope: node,
-									message: `The ${requiredProp} state/property is required on the ${role.name} role.`,
+									message: t(
+										'{0:c} on {1}',
+										t('Require {0}', t('the "{0}" {1}', requiredProp, 'ARIA state/property')),
+										t('the "{0}" {1}', role.name, 'role'),
+									),
 								});
 							}
 						}
@@ -164,9 +208,13 @@ export default createRule<true, Options>({
 					if (/^aria-/i.test(attrName)) {
 						const ariaAttr = ariaAttrs.find(attr => attr.name === attrName);
 						if (ariaAttr && !ariaAttr.isGlobal) {
-							context.report({
+							report({
 								scope: node,
-								message: `The ${attrName} is not global state/property.`,
+								message: t(
+									'{0} is not {1}',
+									t('the "{0}" {1}', attrName, 'ARIA state/property'),
+									'global state/property',
+								),
 								line: attr.startLine,
 								col: attr.startCol,
 								raw: attr.raw,
@@ -189,12 +237,16 @@ export default createRule<true, Options>({
 					if (node.rule.option.checkingValue) {
 						const result = checkAria(attrName, value, computedRole?.name);
 						if (!result.isValid) {
-							context.report({
+							report({
 								scope: node,
 								message:
-									`The "${value}" is disallowed in the ${attrName} state/property.` +
+									t(
+										'{0:c} on {1}',
+										t('{0} is {1:c}', t('the "{0}"', value), 'disallowed'),
+										t('the "{0}" {1}', attrName, 'ARIA state/property'),
+									) +
 									('enum' in result && result.enum.length
-										? ` Allow values are ${result.enum.join(', ')}.`
+										? t('. ') + t('Arrowed values are: {0}', t(result.enum))
 										: ''),
 								line: attr.startLine,
 								col: attr.startCol,
@@ -209,6 +261,7 @@ export default createRule<true, Options>({
 							for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
 								const htmlAttrSpec = attrSpecs.find(a => a.name === equivalentHtmlAttr.htmlAttrName);
 								const isValid = isValidAttr(
+									t,
 									equivalentHtmlAttr.htmlAttrName,
 									equivalentHtmlAttr.value || '',
 									false,
@@ -224,9 +277,29 @@ export default createRule<true, Options>({
 										(equivalentHtmlAttr.value == null && targetAttrValue === value) ||
 										equivalentHtmlAttr.value === value
 									) {
-										context.report({
+										report({
 											scope: node,
-											message: `Has the ${equivalentHtmlAttr.htmlAttrName} attribute that has equivalent semantic.`,
+											message: t(
+												'{0} has {1}',
+												t('the "{0}" {1}', attrName, 'ARIA state/property'),
+												t(
+													'the same {0} as {1}',
+													'semantics',
+													t(
+														'{0} or {1}',
+														t(
+															'the current "{0}" {1}',
+															equivalentHtmlAttr.htmlAttrName,
+															'attribute',
+														),
+														t(
+															'the implicit "{0}" {1}',
+															equivalentHtmlAttr.htmlAttrName,
+															'attribute',
+														),
+													),
+												),
+											),
 											line: attr.startLine,
 											col: attr.startCol,
 											raw: attr.raw,
@@ -236,18 +309,30 @@ export default createRule<true, Options>({
 									if (htmlAttrSpec?.type === 'Boolean' && value !== 'false') {
 										continue;
 									}
-									context.report({
+									report({
 										scope: node,
-										message: `Can be different from the value of the ${equivalentHtmlAttr.htmlAttrName} attribute.`,
+										message: t(
+											'{0} contradicts {1}',
+											t('the "{0}" {1}', attrName, 'ARIA state/property'),
+											t('the current "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
+										),
 										line: attr.startLine,
 										col: attr.startCol,
 										raw: attr.raw,
 									});
 								} else if (value === 'true') {
 									if (!equivalentHtmlAttr.isNotStrictEquivalent && htmlAttrSpec?.type === 'Boolean') {
-										context.report({
+										report({
 											scope: node,
-											message: `Can be in opposition to the value of the unset ${equivalentHtmlAttr.htmlAttrName} attribute.`,
+											message: t(
+												'{0} contradicts {1}',
+												t('the "{0}" {1}', attrName, 'ARIA state/property'),
+												t(
+													'the implicit "{0}" {1}',
+													equivalentHtmlAttr.htmlAttrName,
+													'attribute',
+												),
+											),
 											line: attr.startLine,
 											col: attr.startCol,
 											raw: attr.raw,
@@ -260,9 +345,9 @@ export default createRule<true, Options>({
 
 					// Default value
 					if (node.rule.option.disallowDefaultValue && propSpec && propSpec.defaultValue === value) {
-						context.report({
+						report({
 							scope: node,
-							message: 'It is default value',
+							message: t('It is {0}', 'default value'),
 							line: attr.startLine,
 							col: attr.startCol,
 							raw: attr.raw,

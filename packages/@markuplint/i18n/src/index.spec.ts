@@ -136,4 +136,91 @@ test('ja', () => {
 	);
 	expect(t('Require {0}', t('the "{0}" {1}', 'h1', 'element'))).toBe('要素「h1」が必要です');
 	expect(t('{0} is {1:c}', t('the "{0}" {1}', 'h1', 'element'), 'duplicated')).toBe('要素「h1」が重複しています');
+	expect(
+		t(
+			'{0} according to {1}',
+			t('{0} does not exist', t('the "{0}" {1}', 'foo', 'role')),
+			'the WAI-ARIA specification',
+		),
+	).toBe('WAI-ARIAの仕様において、ロール「foo」は存在しません');
+	expect(t('{0} is {1}', t('the "{0}" {1}', 'foo', 'role'), 'the abstract role')).toBe(
+		'ロール「foo」は抽象ロールです',
+	);
+	expect(
+		t(
+			'{0} is {1}',
+			t('the "{0}" {1}', 'foo', 'role'),
+			t('{0} of {1}', 'the implicit role', t('the "{0}" {1}', 'bar', 'element')),
+		),
+	).toBe('ロール「foo」は要素「bar」の暗黙のロールです');
+	expect(
+		t(
+			'{0} according to {1}',
+			t('Cannot overwrite {0}', t('{0} of {1}', t('the {0}', 'role'), t('the "{0}" {1}', 'foo', 'element'))),
+			'ARIA in HTML specification',
+		),
+	).toBe('ARIA in HTMLの仕様において、要素「foo」のそのロールを上書きすることはできません');
+	expect(
+		t(
+			'{0} according to {1}',
+			t('Cannot overwrite {0} to {1}', t('the "{0}" {1}', 'foo', 'role'), t('the "{0}" {1}', 'bar', 'element')),
+			'ARIA in HTML specification',
+		),
+	).toBe('ARIA in HTMLの仕様において、ロール「foo」を要素「bar」に上書きすることはできません');
+	expect(
+		t(
+			'{0:c} on {1}',
+			t('{0} is {1:c}', t('the "{0}" {1}', 'foo', 'ARIA state/property'), 'deprecated'),
+			t('the "{0}" {1}', 'bar', 'role'),
+		),
+	).toBe('ロール「bar」では、ARIAステート/プロパティ「foo」は非推奨です');
+	expect(
+		t(
+			'{0:c} on {1}',
+			t('{0} is {1:c}', t('the "{0}" {1}', 'foo', 'ARIA state/property'), 'disallowed'),
+			t('the "{0}" {1}', 'bar', 'role'),
+		),
+	).toBe('ロール「bar」では、ARIAステート/プロパティ「foo」は許可されていません');
+	expect(
+		t(
+			'{0:c} on {1}',
+			t('Require {0}', t('the "{0}" {1}', 'foo', 'ARIA state/property')),
+			t('the "{0}" {1}', 'bar', 'role'),
+		),
+	).toBe('ロール「bar」では、ARIAステート/プロパティ「foo」が必要です');
+	expect(t('{0} is not {1}', t('the "{0}" {1}', 'foo', 'ARIA state/property'), 'global state/property')).toBe(
+		'ARIAステート/プロパティ「foo」はグローバルステート/プロパティではありません',
+	);
+	expect(
+		t(
+			'{0} has {1}',
+			t('the "{0}" {1}', 'foo', 'ARIA state/property'),
+			t(
+				'the same {0} as {1}',
+				'semantics',
+				t(
+					'{0} or {1}',
+					t('the current "{0}" {1}', 'bar', 'attribute'),
+					t('the implicit "{0}" {1}', 'bar', 'attribute'),
+				),
+			),
+		),
+	).toBe(
+		'ARIAステート/プロパティ「foo」は現在の属性「bar」もしくは暗黙の属性「bar」と同等のセマンティクスを持っています',
+	);
+	expect(
+		t(
+			'{0} contradicts {1}',
+			t('the "{0}" {1}', 'foo', 'ARIA state/property'),
+			t('the current "{0}" {1}', 'bar', 'attribute'),
+		),
+	).toBe('ARIAステート/プロパティ「foo」は現在の属性「bar」と矛盾しています');
+	expect(
+		t(
+			'{0} contradicts {1}',
+			t('the "{0}" {1}', 'foo', 'ARIA state/property'),
+			t('the implicit "{0}" {1}', 'bar', 'attribute'),
+		),
+	).toBe('ARIAステート/プロパティ「foo」は暗黙の属性「bar」と矛盾しています');
+	expect(t('It is {0}', 'default value')).toBe('デフォルト値です');
 });
