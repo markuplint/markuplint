@@ -113,4 +113,22 @@ test('ja', () => {
 		'ロール「foo」はトップレベルにしたほうがよいです',
 	);
 	expect(t('Require {0}', t('unique {0}', 'accessible name'))).toBe('一意のアクセシブルな名前が必要です');
+	expect(
+		t(
+			'{0} must be {1}',
+			t('the "{0}" {1}', 'foo', 'element'),
+			t('{0} of {1}', 'descendant', t('the "{0}" {1}', 'bar', 'element')),
+		),
+	).toBe('要素「foo」は要素「bar」の子孫にするべきです');
+	expect(
+		t(
+			'{0} according to {1}',
+			t(
+				'{0} is {1:c}',
+				t('{0} of {1}', t('the {0}', 'contents'), t('the "{0}" {1}', 'foo', 'element')),
+				'invalid',
+			),
+			'the html specification',
+		),
+	).toBe('HTMLの仕様において、要素「foo」のその内容は妥当ではありません');
 });
