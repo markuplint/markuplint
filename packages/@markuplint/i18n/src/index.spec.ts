@@ -134,4 +134,6 @@ test('ja', () => {
 	expect(t('{0} expects {1}', t('the "{0}" {1}', 'foo', 'attribute'), t('the "{0}" {1}', 'bar', 'element'))).toBe(
 		'属性「foo」には要素「bar」が必要です',
 	);
+	expect(t('Require {0}', t('the "{0}" {1}', 'h1', 'element'))).toBe('要素「h1」が必要です');
+	expect(t('{0} is {1:c}', t('the "{0}" {1}', 'h1', 'element'), 'duplicated')).toBe('要素「h1」が重複しています');
 });
