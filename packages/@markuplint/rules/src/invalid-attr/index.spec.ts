@@ -19,7 +19,7 @@ test('warns if specified attribute value is invalid', async () => {
 			severity: 'error',
 			line: 1,
 			col: 4,
-			message: 'The "invalid-attr" attribute is not allowed',
+			message: 'The "invalid-attr" attribute is disallow',
 			raw: 'invalid-attr',
 		},
 		{
@@ -28,7 +28,7 @@ test('warns if specified attribute value is invalid', async () => {
 			line: 1,
 			col: 33,
 			message:
-				'The "referrerpolicy" attribute expect either "", "no-referrer", "no-referrer-when-downgrade", "same-origin", "origin", "strict-origin", "origin-when-cross-origin", "strict-origin-when-cross-origin", "unsafe-url"',
+				'The "referrerpolicy" attribute expects either "", "no-referrer", "no-referrer-when-downgrade", "same-origin", "origin", "strict-origin", "origin-when-cross-origin", "strict-origin-when-cross-origin", "unsafe-url"',
 			raw: 'invalid-value',
 		},
 	]);
@@ -52,7 +52,7 @@ test('Type check', async () => {
 			severity: 'error',
 			line: 1,
 			col: 13,
-			message: 'The "name" attribute value must not be the empty string',
+			message: 'The value of the "name" attribute must not be empty string',
 			raw: '',
 		},
 	]);
@@ -136,7 +136,7 @@ test('ancestor condition', async () => {
 			severity: 'error',
 			line: 1,
 			col: 16,
-			message: 'The "media" attribute is not allowed',
+			message: 'The "media" attribute is disallow',
 			raw: 'media',
 		},
 	]);
@@ -168,7 +168,7 @@ test('custom rule', async () => {
 			severity: 'error',
 			line: 1,
 			col: 15,
-			message: 'The "x-attr" attribute expect custom pattern "/[a-z]+/"',
+			message: 'The "x-attr" attribute is unmatched with the below patterns: /[a-z]+/',
 			raw: '123',
 		},
 	]);
@@ -200,7 +200,7 @@ test('custom rule: type', async () => {
 			severity: 'error',
 			line: 1,
 			col: 41,
-			message: 'The "x-attr" attribute expect integer',
+			message: 'The "x-attr" attribute expects integer',
 			raw: 'abc',
 		},
 	]);
@@ -270,7 +270,7 @@ test('prefix attribute', async () => {
 			severity: 'error',
 			line: 1,
 			col: 6,
-			message: 'The "v-bind:title" attribute is not allowed',
+			message: 'The "v-bind:title" attribute is disallow',
 			raw: 'v-bind:title',
 		},
 		{
@@ -278,7 +278,7 @@ test('prefix attribute', async () => {
 			severity: 'error',
 			line: 1,
 			col: 27,
-			message: 'The ":class" attribute is not allowed',
+			message: 'The ":class" attribute is disallow',
 			raw: ':class',
 		},
 		{
@@ -286,7 +286,7 @@ test('prefix attribute', async () => {
 			severity: 'error',
 			col: 44,
 			line: 1,
-			message: 'The "@click" attribute is not allowed',
+			message: 'The "@click" attribute is disallow',
 			raw: '@click',
 		},
 	]);
@@ -499,7 +499,7 @@ test('svg', async () => {
 			severity: 'error',
 			line: 2,
 			col: 30,
-			message: 'The "cz" attribute is not allowed',
+			message: 'The "cz" attribute is disallow',
 			raw: 'cz',
 		},
 	]);
@@ -627,7 +627,7 @@ test('React HTML', async () => {
 			severity: 'error',
 			line: 1,
 			col: 36,
-			message: 'The "tabindex" attribute is not allowed. Did you mean "tabIndex"?',
+			message: 'The "tabindex" attribute is disallow. Did you mean "tabIndex"?',
 			raw: 'tabindex',
 		},
 		{
@@ -635,7 +635,7 @@ test('React HTML', async () => {
 			severity: 'error',
 			line: 1,
 			col: 71,
-			message: 'The "for" attribute is not allowed',
+			message: 'The "for" attribute is disallow',
 			raw: 'htmlFor',
 		},
 	]);
@@ -662,7 +662,7 @@ test('React', async () => {
 			severity: 'error',
 			line: 1,
 			col: 32,
-			message: 'The "invalidAttr" attribute is not allowed',
+			message: 'The "invalidAttr" attribute is disallow',
 			raw: 'invalidAttr',
 		},
 	]);
@@ -691,7 +691,7 @@ test('React with spread attribute', async () => {
 			severity: 'error',
 			line: 1,
 			col: 4,
-			message: 'The "target" attribute is not allowed',
+			message: 'The "target" attribute is disallow',
 			raw: 'target',
 		},
 	]);
@@ -736,7 +736,7 @@ test('React with spread attribute', async () => {
 			severity: 'error',
 			line: 1,
 			col: 6,
-			message: 'The "invalid" attribute is not allowed',
+			message: 'The "invalid" attribute is disallow',
 			raw: 'invalid',
 		},
 	]);
@@ -763,7 +763,7 @@ test('React with spread attribute', async () => {
 			severity: 'error',
 			line: 1,
 			col: 17,
-			message: 'The "invalid" attribute is not allowed',
+			message: 'The "invalid" attribute is disallow',
 			raw: 'invalid',
 		},
 	]);
@@ -814,7 +814,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 2,
 			col: 7,
-			message: 'The "value" attribute is not allowed',
+			message: 'The "value" attribute is disallow',
 			raw: 'value',
 		},
 		{
@@ -822,7 +822,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 2,
 			col: 13,
-			message: 'The "defaultValue" attribute is not allowed',
+			message: 'The "defaultValue" attribute is disallow',
 			raw: 'defaultValue',
 		},
 		{
@@ -830,7 +830,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 3,
 			col: 9,
-			message: 'The "defaultChecked" attribute is not allowed',
+			message: 'The "defaultChecked" attribute is disallow',
 			raw: 'defaultChecked',
 		},
 		{
@@ -838,7 +838,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 4,
 			col: 25,
-			message: 'The "defaultChecked" attribute is not allowed',
+			message: 'The "defaultChecked" attribute is disallow',
 			raw: 'defaultChecked',
 		},
 		{
@@ -846,7 +846,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 5,
 			col: 10,
-			message: 'The "value" attribute is not allowed',
+			message: 'The "value" attribute is disallow',
 			raw: 'value',
 		},
 		{
@@ -854,7 +854,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 5,
 			col: 16,
-			message: 'The "defaultValue" attribute is not allowed',
+			message: 'The "defaultValue" attribute is disallow',
 			raw: 'defaultValue',
 		},
 		{
@@ -862,7 +862,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 6,
 			col: 12,
-			message: 'The "value" attribute is not allowed',
+			message: 'The "value" attribute is disallow',
 			raw: 'value',
 		},
 		{
@@ -870,7 +870,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 6,
 			col: 18,
-			message: 'The "defaultValue" attribute is not allowed',
+			message: 'The "defaultValue" attribute is disallow',
 			raw: 'defaultValue',
 		},
 		{
@@ -878,7 +878,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 7,
 			col: 10,
-			message: 'The "value" attribute is not allowed',
+			message: 'The "value" attribute is disallow',
 			raw: 'value',
 		},
 		{
@@ -886,7 +886,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 7,
 			col: 20,
-			message: 'The "defaultValue" attribute is not allowed',
+			message: 'The "defaultValue" attribute is disallow',
 			raw: 'defaultValue',
 		},
 		{
@@ -894,7 +894,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 8,
 			col: 12,
-			message: 'The "value" attribute is not allowed',
+			message: 'The "value" attribute is disallow',
 			raw: 'value',
 		},
 		{
@@ -902,7 +902,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 8,
 			col: 22,
-			message: 'The "defaultValue" attribute is not allowed',
+			message: 'The "defaultValue" attribute is disallow',
 			raw: 'defaultValue',
 		},
 	]);
@@ -913,7 +913,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 2,
 			col: 7,
-			message: 'The "value" attribute is not allowed',
+			message: 'The "value" attribute is disallow',
 			raw: 'value',
 		},
 		{
@@ -921,7 +921,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 2,
 			col: 13,
-			message: 'The "defaultValue" attribute is not allowed',
+			message: 'The "defaultValue" attribute is disallow',
 			raw: 'defaultValue',
 		},
 		{
@@ -929,7 +929,7 @@ test('React spec', async () => {
 			severity: 'error',
 			line: 3,
 			col: 9,
-			message: 'The "defaultChecked" attribute is not allowed',
+			message: 'The "defaultChecked" attribute is disallow',
 			raw: 'defaultChecked',
 		},
 	]);
@@ -983,7 +983,7 @@ test('regexSelector', async () => {
 			severity: 'error',
 			line: 2,
 			col: 18,
-			message: 'The "srcset" attribute expect either "logo@2x.png 2x", "logo@3x.png 3x"',
+			message: 'The "srcset" attribute expects either "logo@2x.png 2x", "logo@3x.png 3x"',
 			raw: 'logo-3x.png 3x',
 		},
 		{
@@ -991,7 +991,7 @@ test('regexSelector', async () => {
 			severity: 'error',
 			line: 4,
 			col: 18,
-			message: 'The "srcset" attribute expect either "logo@2x.png 2x", "logo@3x.png 3x"',
+			message: 'The "srcset" attribute expects either "logo@2x.png 2x", "logo@3x.png 3x"',
 			raw: 'logo-2x.png 2x',
 		},
 	]);

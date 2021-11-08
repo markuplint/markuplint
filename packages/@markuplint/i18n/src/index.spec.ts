@@ -1,13 +1,22 @@
 import { translator } from './translator';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const ja = require('../locales/ja.json');
+const ja = {
+	locale: 'ja',
+	...require('../locales/ja.json'),
+};
 
 test('Listup', () => {
 	// const t1 = translator();
 	// expect(t1(['1', '2', '3'])).toBe('"1", "2", "3"');
 	const t2 = translator(ja);
 	expect(t2(['1', '2', '3'])).toBe('「1」「2」「3」');
+});
+
+test('One keyword', () => {
+	const t = translator(ja);
+
+	expect(t('element')).toBe('要素');
+	expect(t('attribute')).toBe('属性');
 });
 
 test('Complementize', () => {
@@ -46,4 +55,58 @@ test('ja', () => {
 	expect(
 		t('{0} is {1:c}', t('{0} of {1}', t('the {0}', 'value'), t('the "{0}" {1}', 'id', 'attribute')), 'duplicated'),
 	).toBe('属性「id」のその値が重複しています');
+	expect(
+		t('{0} is {1:c}', t('the "{0}" {1}', 'foo', 'attribute'), 'disallow') +
+			t('. ') +
+			t('Did you mean "{0}"?', 'bar'),
+	).toBe('属性「foo」は許可されていません。「bar」ですか？');
+	expect(
+		t(
+			'{0} must not be {1}',
+			t('{0} of {1}', t('the {0}', 'value'), t('the "{0}" {1}', 'foo', 'attribute')),
+			'empty string',
+		),
+	).toBe('属性「foo」のその値は空文字にするべきではありません');
+	expect(
+		t(
+			'{0} expects {1}',
+			t('the "{0}" {1}', 'foo', 'attribute'),
+			t('{0} greater than {1}', 'floating-point number', 'zero'),
+		),
+	).toBe('属性「foo」にはゼロより大きい浮動小数点数が必要です');
+	expect(
+		t(
+			'{0} expects {1:c}',
+			t('the "{0}" {1}', 'foo', 'attribute'),
+			t('in the range between {0} and {1}', 'zero', 'one'),
+		),
+	).toBe('属性「foo」はゼロから1の範囲である必要があります');
+	expect(
+		t(
+			'{0} expects {1:c}',
+			t('the "{0}" {1}', 'foo', 'attribute'),
+			t(
+				'{0:c} and {1:c}',
+				t('{0} greater than {1}', 'non-negative integer', 'zero'),
+				t('less than or equal to {0}', 1000),
+			),
+		),
+	).toBe('属性「foo」はゼロより大きい正の整数且つ、1,000以下である必要があります');
+	expect(
+		t('{0} behaves the same as {1} if {2}', t('the "{0}" {1}', 'foo', 'attribute'), '-1', t('less than {0}', '-1')),
+	).toBe('属性「foo」は-1未満の場合、-1と同じ振る舞いをします');
+	expect(
+		t('{0} expects {1:c}', t('the "{0}" {1}', 'foo', 'attribute'), t('either {0}', t(['A', 'B', 'C', 'D']))),
+	).toBe('属性「foo」は「A」「B」「C」「D」のいずれかである必要があります');
+	expect(t('{0} expects {1:c}', t('the "{0}" {1}', 'foo', 'attribute'), t('valid {0}', 'hash-name reference'))).toBe(
+		'属性「foo」は妥当なハッシュ名参照である必要があります',
+	);
+	expect(t('{0} expects {1}', t('the "{0}" {1}', 'foo', 'attribute'), 'angle')).toBe('属性「foo」には角度が必要です');
+	expect(
+		t(
+			'{0} expects {1:c}',
+			t('the "{0}" {1}', 'foo', 'attribute'),
+			t('{0} as {1}', t('{0} to {1}', '0%', '100%'), 'alpha channel value'),
+		),
+	).toBe('属性「foo」は不透明度として0%から100%である必要があります');
 });

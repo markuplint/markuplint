@@ -1,5 +1,6 @@
-import { ARIRRoleAttribute, Attribute, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
-import { Element, RuleConfigValue } from '@markuplint/ml-core';
+import type { ARIRRoleAttribute, Attribute, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
+import type { Element, RuleConfigValue } from '@markuplint/ml-core';
+import type { Translator } from '@markuplint/i18n';
 import { attrCheck } from './attr-check';
 import html from '@markuplint/html-spec';
 
@@ -124,6 +125,7 @@ export function htmlSpec(nameWithNS: string) {
 }
 
 export function isValidAttr(
+	t: Translator,
 	name: string,
 	value: string,
 	isDynamicValue: boolean,
@@ -132,11 +134,11 @@ export function isValidAttr(
 ) {
 	let invalid: ReturnType<typeof attrCheck> = false;
 	const spec = attrSpecs.find(s => s.name === name);
-	invalid = attrCheck(name, value, false, spec);
+	invalid = attrCheck(t, name, value, false, spec);
 	if (!invalid && spec && spec.condition && !node.hasSpreadAttr && !attrMatches(node, spec.condition)) {
 		invalid = {
 			invalidType: 'non-existent',
-			message: `The "${name}" attribute is not allowed`,
+			message: t('{0} is {1}', t('the "{0}" {1}', name, 'attribute'), 'disallow'),
 		};
 	}
 	if (invalid && invalid.invalidType === 'invalid-value' && isDynamicValue) {

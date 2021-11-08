@@ -45,6 +45,16 @@
 				"c:duplicated": { "type": "string" },
 				"non-standard": { "type": "string" },
 				"c:non-standard": { "type": "string" },
+				"disallow": { "type": "string" },
+				"c:disallow": { "type": "string" },
+				"empty string": { "type": "string" },
+				"zero": { "type": "string" },
+				"one": { "type": "string" },
+				"integer": { "type": "string" },
+				"non-negative integer": { "type": "string" },
+				"floating-point number": { "type": "string" },
+				"angle": { "type": "string" },
+				"alpha channel value": { "type": "string" },
 				"indentation": { "type": "string" },
 				"tab": { "type": "string" },
 				"space": { "type": "string" },
@@ -53,9 +63,11 @@
 				"equal sign": { "type": "string" },
 				"doctype": { "type": "string" },
 				"obsolete doctype": { "type": "string" },
+				"hash-name reference": { "type": "string" },
 				"top level": { "type": "string" },
 				"the html specification": { "type": "string" },
-				"settings": { "type": "string" }
+				"settings": { "type": "string" },
+				". ": { "type": "string" }
 			}
 		},
 		"sentences": {
@@ -68,6 +80,7 @@
 				"{0} is {1}": { "type": "string" },
 				"{0} is {1:c}": { "type": "string" },
 				"Require {0}": { "type": "string" },
+				"Did you mean \"{0}\"?": { "type": "string" },
 				"Required {0} on {1}": { "type": "string" },
 				"Not required {0}": { "type": "string" },
 				"Not required {0} on {1}": { "type": "string" },
