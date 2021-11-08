@@ -131,4 +131,7 @@ test('ja', () => {
 			'the html specification',
 		),
 	).toBe('HTMLの仕様において、要素「foo」のその内容は妥当ではありません');
+	expect(t('{0} expects {1}', t('the "{0}" {1}', 'foo', 'attribute'), t('the "{0}" {1}', 'bar', 'element'))).toBe(
+		'属性「foo」には要素「bar」が必要です',
+	);
 });

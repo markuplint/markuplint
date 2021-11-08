@@ -28,7 +28,7 @@ test('warns if specified attribute is not appeared', async () => {
 		{
 			col: 1,
 			line: 1,
-			message: "Required 'alt' on '<img>'",
+			message: 'The "alt" attribute expects the "img" element',
 			raw: '<img src="/path/to/image.png">',
 			ruleId: 'required-attr',
 			severity: 'error',
@@ -62,7 +62,7 @@ test('multiple required attributes', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: "Required 'alt' on '<img>'",
+			message: 'The "alt" attribute expects the "img" element',
 			line: 1,
 			col: 1,
 			raw: '<img src="/path/to/image.png">',
@@ -70,7 +70,7 @@ test('multiple required attributes', async () => {
 		},
 		{
 			severity: 'error',
-			message: "Required 'height' on '<img>'",
+			message: 'The "height" attribute expects the "img" element',
 			line: 1,
 			col: 1,
 			raw: '<img src="/path/to/image.png">',
@@ -78,7 +78,7 @@ test('multiple required attributes', async () => {
 		},
 		{
 			severity: 'error',
-			message: "Required 'width' on '<img>'",
+			message: 'The "width" attribute expects the "img" element',
 			line: 1,
 			col: 1,
 			raw: '<img src="/path/to/image.png">',
@@ -192,7 +192,7 @@ test('The ancestors of the <source> element.', async () => {
 			severity: 'error',
 			line: 1,
 			col: 8,
-			message: "Required 'src' on '<source>'",
+			message: 'The "src" attribute expects the "source" element',
 			raw: '<source>',
 		},
 	]);
@@ -217,7 +217,7 @@ test('The ancestors of the <source> element.', async () => {
 			severity: 'error',
 			line: 1,
 			col: 8,
-			message: "Required 'src' on '<source>'",
+			message: 'The "src" attribute expects the "source" element',
 			raw: '<source>',
 		},
 	]);
@@ -265,7 +265,7 @@ test('nodeRules', async () => {
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: "Required 'role' on '<img>'",
+			message: 'The "role" attribute expects the "img" element',
 			raw: '<img src="path/to.svg" alt="text" />',
 		},
 	]);
@@ -302,7 +302,7 @@ test('Foreign element', async () => {
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: "Required 'viewBox' on '<svg>'",
+			message: 'The "viewBox" attribute expects the "svg" element',
 			raw: '<svg>',
 		},
 	]);
@@ -342,7 +342,7 @@ test('svg', async () => {
 			severity: 'error',
 			line: 5,
 			col: 6,
-			message: "Required 'cx' on '<circle>'",
+			message: 'The "cx" attribute expects the "circle" element',
 			raw: '<circle />',
 		},
 		{
@@ -350,7 +350,7 @@ test('svg', async () => {
 			severity: 'error',
 			line: 5,
 			col: 6,
-			message: "Required 'cy' on '<circle>'",
+			message: 'The "cy" attribute expects the "circle" element',
 			raw: '<circle />',
 		},
 		{
@@ -358,7 +358,7 @@ test('svg', async () => {
 			severity: 'error',
 			line: 5,
 			col: 6,
-			message: "Required 'r' on '<circle>'",
+			message: 'The "r" attribute expects the "circle" element',
 			raw: '<circle />',
 		},
 	]);
@@ -388,7 +388,7 @@ test('Pug', async () => {
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: "Required 'src' on '<img>'",
+			message: 'The "src" attribute expects the "img" element',
 			raw: 'img',
 		},
 	]);
@@ -439,7 +439,7 @@ test('React', async () => {
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: "Required 'src' on '<img>'",
+			message: 'The "src" attribute expects the "img" element',
 			raw: '<img alt={alt} />',
 		},
 	]);
