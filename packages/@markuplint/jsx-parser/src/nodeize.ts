@@ -6,6 +6,7 @@ import {
 	MLASTParentNode,
 	MLASTTag,
 	MLASTText,
+	NamespaceURI,
 } from '@markuplint/ml-ast';
 import { getNamespace, parseRawTag } from '@markuplint/html-parser';
 import { isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
@@ -94,7 +95,7 @@ export function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
-					isCustomElement: isJSXComponentName(nodeName),
+					isCustomElement: isJSXComponentName(nodeName, namespace),
 				};
 			}
 
@@ -129,7 +130,7 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				isCustomElement: isJSXComponentName(nodeName),
+				isCustomElement: isJSXComponentName(nodeName, namespace),
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
@@ -239,6 +240,8 @@ export function nodeize(
 	}
 }
 
-function isJSXComponentName(name: string) {
-	return isPotentialCustomElementName(name) || /[A-Z]|\./.test(name);
+function isJSXComponentName(name: string, namespace: NamespaceURI) {
+	return (
+		namespace === 'http://www.w3.org/1999/xhtml' && (isPotentialCustomElementName(name) || /[A-Z]|\./.test(name))
+	);
 }
