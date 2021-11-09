@@ -37,6 +37,13 @@ export type MLEngineEventMap = {
 	rules: (filePath: string, rules: AnyMLRule[], message?: string) => void;
 	i18n: (filePath: string, locale: LocaleSet, message?: string) => void;
 	code: (filePath: string, sourceCode: string, message?: string) => void;
-	lint: (filePath: string, sourceCode: string, violations: Violation[], fixedCode: string, message?: string) => void;
+	lint: (
+		filePath: string,
+		sourceCode: string,
+		violations: Violation[],
+		fixedCode: string,
+		debug: string[] | null,
+		message?: string,
+	) => void;
 	'lint-error': (filePath: string, sourceCode: string, error: Error) => void;
 };

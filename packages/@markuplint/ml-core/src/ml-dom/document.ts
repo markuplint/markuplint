@@ -9,6 +9,7 @@ import { MLRule } from '../';
 import Ruleset from '../ruleset';
 import { log as coreLog } from '../debug';
 import { matchSelector } from './helper/match-selector';
+import { nodeListToDebugMaps } from './helper/debug';
 
 const log = coreLog.extend('ml-dom');
 const docLog = log.extend('document');
@@ -174,6 +175,10 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 			html.push(node.raw);
 		}
 		return html.join('');
+	}
+
+	debugMap() {
+		return nodeListToDebugMaps(this.nodeList, true);
 	}
 
 	private _init(ruleset: Ruleset) {

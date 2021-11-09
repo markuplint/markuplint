@@ -41,7 +41,7 @@ export class MLCore {
 		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
 		this.#filename = filename;
 		this.#rules = rules;
-		this.createDocument();
+		this._createDocument();
 	}
 
 	get document() {
@@ -112,7 +112,7 @@ export class MLCore {
 	setCode(sourceCode: string) {
 		this.#sourceCode = sourceCode;
 		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
-		this.createDocument();
+		this._createDocument();
 	}
 
 	update({ parser, ruleset, rules, locale, schemas, parserOptions }: Partial<MLFabric>) {
@@ -128,10 +128,10 @@ export class MLCore {
 		if (parserOptions && parserOptions.ignoreFrontMatter !== this.#ignoreFrontMatter) {
 			this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
 		}
-		this.createDocument();
+		this._createDocument();
 	}
 
-	private createDocument() {
+	private _createDocument() {
 		try {
 			this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, this.#filename);
 		} catch (err) {

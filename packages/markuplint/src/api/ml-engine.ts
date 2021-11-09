@@ -78,7 +78,9 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 			};
 		}
 
-		this.emit('lint', this.#file.path, sourceCode, violations, fixedCode);
+		const debugMap = ('debugMap' in core.document && core.document.debugMap()) || null;
+
+		this.emit('lint', this.#file.path, sourceCode, violations, fixedCode, debugMap);
 		log('exec: end');
 		return {
 			violations,

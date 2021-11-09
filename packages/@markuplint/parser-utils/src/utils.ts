@@ -92,6 +92,30 @@ export function walk(nodeList: MLASTNode[], walker: Walker, depth = 0) {
 	}
 }
 
+function visibleWhiteSpace(chars: string) {
+	return chars.replace(/\n/g, '⏎').replace(/\t/g, '→').replace(/\s/g, '␣');
+}
+
+function tokenDebug<
+	N extends {
+		startOffset: number;
+		endOffset: number;
+		startLine: number;
+		endLine: number;
+		startCol: number;
+		endCol: number;
+		nodeName?: string;
+		name?: string;
+		potentialName?: string;
+		type?: string;
+		raw: string;
+	},
+>(n: N, type = '') {
+	return `[${n.startLine}:${n.startCol}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${
+		n.nodeName || n.potentialName || n.name || n.type || type
+	}: ${visibleWhiteSpace(n.raw)}`;
+}
+
 export function nodeListToDebugMaps(nodeList: MLASTNode[], withAttr = false) {
 	return nodeList
 		.map(n => {
@@ -195,28 +219,4 @@ export function isPotentialCustomElementName(tagName: string) {
 		}
 	}
 	return rePCEN.test(tagName);
-}
-
-function tokenDebug<
-	N extends {
-		startOffset: number;
-		endOffset: number;
-		startLine: number;
-		endLine: number;
-		startCol: number;
-		endCol: number;
-		nodeName?: string;
-		name?: string;
-		potentialName?: string;
-		type?: string;
-		raw: string;
-	},
->(n: N, type = '') {
-	return `[${n.startLine}:${n.startCol}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${
-		n.nodeName || n.potentialName || n.name || n.type || type
-	}: ${visibleWhiteSpace(n.raw)}`;
-}
-
-function visibleWhiteSpace(chars: string) {
-	return chars.replace(/\n/g, '⏎').replace(/\t/g, '→').replace(/\s/g, '␣');
 }
