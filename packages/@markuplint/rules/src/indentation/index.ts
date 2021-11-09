@@ -1,4 +1,4 @@
-import { ElementCloseTag, createRule } from '@markuplint/ml-core';
+import { ElementCloseTag, createRule, getBeforeSpaces } from '@markuplint/ml-core';
 
 export type Value = 'tab' | number;
 export interface IndentationOptions {
@@ -20,21 +20,23 @@ export default createRule<Value, IndentationOptions>({
 				return;
 			}
 
-			if (node.indentation) {
+			const indent = getBeforeSpaces(node);
+
+			if (indent) {
 				/**
 				 * Validate indent type and length.
 				 */
-				if (node.indentation.type !== 'none') {
+				if (indent.type !== 'none') {
 					const ms = node.rule.severity === 'error' ? 'must' : 'should';
 					let spec: string | null = null;
-					if (node.rule.value === 'tab' && node.indentation.type !== 'tab') {
+					if (node.rule.value === 'tab' && indent.type !== 'tab') {
 						spec = 'tab';
-					} else if (typeof node.rule.value === 'number' && node.indentation.type !== 'space') {
+					} else if (typeof node.rule.value === 'number' && indent.type !== 'space') {
 						spec = 'space';
 					} else if (
 						typeof node.rule.value === 'number' &&
-						node.indentation.type === 'space' &&
-						node.indentation.width % node.rule.value
+						indent.type === 'space' &&
+						indent.width % node.rule.value
 					) {
 						spec = context.translate('{0} width spaces', `${node.rule.value}`);
 					}
@@ -43,9 +45,9 @@ export default createRule<Value, IndentationOptions>({
 						context.report({
 							scope: node,
 							message,
-							line: node.indentation.line,
+							line: indent.line,
 							col: 1,
-							raw: node.indentation.raw,
+							raw: indent.raw,
 						});
 						return;
 					}
@@ -60,8 +62,9 @@ export default createRule<Value, IndentationOptions>({
 				}
 				const parent = node.syntaxicalParentNode;
 				if (parent) {
-					const parentIndentWidth = parent.indentation ? parent.indentation.width : 0;
-					const childIndentWidth = node.indentation.width;
+					const parentIndent = getBeforeSpaces(parent);
+					const parentIndentWidth = parentIndent ? parentIndent.width : 0;
+					const childIndentWidth = indent.width;
 					const expectedWidth = node.rule.value === 'tab' ? 1 : node.rule.value;
 					const diff = childIndentWidth - parentIndentWidth;
 
@@ -73,9 +76,9 @@ export default createRule<Value, IndentationOptions>({
 							context.report({
 								scope: node,
 								message,
-								line: node.indentation.line,
+								line: indent.line,
 								col: 1,
-								raw: node.indentation.raw,
+								raw: indent.raw,
 							});
 						}
 					} else {
@@ -86,9 +89,9 @@ export default createRule<Value, IndentationOptions>({
 							context.report({
 								scope: node,
 								message,
-								line: node.indentation.line,
+								line: indent.line,
 								col: 1,
-								raw: node.indentation.raw,
+								raw: indent.raw,
 							});
 						}
 					}
@@ -105,7 +108,9 @@ export default createRule<Value, IndentationOptions>({
 					return;
 				}
 
-				if (!closeTag.indentation) {
+				const closeTagIndent = getBeforeSpaces(closeTag);
+
+				if (!closeTagIndent) {
 					return;
 				}
 
@@ -113,17 +118,18 @@ export default createRule<Value, IndentationOptions>({
 					return;
 				}
 
-				const endTagIndentationWidth = closeTag.indentation ? closeTag.indentation.width : 0;
-				const startTagIndentationWidth = startTag.indentation ? startTag.indentation.width : 0;
+				const startTagIndent = getBeforeSpaces(startTag);
+				const endTagIndentationWidth = closeTagIndent ? closeTagIndent.width : 0;
+				const startTagIndentationWidth = startTagIndent ? startTagIndent.width : 0;
 
 				if (startTagIndentationWidth !== endTagIndentationWidth) {
 					const message = context.translate('Start tag and end tag indentation should align');
 					context.report({
 						scope: closeTag,
 						message,
-						line: closeTag.indentation ? closeTag.indentation.line : closeTag.startLine,
+						line: closeTagIndent ? closeTagIndent.line : closeTag.startLine,
 						col: 1,
-						raw: closeTag.indentation ? closeTag.indentation.raw : '',
+						raw: closeTagIndent ? closeTagIndent.raw : '',
 					});
 				}
 			}
@@ -134,26 +140,24 @@ export default createRule<Value, IndentationOptions>({
 		 * Validate indent type and length.
 		 */
 		await document.walk(async node => {
-			if (!node.rule.disabled && node.indentation) {
-				if (node.indentation.type !== 'none') {
+			const indent = getBeforeSpaces(node);
+			if (!node.rule.disabled && indent) {
+				if (indent.type !== 'none') {
 					const spec = node.rule.value === 'tab' ? '\t' : ' ';
 					const baseWidth = node.rule.value === 'tab' ? 4 : node.rule.value;
 					let width: number;
 					if (node.rule.value === 'tab') {
-						width =
-							node.indentation.type === 'tab'
-								? node.indentation.width
-								: Math.ceil(node.indentation.width / baseWidth);
+						width = indent.type === 'tab' ? indent.width : Math.ceil(indent.width / baseWidth);
 					} else {
 						width =
-							node.indentation.type === 'tab'
-								? node.indentation.width * baseWidth
-								: Math.ceil(node.indentation.width / baseWidth) * baseWidth;
+							indent.type === 'tab'
+								? indent.width * baseWidth
+								: Math.ceil(indent.width / baseWidth) * baseWidth;
 					}
-					const raw = node.indentation.raw;
+					const raw = indent.raw;
 					const fixed = spec.repeat(width);
 					if (raw !== fixed) {
-						node.indentation.fix(fixed);
+						indent.fix(fixed);
 					}
 				}
 			}
@@ -163,7 +167,8 @@ export default createRule<Value, IndentationOptions>({
 			if (node.rule.disabled) {
 				return;
 			}
-			if (node.indentation) {
+			const indent = getBeforeSpaces(node);
+			if (indent) {
 				/**
 				 * Validate nested parent-children nodes.
 				 */
@@ -171,26 +176,29 @@ export default createRule<Value, IndentationOptions>({
 				if (!nested) {
 					return;
 				}
-				if (node.parentNode) {
-					const parent = node.syntaxicalParentNode;
-					if (parent && parent.indentation) {
-						const parentIndentWidth = parent.indentation.width;
-						const childIndentWidth = node.indentation.width;
-						const expectedWidth = node.rule.value === 'tab' ? 1 : node.rule.value;
-						const diff = childIndentWidth - parentIndentWidth;
-						if (nested === 'never') {
-							if (diff !== 0) {
-								const fixed = parent.indentation.raw;
-								node.indentation.fix(fixed);
-							}
-						} else {
-							if (diff !== expectedWidth) {
-								const fixed = (node.rule.value === 'tab' ? '\t' : ' ').repeat(
-									parentIndentWidth + expectedWidth,
-								);
-								node.indentation.fix(fixed);
-							}
-						}
+				const parent = node.syntaxicalParentNode;
+				if (!parent) {
+					return;
+				}
+				const parentIndent = getBeforeSpaces(parent);
+				if (!parentIndent) {
+					return;
+				}
+				const parentIndentWidth = parentIndent.width;
+				const childIndentWidth = indent.width;
+				const expectedWidth = node.rule.value === 'tab' ? 1 : node.rule.value;
+				const diff = childIndentWidth - parentIndentWidth;
+				if (nested === 'never') {
+					if (diff !== 0) {
+						const fixed = parentIndent.raw;
+						indent.fix(fixed);
+					}
+				} else {
+					if (diff !== expectedWidth) {
+						const fixed = (node.rule.value === 'tab' ? '\t' : ' ').repeat(
+							parentIndentWidth + expectedWidth,
+						);
+						indent.fix(fixed);
 					}
 				}
 			}
@@ -206,12 +214,14 @@ export default createRule<Value, IndentationOptions>({
 			if (!endTag.rule.option.alignment) {
 				return;
 			}
-			if (endTag.indentation && endTag.startTag.indentation) {
-				const endTagIndentationWidth = endTag.indentation.width;
-				const startTagIndentationWidth = endTag.startTag.indentation.width;
+			const endTagIndent = getBeforeSpaces(endTag);
+			const startTagIndent = getBeforeSpaces(endTag.startTag);
+			if (endTagIndent && startTagIndent) {
+				const endTagIndentationWidth = endTagIndent.width;
+				const startTagIndentationWidth = startTagIndent.width;
 				if (startTagIndentationWidth !== endTagIndentationWidth) {
-					const fixed = endTag.startTag.indentation.raw;
-					endTag.indentation.fix(fixed);
+					const fixed = startTagIndent.raw;
+					endTagIndent.fix(fixed);
 				}
 			}
 		});
