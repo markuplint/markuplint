@@ -1,5 +1,5 @@
+import type { MLDOMNode, MLDOMText } from '../tokens';
 import type { AnonymousNode } from '../types';
-import MLDOMIndentation from '../tokens/indentation';
 
 /**
  *
@@ -51,6 +51,58 @@ export function getIndent(node: AnonymousNode<any, any>) {
 	}
 
 	return null;
+}
+
+class MLDOMIndentation {
+	readonly line: number;
+
+	#node: MLDOMText<any, any>;
+	#parent: MLDOMNode<any, any>;
+	#fixed: string;
+
+	constructor(originTextNode: MLDOMText<any, any>, raw: string, line: number, parentNode: MLDOMNode<any, any>) {
+		this.line = line;
+		this.#node = originTextNode;
+		this.#parent = parentNode;
+		this.#fixed = raw;
+	}
+
+	get type(): 'tab' | 'space' | 'mixed' | 'none' {
+		if (this.#parent.type !== 'Text' && this.line !== this.#node.endLine) {
+			return 'none';
+		}
+		const raw = this.#fixed;
+		return raw === '' ? 'none' : /^\t+$/.test(raw) ? 'tab' : /^[^\t]+$/.test(raw) ? 'space' : 'mixed';
+	}
+
+	get width() {
+		if (this.#parent.type !== 'Text' && this.line !== this.#node.endLine) {
+			return 0;
+		}
+		return this.#fixed.length;
+	}
+
+	get raw() {
+		if (this.#parent.type !== 'Text' && this.line !== this.#node.endLine) {
+			return '';
+		}
+		return this.#fixed;
+	}
+
+	fix(raw: string) {
+		const current = this.#fixed;
+		this.#fixed = raw;
+		if (this.#node) {
+			const node = this.#node;
+			const line = node.startLine;
+			const lines = node.raw.split(/\r?\n/);
+			const index = this.line - line;
+			if (lines[index] != null) {
+				lines[index] = lines[index].replace(current, this.#fixed);
+			}
+			node.fix(lines.join('\n'));
+		}
+	}
 }
 
 function isFirstToken(node: AnonymousNode<any, any>) {
