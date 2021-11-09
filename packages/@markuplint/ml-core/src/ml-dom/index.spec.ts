@@ -41,10 +41,6 @@ test('raw', async () => {
 	expect(nodeList[1].prevToken!.uuid).toBe(nodeList[0].uuid);
 	expect(nodeList[2].prevToken!.uuid).toBe(nodeList[1].uuid);
 	expect(nodeList[3].prevToken!.uuid).toBe(nodeList[2].uuid);
-	expect(nodeList[0].indentation).toBe(null);
-	expect(nodeList[1].indentation!.width).toBe(4);
-	expect(nodeList[2].indentation!.width).toBe(8);
-	expect(nodeList[3].indentation!.width).toBe(4);
 });
 
 test('raw', async () => {
@@ -60,14 +56,6 @@ test('raw', async () => {
 	expect(nodeList[5].raw).toBe('</span>');
 	expect(nodeList[6].raw).toBe('\n    ');
 	expect(nodeList[7].raw).toBe('</div>');
-	expect(nodeList[0].indentation!).toBe(null);
-	expect(nodeList[1].indentation!.width).toBe(4);
-	expect(nodeList[2].indentation!).toBe(null);
-	expect(nodeList[3].indentation!.width).toBe(8);
-	expect(nodeList[4].indentation!).toBe(null);
-	expect(nodeList[5].indentation!).toBe(null);
-	expect(nodeList[6].indentation!).toBe(null);
-	expect(nodeList[7].indentation!.width).toBe(4);
 });
 
 test('raw', async () => {
@@ -83,14 +71,6 @@ test('raw', async () => {
 	expect(nodeList[5].raw).toBe('</span>');
 	expect(nodeList[6].raw).toBe('\n');
 	expect(nodeList[7].raw).toBe('</div>');
-	expect(nodeList[0].indentation!).toBe(null);
-	expect(nodeList[1].indentation!.width).toBe(0);
-	expect(nodeList[2].indentation!).toBe(null);
-	expect(nodeList[3].indentation!.width).toBe(1);
-	expect(nodeList[4].indentation!).toBe(null);
-	expect(nodeList[5].indentation!).toBe(null);
-	expect(nodeList[6].indentation!).toBe(null);
-	expect(nodeList[7].indentation!.width).toBe(0);
 });
 
 test('raw', async () => {

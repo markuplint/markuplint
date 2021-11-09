@@ -3,7 +3,6 @@ import type { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/
 import type { MLDOMElement, MLDOMOmittedElement } from './';
 import type { RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
 import type { Document } from '../';
-import MLDOMIndentation from './indentation';
 import MLDOMToken from './token';
 import type { RuleInfo } from '../../';
 
@@ -25,11 +24,6 @@ export default abstract class MLDOMNode<
 	 * prevToken cache props
 	 */
 	#prevToken: AnonymousNode<T, O> | null | undefined;
-
-	/**
-	 * indentation cache props
-	 */
-	#indentaion: MLDOMIndentation<T, O> | null | undefined;
 
 	constructor(astNode: A, document: Document<T, O>) {
 		super(astNode);
@@ -104,38 +98,6 @@ export default abstract class MLDOMNode<
 
 	is(type: NodeType) {
 		return this.type === type;
-	}
-
-	get indentation(): MLDOMIndentation<T, O> | null {
-		if (this.#indentaion !== undefined) {
-			return this.#indentaion;
-		}
-
-		const prevToken = this.prevToken;
-		if (!prevToken) {
-			return null;
-		}
-		if (prevToken.type !== 'Text') {
-			return null;
-		}
-
-		// One or more newlines and zero or more spaces or tabs.
-		// Or, If textNode is first token and that is filled spaces, tabs and newlines only.
-		const matched = prevToken._isFirstToken()
-			? prevToken.raw.match(/^(?:[ \t]*\r?\n)*([ \t]*)$/)
-			: prevToken.raw.match(/\r?\n([ \t]*)$/);
-		// console.log({ [`${this}`]: matched, _: prevToken.raw, f: prevToken._isFirstToken() });
-		if (matched) {
-			// Spaces will include empty string.
-			const spaces = matched[1];
-			if (spaces != null) {
-				this.#indentaion = new MLDOMIndentation(prevToken, spaces, this.startLine, this);
-				return this.#indentaion;
-			}
-		}
-
-		this.#indentaion = null;
-		return this.#indentaion;
 	}
 
 	get rule(): RuleInfo<T, O> {
