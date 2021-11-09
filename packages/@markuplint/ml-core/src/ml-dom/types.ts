@@ -1,4 +1,4 @@
-import {
+import type {
 	MLDOMComment,
 	MLDOMDoctype,
 	MLDOMElement,
@@ -7,7 +7,7 @@ import {
 	MLDOMPreprocessorSpecificBlock,
 	MLDOMText,
 } from './tokens';
-import { RuleConfigValue } from '@markuplint/ml-config';
+import type { RuleConfigValue } from '@markuplint/ml-config';
 
 export interface IMLDOMDoctype extends IMLDOMNode {
 	type: 'Doctype';

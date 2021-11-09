@@ -9,5 +9,4 @@ export {
 	MLDOMNode as Node,
 	MLDOMOmittedElement as OmittedElement,
 	MLDOMText as Text,
-	MLDOMIndentation as Indentation,
 } from './tokens';
