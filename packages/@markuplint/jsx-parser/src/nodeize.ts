@@ -22,6 +22,12 @@ export function nodeize(
 	const parentNamespace =
 		parentNode && 'namespace' in parentNode ? parentNode.namespace : 'http://www.w3.org/1999/xhtml';
 
+	if (originNode.__alreadyNodeized) {
+		return null;
+	}
+
+	originNode.__alreadyNodeized = true;
+
 	switch (originNode.type) {
 		case 'JSXText': {
 			const { startOffset, endOffset, startLine, endLine, startCol, endCol, raw } = sliceFragment(

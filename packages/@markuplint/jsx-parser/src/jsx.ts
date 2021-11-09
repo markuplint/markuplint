@@ -13,7 +13,7 @@ import type {
 
 export type { JSXAttribute } from '@typescript-eslint/types/dist/ast-spec';
 
-export type JSXNode = JSXChild | JSXElementHasSpreadAttribute;
+export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute) & { __alreadyNodeized?: true };
 
 export type JSXElementHasSpreadAttribute = JSXElement & { __hasSpreadAttribute?: true };
 
