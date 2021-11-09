@@ -1,7 +1,12 @@
 import type { AnonymousNode } from '../types';
 import MLDOMIndentation from '../tokens/indentation';
 
-export function getBeforeSpaces(node: AnonymousNode<any, any>) {
+/**
+ *
+ * @deprecated
+ * @param node
+ */
+export function getIndent(node: AnonymousNode<any, any>) {
 	const prevToken = node.prevToken;
 	if (!prevToken) {
 		return null;

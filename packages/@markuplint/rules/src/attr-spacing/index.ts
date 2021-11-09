@@ -1,4 +1,4 @@
-import { createRule, getBeforeSpaces } from '@markuplint/ml-core';
+import { createRule, getIndent } from '@markuplint/ml-core';
 
 export interface AttrSpasingOptions {
 	lineBreak: 'either' | 'always' | 'never';
@@ -86,7 +86,7 @@ export default createRule<boolean, AttrSpasingOptions>({
 						}
 					} else {
 						if (node.rule.option.lineBreak === 'always') {
-							const indent = getBeforeSpaces(node);
+							const indent = getIndent(node);
 							const expectIndent = indent ? indent.raw : '';
 							attr.spacesBeforeName.fix(`\n${expectIndent}`);
 						} else if (

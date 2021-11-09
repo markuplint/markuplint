@@ -1,4 +1,4 @@
-import { ElementCloseTag, createRule, getBeforeSpaces } from '@markuplint/ml-core';
+import { ElementCloseTag, createRule, getIndent } from '@markuplint/ml-core';
 
 export type Value = 'tab' | number;
 export interface IndentationOptions {
@@ -20,7 +20,7 @@ export default createRule<Value, IndentationOptions>({
 				return;
 			}
 
-			const indent = getBeforeSpaces(node);
+			const indent = getIndent(node);
 
 			if (indent) {
 				/**
@@ -62,7 +62,7 @@ export default createRule<Value, IndentationOptions>({
 				}
 				const parent = node.syntaxicalParentNode;
 				if (parent) {
-					const parentIndent = getBeforeSpaces(parent);
+					const parentIndent = getIndent(parent);
 					const parentIndentWidth = parentIndent ? parentIndent.width : 0;
 					const childIndentWidth = indent.width;
 					const expectedWidth = node.rule.value === 'tab' ? 1 : node.rule.value;
@@ -108,7 +108,7 @@ export default createRule<Value, IndentationOptions>({
 					return;
 				}
 
-				const closeTagIndent = getBeforeSpaces(closeTag);
+				const closeTagIndent = getIndent(closeTag);
 
 				if (!closeTagIndent) {
 					return;
@@ -118,7 +118,7 @@ export default createRule<Value, IndentationOptions>({
 					return;
 				}
 
-				const startTagIndent = getBeforeSpaces(startTag);
+				const startTagIndent = getIndent(startTag);
 				const endTagIndentationWidth = closeTagIndent ? closeTagIndent.width : 0;
 				const startTagIndentationWidth = startTagIndent ? startTagIndent.width : 0;
 
@@ -140,7 +140,7 @@ export default createRule<Value, IndentationOptions>({
 		 * Validate indent type and length.
 		 */
 		await document.walk(async node => {
-			const indent = getBeforeSpaces(node);
+			const indent = getIndent(node);
 			if (!node.rule.disabled && indent) {
 				if (indent.type !== 'none') {
 					const spec = node.rule.value === 'tab' ? '\t' : ' ';
@@ -167,7 +167,7 @@ export default createRule<Value, IndentationOptions>({
 			if (node.rule.disabled) {
 				return;
 			}
-			const indent = getBeforeSpaces(node);
+			const indent = getIndent(node);
 			if (indent) {
 				/**
 				 * Validate nested parent-children nodes.
@@ -180,7 +180,7 @@ export default createRule<Value, IndentationOptions>({
 				if (!parent) {
 					return;
 				}
-				const parentIndent = getBeforeSpaces(parent);
+				const parentIndent = getIndent(parent);
 				if (!parentIndent) {
 					return;
 				}
@@ -214,8 +214,8 @@ export default createRule<Value, IndentationOptions>({
 			if (!endTag.rule.option.alignment) {
 				return;
 			}
-			const endTagIndent = getBeforeSpaces(endTag);
-			const startTagIndent = getBeforeSpaces(endTag.startTag);
+			const endTagIndent = getIndent(endTag);
+			const startTagIndent = getIndent(endTag.startTag);
 			if (endTagIndent && startTagIndent) {
 				const endTagIndentationWidth = endTagIndent.width;
 				const startTagIndentationWidth = startTagIndent.width;

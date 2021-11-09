@@ -6,7 +6,7 @@ export * from './ml-rule';
 export { default as MLParseError } from './ml-error/ml-parse-error';
 export { default as Ruleset } from './ruleset';
 export * from './ml-dom';
-export { getBeforeSpaces } from './ml-dom/helper/getBeforeSpaces';
+export { getIndent } from './ml-dom/helper/getIndent';
 export * from './utils';
 export * from './types';
 export * from './test';
