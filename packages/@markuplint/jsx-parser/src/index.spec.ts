@@ -322,6 +322,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:54]>[1:55](53,54)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
+				'  potentialName: tabindex',
 				'  candidate: tabIndex',
 			],
 			[
