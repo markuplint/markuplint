@@ -1,5 +1,5 @@
-import { Config, Violation } from '@markuplint/ml-config';
-import { Document, Ruleset } from '@markuplint/ml-core';
+import type { Config, Violation } from '@markuplint/ml-config';
+import type { Document, Ruleset } from '@markuplint/ml-core';
 
 export interface MLResultInfo {
 	violations: Violation[];

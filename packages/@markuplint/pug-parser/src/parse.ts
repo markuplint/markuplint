@@ -1,16 +1,18 @@
-import { ASTBlock, ASTNode, pugParse } from './pug-parser';
-import {
+import type { ASTBlock, ASTNode } from './pug-parser';
+import type {
 	MLASTDoctype,
 	MLASTNode,
-	MLASTNodeType,
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
 	MLASTTag,
 	Parse,
 } from '@markuplint/ml-ast';
+
 import { getNamespace, parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
 import { ignoreFrontMatter, isPotentialCustomElementName, tokenizer, uuid, walk } from '@markuplint/parser-utils';
+
 import attrTokenizer from './attr-tokenizer';
+import { pugParse } from './pug-parser';
 
 export const parse: Parse = (rawCode, _, __, ___, isIgnoringFrontMatter) => {
 	let parseError: string | undefined;
@@ -70,7 +72,7 @@ class Parser {
 			}
 
 			if (prevNode) {
-				if (node.type !== MLASTNodeType.EndTag) {
+				if (node.type !== 'endtag') {
 					prevNode.nextNode = node;
 				}
 				node.prevNode = prevNode;
@@ -119,7 +121,7 @@ class Parser {
 					startCol,
 					endCol,
 					nodeName: '#doctype',
-					type: MLASTNodeType.Doctype,
+					type: 'doctype',
 					parentNode,
 					prevNode,
 					_addPrevNode: 102,
@@ -140,7 +142,7 @@ class Parser {
 						startCol,
 						endCol,
 						nodeName: '#text',
-						type: MLASTNodeType.Text,
+						type: 'text',
 						parentNode,
 						prevNode,
 						nextNode,
@@ -173,7 +175,7 @@ class Parser {
 					startCol,
 					endCol,
 					nodeName: '#comment',
-					type: MLASTNodeType.Comment,
+					type: 'comment',
 					parentNode,
 					prevNode,
 					nextNode,
@@ -193,7 +195,7 @@ class Parser {
 					startCol,
 					endCol,
 					nodeName: originNode.name,
-					type: MLASTNodeType.StartTag,
+					type: 'starttag',
 					namespace,
 					attributes: originNode.attrs.map(attr => attrTokenizer(attr)),
 					hasSpreadAttr: false,
@@ -226,7 +228,7 @@ class Parser {
 					endLine,
 					startCol,
 					endCol,
-					type: MLASTNodeType.PreprocessorSpecificBlock,
+					type: 'psblock',
 					nodeName: originNode.type,
 					parentNode,
 					prevNode,

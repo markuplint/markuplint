@@ -1,8 +1,10 @@
-import { Config, RuleConfigValue } from '@markuplint/ml-config';
-import { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
-import { Document } from '../ml-dom';
-import { convertRuleset } from '../convert-ruleset';
+import type { Config, RuleConfigValue } from '@markuplint/ml-config';
+import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+
 import { parse } from '@markuplint/html-parser';
+
+import { convertRuleset } from '../convert-ruleset';
+import { Document } from '../ml-dom';
 
 export function createTestDocument<T extends RuleConfigValue = any, O = any>(sourceCode: string, config: Config = {}) {
 	const ast = parse(sourceCode);

@@ -1,5 +1,8 @@
-import { LoaderSync, cosmiconfig } from 'cosmiconfig';
+import type { LoaderSync } from 'cosmiconfig';
+
 import path from 'path';
+
+import { cosmiconfig } from 'cosmiconfig';
 
 const explorer = cosmiconfig('markuplint');
 

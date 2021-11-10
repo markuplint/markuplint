@@ -1,4 +1,5 @@
-import { Config, Nullable, Rule, RuleConfigValue, Rules, SpecConfig, SpecConfig_v1 } from './types';
+import type { Config, Nullable, Rule, RuleConfigValue, Rules, SpecConfig, SpecConfig_v1 } from './types';
+
 import deepmerge from 'deepmerge';
 import { isPlainObject } from 'is-plain-object';
 

@@ -1,5 +1,7 @@
+import type { MLASTElement } from '@markuplint/ml-ast';
+
 import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
-import { MLASTElement } from '@markuplint/ml-ast';
+
 import { parse } from './parse';
 
 describe('parse', () => {
@@ -294,7 +296,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:26]>[1:27](25,26)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 				'  potentialName: class',
 			],
 			[
@@ -309,7 +310,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:40]>[1:41](39,40)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 				'  potentialName: tabindex',
 			],
 			[
@@ -324,7 +324,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:54]>[1:55](53,54)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: true',
+				'  potentialName: tabindex',
 				'  candidate: tabIndex',
 			],
 			[
@@ -339,7 +339,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:75]>[1:76](74,75)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 			],
 			[
 				'[1:76]>[1:95](75,94)theProp: ␣theProp={variable}',
@@ -353,7 +352,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:95]>[1:95](94,94)eQ: ',
 				'  isDirective: false',
 				'  isDynamicValue: true',
-				'  isInvalid: false',
 			],
 		]);
 	});
@@ -375,7 +373,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:10]>[1:11](9,10)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 				'  potentialName: href',
 			],
 		]);
@@ -398,7 +395,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:11]>[1:11](10,10)eQ: ',
 				'  isDirective: false',
 				'  isDynamicValue: true',
-				'  isInvalid: false',
 				'  potentialName: href',
 			],
 		]);
@@ -419,5 +415,16 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
 		expect(doc.nodeList[2].nodeName).toBe('text');
 		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+	});
+
+	it('namespace', () => {
+		const doc = parse('<div><svg><feBlend /></svg></div>');
+		expect(doc.nodeList[0].nodeName).toBe('div');
+		expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[1].nodeName).toBe('svg');
+		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].nodeName).toBe('feBlend');
+		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect((doc.nodeList[2] as MLASTElement).isCustomElement).toBeFalsy();
 	});
 });

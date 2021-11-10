@@ -1,12 +1,16 @@
 import type { AnonymousNode, Document } from '../';
-import { ContentModel, getNS } from '@markuplint/ml-spec';
-import type { MLASTElement, MLASTOmittedElement } from '@markuplint/ml-ast';
 import type { MLDOMAttribute, MLDOMElement, MLDOMOmittedElement, MLDOMText } from './';
-import MLDOMNode from './node';
 import type MLDOMPreprocessorSpecificAttribute from './preprocessor-specific-attribute';
+import type { MLASTElement, MLASTOmittedElement } from '@markuplint/ml-ast';
 import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { ContentModel } from '@markuplint/ml-spec';
+
+import { getNS } from '@markuplint/ml-spec';
+
 import { createSelector } from '../helper';
 import { syncWalk } from '../helper/walkers';
+
+import MLDOMNode from './node';
 
 export default abstract class MLDOMAbstractElement<
 	T extends RuleConfigValue,

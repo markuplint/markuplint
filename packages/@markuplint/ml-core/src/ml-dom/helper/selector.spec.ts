@@ -1,5 +1,6 @@
-import { createSelector } from './selector';
 import { createTestElement } from '../../test';
+
+import { createSelector } from './selector';
 
 describe('selector matching', () => {
 	it('Multiple selector', async () => {

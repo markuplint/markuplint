@@ -1,11 +1,12 @@
 /* global cheerio */
 
 import type { Attribute, AttributeJSON, ContentModel, ElementSpec } from '@markuplint/ml-spec';
-import { getThisOutline, nameCompare } from './utils';
+
 import fetch from './fetch';
 import { getAriaInHtml } from './get-aria-in-html';
 import { getAttribute } from './get-attribute';
 import { getPermittedStructures } from './get-permitted-structures';
+import { getThisOutline, nameCompare } from './utils';
 
 const MAIN_ARTICLE_SELECTOR = 'article.main-page-content, article.article';
 

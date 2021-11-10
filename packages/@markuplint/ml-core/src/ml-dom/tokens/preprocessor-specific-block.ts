@@ -1,8 +1,9 @@
 import type { AnonymousNode, Document } from '../';
 import type { IMLDOMPreprocessorSpecificBlock } from '../types';
 import type { MLASTPreprocessorSpecificBlock } from '@markuplint/ml-ast';
-import MLDOMNode from './node';
 import type { RuleConfigValue } from '@markuplint/ml-config';
+
+import MLDOMNode from './node';
 
 export default class MLDOMPreprocessorSpecificBlock<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTPreprocessorSpecificBlock>

@@ -1,5 +1,6 @@
-import ExpGenerator from './permitted-content.spec-to-regexp';
 import { htmlSpec } from '../helpers';
+
+import ExpGenerator from './permitted-content.spec-to-regexp';
 
 test('empty', () => {
 	const expGen = new ExpGenerator(0);

@@ -1,9 +1,10 @@
-import type { ContentModel } from '@markuplint/ml-spec';
 import type { Document } from '../';
 import type { IMLDOMText } from '../types';
 import type { MLASTText } from '@markuplint/ml-ast';
-import MLDOMNode from './node';
 import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { ContentModel } from '@markuplint/ml-spec';
+
+import MLDOMNode from './node';
 
 /**
  * Raw text elements

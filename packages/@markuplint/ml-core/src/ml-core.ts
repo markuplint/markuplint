@@ -1,12 +1,13 @@
-import type { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
-import type { MLFabric, MLSchema } from './types';
-import type { RuleConfigValue, Violation } from '@markuplint/ml-config';
-import { Document } from './ml-dom';
-import type { LocaleSet } from '@markuplint/i18n';
-import MLParseError from './ml-error/ml-parse-error';
 import type { MLRule } from './ml-rule';
 import type Ruleset from './ruleset';
+import type { MLFabric, MLSchema } from './types';
+import type { LocaleSet } from '@markuplint/i18n';
+import type { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
+import type { RuleConfigValue, Violation } from '@markuplint/ml-config';
+
 import { log } from './debug';
+import { Document } from './ml-dom';
+import MLParseError from './ml-error/ml-parse-error';
 
 const resultLog = log.extend('result');
 
@@ -41,7 +42,7 @@ export class MLCore {
 		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
 		this.#filename = filename;
 		this.#rules = rules;
-		this.createDocument();
+		this._createDocument();
 	}
 
 	get document() {
@@ -112,7 +113,7 @@ export class MLCore {
 	setCode(sourceCode: string) {
 		this.#sourceCode = sourceCode;
 		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
-		this.createDocument();
+		this._createDocument();
 	}
 
 	update({ parser, ruleset, rules, locale, schemas, parserOptions }: Partial<MLFabric>) {
@@ -128,10 +129,10 @@ export class MLCore {
 		if (parserOptions && parserOptions.ignoreFrontMatter !== this.#ignoreFrontMatter) {
 			this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
 		}
-		this.createDocument();
+		this._createDocument();
 	}
 
-	private createDocument() {
+	private _createDocument() {
 		try {
 			this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, this.#filename);
 		} catch (err) {

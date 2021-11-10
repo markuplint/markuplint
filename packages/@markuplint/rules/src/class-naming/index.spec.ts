@@ -1,4 +1,5 @@
 import { mlTest } from 'markuplint';
+
 import rule from './';
 
 test('pass class name', async () => {

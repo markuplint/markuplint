@@ -1,9 +1,8 @@
-import { ASTAttribute, ASTNode, ASTStyleNode, AstroCompileError, astroParse } from './astro-parser';
-import {
+import type { ASTAttribute, ASTNode, ASTStyleNode } from './astro-parser';
+import type {
 	MLASTElement,
 	MLASTElementCloseTag,
 	MLASTNode,
-	MLASTNodeType,
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
 	MLASTTag,
@@ -11,8 +10,11 @@ import {
 	NamespaceURI,
 	Parse,
 } from '@markuplint/ml-ast';
+
 import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
 import { getEndCol, getEndLine, isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
+
+import { AstroCompileError, astroParse } from './astro-parser';
 import { attrTokenizer } from './attr-tokenizer';
 
 export const parse: Parse = rawCode => {
@@ -81,7 +83,7 @@ function traverse(
 		const nodes = Array.isArray(node) ? node : [node];
 		for (const node of nodes) {
 			if (prevNode) {
-				if (node.type !== MLASTNodeType.EndTag) {
+				if (node.type !== 'endtag') {
 					prevNode.nextNode = node;
 				}
 				node.prevNode = prevNode;
@@ -128,7 +130,7 @@ function nodeize(
 				startCol,
 				endCol,
 				nodeName: '#text',
-				type: MLASTNodeType.Text,
+				type: 'text',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -149,7 +151,7 @@ function nodeize(
 					startCol,
 					endCol,
 					nodeName: originNode.type,
-					type: MLASTNodeType.PreprocessorSpecificBlock,
+					type: 'psblock',
 					parentNode,
 					prevNode,
 					nextNode,
@@ -186,7 +188,7 @@ function nodeize(
 					startCol: loc.startCol,
 					endCol: loc.endCol,
 					nodeName: originNode.type,
-					type: MLASTNodeType.PreprocessorSpecificBlock,
+					type: 'psblock',
 					parentNode,
 					prevNode,
 					nextNode,
@@ -212,7 +214,7 @@ function nodeize(
 				startCol,
 				endCol,
 				nodeName: '#comment',
-				type: MLASTNodeType.Comment,
+				type: 'comment',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -236,7 +238,7 @@ function nodeize(
 					startCol,
 					endCol,
 					nodeName: '#doctype',
-					type: MLASTNodeType.Doctype,
+					type: 'doctype',
 					parentNode,
 					prevNode,
 					nextNode,
@@ -318,7 +320,7 @@ function parseElement(
 			startCol: endTagLoc.startCol,
 			endCol: endTagLoc.endCol,
 			nodeName: endTagName,
-			type: MLASTNodeType.EndTag,
+			type: 'endtag',
 			namespace: scopeNS,
 			attributes: endTagTokens.attrs,
 			parentNode,
@@ -343,7 +345,7 @@ function parseElement(
 		startCol,
 		endCol: getEndCol(startTagRaw, startCol),
 		nodeName: tagName,
-		type: MLASTNodeType.StartTag,
+		type: 'starttag',
 		namespace: scopeNS,
 		attributes: originNode.attributes.map((attr: ASTAttribute) => attrTokenizer(attr, rawHtml, offset)),
 		hasSpreadAttr: false,

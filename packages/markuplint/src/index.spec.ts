@@ -1,6 +1,7 @@
-import { mlTest, mlTestFile } from './testing-tool';
 import { createRule } from '@markuplint/ml-core';
+
 import { setGlobal } from './global-settings';
+import { mlTest, mlTestFile } from './testing-tool';
 
 setGlobal({
 	locale: 'en',

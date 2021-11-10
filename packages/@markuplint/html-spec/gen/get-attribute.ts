@@ -1,4 +1,5 @@
-import { AttributeJSON } from '@markuplint/ml-spec';
+import type { AttributeJSON } from '@markuplint/ml-spec';
+
 import readJSON from './read-json';
 
 export function getAttribute(tagName: string, namespace?: string) {

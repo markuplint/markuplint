@@ -1,4 +1,7 @@
-import htmlSpec, { Attribute } from '@markuplint/html-spec';
+import type { Attribute } from '@markuplint/html-spec';
+
+import htmlSpec from '@markuplint/html-spec';
+
 import { getSpec } from './get-spec';
 
 describe('getSpec', () => {

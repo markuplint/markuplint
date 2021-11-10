@@ -1,7 +1,8 @@
+import path from 'path';
+
 import { mlTest, mlTestFile } from 'markuplint';
 // @ts-ignore This has not types
 import Prh from 'textlint-rule-prh';
-import path from 'path';
 
 import { text } from './test-utils';
 

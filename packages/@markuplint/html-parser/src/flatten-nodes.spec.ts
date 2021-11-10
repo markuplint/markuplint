@@ -1,6 +1,7 @@
+import { isDocumentFragment } from '../lib';
+
 import { createTree } from './create-tree';
 import { flattenNodes } from './flatten-nodes';
-import { isDocumentFragment } from '../lib';
 
 function toTree(rawCode: string) {
 	const isFragment = isDocumentFragment(rawCode);

@@ -1,7 +1,7 @@
 import { Ruleset } from '@markuplint/ml-core';
-import { moduleAutoLoader } from './module-auto-loader';
-
 import textlintRule from '@markuplint/rule-textlint';
+
+import { moduleAutoLoader } from './module-auto-loader';
 
 test('built-in-rules', async () => {
 	const r = await moduleAutoLoader(

@@ -1,9 +1,8 @@
-import type { AnyMLRule, MLSchema, Ruleset } from '@markuplint/ml-core';
-import type { Config, Violation } from '@markuplint/ml-config';
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { MLMarkupLanguageParser } from '@markuplint/ml-ast';
-import type { ParserOptions } from '@markuplint/ml-config';
+import type { Config, Violation, ParserOptions } from '@markuplint/ml-config';
+import type { AnyMLRule, MLSchema, Ruleset } from '@markuplint/ml-core';
 
 export type APIOptions = {
 	configFile?: string;
@@ -37,6 +36,13 @@ export type MLEngineEventMap = {
 	rules: (filePath: string, rules: AnyMLRule[], message?: string) => void;
 	i18n: (filePath: string, locale: LocaleSet, message?: string) => void;
 	code: (filePath: string, sourceCode: string, message?: string) => void;
-	lint: (filePath: string, sourceCode: string, violations: Violation[], fixedCode: string, message?: string) => void;
+	lint: (
+		filePath: string,
+		sourceCode: string,
+		violations: Violation[],
+		fixedCode: string,
+		debug: string[] | null,
+		message?: string,
+	) => void;
 	'lint-error': (filePath: string, sourceCode: string, error: Error) => void;
 };

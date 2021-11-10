@@ -1,4 +1,5 @@
 import { mlTest } from 'markuplint';
+
 import rule from './';
 
 test('warns if specified attribute is not appeared', async () => {

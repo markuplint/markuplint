@@ -1,6 +1,7 @@
+import { memo } from 'react';
+
 import IconGitHub from './IconGitHub';
 import IconTwitter from './IconTwitter';
-import { memo } from 'react';
 
 export default memo(() => {
 	return (

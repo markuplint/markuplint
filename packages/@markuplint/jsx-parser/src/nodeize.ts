@@ -1,15 +1,18 @@
-import { JSXNode, getAttr, getName } from './jsx';
-import {
+import type { JSXNode } from './jsx';
+import type {
 	MLASTElementCloseTag,
 	MLASTNode,
-	MLASTNodeType,
 	MLASTParentNode,
 	MLASTTag,
 	MLASTText,
+	NamespaceURI,
 } from '@markuplint/ml-ast';
+
 import { getNamespace, parseRawTag } from '@markuplint/html-parser';
 import { isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
+
 import { attr } from './attr';
+import { getAttr, getName } from './jsx';
 import { traverse } from './traverse';
 
 export function nodeize(
@@ -21,6 +24,12 @@ export function nodeize(
 	const nextNode = null;
 	const parentNamespace =
 		parentNode && 'namespace' in parentNode ? parentNode.namespace : 'http://www.w3.org/1999/xhtml';
+
+	if (originNode.__alreadyNodeized) {
+		return null;
+	}
+
+	originNode.__alreadyNodeized = true;
 
 	switch (originNode.type) {
 		case 'JSXText': {
@@ -39,7 +48,7 @@ export function nodeize(
 				startCol,
 				endCol,
 				nodeName: '#text',
-				type: MLASTNodeType.Text,
+				type: 'text',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -77,7 +86,7 @@ export function nodeize(
 					startCol: endTagLocation.startCol,
 					endCol: endTagLocation.endCol,
 					nodeName,
-					type: MLASTNodeType.EndTag,
+					type: 'endtag',
 					namespace,
 					attributes: [],
 					parentNode,
@@ -88,7 +97,7 @@ export function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
-					isCustomElement: isJSXComponentName(nodeName),
+					isCustomElement: isJSXComponentName(nodeName, namespace),
 				};
 			}
 
@@ -108,7 +117,7 @@ export function nodeize(
 				uuid: uuid(),
 				...startTagLocation,
 				nodeName,
-				type: MLASTNodeType.StartTag,
+				type: 'starttag',
 				namespace,
 				attributes: attrs.map(a => attr(a, rawHtml)),
 				hasSpreadAttr,
@@ -123,7 +132,7 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				isCustomElement: isJSXComponentName(nodeName),
+				isCustomElement: isJSXComponentName(nodeName, namespace),
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
@@ -162,7 +171,7 @@ export function nodeize(
 					startCol: endTagLocation.startCol,
 					endCol: endTagLocation.endCol,
 					nodeName: '#jsx-fragment',
-					type: MLASTNodeType.EndTag,
+					type: 'endtag',
 					namespace: parentNamespace,
 					attributes: [],
 					parentNode,
@@ -181,7 +190,7 @@ export function nodeize(
 				uuid: uuid(),
 				...startTagLocation,
 				nodeName: '#jsx-fragment',
-				type: MLASTNodeType.StartTag,
+				type: 'starttag',
 				namespace: parentNamespace,
 				attributes: [],
 				hasSpreadAttr: false,
@@ -222,7 +231,7 @@ export function nodeize(
 				startCol,
 				endCol,
 				nodeName: originNode.type,
-				type: MLASTNodeType.PreprocessorSpecificBlock,
+				type: 'psblock',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -233,6 +242,8 @@ export function nodeize(
 	}
 }
 
-function isJSXComponentName(name: string) {
-	return isPotentialCustomElementName(name) || /[A-Z]|\./.test(name);
+function isJSXComponentName(name: string, namespace: NamespaceURI) {
+	return (
+		namespace === 'http://www.w3.org/1999/xhtml' && (isPotentialCustomElementName(name) || /[A-Z]|\./.test(name))
+	);
 }

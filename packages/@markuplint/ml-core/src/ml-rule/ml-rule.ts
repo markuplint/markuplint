@@ -1,8 +1,9 @@
-import type { RuleConfig, RuleConfigValue, RuleInfo, Severity, Violation } from '@markuplint/ml-config';
 import type Document from '../ml-dom/document';
-import type { LocaleSet } from '@markuplint/i18n';
-import { MLRuleContext } from './ml-rule-context';
 import type { MLRuleOptions } from './types';
+import type { LocaleSet } from '@markuplint/i18n';
+import type { RuleConfig, RuleConfigValue, RuleInfo, Severity, Violation } from '@markuplint/ml-config';
+
+import { MLRuleContext } from './ml-rule-context';
 
 export class MLRule<T extends RuleConfigValue, O = null> {
 	readonly name: string;

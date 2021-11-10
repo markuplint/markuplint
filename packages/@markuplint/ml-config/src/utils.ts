@@ -1,4 +1,5 @@
 import type { Rule, RuleConfigValue } from './types';
+
 import mustache from 'mustache';
 
 export function toRegxp(pattern: string) {

@@ -1,4 +1,4 @@
-import { MLASTNode } from '@markuplint/ml-ast';
+import type { MLASTNode } from '@markuplint/ml-ast';
 
 /**
  *

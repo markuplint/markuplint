@@ -1,7 +1,10 @@
-import { ParserConfig, ParserOptions, toRegxp } from '@markuplint/ml-config';
 import type { MLFile } from './ml-file';
 import type { MLMarkupLanguageParser } from '@markuplint/ml-ast';
+import type { ParserConfig, ParserOptions } from '@markuplint/ml-config';
+
 import path from 'path';
+
+import { toRegxp } from '@markuplint/ml-config';
 
 const parsers = new Map<string, MLMarkupLanguageParser>();
 

@@ -1,4 +1,3 @@
-import { AST_NODE_TYPES, parse } from '@typescript-eslint/typescript-estree';
 import type {
 	JSXAttribute,
 	JSXChild,
@@ -11,9 +10,11 @@ import type {
 	Node,
 } from '@typescript-eslint/types/dist/ast-spec';
 
+import { AST_NODE_TYPES, parse } from '@typescript-eslint/typescript-estree';
+
 export type { JSXAttribute } from '@typescript-eslint/types/dist/ast-spec';
 
-export type JSXNode = JSXChild | JSXElementHasSpreadAttribute;
+export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute) & { __alreadyNodeized?: true };
 
 export type JSXElementHasSpreadAttribute = JSXElement & { __hasSpreadAttribute?: true };
 

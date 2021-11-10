@@ -1,10 +1,12 @@
 import type { Document } from '../';
 import type { IMLDOMElementCloseTag } from '../types';
-import type { MLASTElementCloseTag } from '@markuplint/ml-ast';
 import type { MLDOMElement } from './';
-import MLDOMNode from './node';
+import type { MLASTElementCloseTag } from '@markuplint/ml-ast';
 import type { RuleConfigValue } from '@markuplint/ml-config';
+
 import { stringSplice } from '../../utils/string-splice';
+
+import MLDOMNode from './node';
 
 export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTElementCloseTag>

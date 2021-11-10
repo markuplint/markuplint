@@ -1,15 +1,18 @@
-import webpack, { Configuration, WebpackPluginInstance } from 'webpack';
-import { Configuration as DevServerConfiguration } from 'webpack-dev-server';
+import type { Configuration, WebpackPluginInstance } from 'webpack';
+import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
+
+import path from 'path';
+import util from 'util';
+
+import glob from 'glob';
 import HTMLInlineCSSWebpackPlugin from 'html-inline-css-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
-import ScriptExtHtmlWebpackPlugin from 'script-ext-html-webpack-plugin';
-import glob from 'glob';
-import path from 'path';
 import sass from 'sass';
+import ScriptExtHtmlWebpackPlugin from 'script-ext-html-webpack-plugin';
 import sveltePreprocess from 'svelte-preprocess';
-import util from 'util';
+import webpack from 'webpack';
 
 const asyncGlob = util.promisify(glob);
 

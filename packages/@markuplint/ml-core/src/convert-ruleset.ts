@@ -1,4 +1,5 @@
-import { Config } from '@markuplint/ml-config';
+import type { Config } from '@markuplint/ml-config';
+
 import Ruleset from './ruleset';
 
 export function convertRuleset(config: Config) {

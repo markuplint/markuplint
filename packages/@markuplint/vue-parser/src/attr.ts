@@ -1,4 +1,4 @@
-import { MLASTAttr } from '@markuplint/ml-ast';
+import type { MLASTAttr } from '@markuplint/ml-ast';
 
 export function attr(attr: MLASTAttr): MLASTAttr {
 	if (attr.type !== 'html-attr') {

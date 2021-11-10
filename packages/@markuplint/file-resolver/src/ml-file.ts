@@ -1,7 +1,9 @@
 import type { Target } from './types';
+
 import { promises as fs } from 'fs';
-import minimatch from 'minimatch';
 import path from 'path';
+
+import minimatch from 'minimatch';
 
 export class MLFile {
 	#type: 'file-base' | 'code-base';

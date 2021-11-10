@@ -1,4 +1,6 @@
-import { CompileError as AstroCompileError, Attribute, Style, TemplateNode, parse } from '@astrojs/parser';
+import type { Attribute, Style, TemplateNode } from '@astrojs/parser';
+
+import { CompileError as AstroCompileError, parse } from '@astrojs/parser';
 
 export { CompileError as AstroCompileError } from '@astrojs/parser';
 export type ASTNode = TemplateNode;

@@ -1,4 +1,4 @@
-import {
+import type {
 	ContentModel,
 	PermittedContent,
 	PermittedContentChoice,
@@ -9,8 +9,10 @@ import {
 	PermittedContentZeroOrMore,
 	Target,
 } from '@markuplint/ml-spec';
-import combination from './array.combination';
+
 import { rePCENChar } from '../helpers';
+
+import combination from './array.combination';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
 const ALL = '(?:<[^>]+>)?';

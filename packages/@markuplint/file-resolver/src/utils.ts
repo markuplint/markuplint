@@ -1,4 +1,4 @@
-import { Nullable } from './types';
+import type { Nullable } from './types';
 
 export function nonNullableFilter<T>(item: Nullable<T>): item is T {
 	return !!item;

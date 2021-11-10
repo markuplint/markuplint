@@ -1,10 +1,11 @@
 /* global cheerio */
 
-import { Attribute, ContentModel, ElementSpec } from '@markuplint/ml-spec';
-import { getThisOutline, mergeAttributes, nameCompare } from './utils';
+import type { Attribute, ContentModel, ElementSpec } from '@markuplint/ml-spec';
+
 import fetch from './fetch';
 import { getAttribute } from './get-attribute';
 import { getPermittedStructures } from './get-permitted-structures';
+import { getThisOutline, mergeAttributes, nameCompare } from './utils';
 
 type SVGElementCategory = ContentModel & `#SVG${string}`;
 

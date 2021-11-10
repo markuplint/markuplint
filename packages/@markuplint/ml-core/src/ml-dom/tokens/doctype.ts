@@ -1,8 +1,9 @@
-import type { MLASTDoctype, MLASTNode } from '@markuplint/ml-ast';
 import type { Document } from '../';
 import type { IMLDOMDoctype } from '../types';
-import MLDOMNode from './node';
+import type { MLASTDoctype, MLASTNode } from '@markuplint/ml-ast';
 import type { RuleConfigValue } from '@markuplint/ml-config';
+
+import MLDOMNode from './node';
 
 export default class MLDOMDoctype<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTNode>

@@ -1,4 +1,4 @@
-import { getEndCol, getEndLine, tokenizer } from './';
+import { getEndCol, getEndLine } from './get-location';
 
 describe('getEndLine', () => {
 	it('empty', () => {
@@ -34,21 +34,5 @@ describe('getEndCol', () => {
 		expect(getEndCol('foo bar\n  ', 4)).toBe(3);
 		expect(getEndCol('foo bar\nfoo bar', 1)).toBe(8);
 		expect(getEndCol('foo bar\nfoo bar', 6)).toBe(8);
-	});
-});
-
-describe('tokenizer', () => {
-	it('empty', () => {
-		expect(tokenizer('', 1, 1, 0)).toEqual(
-			expect.objectContaining({
-				raw: '',
-				startLine: 1,
-				startCol: 1,
-				startOffset: 0,
-				endLine: 1,
-				endCol: 1,
-				endOffset: 0,
-			}),
-		);
 	});
 });

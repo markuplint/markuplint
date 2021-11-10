@@ -1,7 +1,9 @@
 import type { MLASTElement, MLASTHTMLAttr } from '@markuplint/ml-ast';
-import { ignoreBlock, restoreNode } from './ignore-block';
-import { nodeListToDebugMaps } from './utils';
+
 import { parse } from '@markuplint/html-parser';
+
+import { nodeListToDebugMaps } from './debugger';
+import { ignoreBlock, restoreNode } from './ignore-block';
 
 const tags = [
 	{
@@ -174,7 +176,6 @@ describe('restoreNode', () => {
 			'  [1:22]>[1:23](21,22)eQ: "',
 			'  isDirective: false',
 			'  isDynamicValue: true',
-			'  isInvalid: false',
 			'[1:24]>[1:37](23,36)#ps:ejs-tag: <%␣content␣%>',
 			'[1:37]>[1:43](36,42)div: </div>',
 		]);

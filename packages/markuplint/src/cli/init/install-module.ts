@@ -1,8 +1,9 @@
+import { spawnSync } from 'child_process';
+
 import c from 'cli-color';
 // @ts-ignore
 import detectInstalled from 'detect-installed';
 import hasYarn from 'has-yarn';
-import { spawnSync } from 'child_process';
 
 export type InstallModuleResult = {
 	success: boolean;

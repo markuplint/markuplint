@@ -1,14 +1,22 @@
-import { AnonymousNode, NodeType } from './types';
-import { ExtendedSpec, MLMLSpec, getSpec } from '@markuplint/ml-spec';
-import { MLASTDocument, MLASTNode, MLASTNodeType } from '@markuplint/ml-ast';
-import { MLDOMComment, MLDOMDoctype, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
-import { NodeStore, createNode } from './helper';
-import { RuleConfigValue, exchangeValueOnRule } from '@markuplint/ml-config';
-import { Walker, syncWalk } from './helper/walkers';
-import { MLRule } from '../';
-import Ruleset from '../ruleset';
+import type { MLRule } from '../';
+import type Ruleset from '../ruleset';
+import type { Walker } from './helper/walkers';
+import type { MLDOMComment, MLDOMElement, MLDOMElementCloseTag, MLDOMText } from './tokens';
+import type { AnonymousNode, NodeType } from './types';
+import type { MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
+import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+
+import { exchangeValueOnRule } from '@markuplint/ml-config';
+import { getSpec } from '@markuplint/ml-spec';
+
 import { log as coreLog } from '../debug';
+
+import { NodeStore, createNode } from './helper';
+import { nodeListToDebugMaps } from './helper/debug';
 import { matchSelector } from './helper/match-selector';
+import { syncWalk } from './helper/walkers';
+import { MLDOMDoctype, MLDOMNode } from './tokens';
 
 const log = coreLog.extend('ml-dom');
 const docLog = log.extend('document');
@@ -69,7 +77,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
 		this.nodeList = Object.freeze(
 			ast.nodeList.map(astNode => {
-				if (astNode.type === MLASTNodeType.EndTag) {
+				if (astNode.type === 'endtag') {
 					return this.nodeStore.getNode(astNode);
 				}
 				return createNode<MLASTNode, T, O>(astNode, this);
@@ -174,6 +182,10 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 			html.push(node.raw);
 		}
 		return html.join('');
+	}
+
+	debugMap() {
+		return nodeListToDebugMaps(this.nodeList, true);
 	}
 
 	private _init(ruleset: Ruleset) {

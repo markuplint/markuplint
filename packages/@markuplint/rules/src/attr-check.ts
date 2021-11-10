@@ -1,3 +1,6 @@
+import type { Translator } from '@markuplint/i18n';
+import type { Attribute as AttrSpec } from '@markuplint/ml-spec';
+
 import {
 	floatCheck,
 	intCheck,
@@ -7,8 +10,6 @@ import {
 	splitUnit,
 	uintCheck,
 } from './primitive-check';
-import { Attribute as AttrSpec } from '@markuplint/ml-spec';
-import type { Translator } from '@markuplint/i18n';
 
 type Invalid = {
 	invalidType: 'non-existent' | 'invalid-value';
@@ -46,7 +47,7 @@ export function attrCheck(
 	if (!spec) {
 		return {
 			invalidType: 'non-existent',
-			message: t('{0} is {1}', t('the "{0}" {1}', name, 'attribute'), 'disallowed'),
+			message: t('{0} is {1:c}', t('the "{0}" {1}', name, 'attribute'), 'disallowed'),
 		};
 	}
 

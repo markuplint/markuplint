@@ -1,8 +1,10 @@
-import { JSXAttribute, getAttrName } from './jsx';
-import { attrs, invalidAttrs } from './attr-dictionary';
-import { sliceFragment, tokenizer, uuid } from '@markuplint/parser-utils';
-import { MLASTAttr } from '@markuplint/ml-ast';
+import type { JSXAttribute } from './jsx';
+import type { MLASTAttr } from '@markuplint/ml-ast';
+
 import { attrTokenizer } from '@markuplint/html-parser';
+import { searchIDLAttribute, sliceFragment, tokenizer, uuid } from '@markuplint/parser-utils';
+
+import { getAttrName } from './jsx';
 
 export function attr(attr: JSXAttribute, rawHTML: string): MLASTAttr {
 	const beforeHtml = rawHTML.substr(0, attr.range[0]);
@@ -53,38 +55,18 @@ export function attr(attr: JSXAttribute, rawHTML: string): MLASTAttr {
 			startQuote,
 			value,
 			endQuote,
-			isInvalid: false,
 			isDynamicValue: true,
 			isDuplicatable: false,
 		};
 	}
 
 	const rawName = ast.name.raw;
+	const { idlPropName, contentAttrName } = searchIDLAttribute(rawName);
 
-	switch (rawName) {
-		case 'className':
-			ast.potentialName = 'class';
-			break;
-		case 'htmlFor':
-			ast.potentialName = 'for';
-			break;
-		default:
-			if (
-				// JSX Supporting attributes
-				attrs.includes(rawName) ||
-				// Event attributes
-				/^on[a-z]/i.test(rawName)
-			) {
-				ast.potentialName = rawName.toLowerCase();
-			}
-	}
+	ast.potentialName = contentAttrName;
 
-	if (invalidAttrs.includes(rawName)) {
-		ast.isInvalid = true;
-		const candidate = attrs.find(attr => attr.toLowerCase() === rawName);
-		if (candidate) {
-			ast.candidate = candidate;
-		}
+	if (rawName !== idlPropName) {
+		ast.candidate = idlPropName;
 	}
 
 	return ast;

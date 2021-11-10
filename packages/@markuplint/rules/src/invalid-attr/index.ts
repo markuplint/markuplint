@@ -1,7 +1,9 @@
-import { getAttrSpecs, isValidAttr, match } from '../helpers';
-import { AttributeType } from '@markuplint/ml-spec/src';
-import { attrCheck } from '../attr-check';
+import type { AttributeType } from '@markuplint/ml-spec';
+
 import { createRule } from '@markuplint/ml-core';
+
+import { attrCheck } from '../attr-check';
+import { getAttrSpecs, isValidAttr, match } from '../helpers';
 
 type Option = {
 	attrs?: Record<string, Rule>;
@@ -36,11 +38,11 @@ export default createRule<true, Option>({
 				const attrName = attr.getName();
 				const name = attrName.potential;
 
-				if (!node.isCustomElement && attr.attrType === 'html-attr' && attr.isInvalid) {
-					const candidate = attr.candidate;
+				if (!node.isCustomElement && attr.attrType === 'html-attr' && attr.candidate) {
 					const message =
 						t('{0} is {1:c}', t('the "{0}" {1}', attrName.raw, 'attribute'), 'disallowed') +
-						(candidate ? t('. ') + t('Did you mean "{0}"?', candidate) : '');
+						t('. ') +
+						t('Did you mean "{0}"?', attr.candidate);
 					report({
 						scope: node,
 						message: message,
@@ -48,6 +50,7 @@ export default createRule<true, Option>({
 						col: attrName.col,
 						raw: attrName.raw,
 					});
+					continue;
 				}
 
 				const attrValue = attr.getValue();

@@ -1,7 +1,9 @@
 import type { Config, Violation } from '@markuplint/ml-config';
-import MLEngine from './ml-engine';
+
 import { promises as fs } from 'fs';
 import path from 'path';
+
+import MLEngine from './ml-engine';
 
 jest.useFakeTimers();
 

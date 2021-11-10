@@ -1,8 +1,9 @@
 import type { Attribute, SpecDefs } from '@markuplint/ml-spec';
-import { mergeAttributes, nameCompare } from './utils';
+
 import fetch from './fetch';
 import { getAttributes } from './html-elements';
 import readJson from './read-json';
+import { mergeAttributes, nameCompare } from './utils';
 
 export async function getGlobalAttrs() {
 	const htmlGlobalAttrs = await getHTMLGlobalAttrs();

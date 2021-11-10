@@ -1,8 +1,10 @@
+import getStdin from 'get-stdin';
+
+import { verbosely } from '../debug';
+
 import { cli } from './bootstrap';
 import { command } from './command';
-import getStdin from 'get-stdin';
 import { initialize } from './init';
-import { verbosely } from '../debug';
 
 (async () => {
 	if (cli.flags.v) {

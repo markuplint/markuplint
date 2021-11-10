@@ -1,6 +1,9 @@
-import { MLASTNode, Parse } from '@markuplint/ml-ast';
-import jsxParser, { JSXNode } from './jsx';
+import type { JSXNode } from './jsx';
+import type { MLASTNode, Parse } from '@markuplint/ml-ast';
+
 import { flattenNodes } from '@markuplint/html-parser';
+
+import jsxParser from './jsx';
 import { traverse } from './traverse';
 
 export const parse: Parse = rawCode => {

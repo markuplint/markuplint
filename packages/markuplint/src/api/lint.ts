@@ -1,7 +1,10 @@
-import { Target, resolveFiles } from '@markuplint/file-resolver';
-import { APIOptions } from './types';
+import type { MLResultInfo } from '../types';
+import type { APIOptions } from './types';
+import type { Target } from '@markuplint/file-resolver';
+
+import { resolveFiles } from '@markuplint/file-resolver';
+
 import MLEngine from './ml-engine';
-import { MLResultInfo } from '../types';
 
 export async function lint(targetList: Target[], options?: APIOptions) {
 	const res: MLResultInfo[] = [];

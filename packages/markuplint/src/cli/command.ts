@@ -1,10 +1,15 @@
-import { Target, resolveFiles } from '@markuplint/file-resolver';
 import type { CLIOptions } from './bootstrap';
-import { MLEngine } from '../api';
+import type { Target } from '@markuplint/file-resolver';
+
 import { promises as fs } from 'fs';
-import { log } from '../debug';
-import { output } from './output';
 import path from 'path';
+
+import { resolveFiles } from '@markuplint/file-resolver';
+
+import { MLEngine } from '../api';
+import { log } from '../debug';
+
+import { output } from './output';
 
 export async function command(files: Target[], options: CLIOptions) {
 	const fix = options.fix;
