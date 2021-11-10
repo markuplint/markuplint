@@ -1,4 +1,4 @@
-import { MLASTNode, Parse } from '@markuplint/ml-ast';
+import type { MLASTNode, Parse } from '@markuplint/ml-ast';
 import jsxParser, { JSXNode } from './jsx';
 import { flattenNodes } from '@markuplint/html-parser';
 import { traverse } from './traverse';

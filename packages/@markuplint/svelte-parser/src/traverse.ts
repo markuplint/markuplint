@@ -1,4 +1,4 @@
-import { MLASTNode, MLASTNodeType, MLASTParentNode } from '@markuplint/ml-ast';
+import { MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
 import { SvelteNode } from './svelte-parser';
 import { nodeize } from './nodeize';
 
@@ -24,7 +24,7 @@ export function traverse(
 		}
 
 		if (prevNode) {
-			if (node.type !== MLASTNodeType.EndTag) {
+			if (node.type !== 'endtag') {
 				prevNode.nextNode = node;
 			}
 			node.prevNode = prevNode;

@@ -2,7 +2,6 @@ import { ASTBlock, ASTNode, pugParse } from './pug-parser';
 import {
 	MLASTDoctype,
 	MLASTNode,
-	MLASTNodeType,
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
 	MLASTTag,
@@ -70,7 +69,7 @@ class Parser {
 			}
 
 			if (prevNode) {
-				if (node.type !== MLASTNodeType.EndTag) {
+				if (node.type !== 'endtag') {
 					prevNode.nextNode = node;
 				}
 				node.prevNode = prevNode;
@@ -119,7 +118,7 @@ class Parser {
 					startCol,
 					endCol,
 					nodeName: '#doctype',
-					type: MLASTNodeType.Doctype,
+					type: 'doctype',
 					parentNode,
 					prevNode,
 					_addPrevNode: 102,
@@ -140,7 +139,7 @@ class Parser {
 						startCol,
 						endCol,
 						nodeName: '#text',
-						type: MLASTNodeType.Text,
+						type: 'text',
 						parentNode,
 						prevNode,
 						nextNode,
@@ -173,7 +172,7 @@ class Parser {
 					startCol,
 					endCol,
 					nodeName: '#comment',
-					type: MLASTNodeType.Comment,
+					type: 'comment',
 					parentNode,
 					prevNode,
 					nextNode,
@@ -193,7 +192,7 @@ class Parser {
 					startCol,
 					endCol,
 					nodeName: originNode.name,
-					type: MLASTNodeType.StartTag,
+					type: 'starttag',
 					namespace,
 					attributes: originNode.attrs.map(attr => attrTokenizer(attr)),
 					hasSpreadAttr: false,
@@ -226,7 +225,7 @@ class Parser {
 					endLine,
 					startCol,
 					endCol,
-					type: MLASTNodeType.PreprocessorSpecificBlock,
+					type: 'psblock',
 					nodeName: originNode.type,
 					parentNode,
 					prevNode,

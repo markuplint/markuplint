@@ -1,8 +1,7 @@
-import {
+import type {
 	MLASTDoctype,
 	MLASTElementCloseTag,
 	MLASTNode,
-	MLASTNodeType,
 	MLASTOmittedElement,
 	MLASTParentNode,
 	MLASTTag,
@@ -56,7 +55,7 @@ function createTreeRecursive(
 			continue;
 		}
 		if (prevNode) {
-			if (node.type !== MLASTNodeType.EndTag) {
+			if (node.type !== 'endtag') {
 				prevNode.nextNode = node;
 			}
 			node.prevNode = prevNode;
@@ -96,7 +95,7 @@ function nodeize(
 			startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 			endCol: endCol + (endLine === 1 ? offsetColumn : 0),
 			nodeName: originNode.nodeName,
-			type: MLASTNodeType.OmittedTag,
+			type: 'omittedtag',
 			namespace: getNamespace(originNode),
 			parentNode,
 			prevNode,
@@ -128,7 +127,7 @@ function nodeize(
 				startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 				endCol: endCol + (endLine === 1 ? offsetColumn : 0),
 				nodeName: '#doctype',
-				type: MLASTNodeType.Doctype,
+				type: 'doctype',
 				parentNode,
 				prevNode,
 				_addPrevNode: 102,
@@ -148,7 +147,7 @@ function nodeize(
 				startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 				endCol: endCol + (endLine === 1 ? offsetColumn : 0),
 				nodeName: '#text',
-				type: MLASTNodeType.Text,
+				type: 'text',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -168,7 +167,7 @@ function nodeize(
 				startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 				endCol: endCol + (endLine === 1 ? offsetColumn : 0),
 				nodeName: '#comment',
-				type: MLASTNodeType.Comment,
+				type: 'comment',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -235,7 +234,7 @@ function nodeize(
 					startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 					endCol: endCol + (endLine === 1 ? offsetColumn : 0),
 					nodeName: endTagName,
-					type: MLASTNodeType.EndTag,
+					type: 'endtag',
 					namespace: getNamespace(originNode),
 					attributes: endTagTokens.attrs,
 					parentNode,
@@ -262,7 +261,7 @@ function nodeize(
 				startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 				endCol: _endCol + (startLine === _endLine ? offsetColumn : 0),
 				nodeName: tagName,
-				type: MLASTNodeType.StartTag,
+				type: 'starttag',
 				namespace: getNamespace(originNode),
 				attributes: tagTokens.attrs,
 				hasSpreadAttr: false,

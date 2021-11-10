@@ -1,4 +1,4 @@
-import { MLASTAbstructNode, MLASTNode, MLASTNodeType } from '@markuplint/ml-ast';
+import type { MLASTAbstructNode, MLASTNode } from '@markuplint/ml-ast';
 import {
 	MLDOMComment,
 	MLDOMDoctype,
@@ -7,10 +7,10 @@ import {
 	MLDOMOmittedElement,
 	MLDOMText,
 } from '../tokens';
-import { Document } from '../';
+import type { Document } from '../';
 import MLDOMPreprocessorSpecificBlock from '../tokens/preprocessor-specific-block';
-import { MappedNode } from './mapped-nodes';
-import { RuleConfigValue } from '@markuplint/ml-config';
+import type { MappedNode } from './mapped-nodes';
+import type { RuleConfigValue } from '@markuplint/ml-config';
 
 export function createNode<N extends MLASTAbstructNode, T extends RuleConfigValue, O = null>(
 	astNode: N,
@@ -19,25 +19,25 @@ export function createNode<N extends MLASTAbstructNode, T extends RuleConfigValu
 ): MappedNode<N, T, O> {
 	const _astNode = astNode as MLASTNode;
 	switch (_astNode.type) {
-		case MLASTNodeType.Doctype: {
+		case 'doctype': {
 			return new MLDOMDoctype<T, O>(_astNode, document) as MappedNode<N, T, O>;
 		}
-		case MLASTNodeType.StartTag: {
+		case 'starttag': {
 			return new MLDOMElement<T, O>(_astNode, document) as MappedNode<N, T, O>;
 		}
-		case MLASTNodeType.EndTag: {
+		case 'endtag': {
 			return new MLDOMElementCloseTag<T, O>(_astNode, document, pearNode!) as MappedNode<N, T, O>;
 		}
-		case MLASTNodeType.PreprocessorSpecificBlock: {
+		case 'psblock': {
 			return new MLDOMPreprocessorSpecificBlock<T, O>(_astNode, document) as MappedNode<N, T, O>;
 		}
-		case MLASTNodeType.Comment: {
+		case 'comment': {
 			return new MLDOMComment<T, O>(_astNode, document) as MappedNode<N, T, O>;
 		}
-		case MLASTNodeType.Text: {
+		case 'text': {
 			return new MLDOMText<T, O>(_astNode, document) as MappedNode<N, T, O>;
 		}
-		case MLASTNodeType.OmittedTag: {
+		case 'omittedtag': {
 			return new MLDOMOmittedElement<T, O>(_astNode, document) as MappedNode<N, T, O>;
 		}
 	}

@@ -1,4 +1,4 @@
-import { MLASTNode, MLASTNodeType, MLASTParentNode } from '@markuplint/ml-ast';
+import type { MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
 import type { JSXNode } from './jsx';
 import { nodeize } from './nodeize';
 
@@ -20,7 +20,7 @@ export function traverse(astNodes: JSXNode[], parentNode: MLASTParentNode | null
 		}
 
 		if (prevNode) {
-			if (node.type !== MLASTNodeType.EndTag) {
+			if (node.type !== 'endtag') {
 				prevNode.nextNode = node;
 			}
 			node.prevNode = prevNode;

@@ -1,4 +1,4 @@
-import { MLASTNode, MLASTNodeType, MLASTText } from '@markuplint/ml-ast';
+import type { MLASTNode, MLASTText } from '@markuplint/ml-ast';
 import { getEndCol, getEndLine, uuid, walk } from '@markuplint/parser-utils';
 import { removeDeprecatedNode } from './remove-deprecated-node';
 import tagSplitter from './tag-splitter';
@@ -16,12 +16,12 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastT
 				prevToken = node;
 				continue;
 			}
-			if (node.type !== MLASTNodeType.EndTag) {
+			if (node.type !== 'endtag') {
 				prevToken = node;
 				continue;
 			}
 			const endTag = node;
-			if (endTag.nodeName.toLowerCase() === 'body' && prevToken.type === MLASTNodeType.Text) {
+			if (endTag.nodeName.toLowerCase() === 'body' && prevToken.type === 'text') {
 				const prevWreckagesText = prevToken;
 				if (prevWreckagesText) {
 					const wreckages = tagSplitter(
@@ -62,7 +62,7 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastT
 		}
 
 		if (lastNode) {
-			if (lastNode.type === MLASTNodeType.Text) {
+			if (lastNode.type === 'text') {
 				// Correction for Parse5 AST
 				// prev node: ? -> html
 				lastNode.prevNode = lastNode.parentNode && lastNode.parentNode.parentNode;
@@ -97,7 +97,7 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastT
 						startCol: col,
 						endCol: getEndCol(lastTextContent, col),
 						nodeName: '#text',
-						type: MLASTNodeType.Text,
+						type: 'text',
 						parentNode: null,
 						prevNode: lastNode,
 						nextNode: null,
@@ -106,10 +106,7 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastT
 					};
 					if (lastNode) {
 						lastNode.nextNode = lastTextNode;
-						if (
-							(lastNode.type === MLASTNodeType.StartTag || lastNode.type === MLASTNodeType.EndTag) &&
-							lastNode.pearNode
-						) {
+						if ((lastNode.type === 'starttag' || lastNode.type === 'endtag') && lastNode.pearNode) {
 							lastNode.pearNode.nextNode = lastTextNode;
 						}
 					}
@@ -125,7 +122,7 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastT
 	const result: MLASTNode[] = [];
 	nodeOrders.forEach(node => {
 		const prevNode = result[result.length - 1] || null;
-		if (node.type === MLASTNodeType.Text && prevNode && prevNode.type === MLASTNodeType.Text) {
+		if (node.type === 'text' && prevNode && prevNode.type === 'text') {
 			prevNode.raw = prevNode.raw + node.raw;
 			prevNode.endOffset = node.endOffset;
 			prevNode.endLine = node.endLine;
@@ -154,13 +151,13 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastT
 			}
 
 			if (
-				((prevToken.type === MLASTNodeType.EndTag && prevToken.nodeName.toLowerCase() === 'body') ||
-					prevToken.type === MLASTNodeType.Doctype) &&
-				node.type === MLASTNodeType.Text
+				((prevToken.type === 'endtag' && prevToken.nodeName.toLowerCase() === 'body') ||
+					prevToken.type === 'doctype') &&
+				node.type === 'text'
 			) {
 				const nextNode = prevToken.nextNode;
 				prevToken.nextNode = node;
-				if (prevToken.type === MLASTNodeType.EndTag && prevToken.pearNode) {
+				if (prevToken.type === 'endtag' && prevToken.pearNode) {
 					prevToken.pearNode.nextNode = node;
 				}
 				node.prevNode = prevToken;
@@ -169,7 +166,7 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastT
 			}
 
 			// EndTag
-			if (node.type === MLASTNodeType.StartTag && node.pearNode) {
+			if (node.type === 'starttag' && node.pearNode) {
 				const endTag = node.pearNode;
 				endTag.pearNode = node;
 				endTag.prevNode = node.prevNode;
@@ -177,9 +174,9 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastT
 			}
 
 			// Children
-			if (node.type === MLASTNodeType.Text) {
+			if (node.type === 'text') {
 				const parent = node.parentNode;
-				if (parent && parent.type === MLASTNodeType.StartTag && parent.nodeName.toLowerCase() === 'html') {
+				if (parent && parent.type === 'starttag' && parent.nodeName.toLowerCase() === 'html') {
 					if (parent.childNodes && !parent.childNodes.some(n => n.uuid === node.uuid)) {
 						parent.childNodes.push(node);
 					}
@@ -228,7 +225,7 @@ function arrayize(nodeTree: MLASTNode[], rawHtml: string) {
 					startCol: prevCol,
 					endCol: getEndCol(spaces, prevCol),
 					nodeName: '#text',
-					type: MLASTNodeType.Text,
+					type: 'text',
 					parentNode: node.parentNode,
 					prevNode: node.prevNode,
 					nextNode: node,

@@ -1,12 +1,12 @@
-import { AnonymousNode, NodeType } from './types';
+import type { AnonymousNode, NodeType } from './types';
 import { ExtendedSpec, MLMLSpec, getSpec } from '@markuplint/ml-spec';
-import { MLASTDocument, MLASTNode, MLASTNodeType } from '@markuplint/ml-ast';
+import type { MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
 import { MLDOMComment, MLDOMDoctype, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
 import { NodeStore, createNode } from './helper';
 import { RuleConfigValue, exchangeValueOnRule } from '@markuplint/ml-config';
 import { Walker, syncWalk } from './helper/walkers';
-import { MLRule } from '../';
-import Ruleset from '../ruleset';
+import type { MLRule } from '../';
+import type Ruleset from '../ruleset';
 import { log as coreLog } from '../debug';
 import { matchSelector } from './helper/match-selector';
 import { nodeListToDebugMaps } from './helper/debug';
@@ -70,7 +70,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
 		this.nodeList = Object.freeze(
 			ast.nodeList.map(astNode => {
-				if (astNode.type === MLASTNodeType.EndTag) {
+				if (astNode.type === 'endtag') {
 					return this.nodeStore.getNode(astNode);
 				}
 				return createNode<MLASTNode, T, O>(astNode, this);

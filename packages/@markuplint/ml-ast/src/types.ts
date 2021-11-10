@@ -9,15 +9,7 @@ export interface MLToken {
 	endCol: number;
 }
 
-export enum MLASTNodeType {
-	Doctype = 'doctype',
-	StartTag = 'starttag',
-	EndTag = 'endtag',
-	Comment = 'comment',
-	Text = 'text',
-	OmittedTag = 'omittedtag',
-	PreprocessorSpecificBlock = 'psblock',
-}
+export type MLASTNodeType = 'doctype' | 'starttag' | 'endtag' | 'comment' | 'text' | 'omittedtag' | 'psblock';
 
 export type MLASTNode = MLASTDoctype | MLASTTag | MLASTComment | MLASTText | MLASTPreprocessorSpecificBlock;
 
@@ -32,14 +24,14 @@ export interface MLASTAbstructNode extends MLToken {
 }
 
 export interface MLASTDoctype extends MLASTAbstructNode {
-	type: MLASTNodeType.Doctype;
+	type: 'doctype';
 	name: string;
 	publicId: string;
 	systemId: string;
 }
 
 export interface MLASTElement extends MLASTAbstructNode {
-	type: MLASTNodeType.StartTag;
+	type: 'starttag';
 	namespace: string;
 	attributes: MLASTAttr[];
 	hasSpreadAttr: boolean;
@@ -53,7 +45,7 @@ export interface MLASTElement extends MLASTAbstructNode {
 }
 
 export interface MLASTElementCloseTag extends MLASTAbstructNode {
-	type: MLASTNodeType.EndTag;
+	type: 'endtag';
 	namespace: string;
 	attributes: MLASTAttr[];
 	childNodes?: MLASTNode[];
@@ -64,14 +56,14 @@ export interface MLASTElementCloseTag extends MLASTAbstructNode {
 }
 
 export interface MLASTOmittedElement extends MLASTAbstructNode {
-	type: MLASTNodeType.OmittedTag;
+	type: 'omittedtag';
 	namespace: string;
 	childNodes?: MLASTNode[];
 	isCustomElement: boolean;
 }
 
 export interface MLASTPreprocessorSpecificBlock extends MLASTAbstructNode {
-	type: MLASTNodeType.PreprocessorSpecificBlock;
+	type: 'psblock';
 	nodeName: string;
 	parentNode: MLASTParentNode | null;
 	prevNode: MLASTNode | null;
@@ -85,11 +77,11 @@ export type MLASTTag = MLASTElement | MLASTElementCloseTag | MLASTOmittedElement
 export type MLASTParentNode = MLASTElement | MLASTOmittedElement | MLASTPreprocessorSpecificBlock;
 
 export interface MLASTComment extends MLASTAbstructNode {
-	type: MLASTNodeType.Comment;
+	type: 'comment';
 }
 
 export interface MLASTText extends MLASTAbstructNode {
-	type: MLASTNodeType.Text;
+	type: 'text';
 }
 
 export type MLASTAttr = MLASTHTMLAttr | MLASTPreprocessorSpecificAttr;
