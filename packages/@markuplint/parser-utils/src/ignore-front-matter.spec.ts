@@ -1,4 +1,4 @@
-import { ignoreFrontMatter } from './';
+import { ignoreFrontMatter } from './ignore-front-matter';
 
 describe('ignoreFrontMatter', () => {
 	it('basic', () => {

@@ -1,4 +1,4 @@
-import { sliceFragment, tokenizer_v2, uuid } from '@markuplint/parser-utils';
+import { createTokenFromRawCode, sliceFragment, uuid } from '@markuplint/parser-utils';
 import { ASTAttribute } from './astro-parser';
 import { MLASTHTMLAttr } from '@markuplint/ml-ast';
 
@@ -11,15 +11,19 @@ export function attrTokenizer(attr: ASTAttribute, rawHtml: string, codeOffset: n
 			return v.type === 'MustacheTag';
 		}) || undefined;
 
-	const attrToken = tokenizer_v2(raw, startOffset, rawHtml);
+	const attrToken = createTokenFromRawCode(raw, startOffset, rawHtml);
 
 	const beforeCode = rawHtml.slice(0, attrToken.startOffset);
 	const beforeAttrMatched = beforeCode.match(/\s+$/m);
 	const beforeAttrChar = beforeAttrMatched?.[0] || '';
 
-	const spacesBeforeName = tokenizer_v2(beforeAttrChar, attrToken.startOffset - beforeAttrChar.length, rawHtml);
+	const spacesBeforeName = createTokenFromRawCode(
+		beforeAttrChar,
+		attrToken.startOffset - beforeAttrChar.length,
+		rawHtml,
+	);
 
-	const name = tokenizer_v2(attr.name, spacesBeforeName.endOffset, rawHtml);
+	const name = createTokenFromRawCode(attr.name, spacesBeforeName.endOffset, rawHtml);
 
 	let rawValue: string;
 	let rawValueStart: number;
@@ -42,7 +46,7 @@ export function attrTokenizer(attr: ASTAttribute, rawHtml: string, codeOffset: n
 		rawValueStart = attr.value[0].start;
 	}
 
-	const value = tokenizer_v2(rawValue, rawValueStart + codeOffset, rawHtml);
+	const value = createTokenFromRawCode(rawValue, rawValueStart + codeOffset, rawHtml);
 
 	const eq = sliceFragment(rawHtml, name.endOffset, value.startOffset);
 	const eqRegexp = /^(?<bs>\s*)(?<eq>=)(?<as>\s*)(?<squot>"|'|{)?$/g;
@@ -53,11 +57,11 @@ export function attrTokenizer(attr: ASTAttribute, rawHtml: string, codeOffset: n
 	const asChar = exp?.groups?.as || '';
 	const squotChar = exp?.groups?.squot || '';
 
-	const spacesBeforeEqual = tokenizer_v2(bsChar, name.endOffset, rawHtml);
-	const equal = tokenizer_v2(eqChar, spacesBeforeEqual.endOffset, rawHtml);
-	const spacesAfterEqual = tokenizer_v2(asChar, equal.endOffset, rawHtml);
-	const startQuote = tokenizer_v2(squotChar, spacesAfterEqual.endOffset, rawHtml);
-	const endQuote = tokenizer_v2(squotChar === '{' ? '}' : squotChar, value.endOffset, rawHtml);
+	const spacesBeforeEqual = createTokenFromRawCode(bsChar, name.endOffset, rawHtml);
+	const equal = createTokenFromRawCode(eqChar, spacesBeforeEqual.endOffset, rawHtml);
+	const spacesAfterEqual = createTokenFromRawCode(asChar, equal.endOffset, rawHtml);
+	const startQuote = createTokenFromRawCode(squotChar, spacesAfterEqual.endOffset, rawHtml);
+	const endQuote = createTokenFromRawCode(squotChar === '{' ? '}' : squotChar, value.endOffset, rawHtml);
 
 	return {
 		type: 'html-attr',
