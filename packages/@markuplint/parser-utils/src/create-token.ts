@@ -1,6 +1,8 @@
-import { getEndCol, getEndLine, sliceFragment } from './get-location';
 import type { MLToken } from '@markuplint/ml-ast';
+
 import { v4 as uuid4 } from 'uuid';
+
+import { getEndCol, getEndLine, sliceFragment } from './get-location';
 
 export function tokenizer(raw: string | null, startLine: number, startCol: number, startOffset: number): MLToken {
 	raw = raw || '';

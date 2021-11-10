@@ -1,9 +1,13 @@
-import { Config, mergeConfig } from '@markuplint/ml-config';
+import type { Config } from '@markuplint/ml-config';
+
 import fs from 'fs';
-import { installModule } from './install-module';
 import path from 'path';
-import { prompt } from 'enquirer';
 import util from 'util';
+
+import { mergeConfig } from '@markuplint/ml-config';
+import { prompt } from 'enquirer';
+
+import { installModule } from './install-module';
 
 const writeFile = util.promisify(fs.writeFile);
 

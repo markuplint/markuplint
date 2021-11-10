@@ -1,6 +1,6 @@
-import { TextlintKernel } from '@textlint/kernel';
-import { TextlintKernelOptions } from '@textlint/kernel/lib/src/textlint-kernel-interface';
+import type { TextlintKernelOptions } from '@textlint/kernel/lib/src/textlint-kernel-interface';
 
+import { TextlintKernel } from '@textlint/kernel';
 // @ts-ignore / This has no types
 import TextlintPluginHTML from 'textlint-plugin-html';
 

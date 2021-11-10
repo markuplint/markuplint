@@ -1,6 +1,8 @@
-import { LocaleSet, Translator, translator } from '@markuplint/i18n';
-import type { Report, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
 import type Document from '../ml-dom/document';
+import type { LocaleSet, Translator } from '@markuplint/i18n';
+import type { Report, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
+
+import { translator } from '@markuplint/i18n';
 
 export class MLRuleContext<T extends RuleConfigValue, O = null> {
 	readonly document: Document<T, O>;

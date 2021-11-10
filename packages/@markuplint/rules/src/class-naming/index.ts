@@ -1,4 +1,5 @@
 import { createRule } from '@markuplint/ml-core';
+
 import { match } from '../helpers';
 
 export type Value = string | string[] | null;

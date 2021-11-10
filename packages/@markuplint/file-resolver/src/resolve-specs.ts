@@ -1,5 +1,7 @@
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+
 import path from 'path';
+
 import { toRegxp } from '@markuplint/ml-config';
 
 type SpecConfig = Record<string, string> | string[] | string;

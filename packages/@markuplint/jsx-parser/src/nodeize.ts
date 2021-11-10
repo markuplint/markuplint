@@ -1,4 +1,4 @@
-import { JSXNode, getAttr, getName } from './jsx';
+import type { JSXNode } from './jsx';
 import type {
 	MLASTElementCloseTag,
 	MLASTNode,
@@ -7,9 +7,12 @@ import type {
 	MLASTText,
 	NamespaceURI,
 } from '@markuplint/ml-ast';
+
 import { getNamespace, parseRawTag } from '@markuplint/html-parser';
 import { isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
+
 import { attr } from './attr';
+import { getAttr, getName } from './jsx';
 import { traverse } from './traverse';
 
 export function nodeize(

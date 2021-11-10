@@ -1,4 +1,5 @@
 import type MLDOMAbstractElement from '../tokens/abstract-element';
+
 import parser from 'postcss-selector-parser';
 
 export function createSelector(selector: string) {

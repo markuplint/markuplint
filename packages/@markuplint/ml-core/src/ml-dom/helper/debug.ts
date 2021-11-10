@@ -1,6 +1,6 @@
-import type { AnonymousNode } from '@markuplint/ml-core';
 import type MLDOMAttribute from '../tokens/attribute';
 import type MLDOMPreprocessorSpecificAttribute from '../tokens/preprocessor-specific-attribute';
+import type { AnonymousNode } from '@markuplint/ml-core';
 
 export function nodeListToDebugMaps(nodeList: Readonly<AnonymousNode<any, any>[]>, withAttr = false) {
 	return nodeList

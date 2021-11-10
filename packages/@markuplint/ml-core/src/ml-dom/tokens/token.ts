@@ -1,5 +1,5 @@
-import { MLToken } from '@markuplint/ml-ast';
-import { Rules } from '@markuplint/ml-config';
+import type { MLToken } from '@markuplint/ml-ast';
+import type { Rules } from '@markuplint/ml-config';
 
 export default class MLDOMToken<A extends MLToken> {
 	readonly uuid: string;

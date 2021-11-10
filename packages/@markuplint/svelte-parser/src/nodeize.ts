@@ -1,4 +1,5 @@
-import {
+import type { SvelteDirective, SvelteNode } from './svelte-parser';
+import type {
 	MLASTAttr,
 	MLASTElementCloseTag,
 	MLASTNode,
@@ -7,9 +8,10 @@ import {
 	MLASTTag,
 	MLASTText,
 } from '@markuplint/ml-ast';
-import { SvelteDirective, SvelteNode } from './svelte-parser';
+
 import { getNamespace, parseRawTag } from '@markuplint/html-parser';
 import { isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
+
 import { attr } from './attr';
 import { traverse } from './traverse';
 

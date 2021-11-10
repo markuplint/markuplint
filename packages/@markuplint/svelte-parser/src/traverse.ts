@@ -1,5 +1,6 @@
-import { MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
-import { SvelteNode } from './svelte-parser';
+import type { SvelteNode } from './svelte-parser';
+import type { MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
+
 import { nodeize } from './nodeize';
 
 export function traverse(

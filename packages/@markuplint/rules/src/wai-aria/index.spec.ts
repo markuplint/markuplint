@@ -1,4 +1,5 @@
 import { mlTest } from 'markuplint';
+
 import rule from './';
 
 describe("Use the role that doesn't exist in the spec", () => {

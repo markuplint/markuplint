@@ -1,6 +1,7 @@
-import { createTestDocument, createTestElement, createTestNodeList } from '../test';
-import { MLDOMElement } from './tokens';
+import type { MLDOMElement } from './tokens';
+
 import { createRule } from '../create-rule';
+import { createTestDocument, createTestElement, createTestNodeList } from '../test';
 
 test('node count', async () => {
 	const nodeList = createTestNodeList('<div>text</div>');

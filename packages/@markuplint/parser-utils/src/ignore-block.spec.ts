@@ -1,7 +1,9 @@
 import type { MLASTElement, MLASTHTMLAttr } from '@markuplint/ml-ast';
-import { ignoreBlock, restoreNode } from './ignore-block';
-import { nodeListToDebugMaps } from './debugger';
+
 import { parse } from '@markuplint/html-parser';
+
+import { nodeListToDebugMaps } from './debugger';
+import { ignoreBlock, restoreNode } from './ignore-block';
 
 const tags = [
 	{

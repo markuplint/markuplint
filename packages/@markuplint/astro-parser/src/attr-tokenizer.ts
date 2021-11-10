@@ -1,6 +1,7 @@
+import type { ASTAttribute } from './astro-parser';
+import type { MLASTHTMLAttr } from '@markuplint/ml-ast';
+
 import { createTokenFromRawCode, sliceFragment, uuid } from '@markuplint/parser-utils';
-import { ASTAttribute } from './astro-parser';
-import { MLASTHTMLAttr } from '@markuplint/ml-ast';
 
 export function attrTokenizer(attr: ASTAttribute, rawHtml: string, codeOffset: number): MLASTHTMLAttr {
 	const { raw, startOffset } = sliceFragment(rawHtml, attr.start + codeOffset, attr.end + codeOffset);

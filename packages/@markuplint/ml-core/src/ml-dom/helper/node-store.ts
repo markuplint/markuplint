@@ -1,8 +1,9 @@
-import { MLASTAbstructNode } from '@markuplint/ml-ast';
-import MLDOMNode from '../tokens/node';
+import type MLDOMNode from '../tokens/node';
+import type { MappedNode } from './mapped-nodes';
+import type { MLASTAbstructNode } from '@markuplint/ml-ast';
+import type { RuleConfigValue } from '@markuplint/ml-config';
+
 import MLParseError from '../../ml-error/ml-parse-error';
-import { MappedNode } from './mapped-nodes';
-import { RuleConfigValue } from '@markuplint/ml-config';
 
 export default class NodeStore {
 	#store = new Map<string, MLDOMNode<any, any, any>>();

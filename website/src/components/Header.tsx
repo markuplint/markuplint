@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import Logo from './Logo';
 import { memo } from 'react';
+
+import Logo from './Logo';
 
 type Props = {
 	isHome?: boolean;

@@ -1,9 +1,11 @@
 import 'normalize.css';
 import '../global.css';
 
-import { MDXProvider, MDXProviderComponentsProp } from '@mdx-js/react';
-import { AppProps } from 'next/app';
-import { PropsWithChildren } from 'react';
+import type { MDXProviderComponentsProp } from '@mdx-js/react';
+import type { AppProps } from 'next/app';
+import type { PropsWithChildren } from 'react';
+
+import { MDXProvider } from '@mdx-js/react';
 import innerText from 'react-innertext';
 
 const mdComponents: MDXProviderComponentsProp = {

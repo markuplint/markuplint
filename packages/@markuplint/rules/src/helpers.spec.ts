@@ -1,5 +1,6 @@
-import { checkAria, checkAriaValue, getComputedRole, getImplicitRole, getPermittedRoles, getRoleSpec } from './helpers';
 import { createTestElement } from '@markuplint/ml-core';
+
+import { checkAria, checkAriaValue, getComputedRole, getImplicitRole, getPermittedRoles, getRoleSpec } from './helpers';
 
 describe('getRoleSpec', () => {
 	test('the button role', () => {

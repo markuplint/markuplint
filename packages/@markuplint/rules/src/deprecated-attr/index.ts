@@ -1,4 +1,5 @@
 import { createRule } from '@markuplint/ml-core';
+
 import { getAttrSpecs } from '../helpers';
 
 export default createRule({

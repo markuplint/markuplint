@@ -1,15 +1,22 @@
-import type { AnonymousNode, NodeType } from './types';
-import { ExtendedSpec, MLMLSpec, getSpec } from '@markuplint/ml-spec';
-import type { MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
-import { MLDOMComment, MLDOMDoctype, MLDOMElement, MLDOMElementCloseTag, MLDOMNode, MLDOMText } from './tokens';
-import { NodeStore, createNode } from './helper';
-import { RuleConfigValue, exchangeValueOnRule } from '@markuplint/ml-config';
-import { Walker, syncWalk } from './helper/walkers';
 import type { MLRule } from '../';
 import type Ruleset from '../ruleset';
+import type { Walker } from './helper/walkers';
+import type { MLDOMComment, MLDOMElement, MLDOMElementCloseTag, MLDOMText } from './tokens';
+import type { AnonymousNode, NodeType } from './types';
+import type { MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
+import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+
+import { exchangeValueOnRule } from '@markuplint/ml-config';
+import { getSpec } from '@markuplint/ml-spec';
+
 import { log as coreLog } from '../debug';
-import { matchSelector } from './helper/match-selector';
+
+import { NodeStore, createNode } from './helper';
 import { nodeListToDebugMaps } from './helper/debug';
+import { matchSelector } from './helper/match-selector';
+import { syncWalk } from './helper/walkers';
+import { MLDOMDoctype, MLDOMNode } from './tokens';
 
 const log = coreLog.extend('ml-dom');
 const docLog = log.extend('document');

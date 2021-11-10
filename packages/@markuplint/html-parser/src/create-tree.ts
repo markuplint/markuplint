@@ -7,8 +7,20 @@ import type {
 	MLASTTag,
 	MLASTText,
 } from '@markuplint/ml-ast';
+import type {
+	CommentNode,
+	Document,
+	DocumentFragment,
+	Element,
+	Node,
+	TextNode,
+	ElementLocation,
+	Location,
+} from 'parse5';
+
 import { getEndCol, getEndLine, isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
-import parse5, { CommentNode, Document, DocumentFragment, Element, Node, TextNode } from 'parse5';
+import { parse, parseFragment } from 'parse5';
+
 import parseRawTag from './parse-raw-tag';
 
 interface TraversalNode {
@@ -31,8 +43,8 @@ export function createTree(
 	offsetColumn: number,
 ) {
 	const doc = isFragment
-		? (parse5.parseFragment(rawCode, P5_OPTIONS) as P5Fragment)
-		: (parse5.parse(rawCode, P5_OPTIONS) as P5Document);
+		? (parseFragment(rawCode, P5_OPTIONS) as P5Fragment)
+		: (parse(rawCode, P5_OPTIONS) as P5Document);
 	return createTreeRecursive(doc, null, rawCode, offsetOffset, offsetLine, offsetColumn);
 }
 
@@ -318,7 +330,7 @@ function getChildNodes(rootNode: P5Node | P5Document | P5Fragment) {
 			'\n'.repeat(breakCount) +
 			' '.repeat(indentWidth);
 
-		const fragment = parse5.parseFragment(`${offsetSpaces}${html}`, P5_OPTIONS);
+		const fragment = parseFragment(`${offsetSpaces}${html}`, P5_OPTIONS);
 		const childNodes = fragment.childNodes.slice(offsetSpaces ? 1 : 0);
 		// const childNodes = ('childNodes' in _childNodes && _childNodes.childNodes) || [];
 
@@ -331,7 +343,7 @@ function hasLocation(node: P5Node): node is P5LocatableNode {
 	return 'sourceCodeLocation' in node;
 }
 
-function getLocation(node: P5Node): parse5.Location | parse5.ElementLocation | null {
+function getLocation(node: P5Node): Location | ElementLocation | null {
 	if (hasLocation(node) && node.sourceCodeLocation) {
 		return node.sourceCodeLocation;
 	}

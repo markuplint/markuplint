@@ -1,8 +1,9 @@
-import { AnyMLRule } from '@markuplint/ml-core';
-import { Config } from '@markuplint/ml-config';
-import { Target } from '@markuplint/file-resolver';
-import { getGlobal } from '../global-settings';
+import type { Target } from '@markuplint/file-resolver';
+import type { Config } from '@markuplint/ml-config';
+import type { AnyMLRule } from '@markuplint/ml-core';
+
 import { lint } from '../api';
+import { getGlobal } from '../global-settings';
 
 export async function mlTest(sourceCode: string, config: Config, rules?: AnyMLRule[], locale?: string, fix = false) {
 	const global = getGlobal();

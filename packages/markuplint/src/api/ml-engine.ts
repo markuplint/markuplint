@@ -1,8 +1,10 @@
-import { APIOptions, MLEngineEventMap, MLFabric } from './types';
+import type { MLResultInfo } from '../types';
+import type { APIOptions, MLEngineEventMap, MLFabric } from './types';
+import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
+import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { Ruleset } from '@markuplint/ml-core';
+
 import {
-	ConfigSet,
-	MLFile,
-	Target,
 	configProvider,
 	moduleAutoLoader,
 	resolveFiles,
@@ -10,11 +12,10 @@ import {
 	resolveRules,
 	resolveSpecs,
 } from '@markuplint/file-resolver';
-import { MLCore, Ruleset, convertRuleset } from '@markuplint/ml-core';
+import { MLCore, convertRuleset } from '@markuplint/ml-core';
 import { FSWatcher } from 'chokidar';
-import { MLResultInfo } from '../types';
-import { RuleConfigValue } from '@markuplint/ml-config';
 import { StrictEventEmitter } from 'strict-event-emitter';
+
 import { log as coreLog } from '../debug';
 import { i18n } from '../i18n';
 

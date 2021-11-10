@@ -1,5 +1,5 @@
-import debug from 'debug';
 import { enableDebug } from '@markuplint/ml-core';
+import debug from 'debug';
 
 export const log = debug('markuplint-cli');
 

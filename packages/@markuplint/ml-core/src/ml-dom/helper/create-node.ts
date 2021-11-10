@@ -1,4 +1,8 @@
+import type { Document } from '../';
+import type { MappedNode } from './mapped-nodes';
 import type { MLASTAbstructNode, MLASTNode } from '@markuplint/ml-ast';
+import type { RuleConfigValue } from '@markuplint/ml-config';
+
 import {
 	MLDOMComment,
 	MLDOMDoctype,
@@ -7,10 +11,7 @@ import {
 	MLDOMOmittedElement,
 	MLDOMText,
 } from '../tokens';
-import type { Document } from '../';
 import MLDOMPreprocessorSpecificBlock from '../tokens/preprocessor-specific-block';
-import type { MappedNode } from './mapped-nodes';
-import type { RuleConfigValue } from '@markuplint/ml-config';
 
 export function createNode<N extends MLASTAbstructNode, T extends RuleConfigValue, O = null>(
 	astNode: N,

@@ -1,4 +1,5 @@
 import { mlTest } from 'markuplint';
+
 import rule from './';
 
 test('warns if specified attribute value is invalid', async () => {

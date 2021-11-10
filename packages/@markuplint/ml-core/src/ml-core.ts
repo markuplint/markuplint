@@ -1,12 +1,13 @@
-import type { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
-import type { MLFabric, MLSchema } from './types';
-import type { RuleConfigValue, Violation } from '@markuplint/ml-config';
-import { Document } from './ml-dom';
-import type { LocaleSet } from '@markuplint/i18n';
-import MLParseError from './ml-error/ml-parse-error';
 import type { MLRule } from './ml-rule';
 import type Ruleset from './ruleset';
+import type { MLFabric, MLSchema } from './types';
+import type { LocaleSet } from '@markuplint/i18n';
+import type { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
+import type { RuleConfigValue, Violation } from '@markuplint/ml-config';
+
 import { log } from './debug';
+import { Document } from './ml-dom';
+import MLParseError from './ml-error/ml-parse-error';
 
 const resultLog = log.extend('result');
 

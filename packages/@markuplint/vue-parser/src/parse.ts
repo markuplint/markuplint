@@ -1,8 +1,11 @@
-import { MLASTElementCloseTag, MLASTNode, MLASTParentNode, MLASTTag, MLASTText, Parse } from '@markuplint/ml-ast';
+import type { ASTNode } from './vue-parser';
+import type { MLASTElementCloseTag, MLASTNode, MLASTParentNode, MLASTTag, MLASTText, Parse } from '@markuplint/ml-ast';
+
 import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
 import { getEndCol, getEndLine, isPotentialCustomElementName, uuid } from '@markuplint/parser-utils';
-import vueParse, { ASTNode } from './vue-parser';
+
 import { attr } from './attr';
+import vueParse from './vue-parser';
 
 export const parse: Parse = rawCode => {
 	const ast = vueParse(rawCode);

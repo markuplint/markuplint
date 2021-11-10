@@ -1,4 +1,4 @@
-import { ASTAttribute, ASTNode, ASTStyleNode, AstroCompileError, astroParse } from './astro-parser';
+import type { ASTAttribute, ASTNode, ASTStyleNode } from './astro-parser';
 import type {
 	MLASTElement,
 	MLASTElementCloseTag,
@@ -10,8 +10,11 @@ import type {
 	NamespaceURI,
 	Parse,
 } from '@markuplint/ml-ast';
+
 import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
 import { getEndCol, getEndLine, isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
+
+import { AstroCompileError, astroParse } from './astro-parser';
 import { attrTokenizer } from './attr-tokenizer';
 
 export const parse: Parse = rawCode => {

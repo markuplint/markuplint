@@ -1,7 +1,9 @@
-import { Ruleset } from '@markuplint/ml-core';
-import { decode } from './utils';
-import { diagnose } from './diagnose';
+import type { Ruleset } from '@markuplint/ml-core';
+
 import { editor } from 'monaco-editor';
+
+import { diagnose } from './diagnose';
+import { decode } from './utils';
 
 const defaultSample = `<!doctype html>
 <html

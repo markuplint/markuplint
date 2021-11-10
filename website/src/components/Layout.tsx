@@ -1,6 +1,7 @@
+import type { PropsWithChildren } from 'react';
+
 import Footer from './Footer';
 import Header from './Header';
-import { PropsWithChildren } from 'react';
 
 type Props = {};
 export default function Layout({ children }: PropsWithChildren<Props>) {

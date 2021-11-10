@@ -1,5 +1,6 @@
-import { Config, RuleConfigValue } from '@markuplint/ml-config';
-import { MLRule } from '@markuplint/ml-core';
+import type { Config, RuleConfigValue } from '@markuplint/ml-config';
+import type { MLRule } from '@markuplint/ml-core';
+
 import { lint } from './lint';
 
 /**

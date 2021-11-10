@@ -1,6 +1,8 @@
-import { cli } from './bootstrap';
-import execa from 'execa';
 import path from 'path';
+
+import execa from 'execa';
+
+import { cli } from './bootstrap';
 
 const entryFilePath = path.resolve(__dirname, '../../bin/markuplint');
 

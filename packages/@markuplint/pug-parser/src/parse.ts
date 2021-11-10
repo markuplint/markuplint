@@ -1,5 +1,5 @@
-import { ASTBlock, ASTNode, pugParse } from './pug-parser';
-import {
+import type { ASTBlock, ASTNode } from './pug-parser';
+import type {
 	MLASTDoctype,
 	MLASTNode,
 	MLASTParentNode,
@@ -7,9 +7,12 @@ import {
 	MLASTTag,
 	Parse,
 } from '@markuplint/ml-ast';
+
 import { getNamespace, parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
 import { ignoreFrontMatter, isPotentialCustomElementName, tokenizer, uuid, walk } from '@markuplint/parser-utils';
+
 import attrTokenizer from './attr-tokenizer';
+import { pugParse } from './pug-parser';
 
 export const parse: Parse = (rawCode, _, __, ___, isIgnoringFrontMatter) => {
 	let parseError: string | undefined;

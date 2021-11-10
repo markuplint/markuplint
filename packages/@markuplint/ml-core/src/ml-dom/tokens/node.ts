@@ -1,10 +1,11 @@
-import type { AnonymousNode, IMLDOMNode, NodeType } from '../types';
-import type { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
-import type { MLDOMElement, MLDOMOmittedElement } from './';
-import type { RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
 import type { Document } from '../';
-import MLDOMToken from './token';
 import type { RuleInfo } from '../../';
+import type { AnonymousNode, IMLDOMNode, NodeType } from '../types';
+import type { MLDOMElement, MLDOMOmittedElement } from './';
+import type { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
+import type { RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
+
+import MLDOMToken from './token';
 
 export default abstract class MLDOMNode<
 		T extends RuleConfigValue,

@@ -1,8 +1,10 @@
-import type { ARIRRoleAttribute, Attribute, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
-import type { Element, RuleConfigValue } from '@markuplint/ml-core';
 import type { Translator } from '@markuplint/i18n';
+import type { Element, RuleConfigValue } from '@markuplint/ml-core';
+import type { ARIRRoleAttribute, Attribute, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
+
+import { def, specs } from '@markuplint/html-spec';
+
 import { attrCheck } from './attr-check';
-import html from '@markuplint/html-spec';
 
 export function getAttrSpecs(nameWithNS: string, { specs, def }: MLMLSpec) {
 	const spec = specs.find(spec => spec.name === nameWithNS);
@@ -86,7 +88,7 @@ export function match(needle: string, pattern: string) {
 /**
  * PotentialCustomElementName
  *
- * @see https://html.spec.whatwg.org/multipage/custom-elements.html#prod-potentialcustomelementname
+ * @see https://spec.whatwg.org/multipage/custom-elements.html#prod-potentialcustomelementname
  *
  * > PotentialCustomElementName ::=
  * >   [a-z] (PCENChar)* '-' (PCENChar)*
@@ -120,7 +122,7 @@ export const rePCENChar = [
 ].join('|');
 
 export function htmlSpec(nameWithNS: string) {
-	const spec = html.specs.find(spec => spec.name === nameWithNS);
+	const spec = specs.find(spec => spec.name === nameWithNS);
 	return spec || null;
 }
 
@@ -148,8 +150,8 @@ export function isValidAttr(
 }
 
 export function ariaSpec() {
-	const roles = html.def['#roles'];
-	const ariaAttrs = html.def['#ariaAttrs'];
+	const roles = def['#roles'];
+	const ariaAttrs = def['#ariaAttrs'];
 	return {
 		roles,
 		ariaAttrs,
@@ -171,7 +173,7 @@ export function getRoleSpec(roleName: string) {
 }
 
 function getRoleByName(roleName: string) {
-	const roles = html.def['#roles'];
+	const roles = def['#roles'];
 	const role = roles.find(r => r.name === roleName);
 	return role;
 }
@@ -315,7 +317,7 @@ export function checkAriaValue(type: string, value: string, tokenEnum: string[])
 }
 
 export function checkAria(attrName: string, currentValue: string, role?: string) {
-	const ariaAttrs = html.def['#ariaAttrs'];
+	const ariaAttrs = def['#ariaAttrs'];
 	const aria = ariaAttrs.find(a => a.name === attrName);
 	if (!aria) {
 		return {

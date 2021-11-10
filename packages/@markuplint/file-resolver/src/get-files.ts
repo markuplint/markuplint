@@ -1,6 +1,8 @@
 import type { MLFile } from './ml-file';
-import { getFile } from './get-file';
+
 import glob from 'glob';
+
+import { getFile } from './get-file';
 
 /**
  * Get files

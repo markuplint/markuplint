@@ -1,10 +1,8 @@
-import {
-	RegexSelector,
-	RegexSelectorCombinator,
-	RegexSelectorWithoutCompination,
-	regexSelectorMatches,
-} from '@markuplint/ml-config';
 import type MLDOMAbstractElement from '../tokens/abstract-element';
+import type { RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCompination } from '@markuplint/ml-config';
+
+import { regexSelectorMatches } from '@markuplint/ml-config';
+
 import { createSelector } from './selector';
 
 type TargetElement = MLDOMAbstractElement<any, any>;

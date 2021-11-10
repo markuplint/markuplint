@@ -1,4 +1,5 @@
-import { LocaleSet } from '@markuplint/i18n';
+import type { LocaleSet } from '@markuplint/i18n';
+
 import osLocale from 'os-locale';
 
 let cachedLocale: string | null = null;

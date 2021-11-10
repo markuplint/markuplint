@@ -1,7 +1,9 @@
-import { getAttrSpecs, isValidAttr, match } from '../helpers';
 import type { AttributeType } from '@markuplint/ml-spec';
-import { attrCheck } from '../attr-check';
+
 import { createRule } from '@markuplint/ml-core';
+
+import { attrCheck } from '../attr-check';
+import { getAttrSpecs, isValidAttr, match } from '../helpers';
 
 type Option = {
 	attrs?: Record<string, Rule>;

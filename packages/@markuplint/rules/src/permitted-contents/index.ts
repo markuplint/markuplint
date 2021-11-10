@@ -1,7 +1,11 @@
-import { ContentModel, PermittedStructuresSchema } from '@markuplint/ml-spec';
-import { Element, createRule } from '@markuplint/ml-core';
-import ExpGenerator from './permitted-content.spec-to-regexp';
+import type { Element } from '@markuplint/ml-core';
+import type { ContentModel, PermittedStructuresSchema } from '@markuplint/ml-spec';
+
+import { createRule } from '@markuplint/ml-core';
+
 import { htmlSpec } from '../helpers';
+
+import ExpGenerator from './permitted-content.spec-to-regexp';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
 type TagRule = PermittedStructuresSchema;

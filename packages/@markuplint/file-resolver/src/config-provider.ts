@@ -1,9 +1,13 @@
-import { Config, mergeConfig } from '@markuplint/ml-config';
-import { ConfigSet, Nullable } from './types';
+import type { MLFile } from './ml-file';
+import type { ConfigSet, Nullable } from './types';
+import type { Config } from '@markuplint/ml-config';
+
+import path from 'path';
+
+import { mergeConfig } from '@markuplint/ml-config';
+
 import { load as loadConfig, search } from './cosmiconfig';
 import { nonNullableFilter, uuid } from './utils';
-import { MLFile } from './ml-file';
-import path from 'path';
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
 

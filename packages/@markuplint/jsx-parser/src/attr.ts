@@ -1,7 +1,10 @@
-import { JSXAttribute, getAttrName } from './jsx';
-import { searchIDLAttribute, sliceFragment, tokenizer, uuid } from '@markuplint/parser-utils';
-import { MLASTAttr } from '@markuplint/ml-ast';
+import type { JSXAttribute } from './jsx';
+import type { MLASTAttr } from '@markuplint/ml-ast';
+
 import { attrTokenizer } from '@markuplint/html-parser';
+import { searchIDLAttribute, sliceFragment, tokenizer, uuid } from '@markuplint/parser-utils';
+
+import { getAttrName } from './jsx';
 
 export function attr(attr: JSXAttribute, rawHTML: string): MLASTAttr {
 	const beforeHtml = rawHTML.substr(0, attr.range[0]);

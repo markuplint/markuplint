@@ -1,4 +1,5 @@
 import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
+
 import { isDocumentFragment, parse } from './';
 
 describe('isDocumentFragment', () => {

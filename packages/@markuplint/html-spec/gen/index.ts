@@ -1,13 +1,15 @@
-import { MLMLSpec } from '@markuplint/ml-spec';
+import type { MLMLSpec } from '@markuplint/ml-spec';
+
 import fs from 'fs';
-import { getAria } from './aria';
-import getContentModels from './content-models';
-import { getGlobalAttrs } from './global-attrs';
-import { getHTMLElements } from './html-elements';
-import { getReferences } from './fetch';
-import { getSVG } from './svg';
 import path from 'path';
 import util from 'util';
+
+import { getAria } from './aria';
+import getContentModels from './content-models';
+import { getReferences } from './fetch';
+import { getGlobalAttrs } from './global-attrs';
+import { getHTMLElements } from './html-elements';
+import { getSVG } from './svg';
 
 const writeFile = util.promisify(fs.writeFile);
 

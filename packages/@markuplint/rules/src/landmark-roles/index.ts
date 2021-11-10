@@ -1,4 +1,6 @@
-import { Element, createRule } from '@markuplint/ml-core';
+import type { Element } from '@markuplint/ml-core';
+
+import { createRule } from '@markuplint/ml-core';
 
 type Options = {
 	ignoreRoles: Roles[];

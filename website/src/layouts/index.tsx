@@ -1,7 +1,9 @@
-import BasicMeta from '../components/meta/BasicMeta';
-import Layout from '../components/Layout';
+import type { PropsWithChildren } from 'react';
+
 import Link from 'next/link';
-import { PropsWithChildren } from 'react';
+
+import Layout from '../components/Layout';
+import BasicMeta from '../components/meta/BasicMeta';
 
 type Props = {
 	title: string;

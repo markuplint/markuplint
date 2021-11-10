@@ -1,5 +1,6 @@
-import { attrMatches, getAttrSpecs } from '../helpers';
 import { createRule } from '@markuplint/ml-core';
+
+import { attrMatches, getAttrSpecs } from '../helpers';
 
 type RequiredAttributes = string | string[];
 

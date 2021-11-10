@@ -1,5 +1,5 @@
-import type { RuleConfigValue, Severity } from '@markuplint/ml-config';
 import type { MLRuleContext } from './ml-rule-context';
+import type { RuleConfigValue, Severity } from '@markuplint/ml-config';
 
 export interface MLRuleOptions<T extends RuleConfigValue, O = null> {
 	name: string;

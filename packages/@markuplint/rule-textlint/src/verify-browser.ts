@@ -1,6 +1,8 @@
-import { Option, lintText } from './helper';
-import { MLRuleOptions } from '@markuplint/ml-core';
-import { TextlintResult } from '@textlint/kernel';
+import type { Option } from './helper';
+import type { MLRuleOptions } from '@markuplint/ml-core';
+import type { TextlintResult } from '@textlint/kernel';
+
+import { lintText } from './helper';
 
 export const defaultOptions = {};
 

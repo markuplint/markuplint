@@ -1,5 +1,7 @@
-import { MLASTElement } from '@markuplint/ml-ast';
+import type { MLASTElement } from '@markuplint/ml-ast';
+
 import { nodeListToDebugMaps } from '../../parser-utils/lib';
+
 import { parse } from './parse';
 
 it('Basic', () => {

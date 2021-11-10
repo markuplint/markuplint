@@ -1,3 +1,5 @@
+import { createRule } from '@markuplint/ml-core';
+
 import {
 	ariaSpec,
 	checkAria,
@@ -9,7 +11,6 @@ import {
 	htmlSpec,
 	isValidAttr,
 } from '../helpers';
-import { createRule } from '@markuplint/ml-core';
 
 type Options = {
 	checkingValue?: boolean;

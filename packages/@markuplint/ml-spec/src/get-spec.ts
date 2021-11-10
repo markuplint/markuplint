@@ -1,4 +1,5 @@
 import type { ElementSpec, ExtendedSpec, MLMLSpec } from './types';
+
 import { mergeArray } from './utils';
 
 /**
@@ -22,7 +23,7 @@ export function getSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 			if (extendedSpec.def['#globalAttrs']?.['#extends']) {
 				result.def['#globalAttrs']['#HTMLGlobalAttrs'] = [
 					...(result.def['#globalAttrs']?.['#HTMLGlobalAttrs'] || []),
-					...extendedSpec.def['#globalAttrs']?.['#extends'],
+					...(extendedSpec.def['#globalAttrs']?.['#extends'] || []),
 				];
 			}
 			if (extendedSpec.def['#roles']) {

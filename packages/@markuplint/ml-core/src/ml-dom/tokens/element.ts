@@ -1,15 +1,17 @@
-import type { MLASTElement, MLToken } from '@markuplint/ml-ast';
-import type { MLDOMElementCloseTag, MLDOMText } from './';
-import { createNode, createSelector } from '../helper';
 import type { Document } from '../';
 import type { IMLDOMElement } from '../types';
+import type { MLDOMElementCloseTag, MLDOMText } from './';
+import type { MLASTElement, MLToken } from '@markuplint/ml-ast';
+import type { RuleConfigValue } from '@markuplint/ml-config';
+
+import { stringSplice } from '../../utils/string-splice';
+import { createNode, createSelector } from '../helper';
+import { syncWalk } from '../helper/walkers';
+
 import MLDOMAbstractElement from './abstract-element';
 import MLDOMAttribute from './attribute';
 import MLDOMPreprocessorSpecificAttribute from './preprocessor-specific-attribute';
 import MLDOMToken from './token';
-import type { RuleConfigValue } from '@markuplint/ml-config';
-import { stringSplice } from '../../utils/string-splice';
-import { syncWalk } from '../helper/walkers';
 
 export default class MLDOMElement<T extends RuleConfigValue, O = null>
 	extends MLDOMAbstractElement<T, O, MLASTElement>

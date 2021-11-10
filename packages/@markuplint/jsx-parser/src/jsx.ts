@@ -1,4 +1,3 @@
-import { AST_NODE_TYPES, parse } from '@typescript-eslint/typescript-estree';
 import type {
 	JSXAttribute,
 	JSXChild,
@@ -10,6 +9,8 @@ import type {
 	JSXTagNameExpression,
 	Node,
 } from '@typescript-eslint/types/dist/ast-spec';
+
+import { AST_NODE_TYPES, parse } from '@typescript-eslint/typescript-estree';
 
 export type { JSXAttribute } from '@typescript-eslint/types/dist/ast-spec';
 

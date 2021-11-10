@@ -1,6 +1,7 @@
-import { tokenizer, uuid } from '@markuplint/parser-utils';
-import { MLASTHTMLAttr } from '@markuplint/ml-ast';
+import type { MLASTHTMLAttr } from '@markuplint/ml-ast';
+
 import { attrTokenizer } from '@markuplint/html-parser';
+import { tokenizer, uuid } from '@markuplint/parser-utils';
 
 // eslint-disable-next-line no-control-regex
 const reNameOnly = /^[^\x00-\x1f\x7f-\x9f {>/=]+/;
