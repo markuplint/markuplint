@@ -70,7 +70,6 @@ test('has attribute', () => {
 					startOffset: 5,
 					endOffset: 6,
 				},
-				isInvalid: false,
 			},
 		],
 	});
@@ -106,7 +105,6 @@ test('2 attributes', () => {
 					startOffset: 5,
 					endOffset: 6,
 				},
-				isInvalid: false,
 			},
 			{
 				raw: ' c',
@@ -134,7 +132,6 @@ test('2 attributes', () => {
 					startOffset: 7,
 					endOffset: 8,
 				},
-				isInvalid: false,
 			},
 		],
 	});
@@ -182,7 +179,6 @@ a>`,
 					startOffset: 5,
 					endOffset: 6,
 				},
-				isInvalid: false,
 			},
 		],
 	});
@@ -228,7 +224,6 @@ test('has multiple line breaks', () => {
 					startOffset: 10,
 					endOffset: 11,
 				},
-				isInvalid: false,
 			},
 		],
 	});
@@ -279,7 +274,6 @@ test('standard', () => {
 				startLine: 1,
 				startCol: 5,
 				raw: '\n     a',
-				isInvalid: false,
 			},
 			{
 				name: {
@@ -288,7 +282,6 @@ test('standard', () => {
 				startLine: 2,
 				startCol: 7,
 				raw: '\n      b',
-				isInvalid: false,
 			},
 			{
 				name: {
@@ -297,7 +290,6 @@ test('standard', () => {
 				startLine: 3,
 				startCol: 8,
 				raw: ' c',
-				isInvalid: false,
 			},
 			{
 				name: {
@@ -306,7 +298,6 @@ test('standard', () => {
 				startLine: 3,
 				startCol: 10,
 				raw: '\n      d',
-				isInvalid: false,
 			},
 		],
 	});
@@ -328,7 +319,6 @@ test('standard', () => {
 				endQuote: { raw: '' },
 				startLine: 1,
 				startCol: 5,
-				isInvalid: false,
 			},
 		],
 	});
@@ -430,7 +420,6 @@ c"
 					startOffset: 16,
 					endOffset: 17,
 				},
-				isInvalid: false,
 			},
 		],
 	});

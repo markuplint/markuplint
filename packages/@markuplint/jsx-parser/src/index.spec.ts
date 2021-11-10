@@ -294,7 +294,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:26]>[1:27](25,26)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 				'  potentialName: class',
 			],
 			[
@@ -309,7 +308,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:40]>[1:41](39,40)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 				'  potentialName: tabindex',
 			],
 			[
@@ -324,7 +322,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:54]>[1:55](53,54)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: true',
 				'  candidate: tabIndex',
 			],
 			[
@@ -339,7 +336,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:75]>[1:76](74,75)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 			],
 			[
 				'[1:76]>[1:95](75,94)theProp: ␣theProp={variable}',
@@ -353,7 +349,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:95]>[1:95](94,94)eQ: ',
 				'  isDirective: false',
 				'  isDynamicValue: true',
-				'  isInvalid: false',
 			],
 		]);
 	});
@@ -375,7 +370,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:10]>[1:11](9,10)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 				'  potentialName: href',
 			],
 		]);
@@ -398,7 +392,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:11]>[1:11](10,10)eQ: ',
 				'  isDirective: false',
 				'  isDynamicValue: true',
-				'  isInvalid: false',
 				'  potentialName: href',
 			],
 		]);

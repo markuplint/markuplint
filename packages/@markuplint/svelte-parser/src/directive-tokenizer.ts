@@ -108,7 +108,6 @@ export default function directiveTokenizer(
 		value,
 		endQuote,
 		isDirective: true,
-		isInvalid: false,
 		isDuplicatable: false,
 	};
 

@@ -77,7 +77,6 @@ export function attrTokenizer(attr: ASTAttribute, rawHtml: string, codeOffset: n
 		startQuote,
 		value,
 		endQuote,
-		isInvalid: false,
 		isDuplicatable: false,
 		isDynamicValue,
 	};

@@ -1063,7 +1063,6 @@ describe('parser', () => {
 				'  [1:10]>[1:11](9,10)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 			],
 		]);
 	});

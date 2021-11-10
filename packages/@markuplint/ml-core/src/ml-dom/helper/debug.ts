@@ -54,7 +54,6 @@ function attributesToDebugMaps(attributes: (MLDOMAttribute | MLDOMPreprocessorSp
 			r.push(`  ${tokenDebug(n.endQuote, 'eQ')}`);
 			r.push(`  isDirective: ${!!n.isDirective}`);
 			r.push(`  isDynamicValue: ${!!n.isDynamicValue}`);
-			r.push(`  isInvalid: ${!!n.isInvalid}`);
 		}
 		if (n.potentialName != null) {
 			r.push(`  potentialName: ${visibleWhiteSpace(n.potentialName)}`);

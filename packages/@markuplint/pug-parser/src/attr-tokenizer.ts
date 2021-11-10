@@ -62,6 +62,10 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 		!!(valueChars && quoteChars === null && /["'=<>`]/.test(valueChars)) ||
 		!!(equalChars && quoteChars === null && valueChars === null);
 
+	if (invalid) {
+		throw new Error('Parse error: It has invalid attribute');
+	}
+
 	let offset = attr.offset;
 	let line = attr.line;
 	let col = attr.column;
@@ -131,7 +135,6 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 		startQuote,
 		value,
 		endQuote,
-		isInvalid: invalid,
 		isDynamicValue,
 		isDuplicatable,
 	};

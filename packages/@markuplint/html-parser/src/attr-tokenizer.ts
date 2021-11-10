@@ -81,7 +81,6 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 		startQuote,
 		value,
 		endQuote,
-		isInvalid: false,
 		isDuplicatable: false,
 	};
 }

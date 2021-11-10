@@ -10,7 +10,6 @@ describe('attrTokenizer', () => {
 			endCol: 5,
 			startOffset: 0,
 			endOffset: 4,
-			isInvalid: false,
 			spacesBeforeName: {
 				raw: ' ',
 				startLine: 1,
@@ -96,7 +95,6 @@ test('normal', async () => {
 		startOffset: 0,
 		endOffset: 10,
 		raw: ' abc="123"',
-		isInvalid: false,
 		spacesBeforeName: {
 			raw: ' ',
 			startLine: 1,
@@ -181,7 +179,6 @@ test('after line break', async () => {
 		startOffset: 0,
 		endOffset: 11,
 		raw: '\n abc="123"',
-		isInvalid: false,
 		spacesBeforeName: {
 			raw: '\n ',
 			startLine: 1,
@@ -280,7 +277,6 @@ test('single quote', () => {
 		startOffset: 0,
 		endOffset: 7,
 		raw: "  q='a'",
-		isInvalid: false,
 		spacesBeforeName: {
 			raw: '  ',
 			startLine: 1,
@@ -329,7 +325,6 @@ test('no quote', () => {
 		startOffset: 0,
 		endOffset: 3,
 		raw: 'q=a',
-		isInvalid: false,
 		name: {
 			raw: 'q',
 			startLine: 1,
@@ -369,7 +364,6 @@ test('empty', () => {
 		startOffset: 0,
 		endOffset: 1,
 		raw: 'q',
-		isInvalid: false,
 		name: {
 			raw: 'q',
 			startLine: 1,
@@ -393,7 +387,6 @@ test('no value', () => {
 		startOffset: 0,
 		endOffset: 2,
 		raw: 'q=',
-		isInvalid: false,
 		name: {
 			raw: 'q',
 			startLine: 1,
@@ -433,7 +426,6 @@ test('spaces', () => {
 		startOffset: 0,
 		endOffset: 13,
 		raw: 'abc  =  "efg"',
-		isInvalid: false,
 		name: {
 			raw: 'abc',
 			startLine: 1,
@@ -489,7 +481,6 @@ test('line break', () => {
 		startOffset: 0,
 		endOffset: 29,
 		raw: '\n abc\n\n   =\n\n  "e\n\n     fg\n\n"',
-		isInvalid: false,
 		name: {
 			raw: 'abc',
 			startLine: 2,
