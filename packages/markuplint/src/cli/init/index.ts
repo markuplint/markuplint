@@ -5,7 +5,8 @@ import path from 'path';
 import util from 'util';
 
 import { mergeConfig } from '@markuplint/ml-config';
-import { prompt } from 'enquirer';
+
+import { confirm, confirmSequence, multiSelect } from '../prompt';
 
 import { installModule } from './install-module';
 
@@ -143,52 +144,31 @@ export async function initialize() {
 	write('markuplit initialization');
 	write.break();
 
-	const res = await prompt<{
-		langs: string[];
-		autoInstall: boolean;
-		customize: boolean;
-	}>([
-		{
-			message: 'Which do you use template engines?',
-			name: 'langs',
-			type: 'multiselect',
-			choices: [
-				{ name: 'React (JSX)', value: 'jsx' },
-				{ name: 'Vue', value: 'vue' },
-				{ name: 'Svelte', value: 'svelte' },
-				{ name: 'Pug', value: 'pug' },
-				{ name: 'PHP', value: 'php' },
-				{ name: 'eRuby', value: 'erb' },
-				{ name: 'EJS', value: 'ejs' },
-				{ name: 'Mustache/Handlebars', value: 'mustache' },
-				{ name: 'Nunjucks', value: 'nunjucks' },
-				{ name: 'liquid (Shopify)', value: 'liquid' },
-			],
-			result(names) {
-				// @ts-ignore
-				const map = this.map(names);
-				// @ts-ignore
-				const values = names.map(name => map[name]);
-				return values;
-			},
-		},
-		{
-			message: 'May I install them automatically?',
-			name: 'autoInstall',
-			type: 'confirm',
-		},
-		{
-			message: 'Do you customize rules?',
-			name: 'customize',
-			type: 'confirm',
-		},
-	]);
+	const langs = await multiSelect({
+		message: 'Which do you use template engines?',
+		choices: [
+			{ name: 'React (JSX)', value: 'jsx' },
+			{ name: 'Vue', value: 'vue' },
+			{ name: 'Svelte', value: 'svelte' },
+			{ name: 'Pug', value: 'pug' },
+			{ name: 'PHP', value: 'php' },
+			{ name: 'eRuby', value: 'erb' },
+			{ name: 'EJS', value: 'ejs' },
+			{ name: 'Mustache/Handlebars', value: 'mustache' },
+			{ name: 'Nunjucks', value: 'nunjucks' },
+			{ name: 'liquid (Shopify)', value: 'liquid' },
+		],
+	});
 
-	if (res.langs && res.langs.length) {
+	const autoInstall = await confirm('May I install them automatically?');
+
+	const customize = await confirm('Do you customize rules?');
+
+	if (langs && langs.length) {
 		config.parser = {};
 	}
 
-	for (const lang of res.langs) {
+	for (const lang of langs) {
 		if (!config.parser) {
 			continue;
 		}
@@ -215,17 +195,16 @@ export async function initialize() {
 		}
 	}
 
-	if (res.customize) {
+	if (customize) {
 		const ruleNames = Object.keys(defaultRules);
 		const categories = Object.keys(ruleCategories) as Category[];
 
-		const res = await prompt<Record<string, boolean>>(
+		const res = await confirmSequence(
 			categories.map(catName => {
 				const cat = ruleCategories[catName];
 				return {
 					message: cat.message,
 					name: catName,
-					type: 'confirm',
 				};
 			}),
 		);
@@ -255,15 +234,15 @@ export async function initialize() {
 	await writeFile(filePath, JSON.stringify(config, null, 2), { encoding: 'utf-8' });
 	write(`✨Created: ${filePath}`);
 
-	if (res.autoInstall) {
+	if (autoInstall) {
 		write('Install automatically');
 
-		const modules = ['markuplint', ...res.langs.map(lang => `@markuplint/${lang}-parser`)];
+		const modules = ['markuplint', ...langs.map(lang => `@markuplint/${lang}-parser`)];
 
-		if (res.langs.includes('vue')) {
+		if (langs.includes('vue')) {
 			modules.push('@markuplint/vue-spec');
 		}
-		if (res.langs.includes('jsx')) {
+		if (langs.includes('jsx')) {
 			modules.push('@markuplint/react-spec');
 		}
 
