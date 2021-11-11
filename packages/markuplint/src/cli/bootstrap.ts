@@ -14,6 +14,7 @@ Options
 	--verbose                     Output with detailed information.
 
 	--init                        Initialize settings interactively.
+	--create-rule                 Add the scaffold of a custom rule.
 
 	--help,         -h            Show help.
 	--version,      -v            Show version.
@@ -26,6 +27,10 @@ Examples
 export const cli = meow(help, {
 	flags: {
 		init: {
+			type: 'boolean',
+			default: false,
+		},
+		createRule: {
 			type: 'boolean',
 			default: false,
 		},

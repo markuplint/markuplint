@@ -7,6 +7,9 @@
 	},
 	"references": [
 		{
+			"path": "../@markuplint/create-rule-helper"
+		},
+		{
 			"path": "../@markuplint/file-resolver"
 		},
 		{

@@ -1,0 +1,19 @@
+{
+	"extends": "../../../tsconfig.json",
+	"compilerOptions": {
+		"composite": true,
+		"outDir": "./lib",
+		"rootDir": "./src",
+		"paths": {
+			"@markuplint/*": ["../../../node_modules"],
+			"*": ["../../../node_modules"]
+		}
+	},
+	"references": [
+		{
+			"path": "../ml-core"
+		}
+	],
+	"include": ["./src/**/*"],
+	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
+}
