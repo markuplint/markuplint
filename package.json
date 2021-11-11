@@ -1,4 +1,5 @@
 {
+	"name": "markuplint-packages",
 	"private": true,
 	"scripts": {
 		"bootstrap": "lerna bootstrap",
