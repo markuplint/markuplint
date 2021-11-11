@@ -25,6 +25,7 @@
 		"execa": "^5.1.1"
 	},
 	"dependencies": {
+		"@markuplint/create-rule-helper": "^0.1.0",
 		"@markuplint/file-resolver": "^1.5.0",
 		"@markuplint/html-parser": "^1.7.3",
 		"@markuplint/html-spec": "^1.8.2",

@@ -4,6 +4,7 @@ import { verbosely } from '../debug';
 
 import { cli } from './bootstrap';
 import { command } from './command';
+import { createRule } from './create-rule';
 import { initialize } from './init';
 
 (async () => {
@@ -21,6 +22,14 @@ import { initialize } from './init';
 
 	if (cli.flags.init) {
 		await initialize().catch(err => {
+			process.stderr.write(err + '\n');
+			process.exit(1);
+		});
+		return;
+	}
+
+	if (cli.flags.createRule) {
+		await createRule().catch(err => {
 			process.stderr.write(err + '\n');
 			process.exit(1);
 		});
