@@ -22,10 +22,10 @@ The priority applied names are:
 
 ```json
 {
+	"extends": [],
 	"parser": {},
 	"parserOptions": {},
 	"specs": [],
-	"extends": [],
 	"excludeFiles": [],
 	"rules": {},
 	"nodeRules": [],
@@ -33,14 +33,24 @@ The priority applied names are:
 }
 ```
 
+-   [`extends`](#extends)
 -   [`parser`](#parser)
 -   [`parserOptions`](#parserOptions)
 -   [`specs`](#specs)
--   [`extends`](#extends)
 -   [`excludeFiles`](#excludeFiles)
 -   [`rules`](#rules)
 -   [`nodeRules`](#nodeRules)
 -   [`childNodeRules`](#childNodeRules)
+
+### `extends`
+
+If set another configuration file path then the current setting is merged with it.
+
+```json
+{
+	"extends": ["../../.markuplintrc"]
+}
+```
 
 ### `parser`
 
@@ -104,16 +114,6 @@ Or, Add the spec module path to this array. But this is the format for version `
 {
 	// Depraceted
 	"specs": ["@markuplint/vue-spec", "./path/to/custom-specs/any-lang"]
-}
-```
-
-### `extends`
-
-If set another configuration file path then the current setting is merged with it.
-
-```json
-{
-	"extends": ["../../.markuplintrc"]
 }
 ```
 
