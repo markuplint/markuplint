@@ -5,8 +5,7 @@ import path from 'path';
 import { toRegxp } from '@markuplint/ml-config';
 
 type SpecConfig = Record<string, string> | string[] | string;
-
-const specs = new Map<string, MLMLSpec | ExtendedSpec>();
+const caches = new Map<string, MLMLSpec | ExtendedSpec>();
 
 export async function resolveSpecs(filePath: string, specConfig?: SpecConfig) {
 	const htmlSpec = await importSpecs<MLMLSpec>('@markuplint/html-spec');
@@ -40,12 +39,14 @@ export async function resolveSpecs(filePath: string, specConfig?: SpecConfig) {
 }
 
 async function importSpecs<T>(specModName: string) {
-	// @ts-ignore
-	const entity: T = specs.get(specModName);
-	if (entity) {
-		return entity;
+	{
+		// @ts-ignore
+		const spec: T = caches.get(specModName);
+		if (spec) {
+			return spec;
+		}
 	}
 	const spec: T = (await import(specModName)).default;
-	specs.set(specModName, spec);
+	caches.set(specModName, spec);
 	return spec;
 }
