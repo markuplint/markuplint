@@ -42,9 +42,19 @@ The priority applied names are:
 -   [`nodeRules`](#nodeRules)
 -   [`childNodeRules`](#childNodeRules)
 
+### Specification about paths
+
+[`extends`](#extends), [`parser`](#parser), [`specs`](#specs), and [`excludeFiles`](#excludeFiles) can set paths.
+In `extends`, `parser,` and `specs` three, it can set a package name instead of a path.
+
+First, it tries to import it as a package.
+If it fails, such as the package doesn't exist, or the strings are not a package, **it resolves strings as just a path**.
+These paths are resolved to absolute paths internally.
+A relative file becomes an absolute path on the base of the config file path being had it.
+
 ### `extends`
 
-If set another configuration file path then the current setting is merged with it.
+If set other config file [paths](#Specification%20about%20paths), then the current setting is merged with it.
 
 ```json
 {
@@ -54,7 +64,7 @@ If set another configuration file path then the current setting is merged with i
 
 ### `parser`
 
-Set a regular expression that can identify the target file name to the key, and the parser module path to the value.
+Set a regex to the key, and the parser file [path](#Specification%20about%20paths) or a package name to the value. The regex should be set it matches the target lintee file (ex., the extension part).
 
 ```json
 {
@@ -97,7 +107,7 @@ prop: value
 
 ### `specs`
 
-Set a regular expression that can identify the target file name to the key, and the spec module path to the value.
+Set a regex to the key, and the spec file [path](#Specification%20about%20paths) or a package name to the value. The regex should be set it matches the target lintee file (ex. the extension part).
 
 ```json
 {
