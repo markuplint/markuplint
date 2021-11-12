@@ -62,6 +62,14 @@ If set other config file [paths](#Specification%20about%20paths), then the curre
 }
 ```
 
+#### Interface
+
+```ts
+interface Config {
+	extends?: string[];
+}
+```
+
 ### `parser`
 
 Set a regex to the key, and the parser file [path](#Specification%20about%20paths) or a package name to the value. The regex should be set it matches the target lintee file (ex., the extension part).
@@ -75,6 +83,16 @@ Set a regex to the key, and the parser file [path](#Specification%20about%20path
 		".svelte$": "@markuplint/svelte-parser",
 		".any$": "./path/to/custom-parser/any-lang"
 	}
+}
+```
+
+#### Interface
+
+```ts
+interface Config {
+	parser?: {
+		[regex: string]: string;
+	};
 }
 ```
 
@@ -105,6 +123,16 @@ prop: value
 </html>
 ```
 
+#### Interface
+
+```ts
+interface Config {
+	parserOptions?: {
+		ignoreFrontMatter?: boolean;
+	};
+}
+```
+
 ### `specs`
 
 Set a regex to the key, and the spec file [path](#Specification%20about%20paths) or a package name to the value. The regex should be set it matches the target lintee file (ex. the extension part).
@@ -127,6 +155,25 @@ Or, Add the spec module path to this array. But this is the format for version `
 }
 ```
 
+#### Interface
+
+```ts
+interface Config {
+	specs?:
+		| {
+				[regex: string]: string;
+		  }
+		/**
+		 * @Depraceted
+		 */
+		| string[]
+		/**
+		 * @Depraceted
+		 */
+		| string;
+}
+```
+
 ### `excludeFiles`
 
 It can exclude files if you need them.
@@ -136,6 +183,14 @@ Paths can be glob format.
 ```json
 {
 	"excludeFiles": ["./ignore.html", "./ignore/**/*.html"]
+}
+```
+
+#### Interface
+
+```ts
+interface Config {
+	excludeFiles?: string[];
 }
 ```
 
@@ -192,6 +247,26 @@ For example, setting of the rule of `invalid-attr`:
 }
 ```
 
+#### Interface
+
+```ts
+interface Config {
+	rules?: {
+		[ruleName: string]: Rule<T, O>;
+	};
+}
+
+type Rule<T, O> =
+	| T
+	| false
+	| {
+			severity?: 'error' | 'warning' | 'info';
+			value?: T;
+			option?: O;
+			reason?: string;
+	  };
+```
+
 ### `nodeRules`
 
 If you want only any specific element to apply some rule, you can set by this property.
@@ -208,6 +283,19 @@ You can set the `rules` property of this property like the [`rules`](#rules) pro
 			}
 		}
 	]
+}
+```
+
+#### Interface
+
+```ts
+interface Config {
+	nodeRules?: {
+		tagName: string;
+		rules: {
+			[ruleName: string]: Rule<T, O>;
+		};
+	}[];
 }
 ```
 
@@ -450,3 +538,35 @@ The above is the same as CSS selector `el1 el2 > el3 + el4 ~ el5`.
 
 -   [Check designed CSS class name](/configuration/regex-selector-sample#Case%201:%20Check%20designed%20CSS%20class%20name)
 -   [Check filenames of images](/configuration/regex-selector-sample#Case%202:%20Check%20filenames%20of%20images)
+
+#### Interface
+
+```ts
+interface Config {
+	childNodeRules?: (
+		| {
+				selector: string;
+				inheritance?: boolean;
+				rules: {
+					[ruleName: string]: Rule<T, O>;
+				};
+		  }
+		| {
+				regexSelector: RegexSelector;
+				inheritance?: boolean;
+				rules: {
+					[ruleName: string]: Rule<T, O>;
+				};
+		  }
+	)[];
+}
+
+type RegexSelector = {
+	nodeName?: string;
+	attrName?: string;
+	attrValue?: string;
+	combination?: RegexSelector & {
+		combinator: ' ' | '>' | '+' | '~' | ':has(+)' | ':has(~)';
+	};
+};
+```
