@@ -1,4 +1,4 @@
-import type { Target } from './types';
+import type { Target } from '../types';
 
 import { promises as fs } from 'fs';
 import path from 'path';

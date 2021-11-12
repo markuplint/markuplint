@@ -1,7 +1,7 @@
 import path from 'path';
 
 import { configProvider } from './config-provider';
-import { getFile } from './get-file';
+import { getFile } from './ml-file';
 
 it('001 + 002', async () => {
 	const key = path.resolve(__dirname, '..', 'test', 'fixtures', '002', '.markuplintrc.json');
