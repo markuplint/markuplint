@@ -54,7 +54,7 @@ A relative file becomes an absolute path on the base of the config file path bei
 
 ### `extends`
 
-If set other config file [paths](#Specification%20about%20paths), then the current setting is merged with it.
+If you set other config file [paths](#Specification%20about%20paths), it merges the current setting with them.
 
 ```json
 {
@@ -77,11 +77,11 @@ Set a regex to the key, and the parser file [path](#Specification%20about%20path
 ```json
 {
 	"parser": {
-		".pug$": "@markuplint/pug-parser",
-		".[jt]sx?$": "@markuplint/jsx-parser",
-		".vue$": "@markuplint/vue-parser",
-		".svelte$": "@markuplint/svelte-parser",
-		".any$": "./path/to/custom-parser/any-lang"
+		"\\.pug$": "@markuplint/pug-parser",
+		"\\.[jt]sx?$": "@markuplint/jsx-parser",
+		"\\.vue$": "@markuplint/vue-parser",
+		"\\.svelte$": "@markuplint/svelte-parser",
+		"\\.ext$": "./path/to/custom-parser/any-lang.js"
 	}
 }
 ```
@@ -140,8 +140,8 @@ Set a regex to the key, and the spec file [path](#Specification%20about%20paths)
 ```json
 {
 	"specs": {
-		".vue$": "@markuplint/vue-spec",
-		".any$": "./path/to/custom-specs/any-lang"
+		"\\.vue$": "@markuplint/vue-spec",
+		"\\.ext$": "./path/to/custom-specs/any-lang.js"
 	}
 }
 ```
