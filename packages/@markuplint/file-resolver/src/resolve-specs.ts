@@ -7,6 +7,36 @@ import { toRegxp } from '@markuplint/ml-config';
 
 const caches = new Map<string, MLMLSpec | ExtendedSpec>();
 
+/**
+ * Loading and importing form specs.
+ *
+ * Import a package or load a local file if regexp matches `filePath`.
+ * ```jsonc
+ * {
+ *   "specs": {
+ *     "\\.html$": "aaa-aaa",
+ *     "\\.ext$": "./bbb-bbb.json"
+ *   },
+ * }
+ * ```
+ *
+ * The below ways are deprecated.
+ *
+ * ```jsonc
+ * {
+ *   "specs": "xxx-xxx",
+ * }
+ * ```
+ * ```jsonc
+ * {
+ *   "specs": ["xxx-xxx", "./yyy-yyy.json"],
+ * }
+ * ```
+ *
+ * @param filePath The lintee file path
+ * @param specConfig The `spec` property part of the config
+ * @returns
+ */
 export async function resolveSpecs(filePath: string, specConfig?: SpecConfig | SpecConfig_v1) {
 	const htmlSpec = await importSpecs<MLMLSpec>('@markuplint/html-spec');
 	const extendedSpecs: ExtendedSpec[] = [];
