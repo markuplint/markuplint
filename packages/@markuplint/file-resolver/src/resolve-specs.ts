@@ -1,13 +1,13 @@
+import type { SpecConfig, SpecConfig_v1 } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import path from 'path';
 
 import { toRegxp } from '@markuplint/ml-config';
 
-type SpecConfig = Record<string, string> | string[] | string;
 const caches = new Map<string, MLMLSpec | ExtendedSpec>();
 
-export async function resolveSpecs(filePath: string, specConfig?: SpecConfig) {
+export async function resolveSpecs(filePath: string, specConfig?: SpecConfig | SpecConfig_v1) {
 	const htmlSpec = await importSpecs<MLMLSpec>('@markuplint/html-spec');
 	const extendedSpecs: ExtendedSpec[] = [];
 
