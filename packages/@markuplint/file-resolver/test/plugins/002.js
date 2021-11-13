@@ -2,15 +2,8 @@
 const { createPlugin } = require('@markuplint/ml-core');
 
 module.exports = createPlugin({
-	name: 'foo',
-	create(settings) {
-		return {
-			rules: {
-				bar: {
-					name: 'bar2',
-					verify: async () => [],
-				},
-			},
-		};
+	// No name
+	create() {
+		return {};
 	},
 });
