@@ -1,15 +1,20 @@
 export interface Config {
 	$schema?: string;
 	extends?: string | string[];
+	plugins?: (PluginConfig | string)[];
 	parser?: ParserConfig;
 	parserOptions?: ParserOptions;
 	specs?: SpecConfig | SpecConfig_v1;
-	importRules?: string[];
 	excludeFiles?: string[];
 	rules?: Rules;
 	nodeRules?: NodeRule[];
 	childNodeRules?: ChildNodeRule[];
 }
+
+export type PluginConfig = {
+	name: string;
+	settings: Record<string, any>;
+};
 
 export interface ParserConfig {
 	[extensionPattern: string]: string /* module name or path */;
@@ -28,10 +33,11 @@ export type SpecConfig = {
  */
 export type SpecConfig_v1 = string | string[];
 
-export type Rule = RuleConfig<RuleConfigValue, unknown> | RuleConfigValue;
+export type Rule<T extends RuleConfigValue, O = void> = RuleConfig<T, O> | T | boolean;
 
+export type AnyRule = Rule<RuleConfigValue, unknown>;
 export interface Rules {
-	[ruleName: string]: Rule;
+	[ruleName: string]: AnyRule;
 }
 
 export type RuleConfig<T extends RuleConfigValue, O = void> = {

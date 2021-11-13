@@ -3,7 +3,6 @@ import { createRule } from '@markuplint/ml-core';
 import { getSpecByTagName } from '@markuplint/ml-spec';
 
 export default createRule({
-	name: 'deprecated-element',
 	defaultValue: null,
 	defaultOptions: null,
 	async verify({ document, report, t }) {

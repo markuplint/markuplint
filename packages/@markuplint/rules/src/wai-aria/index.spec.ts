@@ -1,23 +1,13 @@
-import { mlTest } from 'markuplint';
+import { mlRuleTest } from 'markuplint';
 
 import rule from './';
 
 describe("Use the role that doesn't exist in the spec", () => {
 	test('[role=hoge]', async () => {
-		const { violations } = await mlTest(
-			'<div role="hoge"></div>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<div role="hoge"></div>', { rule: true });
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 6,
@@ -31,20 +21,10 @@ describe("Use the role that doesn't exist in the spec", () => {
 
 describe('Use the abstract role', () => {
 	test('[role=roletype]', async () => {
-		const { violations } = await mlTest(
-			'<div role="roletype"></div>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<div role="roletype"></div>', { rule: true });
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 6,
@@ -57,20 +37,10 @@ describe('Use the abstract role', () => {
 
 describe("Use the property/state that doesn't belong to a set role (or an implicit role)", () => {
 	test('[aria-checked=true]', async () => {
-		const { violations } = await mlTest(
-			'<div aria-checked="true"></div>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<div aria-checked="true"></div>', { rule: true });
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 6,
@@ -81,20 +51,10 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 	});
 
 	test('button[aria-checked=true]', async () => {
-		const { violations } = await mlTest(
-			'<button aria-checked="true"></button>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<button aria-checked="true"></button>', { rule: true });
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 9,
@@ -105,16 +65,7 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 	});
 
 	test('button[aria-pressed=true]', async () => {
-		const { violations } = await mlTest(
-			'<button aria-pressed="true"></button>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<button aria-pressed="true"></button>', { rule: true });
 
 		expect(violations.length).toBe(0);
 	});
@@ -122,20 +73,10 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 
 describe('Use an invalid value of the property/state', () => {
 	test('[aria-current=foo]', async () => {
-		const { violations } = await mlTest(
-			'<div aria-current="foo"></div>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<div aria-current="foo"></div>', { rule: true });
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 6,
@@ -147,35 +88,19 @@ describe('Use an invalid value of the property/state', () => {
 	});
 
 	test('[aria-current=page]', async () => {
-		const { violations } = await mlTest(
-			'<div aria-current="page"></div>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<div aria-current="page"></div>', { rule: true });
 
 		expect(violations.length).toBe(0);
 	});
 
 	test('disabled', async () => {
-		const { violations } = await mlTest(
-			'<div aria-current="foo"></div>',
-			{
-				rules: {
-					'wai-aria': {
-						option: {
-							checkingValue: false,
-						},
-					},
+		const { violations } = await mlRuleTest(rule, '<div aria-current="foo"></div>', {
+			rule: {
+				option: {
+					checkingValue: false,
 				},
 			},
-			[rule],
-			'en',
-		);
+		});
 
 		expect(violations.length).toBe(0);
 	});
@@ -183,20 +108,10 @@ describe('Use an invalid value of the property/state', () => {
 
 describe('Use the not permitted role according to ARIA in HTML', () => {
 	test('script[role=link]', async () => {
-		const { violations } = await mlTest(
-			'<script role="link"></script>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<script role="link"></script>', { rule: true });
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 9,
@@ -207,20 +122,10 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 	});
 
 	test('a[role=document]', async () => {
-		const { violations } = await mlTest(
-			'<a href role="document"></a>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<a href role="document"></a>', { rule: true });
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 9,
@@ -232,20 +137,13 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 	});
 
 	test('disabled', async () => {
-		const { violations } = await mlTest(
-			'<script role="link"></script>',
-			{
-				rules: {
-					'wai-aria': {
-						option: {
-							permittedAriaRoles: false,
-						},
-					},
+		const { violations } = await mlRuleTest(rule, '<script role="link"></script>', {
+			rule: {
+				option: {
+					permittedAriaRoles: false,
 				},
 			},
-			[rule],
-			'en',
-		);
+		});
 
 		expect(violations.length).toBe(0);
 	});
@@ -253,20 +151,10 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 
 describe("Don't set the required property/state", () => {
 	test('heading needs aria-level', async () => {
-		const { violations } = await mlTest(
-			'<div role="heading"></div>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<div role="heading"></div>', { rule: true });
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 1,
@@ -277,16 +165,7 @@ describe("Don't set the required property/state", () => {
 	});
 
 	test("h1 element doesn't needs aria-level", async () => {
-		const { violations } = await mlTest(
-			'<h1></h1>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<h1></h1>', { rule: true });
 
 		expect(violations).toStrictEqual([]);
 	});
@@ -294,20 +173,10 @@ describe("Don't set the required property/state", () => {
 
 describe('Set the implicit role explicitly', () => {
 	test('a[href][role=link]', async () => {
-		const { violations } = await mlTest(
-			'<a href="path/to" role="link"></a>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<a href="path/to" role="link"></a>', { rule: true });
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 19,
@@ -318,20 +187,10 @@ describe('Set the implicit role explicitly', () => {
 	});
 
 	test('header[role=banner]', async () => {
-		const { violations } = await mlTest(
-			'<header role="banner"></header>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<header role="banner"></header>', { rule: true });
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 9,
@@ -340,20 +199,14 @@ describe('Set the implicit role explicitly', () => {
 			},
 		]);
 
-		const { violations: violations2 } = await mlTest(
+		const { violations: violations2 } = await mlRuleTest(
+			rule,
 			'<header role="banner"><article></article></header>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: true },
 		);
 
 		expect(violations2).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 9,
@@ -365,20 +218,13 @@ describe('Set the implicit role explicitly', () => {
 	});
 
 	test('disabled', async () => {
-		const { violations } = await mlTest(
-			'<a href="path/to" role="link"></a>',
-			{
-				rules: {
-					'wai-aria': {
-						option: {
-							disallowSetImplicitRole: false,
-						},
-					},
+		const { violations } = await mlRuleTest(rule, '<a href="path/to" role="link"></a>', {
+			rule: {
+				option: {
+					disallowSetImplicitRole: false,
 				},
 			},
-			[rule],
-			'en',
-		);
+		});
 
 		expect(violations.length).toBe(0);
 	});
@@ -386,24 +232,16 @@ describe('Set the implicit role explicitly', () => {
 
 describe('Set the default value of the property/state explicitly', () => {
 	test('aria-live="off"', async () => {
-		const { violations } = await mlTest(
-			'<div aria-live="off"></div>',
-			{
-				rules: {
-					'wai-aria': {
-						option: {
-							disallowDefaultValue: true,
-						},
-					},
+		const { violations } = await mlRuleTest(rule, '<div aria-live="off"></div>', {
+			rule: {
+				option: {
+					disallowDefaultValue: true,
 				},
 			},
-			[rule],
-			'en',
-		);
+		});
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 6,
@@ -416,20 +254,10 @@ describe('Set the default value of the property/state explicitly', () => {
 
 describe('Set the deprecated property/state', () => {
 	test('aria-disabled is deprecated in article', async () => {
-		const { violations } = await mlTest(
-			'<article aria-disabled="true"></article>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<article aria-disabled="true"></article>', { rule: true });
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 10,
@@ -440,20 +268,12 @@ describe('Set the deprecated property/state', () => {
 	});
 
 	test('aria-disabled is deprecated in article role', async () => {
-		const { violations } = await mlTest(
-			'<div role="article" aria-disabled="true"></div>',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<div role="article" aria-disabled="true"></div>', {
+			rule: true,
+		});
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 21,
@@ -464,20 +284,13 @@ describe('Set the deprecated property/state', () => {
 	});
 
 	test('disable', async () => {
-		const { violations } = await mlTest(
-			'<article aria-disabled="true"></article>',
-			{
-				rules: {
-					'wai-aria': {
-						option: {
-							checkingDeprecatedProps: false,
-						},
-					},
+		const { violations } = await mlRuleTest(rule, '<article aria-disabled="true"></article>', {
+			rule: {
+				option: {
+					checkingDeprecatedProps: false,
 				},
 			},
-			[rule],
-			'en',
-		);
+		});
 
 		expect(violations).toStrictEqual([]);
 	});
@@ -485,20 +298,12 @@ describe('Set the deprecated property/state', () => {
 
 describe('Set the property/state explicitly when its element has semantic HTML attribute equivalent to it according to ARIA in HTML.', () => {
 	test('checked and aria-checked="true"', async () => {
-		const { violations } = await mlTest(
-			'<input type="checkbox" checked aria-checked="true" />',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="true" />', {
+			rule: true,
+		});
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 32,
@@ -510,20 +315,12 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	});
 
 	test('checked and aria-checked="false"', async () => {
-		const { violations } = await mlTest(
-			'<input type="checkbox" checked aria-checked="false" />',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="false" />', {
+			rule: true,
+		});
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 32,
@@ -534,20 +331,10 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	});
 
 	test('only aria-checked="true"', async () => {
-		const { violations } = await mlTest(
-			'<input type="checkbox" aria-checked="true" />',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<input type="checkbox" aria-checked="true" />', { rule: true });
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 24,
@@ -558,35 +345,22 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	});
 
 	test('check and aria-checked="mixed"', async () => {
-		const { violations } = await mlTest(
-			'<input type="checkbox" checked aria-checked="mixed" />',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
-		);
+		const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="mixed" />', {
+			rule: true,
+		});
 
 		expect(violations).toStrictEqual([]);
 	});
 
 	test('placeholder="type hints" and aria-placeholder="type hints"', async () => {
-		const { violations } = await mlTest(
+		const { violations } = await mlRuleTest(
+			rule,
 			'<input type="text" placeholder="type hints" aria-placeholder="type hints" />',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: true },
 		);
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 45,
@@ -598,20 +372,14 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	});
 
 	test('placeholder="type hints" and aria-placeholder="different value"', async () => {
-		const { violations } = await mlTest(
+		const { violations } = await mlRuleTest(
+			rule,
 			'<input type="text" placeholder="type hints" aria-placeholder="different value" />',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: true },
 		);
 
 		expect(violations).toStrictEqual([
 			{
-				ruleId: 'wai-aria',
 				severity: 'error',
 				line: 1,
 				col: 45,
@@ -622,22 +390,13 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	});
 
 	test('hidden vs aria-hidden', async () => {
-		const config = {
-			rules: {
-				'wai-aria': true,
-			},
-		};
+		const config = { rule: true };
 
-		const { violations: violations1 } = await mlTest('<div hidden></div>', config, [rule], 'en');
-		const { violations: violations2 } = await mlTest('<div hidden aria-hidden="true"></div>', config, [rule], 'en');
-		const { violations: violations3 } = await mlTest(
-			'<div hidden aria-hidden="false"></div>',
-			config,
-			[rule],
-			'en',
-		);
-		const { violations: violations4 } = await mlTest('<div aria-hidden="true"></div>', config, [rule], 'en');
-		const { violations: violations5 } = await mlTest('<div aria-hidden="false"></div>', config, [rule], 'en');
+		const { violations: violations1 } = await mlRuleTest(rule, '<div hidden></div>', config);
+		const { violations: violations2 } = await mlRuleTest(rule, '<div hidden aria-hidden="true"></div>', config);
+		const { violations: violations3 } = await mlRuleTest(rule, '<div hidden aria-hidden="false"></div>', config);
+		const { violations: violations4 } = await mlRuleTest(rule, '<div aria-hidden="true"></div>', config);
+		const { violations: violations5 } = await mlRuleTest(rule, '<div aria-hidden="false"></div>', config);
 
 		expect(violations1[0]?.message).toBe(undefined);
 		expect(violations2[0]?.message).toBe(
@@ -651,20 +410,13 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	});
 
 	test('disable', async () => {
-		const { violations } = await mlTest(
-			'<input type="checkbox" checked aria-checked="true" />',
-			{
-				rules: {
-					'wai-aria': {
-						option: {
-							disallowSetImplicitProps: false,
-						},
-					},
+		const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="true" />', {
+			rule: {
+				option: {
+					disallowSetImplicitProps: false,
 				},
 			},
-			[rule],
-			'en',
-		);
+		});
 
 		expect(violations).toStrictEqual([]);
 	});
@@ -672,28 +424,19 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 
 describe('childNodeRules', () => {
 	test('ex. For Safari + VoiceOver', async () => {
-		const { violations } = await mlTest(
-			'<img src="path/to.svg" alt="text" role="img" />',
-			{
-				rules: {
-					'wai-aria': true,
-				},
-				nodeRules: [
-					{
-						selector: 'img[src$=.svg]',
-						rules: {
-							'wai-aria': {
-								option: {
-									disallowSetImplicitRole: false,
-								},
-							},
+		const { violations } = await mlRuleTest(rule, '<img src="path/to.svg" alt="text" role="img" />', {
+			rule: true,
+			nodeRule: [
+				{
+					selector: 'img[src$=.svg]',
+					rule: {
+						option: {
+							disallowSetImplicitRole: false,
 						},
 					},
-				],
-			},
-			[rule],
-			'en',
-		);
+				},
+			],
+		});
 
 		expect(violations.length).toBe(0);
 	});

@@ -3,8 +3,7 @@ import { createRule } from '@markuplint/ml-core';
 export type Value = 'lower' | 'upper';
 
 export default createRule<Value, null>({
-	name: 'case-sensitive-tag-name',
-	defaultLevel: 'warning',
+	defaultServerity: 'warning',
 	defaultValue: 'lower',
 	defaultOptions: null,
 	async verify({ document, report, t }) {

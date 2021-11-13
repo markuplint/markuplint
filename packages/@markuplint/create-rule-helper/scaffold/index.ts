@@ -21,17 +21,14 @@ type Options = {
 
 export default createRule<MainValue, Options>({
 	/**
-	 * Step 1-1. Set the name of this rule
+	 * Step 1-1. Choose the severity from `error` or `warning`
+	 *
+	 * Deafult is `error`
 	 */
-	name: '{{name}}',
+	defaultServerity: 'error',
 
 	/**
-	 * Step 1-2. Choose the severity from `error` or `warning`
-	 */
-	defaultLevel: 'error',
-
-	/**
-	 * Step 1-3. Set the default principal value
+	 * Step 1-2. Set the default principal value
 	 *
 	 * It adopts this value in the evaluation
 	 * if it sets `true` or undefined (in other words, it doesn't set)
@@ -40,7 +37,7 @@ export default createRule<MainValue, Options>({
 	defaultValue: '__DEFAULT_MAIN_VALUE__',
 
 	/**
-	 * Step 1-4. Set the default options
+	 * Step 1-3. Set the default options
 	 *
 	 * It adopts this value in the evaluation
 	 * if it doesn't set to the configuration.

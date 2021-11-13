@@ -6,7 +6,6 @@ type Option = {
 };
 
 export default createRule<Value, Option>({
-	name: 'doctype',
 	defaultValue: 'always',
 	defaultOptions: {
 		denyObsolateType: true,

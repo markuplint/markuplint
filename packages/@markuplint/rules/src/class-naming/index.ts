@@ -5,8 +5,7 @@ import { match } from '../helpers';
 export type Value = string | string[] | null;
 
 export default createRule<Value>({
-	name: 'class-naming',
-	defaultLevel: 'warning',
+	defaultServerity: 'warning',
 	defaultValue: null,
 	defaultOptions: null,
 	async verify({ document, report, t }) {

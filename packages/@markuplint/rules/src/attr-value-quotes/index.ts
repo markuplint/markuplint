@@ -10,8 +10,7 @@ const quoteList: QuoteMap = {
 };
 
 export default createRule<Type>({
-	name: 'attr-value-quotes',
-	defaultLevel: 'warning',
+	defaultServerity: 'warning',
 	defaultValue: 'double',
 	defaultOptions: null,
 	async verify(context) {

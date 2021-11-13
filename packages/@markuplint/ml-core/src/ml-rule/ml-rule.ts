@@ -1,5 +1,5 @@
 import type Document from '../ml-dom/document';
-import type { MLRuleOptions } from './types';
+import type { RuleSeed } from './types';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { RuleConfig, RuleConfigValue, RuleInfo, Severity, Violation } from '@markuplint/ml-config';
 
@@ -11,14 +11,14 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	readonly defaultValue: T;
 	readonly defaultOptions: O;
 
-	#v: MLRuleOptions<T, O>['verify'];
-	#f: MLRuleOptions<T, O>['fix'];
+	#v: RuleSeed<T, O>['verify'];
+	#f: RuleSeed<T, O>['fix'];
 
 	/**
 	 * The following getter is unused internally,
 	 * only for extending from 3rd party library
 	 */
-	protected get v(): MLRuleOptions<T, O>['verify'] {
+	protected get v(): RuleSeed<T, O>['verify'] {
 		return this.#v;
 	}
 
@@ -26,13 +26,13 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	 * The following getter is unused internally,
 	 * only for extending from 3rd party library
 	 */
-	protected get f(): MLRuleOptions<T, O>['fix'] {
+	protected get f(): RuleSeed<T, O>['fix'] {
 		return this.#f;
 	}
 
-	constructor(o: MLRuleOptions<T, O>) {
+	constructor(o: RuleSeed<T, O> & { name: string }) {
 		this.name = o.name;
-		this.defaultServerity = o.defaultLevel || 'error';
+		this.defaultServerity = o.defaultServerity || 'error';
 		this.defaultValue = o.defaultValue;
 		this.defaultOptions = o.defaultOptions;
 		this.#v = o.verify;

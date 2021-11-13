@@ -6,8 +6,7 @@ const alwaysMsg = 'Always insert {0} before {1} of {2}';
 const neverMsg = 'Never insert {0} before {1} of {2}';
 
 export default createRule<Value>({
-	name: 'attr-equal-space-before',
-	defaultLevel: 'warning',
+	defaultServerity: 'warning',
 	defaultValue: 'never',
 	defaultOptions: null,
 	async verify(context) {

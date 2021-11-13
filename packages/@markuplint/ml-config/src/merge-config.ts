@@ -1,4 +1,4 @@
-import type { Config, Nullable, Rule, RuleConfigValue, Rules, SpecConfig, SpecConfig_v1 } from './types';
+import type { Config, Nullable, AnyRule, RuleConfigValue, Rules, SpecConfig, SpecConfig_v1 } from './types';
 
 import deepmerge from 'deepmerge';
 import { isPlainObject } from 'is-plain-object';
@@ -7,6 +7,7 @@ export function mergeConfig(a: Config, b: Config): Config {
 	const config: Config = {
 		...a,
 		...b,
+		plugins: concatArray(a.plugins, b.plugins, true, 'name'),
 		parser: mergeObject(a.parser, b.parser),
 		parserOptions: mergeObject(a.parserOptions, b.parserOptions),
 		specs:
@@ -14,8 +15,7 @@ export function mergeConfig(a: Config, b: Config): Config {
 			// mergeObject(a.specs, b.specs),
 			// v2
 			mergeSpecs(a.specs, b.specs),
-		importRules: concatArrayUniquely(a.importRules, b.importRules),
-		excludeFiles: concatArrayUniquely(a.excludeFiles, b.excludeFiles),
+		excludeFiles: concatArray(a.excludeFiles, b.excludeFiles, true),
 		rules: mergeRules(
 			// TODO: Deep merge
 			a.rules,
@@ -42,18 +42,70 @@ function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 	return res;
 }
 
-function concatArray<T>(a: Nullable<T[]>, b: Nullable<T[]>): T[] | undefined {
-	const res = [...(a || []), ...(b || [])];
-	return res.length === 0 ? undefined : res;
+function concatArray<T extends any>(
+	a: Nullable<T[]>,
+	b: Nullable<T[]>,
+	uniquely = false,
+	comparePropName?: string,
+): T[] | undefined {
+	const newArray: T[] = [];
+	function concat(item: T) {
+		if (!uniquely) {
+			newArray.push(item);
+			return;
+		}
+		if (newArray.includes(item)) {
+			return;
+		}
+
+		if (!comparePropName) {
+			newArray.push(item);
+			return;
+		}
+
+		const name = getName(item, comparePropName);
+		if (!name) {
+			newArray.push(item);
+			return;
+		}
+
+		const existedIndex = newArray.findIndex(e => getName(e, comparePropName) === name);
+		if (existedIndex === -1) {
+			newArray.push(item);
+			return;
+		}
+
+		if (typeof item === 'string') {
+			return;
+		}
+
+		const existed = newArray[existedIndex];
+		const merged = mergeObject(existed, item);
+		if (!merged) {
+			newArray.push(item);
+			return;
+		}
+
+		newArray.splice(existedIndex, 1, merged);
+	}
+
+	a?.forEach(concat);
+	b?.forEach(concat);
+
+	return newArray.length === 0 ? undefined : newArray;
 }
 
-function concatArrayUniquely<T>(a: Nullable<T[]>, b: Nullable<T[]>): T[] | undefined {
-	const concated = concatArray(a, b);
-	if (!concated) {
-		return;
+function getName(item: any, comparePropName: string) {
+	if (item == null) {
+		return null;
 	}
-	const res = Array.from(new Set(concated));
-	return res.length === 0 ? undefined : res;
+	if (typeof item === 'string') {
+		return item;
+	}
+	if (typeof item === 'object' && item && comparePropName in item && typeof item[comparePropName] === 'string') {
+		return item[comparePropName] as string;
+	}
+	return null;
 }
 
 function mergeRules(a: Nullable<Rules>, b: Nullable<Rules>): Rules | undefined {
@@ -74,7 +126,7 @@ function mergeRules(a: Nullable<Rules>, b: Nullable<Rules>): Rules | undefined {
 	return res;
 }
 
-function mergeRule(a: Nullable<Rule>, b: Rule): Rule {
+function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
 	if (a === undefined) {
 		return b;
 	}

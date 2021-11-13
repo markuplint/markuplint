@@ -1,15 +1,32 @@
 import path from 'path';
 
 import { configProvider } from './config-provider';
-import { getFile } from './get-file';
+import { getFile } from './ml-file';
 
 it('001 + 002', async () => {
-	const key = path.resolve(__dirname, '..', 'test', 'fixtures', '002', '.markuplintrc.json');
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '002', '.markuplintrc.json');
 	await configProvider.load(key);
 	const configSet = await configProvider.resolve([key]);
 	expect(configSet.config).toStrictEqual({
 		dummy: true,
 		dummy2: false,
+		key: '002/.markuplintrc.json',
+		plugins: [
+			path.resolve(testDir, '001', 'a'),
+			{
+				name: '@markuplint/file-resolver',
+				foo: '002',
+			},
+			{
+				name: path.resolve(testDir, '001', 'b'),
+				foo: '001',
+			},
+			{
+				name: path.resolve(testDir, '002', 'b'),
+				foo: '002',
+			},
+		],
 		rules: {
 			rule__enabled: true,
 			rule__disabled: false,
@@ -43,13 +60,33 @@ it('001 + 002', async () => {
 });
 
 it('001 + 002 + 003', async () => {
-	const filePath = path.resolve(__dirname, '..', 'test', 'fixtures', '003', 'dir', 'target.html');
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const filePath = path.resolve(testDir, '003', 'dir', 'target.html');
 	const file = getFile(filePath);
 	const key = await configProvider.search(file);
 	const configSet = await configProvider.resolve([key]);
 	expect(configSet.config).toStrictEqual({
+		___configs: 'test',
 		dummy: true,
 		dummy2: true,
+		key: '003/.markuplintrc',
+		key2: '001-2.js',
+		plugins: [
+			path.resolve(testDir, '001', 'a'),
+			{
+				name: '@markuplint/file-resolver',
+				foo: '002',
+			},
+			{
+				name: path.resolve(testDir, '001', 'b'),
+				foo: '001',
+			},
+			{
+				name: path.resolve(testDir, '002', 'b'),
+				foo: '002',
+			},
+			path.resolve(testDir, '..', 'plugins', '001.js'),
+		],
 		rules: {
 			rule__enabled: true,
 			rule__disabled: true,
@@ -63,6 +100,10 @@ it('001 + 002 + 003', async () => {
 			},
 			additional_rule: {
 				value: 'VALUE',
+			},
+			xxx: 'yyy',
+			zzz: {
+				severity: 'error',
 			},
 		},
 		nodeRules: [

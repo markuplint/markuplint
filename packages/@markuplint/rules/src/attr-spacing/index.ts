@@ -1,13 +1,12 @@
 import { createRule, getIndent } from '@markuplint/ml-core';
 
 export interface AttrSpasingOptions {
-	lineBreak: 'either' | 'always' | 'never';
-	width: number | false;
+	lineBreak?: 'either' | 'always' | 'never';
+	width?: number | false;
 }
 
 export default createRule<boolean, AttrSpasingOptions>({
-	name: 'attr-spacing',
-	defaultLevel: 'warning',
+	defaultServerity: 'warning',
 	defaultValue: true,
 	defaultOptions: {
 		lineBreak: 'either',

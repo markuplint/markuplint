@@ -5,12 +5,11 @@ import { createRule } from '@markuplint/ml-core';
 export type Value = boolean;
 
 export interface RequiredH1Options {
-	'expected-once': boolean;
-	'in-document-fragment': boolean;
+	'expected-once'?: boolean;
+	'in-document-fragment'?: boolean;
 }
 
 export default createRule<Value, RequiredH1Options>({
-	name: 'required-h1',
 	defaultValue: true,
 	defaultOptions: {
 		'expected-once': true,

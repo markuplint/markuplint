@@ -1,4 +1,4 @@
-import { mlTest } from 'markuplint';
+import { mlRuleTest } from 'markuplint';
 
 import rule from './';
 
@@ -6,24 +6,12 @@ import rule from './';
  * Example: Write tests
  */
 it('is test', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		/**
 		 * Example: The target HTML that is evaluated
 		 */
 		'<div><!-- TODO: I will do something --></div>',
-		{
-			rules:
-				/**
-				 * Example: Set the rule name and the value
-				 *
-				 * It doesn't run if set `false`.
-				 */
-				{
-					'{{name}}': true,
-				},
-		},
-		[rule],
-		'en',
 	);
 
 	/**
@@ -31,7 +19,6 @@ it('is test', async () => {
 	 */
 	expect(violations).toStrictEqual([
 		{
-			ruleId: '{{name}}',
 			severity: 'error',
 			line: 1,
 			col: 6,

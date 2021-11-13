@@ -3,8 +3,8 @@ import type { Element } from '@markuplint/ml-core';
 import { createRule } from '@markuplint/ml-core';
 
 type Options = {
-	ignoreRoles: Roles[];
-	labelEachArea: boolean;
+	ignoreRoles?: Roles[];
+	labelEachArea?: boolean;
 };
 
 type TopLevelRoles = 'banner' | 'main' | 'complementary' | 'contentinfo';
@@ -28,8 +28,7 @@ const selectors: { [role in Roles]: string[] } = {
 const topLevelRoles: TopLevelRoles[] = ['banner', 'main', 'complementary', 'contentinfo'];
 
 export default createRule<boolean, Options>({
-	name: 'landmark-roles',
-	defaultLevel: 'warning',
+	defaultServerity: 'warning',
 	defaultValue: true,
 	defaultOptions: {
 		ignoreRoles: [],
@@ -95,7 +94,7 @@ export default createRule<boolean, Options>({
 					continue;
 				}
 
-				if (el.rule.option.ignoreRoles.includes(role)) {
+				if (el.rule.option.ignoreRoles?.includes(role)) {
 					continue;
 				}
 

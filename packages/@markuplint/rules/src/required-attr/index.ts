@@ -5,8 +5,6 @@ import { attrMatches, getAttrSpecs } from '../helpers';
 type RequiredAttributes = string | string[];
 
 export default createRule<RequiredAttributes, null>({
-	name: 'required-attr',
-	defaultLevel: 'error',
 	defaultValue: [],
 	defaultOptions: null,
 	async verify({ document, report, t }) {

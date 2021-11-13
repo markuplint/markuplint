@@ -1,42 +1,57 @@
-import type { AnyMLRule } from '@markuplint/ml-core';
+import type { AnyMLRule, Ruleset, Plugin, AnyRuleSeed } from '@markuplint/ml-core';
 
-const cache = new Map<string, AnyMLRule[]>();
+import { MLRule } from '@markuplint/ml-core';
 
-export async function resolveRules(importRuleSet?: string[], importPreset = true) {
+import { autoLoadRules } from './auto-load-rules';
+
+let cachedPresetRules: AnyMLRule[] | null = null;
+
+export async function resolveRules(
+	plugins: Plugin[],
+	ruleset: Ruleset,
+	importPreset: boolean,
+	/**
+	 * @deprecated
+	 */
+	autoLoad: boolean,
+) {
 	const rules = importPreset ? await importPresetRules() : [];
-	if (importRuleSet) {
-		for (const ruleFilePath of importRuleSet) {
-			const rules = await importRules(ruleFilePath);
-			rules.push(...rules);
+	plugins.forEach(plugin => {
+		if (!plugin.rules) {
+			return;
 		}
+		Object.entries(plugin.rules).forEach(([name, seed]) => {
+			const rule = new MLRule({
+				name: `${plugin.name}/${name}`,
+				...seed,
+			});
+			rules.push(rule);
+		});
+	});
+	if (autoLoad) {
+		const { rules: additionalRules } = await autoLoadRules(ruleset);
+		additionalRules.forEach(rule => {
+			rules.push(rule);
+		});
 	}
-	// Clone
-	return rules.slice();
-}
-
-async function importRules(filePath: string) {
-	const cached = cache.get(filePath);
-	if (cached) {
-		// Clone
-		return cached.slice();
-	}
-	const r = await import(filePath);
-	const rules: AnyMLRule[] = Array.from(r.default) ? r.default : [r.default];
-	cache.set(filePath, rules);
 	// Clone
 	return rules.slice();
 }
 
 async function importPresetRules() {
-	const modName = '@markuplint/rules';
-	const cached = cache.get(modName);
-	if (cached) {
-		// Clone
-		return cached.slice();
+	if (cachedPresetRules) {
+		return cachedPresetRules.slice();
 	}
-	const r = await import(modName);
-	const rules: AnyMLRule[] = r.default;
-	cache.set(modName, rules);
+	const modName = '@markuplint/rules';
+	const presetRules: Record<string, AnyRuleSeed> = (await import(modName)).default;
+	const ruleList = Object.entries(presetRules).map(([name, seed]) => {
+		const rule = new MLRule({
+			name,
+			...seed,
+		});
+		return rule;
+	});
+	cachedPresetRules = ruleList;
 	// Clone
-	return rules.slice();
+	return ruleList.slice();
 }

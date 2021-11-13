@@ -16,7 +16,6 @@ type Options = {
 const expMapOnNodeId: Map<string, RegExp> = new Map();
 
 export default createRule<TagRule[], Options>({
-	name: 'permitted-contents',
 	defaultValue: [],
 	defaultOptions: {
 		ignoreHasMutableChildren: true,

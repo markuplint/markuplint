@@ -5,8 +5,7 @@ import { getAttrSpecs } from '../helpers';
 export type Value = 'no-upper' | 'no-lower';
 
 export default createRule<Value, null>({
-	name: 'case-sensitive-attr-name',
-	defaultLevel: 'warning',
+	defaultServerity: 'warning',
 	defaultValue: 'no-upper',
 	defaultOptions: null,
 	async verify({ document, report, t }) {

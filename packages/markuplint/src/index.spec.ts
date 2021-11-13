@@ -1,4 +1,4 @@
-import { createRule } from '@markuplint/ml-core';
+import { MLRule } from '@markuplint/ml-core';
 
 import { setGlobal } from './global-settings';
 import { mlTest, mlTestFile } from './testing-tool';
@@ -121,7 +121,7 @@ describe('async and sync rules', () => {
 		raw: 'content',
 	};
 
-	const asyncRule = createRule({
+	const asyncRule = new MLRule({
 		name: 'test-async-rule',
 		defaultValue: null,
 		defaultOptions: null,
@@ -131,7 +131,7 @@ describe('async and sync rules', () => {
 		},
 	});
 
-	const syncRule = createRule({
+	const syncRule = new MLRule({
 		name: 'test-sync-rule',
 		defaultValue: null,
 		defaultOptions: null,

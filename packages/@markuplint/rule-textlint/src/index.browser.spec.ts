@@ -27,8 +27,6 @@ test('is test 1', async () => {
 			},
 		},
 		// Auto loading
-		[],
-		'en',
 	);
 
 	expect(violations).toStrictEqual([
