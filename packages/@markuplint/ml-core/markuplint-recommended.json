@@ -1,0 +1,23 @@
+{
+	"rules": {
+		"attr-duplication": true,
+		"character-reference": true,
+		"deprecated-attr": true,
+		"deprecated-element": true,
+		"doctype": true,
+		"id-duplication": true,
+		"permitted-contents": true,
+		"required-attr": true,
+		"invalid-attr": true,
+		"landmark-roles": true,
+		"required-h1": true,
+		"class-naming": false,
+		"attr-equal-space-after": false,
+		"attr-equal-space-before": false,
+		"attr-spacing": false,
+		"attr-value-quotes": false,
+		"case-sensitive-attr-name": true,
+		"case-sensitive-tag-name": true,
+		"indentation": false
+	}
+}

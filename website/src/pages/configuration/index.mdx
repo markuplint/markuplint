@@ -68,7 +68,32 @@ If you set other config file [paths](#properties/specification-about-paths), it 
 
 ```json
 {
-  "extends": ["../../.markuplintrc"]
+  "extends": [
+    // As a local file
+    "../../.markuplintrc",
+    // As a package
+    "third-party-config"
+  ]
+}
+```
+
+The name added the prefix `markuplint:` loads the config provided from markuplint core.
+There is only one kind of configs is `markuplint:recommended` that it can provide currently.
+
+```json
+{
+  "extends": ["markuplint:recommended"]
+}
+```
+
+The name added the prefix `plugin:` loads the config provided from any plugins.
+The before the slash is a namespace determined by the plugin.
+The after the slash is the unique config name on the plugin.
+
+```json
+{
+  "extends": ["plugin:third-party-plugin-name/config-name"],
+  "plugins": ["third-party-plugin"]
 }
 ```
 

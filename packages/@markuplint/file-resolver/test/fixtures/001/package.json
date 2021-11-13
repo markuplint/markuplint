@@ -2,6 +2,7 @@
 	"private": true,
 	"markuplint": {
 		"dummy": true,
+		"key": "001/package.json",
 		"plugins": [
 			"a",
 			"@markuplint/file-resolver",

@@ -3,14 +3,7 @@ import type { APIOptions, MLEngineEventMap, MLFabric } from './types';
 import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
 import type { Ruleset, Plugin } from '@markuplint/ml-core';
 
-import {
-	configProvider,
-	resolveFiles,
-	resolvePlugins,
-	resolveParser,
-	resolveRules,
-	resolveSpecs,
-} from '@markuplint/file-resolver';
+import { configProvider, resolveFiles, resolveParser, resolveRules, resolveSpecs } from '@markuplint/file-resolver';
 import { MLCore, convertRuleset } from '@markuplint/ml-core';
 import { FSWatcher } from 'chokidar';
 import { StrictEventEmitter } from 'strict-event-emitter';
@@ -141,10 +134,9 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 			return null;
 		}
 
-		const plugins = await this.resolvePlugins(configSet);
 		const ruleset = this.resolveRuleset(configSet);
 		const schemas = await this.resolveSchemas(configSet);
-		const rules = await this.resolveRules(plugins, ruleset);
+		const rules = await this.resolveRules(configSet.plugins, ruleset);
 		const locale = await i18n(this.#options?.locale);
 
 		fileLog(
@@ -205,11 +197,6 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		this.emit('parser', this.#file.path, parser.parserModName);
 		fileLog('Fetched Parser module: %s', parser.parserModName);
 		return parser;
-	}
-
-	private async resolvePlugins(configSet: ConfigSet) {
-		const plugins = await resolvePlugins(configSet.config.plugins);
-		return plugins;
 	}
 
 	private resolveRuleset(configSet: ConfigSet) {

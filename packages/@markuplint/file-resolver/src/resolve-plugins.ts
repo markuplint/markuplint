@@ -13,15 +13,17 @@ export async function resolvePlugins(pluginPaths?: (string | PluginConfig)[]) {
 	return plugins.slice();
 }
 
-async function importPlugin(pluginPath: string | PluginConfig) {
+async function importPlugin(pluginPath: string | PluginConfig): Promise<Plugin> {
 	const config = getPluginConfig(pluginPath);
 	const cached = cache.get(config.name);
 	if (cached) {
 		return cached;
 	}
-	const pluginCreator: PluginCreator<any> = (await import(config.name)).default;
+	const pluginCreator = await failSafeImport<PluginCreator<any>>(config.name);
 	if (!pluginCreator) {
-		throw new Error(`The plugin (${config.name}) is empty`);
+		return {
+			name: config.name,
+		};
 	}
 	const plugin: Plugin = {
 		name: pluginCreator.name,
@@ -44,4 +46,12 @@ function getPluginConfig(pluginPath: string | PluginConfig): PluginConfig {
 		return { name: pluginPath, settings: {} };
 	}
 	return pluginPath;
+}
+
+async function failSafeImport<T>(name: string) {
+	const res = await import(name).catch(e => e);
+	if ('code' in res && res === 'MODULE_NOT_FOUND') {
+		return null;
+	}
+	return res.default as T;
 }

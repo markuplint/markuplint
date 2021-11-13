@@ -9,5 +9,6 @@ export * from './plugin';
 export { getIndent } from './ml-dom/helper/getIndent';
 export * from './utils';
 export * from './types';
+export * from './configs';
 export * from './test';
 export { enableDebug } from './debug';
