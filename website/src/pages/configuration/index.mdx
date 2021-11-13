@@ -269,22 +269,26 @@ Otherwise, you can set details if you set structure like:
 
 ```json
 {
-  // Type: string | number | boolean | Array
-  "value": "any-value",
+  "rules": {
+    "rule-name": {
+      // Type: string | number | boolean | Array
+      "value": "any-value",
 
-  // Optional, "error" or "warning"
-  "severity": "error",
+      // Optional, "error" or "warning"
+      "severity": "error",
 
-  // Optional
-  "option": {
-    "any-option": "any-optional-value"
+      // Optional
+      "option": {
+        "any-option": "any-optional-value"
+      }
+    }
   }
 }
 ```
 
 The details of each rule are said from the [Rules page](/rules).
 
-For example, setting of the rule of `invalid-attr`:
+For example, setting of the rule of [`invalid-attr`](/rules/invalid-attr):
 
 ```json
 {
@@ -332,8 +336,8 @@ interface Config {
 }
 
 type Rule<T, O> =
+  | boolean
   | T
-  | false
   | {
       severity?: 'error' | 'warning' | 'info';
       value?: T;
