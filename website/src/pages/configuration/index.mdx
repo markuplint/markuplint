@@ -27,6 +27,7 @@ The priority applied names are:
 ```json
 {
 	"extends": [],
+	"plugins": {},
 	"parser": {},
 	"parserOptions": {},
 	"specs": [],
@@ -38,6 +39,7 @@ The priority applied names are:
 ```
 
 -   [`extends`](#extends)
+-   [`plugins`](#plugins)
 -   [`parser`](#parser)
 -   [`parserOptions`](#parserOptions)
 -   [`specs`](#specs)
@@ -71,6 +73,48 @@ If you set other config file [paths](#Specification%20about%20paths), it merges 
 ```ts
 interface Config {
 	extends?: string[];
+}
+```
+
+### `plugins`
+
+You can load any plugins.
+Set a package name or a path.
+Can set settings if the plugin has it.
+
+```json
+{
+	"plugins": [
+		"third-party-plugin",
+		"@third-party/markuplint-plugin",
+		{
+			"name": "third-party-plugin2",
+			"settings": {
+				"foo": "bar"
+			}
+		},
+		"./path/to/local-plugin.js",
+		{
+			"name": "./path/to/local-plugin.js2",
+			"settings": {
+				"foo": "bar"
+			}
+		}
+	]
+}
+```
+
+#### Interface
+
+```ts
+interface Config {
+	plugins?: (
+		| string
+		| {
+				name: string;
+				settings?: Record<string, unknown>;
+		  }
+	)[];
 }
 ```
 
