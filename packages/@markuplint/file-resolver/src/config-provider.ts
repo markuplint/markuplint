@@ -67,6 +67,7 @@ class ConfigProvider {
 		return {
 			...config,
 			extends: pathResolve(dir, config.extends),
+			plugins: pathResolve(dir, config.plugins, ['name']),
 			parser: pathResolve(dir, config.parser),
 			specs: pathResolve(dir, config.specs),
 			importRules: pathResolve(dir, config.importRules),
@@ -132,7 +133,11 @@ async function load(filePath: string) {
 	return res.config;
 }
 
-function pathResolve<T extends string | string[] | Record<string, string> | undefined>(dir: string, filePath?: T): T {
+function pathResolve<T extends string | (string | Record<string, unknown>)[] | Record<string, unknown> | undefined>(
+	dir: string,
+	filePath?: T,
+	resolveProps?: string[],
+): T {
 	if (filePath == null) {
 		// @ts-ignore
 		return undefined;
@@ -143,11 +148,21 @@ function pathResolve<T extends string | string[] | Record<string, string> | unde
 	}
 	if (Array.isArray(filePath)) {
 		// @ts-ignore
-		return filePath.map(fp => resolve(dir, fp));
+		return filePath.map(fp => pathResolve(dir, fp, resolveProps));
 	}
-	const res: Record<string, string> = {};
+	const res: Record<string, unknown> = {};
 	for (const [key, fp] of Object.entries(filePath)) {
-		res[key] = resolve(dir, fp);
+		if (typeof fp === 'string') {
+			if (!resolveProps) {
+				res[key] = resolve(dir, fp);
+			} else if (resolveProps.includes(key)) {
+				res[key] = resolve(dir, fp);
+			} else {
+				res[key] = fp;
+			}
+		} else {
+			res[key] = fp;
+		}
 	}
 	// @ts-ignore
 	return res;

@@ -1,6 +1,14 @@
 {
 	"private": true,
 	"markuplint": {
-		"dummy": true
+		"dummy": true,
+		"plugins": [
+			"a",
+			"@markuplint/file-resolver",
+			{
+				"name": "b",
+				"foo": "001"
+			}
+		]
 	}
 }
