@@ -22,7 +22,7 @@
 			"url": "http://json-schema.org/draft-07/schema#"
 		},
 		{
-			"fileMatch": ["/**/*.markuplintrc"],
+			"fileMatch": ["/**/*.markuplintrc", "/**/markuplint-*.json"],
 			"url": "https://raw.githubusercontent.com/markuplint/markuplint/main/config.schema.json"
 		},
 		{

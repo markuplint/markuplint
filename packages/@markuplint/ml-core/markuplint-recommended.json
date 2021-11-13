@@ -11,13 +11,44 @@
 		"invalid-attr": true,
 		"landmark-roles": true,
 		"required-h1": true,
-		"class-naming": false,
-		"attr-equal-space-after": false,
-		"attr-equal-space-before": false,
-		"attr-spacing": false,
-		"attr-value-quotes": false,
-		"case-sensitive-attr-name": true,
-		"case-sensitive-tag-name": true,
-		"indentation": false
-	}
+		"wai-aria": true
+	},
+	"nodeRules": [
+		{
+			"selector": "html",
+			"rules": {
+				"required-attr": ["lang"]
+			}
+		},
+		{
+			"selector": "script[src]",
+			"rules": {
+				"required-attr": ["defer"]
+			}
+		},
+		{
+			"selector": "img",
+			"rules": {
+				"required-attr": ["decoding", "width", "height", "alt"]
+			}
+		},
+		{
+			"selector": "iframe",
+			"rules": {
+				"required-attr": ["loading", "title"]
+			}
+		},
+		{
+			"selector": "a[target=_blank], area[target=_blank]",
+			"rules": {
+				"required-attr": ["rel"]
+			}
+		},
+		{
+			"selector": "abbr",
+			"rules": {
+				"required-attr": ["title"]
+			}
+		}
+	]
 }
