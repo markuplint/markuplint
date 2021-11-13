@@ -304,6 +304,24 @@ For example, setting of the rule of `invalid-attr`:
 }
 ```
 
+#### About the rule name
+
+There are cases in which a rule name includes a slash.
+In that case, it indicates the rule is from a plugin.
+The before the slash is a namespace determined by the plugin.
+The after the slash is the unique rule name on the plugin.
+
+```json
+{
+  "plugins": ["third-party-plugin", "./path/to/local-plugin.js"],
+  "rules": {
+    "core-rule-name": true,
+    "third-party-plugin/rule-name": true,
+    "named-plugin-imported-form-local/rule-name": true
+  }
+}
+```
+
 #### Interface
 
 ```ts
