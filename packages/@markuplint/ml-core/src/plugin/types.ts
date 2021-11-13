@@ -1,9 +1,9 @@
-import type { AnyMLRule } from '../ml-rule';
+import type { AnyRuleSeed } from '../ml-rule';
 import type { Config } from '@markuplint/ml-config';
 
 export type Plugin = {
 	name: string;
-	rules?: Record<string, AnyMLRule>;
+	rules?: Record<string, AnyRuleSeed>;
 	configs?: Record<string, Config>[];
 };
 

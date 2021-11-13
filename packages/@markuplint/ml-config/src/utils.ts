@@ -1,4 +1,4 @@
-import type { Rule, RuleConfigValue } from './types';
+import type { AnyRule, RuleConfigValue } from './types';
 
 import mustache from 'mustache';
 
@@ -58,7 +58,7 @@ export function provideValue(template: string, data: Record<string, string>) {
 	return result;
 }
 
-export function exchangeValueOnRule(rule: Rule, data: Record<string, string>): Rule | undefined {
+export function exchangeValueOnRule(rule: AnyRule, data: Record<string, string>): AnyRule | undefined {
 	if (rule != null && typeof rule === 'object' && !Array.isArray(rule)) {
 		if (rule.value != null) {
 			rule = {

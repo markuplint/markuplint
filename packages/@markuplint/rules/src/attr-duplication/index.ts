@@ -1,7 +1,6 @@
 import { createRule } from '@markuplint/ml-core';
 
 export default createRule({
-	name: 'attr-duplication',
 	defaultValue: null,
 	defaultOptions: null,
 	async verify({ document, report, t }) {

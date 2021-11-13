@@ -22,8 +22,6 @@ type Options = {
 };
 
 export default createRule<true, Options>({
-	name: 'wai-aria',
-	defaultLevel: 'error',
 	defaultValue: true,
 	defaultOptions: {
 		checkingValue: true,

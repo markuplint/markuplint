@@ -2,13 +2,12 @@ import { ElementCloseTag, createRule, getIndent } from '@markuplint/ml-core';
 
 export type Value = 'tab' | number;
 export interface IndentationOptions {
-	alignment: boolean;
-	'indent-nested-nodes': boolean | 'always' | 'never';
+	alignment?: boolean;
+	'indent-nested-nodes'?: boolean | 'always' | 'never';
 }
 
 export default createRule<Value, IndentationOptions>({
-	name: 'indentation',
-	defaultLevel: 'warning',
+	defaultServerity: 'warning',
 	defaultValue: 2,
 	defaultOptions: {
 		alignment: true,

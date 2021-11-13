@@ -1,22 +1,16 @@
-import { mlTest } from 'markuplint';
+import { mlRuleTest } from 'markuplint';
 
 import rule from './';
 
 test('warns if specified attribute value is invalid', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
+		{ rule: true },
 	);
 
 	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 4,
@@ -24,7 +18,6 @@ test('warns if specified attribute value is invalid', async () => {
 			raw: 'invalid-attr',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 33,
@@ -36,20 +29,10 @@ test('warns if specified attribute value is invalid', async () => {
 });
 
 test('Type check', async () => {
-	const { violations } = await mlTest(
-		'<form name=""></form>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations } = await mlRuleTest(rule, '<form name=""></form>', { rule: true });
 
 	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 13,
@@ -60,80 +43,32 @@ test('Type check', async () => {
 });
 
 test('disable', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
-		{
-			rules: {
-				'invalid-attr': false,
-			},
-		},
-		[rule],
-		'en',
+		{ rule: false },
 	);
 
 	expect(violations.length).toBe(0);
 });
 
 test('the input element type case-insensitive', async () => {
-	const { violations } = await mlTest(
-		'<input type="checkbox" checked>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked>', { rule: true });
 
 	expect(violations.length).toBe(0);
 
-	const { violations: violations2 } = await mlTest(
-		'<input type="checkBox" checked>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations: violations2 } = await mlRuleTest(rule, '<input type="checkBox" checked>', { rule: true });
 
 	expect(violations2.length).toBe(0);
 });
 
 test('ancestor condition', async () => {
 	expect(
-		(
-			await mlTest(
-				'<picture><source media="print"></picture>',
-				{
-					rules: {
-						'invalid-attr': true,
-					},
-				},
-				[rule],
-				'en',
-			)
-		).violations,
+		(await mlRuleTest(rule, '<picture><source media="print"></picture>', { rule: true })).violations,
 	).toStrictEqual([]);
 
-	expect(
-		(
-			await mlTest(
-				'<audio><source media="print"></audio>',
-				{
-					rules: {
-						'invalid-attr': true,
-					},
-				},
-				[rule],
-				'en',
-			)
-		).violations,
-	).toStrictEqual([
+	expect((await mlRuleTest(rule, '<audio><source media="print"></audio>', { rule: true })).violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 16,
@@ -144,28 +79,20 @@ test('ancestor condition', async () => {
 });
 
 test('custom rule', async () => {
-	const { violations } = await mlTest(
-		'<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>',
-		{
-			rules: {
-				'invalid-attr': {
-					option: {
-						attrs: {
-							'x-attr': {
-								pattern: '/[a-z]+/',
-							},
-						},
+	const { violations } = await mlRuleTest(rule, '<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>', {
+		rule: {
+			option: {
+				attrs: {
+					'x-attr': {
+						pattern: '/[a-z]+/',
 					},
 				},
 			},
 		},
-		[rule],
-		'en',
-	);
+	});
 
 	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 15,
@@ -176,28 +103,20 @@ test('custom rule', async () => {
 });
 
 test('custom rule: type', async () => {
-	const { violations } = await mlTest(
-		'<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>',
-		{
-			rules: {
-				'invalid-attr': {
-					option: {
-						attrs: {
-							'x-attr': {
-								type: 'Int',
-							},
-						},
+	const { violations } = await mlRuleTest(rule, '<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>', {
+		rule: {
+			option: {
+				attrs: {
+					'x-attr': {
+						type: 'Int',
 					},
 				},
 			},
 		},
-		[rule],
-		'en',
-	);
+	});
 
 	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 41,
@@ -208,66 +127,41 @@ test('custom rule: type', async () => {
 });
 
 test('custom element', async () => {
-	const { violations } = await mlTest(
-		'<custom-element any-attr></custom-element>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations } = await mlRuleTest(rule, '<custom-element any-attr></custom-element>', { rule: true });
 
 	expect(violations.length).toBe(0);
 });
 
 test('custom element and custom rule', async () => {
-	const { violations } = await mlTest(
-		'<custom-element any-attr="any-string"></custom-element>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-			nodeRules: [
-				{
-					tagName: 'custom-element',
-					rules: {
-						'invalid-attr': {
-							option: {
-								attrs: {
-									'any-attr': {
-										type: 'Int',
-									},
-								},
+	const { violations } = await mlRuleTest(rule, '<custom-element any-attr="any-string"></custom-element>', {
+		rule: true,
+
+		nodeRule: [
+			{
+				tagName: 'custom-element',
+				rule: {
+					option: {
+						attrs: {
+							'any-attr': {
+								type: 'Int',
 							},
 						},
 					},
 				},
-			],
-		},
-		[rule],
-		'en',
-	);
+			},
+		],
+	});
 
 	expect(violations.length).toBe(1);
 });
 
 test('prefix attribute', async () => {
-	const { violations } = await mlTest(
-		'<div v-bind:title="title" :class="classes" @click="click"></div>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations } = await mlRuleTest(rule, '<div v-bind:title="title" :class="classes" @click="click"></div>', {
+		rule: true,
+	});
 
 	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 6,
@@ -275,7 +169,6 @@ test('prefix attribute', async () => {
 			raw: 'v-bind:title',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 27,
@@ -283,7 +176,6 @@ test('prefix attribute', async () => {
 			raw: ':class',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			col: 44,
 			line: 1,
@@ -294,180 +186,62 @@ test('prefix attribute', async () => {
 });
 
 test('ignore prefix attribute', async () => {
-	const { violations } = await mlTest(
-		'<div v-bind:title="title" :class="classes" @click="click"></div>',
-		{
-			rules: {
-				'invalid-attr': {
-					option: {
-						ignoreAttrNamePrefix: ['v-bind:', ':', '@'],
-					},
-				},
+	const { violations } = await mlRuleTest(rule, '<div v-bind:title="title" :class="classes" @click="click"></div>', {
+		rule: {
+			option: {
+				ignoreAttrNamePrefix: ['v-bind:', ':', '@'],
 			},
 		},
-		[rule],
-		'en',
-	);
+	});
 
 	expect(violations.length).toBe(0);
 });
 
 test('URL attribute', async () => {
-	const { violations } = await mlTest(
-		'<img src="https://sample.com/path/to">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations } = await mlRuleTest(rule, '<img src="https://sample.com/path/to">', { rule: true });
 	expect(violations.length).toBe(0);
 
-	const { violations: violations2 } = await mlTest(
-		'<img src="//sample.com/path/to">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations: violations2 } = await mlRuleTest(rule, '<img src="//sample.com/path/to">', { rule: true });
 	expect(violations2.length).toBe(0);
 
-	const { violations: violations3 } = await mlTest(
-		'<img src="//user:pass@sample.com/path/to">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations: violations3 } = await mlRuleTest(rule, '<img src="//user:pass@sample.com/path/to">', {
+		rule: true,
+	});
 	expect(violations3.length).toBe(0);
 
-	const { violations: violations4 } = await mlTest(
-		'<img src="/path/to">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations: violations4 } = await mlRuleTest(rule, '<img src="/path/to">', { rule: true });
 	expect(violations4.length).toBe(0);
 
-	const { violations: violations5 } = await mlTest(
-		'<img src="/path/to?param=value">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations: violations5 } = await mlRuleTest(rule, '<img src="/path/to?param=value">', { rule: true });
 	expect(violations5.length).toBe(0);
 
-	const { violations: violations6 } = await mlTest(
-		'<img src="/?param=value">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations: violations6 } = await mlRuleTest(rule, '<img src="/?param=value">', { rule: true });
 	expect(violations6.length).toBe(0);
 
-	const { violations: violations7 } = await mlTest(
-		'<img src="?param=value">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations: violations7 } = await mlRuleTest(rule, '<img src="?param=value">', { rule: true });
 	expect(violations7.length).toBe(0);
 
-	const { violations: violations8 } = await mlTest(
-		'<img src="path/to">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations: violations8 } = await mlRuleTest(rule, '<img src="path/to">', { rule: true });
 	expect(violations8.length).toBe(0);
 
-	const { violations: violations9 } = await mlTest(
-		'<img src="./path/to">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations: violations9 } = await mlRuleTest(rule, '<img src="./path/to">', { rule: true });
 	expect(violations9.length).toBe(0);
 
-	const { violations: violations10 } = await mlTest(
-		'<img src="../path/to">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations: violations10 } = await mlRuleTest(rule, '<img src="../path/to">', { rule: true });
 	expect(violations10.length).toBe(0);
 
-	const { violations: violations11 } = await mlTest(
-		'<img src="/path/to#hash">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations: violations11 } = await mlRuleTest(rule, '<img src="/path/to#hash">', { rule: true });
 	expect(violations11.length).toBe(0);
 
-	const { violations: violations12 } = await mlTest(
-		'<img src="#hash">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations: violations12 } = await mlRuleTest(rule, '<img src="#hash">', { rule: true });
 	expect(violations12.length).toBe(0);
 });
 
 test('Foreign element', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		'<div><svg width="10px" height="10px" viewBox="0 0 10 10"></svg></div>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
+		{ rule: true },
 	);
 
 	expect(violations.length).toBe(0);
@@ -476,7 +250,8 @@ test('Foreign element', async () => {
 test('svg', async () => {
 	expect(
 		(
-			await mlTest(
+			await mlRuleTest(
+				rule,
 				`<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg" stroke="red" fill="grey">
 					<circle cx="50" cy="50" cz="50" r="40" />
 					<circle cx="150" cy="50" r="4" />
@@ -485,18 +260,11 @@ test('svg', async () => {
 					</svg>
 				</svg>
 				`,
-				{
-					rules: {
-						'invalid-attr': true,
-					},
-				},
-				[rule],
-				'en',
+				{ rule: true },
 			)
 		).violations,
 	).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 2,
 			col: 30,
@@ -507,49 +275,36 @@ test('svg', async () => {
 });
 
 test('Pug', async () => {
-	const { violations } = await mlTest(
-		'button(type=buttonType)',
-		{
-			parser: {
-				'.*': '@markuplint/pug-parser',
-			},
-			rules: {
-				'invalid-attr': true,
-			},
+	const { violations } = await mlRuleTest(rule, 'button(type=buttonType)', {
+		parser: {
+			'.*': '@markuplint/pug-parser',
 		},
-		[rule],
-		'en',
-	);
+		rule: true,
+	});
 
 	expect(violations.length).toBe(0);
 });
 
 test('Vue', async () => {
-	const { violations: violations1 } = await mlTest(
+	const { violations: violations1 } = await mlRuleTest(
+		rule,
 		'<template><button type="buttonType"></button></template>',
 		{
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
-			rules: {
-				'invalid-attr': true,
-			},
+			rule: true,
 		},
-		[rule],
-		'en',
 	);
-	const { violations: violations2 } = await mlTest(
+	const { violations: violations2 } = await mlRuleTest(
+		rule,
 		'<template><button :type="buttonType"></button></template>',
 		{
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
-			rules: {
-				'invalid-attr': true,
-			},
+			rule: true,
 		},
-		[rule],
-		'en',
 	);
 
 	expect(violations1.length).toBe(1);
@@ -557,32 +312,26 @@ test('Vue', async () => {
 });
 
 test('Vue iterator', async () => {
-	const { violations: violations1 } = await mlTest(
+	const { violations: violations1 } = await mlRuleTest(
+		rule,
 		'<template><ul ref="ul"><li key="key"></li></ul></template>',
 		{
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
 			specs: ['@markuplint/vue-spec'],
-			rules: {
-				'invalid-attr': true,
-			},
+			rule: true,
 		},
-		[rule],
-		'en',
 	);
-	const { violations: violations2 } = await mlTest(
+	const { violations: violations2 } = await mlRuleTest(
+		rule,
 		'<template><ul><li v-for="item of list" :key="key"></li></ul></template>',
 		{
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
-			rules: {
-				'invalid-attr': true,
-			},
+			rule: true,
 		},
-		[rule],
-		'en',
 	);
 
 	expect(violations1.length).toBe(1);
@@ -590,41 +339,34 @@ test('Vue iterator', async () => {
 });
 
 test('React Component', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		'<Component className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
 		{
 			parser: {
 				'.*': '@markuplint/jsx-parser',
 			},
-			rules: {
-				'invalid-attr': true,
-			},
+			rule: true,
 		},
-		[rule],
-		'en',
 	);
 
 	expect(violations).toStrictEqual([]);
 });
 
 test('React HTML', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		'<img className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
 		{
 			parser: {
 				'.*': '@markuplint/jsx-parser',
 			},
-			rules: {
-				'invalid-attr': true,
-			},
+			rule: true,
 		},
-		[rule],
-		'en',
 	);
 
 	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 36,
@@ -632,7 +374,6 @@ test('React HTML', async () => {
 			raw: 'tabindex',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 71,
@@ -643,23 +384,15 @@ test('React HTML', async () => {
 });
 
 test('React', async () => {
-	const { violations } = await mlTest(
-		'<a href={href} target={target} invalidAttr={invalidAttr} />',
-		{
-			parser: {
-				'.*': '@markuplint/jsx-parser',
-			},
-			rules: {
-				'invalid-attr': true,
-			},
+	const { violations } = await mlRuleTest(rule, '<a href={href} target={target} invalidAttr={invalidAttr} />', {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
 		},
-		[rule],
-		'en',
-	);
+		rule: true,
+	});
 
 	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 32,
@@ -672,23 +405,15 @@ test('React', async () => {
 test('React with spread attribute', async () => {
 	expect(
 		(
-			await mlTest(
-				'<a target="_blank" />',
-				{
-					parser: {
-						'.*': '@markuplint/jsx-parser',
-					},
-					rules: {
-						'invalid-attr': true,
-					},
+			await mlRuleTest(rule, '<a target="_blank" />', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
 				},
-				[rule],
-				'en',
-			)
+				rule: true,
+			})
 		).violations,
 	).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 4,
@@ -699,41 +424,26 @@ test('React with spread attribute', async () => {
 
 	expect(
 		(
-			await mlTest(
-				'<a {...props} target="_blank" />',
-				{
-					parser: {
-						'.*': '@markuplint/jsx-parser',
-					},
-					rules: {
-						'invalid-attr': true,
-					},
+			await mlRuleTest(rule, '<a {...props} target="_blank" />', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
 				},
-				[rule],
-				'en',
-			)
+				rule: true,
+			})
 		).violations,
 	).toStrictEqual([]);
 
 	expect(
 		(
-			await mlTest(
-				'<img invalid />',
-				{
-					parser: {
-						'.*': '@markuplint/jsx-parser',
-					},
-					rules: {
-						'invalid-attr': true,
-					},
+			await mlRuleTest(rule, '<img invalid />', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
 				},
-				[rule],
-				'en',
-			)
+				rule: true,
+			})
 		).violations,
 	).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 6,
@@ -744,23 +454,15 @@ test('React with spread attribute', async () => {
 
 	expect(
 		(
-			await mlTest(
-				'<img {...props} invalid />',
-				{
-					parser: {
-						'.*': '@markuplint/jsx-parser',
-					},
-					rules: {
-						'invalid-attr': true,
-					},
+			await mlRuleTest(rule, '<img {...props} invalid />', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
 				},
-				[rule],
-				'en',
-			)
+				rule: true,
+			})
 		).violations,
 	).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 17,
@@ -780,38 +482,23 @@ test('React spec', async () => {
 	<select value={0} defaultValue={0}></select>
 	<textarea value={0} defaultValue={0}></textarea>
 </>`;
-	const { violations: violations1 } = await mlTest(
-		jsx,
-		{
-			parser: {
-				'.*': '@markuplint/jsx-parser',
-			},
-			rules: {
-				'invalid-attr': true,
-			},
+	const { violations: violations1 } = await mlRuleTest(rule, jsx, {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
 		},
-		[rule],
-		'en',
-	);
+		rule: true,
+	});
 
-	const { violations: violations2 } = await mlTest(
-		jsx,
-		{
-			parser: {
-				'.*': '@markuplint/jsx-parser',
-			},
-			specs: ['@markuplint/react-spec'],
-			rules: {
-				'invalid-attr': true,
-			},
+	const { violations: violations2 } = await mlRuleTest(rule, jsx, {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
 		},
-		[rule],
-		'en',
-	);
+		specs: ['@markuplint/react-spec'],
+		rule: true,
+	});
 
 	expect(violations1).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 2,
 			col: 7,
@@ -819,7 +506,6 @@ test('React spec', async () => {
 			raw: 'value',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 2,
 			col: 13,
@@ -827,7 +513,6 @@ test('React spec', async () => {
 			raw: 'defaultValue',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 3,
 			col: 9,
@@ -835,7 +520,6 @@ test('React spec', async () => {
 			raw: 'defaultChecked',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 4,
 			col: 25,
@@ -843,7 +527,6 @@ test('React spec', async () => {
 			raw: 'defaultChecked',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 5,
 			col: 10,
@@ -851,7 +534,6 @@ test('React spec', async () => {
 			raw: 'value',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 5,
 			col: 16,
@@ -859,7 +541,6 @@ test('React spec', async () => {
 			raw: 'defaultValue',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 6,
 			col: 12,
@@ -867,7 +548,6 @@ test('React spec', async () => {
 			raw: 'value',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 6,
 			col: 18,
@@ -875,7 +555,6 @@ test('React spec', async () => {
 			raw: 'defaultValue',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 7,
 			col: 10,
@@ -883,7 +562,6 @@ test('React spec', async () => {
 			raw: 'value',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 7,
 			col: 20,
@@ -891,7 +569,6 @@ test('React spec', async () => {
 			raw: 'defaultValue',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 8,
 			col: 12,
@@ -899,7 +576,6 @@ test('React spec', async () => {
 			raw: 'value',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 8,
 			col: 22,
@@ -910,7 +586,6 @@ test('React spec', async () => {
 
 	expect(violations2).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 2,
 			col: 7,
@@ -918,7 +593,6 @@ test('React spec', async () => {
 			raw: 'value',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 2,
 			col: 13,
@@ -926,7 +600,6 @@ test('React spec', async () => {
 			raw: 'defaultValue',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 3,
 			col: 9,
@@ -937,7 +610,8 @@ test('React spec', async () => {
 });
 
 test('regexSelector', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`<picture>
 	<source srcset="logo-3x.png 3x">
 	<source srcset="logo@3x.png 3x">
@@ -947,10 +621,9 @@ test('regexSelector', async () => {
 </picture>
 `,
 		{
-			rules: {
-				'invalid-attr': true,
-			},
-			nodeRules: [
+			rule: true,
+
+			nodeRule: [
 				{
 					regexSelector: {
 						nodeName: 'img',
@@ -961,13 +634,11 @@ test('regexSelector', async () => {
 							nodeName: 'source',
 						},
 					},
-					rules: {
-						'invalid-attr': {
-							option: {
-								attrs: {
-									srcset: {
-										enum: ['{{FileName}}@2x.{{Exp}} 2x', '{{FileName}}@3x.{{Exp}} 3x'],
-									},
+					rule: {
+						option: {
+							attrs: {
+								srcset: {
+									enum: ['{{FileName}}@2x.{{Exp}} 2x', '{{FileName}}@3x.{{Exp}} 3x'],
 								},
 							},
 						},
@@ -975,12 +646,9 @@ test('regexSelector', async () => {
 				},
 			],
 		},
-		[rule],
-		'en',
 	);
 	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 2,
 			col: 18,
@@ -988,7 +656,6 @@ test('regexSelector', async () => {
 			raw: 'logo-3x.png 3x',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 4,
 			col: 18,

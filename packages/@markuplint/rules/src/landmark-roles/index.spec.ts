@@ -1,9 +1,10 @@
-import { mlTest } from 'markuplint';
+import { mlRuleTest } from 'markuplint';
 
 import rule from './';
 
 test('No warning', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 <html>
 <body>
@@ -18,20 +19,15 @@ test('No warning', async () => {
 </body>
 </html>
 `,
-		{
-			rules: {
-				'landmark-roles': true,
-			},
-		},
-		[rule],
-		'en',
+		{ rule: true },
 	);
 
 	expect(violations).toStrictEqual([]);
 });
 
 test('Top level landmarks', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 <html>
 <body>
@@ -46,18 +42,11 @@ test('Top level landmarks', async () => {
 </body>
 </html>
 `,
-		{
-			rules: {
-				'landmark-roles': true,
-			},
-		},
-		[rule],
-		'en',
+		{ rule: true },
 	);
 
 	expect(violations).toStrictEqual([
 		{
-			ruleId: 'landmark-roles',
 			severity: 'warning',
 			line: 9,
 			col: 3,
@@ -68,7 +57,8 @@ test('Top level landmarks', async () => {
 });
 
 test('Top level landmarks: disabled', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 <html>
 <body>
@@ -84,27 +74,23 @@ test('Top level landmarks: disabled', async () => {
 </html>
 `,
 		{
-			rules: {
-				'landmark-roles': true,
-			},
-			nodeRules: [
+			rule: true,
+
+			nodeRule: [
 				{
 					tagName: 'aside',
-					rules: {
-						'landmark-roles': false,
-					},
+					rule: false,
 				},
 			],
 		},
-		[rule],
-		'en',
 	);
 
 	expect(violations).toStrictEqual([]);
 });
 
 test('Top level landmarks: ignoreRoles option', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 <html>
 <body>
@@ -120,23 +106,20 @@ test('Top level landmarks: ignoreRoles option', async () => {
 </html>
 `,
 		{
-			rules: {
-				'landmark-roles': {
-					option: {
-						ignoreRoles: ['complementary'],
-					},
+			rule: {
+				option: {
+					ignoreRoles: ['complementary'],
 				},
 			},
 		},
-		[rule],
-		'en',
 	);
 
 	expect(violations).toStrictEqual([]);
 });
 
 test('Duplicated area: has-label', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 <html>
 <body>
@@ -152,23 +135,20 @@ test('Duplicated area: has-label', async () => {
 </html>
 `,
 		{
-			rules: {
-				'landmark-roles': {
-					option: {
-						ignoreRoles: ['complementary'],
-					},
+			rule: {
+				option: {
+					ignoreRoles: ['complementary'],
 				},
 			},
 		},
-		[rule],
-		'en',
 	);
 
 	expect(violations).toStrictEqual([]);
 });
 
 test('Duplicated area: no-label', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 <html>
 <body>
@@ -184,21 +164,16 @@ test('Duplicated area: no-label', async () => {
 </html>
 `,
 		{
-			rules: {
-				'landmark-roles': {
-					option: {
-						ignoreRoles: ['complementary'],
-					},
+			rule: {
+				option: {
+					ignoreRoles: ['complementary'],
 				},
 			},
 		},
-		[rule],
-		'en',
 	);
 
 	expect(violations).toStrictEqual([
 		{
-			ruleId: 'landmark-roles',
 			severity: 'warning',
 			line: 5,
 			col: 2,
@@ -206,7 +181,6 @@ test('Duplicated area: no-label', async () => {
 			message: 'Require unique accessible name',
 		},
 		{
-			ruleId: 'landmark-roles',
 			severity: 'warning',
 			line: 8,
 			col: 3,

@@ -59,3 +59,38 @@ describe('Watcher', () => {
 		return Promise.resolve();
 	});
 });
+
+describe('Resolving the plugin', () => {
+	it('config', async () => {
+		const file = await MLEngine.toMLFile('test/fixture/001.html');
+		const engine = new MLEngine(file, {
+			config: {
+				plugins: [
+					{
+						name: path.resolve(__dirname, '..', '..', 'test', 'plugin001.js'),
+						settings: {
+							foo: 'IT IS SUCCESS',
+						},
+					},
+				],
+				rules: {
+					'foo/bar': true,
+				},
+			},
+		});
+		const result = await engine.exec();
+		if (!result) {
+			throw new Error('Test failed');
+		}
+		expect(result.violations).toStrictEqual([
+			{
+				ruleId: 'foo/bar',
+				severity: 'error',
+				line: 0,
+				col: 0,
+				message: "It's test: IT IS SUCCESS",
+				raw: '',
+			},
+		]);
+	});
+});

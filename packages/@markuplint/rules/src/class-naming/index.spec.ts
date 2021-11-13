@@ -1,9 +1,10 @@
-import { mlTest } from 'markuplint';
+import { mlRuleTest } from 'markuplint';
 
 import rule from './';
 
 test('pass class name', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 		<div class="c-root">
 			<div class="c-root__el"></div>
@@ -11,21 +12,18 @@ test('pass class name', async () => {
 		</div>
 		`,
 		{
-			rules: {
-				'class-naming': {
-					severity: 'error',
-					value: '/^c-[a-z]+/',
-				},
+			rule: {
+				severity: 'error',
+				value: '/^c-[a-z]+/',
 			},
 		},
-		[rule],
-		'en',
 	);
 	expect(violations.length).toBe(0);
 });
 
 test('unmatched class name', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 		<div class="c-root">
 			<div class="c-root__el"></div>
@@ -33,26 +31,20 @@ test('unmatched class name', async () => {
 		</div>
 		`,
 		{
-			rules: {
-				'class-naming': {
-					severity: 'error',
-					value: '/^c-[a-z]+/',
-				},
+			rule: {
+				severity: 'error',
+				value: '/^c-[a-z]+/',
 			},
-			nodeRules: [
+			nodeRule: [
 				{
 					selector: '[class^="c-"]:not([class*="__"])',
-					rules: {
-						'class-naming': {
-							severity: 'error',
-							value: '/^c-[a-z]+__[a-z0-9]+/',
-						},
+					rule: {
+						severity: 'error',
+						value: '/^c-[a-z]+__[a-z0-9]+/',
 					},
 				},
 			],
 		},
-		[rule],
-		'en',
 	);
 	expect(violations).toStrictEqual([
 		{
@@ -61,39 +53,33 @@ test('unmatched class name', async () => {
 			line: 2,
 			col: 15,
 			raw: 'c-root',
-			ruleId: 'class-naming',
 		},
 	]);
 });
 
 test('childNodeRules', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 		<div class="c-root">
 			<div class="c-root_x"></div>
 		</div>
 		`,
 		{
-			rules: {
-				'class-naming': {
-					severity: 'error',
-					value: '/^c-[a-z]+/',
-				},
+			rule: {
+				severity: 'error',
+				value: '/^c-[a-z]+/',
 			},
-			childNodeRules: [
+			childNodeRule: [
 				{
 					selector: '[class^="c-"]:not([class*="__"])',
-					rules: {
-						'class-naming': {
-							severity: 'error',
-							value: '/^c-[a-z]+__[a-z0-9]+/',
-						},
+					rule: {
+						severity: 'error',
+						value: '/^c-[a-z]+__[a-z0-9]+/',
 					},
 				},
 			],
 		},
-		[rule],
-		'en',
 	);
 	expect(violations).toStrictEqual([
 		{
@@ -102,13 +88,13 @@ test('childNodeRules', async () => {
 			line: 3,
 			col: 16,
 			raw: 'c-root_x',
-			ruleId: 'class-naming',
 		},
 	]);
 });
 
 test('unmatched class name (2)', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 		<div class="c-root">
 			<div class="c-root__x">
@@ -120,15 +106,11 @@ test('unmatched class name (2)', async () => {
 		</div>
 		`,
 		{
-			rules: {
-				'class-naming': {
-					severity: 'error',
-					value: '/^c-[a-z]+/',
-				},
+			rule: {
+				severity: 'error',
+				value: '/^c-[a-z]+/',
 			},
 		},
-		[rule],
-		'en',
 	);
 	expect(violations).toStrictEqual([
 		{
@@ -137,13 +119,13 @@ test('unmatched class name (2)', async () => {
 			line: 6,
 			col: 18,
 			raw: 'hoge',
-			ruleId: 'class-naming',
 		},
 	]);
 });
 
 test('multi pattern', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 		<div class="c-root">
 			<div class="c-root__el"></div>
@@ -151,21 +133,18 @@ test('multi pattern', async () => {
 		</div>
 		`,
 		{
-			rules: {
-				'class-naming': {
-					severity: 'error',
-					value: ['/^c-[a-z]+/', 'exceptional'],
-				},
+			rule: {
+				severity: 'error',
+				value: ['/^c-[a-z]+/', 'exceptional'],
 			},
 		},
-		[rule],
-		'en',
 	);
 	expect(violations.length).toBe(0);
 });
 
 test('childNodeRules multi selectors', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 		<div class="c-root">
 			<div class="c-root__x">
@@ -177,37 +156,29 @@ test('childNodeRules multi selectors', async () => {
 		</div>
 		`,
 		{
-			rules: {
-				'class-naming': {
-					severity: 'error',
-					value: '/^c-[a-z]+/',
-				},
+			rule: {
+				severity: 'error',
+				value: '/^c-[a-z]+/',
 			},
-			childNodeRules: [
+			childNodeRule: [
 				{
 					selector: '[class^="c-"]:not([class*="__"])',
-					rules: {
-						'class-naming': {
-							severity: 'error',
-							value: '/^c-[a-z]+__[a-z0-9]+/',
-						},
+					rule: {
+						severity: 'error',
+						value: '/^c-[a-z]+__[a-z0-9]+/',
 					},
 					inheritance: true,
 				},
 				{
 					selector: 'main',
-					rules: {
-						'class-naming': {
-							severity: 'error',
-							value: 'hoge2',
-						},
+					rule: {
+						severity: 'error',
+						value: 'hoge2',
 					},
 					inheritance: true,
 				},
 			],
 		},
-		[rule],
-		'en',
 	);
 	expect(violations).toStrictEqual([
 		{
@@ -216,13 +187,13 @@ test('childNodeRules multi selectors', async () => {
 			line: 6,
 			col: 18,
 			raw: 'hoge',
-			ruleId: 'class-naming',
 		},
 	]);
 });
 
 test('childNodeRules multi selectors (No error)', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 		<div class="c-root">
 			<div class="c-root__x">
@@ -234,62 +205,48 @@ test('childNodeRules multi selectors (No error)', async () => {
 		</div>
 		`,
 		{
-			rules: {
-				'class-naming': {
-					severity: 'error',
-					value: '/^c-[a-z]+/',
-				},
+			rule: {
+				severity: 'error',
+				value: '/^c-[a-z]+/',
 			},
-			childNodeRules: [
+			childNodeRule: [
 				{
 					selector: '[class^="c-"]:not([class*="__"])',
-					rules: {
-						'class-naming': {
-							severity: 'error',
-							value: '/^c-[a-z]+__[a-z0-9]+/',
-						},
+					rule: {
+						severity: 'error',
+						value: '/^c-[a-z]+__[a-z0-9]+/',
 					},
 					inheritance: true,
 				},
 				{
 					selector: 'main',
-					rules: {
-						'class-naming': {
-							severity: 'error',
-							value: '/^(?!c-).+$/',
-						},
+					rule: {
+						severity: 'error',
+						value: '/^(?!c-).+$/',
 					},
 					inheritance: true,
 				},
 			],
 		},
-		[rule],
-		'en',
 	);
 	expect(violations.length).toBe(0);
 });
 
 test('Dynamic value', async () => {
-	const { violations } = await mlTest(
-		'<div className={style}></div>',
-		{
-			rules: {
-				'class-naming': {
-					value: '/^c-[a-z]+/',
-				},
-			},
-			parser: {
-				'.*': '@markuplint/jsx-parser',
-			},
+	const { violations } = await mlRuleTest(rule, '<div className={style}></div>', {
+		rule: {
+			value: '/^c-[a-z]+/',
 		},
-		[rule],
-		'en',
-	);
+		parser: {
+			'.*': '@markuplint/jsx-parser',
+		},
+	});
 	expect(violations.length).toBe(0);
 });
 
 test('regexSelector', async () => {
-	const { violations } = await mlTest(
+	const { violations } = await mlRuleTest(
+		rule,
 		`<section class="Card">
 	<div class="Card__header">
 		<div class="Heading"><h3 class="Heading__lv3">Title</h3></div>
@@ -330,30 +287,24 @@ test('regexSelector', async () => {
 </section>
 `,
 		{
-			rules: {
-				'class-naming': '/.+/',
-			},
-			childNodeRules: [
+			rule: '/.+/',
+
+			childNodeRule: [
 				{
 					regexSelector: {
 						attrName: 'class',
 						attrValue: '/^(?<BlockName>[A-Z][a-z0-9]+)(?:__[a-z][a-z0-9-]+)?$/',
 					},
-					rules: {
-						'class-naming': {
-							value: ['/^{{BlockName}}__[a-z][a-z0-9-]+$/', '/^([A-Z][a-z0-9]+)$/'],
-							reason: 'Do not allow include the element in a no-own block.',
-						},
+					rule: {
+						value: ['/^{{BlockName}}__[a-z][a-z0-9-]+$/', '/^([A-Z][a-z0-9]+)$/'],
+						reason: 'Do not allow include the element in a no-own block.',
 					},
 				},
 			],
 		},
-		[rule],
-		'en',
 	);
 	expect(violations).toStrictEqual([
 		{
-			ruleId: 'class-naming',
 			severity: 'warning',
 			line: 19,
 			col: 14,
@@ -363,7 +314,6 @@ test('regexSelector', async () => {
 			reason: 'Do not allow include the element in a no-own block.',
 		},
 		{
-			ruleId: 'class-naming',
 			severity: 'warning',
 			line: 24,
 			col: 14,
@@ -373,7 +323,6 @@ test('regexSelector', async () => {
 			reason: 'Do not allow include the element in a no-own block.',
 		},
 		{
-			ruleId: 'class-naming',
 			severity: 'warning',
 			line: 31,
 			col: 15,

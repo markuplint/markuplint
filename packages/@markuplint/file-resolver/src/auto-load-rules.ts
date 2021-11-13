@@ -1,4 +1,6 @@
-import type { Ruleset, AnyMLRule } from '@markuplint/ml-core';
+import type { Ruleset, AnyMLRule, AnyRuleSeed } from '@markuplint/ml-core';
+
+import { MLRule } from '@markuplint/ml-core';
 
 const cache = new Map<string, AnyMLRule>();
 
@@ -16,33 +18,49 @@ export async function autoLoadRules(ruleset: Ruleset) {
 			continue;
 		}
 
-		let rule: AnyMLRule | null = null;
+		let seed: AnyRuleSeed | null = null;
 
 		try {
 			const _module = await import(`@markuplint/rule-${ruleName}`);
-			rule = _module.default;
+			seed = _module.default;
+			if (!(seed && 'defaultValue' in seed && 'defaultOptions' in seed && 'verify' in seed)) {
+				seed = null;
+			}
 		} catch (e) {
 			errors.push(e);
 		}
 
-		if (rule) {
+		if (seed) {
+			const rule = new MLRule({
+				name: ruleName,
+				...seed,
+			});
+
+			cache.set(ruleName, rule);
 			rules.push(rule);
 			continue;
 		}
 
 		try {
 			const _module = await import(`markuplint-rule-${ruleName}`);
-			rule = _module.default;
+			seed = _module.default;
+			if (!(seed && 'defaultValue' in seed && 'defaultOptions' in seed && 'verify' in seed)) {
+				seed = null;
+			}
 		} catch (e) {
 			errors.push(e);
 		}
 
-		if (!rule) {
+		if (seed) {
+			const rule = new MLRule({
+				name: ruleName,
+				...seed,
+			});
+
+			cache.set(ruleName, rule);
+			rules.push(rule);
 			continue;
 		}
-
-		cache.set(ruleName, rule);
-		rules.push(rule);
 	}
 
 	return {

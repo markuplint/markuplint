@@ -22,8 +22,6 @@ type Rule =
 	  };
 
 export default createRule<true, Option>({
-	name: 'invalid-attr',
-	defaultLevel: 'error',
 	defaultValue: true,
 	defaultOptions: {},
 	async verify({ document, report, t }) {

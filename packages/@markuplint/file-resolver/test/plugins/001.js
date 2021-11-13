@@ -7,7 +7,6 @@ module.exports = createPlugin({
 		return {
 			rules: {
 				bar: {
-					name: 'bar2',
 					verify: async () => [],
 				},
 			},

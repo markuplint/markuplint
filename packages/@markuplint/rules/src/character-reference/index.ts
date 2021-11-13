@@ -6,7 +6,6 @@ const defaultChars = ['"', '&', '<', '>'];
 const ignoreParentElement = ['script', 'style'];
 
 export default createRule<Value>({
-	name: 'character-reference',
 	defaultValue: true,
 	defaultOptions: null,
 	async verify({ document, report, t }) {

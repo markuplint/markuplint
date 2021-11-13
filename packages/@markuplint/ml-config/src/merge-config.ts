@@ -1,4 +1,4 @@
-import type { Config, Nullable, Rule, RuleConfigValue, Rules, SpecConfig, SpecConfig_v1 } from './types';
+import type { Config, Nullable, AnyRule, RuleConfigValue, Rules, SpecConfig, SpecConfig_v1 } from './types';
 
 import deepmerge from 'deepmerge';
 import { isPlainObject } from 'is-plain-object';
@@ -126,7 +126,7 @@ function mergeRules(a: Nullable<Rules>, b: Nullable<Rules>): Rules | undefined {
 	return res;
 }
 
-function mergeRule(a: Nullable<Rule>, b: Rule): Rule {
+function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
 	if (a === undefined) {
 		return b;
 	}

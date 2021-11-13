@@ -1,5 +1,5 @@
 import type { Option } from './helper';
-import type { MLRuleOptions } from '@markuplint/ml-core';
+import type { RuleSeed } from '@markuplint/ml-core';
 import type { TextlintResult } from '@textlint/kernel';
 
 import { lintText } from './helper';
@@ -7,7 +7,7 @@ import { lintText } from './helper';
 export const defaultOptions = {};
 
 export const textlintVerify: (
-	...args: Parameters<MLRuleOptions<boolean, Option>['verify']>
+	...args: Parameters<RuleSeed<boolean, Option>['verify']>
 ) => Promise<TextlintResult | undefined> = async context => {
 	const html = context.document.toString();
 	const option = context.globalRule.option;

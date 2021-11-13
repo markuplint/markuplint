@@ -1,4 +1,6 @@
-import type { AnyMLRule, Ruleset, Plugin } from '@markuplint/ml-core';
+import type { AnyMLRule, Ruleset, Plugin, AnyRuleSeed } from '@markuplint/ml-core';
+
+import { MLRule } from '@markuplint/ml-core';
 
 import { autoLoadRules } from './auto-load-rules';
 
@@ -18,7 +20,11 @@ export async function resolveRules(
 		if (!plugin.rules) {
 			return;
 		}
-		Object.entries(plugin.rules).forEach(([, rule]) => {
+		Object.entries(plugin.rules).forEach(([name, seed]) => {
+			const rule = new MLRule({
+				name: `${plugin.name}/${name}`,
+				...seed,
+			});
 			rules.push(rule);
 		});
 	});
@@ -34,11 +40,18 @@ export async function resolveRules(
 
 async function importPresetRules() {
 	if (cachedPresetRules) {
-		return cachedPresetRules;
+		return cachedPresetRules.slice();
 	}
 	const modName = '@markuplint/rules';
-	const presetRules: AnyMLRule[] = (await import(modName)).default;
-	cachedPresetRules = presetRules;
+	const presetRules: Record<string, AnyRuleSeed> = (await import(modName)).default;
+	const ruleList = Object.entries(presetRules).map(([name, seed]) => {
+		const rule = new MLRule({
+			name,
+			...seed,
+		});
+		return rule;
+	});
+	cachedPresetRules = ruleList;
 	// Clone
-	return presetRules.slice();
+	return ruleList.slice();
 }

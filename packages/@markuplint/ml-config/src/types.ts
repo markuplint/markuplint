@@ -33,10 +33,11 @@ export type SpecConfig = {
  */
 export type SpecConfig_v1 = string | string[];
 
-export type Rule = RuleConfig<RuleConfigValue, unknown> | RuleConfigValue;
+export type Rule<T extends RuleConfigValue, O = void> = RuleConfig<T, O> | T | boolean;
 
+export type AnyRule = Rule<RuleConfigValue, unknown>;
 export interface Rules {
-	[ruleName: string]: Rule;
+	[ruleName: string]: AnyRule;
 }
 
 export type RuleConfig<T extends RuleConfigValue, O = void> = {

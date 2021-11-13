@@ -1,6 +1,6 @@
 import type { MLDOMElement } from './tokens';
 
-import { createRule } from '../create-rule';
+import { createRule } from '../ml-rule/create-test-rule';
 import { createTestDocument, createTestElement, createTestNodeList } from '../test';
 
 test('node count', async () => {
