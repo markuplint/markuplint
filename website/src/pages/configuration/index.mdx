@@ -16,9 +16,9 @@ You can get even if the filename is not `.markuplintrc`.
 
 The priority applied names are:
 
--   `markuplint` property in `package.json`
--   `markuplintrc.json`, `markuplintrc.yaml`, `markuplintrc.yml`, `markuplintrc.js`, or `markuplintrc.cjs`
--   `markuplint.config.js` or `markuplint.config.cjs`
+- `markuplint` property in `package.json`
+- `markuplintrc.json`, `markuplintrc.yaml`, `markuplintrc.yml`, `markuplintrc.js`, or `markuplintrc.cjs`
+- `markuplint.config.js` or `markuplint.config.cjs`
 
 `.markuplintrc`'s format is JSON and also YAML.
 
@@ -26,27 +26,27 @@ The priority applied names are:
 
 ```json
 {
-	"extends": [],
-	"plugins": {},
-	"parser": {},
-	"parserOptions": {},
-	"specs": [],
-	"excludeFiles": [],
-	"rules": {},
-	"nodeRules": [],
-	"childNodeRules": []
+  "extends": [],
+  "plugins": {},
+  "parser": {},
+  "parserOptions": {},
+  "specs": [],
+  "excludeFiles": [],
+  "rules": {},
+  "nodeRules": [],
+  "childNodeRules": []
 }
 ```
 
--   [`extends`](#properties/extends)
--   [`plugins`](#properties/plugins)
--   [`parser`](#properties/parser)
--   [`parserOptions`](#properties/parser-options)
--   [`specs`](#properties/specs)
--   [`excludeFiles`](#properties/exclude-files)
--   [`rules`](#properties/rules)
--   [`nodeRules`](#properties/node-rules)
--   [`childNodeRules`](#properties/child-node-rules)
+- [`extends`](#properties/extends)
+- [`plugins`](#properties/plugins)
+- [`parser`](#properties/parser)
+- [`parserOptions`](#properties/parser-options)
+- [`specs`](#properties/specs)
+- [`excludeFiles`](#properties/exclude-files)
+- [`rules`](#properties/rules)
+- [`nodeRules`](#properties/node-rules)
+- [`childNodeRules`](#properties/child-node-rules)
 
 ### Specification about paths
 
@@ -68,7 +68,7 @@ If you set other config file [paths](#properties/specification-about-paths), it 
 
 ```json
 {
-	"extends": ["../../.markuplintrc"]
+  "extends": ["../../.markuplintrc"]
 }
 ```
 
@@ -76,7 +76,7 @@ If you set other config file [paths](#properties/specification-about-paths), it 
 
 ```ts
 interface Config {
-	extends?: string[];
+  extends?: string[];
 }
 ```
 
@@ -88,23 +88,23 @@ Can set settings if the plugin has it.
 
 ```json
 {
-	"plugins": [
-		"third-party-plugin",
-		"@third-party/markuplint-plugin",
-		{
-			"name": "third-party-plugin2",
-			"settings": {
-				"foo": "bar"
-			}
-		},
-		"./path/to/local-plugin.js",
-		{
-			"name": "./path/to/local-plugin.js2",
-			"settings": {
-				"foo": "bar"
-			}
-		}
-	]
+  "plugins": [
+    "third-party-plugin",
+    "@third-party/markuplint-plugin",
+    {
+      "name": "third-party-plugin2",
+      "settings": {
+        "foo": "bar"
+      }
+    },
+    "./path/to/local-plugin.js",
+    {
+      "name": "./path/to/local-plugin.js2",
+      "settings": {
+        "foo": "bar"
+      }
+    }
+  ]
 }
 ```
 
@@ -112,13 +112,13 @@ Can set settings if the plugin has it.
 
 ```ts
 interface Config {
-	plugins?: (
-		| string
-		| {
-				name: string;
-				settings?: Record<string, unknown>;
-		  }
-	)[];
+  plugins?: (
+    | string
+    | {
+        name: string;
+        settings?: Record<string, unknown>;
+      }
+  )[];
 }
 ```
 
@@ -129,13 +129,13 @@ The regex should be set it matches the target lintee file (ex., the extension pa
 
 ```json
 {
-	"parser": {
-		"\\.pug$": "@markuplint/pug-parser",
-		"\\.[jt]sx?$": "@markuplint/jsx-parser",
-		"\\.vue$": "@markuplint/vue-parser",
-		"\\.svelte$": "@markuplint/svelte-parser",
-		"\\.ext$": "./path/to/custom-parser/any-lang.js"
-	}
+  "parser": {
+    "\\.pug$": "@markuplint/pug-parser",
+    "\\.[jt]sx?$": "@markuplint/jsx-parser",
+    "\\.vue$": "@markuplint/vue-parser",
+    "\\.svelte$": "@markuplint/svelte-parser",
+    "\\.ext$": "./path/to/custom-parser/any-lang.js"
+  }
 }
 ```
 
@@ -143,9 +143,9 @@ The regex should be set it matches the target lintee file (ex., the extension pa
 
 ```ts
 interface Config {
-	parser?: {
-		[regex: string]: string;
-	};
+  parser?: {
+    [regex: string]: string;
+  };
 }
 ```
 
@@ -153,16 +153,16 @@ interface Config {
 
 ```json
 {
-	"parserOptions": {
-		"ignoreFrontMatter": true
-	}
+  "parserOptions": {
+    "ignoreFrontMatter": true
+  }
 }
 ```
 
 #### `ignoreFrontMatter`
 
--   **Type**: `boolean`
--   **Default**: `false`
+- **Type**: `boolean`
+- **Default**: `false`
 
 When set `true` the parser ignores the [Front Matter](https://jekyllrb.com/docs/front-matter/) format part of the source code.
 
@@ -172,7 +172,7 @@ prop: value
 ---
 
 <html>
-	...
+  ...
 </html>
 ```
 
@@ -180,9 +180,9 @@ prop: value
 
 ```ts
 interface Config {
-	parserOptions?: {
-		ignoreFrontMatter?: boolean;
-	};
+  parserOptions?: {
+    ignoreFrontMatter?: boolean;
+  };
 }
 ```
 
@@ -193,10 +193,10 @@ The regex should be set it matches the target lintee file (ex., the extension pa
 
 ```json
 {
-	"specs": {
-		"\\.vue$": "@markuplint/vue-spec",
-		"\\.ext$": "./path/to/custom-specs/any-lang.js"
-	}
+  "specs": {
+    "\\.vue$": "@markuplint/vue-spec",
+    "\\.ext$": "./path/to/custom-specs/any-lang.js"
+  }
 }
 ```
 
@@ -205,8 +205,8 @@ But this is the format for version `1.x`, so it's **deprecated**.
 
 ```json
 {
-	// Depraceted
-	"specs": ["@markuplint/vue-spec", "./path/to/custom-specs/any-lang"]
+  // Depraceted
+  "specs": ["@markuplint/vue-spec", "./path/to/custom-specs/any-lang"]
 }
 ```
 
@@ -214,18 +214,18 @@ But this is the format for version `1.x`, so it's **deprecated**.
 
 ```ts
 interface Config {
-	specs?:
-		| {
-				[regex: string]: string;
-		  }
-		/**
-		 * @Depraceted
-		 */
-		| string[]
-		/**
-		 * @Depraceted
-		 */
-		| string;
+  specs?:
+    | {
+        [regex: string]: string;
+      }
+    /**
+     * @Depraceted
+     */
+    | string[]
+    /**
+     * @Depraceted
+     */
+    | string;
 }
 ```
 
@@ -237,7 +237,7 @@ Paths can be glob format.
 
 ```json
 {
-	"excludeFiles": ["./ignore.html", "./ignore/**/*.html"]
+  "excludeFiles": ["./ignore.html", "./ignore/**/*.html"]
 }
 ```
 
@@ -245,7 +245,7 @@ Paths can be glob format.
 
 ```ts
 interface Config {
-	excludeFiles?: string[];
+  excludeFiles?: string[];
 }
 ```
 
@@ -255,9 +255,9 @@ And add some rules to this property.
 
 ```json
 {
-	"rules": {
-		"rule-name": "value" // Add to here or more
-	}
+  "rules": {
+    "rule-name": "value" // Add to here or more
+  }
 }
 ```
 
@@ -269,16 +269,16 @@ Otherwise, you can set details if you set structure like:
 
 ```json
 {
-	// Type: string | number | boolean | Array
-	"value": "any-value",
+  // Type: string | number | boolean | Array
+  "value": "any-value",
 
-	// Optional, "error" or "warning"
-	"severity": "error",
+  // Optional, "error" or "warning"
+  "severity": "error",
 
-	// Optional
-	"option": {
-		"any-option": "any-optional-value"
-	}
+  // Optional
+  "option": {
+    "any-option": "any-optional-value"
+  }
 }
 ```
 
@@ -288,19 +288,19 @@ For example, setting of the rule of `invalid-attr`:
 
 ```json
 {
-	"rule": {
-		"invalid-attr": {
-			"value": true,
-			"severity": "warning",
-			"option": {
-				"attrs": {
-					"x-attr": {
-						"enum": ["value1", "value2", "value3"]
-					}
-				}
-			}
-		}
-	}
+  "rule": {
+    "invalid-attr": {
+      "value": true,
+      "severity": "warning",
+      "option": {
+        "attrs": {
+          "x-attr": {
+            "enum": ["value1", "value2", "value3"]
+          }
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -308,20 +308,20 @@ For example, setting of the rule of `invalid-attr`:
 
 ```ts
 interface Config {
-	rules?: {
-		[ruleName: string]: Rule<T, O>;
-	};
+  rules?: {
+    [ruleName: string]: Rule<T, O>;
+  };
 }
 
 type Rule<T, O> =
-	| T
-	| false
-	| {
-			severity?: 'error' | 'warning' | 'info';
-			value?: T;
-			option?: O;
-			reason?: string;
-	  };
+  | T
+  | false
+  | {
+      severity?: 'error' | 'warning' | 'info';
+      value?: T;
+      option?: O;
+      reason?: string;
+    };
 ```
 
 ### `nodeRules`
@@ -332,14 +332,14 @@ You can set the `rules` property of this property like the [`rules`](#properties
 
 ```json
 {
-	"nodeRules": [
-		{
-			"tagName": "main",
-			"rules": {
-				"class-naming": "/[a-z]+(__[a-z]+)?/"
-			}
-		}
-	]
+  "nodeRules": [
+    {
+      "tagName": "main",
+      "rules": {
+        "class-naming": "/[a-z]+(__[a-z]+)?/"
+      }
+    }
+  ]
 }
 ```
 
@@ -347,12 +347,12 @@ You can set the `rules` property of this property like the [`rules`](#properties
 
 ```ts
 interface Config {
-	nodeRules?: {
-		tagName: string;
-		rules: {
-			[ruleName: string]: Rule<T, O>;
-		};
-	}[];
+  nodeRules?: {
+    tagName: string;
+    rules: {
+      [ruleName: string]: Rule<T, O>;
+    };
+  }[];
 }
 ```
 
@@ -367,15 +367,15 @@ You can set the `rules` property of this property like the [`rules`](#properties
 
 ```json
 {
-	"childNodeRules": [
-		{
-			"selector": ".ignoreClass",
-			"inheritance": true,
-			"rules": {
-				"character-reference": true
-			}
-		}
-	]
+  "childNodeRules": [
+    {
+      "selector": ".ignoreClass",
+      "inheritance": true,
+      "rules": {
+        "character-reference": true
+      }
+    }
+  ]
 }
 ```
 
@@ -448,18 +448,18 @@ It is AND condition if combinate.
 
 ```json
 {
-	"childNodeRules": [
-		{
-			"regexSelector": {
-				"nodeName": "/^[a-z]+$/",
-				"attrName": "/^[a-z]+$/",
-				"attrValue": "/^[a-z]+$/"
-			},
-			"rules": {
-				"any-rule": "any-value"
-			}
-		}
-	]
+  "childNodeRules": [
+    {
+      "regexSelector": {
+        "nodeName": "/^[a-z]+$/",
+        "attrName": "/^[a-z]+$/",
+        "attrValue": "/^[a-z]+$/"
+      },
+      "rules": {
+        "any-rule": "any-value"
+      }
+    }
+  ]
 }
 ```
 
@@ -469,20 +469,20 @@ It expands the capturing incremental number prepended $ mark as a variable.
 
 ```json
 {
-	"childNodeRules": [
-		{
-			"regexSelector": {
-				"attrName": "/^data-([a-z]+)$/"
-			},
-			"rules": {
-				"any-rule": "It is {{ $1 }} data attribute",
-				"any-rule2": {
-					"value": "It is {{ $1 }} data attribute",
-					"severity": "error"
-				}
-			}
-		}
-	]
+  "childNodeRules": [
+    {
+      "regexSelector": {
+        "attrName": "/^data-([a-z]+)$/"
+      },
+      "rules": {
+        "any-rule": "It is {{ $1 }} data attribute",
+        "any-rule2": {
+          "value": "It is {{ $1 }} data attribute",
+          "severity": "error"
+        }
+      }
+    }
+  ]
 }
 ```
 
@@ -491,16 +491,16 @@ It expands the name as a variable.
 
 ```json
 {
-	"childNodeRules": [
-		{
-			"regexSelector": {
-				"attrName": "/^data-(?<dataName>[a-z]+)$/"
-			},
-			"rules": {
-				"any-rule": "It is {{ dataName }} data attribute"
-			}
-		}
-	]
+  "childNodeRules": [
+    {
+      "regexSelector": {
+        "attrName": "/^data-(?<dataName>[a-z]+)$/"
+      },
+      "rules": {
+        "any-rule": "It is {{ dataName }} data attribute"
+      }
+    }
+  ]
 }
 ```
 
@@ -509,26 +509,26 @@ The numbered capture may conflict and be overwritten.
 
 ```json
 {
-	"childNodeRules": [
-		{
-			"regexSelector": {
-				"attrName": "/^data-([a-z]+)$/", // It will be `$1`.
-				"attrValue": "^(.+)$" // It will be `$1` too. `$1` is overwritten.
-			},
-			"rules": {
-				"any-rule": "It is {{ $1 }} data attribute, and value is {{ $1 }}"
-			}
-		},
-		{
-			"regexSelector": {
-				"attrName": "/^data-(?<dataName>[a-z]+)$/", // It will be `dataName`.
-				"attrValue": "^(?<dataValue>.+)$" // It will be `dataValue`.
-			},
-			"rules": {
-				"any-rule": "It is {{ dataName }} data attribute, and value is {{ dataValue }}"
-			}
-		}
-	]
+  "childNodeRules": [
+    {
+      "regexSelector": {
+        "attrName": "/^data-([a-z]+)$/", // It will be `$1`.
+        "attrValue": "^(.+)$" // It will be `$1` too. `$1` is overwritten.
+      },
+      "rules": {
+        "any-rule": "It is {{ $1 }} data attribute, and value is {{ $1 }}"
+      }
+    },
+    {
+      "regexSelector": {
+        "attrName": "/^data-(?<dataName>[a-z]+)$/", // It will be `dataName`.
+        "attrValue": "^(?<dataValue>.+)$" // It will be `dataValue`.
+      },
+      "rules": {
+        "any-rule": "It is {{ dataName }} data attribute, and value is {{ dataValue }}"
+      }
+    }
+  ]
 }
 ```
 
@@ -536,17 +536,17 @@ You can select the element in complex conditions if you use the `combination` pr
 
 ```json
 {
-	"childNodeRules": [
-		{
-			"regexSelector": {
-				"attrName": "img",
-				"combination": {
-					"combinator": ":has(~)",
-					"nodeName": "source"
-				}
-			}
-		}
-	]
+  "childNodeRules": [
+    {
+      "regexSelector": {
+        "attrName": "img",
+        "combination": {
+          "combinator": ":has(~)",
+          "nodeName": "source"
+        }
+      }
+    }
+  ]
 }
 ```
 
@@ -554,40 +554,40 @@ The regexSelector above is the same as CSS selector `img:has(~ source)`.
 
 The `combinator` prop supports below:
 
--   `" "`: Descendant combinator
--   `">"`: Child combinator
--   `"+"`: Next-sibling combinator
--   `":has(+)"`: Prev-sibling combinator
--   `"~"`: Subsequent-sibling combinator
--   `":has(~)"`: Preceding-sibling
+- `" "`: Descendant combinator
+- `">"`: Child combinator
+- `"+"`: Next-sibling combinator
+- `":has(+)"`: Prev-sibling combinator
+- `"~"`: Subsequent-sibling combinator
+- `":has(~)"`: Preceding-sibling
 
 You can define nodes unlimitedly deeply.
 
 ```json
 {
-	"childNodeRules": [
-		{
-			"regexSelector": {
-				"attrName": "el1",
-				"combination": {
-					"combinator": " ",
-					"attrName": "el2",
-					"combination": {
-						"combinator": ">",
-						"attrName": "el3",
-						"combination": {
-							"combinator": "+",
-							"attrName": "el4",
-							"combination": {
-								"combinator": "~",
-								"attrName": "el5"
-							}
-						}
-					}
-				}
-			}
-		}
-	]
+  "childNodeRules": [
+    {
+      "regexSelector": {
+        "attrName": "el1",
+        "combination": {
+          "combinator": " ",
+          "attrName": "el2",
+          "combination": {
+            "combinator": ">",
+            "attrName": "el3",
+            "combination": {
+              "combinator": "+",
+              "attrName": "el4",
+              "combination": {
+                "combinator": "~",
+                "attrName": "el5"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }
 ```
 
@@ -595,37 +595,37 @@ The above is the same as CSS selector `el1 el2 > el3 + el4 ~ el5`.
 
 ##### Usecase of `regexSelector`
 
--   [Check designed CSS class name](/configuration/regex-selector-sample#Case%201:%20Check%20designed%20CSS%20class%20name)
--   [Check filenames of images](/configuration/regex-selector-sample#Case%202:%20Check%20filenames%20of%20images)
+- [Check designed CSS class name](/configuration/regex-selector-sample#Case%201:%20Check%20designed%20CSS%20class%20name)
+- [Check filenames of images](/configuration/regex-selector-sample#Case%202:%20Check%20filenames%20of%20images)
 
 #### Interface
 
 ```ts
 interface Config {
-	childNodeRules?: (
-		| {
-				selector: string;
-				inheritance?: boolean;
-				rules: {
-					[ruleName: string]: Rule<T, O>;
-				};
-		  }
-		| {
-				regexSelector: RegexSelector;
-				inheritance?: boolean;
-				rules: {
-					[ruleName: string]: Rule<T, O>;
-				};
-		  }
-	)[];
+  childNodeRules?: (
+    | {
+        selector: string;
+        inheritance?: boolean;
+        rules: {
+          [ruleName: string]: Rule<T, O>;
+        };
+      }
+    | {
+        regexSelector: RegexSelector;
+        inheritance?: boolean;
+        rules: {
+          [ruleName: string]: Rule<T, O>;
+        };
+      }
+  )[];
 }
 
 type RegexSelector = {
-	nodeName?: string;
-	attrName?: string;
-	attrValue?: string;
-	combination?: RegexSelector & {
-		combinator: ' ' | '>' | '+' | '~' | ':has(+)' | ':has(~)';
-	};
+  nodeName?: string;
+  attrName?: string;
+  attrValue?: string;
+  combination?: RegexSelector & {
+    combinator: ' ' | '>' | '+' | '~' | ':has(+)' | ':has(~)';
+  };
 };
 ```
