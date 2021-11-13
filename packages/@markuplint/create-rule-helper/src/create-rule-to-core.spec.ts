@@ -18,11 +18,17 @@ async function removeTestDir() {
 	await fs.rm(testDir2, { recursive: true, force: true });
 }
 
+async function delay(ms: number) {
+	await new Promise(r => setTimeout(r, ms));
+}
+
 beforeAll(async () => {
 	await removeTestDir();
+	await delay(500);
 });
 
 afterAll(async () => {
+	await delay(500);
 	await removeTestDir();
 });
 
@@ -33,15 +39,15 @@ test('error', async () => {
 });
 
 test('TS', async () => {
-	await craeteRuleToCore({ name: testDirName1, lang: 'TYPESCRIPT', needTest: false });
+	await craeteRuleToCore({ name: testDirName1, lang: 'TYPESCRIPT', needTest: true });
 	const testDir = await getTestDir(testDirName1);
 	const fileList = await fs.readdir(testDir, { encoding: 'utf-8' });
-	expect(fileList).toEqual(['README.md', 'index.spec.ts', 'index.ts']);
+	expect(fileList.sort()).toEqual(['README.md', 'index.spec.ts', 'index.ts']);
 });
 
 test('JS', async () => {
 	await craeteRuleToCore({ name: testDirName2, lang: 'JAVASCRIPT', needTest: false });
 	const testDir = await getTestDir(testDirName2);
 	const fileList = await fs.readdir(testDir, { encoding: 'utf-8' });
-	expect(fileList).toEqual(['README.md', 'index.js', 'index.spec.js']);
+	expect(fileList.sort()).toEqual(['README.md', 'index.js']);
 });
