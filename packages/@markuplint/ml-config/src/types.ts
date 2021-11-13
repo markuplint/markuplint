@@ -1,6 +1,7 @@
 export interface Config {
 	$schema?: string;
 	extends?: string | string[];
+	plugins?: (PluginConfig | string)[];
 	parser?: ParserConfig;
 	parserOptions?: ParserOptions;
 	specs?: SpecConfig | SpecConfig_v1;
@@ -10,6 +11,11 @@ export interface Config {
 	nodeRules?: NodeRule[];
 	childNodeRules?: ChildNodeRule[];
 }
+
+export type PluginConfig = {
+	name: string;
+	settings: Record<string, any>;
+};
 
 export interface ParserConfig {
 	[extensionPattern: string]: string /* module name or path */;

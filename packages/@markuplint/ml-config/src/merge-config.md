@@ -2,6 +2,7 @@
 
 | 0ptions                                                               | Type                   | Merging                      | Path Absolutize |
 | --------------------------------------------------------------------- | ---------------------- | ---------------------------- | --------------- |
+| [plugins](https://markuplint.dev/configuration#plugins)               | Array                  | Add uniquely                 | ✓               |
 | [parser](https://markuplint.dev/configuration#parser)                 | Object                 | Merge                        | ✓               |
 | [parserOptions](https://markuplint.dev/configuration#parserOptions)   | Object                 | Merge                        | ✓               |
 | [specs](https://markuplint.dev/configuration#specs)                   | Object(v2) / Array(v1) | Merge(v2) / Add uniquely(v1) | -               |

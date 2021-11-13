@@ -8,6 +8,48 @@ it('test', () => {
 	expect(
 		mergeConfig(
 			{
+				plugins: ['a', 'b', 'c'],
+			},
+			{
+				plugins: ['c', 'b', 'd'],
+			},
+		),
+	).toStrictEqual({
+		plugins: ['a', 'b', 'c', 'd'],
+	});
+});
+
+it('test', () => {
+	expect(
+		mergeConfig(
+			{
+				plugins: ['a', 'b', { name: 'c', settings: { foo: 'foo', bar: 'bar' } }],
+			},
+			{
+				plugins: ['c', 'b', 'd', { name: 'c', settings: { foo2: 'foo2', bar: 'bar2' } }],
+			},
+		),
+	).toStrictEqual({
+		plugins: [
+			'a',
+			'b',
+			{
+				name: 'c',
+				settings: {
+					bar: 'bar2',
+					foo: 'foo',
+					foo2: 'foo2',
+				},
+			},
+			'd',
+		],
+	});
+});
+
+it('test', () => {
+	expect(
+		mergeConfig(
+			{
 				parser: { '/\\.vue$/i': '@markuplint/vue-parser' },
 			},
 			{
