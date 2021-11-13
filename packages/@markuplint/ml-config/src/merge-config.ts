@@ -15,7 +15,6 @@ export function mergeConfig(a: Config, b: Config): Config {
 			// mergeObject(a.specs, b.specs),
 			// v2
 			mergeSpecs(a.specs, b.specs),
-		importRules: concatArray(a.importRules, b.importRules, true),
 		excludeFiles: concatArray(a.excludeFiles, b.excludeFiles, true),
 		rules: mergeRules(
 			// TODO: Deep merge

@@ -1,13 +1,12 @@
 import type { MLResultInfo } from '../types';
 import type { APIOptions, MLEngineEventMap, MLFabric } from './types';
 import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
-import type { RuleConfigValue } from '@markuplint/ml-config';
-import type { Ruleset } from '@markuplint/ml-core';
+import type { Ruleset, Plugin } from '@markuplint/ml-core';
 
 import {
 	configProvider,
-	moduleAutoLoader,
 	resolveFiles,
+	resolvePlugins,
 	resolveParser,
 	resolveRules,
 	resolveSpecs,
@@ -142,10 +141,17 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 			return null;
 		}
 
+		const plugins = await this.resolvePlugins(configSet);
 		const ruleset = this.resolveRuleset(configSet);
 		const schemas = await this.resolveSchemas(configSet);
-		const rules = await this.resolveRules(configSet, ruleset);
+		const rules = await this.resolveRules(plugins, ruleset);
 		const locale = await i18n(this.#options?.locale);
+
+		fileLog(
+			'Loaded %d rules: %O',
+			rules.length,
+			rules.map(r => r.name),
+		);
 
 		return {
 			parser,
@@ -201,6 +207,11 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		return parser;
 	}
 
+	private async resolvePlugins(configSet: ConfigSet) {
+		const plugins = await resolvePlugins(configSet.config.plugins);
+		return plugins;
+	}
+
 	private resolveRuleset(configSet: ConfigSet) {
 		const ruleset = convertRuleset(configSet.config);
 		this.emit('ruleset', this.#file.path, ruleset);
@@ -213,14 +224,14 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		return schemas;
 	}
 
-	private async resolveRules(configSet: ConfigSet, ruleset: Ruleset) {
-		const rules = await resolveRules(configSet.config.importRules, this.#options?.importPresetRules);
-		const autoLoad = this.#options?.autoLoad ?? true;
-		// Additional rules
-		if (autoLoad) {
-			const { rules: additionalRules } = await moduleAutoLoader<RuleConfigValue, unknown>(ruleset);
-			rules.push(...additionalRules);
-		}
+	private async resolveRules(plugins: Plugin[], ruleset: Ruleset) {
+		const rules = await resolveRules(
+			plugins,
+			ruleset,
+			this.#options?.importPresetRules ?? true,
+			this.#options?.autoLoad ?? true,
+		);
+
 		if (this.#options?.rules) {
 			rules.push(...this.#options.rules);
 		}

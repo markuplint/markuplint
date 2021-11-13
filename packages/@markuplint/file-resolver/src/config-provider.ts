@@ -70,7 +70,6 @@ class ConfigProvider {
 			plugins: pathResolve(dir, config.plugins, ['name']),
 			parser: pathResolve(dir, config.parser),
 			specs: pathResolve(dir, config.specs),
-			importRules: pathResolve(dir, config.importRules),
 			excludeFiles: pathResolve(dir, config.excludeFiles),
 		};
 	}

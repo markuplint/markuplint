@@ -9,12 +9,15 @@ export type APIOptions = {
 	config?: Config;
 	defaultConfig?: Config;
 	noSearchConfig?: boolean;
-	autoLoad?: boolean;
 	locale?: string;
 	fix?: boolean;
 	extMatch?: boolean;
 	rules?: AnyMLRule[];
 	importPresetRules?: boolean;
+	/**
+	 * @deprecated
+	 */
+	autoLoad?: boolean;
 };
 
 export type MLFabric = {

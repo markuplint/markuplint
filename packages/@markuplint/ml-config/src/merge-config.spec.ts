@@ -101,21 +101,6 @@ it('test', () => {
 	expect(
 		mergeConfig(
 			{
-				importRules: ['a', 'b', 'c'],
-			},
-			{
-				importRules: ['c', 'b', 'd'],
-			},
-		),
-	).toStrictEqual({
-		importRules: ['a', 'b', 'c', 'd'],
-	});
-});
-
-it('test', () => {
-	expect(
-		mergeConfig(
-			{
 				rules: {
 					sameRule: {
 						option: {

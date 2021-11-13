@@ -1,12 +1,22 @@
-import type { RuleConfigValue } from '@markuplint/ml-config';
-import type { MLRule, Ruleset } from '@markuplint/ml-core';
+import type { Ruleset, AnyMLRule } from '@markuplint/ml-core';
 
-export async function moduleAutoLoader<T extends RuleConfigValue, O = unknown>(ruleset: Ruleset) {
-	const rules: MLRule<T, O>[] = [];
+const cache = new Map<string, AnyMLRule>();
+
+/**
+ * @deprecated
+ */
+export async function autoLoadRules(ruleset: Ruleset) {
+	const rules: AnyMLRule[] = [];
 	const errors: unknown[] = [];
 
 	for (const ruleName of Object.keys(ruleset.rules)) {
-		let rule: MLRule<T, O> | null = null;
+		const cached = cache.get(ruleName);
+		if (cached) {
+			rules.push(cached);
+			continue;
+		}
+
+		let rule: AnyMLRule | null = null;
 
 		try {
 			const _module = await import(`@markuplint/rule-${ruleName}`);
@@ -31,11 +41,14 @@ export async function moduleAutoLoader<T extends RuleConfigValue, O = unknown>(r
 			continue;
 		}
 
+		cache.set(ruleName, rule);
 		rules.push(rule);
 	}
 
 	return {
-		rules,
-		errors,
+		// Clone
+		rules: rules.slice(),
+		// Clone
+		errors: errors.slice(),
 	};
 }

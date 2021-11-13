@@ -1,42 +1,44 @@
-import type { AnyMLRule } from '@markuplint/ml-core';
+import type { AnyMLRule, Ruleset, Plugin } from '@markuplint/ml-core';
 
-const cache = new Map<string, AnyMLRule[]>();
+import { autoLoadRules } from './auto-load-rules';
 
-export async function resolveRules(importRuleSet?: string[], importPreset = true) {
+let cachedPresetRules: AnyMLRule[] | null = null;
+
+export async function resolveRules(
+	plugins: Plugin[],
+	ruleset: Ruleset,
+	importPreset: boolean,
+	/**
+	 * @deprecated
+	 */
+	autoLoad: boolean,
+) {
 	const rules = importPreset ? await importPresetRules() : [];
-	if (importRuleSet) {
-		for (const ruleFilePath of importRuleSet) {
-			const rules = await importRules(ruleFilePath);
-			rules.push(...rules);
+	plugins.forEach(plugin => {
+		if (!plugin.rules) {
+			return;
 		}
+		Object.entries(plugin.rules).forEach(([, rule]) => {
+			rules.push(rule);
+		});
+	});
+	if (autoLoad) {
+		const { rules: additionalRules } = await autoLoadRules(ruleset);
+		additionalRules.forEach(rule => {
+			rules.push(rule);
+		});
 	}
-	// Clone
-	return rules.slice();
-}
-
-async function importRules(filePath: string) {
-	const cached = cache.get(filePath);
-	if (cached) {
-		// Clone
-		return cached.slice();
-	}
-	const r = await import(filePath);
-	const rules: AnyMLRule[] = Array.from(r.default) ? r.default : [r.default];
-	cache.set(filePath, rules);
 	// Clone
 	return rules.slice();
 }
 
 async function importPresetRules() {
-	const modName = '@markuplint/rules';
-	const cached = cache.get(modName);
-	if (cached) {
-		// Clone
-		return cached.slice();
+	if (cachedPresetRules) {
+		return cachedPresetRules;
 	}
-	const r = await import(modName);
-	const rules: AnyMLRule[] = r.default;
-	cache.set(modName, rules);
+	const modName = '@markuplint/rules';
+	const presetRules: AnyMLRule[] = (await import(modName)).default;
+	cachedPresetRules = presetRules;
 	// Clone
-	return rules.slice();
+	return presetRules.slice();
 }

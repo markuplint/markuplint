@@ -1,10 +1,10 @@
 import { Ruleset } from '@markuplint/ml-core';
 import textlintRule from '@markuplint/rule-textlint';
 
-import { moduleAutoLoader } from './module-auto-loader';
+import { autoLoadRules } from './auto-load-rules';
 
 test('built-in-rules', async () => {
-	const r = await moduleAutoLoader(
+	const r = await autoLoadRules(
 		new Ruleset({
 			rules: {
 				textlint: true,
@@ -17,7 +17,7 @@ test('built-in-rules', async () => {
 });
 
 test('third-party-rules', async () => {
-	const r = await moduleAutoLoader(
+	const r = await autoLoadRules(
 		new Ruleset({
 			rules: {
 				fake: true,
@@ -30,7 +30,7 @@ test('third-party-rules', async () => {
 });
 
 test('invalid-rules', async () => {
-	const r = await moduleAutoLoader(
+	const r = await autoLoadRules(
 		new Ruleset({
 			rules: {
 				invalid: true,

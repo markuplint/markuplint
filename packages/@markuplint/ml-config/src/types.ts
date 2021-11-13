@@ -5,7 +5,6 @@ export interface Config {
 	parser?: ParserConfig;
 	parserOptions?: ParserOptions;
 	specs?: SpecConfig | SpecConfig_v1;
-	importRules?: string[];
 	excludeFiles?: string[];
 	rules?: Rules;
 	nodeRules?: NodeRule[];
