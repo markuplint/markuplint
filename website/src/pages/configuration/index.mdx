@@ -38,20 +38,24 @@ The priority applied names are:
 }
 ```
 
--   [`extends`](#extends)
--   [`plugins`](#plugins)
--   [`parser`](#parser)
--   [`parserOptions`](#parserOptions)
--   [`specs`](#specs)
--   [`excludeFiles`](#excludeFiles)
--   [`rules`](#rules)
--   [`nodeRules`](#nodeRules)
--   [`childNodeRules`](#childNodeRules)
+-   [`extends`](#properties/extends)
+-   [`plugins`](#properties/plugins)
+-   [`parser`](#properties/parser)
+-   [`parserOptions`](#properties/parser-options)
+-   [`specs`](#properties/specs)
+-   [`excludeFiles`](#properties/exclude-files)
+-   [`rules`](#properties/rules)
+-   [`nodeRules`](#properties/node-rules)
+-   [`childNodeRules`](#properties/child-node-rules)
 
 ### Specification about paths
 
-[`extends`](#extends), [`parser`](#parser), [`specs`](#specs), and [`excludeFiles`](#excludeFiles) can set paths.
-In `extends`, `parser,` and `specs` three, it can set a package name instead of a path.
+[`extends`](#properties/extends),
+[`plugins`](#properties/plugins),
+[`specs`](#properties/specs),
+[`specs`](#properties/specs),
+and [`excludeFiles`](#properties/exclude-files) can set paths.
+In `extends`, `plugins`, `parser,` and `specs` four, it can set a package name instead of a path.
 
 First, it tries to import it as a package.
 If it fails, such as the package doesn't exist, or the strings are not a package, **it resolves strings as just a path**.
@@ -60,7 +64,7 @@ A relative path becomes an absolute path on the base of the config file path bei
 
 ### `extends`
 
-If you set other config file [paths](#Specification%20about%20paths), it merges the current setting with them.
+If you set other config file [paths](#properties/specification-about-paths), it merges the current setting with them.
 
 ```json
 {
@@ -79,7 +83,7 @@ interface Config {
 ### `plugins`
 
 You can load any plugins.
-Set a package name or a path.
+Set a package name or a [path](#properties/specification-about-paths).
 Can set settings if the plugin has it.
 
 ```json
@@ -120,7 +124,8 @@ interface Config {
 
 ### `parser`
 
-Set a regex to the key, and the parser file [path](#Specification%20about%20paths) or a package name to the value. The regex should be set it matches the target lintee file (ex., the extension part).
+Set a regex to the key, and the parser file [path](#properties/specification-about-paths) or a package name to the value.
+The regex should be set it matches the target lintee file (ex., the extension part).
 
 ```json
 {
@@ -183,7 +188,7 @@ interface Config {
 
 ### `specs`
 
-Set a regex to the key, and the spec file [path](#Specification%20about%20paths) or a package name to the value.
+Set a regex to the key, and the spec file [path](#properties/specification-about-paths) or a package name to the value.
 The regex should be set it matches the target lintee file (ex., the extension part).
 
 ```json
@@ -323,7 +328,7 @@ type Rule<T, O> =
 
 If you want only any specific element to apply some rule, you can set by this property.
 Be careful to the value is an array.
-You can set the `rules` property of this property like the [`rules`](#rules) property of the root.
+You can set the `rules` property of this property like the [`rules`](#properties/rules) property of the root.
 
 ```json
 {
@@ -358,7 +363,7 @@ You should set only element name to the `tagName`, but you can set `"#text"` exc
 If you want any specific element or its descendants to apply some rule, you can set by this property.
 If set true to the `inheritance` property, _affects all descendant nodes_ of the target element.
 Be careful; **This value is an array**.
-You can set the `rules` property of this property like the [`rules`](#rules) property of the root.
+You can set the `rules` property of this property like the [`rules`](#properties/rules) property of the root.
 
 ```json
 {
