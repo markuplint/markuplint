@@ -20,9 +20,9 @@
 		"schema": "yarn schema:structures; yarn schema:attributes;"
 	},
 	"dependencies": {
-		"tslib": "^2.3.0"
+		"tslib": "^2.3.1"
 	},
 	"devDependencies": {
-		"json-schema-to-typescript": "^10.1.4"
+		"json-schema-to-typescript": "^10.1.5"
 	}
 }

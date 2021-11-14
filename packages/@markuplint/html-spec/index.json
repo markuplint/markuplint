@@ -10359,7 +10359,7 @@
 			"description": "The <a> HTML element (or anchor element), with its href attribute, creates a hyperlink to web pages, files, email addresses, locations in the same page, or anything else a URL can address.",
 			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
 			"permittedStructures": {
-				"summary": "Transparent, containing either flow content (excluding interactive content) or phrasing content.",
+				"summary": "Transparent, except that no descendant may be interactive content or an a element, and no descendant may have a specified tabindex attribute.",
 				"tag": "a",
 				"contents": [
 					{
@@ -10694,7 +10694,7 @@
 				},
 				{
 					"name": "coords",
-					"description": "The coords attribute details the coordinates of the shape attribute in size, shape, and placement of an <area>. rect: the value is x1,y1,x2,y2. Value specifies the coordinates of the top-left and bottom-right corner of the rectangle. For example: <area shape=\"rect\" coords=\"0,0,253,27\" href=\"#\" target=\"_blank\" alt=\"Mozilla\"> The coords in the above example specify: 0,0 as the top-left corner and 253,27 as the bottom-right corner of the rectangle. circle: the value is x,y,radius. Value specifies the coordinates of the circle center and the radius. For example: <area shape=\"circle\" coords=\"130,136,60\" href=\"#\" target=\"_blank\" alt=\"MDN\"> poly: the value is x1,y1,x2,y2,..,xn,yn. Value specifies the coordinates of the edges of the polygon. If the first and last coordinate pairs are not the same, the browser will add the last coordinate pair to close the polygon default: defines the entire region The values are numbers of CSS pixels.",
+					"description": "The coords attribute details the coordinates of the shape attribute in size, shape, and placement of an <area>. This attribute must not be used if shape is set to default. rect: the value is x1,y1,x2,y2. The value specifies the coordinates of the top-left and bottom-right corner of the rectangle.For example, inthe coordinates are0,0and253,27`, indicating the top-left and bottom-right corners of the rectangle, respectively. circle: the value is x,y,radius. Value specifies the coordinates of the circle center and the radius. For example: <area shape=\"circle\" coords=\"130,136,60\" href=\"#\" target=\"_blank\" alt=\"MDN\"> poly: the value is x1,y1,x2,y2,..,xn,yn. Value specifies the coordinates of the edges of the polygon. If the first and last coordinate pairs are not the same, the browser will add the last coordinate pair to close the polygon The values are numbers of CSS pixels.",
 					"type": "Coords"
 				},
 				{

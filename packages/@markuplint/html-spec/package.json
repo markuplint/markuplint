@@ -17,11 +17,11 @@
 	"devDependencies": {
 		"@types/cheerio": "^0.22.30",
 		"@types/cli-progress": "^3.9.2",
-		"@types/node-fetch": "^2.5.11",
+		"@types/node-fetch": "2",
 		"cheerio": "^1.0.0-rc.10",
-		"cli-progress": "^3.9.0",
-		"fast-xml-parser": "^3.19.0",
-		"node-fetch": "^2.6.1"
+		"cli-progress": "^3.9.1",
+		"fast-xml-parser": "^3.21.1",
+		"node-fetch": "2"
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "^1.7.0"

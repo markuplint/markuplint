@@ -23,7 +23,7 @@
 		"@markuplint/ml-spec": "^1.7.0",
 		"debug": "^4.3.2",
 		"postcss-selector-parser": "^6.0.6",
-		"tslib": "^2.3.0"
+		"tslib": "^2.3.1"
 	},
 	"devDependencies": {
 		"@markuplint/html-parser": "^1.7.3",
