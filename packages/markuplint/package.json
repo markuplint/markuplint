@@ -36,18 +36,18 @@
 		"@markuplint/ml-spec": "^1.7.0",
 		"@markuplint/rules": "^1.10.4",
 		"chokidar": "^3.5.2",
-		"cli-color": "^2.0.0",
+		"cli-color": "^2.0.1",
 		"debug": "^4.3.2",
 		"detect-installed": "^2.0.4",
 		"eastasianwidth": "^0.2.0",
 		"enquirer": "^2.3.6",
 		"get-stdin": "8",
-		"has-yarn": "^2.1.0",
+		"has-yarn": "2",
 		"meow": "9",
-		"os-locale": "^5.0.0",
+		"os-locale": "5",
 		"strict-event-emitter": "^0.2.0",
 		"strip-ansi": "6",
-		"tslib": "^2.3.0",
+		"tslib": "^2.3.1",
 		"uuid": "^8.3.2"
 	}
 }

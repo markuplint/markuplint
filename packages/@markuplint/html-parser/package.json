@@ -17,12 +17,12 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/parse5": "^6.0.1"
+		"@types/parse5": "^6.0.2"
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "^1.6.0",
 		"@markuplint/parser-utils": "^1.6.3",
 		"parse5": "^6.0.1",
-		"tslib": "^2.3.0"
+		"tslib": "^2.3.1"
 	}
 }
