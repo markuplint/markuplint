@@ -139,7 +139,6 @@ function recursiveSearchJSXElements(tree: (Node | null)[]) {
 			case AST_NODE_TYPES.TSMappedType:
 			case AST_NODE_TYPES.TSIntersectionType:
 			case AST_NODE_TYPES.TSOptionalType:
-			case AST_NODE_TYPES.TSParenthesizedType:
 			case AST_NODE_TYPES.TSUnionType:
 			case AST_NODE_TYPES.TSAbstractKeyword:
 			case AST_NODE_TYPES.TSAnyKeyword:
@@ -195,6 +194,7 @@ function recursiveSearchJSXElements(tree: (Node | null)[]) {
 			case AST_NODE_TYPES.Program:
 			case AST_NODE_TYPES.BlockStatement:
 			case AST_NODE_TYPES.ClassBody:
+			case AST_NODE_TYPES.StaticBlock:
 			case AST_NODE_TYPES.TSModuleBlock: {
 				jsxList.push(...recursiveSearchJSXElements(node.body));
 				continue;
@@ -276,9 +276,7 @@ function recursiveSearchJSXElements(tree: (Node | null)[]) {
 				jsxList.push(...recursiveSearchJSXElements([node.value]));
 				continue;
 			}
-			case AST_NODE_TYPES.ClassProperty:
-			case AST_NODE_TYPES.MethodDefinition:
-			case AST_NODE_TYPES.TSAbstractClassProperty: {
+			case AST_NODE_TYPES.MethodDefinition: {
 				if (node.decorators) {
 					jsxList.push(...recursiveSearchJSXElements(node.decorators));
 				}
@@ -412,6 +410,18 @@ function recursiveSearchJSXElements(tree: (Node | null)[]) {
 			}
 			case AST_NODE_TYPES.TSTypeLiteral: {
 				jsxList.push(...recursiveSearchJSXElements(node.members));
+				continue;
+			}
+			case AST_NODE_TYPES.PrivateIdentifier: {
+				continue;
+			}
+			case AST_NODE_TYPES.PropertyDefinition:
+			case AST_NODE_TYPES.TSAbstractPropertyDefinition: {
+				jsxList.push(...recursiveSearchJSXElements([node.value]));
+				if (node.decorators) {
+					jsxList.push(...recursiveSearchJSXElements(node.decorators));
+				}
+				jsxList.push(...recursiveSearchJSXElements([node.key]));
 				continue;
 			}
 		}
