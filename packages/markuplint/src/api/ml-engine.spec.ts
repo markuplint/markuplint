@@ -65,6 +65,7 @@ describe('Resolving the plugin', () => {
 	it('config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/001.html');
 		const engine = new MLEngine(file, {
+			// debug: true,
 			config: {
 				plugins: [
 					{

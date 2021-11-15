@@ -9,11 +9,14 @@ import { log } from './debug';
 import { Document } from './ml-dom';
 import MLParseError from './ml-error/ml-parse-error';
 
+import { enableDebug } from '.';
+
 const resultLog = log.extend('result');
 
 export type MLCoreParams = {
 	sourceCode: string;
 	filename: string;
+	debug?: boolean;
 } & MLFabric;
 
 export class MLCore {
@@ -28,7 +31,7 @@ export class MLCore {
 	#schemas: MLSchema;
 	#ignoreFrontMatter: boolean;
 
-	constructor({ parser, sourceCode, ruleset, rules, locale, schemas, parserOptions, filename }: MLCoreParams) {
+	constructor({ parser, sourceCode, ruleset, rules, locale, schemas, parserOptions, filename, debug }: MLCoreParams) {
 		this.#parser = parser;
 		this.#sourceCode = sourceCode;
 		this.#ignoreFrontMatter = !!parserOptions.ignoreFrontMatter;
@@ -42,6 +45,11 @@ export class MLCore {
 		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
 		this.#filename = filename;
 		this.#rules = rules;
+
+		if (debug) {
+			enableDebug();
+		}
+
 		this._createDocument();
 	}
 

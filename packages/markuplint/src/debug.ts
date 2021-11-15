@@ -4,8 +4,9 @@ import debug from 'debug';
 export const log = debug('markuplint-cli');
 
 export function verbosely() {
-	if (!debug.enabled('markuplint-cli')) {
-		debug.enable('markuplint-cli*');
+	if (!log.enabled) {
+		debug.enable(`${log.namespace}*`);
+		log(`Debug enable: ${log.namespace}`);
 	}
 	enableDebug();
 }
