@@ -3,14 +3,18 @@
 		"roles": true,
 		"conditions": [
 			{
-				"condition": ":closest(table[role=table], table[role=grid], table[role=treegrid])",
+				"condition": ":closest(table, table[role=table], table[role=grid], table[role=treegrid])",
 				"roles": false
 			}
 		]
 	},
 	"implicitRole": {
-		"role": "cell",
+		"role": false,
 		"conditions": [
+			{
+				"condition": ":closest(table, table[role=table])",
+				"role": "cell"
+			},
 			{
 				"condition": ":closest(table[role=grid], table[role=treegrid])",
 				"role": "gridcell"
