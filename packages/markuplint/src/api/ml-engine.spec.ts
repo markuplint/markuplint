@@ -5,8 +5,6 @@ import path from 'path';
 
 import MLEngine from './ml-engine';
 
-jest.useFakeTimers();
-
 describe('Event notification', () => {
 	it('config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/001.html');
