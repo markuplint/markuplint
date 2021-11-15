@@ -7,7 +7,7 @@
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev",
 		"test": "jest --coverage",
-		"test:coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
+		"test:coverage": "jest --useStderr --coverage && cat ./coverage/lcov.info | coveralls",
 		"test:clear": "jest --clearCache",
 		"test:unit": "jest",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
