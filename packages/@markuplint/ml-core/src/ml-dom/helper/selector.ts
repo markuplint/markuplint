@@ -282,6 +282,24 @@ function attrMatch(attr: parser.Attribute, el: TargetElement) {
 
 function pseudoMatch(pseudo: parser.Pseudo, el: TargetElement, caller: TargetElement | null) {
 	switch (pseudo.value) {
+		/**
+		 * Below, markuplint Specific Selector
+		 */
+		case ':closest': {
+			const ruleset = new Ruleset(pseudo.nodes);
+			let parent = el.parentNode;
+			while (parent) {
+				if (ruleset.match(parent, caller)) {
+					return true;
+				}
+				parent = parent.parentNode;
+			}
+			return false;
+		}
+
+		/**
+		 * Below, Selector Level 4
+		 */
 		case ':not': {
 			const ruleset = new Ruleset(pseudo.nodes);
 			if (ruleset.match(el, caller)) {
