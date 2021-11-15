@@ -144,22 +144,13 @@ describe('selector matching', () => {
 		expect(createSelector('.i2 ~ li').match(el.children[4])).toBe(true);
 	});
 
-	it(':has', async () => {
-		const el = createTestElement('<div><span><i></i></span></div>');
-		expect(createSelector(':has(span)').match(el)).toBe(true);
-		expect(createSelector(':has(a)').match(el)).toBe(false);
-		expect(createSelector(':has(i)').match(el)).toBe(true);
-		expect(createSelector(':has(> span)').match(el)).toBe(true);
-		expect(createSelector(':has(> i)').match(el)).toBe(false);
-
-		const el2 = createTestElement('<div><a></a></div>');
-		expect(createSelector(':has(> span)').match(el2)).toBe(false);
-
-		const el3 = createTestElement('<header><article></article></header>');
-		const selector =
-			':has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])';
-		expect(createSelector(selector).match(el3)).toBe(true);
-		const el4 = createTestElement('<header><div><article></article></div></header>');
-		expect(createSelector(selector).match(el4)).toBe(true);
+	it(':closest', async () => {
+		const el = createTestElement('<table><tr><td></td></tr></table>');
+		const td = el.children[0].children[0].children[0];
+		expect(createSelector('td').match(td)).toBe(true);
+		expect(createSelector(':closest(table)').match(td)).toBe(true);
+		expect(createSelector(':closest(tr)').match(td)).toBe(true);
+		expect(createSelector(':closest(tbody)').match(td)).toBe(true);
+		expect(createSelector(':closest(div)').match(td)).toBe(false);
 	});
 });
