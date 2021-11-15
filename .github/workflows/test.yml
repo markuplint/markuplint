@@ -6,13 +6,11 @@ on:
             - main
             - v2
             - next
-            - dev
     pull_request:
         branches:
             - main
             - v2
             - next
-            - dev
 
 jobs:
     test:
@@ -20,9 +18,12 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                os: [ubuntu-latest, macos-latest]
-                node: [12, 14, 16]
-
+                os: [ubuntu-latest, macos-latest, windows-latest]
+                node: [12]
+                include:
+                    - node: 17
+                      os: ubuntu-latest
+                      experimental: true
         steps:
             - uses: actions/checkout@v2
               with:

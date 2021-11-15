@@ -7,11 +7,12 @@
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev",
 		"test": "jest --coverage",
-		"test:coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
+		"test:coverage": "jest --useStderr --coverage && cat ./coverage/lcov.info | coveralls",
 		"test:clear": "jest --clearCache",
 		"test:unit": "jest",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
 		"lint": "prettier --write './{packages,website,playground}/**/*.{ts,tsx,json}'; eslint --fix './{packages,website,playground}/**/*.{ts,tsx}'; yarn cli './website/**/*.tsx'",
+		"ga": "actionlint .github/workflows/*.yml",
 		"schema": "lerna run schema",
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
 		"all": "yarn lint; yarn clean; yarn gen; yarn build; yarn schema; yarn test:clear; yarn test;",
@@ -34,6 +35,9 @@
 		],
 		"./test/**/*.{pug,html}": [
 			"yarn cli"
+		],
+		".github/workflows/*.yml": [
+			"actionlint"
 		]
 	},
 	"jest": {
