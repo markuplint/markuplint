@@ -11,7 +11,7 @@ module.exports = createPlugin({
 					defaultOptions: null,
 					verify({ report }) {
 						report({
-							message: `It's test: ${settings?.foo}`,
+							message: `It's test: ${settings && settings.foo}`,
 							line: 0,
 							col: 0,
 							raw: '',
