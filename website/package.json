@@ -1,7 +1,7 @@
 {
   "name": "@markuplint/website",
   "description": "https://markuplint.dev",
-  "version": "1.10.4",
+  "version": "2.0.0-alpha.0",
   "private": true,
   "scripts": {
     "site:dev": "node prebuild.js && next dev",
@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@mapbox/rehype-prism": "^0.7.0",
-    "@markuplint/rules": "^1.10.4",
+    "@markuplint/rules": "^2.0.0-alpha.0",
     "next": "11.0.1",
     "next-mdx-enhanced": "^5.0.0",
     "normalize.css": "^8.0.1",

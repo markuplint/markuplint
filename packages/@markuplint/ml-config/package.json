@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-config",
-	"version": "1.3.0",
+	"version": "2.0.0-alpha.0",
 	"description": "JSON Schema and TypeScript types of markuplint configure JSON",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
