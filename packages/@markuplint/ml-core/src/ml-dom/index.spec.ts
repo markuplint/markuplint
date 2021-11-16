@@ -193,3 +193,176 @@ test('regexSelector', async () => {
 		},
 	});
 });
+
+test('extend rule settings', async () => {
+	const document = createTestDocument('<span class="a"></span><div class="b"><span></span></div>', {
+		rules: {
+			ruleA: {
+				severity: 'error',
+				reason: '123',
+			},
+			ruleB: {
+				severity: 'info',
+				reason: '456',
+			},
+			ruleC: false,
+			ruleD: true,
+			ruleE: {
+				value: '789',
+			},
+		},
+		nodeRules: [
+			{
+				selector: '.a',
+				rules: {
+					ruleA: {
+						severity: 'info',
+						reason: '456',
+					},
+					ruleB: {},
+					ruleC: true,
+					ruleD: false,
+					ruleE: false,
+				},
+			},
+		],
+		childNodeRules: [
+			{
+				selector: '.b',
+				rules: {
+					ruleA: {
+						severity: 'info',
+						reason: '456',
+					},
+					ruleB: {},
+					ruleC: true,
+					ruleD: false,
+					ruleE: false,
+				},
+			},
+		],
+	});
+
+	expect((document.nodeList[0] as MLDOMElement<any, any>).nodeName).toBe('span');
+	expect((document.nodeList[1] as MLDOMElement<any, any>).nodeName).toBe('span');
+	expect((document.nodeList[2] as MLDOMElement<any, any>).nodeName).toBe('div');
+	expect((document.nodeList[3] as MLDOMElement<any, any>).nodeName).toBe('span');
+	expect((document.nodeList[4] as MLDOMElement<any, any>).nodeName).toBe('span');
+	expect((document.nodeList[5] as MLDOMElement<any, any>).nodeName).toBe('div');
+
+	const ruleA = createRule({
+		name: 'ruleA',
+		defaultValue: 'foo',
+		defaultOptions: null,
+		async verify() {
+			throw new Error();
+		},
+	});
+	const ruleB = createRule({
+		name: 'ruleB',
+		defaultValue: 'bar',
+		defaultOptions: null,
+		async verify() {
+			throw new Error();
+		},
+	});
+	const ruleC = createRule({
+		name: 'ruleC',
+		defaultValue: 'buz',
+		defaultOptions: null,
+		async verify() {
+			throw new Error();
+		},
+	});
+	const ruleD = createRule({
+		name: 'ruleD',
+		defaultValue: 'fuz',
+		defaultOptions: null,
+		async verify() {
+			throw new Error();
+		},
+	});
+	const ruleE = createRule({
+		name: 'ruleE',
+		defaultValue: 'piyo',
+		defaultOptions: null,
+		async verify() {
+			throw new Error();
+		},
+	});
+
+	document.setRule(ruleA);
+	const resultA = {
+		disabled: false,
+		reason: '456',
+		severity: 'info',
+		value: 'foo',
+		option: null,
+	};
+	expect(document.nodeList[0].rule).toStrictEqual(resultA);
+	expect(document.nodeList[1].rule).toStrictEqual(resultA);
+	expect(document.nodeList[2].rule).not.toStrictEqual(resultA);
+	expect(document.nodeList[3].rule).toStrictEqual(resultA);
+	expect(document.nodeList[4].rule).toStrictEqual(resultA);
+	expect(document.nodeList[5].rule).not.toStrictEqual(resultA);
+
+	document.setRule(ruleB);
+	const resultB = {
+		disabled: false,
+		reason: '456',
+		severity: 'info',
+		value: 'bar',
+		option: null,
+	};
+	expect(document.nodeList[0].rule).toStrictEqual(resultB);
+	expect(document.nodeList[1].rule).toStrictEqual(resultB);
+	expect(document.nodeList[2].rule).toStrictEqual(resultB);
+	expect(document.nodeList[3].rule).toStrictEqual(resultB);
+	expect(document.nodeList[4].rule).toStrictEqual(resultB);
+	expect(document.nodeList[5].rule).toStrictEqual(resultB);
+
+	document.setRule(ruleC);
+	const resultC = {
+		disabled: false,
+		reason: undefined,
+		severity: 'error',
+		value: 'buz',
+		option: null,
+	};
+	expect(document.nodeList[0].rule).toStrictEqual(resultC);
+	expect(document.nodeList[1].rule).toStrictEqual(resultC);
+	expect(document.nodeList[2].rule).not.toStrictEqual(resultC);
+	expect(document.nodeList[3].rule).toStrictEqual(resultC);
+	expect(document.nodeList[4].rule).toStrictEqual(resultC);
+	expect(document.nodeList[5].rule).not.toStrictEqual(resultC);
+
+	document.setRule(ruleD);
+	const resultD = {
+		disabled: true,
+		reason: undefined,
+		severity: 'error',
+		value: 'fuz',
+		option: null,
+	};
+	expect(document.nodeList[0].rule).toStrictEqual(resultD);
+	expect(document.nodeList[1].rule).toStrictEqual(resultD);
+	expect(document.nodeList[2].rule).not.toStrictEqual(resultC);
+	expect(document.nodeList[3].rule).toStrictEqual(resultD);
+	expect(document.nodeList[4].rule).toStrictEqual(resultD);
+	expect(document.nodeList[5].rule).not.toStrictEqual(resultC);
+
+	document.setRule(ruleE);
+	const resultE = {
+		disabled: true,
+		reason: undefined,
+		severity: 'error',
+		value: 'piyo',
+		option: null,
+	};
+	expect(document.nodeList[0].rule).toStrictEqual(resultE);
+	expect(document.nodeList[1].rule).toStrictEqual(resultE);
+	expect(document.nodeList[2].rule).not.toStrictEqual(resultE);
+	expect(document.nodeList[3].rule).toStrictEqual(resultE);
+	expect(document.nodeList[4].rule).toStrictEqual(resultE);
+	expect(document.nodeList[5].rule).not.toStrictEqual(resultE);
+});

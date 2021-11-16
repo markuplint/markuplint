@@ -3,7 +3,7 @@ import type { RuleInfo } from '../../';
 import type { AnonymousNode, IMLDOMNode, NodeType } from '../types';
 import type { MLDOMElement, MLDOMOmittedElement } from './';
 import type { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
-import type { RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
+import type { AnyRule, RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
 
 import MLDOMToken from './token';
 
@@ -16,6 +16,14 @@ export default abstract class MLDOMNode<
 	implements IMLDOMNode
 {
 	readonly type: NodeType = 'Node';
+	readonly rules: Record<
+		string,
+		{
+			from: 'rules' | 'nodeRules' | 'childNodeRules';
+			index: number;
+			set: AnyRule;
+		}
+	> = {};
 
 	protected _astToken: A;
 
@@ -107,16 +115,15 @@ export default abstract class MLDOMNode<
 		}
 		const name = this.#doc.currentRule.name;
 
-		// @ts-ignore
-		const ruleConfig: RuleConfig<T, O> | T = this.rules[name];
+		const rule = this.rules[name];
 
-		if (ruleConfig == null) {
+		if (rule == null) {
 			throw new Error('Invalid call "rule" property.');
 		}
-		return this.#doc.currentRule.optimizeOption(ruleConfig);
-	}
 
-	private _isFirstToken() {
-		return !this.prevToken;
+		// @ts-ignore
+		const set: RuleConfig<T, O> | T = rule.set;
+
+		return this.#doc.currentRule.optimizeOption(set);
 	}
 }
