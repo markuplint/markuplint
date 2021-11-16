@@ -12,7 +12,6 @@ let h2: string;
 let h3: string;
 let h4: string;
 let h5: string;
-let h6: string;
 
 const mdComponents: MDXProviderComponentsProp = {
   h1: _ => null,
@@ -66,7 +65,6 @@ const mdComponents: MDXProviderComponentsProp = {
   h6: (props: PropsWithChildren<{}>) => {
     const _id = createId(innerText(props.children));
     const id = `${h2}/${h3}/${h4}/${h5}/${_id}`;
-    h6 = _id;
     return (
       <h6>
         <a {...props} id={id} href={`#${id}`}>
