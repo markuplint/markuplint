@@ -42,7 +42,7 @@ Sets a string that represents a regular expression or its array. Regular express
 
 The BEM-like CSS structure:
 
-```jsonc
+```json
 {
 	"rules": {
 		// Enable class-naming rule to childNodeRules.

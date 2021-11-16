@@ -24,7 +24,7 @@ $ yarn add -D textlint-rule-prh
 
 #### Load `.textlintrc.*` config automatically
 
-```jsonc
+```json
 // `.markuplintrc`
 {
 	"rules": {
@@ -33,7 +33,7 @@ $ yarn add -D textlint-rule-prh
 }
 ```
 
-```jsonc
+```json
 // `.textlintrc`
 {
 	// `html` plugin will be used automatically by `markuplint`

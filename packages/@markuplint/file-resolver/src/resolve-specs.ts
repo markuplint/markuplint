@@ -11,7 +11,7 @@ const caches = new Map<string, MLMLSpec | ExtendedSpec>();
  * Loading and importing form specs.
  *
  * Import a package or load a local file if regexp matches `filePath`.
- * ```jsonc
+ * ```json
  * {
  *   "specs": {
  *     "\\.html$": "aaa-aaa",
@@ -22,12 +22,12 @@ const caches = new Map<string, MLMLSpec | ExtendedSpec>();
  *
  * The below ways are deprecated.
  *
- * ```jsonc
+ * ```json
  * {
  *   "specs": "xxx-xxx",
  * }
  * ```
- * ```jsonc
+ * ```json
  * {
  *   "specs": ["xxx-xxx", "./yyy-yyy.json"],
  * }
