@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/astro-parser",
-	"version": "2.0.0-dev.20211115.0",
+	"version": "2.0.0-dev.2021117.0",
 	"description": "astro parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -17,9 +17,9 @@
 	},
 	"dependencies": {
 		"@astrojs/parser": "^0.20.2",
-		"@markuplint/html-parser": "2.0.0-dev.20211115.0",
+		"@markuplint/html-parser": "^2.0.0-dev.2021117.0",
 		"@markuplint/ml-ast": "2.0.0-dev.20211115.0",
-		"@markuplint/parser-utils": "2.0.0-dev.20211115.0",
+		"@markuplint/parser-utils": "^2.0.0-dev.2021117.0",
 		"tslib": "^2.3.1"
 	}
 }

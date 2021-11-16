@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/react-spec",
-	"version": "1.0.0-dev.20211115.0",
+	"version": "1.0.0-dev.2021117.0",
 	"description": "Extended specification for tags and attributes in React",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
