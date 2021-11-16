@@ -192,7 +192,7 @@ function uncombinatedRegexSelect(el: TargetElement, selector: RegexSelectorWitho
 	if (selector.attrName) {
 		const selectorAttrName = selector.attrName;
 		const matchedAttrNameList = el.attributes.map(attr => {
-			const attrName = attr.getName().raw;
+			const attrName = attr.getName().potential;
 			const matchedAttrName = regexSelectorMatches(selectorAttrName, attrName);
 
 			if (matchedAttrName) {
@@ -215,8 +215,8 @@ function uncombinatedRegexSelect(el: TargetElement, selector: RegexSelectorWitho
 	if (selector.attrValue) {
 		const selectorAttrValue = selector.attrValue;
 		const matchedAttrValueList = el.attributes.map(attr => {
-			const attrName = attr.getName().raw;
-			const attrValue = attr.getValue().raw;
+			const attrName = attr.getName().potential;
+			const attrValue = attr.getValue().potential;
 			const matchedAttrValue = regexSelectorMatches(selectorAttrValue, attrValue);
 
 			if (matchedAttrValue) {

@@ -108,18 +108,20 @@ test('namespace', async () => {
 
 test('rule', async () => {
 	const document = createTestDocument<'foo', any>('<div><span>text</span></div>', {
-		rules: {
-			ruleA: true,
-			ruleB: true,
-		},
-		nodeRules: [
-			{
-				tagName: 'span',
-				rules: {
-					ruleA: false,
-				},
+		config: {
+			rules: {
+				ruleA: true,
+				ruleB: true,
 			},
-		],
+			nodeRules: [
+				{
+					tagName: 'span',
+					rules: {
+						ruleA: false,
+					},
+				},
+			],
+		},
 	});
 	const ruleA = createRule({
 		name: 'ruleA',
@@ -145,30 +147,32 @@ test('rule', async () => {
 
 test('regexSelector', async () => {
 	const document = createTestDocument('<img src="path/to/name.png" />', {
-		rules: {
-			ruleA: true,
-		},
-		nodeRules: [
-			{
-				regexSelector: {
-					nodeName: 'img',
-					attrName: 'src',
-					attrValue: '/(?<fileName>[a-z0-9_-]+)\\.png$/',
-				},
-				rules: {
-					ruleA: {
-						value: 'fileName is {{ fileName }}',
-						option: {
-							propA: 'fileName is {{ fileName }}',
-							propB: ['fileName is {{ fileName }}'],
-							propC: {
-								prop: 'fileName is {{ fileName }}',
+		config: {
+			rules: {
+				ruleA: true,
+			},
+			nodeRules: [
+				{
+					regexSelector: {
+						nodeName: 'img',
+						attrName: 'src',
+						attrValue: '/(?<fileName>[a-z0-9_-]+)\\.png$/',
+					},
+					rules: {
+						ruleA: {
+							value: 'fileName is {{ fileName }}',
+							option: {
+								propA: 'fileName is {{ fileName }}',
+								propB: ['fileName is {{ fileName }}'],
+								propC: {
+									prop: 'fileName is {{ fileName }}',
+								},
 							},
 						},
 					},
 				},
-			},
-		],
+			],
+		},
 	});
 	const ruleA = createRule({
 		name: 'ruleA',
