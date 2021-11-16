@@ -1,5 +1,15 @@
 import { MLFile } from './ml-file';
 
+it('file path', async () => {
+	const file = new MLFile('/dir/file');
+	expect(file.path).toBe('/dir/file');
+	expect(file.dirname).toBe('/dir');
+
+	const file2 = new MLFile('/dir/dir2/file.html');
+	expect(file2.path).toBe('/dir/dir2/file.html');
+	expect(file2.dirname).toBe('/dir/dir2');
+});
+
 it('file matches', async () => {
 	const file = new MLFile('/dir/file');
 	expect(file.matches('/dir/*')).toBeTruthy();
