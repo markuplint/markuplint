@@ -10,4 +10,7 @@ module.exports = withMdxEnhanced({
 })({
   webpack5: false,
   pageExtensions: ['mdx', 'tsx'],
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 });
