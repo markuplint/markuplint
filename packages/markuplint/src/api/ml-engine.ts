@@ -8,13 +8,14 @@ import { MLCore, convertRuleset } from '@markuplint/ml-core';
 import { FSWatcher } from 'chokidar';
 import { StrictEventEmitter } from 'strict-event-emitter';
 
-import { log as coreLog } from '../debug';
+import { log as coreLog, verbosely } from '../debug';
 import { i18n } from '../i18n';
 
 const log = coreLog.extend('ml-engine');
 const fileLog = log.extend('file');
 
 type MLEngineOptions = {
+	debug?: boolean;
 	watch?: boolean;
 };
 
@@ -33,6 +34,10 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		super();
 		this.#file = file;
 		this.#options = options;
+
+		if (this.#options?.debug) {
+			verbosely();
+		}
 
 		if (options?.watch) {
 			this.#watcher.on('all', this.watch.bind(this));
@@ -116,6 +121,8 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 	private async provide(remerge: boolean): Promise<MLFabric | null> {
 		const configSet = await this.resolveConfig(remerge);
 		fileLog('Fetched Config files: %O', configSet.files);
+		fileLog('Resolved Config: %O', configSet.config);
+		fileLog('Resolved Plugins: %O', configSet.plugins);
 
 		// Exclude
 		const excludeFiles = configSet.config.excludeFiles || [];
@@ -135,8 +142,14 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		}
 
 		const ruleset = this.resolveRuleset(configSet);
+		fileLog('Resolved ruleset: %O', ruleset);
+
 		const schemas = await this.resolveSchemas(configSet);
+		fileLog('Resolved schemas: %O', schemas);
+
 		const rules = await this.resolveRules(configSet.plugins, ruleset);
+		fileLog('Resolved rules: %O', rules);
+
 		const locale = await i18n(this.#options?.locale);
 
 		fileLog(
@@ -165,6 +178,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		const core = new MLCore({
 			sourceCode,
 			filename: this.#file.path,
+			debug: this.#options?.debug,
 			...fabric,
 		});
 

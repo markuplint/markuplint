@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import { promises as fs } from 'fs';
 
 export async function fsExists(path: string) {
 	const stat = await fs.stat(path).catch(e => {

@@ -34,8 +34,22 @@ export class MLFile {
 		return path.resolve(this.#dirname, this.#basename);
 	}
 
+	/**
+	 * Normalized `MLFile.path`
+	 */
+	get nPath() {
+		return pathNormalize(this.path);
+	}
+
 	get dirname() {
 		return this.#dirname;
+	}
+
+	/**
+	 * Normalized `MLFile.dirname`
+	 */
+	get nDirname() {
+		return pathNormalize(this.dirname);
 	}
 
 	async isExist() {
@@ -64,7 +78,7 @@ export class MLFile {
 	}
 
 	matches(globPath: string) {
-		return minimatch(this.path, globPath);
+		return minimatch(this.nPath, pathNormalize(globPath));
 	}
 
 	private async _fetch() {
@@ -89,4 +103,14 @@ async function exist(filePath: string) {
 		}
 		throw err;
 	}
+}
+
+function pathNormalize(filePath: string) {
+	// Remove the local disk scheme of Windows OS
+	if (path.isAbsolute(filePath)) {
+		filePath = filePath.replace(/^[a-z]+:/i, '');
+	}
+	// Replace the separator of Windows OS
+	filePath = filePath.split(path.sep).join('/');
+	return filePath;
 }

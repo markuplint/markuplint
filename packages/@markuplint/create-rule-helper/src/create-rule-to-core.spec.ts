@@ -1,7 +1,16 @@
-import fs from 'fs/promises';
+import { promises as fs } from 'fs';
 import path from 'path';
 
+import { promises as fse } from 'fs-extra'; // for v12
+
 import { craeteRuleToCore, getRulesDir } from './create-rule-to-core';
+
+const rm =
+	'rm' in fs && fs.rm && typeof fs.rm === 'function'
+		? // for v14 or later
+		  fs.rm || fse.rm
+		: // for v12
+		  fse.rmdir;
 
 const testDirName1 = '__foo';
 const testDirName2 = '__bar';
@@ -14,8 +23,8 @@ async function getTestDir(testDirName: string) {
 async function removeTestDir() {
 	const testDir1 = await getTestDir(testDirName1);
 	const testDir2 = await getTestDir(testDirName2);
-	await fs.rm(testDir1, { recursive: true, force: true });
-	await fs.rm(testDir2, { recursive: true, force: true });
+	await rm(testDir1, { recursive: true, force: true });
+	await rm(testDir2, { recursive: true, force: true });
 }
 
 async function delay(ms: number) {

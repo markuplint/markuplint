@@ -5,8 +5,6 @@ import path from 'path';
 
 import MLEngine from './ml-engine';
 
-jest.useFakeTimers();
-
 describe('Event notification', () => {
 	it('config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/001.html');
@@ -47,8 +45,11 @@ describe('Watcher', () => {
 			});
 		});
 		// Disable rules
-		config.rules = {};
-		await fs.writeFile(targetFile, JSON.stringify(config), { encoding: 'utf-8' });
+		const config2: Config = {
+			...config,
+			rules: {},
+		};
+		await fs.writeFile(targetFile, JSON.stringify(config2), { encoding: 'utf-8' });
 		// Second evaluation
 		const result2nd = await result2ndPromise;
 		// Revert the file
@@ -64,6 +65,7 @@ describe('Resolving the plugin', () => {
 	it('config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/001.html');
 		const engine = new MLEngine(file, {
+			// debug: true,
 			config: {
 				plugins: [
 					{

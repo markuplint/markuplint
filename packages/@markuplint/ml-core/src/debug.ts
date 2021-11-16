@@ -1,9 +1,16 @@
 import debug from 'debug';
 
+const CLI_NS = 'markuplint-cli';
 export const log = debug('ml-core');
 
 export function enableDebug() {
-	if (!debug.enabled('ml-core')) {
-		debug.enable('ml-core*');
+	if (!log.enabled) {
+		debug.enable(`${log.namespace}*`);
+		log(`Debug enable: ${log.namespace}`);
+
+		if (!debug.enabled(CLI_NS)) {
+			debug.enable(`${log.namespace}*,${CLI_NS}*`);
+			log(`Debug enable: ${log.namespace}, ${CLI_NS}`);
+		}
 	}
 }
