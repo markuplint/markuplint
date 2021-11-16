@@ -5,5 +5,13 @@
 	"singleQuote": true,
 	"trailingComma": "all",
 	"bracketSpacing": true,
-	"arrowParens": "avoid"
+	"arrowParens": "avoid",
+	"overrides": [
+		{
+			"files": ["**/.textlintrc", "**/.markuplintrc", "**/.eslintrc"],
+			"options": {
+				"parser": "json"
+			}
+		}
+	]
 }

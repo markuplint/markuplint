@@ -1,63 +1,61 @@
 {
-	"parser": {
-		".tsx$": "@markuplint/jsx-parser"
-	},
-	"specs": [
-		"@markuplint/react-spec"
-	],
-	"rules": {
-		"attr-duplication": true,
-		"character-reference": true,
-		"deprecated-attr": true,
-		"deprecated-element": true,
-		"doctype": true,
-		"id-duplication": true,
-		"permitted-contents": true,
-		"required-attr": true,
-		"invalid-attr": true,
-		"landmark-roles": true,
-		"required-h1": true,
-		"class-naming": false,
-		"attr-equal-space-after": true,
-		"attr-equal-space-before": true,
-		"attr-spacing": true,
-		"attr-value-quotes": true,
-		"case-sensitive-attr-name": true,
-		"case-sensitive-tag-name": true,
-		"indentation": false,
-		"wai-aria": true
-	},
-	"nodeRules": [
-		{
-			"selector": "meta[property]",
-			"rules": {
-				"invalid-attr": {
-					"option": {
-						"attrs": {
-							"property": {
-								"type": "String"
-							},
-							"content": {
-								"type": "String"
-							}
-						}
-					}
-				}
-			}
-		},
-		{
-			"tagName": "style",
-			"rules": {
-				"invalid-attr": {
-					"option": {
-						"attrs": {
-							"jsx": {
-								"type": "Boolean"
-							}
-						}
-					}
-				}
-			}
-		}
-	]
+  "parser": {
+    ".tsx$": "@markuplint/jsx-parser"
+  },
+  "specs": ["@markuplint/react-spec"],
+  "rules": {
+    "attr-duplication": true,
+    "character-reference": true,
+    "deprecated-attr": true,
+    "deprecated-element": true,
+    "doctype": true,
+    "id-duplication": true,
+    "permitted-contents": true,
+    "required-attr": true,
+    "invalid-attr": true,
+    "landmark-roles": true,
+    "required-h1": true,
+    "class-naming": false,
+    "attr-equal-space-after": true,
+    "attr-equal-space-before": true,
+    "attr-spacing": true,
+    "attr-value-quotes": true,
+    "case-sensitive-attr-name": true,
+    "case-sensitive-tag-name": true,
+    "indentation": false,
+    "wai-aria": true
+  },
+  "nodeRules": [
+    {
+      "selector": "meta[property]",
+      "rules": {
+        "invalid-attr": {
+          "option": {
+            "attrs": {
+              "property": {
+                "type": "String"
+              },
+              "content": {
+                "type": "String"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "tagName": "style",
+      "rules": {
+        "invalid-attr": {
+          "option": {
+            "attrs": {
+              "jsx": {
+                "type": "Boolean"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

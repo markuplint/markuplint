@@ -1,7 +1,5 @@
 {
-  "plugins": [
-    "html"
-  ],
+  "plugins": ["html"],
   "rules": {
     "preset-japanese": {
       "max-ten": false,
@@ -19,7 +17,7 @@
       "3.1.1.全角文字と半角文字の間": false,
       "3.1.2.全角文字どうし": false,
       "3.3.かっこ類と隣接する文字の間のスペースの有無": false,
-      "4.3.1.丸かっこ（）": false,
+      "4.3.1.丸かっこ（）": false
     }
   }
 }
