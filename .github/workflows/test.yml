@@ -46,7 +46,7 @@ jobs:
                   node-version: ${{ matrix.node }}
 
             - name: Install dependencies
-              if: steps.cache.outputs.cache-hit != 'true'
+              if: steps.cache.outputs.cache-hit != 'true' || matrix.os == 'windows-latest'
               run: yarn install
 
             - name: Bootstrap
