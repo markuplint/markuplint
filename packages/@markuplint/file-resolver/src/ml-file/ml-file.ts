@@ -108,7 +108,7 @@ async function exist(filePath: string) {
 function pathNormalize(filePath: string) {
 	// Remove the local disk scheme of Windows OS
 	if (path.isAbsolute(filePath)) {
-		filePath = filePath.replace(/^[a-z]+:/, '');
+		filePath = filePath.replace(/^[a-z]+:/i, '');
 	}
 	// Replace the separator of Windows OS
 	filePath = filePath.split(path.sep).join('/');
