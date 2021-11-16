@@ -1,4 +1,4 @@
-import { mergeConfig } from './merge-config';
+import { mergeConfig, mergeRule } from './merge-config';
 
 it('test', () => {
 	expect(mergeConfig({}, {})).toStrictEqual({});
@@ -99,33 +99,52 @@ it('test', () => {
 
 it('test', () => {
 	expect(
-		mergeConfig(
+		mergeRule(
 			{
-				rules: {
-					sameRule: {
-						option: {
-							optional: 'OPTIONAL_VALUE',
-						},
-					},
-				},
+				value: true,
 			},
-			{
-				rules: {
-					sameRule: {
-						option: {
-							optional: 'CHANGED_OPTIONAL_VALUE',
-						},
-					},
-				},
-			},
+			{},
 		),
 	).toStrictEqual({
-		rules: {
-			sameRule: {
+		value: true,
+	});
+
+	expect(
+		mergeRule(
+			{
+				value: true,
+			},
+			false,
+		),
+	).toStrictEqual(false);
+
+	expect(
+		mergeRule(
+			{
+				value: false,
+			},
+			true,
+		),
+	).toStrictEqual({
+		value: true,
+	});
+
+	expect(
+		mergeRule(
+			{
+				option: {
+					optional: 'OPTIONAL_VALUE',
+				},
+			},
+			{
 				option: {
 					optional: 'CHANGED_OPTIONAL_VALUE',
 				},
 			},
+		),
+	).toStrictEqual({
+		option: {
+			optional: 'CHANGED_OPTIONAL_VALUE',
 		},
 	});
 });

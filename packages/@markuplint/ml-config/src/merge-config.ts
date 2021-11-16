@@ -30,6 +30,47 @@ export function mergeConfig(a: Config, b: Config): Config {
 	return config;
 }
 
+export function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
+	// Particular behavior:
+	//
+	// If the right-side value is false, return false.
+	// In short; The `false` makes the rule to be disabled absolutely.
+	if (b === false || (!isRuleConfigValue(b) && b.value === false)) {
+		return false;
+	}
+
+	if (a === undefined) {
+		return b;
+	}
+	if (isRuleConfigValue(b)) {
+		if (isRuleConfigValue(a)) {
+			if (Array.isArray(a) && Array.isArray(b)) {
+				return [...a, ...b];
+			}
+			return b;
+		}
+		const value = Array.isArray(a.value) && Array.isArray(b) ? [...a.value, b] : b;
+		const res = {
+			...a,
+			value,
+		};
+		deleteUndefProp(res);
+		return res;
+	}
+	const severity = b.severity || (!isRuleConfigValue(a) ? a.severity : undefined);
+	const value = b.value || (isRuleConfigValue(a) ? a : a.value);
+	const option = mergeObject(!isRuleConfigValue(a) ? a.option : undefined, b.option);
+	const reason = b.reason || (!isRuleConfigValue(a) ? a.reason : undefined);
+	const res = {
+		severity,
+		value,
+		option,
+		reason,
+	};
+	deleteUndefProp(res);
+	return res;
+}
+
 function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 	if (a == null) {
 		return b || undefined;
@@ -122,47 +163,6 @@ function mergeRules(a: Nullable<Rules>, b: Nullable<Rules>): Rules | undefined {
 			res[key] = merged;
 		}
 	}
-	deleteUndefProp(res);
-	return res;
-}
-
-export function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
-	// Particular behavior:
-	//
-	// If the right-side value is false, return false.
-	// In short; The `false` makes the rule to be disabled absolutely.
-	if (b === false || (!isRuleConfigValue(b) && b.value === false)) {
-		return false;
-	}
-
-	if (a === undefined) {
-		return b;
-	}
-	if (isRuleConfigValue(b)) {
-		if (isRuleConfigValue(a)) {
-			if (Array.isArray(a) && Array.isArray(b)) {
-				return [...a, ...b];
-			}
-			return b;
-		}
-		const value = Array.isArray(a.value) && Array.isArray(b) ? [...a.value, b] : b;
-		const res = {
-			...a,
-			value,
-		};
-		deleteUndefProp(res);
-		return res;
-	}
-	const severity = b.severity || (!isRuleConfigValue(a) ? a.severity : undefined);
-	const value = b.value || (isRuleConfigValue(a) ? a : a.value);
-	const option = mergeObject(!isRuleConfigValue(a) ? a.option : undefined, b.option);
-	const reason = b.reason || (!isRuleConfigValue(a) ? a.reason : undefined);
-	const res = {
-		severity,
-		value,
-		option,
-		reason,
-	};
 	deleteUndefProp(res);
 	return res;
 }
