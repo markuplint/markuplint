@@ -252,3 +252,20 @@ test('combination :has(~)', async () => {
 		__node: '[class="i5"]:has(~ li)',
 	});
 });
+
+test('pug', async () => {
+	const el = createTestElement('div#foo.bar', { parser: require('@markuplint/pug-parser') });
+	expect(
+		matchSelector(el, {
+			nodeName: '/^(?<tag>[a-z]+)$/',
+			attrName: '/^(?<attr>[a-z]+)$/',
+			attrValue: '/^(?<value>[a-z]+)$/',
+		}),
+	).toStrictEqual({
+		__node: 'div[id][class][id="foo"][class="bar"]',
+		tag: 'div',
+		attr: 'class',
+		value: 'bar',
+		$1: 'bar',
+	});
+});
