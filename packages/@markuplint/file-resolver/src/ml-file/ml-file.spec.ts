@@ -2,12 +2,12 @@ import { MLFile } from './ml-file';
 
 it('file path', async () => {
 	const file = new MLFile('/dir/file');
-	expect(file.path).toBe('/dir/file');
-	expect(file.dirname).toBe('/dir');
+	expect(file.nPath).toBe('/dir/file');
+	expect(file.nDirname).toBe('/dir');
 
 	const file2 = new MLFile('/dir/dir2/file.html');
-	expect(file2.path).toBe('/dir/dir2/file.html');
-	expect(file2.dirname).toBe('/dir/dir2');
+	expect(file2.nPath).toBe('/dir/dir2/file.html');
+	expect(file2.nDirname).toBe('/dir/dir2');
 });
 
 it('file matches', async () => {
