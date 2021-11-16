@@ -23,7 +23,7 @@
 	"dependencies": {
 		"@markuplint/ml-ast": "2.0.0-dev.20211115.0",
 		"@markuplint/ml-config": "2.0.0-dev.2021116.0",
-		"@markuplint/ml-core": "^2.0.0-dev.2021117.0",
+		"@markuplint/ml-core": "2.0.0-dev.2021117.0",
 		"@markuplint/ml-spec": "2.0.0-dev.20211115.0",
 		"cosmiconfig": "^7.0.1",
 		"glob": "^7.2.0",

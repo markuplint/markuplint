@@ -17,8 +17,8 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-spec": "^2.0.0-dev.2021117.0",
-		"@markuplint/ml-core": "^2.0.0-dev.2021117.0",
+		"@markuplint/html-spec": "2.0.0-dev.2021117.0",
+		"@markuplint/ml-core": "2.0.0-dev.2021117.0",
 		"@markuplint/ml-spec": "2.0.0-dev.20211115.0",
 		"tslib": "^2.3.1"
 	}

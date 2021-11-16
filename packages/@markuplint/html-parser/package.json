@@ -21,7 +21,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "2.0.0-dev.20211115.0",
-		"@markuplint/parser-utils": "^2.0.0-dev.2021117.0",
+		"@markuplint/parser-utils": "2.0.0-dev.2021117.0",
 		"parse5": "^6.0.1",
 		"tslib": "^2.3.1"
 	}
