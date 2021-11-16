@@ -16,6 +16,6 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "^2.0.0-dev.20211115.0"
+		"@markuplint/ml-spec": "2.0.0-dev.20211115.0"
 	}
 }
