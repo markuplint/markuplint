@@ -200,51 +200,53 @@ test('regexSelector', async () => {
 
 test('extend rule settings', async () => {
 	const document = createTestDocument('<span class="a"></span><div class="b"><span></span></div>', {
-		rules: {
-			ruleA: {
-				severity: 'error',
-				reason: '123',
+		config: {
+			rules: {
+				ruleA: {
+					severity: 'error',
+					reason: '123',
+				},
+				ruleB: {
+					severity: 'info',
+					reason: '456',
+				},
+				ruleC: false,
+				ruleD: true,
+				ruleE: {
+					value: '789',
+				},
 			},
-			ruleB: {
-				severity: 'info',
-				reason: '456',
-			},
-			ruleC: false,
-			ruleD: true,
-			ruleE: {
-				value: '789',
-			},
+			nodeRules: [
+				{
+					selector: '.a',
+					rules: {
+						ruleA: {
+							severity: 'info',
+							reason: '456',
+						},
+						ruleB: {},
+						ruleC: true,
+						ruleD: false,
+						ruleE: false,
+					},
+				},
+			],
+			childNodeRules: [
+				{
+					selector: '.b',
+					rules: {
+						ruleA: {
+							severity: 'info',
+							reason: '456',
+						},
+						ruleB: {},
+						ruleC: true,
+						ruleD: false,
+						ruleE: false,
+					},
+				},
+			],
 		},
-		nodeRules: [
-			{
-				selector: '.a',
-				rules: {
-					ruleA: {
-						severity: 'info',
-						reason: '456',
-					},
-					ruleB: {},
-					ruleC: true,
-					ruleD: false,
-					ruleE: false,
-				},
-			},
-		],
-		childNodeRules: [
-			{
-				selector: '.b',
-				rules: {
-					ruleA: {
-						severity: 'info',
-						reason: '456',
-					},
-					ruleB: {},
-					ruleC: true,
-					ruleD: false,
-					ruleE: false,
-				},
-			},
-		],
 	});
 
 	expect((document.nodeList[0] as MLDOMElement<any, any>).nodeName).toBe('span');
