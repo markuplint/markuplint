@@ -126,7 +126,15 @@ function mergeRules(a: Nullable<Rules>, b: Nullable<Rules>): Rules | undefined {
 	return res;
 }
 
-function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
+export function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
+	// Particular behavior:
+	//
+	// If the right-side value is false, return false.
+	// In short; The `false` makes the rule to be disabled absolutely.
+	if (b === false || (!isRuleConfigValue(b) && b.value === false)) {
+		return false;
+	}
+
 	if (a === undefined) {
 		return b;
 	}
@@ -148,10 +156,12 @@ function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
 	const severity = b.severity || (!isRuleConfigValue(a) ? a.severity : undefined);
 	const value = b.value || (isRuleConfigValue(a) ? a : a.value);
 	const option = mergeObject(!isRuleConfigValue(a) ? a.option : undefined, b.option);
+	const reason = b.reason || (!isRuleConfigValue(a) ? a.reason : undefined);
 	const res = {
 		severity,
 		value,
 		option,
+		reason,
 	};
 	deleteUndefProp(res);
 	return res;

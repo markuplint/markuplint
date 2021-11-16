@@ -1,9 +1,7 @@
 import type { MLToken } from '@markuplint/ml-ast';
-import type { Rules } from '@markuplint/ml-config';
 
 export default class MLDOMToken<A extends MLToken> {
 	readonly uuid: string;
-	readonly rules: Rules = {};
 
 	readonly #startLine: number;
 	readonly #endLine: number;

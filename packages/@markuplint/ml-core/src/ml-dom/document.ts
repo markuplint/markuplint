@@ -7,7 +7,7 @@ import type { MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
 import type { RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
-import { exchangeValueOnRule } from '@markuplint/ml-config';
+import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
 import { getSpec } from '@markuplint/ml-spec';
 
 import { log as coreLog } from '../debug';
@@ -20,6 +20,7 @@ import { MLDOMDoctype, MLDOMNode } from './tokens';
 
 const log = coreLog.extend('ml-dom');
 const docLog = log.extend('document');
+const ruleLog = docLog.extend('rule');
 
 /**
  * markuplint DOM Document
@@ -192,11 +193,19 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		docLog('Initialize');
 		// add rules to node
 		for (const node of this.nodeList) {
-			docLog('Add rules to node <%s>', 'nodeName' in node ? node.nodeName : `#${node.type}`);
+			docLog(
+				'Add rules to node <%s%s>',
+				node.type === 'ElementCloseTag' ? '/' : '',
+				'nodeName' in node ? node.nodeName : `#${node.type}`,
+			);
 			// global rules
 			for (const ruleName of Object.keys(ruleset.rules)) {
 				const rule = ruleset.rules[ruleName];
-				node.rules[ruleName] = rule;
+				node.rules[ruleName] = {
+					from: 'rules',
+					index: -1,
+					set: rule,
+				};
 			}
 
 			if (node.type !== 'Element' && node.type !== 'ElementCloseTag') {
@@ -206,29 +215,30 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 			const selectorTarget = node.type === 'Element' ? node : node.startTag;
 
 			// node specs and special rules for node by selector
-			for (const nodeRule of ruleset.nodeRules) {
+			ruleset.nodeRules.forEach((nodeRule, i) => {
 				if (!nodeRule.rules) {
-					continue;
+					return;
 				}
 
 				const selector = nodeRule.selector || nodeRule.tagName || nodeRule.regexSelector;
 				if (!selector) {
-					continue;
+					return;
 				}
 
 				const matched = matchSelector(selectorTarget, selector);
 
 				if (!matched) {
-					continue;
+					return;
 				}
 
-				const ruleList = Object.keys(nodeRule.rules);
 				docLog(
-					'Matched nodeRule: <%s>(%s) <- Rules: %o',
+					'Matched nodeRule: <%s%s>(%s)',
+					node.type === 'ElementCloseTag' ? '/' : '',
 					node.nodeName,
 					matched.__node || 'No Selector',
-					ruleList,
 				);
+
+				const ruleList = Object.keys(nodeRule.rules);
 
 				// special rules
 				for (const ruleName of ruleList) {
@@ -237,47 +247,90 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					if (convertedRule === undefined) {
 						continue;
 					}
-					node.rules[ruleName] = convertedRule;
-				}
-			}
-		}
+					const globalRule = ruleset.rules[ruleName];
+					const mergedRule = globalRule ? mergeRule(globalRule, convertedRule) : convertedRule;
 
-		// overwrite rule to child node
-		for (const nodeRule of ruleset.childNodeRules) {
-			if (!nodeRule.rules) {
-				break;
-			}
-			for (const ruleName of Object.keys(nodeRule.rules)) {
-				const rule = nodeRule.rules[ruleName];
-				for (const node of this.nodeList) {
-					if (node.type !== 'Element') {
+					if (node.rules[ruleName] && node.rules[ruleName].index >= i) {
 						continue;
 					}
 
-					const matched = matchSelector(node, nodeRule.selector || nodeRule.regexSelector);
-					if (matched) {
-						const convertedRule = exchangeValueOnRule(rule, matched);
-						if (convertedRule === undefined) {
-							continue;
-						}
-						docLog(
-							'Matched childNodeRule: <%s>(%s) <- Rule: %s',
-							node.nodeName,
-							matched.__node || 'No Selector',
-							ruleName,
-						);
-						if (nodeRule.inheritance) {
-							syncWalk(node.childNodes, childNode => {
-								childNode.rules[ruleName] = convertedRule;
-							});
-						} else {
-							for (const childNode of node.childNodes) {
-								childNode.rules[ruleName] = convertedRule;
-							}
-						}
-					}
+					ruleLog('↑ Rule (%s): %O', ruleName, mergedRule);
+
+					node.rules[ruleName] = {
+						from: 'nodeRules',
+						index: i,
+						set: mergedRule,
+					};
 				}
-			}
+			});
+
+			// overwrite rule to child node
+			ruleset.childNodeRules.forEach((nodeRule, i) => {
+				if (!nodeRule.rules) {
+					return;
+				}
+
+				const selector = nodeRule.selector || nodeRule.tagName || nodeRule.regexSelector;
+				if (!selector) {
+					return;
+				}
+
+				const matched = matchSelector(selectorTarget, selector);
+				if (!matched) {
+					return;
+				}
+
+				docLog(
+					'Matched childNodeRule: <%s%s>(%s), inheritance: %o',
+					node.type === 'ElementCloseTag' ? '/' : '',
+					node.nodeName,
+					matched.__node || 'No Selector',
+					!!nodeRule.inheritance,
+				);
+
+				const ruleList = Object.keys(nodeRule.rules);
+
+				for (const ruleName of ruleList) {
+					const rule = nodeRule.rules[ruleName];
+
+					const convertedRule = exchangeValueOnRule(rule, matched);
+					if (convertedRule === undefined) {
+						continue;
+					}
+					const globalRule = ruleset.rules[ruleName];
+					const mergedRule = globalRule ? mergeRule(globalRule, convertedRule) : convertedRule;
+
+					const targetDescendants: AnonymousNode<T, O>[] = [];
+					if (nodeRule.inheritance) {
+						syncWalk(selectorTarget.childNodes, childNode => {
+							if (childNode.rules[ruleName] && childNode.rules[ruleName].index >= i) {
+								return;
+							}
+							targetDescendants.push(childNode);
+						});
+					} else {
+						targetDescendants.push(
+							...selectorTarget.childNodes.filter(
+								childNode => childNode.rules[ruleName] && childNode.rules[ruleName].index < i,
+							),
+						);
+					}
+
+					if (targetDescendants.length <= 0) {
+						return;
+					}
+
+					ruleLog('↑ Rule (%s): %O', ruleName, mergedRule);
+
+					targetDescendants.forEach(descendant => {
+						descendant.rules[ruleName] = {
+							from: 'childNodeRules',
+							index: i,
+							set: mergedRule,
+						};
+					});
+				}
+			});
 		}
 	}
 }

@@ -108,6 +108,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 				severity: this.defaultServerity,
 				value: this.defaultValue,
 				option: this.defaultOptions,
+				reason: undefined,
 			};
 		}
 		if (!Array.isArray(configSettings) && typeof configSettings === 'object' && configSettings !== null) {
@@ -136,6 +137,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 			// @ts-ignore TODO: Wait for fix to bug of type guards in TypeScript
 			value: configSettings == null ? this.defaultValue : configSettings,
 			option: this.defaultOptions,
+			reason: undefined,
 		};
 	}
 }

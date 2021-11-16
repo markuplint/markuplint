@@ -72,6 +72,13 @@ export function exchangeValueOnRule(rule: AnyRule, data: Record<string, string>)
 				option: exchangeOption(rule.option as PlainData, data),
 			};
 		}
+		if (rule.reason != null) {
+			const exchangedValue = exchangeValue(rule.reason, data);
+			rule = {
+				...rule,
+				reason: exchangedValue ? `${exchangedValue}` : undefined,
+			};
+		}
 		return rule;
 	}
 	return exchangeValue(rule, data);

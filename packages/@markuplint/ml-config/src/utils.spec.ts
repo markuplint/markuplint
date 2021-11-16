@@ -64,7 +64,7 @@ it('exchangeValueOnRule', () => {
 			{
 				severity: 'error',
 				value: 'The name is {{ dataName }}',
-				reason: 'For xxx',
+				reason: 'For {{ dataName }}',
 			},
 			{
 				$0: 'data-hoge',
@@ -75,7 +75,7 @@ it('exchangeValueOnRule', () => {
 	).toStrictEqual({
 		severity: 'error',
 		value: 'The name is hoge',
-		reason: 'For xxx',
+		reason: 'For hoge',
 	});
 
 	expect(
