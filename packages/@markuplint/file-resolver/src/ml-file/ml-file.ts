@@ -78,7 +78,7 @@ export class MLFile {
 	}
 
 	matches(globPath: string) {
-		return minimatch(this.nPath, globPath);
+		return minimatch(this.nPath, pathNormalize(globPath));
 	}
 
 	private async _fetch() {
