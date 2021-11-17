@@ -439,3 +439,72 @@ test('regexSelector + pug', async () => {
 		option: null,
 	});
 });
+
+test('regexSelector + jsx', async () => {
+	const document = createTestDocument(
+		`<section className="Card">
+	<div className="Card__inner1">
+		<div className="Card__inner2">
+			{() => (<div className="Card__inner3" />)}
+		</div>
+	</div>
+</section>`,
+		{
+			config: {
+				rules: {
+					ruleA: 'global',
+				},
+				childNodeRules: [
+					{
+						regexSelector: {
+							attrName: 'class',
+							attrValue: '/^(?<BlockName>[A-Z][a-z0-9]+)$/',
+						},
+						inheritance: true,
+						rules: {
+							ruleA: '{{ BlockName }}',
+						},
+					},
+				],
+			},
+			parser: require('@markuplint/jsx-parser'),
+		},
+	);
+	const ruleA = createRule({
+		name: 'ruleA',
+		defaultValue: 'foo',
+		defaultOptions: null,
+		async verify() {
+			throw new Error();
+		},
+	});
+	document.setRule(ruleA);
+	expect(document.nodeList[0].rule).toStrictEqual({
+		disabled: false,
+		reason: undefined,
+		severity: 'error',
+		value: 'global',
+		option: null,
+	});
+	expect(document.nodeList[2].rule).toStrictEqual({
+		disabled: false,
+		reason: undefined,
+		severity: 'error',
+		value: 'Card',
+		option: null,
+	});
+	expect(document.nodeList[4].rule).toStrictEqual({
+		disabled: false,
+		reason: undefined,
+		severity: 'error',
+		value: 'Card',
+		option: null,
+	});
+	expect(document.nodeList[7].rule).toStrictEqual({
+		disabled: false,
+		reason: undefined,
+		severity: 'error',
+		value: 'Card',
+		option: null,
+	});
+});
