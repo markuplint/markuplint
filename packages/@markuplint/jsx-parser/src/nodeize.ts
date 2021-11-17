@@ -54,6 +54,7 @@ export function nodeize(
 				nextNode,
 				isFragment: false,
 				isGhost: false,
+				__parentId: originNode.__parentId || null,
 			};
 			return node;
 		}
@@ -133,6 +134,7 @@ export function nodeize(
 				tagOpenChar: '<',
 				tagCloseChar: '>',
 				isCustomElement: isJSXComponentName(nodeName, namespace),
+				__parentId: originNode.__parentId || null,
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
@@ -183,6 +185,7 @@ export function nodeize(
 					tagOpenChar: '</',
 					tagCloseChar: '>',
 					isCustomElement: true,
+					__parentId: originNode.__parentId || null,
 				};
 			}
 
@@ -204,6 +207,7 @@ export function nodeize(
 				tagOpenChar: '<',
 				tagCloseChar: '>',
 				isCustomElement: true,
+				__parentId: originNode.__parentId || null,
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
@@ -237,6 +241,7 @@ export function nodeize(
 				nextNode,
 				isFragment: false,
 				isGhost: false,
+				__parentId: originNode.__parentId || null,
 			};
 		}
 	}
