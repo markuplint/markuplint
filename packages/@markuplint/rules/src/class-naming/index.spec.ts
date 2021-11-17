@@ -288,7 +288,6 @@ test('regexSelector', async () => {
 `,
 		{
 			rule: '/.+/',
-
 			childNodeRule: [
 				{
 					regexSelector: {
@@ -329,6 +328,87 @@ test('regexSelector', async () => {
 			raw: 'Card__list',
 			message:
 				'The "Card__list" class name is unmatched with the below patterns: "/^List__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/"',
+			reason: 'Do not allow include the element in a no-own block.',
+		},
+	]);
+});
+
+test('pug + regexSelector', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		`section.Card
+	.Card__header
+		.Heading
+			h3.Heading__lv3 Title
+	.Card__body
+		.List
+			ul.List__group
+				li ...
+				li ...
+				li ...
+section.Card
+	.Card__header
+		// 👎 It is "Card" scope, Don't use the element owned "Heading"
+		h3.Heading__lv3 Title
+	.Card__body
+		.Card__body-el ...
+		// 👎 It is "Card" scope, Don't use the element owned "List"
+		ul.List__group
+			li ...
+			li ...
+			li ...
+		.List
+			// 👎 It is not "Card" scope instead of "List" scope here
+			ul.Card__list
+				li ...
+				li ...
+				li ...
+`,
+		{
+			parser: {
+				'.*': '@markuplint/pug-parser',
+			},
+			rule: '/.+/',
+			childNodeRule: [
+				{
+					regexSelector: {
+						attrName: 'class',
+						attrValue: '/^(?<BlockName>[A-Z][a-z0-9]+)(?:__[a-z][a-z0-9-]+)?$/',
+					},
+					rule: {
+						value: ['/^{{BlockName}}__[a-z][a-z0-9-]+$/', '/^([A-Z][a-z0-9]+)$/'],
+						reason: 'Do not allow include the element in a no-own block.',
+					},
+				},
+			],
+		},
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 14,
+			col: 5,
+			message:
+				'The "Heading__lv3" class name is unmatched with the below patterns: "/^Card__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/"',
+			raw: '.Heading__lv3',
+			reason: 'Do not allow include the element in a no-own block.',
+		},
+		{
+			severity: 'warning',
+			line: 18,
+			col: 5,
+			message:
+				'The "List__group" class name is unmatched with the below patterns: "/^Card__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/"',
+			raw: '.List__group',
+			reason: 'Do not allow include the element in a no-own block.',
+		},
+		{
+			severity: 'warning',
+			line: 24,
+			col: 6,
+			message:
+				'The "Card__list" class name is unmatched with the below patterns: "/^List__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/"',
+			raw: '.Card__list',
 			reason: 'Do not allow include the element in a no-own block.',
 		},
 	]);
