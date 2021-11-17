@@ -16,14 +16,7 @@ export default abstract class MLDOMNode<
 	implements IMLDOMNode
 {
 	readonly type: NodeType = 'Node';
-	readonly rules: Record<
-		string,
-		{
-			from: 'rules' | 'nodeRules' | 'childNodeRules';
-			index: number;
-			set: AnyRule;
-		}
-	> = {};
+	readonly rules: Record<string, AnyRule> = {};
 
 	protected _astToken: A;
 
@@ -115,15 +108,12 @@ export default abstract class MLDOMNode<
 		}
 		const name = this.#doc.currentRule.name;
 
-		const rule = this.rules[name];
+		const rule = this.rules[name] as RuleConfig<T, O> | T;
 
 		if (rule == null) {
 			throw new Error('Invalid call "rule" property.');
 		}
 
-		// @ts-ignore
-		const set: RuleConfig<T, O> | T = rule.set;
-
-		return this.#doc.currentRule.optimizeOption(set);
+		return this.#doc.currentRule.optimizeOption(rule);
 	}
 }

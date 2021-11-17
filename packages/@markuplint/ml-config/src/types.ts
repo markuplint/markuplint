@@ -52,6 +52,9 @@ export type Severity = 'error' | 'warning' | 'info';
 export type RuleConfigValue = string | number | boolean | any[] | null;
 
 export interface NodeRule {
+	/**
+	 * @deprecated
+	 */
 	tagName?: string;
 	selector?: string;
 	regexSelector?: RegexSelector;
@@ -62,6 +65,9 @@ export interface NodeRule {
 }
 
 export interface ChildNodeRule {
+	/**
+	 * @deprecated
+	 */
 	tagName?: string;
 	selector?: string;
 	regexSelector?: RegexSelector;
