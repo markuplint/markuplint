@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/rules",
-	"version": "2.0.0-dev.2021117.1",
+	"version": "2.0.0-dev.2021117.2",
 	"description": "Rules for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -18,7 +18,7 @@
 	},
 	"dependencies": {
 		"@markuplint/html-spec": "2.0.0-dev.2021117.0",
-		"@markuplint/ml-core": "2.0.0-dev.2021117.1",
+		"@markuplint/ml-core": "2.0.0-dev.2021117.2",
 		"@markuplint/ml-spec": "2.0.0-dev.20211115.0",
 		"tslib": "^2.3.1"
 	}
