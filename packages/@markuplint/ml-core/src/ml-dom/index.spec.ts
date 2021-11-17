@@ -373,11 +373,13 @@ test('extend rule settings', async () => {
 	expect(document.nodeList[5].rule).not.toStrictEqual(resultE);
 });
 
-test('regexSelector', async () => {
+test('regexSelector + pug', async () => {
 	const document = createTestDocument(
 		`section.Card
 	.Card__inner1
-		.Card__inner2`,
+		.Card__inner2
+			if true
+				.Card__inner3`,
 		{
 			config: {
 				rules: {
@@ -423,6 +425,13 @@ test('regexSelector', async () => {
 		option: null,
 	});
 	expect(document.nodeList[2].rule).toStrictEqual({
+		disabled: false,
+		reason: undefined,
+		severity: 'error',
+		value: 'Card',
+		option: null,
+	});
+	expect(document.nodeList[4].rule).toStrictEqual({
 		disabled: false,
 		reason: undefined,
 		severity: 'error',
