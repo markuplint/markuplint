@@ -79,6 +79,15 @@ describe('parse', () => {
 		]);
 	});
 
+	it('Children', () => {
+		const ast = parse('<ul>{[1, 2, 3].map(item => (<li key={item}>{item}</li>))}</ul>');
+		expect(ast.nodeList[0].nodeName).toBe('ul');
+		expect(ast.nodeList[1].nodeName).toBe('JSXExpressionContainer');
+		// @ts-ignore
+		expect(ast.nodeList[1].childNodes[0].uuid).toBe(ast.nodeList[2].uuid);
+		expect(ast.nodeList[2].parentNode?.uuid).toBe(ast.nodeList[1].uuid);
+	});
+
 	it('Code 2', () => {
 		const ast = parse(`const Component = () => {
 	return (
@@ -142,7 +151,9 @@ describe('parse', () => {
 		expect(ast.nodeList[0].childNodes[1].nodeName).toBe('JSXExpressionContainer');
 		// @ts-ignore
 		expect(ast.nodeList[0].childNodes[2].nodeName).toBe('#text');
-		expect(ast.nodeList[3].parentNode).toBeNull();
+		// @ts-ignore
+		expect(ast.nodeList[2].parentNode?.uuid).toBe(ast.nodeList[0].uuid);
+		expect(ast.nodeList[3].parentNode?.uuid).toBe(ast.nodeList[2].uuid);
 	});
 
 	it('Code 4', () => {

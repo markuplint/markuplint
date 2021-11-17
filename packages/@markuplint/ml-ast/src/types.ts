@@ -7,6 +7,7 @@ export interface MLToken {
 	endLine: number;
 	startCol: number;
 	endCol: number;
+	[extendKey: `__${string}`]: string | number | boolean | null;
 }
 
 export type MLASTNodeType = 'doctype' | 'starttag' | 'endtag' | 'comment' | 'text' | 'omittedtag' | 'psblock';

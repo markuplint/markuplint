@@ -285,6 +285,9 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				const descendants: AnonymousNode<T, O>[] = [];
 				syncWalk(selectorTarget.childNodes, childNode => {
 					descendants.push(childNode);
+					if (childNode.type === 'Element' && childNode.closeTag) {
+						descendants.push(childNode.closeTag);
+					}
 				});
 				const children = selectorTarget.childNodes;
 
