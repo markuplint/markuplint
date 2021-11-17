@@ -16,6 +16,7 @@ import { NodeStore, createNode } from './helper';
 import { nodeListToDebugMaps } from './helper/debug';
 import { matchSelector } from './helper/match-selector';
 import { syncWalk } from './helper/walkers';
+import { RuleMapper } from './rule-mapper';
 import { MLDOMDoctype, MLDOMNode } from './tokens';
 
 const log = coreLog.extend('ml-dom');
@@ -85,7 +86,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 			}),
 		);
 
-		this._init(ruleset);
+		this._ruleMapping(ruleset);
 	}
 
 	get doctype() {
@@ -189,8 +190,11 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		return nodeListToDebugMaps(this.nodeList, true);
 	}
 
-	private _init(ruleset: Ruleset) {
-		docLog('Initialize');
+	private _ruleMapping(ruleset: Ruleset) {
+		docLog('Rule Mapping');
+
+		const ruleMapper = new RuleMapper(this.nodeList);
+
 		// add rules to node
 		for (const node of this.nodeList) {
 			docLog(
@@ -198,21 +202,32 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				node.type === 'ElementCloseTag' ? '/' : '',
 				'nodeName' in node ? node.nodeName : `#${node.type}`,
 			);
+
 			// global rules
-			for (const ruleName of Object.keys(ruleset.rules)) {
+			Object.keys(ruleset.rules).forEach(ruleName => {
 				const rule = ruleset.rules[ruleName];
-				node.rules[ruleName] = {
+				ruleMapper.set(node, ruleName, {
 					from: 'rules',
 					index: -1,
-					set: rule,
-				};
-			}
+					rule,
+				});
+			});
 
-			if (node.type !== 'Element' && node.type !== 'ElementCloseTag') {
+			if (
+				node.type !== 'Element' &&
+				node.type !== 'OmittedElement' &&
+				node.type !== 'ElementCloseTag' &&
+				node.type !== 'Text'
+			) {
 				continue;
 			}
 
-			const selectorTarget = node.type === 'Element' ? node : node.startTag;
+			const selectorTarget =
+				node.type === 'Element' || node.type === 'OmittedElement'
+					? node
+					: node.type === 'ElementCloseTag'
+					? node.startTag
+					: null;
 
 			// node specs and special rules for node by selector
 			ruleset.nodeRules.forEach((nodeRule, i) => {
@@ -220,12 +235,18 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					return;
 				}
 
-				const selector = nodeRule.selector || nodeRule.tagName || nodeRule.regexSelector;
-				if (!selector) {
-					return;
-				}
+				const selector = nodeRule.selector || nodeRule.regexSelector || nodeRule.tagName;
 
-				const matched = matchSelector(selectorTarget, selector);
+				const matched =
+					/**
+					 * Forward v1.x compatibility
+					 */
+					nodeRule.tagName && /^#text$/i.test(nodeRule.tagName) && node.type === 'Text'
+						? { __node: '#text' }
+						: /**
+						   * v2.0.0 or later
+						   */
+						  selectorTarget && matchSelector(selectorTarget, selector);
 
 				if (!matched) {
 					return;
@@ -234,13 +255,12 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				docLog(
 					'Matched nodeRule: <%s%s>(%s)',
 					node.type === 'ElementCloseTag' ? '/' : '',
-					node.nodeName,
+					'nodeName' in node ? node.nodeName : node.type,
 					matched.__node || 'No Selector',
 				);
 
 				const ruleList = Object.keys(nodeRule.rules);
 
-				// special rules
 				for (const ruleName of ruleList) {
 					const rule = nodeRule.rules[ruleName];
 					const convertedRule = exchangeValueOnRule(rule, matched);
@@ -250,87 +270,74 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					const globalRule = ruleset.rules[ruleName];
 					const mergedRule = globalRule ? mergeRule(globalRule, convertedRule) : convertedRule;
 
-					if (node.rules[ruleName] && node.rules[ruleName].index >= i) {
-						continue;
-					}
+					ruleLog('↑ nodeRule (%s): %O', ruleName, mergedRule);
 
-					ruleLog('↑ Rule (%s): %O', ruleName, mergedRule);
-
-					node.rules[ruleName] = {
+					ruleMapper.set(node, ruleName, {
 						from: 'nodeRules',
 						index: i,
-						set: mergedRule,
-					};
+						rule: mergedRule,
+					});
 				}
 			});
 
 			// overwrite rule to child node
-			ruleset.childNodeRules.forEach((nodeRule, i) => {
-				if (!nodeRule.rules) {
-					return;
-				}
+			if (selectorTarget && ruleset.childNodeRules.length) {
+				const descendants: AnonymousNode<T, O>[] = [];
+				syncWalk(selectorTarget.childNodes, childNode => {
+					descendants.push(childNode);
+				});
+				const children = selectorTarget.childNodes;
 
-				const selector = nodeRule.selector || nodeRule.tagName || nodeRule.regexSelector;
-				if (!selector) {
-					return;
-				}
-
-				const matched = matchSelector(selectorTarget, selector);
-				if (!matched) {
-					return;
-				}
-
-				docLog(
-					'Matched childNodeRule: <%s%s>(%s), inheritance: %o',
-					node.type === 'ElementCloseTag' ? '/' : '',
-					node.nodeName,
-					matched.__node || 'No Selector',
-					!!nodeRule.inheritance,
-				);
-
-				const ruleList = Object.keys(nodeRule.rules);
-
-				for (const ruleName of ruleList) {
-					const rule = nodeRule.rules[ruleName];
-
-					const convertedRule = exchangeValueOnRule(rule, matched);
-					if (convertedRule === undefined) {
-						continue;
+				ruleset.childNodeRules.forEach((nodeRule, i) => {
+					if (!nodeRule.rules) {
+						return;
 					}
-					const globalRule = ruleset.rules[ruleName];
-					const mergedRule = globalRule ? mergeRule(globalRule, convertedRule) : convertedRule;
+					const nodeRuleRules = nodeRule.rules;
 
-					const targetDescendants: AnonymousNode<T, O>[] = [];
-					if (nodeRule.inheritance) {
-						syncWalk(selectorTarget.childNodes, childNode => {
-							if (childNode.rules[ruleName] && childNode.rules[ruleName].index >= i) {
-								return;
-							}
-							targetDescendants.push(childNode);
-						});
-					} else {
-						targetDescendants.push(
-							...selectorTarget.childNodes.filter(
-								childNode => childNode.rules[ruleName] && childNode.rules[ruleName].index < i,
-							),
-						);
-					}
-
-					if (targetDescendants.length <= 0) {
+					const selector = nodeRule.selector || nodeRule.tagName || nodeRule.regexSelector;
+					if (!selector) {
 						return;
 					}
 
-					ruleLog('↑ Rule (%s): %O', ruleName, mergedRule);
+					const matched = matchSelector(selectorTarget, selector);
+					if (!matched) {
+						return;
+					}
 
-					targetDescendants.forEach(descendant => {
-						descendant.rules[ruleName] = {
-							from: 'childNodeRules',
-							index: i,
-							set: mergedRule,
-						};
+					docLog(
+						'Matched childNodeRule: <%s%s>(%s), inheritance: %o',
+						node.type === 'ElementCloseTag' ? '/' : '',
+						selectorTarget.nodeName,
+						matched.__node || 'No Selector',
+						!!nodeRule.inheritance,
+					);
+
+					const targetDescendants = nodeRule.inheritance ? descendants : children;
+
+					Object.keys(nodeRuleRules).forEach(ruleName => {
+						const rule = nodeRuleRules[ruleName];
+
+						const convertedRule = exchangeValueOnRule(rule, matched);
+						if (convertedRule === undefined) {
+							return;
+						}
+						const globalRule = ruleset.rules[ruleName];
+						const mergedRule = globalRule ? mergeRule(globalRule, convertedRule) : convertedRule;
+
+						ruleLog('↑ childNodeRule (%s): %O', ruleName, mergedRule);
+
+						targetDescendants.forEach(descendant => {
+							ruleMapper.set(descendant, ruleName, {
+								from: 'childNodeRules',
+								index: i,
+								rule: mergedRule,
+							});
+						});
 					});
-				}
-			});
+				});
+			}
 		}
+
+		ruleMapper.apply();
 	}
 }
