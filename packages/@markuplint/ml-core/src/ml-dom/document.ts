@@ -197,11 +197,11 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 
 		// add rules to node
 		for (const node of this.nodeList) {
-			docLog(
-				'Add rules to node <%s%s>',
-				node.type === 'ElementCloseTag' ? '/' : '',
-				'nodeName' in node ? node.nodeName : `#${node.type}`,
-			);
+			if (node.type === 'ElementCloseTag') {
+				continue;
+			}
+
+			docLog('Add rules to node <%s>', 'nodeName' in node ? node.nodeName : `#${node.type}`);
 
 			// global rules
 			Object.keys(ruleset.rules).forEach(ruleName => {
@@ -213,21 +213,11 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				});
 			});
 
-			if (
-				node.type !== 'Element' &&
-				node.type !== 'OmittedElement' &&
-				node.type !== 'ElementCloseTag' &&
-				node.type !== 'Text'
-			) {
+			if (node.type !== 'Element' && node.type !== 'OmittedElement' && node.type !== 'Text') {
 				continue;
 			}
 
-			const selectorTarget =
-				node.type === 'Element' || node.type === 'OmittedElement'
-					? node
-					: node.type === 'ElementCloseTag'
-					? node.startTag
-					: null;
+			const selectorTarget = node.type === 'Element' || node.type === 'OmittedElement' ? node : null;
 
 			// node specs and special rules for node by selector
 			ruleset.nodeRules.forEach((nodeRule, i) => {
@@ -253,8 +243,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				}
 
 				docLog(
-					'Matched nodeRule: <%s%s>(%s)',
-					node.type === 'ElementCloseTag' ? '/' : '',
+					'Matched nodeRule: <%s>(%s)',
 					'nodeName' in node ? node.nodeName : node.type,
 					matched.__node || 'No Selector',
 				);
@@ -308,8 +297,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					}
 
 					docLog(
-						'Matched childNodeRule: <%s%s>(%s), inheritance: %o',
-						node.type === 'ElementCloseTag' ? '/' : '',
+						'Matched childNodeRule: <%s>(%s), inheritance: %o',
 						selectorTarget.nodeName,
 						matched.__node || 'No Selector',
 						!!nodeRule.inheritance,

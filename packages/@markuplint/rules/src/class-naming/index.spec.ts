@@ -333,6 +333,61 @@ test('regexSelector', async () => {
 	]);
 });
 
+test('regexSelector inheritance', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		`<html>
+<body class="Card">
+	<div class="Card__heading">
+		<div class="Heading">
+			<div class="Heading__text"></div>
+		</div>
+	</div>
+	<div class="Card__text"></div>
+	<div class="Heading_text"></div>
+	<div class="Card_text"></div>
+</body>
+</html>
+`,
+		{
+			rule: '/.+/',
+			childNodeRule: [
+				{
+					regexSelector: {
+						attrName: 'class',
+						attrValue: '/^(?<BlockName>[A-Z][a-z0-9]+)(?:__[a-z][a-z0-9-]+)?$/',
+					},
+					inheritance: true,
+					rule: {
+						value: ['/^{{BlockName}}__[a-z][a-z0-9-]+$/', '/^([A-Z][a-z0-9]+)$/'],
+						reason: 'Do not allow include the element in a no-own block.',
+					},
+				},
+			],
+		},
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 9,
+			col: 14,
+			message:
+				'The "Heading_text" class name is unmatched with the below patterns: "/^Card__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/"',
+			raw: 'Heading_text',
+			reason: 'Do not allow include the element in a no-own block.',
+		},
+		{
+			severity: 'warning',
+			line: 10,
+			col: 14,
+			message:
+				'The "Card_text" class name is unmatched with the below patterns: "/^Card__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/"',
+			raw: 'Card_text',
+			reason: 'Do not allow include the element in a no-own block.',
+		},
+	]);
+});
+
 test('pug + regexSelector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
