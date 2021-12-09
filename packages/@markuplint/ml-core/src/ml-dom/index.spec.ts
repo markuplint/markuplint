@@ -508,3 +508,37 @@ test('regexSelector + jsx', async () => {
 		option: null,
 	});
 });
+
+test('Rule Mapping', () => {
+	const config = {
+		rules: {
+			ruleA: 'global',
+		},
+		childNodeRules: [
+			{
+				regexSelector: {
+					nodeName: '/^x-(?<name>[a-c])/',
+				},
+				inheritance: true,
+				rules: {
+					ruleA: '{{ name }}',
+				},
+			},
+		],
+	};
+
+	const html = createTestDocument('<x-a><x-b><x-c></x-c></x-b></x-a>', {
+		config,
+	});
+	// @ts-ignore
+	const htmlRules = html.nodeList.map(node => node.nodeName + ':' + node.rules['ruleA']);
+	expect(htmlRules).toStrictEqual(['x-a:global', 'x-b:a', 'x-c:b', 'x-c:b', 'x-b:a', 'x-a:global']);
+
+	const pug = createTestDocument('x-a: x-b: x-c', {
+		config,
+		parser: require('@markuplint/pug-parser'),
+	});
+	// @ts-ignore
+	const pugRules = pug.nodeList.map(node => node.nodeName + ':' + node.rules['ruleA']);
+	expect(pugRules).toStrictEqual(['x-a:global', 'x-b:a', 'x-c:b']);
+});

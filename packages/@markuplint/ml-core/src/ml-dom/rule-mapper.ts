@@ -24,6 +24,9 @@ export class RuleMapper<N extends AnonymousNode<any, any> = AnonymousNode<any, a
 	}
 
 	set(node: N, ruleName: string, rule: MappingLayer) {
+		if (node.type === 'ElementCloseTag') {
+			return;
+		}
 		const rules = this.#ruleMap.get(node.uuid) || {};
 		const currentRule = rules[ruleName];
 		if (currentRule) {
@@ -36,6 +39,9 @@ export class RuleMapper<N extends AnonymousNode<any, any> = AnonymousNode<any, a
 		}
 		rules[ruleName] = rule;
 		this.#ruleMap.set(node.uuid, rules);
+		if (node.type === 'Element' && node.closeTag) {
+			this.#ruleMap.set(node.closeTag.uuid, rules);
+		}
 		ruleMapperLog('Set %o to %s', rule, node);
 	}
 
