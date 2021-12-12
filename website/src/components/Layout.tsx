@@ -13,7 +13,7 @@ export default function Layout({ children }: PropsWithChildren<Props>) {
       <style jsx>
         {`
           main {
-            max-width: 580px;
+            max-width: 680px;
             margin: 3em auto 5em;
             padding: 0 20px;
             position: relative;
