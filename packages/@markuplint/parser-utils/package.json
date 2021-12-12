@@ -20,6 +20,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "2.0.0-dev.20211115.1",
+		"@markuplint/types": "1.0.0-dev.2021117.0",
 		"tslib": "^2.3.1",
 		"uuid": "^8.3.2"
 	}
