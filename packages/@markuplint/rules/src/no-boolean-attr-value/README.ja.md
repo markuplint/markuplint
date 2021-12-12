@@ -18,8 +18,8 @@
 
 ### 設定値
 
--   Type: `boolean`
--   Deafult Value: `true`
+-   型: `boolean`
+-   デフォルト値: `true`
 
 ### デフォルトの警告の厳しさ
 
