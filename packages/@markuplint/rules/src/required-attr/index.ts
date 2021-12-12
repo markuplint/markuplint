@@ -60,8 +60,8 @@ export default createRule<RequiredAttributes, null>({
 				if (invalid) {
 					const message = t(
 						'{0} expects {1}',
-						t('the "{0}" {1}', spec.name, 'attribute'),
 						t('the "{0}" {1}', node.nodeName, 'element'),
+						t('the "{0}" {1}', spec.name, 'attribute'),
 					);
 					report({
 						scope: node,
