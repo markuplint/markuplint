@@ -98,7 +98,8 @@
 					"uniqueItems": true
 				},
 				"max": { "type": "number" },
-				"min": { "type": "number" }
+				"min": { "type": "number" },
+				"_TODO_": { "type": "string" }
 			}
 		},
 		"PermittedContentOptional": {
@@ -113,7 +114,8 @@
 					"items": { "$ref": "#/definitions/Node" },
 					"uniqueItems": true
 				},
-				"max": { "type": "number" }
+				"max": { "type": "number" },
+				"_TODO_": { "type": "string" }
 			}
 		},
 		"PermittedContentOneOrMore": {
@@ -130,7 +132,8 @@
 					"items": { "$ref": "#/definitions/Node" },
 					"uniqueItems": true
 				},
-				"max": { "type": "number" }
+				"max": { "type": "number" },
+				"_TODO_": { "type": "string" }
 			}
 		},
 		"PermittedContentZeroOrMore": {
@@ -147,7 +150,8 @@
 					"items": { "$ref": "#/definitions/Node" },
 					"uniqueItems": true
 				},
-				"max": { "type": "number" }
+				"max": { "type": "number" },
+				"_TODO_": { "type": "string" }
 			}
 		},
 		"PermittedContentChoice": {
@@ -160,7 +164,8 @@
 					"items": { "$ref": "#/definitions/PermittedContentSpec" },
 					"minItems": 2,
 					"maxItems": 5
-				}
+				},
+				"_TODO_": { "type": "string" }
 			}
 		},
 		"PermittedContentInterleave": {
@@ -172,7 +177,8 @@
 					"type": "array",
 					"items": { "$ref": "#/definitions/PermittedContentSpec" },
 					"minItems": 2
-				}
+				},
+				"_TODO_": { "type": "string" }
 			}
 		}
 	},
@@ -203,7 +209,13 @@
 								"additionalProperties": false,
 								"required": ["parent"],
 								"properties": {
-									"parent": { "type": "string" }
+									"parent": { "type": "string" },
+									"hasNotAttr": {
+										"type": "string",
+										"description": "Not support yet"
+									},
+									"_TODO_": { "type": "string" },
+									"_parent": { "type": "string" }
 								}
 							}
 						]

@@ -1,28 +1,26 @@
-import type { Attribute } from '@markuplint/html-spec';
-
 import htmlSpec from '@markuplint/html-spec';
 
 import { getSpec } from './get-spec';
 
 describe('getSpec', () => {
-	test('', () => {
-		const exAttr: Attribute = {
-			name: 'extended-attr',
+	test('Overriding', () => {
+		const exAttr = {
+			ref: 'N/A',
 			type: 'Boolean',
 			description: 'For the unit test.',
-		};
-		const exAttr2: Attribute = {
-			name: 'extended-attr',
+		} as const;
+		const exAttr2 = {
+			ref: 'N/A',
 			type: 'Boolean',
 			description: 'For the unit test. Override.',
-		};
+		} as const;
 		const mergedSpec = getSpec([
 			htmlSpec,
 			{
 				specs: [
 					{
 						name: 'a',
-						attributes: [exAttr],
+						attributes: { 'extended-attr': exAttr },
 					},
 				],
 			},
@@ -30,17 +28,12 @@ describe('getSpec', () => {
 				specs: [
 					{
 						name: 'a',
-						attributes: [exAttr2],
+						attributes: { 'extended-attr': exAttr2 },
 					},
 				],
 			},
 		]);
 		const aElAttrs = mergedSpec.specs.find(el => el.name === 'a')!.attributes;
-		expect(
-			aElAttrs.find((attr): attr is Attribute => !(typeof attr === 'string') && attr.name === 'href')!.name,
-		).toBe('href');
-		expect(
-			aElAttrs.find((attr): attr is Attribute => !(typeof attr === 'string') && attr.name === exAttr.name),
-		).toStrictEqual(exAttr2);
+		expect(aElAttrs['extended-attr']).toStrictEqual(exAttr2);
 	});
 });

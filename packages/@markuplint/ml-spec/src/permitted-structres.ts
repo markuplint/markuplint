@@ -57,6 +57,12 @@ export interface PermittedStructuresSchema {
 			  }
 			| {
 					parent: string;
+					/**
+					 * Not support yet
+					 */
+					hasNotAttr?: string;
+					_TODO_?: string;
+					_parent?: string;
 			  };
 		contents: PermittedContentSpec | boolean;
 	}[];
@@ -69,24 +75,28 @@ export interface PermittedContentRequire {
 	notAllowedDescendants?: Node[];
 	max?: number;
 	min?: number;
+	_TODO_?: string;
 }
 export interface PermittedContentOptional {
 	optional: Target;
 	ignore?: Target;
 	notAllowedDescendants?: Node[];
 	max?: number;
+	_TODO_?: string;
 }
 export interface PermittedContentOneOrMore {
 	oneOrMore: Target | PermittedContentSpec;
 	ignore?: Target;
 	notAllowedDescendants?: Node[];
 	max?: number;
+	_TODO_?: string;
 }
 export interface PermittedContentZeroOrMore {
 	zeroOrMore: Target | PermittedContentSpec;
 	ignore?: Target;
 	notAllowedDescendants?: Node[];
 	max?: number;
+	_TODO_?: string;
 }
 export interface PermittedContentChoice {
 	choice:
@@ -100,7 +110,9 @@ export interface PermittedContentChoice {
 				PermittedContentSpec,
 				PermittedContentSpec,
 		  ];
+	_TODO_?: string;
 }
 export interface PermittedContentInterleave {
 	interleave: [PermittedContentSpec, PermittedContentSpec, ...PermittedContentSpec[]];
+	_TODO_?: string;
 }
