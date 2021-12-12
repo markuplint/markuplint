@@ -67,9 +67,19 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 
 		if (violations instanceof Error) {
 			this.emit('lint-error', this.#file.path, sourceCode, violations);
-			log('exec: error %o', violations.message);
+			const errMessage = violations.stack ?? violations.message;
+			log('exec: error %O', errMessage);
 			return {
-				violations: [],
+				violations: [
+					{
+						severity: 'error',
+						message: errMessage,
+						ruleId: '@markuplint/ml-core',
+						line: 0,
+						col: 0,
+						raw: '',
+					},
+				],
 				filePath: this.#file.path,
 				sourceCode,
 				fixedCode,
