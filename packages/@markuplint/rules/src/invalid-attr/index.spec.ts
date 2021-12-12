@@ -36,8 +36,23 @@ test('Type check', async () => {
 			severity: 'error',
 			line: 1,
 			col: 13,
-			message: 'The value of the "name" attribute must not be empty string',
+			message: 'The "name" attribute must not be empty',
 			raw: '',
+		},
+	]);
+});
+
+test('complex type', async () => {
+	const { violations } = await mlRuleTest(rule, '<input autocomplete="section-a section-b"/>', { rule: true });
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message:
+				'The autofill named group part of the "autocomplete" attribute is duplicated (https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-section)',
+			raw: 'section-b',
 		},
 	]);
 });
@@ -120,7 +135,7 @@ test('custom rule: type', async () => {
 			severity: 'error',
 			line: 1,
 			col: 41,
-			message: 'The "x-attr" attribute expects integer',
+			message: 'It includes unexpected characters. the "x-attr" attribute expects integer',
 			raw: 'abc',
 		},
 	]);
@@ -270,6 +285,31 @@ test('svg', async () => {
 			col: 30,
 			message: 'The "cz" attribute is disallowed',
 			raw: 'cz',
+		},
+	]);
+});
+
+test('svg', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<svg>
+					<rect mask="20px
+					hogehoge" />
+				</svg>
+				`,
+				{ rule: true },
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 3,
+			col: 6,
+			message:
+				'The value part of the "mask" attribute expects the CSS Syntax "<mask-layer>#" (https://csstree.github.io/docs/syntax/#Property:mask)',
+			raw: 'hogehoge',
 		},
 	]);
 });

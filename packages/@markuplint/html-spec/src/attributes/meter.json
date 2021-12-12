@@ -1,29 +1,36 @@
 {
 	"tag": "meter",
-	"attributes": [
-		{
-			"name": "value",
-			"type": "Float"
+	"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"value": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-meter-value",
+			"type": "Number"
 		},
-		{
-			"name": "min",
-			"type": "Float"
+		"min": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-meter-min",
+			"type": "Number"
 		},
-		{
-			"name": "max",
-			"type": "Float"
+		"max": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-meter-max",
+			"type": "Number"
 		},
-		{
-			"name": "low",
-			"type": "Float"
+		"low": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-meter-low",
+			"type": "Number"
 		},
-		{
-			"name": "high",
-			"type": "Float"
+		"high": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-meter-high",
+			"type": "Number"
 		},
-		{
-			"name": "optimum",
-			"type": "Float"
+		"optimum": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-meter-optimum",
+			"type": "Number"
 		}
-	]
+	}
 }

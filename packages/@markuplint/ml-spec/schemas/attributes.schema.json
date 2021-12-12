@@ -1,235 +1,222 @@
 {
 	"definitions": {
+		"AttributeName": { "type": "string", "pattern": "^(?:(xml|xlink):)?[a-z][a-zA-Z0-9-]*$" },
 		"AttributeCondition": {
 			"oneOf": [
 				{
 					"type": "object",
 					"additionalProperties": false,
 					"required": ["ancestor"],
-					"properties": {
-						"ancestor": {
-							"type": "string"
-						}
-					}
+					"properties": { "ancestor": { "$ref": "#/definitions/Selectors" } }
 				},
 				{
 					"type": "object",
 					"additionalProperties": false,
 					"required": ["self"],
-					"properties": {
-						"self": {
-							"type": ["string", "array"],
-							"items": {
-								"type": "string",
-								"minItems": 2
-							}
-						}
-					}
+					"properties": { "self": { "$ref": "#/definitions/Selectors" } }
 				}
 			]
 		},
-		"AttributeType": {
-			"oneOf": [
-				{
-					"type": "string",
-					"enum": [
-						"String",
-						"NonEmptyString",
-						"Boolean",
-						"Function",
-						"Date",
-						"Int",
-						"Uint",
-						"Float",
-						"NonZeroUint",
-						"ZeroToOne",
-						"AcceptList",
-						"AutoComplete",
-						"BCP47",
-						"Color",
-						"ColSpan",
-						"Coords",
-						"Crossorigin",
-						"DateTime",
-						"Destination",
-						"DOMID",
-						"DOMIDList",
-						"IRI",
-						"ItemType",
-						"LinkSizes",
-						"LinkType",
-						"LinkTypeList",
-						"MediaQuery",
-						"MediaQueryList",
-						"MIMEType",
-						"ReferrerPolicy",
-						"RowSpan",
-						"SourceSizeList",
-						"SrcSet",
-						"TabIndex",
-						"Target",
-						"URL",
-						"URLHash",
-						"URLList",
-						"CSSAngle",
-						"CSSBlendMode",
-						"CSSClipPath",
-						"CSSCustomIdent",
-						"CSSDisplay",
-						"CSSFilter",
-						"CSSFontFamily",
-						"CSSFontSize",
-						"CSSFontVariant",
-						"CSSFontWeight",
-						"CSSMask",
-						"CSSOpacity",
-						"CSSTextDecoration",
-						"CSSTransformList",
-						"CSSTransformOrigin",
-						"CSSURL",
-						"SVGAnimatableValue",
-						"SVGBeginValueList",
-						"SVGClockValue",
-						"SVGColorMatrix",
-						"SVGDashArray",
-						"SVGEndValueList",
-						"SVGFilterPrimitiveReference",
-						"SVGKernelMatrix",
-						"SVGKeyPoints",
-						"SVGKeySplines",
-						"SVGKeyTimes",
-						"SVGLanguageTags",
-						"SVGLength",
-						"SVGLengthList",
-						"SVGNumberList",
-						"SVGNumberOptionalNumber",
-						"SVGOrigin",
-						"SVGPaint",
-						"SVGPathCommands",
-						"SVGPercentage",
-						"SVGPercentageList",
-						"SVGPoints",
-						"SVGPreserveAspectRatio",
-						"SVGViewBox"
-					]
-				},
-				{
-					"type": "object",
-					"additionalProperties": false,
-					"required": ["enum"],
-					"properties": {
-						"enum": {
-							"type": "array",
-							"minLength": 1,
-							"uniqueItems": true,
-							"items": {
-								"type": "string"
-							}
-						}
-					}
-				}
-			]
+		"Selectors": {
+			"oneOf": [{ "type": "string" }, { "type": "array", "minItems": 2, "items": { "type": "string" } }]
 		},
+		"AttributeType": { "$ref": "../../types/types.schema.json#/definitions/type" },
 		"AttributeJSON": {
 			"type": "object",
 			"additionalProperties": false,
-			"required": ["name", "type"],
+			"required": ["ref"],
+			"minProperties": 2,
 			"properties": {
-				"name": {
-					"type": "string"
-				},
+				"_TODO_": { "type": "string" },
+				"ref": { "type": "string", "format": "uri" },
 				"type": {
 					"oneOf": [
-						{
-							"$ref": "#/definitions/AttributeType"
-						},
+						{ "$ref": "#/definitions/AttributeType" },
 						{
 							"type": "array",
 							"minItems": 1,
 							"uniqueItems": true,
-							"items": {
-								"$ref": "#/definitions/AttributeType"
-							}
+							"items": { "$ref": "#/definitions/AttributeType" }
 						}
 					]
 				},
 				"defaultValue": { "type": "string" },
 				"deprecated": { "type": "boolean" },
-				"required": {
+				"required": { "oneOf": [{ "type": "boolean" }, { "$ref": "#/definitions/AttributeCondition" }] },
+				"requiredEither": { "type": "array", "items": { "type": "string" } },
+				"noUse": { "type": "boolean" },
+				"condition": { "$ref": "#/definitions/AttributeCondition" },
+				"ineffective": { "$ref": "#/definitions/Selectors" },
+				"animatable": { "type": "boolean" }
+			}
+		},
+		"GlobalAttributes": {
+			"type": "object",
+			"additionalProperties": false,
+			"propertyNames": {
+				"type": "string",
+				"enum": [
+					"#HTMLGlobalAttrs",
+					"#GlobalEventAttrs",
+					"#DocumentElementEventAttrs",
+					"#HTMLLinkAndFetchingAttrs",
+					"#HTMLEmbededAndMediaContentAttrs",
+					"#HTMLFormControlElementAttrs",
+					"#HTMLTableCellElementAttrs",
+					"#ARIAAttrs",
+					"#SVGAnimationAdditionAttrs",
+					"#SVGAnimationAttributeTargetAttrs",
+					"#SVGAnimationEventAttrs",
+					"#SVGAnimationTargetElementAttrs",
+					"#SVGAnimationTimingAttrs",
+					"#SVGAnimationValueAttrs",
+					"#SVGConditionalProcessingAttrs",
+					"#SVGCoreAttrs",
+					"#SVGFilterPrimitiveAttrs",
+					"#SVGPresentationAttrs",
+					"#SVGTransferFunctionAttrs",
+					"#XLinkAttrs"
+				]
+			},
+			"properties": {
+				"#HTMLGlobalAttrs": { "type": "boolean" },
+				"#GlobalEventAttrs": {
 					"oneOf": [
+						{ "type": "boolean" },
 						{
-							"type": "boolean"
-						},
-						{
-							"$ref": "#/definitions/AttributeCondition"
+							"type": "array",
+							"minItems": 0,
+							"uniqueItems": true,
+							"items": { "$ref": "./global-attributes.schema.json#/definitions/GlobalEventAttrs" }
 						}
 					]
 				},
-				"requiredEither": {
+				"#DocumentElementEventAttrs": {
+					"oneOf": [
+						{ "type": "boolean" },
+						{
+							"type": "array",
+							"minItems": 0,
+							"uniqueItems": true,
+							"items": {
+								"$ref": "./global-attributes.schema.json#/definitions/DocumentElementEventAttrs"
+							}
+						}
+					]
+				},
+				"#HTMLLinkAndFetchingAttrs": {
 					"type": "array",
-					"items": {
-						"type": "string"
-					}
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/HTMLLinkAndFetchingAttrs" }
 				},
-				"noUse": {
-					"type": "boolean"
+				"#HTMLEmbededAndMediaContentAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/HTMLEmbededAndMediaContentAttrs" }
 				},
-				"condition": {
-					"$ref": "#/definitions/AttributeCondition"
+				"#HTMLFormControlElementAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/HTMLFormControlElementAttrs" }
+				},
+				"#HTMLTableCellElementAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/HTMLTableCellElementAttrs" }
+				},
+				"#ARIAAttrs": { "type": "boolean" },
+				"#SVGAnimationAdditionAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGAnimationAdditionAttrs" }
+				},
+				"#SVGAnimationAttributeTargetAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGAnimationAttributeTargetAttrs" }
+				},
+				"#SVGAnimationEventAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGAnimationEventAttrs" }
+				},
+				"#SVGAnimationTargetElementAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGAnimationTargetElementAttrs" }
+				},
+				"#SVGAnimationTimingAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGAnimationTimingAttrs" }
+				},
+				"#SVGAnimationValueAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGAnimationValueAttrs" }
+				},
+				"#SVGConditionalProcessingAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGConditionalProcessingAttrs" }
+				},
+				"#SVGCoreAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGCoreAttrs" }
+				},
+				"#SVGFilterPrimitiveAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGFilterPrimitiveAttrs" }
+				},
+				"#SVGPresentationAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGPresentationAttrs" }
+				},
+				"#SVGTransferFunctionAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGTransferFunctionAttrs" }
+				},
+				"#XLinkAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/XLinkAttrs" }
 				}
 			}
 		},
-		"DefineDefaultAttributeType": {
+		"Attributes": {
 			"type": "object",
 			"additionalProperties": false,
-			"required": ["name", "defaultValue"],
-			"properties": {
-				"name": { "type": "string" },
-				"defaultValue": { "type": "string" }
-			}
+			"propertyNames": { "$ref": "#/definitions/AttributeName" },
+			"patternProperties": { ".*": { "$ref": "#/definitions/AttributeJSON" } }
 		}
 	},
 	"type": "object",
 	"additionalProperties": false,
-	"required": ["tag", "attributes"],
+	"required": ["tag", "ref", "attributes"],
 	"properties": {
 		"tag": { "type": "string" },
-		"attributes": {
-			"type": "array",
-			"uniqueItems": true,
-			"items": {
-				"anyOf": [
-					{
-						"type": "string",
-						"enum": [
-							"#globalAttrs",
-							"#ariaAttrs",
-							"#SVGAnimationAdditionAttrs",
-							"#SVGAnimationAttributeTargetAttrs",
-							"#SVGAnimationEventAttrs",
-							"#SVGAnimationTargetElementAttrs",
-							"#SVGAnimationTimingAttrs",
-							"#SVGAnimationValueAttrs",
-							"#SVGConditionalProcessingAttrs",
-							"#SVGCoreAttrs",
-							"#SVGDocumentElementEventAttrs",
-							"#SVGDocumentEventAttrs",
-							"#SVGFilterPrimitiveAttrs",
-							"#SVGGlobalEventAttrs",
-							"#SVGGraphicalEventAttrs",
-							"#SVGPresentationAttrs",
-							"#SVGTransferFunctionAttrs",
-							"#XLinkAttrs"
-						]
-					},
-					{
-						"$ref": "#/definitions/AttributeJSON"
-					},
-					{
-						"$ref": "#/definitions/DefineDefaultAttributeType"
-					}
-				]
-			}
-		}
+		"ref": { "type": "string", "format": "uri" },
+		"global": { "$ref": "#/definitions/GlobalAttributes" },
+		"attributes": { "$ref": "#/definitions/Attributes" }
 	}
 }

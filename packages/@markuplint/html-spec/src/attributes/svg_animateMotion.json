@@ -1,40 +1,44 @@
 {
 	"tag": "animateMotion",
-	"attributes": [
-		"#SVGAnimationAdditionAttrs",
-		"#SVGAnimationEventAttrs",
-		"#SVGAnimationTargetElementAttrs",
-		"#SVGAnimationTimingAttrs",
-		"#SVGAnimationValueAttrs",
-		"#SVGConditionalProcessingAttrs",
-		"#SVGCoreAttrs",
-		"#SVGGlobalEventAttrs",
-		"#SVGDocumentElementEventAttrs",
-		{
-			"name": "path",
-			"type": "SVGPathCommands"
+	"ref": "https://svgwg.org/specs/animations/#AnimateMotionElement",
+	"global": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGAnimationAdditionAttrs": ["additive", "accumulate"],
+		"#SVGAnimationEventAttrs": ["onbegin", "onend", "onrepeat"],
+		"#SVGAnimationTargetElementAttrs": ["href"],
+		"#SVGAnimationTimingAttrs": [
+			"begin",
+			"dur",
+			"end",
+			"min",
+			"max",
+			"restart",
+			"repeatCount",
+			"repeatDur",
+			"fill"
+		],
+		"#SVGAnimationValueAttrs": ["calcMode", "values", "keyTimes", "keySplines", "from", "to", "by"],
+		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+	},
+	"attributes": {
+		"path": {
+			"ref": "https://svgwg.org/specs/animations/#AnimateMotionElementPathAttribute",
+			"type": "<svg-path>"
 		},
-		{
-			"name": "keyPoints",
-			"type": "SVGKeyPoints"
+		"keyPoints": {
+			"ref": "https://svgwg.org/specs/animations/#KeyPointsAttribute",
+			"type": "<key-points>"
 		},
-		{
-			"name": "rotate",
-			"type": [
-				"Float",
-				{
-					"enum": ["auto", "auto-reverse"]
-				}
-			]
+		"rotate": {
+			"ref": "https://svgwg.org/specs/animations/#RotateAttribute",
+			"type": "<rotate>"
 		},
-		{
-			"name": "origin",
-			"type": "SVGOrigin",
+		"origin": {
+			"ref": "https://svgwg.org/specs/animations/#OriginAttribute",
+			"type": "<origin>",
 			"defaultValue": "default"
-		},
-		{
-			"name": "calcMode",
-			"defaultValue": "paced"
 		}
-	]
+	}
 }

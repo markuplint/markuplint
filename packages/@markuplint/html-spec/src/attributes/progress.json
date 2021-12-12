@@ -1,13 +1,21 @@
 {
 	"tag": "progress",
-	"attributes": [
-		{
-			"name": "value",
-			"type": "Float"
+	"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"value": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-progress-value",
+			"type": "Number",
+			"_TODO_": "The range is 0 to 1 but, the maximum will be the value when setting the `max` attribute from 1."
 		},
-		{
-			"name": "max",
-			"type": "Float"
+		"max": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-progress-max",
+			"type": "Number"
 		}
-	]
+	}
 }

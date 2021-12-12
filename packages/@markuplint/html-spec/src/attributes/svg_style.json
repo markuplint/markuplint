@@ -1,22 +1,25 @@
 {
 	"tag": "style",
-	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGGlobalEventAttrs",
-		"#SVGDocumentElementEventAttrs",
-		{
-			"name": "type",
+	"ref": "https://svgwg.org/svg2-draft/styling.html#StyleElement",
+	"global": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+	},
+	"attributes": {
+		"type": {
+			"ref": "https://svgwg.org/svg2-draft/styling.html#StyleElementTypeAttribute",
 			"type": "MIMEType",
 			"defaultValue": "text/css"
 		},
-		{
-			"name": "media",
-			"type": "String",
+		"media": {
+			"ref": "https://svgwg.org/svg2-draft/styling.html#StyleElementMediaAttribute",
+			"type": "<media-query-list>",
 			"defaultValue": "all"
 		},
-		{
-			"name": "title",
-			"type": "String"
+		"title": {
+			"ref": "https://svgwg.org/svg2-draft/styling.html#StyleElementTitleAttribute",
+			"type": "Any"
 		}
-	]
+	}
 }

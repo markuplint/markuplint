@@ -1,0 +1,12 @@
+{
+	"refs": {
+		"source-size-list": "https://html.spec.whatwg.org/multipage/images.html#sizes-attributes",
+		"key-times": "https://svgwg.org/specs/animations/#KeyTimesAttribute"
+	},
+	"types": {
+		"source-size-list": "[ <source-size># , ]? <source-size-value>",
+		"source-size": "<media-condition> <source-size-value>",
+		"source-size-value": "<length>",
+		"key-times": "<number> [; <number>]* [;]?"
+	}
+}

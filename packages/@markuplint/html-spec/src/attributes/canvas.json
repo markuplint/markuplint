@@ -1,13 +1,21 @@
 {
 	"tag": "canvas",
-	"attributes": [
-		{
-			"name": "height",
-			"type": "Uint"
+	"ref": "https://html.spec.whatwg.org/multipage/canvas.html#the-canvas-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["height", "width"]
+	},
+	"attributes": {
+		"height": {
+			"ref": "https://html.spec.whatwg.org/multipage/canvas.html#attr-canvas-height",
+			"defaultValue": "150"
 		},
-		{
-			"name": "width",
-			"type": "Uint"
+		"width": {
+			"ref": "https://html.spec.whatwg.org/multipage/canvas.html#attr-canvas-width",
+			"defaultValue": "300"
 		}
-	]
+	}
 }

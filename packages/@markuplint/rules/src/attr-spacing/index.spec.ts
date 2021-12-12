@@ -161,7 +161,7 @@ describe('verify', () => {
 		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
-				message: 'Space should be 1',
+				message: 'Space should be one',
 				line: 2,
 				col: 21,
 				raw: '  ',
@@ -186,7 +186,7 @@ describe('verify', () => {
 		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
-				message: 'Space should be 2',
+				message: 'Space should be two',
 				line: 2,
 				col: 7,
 				raw: ' ',

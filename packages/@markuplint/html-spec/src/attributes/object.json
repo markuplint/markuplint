@@ -1,35 +1,28 @@
 {
-	"tag": "meter",
-	"attributes": [
-		{
-			"name": "data",
+	"tag": "object",
+	"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["height", "width"],
+		"#HTMLFormControlElementAttrs": ["form"]
+	},
+	"attributes": {
+		"data": {
+			"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-data",
 			"type": "URL",
 			"requiredEither": ["type"]
 		},
-		{
-			"name": "type",
-			"type": "String",
+		"type": {
+			"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-type",
+			"type": "MIMEType",
 			"requiredEither": ["data"]
 		},
-		{
-			"name": "name",
-			"type": "String"
-		},
-		{
-			"name": "usemap",
-			"type": "String"
-		},
-		{
-			"name": "form",
-			"type": "DOMID"
-		},
-		{
-			"name": "width",
-			"type": "Uint"
-		},
-		{
-			"name": "height",
-			"type": "Uint"
+		"name": {
+			"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-name",
+			"type": "BrowsingContextName"
 		}
-	]
+	}
 }

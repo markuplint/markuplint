@@ -1,12 +1,19 @@
 {
 	"tag": "li",
-	"attributes": [
-		{
-			"name": "value",
+	"ref": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-li-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"value": {
+			"ref": "https://html.spec.whatwg.org/multipage/grouping-content.html#attr-li-value",
 			"type": "Int",
 			"condition": {
-				"ancestor": "ul, menu"
+				"ancestor": "ol"
 			}
 		}
-	]
+	}
 }

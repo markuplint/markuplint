@@ -1,6 +1,6 @@
-import { createRule } from '@markuplint/ml-core';
+import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
-import { attrMatches, getAttrSpecs } from '../helpers';
+import { attrMatches } from '../helpers';
 
 type RequiredAttributes = string | string[];
 
@@ -46,7 +46,13 @@ export default createRule<RequiredAttributes, null>({
 					invalid = attrMatches(node, spec.condition) && didntHave;
 				} else if (spec.required) {
 					if ('ancestor' in spec.required && spec.required.ancestor) {
-						const ancestors = spec.required.ancestor.split(',').map(a => a.trim());
+						const ancestorList = Array.isArray(spec.required.ancestor)
+							? spec.required.ancestor
+							: [spec.required.ancestor];
+						const ancestors = ancestorList
+							.join(',')
+							.split(',')
+							.map(a => a.trim());
 						invalid = ancestors.some(a => node.closest(a)) && didntHave;
 					}
 				}

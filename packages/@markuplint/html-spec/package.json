@@ -15,12 +15,14 @@
 		"gen": "ts-node gen/index.ts; prettier --write index.json"
 	},
 	"devDependencies": {
+		"@apidevtools/json-schema-ref-parser": "^9.0.9",
 		"@types/cheerio": "^0.22.30",
 		"@types/cli-progress": "^3.9.2",
 		"@types/node-fetch": "2",
 		"cheerio": "^1.0.0-rc.10",
 		"cli-progress": "^3.9.1",
 		"fast-xml-parser": "^3.21.1",
+		"jsonschema": "^1.4.0",
 		"node-fetch": "2"
 	},
 	"dependencies": {

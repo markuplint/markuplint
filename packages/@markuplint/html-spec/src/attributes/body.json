@@ -1,69 +1,76 @@
 {
 	"tag": "body",
-	"attributes": [
-		{
-			"name": "onafterprint",
-			"type": "Function"
+	"ref": "https://html.spec.whatwg.org/multipage/sections.html#the-body-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"onafterprint": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onafterprint",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onbeforeprint",
-			"type": "Function"
+		"onbeforeprint": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onbeforeprint",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onbeforeunload",
-			"type": "Function"
+		"onbeforeunload": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onbeforeunload",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onhashchange",
-			"type": "Function"
+		"onhashchange": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onhashchange",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onlanguagechange",
-			"type": "Function"
+		"onlanguagechange": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onlanguagechange",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onmessage",
-			"type": "Function"
+		"onmessage": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onmessage",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onmessageerror",
-			"type": "Function"
+		"onmessageerror": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onmessageerror",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onoffline",
-			"type": "Function"
+		"onoffline": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onoffline",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "ononline",
-			"type": "Function"
+		"ononline": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-ononline",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onpagehide",
-			"type": "Function"
+		"onpagehide": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onpagehide",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onpageshow",
-			"type": "Function"
+		"onpageshow": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onpageshow",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onpopstate",
-			"type": "Function"
+		"onpopstate": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onpopstate",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onrejectionhandled",
-			"type": "Function"
+		"onrejectionhandled": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onrejectionhandled",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onstorage",
-			"type": "Function"
+		"onstorage": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onstorage",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onunhandledrejection",
-			"type": "Function"
+		"onunhandledrejection": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onunhandledrejection",
+			"type": "FunctionBody"
 		},
-		{
-			"name": "onunload",
-			"type": "Function"
+		"onunload": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onunload",
+			"type": "FunctionBody"
 		}
-	]
+	}
 }

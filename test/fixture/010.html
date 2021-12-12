@@ -1,0 +1,494 @@
+<div>
+	<!-- ❌ empty-token -->
+	<time datetime=""></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" "></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="a"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 4 -->
+	<time datetime="0"></time>
+	<!-- ❌ out-of-range, gt: 0 -->
+	<time datetime="0000"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="0001:"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="0001-"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="0001-a"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="0001-0"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="0001-001"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 12 -->
+	<time datetime="0001-00"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 12 -->
+	<time datetime="0001-13"></time>
+	<!-- ✅ -->
+	<time datetime="0001-01"></time>
+	<!-- ✅ -->
+	<time datetime="0001-12"></time>
+	<!-- ✅ -->
+	<time datetime="10001-01"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="0001-01-"></time>
+
+	<!-- ❌ empty-token -->
+	<time datetime=""></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" "></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="a"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 4 -->
+	<time datetime="0"></time>
+	<!-- ❌ out-of-range, gt: 0 -->
+	<time datetime="0000"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="2000:"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="2000-"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="2000-a"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="2000-0"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 12 -->
+	<time datetime="2000-00"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="2000-01:"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="2000-01-"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="2000-01-a"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="2000-01-0"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="2000-01-001"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 31 -->
+	<time datetime="2000-01-00"></time>
+	<!-- ✅ -->
+	<time datetime="2000-01-01"></time>
+	<!-- ✅ -->
+	<time datetime="2000-01-31"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 31 -->
+	<time datetime="2000-01-32"></time>
+	<!-- ✅ -->
+	<time datetime="2000-02-28"></time>
+	<!-- ✅ -->
+	<time datetime="2000-02-29"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 29 -->
+	<time datetime="2000-02-30"></time>
+	<!-- ✅ -->
+	<time datetime="2001-02-28"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 28 -->
+	<time datetime="2001-02-29"></time>
+
+	<!-- ❌ empty-token -->
+	<time datetime=""></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" "></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="a"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="0"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 12 -->
+	<time datetime="00"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="01"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="01:"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="01-"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="01-a"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="01-0"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 31 -->
+	<time datetime="01-00"></time>
+	<!-- ✅ -->
+	<time datetime="01-01"></time>
+	<!-- ✅ -->
+	<time datetime="01-31"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 31 -->
+	<time datetime="01-32"></time>
+	<!-- ✅ -->
+	<time datetime="02-28"></time>
+	<!-- ✅ -->
+	<time datetime="02-29"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 29 -->
+	<time datetime="02-30"></time>
+
+	<!-- ❌ empty-token -->
+	<time datetime=""></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" "></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="a"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="0"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="000"></time>
+	<!-- ❌ out-of-range, gte: 0, lte: 23 -->
+	<time datetime="24"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="00"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="00-"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="00:"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="00:a"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="00:0"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="00:000"></time>
+	<!-- ✅ -->
+	<time datetime="00:00"></time>
+	<!-- ✅ -->
+	<time datetime="00:59"></time>
+	<!-- ❌ out-of-range, gte: 0, lte: 59 -->
+	<time datetime="00:60"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="00:00-"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="00:00:"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="00:00:a"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="00:00:0"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="00:00:000"></time>
+	<!-- ✅ -->
+	<time datetime="00:00:00"></time>
+	<!-- ✅ -->
+	<time datetime="00:00:59"></time>
+	<!-- ❌ out-of-range, gte: 0, lte: 59 -->
+	<time datetime="00:00:60"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="00:00:00:"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="00:00:00."></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="00:00:00.a"></time>
+	<!-- ✅ -->
+	<time datetime="00:00:00.0"></time>
+	<!-- ✅ -->
+	<time datetime="00:00:00.9"></time>
+	<!-- ✅ -->
+	<time datetime="00:00:00.00"></time>
+	<!-- ✅ -->
+	<time datetime="00:00:00.99"></time>
+	<!-- ✅ -->
+	<time datetime="00:00:00.000"></time>
+	<!-- ✅ -->
+	<time datetime="00:00:00.999"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 1, lte: 3 -->
+	<time datetime="00:00:00.0000"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 1, lte: 3 -->
+	<time datetime="00:00:00.1000"></time>
+
+	<!-- ❌ empty-token -->
+	<time datetime=""></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" "></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="2020-12-31:"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="2020-12-31T"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="2020-12-31 "></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="2020-12-31  "></time>
+	<!-- ✅ -->
+	<time datetime="2020-12-31T00:00:00.000"></time>
+
+	<!-- ❌ empty-token -->
+	<time datetime=""></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" "></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="2020-12-31:"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="2020-12-31T"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="2020-12-31 "></time>
+	<!-- ✅ -->
+	<time datetime="2020-12-31T00:00"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="2020-12-31T00:00:00"></time>
+	<!-- ✅ -->
+	<time datetime="2020-12-31T00:00:01"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="2020-12-31T00:00:00.0"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="2020-12-31T00:00:00.00"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="2020-12-31T00:00:00.000"></time>
+	<!-- ✅ -->
+	<time datetime="2020-12-31T00:00:00.001"></time>
+
+	<!-- ❌ empty-token -->
+	<time datetime=""></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" "></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="a"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="z"></time>
+	<!-- ✅ -->
+	<time datetime="Z"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="Z:"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="ZZ"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="+"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="-"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="+-"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="+00"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="+00:"></time>
+	<!-- ✅ -->
+	<time datetime="+00:00"></time>
+	<!-- alse -->
+	<time datetime="+24:00"></time>
+	<!-- alse -->
+	<time datetime="+00:60"></time>
+	<!-- alse -->
+	<time datetime="+000:00"></time>
+	<!-- alse -->
+	<time datetime="+00:000"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="+00:00:"></time>
+	<!-- ✅ -->
+	<time datetime="+0000"></time>
+	<!-- alse -->
+	<time datetime="+2400"></time>
+	<!-- alse -->
+	<time datetime="+0060"></time>
+	<!-- alse -->
+	<time datetime="+00000"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="+0000:"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="2000-01-01T00:00+"></time>
+	<!-- ✅ -->
+	<time datetime="2000-01-01T00:00Z"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="2000-01-01T00:00+00"></time>
+	<!-- ✅ -->
+	<time datetime="2000-01-01T00:00+0000"></time>
+	<!-- ✅ -->
+	<time datetime="2000-01-01T00:00+00:00"></time>
+	<!-- ✅ -->
+	<time datetime="2000-01-01T00:00-2359"></time>
+	<!-- ✅ -->
+	<time datetime="2000-01-01T00:00-23:59"></time>
+	<!-- ✅ -->
+	<time datetime="2000-01-01T00:00:00+0000"></time>
+	<!-- ✅ -->
+	<time datetime="2000-01-01T00:00:00.000+0000"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="2000-01-01T00:00:00.000+0000a"></time>
+
+	<!-- ❌ empty-token -->
+	<time datetime=""></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" "></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="a"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="2000-"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="2000-a"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="2000-W"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="2000-Wa"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="2000-W0"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 52 -->
+	<time datetime="2000-W00"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 52 -->
+	<time datetime="2000-W53"></time>
+	<!-- ✅ -->
+	<time datetime="2000-W01"></time>
+	<!-- ✅ -->
+	<time datetime="2000-W52"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 53 -->
+	<time datetime="2004-W00"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 53 -->
+	<time datetime="2004-W54"></time>
+	<!-- ✅ -->
+	<time datetime="2004-W01"></time>
+	<!-- ✅ -->
+	<time datetime="2004-W53"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="2000-W01a"></time>
+
+	<!-- ❌ empty-token -->
+	<time datetime=""></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" "></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="a"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 4 -->
+	<time datetime="200"></time>
+	<!-- ✅ -->
+	<time datetime="2000"></time>
+	<!-- ✅ -->
+	<time datetime="20000"></time>
+
+	<!-- ❌ empty-token -->
+	<time datetime=""></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" "></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="a"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="P"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="P0"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="P0D"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="P0H"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="P0Dt"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="P0DT"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="P0DT0"></time>
+	<!-- ✅ -->
+	<time datetime="P0DT0H"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="P0DT0H0"></time>
+	<!-- ✅ -->
+	<time datetime="P0DT0H0M"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="P0DT0H0M0"></time>
+	<!-- ✅ -->
+	<time datetime="P0DT0H0M0S"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="P0DT0H0M0."></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="P0DT0H0M0M"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="P0DT0H0M0.0"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="P0DT0H0M0.0M"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="P0DT0H0M0.000"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 1, lte: 3 -->
+	<time datetime="P0DT0H0M0.0000"></time>
+	<!-- ✅ -->
+	<time datetime="P0DT0H0M0.000S"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="P0DT0H0M0.000S0"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="P0DT0H0M0.000S0H"></time>
+	<!-- ✅ -->
+	<time datetime="P0DT0M"></time>
+	<!-- ✅ -->
+	<time datetime="P0DT0S"></time>
+	<!-- ✅ -->
+	<time datetime="P0DT0.0S"></time>
+	<!-- ✅ -->
+	<time datetime="P0DT0M0S"></time>
+	<!-- ✅ -->
+	<time datetime="P0DT0H0S"></time>
+	<!-- ✅ -->
+	<time datetime="P0DT0H0.0S"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="P0DT0M0H"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="P0DT0S0M"></time>
+	<!-- ❌ extra-token -->
+	<time datetime="P0DT0.0S0M"></time>
+	<!-- ✅ -->
+	<time datetime="PT4H18M3S"></time>
+
+	<!-- ❌ empty-token -->
+	<time datetime=""></time>
+	<!-- ❌ missing-token -->
+	<time datetime=" "></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" a"></time>
+	<!-- ❌ missing-token -->
+	<time datetime=" 0"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" 0a"></time>
+	<!-- ✅ -->
+	<time datetime=" 0w"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" 0ww"></time>
+	<!-- ✅ -->
+	<time datetime="0w"></time>
+	<!-- ✅ -->
+	<time datetime="0w "></time>
+	<!-- ❌ missing-token -->
+	<time datetime="0w 0"></time>
+	<!-- duplicated -->
+	<time datetime="0w 0w"></time>
+	<!-- ✅ -->
+	<time datetime="0w 0d"></time>
+	<!-- ✅ -->
+	<time datetime="0w  0d"></time>
+	<!-- ✅ -->
+	<time datetime=" 0w  0d"></time>
+	<!-- ✅ -->
+	<time datetime=" 0w  0d "></time>
+	<!-- ✅ -->
+	<time datetime="0w  0d  "></time>
+	<!-- ✅ -->
+	<time
+		datetime="
+			0w
+			0d
+		"
+	></time>
+	<!-- ❌ missing-token -->
+	<time datetime="0w 0."></time>
+	<!-- ❌ missing-token -->
+	<time datetime="0w 0.0"></time>
+	<!-- ✅ -->
+	<time datetime="0w 0.0s"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="0w 0.0d"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="0s 0."></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="0s 0.0"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="0s 0.0s"></time>
+	<!-- ✅ -->
+	<time datetime="0w 0.00s"></time>
+	<!-- ✅ -->
+	<time datetime="0w 0.000s"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 1, lte: 3 -->
+	<time datetime="0w 0.0000s"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime="0s 0.000s"></time>
+	<!-- duplicated -->
+	<time datetime="0.000s 0s"></time>
+	<!-- ✅ -->
+	<time datetime="0w0d0h0m0.000s"></time>
+	<!-- ✅ -->
+	<time datetime="0w 0d 0h 0m 0.000s"></time>
+	<!-- ✅ -->
+	<time datetime="0w 0d0h 0m0.000s"></time>
+	<!-- ❌ unexpected-token -->
+	<time datetime=" 2w 3d6m 3.4s 93xxxxxxx"></time>
+
+	<!-- ❌ out-of-range-length-digit, gte: 4 -->
+	<time datetime="200-1-1"></time>
+	<!-- ❌ out-of-range, gte: 1, lte: 28 -->
+	<time datetime="2001-02-29"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="2001-02-28T"></time>
+	<!-- ❌ missing-token -->
+	<time datetime="2001-02-28T00"></time>
+	<!-- ❌ out-of-range-length-digit, gte: 2, lte: 2 -->
+	<time datetime="2001-02-28T00:0"></time>
+</div>

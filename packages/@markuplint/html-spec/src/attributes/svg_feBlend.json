@@ -1,11 +1,82 @@
 {
 	"tag": "feBlend",
-	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGPresentationAttrs",
-		"#SVGFilterPrimitiveAttrs",
-		{
-			"name": "in",
+	"ref": "https://drafts.fxtf.org/filter-effects/#feBlendElement",
+	"global": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": [
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"isolation",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"mask-type",
+			"opacity",
+			"overflow",
+			"paint-order",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-overflow",
+			"text-rendering",
+			"transform-origin",
+			"unicode-bidi",
+			"vector-effect",
+			"visibility",
+			"white-space",
+			"word-spacing",
+			"writing-mode"
+		],
+		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"]
+	},
+	"attributes": {
+		"in2": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feblend-in2",
 			"type": [
 				{
 					"enum": [
@@ -15,41 +86,18 @@
 						"BackgroundAlpha",
 						"FillPaint",
 						"StrokePaint"
-					]
+					],
+					"disallowToSurroundBySpaces": false
 				},
-				"CSSCustomIdent"
-			]
+				"<custom-ident>"
+			],
+			"animatable": true
 		},
-		{
-			"name": "in2",
-			"type": [
-				{
-					"enum": [
-						"SourceGraphic",
-						"SourceAlpha",
-						"BackgroundImage",
-						"BackgroundAlpha",
-						"FillPaint",
-						"StrokePaint"
-					]
-				},
-				"CSSCustomIdent"
-			]
-		},
-		{
-			"name": "mode",
-			"type": "CSSBlendMode",
-			"defaultValue": "normal"
-		},
-		{
-			"name": "height",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "100%"
-		},
-		{
-			"name": "width",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "100%"
+		"mode": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feblend-mode",
+			"type": "<blend-mode>",
+			"defaultValue": "normal",
+			"animatable": true
 		}
-	]
+	}
 }

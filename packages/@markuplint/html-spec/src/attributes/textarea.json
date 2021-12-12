@@ -1,59 +1,51 @@
 {
 	"tag": "textarea",
-	"attributes": [
-		{
-			"name": "autocomplete",
-			"type": "AutoComplete"
-		},
-		{
-			"name": "cols",
-			"type": "Uint"
-		},
-		{
-			"name": "dirname",
-			"type": "String"
-		},
-		{
-			"name": "disabled",
-			"type": "Boolean"
-		},
-		{
-			"name": "form",
-			"type": "DOMID"
-		},
-		{
-			"name": "maxlength",
-			"type": "Uint"
-		},
-		{
-			"name": "minlength",
-			"type": "Uint"
-		},
-		{
-			"name": "name",
-			"type": "String"
-		},
-		{
-			"name": "placeholder",
-			"type": "String"
-		},
-		{
-			"name": "readonly",
-			"type": "Boolean"
-		},
-		{
-			"name": "required",
-			"type": "Boolean"
-		},
-		{
-			"name": "rows",
-			"type": "NonZeroUint"
-		},
-		{
-			"name": "wrap",
+	"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#the-textarea-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": [
+			"autocomplete",
+			"dirname",
+			"disabled",
+			"form",
+			"maxlength",
+			"minlength",
+			"name",
+			"readonly",
+			"required"
+		]
+	},
+	"attributes": {
+		"cols": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-textarea-cols",
 			"type": {
-				"enum": ["soft", "hard"]
+				"type": "integer",
+				"gt": 0
+			},
+			"defaultValue": "20"
+		},
+		"placeholder": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-textarea-placeholder",
+			"type": "Any"
+		},
+		"rows": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-textarea-rows",
+			"type": {
+				"type": "integer",
+				"gt": 0
+			},
+			"defaultValue": "2"
+		},
+		"wrap": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-textarea-wrap",
+			"type": {
+				"enum": ["soft", "hard"],
+				"missingValueDefault": "soft",
+				"invalidValueDefault": "soft"
 			}
 		}
-	]
+	}
 }

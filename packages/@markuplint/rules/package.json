@@ -20,6 +20,11 @@
 		"@markuplint/html-spec": "2.0.0-dev.2021117.0",
 		"@markuplint/ml-core": "2.0.0-dev.2021117.3",
 		"@markuplint/ml-spec": "2.0.0-dev.20211115.0",
+		"@markuplint/types": "1.0.0-dev.2021117.0",
+		"debug": "^4.3.2",
 		"tslib": "^2.3.1"
+	},
+	"devDependencies": {
+		"@types/debug": "^4.1.7"
 	}
 }

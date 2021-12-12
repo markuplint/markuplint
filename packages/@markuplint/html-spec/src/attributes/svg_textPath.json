@@ -1,54 +1,140 @@
 {
 	"tag": "tspan",
-	"attributes": [
-		"#ariaAttrs",
-		"#SVGConditionalProcessingAttrs",
-		"#SVGCoreAttrs",
-		"#SVGGlobalEventAttrs",
-		"#SVGDocumentElementEventAttrs",
-		"#SVGPresentationAttrs",
-		"#XLinkAttrs",
-		{
-			"name": "lengthAdjust",
-			"type": { "enum": ["spacing", "spacingAndGlyphs"] },
-			"defaultValue": "spacing"
-		},
-		{
-			"name": "textLength",
-			"type": ["SVGLength", "SVGPercentage", "Float"]
-		},
-		{
-			"name": "path",
-			"type": "SVGPathCommands"
-		},
-		{
-			"name": "href",
-			"type": "URL"
-		},
-		{
-			"name": "startOffset",
-			"type": ["SVGLength", "SVGPercentage", "Float"]
-		},
-		{
-			"name": "method",
+	"ref": "https://svgwg.org/svg2-draft/text.html#TextPathElement",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": [
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"isolation",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"mask-type",
+			"opacity",
+			"overflow",
+			"paint-order",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-overflow",
+			"text-rendering",
+			"transform-origin",
+			"unicode-bidi",
+			"vector-effect",
+			"visibility",
+			"white-space",
+			"word-spacing",
+			"writing-mode"
+		],
+		"#XLinkAttrs": ["xlink:href", "xlink:title"]
+	},
+	"attributes": {
+		"lengthAdjust": {
+			"ref": "https://svgwg.org/svg2-draft/text.html#TextElementLengthAdjustAttribute",
 			"type": {
-				"enum": ["align", "stretch"]
+				"enum": ["spacing", "spacingAndGlyphs"],
+				"disallowToSurroundBySpaces": false
 			},
-			"defaultValue": "align"
+			"defaultValue": "spacing",
+			"animatable": true
 		},
-		{
-			"name": "spacing",
-			"type": {
-				"enum": ["auto", "exact"]
-			},
-			"defaultValue": "exact"
+		"textLength": {
+			"ref": "https://svgwg.org/svg2-draft/text.html#TextElementTextLengthAttribute",
+			"type": ["<svg-length>", "<percentage>"],
+			"animatable": true
 		},
-		{
-			"name": "side",
+		"path": {
+			"ref": "https://svgwg.org/svg2-draft/text.html#TextPathElementPathAttribute",
+			"type": "<svg-path>",
+			"animatable": true
+		},
+		"href": {
+			"ref": "https://svgwg.org/svg2-draft/text.html#TextPathElementHrefAttribute",
+			"type": "URL",
+			"animatable": true
+		},
+		"startOffset": {
+			"ref": "https://svgwg.org/svg2-draft/text.html#TextPathElementStartOffsetAttribute",
+			"type": ["<svg-length>", "<percentage>"],
+			"animatable": true
+		},
+		"method": {
+			"ref": "https://svgwg.org/svg2-draft/text.html#TextPathElementMethodAttribute",
 			"type": {
-				"enum": ["left", "right"]
+				"enum": ["align", "stretch"],
+				"disallowToSurroundBySpaces": false
 			},
-			"defaultValue": "left"
+			"defaultValue": "align",
+			"animatable": true
+		},
+		"spacing": {
+			"ref": "https://svgwg.org/svg2-draft/text.html#TextPathElementSpacingAttribute",
+			"type": {
+				"enum": ["auto", "exact"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "exact",
+			"animatable": true
+		},
+		"side": {
+			"ref": "https://svgwg.org/svg2-draft/text.html#TextPathElementSideAttribute",
+			"type": {
+				"enum": ["left", "right"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "left",
+			"animatable": true
 		}
-	]
+	}
 }

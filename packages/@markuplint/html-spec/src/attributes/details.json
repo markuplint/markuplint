@@ -1,14 +1,16 @@
 {
 	"tag": "details",
-	"attributes": [
-		{
-			"name": "tabindex",
-			"type": "Int",
-			"noUse": true
-		},
-		{
-			"name": "open",
+	"ref": "https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"open": {
+			"ref": "https://html.spec.whatwg.org/multipage/interactive-elements.html#attr-details-open",
 			"type": "Boolean"
 		}
-	]
+	}
 }

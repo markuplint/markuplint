@@ -1,9 +1,20 @@
 {
 	"tag": "dialog",
-	"attributes": [
-		{
-			"name": "open",
+	"ref": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"tabindex": {
+			"ref": "https://html.spec.whatwg.org/multipage/interactive-elements.html#the-dialog-element:attr-tabindex",
+			"noUse": true
+		},
+		"open": {
+			"ref": "https://html.spec.whatwg.org/multipage/interactive-elements.html#attr-dialog-open",
 			"type": "Boolean"
 		}
-	]
+	}
 }

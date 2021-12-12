@@ -1,37 +1,55 @@
 {
 	"tag": "source",
-	"attributes": [
-		{
-			"name": "src",
+	"ref": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["height", "srcset", "sizes", "width"]
+	},
+	"attributes": {
+		"type": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-type",
+			"type": "MIMEType"
+		},
+		"src": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-src",
 			"type": "URL",
 			"required": {
 				"ancestor": "video, audio"
 			}
 		},
-		{
-			"name": "type",
-			"type": "MIMEType"
-		},
-		{
-			"name": "srcset",
-			"type": "SrcSet",
+		"srcset": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-srcset",
 			"condition": {
 				"ancestor": "picture"
 			}
 		},
-		{
-			"name": "sizes",
-			"type": "SourceSizeList",
+		"sizes": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-sizes",
 			"condition": {
 				"ancestor": "picture"
 			}
 		},
-		{
-			"name": "media",
-			"type": "MediaQueryList",
+		"media": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-media",
+			"type": "<media-query-list>",
+			"condition": {
+				"ancestor": "picture"
+			}
+		},
+		"width": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-width",
+			"condition": {
+				"ancestor": "picture"
+			}
+		},
+		"height": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-height",
 			"condition": {
 				"ancestor": "picture"
 			}
 		}
-	]
+	}
 }

@@ -8,6 +8,9 @@
 	"references": [
 		{
 			"path": "../ml-ast"
+		},
+		{
+			"path": "../types"
 		}
 	],
 	"include": ["./src/**/*"],

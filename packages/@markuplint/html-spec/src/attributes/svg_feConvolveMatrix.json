@@ -1,79 +1,135 @@
 {
 	"tag": "feConvolveMatrix",
-	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGPresentationAttrs",
-		"#SVGFilterPrimitiveAttrs",
-		{
-			"name": "in",
-			"type": [
-				{
-					"enum": [
-						"SourceGraphic",
-						"SourceAlpha",
-						"BackgroundImage",
-						"BackgroundAlpha",
-						"FillPaint",
-						"StrokePaint"
-					]
-				},
-				"CSSCustomIdent"
-			]
+	"ref": "https://drafts.fxtf.org/filter-effects/#feConvolveMatrixElement",
+	"global": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": [
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"isolation",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"mask-type",
+			"opacity",
+			"overflow",
+			"paint-order",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-overflow",
+			"text-rendering",
+			"transform-origin",
+			"unicode-bidi",
+			"vector-effect",
+			"visibility",
+			"white-space",
+			"word-spacing",
+			"writing-mode"
+		],
+		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"]
+	},
+	"attributes": {
+		"order": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-order",
+			"type": "<number-optional-number>",
+			"defaultValue": "3",
+			"animatable": true
 		},
-		{
-			"name": "order",
-			"type": "SVGNumberOptionalNumber",
-			"defaultValue": "3"
+		"kernelMatrix": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-kernelmatrix",
+			"type": "<list-of-numbers>",
+			"animatable": true
 		},
-		{
-			"name": "kernelMatrix",
-			"type": "SVGKernelMatrix"
+		"divisor": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-divisor",
+			"type": "<number>",
+			"animatable": true
 		},
-		{
-			"name": "divisor",
-			"type": "Float"
+		"bias": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-bias",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
 		},
-		{
-			"name": "bias",
-			"type": "Float",
-			"defaultValue": "0"
+		"targetX": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-targetx",
+			"type": "<integer>",
+			"animatable": true
 		},
-		{
-			"name": "targetX",
-			"type": "Int"
+		"targetY": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-targety",
+			"type": "<integer>",
+			"animatable": true
 		},
-		{
-			"name": "targetY",
-			"type": "Int"
-		},
-		{
-			"name": "edgeMode",
+		"edgeMode": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-edgemode",
 			"type": {
-				"enum": ["duplicate", "wrap", "none"]
+				"enum": ["duplicate", "wrap", "none"],
+				"disallowToSurroundBySpaces": false
 			},
-			"defaultValue": "duplicate"
+			"defaultValue": "duplicate",
+			"animatable": true
 		},
-		{
-			"name": "kernelUnitLength",
-			"type": "SVGNumberOptionalNumber",
+		"kernelUnitLength": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-kernelunitlength",
+			"type": "<number-optional-number>",
+			"animatable": true,
 			"deprecated": true
 		},
-		{
-			"name": "preserveAlpha",
+		"preserveAlpha": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-preservealpha",
 			"type": {
-				"enum": ["true", "false"]
+				"enum": ["true", "false"],
+				"disallowToSurroundBySpaces": false
 			},
-			"defaultValue": "false"
-		},
-		{
-			"name": "height",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "100%"
-		},
-		{
-			"name": "width",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "100%"
+			"defaultValue": "false",
+			"animatable": true
 		}
-	]
+	}
 }

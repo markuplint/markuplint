@@ -1,17 +1,20 @@
 {
 	"tag": "discard",
-	"attributes": [
-		"#SVGConditionalProcessingAttrs",
-		"#SVGCoreAttrs",
-		"#ariaAttrs",
-		{
-			"name": "begin",
-			"type": "SVGBeginValueList",
+	"ref": "https://svgwg.org/specs/animations/#DiscardElement",
+	"global": {
+		"#ARIAAttrs": true,
+		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+	},
+	"attributes": {
+		"begin": {
+			"ref": "https://svgwg.org/specs/animations/#DiscardElementBeginAttribute",
+			"type": "<begin-value-list>",
 			"defaultValue": "0s"
 		},
-		{
-			"name": "href",
+		"href": {
+			"ref": "https://svgwg.org/specs/animations/#DiscardElementHrefAttribute",
 			"type": "URL"
 		}
-	]
+	}
 }

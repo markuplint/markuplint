@@ -1,0 +1,11 @@
+{
+	"tag": "s",
+	"ref": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-s-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {}
+}

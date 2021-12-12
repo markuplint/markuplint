@@ -1,9 +1,22 @@
 {
 	"tag": "colgroup",
-	"attributes": [
-		{
-			"name": "span",
-			"type": "NonZeroUint"
+	"ref": "https://html.spec.whatwg.org/multipage/tables.html#the-colgroup-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"span": {
+			"ref": "https://html.spec.whatwg.org/multipage/tables.html#attr-colgroup-span",
+			"type": {
+				"type": "integer",
+				"gt": 0,
+				"lte": 1000,
+				"clampable": true
+			},
+			"defaultValue": "1"
 		}
-	]
+	}
 }

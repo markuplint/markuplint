@@ -1,13 +1,22 @@
 {
 	"tag": "param",
-	"attributes": [
-		{
-			"name": "name",
-			"type": "String"
+	"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-param-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"name": {
+			"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-param-name",
+			"type": "Any",
+			"required": true
 		},
-		{
-			"name": "value",
-			"type": "String"
+		"value": {
+			"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-param-value",
+			"type": "Any",
+			"required": true
 		}
-	]
+	}
 }

@@ -1,4 +1,4 @@
-import { translator } from './translator';
+import { taggedTemplateTranslator, translator } from './translator';
 
 const ja = {
 	locale: 'ja',
@@ -6,10 +6,11 @@ const ja = {
 };
 
 test('Listup', () => {
-	// const t1 = translator();
-	// expect(t1(['1', '2', '3'])).toBe('"1", "2", "3"');
+	const t1 = translator();
+	expect(t1(['1', '2', '3'])).toBe('"1", "2", "3"');
 	const t2 = translator(ja);
 	expect(t2(['1', '2', '3'])).toBe('「1」「2」「3」');
+	expect(t2(['element', 'attribute', 'value'])).toBe('「要素」「属性」「値」');
 });
 
 test('One keyword', () => {
@@ -19,6 +20,24 @@ test('One keyword', () => {
 	expect(t('attribute')).toBe('属性');
 });
 
+test('No translate (EN is not affect)', () => {
+	const t = translator();
+
+	expect(t('the "{0}" {1}', 'autocomplete', 'attribute')).toBe('the "autocomplete" attribute');
+	expect(t('the "{0*}" {1}', 'autocomplete', 'attribute')).toBe('the "autocomplete" attribute');
+	expect(t('the "{0*}" {1*}', 'autocomplete', 'attribute')).toBe('the "autocomplete" attribute');
+	expect(t('the "{0}" {1*}', 'autocomplete', 'attribute')).toBe('the "autocomplete" attribute');
+	// It is an illegal syntax
+	expect(t('the "{0**}" {1**}', 'autocomplete', 'attribute')).toBe('the "{0**}" {1**}');
+
+	expect(t('element')).toBe('element');
+	expect(t('%element%')).toBe('element');
+	expect(t('%element%%')).toBe('%element%');
+	expect(t('%%element%')).toBe('%element%');
+	expect(t('%%element%%')).toBe('%element%');
+	expect(t('element%%')).toBe('element%');
+});
+
 test('Complementize', () => {
 	const t = translator(ja);
 
@@ -26,6 +45,15 @@ test('Complementize', () => {
 	expect(t('{0} is {1:c}', 'attribute', 'deprecated')).toBe('属性は非推奨です');
 	expect(t('{0} is {1}', 'attribute', 'obsolete')).toBe('属性は廃止ずみです');
 	expect(t('{0} is {1:c}', 'attribute', 'obsolete')).toBe('属性は廃止されています');
+});
+
+test('Complementize (EN is not affect)', () => {
+	const t = translator();
+
+	expect(t('{0} is {1}', 'attribute', 'deprecated')).toBe('attribute is deprecated');
+	expect(t('{0} is {1:c}', 'attribute', 'deprecated')).toBe('attribute is deprecated');
+	expect(t('{0} is {1}', 'attribute', 'obsolete')).toBe('attribute is obsolete');
+	expect(t('{0} is {1:c}', 'attribute', 'obsolete')).toBe('attribute is obsolete');
 });
 
 test('Nesting', () => {
@@ -38,6 +66,25 @@ test('Nesting', () => {
 	expect(t2('{0} must be {1}', t2('{0} of {1}', 'attribute names', 'HTML elements'), 'lowercase')).toBe(
 		'HTML要素の属性名は小文字にするべきです',
 	);
+});
+
+test('Tagged template version (@experimental)', () => {
+	const _ = taggedTemplateTranslator(ja);
+	expect(
+		_`${
+			//
+			_`${
+				//
+				_`the ${'value'}`
+			} of ${
+				//
+				_`the "${'id'}" ${'attribute'}`
+			}`
+		} is ${
+			//
+			'c:duplicated'
+		}`,
+	).toBe('属性「id」の値が重複しています');
 });
 
 test('ja', () => {
@@ -54,19 +101,19 @@ test('ja', () => {
 	expect(t('Never {0} {1}', 'declarate', 'obsolete doctype')).toBe('廃止された文書型を宣言しないでください');
 	expect(
 		t('{0} is {1:c}', t('{0} of {1}', t('the {0}', 'value'), t('the "{0}" {1}', 'id', 'attribute')), 'duplicated'),
-	).toBe('属性「id」のその値が重複しています');
+	).toBe('属性「id」の値が重複しています');
 	expect(
 		t('{0} is {1:c}', t('the "{0}" {1}', 'foo', 'attribute'), 'disallowed') +
 			t('. ') +
 			t('Did you mean "{0}"?', 'bar'),
-	).toBe('属性「foo」は許可されていません。「bar」ですか？');
+	).toBe('属性「foo」は許可されていません。「bar」ではありませんか？');
 	expect(
 		t(
 			'{0} must not be {1}',
 			t('{0} of {1}', t('the {0}', 'value'), t('the "{0}" {1}', 'foo', 'attribute')),
 			'empty string',
 		),
-	).toBe('属性「foo」のその値は空文字にするべきではありません');
+	).toBe('属性「foo」の値は空文字にするべきではありません');
 	expect(
 		t(
 			'{0} expects {1}',
@@ -130,7 +177,7 @@ test('ja', () => {
 			),
 			'the html specification',
 		),
-	).toBe('HTMLの仕様において、要素「foo」のその内容は妥当ではありません');
+	).toBe('HTMLの仕様において、要素「foo」の内容は妥当ではありません');
 	expect(t('{0} expects {1}', t('the "{0}" {1}', 'foo', 'attribute'), t('the "{0}" {1}', 'bar', 'element'))).toBe(
 		'属性「foo」には要素「bar」が必要です',
 	);
@@ -159,7 +206,7 @@ test('ja', () => {
 			t('Cannot overwrite {0}', t('{0} of {1}', t('the {0}', 'role'), t('the "{0}" {1}', 'foo', 'element'))),
 			'ARIA in HTML specification',
 		),
-	).toBe('ARIA in HTMLの仕様において、要素「foo」のそのロールを上書きすることはできません');
+	).toBe('ARIA in HTMLの仕様において、要素「foo」のロールを上書きすることはできません');
 	expect(
 		t(
 			'{0} according to {1}',

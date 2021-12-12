@@ -1,0 +1,11 @@
+{
+	"tag": "picture",
+	"ref": "https://html.spec.whatwg.org/multipage/embedded-content.html#the-picture-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {}
+}

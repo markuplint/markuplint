@@ -1,16 +1,21 @@
 {
 	"tag": "feDistantLight",
-	"attributes": [
-		"#SVGCoreAttrs",
-		{
-			"name": "azimuth",
-			"type": "Float",
-			"defaultValue": "0"
+	"ref": "https://drafts.fxtf.org/filter-effects/#feDistantLightElement",
+	"global": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
+	},
+	"attributes": {
+		"azimuth": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fedistantlight-azimuth",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
 		},
-		{
-			"name": "elevation",
-			"type": "Float",
-			"defaultValue": "0"
+		"elevation": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fedistantlight-elevation",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
 		}
-	]
+	}
 }

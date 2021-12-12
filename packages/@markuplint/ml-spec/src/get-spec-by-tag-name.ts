@@ -1,8 +1,11 @@
-import type { Attribute, MLDOMElementSpec, MLMLSpec, SpecOM } from './types';
+import type { MLDOMElementSpec, MLMLSpec, SpecOM } from './types';
 
-function getSpecOM({ specs }: MLMLSpec): SpecOM {
+import { getAttrSpecs } from './get-attr-specs';
+
+function getSpecOM(spec: MLMLSpec): SpecOM {
 	const som: SpecOM = {};
-	for (const el of specs) {
+	for (const el of spec.specs) {
+		const attributes = getAttrSpecs(el.name, spec);
 		som[el.name] = {
 			experimental: !!el.experimental,
 			obsolete: typeof el.obsolete === 'boolean' ? !!el.obsolete : el.obsolete ? el.obsolete.alt : false,
@@ -10,9 +13,7 @@ function getSpecOM({ specs }: MLMLSpec): SpecOM {
 			nonStandard: !!el.nonStandard,
 			categories: el.categories,
 			permittedStructures: el.permittedStructures,
-			attributes: el.attributes.filter(
-				(attr: Attribute | string): attr is Attribute => !(typeof attr === 'string'),
-			),
+			attributes: Object.values(attributes || {}),
 		};
 	}
 	return som;

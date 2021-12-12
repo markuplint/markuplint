@@ -1,4 +1,5 @@
-import type { AttributeCondition, AttributeType } from './attributes';
+import type { AttributeJSON } from '.';
+import type { AttributeType, GlobalAttributes } from './attributes';
 import type { ContentModel, PermittedStructuresSchema } from './permitted-structres';
 
 /**
@@ -10,7 +11,10 @@ export interface MLMLSpec {
 	specs: ElementSpec[];
 }
 
-type ExtendedElementSpec = Partial<ElementSpec> & { name: ElementSpec['name'] };
+export type ExtendedElementSpec = Partial<Omit<ElementSpec, 'name' | 'attributes'>> & {
+	name: ElementSpec['name'];
+	attributes?: Record<string, Partial<Attribute>>;
+};
 
 export type ExtendedSpec = {
 	cites?: Cites;
@@ -25,9 +29,9 @@ export type Cites = string[];
 
 export type SpecDefs = {
 	'#globalAttrs': Partial<{
-		'#extends': Attribute[];
-		'#HTMLGlobalAttrs': Attribute[];
-		[OtherGlobalAttrs: string]: Attribute[];
+		'#extends': Record<string, Partial<Attribute>>;
+		'#HTMLGlobalAttrs': Record<string, Partial<Attribute>>;
+		[OtherGlobalAttrs: string]: Record<string, Partial<Attribute>>;
 	}>;
 	'#ariaAttrs': ARIAAttribute[];
 	'#roles': ARIRRoleAttribute[];
@@ -123,9 +127,14 @@ export type ElementSpec = {
 	omittion: ElementSpecOmittion;
 
 	/**
+	 * Global Attributes
+	 */
+	globalAttrs: GlobalAttributes;
+
+	/**
 	 * Attributes
 	 */
-	attributes: (Attribute | string)[];
+	attributes: Record<string, Attribute>;
 };
 
 /**
@@ -152,18 +161,16 @@ type ElementCondition = {
 
 export type Attribute = {
 	name: string;
-	type: AttributeType | [AttributeType, ...AttributeType[]];
-	description: string;
+	type: AttributeType | AttributeType[];
+	description?: string;
 	caseSensitive?: true;
 	experimental?: true;
 	obsolete?: true;
 	deprecated?: boolean;
 	nonStandard?: true;
-	required?: boolean | AttributeCondition;
-	requiredEither?: string[];
-	noUse?: boolean;
-	condition?: AttributeCondition;
-};
+} & ExtendableAttributeSpec;
+
+type ExtendableAttributeSpec = Omit<AttributeJSON, 'ref' | '_TODO_' | 'type'>;
 
 export type ARIRRoleAttribute = {
 	name: string;

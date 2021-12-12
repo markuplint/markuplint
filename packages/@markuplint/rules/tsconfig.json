@@ -18,6 +18,9 @@
 		},
 		{
 			"path": "../html-spec"
+		},
+		{
+			"path": "../types"
 		}
 	],
 	"include": ["./src/**/*"],

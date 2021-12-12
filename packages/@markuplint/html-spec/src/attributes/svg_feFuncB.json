@@ -1,13 +1,9 @@
 {
 	"tag": "feFuncB",
-	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGTransferFunctionAttrs",
-		{
-			"name": "type",
-			"type": {
-				"enum": ["identity", "table", "discrete", "linear", "gamma"]
-			}
-		}
-	]
+	"ref": "https://drafts.fxtf.org/filter-effects/#elementdef-fefuncb",
+	"global": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
+		"#SVGTransferFunctionAttrs": ["type", "tableValues", "slope", "intercept", "amplitude", "exponent", "offset"]
+	},
+	"attributes": {}
 }
