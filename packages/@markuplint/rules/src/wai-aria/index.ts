@@ -244,7 +244,7 @@ export default createRule<true, Options>({
 										t('the "{0}" {1}', attrName, 'ARIA state/property'),
 									) +
 									('enum' in result && result.enum.length
-										? t('. ') + t('Arrowed values are: {0}', t(result.enum))
+										? t('. ') + t('Allowed values are: {0}', t(result.enum))
 										: ''),
 								line: attr.startLine,
 								col: attr.startCol,
