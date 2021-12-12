@@ -46,7 +46,7 @@ test('multiple required attributes', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'The "img" element expects the "alt" attribute',
+			message: 'The "img" element expects the "width" attribute',
 			line: 1,
 			col: 1,
 			raw: '<img src="/path/to/image.png">',
@@ -60,7 +60,7 @@ test('multiple required attributes', async () => {
 		},
 		{
 			severity: 'error',
-			message: 'The "img" element expects the "width" attribute',
+			message: 'The "img" element expects the "alt" attribute',
 			line: 1,
 			col: 1,
 			raw: '<img src="/path/to/image.png">',
@@ -168,6 +168,87 @@ test('The ancestors of the <source> element.', async () => {
 			})
 		).violations,
 	).toStrictEqual([]);
+});
+
+test('with value requirement', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<img />', {
+				rule: [
+					{
+						name: 'decoding',
+						value: 'async',
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "img" element expects the "src" attribute',
+			raw: '<img />',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "img" element expects the "decoding" attribute',
+			raw: '<img />',
+		},
+	]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<img decoding="sync" />', {
+				rule: [
+					{
+						name: 'decoding',
+						value: 'async',
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "img" element expects the "src" attribute',
+			raw: '<img decoding="sync" />',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 16,
+			message: 'The "decoding" attribute expects "async"',
+			raw: 'sync',
+		},
+	]);
+});
+
+test('with value requirement (regex)', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<img src="./path/to" /><img src="/path/to" />', {
+				rule: [
+					{
+						name: 'src',
+						value: '/^\\/|^https:\\/\\//i',
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 11,
+			message: 'The "src" attribute expects "/^\\/|^https:\\/\\//i"',
+			raw: './path/to',
+		},
+	]);
 });
 
 test('nodeRules', async () => {

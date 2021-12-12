@@ -60,11 +60,30 @@ When the `alt` attribute is required, set `{"required-attr": "alt"}`.
 }
 ```
 
-Type: `string | string[]`
+```json
+{
+	"rules": {
+		"required-attr": [
+			"alt",
+			{
+				"name": "src",
+				"value": "/^\\/|^https:\\/\\//i"
+			}
+		]
+	}
+}
+```
 
-| value              | default | description                                                                         |
-| ------------------ | ------- | ----------------------------------------------------------------------------------- |
-| `"attribute-name"` | []      | Attribute name string or array of attribute names to warn if they are not appeared. |
+Type: `string | (string | Attr)[]`
+
+### Interface
+
+```ts
+type Attr = {
+	name: string;
+	value: string | string[];
+};
+```
 
 ## Configuration Example
 
