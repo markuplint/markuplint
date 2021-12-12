@@ -40,19 +40,38 @@
 		{
 			"selector": "img",
 			"rules": {
-				"required-attr": ["decoding", "width", "height", "alt"]
+				"required-attr": [
+					"width",
+					"height",
+					"alt",
+					{
+						"name": "decoding",
+						"value": "async"
+					}
+				]
 			}
 		},
 		{
 			"selector": "iframe",
 			"rules": {
-				"required-attr": ["loading", "title"]
+				"required-attr": [
+					"title",
+					{
+						"name": "loading",
+						"value": "lazy"
+					}
+				]
 			}
 		},
 		{
 			"selector": "a[target=_blank], area[target=_blank]",
 			"rules": {
-				"required-attr": ["rel"]
+				"required-attr": [
+					{
+						"name": "rel",
+						"value": "noreferrer"
+					}
+				]
 			}
 		},
 		{
