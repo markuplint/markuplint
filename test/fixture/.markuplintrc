@@ -1,29 +1,27 @@
 {
-	"excludeFiles": [
-		"./008.html"
-	],
+	"excludeFiles": ["./008.html"],
 	"rules": {
 		"attr-duplication": true,
+		"attr-equal-space-after": true,
+		"attr-equal-space-before": true,
+		"attr-spacing": true,
+		"attr-value-quotes": { "reason": "For consistency" },
+		"case-sensitive-attr-name": true,
+		"case-sensitive-tag-name": true,
 		"character-reference": true,
+		"class-naming": "/[a-z]+/",
 		"deprecated-attr": true,
 		"deprecated-element": true,
 		"doctype": true,
 		"id-duplication": true,
-		"permitted-contents": true,
-		"required-attr": true,
+		"indentation": "tab",
+		"ineffective-attr": true,
 		"invalid-attr": true,
 		"landmark-roles": true,
+		"no-boolean-attr-value": true,
+		"permitted-contents": true,
+		"required-attr": true,
 		"required-h1": true,
-		"class-naming": "/[a-z]+/",
-		"attr-equal-space-after": true,
-		"attr-equal-space-before": true,
-		"attr-spacing": true,
-		"attr-value-quotes": {
-			"reason": "For consistency"
-		},
-		"case-sensitive-attr-name": true,
-		"case-sensitive-tag-name": true,
-		"indentation": "tab",
 		"wai-aria": true
 	},
 	"nodeRules": [
@@ -68,9 +66,7 @@
 					"option": {
 						"attrs": {
 							"role": {
-								"enum": [
-									"img"
-								]
+								"enum": ["img"]
 							}
 						}
 					}

@@ -12,6 +12,7 @@ import DeprecatedElement from './deprecated-element';
 import Doctype from './doctype';
 import IdDuplication from './id-duplication';
 import Indentation from './indentation';
+import IneffectiveAttr from './ineffective-attr';
 import InvalidAttr from './invalid-attr';
 import LandmarkRoles from './landmark-roles';
 import NoBooleanAttrValue from './no-boolean-attr-value';
@@ -35,6 +36,7 @@ export default {
 	doctype: Doctype,
 	'id-duplication': IdDuplication,
 	indentation: Indentation,
+	'ineffective-attr': IneffectiveAttr,
 	'invalid-attr': InvalidAttr,
 	'landmark-roles': LandmarkRoles,
 	'no-boolean-attr-value': NoBooleanAttrValue,
