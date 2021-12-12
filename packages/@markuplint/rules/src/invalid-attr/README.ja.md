@@ -34,7 +34,7 @@
 
 独自ルールを指定します。
 
-`enum` `pattern` `type` のいずれかで設定します。
+`enum` `pattern` `type` `disallowed` のいずれかで設定します。
 
 ##### `enum`
 
@@ -89,6 +89,26 @@
 			"attrs": {
 				"x-attr": {
 					"type": "Boolean"
+				}
+			}
+		}
+	}
+}
+```
+
+##### `disallowed`
+
+指定した属性を禁止します。
+
+型: `boolean`
+
+```json
+{
+	"invalid-attr": {
+		"option": {
+			"attrs": {
+				"x-attr": {
+					"disallowed": true
 				}
 			}
 		}

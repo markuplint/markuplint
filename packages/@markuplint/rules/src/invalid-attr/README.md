@@ -40,7 +40,7 @@ Type: `boolean`
 
 Setting custom rule.
 
-Set either `enum`, `pattern` or `type`.
+Set either `enum`, `pattern`, `type` or `disallowed`.
 
 ##### `enum`
 
@@ -95,6 +95,26 @@ Type: `string`
 			"attrs": {
 				"x-attr": {
 					"type": "Boolean"
+				}
+			}
+		}
+	}
+}
+```
+
+##### `disallowed`
+
+Disallow the attribute.
+
+Type: `boolean`
+
+```json
+{
+	"invalid-attr": {
+		"option": {
+			"attrs": {
+				"x-attr": {
+					"disallowed": true
 				}
 			}
 		}

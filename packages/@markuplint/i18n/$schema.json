@@ -167,6 +167,7 @@
 				"{0} includes {1}": { "type": "string" },
 				"{0} is {1:c}": { "type": "string" },
 				"{0} is {1}": { "type": "string" },
+				"{0} is disallowed": { "type": "string" },
 				"{0} is not {1}": { "type": "string" },
 				"{0} is unmatched with the below patterns: {1}": { "type": "string" },
 				"{0} less than {1}": { "type": "string" },

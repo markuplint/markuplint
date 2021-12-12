@@ -22,6 +22,9 @@ type Rule =
 	  }
 	| {
 			type: AttributeType;
+	  }
+	| {
+			disallowed: true;
 	  };
 
 export default createRule<true, Option>({
@@ -92,6 +95,11 @@ export default createRule<true, Option>({
 						}
 					} else if ('type' in customRule) {
 						invalid = attrCheck(t, name, value, true, { name, type: customRule.type, description: '' });
+					} else if ('disallowed' in customRule && customRule.disallowed) {
+						invalid = {
+							invalidType: 'non-existent',
+							message: t('{0} is disallowed', t('the "{0}" {1}', name, 'attribute')),
+						};
 					}
 				} else if (!node.isCustomElement && attrSpecs) {
 					log('Checking %s[%s="%s"]', node.nodeName, name, value);

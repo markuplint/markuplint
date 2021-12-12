@@ -47,6 +47,16 @@
 										"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json/#/definitions/type"
 									}
 								}
+							},
+							{
+								"type": "object",
+								"additionalProperties": false,
+								"required": ["disallowed"],
+								"properties": {
+									"disallowed": {
+										"type": "boolean"
+									}
+								}
 							}
 						]
 					}

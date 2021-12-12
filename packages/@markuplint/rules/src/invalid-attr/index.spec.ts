@@ -297,6 +297,30 @@ test('Overwrite type', async () => {
 	]);
 });
 
+test('custom rule: disallowed', async () => {
+	const { violations } = await mlRuleTest(rule, '<a onclick="fn()"></>', {
+		rule: {
+			option: {
+				attrs: {
+					onclick: {
+						disallowed: true,
+					},
+				},
+			},
+		},
+	});
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 4,
+			message: 'The "onclick" attribute is disallowed',
+			raw: 'onclick',
+		},
+	]);
+});
+
 test('Foreign element', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
