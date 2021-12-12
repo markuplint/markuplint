@@ -37,6 +37,7 @@
 				"autocomplete": { "type": "string" },
 				"autofill field name": { "type": "string" },
 				"autofill named group": { "type": "string" },
+				"boolean attribute": { "type": "string" },
 				"browsing context name": { "type": "string" },
 				"c:deprecated": { "type": "string" },
 				"c:disallowed": { "type": "string" },
