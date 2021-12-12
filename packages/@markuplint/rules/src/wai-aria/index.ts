@@ -1,9 +1,8 @@
-import { createRule } from '@markuplint/ml-core';
+import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 import {
 	ariaSpec,
 	checkAria,
-	getAttrSpecs,
 	getComputedRole,
 	getImplicitRole,
 	getPermittedRoles,

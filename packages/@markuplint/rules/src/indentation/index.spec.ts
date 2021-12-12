@@ -215,14 +215,14 @@ describe('verify', () => {
 		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
-				message: 'Indentation must be 2 width spaces',
+				message: 'Indentation must be two width spaces',
 				line: 2,
 				col: 1,
 				raw: '   ',
 			},
 			{
 				severity: 'error',
-				message: 'Indentation must be 2 width spaces',
+				message: 'Indentation must be two width spaces',
 				line: 5,
 				col: 1,
 				raw: '   ',
@@ -273,7 +273,7 @@ describe('verify', () => {
 				severity: 'warning',
 				line: 4,
 				col: 1,
-				message: 'Indentation should be 3 width spaces',
+				message: 'Indentation should be three width spaces',
 				raw: '          ',
 			},
 		]);

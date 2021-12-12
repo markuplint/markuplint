@@ -44,43 +44,7 @@
 								"required": ["type"],
 								"properties": {
 									"type": {
-										"type": "string",
-										"enum": [
-											"String",
-											"Boolean",
-											"Function",
-											"Date",
-											"Int",
-											"Uint",
-											"Float",
-											"NonZeroUint",
-											"AcceptList",
-											"AutoComplete",
-											"BCP47",
-											"Color",
-											"ColSpan",
-											"Coords",
-											"DateTime",
-											"Destination",
-											"DOMID",
-											"DOMIDList",
-											"ItemType",
-											"LinkSizes",
-											"LinkType",
-											"LinkTypeList",
-											"MediaQuery",
-											"MediaQueryList",
-											"MIMEType",
-											"ReferrerPolicy",
-											"RowSpan",
-											"SourceSizeList",
-											"SrcSet",
-											"TabIndex",
-											"Target",
-											"URL",
-											"URLHash",
-											"URLList"
-										]
+										"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json/#/definitions/type"
 									}
 								}
 							}

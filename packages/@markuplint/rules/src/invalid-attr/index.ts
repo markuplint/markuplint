@@ -1,9 +1,12 @@
 import type { AttributeType } from '@markuplint/ml-spec';
 
-import { createRule } from '@markuplint/ml-core';
+import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 import { attrCheck } from '../attr-check';
-import { getAttrSpecs, isValidAttr, match } from '../helpers';
+import { log as ruleLog } from '../debug';
+import { isValidAttr, match } from '../helpers';
+
+const log = ruleLog.extend('invalid-attr');
 
 type Option = {
 	attrs?: Record<string, Rule>;
@@ -12,7 +15,7 @@ type Option = {
 
 type Rule =
 	| {
-			enum: string[];
+			enum: [string, ...string[]];
 	  }
 	| {
 			pattern: string;
@@ -91,6 +94,7 @@ export default createRule<true, Option>({
 						invalid = attrCheck(t, name, value, true, { name, type: customRule.type, description: '' });
 					}
 				} else if (!node.isCustomElement && attrSpecs) {
+					log('Checking %s[%s="%s"]', node.nodeName, name, value);
 					invalid = isValidAttr(
 						t,
 						name,
@@ -98,6 +102,7 @@ export default createRule<true, Option>({
 						(attr.attrType === 'html-attr' && attr.isDynamicValue) || false,
 						node,
 						attrSpecs,
+						log,
 					);
 				}
 
@@ -107,9 +112,9 @@ export default createRule<true, Option>({
 							report({
 								scope: node,
 								message: invalid.message,
-								line: attrValue.line,
-								col: attrValue.col,
-								raw: value,
+								line: attrValue.line + (invalid.loc?.line ?? 0),
+								col: invalid.loc?.line ? invalid.loc?.col + 1 : attrValue.col + (invalid.loc?.col ?? 0),
+								raw: invalid.loc?.raw ?? value,
 							});
 							break;
 						}

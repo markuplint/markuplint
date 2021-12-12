@@ -68,7 +68,7 @@ test('is test 2', async () => {
 test('is test 3', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="/" SRC="/" >', { rule: true }, false, 'ja');
 
-	expect(violations.map(_ => _.message)).toStrictEqual(['その属性名が重複しています']);
+	expect(violations.map(_ => _.message)).toStrictEqual(['属性名が重複しています']);
 });
 
 test('nodeRules disable', async () => {
