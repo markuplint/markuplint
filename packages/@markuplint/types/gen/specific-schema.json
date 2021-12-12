@@ -1,0 +1,98 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"list": {
+			"description": "- [Space-separated tokens](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#space-separated-tokens)\n- [Comma-separated tokens](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#comma-separated-tokens)",
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["token", "separator"],
+			"properties": {
+				"token": {
+					"oneOf": [
+						{
+							"$ref": "#/definitions/extended-type"
+						},
+						{
+							"$ref": "#/definitions/enum"
+						}
+					]
+				},
+				"disallowToSurroundBySpaces": { "type": "boolean" },
+				"allowEmpty": { "type": "boolean" },
+				"ordered": { "type": "boolean" },
+				"unique": { "type": "boolean" },
+				"caseInsensitive": { "type": "boolean" },
+				"number": {
+					"oneOf": [
+						{
+							"type": "string",
+							"enum": ["zeroOrMore", "oneOrMore"]
+						},
+						{
+							"type": "object",
+							"additionalProperties": false,
+							"required": ["min", "max"],
+							"properties": {
+								"min": { "type": "number" },
+								"max": { "type": "number" }
+							}
+						}
+					]
+				},
+				"separator": {
+					"type": "string",
+					"enum": ["space", "comma"]
+				}
+			}
+		},
+		"enum": {
+			"description": "[Enumerated attributes](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#enumerated-attribute)",
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["enum"],
+			"properties": {
+				"enum": {
+					"type": "array",
+					"minItems": 1,
+					"uniqueItems": true,
+					"items": {
+						"type": "string"
+					}
+				},
+				"disallowToSurroundBySpaces": { "type": "boolean" },
+				"caseInsensitive": { "type": "boolean" },
+				"invalidValueDefault": { "type": "string" },
+				"missingValueDefault": { "type": "string" },
+				"sameStates": {
+					"type": "object",
+					"additionalProperties": true,
+					"items": {
+						"type": "array",
+						"minItems": 1,
+						"uniqueItems": true,
+						"items": {
+							"type": "string"
+						}
+					}
+				}
+			}
+		},
+		"number": {
+			"description": "[Numbers](https://html.spec.whatwg.org/dev/common-microsyntaxes.html#numbers)",
+			"type": "object",
+			"required": ["type"],
+			"additionalProperties": false,
+			"properties": {
+				"type": {
+					"type": "string",
+					"enum": ["float", "integer"]
+				},
+				"gt": { "type": "number" },
+				"gte": { "type": "number" },
+				"lt": { "type": "number" },
+				"lte": { "type": "number" },
+				"clampable": { "type": "boolean" }
+			}
+		}
+	}
+}
