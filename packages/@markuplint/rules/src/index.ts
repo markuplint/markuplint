@@ -14,6 +14,7 @@ import IdDuplication from './id-duplication';
 import Indentation from './indentation';
 import InvalidAttr from './invalid-attr';
 import LandmarkRoles from './landmark-roles';
+import NoBooleanAttrValue from './no-boolean-attr-value';
 import PermittedContents from './permitted-contents';
 import RequiredAttr from './required-attr';
 import RequiredH1 from './required-h1';
@@ -36,6 +37,7 @@ export default {
 	indentation: Indentation,
 	'invalid-attr': InvalidAttr,
 	'landmark-roles': LandmarkRoles,
+	'no-boolean-attr-value': NoBooleanAttrValue,
 	'permitted-contents': PermittedContents,
 	'required-attr': RequiredAttr,
 	'required-h1': RequiredH1,
