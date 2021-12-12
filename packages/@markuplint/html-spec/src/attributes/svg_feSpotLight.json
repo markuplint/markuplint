@@ -1,62 +1,56 @@
 {
 	"tag": "feSpotLight",
-	"attributes": [
-		"#SVGCoreAttrs",
-		{
-			"name": "in",
-			"type": [
-				{
-					"enum": [
-						"SourceGraphic",
-						"SourceAlpha",
-						"BackgroundImage",
-						"BackgroundAlpha",
-						"FillPaint",
-						"StrokePaint"
-					]
-				},
-				"CSSCustomIdent"
-			]
+	"ref": "https://drafts.fxtf.org/filter-effects/#feSpotLightElement",
+	"global": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
+	},
+	"attributes": {
+		"x": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-x",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
 		},
-		{
-			"name": "x",
-			"type": "Float",
-			"defaultValue": "0"
+		"y": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-y",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
 		},
-		{
-			"name": "y",
-			"type": "Float",
-			"defaultValue": "0"
+		"z": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-z",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
 		},
-		{
-			"name": "z",
-			"type": "Float",
-			"defaultValue": "1"
+		"pointsAtX": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-pointsatx",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
 		},
-		{
-			"name": "pointsAtX",
-			"type": "Float",
-			"defaultValue": "0"
+		"pointsAtY": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-pointsaty",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
 		},
-		{
-			"name": "pointsAtY",
-			"type": "Float",
-			"defaultValue": "0"
+		"pointsAtZ": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-pointsatz",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
 		},
-		{
-			"name": "pointsAtZ",
-			"type": "Float",
-			"defaultValue": "0"
+		"specularExponent": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-specularexponent",
+			"type": "<number>",
+			"defaultValue": "1",
+			"animatable": true
 		},
-		{
-			"name": "specularExponent",
-			"type": "Float",
-			"defaultValue": "1"
-		},
-		{
-			"name": "limitingConeAngle",
-			"type": "Float",
-			"defaultValue": "0"
+		"limitingConeAngle": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-limitingconeangle",
+			"type": "<number>",
+			"animatable": true
 		}
-	]
+	}
 }

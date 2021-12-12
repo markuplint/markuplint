@@ -1,22 +1,9 @@
 {
 	"tag": "feMergeNode",
-	"attributes": [
-		"#SVGCoreAttrs",
-		{
-			"name": "in",
-			"type": [
-				{
-					"enum": [
-						"SourceGraphic",
-						"SourceAlpha",
-						"BackgroundImage",
-						"BackgroundAlpha",
-						"FillPaint",
-						"StrokePaint"
-					]
-				},
-				"CSSCustomIdent"
-			]
-		}
-	]
+	"ref": "https://drafts.fxtf.org/filter-effects/#feMergeNodeElement",
+	"global": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
+		"#SVGFilterPrimitiveAttrs": ["in"]
+	},
+	"attributes": {}
 }

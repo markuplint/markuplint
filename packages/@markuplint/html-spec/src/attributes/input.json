@@ -1,23 +1,51 @@
 {
 	"tag": "input",
-	"attributes": [
-		{
-			"name": "accept",
-			"type": "AcceptList",
+	"ref": "https://html.spec.whatwg.org/multipage/input.html#the-input-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "width"],
+		"#HTMLFormControlElementAttrs": [
+			"autocomplete",
+			"dirname",
+			"disabled",
+			"form",
+			"formaction",
+			"formenctype",
+			"formmethod",
+			"formnovalidate",
+			"formtarget",
+			"name",
+			"maxlength",
+			"minlength",
+			"readonly",
+			"required"
+		]
+	},
+	"attributes": {
+		"accept": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-accept",
+			"type": {
+				"token": "Accept",
+				"caseInsensitive": true,
+				"unique": true,
+				"separator": "comma"
+			},
 			"condition": {
 				"self": "[type='file' i]"
 			}
 		},
-		{
-			"name": "alt",
-			"type": "String",
+		"alt": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-alt",
+			"type": "Any",
 			"condition": {
 				"self": "[type='image' i]"
 			}
 		},
-		{
-			"name": "autocomplete",
-			"type": "AutoComplete",
+		"autocomplete": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete",
 			"condition": {
 				"self": [
 					"[type='hidden' i]",
@@ -38,80 +66,29 @@
 				]
 			}
 		},
-		{
-			"name": "checked",
+		"checked": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-checked",
 			"type": "Boolean",
 			"condition": {
 				"self": ["[type='checkbox' i]", "[type='radio' i]"]
 			}
 		},
-		{
-			"name": "dirname",
-			"type": "String",
+		"dirname": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-dirname",
 			"condition": {
 				"self": ["[type='text' i]", "[type='search' i]"]
 			}
 		},
-		{
-			"name": "disabled",
-			"type": "Boolean"
-		},
-		{
-			"name": "form",
-			"type": "DOMID",
-			"condition": {
-				"self": ["[type='file' i]", "[type='file' i]"]
-			}
-		},
-		{
-			"name": "formaction",
-			"type": "URL",
-			"condition": {
-				"self": ["[type='submit' i]", "[type='image' i]"]
-			}
-		},
-		{
-			"name": "formenctype",
-			"type": {
-				"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
-			},
-			"condition": {
-				"self": ["[type='submit' i]", "[type='image' i]"]
-			}
-		},
-		{
-			"name": "formmethod",
-			"type": {
-				"enum": ["post", "get", "dialog"]
-			},
-			"condition": {
-				"self": ["[type='submit' i]", "[type='image' i]"]
-			}
-		},
-		{
-			"name": "formnovalidate",
-			"type": "Boolean",
-			"condition": {
-				"self": ["[type='submit' i]", "[type='image' i]"]
-			}
-		},
-		{
-			"name": "formtarget",
-			"type": "Target",
-			"condition": {
-				"self": ["[type='submit' i]", "[type='image' i]"]
-			}
-		},
-		{
-			"name": "height",
-			"type": "Uint",
+		"height": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-height",
 			"condition": {
 				"self": "[type='image' i]"
 			}
 		},
-		{
-			"name": "list",
+		"list": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-list",
 			"type": "DOMID",
+			"_TODO_": "must be the ID of a `datalist` element",
 			"condition": {
 				"self": [
 					"[type='text' i]",
@@ -130,9 +107,10 @@
 				]
 			}
 		},
-		{
-			"name": "max",
-			"type": "String",
+		"max": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-max",
+			"type": ["DateTime", "Number"],
+			"_TODO_": "The `type` attribute determines the type either DateTime of Number",
 			"condition": {
 				"self": [
 					"[type='date' i]",
@@ -145,9 +123,8 @@
 				]
 			}
 		},
-		{
-			"name": "maxlength",
-			"type": "Uint",
+		"maxlength": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-maxlength",
 			"condition": {
 				"self": [
 					"[type='text' i]",
@@ -159,9 +136,10 @@
 				]
 			}
 		},
-		{
-			"name": "min",
-			"type": "String",
+		"min": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-min",
+			"type": ["DateTime", "Number"],
+			"_TODO_": "The `type` attribute determines the type either DateTime of Number",
 			"condition": {
 				"self": [
 					"[type='date' i]",
@@ -174,9 +152,8 @@
 				]
 			}
 		},
-		{
-			"name": "minlength",
-			"type": "Uint",
+		"minlength": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-minlength",
 			"condition": {
 				"self": [
 					"[type='text' i]",
@@ -188,20 +165,16 @@
 				]
 			}
 		},
-		{
-			"name": "multiple",
+		"multiple": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-multiple",
 			"type": "Boolean",
 			"condition": {
 				"self": ["[type='email' i]", "[type='file' i]"]
 			}
 		},
-		{
-			"name": "name",
-			"type": "Boolean"
-		},
-		{
-			"name": "pattern",
-			"type": "String",
+		"pattern": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-pattern",
+			"type": "Pattern",
 			"condition": {
 				"self": [
 					"[type='text' i]",
@@ -213,9 +186,9 @@
 				]
 			}
 		},
-		{
-			"name": "placeholder",
-			"type": "String",
+		"placeholder": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-placeholder",
+			"type": "OneLineAny",
 			"condition": {
 				"self": [
 					"[type='text' i]",
@@ -228,9 +201,8 @@
 				]
 			}
 		},
-		{
-			"name": "readonly",
-			"type": "Boolean",
+		"readonly": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-readonly",
 			"condition": {
 				"self": [
 					"[type='text' i]",
@@ -248,9 +220,8 @@
 				]
 			}
 		},
-		{
-			"name": "required",
-			"type": "Boolean",
+		"required": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-required",
 			"condition": {
 				"self": [
 					"[type='text' i]",
@@ -271,9 +242,12 @@
 				]
 			}
 		},
-		{
-			"name": "size",
-			"type": "NonZeroUint",
+		"size": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-size",
+			"type": {
+				"type": "integer",
+				"gt": 0
+			},
 			"condition": {
 				"self": [
 					"[type='text' i]",
@@ -283,18 +257,24 @@
 					"[type='email' i]",
 					"[type='password' i]"
 				]
-			}
+			},
+			"defaultValue": "20"
 		},
-		{
-			"name": "src",
-			"type": "URL",
+		"src": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-src",
 			"condition": {
 				"self": "[type='image' i]"
 			}
 		},
-		{
-			"name": "step",
-			"type": "String",
+		"step": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-step",
+			"type": [
+				"Number",
+				{
+					"enum": ["any"],
+					"caseInsensitive": true
+				}
+			],
 			"condition": {
 				"self": [
 					"[type='date' i]",
@@ -307,20 +287,48 @@
 				]
 			}
 		},
-		{
-			"name": "type",
-			"type": "Boolean"
+		"type": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-type",
+			"type": {
+				"enum": [
+					"hidden",
+					"text",
+					"search",
+					"tel",
+					"url",
+					"email",
+					"password",
+					"date",
+					"month",
+					"week",
+					"time",
+					"datetime-local",
+					"number",
+					"range",
+					"color",
+					"checkbox",
+					"radio",
+					"file",
+					"submit",
+					"image",
+					"reset",
+					"button"
+				],
+				"invalidValueDefault": "text",
+				"missingValueDefault": "text"
+			},
+			"defaultValue": "text"
 		},
-		{
-			"name": "value",
-			"type": "Boolean"
+		"value": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-value",
+			"type": "Any",
+			"_TODO_": "The `type` attribute determines the type"
 		},
-		{
-			"name": "width",
-			"type": "Uint",
+		"width": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-width",
 			"condition": {
 				"self": "[type='image' i]"
 			}
 		}
-	]
+	}
 }

@@ -1,0 +1,11 @@
+{
+	"tag": "noscript",
+	"ref": "https://html.spec.whatwg.org/multipage/scripting.html#the-noscript-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {}
+}

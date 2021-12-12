@@ -1,11 +1,11 @@
 /* global cheerio */
 
-import type { Attribute, ContentModel, ElementSpec } from '@markuplint/ml-spec';
+import type { ContentModel, ElementSpec, ExtendedElementSpec } from '@markuplint/ml-spec';
 
 import fetch from './fetch';
 import { getAttribute } from './get-attribute';
 import { getPermittedStructures } from './get-permitted-structures';
-import { getThisOutline, mergeAttributes, nameCompare } from './utils';
+import { getThisOutline, nameCompare } from './utils';
 
 type SVGElementCategory = ContentModel & `#SVG${string}`;
 
@@ -13,7 +13,7 @@ const BASE_URL = 'https://developer.mozilla.org';
 
 export async function getSVG() {
 	const [linkList, deprecatedList] = await getSVGElementList();
-	const data: ElementSpec[] = [];
+	const data: ExtendedElementSpec[] = [];
 	for (const elUrl of linkList) {
 		const el = await getSVGElement(elUrl);
 		if (el) {
@@ -40,7 +40,8 @@ export async function getSVG() {
 				contents: false,
 			},
 			omittion: false,
-			attributes: [],
+			globalAttrs: {},
+			attributes: {},
 			deprecated: true,
 		})),
 	);
@@ -72,13 +73,17 @@ async function getSVGElement({ name, url }: { name: string; url: string | null }
 	url = `${BASE_URL}${url}`;
 	const $ = await fetch(url);
 
-	const $attribute = getThisOutline($, $('#attributes'));
-	const attributesFromDocs: Attribute[] = $attribute
+	const { attributes, global } = getAttribute(name, 'svg');
+
+	getThisOutline($, $('#attributes'))
 		.find('dt')
 		.toArray()
-		.map(dt => {
+		.forEach(dt => {
 			const $dt = $(dt);
 			const name = $dt.find('code').text().trim();
+			if (!name) {
+				return;
+			}
 			const experimental = !!$dt.find('.icon.icon-experimental').length || undefined;
 			const description = $dt
 				.next('dd')
@@ -87,9 +92,22 @@ async function getSVGElement({ name, url }: { name: string; url: string | null }
 				.join('')
 				.trim()
 				.replace(/(?:\r?\n|\s)+/gi, ' ');
-			return {
-				name,
-				type: 'String',
+			const current = attributes[name];
+			if (typeof current === 'object' && 'type' in current) {
+				// @ts-ignore
+				attributes[name] = {
+					// @ts-ignore
+					ref: current.ref,
+					description,
+					...current,
+					// @ts-ignore
+					experimental,
+				};
+				return;
+			}
+			// @ts-ignore
+			attributes[name] = {
+				// @ts-ignore
 				description,
 				experimental,
 			};
@@ -128,11 +146,7 @@ async function getSVGElement({ name, url }: { name: string; url: string | null }
 	const permittedStructuresSummary = contains($, $table.find('th'), 'Permitted content').next('td').text().trim();
 	const structures = getPermittedStructures(name, 'svg');
 
-	const attrSpecs = getAttribute(name, 'svg');
-
-	const attributes = mergeAttributes(attributesFromDocs, attrSpecs.attributes);
-
-	const data: ElementSpec = {
+	const data: ExtendedElementSpec = {
 		name: `svg:${name}`,
 		namespace: 'http://www.w3.org/2000/svg',
 		cite: url,
@@ -150,6 +164,7 @@ async function getSVGElement({ name, url }: { name: string; url: string | null }
 			...structures,
 		},
 		omittion: false,
+		globalAttrs: global || {},
 		attributes,
 	};
 	return data;

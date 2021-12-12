@@ -1,4 +1,4 @@
-import type { MLMLSpec } from '@markuplint/ml-spec';
+import type { ExtendedSpec } from '@markuplint/ml-spec';
 
 import fs from 'fs';
 import path from 'path';
@@ -26,7 +26,7 @@ async function main() {
 
 	const cites = getReferences();
 
-	const json: MLMLSpec = {
+	const json: ExtendedSpec = {
 		cites,
 		def: {
 			'#globalAttrs': globalAttrs,

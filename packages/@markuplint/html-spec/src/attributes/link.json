@@ -1,69 +1,128 @@
 {
 	"tag": "link",
-	"attributes": [
-		{
-			"name": "href",
-			"type": "URL"
+	"ref": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "href", "hreflang", "type", "referrerpolicy", "integrity", "media"]
+	},
+	"attributes": {
+		"rel": {
+			"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-link-rel",
+			"type": [
+				"Any",
+				{
+					"token": {
+						"enum": [
+							"alternate",
+							"canonical",
+							"author",
+							"dns-prefetch",
+							"help",
+							"icon",
+							"manifest",
+							"modulepreload",
+							"license",
+							"next",
+							"pingback",
+							"preconnect",
+							"prefetch",
+							"preload",
+							"prerender",
+							"prev",
+							"search",
+							"stylesheet"
+						]
+					},
+					"unique": true,
+					"separator": "space"
+				}
+			],
+			"requiredEither": ["itemprop"]
 		},
-		{
-			"name": "crossorigin",
-			"type": "Crossorigin"
+		"itemprop": {
+			"ref": "https://html.spec.whatwg.org/multipage/semantics.html#the-link-element:names:-the-itemprop-attribute",
+			"requiredEither": ["rel"]
 		},
-		{
-			"name": "rel",
-			"type": "LinkTypeList"
-		},
-		{
-			"name": "media",
-			"type": "MediaQueryList"
-		},
-		{
-			"name": "integrity",
-			"type": "String"
-		},
-		{
-			"name": "hreflang",
-			"type": "BCP47"
-		},
-		{
-			"name": "type",
-			"type": "MIMEType"
-		},
-		{
-			"name": "referrerpolicy",
-			"type": "ReferrerPolicy"
-		},
-		{
-			"name": "sizes",
-			"type": "LinkSizes"
-		},
-		{
-			"name": "imagesrcset",
-			"type": "SrcSet",
+		"integrity": {
+			"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-link-integrity",
 			"condition": {
-				"self": "[imagesizes]"
+				"self": ["[rel~='stylesheet' i]", "[rel~='preload' i]", "[rel~='modulepreload' i]"]
 			}
 		},
-		{
-			"name": "imagesizes",
+		"sizes": {
+			"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-link-sizes",
+			"type": {
+				"token": "IconSize",
+				"caseInsensitive": true,
+				"ordered": false,
+				"unique": true,
+				"separator": "space"
+			},
+			"condition": {
+				"self": ["[rel~='icon' i]", "[rel~='apple-touch-icon' i]"]
+			}
+		},
+		"imagesrcset": {
+			"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-link-imagesrcset",
+			"type": "Srcset",
+			"condition": {
+				"self": "[imagesizes][rel~='preload' i][as='image' i]"
+			},
+			"required": { "self": "[imagesizes]" }
+		},
+		"imagesizes": {
+			"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-link-imagesizes",
 			"type": "SourceSizeList",
 			"condition": {
-				"self": "[imagesrcset]"
+				"self": "[imagesrcset][rel~='preload' i][as='image' i]"
+			},
+			"required": { "self": "[imagesrcset]" }
+		},
+		"as": {
+			"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-link-as",
+			"type": {
+				"enum": [
+					"fetch",
+					"audio",
+					"audioworklet",
+					"document",
+					"embed",
+					"font",
+					"frame",
+					"iframe",
+					"image",
+					"manifest",
+					"object",
+					"paintworklet",
+					"report",
+					"script",
+					"serviceworker",
+					"sharedworker",
+					"style",
+					"track",
+					"video",
+					"worker",
+					"xslt"
+				]
+			},
+			"_TODO_": "If the rel attribute is modulepreload, invalidValueDefault and missingValueDefault will be `script`",
+			"condition": {
+				"self": ["[rel='preload' i]", "[rel='modulepreload' i]"]
 			}
 		},
-		{
-			"name": "as",
-			"type": "Destination",
+		"color": {
+			"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-link-color",
+			"type": "<color>",
 			"condition": {
-				"self": ["[rel=preload]", "[rel=modulepreload]"]
+				"self": "[rel~='mask-icon' i]"
 			}
 		},
-		{
-			"name": "color",
-			"type": "Color",
-			"condition": {
-				"self": "[rel=mask-icon]"
-			}
+		"disabled": {
+			"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-link-disabled",
+			"type": "Boolean"
 		}
-	]
+	}
 }

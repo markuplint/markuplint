@@ -1,0 +1,38 @@
+{
+	"tag": "track",
+	"ref": "https://html.spec.whatwg.org/multipage/media.html#the-track-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"kind": {
+			"ref": "https://html.spec.whatwg.org/multipage/media.html#attr-track-kind",
+			"type": {
+				"enum": ["subtitles", "captions", "descriptions", "chapters", "metadata"],
+				"missingValueDefault": "metadata",
+				"invalidValueDefault": "metadata"
+			}
+		},
+		"src": {
+			"ref": "https://html.spec.whatwg.org/multipage/media.html#attr-track-src",
+			"type": "URL",
+			"required": true
+		},
+		"srclang": {
+			"ref": "https://html.spec.whatwg.org/multipage/media.html#attr-track-srclang",
+			"type": "BCP47"
+		},
+		"label": {
+			"ref": "https://html.spec.whatwg.org/multipage/media.html#attr-track-label",
+			"type": "NoEmptyAny",
+			"_TODO_": "> The value of the label attribute, if the attribute is present, must not be the empty string. Furthermore, there must not be two track element children of the same media element whose kind attributes are in the same state, whose srclang attributes are both missing or have values that represent the same language, and whose label attributes are again both missing or both have the same value."
+		},
+		"default": {
+			"ref": "https://html.spec.whatwg.org/multipage/media.html#attr-track-default",
+			"type": "Boolean"
+		}
+	}
+}

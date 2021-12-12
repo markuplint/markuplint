@@ -1,0 +1,11 @@
+{
+	"tag": "dd",
+	"ref": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-dd-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {}
+}

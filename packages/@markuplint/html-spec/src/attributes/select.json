@@ -1,36 +1,24 @@
 {
 	"tag": "select",
-	"attributes": [
-		{
-			"name": "autocomplete",
-			"type": "AutoComplete"
-		},
-		{
-			"name": "disabled",
+	"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": ["autocomplete", "disabled", "form", "name", "required"]
+	},
+	"attributes": {
+		"multiple": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-select-multiple",
 			"type": "Boolean"
 		},
-		{
-			"name": "form",
-			"type": "DOMID"
-		},
-		{
-			"name": "multiple",
-			"type": "Boolean"
-		},
-		{
-			"name": "name",
-			"type": "String"
-		},
-		{
-			"name": "required",
-			"type": "Boolean"
-		},
-		{
-			"name": "size",
-			"type": "NonZeroUint",
-			"condition": {
-				"self": "[multiple]"
+		"size": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-select-size",
+			"type": {
+				"type": "integer",
+				"gt": 0
 			}
 		}
-	]
+	}
 }

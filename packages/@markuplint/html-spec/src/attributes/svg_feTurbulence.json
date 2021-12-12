@@ -1,47 +1,114 @@
 {
 	"tag": "feTurbulence",
-	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGPresentationAttrs",
-		"#SVGFilterPrimitiveAttrs",
-		{
-			"name": "baseFrequency",
-			"type": "SVGNumberOptionalNumber",
-			"defaultValue": "0"
+	"ref": "https://drafts.fxtf.org/filter-effects/#feTurbulenceElement",
+	"global": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": [
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"isolation",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"mask-type",
+			"opacity",
+			"overflow",
+			"paint-order",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-overflow",
+			"text-rendering",
+			"transform-origin",
+			"unicode-bidi",
+			"vector-effect",
+			"visibility",
+			"white-space",
+			"word-spacing",
+			"writing-mode"
+		],
+		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"]
+	},
+	"attributes": {
+		"baseFrequency": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feturbulence-basefrequency",
+			"type": "<number-optional-number>",
+			"_TODO_": "Negative values are unsupported",
+			"defaultValue": "0",
+			"animatable": true
 		},
-		{
-			"name": "numOctaves",
-			"type": "Int",
-			"defaultValue": "1"
+		"numOctaves": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feturbulence-numoctaves",
+			"type": "<positive-integer>",
+			"defaultValue": "1",
+			"animatable": true
 		},
-		{
-			"name": "seed",
-			"type": "Float",
-			"defaultValue": "0"
+		"seed": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feturbulence-seed",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
 		},
-		{
-			"name": "stitchTiles",
+		"stitchTiles": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feturbulence-stitchtiles",
 			"type": {
 				"enum": ["noStitch", "stitch"]
 			},
-			"defaultValue": "noStitch"
+			"defaultValue": "noStitch",
+			"animatable": true
 		},
-		{
-			"name": "type",
+		"type": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-feturbulence-type",
 			"type": {
 				"enum": ["fractalNoise", "turbulence"]
 			},
-			"defaultValue": "turbulence"
-		},
-		{
-			"name": "height",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "100%"
-		},
-		{
-			"name": "width",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "100%"
+			"defaultValue": "turbulence",
+			"animatable": true
 		}
-	]
+	}
 }

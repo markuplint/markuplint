@@ -1,70 +1,150 @@
 {
 	"tag": "marker",
-	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGGlobalEventAttrs",
-		"#SVGDocumentElementEventAttrs",
-		"#SVGPresentationAttrs",
-		{
-			"name": "viewBox",
-			"type": "SVGViewBox"
+	"ref": "https://svgwg.org/svg2-draft/painting.html#MarkerElement",
+	"global": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": [
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"isolation",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"mask-type",
+			"opacity",
+			"overflow",
+			"paint-order",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-overflow",
+			"text-rendering",
+			"transform-origin",
+			"unicode-bidi",
+			"vector-effect",
+			"visibility",
+			"white-space",
+			"word-spacing",
+			"writing-mode"
+		]
+	},
+	"attributes": {
+		"viewBox": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#ViewBoxAttribute",
+			"type": "<view-box>",
+			"animatable": true
 		},
-		{
-			"name": "preserveAspectRatio",
-			"type": "SVGPreserveAspectRatio",
-			"defaultValue": "xMidYMid meet"
+		"preserveAspectRatio": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#PreserveAspectRatioAttribute",
+			"type": "<preserve-aspect-ratio>",
+			"defaultValue": "xMidYMid meet",
+			"animatable": true
 		},
-		{
-			"name": "refX",
+		"refX": {
+			"ref": "https://svgwg.org/svg2-draft/painting.html#MarkerElementRefXAttribute",
 			"type": [
-				"SVGLength",
-				"SVGPercentage",
-				"Float",
+				"<percentage>",
+				"<number>",
 				{
-					"enum": ["left", "center", "right"]
+					"enum": ["left", "center", "right"],
+					"disallowToSurroundBySpaces": false
 				}
 			],
-			"defaultValue": "0"
+			"defaultValue": "0",
+			"animatable": true
 		},
-		{
-			"name": "refY",
+		"refY": {
+			"ref": "https://svgwg.org/svg2-draft/painting.html#MarkerElementRefYAttribute",
 			"type": [
-				"SVGLength",
-				"SVGPercentage",
-				"Float",
+				"<percentage>",
+				"<number>",
 				{
-					"enum": ["top", "center", "bottom"]
+					"enum": ["left", "center", "right"],
+					"disallowToSurroundBySpaces": false
 				}
 			],
-			"defaultValue": "0"
+			"defaultValue": "0",
+			"animatable": true
 		},
-		{
-			"name": "markerUnits",
+		"markerUnits": {
+			"ref": "https://svgwg.org/svg2-draft/painting.html#MarkerUnitsAttribute",
 			"type": {
-				"enum": ["userSpaceOnUse", "strokeWidth"]
+				"enum": ["userSpaceOnUse", "strokeWidth"],
+				"disallowToSurroundBySpaces": false
 			},
 			"defaultValue": "strokeWidth"
 		},
-		{
-			"name": "markerWidth",
-			"type": ["SVGLength", "SVGPercentage", "Float"],
-			"defaultValue": "3"
+		"markerWidth": {
+			"ref": "https://svgwg.org/svg2-draft/painting.html#MarkerWidthAttribute",
+			"type": ["<svg-length>", "<percentage>", "<number>"],
+			"defaultValue": "3",
+			"animatable": true
 		},
-		{
-			"name": "markerHeight",
-			"type": ["SVGLength", "SVGPercentage", "Float"],
-			"defaultValue": "3"
+		"markerHeight": {
+			"ref": "https://svgwg.org/svg2-draft/painting.html#MarkerHeightAttribute",
+			"type": ["<svg-length>", "<percentage>", "<number>"],
+			"defaultValue": "3",
+			"animatable": true
 		},
-		{
-			"name": "orient",
+		"orient": {
+			"ref": "https://svgwg.org/svg2-draft/painting.html#OrientAttribute",
 			"type": [
 				{
-					"enum": ["auto", "auto-start-reverse"]
+					"enum": ["auto", "auto-start-reverse"],
+					"disallowToSurroundBySpaces": false
 				},
-				"CSSAngle",
-				"Float"
+				"<angle>",
+				"<number>"
 			],
-			"defaultValue": "0"
+			"defaultValue": "0",
+			"animatable": true
 		}
-	]
+	}
 }

@@ -1,0 +1,11 @@
+{
+	"tag": "html",
+	"ref": "https://html.spec.whatwg.org/multipage/semantics.html#the-html-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {}
+}

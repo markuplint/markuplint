@@ -1,64 +1,128 @@
 {
 	"tag": "pattern",
-	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGGlobalEventAttrs",
-		"#SVGPresentationAttrs",
-		"#XLinkAttrs",
-		{
-			"name": "viewBox",
-			"type": "SVGViewBox"
+	"ref": "https://svgwg.org/svg2-draft/pservers.html#Patterns",
+	"global": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": [
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"isolation",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"mask-type",
+			"opacity",
+			"overflow",
+			"paint-order",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-overflow",
+			"text-rendering",
+			"transform-origin",
+			"unicode-bidi",
+			"vector-effect",
+			"visibility",
+			"white-space",
+			"word-spacing",
+			"writing-mode"
+		],
+		"#XLinkAttrs": ["xlink:href", "xlink:title"]
+	},
+	"attributes": {
+		"viewBox": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#ViewBoxAttribute",
+			"type": "<view-box>",
+			"animatable": true
 		},
-		{
-			"name": "preserveAspectRatio",
-			"type": "SVGPreserveAspectRatio"
+		"preserveAspectRatio": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#PreserveAspectRatioAttribute",
+			"type": "<preserve-aspect-ratio>",
+			"defaultValue": "xMidYMid meet",
+			"animatable": true
 		},
-		{
-			"name": "x",
-			"type": "SVGLength",
+		"width": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementWidthAttribute",
 			"defaultValue": "0"
 		},
-		{
-			"name": "y",
-			"type": "SVGLength",
+		"height": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementHeightAttribute",
 			"defaultValue": "0"
 		},
-		{
-			"name": "width",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0"
-		},
-		{
-			"name": "height",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0"
-		},
-		{
-			"name": "patternUnits",
+		"patternUnits": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementPatternUnitsAttribute",
 			"type": {
-				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+				"enum": ["userSpaceOnUse", "objectBoundingBox"],
+				"disallowToSurroundBySpaces": false
 			},
-			"defaultValue": "objectBoundingBox"
+			"defaultValue": "objectBoundingBox",
+			"animatable": true
 		},
-		{
-			"name": "patternContentUnits",
+		"patternContentUnits": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementPatternContentUnitsAttribute",
 			"type": {
-				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+				"enum": ["userSpaceOnUse", "objectBoundingBox"],
+				"disallowToSurroundBySpaces": false
 			},
-			"defaultValue": "userSpaceOnUse"
+			"defaultValue": "userSpaceOnUse",
+			"animatable": true
 		},
-		{
-			"name": "patternTransform",
-			"type": "CSSTransformList"
+		"patternTransform": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementPatternTransformAttribute",
+			"type": "<transform-list>",
+			"animatable": true
 		},
-		{
-			"name": "href",
-			"type": "URL"
-		},
-		{
-			"name": "xlink:href",
+		"href": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementHrefAttribute",
 			"type": "URL",
-			"deprecated": true
+			"animatable": true
 		}
-	]
+	}
 }

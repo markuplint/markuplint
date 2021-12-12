@@ -1,64 +1,45 @@
 {
 	"tag": "img",
-	"attributes": [
-		{
-			"name": "alt",
-			"type": "String"
+	"ref": "https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "srcset", "sizes", "width"],
+		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "loading"]
+	},
+	"attributes": {
+		"alt": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-alt",
+			"type": "Any"
 		},
-		{
-			"name": "crossorigin",
-			"type": "Crossorigin"
+		"src": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-src",
+			"type": "URL",
+			"required": true
 		},
-		{
-			"name": "decoding",
-			"type": {
-				"enum": ["sync", "async", "auto"]
+		"usemap": {
+			"ref": "https://html.spec.whatwg.org/multipage/image-maps.html#attr-hyperlink-usemap",
+			"type": "HashName",
+			"condition": {
+				"ancestor": ":not(a):not(button)"
 			}
 		},
-		{
-			"name": "height",
-			"type": "Uint"
-		},
-		{
-			"name": "ismap",
+		"ismap": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-ismap",
 			"type": "Boolean",
 			"condition": {
 				"ancestor": "a[href]"
 			}
 		},
-		{
-			"name": "loading",
+		"decoding": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-decoding",
 			"type": {
-				"enum": ["eager", "lazy"]
-			}
-		},
-		{
-			"name": "referrerpolicy",
-			"type": "ReferrerPolicy"
-		},
-		{
-			"name": "sizes",
-			"type": "SourceSizeList"
-		},
-		{
-			"name": "src",
-			"type": "URL",
-			"required": true
-		},
-		{
-			"name": "srcset",
-			"type": "SrcSet"
-		},
-		{
-			"name": "width",
-			"type": "Uint"
-		},
-		{
-			"name": "usemap",
-			"type": "URLHash",
-			"condition": {
-				"ancestor": ":not(a):not(button)"
+				"enum": ["sync", "async", "auto"],
+				"invalidValueDefault": "auto",
+				"missingValueDefault": "auto"
 			}
 		}
-	]
+	}
 }

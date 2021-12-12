@@ -1,19 +1,29 @@
 {
 	"tag": "ol",
-	"attributes": [
-		{
-			"name": "reversed",
+	"ref": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-ol-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"reversed": {
+			"ref": "https://html.spec.whatwg.org/multipage/grouping-content.html#attr-ol-reversed",
 			"type": "Boolean"
 		},
-		{
-			"name": "start",
+		"start": {
+			"ref": "https://html.spec.whatwg.org/multipage/grouping-content.html#attr-ol-start",
 			"type": "Int"
 		},
-		{
-			"name": "type",
+		"type": {
+			"ref": "https://html.spec.whatwg.org/multipage/grouping-content.html#attr-ol-type",
 			"type": {
-				"enum": ["1", "a", "A", "i", "I"]
+				"enum": ["1", "a", "A", "i", "I"],
+				"caseInsensitive": false,
+				"invalidValueDefault": "decimal",
+				"missingValueDefault": "decimal"
 			}
 		}
-	]
+	}
 }

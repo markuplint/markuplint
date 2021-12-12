@@ -3,7 +3,7 @@
 	"conditional": [
 		{
 			"condition": {
-				"_TODO_": "WAIT: The selector parser supports namespace",
+				"_TODO_": "#322: The selector parser supports namespace",
 				"_parent": "svg|switch",
 				"parent": "svg-switch"
 			},

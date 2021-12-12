@@ -1,12 +1,12 @@
 /* global cheerio */
 
-import type { Attribute, AttributeJSON, ContentModel, ElementSpec } from '@markuplint/ml-spec';
+import type { ContentModel, ElementSpec, ExtendedElementSpec } from '@markuplint/ml-spec';
 
 import fetch from './fetch';
 import { getAriaInHtml } from './get-aria-in-html';
 import { getAttribute } from './get-attribute';
 import { getPermittedStructures } from './get-permitted-structures';
-import { getThisOutline, nameCompare } from './utils';
+import { getThisOutline, nameCompare, sortObjectByKey } from './utils';
 
 const MAIN_ARTICLE_SELECTOR = 'article.main-page-content, article.article';
 
@@ -24,8 +24,12 @@ export async function getHTMLElements() {
 			const ariaInHtml = getAriaInHtml(name);
 			h.name = name;
 			h.permittedStructures = { ...h.permittedStructures, ...getPermittedStructures(name) };
-			h.permittedRoles = { ...h.permittedRoles, ...ariaInHtml.permittedRoles };
-			h.implicitRole = { ...h.implicitRole, ...ariaInHtml.implicitRole };
+			if (h.permittedRoles) {
+				h.permittedRoles = { ...h.permittedRoles, ...ariaInHtml.permittedRoles };
+			}
+			if (h.implicitRole) {
+				h.implicitRole = { ...h.implicitRole, ...ariaInHtml.implicitRole };
+			}
 			specs.push(h);
 		}
 	}
@@ -110,12 +114,13 @@ export async function getHTMLElement(link: string) {
 	const permittedRoles = getProperty($, 'Permitted ARIA roles');
 	const implicitRole = getProperty($, 'Implicit ARIA role');
 
-	const attrs = getAttributes($, '#attributes', name);
-	attrs.sort(nameCompare);
+	let { globalAttrs, attributes } = getAttributes($, '#attributes', name);
+	globalAttrs = sortObjectByKey(globalAttrs || {});
+	attributes = sortObjectByKey(attributes);
 
 	const ariaInHtml = getAriaInHtml(name);
 
-	const spec: ElementSpec = {
+	const spec: ExtendedElementSpec = {
 		name,
 		cite: link,
 		description,
@@ -137,22 +142,17 @@ export async function getHTMLElement(link: string) {
 			...ariaInHtml.implicitRole,
 		},
 		omittion: false,
-		attributes: ['#globalAttrs', '#ariaAttrs', ...attrs],
+		globalAttrs,
+		attributes,
 	};
 
 	return spec;
 }
 
-export function getAttributes($: cheerio.Root, heading: string, tagName: string): (Attribute | string)[] {
+export function getAttributes($: cheerio.Root, heading: string, tagName: string) {
 	const $heading = $(heading);
 	const $outline = getThisOutline($, $heading);
-	const { attributes } = getAttribute(tagName);
-	const result: (Attribute | string)[] = attributes.map(a => {
-		if (typeof a === 'string') {
-			return a;
-		}
-		return { ...a, description: '' };
-	});
+	const { attributes, global } = getAttribute(tagName);
 	$outline
 		.find('> div > dl > dt')
 		.toArray()
@@ -184,35 +184,35 @@ export function getAttributes($: cheerio.Root, heading: string, tagName: string)
 				.trim()
 				.replace(/(?:\r?\n|\s)+/gi, ' ');
 
-			const specIndex = result.findIndex(attr => typeof attr !== 'string' && attr.name === name);
-			if (specIndex === -1) {
-				result.push({
-					name,
-					type: 'String',
+			const current = attributes[name];
+			if (!current) {
+				attributes[name] = {
+					// @ts-ignore
 					description,
 					experimental,
 					obsolete,
 					deprecated,
 					nonStandard,
-				});
+				};
 				return;
 			}
 
-			const _attr = attributes[specIndex];
-			const attr = typeof _attr !== 'string' ? _attr : ({} as AttributeJSON);
-
-			result[specIndex] = {
-				// @ts-ignore for key order that "name" is first
-				name,
-				description,
-				experimental,
-				obsolete,
-				deprecated,
-				nonStandard,
-				...attr,
-			};
+			if (typeof current === 'object' && 'name' in current) {
+				attributes[name] = {
+					// @ts-ignore for key order that "name" is first
+					name,
+					// @ts-ignore for key order that "description" is second
+					description,
+					experimental,
+					obsolete,
+					deprecated,
+					nonStandard,
+					// @ts-ignore
+					...current,
+				};
+			}
 		});
-	return result;
+	return { attributes, globalAttrs: global };
 }
 
 function getProperty($: cheerio.Root, prop: string) {
@@ -270,7 +270,7 @@ async function getHTMLElementLinks() {
 	return lists;
 }
 
-function getObsoleteElements(specs: ElementSpec[]): ElementSpec[] {
+function getObsoleteElements(specs: ExtendedElementSpec[]): ExtendedElementSpec[] {
 	return [
 		'applet',
 		'acronym',
@@ -301,7 +301,7 @@ function getObsoleteElements(specs: ElementSpec[]): ElementSpec[] {
 		'spacer',
 		'tt',
 	]
-		.map<ElementSpec | null>(name => {
+		.map<ExtendedElementSpec | null>(name => {
 			const found = specs.find(e => e.name === name);
 			if (found) {
 				return null;
@@ -326,7 +326,8 @@ function getObsoleteElements(specs: ElementSpec[]): ElementSpec[] {
 					role: false,
 				},
 				omittion: false,
-				attributes: [],
+				globalAttrs: {},
+				attributes: {},
 			};
 		})
 		.filter((e): e is ElementSpec => !!e);

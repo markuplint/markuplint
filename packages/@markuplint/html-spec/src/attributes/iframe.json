@@ -1,66 +1,60 @@
 {
 	"tag": "iframe",
-	"attributes": [
-		{
-			"name": "src",
-			"type": "URL"
+	"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "width"],
+		"#HTMLLinkAndFetchingAttrs": ["referrerpolicy", "loading"]
+	},
+	"attributes": {
+		"src": {
+			"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-src",
+			"required": { "self": "[itemprop]" }
 		},
-		{
-			"name": "srcdoc",
-			"type": "String"
+		"srcdoc": {
+			"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-srcdoc",
+			"type": "Any",
+			"_TODO_": "The type is HTML syntax, but it does not support"
 		},
-		{
-			"name": "name",
-			"type": "String"
+		"name": {
+			"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-name",
+			"type": "BrowsingContextName"
 		},
-		{
-			"name": "sandbox",
+		"sandbox": {
+			"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-sandbox",
 			"type": {
-				"enum": [
-					"allow-forms",
-					"allow-modals",
-					"allow-orientation-lock",
-					"allow-pointer-lock",
-					"allow-popups",
-					"allow-popups-to-escape-sandbox",
-					"allow-presentation",
-					"allow-same-origin",
-					"allow-scripts",
-					"allow-top-navigation",
-					"allow-top-navigation-by-user-activation",
-					"allow-downloads"
-				]
+				"token": {
+					"enum": [
+						"allow-forms",
+						"allow-modals",
+						"allow-orientation-lock",
+						"allow-pointer-lock",
+						"allow-popups",
+						"allow-popups-to-escape-sandbox",
+						"allow-presentation",
+						"allow-same-origin",
+						"allow-scripts",
+						"allow-top-navigation",
+						"allow-top-navigation-by-user-activation",
+						"allow-downloads"
+					]
+				},
+				"caseInsensitive": true,
+				"ordered": true,
+				"unique": true,
+				"separator": "space"
 			}
 		},
-		{
-			"name": "allow",
-			"type": "String"
+		"allow": {
+			"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-allow",
+			"type": "SerializedPermissionsPolicy"
 		},
-		{
-			"name": "allowfullscreen",
+		"allowfullscreen": {
+			"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-allowfullscreen",
 			"type": "Boolean"
-		},
-		{
-			"name": "allowpaymentrequest",
-			"type": "Boolean"
-		},
-		{
-			"name": "width",
-			"type": "Uint"
-		},
-		{
-			"name": "height",
-			"type": "Uint"
-		},
-		{
-			"name": "referrerpolicy",
-			"type": "ReferrerPolicy"
-		},
-		{
-			"name": "loading",
-			"type": {
-				"enum": ["eager", "lazy"]
-			}
 		}
-	]
+	}
 }

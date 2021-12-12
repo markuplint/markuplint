@@ -1,40 +1,33 @@
 {
 	"tag": "meshgradient",
-	"attributes": [
-		"#SVGCoreAttrs",
-		"#SVGGlobalEventAttrs",
-		"#SVGPresentationAttrs",
-		{
-			"name": "x",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0%"
-		},
-		{
-			"name": "y",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0%"
-		},
-		{
-			"name": "gradientUnits",
+	"ref": "https://www.w3.org/TR/2016/CR-SVG2-20160915/pservers.html#MeshElement",
+	"global": {
+		"#SVGCoreAttrs": ["id", "tabindex", "lang", "xml:space", "class", "style"],
+		"#GlobalEventAttrs": true,
+		"#SVGPresentationAttrs": ["x", "y", "transform"]
+	},
+	"attributes": {
+		"gradientUnits": {
+			"ref": "https://www.w3.org/TR/2016/CR-SVG2-20160915/pservers.html#MeshGradientElementGradientUnitsAttribute",
 			"type": {
-				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+				"enum": ["userSpaceOnUse", "objectBoundingBox"],
+				"disallowToSurroundBySpaces": false
 			},
-			"defaultValue": "objectBoundingBox"
+			"defaultValue": "objectBoundingBox",
+			"animatable": true
 		},
-		{
-			"name": "transform",
-			"type": "CSSTransformList"
+		"href": {
+			"ref": "https://www.w3.org/TR/2016/CR-SVG2-20160915/pservers.html#MeshGradientElementHrefAttribute",
+			"type": "URL",
+			"animatable": true
 		},
-		{
-			"name": "href",
-			"type": "URL"
-		},
-		{
-			"name": "type",
+		"type": {
+			"ref": "https://www.w3.org/TR/2016/CR-SVG2-20160915/pservers.html#MeshGradientElementTypeAttribute",
 			"type": {
-				"enum": ["bilinear", "bicubic"]
+				"enum": ["bilinear", "bicubic"],
+				"disallowToSurroundBySpaces": false
 			},
 			"defaultValue": "bilinear"
 		}
-	]
+	}
 }

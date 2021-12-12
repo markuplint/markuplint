@@ -1,13 +1,22 @@
 {
 	"tag": "portal",
-	"attributes": [
-		{
-			"name": "src",
-			"type": "URL"
+	"ref": "https://wicg.github.io/portals/",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["referrerpolicy"],
+		"#HTMLEmbededAndMediaContentAttrs": ["src"]
+	},
+	"attributes": {
+		"src": {
+			"ref": "https://wicg.github.io/portals/#dom-htmlportalelement-src",
+			"_TODO_": ""
 		},
-		{
-			"name": "referrerpolicy",
-			"type": "ReferrerPolicy"
+		"referrerpolicy": {
+			"ref": "https://wicg.github.io/portals/#dom-htmlportalelement-referrerpolicy",
+			"_TODO_": ""
 		}
-	]
+	}
 }

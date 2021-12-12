@@ -1,0 +1,11 @@
+{
+	"tag": "dl",
+	"ref": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {}
+}

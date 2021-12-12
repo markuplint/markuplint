@@ -1,0 +1,11 @@
+{
+	"tag": "tfoot",
+	"ref": "https://html.spec.whatwg.org/multipage/tables.html#the-tfoot-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {}
+}

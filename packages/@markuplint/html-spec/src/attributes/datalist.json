@@ -1,0 +1,11 @@
+{
+	"tag": "datalist",
+	"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#the-datalist-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {}
+}

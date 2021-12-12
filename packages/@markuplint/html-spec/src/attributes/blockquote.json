@@ -1,9 +1,16 @@
 {
 	"tag": "blockquote",
-	"attributes": [
-		{
-			"name": "cite",
+	"ref": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-blockquote-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"cite": {
+			"ref": "https://html.spec.whatwg.org/multipage/grouping-content.html#attr-blockquote-cite",
 			"type": "URL"
 		}
-	]
+	}
 }

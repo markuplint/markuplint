@@ -1,64 +1,47 @@
 {
 	"tag": "symbol",
-	"attributes": [
-		"#ariaAttrs",
-		"#SVGCoreAttrs",
-		"#SVGGlobalEventAttrs",
-		"#SVGDocumentEventAttrs",
-		"#SVGPresentationAttrs",
-		{
-			"name": "preserveAspectRatio",
-			"type": "SVGPreserveAspectRatio",
+	"ref": "https://svgwg.org/svg2-draft/struct.html#SymbolElement",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": ["x", "y", "width", "height"]
+	},
+	"attributes": {
+		"preserveAspectRatio": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#PreserveAspectRatioAttribute",
+			"type": "<preserve-aspect-ratio>",
 			"defaultValue": "xMidYMid meet"
 		},
-		{
-			"name": "viewBox",
-			"type": "SVGViewBox"
+		"viewBox": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#ViewBoxAttribute",
+			"type": "<view-box>"
 		},
-
-		{
-			"name": "refX",
+		"refX": {
+			"ref": "https://svgwg.org/svg2-draft/struct.html#SymbolElementRefXAttribute",
 			"type": [
-				"SVGLength",
-				"SVGPercentage",
-				"Float",
+				"<svg-length>",
+				"<percentage>",
+				"<number>",
 				{
 					"enum": ["left", "center", "right"]
 				}
 			],
 			"defaultValue": "0"
 		},
-		{
-			"name": "refY",
+		"refY": {
+			"ref": "https://svgwg.org/svg2-draft/struct.html#SymbolElementRefYAttribute",
 			"type": [
-				"SVGLength",
-				"SVGPercentage",
-				"Float",
+				"<svg-length>",
+				"<percentage>",
+				"<number>",
 				{
 					"enum": ["top", "center", "bottom"]
 				}
 			],
 			"defaultValue": "0"
-		},
-		{
-			"name": "x",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0"
-		},
-		{
-			"name": "y",
-			"type": ["SVGLength", "SVGPercentage"],
-			"defaultValue": "0"
-		},
-		{
-			"name": "width",
-			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
-			"defaultValue": "auto"
-		},
-		{
-			"name": "height",
-			"type": [{ "enum": ["auto"] }, "SVGLength", "SVGPercentage"],
-			"defaultValue": "auto"
 		}
-	]
+	}
 }

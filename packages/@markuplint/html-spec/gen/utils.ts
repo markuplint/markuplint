@@ -1,7 +1,5 @@
 /* global cheerio */
 
-import type { Attribute, AttributeJSON } from '@markuplint/ml-spec';
-
 type HasName = { name: string };
 
 export function nameCompare(a: HasName | string, b: HasName | string) {
@@ -14,6 +12,18 @@ export function nameCompare(a: HasName | string, b: HasName | string) {
 		return 1;
 	}
 	return 0;
+}
+
+export function sortObjectByKey<T>(o: T): T {
+	const keys = Object.keys(o);
+	keys.sort(nameCompare);
+	// @ts-ignore
+	const newObj: T = {};
+	keys.forEach(key => {
+		// @ts-ignore
+		newObj[key] = o[key];
+	});
+	return newObj;
 }
 
 export function arrayUnique<T extends HasName>(array: T[]) {
@@ -41,49 +51,14 @@ export function getThisOutline($: cheerio.Root, $start: cheerio.Cheerio) {
 	return $container;
 }
 
-export function mergeAttributes(fromDocs: Attribute[], fromJSON: (string | AttributeJSON)[]) {
-	const attributes: (Attribute | string)[] = [];
+export function mergeAttributes<T>(fromDocs: T, fromJSON: T): T {
+	return {
+		...fromDocs,
+		...fromJSON,
+	};
+}
 
-	for (const docs of fromDocs) {
-		if (!docs.name) {
-			continue;
-		}
-		const jsonIndex = fromJSON.findIndex(a => typeof a !== 'string' && a.name === docs.name);
-		if (jsonIndex !== -1) {
-			const json = fromJSON.splice(jsonIndex, 1)[0];
-			if (json && typeof json !== 'string') {
-				attributes.push({
-					...{
-						name: '',
-						description: '',
-						type: '',
-					},
-					...docs,
-					...json,
-				});
-				continue;
-			}
-			fromJSON.push(json);
-		}
-		attributes.push(docs);
-	}
-
-	for (const spec of fromJSON) {
-		if (typeof spec === 'string') {
-			attributes.push(spec);
-			continue;
-		}
-		attributes.push({
-			...{
-				name: '',
-				description: '',
-				type: '',
-			},
-			...spec,
-		});
-	}
-
-	attributes.sort(nameCompare);
-
-	return attributes;
+export function keys<T, K = keyof T>(object: T): K[] {
+	// @ts-ignore
+	return Object.keys(object) as K[];
 }

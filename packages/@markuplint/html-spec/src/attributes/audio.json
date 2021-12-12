@@ -1,35 +1,13 @@
 {
 	"tag": "audio",
-	"attributes": [
-		{
-			"name": "autoplay",
-			"type": "Boolean"
-		},
-		{
-			"name": "controls",
-			"type": "Boolean"
-		},
-		{
-			"name": "crossorigin",
-			"type": "Crossorigin"
-		},
-		{
-			"name": "loop",
-			"type": "Boolean"
-		},
-		{
-			"name": "muted",
-			"type": "Boolean"
-		},
-		{
-			"name": "preload",
-			"type": {
-				"enum": ["none", "metadata", "auto", ""]
-			}
-		},
-		{
-			"name": "src",
-			"type": "URL"
-		}
-	]
+	"ref": "https://html.spec.whatwg.org/multipage/media.html#the-audio-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["crossorigin"],
+		"#HTMLEmbededAndMediaContentAttrs": ["src", "preload", "autoplay", "loop", "muted", "controls"]
+	},
+	"attributes": {}
 }
