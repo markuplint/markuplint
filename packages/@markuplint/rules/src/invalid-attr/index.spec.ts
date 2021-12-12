@@ -252,6 +252,51 @@ test('URL attribute', async () => {
 	expect(violations12.length).toBe(0);
 });
 
+test('Overwrite type', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>',
+		{
+			rule: {
+				option: {
+					attrs: {
+						datetime: {
+							enum: ['overwrite-type'],
+						},
+					},
+				},
+			},
+		},
+	);
+	const { violations: violations2 } = await mlRuleTest(
+		rule,
+		'<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>',
+		{
+			rule: true,
+		},
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 56,
+			message: 'The "datetime" attribute expects overwrite-type',
+			raw: '2000-01-01',
+		},
+	]);
+	expect(violations2).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 17,
+			message:
+				'The year part includes unexpected characters (https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value)',
+			raw: 'overwrite',
+		},
+	]);
+});
+
 test('Foreign element', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
