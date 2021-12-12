@@ -1,4 +1,5 @@
 export { RuleInfo, RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
+export { getAttrSpecs } from '@markuplint/ml-spec';
 export * from './convert-ruleset';
 export * from './ml-core';
 export * from './ml-rule';

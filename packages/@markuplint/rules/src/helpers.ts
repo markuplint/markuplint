@@ -1,54 +1,11 @@
+import type { Log } from './debug';
 import type { Translator } from '@markuplint/i18n';
 import type { Element, RuleConfigValue } from '@markuplint/ml-core';
-import type { ARIRRoleAttribute, Attribute, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
+import type { ARIRRoleAttribute, Attribute, PermittedRoles } from '@markuplint/ml-spec';
 
 import { def, specs } from '@markuplint/html-spec';
 
 import { attrCheck } from './attr-check';
-
-export function getAttrSpecs(nameWithNS: string, { specs, def }: MLMLSpec) {
-	const spec = specs.find(spec => spec.name === nameWithNS);
-
-	if (!spec) {
-		return null;
-	}
-	const globalAttrs = def['#globalAttrs'];
-	const attrs: Attribute[] = [];
-
-	if (!/[a-z]:[a-z]/i.test(nameWithNS)) {
-		// It's HTML tag
-		const hasGlobalAttr = spec.attributes.some(attr => attr === '#globalAttrs');
-		if (hasGlobalAttr) {
-			attrs.push(...(globalAttrs['#HTMLGlobalAttrs'] || []));
-		}
-	}
-
-	for (const attr of spec.attributes) {
-		if (typeof attr === 'string') {
-			const globalAttr = globalAttrs[attr];
-			if (!globalAttr) {
-				continue;
-			}
-			attrs.push(...globalAttr);
-			continue;
-		}
-
-		const definedIndex = attrs.findIndex(a => a.name === attr.name);
-		if (definedIndex !== -1) {
-			attrs[definedIndex] = {
-				...attrs[definedIndex],
-				...attr,
-			};
-			continue;
-		}
-
-		attrs.push(attr);
-	}
-
-	attrs.push(...(globalAttrs['#extends'] || []));
-
-	return attrs;
-}
 
 export function attrMatches<T extends RuleConfigValue, R>(node: Element<T, R>, condition: Attribute['condition']) {
 	if (!condition) {
@@ -64,7 +21,10 @@ export function attrMatches<T extends RuleConfigValue, R>(node: Element<T, R>, c
 		let _node = node.parentNode;
 		while (_node) {
 			if (_node.type === 'Element') {
-				if (_node.matches(condition.ancestor)) {
+				const condSelector = Array.isArray(condition.ancestor)
+					? condition.ancestor.join(',')
+					: condition.ancestor;
+				if (_node.matches(condSelector)) {
 					matched = true;
 					break;
 				}
@@ -133,9 +93,11 @@ export function isValidAttr(
 	isDynamicValue: boolean,
 	node: Element<any, any>,
 	attrSpecs: Attribute[],
+	log?: Log,
 ) {
 	let invalid: ReturnType<typeof attrCheck> = false;
-	const spec = attrSpecs.find(s => s.name === name);
+	const spec = attrSpecs.find(s => s.name.toLowerCase() === name.toLowerCase());
+	log && log('Spec of the %s attr: %o', name, spec);
 	invalid = attrCheck(t, name, value, false, spec);
 	if (!invalid && spec && spec.condition && !node.hasSpreadAttr && !attrMatches(node, spec.condition)) {
 		invalid = {
