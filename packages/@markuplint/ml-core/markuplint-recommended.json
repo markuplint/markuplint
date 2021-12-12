@@ -8,6 +8,7 @@
 		"id-duplication": true,
 		"permitted-contents": true,
 		"required-attr": true,
+		"ineffective-attr": true,
 		"invalid-attr": {
 			"option": {
 				"attrs": {
@@ -21,6 +22,7 @@
 			}
 		},
 		"landmark-roles": true,
+		"no-boolean-attr-value": true,
 		"required-h1": true,
 		"wai-aria": true
 	},
