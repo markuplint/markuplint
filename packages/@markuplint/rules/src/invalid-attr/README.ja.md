@@ -34,7 +34,7 @@
 
 独自ルールを指定します。
 
-`enum` `pattern` `type` のいずれかで設定します。
+`enum` `pattern` `type` `disallowed` のいずれかで設定します。
 
 ##### `enum`
 
@@ -78,7 +78,7 @@
 
 ##### `type`
 
-指定した[型](https://github.com/markuplint/markuplint/blob/main/packages/@markuplint/ml-spec/src/types.ts#L162-L197)にマッチする値のみ許可します。
+指定した[型](https://markuplint.dev/types)にマッチする値のみ許可します。
 
 型: `string`
 
@@ -89,6 +89,26 @@
 			"attrs": {
 				"x-attr": {
 					"type": "Boolean"
+				}
+			}
+		}
+	}
+}
+```
+
+##### `disallowed`
+
+指定した属性を禁止します。
+
+型: `boolean`
+
+```json
+{
+	"invalid-attr": {
+		"option": {
+			"attrs": {
+				"x-attr": {
+					"disallowed": true
 				}
 			}
 		}

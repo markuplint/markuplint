@@ -81,7 +81,7 @@ describe('Use an invalid value of the property/state', () => {
 				line: 1,
 				col: 6,
 				message:
-					'The "foo" is disallowed on the "aria-current" ARIA state/property. Arrowed values are: "page", "step", "location", "date", "time", "true", "false"',
+					'The "foo" is disallowed on the "aria-current" ARIA state/property. Allowed values are: "page", "step", "location", "date", "time", "true", "false"',
 				raw: 'aria-current="foo"',
 			},
 		]);

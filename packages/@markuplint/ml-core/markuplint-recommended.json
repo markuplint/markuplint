@@ -8,7 +8,18 @@
 		"id-duplication": true,
 		"permitted-contents": true,
 		"required-attr": true,
-		"invalid-attr": true,
+		"invalid-attr": {
+			"option": {
+				"attrs": {
+					"autofocus": {
+						"disallowed": true
+					},
+					"accesskey": {
+						"disallowed": true
+					}
+				}
+			}
+		},
 		"landmark-roles": true,
 		"required-h1": true,
 		"wai-aria": true
@@ -48,6 +59,40 @@
 			"selector": "abbr",
 			"rules": {
 				"required-attr": ["title"]
+			}
+		},
+		{
+			"selector": "video[autoplay]",
+			"rules": {
+				"required-attr": ["muted"]
+			}
+		},
+		{
+			"selector": "th, td",
+			"rules": {
+				"invalid-attr": {
+					"option": {
+						"attrs": {
+							"span": {
+								"disallowed": false
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"selector": ":not(button)",
+			"rules": {
+				"invalid-attr": {
+					"option": {
+						"attrs": {
+							"onclick": {
+								"disallowed": false
+							}
+						}
+					}
+				}
 			}
 		}
 	]

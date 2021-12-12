@@ -4,9 +4,9 @@
   "version": "2.0.0-dev.2021117.3",
   "private": true,
   "scripts": {
-    "site:dev": "node prebuild.js && next dev",
-    "site:build": "node prebuild.js && next build && next export -o ./dist",
-    "site:prebuild": "node prebuild.js"
+    "site:dev": "yarn site:prebuild; next dev",
+    "site:build": "yarn site:prebuild; next build && next export -o ./dist",
+    "site:prebuild": "node prebuild.js; prettier --write './src/**/*{ts,tsx,json,rc,md,mdx,css,scss}';"
   },
   "author": "Yusuke Hirao",
   "license": "MIT",

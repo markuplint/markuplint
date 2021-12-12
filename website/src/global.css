@@ -1,43 +1,43 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
 
 :root {
-	--main-color: #0071bc;
-	--main-color-dark: #1e608b;
-	--shadow: rgba(0, 0, 0, 0.3);
-	--base-color: #fff;
-	--base-color-front: hsl(0, 0%, 100%);
-	--base-color-middle: hsl(0, 0%, 98%);
-	--base-color-back: hsl(0, 0%, 96%);
-	--font-color: #222;
-	--border-color: #ccc;
-	font-size: 16px;
+  --main-color: #0071bc;
+  --main-color-dark: #1e608b;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --base-color: #fff;
+  --base-color-front: hsl(0, 0%, 100%);
+  --base-color-middle: hsl(0, 0%, 98%);
+  --base-color-back: hsl(0, 0%, 96%);
+  --font-color: #222;
+  --border-color: #ccc;
+  font-size: 16px;
 }
 
 @media (prefers-color-scheme: dark) {
-	:root {
-		--main-color: #3e9fe0;
-		--base-color: #000;
-		--base-color-front: hsl(0, 0%, 15%);
-		--base-color-middle: hsl(0, 0%, 10%);
-		--base-color-back: hsl(0, 0%, 0%);
-		--font-color: #fff;
-		--border-color: #555;
-	}
+  :root {
+    --main-color: #3e9fe0;
+    --base-color: #000;
+    --base-color-front: hsl(0, 0%, 15%);
+    --base-color-middle: hsl(0, 0%, 10%);
+    --base-color-back: hsl(0, 0%, 0%);
+    --font-color: #fff;
+    --border-color: #555;
+  }
 }
 
 html,
 body {
-	font-family: 'Lato', sans-serif;
-	background-color: var(--base-color-middle);
-	color: var(--font-color);
-	height: 100%;
-	font-weight: 400;
+  font-family: 'Lato', sans-serif;
+  background-color: var(--base-color-middle);
+  color: var(--font-color);
+  height: 100%;
+  font-weight: 400;
 }
 
 @media (max-width: 380px) {
-	:root {
-		font-size: calc(100 / (380 / 16) * 1vw);
-	}
+  :root {
+    font-size: calc(100 / (380 / 16) * 1vw);
+  }
 }
 
 /* body::before {
@@ -52,11 +52,11 @@ body {
 } */
 
 #__next {
-	height: 100%;
+  height: 100%;
 }
 
 a {
-	color: var(--main-color);
+  color: var(--main-color);
 }
 
 h2 a,
@@ -64,9 +64,9 @@ h3 a,
 h4 a,
 h5 a,
 h6 a {
-	color: inherit;
-	text-decoration: none;
-	position: relative;
+  color: inherit;
+  text-decoration: none;
+  position: relative;
 }
 
 h2 a:hover::after,
@@ -74,174 +74,184 @@ h3 a:hover::after,
 h4 a:hover::after,
 h5 a:hover::after,
 h6 a:hover::after {
-	content: '🔗';
-	font-size: 0.4em;
-	position: absolute;
-	top: 50%;
-	left: 0;
-	transform: translate(calc(-100% - 0.5em), -50%);
+  content: '🔗';
+  font-size: 0.4em;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(calc(-100% - 0.5em), -50%);
 }
 
 strong {
-	font-weight: 700;
+  font-weight: 700;
 }
 
 em {
-	font-style: normal;
-	font-weight: 700;
+  font-style: normal;
+  font-weight: 700;
 }
 
 h1 {
-	font-size: calc(1em * 8 / 3);
+  font-size: calc(1em * 8 / 3);
 }
 
 h2 {
-	font-size: calc(1em * 8 / 4);
+  font-size: calc(1em * 8 / 3.5);
 }
 
 h3 {
-	font-size: calc(1em * 8 / 5);
+  font-size: calc(1em * 8 / 4);
 }
 
 h4 {
-	font-size: calc(1em * 8 / 6);
+  font-size: calc(1em * 8 / 5);
 }
 
 h5 {
-	font-size: calc(1em * 8 / 7);
+  font-size: calc(1em * 8 / 6);
 }
 
 h6 {
-	font-size: calc(1em * 8 / 8);
+  font-size: calc(1em * 8 / 7);
 }
 
 p {
-	line-height: 1.7;
-	margin: 1em 0;
+  line-height: 1.7;
+  margin: 1em 0;
+}
+
+p,
+ul,
+ol {
+  margin-right: 2em;
+  margin-left: 2em;
+  list-style: outside;
+  padding: 0;
 }
 
 li {
-	margin: 0.5em 0;
+  margin: 0.5em 0;
 }
 
 table {
-	border-collapse: collapse;
-	width: 100%;
+  border-collapse: collapse;
+  width: 100%;
 }
 
 .__table-wrapper {
-	width: 100%;
-	overflow: auto;
+  width: 100%;
+  overflow: auto;
 }
 
 th,
 td {
-	text-align: left;
-	font-size: calc(14 / 16 * 1em);
-	border: 1px solid var(--border-color);
-	padding: 0.3em 0.6em;
+  text-align: left;
+  font-size: calc(14 / 16 * 1em);
+  border: 1px solid var(--border-color);
+  padding: 0.3em 0.6em;
 }
 
 th {
-	padding: 0.6em 0.6em;
+  padding: 0.6em 0.6em;
 }
 
 blockquote {
-	position: relative;
-	background: var(--base-color-back);
-	margin: 0 2em;
-	padding: 0.5em 1em;
+  position: relative;
+  background: var(--base-color-back);
+  margin: 0 3em;
+  padding: 0.5em 1em;
 }
 
 blockquote::before {
-	content: '“';
-	font-size: 2em;
-	position: absolute;
-	transform: translate(calc(-100% - 0.1em), 0);
-	top: 0;
-	left: 0;
-	opacity: 0.3;
+  content: '“';
+  font-size: 2em;
+  position: absolute;
+  transform: translate(calc(-100% - 0.1em), 0);
+  top: 0;
+  left: 0;
+  opacity: 0.3;
 }
 
 blockquote::after {
-	content: '“';
-	font-size: 2em;
-	position: absolute;
-	bottom: 0;
-	right: 0;
-	transform: translate(calc(100% + 0.1em), 0) rotate(180deg);
-	opacity: 0.3;
+  content: '“';
+  font-size: 2em;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  transform: translate(calc(100% + 0.1em), 0) rotate(180deg);
+  opacity: 0.3;
 }
 
 pre {
-	font-size: calc(14 / 16 * 1em);
-	background: var(--base-color-back);
-	padding: 1em;
-	border-radius: 0.2em;
-	line-height: 1.5;
-	overflow: auto;
+  font-size: calc(14 / 16 * 1em);
+  background: var(--base-color-back);
+  margin: 0 1em;
+  padding: 1em;
+  border-radius: 0.2em;
+  line-height: 1.5;
+  overflow: auto;
 }
 
 code {
-	font-family: Courier, monospace;
+  font-family: Courier, monospace;
 }
 
 p code,
 li code,
 td code {
-	background: var(--base-color-back);
-	padding: 0 0.2em;
-	border-radius: 0.2em;
-	display: inline-block;
+  background: var(--base-color-back);
+  padding: 0 0.2em;
+  border-radius: 0.2em;
+  display: inline-block;
 }
 
 li code,
 td code {
-	padding: 0.3em 0.2em;
+  padding: 0.3em 0.2em;
 }
 
 /** Syntax Highlighting */
 :root {
-	--sh-color-comment: #5d666f;
-	--sh-color-operator: #c53d4a;
-	--sh-color-tag: #1e7934;
-	--sh-color-symbol: #1e7934;
-	--sh-color-string: #032f62;
-	--sh-color-class: #6f42c1;
+  --sh-color-comment: #5d666f;
+  --sh-color-operator: #c53d4a;
+  --sh-color-tag: #1e7934;
+  --sh-color-symbol: #1e7934;
+  --sh-color-string: #032f62;
+  --sh-color-class: #6f42c1;
 }
 
 @media (prefers-color-scheme: dark) {
-	:root {
-		--sh-color-comment: #7d7a6a;
-		--sh-color-operator: #d73a49;
-		--sh-color-tag: #f92672;
-		--sh-color-symbol: #ae81ff;
-		--sh-color-string: #e6db74;
-		--sh-color-class: #a6e22e;
-	}
+  :root {
+    --sh-color-comment: #7d7a6a;
+    --sh-color-operator: #d73a49;
+    --sh-color-tag: #f92672;
+    --sh-color-symbol: #ae81ff;
+    --sh-color-string: #e6db74;
+    --sh-color-class: #a6e22e;
+  }
 }
 
 .token.plain-text {
-	color: inherit;
+  color: inherit;
 }
 
 .token.comment,
 .token.prolog,
 .token.doctype,
 .token.cdata {
-	color: var(--sh-color-comment);
+  color: var(--sh-color-comment);
 }
 
 .token.atrule,
 .token.attr-value,
 .token.keyword,
 .token.operator {
-	color: var(--sh-color-operator);
+  color: var(--sh-color-operator);
 }
 
 .token.property,
 .token.tag {
-	color: var(--sh-color-tag);
+  color: var(--sh-color-tag);
 }
 
 .token.boolean,
@@ -249,7 +259,7 @@ td code {
 .token.constant,
 .token.symbol,
 .token.deleted {
-	color: var(--sh-color-symbol);
+  color: var(--sh-color-symbol);
 }
 
 .token.selector,
@@ -258,12 +268,12 @@ td code {
 .token.char,
 .token.builtin,
 .token.inserted {
-	color: var(--sh-color-string);
+  color: var(--sh-color-string);
 }
 
 .token.function,
 .token.class-name {
-	color: var(--sh-color-class);
+  color: var(--sh-color-class);
 }
 
 /* language-specific */
@@ -273,76 +283,76 @@ td code {
 .language-jsx .token.tag .token.punctuation,
 .language-jsx .token.tag .token.script,
 .language-jsx .token.plain-text {
-	color: #24292e;
+  color: #24292e;
 }
 
 .language-jsx .token.tag .token.attr-name {
-	color: #6f42c1;
+  color: #6f42c1;
 }
 
 .language-jsx .token.tag .token.class-name {
-	color: #005cc5;
+  color: #005cc5;
 }
 
 .language-jsx .token.tag .token.script-punctuation,
 .language-jsx .token.attr-value .token.punctuation:first-child {
-	color: #d73a49;
+  color: #d73a49;
 }
 
 .language-jsx .token.attr-value {
-	color: #032f62;
+  color: #032f62;
 }
 
 .language-jsx span[class='comment'] {
-	color: pink;
+  color: pink;
 }
 
 /* HTML */
 
 :root {
-	--sh-html-color-punctuation: #24292e;
-	--sh-html-color-attr-name: #6f42c1;
-	--sh-html-color-attr-value: #032f62;
+  --sh-html-color-punctuation: #24292e;
+  --sh-html-color-attr-name: #6f42c1;
+  --sh-html-color-attr-value: #032f62;
 }
 
 @media (prefers-color-scheme: dark) {
-	:root {
-		--sh-html-color-punctuation: #fff;
-		--sh-html-color-attr-name: #a6e22e;
-		--sh-html-color-attr-value: #e6db74;
-	}
+  :root {
+    --sh-html-color-punctuation: #fff;
+    --sh-html-color-attr-name: #a6e22e;
+    --sh-html-color-attr-value: #e6db74;
+  }
 }
 
 .language-html .token.tag .token.punctuation {
-	color: var(--sh-html-color-punctuation);
+  color: var(--sh-html-color-punctuation);
 }
 
 .language-html .token.tag .token.attr-name {
-	color: var(--sh-html-color-attr-name);
+  color: var(--sh-html-color-attr-name);
 }
 
 .language-html .token.tag .token.attr-value,
 .language-html .token.tag .token.attr-value .token.punctuation:not(:first-child) {
-	color: var(--sh-html-color-attr-value);
+  color: var(--sh-html-color-attr-value);
 }
 
 :root {
-	--sh-css-color-selector: #6f42c1;
-	--sh-css-color-property: #6f42c1;
+  --sh-css-color-selector: #6f42c1;
+  --sh-css-color-property: #6f42c1;
 }
 
 @media (prefers-color-scheme: dark) {
-	:root {
-		--sh-css-color-selector: #a6e22e;
-		--sh-css-color-property: #66d9ef;
-	}
+  :root {
+    --sh-css-color-selector: #a6e22e;
+    --sh-css-color-property: #66d9ef;
+  }
 }
 
 /* CSS */
 .language-css .token.selector {
-	color: var(--sh-css-color-selector);
+  color: var(--sh-css-color-selector);
 }
 
 .language-css .token.property {
-	color: var(--sh-css-color-property);
+  color: var(--sh-css-color-property);
 }

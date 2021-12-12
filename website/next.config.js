@@ -6,10 +6,11 @@ const withMdxEnhanced = require('next-mdx-enhanced');
 module.exports = withMdxEnhanced({
   layoutPath: 'src/layouts',
   defaultLayout: true,
+  fileExtensions: ['md', 'mdx'],
   rehypePlugins: [rehypePrism],
 })({
   webpack5: false,
-  pageExtensions: ['mdx', 'tsx'],
+  pageExtensions: ['md', 'mdx', 'tsx'],
   eslint: {
     ignoreDuringBuilds: true,
   },
