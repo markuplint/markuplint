@@ -61,6 +61,14 @@ test('IconSize', () => {
 	expect(check('x1', 'IconSize').matched).toBe(false);
 });
 
+test('Number', () => {
+	expect(check('10', { type: 'integer', gt: 0 }).matched).toBe(true);
+	expect(check('0', { type: 'integer', gt: 0 }).matched).toBe(false);
+	expect(check('0', { type: 'integer', gte: 0 }).matched).toBe(true);
+	expect(check('9', { type: 'integer', lt: 10 }).matched).toBe(true);
+	expect(check('10', { type: 'integer', lt: 10 }).matched).toBe(false);
+});
+
 test('Non-exist types', () => {
 	// @ts-ignore
 	expect(check('abc', 'String').matched).toBe(true);
