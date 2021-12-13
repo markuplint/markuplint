@@ -1,0 +1,34 @@
+{
+	"tag": "view",
+	"ref": "https://svgwg.org/svg2-draft/linking.html#ViewElement",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+	},
+	"attributes": {
+		"viewBox": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#ViewBoxAttribute",
+			"type": "<view-box>"
+		},
+		"preserveAspectRatio": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#PreserveAspectRatioAttribute",
+			"type": "<preserve-aspect-ratio>"
+		},
+		"zoomAndPan": {
+			"ref": "https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/zoomAndPan",
+			"type": {
+				"enum": ["disable", "magnify"]
+			},
+			"defaultValue": "magnify",
+			"deprecated": true
+		},
+		"viewTarget": {
+			"ref": "https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewTarget",
+			"type": "Any",
+			"deprecated": true
+		}
+	}
+}

@@ -1,101 +1,61 @@
-import * as markuplint from 'markuplint';
+import { mlRuleTest } from 'markuplint';
+
 import rule from './';
 
 test('character-reference', async () => {
-	const r = await markuplint.verify(
-		'<div id="a"> > < & " \' &amp;</div>',
-		{
-			rules: {
-				'character-reference': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r.length).toBe(4);
-	expect(r[0]).toStrictEqual({
+	const { violations } = await mlRuleTest(rule, '<div id="a"> > < & " \' &amp;</div>', { rule: true });
+	expect(violations.length).toBe(4);
+	expect(violations[0]).toStrictEqual({
 		severity: 'error',
 		message: 'Illegal characters must escape in character reference',
 		line: 1,
 		col: 14,
 		raw: '>',
-		ruleId: 'character-reference',
 	});
-	expect(r[1].col).toBe(16);
-	expect(r[1].raw).toBe('<');
-	expect(r[2].col).toBe(18);
-	expect(r[2].raw).toBe('&');
-	expect(r[3].col).toBe(20);
-	expect(r[3].raw).toBe('"');
+	expect(violations[1].col).toBe(16);
+	expect(violations[1].raw).toBe('<');
+	expect(violations[2].col).toBe(18);
+	expect(violations[2].raw).toBe('&');
+	expect(violations[3].col).toBe(20);
+	expect(violations[3].raw).toBe('"');
 });
 
 test('character-reference', async () => {
-	const r = await markuplint.verify(
-		'<img src="path/to?a=b&c=d">',
-		{
-			rules: {
-				'character-reference': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r).toStrictEqual([
+	const { violations } = await mlRuleTest(rule, '<img src="path/to?a=b&c=d">', { rule: true });
+	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
 			message: 'Illegal characters must escape in character reference',
 			line: 1,
 			col: 22,
 			raw: '&',
-			ruleId: 'character-reference',
 		},
 	]);
 });
 
 test('character-reference', async () => {
-	const r = await markuplint.verify(
-		'<script>if (i < 0) console.log("<markuplint>");</script>',
-		{
-			rules: {
-				'character-reference': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r.length).toBe(0);
+	const { violations } = await mlRuleTest(rule, '<script>if (i < 0) console.log("<markuplint>");</script>', {
+		rule: true,
+	});
+	expect(violations.length).toBe(0);
 });
 
 test('in Vue', async () => {
-	const r = await markuplint.verify(
-		'<template><div v-if="a < b"></div></template>',
-		{
-			parser: {
-				'.*': '@markuplint/vue-parser',
-			},
-			rules: {
-				'character-reference': true,
-			},
+	const { violations } = await mlRuleTest(rule, '<template><div v-if="a < b"></div></template>', {
+		rule: true,
+		parser: {
+			'.*': '@markuplint/vue-parser',
 		},
-		[rule],
-		'en',
-	);
-	expect(r.length).toBe(0);
+	});
+	expect(violations.length).toBe(0);
 });
 
 test('in EJS', async () => {
-	const r = await markuplint.verify(
-		'<title><%- "title" _%></title>',
-		{
-			parser: {
-				'.*': '@markuplint/ejs-parser',
-			},
-			rules: {
-				'character-reference': true,
-			},
+	const { violations } = await mlRuleTest(rule, '<title><%- "title" _%></title>', {
+		rule: true,
+		parser: {
+			'.*': '@markuplint/ejs-parser',
 		},
-		[rule],
-		'en',
-	);
-	expect(r.length).toBe(0);
+	});
+	expect(violations.length).toBe(0);
 });

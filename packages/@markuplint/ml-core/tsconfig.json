@@ -17,6 +17,9 @@
 		},
 		{
 			"path": "../i18n"
+		},
+		{
+			"path": "../html-parser"
 		}
 	],
 	"include": ["./src/**/*"],

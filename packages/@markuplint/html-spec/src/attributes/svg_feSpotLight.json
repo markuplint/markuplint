@@ -1,0 +1,56 @@
+{
+	"tag": "feSpotLight",
+	"ref": "https://drafts.fxtf.org/filter-effects/#feSpotLightElement",
+	"global": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
+	},
+	"attributes": {
+		"x": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-x",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		"y": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-y",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		"z": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-z",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		"pointsAtX": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-pointsatx",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		"pointsAtY": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-pointsaty",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		"pointsAtZ": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-pointsatz",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		"specularExponent": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-specularexponent",
+			"type": "<number>",
+			"defaultValue": "1",
+			"animatable": true
+		},
+		"limitingConeAngle": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-limitingconeangle",
+			"type": "<number>",
+			"animatable": true
+		}
+	}
+}

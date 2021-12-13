@@ -1,10 +1,11 @@
 {
 	"tag": "bdo",
-	"attributes": [
-		{
-			"name": "dir",
-			"type": "String",
-			"enum": ["ltr", "rtl"]
-		}
-	]
+	"ref": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdo-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {}
 }

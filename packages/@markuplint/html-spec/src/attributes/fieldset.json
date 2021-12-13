@@ -1,17 +1,12 @@
 {
 	"tag": "fieldset",
-	"attributes": [
-		{
-			"name": "disabled",
-			"type": "Boolean"
-		},
-		{
-			"name": "form",
-			"type": "DOMID"
-		},
-		{
-			"name": "name",
-			"type": "String"
-		}
-	]
+	"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#the-fieldset-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": ["disabled", "form", "name"]
+	},
+	"attributes": {}
 }

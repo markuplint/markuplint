@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/react-spec",
-	"version": "0.1.0-beta.3",
+	"version": "1.0.0-dev.20211213.0",
 	"description": "Extended specification for tags and attributes in React",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -16,6 +16,6 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "^1.7.0"
+		"@markuplint/ml-spec": "2.0.0-dev.20211213.0"
 	}
 }

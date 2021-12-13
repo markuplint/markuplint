@@ -1,4 +1,7 @@
+import type { MLASTElement } from '@markuplint/ml-ast';
+
 import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
+
 import { parse } from './parse';
 
 describe('parse', () => {
@@ -76,6 +79,15 @@ describe('parse', () => {
 		]);
 	});
 
+	it('Children', () => {
+		const ast = parse('<ul>{[1, 2, 3].map(item => (<li key={item}>{item}</li>))}</ul>');
+		expect(ast.nodeList[0].nodeName).toBe('ul');
+		expect(ast.nodeList[1].nodeName).toBe('JSXExpressionContainer');
+		// @ts-ignore
+		expect(ast.nodeList[1].childNodes[0].uuid).toBe(ast.nodeList[2].uuid);
+		expect(ast.nodeList[2].parentNode?.uuid).toBe(ast.nodeList[1].uuid);
+	});
+
 	it('Code 2', () => {
 		const ast = parse(`const Component = () => {
 	return (
@@ -139,7 +151,9 @@ describe('parse', () => {
 		expect(ast.nodeList[0].childNodes[1].nodeName).toBe('JSXExpressionContainer');
 		// @ts-ignore
 		expect(ast.nodeList[0].childNodes[2].nodeName).toBe('#text');
-		expect(ast.nodeList[3].parentNode).toBeNull();
+		// @ts-ignore
+		expect(ast.nodeList[2].parentNode?.uuid).toBe(ast.nodeList[0].uuid);
+		expect(ast.nodeList[3].parentNode?.uuid).toBe(ast.nodeList[2].uuid);
 	});
 
 	it('Code 4', () => {
@@ -293,7 +307,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:26]>[1:27](25,26)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 				'  potentialName: class',
 			],
 			[
@@ -308,7 +321,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:40]>[1:41](39,40)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 				'  potentialName: tabindex',
 			],
 			[
@@ -323,7 +335,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:54]>[1:55](53,54)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: true',
+				'  potentialName: tabindex',
 				'  candidate: tabIndex',
 			],
 			[
@@ -338,7 +350,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:75]>[1:76](74,75)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 			],
 			[
 				'[1:76]>[1:95](75,94)theProp: ␣theProp={variable}',
@@ -352,7 +363,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:95]>[1:95](94,94)eQ: ',
 				'  isDirective: false',
 				'  isDynamicValue: true',
-				'  isInvalid: false',
 			],
 		]);
 	});
@@ -374,7 +384,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:10]>[1:11](9,10)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 				'  potentialName: href',
 			],
 		]);
@@ -397,7 +406,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:11]>[1:11](10,10)eQ: ',
 				'  isDirective: false',
 				'  isDynamicValue: true',
-				'  isInvalid: false',
 				'  potentialName: href',
 			],
 		]);
@@ -408,5 +416,26 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		// @ts-ignore
 		const attrMaps = attributesToDebugMaps(ast.nodeList[0].attributes);
 		expect(attrMaps).toStrictEqual([]);
+	});
+
+	it('namespace', () => {
+		const doc = parse('<div><svg><text /></svg></div>');
+		expect(doc.nodeList[0].nodeName).toBe('div');
+		expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[1].nodeName).toBe('svg');
+		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].nodeName).toBe('text');
+		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+	});
+
+	it('namespace', () => {
+		const doc = parse('<div><svg><feBlend /></svg></div>');
+		expect(doc.nodeList[0].nodeName).toBe('div');
+		expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[1].nodeName).toBe('svg');
+		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].nodeName).toBe('feBlend');
+		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect((doc.nodeList[2] as MLASTElement).isCustomElement).toBeFalsy();
 	});
 });

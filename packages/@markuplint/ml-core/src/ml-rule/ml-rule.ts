@@ -1,26 +1,24 @@
-import { RuleConfig, RuleConfigValue, RuleInfo, Severity, VerifiedResult } from '@markuplint/ml-config';
-import Document from '../ml-dom/document';
-import { I18n } from '@markuplint/i18n';
-import { MLRuleOptions } from './types';
+import type Document from '../ml-dom/document';
+import type { RuleSeed } from './types';
+import type { LocaleSet } from '@markuplint/i18n';
+import type { RuleConfig, RuleConfigValue, RuleInfo, Severity, Violation } from '@markuplint/ml-config';
+
+import { MLRuleContext } from './ml-rule-context';
 
 export class MLRule<T extends RuleConfigValue, O = null> {
-	static create<T extends RuleConfigValue, O = null>(options: MLRuleOptions<T, O>) {
-		return new MLRule<T, O>(options);
-	}
-
 	readonly name: string;
 	readonly defaultServerity: Severity;
 	readonly defaultValue: T;
 	readonly defaultOptions: O;
 
-	#v: MLRuleOptions<T, O>['verify'];
-	#f: MLRuleOptions<T, O>['fix'];
+	#v: RuleSeed<T, O>['verify'];
+	#f: RuleSeed<T, O>['fix'];
 
 	/**
 	 * The following getter is unused internally,
 	 * only for extending from 3rd party library
 	 */
-	protected get v(): MLRuleOptions<T, O>['verify'] {
+	protected get v(): RuleSeed<T, O>['verify'] {
 		return this.#v;
 	}
 
@@ -28,48 +26,79 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	 * The following getter is unused internally,
 	 * only for extending from 3rd party library
 	 */
-	protected get f(): MLRuleOptions<T, O>['fix'] {
+	protected get f(): RuleSeed<T, O>['fix'] {
 		return this.#f;
 	}
 
-	private constructor(o: MLRuleOptions<T, O>) {
+	constructor(o: RuleSeed<T, O> & { name: string }) {
 		this.name = o.name;
-		this.defaultServerity = o.defaultLevel || 'error';
+		this.defaultServerity = o.defaultServerity || 'error';
 		this.defaultValue = o.defaultValue;
 		this.defaultOptions = o.defaultOptions;
 		this.#v = o.verify;
 		this.#f = o.fix;
 	}
 
-	async verify(document: Document<T, O>, i18n: I18n, rule: RuleInfo<T, O>): Promise<VerifiedResult[]> {
+	async verify(
+		document: Document<T, O>,
+		locale: LocaleSet,
+		globalRule: RuleInfo<T, O>,
+		fix: boolean,
+	): Promise<Violation[]> {
 		if (!this.#v) {
 			return [];
 		}
-
 		document.setRule(this);
-		const results = await this.#v(document, i18n.translator(), rule);
-		document.setRule(null);
 
-		return results.map<VerifiedResult>(result => {
-			return {
-				severity: result.severity,
-				message: result.message,
-				line: result.line,
-				col: result.col,
-				raw: result.raw,
-				ruleId: this.name,
-			};
-		});
-	}
+		const context = new MLRuleContext(document, locale, globalRule);
+		const providableContext = context.provide();
 
-	async fix(document: Document<T, O>, rule: RuleInfo<T, O>): Promise<void> {
-		if (!this.#f) {
-			return;
+		await this.#v(providableContext);
+		if (this.#f && fix) {
+			await this.#f(providableContext);
 		}
 
-		document.setRule(this);
-		await this.#f(document, rule);
+		const violation = context.reports.map<Violation>(report => {
+			if ('scope' in report) {
+				let line = report.scope.startLine;
+				let col = report.scope.startCol;
+				let raw = report.scope.raw;
+				if ('line' in report) {
+					line = report.line;
+					col = report.col;
+					raw = report.raw;
+				}
+				const violation: Violation = {
+					severity: report.scope.rule.severity,
+					message: report.message,
+					line,
+					col,
+					raw,
+					ruleId: this.name,
+				};
+				if (report.scope.rule.reason || globalRule.reason) {
+					violation.reason = report.scope.rule.reason || globalRule.reason;
+				}
+				return violation;
+			}
+
+			const violation: Violation = {
+				severity: globalRule.severity,
+				message: report.message,
+				line: report.line,
+				col: report.col,
+				raw: report.raw,
+				ruleId: this.name,
+			};
+			if (globalRule.reason) {
+				violation.reason = globalRule.reason;
+			}
+			return violation;
+		});
+
 		document.setRule(null);
+
+		return violation;
 	}
 
 	optimizeOption(configSettings: T | RuleConfig<T, O>): RuleInfo<T, O> {
@@ -79,6 +108,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 				severity: this.defaultServerity,
 				value: this.defaultValue,
 				option: this.defaultOptions,
+				reason: undefined,
 			};
 		}
 		if (!Array.isArray(configSettings) && typeof configSettings === 'object' && configSettings !== null) {
@@ -98,6 +128,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 					  (configSettings.option == null || typeof configSettings.option === 'object')
 					? { ...this.defaultOptions, ...(configSettings.option || {}) }
 					: configSettings.option || this.defaultOptions,
+				reason: configSettings.reason,
 			};
 		}
 		return {
@@ -106,6 +137,9 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 			// @ts-ignore TODO: Wait for fix to bug of type guards in TypeScript
 			value: configSettings == null ? this.defaultValue : configSettings,
 			option: this.defaultOptions,
+			reason: undefined,
 		};
 	}
 }
+
+export type AnyMLRule = MLRule<RuleConfigValue, unknown>;

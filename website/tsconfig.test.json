@@ -1,11 +1,11 @@
 {
-	"extends": "../tsconfig.json",
-	"compilerOptions": {
-		"resolveJsonModule": true,
-		"declaration": false,
-		"allowJs": true,
-		"outDir": "_"
-	},
-	"include": ["./webpack.config.ts", "*.js"],
-	"exclude": ["node_modules"]
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "declaration": false,
+    "allowJs": true,
+    "outDir": "_"
+  },
+  "include": ["./webpack.config.ts", "*.js"],
+  "exclude": ["node_modules"]
 }

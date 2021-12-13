@@ -1,4 +1,5 @@
-import { ElementSpec, ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+import type { ElementSpec, ExtendedSpec, MLMLSpec, Attribute } from './types';
+
 import { mergeArray } from './utils';
 
 /**
@@ -19,8 +20,11 @@ export function getSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 			if (extendedSpec.def['#ariaAttrs']) {
 				result.def['#ariaAttrs'] = [...result.def['#ariaAttrs'], ...extendedSpec.def['#ariaAttrs']];
 			}
-			if (extendedSpec.def['#globalAttrs']) {
-				result.def['#globalAttrs'] = [...result.def['#globalAttrs'], ...extendedSpec.def['#globalAttrs']];
+			if (extendedSpec.def['#globalAttrs']?.['#extends']) {
+				result.def['#globalAttrs']['#HTMLGlobalAttrs'] = {
+					...(result.def['#globalAttrs']?.['#HTMLGlobalAttrs'] || {}),
+					...(extendedSpec.def['#globalAttrs']?.['#extends'] || {}),
+				};
 			}
 			if (extendedSpec.def['#roles']) {
 				result.def['#roles'] = [...result.def['#roles'], ...extendedSpec.def['#roles']];
@@ -51,7 +55,11 @@ export function getSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 				specs.push({
 					...elSpec,
 					...exSpec,
-					attributes: mergeArray(elSpec.attributes, exSpec.attributes),
+					globalAttrs: {
+						...elSpec.globalAttrs,
+						...exSpec.globalAttrs,
+					},
+					attributes: mergeAttrSpec(elSpec.attributes, exSpec.attributes),
 					categories: mergeArray(elSpec.categories, exSpec.categories),
 				});
 			}
@@ -60,5 +68,22 @@ export function getSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 		}
 	}
 
+	return result;
+}
+
+function mergeAttrSpec(
+	std: Record<string, Attribute>,
+	ex: Record<string, Partial<Attribute>> = {},
+): Record<string, Attribute> {
+	const result: Record<string, Attribute> = {};
+	const keys = Array.from(new Set([...Object.keys(std), ...Object.keys(ex)]));
+	for (const key of keys) {
+		const _std = std[key];
+		const _ex = ex[key];
+		result[key] = {
+			..._std,
+			..._ex,
+		};
+	}
 	return result;
 }

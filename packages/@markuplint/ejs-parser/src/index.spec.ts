@@ -1,4 +1,5 @@
 import { nodeListToDebugMaps } from '@markuplint/parser-utils';
+
 import { parse } from './';
 
 describe('Node list', () => {

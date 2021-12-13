@@ -1,9 +1,16 @@
 {
 	"tag": "slot",
-	"attributes": [
-		{
-			"name": "name",
-			"type": "String"
+	"ref": "https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"name": {
+			"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-slot-name",
+			"type": "NoEmptyAny"
 		}
-	]
+	}
 }

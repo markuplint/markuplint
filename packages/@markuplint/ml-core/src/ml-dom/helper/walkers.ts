@@ -1,5 +1,5 @@
-import { AnonymousNode } from '../types';
-import { RuleConfigValue } from '@markuplint/ml-config';
+import type { AnonymousNode } from '../types';
+import type { RuleConfigValue } from '@markuplint/ml-config';
 
 export type Walker<T extends RuleConfigValue, O = null, N = AnonymousNode<T, O>> = (node: N) => void | Promise<void>;
 
@@ -10,7 +10,7 @@ export function syncWalk<T extends RuleConfigValue, O = null>(
 	walker: SyncWalker<T, O>,
 ) {
 	for (const node of nodeList) {
-		if (node.type === 'Element' || node.type === 'OmittedElement') {
+		if (node.type === 'Element' || node.type === 'OmittedElement' || node.type === 'PSBlock') {
 			syncWalk(node.childNodes, walker);
 		}
 		walker(node);

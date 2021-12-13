@@ -1,6 +1,17 @@
 {
 	"extends": "../001/package.json",
 	"dummy2": false,
+	"key": "002/.markuplintrc.json",
+	"plugins": [
+		{
+			"name": "@markuplint/file-resolver",
+			"foo": "002"
+		},
+		{
+			"name": "b",
+			"foo": "002"
+		}
+	],
 	"rules": {
 		"rule__enabled": true,
 		"rule__disabled": false,

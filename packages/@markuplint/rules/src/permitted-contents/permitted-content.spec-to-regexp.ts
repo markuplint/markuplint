@@ -1,4 +1,4 @@
-import {
+import type {
 	ContentModel,
 	PermittedContent,
 	PermittedContentChoice,
@@ -9,8 +9,10 @@ import {
 	PermittedContentZeroOrMore,
 	Target,
 } from '@markuplint/ml-spec';
-import combination from './array.combination';
+
 import { rePCENChar } from '../helpers';
+
+import combination from './array.combination';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
 const ALL = '(?:<[^>]+>)?';
@@ -23,7 +25,11 @@ export default class ExpGenerator {
 
 	constructor(private _id: number) {}
 
-	public specToRegExp(contentRule: PermittedContent[] | boolean, parentExp: RegExp | null = null) {
+	public specToRegExp(
+		contentRule: PermittedContent[] | boolean,
+		parentExp: RegExp | null = null,
+		ownNS: string | null = null,
+	) {
 		if (contentRule === true) {
 			return new RegExp(`^(?:${ALL})+$`);
 		}
@@ -31,7 +37,7 @@ export default class ExpGenerator {
 			return new RegExp('^$');
 		}
 		const parentPattern = parentExp ? parentExp.source.replace(/^\^|\$$/g, '') : ALL;
-		const pattern = this._toPattern(contentRule, null, 1, 1).replace(
+		const pattern = this._toPattern(contentRule, null, ownNS, 1, 1).replace(
 			___TRANSPARENT___,
 			() => `(?<TRANSPARENT_${this._id}${this._idCounter++}>${parentPattern})`,
 		);
@@ -39,9 +45,15 @@ export default class ExpGenerator {
 		return new RegExp(`^${pattern}$`, 'i');
 	}
 
-	private _toPattern(contentRule: Target | PermittedContent[], ignore: Target | null, min: number, max: number) {
+	private _toPattern(
+		contentRule: Target | PermittedContent[],
+		ignore: Target | null,
+		ownNS: string | null,
+		min: number,
+		max: number,
+	) {
 		if (isTarget(contentRule)) {
-			return this._targetTags(contentRule, ignore, min, max);
+			return this._targetTags(contentRule, ignore, ownNS, min, max);
 		}
 		let notAllowedDescendantsNamedCapture = '';
 		const exp: string[] = [];
@@ -59,6 +71,7 @@ export default class ExpGenerator {
 				pattern = this._targetTags(
 					nodeRule.require,
 					nodeRule.ignore || null,
+					ownNS,
 					nodeRule.min || 1,
 					nodeRule.max || nodeRule.min || 1,
 				);
@@ -71,7 +84,7 @@ export default class ExpGenerator {
 						notAllowedDescendantsNamedCapture += `${___InTRANSPARENT}`;
 					}
 				}
-				pattern = this._targetTags(nodeRule.optional, nodeRule.ignore || null, 0, nodeRule.max || 1);
+				pattern = this._targetTags(nodeRule.optional, nodeRule.ignore || null, ownNS, 0, nodeRule.max || 1);
 			} else if (isOneOrMoreContents(nodeRule)) {
 				if (nodeRule.notAllowedDescendants) {
 					notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
@@ -81,7 +94,13 @@ export default class ExpGenerator {
 						notAllowedDescendantsNamedCapture += `${___InTRANSPARENT}`;
 					}
 				}
-				pattern = this._toPattern(nodeRule.oneOrMore, nodeRule.ignore || null, 1, nodeRule.max || Infinity);
+				pattern = this._toPattern(
+					nodeRule.oneOrMore,
+					nodeRule.ignore || null,
+					ownNS,
+					1,
+					nodeRule.max || Infinity,
+				);
 			} else if (isZeroOrMoreContents(nodeRule)) {
 				if (nodeRule.notAllowedDescendants) {
 					notAllowedDescendantsNamedCapture = nodeRule.notAllowedDescendants
@@ -91,11 +110,17 @@ export default class ExpGenerator {
 						notAllowedDescendantsNamedCapture += `${___InTRANSPARENT}`;
 					}
 				}
-				pattern = this._toPattern(nodeRule.zeroOrMore, nodeRule.ignore || null, 0, nodeRule.max || Infinity);
+				pattern = this._toPattern(
+					nodeRule.zeroOrMore,
+					nodeRule.ignore || null,
+					ownNS,
+					0,
+					nodeRule.max || Infinity,
+				);
 			} else if (isChoiceContents(nodeRule)) {
-				pattern = `(?:${nodeRule.choice.map(choice => this._toPattern(choice, null, 1, 1)).join('|')})`;
+				pattern = `(?:${nodeRule.choice.map(choice => this._toPattern(choice, null, ownNS, 1, 1)).join('|')})`;
 			} else if (isInterleaveContents(nodeRule)) {
-				pattern = this._interleavePattern(nodeRule.interleave);
+				pattern = this._interleavePattern(nodeRule.interleave, ownNS);
 			}
 			exp.push(pattern);
 		}
@@ -118,17 +143,17 @@ export default class ExpGenerator {
 		return `(${c}${exp.join('')})${range}`;
 	}
 
-	private _interleavePattern(contents: PermittedContent[][]) {
-		const interleave = contents.map(content => this._toPattern(content, null, 1, 1));
+	private _interleavePattern(contents: PermittedContent[][], ownNS: string | null) {
+		const interleave = contents.map(content => this._toPattern(content, null, ownNS, 1, 1));
 		const patterns = combination(interleave).map((pattern, i) =>
 			pattern.join('').replace(/(\(\?<[A-Z]+_)([0-9]+)_/g, ($0, $1, $2) => `${$1}${$2}${i}_`),
 		);
 		return join(patterns);
 	}
 
-	private _targetTags(target: Target, ignore: Target | null, min: number, max: number) {
-		const tagList = this._resolveTags(target);
-		const ignoreList = ignore ? this._resolveTags(ignore) : null;
+	private _targetTags(target: Target, ignore: Target | null, ownNS: string | null, min: number, max: number) {
+		const tagList = this._resolveTags(target, ownNS);
+		const ignoreList = ignore ? this._resolveTags(ignore, ownNS) : null;
 
 		if (ignoreList) {
 			ignoreList.forEach(ignore => tagList.delete(ignore));
@@ -137,19 +162,19 @@ export default class ExpGenerator {
 		return join(Array.from(tagList), createRange(min, max));
 	}
 
-	private _resolveTags(target: Target) {
+	private _resolveTags(target: Target, ownNS: string | null) {
 		const list = Array.isArray(target) ? target : [target];
-		const tagList: Set<string> = new Set();
+		const tagList = new TagList();
 
 		for (const name of list) {
 			if (name !== '#text' && name[0] === '#') {
 				switch (name) {
 					case '#transparent': {
-						tagList.add(___TRANSPARENT___);
+						tagList.addPattern(___TRANSPARENT___);
 						break;
 					}
 					case '#custom': {
-						tagList.add(CUSTOM_ELEMENT);
+						tagList.addPattern(CUSTOM_ELEMENT);
 						break;
 					}
 					default: {
@@ -157,26 +182,45 @@ export default class ExpGenerator {
 						const counter = this._idCounter++;
 						selectors.forEach(selector => {
 							if (selector === '#custom') {
-								tagList.add(CUSTOM_ELEMENT);
+								tagList.addPattern(CUSTOM_ELEMENT);
 								return;
 							}
 							if (/]$/i.test(selector)) {
 								const [, tagName] = /^([^[\]]+)\[[^\]]+\]$/.exec(selector) || [];
-								// ACM = Attributes by comtent model
+								// ACM = Attributes by content model
 								const exp = `(?<ACM_${this._id}${counter}_${name.slice(1)}_${tagName}><${tagName}>)`;
-								tagList.add(exp);
+								tagList.addPattern(exp);
 								return;
 							}
-							tagList.add(`<${selector}>`);
+							tagList.addTag(selector, ownNS);
 						});
 					}
 				}
 				continue;
 			}
-			tagList.add(`<${name}>`);
+			tagList.addTag(name, ownNS);
 		}
 
-		return tagList;
+		return tagList.result();
+	}
+}
+
+class TagList {
+	#list = new Set<string>();
+
+	addPattern(pattern: string) {
+		this.#list.add(pattern);
+	}
+
+	addTag(tagNameOrSelector: string, ownNS: string | null) {
+		if (ownNS) {
+			tagNameOrSelector = tagNameOrSelector.replace(new RegExp(`^${ownNS}:`, 'i'), '');
+		}
+		this.#list.add(`<${tagNameOrSelector}>`);
+	}
+
+	result() {
+		return this.#list;
 	}
 }
 

@@ -1,16 +1,11 @@
-import {
-	MLASTElementCloseTag,
-	MLASTNode,
-	MLASTNodeType,
-	MLASTParentNode,
-	MLASTTag,
-	MLASTText,
-	Parse,
-} from '@markuplint/ml-ast';
+import type { ASTNode } from './vue-parser';
+import type { MLASTElementCloseTag, MLASTNode, MLASTParentNode, MLASTTag, MLASTText, Parse } from '@markuplint/ml-ast';
+
 import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
 import { getEndCol, getEndLine, isPotentialCustomElementName, uuid } from '@markuplint/parser-utils';
-import vueParse, { ASTNode } from './vue-parser';
+
 import { attr } from './attr';
+import vueParse from './vue-parser';
 
 export const parse: Parse = rawCode => {
 	const ast = vueParse(rawCode);
@@ -51,7 +46,7 @@ function traverse(rootNode: ASTNode, parentNode: MLASTParentNode | null = null, 
 			continue;
 		}
 		if (prevNode) {
-			if (node.type !== MLASTNodeType.EndTag) {
+			if (node.type !== 'endtag') {
 				prevNode.nextNode = node;
 			}
 			node.prevNode = prevNode;
@@ -89,7 +84,7 @@ function nodeize(
 				startCol,
 				endCol,
 				nodeName: '#text',
-				type: MLASTNodeType.Text,
+				type: 'text',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -109,7 +104,7 @@ function nodeize(
 				startCol,
 				endCol,
 				nodeName: '#comment',
-				type: MLASTNodeType.Comment,
+				type: 'comment',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -143,7 +138,7 @@ function nodeize(
 					startCol: endTagLoc.loc.start.column + 1,
 					endCol: endTagLoc.loc.end.column + 1,
 					nodeName: endTagName,
-					type: MLASTNodeType.EndTag,
+					type: 'endtag',
 					namespace: originNode.namespace,
 					attributes: endTagTokens.attrs,
 					parentNode,
@@ -167,7 +162,7 @@ function nodeize(
 				startCol,
 				endCol: getEndCol(startTagRaw, startCol),
 				nodeName: tagName,
-				type: MLASTNodeType.StartTag,
+				type: 'starttag',
 				namespace: originNode.namespace,
 				attributes: tagTokens.attrs.map(attr),
 				hasSpreadAttr: false,

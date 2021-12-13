@@ -1,11 +1,15 @@
-import * as HTMLParser from '@markuplint/html-parser';
-import { I18n, LocaleSet } from '@markuplint/i18n';
-import { MLCore, Ruleset } from '@markuplint/ml-core';
-import { getEndCol, getEndLine } from '@markuplint/parser-utils';
+import type { LocaleSet } from '@markuplint/i18n';
+import type { Ruleset } from '@markuplint/ml-core';
 import type { editor } from 'monaco-editor';
-import { encode } from './utils';
-import rules from '@markuplint/rules';
+
+import * as HTMLParser from '@markuplint/html-parser';
 import spec from '@markuplint/html-spec';
+import { I18n } from '@markuplint/i18n';
+import { MLCore } from '@markuplint/ml-core';
+import { getEndCol, getEndLine } from '@markuplint/parser-utils';
+import rules from '@markuplint/rules';
+
+import { encode } from './utils';
 
 const lint = async (newCode: string, ruleset: Ruleset) => {
 	const language = navigator.language || '';

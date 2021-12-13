@@ -1,5 +1,6 @@
+import type { MLASTHTMLAttr } from '@markuplint/ml-ast';
+
 import { tokenizer, uuid } from '@markuplint/parser-utils';
-import { MLASTHTMLAttr } from '@markuplint/ml-ast';
 
 const reAttrsInStartTag =
 	// eslint-disable-next-line no-control-regex
@@ -81,7 +82,6 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 		startQuote,
 		value,
 		endQuote,
-		isInvalid: false,
 		isDuplicatable: false,
 	};
 }

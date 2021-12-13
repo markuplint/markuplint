@@ -1,14 +1,18 @@
 {
 	"tag": "optgroup",
-	"attributes": [
-		{
-			"name": "disabled",
-			"type": "Boolean"
-		},
-		{
-			"name": "label",
-			"type": "String",
+	"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#the-optgroup-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": ["disabled"]
+	},
+	"attributes": {
+		"label": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-optgroup-label",
+			"type": "Any",
 			"required": true
 		}
-	]
+	}
 }

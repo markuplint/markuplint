@@ -1,0 +1,90 @@
+{
+	"tag": "clipPath",
+	"ref": "https://drafts.fxtf.org/css-masking/#ClipPathElement",
+	"global": {
+		"#SVGConditionalProcessingAttrs": ["requiredFeatures", "requiredExtensions", "systemLanguage"],
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": [
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-profile",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"opacity",
+			"overflow",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-rendering",
+			"unicode-bidi",
+			"visibility",
+			"word-spacing",
+			"writing-mode",
+			"transform"
+		]
+	},
+	"attributes": {
+		"externalResourcesRequired": {
+			"ref": "https://www.w3.org/TR/2011/REC-SVG11-20110816/struct.html#ExternalResourcesRequiredAttribute",
+			"type": {
+				"enum": ["true", "false"]
+			},
+			"defaultValue": "true"
+		},
+		"clipPathUnits": {
+			"ref": "https://drafts.fxtf.org/css-masking/#element-attrdef-clippath-clippathunits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "userSpaceOnUse",
+			"animatable": true
+		}
+	}
+}

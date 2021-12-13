@@ -1,4 +1,16 @@
-import {
+import type {
+	MLDOMAttribute,
+	MLDOMComment,
+	MLDOMDoctype,
+	MLDOMElement,
+	MLDOMElementCloseTag,
+	MLDOMNode,
+	MLDOMOmittedElement,
+	MLDOMPreprocessorSpecificBlock,
+	MLDOMText,
+	MLDOMToken,
+} from '../tokens';
+import type {
 	MLASTAbstructNode,
 	MLASTAttr,
 	MLASTComment,
@@ -12,19 +24,7 @@ import {
 	MLASTText,
 	MLToken,
 } from '@markuplint/ml-ast/';
-import {
-	MLDOMAttribute,
-	MLDOMComment,
-	MLDOMDoctype,
-	MLDOMElement,
-	MLDOMElementCloseTag,
-	MLDOMNode,
-	MLDOMOmittedElement,
-	MLDOMPreprocessorSpecificBlock,
-	MLDOMText,
-	MLDOMToken,
-} from '../tokens';
-import { RuleConfigValue } from '@markuplint/ml-config';
+import type { RuleConfigValue } from '@markuplint/ml-config';
 
 // prettier-ignore
 export type MappedNode<N, T extends RuleConfigValue, O = null>

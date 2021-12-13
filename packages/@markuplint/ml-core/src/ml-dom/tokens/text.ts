@@ -1,10 +1,10 @@
-import { ContentModel } from '@markuplint/ml-spec';
-import { Document } from '../';
-import { IMLDOMText } from '../types';
-import { MLASTText } from '@markuplint/ml-ast';
-import MLDOMIndentation from './indentation';
+import type { Document } from '../';
+import type { IMLDOMText } from '../types';
+import type { MLASTText } from '@markuplint/ml-ast';
+import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { ContentModel } from '@markuplint/ml-spec';
+
 import MLDOMNode from './node';
-import { RuleConfigValue } from '@markuplint/ml-config';
 
 /**
  * Raw text elements
@@ -28,28 +28,5 @@ export default class MLDOMText<T extends RuleConfigValue, O = null>
 
 	isWhitespace() {
 		return /^\s+$/.test(this.raw);
-	}
-
-	/**
-	 * @override
-	 */
-	get indentation(): MLDOMIndentation<T, O> | null {
-		if (this.isRawText) {
-			return null;
-		}
-
-		const matched = this.raw.match(/^(\s*(?:\r?\n)+\s*)(?:[^\s]+)/);
-		if (matched) {
-			const spaces = matched[1];
-			if (spaces) {
-				const spaceLines = spaces.split(/\r?\n/);
-				const line = spaceLines.length + this.startLine - 1;
-				const lastSpace = spaceLines.pop();
-				if (lastSpace != null) {
-					return new MLDOMIndentation(this, lastSpace, line, this);
-				}
-			}
-		}
-		return null;
 	}
 }

@@ -1,5 +1,5 @@
-import { Bar, Presets } from 'cli-progress';
 import cheerio from 'cheerio';
+import { Bar, Presets } from 'cli-progress';
 import fetch from 'node-fetch';
 
 const cache = new Map<string, string>();

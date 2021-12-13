@@ -1,28 +1,32 @@
-import { MLMLSpec } from '@markuplint/ml-spec';
+import type { ExtendedSpec } from '@markuplint/ml-spec';
+
 import fs from 'fs';
-import { getAria } from './aria';
-import getContentModels from './content-models';
-import { getGlobalAttrs } from './global-attrs';
-import { getHTMLElements } from './html-elements';
-import { getReferences } from './fetch';
 import path from 'path';
 import util from 'util';
+
+import { getAria } from './aria';
+import getContentModels from './content-models';
+import { getReferences } from './fetch';
+import { getGlobalAttrs } from './global-attrs';
+import { getHTMLElements } from './html-elements';
+import { getSVG } from './svg';
 
 const writeFile = util.promisify(fs.writeFile);
 
 async function main() {
 	const outputFilePath = path.resolve(__dirname, '../index.json');
 
-	const [specs, globalAttrs, { roles, arias }, contentModels] = await Promise.all([
+	const [specs, globalAttrs, { roles, arias }, contentModels, svg] = await Promise.all([
 		await getHTMLElements(),
 		await getGlobalAttrs(),
 		await getAria(),
 		await getContentModels(),
+		await getSVG(),
 	]);
 
 	const cites = getReferences();
 
-	const json: MLMLSpec = {
+	const json: ExtendedSpec = {
 		cites,
 		def: {
 			'#globalAttrs': globalAttrs,
@@ -30,7 +34,7 @@ async function main() {
 			'#ariaAttrs': arias,
 			'#contentModels': contentModels,
 		},
-		specs,
+		specs: [...specs, ...svg],
 	};
 
 	const jsonString = JSON.stringify(json, null, 2);

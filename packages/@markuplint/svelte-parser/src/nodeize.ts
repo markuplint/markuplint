@@ -1,16 +1,17 @@
-import {
+import type { SvelteDirective, SvelteNode } from './svelte-parser';
+import type {
 	MLASTAttr,
 	MLASTElementCloseTag,
 	MLASTNode,
-	MLASTNodeType,
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
 	MLASTTag,
 	MLASTText,
 } from '@markuplint/ml-ast';
-import { SvelteDirective, SvelteNode } from './svelte-parser';
+
 import { getNamespace, parseRawTag } from '@markuplint/html-parser';
 import { isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
+
 import { attr } from './attr';
 import { traverse } from './traverse';
 
@@ -41,7 +42,7 @@ export function nodeize(
 				startCol,
 				endCol,
 				nodeName: '#text',
-				type: MLASTNodeType.Text,
+				type: 'text',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -61,7 +62,7 @@ export function nodeize(
 				startCol,
 				endCol,
 				nodeName: '#comment',
-				type: MLASTNodeType.Comment,
+				type: 'comment',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -98,7 +99,7 @@ export function nodeize(
 					startCol: endTagLocation.startCol,
 					endCol: endTagLocation.endCol,
 					nodeName: originNode.name,
-					type: MLASTNodeType.EndTag,
+					type: 'endtag',
 					namespace,
 					attributes: [],
 					parentNode,
@@ -130,7 +131,7 @@ export function nodeize(
 				uuid: uuid(),
 				...startTagLocation,
 				nodeName: originNode.name,
-				type: MLASTNodeType.StartTag,
+				type: 'starttag',
 				namespace,
 				attributes,
 				hasSpreadAttr,
@@ -169,7 +170,7 @@ export function nodeize(
 				uuid: uuid(),
 				...pendingTag,
 				nodeName: pendingNode.type,
-				type: MLASTNodeType.PreprocessorSpecificBlock,
+				type: 'psblock',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -192,7 +193,7 @@ export function nodeize(
 					uuid: uuid(),
 					...thenTag,
 					nodeName: thenNode.type,
-					type: MLASTNodeType.PreprocessorSpecificBlock,
+					type: 'psblock',
 					parentNode,
 					prevNode,
 					nextNode,
@@ -217,7 +218,7 @@ export function nodeize(
 					uuid: uuid(),
 					...awaitCatchTag,
 					nodeName: awaitCatchNode.type,
-					type: MLASTNodeType.PreprocessorSpecificBlock,
+					type: 'psblock',
 					parentNode,
 					prevNode,
 					nextNode,
@@ -250,7 +251,7 @@ export function nodeize(
 					startCol: endTagLocation.startCol,
 					endCol: endTagLocation.endCol,
 					nodeName: originNode.type,
-					type: MLASTNodeType.PreprocessorSpecificBlock,
+					type: 'psblock',
 					parentNode,
 					prevNode,
 					nextNode,
@@ -284,7 +285,7 @@ export function nodeize(
 				startCol,
 				endCol,
 				nodeName: originNode.name || originNode.type,
-				type: MLASTNodeType.PreprocessorSpecificBlock,
+				type: 'psblock',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -330,7 +331,7 @@ function solveCtrlBlock(
 			startCol: endTagLocation.startCol,
 			endCol: endTagLocation.endCol,
 			nodeName: originNode.type,
-			type: MLASTNodeType.PreprocessorSpecificBlock,
+			type: 'psblock',
 			parentNode,
 			prevNode,
 			nextNode,
@@ -349,7 +350,7 @@ function solveCtrlBlock(
 			uuid: uuid(),
 			...elseTagLocation,
 			nodeName: elseNode.type,
-			type: MLASTNodeType.PreprocessorSpecificBlock,
+			type: 'psblock',
 			parentNode,
 			prevNode,
 			nextNode,
@@ -366,7 +367,7 @@ function solveCtrlBlock(
 		uuid: uuid(),
 		...startTagLocation,
 		nodeName: originNode.type,
-		type: MLASTNodeType.PreprocessorSpecificBlock,
+		type: 'psblock',
 		parentNode,
 		prevNode,
 		nextNode,

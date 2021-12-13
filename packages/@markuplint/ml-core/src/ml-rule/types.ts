@@ -1,12 +1,12 @@
-import { Result, RuleConfigValue, RuleInfo, Severity } from '@markuplint/ml-config';
-import Document from '../ml-dom/document';
-import { Translator } from '@markuplint/i18n';
+import type { MLRuleContext } from './ml-rule-context';
+import type { RuleConfigValue, Severity } from '@markuplint/ml-config';
 
-export interface MLRuleOptions<T extends RuleConfigValue, O = null> {
-	name: string;
-	defaultLevel?: Severity;
+export type RuleSeed<T extends RuleConfigValue, O = null> = {
+	defaultServerity?: Severity;
 	defaultValue: T;
 	defaultOptions: O;
-	verify(document: Document<T, O>, translate: Translator, globalRule: RuleInfo<T, O>): Result[] | Promise<Result[]>;
-	fix?(document: Document<T, O>, globalRule: RuleInfo<T, O>): void | Promise<void>;
-}
+	verify(context: ReturnType<MLRuleContext<T, O>['provide']>): void | Promise<void>;
+	fix?(context: ReturnType<MLRuleContext<T, O>['provide']>): void | Promise<void>;
+};
+
+export type AnyRuleSeed = RuleSeed<any, any>;

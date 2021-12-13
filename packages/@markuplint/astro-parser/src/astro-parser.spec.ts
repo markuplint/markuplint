@@ -1,30 +1,5 @@
 import { AstroCompileError, astroParse } from './astro-parser';
 
-it('Parse error', () => {
-	const ast = astroParse(`---
-const name = "World";
----
-<!-- Comment -->
-<style>
-div {
-    color: red;
-}
-</style>
-<div>Hello {name}!</div>
-<style>
-div {
-    background: #000;
-}
-</style>
-`);
-	if (!(ast instanceof AstroCompileError)) {
-		throw ast;
-	}
-	expect(ast instanceof AstroCompileError).toBeTruthy();
-	expect(ast.start).toEqual({ line: 11, column: 0, character: 113 });
-	expect(ast.end).toEqual({ line: 11, column: 0, character: 113 });
-});
-
 it('Basic', () => {
 	const ast = astroParse(`---
 const name = "World";
@@ -53,6 +28,29 @@ div {
 	expect(ast.html?.children?.[4]?.name).toBe('div');
 	expect(ast.html?.children?.[4]?.attributes?.length).toBe(1);
 	expect(ast.html?.children?.[4]?.children?.length).toBe(3);
+});
+
+it('2 style element', () => {
+	const ast = astroParse(`---
+const name = "World";
+---
+<!-- Comment -->
+<style>
+div {
+    color: red;
+}
+</style>
+<div>Hello {name}!</div>
+<style>
+div {
+    background: #000;
+}
+</style>
+`);
+	if (ast instanceof AstroCompileError) {
+		throw ast;
+	}
+	expect(ast.style?.length).toBe(2);
 });
 
 it('Void Element', () => {

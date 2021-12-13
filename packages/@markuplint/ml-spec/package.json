@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-spec",
-	"version": "1.7.0",
+	"version": "2.0.0-dev.20211213.0",
 	"description": "Types and schema that specs of the Markup languages for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -15,12 +15,16 @@
 		"build": "tsc",
 		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean",
-		"schema": "json2ts ./schemas/permitted-structures.schema.json > ./src/permitted-structres.ts; prettier --write ./src/permitted-structres.ts; eslint --fix --config ../../../.eslintrc ./src/permitted-structres.ts"
+		"schema:gen": "ts-node ./gen/gen.ts; prettier --write './schemas/*.json';",
+		"schema:structures": "json2ts ./schemas/permitted-structures.schema.json > ./src/permitted-structres.ts; prettier --write ./src/permitted-structres.ts; eslint --fix --config ../../../.eslintrc ./src/permitted-structres.ts",
+		"schema:attributes": "json2ts ./schemas/attributes.schema.json --cwd ./schemas > ./src/attributes.ts; prettier --write ./src/attributes.ts; eslint --fix --config ../../../.eslintrc ./src/attributes.ts",
+		"schema": "yarn schema:gen; yarn schema:structures; yarn schema:attributes; tsc;"
 	},
 	"dependencies": {
-		"tslib": "^2.3.0"
+		"tslib": "^2.3.1"
 	},
 	"devDependencies": {
-		"json-schema-to-typescript": "^10.1.4"
+		"@markuplint/types": "1.0.0-dev.20211213.0",
+		"json-schema-to-typescript": "^10.1.5"
 	}
 }

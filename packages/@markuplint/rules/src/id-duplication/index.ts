@@ -1,12 +1,14 @@
-import { Result, createRule } from '@markuplint/ml-core';
+import { createRule } from '@markuplint/ml-core';
 
 export default createRule({
-	name: 'id-duplication',
 	defaultValue: null,
 	defaultOptions: null,
-	async verify(document, translate) {
-		const reports: Result[] = [];
-		const message = translate('Duplicate {0}', 'attribute id value');
+	async verify({ document, report, t }) {
+		const message = t(
+			'{0} is {1:c}',
+			t('{0} of {1}', t('the {0}', 'value'), t('the "{0}" {1}', 'id', 'attribute')),
+			'duplicated',
+		);
 		const idStack: string[] = [];
 		await document.walkOn('Element', async node => {
 			const idAttrs = node.getAttributeToken('id');
@@ -20,8 +22,8 @@ export default createRule({
 				}
 				const id = idAttr.getValue();
 				if (idStack.includes(id.raw)) {
-					reports.push({
-						severity: node.rule.severity,
+					report({
+						scope: node,
 						message,
 						line: idAttr.startLine,
 						col: idAttr.startCol,
@@ -31,6 +33,5 @@ export default createRule({
 				idStack.push(id.raw);
 			}
 		});
-		return reports;
 	},
 });

@@ -1,0 +1,17 @@
+{
+	"tag": "polygon",
+	"contents": [
+		{
+			"zeroOrMore": [
+				"#SVGAnimation",
+				"#SVGDescriptive",
+				"#SVGPaintServer",
+				"svg:clipPath",
+				"svg:marker",
+				"svg:mask",
+				"svg:script",
+				"svg:style"
+			]
+		}
+	]
+}

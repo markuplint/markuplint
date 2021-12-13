@@ -1,31 +1,28 @@
-import { Result, createRule } from '@markuplint/ml-core';
+import { createRule } from '@markuplint/ml-core';
 
 export type Value = 'lower' | 'upper';
 
 export default createRule<Value, null>({
-	name: 'case-sensitive-tag-name',
-	defaultLevel: 'warning',
+	defaultServerity: 'warning',
 	defaultValue: 'lower',
 	defaultOptions: null,
-	async verify(document, translate) {
-		const reports: Result[] = [];
+	async verify({ document, report, t }) {
 		await document.walk(async node => {
 			if ('fixNodeName' in node) {
-				if (node.isForeignElement || node.isCustomElement) {
+				if (node.isForeignElement || node.isCustomElement || node.type === 'OmittedElement') {
 					return;
 				}
 				const ms = node.rule.severity === 'error' ? 'must' : 'should';
 				const deny = node.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
-				const message = translate(
-					`{0} of {1} ${ms} be {2}`,
-					'Tag name',
-					'HTML elements',
+				const message = t(
+					`{0} ${ms} be {1}`,
+					t('{0} of {1}', 'tag names', 'HTML elements'),
 					`${node.rule.value}case`,
 				);
 				if (deny.test(node.nodeName)) {
 					const loc = node.getNameLocation();
-					reports.push({
-						severity: node.rule.severity,
+					report({
+						scope: node,
 						message,
 						line: loc.line,
 						col: loc.col,
@@ -34,9 +31,8 @@ export default createRule<Value, null>({
 				}
 			}
 		});
-		return reports;
 	},
-	async fix(document) {
+	async fix({ document }) {
 		await document.walk(async node => {
 			if ('fixNodeName' in node) {
 				if (node.isForeignElement || node.isCustomElement) {

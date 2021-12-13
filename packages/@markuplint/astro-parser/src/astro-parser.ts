@@ -1,4 +1,6 @@
-import { CompileError as AstroCompileError, Attribute, Style, TemplateNode, parse } from '@astrojs/parser';
+import type { Attribute, Style, TemplateNode } from '@astrojs/parser';
+
+import { CompileError as AstroCompileError, parse } from '@astrojs/parser';
 
 export { CompileError as AstroCompileError } from '@astrojs/parser';
 export type ASTNode = TemplateNode;
@@ -6,7 +8,7 @@ export type ASTStyleNode = Style;
 export type ASTAttribute = Attribute;
 export type AstroAST = {
 	html?: ASTNode;
-	style?: ASTStyleNode;
+	style?: ASTStyleNode[];
 };
 
 export function astroParse(code: string): AstroAST | AstroCompileError {

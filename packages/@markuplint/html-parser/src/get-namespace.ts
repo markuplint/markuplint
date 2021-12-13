@@ -1,5 +1,6 @@
+import type { NamespaceURI } from '@markuplint/ml-ast';
+
 import { parse, parseFragment } from 'parse5';
-import { NamespaceURI } from '@markuplint/ml-ast';
 
 const DEFAULT_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 

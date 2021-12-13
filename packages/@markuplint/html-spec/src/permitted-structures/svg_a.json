@@ -1,0 +1,24 @@
+{
+	"tag": "a",
+	"conditional": [
+		{
+			"condition": {
+				"_TODO_": "#322: The selector parser supports namespace",
+				"_parent": "svg|switch",
+				"parent": "svg-switch"
+			},
+			"contents": [
+				{
+					"_TODO_": "If the parent is a switch element, use the content model of the nearest ancestor that isn't a switch.",
+					"zeroOrMore": "#transparent"
+				}
+			]
+		}
+	],
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGDescriptive", "#transparent"],
+			"ignore": "svg:a"
+		}
+	]
+}

@@ -1,4 +1,4 @@
-import { Result, createRule } from '@markuplint/ml-core';
+import { createRule } from '@markuplint/ml-core';
 
 export type Type = 'double' | 'single';
 export type Quote = '"' | "'";
@@ -10,14 +10,12 @@ const quoteList: QuoteMap = {
 };
 
 export default createRule<Type>({
-	name: 'attr-value-quotes',
-	defaultLevel: 'warning',
+	defaultServerity: 'warning',
 	defaultValue: 'double',
 	defaultOptions: null,
-	async verify(document, translate) {
-		const reports: Result[] = [];
-		await document.walkOn('Element', async node => {
-			const message = translate(
+	async verify(context) {
+		await context.document.walkOn('Element', async node => {
+			const message = context.translate(
 				'{0} is must {1} on {2}',
 				'Attribute value',
 				'quote',
@@ -29,8 +27,8 @@ export default createRule<Type>({
 				}
 				const quote = attr.startQuote.raw;
 				if (quote !== quoteList[node.rule.value]) {
-					reports.push({
-						severity: node.rule.severity,
+					context.report({
+						scope: node,
 						message,
 						line: attr.name.startLine,
 						col: attr.name.startCol,
@@ -39,10 +37,9 @@ export default createRule<Type>({
 				}
 			}
 		});
-		return reports;
 	},
-	async fix(document) {
-		await document.walkOn('Element', async node => {
+	async fix(context) {
+		await context.document.walkOn('Element', async node => {
 			for (const attr of node.attributes) {
 				const quote = quoteList[node.rule.value];
 				if (attr.attrType === 'html-attr' && quote && attr.startQuote && attr.startQuote.raw !== quote) {

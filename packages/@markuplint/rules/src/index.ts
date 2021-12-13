@@ -12,32 +12,36 @@ import DeprecatedElement from './deprecated-element';
 import Doctype from './doctype';
 import IdDuplication from './id-duplication';
 import Indentation from './indentation';
+import IneffectiveAttr from './ineffective-attr';
 import InvalidAttr from './invalid-attr';
 import LandmarkRoles from './landmark-roles';
+import NoBooleanAttrValue from './no-boolean-attr-value';
 import PermittedContents from './permitted-contents';
 import RequiredAttr from './required-attr';
 import RequiredH1 from './required-h1';
 import WaiAria from './wai-aria';
 
-export default [
-	AttrDuplication,
-	AttrEqualSpaceAfter,
-	AttrEqualSpaceBefore,
-	AttrSpacing,
-	AttrValueQuotes,
-	CaseSensitiveAttrName,
-	CaseSensitiveTagName,
-	CharacterReference,
-	ClassNaming,
-	DeprecatedAttr,
-	DeprecatedElement,
-	Doctype,
-	IdDuplication,
-	Indentation,
-	InvalidAttr,
-	LandmarkRoles,
-	PermittedContents,
-	RequiredAttr,
-	RequiredH1,
-	WaiAria,
-];
+export default {
+	'attr-duplication': AttrDuplication,
+	'attr-equal-space-after': AttrEqualSpaceAfter,
+	'attr-equal-space-before': AttrEqualSpaceBefore,
+	'attr-spacing': AttrSpacing,
+	'attr-value-quotes': AttrValueQuotes,
+	'case-sensitive-attr-name': CaseSensitiveAttrName,
+	'case-sensitive-tag-name': CaseSensitiveTagName,
+	'character-reference': CharacterReference,
+	'class-naming': ClassNaming,
+	'deprecated-attr': DeprecatedAttr,
+	'deprecated-element': DeprecatedElement,
+	doctype: Doctype,
+	'id-duplication': IdDuplication,
+	indentation: Indentation,
+	'ineffective-attr': IneffectiveAttr,
+	'invalid-attr': InvalidAttr,
+	'landmark-roles': LandmarkRoles,
+	'no-boolean-attr-value': NoBooleanAttrValue,
+	'permitted-contents': PermittedContents,
+	'required-attr': RequiredAttr,
+	'required-h1': RequiredH1,
+	'wai-aria': WaiAria,
+};

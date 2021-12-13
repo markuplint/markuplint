@@ -1,0 +1,11 @@
+{
+	"tag": "head",
+	"ref": "https://html.spec.whatwg.org/multipage/semantics.html#the-head-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {}
+}

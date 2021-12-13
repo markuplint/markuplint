@@ -1,0 +1,47 @@
+{
+	"tag": "symbol",
+	"ref": "https://svgwg.org/svg2-draft/struct.html#SymbolElement",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": ["x", "y", "width", "height"]
+	},
+	"attributes": {
+		"preserveAspectRatio": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#PreserveAspectRatioAttribute",
+			"type": "<preserve-aspect-ratio>",
+			"defaultValue": "xMidYMid meet"
+		},
+		"viewBox": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#ViewBoxAttribute",
+			"type": "<view-box>"
+		},
+		"refX": {
+			"ref": "https://svgwg.org/svg2-draft/struct.html#SymbolElementRefXAttribute",
+			"type": [
+				"<svg-length>",
+				"<percentage>",
+				"<number>",
+				{
+					"enum": ["left", "center", "right"]
+				}
+			],
+			"defaultValue": "0"
+		},
+		"refY": {
+			"ref": "https://svgwg.org/svg2-draft/struct.html#SymbolElementRefYAttribute",
+			"type": [
+				"<svg-length>",
+				"<percentage>",
+				"<number>",
+				{
+					"enum": ["top", "center", "bottom"]
+				}
+			],
+			"defaultValue": "0"
+		}
+	}
+}

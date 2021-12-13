@@ -1,43 +1,43 @@
 {
-	"name": "@markuplint/website",
-	"description": "https://markuplint.dev",
-	"version": "1.10.4",
-	"private": true,
-	"scripts": {
-		"site:dev": "node prebuild.js && next dev",
-		"site:build": "node prebuild.js && next build && next export -o ./dist",
-		"site:prebuild": "node prebuild.js"
-	},
-	"author": "Yusuke Hirao",
-	"license": "MIT",
-	"devDependencies": {
-		"@types/mdx-js__react": "^1.5.4",
-		"@types/node": "^16.3.2",
-		"@types/react": "^17.0.14",
-		"@zeit/next-css": "^1.0.1",
-		"autoprefixer": "^10.3.1",
-		"cssnano": "^5.0.6",
-		"eslint-config-next": "^11.0.1",
-		"eslint-plugin-react": "^7.24.0",
-		"eslint-plugin-react-hooks": "^4.2.0",
-		"postcss": "^8.3.5",
-		"postcss-base64": "^0.7.1",
-		"postcss-calc": "^8.0.0",
-		"postcss-custom-media": "^8.0.0",
-		"postcss-gap-properties": "^2.0.0",
-		"postcss-loader": "^6.1.1",
-		"postcss-math": "^0.0.10",
-		"text-loader": "^0.0.1",
-		"url-loader": "^4.1.1"
-	},
-	"dependencies": {
-		"@mapbox/rehype-prism": "^0.7.0",
-		"@markuplint/rules": "^1.10.4",
-		"next": "11.0.1",
-		"next-mdx-enhanced": "^5.0.0",
-		"normalize.css": "^8.0.1",
-		"react": "17.0.2",
-		"react-dom": "17.0.2",
-		"react-innertext": "^1.1.5"
-	}
+  "name": "@markuplint/website",
+  "description": "https://markuplint.dev",
+  "version": "2.0.0-dev.20211213.0",
+  "private": true,
+  "scripts": {
+    "site:dev": "yarn site:prebuild; next dev",
+    "site:build": "yarn site:prebuild; next build && next export -o ./dist",
+    "site:prebuild": "node prebuild.js; prettier --write './src/**/*{ts,tsx,json,rc,md,mdx,css,scss}';"
+  },
+  "author": "Yusuke Hirao",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/mdx-js__react": "^1.5.4",
+    "@types/node": "^16.3.2",
+    "@types/react": "^17.0.14",
+    "@zeit/next-css": "^1.0.1",
+    "autoprefixer": "^10.3.1",
+    "cssnano": "^5.0.6",
+    "eslint-config-next": "^11.0.1",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "postcss": "^8.3.5",
+    "postcss-base64": "^0.7.1",
+    "postcss-calc": "^8.0.0",
+    "postcss-custom-media": "^8.0.0",
+    "postcss-gap-properties": "^2.0.0",
+    "postcss-loader": "^6.1.1",
+    "postcss-math": "^0.0.10",
+    "text-loader": "^0.0.1",
+    "url-loader": "^4.1.1"
+  },
+  "dependencies": {
+    "@mapbox/rehype-prism": "^0.7.0",
+    "@markuplint/rules": "2.0.0-dev.20211213.0",
+    "next": "11.0.1",
+    "next-mdx-enhanced": "^5.0.0",
+    "normalize.css": "^8.0.1",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-innertext": "^1.1.5"
+  }
 }

@@ -1,11 +1,11 @@
 ---
 title: Set up rules
 back:
-    title: Getting started
-    href: getting-started
+  title: Getting started
+  href: getting-started
 next:
-    title: The setting for other languages
-    href: setting-for-other-languages
+  title: The setting for other languages
+  href: setting-for-other-languages
 ---
 
 ## Create a configuration file
@@ -15,9 +15,9 @@ And add some rules to the `rules` property of this file.
 
 ```json
 {
-	"rules": {
-		"rule-name": "value" // Add to here or more
-	}
+  "rules": {
+    "rule-name": "value" // Add to here or more
+  }
 }
 ```
 
@@ -25,28 +25,28 @@ This file is _loaded automatically_ when CLI executes or open a target file thro
 
 ```json
 {
-	"rules": {
-		"attr-duplication": true,
-		"character-reference": true,
-		"deprecated-attr": true,
-		"deprecated-element": true,
-		"doctype": true,
-		"id-duplication": true,
-		"permitted-contents": true,
-		"required-attr": true,
-		"invalid-attr": true,
-		"landmark-roles": true,
-		"required-h1": true,
-		"class-naming": false,
-		"attr-equal-space-after": false,
-		"attr-equal-space-before": false,
-		"attr-spacing": false,
-		"attr-value-quotes": false,
-		"case-sensitive-attr-name": false,
-		"case-sensitive-tag-name": false,
-		"indentation": false,
-		"wai-aria": true
-	}
+  "rules": {
+    "attr-duplication": true,
+    "character-reference": true,
+    "deprecated-attr": true,
+    "deprecated-element": true,
+    "doctype": true,
+    "id-duplication": true,
+    "permitted-contents": true,
+    "required-attr": true,
+    "invalid-attr": true,
+    "landmark-roles": true,
+    "required-h1": true,
+    "class-naming": false,
+    "attr-equal-space-after": false,
+    "attr-equal-space-before": false,
+    "attr-spacing": false,
+    "attr-value-quotes": false,
+    "case-sensitive-attr-name": false,
+    "case-sensitive-tag-name": false,
+    "indentation": false,
+    "wai-aria": true
+  }
 }
 ```
 
@@ -59,29 +59,29 @@ If you want the part of structures only to apply some rule then set the tag name
 
 ```json
 {
-	"nodeRules": [
-		{
-			"tagName": "main",
-			"rules": {
-				"class-naming": "/[a-z]+(__[a-z]+)?/"
-			}
-		},
-		{
-			"selector": ".some-class-name",
-			"rules": {
-				"required-attr": true
-			}
-		}
-	],
-	"childNodeRules": [
-		{
-			"selector": ".ignoreClass",
-			"inheritance": true,
-			"rules": {
-				"character-reference": true
-			}
-		}
-	]
+  "nodeRules": [
+    {
+      "tagName": "main",
+      "rules": {
+        "class-naming": "/[a-z]+(__[a-z]+)?/"
+      }
+    },
+    {
+      "selector": ".some-class-name",
+      "rules": {
+        "required-attr": true
+      }
+    }
+  ],
+  "childNodeRules": [
+    {
+      "selector": ".ignoreClass",
+      "inheritance": true,
+      "rules": {
+        "character-reference": true
+      }
+    }
+  ]
 }
 ```
 

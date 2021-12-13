@@ -1,0 +1,31 @@
+{
+	"tag": "set",
+	"ref": "https://svgwg.org/specs/animations/#SetElement",
+	"global": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGAnimationEventAttrs": ["onbegin", "onend", "onrepeat"],
+		"#SVGAnimationTargetElementAttrs": ["href"],
+		"#SVGAnimationAttributeTargetAttrs": ["attributeName"],
+		"#SVGAnimationTimingAttrs": [
+			"begin",
+			"dur",
+			"end",
+			"min",
+			"max",
+			"restart",
+			"repeatCount",
+			"repeatDur",
+			"fill"
+		],
+		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+	},
+	"attributes": {
+		"to": {
+			"ref": "https://svgwg.org/specs/animations/#SetElementToAttribute",
+			"type": "NoEmptyAny",
+			"_TODO_": "> Specifies the value for the attribute during the duration of the \"set\" element. The argument value must match the attribute type. For a list of attributes and properties that can be animated using the \"set\" element, see Elements, attributes and properties that can be animated."
+		}
+	}
+}

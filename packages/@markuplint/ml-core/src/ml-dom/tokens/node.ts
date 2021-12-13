@@ -1,12 +1,11 @@
-import { AnonymousNode, IMLDOMNode, NodeType } from '../types';
-import { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
-import { RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
-import Document from '../document';
-import MLDOMElement from './element';
-import MLDOMIndentation from './indentation';
-import MLDOMOmittedElement from './omitted-element';
+import type { Document } from '../';
+import type { RuleInfo } from '../../';
+import type { AnonymousNode, IMLDOMNode, NodeType } from '../types';
+import type { MLDOMElement, MLDOMOmittedElement } from './';
+import type { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
+import type { AnyRule, RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
+
 import MLDOMToken from './token';
-import { RuleInfo } from '../../';
 
 export default abstract class MLDOMNode<
 		T extends RuleConfigValue,
@@ -17,6 +16,7 @@ export default abstract class MLDOMNode<
 	implements IMLDOMNode
 {
 	readonly type: NodeType = 'Node';
+	readonly rules: Record<string, AnyRule> = {};
 
 	protected _astToken: A;
 
@@ -26,11 +26,6 @@ export default abstract class MLDOMNode<
 	 * prevToken cache props
 	 */
 	#prevToken: AnonymousNode<T, O> | null | undefined;
-
-	/**
-	 * indentation cache props
-	 */
-	#indentaion: MLDOMIndentation<T, O> | null | undefined;
 
 	constructor(astNode: A, document: Document<T, O>) {
 		super(astNode);
@@ -107,54 +102,18 @@ export default abstract class MLDOMNode<
 		return this.type === type;
 	}
 
-	get indentation(): MLDOMIndentation<T, O> | null {
-		if (this.#indentaion !== undefined) {
-			return this.#indentaion;
-		}
-
-		const prevToken = this.prevToken;
-		if (!prevToken) {
-			return null;
-		}
-		if (prevToken.type !== 'Text') {
-			return null;
-		}
-
-		// One or more newlines and zero or more spaces or tabs.
-		// Or, If textNode is first token and that is filled spaces, tabs and newlines only.
-		const matched = prevToken._isFirstToken()
-			? prevToken.raw.match(/^(?:[ \t]*\r?\n)*([ \t]*)$/)
-			: prevToken.raw.match(/\r?\n([ \t]*)$/);
-		// console.log({ [`${this}`]: matched, _: prevToken.raw, f: prevToken._isFirstToken() });
-		if (matched) {
-			// Spaces will include empty string.
-			const spaces = matched[1];
-			if (spaces != null) {
-				this.#indentaion = new MLDOMIndentation(prevToken, spaces, this.startLine, this);
-				return this.#indentaion;
-			}
-		}
-
-		this.#indentaion = null;
-		return this.#indentaion;
-	}
-
 	get rule(): RuleInfo<T, O> {
 		if (!this.#doc.currentRule) {
 			throw new Error('Invalid call.');
 		}
 		const name = this.#doc.currentRule.name;
 
-		// @ts-ignore
-		const ruleConfig: RuleConfig<T, O> | T = this.rules[name];
+		const rule = this.rules[name] as RuleConfig<T, O> | T;
 
-		if (ruleConfig == null) {
+		if (rule == null) {
 			throw new Error('Invalid call "rule" property.');
 		}
-		return this.#doc.currentRule.optimizeOption(ruleConfig);
-	}
 
-	private _isFirstToken() {
-		return !this.prevToken;
+		return this.#doc.currentRule.optimizeOption(rule);
 	}
 }

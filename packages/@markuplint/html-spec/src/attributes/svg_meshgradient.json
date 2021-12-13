@@ -1,0 +1,33 @@
+{
+	"tag": "meshgradient",
+	"ref": "https://www.w3.org/TR/2016/CR-SVG2-20160915/pservers.html#MeshElement",
+	"global": {
+		"#SVGCoreAttrs": ["id", "tabindex", "lang", "xml:space", "class", "style"],
+		"#GlobalEventAttrs": true,
+		"#SVGPresentationAttrs": ["x", "y", "transform"]
+	},
+	"attributes": {
+		"gradientUnits": {
+			"ref": "https://www.w3.org/TR/2016/CR-SVG2-20160915/pservers.html#MeshGradientElementGradientUnitsAttribute",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "objectBoundingBox",
+			"animatable": true
+		},
+		"href": {
+			"ref": "https://www.w3.org/TR/2016/CR-SVG2-20160915/pservers.html#MeshGradientElementHrefAttribute",
+			"type": "URL",
+			"animatable": true
+		},
+		"type": {
+			"ref": "https://www.w3.org/TR/2016/CR-SVG2-20160915/pservers.html#MeshGradientElementTypeAttribute",
+			"type": {
+				"enum": ["bilinear", "bicubic"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "bilinear"
+		}
+	}
+}

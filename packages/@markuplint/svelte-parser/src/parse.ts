@@ -1,6 +1,9 @@
-import { MLASTNode, Parse } from '@markuplint/ml-ast';
-import svelteParse, { SvelteNode } from './svelte-parser';
+import type { SvelteNode } from './svelte-parser';
+import type { MLASTNode, Parse } from '@markuplint/ml-ast';
+
 import { flattenNodes } from '@markuplint/html-parser';
+
+import svelteParse from './svelte-parser';
 import { traverse } from './traverse';
 
 export const parse: Parse = rawCode => {
@@ -11,7 +14,7 @@ export const parse: Parse = rawCode => {
 		return {
 			nodeList: [],
 			isFragment: true,
-			parseError: new Error(err).message,
+			parseError: new Error(`${err}`).message,
 		};
 	}
 

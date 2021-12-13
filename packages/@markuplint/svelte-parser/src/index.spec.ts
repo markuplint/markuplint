@@ -1,5 +1,7 @@
+import type { MLASTElement } from '@markuplint/ml-ast';
+
 import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
-import { MLASTElement } from '@markuplint/ml-ast';
+
 import { parse } from './';
 
 describe('parser', () => {
@@ -164,7 +166,6 @@ describe('parser', () => {
 				'  [1:21]>[1:22](20,21)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 			],
 		]);
 	});
@@ -185,7 +186,6 @@ describe('parser', () => {
 				'  [1:35]>[1:36](34,35)eQ: }',
 				'  isDirective: true',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 			],
 		]);
 	});
@@ -206,7 +206,6 @@ describe('parser', () => {
 				'  [1:38]>[1:39](37,38)eQ: }',
 				'  isDirective: true',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 			],
 		]);
 	});
@@ -227,7 +226,6 @@ describe('parser', () => {
 				'  [1:17]>[1:17](16,16)eQ: ',
 				'  isDirective: true',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 			],
 		]);
 	});
@@ -248,7 +246,6 @@ describe('parser', () => {
 				'  [1:28]>[1:29](27,28)eQ: }',
 				'  isDirective: false',
 				'  isDynamicValue: true',
-				'  isInvalid: false',
 				'  potentialName: property',
 			],
 		]);
@@ -270,7 +267,6 @@ describe('parser', () => {
 				'  [1:18]>[1:18](17,17)eQ: ',
 				'  isDirective: false',
 				'  isDynamicValue: true',
-				'  isInvalid: false',
 				'  potentialName: property',
 			],
 		]);
@@ -317,7 +313,6 @@ describe('parser', () => {
 				'  [1:33]>[1:34](32,33)eQ: "',
 				'  isDirective: true',
 				'  isDynamicValue: true',
-				'  isInvalid: false',
 				'  potentialName: class',
 			],
 			[
@@ -332,7 +327,6 @@ describe('parser', () => {
 				'  [1:61]>[1:62](60,61)eQ: "',
 				'  isDirective: true',
 				'  isDynamicValue: true',
-				'  isInvalid: false',
 				'  potentialName: class',
 			],
 		]);
@@ -354,7 +348,6 @@ describe('parser', () => {
 				'  [1:11]>[1:12](10,11)eQ: }',
 				'  isDirective: false',
 				'  isDynamicValue: true',
-				'  isInvalid: false',
 				'  potentialName: items',
 			],
 		]);
@@ -366,5 +359,15 @@ describe('parser', () => {
 		expect(attr).toStrictEqual([]);
 		// @ts-ignore
 		expect(r.nodeList[0].hasSpreadAttr).toBeTruthy();
+	});
+
+	test('namespace', () => {
+		const doc = parse('<div><svg><text /></svg></div>');
+		expect(doc.nodeList[0].nodeName).toBe('div');
+		expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[1].nodeName).toBe('svg');
+		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].nodeName).toBe('text');
+		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
 	});
 });

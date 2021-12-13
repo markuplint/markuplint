@@ -1,56 +1,43 @@
 {
 	"tag": "video",
-	"attributes": [
-		{
-			"name": "autoplay",
-			"type": "Boolean"
-		},
-		{
-			"name": "controls",
-			"type": "Boolean"
-		},
-		{
-			"name": "crossorigin",
-			"type": "String",
-			"enum": ["anonymous", "use-credentials"]
-		},
-		{
-			"name": "height",
-			"type": "Uint"
-		},
-		{
-			"name": "loop",
-			"type": "Boolean"
-		},
-		{
-			"name": "muted",
-			"type": "Boolean"
-		},
-		{
-			"name": "preload",
-			"type": "String",
-			"enum": ["none", "metadata", "auto", ""]
-		},
-		{
-			"name": "playsinline",
-			"type": "Boolean"
-		},
-		{
-			"name": "poster",
+	"ref": "https://html.spec.whatwg.org/multipage/media.html#the-video-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["crossorigin"],
+		"#HTMLEmbededAndMediaContentAttrs": [
+			"src",
+			"preload",
+			"autoplay",
+			"loop",
+			"muted",
+			"controls",
+			"height",
+			"width"
+		]
+	},
+	"attributes": {
+		"poster": {
+			"ref": "https://html.spec.whatwg.org/multipage/media.html#attr-video-poster",
 			"type": "URL"
 		},
-		{
-			"name": "src",
-			"type": "URL"
+		"playsinline": {
+			"ref": "https://html.spec.whatwg.org/multipage/media.html#attr-video-playsinline",
+			"type": "Boolean"
 		},
-		{
-			"name": "width",
-			"type": "Uint"
-		},
-		{
-			"name": "controlslist",
-			"type": "String",
-			"enum": ["nodownload", "nofullscreen", "noremoteplayback"]
+		"controlslist": {
+			"ref": "https://wicg.github.io/controls-list/html-output/multipage/embedded-content.html#attr-media-controlslist",
+			"type": {
+				"token": {
+					"enum": ["nodownload", "nofullscreen", "noremoteplayback"]
+				},
+				"ordered": false,
+				"caseInsensitive": true,
+				"unique": true,
+				"separator": "space"
+			}
 		}
-	]
+	}
 }

@@ -1,278 +1,229 @@
-import * as markuplint from 'markuplint';
+import { mlRuleTest } from 'markuplint';
+
 import rule from '.';
 
 describe('verify', () => {
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<img src="path/to" src="path/to2">
 		`,
-			{
-				rules: {
-					'attr-spacing': true,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: true },
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<img src="path/to"src="path/to2">
 		`,
-			{
-				rules: {
-					'attr-spacing': true,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: true },
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Required space',
 				line: 2,
 				col: 21,
 				raw: '',
-				ruleId: 'attr-spacing',
 			},
 		]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<img src="path/to"src="path/to2">
 		`,
-			{
-				rules: {
-					'attr-spacing': false,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: false },
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<img src="path/to"
 		src="path/to2">
 		`,
-			{
-				rules: {
-					'attr-spacing': true,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: true },
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('Never line break', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<img src="path/to"
 		src="path/to2">
 		`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { lineBreak: 'never' },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { lineBreak: 'never' },
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Never break line',
 				line: 2,
 				col: 21,
 				raw: '\n\t\t',
-				ruleId: 'attr-spacing',
 			},
 		]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<img src="path/to" src="path/to2">
 		`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { lineBreak: 'never' },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { lineBreak: 'never' },
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<img src="path/to"
 		src="path/to2">
 		`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { lineBreak: 'always' },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { lineBreak: 'always' },
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Insert line break',
 				line: 2,
 				col: 7,
 				raw: ' ',
-				ruleId: 'attr-spacing',
 			},
 		]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<img
 		src="path/to"
 		src="path/to2">
 		`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { lineBreak: 'always' },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { lineBreak: 'always' },
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<img src="path/to"  src="path/to2">
 		`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { width: 1 },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { width: 1 },
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
-				message: 'Space should be 1',
+				message: 'Space should be one',
 				line: 2,
 				col: 21,
 				raw: '  ',
-				ruleId: 'attr-spacing',
 			},
 		]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<img src="path/to"  src="path/to2">
 		`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { width: 2 },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { width: 2 },
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
-				message: 'Space should be 2',
+				message: 'Space should be two',
 				line: 2,
 				col: 7,
 				raw: ' ',
-				ruleId: 'attr-spacing',
 			},
 		]);
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<img
 		src="path/to"   src="path/to2">
 		`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { width: 3 },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { width: 3 },
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
 describe('fix', () => {
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
 			<img src="path/to" src="path/to2">
 			`,
-			{
-				rules: {
-					'attr-spacing': true,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: true },
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -280,19 +231,15 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
 			<img src="path/to"src="path/to2">
 			`,
-			{
-				rules: {
-					'attr-spacing': true,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: true },
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -300,19 +247,15 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
 			<img src="path/to"src="path/to2">
 			`,
-			{
-				rules: {
-					'attr-spacing': false,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: false },
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to"src="path/to2">
 			`,
@@ -320,20 +263,16 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
 			<img src="path/to"
 			src="path/to2">
 			`,
-			{
-				rules: {
-					'attr-spacing': true,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: true },
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to"
 			src="path/to2">
@@ -342,24 +281,22 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
 			<img src="path/to"
 			src="path/to2">
 			`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { lineBreak: 'never' },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { lineBreak: 'never' },
 				},
 			},
-			[rule],
-			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -367,23 +304,21 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
 			<img src="path/to" src="path/to2">
 			`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { lineBreak: 'never' },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { lineBreak: 'never' },
 				},
 			},
-			[rule],
-			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -391,24 +326,22 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
 			<img src="path/to"
 			src="path/to2">
 			`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { lineBreak: 'always' },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { lineBreak: 'always' },
 				},
 			},
-			[rule],
-			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img
 			src="path/to"
@@ -418,25 +351,23 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
 			<img
 			src="path/to"
 			src="path/to2">
 			`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { lineBreak: 'always' },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { lineBreak: 'always' },
 				},
 			},
-			[rule],
-			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img
 			src="path/to"
@@ -446,23 +377,21 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
 			<img src="path/to"  src="path/to2">
 			`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { width: 1 },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { width: 1 },
 				},
 			},
-			[rule],
-			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img src="path/to" src="path/to2">
 			`,
@@ -470,23 +399,21 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
 			<img src="path/to"  src="path/to2">
 			`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { width: 2 },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { width: 2 },
 				},
 			},
-			[rule],
-			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img  src="path/to"  src="path/to2">
 			`,
@@ -494,24 +421,22 @@ describe('fix', () => {
 	});
 
 	test('no-space', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
 			<img
 			src="path/to"   src="path/to2">
 			`,
 			{
-				rules: {
-					'attr-spacing': {
-						severity: 'error',
-						value: true,
-						option: { width: 3 },
-					},
+				rule: {
+					severity: 'error',
+					value: true,
+					option: { width: 3 },
 				},
 			},
-			[rule],
-			'en',
+			true,
 		);
-		expect(r).toEqual(
+		expect(fixedCode).toEqual(
 			`
 			<img
 			src="path/to"   src="path/to2">

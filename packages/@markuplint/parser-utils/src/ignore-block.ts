@@ -1,7 +1,10 @@
-import { Code, IgnoreBlock, IgnoreTag } from './types';
-import { MLASTNode, MLASTNodeType, MLASTPreprocessorSpecificBlock, MLASTText } from '@markuplint/ml-ast';
-import { siblingsCorrection, sliceFragment, uuid } from './utils';
+import type { Code, IgnoreBlock, IgnoreTag } from './types';
+import type { MLASTNode, MLASTPreprocessorSpecificBlock, MLASTText } from '@markuplint/ml-ast';
+
 import { MASK_CHAR } from './const';
+import { uuid } from './create-token';
+import { sliceFragment } from './get-location';
+import { siblingsCorrection } from './siblings-correction';
 
 export function ignoreBlock(source: string, tags: IgnoreTag[]): IgnoreBlock {
 	let replaced = source;
@@ -80,7 +83,7 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 	nodeList = nodeList.slice();
 	const { source, stack } = ignoreBlock;
 	for (const node of nodeList) {
-		if (node.type === MLASTNodeType.Comment || node.type === MLASTNodeType.Text) {
+		if (node.type === 'comment' || node.type === 'text') {
 			if (!hasIgnoreBlock(node.raw)) {
 				continue;
 			}
@@ -105,7 +108,7 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 						const textNode: MLASTText = {
 							...node,
 							uuid: uuid(),
-							type: MLASTNodeType.Text,
+							type: 'text',
 							raw,
 							startOffset,
 							endOffset,
@@ -125,7 +128,7 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 						);
 						const bodyNode: MLASTPreprocessorSpecificBlock = {
 							uuid: uuid(),
-							type: MLASTNodeType.PreprocessorSpecificBlock,
+							type: 'psblock',
 							nodeName: `#ps:${tag.type}`,
 							raw,
 							parentNode: node.parentNode,
@@ -156,7 +159,7 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 				const textNode: MLASTText = {
 					...node,
 					uuid: uuid(),
-					type: MLASTNodeType.Text,
+					type: 'text',
 					raw,
 					startOffset,
 					endOffset,
@@ -176,7 +179,7 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 
 			nodeList.splice(index, 1, ...insertList);
 		}
-		if (node.type === MLASTNodeType.StartTag) {
+		if (node.type === 'starttag') {
 			for (const attr of node.attributes) {
 				if (attr.type === 'ps-attr' || attr.value.raw === '' || !hasIgnoreBlock(attr.value.raw)) {
 					continue;

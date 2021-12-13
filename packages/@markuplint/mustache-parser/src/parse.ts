@@ -1,6 +1,7 @@
-import { ignoreBlock, restoreNode } from '@markuplint/parser-utils';
-import { Parse } from '@markuplint/ml-ast';
+import type { Parse } from '@markuplint/ml-ast';
+
 import { parse as htmlParse } from '@markuplint/html-parser';
+import { ignoreBlock, restoreNode } from '@markuplint/parser-utils';
 
 export const parse: Parse = rawCode => {
 	const blocks = ignoreBlock(rawCode, [

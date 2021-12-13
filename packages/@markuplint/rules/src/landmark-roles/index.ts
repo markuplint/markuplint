@@ -1,8 +1,10 @@
-import { Element, Result, createRule } from '@markuplint/ml-core';
+import type { Element } from '@markuplint/ml-core';
+
+import { createRule } from '@markuplint/ml-core';
 
 type Options = {
-	ignoreRoles: Roles[];
-	labelEachArea: boolean;
+	ignoreRoles?: Roles[];
+	labelEachArea?: boolean;
 };
 
 type TopLevelRoles = 'banner' | 'main' | 'complementary' | 'contentinfo';
@@ -26,19 +28,16 @@ const selectors: { [role in Roles]: string[] } = {
 const topLevelRoles: TopLevelRoles[] = ['banner', 'main', 'complementary', 'contentinfo'];
 
 export default createRule<boolean, Options>({
-	name: 'landmark-roles',
-	defaultLevel: 'warning',
+	defaultServerity: 'warning',
 	defaultValue: true,
 	defaultOptions: {
 		ignoreRoles: [],
 		labelEachArea: true,
 	},
-	async verify(document, translate) {
+	async verify({ document, report, t }) {
 		if (document.isFragment) {
-			return [];
+			return;
 		}
-
-		const reports: Result[] = [];
 
 		const roles: RoleSet = {
 			complementary: document.matchNodes(selectors.complementary.join(',')),
@@ -95,17 +94,14 @@ export default createRule<boolean, Options>({
 					continue;
 				}
 
-				if (el.rule.option.ignoreRoles.includes(role)) {
+				if (el.rule.option.ignoreRoles?.includes(role)) {
 					continue;
 				}
 
 				if (el.isDescendantByUUIDList(uuidList)) {
-					reports.push({
-						severity: el.rule.severity,
-						message: translate('{0} should be {1}', role, 'top level'),
-						line: el.startLine,
-						col: el.startCol,
-						raw: el.raw,
+					report({
+						scope: el,
+						message: t('{0} should be {1}', t('the "{0}" {1}', role, 'role'), 'top level'),
 					});
 				}
 			}
@@ -128,21 +124,13 @@ export default createRule<boolean, Options>({
 				}
 
 				if (!hasLabel(el)) {
-					reports.push({
-						severity: el.rule.severity,
-						message: translate(
-							'Should have a unique label because {0} landmarks were markup more than once on a page',
-							role,
-						),
-						line: el.startLine,
-						col: el.startCol,
-						raw: el.raw,
+					report({
+						scope: el,
+						message: t('Require {0}', t('unique {0}', 'accessible name')),
 					});
 				}
 			}
 		}
-
-		return reports;
 	},
 });
 

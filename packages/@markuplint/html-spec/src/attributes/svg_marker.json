@@ -1,0 +1,150 @@
+{
+	"tag": "marker",
+	"ref": "https://svgwg.org/svg2-draft/painting.html#MarkerElement",
+	"global": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": [
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"isolation",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"mask-type",
+			"opacity",
+			"overflow",
+			"paint-order",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-overflow",
+			"text-rendering",
+			"transform-origin",
+			"unicode-bidi",
+			"vector-effect",
+			"visibility",
+			"white-space",
+			"word-spacing",
+			"writing-mode"
+		]
+	},
+	"attributes": {
+		"viewBox": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#ViewBoxAttribute",
+			"type": "<view-box>",
+			"animatable": true
+		},
+		"preserveAspectRatio": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#PreserveAspectRatioAttribute",
+			"type": "<preserve-aspect-ratio>",
+			"defaultValue": "xMidYMid meet",
+			"animatable": true
+		},
+		"refX": {
+			"ref": "https://svgwg.org/svg2-draft/painting.html#MarkerElementRefXAttribute",
+			"type": [
+				"<percentage>",
+				"<number>",
+				{
+					"enum": ["left", "center", "right"],
+					"disallowToSurroundBySpaces": false
+				}
+			],
+			"defaultValue": "0",
+			"animatable": true
+		},
+		"refY": {
+			"ref": "https://svgwg.org/svg2-draft/painting.html#MarkerElementRefYAttribute",
+			"type": [
+				"<percentage>",
+				"<number>",
+				{
+					"enum": ["left", "center", "right"],
+					"disallowToSurroundBySpaces": false
+				}
+			],
+			"defaultValue": "0",
+			"animatable": true
+		},
+		"markerUnits": {
+			"ref": "https://svgwg.org/svg2-draft/painting.html#MarkerUnitsAttribute",
+			"type": {
+				"enum": ["userSpaceOnUse", "strokeWidth"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "strokeWidth"
+		},
+		"markerWidth": {
+			"ref": "https://svgwg.org/svg2-draft/painting.html#MarkerWidthAttribute",
+			"type": ["<svg-length>", "<percentage>", "<number>"],
+			"defaultValue": "3",
+			"animatable": true
+		},
+		"markerHeight": {
+			"ref": "https://svgwg.org/svg2-draft/painting.html#MarkerHeightAttribute",
+			"type": ["<svg-length>", "<percentage>", "<number>"],
+			"defaultValue": "3",
+			"animatable": true
+		},
+		"orient": {
+			"ref": "https://svgwg.org/svg2-draft/painting.html#OrientAttribute",
+			"type": [
+				{
+					"enum": ["auto", "auto-start-reverse"],
+					"disallowToSurroundBySpaces": false
+				},
+				"<angle>",
+				"<number>"
+			],
+			"defaultValue": "0",
+			"animatable": true
+		}
+	}
+}

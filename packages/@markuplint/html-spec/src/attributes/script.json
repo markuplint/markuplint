@@ -1,38 +1,58 @@
 {
 	"tag": "script",
-	"attributes": [
-		{
-			"name": "src",
+	"ref": "https://html.spec.whatwg.org/multipage/scripting.html#the-script-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "integrity"]
+	},
+	"attributes": {
+		"src": {
+			"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-script-src",
 			"type": "URL"
 		},
-		{
-			"name": "type",
-			"type": "String"
+		"type": {
+			"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-script-type",
+			"type": [
+				"MIMEType",
+				{
+					"enum": ["module"],
+					"caseInsensitive": true
+				}
+			],
+			"_TODO_": "> When used to include data blocks, the data must be embedded inline, the format of the data must be given using the type attribute, and the contents of the script element must conform to the requirements defined for the format used. The src, async, nomodule, defer, crossorigin, integrity, and referrerpolicy attributes must not be specified."
 		},
-		{
-			"name": "nomodule",
-			"type": "Boolean"
+		"nomodule": {
+			"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-script-nomodule",
+			"type": "Boolean",
+			"condition": {
+				"self": ":not([type='module' i])"
+			}
 		},
-		{
-			"name": "async",
-			"type": "Boolean"
+		"async": {
+			"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-script-async",
+			"type": "Boolean",
+			"condition": {
+				"self": ["[src]", "[type='module' i]"]
+			},
+			"ineffective": ":not([src]):not([type='module' i])"
 		},
-		{
-			"name": "defer",
-			"type": "Boolean"
+		"defer": {
+			"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-script-defer",
+			"type": "Boolean",
+			"condition": {
+				"self": "[src]"
+			},
+			"ineffective": ["[type='module' i]", ":not([src])", "[async]"],
+			"_TODO_": "The defer attribute affects the element that has the async attribute if it doesn't support the async"
 		},
-		{
-			"name": "crossorigin",
-			"type": "String",
-			"enum": ["anonymous", "use-credentials"]
-		},
-		{
-			"name": "integrity",
-			"type": "String"
-		},
-		{
-			"name": "referrerpolicy",
-			"type": "ReferrerPolicy"
+		"integrity": {
+			"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-script-integrity",
+			"condition": {
+				"self": "[src]"
+			}
 		}
-	]
+	}
 }

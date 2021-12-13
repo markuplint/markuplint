@@ -1,0 +1,133 @@
+{
+	"tag": "linearGradient",
+	"ref": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElement",
+	"global": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": [
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"isolation",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"mask-type",
+			"opacity",
+			"overflow",
+			"paint-order",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-overflow",
+			"text-rendering",
+			"transform-origin",
+			"unicode-bidi",
+			"vector-effect",
+			"visibility",
+			"white-space",
+			"word-spacing",
+			"writing-mode"
+		],
+		"#XLinkAttrs": ["xlink:href", "xlink:title"]
+	},
+	"attributes": {
+		"x1": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElementX1Attribute",
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0%",
+			"animatable": true
+		},
+		"y1": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElementY1Attribute",
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0%",
+			"animatable": true
+		},
+		"x2": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElementX2Attribute",
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "100%",
+			"animatable": true
+		},
+		"y2": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElementY2Attribute",
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0%",
+			"animatable": true
+		},
+		"gradientUnits": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElementGradientUnitsAttribute",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "objectBoundingBox",
+			"animatable": true
+		},
+		"gradientTransform": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElementGradientTransformAttribute",
+			"type": "<transform-list>",
+			"animatable": true
+		},
+		"spreadMethod": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElementSpreadMethodAttribute",
+			"type": {
+				"enum": ["pad", "reflect", "repeat"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "pad",
+			"animatable": true
+		},
+		"href": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElementHrefAttribute",
+			"type": "URL",
+			"animatable": true
+		}
+	}
+}

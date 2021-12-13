@@ -1,0 +1,9 @@
+{
+	"tag": "feFuncG",
+	"ref": "https://drafts.fxtf.org/filter-effects/#elementdef-fefuncg",
+	"global": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
+		"#SVGTransferFunctionAttrs": ["type", "tableValues", "slope", "intercept", "amplitude", "exponent", "offset"]
+	},
+	"attributes": {}
+}

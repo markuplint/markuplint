@@ -1,10 +1,11 @@
-import fetch from './fetch';
-import { getAttributes } from './html-elements';
-import { nameCompare } from './utils';
+import type { SpecDefs } from '@markuplint/ml-spec';
+
+import readJson from './read-json';
 
 export async function getGlobalAttrs() {
-	const $ = await fetch('https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
-	const attrs = getAttributes($, '#list_of_global_attributes', '_global');
-	attrs.sort(nameCompare);
-	return attrs;
+	const gAttrs = readJson<SpecDefs['#globalAttrs']>('../src/global-attributes/_global.json', {
+		'#HTMLGlobalAttrs': {},
+	});
+
+	return gAttrs;
 }

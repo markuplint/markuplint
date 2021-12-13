@@ -1,129 +1,71 @@
-import * as markuplint from 'markuplint';
+import { mlRuleTest } from 'markuplint';
+
 import rule from './';
 
 test('h1', async () => {
-	const r = await markuplint.verify(
-		'<html><body>text</body></html>',
-		{
-			rules: {
-				'required-h1': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r).toStrictEqual([
+	const { violations } = await mlRuleTest(rule, '<html><body>text</body></html>', { rule: true });
+	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Missing the h1 element',
+			message: 'Require the "h1" element',
 			line: 1,
 			col: 1,
 			raw: '<',
-			ruleId: 'required-h1',
 		},
 	]);
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
-		'<html><body><h1>text</h1></body></html>',
-		{
-			rules: {
-				'required-h1': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r.length).toBe(0);
+	const { violations } = await mlRuleTest(rule, '<html><body><h1>text</h1></body></html>', { rule: true });
+	expect(violations.length).toBe(0);
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
-		'<html><body><h1>text</h1><h1>text</h1></body></html>',
-		{
-			rules: {
-				'required-h1': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r).toStrictEqual([
+	const { violations } = await mlRuleTest(rule, '<html><body><h1>text</h1><h1>text</h1></body></html>', {
+		rule: true,
+	});
+	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Duplicate the h1 element',
+			message: 'The "h1" element is duplicated',
 			line: 1,
 			col: 26,
 			raw: '<h1>',
-			ruleId: 'required-h1',
 		},
 	]);
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
-		'<html><body><h1>text</h1><h1>text</h1></body></html>',
-		{
-			rules: {
-				'required-h1': {
-					severity: 'error',
-					value: true,
-					option: {
-						'expected-once': false,
-					},
-				},
+	const { violations } = await mlRuleTest(rule, '<html><body><h1>text</h1><h1>text</h1></body></html>', {
+		rule: {
+			severity: 'error',
+			value: true,
+			option: {
+				'expected-once': false,
 			},
 		},
-		[rule],
-		'en',
-	);
-	expect(r.length).toBe(0);
+	});
+	expect(violations.length).toBe(0);
 });
 
 test('h1', async () => {
-	const r = await markuplint.verify(
-		'<div><h2>text</h2></div>',
-		{
-			rules: {
-				'required-h1': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r.length).toBe(0);
+	const { violations } = await mlRuleTest(rule, '<div><h2>text</h2></div>', { rule: true });
+	expect(violations.length).toBe(0);
 });
 
 test('enable to opetion "in-document-fragment"', async () => {
-	const r = await markuplint.verify(
-		'<div><h2>text</h2></div>',
-		{
-			rules: {
-				'required-h1': {
-					severity: 'error',
-					option: {
-						'in-document-fragment': true,
-					},
-				},
+	const { violations } = await mlRuleTest(rule, '<div><h2>text</h2></div>', {
+		rule: {
+			severity: 'error',
+			option: {
+				'in-document-fragment': true,
 			},
 		},
-		[rule],
-		'en',
-	);
-	expect(r.length).toBe(1);
+	});
+	expect(violations.length).toBe(1);
 });
 
 test('Issue #57', async () => {
-	const r = await markuplint.verify(
-		'',
-		{
-			rules: {
-				'required-h1': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r.length).toBe(0);
+	const { violations } = await mlRuleTest(rule, '', { rule: true });
+	expect(violations.length).toBe(0);
 });

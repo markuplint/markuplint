@@ -1,0 +1,15 @@
+{
+	"tag": "mpath",
+	"ref": "https://svgwg.org/specs/animations/#MPathElement",
+	"global": {
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true
+	},
+	"attributes": {
+		"href": {
+			"ref": "https://svgwg.org/specs/animations/#MPathElementHrefAttribute",
+			"type": "URL"
+		}
+	}
+}

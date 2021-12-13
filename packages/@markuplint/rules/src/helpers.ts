@@ -1,41 +1,11 @@
-import { ARIRRoleAttribute, Attribute, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
-import { Element, RuleConfigValue } from '@markuplint/ml-core';
-import html from '@markuplint/html-spec';
-import { typeCheck } from './type-check';
+import type { Log } from './debug';
+import type { Translator } from '@markuplint/i18n';
+import type { Element, RuleConfigValue } from '@markuplint/ml-core';
+import type { ARIRRoleAttribute, Attribute, PermittedRoles } from '@markuplint/ml-spec';
 
-export function getAttrSpecs(tag: string, { specs, def }: MLMLSpec) {
-	tag = tag.toLowerCase();
-	const spec = specs.find(spec => spec.name === tag);
-	if (!spec) {
-		return null;
-	}
-	const hasGlobalAttr = spec.attributes.some(attr => attr === '#globalAttrs');
+import { def, specs } from '@markuplint/html-spec';
 
-	const attrs: Attribute[] = [];
-
-	if (hasGlobalAttr) {
-		attrs.push(...def['#globalAttrs']);
-	}
-
-	for (const attr of spec.attributes) {
-		if (typeof attr === 'string') {
-			continue;
-		}
-
-		const definedIndex = attrs.findIndex(a => a.name === attr.name);
-		if (definedIndex !== -1) {
-			attrs[definedIndex] = {
-				...attrs[definedIndex],
-				...attr,
-			};
-			continue;
-		}
-
-		attrs.push(attr);
-	}
-
-	return attrs;
-}
+import { attrCheck } from './attr-check';
 
 export function attrMatches<T extends RuleConfigValue, R>(node: Element<T, R>, condition: Attribute['condition']) {
 	if (!condition) {
@@ -43,15 +13,18 @@ export function attrMatches<T extends RuleConfigValue, R>(node: Element<T, R>, c
 	}
 
 	let matched = false;
-	if (condition.self) {
+	if ('self' in condition && condition.self) {
 		const condSelector = Array.isArray(condition.self) ? condition.self.join(',') : condition.self;
 		matched = node.matches(condSelector);
 	}
-	if (condition.ancestor) {
+	if ('ancestor' in condition && condition.ancestor) {
 		let _node = node.parentNode;
 		while (_node) {
 			if (_node.type === 'Element') {
-				if (_node.matches(condition.ancestor)) {
+				const condSelector = Array.isArray(condition.ancestor)
+					? condition.ancestor.join(',')
+					: condition.ancestor;
+				if (_node.matches(condSelector)) {
 					matched = true;
 					break;
 				}
@@ -75,7 +48,7 @@ export function match(needle: string, pattern: string) {
 /**
  * PotentialCustomElementName
  *
- * @see https://html.spec.whatwg.org/multipage/custom-elements.html#prod-potentialcustomelementname
+ * @see https://spec.whatwg.org/multipage/custom-elements.html#prod-potentialcustomelementname
  *
  * > PotentialCustomElementName ::=
  * >   [a-z] (PCENChar)* '-' (PCENChar)*
@@ -108,26 +81,28 @@ export const rePCENChar = [
 	'[\uD800-\uDBFF][\uDC00-\uDFFF]',
 ].join('|');
 
-export function htmlSpec(tag: string) {
-	tag = tag.toLowerCase();
-	const spec = html.specs.find(spec => spec.name === tag);
+export function htmlSpec(nameWithNS: string) {
+	const spec = specs.find(spec => spec.name === nameWithNS);
 	return spec || null;
 }
 
 export function isValidAttr(
+	t: Translator,
 	name: string,
 	value: string,
 	isDynamicValue: boolean,
 	node: Element<any, any>,
 	attrSpecs: Attribute[],
+	log?: Log,
 ) {
-	let invalid: ReturnType<typeof typeCheck> = false;
-	const spec = attrSpecs.find(s => s.name === name);
-	invalid = typeCheck(name, value, false, spec);
+	let invalid: ReturnType<typeof attrCheck> = false;
+	const spec = attrSpecs.find(s => s.name.toLowerCase() === name.toLowerCase());
+	log && log('Spec of the %s attr: %o', name, spec);
+	invalid = attrCheck(t, name, value, false, spec);
 	if (!invalid && spec && spec.condition && !node.hasSpreadAttr && !attrMatches(node, spec.condition)) {
 		invalid = {
 			invalidType: 'non-existent',
-			message: `The "${name}" attribute is not allowed`,
+			message: t('{0} is {1}', t('the "{0}" {1}', name, 'attribute'), 'disallowed'),
 		};
 	}
 	if (invalid && invalid.invalidType === 'invalid-value' && isDynamicValue) {
@@ -137,8 +112,8 @@ export function isValidAttr(
 }
 
 export function ariaSpec() {
-	const roles = html.def['#roles'];
-	const ariaAttrs = html.def['#ariaAttrs'];
+	const roles = def['#roles'];
+	const ariaAttrs = def['#ariaAttrs'];
 	return {
 		roles,
 		ariaAttrs,
@@ -160,7 +135,7 @@ export function getRoleSpec(roleName: string) {
 }
 
 function getRoleByName(roleName: string) {
-	const roles = html.def['#roles'];
+	const roles = def['#roles'];
 	const role = roles.find(r => r.name === roleName);
 	return role;
 }
@@ -304,7 +279,7 @@ export function checkAriaValue(type: string, value: string, tokenEnum: string[])
 }
 
 export function checkAria(attrName: string, currentValue: string, role?: string) {
-	const ariaAttrs = html.def['#ariaAttrs'];
+	const ariaAttrs = def['#ariaAttrs'];
 	const aria = ariaAttrs.find(a => a.name === attrName);
 	if (!aria) {
 		return {

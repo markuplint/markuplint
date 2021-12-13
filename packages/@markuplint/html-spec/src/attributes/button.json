@@ -1,48 +1,34 @@
 {
 	"tag": "button",
-	"attributes": [
-		{
-			"name": "disabled",
-			"type": "Boolean"
+	"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": [
+			"disabled",
+			"form",
+			"formaction",
+			"formenctype",
+			"formmethod",
+			"formnovalidate",
+			"formtarget",
+			"name"
+		]
+	},
+	"attributes": {
+		"type": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-type",
+			"type": {
+				"enum": ["submit", "reset", "button"],
+				"invalidValueDefault": "submit",
+				"missingValueDefault": "submit"
+			}
 		},
-		{
-			"name": "form",
-			"type": "DOMID"
-		},
-		{
-			"name": "formaction",
-			"type": "URL"
-		},
-		{
-			"name": "formenctype",
-			"type": "String",
-			"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
-		},
-		{
-			"name": "formmethod",
-			"type": "String",
-			"enum": ["post", "get", "dialog"]
-		},
-		{
-			"name": "formnovalidate",
-			"type": "Boolean"
-		},
-		{
-			"name": "formtarget",
-			"type": "Target"
-		},
-		{
-			"name": "name",
-			"type": "String"
-		},
-		{
-			"name": "type",
-			"type": "String",
-			"enum": ["submit", "reset", "button"]
-		},
-		{
-			"name": "value",
-			"type": "String"
+		"value": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-value",
+			"type": "Any"
 		}
-	]
+	}
 }

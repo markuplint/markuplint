@@ -1,26 +1,25 @@
 {
 	"tag": "th",
-	"attributes": [
-		{
-			"name": "colspan",
-			"type": "ColSpan"
+	"ref": "https://html.spec.whatwg.org/multipage/tables.html#the-th-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLTableCellElementAttrs": ["colspan", "rowspan", "headers"]
+	},
+	"attributes": {
+		"scope": {
+			"ref": "https://html.spec.whatwg.org/multipage/tables.html#attr-th-scope",
+			"type": {
+				"enum": ["row", "col", "rowgroup", "colgroup"],
+				"missingValueDefault": "auto",
+				"invalidValueDefault": "auto"
+			}
 		},
-		{
-			"name": "rowspan",
-			"type": "RowSpan"
-		},
-		{
-			"name": "headers",
-			"type": "DOMIDList"
-		},
-		{
-			"name": "scope",
-			"type": "String",
-			"enum": ["row", "col", "rowgroup", "colgroup", "auto"]
-		},
-		{
-			"name": "abbr",
-			"type": "String"
+		"abbr": {
+			"ref": "https://html.spec.whatwg.org/multipage/tables.html#attr-th-abbr",
+			"type": "Any"
 		}
-	]
+	}
 }

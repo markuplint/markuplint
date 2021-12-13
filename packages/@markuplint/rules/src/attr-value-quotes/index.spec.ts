@@ -1,31 +1,26 @@
-import * as markuplint from 'markuplint';
+import { mlRuleTest } from 'markuplint';
+
 import rule from './';
 
 describe('verify', () => {
 	test('default', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
 			<p>ipsam</p>
 		</div>
 		`,
-			{
-				rules: {
-					'attr-value-quotes': true,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: true },
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				message: 'Attribute value is must quote on double quotation mark',
 				line: 2,
 				col: 26,
 				raw: "data-Attr='db'",
-				ruleId: 'attr-value-quotes',
 			},
 			{
 				severity: 'warning',
@@ -33,13 +28,13 @@ describe('verify', () => {
 				line: 2,
 				col: 41,
 				raw: 'data-attR=tr',
-				ruleId: 'attr-value-quotes',
 			},
 		]);
 	});
 
 	test('double', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
@@ -47,25 +42,20 @@ describe('verify', () => {
 		</div>
 		`,
 			{
-				rules: {
-					'attr-value-quotes': {
-						severity: 'error',
-						value: 'double',
-						option: null,
-					},
+				rule: {
+					severity: 'error',
+					value: 'double',
+					option: null,
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Attribute value is must quote on double quotation mark',
 				line: 2,
 				col: 26,
 				raw: "data-Attr='db'",
-				ruleId: 'attr-value-quotes',
 			},
 			{
 				severity: 'error',
@@ -73,13 +63,13 @@ describe('verify', () => {
 				line: 2,
 				col: 41,
 				raw: 'data-attR=tr',
-				ruleId: 'attr-value-quotes',
 			},
 		]);
 	});
 
 	test('single', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
@@ -87,25 +77,20 @@ describe('verify', () => {
 		</div>
 		`,
 			{
-				rules: {
-					'attr-value-quotes': {
-						severity: 'error',
-						value: 'single',
-						option: null,
-					},
+				rule: {
+					severity: 'error',
+					value: 'single',
+					option: null,
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Attribute value is must quote on single quotation mark',
 				line: 2,
 				col: 8,
 				raw: 'data-attr="value"',
-				ruleId: 'attr-value-quotes',
 			},
 			{
 				severity: 'error',
@@ -113,57 +98,43 @@ describe('verify', () => {
 				line: 2,
 				col: 41,
 				raw: 'data-attR=tr',
-				ruleId: 'attr-value-quotes',
 			},
 		]);
 	});
 
 	test('empty', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<div data-attr>
 			lorem
 			<p>ipsam</p>
 		</div>
 		`,
-			{
-				rules: {
-					'attr-value-quotes': true,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: true },
 		);
-		expect(r.length).toBe(0);
+		expect(violations.length).toBe(0);
 	});
 });
 
 describe('fix', () => {
 	test('empty', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			'<div attr noop=noop foo="bar" hoge=\'fuga\'>',
-			{
-				rules: {
-					'attr-value-quotes': true,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: true },
+			true,
 		);
-		expect(r).toEqual('<div attr noop="noop" foo="bar" hoge="fuga">');
+		expect(fixedCode).toEqual('<div attr noop="noop" foo="bar" hoge="fuga">');
 	});
 
 	test('empty', async () => {
-		const r = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			'<div attr noop=noop foo="bar" hoge=\'fuga\'>',
-			{
-				rules: {
-					'attr-value-quotes': 'single',
-				},
-			},
-			[rule],
-			'en',
+			{ rule: 'single' },
+			true,
 		);
-		expect(r).toEqual("<div attr noop='noop' foo='bar' hoge='fuga'>");
+		expect(fixedCode).toEqual("<div attr noop='noop' foo='bar' hoge='fuga'>");
 	});
 });

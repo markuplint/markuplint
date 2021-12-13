@@ -1,6 +1,6 @@
 import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
+
 import { isDocumentFragment, parse } from './';
-import { MLASTNodeType } from '@markuplint/ml-ast';
 
 describe('isDocumentFragment', () => {
 	it('<!doctype>', () => {
@@ -85,7 +85,7 @@ describe('isDocumentFragment', () => {
 describe('parser', () => {
 	it('<!DOCTYPE html>', () => {
 		const doc = parse('<!DOCTYPE html>');
-		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[0].type).toBe('doctype');
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
 		expect(doc.nodeList[3].nodeName).toBe('body');
@@ -94,7 +94,7 @@ describe('parser', () => {
 
 	it('<!DOCTYPE html> ', () => {
 		const doc = parse('<!DOCTYPE html> ');
-		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[0].type).toBe('doctype');
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
 		expect(doc.nodeList[3].nodeName).toBe('body');
@@ -105,7 +105,7 @@ describe('parser', () => {
 
 	it('<!DOCTYPE html>\\n', () => {
 		const doc = parse('<!DOCTYPE html>\n');
-		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[0].type).toBe('doctype');
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
 		expect(doc.nodeList[3].nodeName).toBe('body');
@@ -116,22 +116,22 @@ describe('parser', () => {
 
 	it('<!DOCTYPE html>text', () => {
 		const doc = parse('<!DOCTYPE html>text');
-		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[0].type).toBe('doctype');
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
 		expect(doc.nodeList[3].nodeName).toBe('body');
-		expect(doc.nodeList[4].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[4].type).toBe('text');
 		expect(doc.nodeList[4].startCol).toBe(16);
 		expect(doc.nodeList.length).toBe(5);
 	});
 
 	it('<!DOCTYPE html> text', () => {
 		const doc = parse('<!DOCTYPE html> text');
-		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[0].type).toBe('doctype');
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
 		expect(doc.nodeList[3].nodeName).toBe('body');
-		expect(doc.nodeList[4].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[4].type).toBe('text');
 		expect(doc.nodeList[4].raw).toBe(' text');
 		expect(doc.nodeList[4].startCol).toBe(16);
 		expect(doc.nodeList.length).toBe(5);
@@ -139,11 +139,11 @@ describe('parser', () => {
 
 	it('<!DOCTYPE html>\\ntext', () => {
 		const doc = parse('<!DOCTYPE html>\ntext');
-		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[0].type).toBe('doctype');
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
 		expect(doc.nodeList[3].nodeName).toBe('body');
-		expect(doc.nodeList[4].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[4].type).toBe('text');
 		expect(doc.nodeList[4].raw).toBe('\ntext');
 		expect(doc.nodeList[4].startCol).toBe(16);
 		expect(doc.nodeList.length).toBe(5);
@@ -151,13 +151,13 @@ describe('parser', () => {
 
 	it('<!DOCTYPE html>\\n<p>text', () => {
 		const doc = parse('<!DOCTYPE html>\n<p>text');
-		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[0].type).toBe('doctype');
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
 		expect(doc.nodeList[3].nodeName).toBe('body');
 		expect(doc.nodeList[4].nodeName).toBe('#text');
 		expect(doc.nodeList[5].nodeName).toBe('p');
-		expect(doc.nodeList[6].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[6].type).toBe('text');
 		expect(doc.nodeList[6].raw).toBe('text');
 		expect(doc.nodeList[6].startCol).toBe(4);
 		expect(doc.nodeList.length).toBe(7);
@@ -165,12 +165,12 @@ describe('parser', () => {
 
 	it('<!DOCTYPE html><p>\\ntext', () => {
 		const doc = parse('<!DOCTYPE html><p>\ntext');
-		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[0].type).toBe('doctype');
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
 		expect(doc.nodeList[3].nodeName).toBe('body');
 		expect(doc.nodeList[4].nodeName).toBe('p');
-		expect(doc.nodeList[5].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[5].type).toBe('text');
 		expect(doc.nodeList[5].raw).toBe('\ntext');
 		expect(doc.nodeList[5].startCol).toBe(19);
 		expect(doc.nodeList.length).toBe(6);
@@ -178,12 +178,12 @@ describe('parser', () => {
 
 	it('<!DOCTYPE html>\\n<html>text', () => {
 		const doc = parse('<!DOCTYPE html>\n<html>text');
-		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[0].type).toBe('doctype');
 		expect(doc.nodeList[1].nodeName).toBe('#text');
 		expect(doc.nodeList[2].nodeName).toBe('html');
 		expect(doc.nodeList[3].nodeName).toBe('head');
 		expect(doc.nodeList[4].nodeName).toBe('body');
-		expect(doc.nodeList[5].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[5].type).toBe('text');
 		expect(doc.nodeList[5].raw).toBe('text');
 		expect(doc.nodeList[5].startCol).toBe(7);
 		expect(doc.nodeList.length).toBe(6);
@@ -191,11 +191,11 @@ describe('parser', () => {
 
 	it('<!DOCTYPE html><html>\\ntext', () => {
 		const doc = parse('<!DOCTYPE html><html>\ntext');
-		expect(doc.nodeList[0].type).toBe(MLASTNodeType.Doctype);
+		expect(doc.nodeList[0].type).toBe('doctype');
 		expect(doc.nodeList[1].nodeName).toBe('html');
 		expect(doc.nodeList[2].nodeName).toBe('head');
 		expect(doc.nodeList[3].nodeName).toBe('body');
-		expect(doc.nodeList[4].type).toBe(MLASTNodeType.Text);
+		expect(doc.nodeList[4].type).toBe('text');
 		expect(doc.nodeList[4].raw).toBe('\ntext');
 		expect(doc.nodeList[4].startCol).toBe(22);
 		expect(doc.nodeList.length).toBe(5);
@@ -1063,8 +1063,55 @@ describe('parser', () => {
 				'  [1:10]>[1:11](9,10)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  isInvalid: false',
 			],
+		]);
+	});
+
+	it('svg', () => {
+		const doc = parse(`<div>
+	<svg>
+		<a></a>
+		<switch>
+			<g>
+				<rect />
+			</g>
+			<foreignObject>
+				<div></div>
+			</foreignObject>
+		</switch>
+	</svg>
+</div>
+`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:6](0,5)div: <div>',
+			'[1:6]>[2:2](5,7)#text: ⏎→',
+			'[2:2]>[2:7](7,12)svg: <svg>',
+			'[2:7]>[3:3](12,15)#text: ⏎→→',
+			'[3:3]>[3:6](15,18)a: <a>',
+			'[3:6]>[3:10](18,22)a: </a>',
+			'[3:10]>[4:3](22,25)#text: ⏎→→',
+			'[4:3]>[4:11](25,33)switch: <switch>',
+			'[4:11]>[5:4](33,37)#text: ⏎→→→',
+			'[5:4]>[5:7](37,40)g: <g>',
+			'[5:7]>[6:5](40,45)#text: ⏎→→→→',
+			'[6:5]>[6:13](45,53)rect: <rect␣/>',
+			'[6:13]>[7:4](53,57)#text: ⏎→→→',
+			'[7:4]>[7:8](57,61)g: </g>',
+			'[7:8]>[8:4](61,65)#text: ⏎→→→',
+			'[8:4]>[8:19](65,80)foreignObject: <foreignObject>',
+			'[8:19]>[9:5](80,85)#text: ⏎→→→→',
+			'[9:5]>[9:10](85,90)div: <div>',
+			'[9:10]>[9:16](90,96)div: </div>',
+			'[9:16]>[10:4](96,100)#text: ⏎→→→',
+			'[10:4]>[10:20](100,116)foreignObject: </foreignObject>',
+			'[10:20]>[11:3](116,119)#text: ⏎→→',
+			'[11:3]>[11:12](119,128)switch: </switch>',
+			'[11:12]>[12:2](128,130)#text: ⏎→',
+			'[12:2]>[12:8](130,136)svg: </svg>',
+			'[12:8]>[13:1](136,137)#text: ⏎',
+			'[13:1]>[13:7](137,143)div: </div>',
+			'[13:7]>[14:1](143,144)#text: ⏎',
 		]);
 	});
 });

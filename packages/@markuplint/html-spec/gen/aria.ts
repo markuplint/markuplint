@@ -1,13 +1,15 @@
-import {
+/* global cheerio */
+
+import type {
 	ARIAAttribute,
 	ARIAAttributeValue,
 	ARIARoleOwnedPropOrState,
 	ARIRRoleAttribute,
 	EquivalentHtmlAttr,
 } from '@markuplint/ml-spec';
-import { arrayUnique, nameCompare } from './utils';
-import type cheerio from 'cheerio';
+
 import fetch from './fetch';
+import { arrayUnique, nameCompare } from './utils';
 
 async function getAriaInHtml() {
 	const $ = await fetch('https://www.w3.org/TR/html-aria/');

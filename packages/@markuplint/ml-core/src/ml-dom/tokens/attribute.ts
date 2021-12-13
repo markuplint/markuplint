@@ -1,4 +1,5 @@
-import { MLASTHTMLAttr, MLToken } from '@markuplint/ml-ast';
+import type { MLASTHTMLAttr, MLToken } from '@markuplint/ml-ast';
+
 import MLDOMToken from './token';
 
 export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
@@ -14,7 +15,6 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 	readonly isDynamicValue?: true;
 	readonly isDirective?: true;
 	readonly potentialName: string;
-	readonly isInvalid?: boolean;
 	readonly candidate?: string;
 	readonly isDuplicatable: boolean;
 
@@ -32,7 +32,6 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 		this.isDynamicValue = astToken.isDynamicValue;
 		this.isDirective = astToken.isDirective;
 		this.potentialName = astToken.potentialName || this.name.raw;
-		this.isInvalid = astToken.isInvalid;
 		this.candidate = astToken.candidate;
 		this.isDuplicatable = astToken.isDuplicatable;
 	}

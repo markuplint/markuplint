@@ -1,0 +1,20 @@
+{
+	"tag": "text",
+	"contents": [
+		{
+			"zeroOrMore": [
+				"#text",
+				"#SVGAnimation",
+				"#SVGDescriptive",
+				"#SVGPaintServer",
+				"#SVGTextContentChild",
+				"svg:a",
+				"svg:clipPath",
+				"svg:marker",
+				"svg:mask",
+				"svg:script",
+				"svg:style"
+			]
+		}
+	]
+}

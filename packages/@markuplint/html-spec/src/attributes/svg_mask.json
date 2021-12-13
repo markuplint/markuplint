@@ -1,0 +1,107 @@
+{
+	"tag": "mask",
+	"ref": "https://drafts.fxtf.org/css-masking/#MaskElement",
+	"global": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+		"#SVGConditionalProcessingAttrs": ["requiredFeatures", "requiredExtensions", "systemLanguage"],
+		"#SVGPresentationAttrs": [
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-profile",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"opacity",
+			"overflow",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-rendering",
+			"unicode-bidi",
+			"visibility",
+			"word-spacing",
+			"writing-mode"
+		],
+		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height"]
+	},
+	"attributes": {
+		"x": {
+			"ref": "https://drafts.fxtf.org/css-masking/#element-attrdef-mask-x",
+			"defaultValue": "-10%"
+		},
+		"y": {
+			"ref": "https://drafts.fxtf.org/css-masking/#element-attrdef-mask-y",
+			"defaultValue": "-10%"
+		},
+		"width": {
+			"ref": "https://drafts.fxtf.org/css-masking/#element-attrdef-mask-width",
+			"defaultValue": "120%"
+		},
+		"height": {
+			"ref": "https://drafts.fxtf.org/css-masking/#element-attrdef-mask-height",
+			"defaultValue": "120%"
+		},
+		"maskUnits": {
+			"ref": "https://drafts.fxtf.org/css-masking/#element-attrdef-mask-maskunits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "objectBoundingBox",
+			"animatable": true
+		},
+		"maskContentUnits": {
+			"ref": "https://drafts.fxtf.org/css-masking/#element-attrdef-mask-maskcontentunits",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"]
+			},
+			"defaultValue": "userSpaceOnUse",
+			"animatable": true
+		}
+	}
+}

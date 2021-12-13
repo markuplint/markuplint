@@ -1,0 +1,29 @@
+{
+	"tag": "script",
+	"ref": "https://svgwg.org/svg2-draft/interact.html#ScriptElement",
+	"global": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#XLinkAttrs": ["xlink:href", "xlink:title"]
+	},
+	"attributes": {
+		"type": {
+			"ref": "https://svgwg.org/svg2-draft/interact.html#ScriptElementTypeAttribute",
+			"type": "MIMEType",
+			"defaultValue": "application/ecmascript"
+		},
+		"href": {
+			"ref": "https://svgwg.org/svg2-draft/interact.html#ScriptElementHrefAttribute",
+			"type": "URL"
+		},
+		"crossorigin": {
+			"ref": "https://svgwg.org/svg2-draft/interact.html#ScriptElementCrossoriginAttribute",
+			"type": {
+				"enum": ["anonymous", "use-credentials", ""],
+				"disallowToSurroundBySpaces": false
+			},
+			"animatable": true
+		}
+	}
+}

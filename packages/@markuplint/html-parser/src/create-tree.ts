@@ -1,15 +1,26 @@
-import {
+import type {
 	MLASTDoctype,
 	MLASTElementCloseTag,
 	MLASTNode,
-	MLASTNodeType,
 	MLASTOmittedElement,
 	MLASTParentNode,
 	MLASTTag,
 	MLASTText,
 } from '@markuplint/ml-ast';
-import { getEndCol, getEndLine, isPotentialCustomElementName, uuid } from '@markuplint/parser-utils';
-import parse5, { CommentNode, Document, DocumentFragment, Element, Node, TextNode } from 'parse5';
+import type {
+	CommentNode,
+	Document,
+	DocumentFragment,
+	Element,
+	Node,
+	TextNode,
+	ElementLocation,
+	Location,
+} from 'parse5';
+
+import { getEndCol, getEndLine, isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { parse, parseFragment } from 'parse5';
+
 import parseRawTag from './parse-raw-tag';
 
 interface TraversalNode {
@@ -32,8 +43,8 @@ export function createTree(
 	offsetColumn: number,
 ) {
 	const doc = isFragment
-		? (parse5.parseFragment(rawCode, P5_OPTIONS) as P5Fragment)
-		: (parse5.parse(rawCode, P5_OPTIONS) as P5Document);
+		? (parseFragment(rawCode, P5_OPTIONS) as P5Fragment)
+		: (parse(rawCode, P5_OPTIONS) as P5Document);
 	return createTreeRecursive(doc, null, rawCode, offsetOffset, offsetLine, offsetColumn);
 }
 
@@ -56,7 +67,7 @@ function createTreeRecursive(
 			continue;
 		}
 		if (prevNode) {
-			if (node.type !== MLASTNodeType.EndTag) {
+			if (node.type !== 'endtag') {
 				prevNode.nextNode = node;
 			}
 			node.prevNode = prevNode;
@@ -96,7 +107,7 @@ function nodeize(
 			startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 			endCol: endCol + (endLine === 1 ? offsetColumn : 0),
 			nodeName: originNode.nodeName,
-			type: MLASTNodeType.OmittedTag,
+			type: 'omittedtag',
 			namespace: getNamespace(originNode),
 			parentNode,
 			prevNode,
@@ -128,7 +139,7 @@ function nodeize(
 				startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 				endCol: endCol + (endLine === 1 ? offsetColumn : 0),
 				nodeName: '#doctype',
-				type: MLASTNodeType.Doctype,
+				type: 'doctype',
 				parentNode,
 				prevNode,
 				_addPrevNode: 102,
@@ -148,7 +159,7 @@ function nodeize(
 				startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 				endCol: endCol + (endLine === 1 ? offsetColumn : 0),
 				nodeName: '#text',
-				type: MLASTNodeType.Text,
+				type: 'text',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -168,7 +179,7 @@ function nodeize(
 				startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 				endCol: endCol + (endLine === 1 ? offsetColumn : 0),
 				nodeName: '#comment',
-				type: MLASTNodeType.Comment,
+				type: 'comment',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -193,7 +204,25 @@ function nodeize(
 			const tagName = tagTokens.tagName;
 			const isCustomElement = isPotentialCustomElementName(tagName);
 			let endTag: MLASTElementCloseTag | null = null;
-			const endTagLoc = 'endTag' in location ? location.endTag : null;
+			let endTagLoc = 'endTag' in location ? location.endTag : null;
+
+			/**
+			 * Patch: Create endTag for SVG Element
+			 * @see https://github.com/inikulin/parse5/issues/352
+			 */
+			if (
+				!endTagLoc &&
+				'namespaceURI' in originNode &&
+				originNode.namespaceURI === 'http://www.w3.org/2000/svg'
+			) {
+				const belowRawHTMLFromStartTagEnd = rawHtml.slice(location.endOffset);
+				const endTagMatched = belowRawHTMLFromStartTagEnd.match(new RegExp(`^</\\s*${tagName}[^>]*>`, 'm'));
+				const endTag = endTagMatched && endTagMatched[0];
+				if (endTag) {
+					endTagLoc = sliceFragment(rawHtml, location.endOffset, location.endOffset + endTag.length);
+				}
+			}
+
 			if (endTagLoc) {
 				const { startOffset, endOffset, startLine, endLine, startCol, endCol } = endTagLoc;
 				const endTagRaw = rawHtml.slice(startOffset, endOffset);
@@ -217,7 +246,7 @@ function nodeize(
 					startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 					endCol: endCol + (endLine === 1 ? offsetColumn : 0),
 					nodeName: endTagName,
-					type: MLASTNodeType.EndTag,
+					type: 'endtag',
 					namespace: getNamespace(originNode),
 					attributes: endTagTokens.attrs,
 					parentNode,
@@ -244,7 +273,7 @@ function nodeize(
 				startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 				endCol: _endCol + (startLine === _endLine ? offsetColumn : 0),
 				nodeName: tagName,
-				type: MLASTNodeType.StartTag,
+				type: 'starttag',
 				namespace: getNamespace(originNode),
 				attributes: tagTokens.attrs,
 				hasSpreadAttr: false,
@@ -301,7 +330,7 @@ function getChildNodes(rootNode: P5Node | P5Document | P5Fragment) {
 			'\n'.repeat(breakCount) +
 			' '.repeat(indentWidth);
 
-		const fragment = parse5.parseFragment(`${offsetSpaces}${html}`, P5_OPTIONS);
+		const fragment = parseFragment(`${offsetSpaces}${html}`, P5_OPTIONS);
 		const childNodes = fragment.childNodes.slice(offsetSpaces ? 1 : 0);
 		// const childNodes = ('childNodes' in _childNodes && _childNodes.childNodes) || [];
 
@@ -314,7 +343,7 @@ function hasLocation(node: P5Node): node is P5LocatableNode {
 	return 'sourceCodeLocation' in node;
 }
 
-function getLocation(node: P5Node): parse5.Location | parse5.ElementLocation | null {
+function getLocation(node: P5Node): Location | ElementLocation | null {
 	if (hasLocation(node) && node.sourceCodeLocation) {
 		return node.sourceCodeLocation;
 	}

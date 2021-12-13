@@ -1,88 +1,69 @@
-import * as markuplint from 'markuplint';
+import { mlRuleTest } from 'markuplint';
+
 import rule from './';
 
 test('warns if specified attribute is not appeared', async () => {
-	const r = await markuplint.verify(
-		'<img src="/path/to/image.png">',
-		{
-			rules: {
-				'required-attr': true,
-			},
-			nodeRules: [
-				{
-					tagName: 'img',
-					rules: {
-						'required-attr': {
-							severity: 'error',
-							value: 'alt',
-						},
-					},
-				},
-			],
-		},
-		[rule],
-		'en',
-	);
+	const { violations } = await mlRuleTest(rule, '<img src="/path/to/image.png">', {
+		rule: true,
 
-	expect(r).toStrictEqual([
+		nodeRule: [
+			{
+				tagName: 'img',
+				rule: {
+					severity: 'error',
+					value: 'alt',
+				},
+			},
+		],
+	});
+
+	expect(violations).toStrictEqual([
 		{
 			col: 1,
 			line: 1,
-			message: "Required 'alt' on '<img>'",
+			message: 'The "img" element expects the "alt" attribute',
 			raw: '<img src="/path/to/image.png">',
-			ruleId: 'required-attr',
 			severity: 'error',
 		},
 	]);
 });
 
 test('multiple required attributes', async () => {
-	const r = await markuplint.verify(
-		'<img src="/path/to/image.png">',
-		{
-			rules: {
-				'required-attr': true,
-			},
-			nodeRules: [
-				{
-					tagName: 'img',
-					rules: {
-						'required-attr': {
-							severity: 'error',
-							value: ['width', 'height', 'alt'],
-						},
-					},
-				},
-			],
-		},
-		[rule],
-		'en',
-	);
+	const { violations } = await mlRuleTest(rule, '<img src="/path/to/image.png">', {
+		rule: true,
 
-	expect(r).toStrictEqual([
+		nodeRule: [
+			{
+				tagName: 'img',
+				rule: {
+					severity: 'error',
+					value: ['width', 'height', 'alt'],
+				},
+			},
+		],
+	});
+
+	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: "Required 'alt' on '<img>'",
+			message: 'The "img" element expects the "width" attribute',
 			line: 1,
 			col: 1,
 			raw: '<img src="/path/to/image.png">',
-			ruleId: 'required-attr',
 		},
 		{
 			severity: 'error',
-			message: "Required 'height' on '<img>'",
+			message: 'The "img" element expects the "height" attribute',
 			line: 1,
 			col: 1,
 			raw: '<img src="/path/to/image.png">',
-			ruleId: 'required-attr',
 		},
 		{
 			severity: 'error',
-			message: "Required 'width' on '<img>'",
+			message: 'The "img" element expects the "alt" attribute',
 			line: 1,
 			col: 1,
 			raw: '<img src="/path/to/image.png">',
-			ruleId: 'required-attr',
 		},
 	]);
 });
@@ -90,207 +71,302 @@ test('multiple required attributes', async () => {
 test('"alt" attribute on "<area>" is required only if the href attribute is used', async () => {
 	expect(
 		(
-			await markuplint.verify(
-				'<area href="path/to">',
-				{
-					rules: {
-						'required-attr': true,
-					},
-					nodeRules: [],
-				},
-				[rule],
-				'en',
-			)
-		).length,
+			await mlRuleTest(rule, '<area href="path/to">', {
+				rule: true,
+
+				nodeRule: [],
+			})
+		).violations.length,
 	).toBe(1);
 
 	expect(
 		(
-			await markuplint.verify(
-				'<area href="path/to" alt="alternate text">',
-				{
-					rules: {
-						'required-attr': true,
-					},
-					nodeRules: [],
-				},
-				[rule],
-				'en',
-			)
-		).length,
+			await mlRuleTest(rule, '<area href="path/to" alt="alternate text">', {
+				rule: true,
+
+				nodeRule: [],
+			})
+		).violations.length,
 	).toBe(0);
 });
 
 test('At least one of data and type must be defined to <object>.', async () => {
 	expect(
 		(
-			await markuplint.verify(
-				'<object data="https://example.com/data">',
-				{
-					rules: {
-						'required-attr': true,
-					},
-					nodeRules: [],
-				},
-				[rule],
-				'en',
-			)
-		).length,
+			await mlRuleTest(rule, '<object data="https://example.com/data">', {
+				rule: true,
+
+				nodeRule: [],
+			})
+		).violations.length,
 	).toBe(0);
 
 	expect(
 		(
-			await markuplint.verify(
-				'<object type="XXXX_YYYY_ZZZZ">',
-				{
-					rules: {
-						'required-attr': true,
-					},
-					nodeRules: [],
-				},
-				[rule],
-				'en',
-			)
-		).length,
+			await mlRuleTest(rule, '<object type="XXXX_YYYY_ZZZZ">', {
+				rule: true,
+
+				nodeRule: [],
+			})
+		).violations.length,
 	).toBe(0);
 
 	expect(
 		(
-			await markuplint.verify(
-				'<object>',
-				{
-					rules: {
-						'required-attr': true,
-					},
-					nodeRules: [],
-				},
-				[rule],
-				'en',
-			)
-		).length,
+			await mlRuleTest(rule, '<object>', {
+				rule: true,
+
+				nodeRule: [],
+			})
+		).violations.length,
 	).toBe(2);
 });
 
 test('The ancestors of the <source> element.', async () => {
 	expect(
-		await markuplint.verify(
-			'<audio><source></audio>',
-			{
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
+		(
+			await mlRuleTest(rule, '<audio><source></audio>', {
+				rule: true,
+
+				nodeRule: [],
+			})
+		).violations,
 	).toStrictEqual([
 		{
-			ruleId: 'required-attr',
 			severity: 'error',
 			line: 1,
 			col: 8,
-			message: "Required 'src' on '<source>'",
+			message: 'The "source" element expects the "src" attribute',
 			raw: '<source>',
 		},
 	]);
 
 	expect(
-		await markuplint.verify(
-			'<video><source></video>',
-			{
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
+		(
+			await mlRuleTest(rule, '<video><source></video>', {
+				rule: true,
+
+				nodeRule: [],
+			})
+		).violations,
 	).toStrictEqual([
 		{
-			ruleId: 'required-attr',
 			severity: 'error',
 			line: 1,
 			col: 8,
-			message: "Required 'src' on '<source>'",
+			message: 'The "source" element expects the "src" attribute',
 			raw: '<source>',
 		},
 	]);
 
 	expect(
-		await markuplint.verify(
-			'<picture><source></picture>',
-			{
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
+		(
+			await mlRuleTest(rule, '<picture><source></picture>', {
+				rule: true,
+
+				nodeRule: [],
+			})
+		).violations,
 	).toStrictEqual([]);
+});
+
+test('with value requirement', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<img />', {
+				rule: [
+					{
+						name: 'decoding',
+						value: 'async',
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "img" element expects the "src" attribute',
+			raw: '<img />',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "img" element expects the "decoding" attribute',
+			raw: '<img />',
+		},
+	]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<img decoding="sync" />', {
+				rule: [
+					{
+						name: 'decoding',
+						value: 'async',
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "img" element expects the "src" attribute',
+			raw: '<img decoding="sync" />',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 16,
+			message: 'The "decoding" attribute expects "async"',
+			raw: 'sync',
+		},
+	]);
+});
+
+test('with value requirement (regex)', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<img src="./path/to" /><img src="/path/to" />', {
+				rule: [
+					{
+						name: 'src',
+						value: '/^\\/|^https:\\/\\//i',
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 11,
+			message: 'The "src" attribute expects "/^\\/|^https:\\/\\//i"',
+			raw: './path/to',
+		},
+	]);
+});
+
+test('nodeRules', async () => {
+	const { violations } = await mlRuleTest(rule, '<img src="path/to.svg" alt="text" />', {
+		rule: true,
+
+		nodeRule: [
+			{
+				selector: 'img[src$=.svg]',
+				rule: 'role',
+			},
+		],
+	});
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "img" element expects the "role" attribute',
+			raw: '<img src="path/to.svg" alt="text" />',
+		},
+	]);
 });
 
 test('Foreign element', async () => {
 	expect(
-		await markuplint.verify(
-			'<svg></svg>',
-			{
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [
+		(
+			await mlRuleTest(rule, '<svg></svg>', {
+				rule: true,
+
+				nodeRule: [
 					{
 						tagName: 'svg',
-						rules: {
-							'required-attr': {
-								severity: 'error',
-								value: 'viewBox',
-							},
+						rule: {
+							severity: 'error',
+							value: 'viewBox',
 						},
 					},
 				],
-			},
-			[rule],
-			'en',
-		),
+			})
+		).violations,
 	).toStrictEqual([
 		{
-			ruleId: 'required-attr',
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: "Required 'viewBox' on '<svg>'",
+			message: 'The "svg" element expects the "viewBox" attribute',
 			raw: '<svg>',
+		},
+	]);
+});
+
+test('svg', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<svg>
+					<circle cx="50" cy="50" r="40" />
+					<circle cx="150" cy="50" r="4" />
+					<circle cx="5" cy="5" r="4" />
+					<circle />
+				</svg>
+				`,
+				{
+					rule: true,
+
+					nodeRule: [
+						{
+							selector: 'circle',
+							rule: ['cx', 'cy', 'r'],
+						},
+					],
+				},
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 5,
+			col: 6,
+			message: 'The "circle" element expects the "cx" attribute',
+			raw: '<circle />',
+		},
+		{
+			severity: 'error',
+			line: 5,
+			col: 6,
+			message: 'The "circle" element expects the "cy" attribute',
+			raw: '<circle />',
+		},
+		{
+			severity: 'error',
+			line: 5,
+			col: 6,
+			message: 'The "circle" element expects the "r" attribute',
+			raw: '<circle />',
 		},
 	]);
 });
 
 test('Pug', async () => {
 	expect(
-		await markuplint.verify(
-			'img',
-			{
+		(
+			await mlRuleTest(rule, 'img', {
 				parser: {
 					'.*': '@markuplint/pug-parser',
 				},
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
+				rule: true,
+			})
+		).violations,
 	).toStrictEqual([
 		{
-			ruleId: 'required-attr',
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: "Required 'src' on '<img>'",
+			message: 'The "img" element expects the "src" attribute',
 			raw: 'img',
 		},
 	]);
@@ -299,65 +375,44 @@ test('Pug', async () => {
 test('Vue', async () => {
 	expect(
 		(
-			await markuplint.verify(
-				'<template><img :src="src"></template>',
-				{
-					parser: {
-						'.*': '@markuplint/vue-parser',
-					},
-					rules: {
-						'required-attr': true,
-					},
-					nodeRules: [],
+			await mlRuleTest(rule, '<template><img :src="src"></template>', {
+				parser: {
+					'.*': '@markuplint/vue-parser',
 				},
-				[rule],
-				'en',
-			)
-		).length,
+				rule: true,
+			})
+		).violations.length,
 	).toBe(0);
 });
 
 test('React', async () => {
 	expect(
-		await markuplint.verify(
-			'<img alt={alt} />',
-			{
+		(
+			await mlRuleTest(rule, '<img alt={alt} />', {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
+				rule: true,
+			})
+		).violations,
 	).toStrictEqual([
 		{
-			ruleId: 'required-attr',
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: "Required 'src' on '<img>'",
+			message: 'The "img" element expects the "src" attribute',
 			raw: '<img alt={alt} />',
 		},
 	]);
 
 	expect(
-		await markuplint.verify(
-			'<img {...props} />',
-			{
+		(
+			await mlRuleTest(rule, '<img {...props} />', {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rules: {
-					'required-attr': true,
-				},
-				nodeRules: [],
-			},
-			[rule],
-			'en',
-		),
+				rule: true,
+			})
+		).violations,
 	).toStrictEqual([]);
 });

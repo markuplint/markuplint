@@ -1,0 +1,8 @@
+{
+	"tag": "hatch",
+	"contents": [
+		{
+			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "svg:hatchpath", "svg:script", "svg:style"]
+		}
+	]
+}

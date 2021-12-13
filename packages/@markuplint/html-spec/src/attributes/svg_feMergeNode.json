@@ -1,0 +1,9 @@
+{
+	"tag": "feMergeNode",
+	"ref": "https://drafts.fxtf.org/filter-effects/#feMergeNodeElement",
+	"global": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
+		"#SVGFilterPrimitiveAttrs": ["in"]
+	},
+	"attributes": {}
+}

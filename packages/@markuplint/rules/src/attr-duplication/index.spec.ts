@@ -1,45 +1,40 @@
-import * as markuplint from 'markuplint';
+import { mlRuleTest } from 'markuplint';
+
 import rule from './';
 
 test('is test 1', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 		<div data-attr="value" data-Attr='db' data-attR=tr>
 			lorem
 			<p>ipsam</p>
 		</div>
 		`,
-		{
-			rules: {
-				'attr-duplication': true,
-			},
-		},
-		[rule],
-		'en',
+		{ rule: true },
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Duplicate attribute name',
+			message: 'The attribute name is duplicated',
 			line: 2,
 			col: 26,
 			raw: 'data-Attr',
-			ruleId: 'attr-duplication',
 		},
 		{
 			severity: 'error',
-			message: 'Duplicate attribute name',
+			message: 'The attribute name is duplicated',
 			line: 2,
 			col: 41,
 			raw: 'data-attR',
-			ruleId: 'attr-duplication',
 		},
 	]);
 });
 
 test('is test 2', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlRuleTest(
+		rule,
 		`
 		<div
 			data-attr="value"
@@ -49,150 +44,99 @@ test('is test 2', async () => {
 			<p>ipsam</p>
 		</div>
 		`,
-		{
-			rules: {
-				'attr-duplication': true,
-			},
-		},
-		[rule],
-		'en',
+		{ rule: true },
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'Duplicate attribute name',
+			message: 'The attribute name is duplicated',
 			line: 4,
 			col: 4,
 			raw: 'data-Attr',
-			ruleId: 'attr-duplication',
 		},
 		{
 			severity: 'error',
-			message: 'Duplicate attribute name',
+			message: 'The attribute name is duplicated',
 			line: 5,
 			col: 4,
 			raw: 'data-attR',
-			ruleId: 'attr-duplication',
 		},
 	]);
 });
 
 test('is test 3', async () => {
-	const r = await markuplint.verify(
-		'<img src="/" SRC="/" >',
-		{
-			rules: {
-				'attr-duplication': true,
-			},
-		},
-		[rule],
-		'ja',
-	);
+	const { violations } = await mlRuleTest(rule, '<img src="/" SRC="/" >', { rule: true }, false, 'ja');
 
-	expect(r.map(_ => _.message)).toStrictEqual(['属性名が重複しています']);
+	expect(violations.map(_ => _.message)).toStrictEqual(['属性名が重複しています']);
 });
 
 test('nodeRules disable', async () => {
-	const r = await markuplint.verify(
-		'<div><span attr attr></span></div>',
-		{
-			rules: {
-				'attr-duplication': true,
+	const { violations } = await mlRuleTest(rule, '<div><span attr attr></span></div>', {
+		rule: true,
+		nodeRule: [
+			{
+				selector: 'span',
+				rule: false,
 			},
-			nodeRules: [
-				{
-					selector: 'span',
-					rules: {
-						'attr-duplication': false,
-					},
-				},
-			],
-		},
-		[rule],
-		'en',
-	);
+		],
+	});
 
-	expect(r.length).toStrictEqual(0);
+	expect(violations.length).toStrictEqual(0);
 });
 
 test('Vue', async () => {
-	const r = await markuplint.verify(
-		'<template><div attr v-bind:attr /></template>',
-		{
-			rules: {
-				'attr-duplication': true,
-			},
-			parser: {
-				'.*': '@markuplint/vue-parser',
-			},
+	const { violations } = await mlRuleTest(rule, '<template><div attr v-bind:attr /></template>', {
+		rule: true,
+		parser: {
+			'.*': '@markuplint/vue-parser',
 		},
-		[rule],
-		'en',
-	);
+	});
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
-			ruleId: 'attr-duplication',
 			severity: 'error',
 			line: 1,
 			col: 21,
-			message: 'Duplicate attribute name',
+			message: 'The attribute name is duplicated',
 			raw: 'v-bind:attr',
 		},
 	]);
 });
 
 test('React', async () => {
-	const r = await markuplint.verify(
-		'<div tabindex tabIndex />',
-		{
-			rules: {
-				'attr-duplication': true,
-			},
-			parser: {
-				'.*': '@markuplint/vue-parser',
-			},
+	const { violations } = await mlRuleTest(rule, '<div tabindex tabIndex />', {
+		rule: true,
+		parser: {
+			'.*': '@markuplint/vue-parser',
 		},
-		[rule],
-		'en',
-	);
+	});
 
-	expect(r).toStrictEqual([]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('Pug', async () => {
-	const r = await markuplint.verify(
-		'.hoge(class="hoge2")&attributes({class: "hoge3"})',
-		{
-			rules: {
-				'attr-duplication': true,
-			},
-			parser: {
-				'.*': '@markuplint/pug-parser',
-			},
+	const { violations } = await mlRuleTest(rule, '.hoge(class="hoge2")&attributes({class: "hoge3"})', {
+		rule: true,
+		parser: {
+			'.*': '@markuplint/pug-parser',
 		},
-		[rule],
-		'en',
-	);
+	});
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
 
 test('Svelte', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlRuleTest(
+		rule,
 		'<div class:selected="{isSelected}" class:focused="{isFocused}"></div>',
 		{
-			rules: {
-				'attr-duplication': true,
-			},
+			rule: true,
 			parser: {
 				'.*': '@markuplint/svelte-parser',
 			},
 		},
-		[rule],
-		'en',
 	);
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });

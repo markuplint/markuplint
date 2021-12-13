@@ -1,8 +1,18 @@
-import { Config, VerifiedResult } from '@markuplint/ml-config';
-import { Document, Ruleset } from '@markuplint/ml-core';
+import type { Config, Violation } from '@markuplint/ml-config';
+import type { Document, Ruleset } from '@markuplint/ml-core';
 
 export interface MLResultInfo {
-	results: VerifiedResult[];
+	violations: Violation[];
+	filePath: string;
+	sourceCode: string;
+	fixedCode: string;
+}
+
+/**
+ * @deprecated
+ */
+export interface MLResultInfo_v1 {
+	results: Violation[];
 	filePath: string;
 	sourceCode: string;
 	fixedCode: string;
@@ -16,3 +26,5 @@ export interface MLResultInfo {
 		error: string[];
 	};
 }
+
+export type Nullable<T> = T | null | undefined;

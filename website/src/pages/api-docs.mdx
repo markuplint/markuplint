@@ -24,7 +24,7 @@ Basic Usage:
 import { exec } from 'markuplint';
 
 const result = await exec({
-	files: './**/*.html',
+  files: './**/*.html',
 });
 
 console.log(result); // => The results in JSON format
@@ -34,10 +34,10 @@ console.log(result); // => The results in JSON format
 
 ### `exec`
 
--   _Parameter_
-    -   `options`
--   _Return_
-    -   type: `Promise`&lt;`Array`&lt;[`MLResultInfo`](https://api.markuplint.dev/interfaces/mlresultinfo.html)&gt;&gt;
+- _Parameter_
+  - `options`
+- _Return_
+  - type: `Promise`&lt;`Array`&lt;[`MLResultInfo`](https://api.markuplint.dev/interfaces/mlresultinfo.html)&gt;&gt;
 
 #### `options`
 

@@ -1,9 +1,16 @@
 {
 	"tag": "q",
-	"attributes": [
-		{
-			"name": "cite",
+	"ref": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-q-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"cite": {
+			"ref": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#attr-q-cite",
 			"type": "URL"
 		}
-	]
+	}
 }

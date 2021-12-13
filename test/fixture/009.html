@@ -1,0 +1,59 @@
+<div>
+	<svg>
+		<a xlink:href="path/to">
+			<text>Link1</text>
+		</a>
+		<switch>
+			<g>
+				<rect />
+			</g>
+			<foreignObject>
+				<div>
+					<a href="path/to">Link2</a>
+				</div>
+			</foreignObject>
+			<foreignObject>
+				<g>
+					<a href="path/to">Link3</a>
+				</g>
+			</foreignObject>
+			<foreignObject>
+				<g>
+					<a href="path/to">Link4</a>
+				</g>
+				<div>
+					<a href="path/to">Link5</a>
+				</div>
+			</foreignObject>
+		</switch>
+		<g>
+			<defs>
+				<filter id="spotlight">
+					<feFlood
+						result="floodFill"
+						x="0"
+						y="0"
+						width="100%"
+						height="100%"
+						flood-color="green"
+						flood-opacity="1"
+					/>
+					<feBlend in="SourceGraphic" in2="floodFill" mode="multiply" />
+				</filter>
+				<filter id="spotlight2">
+					<feFlood
+						result="floodFill"
+						x="0"
+						y="0"
+						width="100%"
+						height="100%"
+						flood-color="green"
+						flood-opacity="100"
+					/>
+					<feBlend in3="SourceGraphic" in4="floodFill" mode="invalid" />
+				</filter>
+				<image href="path/to.png" x="10%" y="10%" width="80%" height="80%" style="filter: url(#spotlight)" />
+			</defs>
+		</g>
+	</svg>
+</div>

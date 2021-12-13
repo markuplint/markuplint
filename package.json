@@ -1,4 +1,5 @@
 {
+	"name": "markuplint-packages",
 	"private": true,
 	"scripts": {
 		"bootstrap": "lerna bootstrap",
@@ -6,16 +7,18 @@
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev",
 		"test": "jest --coverage",
-		"test:coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
+		"test:coverage": "jest --useStderr --coverage && cat ./coverage/lcov.info | coveralls",
 		"test:clear": "jest --clearCache",
 		"test:unit": "jest",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
-		"lint": "prettier --write './{packages,website,playground}/**/*.{ts,tsx,json}'; eslint --fix './{packages,website,playground}/**/*.{ts,tsx}'; yarn cli './website/**/*.tsx'",
+		"lint": "prettier --write './packages/**/*{ts,tsx,json,rc,md}'; eslint --fix './packages/**/*.ts';",
+		"ga": "actionlint .github/workflows/*.yml",
 		"schema": "lerna run schema",
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
 		"all": "yarn lint; yarn clean; yarn gen; yarn build; yarn schema; yarn test:clear; yarn test;",
 		"cli": "./packages/markuplint/bin/markuplint",
 		"site:dev": "cd website; yarn site:dev",
+		"site:lint": "prettier --write './website/**/*{ts,tsx,mdx}' './website/*{json,rc,js}'; eslint --fix './website/**/*.{ts,tsx}' './website/*.{js,ts}'; yarn cli './website/**/*.tsx'",
 		"site:build": "cd website; yarn site:build",
 		"pg:dev": "cd playground; yarn pg:dev",
 		"pg:build": "cd playground; yarn pg:build",
@@ -33,11 +36,13 @@
 		],
 		"./test/**/*.{pug,html}": [
 			"yarn cli"
+		],
+		".github/workflows/*.yml": [
+			"actionlint"
 		]
 	},
 	"jest": {
 		"verbose": true,
-		"testRegex": "(\\.|/)(spec|test)\\.tsx?$",
 		"moduleFileExtensions": [
 			"ts",
 			"tsx",
@@ -55,6 +60,7 @@
 		"projects": [
 			{
 				"displayName": "node",
+				"testRegex": "(\\.|/)(spec|test)\\.tsx?$",
 				"testPathIgnorePatterns": [
 					"(\\.|/)browser\\.(spec|test)\\.tsx?$"
 				],
@@ -83,24 +89,25 @@
 		"playground"
 	],
 	"devDependencies": {
-		"@types/jest": "^26.0.24",
-		"@typescript-eslint/eslint-plugin": "^4.28.3",
-		"@typescript-eslint/parser": "^4.28.3",
+		"@types/jest": "^27.0.2",
+		"@typescript-eslint/eslint-plugin": "^5.3.1",
+		"@typescript-eslint/parser": "^5.3.1",
 		"browser-resolve": "^2.0.0",
 		"coveralls": "^3.1.1",
-		"eslint": "^7.30.0",
+		"eslint": "^8.2.0",
 		"eslint-plugin-eslint-comments": "^3.2.0",
-		"eslint-plugin-jsdoc": "^35.4.3",
+		"eslint-plugin-import": "^2.25.3",
+		"eslint-plugin-jsdoc": "^37.0.3",
 		"eslint-plugin-node": "^11.1.0",
 		"heapdump": "^0.3.15",
-		"husky": "^7.0.1",
-		"jest": "^27.0.6",
+		"husky": "^7.0.4",
+		"jest": "^27.3.1",
 		"lerna": "^4.0.0",
-		"lint-staged": "^11.0.1",
-		"prettier": "^2.3.2",
-		"ts-jest": "^27.0.3",
-		"ts-node": "^10.1.0",
-		"typedoc": "^0.21.4",
-		"typescript": "^4.3.5"
+		"lint-staged": "^12.0.1",
+		"prettier": "^2.4.1",
+		"ts-jest": "^27.0.7",
+		"ts-node": "^10.4.0",
+		"typedoc": "^0.22.8",
+		"typescript": "^4.4.4"
 	}
 }

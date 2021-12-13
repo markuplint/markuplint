@@ -1,0 +1,11 @@
+{
+	"tag": "figure",
+	"ref": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-figure-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {}
+}

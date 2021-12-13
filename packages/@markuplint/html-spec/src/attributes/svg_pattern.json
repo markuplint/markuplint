@@ -1,0 +1,128 @@
+{
+	"tag": "pattern",
+	"ref": "https://svgwg.org/svg2-draft/pservers.html#Patterns",
+	"global": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": [
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"isolation",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"mask-type",
+			"opacity",
+			"overflow",
+			"paint-order",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-overflow",
+			"text-rendering",
+			"transform-origin",
+			"unicode-bidi",
+			"vector-effect",
+			"visibility",
+			"white-space",
+			"word-spacing",
+			"writing-mode"
+		],
+		"#XLinkAttrs": ["xlink:href", "xlink:title"]
+	},
+	"attributes": {
+		"viewBox": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#ViewBoxAttribute",
+			"type": "<view-box>",
+			"animatable": true
+		},
+		"preserveAspectRatio": {
+			"ref": "https://svgwg.org/svg2-draft/coords.html#PreserveAspectRatioAttribute",
+			"type": "<preserve-aspect-ratio>",
+			"defaultValue": "xMidYMid meet",
+			"animatable": true
+		},
+		"width": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementWidthAttribute",
+			"defaultValue": "0"
+		},
+		"height": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementHeightAttribute",
+			"defaultValue": "0"
+		},
+		"patternUnits": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementPatternUnitsAttribute",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "objectBoundingBox",
+			"animatable": true
+		},
+		"patternContentUnits": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementPatternContentUnitsAttribute",
+			"type": {
+				"enum": ["userSpaceOnUse", "objectBoundingBox"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "userSpaceOnUse",
+			"animatable": true
+		},
+		"patternTransform": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementPatternTransformAttribute",
+			"type": "<transform-list>",
+			"animatable": true
+		},
+		"href": {
+			"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementHrefAttribute",
+			"type": "URL",
+			"animatable": true
+		}
+	}
+}

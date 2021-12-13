@@ -1,21 +1,25 @@
 {
 	"tag": "option",
-	"attributes": [
-		{
-			"name": "disabled",
+	"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#the-option-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": ["disabled"]
+	},
+	"attributes": {
+		"label": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-option-label",
+			"type": "Any"
+		},
+		"selected": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-option-selected",
 			"type": "Boolean"
 		},
-		{
-			"name": "label",
-			"type": "String"
-		},
-		{
-			"name": "selected",
-			"type": "Boolean"
-		},
-		{
-			"name": "value",
-			"type": "String"
+		"value": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-option-value",
+			"type": "Any"
 		}
-	]
+	}
 }

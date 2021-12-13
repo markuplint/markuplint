@@ -1,4 +1,5 @@
 import { getEndCol, getEndLine } from '@markuplint/parser-utils';
+
 import { reSplitterTag, reTagName } from './const';
 
 export interface N {

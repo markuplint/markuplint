@@ -1,631 +1,511 @@
-import * as markuplint from 'markuplint';
+import { mlRuleTest } from 'markuplint';
+
 import rule from './';
 
 test('warns if specified attribute value is invalid', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlRuleTest(
+		rule,
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
+		{ rule: true },
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 4,
-			message: 'The "invalid-attr" attribute is not allowed',
+			message: 'The "invalid-attr" attribute is disallowed',
 			raw: 'invalid-attr',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 33,
 			message:
-				'The "referrerpolicy" attribute expect either "", "no-referrer", "no-referrer-when-downgrade", "same-origin", "origin", "strict-origin", "origin-when-cross-origin", "strict-origin-when-cross-origin", "unsafe-url"',
+				'The "referrerpolicy" attribute expects either "", "no-referrer", "no-referrer-when-downgrade", "same-origin", "origin", "strict-origin", "origin-when-cross-origin", "strict-origin-when-cross-origin", "unsafe-url"',
 			raw: 'invalid-value',
 		},
 	]);
 });
 
 test('Type check', async () => {
-	const r = await markuplint.verify(
-		'<form name=""></form>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations } = await mlRuleTest(rule, '<form name=""></form>', { rule: true });
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 13,
-			message: 'The "name" attribute value must not be the empty string',
+			message: 'The "name" attribute must not be empty',
 			raw: '',
 		},
 	]);
 });
 
-test('disable', async () => {
-	const r = await markuplint.verify(
-		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
+test('complex type', async () => {
+	const { violations } = await mlRuleTest(rule, '<input autocomplete="section-a section-b"/>', { rule: true });
+
+	expect(violations).toStrictEqual([
 		{
-			rules: {
-				'invalid-attr': false,
-			},
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message:
+				'The autofill named group part of the "autocomplete" attribute is duplicated (https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-section)',
+			raw: 'section-b',
 		},
-		[rule],
-		'en',
+	]);
+});
+
+test('disable', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
+		{ rule: false },
 	);
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
 
 test('the input element type case-insensitive', async () => {
-	const r = await markuplint.verify(
-		'<input type="checkbox" checked>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked>', { rule: true });
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 
-	const r2 = await markuplint.verify(
-		'<input type="checkBox" checked>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations: violations2 } = await mlRuleTest(rule, '<input type="checkBox" checked>', { rule: true });
 
-	expect(r2.length).toBe(0);
+	expect(violations2.length).toBe(0);
 });
 
 test('ancestor condition', async () => {
 	expect(
-		await markuplint.verify(
-			'<picture><source media="print"></picture>',
-			{
-				rules: {
-					'invalid-attr': true,
-				},
-			},
-			[rule],
-			'en',
-		),
+		(await mlRuleTest(rule, '<picture><source media="print"></picture>', { rule: true })).violations,
 	).toStrictEqual([]);
 
-	expect(
-		await markuplint.verify(
-			'<audio><source media="print"></audio>',
-			{
-				rules: {
-					'invalid-attr': true,
-				},
-			},
-			[rule],
-			'en',
-		),
-	).toStrictEqual([
+	expect((await mlRuleTest(rule, '<audio><source media="print"></audio>', { rule: true })).violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 16,
-			message: 'The "media" attribute is not allowed',
+			message: 'The "media" attribute is disallowed',
 			raw: 'media',
 		},
 	]);
 });
 
 test('custom rule', async () => {
-	const r = await markuplint.verify(
-		'<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>',
-		{
-			rules: {
-				'invalid-attr': {
-					option: {
-						attrs: {
-							'x-attr': {
-								pattern: '/[a-z]+/',
-							},
-						},
+	const { violations } = await mlRuleTest(rule, '<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>', {
+		rule: {
+			option: {
+				attrs: {
+					'x-attr': {
+						pattern: '/[a-z]+/',
 					},
 				},
 			},
 		},
-		[rule],
-		'en',
-	);
+	});
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 15,
-			message: 'The "x-attr" attribute expect custom pattern "/[a-z]+/"',
+			message: 'The "x-attr" attribute is unmatched with the below patterns: /[a-z]+/',
 			raw: '123',
 		},
 	]);
 });
 
 test('custom rule: type', async () => {
-	const r = await markuplint.verify(
-		'<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>',
-		{
-			rules: {
-				'invalid-attr': {
-					option: {
-						attrs: {
-							'x-attr': {
-								type: 'Int',
-							},
-						},
+	const { violations } = await mlRuleTest(rule, '<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>', {
+		rule: {
+			option: {
+				attrs: {
+					'x-attr': {
+						type: 'Int',
 					},
 				},
 			},
 		},
-		[rule],
-		'en',
-	);
+	});
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 41,
-			message: 'The "x-attr" attribute expect integer',
+			message: 'It includes unexpected characters. the "x-attr" attribute expects integer',
 			raw: 'abc',
 		},
 	]);
 });
 
 test('custom element', async () => {
-	const r = await markuplint.verify(
-		'<custom-element any-attr></custom-element>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations } = await mlRuleTest(rule, '<custom-element any-attr></custom-element>', { rule: true });
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
 
 test('custom element and custom rule', async () => {
-	const r = await markuplint.verify(
-		'<custom-element any-attr="any-string"></custom-element>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-			nodeRules: [
-				{
-					tagName: 'custom-element',
-					rules: {
-						'invalid-attr': {
-							option: {
-								attrs: {
-									'any-attr': {
-										type: 'Int',
-									},
-								},
+	const { violations } = await mlRuleTest(rule, '<custom-element any-attr="any-string"></custom-element>', {
+		rule: true,
+
+		nodeRule: [
+			{
+				tagName: 'custom-element',
+				rule: {
+					option: {
+						attrs: {
+							'any-attr': {
+								type: 'Int',
 							},
 						},
 					},
 				},
-			],
-		},
-		[rule],
-		'en',
-	);
+			},
+		],
+	});
 
-	expect(r.length).toBe(1);
+	expect(violations.length).toBe(1);
 });
 
 test('prefix attribute', async () => {
-	const r = await markuplint.verify(
-		'<div v-bind:title="title" :class="classes" @click="click"></div>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
+	const { violations } = await mlRuleTest(rule, '<div v-bind:title="title" :class="classes" @click="click"></div>', {
+		rule: true,
+	});
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 6,
-			message: 'The "v-bind:title" attribute is not allowed',
+			message: 'The "v-bind:title" attribute is disallowed',
 			raw: 'v-bind:title',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 27,
-			message: 'The ":class" attribute is not allowed',
+			message: 'The ":class" attribute is disallowed',
 			raw: ':class',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			col: 44,
 			line: 1,
-			message: 'The "@click" attribute is not allowed',
+			message: 'The "@click" attribute is disallowed',
 			raw: '@click',
 		},
 	]);
 });
 
 test('ignore prefix attribute', async () => {
-	const r = await markuplint.verify(
-		'<div v-bind:title="title" :class="classes" @click="click"></div>',
+	const { violations } = await mlRuleTest(rule, '<div v-bind:title="title" :class="classes" @click="click"></div>', {
+		rule: {
+			option: {
+				ignoreAttrNamePrefix: ['v-bind:', ':', '@'],
+			},
+		},
+	});
+
+	expect(violations.length).toBe(0);
+});
+
+test('URL attribute', async () => {
+	const { violations } = await mlRuleTest(rule, '<img src="https://sample.com/path/to">', { rule: true });
+	expect(violations.length).toBe(0);
+
+	const { violations: violations2 } = await mlRuleTest(rule, '<img src="//sample.com/path/to">', { rule: true });
+	expect(violations2.length).toBe(0);
+
+	const { violations: violations3 } = await mlRuleTest(rule, '<img src="//user:pass@sample.com/path/to">', {
+		rule: true,
+	});
+	expect(violations3.length).toBe(0);
+
+	const { violations: violations4 } = await mlRuleTest(rule, '<img src="/path/to">', { rule: true });
+	expect(violations4.length).toBe(0);
+
+	const { violations: violations5 } = await mlRuleTest(rule, '<img src="/path/to?param=value">', { rule: true });
+	expect(violations5.length).toBe(0);
+
+	const { violations: violations6 } = await mlRuleTest(rule, '<img src="/?param=value">', { rule: true });
+	expect(violations6.length).toBe(0);
+
+	const { violations: violations7 } = await mlRuleTest(rule, '<img src="?param=value">', { rule: true });
+	expect(violations7.length).toBe(0);
+
+	const { violations: violations8 } = await mlRuleTest(rule, '<img src="path/to">', { rule: true });
+	expect(violations8.length).toBe(0);
+
+	const { violations: violations9 } = await mlRuleTest(rule, '<img src="./path/to">', { rule: true });
+	expect(violations9.length).toBe(0);
+
+	const { violations: violations10 } = await mlRuleTest(rule, '<img src="../path/to">', { rule: true });
+	expect(violations10.length).toBe(0);
+
+	const { violations: violations11 } = await mlRuleTest(rule, '<img src="/path/to#hash">', { rule: true });
+	expect(violations11.length).toBe(0);
+
+	const { violations: violations12 } = await mlRuleTest(rule, '<img src="#hash">', { rule: true });
+	expect(violations12.length).toBe(0);
+});
+
+test('Overwrite type', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>',
 		{
-			rules: {
-				'invalid-attr': {
-					option: {
-						ignoreAttrNamePrefix: ['v-bind:', ':', '@'],
+			rule: {
+				option: {
+					attrs: {
+						datetime: {
+							enum: ['overwrite-type'],
+						},
 					},
 				},
 			},
 		},
-		[rule],
-		'en',
+	);
+	const { violations: violations2 } = await mlRuleTest(
+		rule,
+		'<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>',
+		{
+			rule: true,
+		},
 	);
 
-	expect(r.length).toBe(0);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 56,
+			message: 'The "datetime" attribute expects overwrite-type',
+			raw: '2000-01-01',
+		},
+	]);
+	expect(violations2).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 17,
+			message:
+				'The year part includes unexpected characters (https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value)',
+			raw: 'overwrite',
+		},
+	]);
 });
 
-test('URL attribute', async () => {
-	const r = await markuplint.verify(
-		'<img src="https://sample.com/path/to">',
-		{
-			rules: {
-				'invalid-attr': true,
+test('custom rule: disallowed', async () => {
+	const { violations } = await mlRuleTest(rule, '<a onclick="fn()"></>', {
+		rule: {
+			option: {
+				attrs: {
+					onclick: {
+						disallowed: true,
+					},
+				},
 			},
 		},
-		[rule],
-		'en',
-	);
-	expect(r.length).toBe(0);
+	});
 
-	const r2 = await markuplint.verify(
-		'<img src="//sample.com/path/to">',
+	expect(violations).toStrictEqual([
 		{
-			rules: {
-				'invalid-attr': true,
-			},
+			severity: 'error',
+			line: 1,
+			col: 4,
+			message: 'The "onclick" attribute is disallowed',
+			raw: 'onclick',
 		},
-		[rule],
-		'en',
-	);
-	expect(r2.length).toBe(0);
-
-	const r3 = await markuplint.verify(
-		'<img src="//user:pass@sample.com/path/to">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r3.length).toBe(0);
-
-	const r4 = await markuplint.verify(
-		'<img src="/path/to">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r4.length).toBe(0);
-
-	const r5 = await markuplint.verify(
-		'<img src="/path/to?param=value">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r5.length).toBe(0);
-
-	const r6 = await markuplint.verify(
-		'<img src="/?param=value">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r6.length).toBe(0);
-
-	const r7 = await markuplint.verify(
-		'<img src="?param=value">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r7.length).toBe(0);
-
-	const r8 = await markuplint.verify(
-		'<img src="path/to">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r8.length).toBe(0);
-
-	const r9 = await markuplint.verify(
-		'<img src="./path/to">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r9.length).toBe(0);
-
-	const r10 = await markuplint.verify(
-		'<img src="../path/to">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r10.length).toBe(0);
-
-	const r11 = await markuplint.verify(
-		'<img src="/path/to#hash">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r11.length).toBe(0);
-
-	const r12 = await markuplint.verify(
-		'<img src="#hash">',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
-	);
-	expect(r12.length).toBe(0);
+	]);
 });
 
 test('Foreign element', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlRuleTest(
+		rule,
 		'<div><svg width="10px" height="10px" viewBox="0 0 10 10"></svg></div>',
-		{
-			rules: {
-				'invalid-attr': true,
-			},
-		},
-		[rule],
-		'en',
+		{ rule: true },
 	);
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
+});
+
+test('svg', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg" stroke="red" fill="grey">
+					<circle cx="50" cy="50" cz="50" r="40" />
+					<circle cx="150" cy="50" r="4" />
+					<svg viewBox="0 0 10 10" x="200" width="100">
+						<circle cx="5" cy="5" r="4" />
+					</svg>
+				</svg>
+				`,
+				{ rule: true },
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 2,
+			col: 30,
+			message: 'The "cz" attribute is disallowed',
+			raw: 'cz',
+		},
+	]);
+});
+
+test('svg', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<svg>
+					<rect mask="20px
+					hogehoge" />
+				</svg>
+				`,
+				{ rule: true },
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 3,
+			col: 6,
+			message:
+				'The value part of the "mask" attribute expects the CSS Syntax "<mask-layer>#" (https://csstree.github.io/docs/syntax/#Property:mask)',
+			raw: 'hogehoge',
+		},
+	]);
 });
 
 test('Pug', async () => {
-	const r = await markuplint.verify(
-		'button(type=buttonType)',
-		{
-			parser: {
-				'.*': '@markuplint/pug-parser',
-			},
-			rules: {
-				'invalid-attr': true,
-			},
+	const { violations } = await mlRuleTest(rule, 'button(type=buttonType)', {
+		parser: {
+			'.*': '@markuplint/pug-parser',
 		},
-		[rule],
-		'en',
-	);
+		rule: true,
+	});
 
-	expect(r.length).toBe(0);
+	expect(violations.length).toBe(0);
 });
 
 test('Vue', async () => {
-	const r1 = await markuplint.verify(
+	const { violations: violations1 } = await mlRuleTest(
+		rule,
 		'<template><button type="buttonType"></button></template>',
 		{
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
-			rules: {
-				'invalid-attr': true,
-			},
+			rule: true,
 		},
-		[rule],
-		'en',
 	);
-	const r2 = await markuplint.verify(
+	const { violations: violations2 } = await mlRuleTest(
+		rule,
 		'<template><button :type="buttonType"></button></template>',
 		{
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
-			rules: {
-				'invalid-attr': true,
-			},
+			rule: true,
 		},
-		[rule],
-		'en',
 	);
 
-	expect(r1.length).toBe(1);
-	expect(r2.length).toBe(0);
+	expect(violations1.length).toBe(1);
+	expect(violations2.length).toBe(0);
 });
 
 test('Vue iterator', async () => {
-	const r1 = await markuplint.verify(
+	const { violations: violations1 } = await mlRuleTest(
+		rule,
 		'<template><ul ref="ul"><li key="key"></li></ul></template>',
 		{
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
 			specs: ['@markuplint/vue-spec'],
-			rules: {
-				'invalid-attr': true,
-			},
+			rule: true,
 		},
-		[rule],
-		'en',
 	);
-	const r2 = await markuplint.verify(
+	const { violations: violations2 } = await mlRuleTest(
+		rule,
 		'<template><ul><li v-for="item of list" :key="key"></li></ul></template>',
 		{
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
-			rules: {
-				'invalid-attr': true,
-			},
+			rule: true,
 		},
-		[rule],
-		'en',
 	);
 
-	expect(r1.length).toBe(1);
-	expect(r2.length).toBe(0);
+	expect(violations1.length).toBe(1);
+	expect(violations2.length).toBe(0);
 });
 
 test('React Component', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlRuleTest(
+		rule,
 		'<Component className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
 		{
 			parser: {
 				'.*': '@markuplint/jsx-parser',
 			},
-			rules: {
-				'invalid-attr': true,
-			},
+			rule: true,
 		},
-		[rule],
-		'en',
 	);
 
-	expect(r).toStrictEqual([]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('React HTML', async () => {
-	const r = await markuplint.verify(
+	const { violations } = await mlRuleTest(
+		rule,
 		'<img className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
 		{
 			parser: {
 				'.*': '@markuplint/jsx-parser',
 			},
-			rules: {
-				'invalid-attr': true,
-			},
+			rule: true,
 		},
-		[rule],
-		'en',
 	);
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 36,
-			message: 'The "tabindex" attribute is not allowed. Did you mean "tabIndex"?',
+			message: 'The "tabindex" attribute is disallowed. Did you mean "tabIndex"?',
 			raw: 'tabindex',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 71,
-			message: 'The "for" attribute is not allowed',
+			message: 'The "for" attribute is disallowed',
 			raw: 'htmlFor',
 		},
 	]);
 });
 
 test('React', async () => {
-	const r = await markuplint.verify(
-		'<a href={href} target={target} invalidAttr={invalidAttr} />',
-		{
-			parser: {
-				'.*': '@markuplint/jsx-parser',
-			},
-			rules: {
-				'invalid-attr': true,
-			},
+	const { violations } = await mlRuleTest(rule, '<a href={href} target={target} invalidAttr={invalidAttr} />', {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
 		},
-		[rule],
-		'en',
-	);
+		rule: true,
+	});
 
-	expect(r).toStrictEqual([
+	expect(violations).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 32,
-			message: 'The "invalidAttr" attribute is not allowed',
+			message: 'The "invalidAttr" attribute is disallowed',
 			raw: 'invalidAttr',
 		},
 	]);
@@ -633,92 +513,69 @@ test('React', async () => {
 
 test('React with spread attribute', async () => {
 	expect(
-		await markuplint.verify(
-			'<a target="_blank" />',
-			{
+		(
+			await mlRuleTest(rule, '<a target="_blank" />', {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rules: {
-					'invalid-attr': true,
-				},
-			},
-			[rule],
-			'en',
-		),
+				rule: true,
+			})
+		).violations,
 	).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 4,
-			message: 'The "target" attribute is not allowed',
+			message: 'The "target" attribute is disallowed',
 			raw: 'target',
 		},
 	]);
 
 	expect(
-		await markuplint.verify(
-			'<a {...props} target="_blank" />',
-			{
+		(
+			await mlRuleTest(rule, '<a {...props} target="_blank" />', {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rules: {
-					'invalid-attr': true,
-				},
-			},
-			[rule],
-			'en',
-		),
+				rule: true,
+			})
+		).violations,
 	).toStrictEqual([]);
 
 	expect(
-		await markuplint.verify(
-			'<img invalid />',
-			{
+		(
+			await mlRuleTest(rule, '<img invalid />', {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rules: {
-					'invalid-attr': true,
-				},
-			},
-			[rule],
-			'en',
-		),
+				rule: true,
+			})
+		).violations,
 	).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 6,
-			message: 'The "invalid" attribute is not allowed',
+			message: 'The "invalid" attribute is disallowed',
 			raw: 'invalid',
 		},
 	]);
 
 	expect(
-		await markuplint.verify(
-			'<img {...props} invalid />',
-			{
+		(
+			await mlRuleTest(rule, '<img {...props} invalid />', {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rules: {
-					'invalid-attr': true,
-				},
-			},
-			[rule],
-			'en',
-		),
+				rule: true,
+			})
+		).violations,
 	).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 1,
 			col: 17,
-			message: 'The "invalid" attribute is not allowed',
+			message: 'The "invalid" attribute is disallowed',
 			raw: 'invalid',
 		},
 	]);
@@ -734,158 +591,185 @@ test('React spec', async () => {
 	<select value={0} defaultValue={0}></select>
 	<textarea value={0} defaultValue={0}></textarea>
 </>`;
-	const rWithoutSpec = await markuplint.verify(
-		jsx,
-		{
-			parser: {
-				'.*': '@markuplint/jsx-parser',
-			},
-			rules: {
-				'invalid-attr': true,
-			},
+	const { violations: violations1 } = await mlRuleTest(rule, jsx, {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
 		},
-		[rule],
-		'en',
-	);
+		rule: true,
+	});
 
-	const rWithSpec = await markuplint.verify(
-		jsx,
-		{
-			parser: {
-				'.*': '@markuplint/jsx-parser',
-			},
-			specs: ['@markuplint/react-spec'],
-			rules: {
-				'invalid-attr': true,
-			},
+	const { violations: violations2 } = await mlRuleTest(rule, jsx, {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
 		},
-		[rule],
-		'en',
-	);
+		specs: ['@markuplint/react-spec'],
+		rule: true,
+	});
 
-	expect(rWithoutSpec).toStrictEqual([
+	expect(violations1).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 2,
 			col: 7,
-			message: 'The "value" attribute is not allowed',
+			message: 'The "value" attribute is disallowed',
 			raw: 'value',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 2,
 			col: 13,
-			message: 'The "defaultValue" attribute is not allowed',
+			message: 'The "defaultValue" attribute is disallowed',
 			raw: 'defaultValue',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 3,
 			col: 9,
-			message: 'The "defaultChecked" attribute is not allowed',
+			message: 'The "defaultChecked" attribute is disallowed',
 			raw: 'defaultChecked',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 4,
 			col: 25,
-			message: 'The "defaultChecked" attribute is not allowed',
+			message: 'The "defaultChecked" attribute is disallowed',
 			raw: 'defaultChecked',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 5,
 			col: 10,
-			message: 'The "value" attribute is not allowed',
+			message: 'The "value" attribute is disallowed',
 			raw: 'value',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 5,
 			col: 16,
-			message: 'The "defaultValue" attribute is not allowed',
+			message: 'The "defaultValue" attribute is disallowed',
 			raw: 'defaultValue',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 6,
 			col: 12,
-			message: 'The "value" attribute is not allowed',
+			message: 'The "value" attribute is disallowed',
 			raw: 'value',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 6,
 			col: 18,
-			message: 'The "defaultValue" attribute is not allowed',
+			message: 'The "defaultValue" attribute is disallowed',
 			raw: 'defaultValue',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 7,
 			col: 10,
-			message: 'The "value" attribute is not allowed',
+			message: 'The "value" attribute is disallowed',
 			raw: 'value',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 7,
 			col: 20,
-			message: 'The "defaultValue" attribute is not allowed',
+			message: 'The "defaultValue" attribute is disallowed',
 			raw: 'defaultValue',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 8,
 			col: 12,
-			message: 'The "value" attribute is not allowed',
+			message: 'The "value" attribute is disallowed',
 			raw: 'value',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 8,
 			col: 22,
-			message: 'The "defaultValue" attribute is not allowed',
+			message: 'The "defaultValue" attribute is disallowed',
 			raw: 'defaultValue',
 		},
 	]);
 
-	expect(rWithSpec).toStrictEqual([
+	expect(violations2).toStrictEqual([
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 2,
 			col: 7,
-			message: 'The "value" attribute is not allowed',
+			message: 'The "value" attribute is disallowed',
 			raw: 'value',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 2,
 			col: 13,
-			message: 'The "defaultValue" attribute is not allowed',
+			message: 'The "defaultValue" attribute is disallowed',
 			raw: 'defaultValue',
 		},
 		{
-			ruleId: 'invalid-attr',
 			severity: 'error',
 			line: 3,
 			col: 9,
-			message: 'The "defaultChecked" attribute is not allowed',
+			message: 'The "defaultChecked" attribute is disallowed',
 			raw: 'defaultChecked',
+		},
+	]);
+});
+
+test('regexSelector', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		`<picture>
+	<source srcset="logo-3x.png 3x">
+	<source srcset="logo@3x.png 3x">
+	<source srcset="logo-2x.png 2x">
+	<source srcset="logo@2x.png 2x">
+	<img src="logo.png" alt="logo">
+</picture>
+`,
+		{
+			rule: true,
+
+			nodeRule: [
+				{
+					regexSelector: {
+						nodeName: 'img',
+						attrName: 'src',
+						attrValue: '/^(?<FileName>.+)\\.(?<Exp>png|jpg|webp|gif)$/',
+						combination: {
+							combinator: ':has(~)',
+							nodeName: 'source',
+						},
+					},
+					rule: {
+						option: {
+							attrs: {
+								srcset: {
+									enum: ['{{FileName}}@2x.{{Exp}} 2x', '{{FileName}}@3x.{{Exp}} 3x'],
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 2,
+			col: 18,
+			message: 'The "srcset" attribute expects either "logo@2x.png 2x", "logo@3x.png 3x"',
+			raw: 'logo-3x.png 3x',
+		},
+		{
+			severity: 'error',
+			line: 4,
+			col: 18,
+			message: 'The "srcset" attribute expects either "logo@2x.png 2x", "logo@3x.png 3x"',
+			raw: 'logo-2x.png 2x',
 		},
 	]);
 });

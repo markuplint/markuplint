@@ -1,6 +1,7 @@
+import type { ASTAttr } from './pug-parser';
+import type { MLASTAttr } from '@markuplint/ml-ast';
+
 import { tokenizer, uuid } from '@markuplint/parser-utils';
-import { ASTAttr } from './pug-parser';
-import { MLASTAttr } from '@markuplint/ml-ast';
 
 export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 	if (/^[#.]/.test(attr.raw)) {
@@ -61,6 +62,10 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 	const invalid =
 		!!(valueChars && quoteChars === null && /["'=<>`]/.test(valueChars)) ||
 		!!(equalChars && quoteChars === null && valueChars === null);
+
+	if (invalid) {
+		throw new Error('Parse error: It has invalid attribute');
+	}
 
 	let offset = attr.offset;
 	let line = attr.line;
@@ -131,7 +136,6 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 		startQuote,
 		value,
 		endQuote,
-		isInvalid: invalid,
 		isDynamicValue,
 		isDuplicatable,
 	};

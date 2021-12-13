@@ -40,7 +40,7 @@ Type: `boolean`
 
 Setting custom rule.
 
-Set either `enum`, `pattern` or `type`.
+Set either `enum`, `pattern`, `type` or `disallowed`.
 
 ##### `enum`
 
@@ -84,7 +84,7 @@ Type: `string`
 
 ##### `type`
 
-Only values that match the specified [type](https://github.com/markuplint/markuplint/blob/main/packages/@markuplint/ml-spec/src/types.ts#L162-L197) are allowed.
+Only values that match the specified [type](https://markuplint.dev/types) are allowed.
 
 Type: `string`
 
@@ -95,6 +95,26 @@ Type: `string`
 			"attrs": {
 				"x-attr": {
 					"type": "Boolean"
+				}
+			}
+		}
+	}
+}
+```
+
+##### `disallowed`
+
+Disallow the attribute.
+
+Type: `boolean`
+
+```json
+{
+	"invalid-attr": {
+		"option": {
+			"attrs": {
+				"x-attr": {
+					"disallowed": true
 				}
 			}
 		}

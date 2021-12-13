@@ -1,6 +1,9 @@
 {
-	"extends": "../002/.markuplintrc.json",
+	"extends": ["plugin:foo/bar-config", "../002/.markuplintrc.json", "markuplint:___test"],
 	"dummy2": true,
+	"key": "003/.markuplintrc",
+	"key2": "001-2.js",
+	"plugins": ["../../plugins/001.js"],
 	"rules": {
 		"rule__enabled": false,
 		"rule__disabled": true,

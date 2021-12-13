@@ -1,0 +1,11 @@
+{
+	"tag": "legend",
+	"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#the-legend-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {}
+}

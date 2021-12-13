@@ -1,4 +1,4 @@
-import { Result, createRule } from '@markuplint/ml-core';
+import { createRule } from '@markuplint/ml-core';
 
 type Value = 'always' | 'never' | 'always-single-line' | 'never-single-line';
 
@@ -6,13 +6,11 @@ const alwaysMsg = 'Always insert {0} before {1} of {2}';
 const neverMsg = 'Never insert {0} before {1} of {2}';
 
 export default createRule<Value>({
-	name: 'attr-equal-space-before',
-	defaultLevel: 'warning',
+	defaultServerity: 'warning',
 	defaultValue: 'never',
 	defaultOptions: null,
-	async verify(document, translate) {
-		const reports: Result[] = [];
-		await document.walkOn('Element', async node => {
+	async verify(context) {
+		await context.document.walkOn('Element', async node => {
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'ps-attr' || !(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {
 					continue;
@@ -46,9 +44,9 @@ export default createRule<Value>({
 					}
 				}
 				if (isBad) {
-					reports.push({
-						severity: node.rule.severity,
-						message: translate(rawMessage, 'space', 'equal sign', 'attribute'),
+					context.report({
+						scope: node,
+						message: context.translate(rawMessage, 'space', 'equal sign', 'attribute'),
 						line: attr.spacesBeforeEqual.startLine,
 						col: attr.spacesBeforeEqual.startCol,
 						raw: attr.spacesBeforeEqual.raw + attr.equal.raw + attr.spacesAfterEqual.raw,
@@ -56,9 +54,8 @@ export default createRule<Value>({
 				}
 			}
 		});
-		return reports;
 	},
-	async fix(document) {
+	async fix({ document }) {
 		await document.walkOn('Element', async node => {
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'ps-attr' || !(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {

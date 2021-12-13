@@ -7,9 +7,18 @@
 	},
 	"references": [
 		{
+			"path": "../ml-ast"
+		},
+		{
 			"path": "../ml-config"
+		},
+		{
+			"path": "../ml-core"
+		},
+		{
+			"path": "../ml-spec"
 		}
 	],
 	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
+	"exclude": ["node_modules", "lib", "test", "./src/**/*.spec.ts"]
 }

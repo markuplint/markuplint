@@ -1,20 +1,23 @@
-import { Option, lintText } from './helper';
-import { Config } from 'textlint/lib/src/config/config';
-import { MLRuleOptions } from '@markuplint/ml-core';
-import { TextLintEngine } from 'textlint';
-import { TextlintResult } from '@textlint/kernel';
+import type { Option } from './helper';
+import type { RuleSeed } from '@markuplint/ml-core';
+import type { TextlintResult } from '@textlint/kernel';
 
 import path from 'path';
+
+import { TextLintEngine } from 'textlint';
+import { Config } from 'textlint/lib/src/config/config';
+
+import { lintText } from './helper';
 
 const lintEngineCache = new Map<string, TextLintEngine>();
 
 export const defaultOptions = true;
 
 export const textlintVerify: (
-	...args: Parameters<MLRuleOptions<boolean, Option>['verify']>
-) => Promise<TextlintResult | undefined> = async (document, translate, config) => {
+	...args: Parameters<RuleSeed<boolean, Option>['verify']>
+) => Promise<TextlintResult | undefined> = async ({ document, globalRule }) => {
 	const html = document.toString();
-	const option = config.option;
+	const option = globalRule.option;
 
 	if (typeof option === 'object') {
 		return await lintText(html, option);

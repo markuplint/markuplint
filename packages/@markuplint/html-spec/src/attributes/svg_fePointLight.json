@@ -1,0 +1,27 @@
+{
+	"tag": "fePointLight",
+	"ref": "https://drafts.fxtf.org/filter-effects/#fePointLightElement",
+	"global": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
+	},
+	"attributes": {
+		"x": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fepointlight-x",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		"y": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fepointlight-y",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		"z": {
+			"ref": "https://drafts.fxtf.org/filter-effects/#element-attrdef-fepointlight-z",
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		}
+	}
+}

@@ -1,296 +1,334 @@
 {
 	"tag": "input",
-	"attributes": [
-		{
-			"name": "accept",
-			"type": "AcceptList",
+	"ref": "https://html.spec.whatwg.org/multipage/input.html#the-input-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "width"],
+		"#HTMLFormControlElementAttrs": [
+			"autocomplete",
+			"dirname",
+			"disabled",
+			"form",
+			"formaction",
+			"formenctype",
+			"formmethod",
+			"formnovalidate",
+			"formtarget",
+			"name",
+			"maxlength",
+			"minlength",
+			"readonly",
+			"required"
+		]
+	},
+	"attributes": {
+		"accept": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-accept",
+			"type": {
+				"token": "Accept",
+				"caseInsensitive": true,
+				"unique": true,
+				"separator": "comma"
+			},
 			"condition": {
-				"self": "[type=file]"
+				"self": "[type='file' i]"
 			}
 		},
-		{
-			"name": "alt",
-			"type": "String",
+		"alt": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-alt",
+			"type": "Any",
 			"condition": {
-				"self": "[type=image]"
+				"self": "[type='image' i]"
 			}
 		},
-		{
-			"name": "autocomplete",
-			"type": "AutoComplete",
+		"autocomplete": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete",
 			"condition": {
 				"self": [
-					"[type=hidden]",
-					"[type=text]",
-					"[type=search]",
-					"[type=url]",
-					"[type=tel]",
-					"[type=email]",
-					"[type=password]",
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]",
-					"[type=range]",
-					"[type=color]"
+					"[type='hidden' i]",
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]",
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]",
+					"[type='range' i]",
+					"[type='color' i]"
 				]
 			}
 		},
-		{
-			"name": "checked",
+		"checked": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-checked",
 			"type": "Boolean",
 			"condition": {
-				"self": ["[type=checkbox]", "[type=radio]"]
+				"self": ["[type='checkbox' i]", "[type='radio' i]"]
 			}
 		},
-		{
-			"name": "dirname",
-			"type": "String",
+		"dirname": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-dirname",
 			"condition": {
-				"self": ["[type=text]", "[type=search]"]
+				"self": ["[type='text' i]", "[type='search' i]"]
 			}
 		},
-		{
-			"name": "disabled",
-			"type": "Boolean"
+		"height": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-height",
+			"condition": {
+				"self": "[type='image' i]"
+			}
 		},
-		{
-			"name": "form",
+		"list": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-list",
 			"type": "DOMID",
+			"_TODO_": "must be the ID of a `datalist` element",
 			"condition": {
-				"self": ["[type=file]", "[type=file]"]
+				"self": [
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]",
+					"[type='range' i]",
+					"[type='color' i]"
+				]
 			}
 		},
-		{
-			"name": "formaction",
-			"type": "URL",
+		"max": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-max",
+			"type": ["DateTime", "Number"],
+			"_TODO_": "The `type` attribute determines the type either DateTime of Number",
 			"condition": {
-				"self": ["[type=submit]", "[type=image]"]
+				"self": [
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]",
+					"[type='range' i]"
+				]
 			}
 		},
-		{
-			"name": "formenctype",
-			"type": "String",
-			"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"],
+		"maxlength": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-maxlength",
 			"condition": {
-				"self": ["[type=submit]", "[type=image]"]
+				"self": [
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]"
+				]
 			}
 		},
-		{
-			"name": "formmethod",
-			"type": "String",
-			"enum": ["post", "get", "dialog"],
+		"min": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-min",
+			"type": ["DateTime", "Number"],
+			"_TODO_": "The `type` attribute determines the type either DateTime of Number",
 			"condition": {
-				"self": ["[type=submit]", "[type=image]"]
+				"self": [
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]",
+					"[type='range' i]"
+				]
 			}
 		},
-		{
-			"name": "formnovalidate",
+		"minlength": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-minlength",
+			"condition": {
+				"self": [
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]"
+				]
+			}
+		},
+		"multiple": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-multiple",
 			"type": "Boolean",
 			"condition": {
-				"self": ["[type=submit]", "[type=image]"]
+				"self": ["[type='email' i]", "[type='file' i]"]
 			}
 		},
-		{
-			"name": "formtarget",
-			"type": "Target",
-			"condition": {
-				"self": ["[type=submit]", "[type=image]"]
-			}
-		},
-		{
-			"name": "height",
-			"type": "Uint",
-			"condition": {
-				"self": "[type=image]"
-			}
-		},
-		{
-			"name": "list",
-			"type": "DOMID",
+		"pattern": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-pattern",
+			"type": "Pattern",
 			"condition": {
 				"self": [
-					"[type=text]",
-					"[type=search]",
-					"[type=url]",
-					"[type=tel]",
-					"[type=email]",
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]",
-					"[type=range]",
-					"[type=color]"
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]"
 				]
 			}
 		},
-		{
-			"name": "max",
-			"type": "String",
+		"placeholder": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-placeholder",
+			"type": "OneLineAny",
 			"condition": {
 				"self": [
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]",
-					"[type=range]"
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]",
+					"[type='number' i]"
 				]
 			}
 		},
-		{
-			"name": "maxlength",
-			"type": "Uint",
-			"condition": {
-				"self": ["[type=text]", "[type=search]", "[type=url]", "[type=tel]", "[type=email]", "[type=password]"]
-			}
-		},
-		{
-			"name": "min",
-			"type": "String",
+		"readonly": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-readonly",
 			"condition": {
 				"self": [
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]",
-					"[type=range]"
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]",
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]"
 				]
 			}
 		},
-		{
-			"name": "minlength",
-			"type": "Uint",
-			"condition": {
-				"self": ["[type=text]", "[type=search]", "[type=url]", "[type=tel]", "[type=email]", "[type=password]"]
-			}
-		},
-		{
-			"name": "multiple",
-			"type": "Boolean",
-			"condition": {
-				"self": ["[type=email]", "[type=file]"]
-			}
-		},
-		{
-			"name": "name",
-			"type": "Boolean"
-		},
-		{
-			"name": "pattern",
-			"type": "String",
-			"condition": {
-				"self": ["[type=text]", "[type=search]", "[type=url]", "[type=tel]", "[type=email]", "[type=password]"]
-			}
-		},
-		{
-			"name": "placeholder",
-			"type": "String",
+		"required": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-required",
 			"condition": {
 				"self": [
-					"[type=text]",
-					"[type=search]",
-					"[type=url]",
-					"[type=tel]",
-					"[type=email]",
-					"[type=password]",
-					"[type=number]"
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]",
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]",
+					"[type='checkbox' i]",
+					"[type='radio' i]",
+					"[type='file' i]"
 				]
 			}
 		},
-		{
-			"name": "readonly",
-			"type": "Boolean",
+		"size": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-size",
+			"type": {
+				"type": "integer",
+				"gt": 0
+			},
 			"condition": {
 				"self": [
-					"[type=text]",
-					"[type=search]",
-					"[type=url]",
-					"[type=tel]",
-					"[type=email]",
-					"[type=password]",
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]"
+					"[type='text' i]",
+					"[type='search' i]",
+					"[type='url' i]",
+					"[type='tel' i]",
+					"[type='email' i]",
+					"[type='password' i]"
+				]
+			},
+			"defaultValue": "20"
+		},
+		"src": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-src",
+			"condition": {
+				"self": "[type='image' i]"
+			}
+		},
+		"step": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-step",
+			"type": [
+				"Number",
+				{
+					"enum": ["any"],
+					"caseInsensitive": true
+				}
+			],
+			"condition": {
+				"self": [
+					"[type='date' i]",
+					"[type='month' i]",
+					"[type='week' i]",
+					"[type='time' i]",
+					"[type='datetime-local' i]",
+					"[type='number' i]",
+					"[type='range' i]"
 				]
 			}
 		},
-		{
-			"name": "required",
-			"type": "Boolean",
+		"type": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-type",
+			"type": {
+				"enum": [
+					"hidden",
+					"text",
+					"search",
+					"tel",
+					"url",
+					"email",
+					"password",
+					"date",
+					"month",
+					"week",
+					"time",
+					"datetime-local",
+					"number",
+					"range",
+					"color",
+					"checkbox",
+					"radio",
+					"file",
+					"submit",
+					"image",
+					"reset",
+					"button"
+				],
+				"invalidValueDefault": "text",
+				"missingValueDefault": "text"
+			},
+			"defaultValue": "text"
+		},
+		"value": {
+			"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-value",
+			"type": "Any",
+			"_TODO_": "The `type` attribute determines the type"
+		},
+		"width": {
+			"ref": "https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-width",
 			"condition": {
-				"self": [
-					"[type=text]",
-					"[type=search]",
-					"[type=url]",
-					"[type=tel]",
-					"[type=email]",
-					"[type=password]",
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]",
-					"[type=checkbox]",
-					"[type=radio]",
-					"[type=file]"
-				]
-			}
-		},
-		{
-			"name": "size",
-			"type": "NonZeroUint",
-			"condition": {
-				"self": ["[type=text]", "[type=search]", "[type=url]", "[type=tel]", "[type=email]", "[type=password]"]
-			}
-		},
-		{
-			"name": "src",
-			"type": "URL",
-			"condition": {
-				"self": "[type=image]"
-			}
-		},
-		{
-			"name": "step",
-			"type": "String",
-			"condition": {
-				"self": [
-					"[type=date]",
-					"[type=month]",
-					"[type=week]",
-					"[type=time]",
-					"[type=datetime-local]",
-					"[type=number]",
-					"[type=range]"
-				]
-			}
-		},
-		{
-			"name": "type",
-			"type": "Boolean"
-		},
-		{
-			"name": "value",
-			"type": "Boolean"
-		},
-		{
-			"name": "width",
-			"type": "Uint",
-			"condition": {
-				"self": "[type=image]"
+				"self": "[type='image' i]"
 			}
 		}
-	]
+	}
 }

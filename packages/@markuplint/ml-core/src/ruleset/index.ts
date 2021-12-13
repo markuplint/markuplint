@@ -1,4 +1,4 @@
-import { ChildNodeRule, Config, NodeRule, Rules } from '@markuplint/ml-config';
+import type { ChildNodeRule, Config, NodeRule, Rules } from '@markuplint/ml-config';
 
 export default class Ruleset {
 	readonly rules: Readonly<Rules>;

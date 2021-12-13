@@ -1,0 +1,10 @@
+{
+	"tag": "title",
+	"ref": "https://svgwg.org/svg2-draft/struct.html#TitleElement",
+	"global": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+	},
+	"attributes": {}
+}

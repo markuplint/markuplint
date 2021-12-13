@@ -1,16 +1,20 @@
-import { ASTAttribute, ASTNode, ASTStyleNode, AstroCompileError, astroParse } from './astro-parser';
-import {
+import type { ASTAttribute, ASTNode, ASTStyleNode } from './astro-parser';
+import type {
+	MLASTElement,
 	MLASTElementCloseTag,
 	MLASTNode,
-	MLASTNodeType,
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
 	MLASTTag,
 	MLASTText,
+	NamespaceURI,
 	Parse,
 } from '@markuplint/ml-ast';
+
 import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
 import { getEndCol, getEndLine, isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
+
+import { AstroCompileError, astroParse } from './astro-parser';
 import { attrTokenizer } from './attr-tokenizer';
 
 export const parse: Parse = rawCode => {
@@ -31,10 +35,10 @@ export const parse: Parse = rawCode => {
 		};
 	}
 
-	const htmlRawNodeList = traverse(ast.html, null, rawCode);
+	const htmlRawNodeList = traverse(ast.html, null, 'http://www.w3.org/1999/xhtml', rawCode);
 	if (ast.style) {
-		const styleNode = parseStyle(ast.style, rawCode, 0);
-		htmlRawNodeList.push(styleNode);
+		const styleNodes = parseStyle(ast.style, 'http://www.w3.org/1999/xhtml', rawCode, 0);
+		htmlRawNodeList.push(...styleNodes);
 	}
 
 	const nodeList: MLASTNode[] = flattenNodes(htmlRawNodeList, rawCode);
@@ -60,6 +64,7 @@ export const parse: Parse = rawCode => {
 function traverse(
 	rootNode: ASTNode,
 	parentNode: MLASTParentNode | null = null,
+	scopeNS: NamespaceURI,
 	rawHtml: string,
 	offset?: number,
 ): MLASTNode[] {
@@ -71,14 +76,14 @@ function traverse(
 
 	let prevNode: MLASTNode | null = null;
 	for (const astNode of rootNode.children) {
-		const node = nodeize(astNode, prevNode, parentNode, rawHtml, offset);
+		const node = nodeize(astNode, prevNode, parentNode, scopeNS, rawHtml, offset);
 		if (!node) {
 			continue;
 		}
 		const nodes = Array.isArray(node) ? node : [node];
 		for (const node of nodes) {
 			if (prevNode) {
-				if (node.type !== MLASTNodeType.EndTag) {
+				if (node.type !== 'endtag') {
 					prevNode.nextNode = node;
 				}
 				node.prevNode = prevNode;
@@ -94,6 +99,7 @@ function nodeize(
 	originNode: ASTNode,
 	prevNode: MLASTNode | null,
 	parentNode: MLASTParentNode | null,
+	scopeNS: NamespaceURI,
 	rawHtml: string,
 	offset = 0,
 ): MLASTNode | MLASTNode[] | null {
@@ -101,6 +107,16 @@ function nodeize(
 	const startOffset = originNode.start + offset;
 	const endOffset = originNode.end + offset;
 	const { startLine, endLine, startCol, endCol, raw } = sliceFragment(rawHtml, startOffset, endOffset);
+
+	if (
+		scopeNS === 'http://www.w3.org/1999/xhtml' &&
+		originNode.type === 'Element' &&
+		originNode.name?.toLowerCase() === 'svg'
+	) {
+		scopeNS = 'http://www.w3.org/2000/svg';
+	} else if (scopeNS === 'http://www.w3.org/2000/svg' && parentNode && parentNode.nodeName === 'foreignObject') {
+		scopeNS = 'http://www.w3.org/1999/xhtml';
+	}
 
 	switch (originNode.type) {
 		case 'Text': {
@@ -114,7 +130,7 @@ function nodeize(
 				startCol,
 				endCol,
 				nodeName: '#text',
-				type: MLASTNodeType.Text,
+				type: 'text',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -135,7 +151,7 @@ function nodeize(
 					startCol,
 					endCol,
 					nodeName: originNode.type,
-					type: MLASTNodeType.PreprocessorSpecificBlock,
+					type: 'psblock',
 					parentNode,
 					prevNode,
 					nextNode,
@@ -172,7 +188,7 @@ function nodeize(
 					startCol: loc.startCol,
 					endCol: loc.endCol,
 					nodeName: originNode.type,
-					type: MLASTNodeType.PreprocessorSpecificBlock,
+					type: 'psblock',
 					parentNode,
 					prevNode,
 					nextNode,
@@ -182,7 +198,7 @@ function nodeize(
 				stub = stub.slice(i + chunk.length);
 			}
 			if (blocks[0]) {
-				const childNodes = traverse(originNode.expression, blocks[0], rawHtml, blocks[0].endOffset);
+				const childNodes = traverse(originNode.expression, blocks[0], scopeNS, rawHtml, blocks[0].endOffset);
 				blocks[0].childNodes = childNodes;
 			}
 			return blocks;
@@ -198,7 +214,7 @@ function nodeize(
 				startCol,
 				endCol,
 				nodeName: '#comment',
-				type: MLASTNodeType.Comment,
+				type: 'comment',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -222,7 +238,7 @@ function nodeize(
 					startCol,
 					endCol,
 					nodeName: '#doctype',
-					type: MLASTNodeType.Doctype,
+					type: 'doctype',
 					parentNode,
 					prevNode,
 					nextNode,
@@ -233,6 +249,7 @@ function nodeize(
 			return parseElement(
 				originNode.name,
 				originNode,
+				scopeNS,
 				rawHtml,
 				startLine,
 				startCol,
@@ -244,7 +261,7 @@ function nodeize(
 			);
 		}
 		case 'Fragment': {
-			return originNode.children ? traverse(originNode, parentNode, rawHtml, offset) : null;
+			return originNode.children ? traverse(originNode, parentNode, scopeNS, rawHtml, offset) : null;
 		}
 		default: {
 			return null;
@@ -255,6 +272,7 @@ function nodeize(
 function parseElement(
 	nodeName: string,
 	originNode: ASTNode | ASTStyleNode,
+	scopeNS: NamespaceURI,
 	rawHtml: string,
 	startLine: number,
 	startCol: number,
@@ -302,8 +320,8 @@ function parseElement(
 			startCol: endTagLoc.startCol,
 			endCol: endTagLoc.endCol,
 			nodeName: endTagName,
-			type: MLASTNodeType.EndTag,
-			namespace: originNode.namespace,
+			type: 'endtag',
+			namespace: scopeNS,
 			attributes: endTagTokens.attrs,
 			parentNode,
 			prevNode,
@@ -327,8 +345,8 @@ function parseElement(
 		startCol,
 		endCol: getEndCol(startTagRaw, startCol),
 		nodeName: tagName,
-		type: MLASTNodeType.StartTag,
-		namespace: originNode.namespace,
+		type: 'starttag',
+		namespace: scopeNS,
 		attributes: originNode.attributes.map((attr: ASTAttribute) => attrTokenizer(attr, rawHtml, offset)),
 		hasSpreadAttr: false,
 		parentNode,
@@ -346,13 +364,30 @@ function parseElement(
 	if (endTag) {
 		endTag.pearNode = startTag;
 	}
-	startTag.childNodes = traverse(originNode, startTag, rawHtml, offset);
+	startTag.childNodes = traverse(originNode, startTag, scopeNS, rawHtml, offset);
 	return startTag;
 }
 
-function parseStyle(node: ASTStyleNode, rawHtml: string, offset: number) {
-	const { startLine, startCol, startOffset } = sliceFragment(rawHtml, node.start, node.end);
-	return parseElement('style', node, rawHtml, startLine, startCol, startOffset, null, null, null, offset);
+function parseStyle(nodes: ASTStyleNode[], scopeNS: NamespaceURI, rawHtml: string, offset: number) {
+	const result: MLASTElement[] = [];
+	for (const node of nodes) {
+		const { startLine, startCol, startOffset } = sliceFragment(rawHtml, node.start, node.end);
+		const styleEl = parseElement(
+			'style',
+			node,
+			scopeNS,
+			rawHtml,
+			startLine,
+			startCol,
+			startOffset,
+			null,
+			null,
+			null,
+			offset,
+		);
+		result.push(styleEl);
+	}
+	return result;
 }
 
 function isCustomComponentName(name: string) {

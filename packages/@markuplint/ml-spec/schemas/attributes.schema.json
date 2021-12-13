@@ -1,94 +1,222 @@
 {
 	"definitions": {
-		"condition": {
+		"AttributeName": { "type": "string", "pattern": "^(?:(xml|xlink):)?[a-z][a-zA-Z0-9-]*$" },
+		"AttributeCondition": {
 			"oneOf": [
 				{
 					"type": "object",
 					"additionalProperties": false,
-					"properties": {
-						"ancestor": { "type": "string" }
-					}
+					"required": ["ancestor"],
+					"properties": { "ancestor": { "$ref": "#/definitions/Selectors" } }
 				},
 				{
 					"type": "object",
 					"additionalProperties": false,
-					"properties": {
-						"self": {
-							"type": ["string", "array"],
-							"items": { "type": "string", "minItems": 2 }
-						}
-					}
+					"required": ["self"],
+					"properties": { "self": { "$ref": "#/definitions/Selectors" } }
 				}
 			]
+		},
+		"Selectors": {
+			"oneOf": [{ "type": "string" }, { "type": "array", "minItems": 2, "items": { "type": "string" } }]
+		},
+		"AttributeType": { "$ref": "../../types/types.schema.json#/definitions/type" },
+		"AttributeJSON": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["ref"],
+			"minProperties": 2,
+			"properties": {
+				"_TODO_": { "type": "string" },
+				"ref": { "type": "string", "format": "uri" },
+				"type": {
+					"oneOf": [
+						{ "$ref": "#/definitions/AttributeType" },
+						{
+							"type": "array",
+							"minItems": 1,
+							"uniqueItems": true,
+							"items": { "$ref": "#/definitions/AttributeType" }
+						}
+					]
+				},
+				"defaultValue": { "type": "string" },
+				"deprecated": { "type": "boolean" },
+				"required": { "oneOf": [{ "type": "boolean" }, { "$ref": "#/definitions/AttributeCondition" }] },
+				"requiredEither": { "type": "array", "items": { "type": "string" } },
+				"noUse": { "type": "boolean" },
+				"condition": { "$ref": "#/definitions/AttributeCondition" },
+				"ineffective": { "$ref": "#/definitions/Selectors" },
+				"animatable": { "type": "boolean" }
+			}
+		},
+		"GlobalAttributes": {
+			"type": "object",
+			"additionalProperties": false,
+			"propertyNames": {
+				"type": "string",
+				"enum": [
+					"#HTMLGlobalAttrs",
+					"#GlobalEventAttrs",
+					"#DocumentElementEventAttrs",
+					"#HTMLLinkAndFetchingAttrs",
+					"#HTMLEmbededAndMediaContentAttrs",
+					"#HTMLFormControlElementAttrs",
+					"#HTMLTableCellElementAttrs",
+					"#ARIAAttrs",
+					"#SVGAnimationAdditionAttrs",
+					"#SVGAnimationAttributeTargetAttrs",
+					"#SVGAnimationEventAttrs",
+					"#SVGAnimationTargetElementAttrs",
+					"#SVGAnimationTimingAttrs",
+					"#SVGAnimationValueAttrs",
+					"#SVGConditionalProcessingAttrs",
+					"#SVGCoreAttrs",
+					"#SVGFilterPrimitiveAttrs",
+					"#SVGPresentationAttrs",
+					"#SVGTransferFunctionAttrs",
+					"#XLinkAttrs"
+				]
+			},
+			"properties": {
+				"#HTMLGlobalAttrs": { "type": "boolean" },
+				"#GlobalEventAttrs": {
+					"oneOf": [
+						{ "type": "boolean" },
+						{
+							"type": "array",
+							"minItems": 0,
+							"uniqueItems": true,
+							"items": { "$ref": "./global-attributes.schema.json#/definitions/GlobalEventAttrs" }
+						}
+					]
+				},
+				"#DocumentElementEventAttrs": {
+					"oneOf": [
+						{ "type": "boolean" },
+						{
+							"type": "array",
+							"minItems": 0,
+							"uniqueItems": true,
+							"items": {
+								"$ref": "./global-attributes.schema.json#/definitions/DocumentElementEventAttrs"
+							}
+						}
+					]
+				},
+				"#HTMLLinkAndFetchingAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/HTMLLinkAndFetchingAttrs" }
+				},
+				"#HTMLEmbededAndMediaContentAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/HTMLEmbededAndMediaContentAttrs" }
+				},
+				"#HTMLFormControlElementAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/HTMLFormControlElementAttrs" }
+				},
+				"#HTMLTableCellElementAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/HTMLTableCellElementAttrs" }
+				},
+				"#ARIAAttrs": { "type": "boolean" },
+				"#SVGAnimationAdditionAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGAnimationAdditionAttrs" }
+				},
+				"#SVGAnimationAttributeTargetAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGAnimationAttributeTargetAttrs" }
+				},
+				"#SVGAnimationEventAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGAnimationEventAttrs" }
+				},
+				"#SVGAnimationTargetElementAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGAnimationTargetElementAttrs" }
+				},
+				"#SVGAnimationTimingAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGAnimationTimingAttrs" }
+				},
+				"#SVGAnimationValueAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGAnimationValueAttrs" }
+				},
+				"#SVGConditionalProcessingAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGConditionalProcessingAttrs" }
+				},
+				"#SVGCoreAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGCoreAttrs" }
+				},
+				"#SVGFilterPrimitiveAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGFilterPrimitiveAttrs" }
+				},
+				"#SVGPresentationAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGPresentationAttrs" }
+				},
+				"#SVGTransferFunctionAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/SVGTransferFunctionAttrs" }
+				},
+				"#XLinkAttrs": {
+					"type": "array",
+					"minItems": 0,
+					"uniqueItems": true,
+					"items": { "$ref": "./global-attributes.schema.json#/definitions/XLinkAttrs" }
+				}
+			}
+		},
+		"Attributes": {
+			"type": "object",
+			"additionalProperties": false,
+			"propertyNames": { "$ref": "#/definitions/AttributeName" },
+			"patternProperties": { ".*": { "$ref": "#/definitions/AttributeJSON" } }
 		}
 	},
 	"type": "object",
 	"additionalProperties": false,
-	"required": ["tag", "attributes"],
+	"required": ["tag", "ref", "attributes"],
 	"properties": {
 		"tag": { "type": "string" },
-		"attributes": {
-			"type": "array",
-			"items": {
-				"type": "object",
-				"additionalProperties": false,
-				"required": ["name", "type"],
-				"properties": {
-					"name": { "type": "string" },
-					"type": {
-						"type": "string",
-						"enum": [
-							"String",
-							"NonEmptyString",
-							"Boolean",
-							"Function", // JavaScript function body
-							"Date",
-							"Int", // Integer
-							"Uint", // Non-negative integer
-							"Float", // Floating-point number
-							"NonZeroUint", // Non-negative integer greater than zero
-							"AcceptList", // https://html.spec.whatwg.org/multipage/input.html#attr-input-accept
-							"AutoComplete", // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens
-							"BCP47", // https://tools.ietf.org/html/bcp47
-							"Color", // https://drafts.csswg.org/css-color/#typedef-color
-							"ColSpan", // https://html.spec.whatwg.org/multipage/tables.html#attr-tdth-colspan
-							"Coords", // https://html.spec.whatwg.org/multipage/image-maps.html#attr-area-coords
-							"DateTime", // https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value
-							"Destination", // https://html.spec.whatwg.org/multipage/semantics.html#attr-link-as
-							"DOMID",
-							"DOMIDList",
-							"ItemType", // https://html.spec.whatwg.org/multipage/microdata.html#attr-itemtype
-							"LinkSizes", // https://html.spec.whatwg.org/multipage/semantics.html#attr-link-sizes
-							"LinkType", // https://html.spec.whatwg.org/multipage/links.html#linkTypes
-							"LinkTypeList", // https://html.spec.whatwg.org/multipage/links.html#linkTypes
-							"MediaQuery", // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-media-query-list
-							"MediaQueryList", // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-media-query-list
-							"MIMEType", // https://mimesniff.spec.whatwg.org/#valid-mime-type
-							"ReferrerPolicy", // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#referrer-policy-attribute
-							"RowSpan", // https://html.spec.whatwg.org/multipage/tables.html#attr-tdth-rowspan
-							"SourceSizeList", // https://html.spec.whatwg.org/multipage/images.html#sizes-attributes
-							"SrcSet", // https://html.spec.whatwg.org/multipage/images.html#srcset-attribute
-							"TabIndex", // https://html.spec.whatwg.org/multipage/interaction.html#attr-tabindex
-							"Target", // https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-target
-							"URL", // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces
-							"URLHash", // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-hash-name-reference
-							"URLList" // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces
-						]
-					},
-					"deprecated": { "type": "boolean" },
-					"required": {
-						"oneOf": [{ "type": "boolean" }, { "$ref": "#/definitions/condition" }]
-					},
-					"requiredEither": { "type": "array", "items": { "type": "string" } },
-					"enum": { "type": "array", "items": { "type": "string" }, "minLength": 1 },
-					"noUse": {
-						"type": "boolean"
-					},
-					"condition": {
-						"$ref": "#/definitions/condition"
-					}
-				}
-			}
-		}
+		"ref": { "type": "string", "format": "uri" },
+		"global": { "$ref": "#/definitions/GlobalAttributes" },
+		"attributes": { "$ref": "#/definitions/Attributes" }
 	}
 }

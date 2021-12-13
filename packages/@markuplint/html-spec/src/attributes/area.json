@@ -1,56 +1,37 @@
 {
 	"tag": "area",
-	"attributes": [
-		{
-			"name": "alt",
-			"type": "String",
+	"ref": "https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["href", "target", "download", "ping", "rel", "hreflang", "type", "referrerpolicy"]
+	},
+	"attributes": {
+		"alt": {
+			"ref": "https://html.spec.whatwg.org/multipage/image-maps.html#attr-area-alt",
+			"type": "Any",
 			"required": true,
 			"condition": {
 				"self": "[href]"
 			}
 		},
-		{
-			"name": "coords",
-			"type": "Coords"
-		},
-		{
-			"name": "download",
-			"type": "String"
-		},
-		{
-			"name": "href",
-			"type": "URL"
-		},
-		{
-			"name": "ping",
-			"type": "URLList"
-		},
-		{
-			"name": "referrerpolicy",
-			"type": "ReferrerPolicy"
-		},
-		{
-			"name": "rel",
-			"type": "LinkTypeList",
-			"condition": {
-				"self": "[href]"
+		"coords": {
+			"ref": "https://html.spec.whatwg.org/multipage/image-maps.html#attr-area-coords",
+			"type": {
+				"token": "Number",
+				"disallowToSurroundBySpaces": true,
+				"separator": "comma"
 			}
 		},
-		{
-			"name": "shape",
-			"type": "String",
-			"enum": ["rect", "circle", "poly", "default"]
-		},
-		{
-			"name": "target",
-			"type": "Target",
-			"condition": {
-				"self": "[href]"
+		"shape": {
+			"ref": "https://html.spec.whatwg.org/multipage/image-maps.html#attr-area-shape",
+			"type": {
+				"enum": ["rect", "circle", "poly", "default"],
+				"missingValueDefault": "rect",
+				"invalidValueDefault": "rect"
 			}
-		},
-		{
-			"name": "type",
-			"type": "String"
 		}
-	]
+	}
 }

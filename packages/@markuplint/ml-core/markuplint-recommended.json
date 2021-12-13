@@ -1,0 +1,120 @@
+{
+	"rules": {
+		"attr-duplication": true,
+		"character-reference": true,
+		"deprecated-attr": true,
+		"deprecated-element": true,
+		"doctype": true,
+		"id-duplication": true,
+		"permitted-contents": true,
+		"required-attr": true,
+		"ineffective-attr": true,
+		"invalid-attr": {
+			"option": {
+				"attrs": {
+					"autofocus": {
+						"disallowed": true
+					},
+					"accesskey": {
+						"disallowed": true
+					}
+				}
+			}
+		},
+		"landmark-roles": true,
+		"no-boolean-attr-value": true,
+		"required-h1": true,
+		"wai-aria": true
+	},
+	"nodeRules": [
+		{
+			"selector": "html",
+			"rules": {
+				"required-attr": ["lang"]
+			}
+		},
+		{
+			"selector": "script[src]",
+			"rules": {
+				"required-attr": ["defer"]
+			}
+		},
+		{
+			"selector": "img",
+			"rules": {
+				"required-attr": [
+					"width",
+					"height",
+					"alt",
+					{
+						"name": "decoding",
+						"value": "async"
+					}
+				]
+			}
+		},
+		{
+			"selector": "iframe",
+			"rules": {
+				"required-attr": [
+					"title",
+					{
+						"name": "loading",
+						"value": "lazy"
+					}
+				]
+			}
+		},
+		{
+			"selector": "a[target=_blank], area[target=_blank]",
+			"rules": {
+				"required-attr": [
+					{
+						"name": "rel",
+						"value": "noreferrer"
+					}
+				]
+			}
+		},
+		{
+			"selector": "abbr",
+			"rules": {
+				"required-attr": ["title"]
+			}
+		},
+		{
+			"selector": "video[autoplay]",
+			"rules": {
+				"required-attr": ["muted"]
+			}
+		},
+		{
+			"selector": "th, td",
+			"rules": {
+				"invalid-attr": {
+					"option": {
+						"attrs": {
+							"span": {
+								"disallowed": false
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"selector": ":not(button)",
+			"rules": {
+				"invalid-attr": {
+					"option": {
+						"attrs": {
+							"onclick": {
+								"disallowed": false
+							}
+						}
+					}
+				}
+			}
+		}
+	]
+}

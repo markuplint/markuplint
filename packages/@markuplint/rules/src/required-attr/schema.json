@@ -9,7 +9,30 @@
 				{
 					"type": "array",
 					"minItems": 1,
-					"items": { "type": "string" }
+					"items": {
+						"oneOf": [
+							{ "type": "string" },
+							{
+								"type": "object",
+								"required": ["name", "value"],
+								"properties": {
+									"name": { "type": "string" },
+									"value": {
+										"oneOf": [
+											{
+												"type": "string"
+											},
+											{
+												"type": "array",
+												"minItems": 1,
+												"items": { "type": "string" }
+											}
+										]
+									}
+								}
+							}
+						]
+					}
 				}
 			]
 		}
@@ -28,6 +51,9 @@
 				"value": { "$ref": "#/definitions/value" },
 				"severity": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+				},
+				"reason": {
+					"type": "string"
 				}
 			}
 		}

@@ -1,17 +1,17 @@
 {
 	"tag": "output",
-	"attributes": [
-		{
-			"name": "for",
+	"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#the-output-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": ["form", "name"]
+	},
+	"attributes": {
+		"for": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-output-for",
 			"type": "DOMID"
-		},
-		{
-			"name": "form",
-			"type": "DOMID"
-		},
-		{
-			"name": "name",
-			"type": "String"
 		}
-	]
+	}
 }

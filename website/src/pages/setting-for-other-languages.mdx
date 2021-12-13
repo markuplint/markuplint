@@ -1,8 +1,8 @@
 ---
 title: Setting for other languages
 back:
-    title: Set up rules
-    href: set-up-rules
+  title: Set up rules
+  href: set-up-rules
 ---
 
 ## Install plugins for a language
@@ -55,19 +55,19 @@ If you use React.
 
 ```json
 {
-	"parser": {
-		".jsx$": "@markuplint/jsx-parser"
-	},
-	"specs": ["@markuplint/react-spec"]
+  "parser": {
+    ".jsx$": "@markuplint/jsx-parser"
+  },
+  "specs": ["@markuplint/react-spec"]
 }
 ```
 
 ```json
 {
-	"parser": {
-		".vue$": "@markuplint/vue-parser"
-	},
-	"specs": ["@markuplint/vue-spec"]
+  "parser": {
+    ".vue$": "@markuplint/vue-parser"
+  },
+  "specs": ["@markuplint/vue-spec"]
 }
 ```
 
@@ -75,21 +75,21 @@ For example, if allow the `key` attribute you need `@markuplint/react-spec` or `
 
 ```js
 const Component = ({ list }) => {
-	return (
-		<ul>
-			{list.map(item => (
-				<li key={item.key}>{item.text}</li>
-			))}
-		</ul>
-	);
+  return (
+    <ul>
+      {list.map(item => (
+        <li key={item.key}>{item.text}</li>
+      ))}
+    </ul>
+  );
 };
 ```
 
 ```html
 <template>
-	<ul>
-		<li v-for="item in list" :key="item.key">{{ item.text }}</li>
-	</ul>
+  <ul>
+    <li v-for="item in list" :key="item.key">{{ item.text }}</li>
+  </ul>
 </template>
 ```
 
@@ -97,12 +97,12 @@ const Component = ({ list }) => {
 
 Unsupported the syntax that is complex on the attribute value in some languages:
 
--   [PHP](https://www.php.net/)
--   [eRuby](https://docs.ruby-lang.org/ja/latest/class/ERB.html)
--   [EJS](https://ejs.co/)
--   [Mustache](https://mustache.github.io/)/[Handlebars](https://handlebarsjs.com/)
--   [Nunjucks](https://mozilla.github.io/nunjucks/)
--   [Liquid](https://liquidjs.com/)
+- [PHP](https://www.php.net/)
+- [eRuby](https://docs.ruby-lang.org/ja/latest/class/ERB.html)
+- [EJS](https://ejs.co/)
+- [Mustache](https://mustache.github.io/)/[Handlebars](https://handlebarsjs.com/)
+- [Nunjucks](https://mozilla.github.io/nunjucks/)
+- [Liquid](https://liquidjs.com/)
 
 ✅ Available code:
 

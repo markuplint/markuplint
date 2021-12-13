@@ -1,45 +1,80 @@
 {
 	"tag": "form",
-	"attributes": [
-		{
-			"name": "accept-charset",
-			"type": "String"
+	"ref": "https://html.spec.whatwg.org/multipage/forms.html#the-form-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"accept-charset": {
+			"ref": "https://html.spec.whatwg.org/multipage/forms.html#attr-form-accept-charset",
+			"type": {
+				"enum": ["utf-8"],
+				"caseInsensitive": true
+			}
 		},
-
-		{
-			"name": "action",
+		"action": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-action",
 			"type": "URL"
 		},
-
-		{
-			"name": "autocomplete",
+		"autocomplete": {
+			"ref": "https://html.spec.whatwg.org/multipage/forms.html#attr-form-autocomplete",
+			"type": {
+				"enum": ["on", "off"],
+				"invalidValueDefault": "on",
+				"missingValueDefault": "on"
+			}
+		},
+		"enctype": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formenctype",
+			"type": {
+				"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"],
+				"invalidValueDefault": "application/x-www-form-urlencoded",
+				"missingValueDefault": "application/x-www-form-urlencoded"
+			}
+		},
+		"method": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formmethod",
+			"type": {
+				"enum": ["post", "get", "dialog"],
+				"invalidValueDefault": "get",
+				"missingValueDefault": "get"
+			}
+		},
+		"name": {
+			"ref": "https://html.spec.whatwg.org/multipage/forms.html#attr-form-name",
+			"type": "NoEmptyAny"
+		},
+		"novalidate": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-novalidate",
 			"type": "Boolean"
 		},
-		{
-			"name": "enctype",
-			"type": "String",
-			"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]
-		},
-		{
-			"name": "method",
-			"type": "String",
-			"enum": ["post", "get", "dialog"]
-		},
-		{
-			"name": "name",
-			"type": "NonEmptyString"
-		},
-		{
-			"name": "novalidate",
-			"type": "Boolean"
-		},
-		{
-			"name": "target",
+		"target": {
+			"ref": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-target",
 			"type": "Target"
 		},
-		{
-			"name": "rel",
-			"type": "LinkTypeList"
+		"rel": {
+			"ref": "https://html.spec.whatwg.org/multipage/forms.html#attr-form-rel",
+			"type": {
+				"token": {
+					"enum": [
+						"external",
+						"help",
+						"license",
+						"next",
+						"nofollow",
+						"noopener",
+						"noreferrer",
+						"opener",
+						"prev",
+						"search"
+					]
+				},
+				"unique": true,
+				"separator": "space"
+			}
 		}
-	]
+	}
 }

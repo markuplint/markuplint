@@ -1,12 +1,12 @@
 {
-	"extends": ["eslint:recommended"],
+	"extends": ["eslint:recommended", "plugin:import/recommended", "plugin:import/typescript"],
 	"env": {
 		"browser": false,
 		"es6": true,
 		"node": true,
 		"jest": true
 	},
-	"plugins": ["@typescript-eslint", "jsdoc", "eslint-comments"],
+	"plugins": ["@typescript-eslint", "jsdoc", "eslint-comments", "import"],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
 		"sourceType": "module",
@@ -20,7 +20,7 @@
 		"no-dupe-class-members": 0,
 		"no-unused-vars": 0,
 		"no-array-constructor": 0,
-		"sort-imports": [2],
+		"sort-imports": 0,
 		"no-console": [1],
 		"no-mixed-spaces-and-tabs": 0,
 
@@ -34,19 +34,44 @@
 		"@typescript-eslint/no-var-requires": 2,
 		"@typescript-eslint/no-unnecessary-type-assertion": 2,
 		"@typescript-eslint/restrict-plus-operands": 0,
+		"@typescript-eslint/consistent-type-imports": 1,
 
 		"eslint-comments/disable-enable-pair": "error",
 		"eslint-comments/no-duplicate-disable": "error",
 		"eslint-comments/no-unlimited-disable": "error",
 		"eslint-comments/no-unused-disable": "error",
 		"eslint-comments/no-unused-enable": "error",
-		"eslint-comments/no-use": "off"
+		"eslint-comments/no-use": "off",
+
+		"import/no-named-as-default": 0,
+		"import/order": [
+			"error",
+			{
+				"groups": ["type", "builtin", "external", "parent", "sibling", "index", "object"],
+				"pathGroups": [
+					{
+						"pattern": "@alias/**",
+						"group": "parent",
+						"position": "before"
+					}
+				],
+				"alphabetize": {
+					"order": "asc"
+				},
+				"newlines-between": "always"
+			}
+		]
 	},
 	"settings": {
 		"jsdoc": {
 			"tagNamePreference": {
 				"param": "arg",
 				"returns": "return"
+			}
+		},
+		"import/resolver": {
+			"typescript": {
+				"alwaysTryTypes": true
 			}
 		}
 	}

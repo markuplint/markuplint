@@ -1,9 +1,11 @@
-import * as markuplint from 'markuplint';
+import { mlRuleTest } from 'markuplint';
+
 import rule from './';
 
 describe('verify', () => {
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<div>
 			lorem
@@ -11,21 +13,18 @@ describe('verify', () => {
 		</div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 'tab',
-					},
+				rule: {
+					severity: 'error',
+					value: 'tab',
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
     <div>
         lorem
@@ -33,24 +32,19 @@ describe('verify', () => {
     </div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 'tab',
-					},
+				rule: {
+					severity: 'error',
+					value: 'tab',
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Indentation must be tab',
 				line: 2,
 				col: 1,
 				raw: '    ',
-				ruleId: 'indentation',
 			},
 			{
 				severity: 'error',
@@ -58,7 +52,6 @@ describe('verify', () => {
 				line: 3,
 				col: 1,
 				raw: '        ',
-				ruleId: 'indentation',
 			},
 			{
 				severity: 'error',
@@ -66,7 +59,6 @@ describe('verify', () => {
 				line: 4,
 				col: 1,
 				raw: '        ',
-				ruleId: 'indentation',
 			},
 			{
 				severity: 'error',
@@ -74,13 +66,13 @@ describe('verify', () => {
 				line: 5,
 				col: 1,
 				raw: '    ',
-				ruleId: 'indentation',
 			},
 		]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
     <div>
 
@@ -89,24 +81,19 @@ describe('verify', () => {
     </div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 'tab',
-					},
+				rule: {
+					severity: 'error',
+					value: 'tab',
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Indentation must be tab',
 				line: 2,
 				col: 1,
 				raw: '    ',
-				ruleId: 'indentation',
 			},
 			{
 				severity: 'error',
@@ -114,7 +101,6 @@ describe('verify', () => {
 				line: 4,
 				col: 1,
 				raw: '        ',
-				ruleId: 'indentation',
 			},
 			{
 				severity: 'error',
@@ -122,32 +108,27 @@ describe('verify', () => {
 				line: 6,
 				col: 1,
 				raw: '    ',
-				ruleId: 'indentation',
 			},
 		]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
     <div>
         lorem
         <p>ipsam</p>
     </div>
 		`,
-			{
-				rules: {
-					indentation: 4,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: 4 },
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
     <div>
       lorem
@@ -155,21 +136,18 @@ describe('verify', () => {
     </div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 2,
-					},
+				rule: {
+					severity: 'error',
+					value: 2,
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 	<div>
 		lorem
@@ -177,24 +155,19 @@ describe('verify', () => {
 	</div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 4,
-					},
+				rule: {
+					severity: 'error',
+					value: 4,
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
 				message: 'Indentation must be space',
 				line: 2,
 				col: 1,
 				raw: '	',
-				ruleId: 'indentation',
 			},
 			{
 				severity: 'error',
@@ -202,7 +175,6 @@ describe('verify', () => {
 				line: 3,
 				col: 1,
 				raw: '		',
-				ruleId: 'indentation',
 			},
 			{
 				severity: 'error',
@@ -210,7 +182,6 @@ describe('verify', () => {
 				line: 4,
 				col: 1,
 				raw: '		',
-				ruleId: 'indentation',
 			},
 			{
 				severity: 'error',
@@ -218,13 +189,13 @@ describe('verify', () => {
 				line: 5,
 				col: 1,
 				raw: '	',
-				ruleId: 'indentation',
 			},
 		]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
    <div>
       lorem
@@ -232,41 +203,36 @@ describe('verify', () => {
    </div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 2,
-						option: {
-							'indent-nested-nodes': false,
-						},
+				rule: {
+					severity: 'error',
+					value: 2,
+					option: {
+						'indent-nested-nodes': false,
 					},
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
-				message: 'Indentation must be 2 width spaces',
+				message: 'Indentation must be two width spaces',
 				line: 2,
 				col: 1,
 				raw: '   ',
-				ruleId: 'indentation',
 			},
 			{
 				severity: 'error',
-				message: 'Indentation must be 2 width spaces',
+				message: 'Indentation must be two width spaces',
 				line: 5,
 				col: 1,
 				raw: '   ',
-				ruleId: 'indentation',
 			},
 		]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
    <div>
       lorem
@@ -274,21 +240,18 @@ describe('verify', () => {
    </div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 3,
-					},
+				rule: {
+					severity: 'error',
+					value: 3,
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('tab', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
    <div>
       lorem
@@ -296,231 +259,197 @@ describe('verify', () => {
    </div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'warning',
-						value: 3,
-						option: {
-							'indent-nested-nodes': false,
-						},
+				rule: {
+					severity: 'warning',
+					value: 3,
+					option: {
+						'indent-nested-nodes': false,
 					},
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 4,
 				col: 1,
-				message: 'Indentation should be 3 width spaces',
+				message: 'Indentation should be three width spaces',
 				raw: '          ',
-				ruleId: 'indentation',
 			},
 		]);
 	});
 
 	test('rawText', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 	<script>
     var text = 'lorem';
 	</script>
 		`,
-			{
-				rules: {
-					indentation: 'tab',
-				},
-			},
-			[rule],
-			'en',
+			{ rule: 'tab' },
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - align: false', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 	<div>
 		</div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'warning',
-						value: 'tab',
-						option: {
-							alignment: false,
-						},
+				rule: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						alignment: false,
 					},
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 	<div>
 		</div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'warning',
-						value: 'tab',
-						option: {
-							alignment: true,
-						},
+				rule: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						alignment: true,
 					},
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 3,
 				col: 1,
 				message: 'Start tag and end tag indentation should align',
 				raw: '\t\t',
-				ruleId: 'indentation',
 			},
 		]);
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 	<div>
 </div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'warning',
-						value: 'tab',
-						option: {
-							alignment: true,
-						},
+				rule: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						alignment: true,
 					},
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 3,
 				col: 1,
 				message: 'Start tag and end tag indentation should align',
 				raw: '',
-				ruleId: 'indentation',
 			},
 		]);
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 	<div>	</div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'warning',
-						value: 'tab',
-						option: {
-							alignment: true,
-						},
+				rule: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						alignment: true,
 					},
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 	<div> </div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'warning',
-						value: 'tab',
-						option: {
-							alignment: true,
-						},
+				rule: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						alignment: true,
 					},
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - align: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<div> text </div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'warning',
-						value: 'tab',
-						option: {
-							alignment: true,
-						},
+				rule: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						alignment: true,
 					},
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<div>
 		<img>
 			</div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'warning',
-						value: 'tab',
-						option: {
-							'indent-nested-nodes': true,
-						},
+				rule: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						'indent-nested-nodes': true,
 					},
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 3,
 				col: 1,
 				message: 'Should increase indentation',
 				raw: '\t\t',
-				ruleId: 'indentation',
 			},
 			{
 				severity: 'warning',
@@ -528,104 +457,90 @@ describe('verify', () => {
 				col: 1,
 				message: 'Start tag and end tag indentation should align',
 				raw: '\t\t\t',
-				ruleId: 'indentation',
 			},
 		]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<div>
 	<img>
 		</div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'warning',
-						value: 'tab',
-						option: {
-							'indent-nested-nodes': true,
-						},
+				rule: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						'indent-nested-nodes': true,
 					},
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 3,
 				col: 1,
 				message: 'Should increase indentation',
 				raw: '\t',
-				ruleId: 'indentation',
 			},
 		]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<div>
 					<!-- comment -->
 		</div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'warning',
-						value: 'tab',
-						option: {
-							'indent-nested-nodes': true,
-						},
+				rule: {
+					severity: 'warning',
+					value: 'tab',
+					option: {
+						'indent-nested-nodes': true,
 					},
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 3,
 				col: 1,
 				message: 'Should decrease indentation',
 				raw: '\t\t\t\t\t',
-				ruleId: 'indentation',
 			},
 		]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`<html>
 <body></body>
 </html>`,
-			{
-				rules: {
-					indentation: true,
-				},
-			},
-			[rule],
-			'en',
+			{ rule: true },
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 2,
 				col: 1,
 				message: 'Should increase indentation',
 				raw: '',
-				ruleId: 'indentation',
 			},
 		]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`<html>
 <body>
 	<div>text
@@ -633,32 +548,27 @@ describe('verify', () => {
 </body>
 </html>`,
 			{
-				rules: {
-					indentation: 'tab',
-				},
-				nodeRules: [
+				rule: 'tab',
+				nodeRule: [
 					{
 						tagName: 'body',
-						rules: {
-							indentation: {
-								severity: 'warning',
-								value: 'tab',
-								option: {
-									'indent-nested-nodes': false,
-								},
+						rule: {
+							severity: 'warning',
+							value: 'tab',
+							option: {
+								'indent-nested-nodes': false,
 							},
 						},
 					},
 				],
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`<html>
 	<body>
 		<div>text
@@ -666,32 +576,27 @@ describe('verify', () => {
 	</body>
 </html>`,
 			{
-				rules: {
-					indentation: 'tab',
-				},
-				nodeRules: [
+				rule: 'tab',
+				nodeRule: [
 					{
 						tagName: 'body',
-						rules: {
-							indentation: {
-								severity: 'warning',
-								value: 'tab',
-								option: {
-									'indent-nested-nodes': false,
-								},
+						rule: {
+							severity: 'warning',
+							value: 'tab',
+							option: {
+								'indent-nested-nodes': false,
 							},
 						},
 					},
 				],
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`<html>
 	<body>
 		<div>text
@@ -699,35 +604,28 @@ describe('verify', () => {
 	</body>
 </html>`,
 			{
-				rules: {
-					indentation: 'tab',
-				},
-				nodeRules: [
+				rule: 'tab',
+				nodeRule: [
 					{
 						tagName: 'body',
-						rules: {
-							indentation: {
-								severity: 'warning',
-								value: 'tab',
-								option: {
-									'indent-nested-nodes': 'never',
-								},
+						rule: {
+							severity: 'warning',
+							value: 'tab',
+							option: {
+								'indent-nested-nodes': 'never',
 							},
 						},
 					},
 				],
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 2,
 				col: 1,
 				message: 'Should decrease indentation',
 				raw: '\t',
-				ruleId: 'indentation',
 			},
 			{
 				severity: 'warning',
@@ -735,13 +633,13 @@ describe('verify', () => {
 				col: 1,
 				message: 'Should decrease indentation',
 				raw: '\t',
-				ruleId: 'indentation',
 			},
 		]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`\t<html>
 <body>
 	<div>text
@@ -749,35 +647,28 @@ describe('verify', () => {
 </body>
 	</html>`,
 			{
-				rules: {
-					indentation: 'tab',
-				},
-				nodeRules: [
+				rule: 'tab',
+				nodeRule: [
 					{
 						tagName: 'body',
-						rules: {
-							indentation: {
-								severity: 'warning',
-								value: 'tab',
-								option: {
-									'indent-nested-nodes': 'never',
-								},
+						rule: {
+							severity: 'warning',
+							value: 'tab',
+							option: {
+								'indent-nested-nodes': 'never',
 							},
 						},
 					},
 				],
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([
+		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 2,
 				col: 1,
 				message: 'Should increase indentation',
 				raw: '',
-				ruleId: 'indentation',
 			},
 			{
 				severity: 'warning',
@@ -785,13 +676,13 @@ describe('verify', () => {
 				col: 1,
 				message: 'Should increase indentation',
 				raw: '',
-				ruleId: 'indentation',
 			},
 		]);
 	});
 
 	test('options - indent-nested-nodes: true', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`\t<html>
 	<body>
 		<div>text
@@ -799,32 +690,27 @@ describe('verify', () => {
 	</body>
 	</html>`,
 			{
-				rules: {
-					indentation: 'tab',
-				},
-				nodeRules: [
+				rule: 'tab',
+				nodeRule: [
 					{
 						tagName: 'body',
-						rules: {
-							indentation: {
-								severity: 'warning',
-								value: 'tab',
-								option: {
-									'indent-nested-nodes': 'never',
-								},
+						rule: {
+							severity: 'warning',
+							value: 'tab',
+							option: {
+								'indent-nested-nodes': 'never',
 							},
 						},
 					},
 				],
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('no indent', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<div>
 			<p> ipsam </p>
@@ -833,21 +719,18 @@ describe('verify', () => {
 		</div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 'tab',
-					},
+				rule: {
+					severity: 'error',
+					value: 'tab',
 				},
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('end tag', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<div>
 		<div no-rule>
@@ -856,29 +739,24 @@ describe('verify', () => {
 		</div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 'tab',
-					},
+				rule: {
+					severity: 'error',
+					value: 'tab',
 				},
-				nodeRules: [
+				nodeRule: [
 					{
 						selector: '[no-rule]',
-						rules: {
-							indentation: false,
-						},
+						rule: false,
 					},
 				],
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('childNodeRules', async () => {
-		const r = await markuplint.verify(
+		const { violations } = await mlRuleTest(
+			rule,
 			`
 		<div>
 			<div no-rule>
@@ -890,26 +768,20 @@ describe('verify', () => {
 		</div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 'tab',
-					},
+				rule: {
+					severity: 'error',
+					value: 'tab',
 				},
-				childNodeRules: [
+				childNodeRule: [
 					{
 						selector: '[no-rule]',
 						inheritance: true,
-						rules: {
-							indentation: false,
-						},
+						rule: false,
 					},
 				],
 			},
-			[rule],
-			'en',
 		);
-		expect(r).toStrictEqual([]);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
@@ -921,20 +793,18 @@ describe('fix', () => {
 		<p>ipsam</p>
 	</div>
 	`;
-		const fixed = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			fixture,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 'tab',
-					},
+				rule: {
+					severity: 'error',
+					value: 'tab',
 				},
 			},
-			[rule],
-			'en',
+			true,
 		);
-		expect(fixed).toBe(fixture);
+		expect(fixedCode).toBe(fixture);
 	});
 
 	test('tab', async () => {
@@ -944,20 +814,18 @@ describe('fix', () => {
         <p>ipsam</p>
     </div>
 	`;
-		const fixed = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			fixture,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 'tab',
-					},
+				rule: {
+					severity: 'error',
+					value: 'tab',
 				},
 			},
-			[rule],
-			'en',
+			true,
 		);
-		expect(fixed).toBe(
+		expect(fixedCode).toBe(
 			`
 	<div>
 		lorem
@@ -968,7 +836,8 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
 		<div>
 			lorem
@@ -976,17 +845,14 @@ describe('fix', () => {
 		</div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 4,
-					},
+				rule: {
+					severity: 'error',
+					value: 4,
 				},
 			},
-			[rule],
-			'en',
+			true,
 		);
-		expect(fixed).toBe(
+		expect(fixedCode).toBe(
 			`
         <div>
             lorem
@@ -997,7 +863,8 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
   <div>
     lorem
@@ -1005,17 +872,14 @@ describe('fix', () => {
   </div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 'tab',
-					},
+				rule: {
+					severity: 'error',
+					value: 'tab',
 				},
 			},
-			[rule],
-			'en',
+			true,
 		);
-		expect(fixed).toBe(
+		expect(fixedCode).toBe(
 			`
 	<div>
 		lorem
@@ -1026,7 +890,8 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
   <div>
     lorem
@@ -1034,17 +899,14 @@ describe('fix', () => {
 </div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 3,
-					},
+				rule: {
+					severity: 'error',
+					value: 3,
 				},
 			},
-			[rule],
-			'en',
+			true,
 		);
-		expect(fixed).toBe(
+		expect(fixedCode).toBe(
 			`
    <div>
       lorem
@@ -1055,7 +917,8 @@ describe('fix', () => {
 	});
 
 	test('tab', async () => {
-		const fixed = await markuplint.fix(
+		const { fixedCode } = await mlRuleTest(
+			rule,
 			`
   <div>
     lorem
@@ -1063,18 +926,15 @@ describe('fix', () => {
 </div>
 		`,
 			{
-				rules: {
-					indentation: {
-						severity: 'error',
-						value: 'tab',
-						option: { 'indent-nested-nodes': 'never' },
-					},
+				rule: {
+					severity: 'error',
+					value: 'tab',
+					option: { 'indent-nested-nodes': 'never' },
 				},
 			},
-			[rule],
-			'en',
+			true,
 		);
-		expect(fixed).toBe(
+		expect(fixedCode).toBe(
 			`
 	<div>
 	lorem

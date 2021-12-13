@@ -1,25 +1,8 @@
-import { nodeListToDebugMaps } from '../../parser-utils/lib';
-import { parse } from './parse';
+import type { MLASTElement } from '@markuplint/ml-ast';
 
-it('Parse error', () => {
-	const ast = parse(`---
-const name = "World";
----
-<!-- Comment -->
-<style>
-div {
-    color: red;
-}
-</style>
-<div>Hello {name}!</div>
-<style>
-div {
-    background: #000;
-}
-</style>
-`);
-	expect(ast.parseError).toBeTruthy();
-});
+import { nodeListToDebugMaps } from '../../parser-utils/lib';
+
+import { parse } from './parse';
 
 it('Basic', () => {
 	const ast = parse(`---
@@ -56,7 +39,6 @@ div {
 		'  [10:22]>[10:23](109,110)eQ: "',
 		'  isDirective: false',
 		'  isDynamicValue: false',
-		'  isInvalid: false',
 		'[10:24]>[10:44](111,131)data-dynamic: data-dynamic={value}',
 		'  [10:23]>[10:24](110,111)bN: ␣',
 		'  [10:24]>[10:36](111,123)name: data-dynamic',
@@ -68,7 +50,6 @@ div {
 		'  [10:43]>[10:44](130,131)eQ: }',
 		'  isDirective: false',
 		'  isDynamicValue: true',
-		'  isInvalid: false',
 		'[10:45]>[10:51](132,138)#text: Hello␣',
 		'[10:51]>[10:57](138,144)MustacheTag: {name}',
 		'[10:57]>[10:58](144,145)#text: !',
@@ -134,7 +115,6 @@ it('Attributes', () => {
 		'  [1:23]>[1:23](22,22)eQ: ',
 		'  isDirective: false',
 		'  isDynamicValue: false',
-		'  isInvalid: false',
 		'[1:24]>[1:38](23,37)prop2: prop2="value2"',
 		'  [1:23]>[1:24](22,23)bN: ␣',
 		'  [1:24]>[1:29](23,28)name: prop2',
@@ -146,7 +126,6 @@ it('Attributes', () => {
 		'  [1:37]>[1:38](36,37)eQ: "',
 		'  isDirective: false',
 		'  isDynamicValue: false',
-		'  isInvalid: false',
 		'[1:39]>[1:53](38,52)prop3: prop3={value3}',
 		'  [1:38]>[1:39](37,38)bN: ␣',
 		'  [1:39]>[1:44](38,43)name: prop3',
@@ -158,7 +137,6 @@ it('Attributes', () => {
 		'  [1:52]>[1:53](51,52)eQ: }',
 		'  isDirective: false',
 		'  isDynamicValue: true',
-		'  isInvalid: false',
 		'[1:54]>[1:72](53,71)CustomComponent: </CustomComponent>',
 	]);
 });
@@ -178,4 +156,22 @@ it('Doctype', () => {
 		'[2:1]>[2:7](16,22)html: <html>',
 		'[2:7]>[2:14](22,29)html: </html>',
 	]);
+});
+
+it('namespace', () => {
+	const doc = parse('<div><svg><text /></svg></div>');
+	expect(doc.nodeList[0].nodeName).toBe('div');
+	expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+	expect(doc.nodeList[1].nodeName).toBe('svg');
+	expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+	expect(doc.nodeList[2].nodeName).toBe('text');
+	expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+
+	const doc2 = parse('<svg><foreignObject><div></div></foreignObject></svg>');
+	expect(doc2.nodeList[0].nodeName).toBe('svg');
+	expect((doc2.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+	expect(doc2.nodeList[1].nodeName).toBe('foreignObject');
+	expect((doc2.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+	expect(doc2.nodeList[2].nodeName).toBe('div');
+	expect((doc2.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
 });

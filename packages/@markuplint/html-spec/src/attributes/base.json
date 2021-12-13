@@ -1,16 +1,12 @@
 {
 	"tag": "base",
-	"attributes": [
-		{
-			"name": "href",
-			"type": "URL"
-		},
-		{
-			"name": "target",
-			"type": "String",
-			"condition": {
-				"self": "[href]"
-			}
-		}
-	]
+	"ref": "https://html.spec.whatwg.org/multipage/semantics.html#the-base-element",
+	"global": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["href", "target"]
+	},
+	"attributes": {}
 }

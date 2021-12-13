@@ -1,0 +1,35 @@
+{
+	"tag": "animateTransform",
+	"ref": "https://svgwg.org/specs/animations/#AnimateTransformElement",
+	"global": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGAnimationAdditionAttrs": ["additive", "accumulate"],
+		"#SVGAnimationEventAttrs": ["onbegin", "onend", "onrepeat"],
+		"#SVGAnimationTargetElementAttrs": ["href"],
+		"#SVGAnimationAttributeTargetAttrs": ["attributeName"],
+		"#SVGAnimationTimingAttrs": [
+			"begin",
+			"dur",
+			"end",
+			"min",
+			"max",
+			"restart",
+			"repeatCount",
+			"repeatDur",
+			"fill"
+		],
+		"#SVGAnimationValueAttrs": ["calcMode", "values", "keyTimes", "keySplines", "from", "to", "by"],
+		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+	},
+	"attributes": {
+		"type": {
+			"ref": "https://svgwg.org/specs/animations/#AnimateTransformElementTypeAttribute",
+			"type": {
+				"enum": ["translate", "scale", "rotate", "skewX", "skewY"]
+			},
+			"defaultValue": "translate"
+		}
+	}
+}
