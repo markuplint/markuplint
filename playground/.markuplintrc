@@ -29,14 +29,15 @@
 					"option": {
 						"attrs": {
 							"property": {
-								"type": "String"
+								"type": "Any"
 							},
 							"content": {
-								"type": "String"
+								"type": "Any"
 							}
 						}
 					}
-				}
+				},
+				"required-attr": false
 			}
 		}
 	]
