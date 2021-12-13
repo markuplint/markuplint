@@ -12715,7 +12715,12 @@
 				"role": "heading"
 			},
 			"omittion": false,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#DocumentElementEventAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {}
 		},
 		{
@@ -12741,7 +12746,12 @@
 				"role": "heading"
 			},
 			"omittion": false,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#DocumentElementEventAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {}
 		},
 		{
@@ -12767,7 +12777,12 @@
 				"role": "heading"
 			},
 			"omittion": false,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#DocumentElementEventAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {}
 		},
 		{
@@ -12793,7 +12808,12 @@
 				"role": "heading"
 			},
 			"omittion": false,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#DocumentElementEventAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {}
 		},
 		{
@@ -12819,7 +12839,12 @@
 				"role": "heading"
 			},
 			"omittion": false,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#DocumentElementEventAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {}
 		},
 		{
