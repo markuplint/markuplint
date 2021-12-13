@@ -394,6 +394,17 @@ test('Pug', async () => {
 	expect(violations.length).toBe(0);
 });
 
+test('Pug class', async () => {
+	const { violations } = await mlRuleTest(rule, 'div.className', {
+		parser: {
+			'.*': '@markuplint/pug-parser',
+		},
+		rule: true,
+	});
+
+	expect(violations.length).toBe(0);
+});
+
 test('Vue', async () => {
 	const { violations: violations1 } = await mlRuleTest(
 		rule,

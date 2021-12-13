@@ -58,7 +58,7 @@ export default createRule<true, Option>({
 				}
 
 				const attrValue = attr.getValue();
-				const value = attrValue.raw;
+				const value = attrValue.potential;
 
 				if (node.rule.option.ignoreAttrNamePrefix) {
 					const ignoreAttrNamePrefixes = Array.isArray(node.rule.option.ignoreAttrNamePrefix)

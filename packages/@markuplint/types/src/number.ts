@@ -18,25 +18,25 @@ export function checkNumber(value: string, type: Number, ref?: string): Result {
 		const clampable = type.clampable;
 		const isInt = type.type === 'integer';
 
-		if (type.gt != null && type.gt < n) {
+		if (type.gt != null && n <= type.gt) {
 			return unmatched(value, 'out-of-range', {
 				candicate: clampable && isInt ? `${type.gt + 1}` : undefined,
 			});
 		}
 
-		if (type.gte != null && type.gte <= n) {
+		if (type.gte != null && n < type.gte) {
 			return unmatched(value, 'out-of-range', {
 				candicate: clampable ? `${type.gte}` : undefined,
 			});
 		}
 
-		if (type.lt != null && n < type.lt) {
+		if (type.lt != null && type.lt <= n) {
 			return unmatched(value, 'out-of-range', {
 				candicate: clampable && isInt ? `${type.lt - 1}` : undefined,
 			});
 		}
 
-		if (type.lte != null && n <= type.lte) {
+		if (type.lte != null && type.lte < n) {
 			return unmatched(value, 'out-of-range', {
 				candicate: clampable ? `${type.lte}` : undefined,
 			});

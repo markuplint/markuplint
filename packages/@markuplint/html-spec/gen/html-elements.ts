@@ -30,7 +30,16 @@ export async function getHTMLElements() {
 			if (h.implicitRole) {
 				h.implicitRole = { ...h.implicitRole, ...ariaInHtml.implicitRole };
 			}
-			specs.push(h);
+
+			const attr = getAttribute(name);
+			const globalAttrs = sortObjectByKey(attr.global || {});
+			const attributes = sortObjectByKey(attr.attributes);
+
+			specs.push({
+				...h,
+				globalAttrs,
+				attributes,
+			});
 		}
 	}
 	return specs.sort(nameCompare).filter(spec => spec.name !== 'h1-h6');
