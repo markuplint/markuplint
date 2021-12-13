@@ -1,9 +1,10 @@
+import type { MLCore } from './diagnose';
 import type { Ruleset } from '@markuplint/ml-core';
 
 import { editor } from 'monaco-editor';
 
-import { diagnose } from './diagnose';
-import { decode } from './utils';
+import { diagnose, createLinter } from './diagnose';
+import { decode, encode } from './utils';
 
 const defaultSample = `<!doctype html>
 <html
@@ -65,6 +66,7 @@ export default class Playground {
 	#ruleset: Ruleset;
 	#editor: editor.IStandaloneCodeEditor;
 	#rafId = 0;
+	#linter: MLCore | null = null;
 
 	constructor(el: HTMLElement, ruleset?: string) {
 		const initCode = location.hash ? decode(location.hash.slice(1)) : defaultSample;
@@ -77,6 +79,7 @@ export default class Playground {
 
 		this.#rulesetString = ruleset || '';
 		this.#ruleset = convertRuleset(ruleset);
+		createLinter(this.#ruleset).then(linter => (this.#linter = linter));
 
 		const onChange = this._onChange.bind(this);
 
@@ -98,14 +101,19 @@ export default class Playground {
 	}
 
 	private _onChange() {
-		cancelAnimationFrame(this.#rafId);
+		window.clearTimeout(this.#rafId);
 		const model = this.#editor.getModel();
-		this.#rafId = requestAnimationFrame(async () => {
-			if (model) {
-				const diagnotics = await diagnose(model.getValue(), this.#ruleset);
+		this.#rafId = window.setTimeout(async () => {
+			if (model && this.#linter) {
+				const code = model.getValue();
+				this.#linter.setCode(code);
+				const reports = await this.#linter.verify();
+				const diagnotics = await diagnose(reports);
+				const encoded = encode(code);
+				location.hash = encoded;
 				editor.setModelMarkers(model, 'markuplint', diagnotics);
 			}
-		});
+		}, 300);
 	}
 }
 

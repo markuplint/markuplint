@@ -1,7 +1,5 @@
 import type { MLMLSpec, Attribute } from './types';
 
-import path from 'path';
-
 export function getAttrSpecs(nameWithNS: string, { specs, def }: MLMLSpec) {
 	const elSpec = specs.find(spec => spec.name === nameWithNS);
 
@@ -64,8 +62,7 @@ export function getAttrSpecs(nameWithNS: string, { specs, def }: MLMLSpec) {
 	for (const attr of attrList) {
 		if (!attr.type) {
 			throw new Error(
-				`The type is empty in the ${attr.name} attribute of the ${nameWithNS} element (${path.resolve(
-					process.cwd(),
+				`The type is empty in the ${attr.name} attribute of the ${nameWithNS} element,
 					'packages',
 					'@markuplint',
 					'html-spec',

@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 	import MlPlayground from './ml-playground.svelte';
 	import rulsJSON from 'json-loader!../.markuplintrc';
 

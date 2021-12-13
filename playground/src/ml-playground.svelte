@@ -1,11 +1,22 @@
-<script lang="ts">
+<script>
 	import { onMount } from 'svelte';
 	import Playground from './playground';
 
-	export let ruleset: string;
+	/**
+	 * @type string
+	 */
+	export let ruleset;
 
-	let el: HTMLDivElement;
-	let playground: Playground | null = null;
+	/**
+	 * @type HTMLDivElement
+	 */
+	let el;
+
+	/**
+	 * @type Playground | null
+	 */
+	let playground = null;
+
 	let isLoaded = false;
 
 	$: playground && playground.changeRuleset(ruleset);

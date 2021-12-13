@@ -21,12 +21,9 @@ const distDir = path.resolve(__dirname, 'dist');
 async function build(mode: Mode): Promise<Configuration & DevServerConfiguration> {
 	return {
 		mode,
-		devtool: mode === 'production' ? false : 'cheap-module-eval-source-map',
+		devtool: mode === 'production' ? false : 'eval-cheap-module-source-map',
 		devServer: {
-			contentBase: distDir,
-			watchContentBase: true,
 			hot: true,
-			inline: true,
 			compress: true,
 			port: 9000,
 			open: true,

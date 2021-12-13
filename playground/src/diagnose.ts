@@ -1,17 +1,17 @@
 import type { LocaleSet } from '@markuplint/i18n';
-import type { Ruleset } from '@markuplint/ml-core';
+import type { Violation } from '@markuplint/ml-config';
+import type { AnyRuleSeed, Ruleset } from '@markuplint/ml-core';
 import type { editor } from 'monaco-editor';
 
 import * as HTMLParser from '@markuplint/html-parser';
 import spec from '@markuplint/html-spec';
-import { I18n } from '@markuplint/i18n';
-import { MLCore } from '@markuplint/ml-core';
+import { MLRule, MLCore } from '@markuplint/ml-core';
 import { getEndCol, getEndLine } from '@markuplint/parser-utils';
 import rules from '@markuplint/rules';
 
-import { encode } from './utils';
+export type { MLCore } from '@markuplint/ml-core';
 
-const lint = async (newCode: string, ruleset: Ruleset) => {
+export const createLinter = async (ruleset: Ruleset) => {
 	const language = navigator.language || '';
 	const langCode = language.split(/_|-/)[0];
 	// @ts-ignore TODO: Solve types
@@ -19,9 +19,22 @@ const lint = async (newCode: string, ruleset: Ruleset) => {
 		langCode === 'ja'
 			? await import('@markuplint/i18n/locales/ja.json')
 			: await import('@markuplint/i18n/locales/en.json');
-	const i18n = await I18n.create(localSet);
-	const linter = new MLCore(HTMLParser, newCode, ruleset, rules, i18n, [spec], {}, '');
-	const reports = await linter.verify();
+	const linter = new MLCore({
+		parser: HTMLParser,
+		sourceCode: '',
+		ruleset,
+		rules: Object.entries(rules as Record<string, AnyRuleSeed>).map(
+			([name, seed]) => new MLRule({ name, ...seed }),
+		),
+		locale: localSet,
+		schemas: [spec],
+		parserOptions: {},
+		filename: 'playground.html',
+	});
+	return linter;
+};
+
+export const diagnose = async (reports: Violation[]) => {
 	const diagnotics: editor.IMarkerData[] = [];
 	for (const report of reports) {
 		diagnotics.push({
@@ -33,12 +46,6 @@ const lint = async (newCode: string, ruleset: Ruleset) => {
 			message: `${report.message} (${report.ruleId}) <markuplint>`,
 		});
 	}
-	return diagnotics;
-};
 
-export const diagnose = async (code: string, ruleset: Ruleset) => {
-	const diagnotics = await lint(code, ruleset);
-	const encoded = encode(code);
-	location.hash = encoded;
 	return diagnotics;
 };
