@@ -61,8 +61,15 @@ test('IconSize', () => {
 	expect(check('x1', 'IconSize').matched).toBe(false);
 });
 
-test('ItemProp', () => {
-	expect(check('itemListElement', 'ItemProp').matched).toBe(true);
-	expect(check('item', 'ItemProp').matched).toBe(true);
-	expect(check('position', 'ItemProp').matched).toBe(true);
+test('Non-exist types', () => {
+	// @ts-ignore
+	expect(check('abc', 'String').matched).toBe(true);
+	// @ts-ignore
+	expect(check('abc', 'FooBar').matched).toBe(true);
+	// @ts-ignore
+	expect(check('abc', ' ').matched).toBe(true);
+	// @ts-ignore
+	expect(check('abc', '\n').matched).toBe(true);
+	// @ts-ignore
+	expect(check('abc', '').matched).toBe(true);
 });

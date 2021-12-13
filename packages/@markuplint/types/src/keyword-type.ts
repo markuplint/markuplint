@@ -5,6 +5,7 @@ import { isCSSSyntax } from './check';
 import { cssSyntaxMatch } from './css-syntax';
 import { log } from './debug';
 import { types } from './defs';
+import { matched } from './match-result';
 
 const resultCache = new Map<string, Result>();
 const CACHE_KEY_PREFIX = '@markuplint/types/checkKeywordType/cache:::';
@@ -36,17 +37,26 @@ export function checkKeywordType(value: string, type: KeywordDefinedType, cache 
 function _checkKeywordType(value: string, type: KeywordDefinedType): Result {
 	const def = types[type];
 	if (!def) {
-		return cssSyntaxMatch(value, type as CssSyntax);
+		log('The "%s" type is not defined in custom type identifier markuplint specified', type);
+		try {
+			return cssSyntaxMatch(value, type as CssSyntax);
+		} catch (e) {
+			if (e instanceof Error && e.message === 'MARKUPLINT_TYPE_NO_EXIST') {
+				log("Allow all of any value because the type doesn't exist");
+				return matched();
+			}
+			throw e;
+		}
 	}
 
-	const matched = isCSSSyntax(def) ? cssSyntaxMatch(value, def) : def.is(value);
+	const matches = isCSSSyntax(def) ? cssSyntaxMatch(value, def) : def.is(value);
 
-	if (!matched.matched) {
+	if (!matches.matched) {
 		return {
-			...matched,
-			ref: matched.ref || def.ref,
-			expects: matched.expects || def.expects,
+			...matches,
+			ref: matches.ref || def.ref,
+			expects: matches.expects || def.expects,
 		};
 	}
-	return matched;
+	return matches;
 }
