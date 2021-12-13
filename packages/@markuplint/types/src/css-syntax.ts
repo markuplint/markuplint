@@ -32,6 +32,8 @@ interface SyntaxMatchError {
 }
 
 export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax): Result {
+	log('Search CSS Syntax: "%s"', type);
+
 	const origin = value;
 	let defName: `<${string}>`;
 	const typesExtended: Record<string, string> = {};
@@ -156,6 +158,10 @@ function defToMatcher(lexer: any, def: `<${string}>`) {
 	const isProp = def.search("<'") === 0;
 	const name = def.replace(/^<'?|'?>$/g, '');
 	const matcher = isProp ? lexer.properties[name] : lexer.types[name];
+	if (!matcher) {
+		log('"%s" CSS syntax not found', def);
+		throw new Error('MARKUPLINT_TYPE_NO_EXIST');
+	}
 	return {
 		isProp,
 		name,
