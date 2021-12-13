@@ -46,7 +46,7 @@ test('Srcset', () => {
 	expect(check('a/bb/ccc/dddd 200w, b/cc/ddd/eeee 1.5a', 'Srcset').matched).toBe(false);
 });
 
-test('Srcset', () => {
+test('IconSize', () => {
 	expect(check('any', 'IconSize').matched).toBe(true);
 	expect(check('Any', 'IconSize').matched).toBe(true);
 	expect(check('10x10', 'IconSize').matched).toBe(true);
@@ -59,4 +59,10 @@ test('Srcset', () => {
 	expect(check('1', 'IconSize').matched).toBe(false);
 	expect(check('1x', 'IconSize').matched).toBe(false);
 	expect(check('x1', 'IconSize').matched).toBe(false);
+});
+
+test('ItemProp', () => {
+	expect(check('itemListElement', 'ItemProp').matched).toBe(true);
+	expect(check('item', 'ItemProp').matched).toBe(true);
+	expect(check('position', 'ItemProp').matched).toBe(true);
 });

@@ -1,5 +1,6 @@
 import type { Defs, CssSyntaxTokenizer } from './types';
 
+import { checkMultiTypes } from './check-multi-types';
 import { getCandicate } from './get-candicate';
 import { matched, matches, unmatched } from './match-result';
 import { splitUnit, isFloat, isUint, isInt } from './primitive';
@@ -351,13 +352,12 @@ export const types: Defs = {
 			},
 		],
 		is(value) {
-			if (!isAbsURL()(value)) {
-				return unmatched(value, 'unexpected-token');
-			}
-			if (!isItempropName()(value)) {
-				return unmatched(value, 'unexpected-token');
-			}
-			return matched();
+			const _matched = matched();
+			const _unmatched = unmatched(value, 'unexpected-token');
+			return checkMultiTypes(value, [
+				value => (isAbsURL()(value) ? _matched : _unmatched),
+				value => (isItempropName()(value) ? _matched : _unmatched),
+			]);
 		},
 	},
 
