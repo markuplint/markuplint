@@ -13640,6 +13640,7 @@
 					"ref": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete",
 					"condition": {
 						"self": [
+							":not([type])",
 							"[type='hidden' i]",
 							"[type='text' i]",
 							"[type='search' i]",
@@ -13678,7 +13679,7 @@
 				"dirname": {
 					"ref": "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-dirname",
 					"condition": {
-						"self": ["[type='text' i]", "[type='search' i]"]
+						"self": [":not([type])", "[type='text' i]", "[type='search' i]"]
 					}
 				},
 				"disabled": {
@@ -13724,6 +13725,7 @@
 					"_TODO_": "must be the ID of a `datalist` element",
 					"condition": {
 						"self": [
+							":not([type])",
 							"[type='text' i]",
 							"[type='search' i]",
 							"[type='url' i]",
@@ -13760,6 +13762,7 @@
 					"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-maxlength",
 					"condition": {
 						"self": [
+							":not([type])",
 							"[type='text' i]",
 							"[type='search' i]",
 							"[type='url' i]",
@@ -13789,6 +13792,7 @@
 					"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-minlength",
 					"condition": {
 						"self": [
+							":not([type])",
 							"[type='text' i]",
 							"[type='search' i]",
 							"[type='url' i]",
@@ -13821,6 +13825,7 @@
 					"type": "Pattern",
 					"condition": {
 						"self": [
+							":not([type])",
 							"[type='text' i]",
 							"[type='search' i]",
 							"[type='url' i]",
@@ -13835,6 +13840,7 @@
 					"type": "OneLineAny",
 					"condition": {
 						"self": [
+							":not([type])",
 							"[type='text' i]",
 							"[type='search' i]",
 							"[type='url' i]",
@@ -13849,6 +13855,7 @@
 					"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-readonly",
 					"condition": {
 						"self": [
+							":not([type])",
 							"[type='text' i]",
 							"[type='search' i]",
 							"[type='url' i]",
@@ -13868,6 +13875,7 @@
 					"ref": "https://html.spec.whatwg.org/multipage/input.html#attr-input-required",
 					"condition": {
 						"self": [
+							":not([type])",
 							"[type='text' i]",
 							"[type='search' i]",
 							"[type='url' i]",
@@ -13898,6 +13906,7 @@
 					},
 					"condition": {
 						"self": [
+							":not([type])",
 							"[type='text' i]",
 							"[type='search' i]",
 							"[type='url' i]",
