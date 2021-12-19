@@ -53,9 +53,9 @@ export class RuleMapper<N extends AnonymousNode<any, any> = AnonymousNode<any, a
 			if (!rules) {
 				return;
 			}
-			const shash = node.type === 'ElementCloseTag' ? '/' : '';
+			const slash = node.type === 'ElementCloseTag' ? '/' : '';
 			const nodeName = 'nodeName' in node ? node.nodeName : `#${node.type}`;
-			ruleMapperNodeLog('<%s%s>', shash, nodeName);
+			ruleMapperNodeLog('<%s%s>', slash, nodeName);
 			Object.keys(rules).forEach(ruleName => {
 				const rule = rules[ruleName];
 				node.rules[ruleName] = rule.rule;
