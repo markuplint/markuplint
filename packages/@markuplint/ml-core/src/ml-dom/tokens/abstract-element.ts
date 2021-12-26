@@ -181,7 +181,7 @@ export default abstract class MLDOMAbstractElement<
 	}
 
 	matches(selector: string): boolean {
-		return createSelector(selector).match(this);
+		return !!createSelector(selector).match(this);
 	}
 
 	fixNodeName(name: string) {

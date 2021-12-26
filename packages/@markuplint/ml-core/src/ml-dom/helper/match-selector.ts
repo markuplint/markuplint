@@ -1,30 +1,52 @@
 import type MLDOMAbstractElement from '../tokens/abstract-element';
+import type { Specificity } from './selector';
 import type { RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCompination } from '@markuplint/ml-config';
 
 import { regexSelectorMatches } from '@markuplint/ml-config';
 
 import { createSelector } from './selector';
 
+export type SelectorMatches = SelectorMatched | SelectorUnmatched;
+
+type SelectorMatched = {
+	matched: true;
+	selector: string;
+	specificity: Specificity;
+	data?: Record<string, string>;
+};
+
+type SelectorUnmatched = {
+	matched: false;
+};
+
 type TargetElement = MLDOMAbstractElement<any, any>;
 
-export function matchSelector(
-	el: TargetElement,
-	selector: string | RegexSelector | undefined,
-): Record<string, string> | null {
+export function matchSelector(el: TargetElement, selector: string | RegexSelector | undefined): SelectorMatches {
 	if (!selector) {
-		return null;
+		return {
+			matched: false,
+		};
 	}
 
 	if (typeof selector === 'string') {
 		const sel = createSelector(selector);
-		const matched = sel.match(el);
-		return matched ? { __node: selector } : null;
+		const specificity = sel.match(el);
+		if (specificity) {
+			return {
+				matched: true,
+				selector,
+				specificity,
+			};
+		}
+		return {
+			matched: false,
+		};
 	}
 
 	return regexSelect(el, selector);
 }
 
-function regexSelect(el: TargetElement, selector: RegexSelector): Record<string, string> | null {
+function regexSelect(el: TargetElement, selector: RegexSelector): SelectorMatches {
 	let edge = new SelectorTarget(selector);
 	let edgeSelector = selector.combination;
 	while (edgeSelector) {
@@ -49,13 +71,13 @@ class SelectorTarget {
 		};
 	}
 
-	match(el: TargetElement): Record<string, string> | null {
-		const matched = this._matchWithoutCombinateChecking(el);
-		if (!matched) {
-			return null;
+	match(el: TargetElement): SelectorMatches {
+		const unitCheck = this._matchWithoutCombinateChecking(el);
+		if (!unitCheck.matched) {
+			return unitCheck;
 		}
 		if (!this._combinatedFrom) {
-			return matched;
+			return unitCheck;
 		}
 		const { target, combinator } = this._combinatedFrom;
 		switch (combinator) {
@@ -63,100 +85,72 @@ class SelectorTarget {
 			case ' ': {
 				let ancestor = el.parentNode;
 				while (ancestor) {
-					const ancestorMatched = target.match(ancestor);
-					if (ancestorMatched) {
-						const res = {
-							...ancestorMatched,
-							...matched,
-							__node: `${ancestorMatched.__node} ${matched.__node}`,
-						};
-						return res;
+					const matches = target.match(ancestor);
+					if (matches.matched) {
+						return mergeMatches(matches, unitCheck, ' ');
 					}
 					ancestor = ancestor.parentNode;
 				}
-				return null;
+				return {
+					matched: false,
+				};
 			}
 			// Child combinator
 			case '>': {
 				if (!el.parentNode) {
-					return null;
+					return { matched: false };
 				}
-				const parentMatched = target.match(el.parentNode);
-				if (parentMatched) {
-					const res = {
-						...parentMatched,
-						...matched,
-						__node: `${parentMatched.__node} > ${matched.__node}`,
-					};
-					return res;
+				const matches = target.match(el.parentNode);
+				if (matches.matched) {
+					return mergeMatches(matches, unitCheck, ' > ');
 				}
-				return null;
+				return { matched: false };
 			}
 			// Next-sibling combinator
 			case '+': {
 				if (!el.previousElementSibling) {
-					return null;
+					return { matched: false };
 				}
-				const prevMatched = target.match(el.previousElementSibling);
-				if (prevMatched) {
-					const res = {
-						...prevMatched,
-						...matched,
-						__node: `${prevMatched.__node} + ${matched.__node}`,
-					};
-					return res;
+				const matches = target.match(el.previousElementSibling);
+				if (matches.matched) {
+					return mergeMatches(matches, unitCheck, ' + ');
 				}
-				return null;
+				return { matched: false };
 			}
 			// Subsequent-sibling combinator
 			case '~': {
 				let prev = el.previousElementSibling;
 				while (prev) {
-					const prevMatched = target.match(prev);
-					if (prevMatched) {
-						const res = {
-							...prevMatched,
-							...matched,
-							__node: `${prevMatched.__node} ~ ${matched.__node}`,
-						};
-						return res;
+					const matches = target.match(prev);
+					if (matches.matched) {
+						return mergeMatches(matches, unitCheck, ' ~ ');
 					}
 					prev = prev.previousElementSibling;
 				}
-				return null;
+				return { matched: false };
 			}
 			// Prev-sibling combinator
 			case ':has(+)': {
 				if (!el.nextElementSibling) {
-					return null;
+					return { matched: false };
 				}
-				const nextMatched = target.match(el.nextElementSibling);
-				if (nextMatched) {
-					const res = {
-						...nextMatched,
-						...matched,
-						__node: `${nextMatched.__node}:has(+ ${matched.__node})`,
-					};
-					return res;
+				const matches = target.match(el.nextElementSibling);
+				if (matches.matched) {
+					return mergeMatches(matches, unitCheck, ':has(+ ', true);
 				}
-				return null;
+				return { matched: false };
 			}
 			// Subsequent-sibling (in front) combinator
 			case ':has(~)': {
 				let next = el.nextElementSibling;
 				while (next) {
-					const nextMatched = target.match(next);
-					if (nextMatched) {
-						const res = {
-							...nextMatched,
-							...matched,
-							__node: `${nextMatched.__node}:has(~ ${matched.__node})`,
-						};
-						return res;
+					const matches = target.match(next);
+					if (matches.matched) {
+						return mergeMatches(matches, unitCheck, ':has(~ ', true);
 					}
 					next = next.nextElementSibling;
 				}
-				return null;
+				return { matched: false };
 			}
 			default: {
 				throw new Error(`Unsupported ${this._combinatedFrom.combinator} combinator in selector`);
@@ -173,20 +167,28 @@ class SelectorTarget {
 	}
 }
 
-function uncombinatedRegexSelect(el: TargetElement, selector: RegexSelectorWithoutCompination) {
-	let matchedMap: Record<string, string> = {};
+function uncombinatedRegexSelect(el: TargetElement, selector: RegexSelectorWithoutCompination): SelectorMatches {
+	let matched = true;
+	let data: Record<string, string> = {};
+	let tagSelector = '';
+	const specificity: Specificity = [0, 0, 0];
+	const specifiedAttr = new Map<string, string>();
 
 	if (selector.nodeName) {
 		const matchedNodeName = regexSelectorMatches(selector.nodeName, el.nodeName);
-		if (!matchedNodeName) {
-			return null;
+		if (matchedNodeName) {
+			delete matchedNodeName.$0;
+		} else {
+			matched = false;
 		}
-		delete matchedNodeName.$0;
-		matchedMap = {
-			...matchedMap,
+		data = {
+			...data,
 			...matchedNodeName,
-			__node: el.nodeName,
 		};
+
+		tagSelector = el.nodeName;
+
+		specificity[2] = 1;
 	}
 
 	if (selector.attrName) {
@@ -197,18 +199,18 @@ function uncombinatedRegexSelect(el: TargetElement, selector: RegexSelectorWitho
 
 			if (matchedAttrName) {
 				delete matchedAttrName.$0;
-				matchedMap = {
-					...matchedMap,
+				data = {
+					...data,
 					...matchedAttrName,
-					__node: matchedMap.__node ? `${matchedMap.__node}[${attrName}]` : `[${attrName}]`,
 				};
+				specifiedAttr.set(attrName, '');
 			}
 
 			return matchedAttrName;
 		});
 
 		if (!matchedAttrNameList.some(_ => !!_)) {
-			return null;
+			matched = false;
 		}
 	}
 
@@ -221,22 +223,53 @@ function uncombinatedRegexSelect(el: TargetElement, selector: RegexSelectorWitho
 
 			if (matchedAttrValue) {
 				delete matchedAttrValue.$0;
-				matchedMap = {
-					...matchedMap,
+				data = {
+					...data,
 					...matchedAttrValue,
-					__node: matchedMap.__node
-						? `${matchedMap.__node}[${attrName}="${attrValue}"]`
-						: `[${attrName}="${attrValue}"]`,
 				};
+				specifiedAttr.set(attrName, attrValue);
 			}
 
 			return matchedAttrValue;
 		});
 
 		if (!matchedAttrValueList.some(_ => !!_)) {
-			return null;
+			matched = false;
 		}
 	}
 
-	return matchedMap;
+	const attrSelector = Array.from(specifiedAttr.entries())
+		.map(([name, value]) => {
+			return `[${name}${value ? `="${value}"` : ''}]`;
+		})
+		.join('');
+
+	specificity[1] += specifiedAttr.size;
+
+	if (matched) {
+		return {
+			matched,
+			selector: `${tagSelector}${attrSelector}`,
+			specificity,
+			data,
+		};
+	}
+
+	return { matched };
+}
+
+function mergeMatches(a: SelectorMatched, b: SelectorMatched, sep: string, close = false): SelectorMatched {
+	return {
+		matched: true,
+		selector: `${a.selector}${sep}${b.selector}${close ? ')' : ''}`,
+		specificity: [
+			a.specificity[0] + b.specificity[0],
+			a.specificity[1] + b.specificity[1],
+			a.specificity[2] + b.specificity[2],
+		],
+		data: {
+			...a.data,
+			...b.data,
+		},
+	};
 }
