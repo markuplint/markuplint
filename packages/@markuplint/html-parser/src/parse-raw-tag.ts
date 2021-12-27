@@ -31,7 +31,7 @@ export default function parseRawTag(
 
 	const matches = raw.match(reTag);
 	if (!matches) {
-		throw new SyntaxError(`Invalid tag syntax: ${raw}`);
+		throw new SyntaxError(`Invalid tag syntax: "${raw}"`);
 	}
 	const tagWithAttrs = matches[1];
 

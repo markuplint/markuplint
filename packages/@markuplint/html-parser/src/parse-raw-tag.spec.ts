@@ -462,11 +462,11 @@ test('custom element with full-width space', () => {
 
 describe('error', () => {
 	test('SyntaxError: <div', () => {
-		expect(() => parseRawTag('<div', 1, 1, 0)).toThrow('Invalid tag syntax: <div');
+		expect(() => parseRawTag('<div', 1, 1, 0)).toThrow('Invalid tag syntax: "<div"');
 	});
 
 	test('SyntaxError: <>', () => {
-		expect(() => parseRawTag('<>', 1, 1, 0)).toThrow('Invalid tag syntax: <>');
+		expect(() => parseRawTag('<>', 1, 1, 0)).toThrow('Invalid tag syntax: "<>"');
 	});
 
 	test('SyntaxError: < >', () => {
@@ -476,4 +476,8 @@ describe('error', () => {
 	test('SyntaxError: <要素>', () => {
 		expect(() => parseRawTag('<要素>', 1, 1, 0)).toThrow('Invalid tag name: "要素" in <要素>');
 	});
+});
+
+test('include gt sign', () => {
+	expect(parseRawTag('<div a=" > ">', 1, 1, 0).attrs[0].raw).toBe(' a=" > "');
 });
