@@ -1,5 +1,6 @@
 import type { MLRule } from '../';
 import type Ruleset from '../ruleset';
+import type { SelectorMatches } from './helper/match-selector';
 import type { Walker } from './helper/walkers';
 import type { MLDOMComment, MLDOMElement, MLDOMElementCloseTag, MLDOMText } from './tokens';
 import type { AnonymousNode, NodeType } from './types';
@@ -208,7 +209,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				const rule = ruleset.rules[ruleName];
 				ruleMapper.set(node, ruleName, {
 					from: 'rules',
-					index: -1,
+					specificity: [0, 0, 0],
 					rule,
 				});
 			});
@@ -225,34 +226,42 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					return;
 				}
 
+				if (!selectorTarget) {
+					return;
+				}
+
 				const selector = nodeRule.selector || nodeRule.regexSelector || nodeRule.tagName;
 
-				const matched =
+				const matches: SelectorMatches =
 					/**
 					 * Forward v1.x compatibility
 					 */
 					nodeRule.tagName && /^#text$/i.test(nodeRule.tagName) && node.type === 'Text'
-						? { __node: '#text' }
+						? {
+								matched: true,
+								selector: '#text',
+								specificity: [0, 0, 0],
+						  }
 						: /**
 						   * v2.0.0 or later
 						   */
-						  selectorTarget && matchSelector(selectorTarget, selector);
+						  matchSelector(selectorTarget, selector);
 
-				if (!matched) {
+				if (!matches.matched) {
 					return;
 				}
 
 				docLog(
 					'Matched nodeRule: <%s>(%s)',
 					'nodeName' in node ? node.nodeName : node.type,
-					matched.__node || 'No Selector',
+					matches.selector || '*',
 				);
 
 				const ruleList = Object.keys(nodeRule.rules);
 
 				for (const ruleName of ruleList) {
 					const rule = nodeRule.rules[ruleName];
-					const convertedRule = exchangeValueOnRule(rule, matched);
+					const convertedRule = exchangeValueOnRule(rule, matches.data || {});
 					if (convertedRule === undefined) {
 						continue;
 					}
@@ -263,7 +272,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 
 					ruleMapper.set(node, ruleName, {
 						from: 'nodeRules',
-						index: i,
+						specificity: matches.specificity,
 						rule: mergedRule,
 					});
 				}
@@ -291,15 +300,15 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 						return;
 					}
 
-					const matched = matchSelector(selectorTarget, selector);
-					if (!matched) {
+					const matches = matchSelector(selectorTarget, selector);
+					if (!matches.matched) {
 						return;
 					}
 
 					docLog(
 						'Matched childNodeRule: <%s>(%s), inheritance: %o',
 						selectorTarget.nodeName,
-						matched.__node || 'No Selector',
+						matches.selector || '*',
 						!!nodeRule.inheritance,
 					);
 
@@ -308,7 +317,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					Object.keys(nodeRuleRules).forEach(ruleName => {
 						const rule = nodeRuleRules[ruleName];
 
-						const convertedRule = exchangeValueOnRule(rule, matched);
+						const convertedRule = exchangeValueOnRule(rule, matches.data || {});
 						if (convertedRule === undefined) {
 							return;
 						}
@@ -320,7 +329,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 						targetDescendants.forEach(descendant => {
 							ruleMapper.set(descendant, ruleName, {
 								from: 'childNodeRules',
-								index: i,
+								specificity: matches.specificity,
 								rule: mergedRule,
 							});
 						});

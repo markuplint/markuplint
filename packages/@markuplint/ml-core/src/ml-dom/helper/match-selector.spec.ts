@@ -4,16 +4,24 @@ import { matchSelector } from './match-selector';
 
 test('CSS Selector', async () => {
 	const el = createTestElement('<div id="hoge" class="foo bar"></div>');
-	expect(matchSelector(el, '*')).toStrictEqual({ __node: '*' });
-	expect(matchSelector(el, 'div')).toStrictEqual({ __node: 'div' });
-	expect(matchSelector(el, 'div#hoge')).toStrictEqual({ __node: 'div#hoge' });
-	expect(matchSelector(el, 'div#fuga')).toStrictEqual(null);
-	expect(matchSelector(el, '#hoge')).toStrictEqual({ __node: '#hoge' });
-	expect(matchSelector(el, 'div.foo')).toStrictEqual({ __node: 'div.foo' });
-	expect(matchSelector(el, 'div.bar')).toStrictEqual({ __node: 'div.bar' });
-	expect(matchSelector(el, '.foo')).toStrictEqual({ __node: '.foo' });
-	expect(matchSelector(el, '.foo.bar')).toStrictEqual({ __node: '.foo.bar' });
-	expect(matchSelector(el, '.any')).toStrictEqual(null);
+	expect(matchSelector(el, '*')).toStrictEqual({ matched: true, selector: '*', specificity: [0, 0, 0] });
+	expect(matchSelector(el, 'div')).toStrictEqual({ matched: true, selector: 'div', specificity: [0, 0, 1] });
+	expect(matchSelector(el, 'div#hoge')).toStrictEqual({
+		matched: true,
+		selector: 'div#hoge',
+		specificity: [1, 0, 1],
+	});
+	expect(matchSelector(el, 'div#fuga')).toStrictEqual({ matched: false });
+	expect(matchSelector(el, '#hoge')).toStrictEqual({ matched: true, selector: '#hoge', specificity: [1, 0, 0] });
+	expect(matchSelector(el, 'div.foo')).toStrictEqual({ matched: true, selector: 'div.foo', specificity: [0, 1, 1] });
+	expect(matchSelector(el, 'div.bar')).toStrictEqual({ matched: true, selector: 'div.bar', specificity: [0, 1, 1] });
+	expect(matchSelector(el, '.foo')).toStrictEqual({ matched: true, selector: '.foo', specificity: [0, 1, 0] });
+	expect(matchSelector(el, '.foo.bar')).toStrictEqual({
+		matched: true,
+		selector: '.foo.bar',
+		specificity: [0, 2, 0],
+	});
+	expect(matchSelector(el, '.any')).toStrictEqual({ matched: false });
 });
 
 test('nodeName', async () => {
@@ -23,7 +31,10 @@ test('nodeName', async () => {
 			nodeName: '/^[a-z]+$/',
 		}),
 	).toStrictEqual({
-		__node: 'div',
+		matched: true,
+		selector: 'div',
+		specificity: [0, 0, 1],
+		data: {},
 	});
 });
 
@@ -34,9 +45,13 @@ test('nodeName named group capture', async () => {
 			nodeName: '/^h(?<level>[1-6])$/',
 		}),
 	).toStrictEqual({
-		__node: 'h6',
-		$1: '6',
-		level: '6',
+		matched: true,
+		selector: 'h6',
+		specificity: [0, 0, 1],
+		data: {
+			$1: '6',
+			level: '6',
+		},
 	});
 });
 
@@ -47,7 +62,10 @@ test('nodeName (No RegExp)', async () => {
 			nodeName: 'div',
 		}),
 	).toStrictEqual({
-		__node: 'div',
+		matched: true,
+		selector: 'div',
+		specificity: [0, 0, 1],
+		data: {},
 	});
 });
 
@@ -58,8 +76,12 @@ test('attrName', async () => {
 			attrName: '/^data-([a-z]+)$/',
 		}),
 	).toStrictEqual({
-		__node: '[data-attr]',
-		$1: 'attr',
+		matched: true,
+		selector: '[data-attr]',
+		specificity: [0, 1, 0],
+		data: {
+			$1: 'attr',
+		},
 	});
 });
 
@@ -70,7 +92,10 @@ test('attrValue', async () => {
 			attrValue: '/^[a-z]+$/',
 		}),
 	).toStrictEqual({
-		__node: '[data-attr="abc"]',
+		matched: true,
+		selector: '[data-attr="abc"]',
+		specificity: [0, 1, 0],
+		data: {},
 	});
 });
 
@@ -82,7 +107,9 @@ test('No matched', async () => {
 			attrName: 'data-attr',
 			attrValue: 'abc',
 		}),
-	).toStrictEqual(null);
+	).toStrictEqual({
+		matched: false,
+	});
 });
 
 test('nodeName & attrName', async () => {
@@ -93,7 +120,10 @@ test('nodeName & attrName', async () => {
 			attrName: 'data-attr',
 		}),
 	).toStrictEqual({
-		__node: 'div[data-attr]',
+		matched: true,
+		selector: 'div[data-attr]',
+		specificity: [0, 1, 1],
+		data: {},
 	});
 });
 
@@ -105,7 +135,10 @@ test('attrName & attrValue', async () => {
 			attrValue: '/^[a-z]+$/',
 		}),
 	).toStrictEqual({
-		__node: '[data-attr][data-attr="abc"]',
+		matched: true,
+		selector: '[data-attr="abc"]',
+		specificity: [0, 1, 0],
+		data: {},
 	});
 });
 
@@ -118,7 +151,10 @@ test('nodeName & attrName & attrValue', async () => {
 			attrValue: 'abc',
 		}),
 	).toStrictEqual({
-		__node: 'div[data-attr][data-attr="abc"]',
+		matched: true,
+		selector: 'div[data-attr="abc"]',
+		specificity: [0, 1, 1],
+		data: {},
 	});
 });
 
@@ -136,7 +172,10 @@ test('combination " "', async () => {
 			},
 		}),
 	).toStrictEqual({
-		__node: 'div[data-attr][data-attr="abc"] span',
+		matched: true,
+		selector: 'div[data-attr="abc"] span',
+		specificity: [0, 1, 2],
+		data: {},
 	});
 });
 
@@ -159,9 +198,13 @@ test('combination >', async () => {
 			},
 		}),
 	).toStrictEqual({
-		__node: 'div[data-attr][data-attr="abc"] > span > a',
-		$1: 'a',
-		EdgeNodeName: 'a',
+		matched: true,
+		selector: 'div[data-attr="abc"] > span > a',
+		specificity: [0, 1, 3],
+		data: {
+			$1: 'a',
+			EdgeNodeName: 'a',
+		},
 	});
 });
 
@@ -183,7 +226,10 @@ test('combination +', async () => {
 			},
 		}),
 	).toStrictEqual({
-		__node: '[class="i3"] + li',
+		matched: true,
+		selector: '[class="i3"] + li',
+		specificity: [0, 1, 1],
+		data: {},
 	});
 });
 
@@ -205,7 +251,10 @@ test('combination ~', async () => {
 			},
 		}),
 	).toStrictEqual({
-		__node: '[class="i3"] ~ li',
+		matched: true,
+		selector: '[class="i3"] ~ li',
+		specificity: [0, 1, 1],
+		data: {},
 	});
 });
 
@@ -227,7 +276,10 @@ test('combination :has(+)', async () => {
 			},
 		}),
 	).toStrictEqual({
-		__node: '[class="i4"]:has(+ li)',
+		matched: true,
+		selector: '[class="i4"]:has(+ li)',
+		specificity: [0, 1, 1],
+		data: {},
 	});
 });
 
@@ -249,7 +301,10 @@ test('combination :has(~)', async () => {
 			},
 		}),
 	).toStrictEqual({
-		__node: '[class="i5"]:has(~ li)',
+		matched: true,
+		selector: '[class="i5"]:has(~ li)',
+		specificity: [0, 1, 1],
+		data: {},
 	});
 });
 
@@ -262,10 +317,14 @@ test('pug', async () => {
 			attrValue: '/^(?<value>[a-z]+)$/',
 		}),
 	).toStrictEqual({
-		__node: 'div[id][class][id="foo"][class="bar"]',
-		tag: 'div',
-		attr: 'class',
-		value: 'bar',
-		$1: 'bar',
+		matched: true,
+		selector: 'div[id="foo"][class="bar"]',
+		specificity: [0, 2, 1],
+		data: {
+			tag: 'div',
+			attr: 'class',
+			value: 'bar',
+			$1: 'bar',
+		},
 	});
 });

@@ -28,19 +28,19 @@
 	},
 	"nodeRules": [
 		{
-			"selector": "html",
+			"selector": ":where(html)",
 			"rules": {
 				"required-attr": ["lang"]
 			}
 		},
 		{
-			"selector": "script[src]",
+			"selector": ":where(script[src])",
 			"rules": {
 				"required-attr": ["defer"]
 			}
 		},
 		{
-			"selector": "img",
+			"selector": ":where(img)",
 			"rules": {
 				"required-attr": [
 					"width",
@@ -54,7 +54,7 @@
 			}
 		},
 		{
-			"selector": "iframe",
+			"selector": ":where(iframe)",
 			"rules": {
 				"required-attr": [
 					"title",
@@ -66,7 +66,7 @@
 			}
 		},
 		{
-			"selector": "a[target=_blank], area[target=_blank]",
+			"selector": ":where(a[target=_blank], area[target=_blank])",
 			"rules": {
 				"required-attr": [
 					{
@@ -77,19 +77,19 @@
 			}
 		},
 		{
-			"selector": "abbr",
+			"selector": ":where(abbr)",
 			"rules": {
 				"required-attr": ["title"]
 			}
 		},
 		{
-			"selector": "video[autoplay]",
+			"selector": ":where(video[autoplay])",
 			"rules": {
 				"required-attr": ["muted"]
 			}
 		},
 		{
-			"selector": "th, td",
+			"selector": ":where(th, td)",
 			"rules": {
 				"invalid-attr": {
 					"option": {
@@ -103,7 +103,7 @@
 			}
 		},
 		{
-			"selector": ":not(button)",
+			"selector": ":where(:not(button))",
 			"rules": {
 				"invalid-attr": {
 					"option": {
