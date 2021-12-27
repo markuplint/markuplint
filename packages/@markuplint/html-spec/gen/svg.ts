@@ -53,7 +53,7 @@ async function getSVGElementList() {
 	const index = 'https://developer.mozilla.org/en-US/docs/Web/SVG/Element';
 	const $ = await fetch(index);
 	const $index = getThisOutline($, $('article.main-page-content h2').eq(0));
-	const $linkList = $index.find('code');
+	const $linkList = $index.find('ul code');
 	const linkList = $linkList.toArray().map(el => ({
 		name: $(el).text().trim().replace(/<|>/g, ''),
 		url: $(el).closest('a').hasClass('page-not-created') ? null : $(el).closest('a').attr('href')?.trim() || null,

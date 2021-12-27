@@ -5904,12 +5904,74 @@
 			{
 				"name": "none",
 				"description": "An element whose implicit native role semantics will not be mapped to the accessibility API. See synonym presentation.\n\nIn ARIA 1.1, the working group introduced none as a synonym to the presentation role, due to author confusion surrounding the intended meaning of the word \"presentation\" or \"presentational.\" Many individuals erroneously consider role=\"presentation\" to be synonymous with aria-hidden=\"true\", and we believe role=\"none\" conveys the actual meaning more unambiguously.",
-				"generalization": [],
+				"generalization": ["structure"],
 				"requiredContextRole": [],
 				"accessibleNameRequired": false,
 				"accessibleNameFromContent": false,
 				"accessibleNameProhibited": false,
-				"ownedAttribute": []
+				"ownedAttribute": [
+					{
+						"name": "aria-atomic"
+					},
+					{
+						"name": "aria-busy"
+					},
+					{
+						"name": "aria-controls"
+					},
+					{
+						"name": "aria-current"
+					},
+					{
+						"name": "aria-describedby"
+					},
+					{
+						"name": "aria-details"
+					},
+					{
+						"name": "aria-disabled",
+						"deprecated": true
+					},
+					{
+						"name": "aria-dropeffect"
+					},
+					{
+						"name": "aria-errormessage",
+						"deprecated": true
+					},
+					{
+						"name": "aria-flowto"
+					},
+					{
+						"name": "aria-grabbed"
+					},
+					{
+						"name": "aria-haspopup",
+						"deprecated": true
+					},
+					{
+						"name": "aria-hidden"
+					},
+					{
+						"name": "aria-invalid",
+						"deprecated": true
+					},
+					{
+						"name": "aria-keyshortcuts"
+					},
+					{
+						"name": "aria-live"
+					},
+					{
+						"name": "aria-owns"
+					},
+					{
+						"name": "aria-relevant"
+					},
+					{
+						"name": "aria-roledescription"
+					}
+				]
 			},
 			{
 				"name": "note",
@@ -14434,7 +14496,7 @@
 					"requiredEither": ["itemprop"]
 				},
 				"rev": {
-					"description": "The value of this attribute shows the relationship of the current document to the linked document, as defined by the href attribute. The attribute thus defines the reverse relationship compared to the value of the rel attribute. Link type values for the attribute are similar to the possible values for rel. Note: This attribute is considered obsolete by the WHATWG HTML living standard (which is the specification MDN treats as canonical). However, it's worth noting that rev is not considered obsolete in the W3C specification. That said, given the uncertainty, relying on rev is unwise. Note: Instead, you should use the rel attribute with the opposite link type value. For example, to establish the reverse link for made, specify author. Also this attribute doesn't stand for \"revision\" and must not be used with a version number, even though many sites misuse it in this way.",
+					"description": "The value of this attribute shows the relationship of the current document to the linked document, as defined by the href attribute. The attribute thus defines the reverse relationship compared to the value of the rel attribute. Link type values for the attribute are similar to the possible values for rel. Note: Instead of rev, you should use the rel attribute with the opposite link type value. For example, to establish the reverse link for made, specify author. Also this attribute doesn't stand for \"revision\" and must not be used with a version number, even though many sites misuse it in this way.",
 					"obsolete": true,
 					"deprecated": true
 				},
@@ -21626,126 +21688,6 @@
 					"description": "The y coordinate of the foreignObject. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
 				}
 			}
-		},
-		{
-			"name": "svg:g",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/g",
-			"categories": ["#SVGContainer", "#SVGStructural"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
-			"permittedStructures": {
-				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elementsShape elementsStructural elementsGradient elements<a>, <altGlyphDef>, <clipPath>, <color-profile>, <cursor>, <filter>, <font>, <font-face>, <foreignObject>, <image>, <marker>, <mask>, <pattern>, <script>, <style>, <switch>, <text>, <view>",
-				"tag": "g",
-				"contents": [
-					{
-						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
-							"#SVGShape",
-							"#SVGStructural",
-							"svg:a",
-							"svg:clipPath",
-							"svg:filter",
-							"svg:foreignObject",
-							"svg:image",
-							"svg:marker",
-							"svg:mask",
-							"svg:script",
-							"svg:style",
-							"svg:switch",
-							"svg:text",
-							"svg:view"
-						]
-					}
-				]
-			},
-			"omittion": false,
-			"globalAttrs": {
-				"#HTMLGlobalAttrs": true,
-				"#GlobalEventAttrs": true,
-				"#DocumentElementEventAttrs": true,
-				"#ARIAAttrs": true,
-				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
-				"#SVGPresentationAttrs": [
-					"alignment-baseline",
-					"baseline-shift",
-					"clip",
-					"clip-path",
-					"clip-rule",
-					"color",
-					"color-interpolation",
-					"color-interpolation-filters",
-					"color-rendering",
-					"cursor",
-					"direction",
-					"display",
-					"dominant-baseline",
-					"enable-background",
-					"fill",
-					"fill-opacity",
-					"fill-rule",
-					"filter",
-					"flood-color",
-					"flood-opacity",
-					"font",
-					"font-family",
-					"font-size",
-					"font-size-adjust",
-					"font-stretch",
-					"font-style",
-					"font-variant",
-					"font-weight",
-					"glyph-orientation-horizontal",
-					"glyph-orientation-vertical",
-					"image-rendering",
-					"isolation",
-					"kerning",
-					"letter-spacing",
-					"lighting-color",
-					"marker",
-					"marker-end",
-					"marker-mid",
-					"marker-start",
-					"mask",
-					"mask-type",
-					"opacity",
-					"overflow",
-					"paint-order",
-					"pointer-events",
-					"shape-rendering",
-					"stop-color",
-					"stop-opacity",
-					"stroke",
-					"stroke-dasharray",
-					"stroke-dashoffset",
-					"stroke-linecap",
-					"stroke-linejoin",
-					"stroke-miterlimit",
-					"stroke-opacity",
-					"stroke-width",
-					"text-anchor",
-					"text-decoration",
-					"text-overflow",
-					"text-rendering",
-					"transform-origin",
-					"unicode-bidi",
-					"vector-effect",
-					"visibility",
-					"white-space",
-					"word-spacing",
-					"writing-mode"
-				]
-			},
-			"attributes": {}
 		},
 		{
 			"name": "svg:g",

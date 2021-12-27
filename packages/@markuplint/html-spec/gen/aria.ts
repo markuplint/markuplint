@@ -120,6 +120,17 @@ export async function getAria() {
 		});
 	});
 
+	// the "none" role is synonym
+	const presentationRole = roles.find(role => role.name === 'presentation');
+	if (presentationRole) {
+		const noneRoleIndex = roles.findIndex(role => role.name === 'none');
+		roles[noneRoleIndex] = {
+			...presentationRole,
+			name: 'none',
+			description: roles[noneRoleIndex].description,
+		};
+	}
+
 	roles.sort(nameCompare);
 
 	const ariaNameList: Set<string> = new Set();
