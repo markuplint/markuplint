@@ -7,11 +7,28 @@ import { log as coreLog } from '../../debug';
 const log = coreLog.extend('selector');
 const resLog = log.extend('result');
 
+export type Specificity = [number, number, number];
+
 export function createSelector(selector: string) {
 	return new Selector(selector);
 }
 
-export type Specificity = [number, number, number];
+export function compareSpecificity(a: Specificity, b: Specificity) {
+	if (a[0] < b[0]) {
+		return -1;
+	} else if (a[0] > b[0]) {
+		return 1;
+	} else if (a[1] < b[1]) {
+		return -1;
+	} else if (a[1] > b[1]) {
+		return 1;
+	} else if (a[2] < b[2]) {
+		return -1;
+	} else if (a[2] > b[2]) {
+		return 1;
+	}
+	return 0;
+}
 
 type TargetElement = MLDOMAbstractElement<any, any>;
 
@@ -548,28 +565,14 @@ function getDescendants(el: TargetElement, includeSelf = false): TargetElement[]
 	return [...el.children.map(child => getDescendants(child, true)).flat(), ...(includeSelf ? [el] : [])];
 }
 
-function compareSpecificity(a: Specificity, b: Specificity) {
-	if (a[0] < b[0]) {
-		return b;
-	} else if (a[0] > b[0]) {
-		return a;
-	} else if (a[1] < b[1]) {
-		return b;
-	} else if (a[1] > b[1]) {
-		return b;
-	} else if (a[2] < b[2]) {
-		return b;
-	} else if (a[2] > b[2]) {
-		return a;
-	}
-	return a;
-}
-
 function getSpecificity(result: MultipleSelectorResult) {
 	let specificity: Specificity | void;
 	for (const res of result) {
 		if (specificity) {
-			specificity = compareSpecificity(specificity, res.specificity);
+			const order = compareSpecificity(specificity, res.specificity);
+			if (order === -1) {
+				specificity = res.specificity;
+			}
 		} else {
 			specificity = res.specificity;
 		}

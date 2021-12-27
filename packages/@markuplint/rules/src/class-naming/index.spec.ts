@@ -162,7 +162,7 @@ test('childNodeRules multi selectors', async () => {
 			},
 			childNodeRule: [
 				{
-					selector: '[class^="c-"]:not([class*="__"])',
+					selector: ':where([class^="c-"]:not([class*="__"]))',
 					rule: {
 						severity: 'error',
 						value: '/^c-[a-z]+__[a-z0-9]+/',
@@ -211,7 +211,7 @@ test('childNodeRules multi selectors (No error)', async () => {
 			},
 			childNodeRule: [
 				{
-					selector: '[class^="c-"]:not([class*="__"])',
+					selector: ':where([class^="c-"]:not([class*="__"]))',
 					rule: {
 						severity: 'error',
 						value: '/^c-[a-z]+__[a-z0-9]+/',

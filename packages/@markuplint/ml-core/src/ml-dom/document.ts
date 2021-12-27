@@ -209,7 +209,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				const rule = ruleset.rules[ruleName];
 				ruleMapper.set(node, ruleName, {
 					from: 'rules',
-					index: -1,
+					specificity: [0, 0, 0],
 					rule,
 				});
 			});
@@ -272,7 +272,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 
 					ruleMapper.set(node, ruleName, {
 						from: 'nodeRules',
-						index: i,
+						specificity: matches.specificity,
 						rule: mergedRule,
 					});
 				}
@@ -329,7 +329,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 						targetDescendants.forEach(descendant => {
 							ruleMapper.set(descendant, ruleName, {
 								from: 'childNodeRules',
-								index: i,
+								specificity: matches.specificity,
 								rule: mergedRule,
 							});
 						});
