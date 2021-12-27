@@ -185,8 +185,14 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 					continue;
 				}
 				for (const tag of stack) {
-					if (attr.value.startOffset <= tag.index && tag.index < attr.value.endOffset) {
-						attr.value.raw = tag.startTag + tag.taggedCode + tag.endTag;
+					const raw = tag.startTag + tag.taggedCode + tag.endTag;
+					const length = raw.length;
+
+					if (attr.value.startOffset <= tag.index && tag.index + length <= attr.value.endOffset) {
+						const offset = tag.index - attr.value.startOffset;
+						const above = attr.value.raw.slice(0, offset);
+						const below = attr.value.raw.slice(offset + length);
+						attr.value.raw = above + raw + below;
 						attr.isDynamicValue = true;
 					}
 				}

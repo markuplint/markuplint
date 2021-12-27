@@ -224,12 +224,36 @@ describe('restoreNode', () => {
 		);
 	});
 
-	it('unexpect parsing', () => {
+	it('before space', () => {
 		const code = '<div attr=" <% attr %>"></div>';
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
 		const restoredAst = restoreNode(ast.nodeList, masked);
-		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe('"');
+		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe(' <% attr %>');
+	});
+
+	it('after space', () => {
+		const code = '<div attr=" <% attr %> "></div>';
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe(' <% attr %> ');
+	});
+
+	it('before char', () => {
+		const code = '<div attr="A<% attr %>"></div>';
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe('A<% attr %>');
+	});
+
+	it('after char', () => {
+		const code = '<div attr="A<% attr %>B"></div>';
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe('A<% attr %>B');
 	});
 
 	it('unexpect parsing', () => {
@@ -238,13 +262,5 @@ describe('restoreNode', () => {
 		const ast = parse(masked.replaced);
 		const restoredAst = restoreNode(ast.nodeList, masked);
 		expect(restoredAst).toStrictEqual([]);
-	});
-
-	it('unexpect parsing', () => {
-		const code = '<div attr=" <% attr %> "></div>';
-		const masked = ignoreBlock(code, tags);
-		const ast = parse(masked.replaced);
-		const restoredAst = restoreNode(ast.nodeList, masked);
-		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe('"');
 	});
 });
