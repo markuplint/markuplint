@@ -17,15 +17,19 @@ export async function createRule() {
 
 	const name = await input('What is the name?', /^[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*$/i);
 
-	const lang = await select<CreateRuleLanguage>({
-		message: 'Which language will you implement?',
-		choices: [
-			{ name: 'TypeScript', value: 'TYPESCRIPT' },
-			{ name: 'JavaScript', value: 'JAVASCRIPT' },
-		],
-	});
+	const lang =
+		purpose === 'CONTRIBUTE_TO_CORE'
+			? 'TYPESCRIPT'
+			: await select<CreateRuleLanguage>({
+					message: 'Which language will you implement?',
+					choices: [
+						{ name: 'TypeScript', value: 'TYPESCRIPT' },
+						{ name: 'JavaScript', value: 'JAVASCRIPT' },
+					],
+			  });
 
-	const needTest = await confirm('Do you need the test?', { initial: true });
+	const needTest =
+		purpose === 'CONTRIBUTE_TO_CORE' ? true : await confirm('Do you need the test?', { initial: true });
 
 	const result = await createRuleHelper({ purpose, name, lang, needTest });
 
