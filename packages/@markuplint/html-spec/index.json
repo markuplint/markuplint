@@ -5904,12 +5904,74 @@
 			{
 				"name": "none",
 				"description": "An element whose implicit native role semantics will not be mapped to the accessibility API. See synonym presentation.\n\nIn ARIA 1.1, the working group introduced none as a synonym to the presentation role, due to author confusion surrounding the intended meaning of the word \"presentation\" or \"presentational.\" Many individuals erroneously consider role=\"presentation\" to be synonymous with aria-hidden=\"true\", and we believe role=\"none\" conveys the actual meaning more unambiguously.",
-				"generalization": [],
+				"generalization": ["structure"],
 				"requiredContextRole": [],
 				"accessibleNameRequired": false,
 				"accessibleNameFromContent": false,
 				"accessibleNameProhibited": false,
-				"ownedAttribute": []
+				"ownedAttribute": [
+					{
+						"name": "aria-atomic"
+					},
+					{
+						"name": "aria-busy"
+					},
+					{
+						"name": "aria-controls"
+					},
+					{
+						"name": "aria-current"
+					},
+					{
+						"name": "aria-describedby"
+					},
+					{
+						"name": "aria-details"
+					},
+					{
+						"name": "aria-disabled",
+						"deprecated": true
+					},
+					{
+						"name": "aria-dropeffect"
+					},
+					{
+						"name": "aria-errormessage",
+						"deprecated": true
+					},
+					{
+						"name": "aria-flowto"
+					},
+					{
+						"name": "aria-grabbed"
+					},
+					{
+						"name": "aria-haspopup",
+						"deprecated": true
+					},
+					{
+						"name": "aria-hidden"
+					},
+					{
+						"name": "aria-invalid",
+						"deprecated": true
+					},
+					{
+						"name": "aria-keyshortcuts"
+					},
+					{
+						"name": "aria-live"
+					},
+					{
+						"name": "aria-owns"
+					},
+					{
+						"name": "aria-relevant"
+					},
+					{
+						"name": "aria-roledescription"
+					}
+				]
 			},
 			{
 				"name": "note",
