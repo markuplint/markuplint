@@ -54,6 +54,12 @@
 				"landmark-roles": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/landmark-roles/schema.json"
 				},
+				"no-boolean-attr-value": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-boolean-attr-value/schema.json"
+				},
+				"no-use-event-handler-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-use-event-handler-attr/schema.json"
+				},
 				"permitted-contents": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/permitted-contents/schema.json"
 				},
