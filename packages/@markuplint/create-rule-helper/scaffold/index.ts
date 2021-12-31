@@ -49,11 +49,11 @@ export default createRule<MainValue, Options>({
 	 *
 	 * @param context
 	 */
-	async verify(context) {
+	async verify({ document, report, t }) {
 		/**
 		 * Example: Use `walk` method to traverse the node tree
 		 */
-		context.document.walk(node => {
+		document.walk(node => {
 			/**
 			 * Example: Compare the type of the node to filter it
 			 */
@@ -75,7 +75,7 @@ export default createRule<MainValue, Options>({
 				 *
 				 * This `report` method can call many times.
 				 */
-				context.report({
+				report({
 					/**
 					 * Example: Define the scope.
 					 *
@@ -90,7 +90,7 @@ export default createRule<MainValue, Options>({
 					 *
 					 * You can set just strings without through the translator.
 					 */
-					message: context.t('It is {0}', 'TODO'),
+					message: t('It is {0}', 'TODO'),
 				});
 			}
 		});
