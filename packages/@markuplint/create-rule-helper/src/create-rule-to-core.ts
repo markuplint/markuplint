@@ -17,7 +17,7 @@ export async function craeteRuleToCore({
 	const rulesDir = await getRulesDir();
 	const newRuleDir = path.resolve(rulesDir, name);
 
-	return await installScaffold(newRuleDir, { name, lang, needTest });
+	return await installScaffold('core', newRuleDir, { name, lang, needTest });
 }
 
 export async function getRulesDir() {
