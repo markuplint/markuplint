@@ -17,7 +17,12 @@ export async function craeteRuleToCore({
 	const rulesDir = await getRulesDir();
 	const newRuleDir = path.resolve(rulesDir, name);
 
-	return await installScaffold(newRuleDir, { name, lang, needTest });
+	const exists = await fsExists(newRuleDir);
+	if (exists) {
+		throw new CreateRuleHelperError(`A new rule "${name}" already exists`);
+	}
+
+	return await installScaffold('core', newRuleDir, '', { name, lang, needTest });
 }
 
 export async function getRulesDir() {
