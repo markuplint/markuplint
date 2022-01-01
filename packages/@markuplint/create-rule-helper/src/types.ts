@@ -12,6 +12,10 @@ export type CreateRuleHelperResult = CreateRuleCreatorParams & {
 	readme: string;
 	main: string;
 	test: string | null;
+	packageJson: string | null;
+	tsConfig: string | null;
+	dependencies: string[];
+	devDependencies: string[];
 };
 
 export type CreateRuleLanguage = 'JAVASCRIPT' | 'TYPESCRIPT';

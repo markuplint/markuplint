@@ -5,6 +5,8 @@ import { render } from 'mustache';
 import { format } from 'prettier';
 import { transpile, ScriptTarget } from 'typescript';
 
+import { fsExists } from './fs-exists';
+
 export async function transfer(
 	filePath: string,
 	destDir: string,
@@ -40,6 +42,10 @@ export async function transfer(
 	const parser =
 		extname === '.md' ? 'markdown' : extname === '.ts' ? (options?.transpile ? 'babel' : 'typescript') : undefined;
 	converted = format(converted, { parser });
+
+	if (!(await fsExists(destDir))) {
+		await fs.mkdir(destDir, { recursive: true });
+	}
 
 	const dest = path.resolve(destDir, fileName);
 	await fs.writeFile(dest, converted, { encoding: 'utf-8' });

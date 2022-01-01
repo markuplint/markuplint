@@ -3,6 +3,7 @@ import type { CreateRulePurpose, CreateRuleLanguage } from '@markuplint/create-r
 import { createRuleHelper } from '@markuplint/create-rule-helper';
 import c from 'cli-color';
 
+import { installModule } from '../init/install-module';
 import { input, select, confirm } from '../prompt';
 
 export async function createRule() {
@@ -37,6 +38,15 @@ export async function createRule() {
 	output(name, '📜', 'index', result.main);
 	if (result.test) {
 		output(name, '🖍 ', 'index.spec', result.test);
+	}
+	if (result.packageJson) {
+		output(name, '🎁 ', 'package.json', result.packageJson);
+		if (result.tsConfig) {
+			output(name, '💎 ', 'tsconfig.json', result.tsConfig);
+		}
+
+		await installModule(result.dependencies);
+		await installModule(result.devDependencies, true);
 	}
 }
 

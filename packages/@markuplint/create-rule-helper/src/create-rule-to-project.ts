@@ -17,5 +17,5 @@ export async function craeteRuleToProject({
 		throw new CreateRuleHelperError(`The directory exists: ${newRuleDir}`);
 	}
 
-	return await installScaffold('', newRuleDir, { name, lang, needTest });
+	return await installScaffold('', newRuleDir, '', { name, lang, needTest });
 }
