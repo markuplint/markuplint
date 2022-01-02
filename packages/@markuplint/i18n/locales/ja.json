@@ -30,6 +30,7 @@
 		"c:deprecated": "は非推奨です",
 		"c:disallowed": "は許可されていません",
 		"c:duplicated": "が重複しています",
+		"c:hard-coded": "ハードコーディングされています",
 		"c:ineffective": "は効果がありません",
 		"c:invalid": "は妥当ではありません",
 		"c:non-standard": "は非標準です",

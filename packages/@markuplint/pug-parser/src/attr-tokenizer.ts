@@ -4,7 +4,7 @@ import type { MLASTAttr } from '@markuplint/ml-ast';
 import { tokenizer, uuid } from '@markuplint/parser-utils';
 
 export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
-	if (/^[#.]/.test(attr.raw)) {
+	if (attr.raw[0] === '#' || attr.raw[0] === '.') {
 		let value = '';
 		if (typeof attr.val === 'string') {
 			[, , value] = attr.val.match(/(['"`]?)([^\1]+)(\1)/) || ['', '', ''];
@@ -23,7 +23,7 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 			endCol: attr.endColumn,
 			potentialName: attr.name,
 			potentialValue: value,
-			valueType: !attr.mustEscape ? 'code' : typeof attr.val === 'boolean' ? 'boolean' : 'string',
+			valueType: 'string',
 			isDuplicatable: attr.raw[0] === '.',
 		};
 	}

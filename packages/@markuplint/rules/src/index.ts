@@ -16,6 +16,7 @@ import IneffectiveAttr from './ineffective-attr';
 import InvalidAttr from './invalid-attr';
 import LandmarkRoles from './landmark-roles';
 import NoBooleanAttrValue from './no-boolean-attr-value';
+import NoHardCodeId from './no-hard-code-id';
 import NoUseEventHandlerAttr from './no-use-event-handler-attr';
 import PermittedContents from './permitted-contents';
 import RequiredAttr from './required-attr';
@@ -41,6 +42,7 @@ export default {
 	'invalid-attr': InvalidAttr,
 	'landmark-roles': LandmarkRoles,
 	'no-boolean-attr-value': NoBooleanAttrValue,
+	'no-hard-code-id': NoHardCodeId,
 	'no-use-event-handler-attr': NoUseEventHandlerAttr,
 	'permitted-contents': PermittedContents,
 	'required-attr': RequiredAttr,
