@@ -193,6 +193,7 @@
 				"{0} to {1} chars": { "type": "string" },
 				"{0} to {1} digits": { "type": "string" },
 				"{0} to {1}": { "type": "string" },
+				"\"{0}\" ID": { "type": "string" },
 				"a {0}": { "type": "string" },
 				"an {0}": { "type": "string" },
 				"Allowed values are: {0}": { "type": "string" },
