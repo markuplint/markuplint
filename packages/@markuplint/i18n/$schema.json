@@ -42,6 +42,7 @@
 				"c:deprecated": { "type": "string" },
 				"c:disallowed": { "type": "string" },
 				"c:duplicated": { "type": "string" },
+				"c:hard-coded": { "type": "string" },
 				"c:ineffective": { "type": "string" },
 				"c:invalid": { "type": "string" },
 				"c:non-standard": { "type": "string" },
