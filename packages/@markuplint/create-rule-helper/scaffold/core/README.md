@@ -1,4 +1,10 @@
-# The `{{name}}` rule
+---
+title: 'TODO: Title'
+id: '{{ name }}'
+category: 'TODO category'
+---
+
+# TODO: Title
 
 TODO: Write a description
 
