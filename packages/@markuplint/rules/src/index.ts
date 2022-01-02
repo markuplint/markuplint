@@ -18,6 +18,7 @@ import LandmarkRoles from './landmark-roles';
 import NoBooleanAttrValue from './no-boolean-attr-value';
 import NoDefaultValue from './no-default-value';
 import NoHardCodeId from './no-hard-code-id';
+import NoReferToNonExistentId from './no-refer-to-non-existent-id';
 import NoUseEventHandlerAttr from './no-use-event-handler-attr';
 import PermittedContents from './permitted-contents';
 import RequiredAttr from './required-attr';
@@ -45,6 +46,7 @@ export default {
 	'no-boolean-attr-value': NoBooleanAttrValue,
 	'no-default-value': NoDefaultValue,
 	'no-hard-code-id': NoHardCodeId,
+	'no-refer-to-non-existent-id': NoReferToNonExistentId,
 	'no-use-event-handler-attr': NoUseEventHandlerAttr,
 	'permitted-contents': PermittedContents,
 	'required-attr': RequiredAttr,
