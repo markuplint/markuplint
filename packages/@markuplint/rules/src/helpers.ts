@@ -111,6 +111,37 @@ export function isValidAttr(
 	return invalid;
 }
 
+export function toNormalizedValue(value: string, spec: Attribute) {
+	let normalized = value;
+
+	if (!spec.caseSensitive) {
+		normalized = normalized.toLowerCase();
+	}
+
+	if (typeof spec.type === 'string') {
+		if (spec.type[0] === '<') {
+			normalized = normalized.toLowerCase().trim().replace(/\s+/g, ' ');
+		}
+	} else {
+		if ('token' in spec.type) {
+			if (spec.type.caseInsensitive) {
+				normalized = normalized.toLowerCase();
+			}
+			if (!spec.type.disallowToSurroundBySpaces) {
+				normalized = normalized.trim();
+			}
+			if (spec.type.separator === 'space') {
+				normalized = normalized.replace(/\s+/g, ' ');
+			}
+			if (spec.type.separator === 'comma') {
+				normalized = normalized.replace(/\s*,\s*/g, ',');
+			}
+		}
+	}
+
+	return normalized;
+}
+
 export function ariaSpec() {
 	const roles = def['#roles'];
 	const ariaAttrs = def['#ariaAttrs'];
