@@ -155,18 +155,30 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		fileLog('Resolved ruleset: %O', ruleset);
 
 		const schemas = await this.resolveSchemas(configSet);
-		fileLog('Resolved schemas: %O', schemas);
+		if (fileLog.enabled) {
+			if (schemas[0].cites.length) {
+				const [, ...additionalSpecs] = schemas;
+				fileLog('Resolved schemas: HTML Standard');
+				for (const additionalSpec of additionalSpecs) {
+					fileLog('Resolved schemas: %O', additionalSpec);
+				}
+			} else {
+				fileLog('Resolved schemas: %O', schemas);
+			}
+		}
 
 		const rules = await this.resolveRules(configSet.plugins, ruleset);
 		fileLog('Resolved rules: %O', rules);
 
 		const locale = await i18n(this.#options?.locale);
 
-		fileLog(
-			'Loaded %d rules: %O',
-			rules.length,
-			rules.map(r => r.name),
-		);
+		if (fileLog.enabled) {
+			fileLog(
+				'Loaded %d rules: %O',
+				rules.length,
+				rules.map(r => r.name),
+			);
+		}
 
 		return {
 			parser,
