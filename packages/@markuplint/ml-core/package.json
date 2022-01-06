@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-core",
-	"version": "2.0.0-dev.20220105.1",
+	"version": "2.0.0-dev.20220106.0",
 	"description": "The core module of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -20,13 +20,13 @@
 		"@markuplint/i18n": "2.0.0-dev.20220105.1",
 		"@markuplint/ml-ast": "2.0.0-dev.20211115.3",
 		"@markuplint/ml-config": "2.0.0-dev.2021116.3",
-		"@markuplint/ml-spec": "2.0.0-dev.20211227.1",
+		"@markuplint/ml-spec": "2.0.0-dev.20220106.0",
 		"debug": "^4.3.2",
 		"postcss-selector-parser": "^6.0.6",
 		"tslib": "^2.3.1"
 	},
 	"devDependencies": {
-		"@markuplint/html-parser": "2.0.0-dev.20220105.1",
+		"@markuplint/html-parser": "2.0.0-dev.20220106.0",
 		"@types/debug": "^4.1.7"
 	}
 }
