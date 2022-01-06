@@ -2,7 +2,13 @@ import type { MLDOMElementSpec, MLMLSpec, SpecOM } from './types';
 
 import { getAttrSpecs } from './get-attr-specs';
 
+const cacheMap = new WeakMap<MLMLSpec, SpecOM>();
+
 function getSpecOM(spec: MLMLSpec): SpecOM {
+	const cache = cacheMap.get(spec);
+	if (cache) {
+		return cache;
+	}
 	const som: SpecOM = {};
 	for (const el of spec.specs) {
 		const attributes = getAttrSpecs(el.name, spec);
@@ -16,6 +22,7 @@ function getSpecOM(spec: MLMLSpec): SpecOM {
 			attributes: Object.values(attributes || {}),
 		};
 	}
+	cacheMap.set(spec, som);
 	return som;
 }
 

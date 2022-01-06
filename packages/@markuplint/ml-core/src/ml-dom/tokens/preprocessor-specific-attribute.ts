@@ -39,4 +39,8 @@ export default class MLDOMPreprocessorSpecificAttribute extends MLDOMToken<MLAST
 	toString() {
 		return this.raw;
 	}
+
+	toNormalizeString() {
+		return this.raw;
+	}
 }

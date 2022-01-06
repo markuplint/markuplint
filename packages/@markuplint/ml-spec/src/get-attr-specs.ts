@@ -1,12 +1,28 @@
 import type { MLMLSpec, Attribute } from './types';
 
-export function getAttrSpecs(nameWithNS: string, { specs, def }: MLMLSpec) {
-	const elSpec = specs.find(spec => spec.name === nameWithNS);
+const cacheMap = new Map<string, Attribute[] | null>();
+const schemaCache = new WeakSet<MLMLSpec>();
 
+export function getAttrSpecs(nameWithNS: string, schema: MLMLSpec) {
+	if (!schemaCache.has(schema)) {
+		cacheMap.clear();
+	}
+
+	const cache = cacheMap.get(nameWithNS);
+
+	if (cache !== undefined) {
+		return cache;
+	}
+
+	schemaCache.add(schema);
+
+	const elSpec = schema.specs.find(spec => spec.name === nameWithNS);
 	if (!elSpec) {
+		cacheMap.set(nameWithNS, null);
 		return null;
 	}
-	const globalAttrs = def['#globalAttrs'];
+
+	const globalAttrs = schema.def['#globalAttrs'];
 	let attrs: Record<string, Partial<Attribute>> = {};
 
 	for (const catName in elSpec.globalAttrs) {
@@ -76,6 +92,7 @@ export function getAttrSpecs(nameWithNS: string, { specs, def }: MLMLSpec) {
 
 	attrList.sort(nameCompare);
 
+	cacheMap.set(nameWithNS, attrList);
 	return attrList;
 }
 

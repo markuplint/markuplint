@@ -29,6 +29,8 @@ export default abstract class MLDOMAbstractElement<
 	readonly isInFragmentDocument: boolean;
 
 	#fixedNodeName: string;
+	#getChildElementsAndTextNodeWithoutWhitespacesCache: (MLDOMElement<T, O> | MLDOMText<T, O>)[] | null = null;
+	#normalizedString: string | null = null;
 
 	constructor(astNode: E, document: Document<T, O>) {
 		super(astNode, document);
@@ -189,6 +191,9 @@ export default abstract class MLDOMAbstractElement<
 	}
 
 	getChildElementsAndTextNodeWithoutWhitespaces() {
+		if (this.#getChildElementsAndTextNodeWithoutWhitespacesCache) {
+			return this.#getChildElementsAndTextNodeWithoutWhitespacesCache;
+		}
 		const filteredNodes: (MLDOMElement<T, O> | MLDOMText<T, O>)[] = [];
 		this.childNodes.forEach(node => {
 			if (node.type === 'Element') {
@@ -202,6 +207,7 @@ export default abstract class MLDOMAbstractElement<
 				filteredNodes.push(...children);
 			}
 		});
+		this.#getChildElementsAndTextNodeWithoutWhitespacesCache = filteredNodes;
 		return filteredNodes;
 	}
 
@@ -226,5 +232,27 @@ export default abstract class MLDOMAbstractElement<
 			el = el.parentNode;
 		} while (el !== null && el.type === 'Element');
 		return false;
+	}
+
+	toNormalizeString(): string {
+		if (this.#normalizedString) {
+			return this.#normalizedString;
+		}
+
+		const children = this.getChildElementsAndTextNodeWithoutWhitespaces();
+		const attrs = this.attributes.map(attr => attr.toNormalizeString());
+		const attrString = attrs.length ? ' ' + attrs.join('') : '';
+		const startTag = `<${this.nodeName}${attrString}>`;
+		const childNodes = children.map(node => {
+			if (node.type === 'Element') {
+				return node.toNormalizeString();
+			}
+			return node.originRaw;
+		});
+		const endTag = `</${this.nodeName}>`;
+		const normalizedString = `${startTag}${childNodes.join('')}${endTag}`;
+
+		this.#normalizedString = normalizedString;
+		return normalizedString;
 	}
 }

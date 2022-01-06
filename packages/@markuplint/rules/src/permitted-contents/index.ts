@@ -217,8 +217,25 @@ function getRegExpFromParentNode(node: El, expGen: ExpGenerator) {
 	return parentExp;
 }
 
+const matchingCacheMap = new Map<string, boolean>();
+
 function match(exp: RegExp, childNodes: TargetNodes, ownNS: string | null, evalCustomElement: boolean) {
 	const target = normalization(childNodes, ownNS, evalCustomElement);
+	const cacheKey =
+		target + exp.source + childNodes.map(n => (n.type == 'Element' ? n.toNormalizeString() : n.originRaw)).join('');
+	const res = matchingCacheMap.get(cacheKey);
+
+	if (res != null) {
+		return res;
+	}
+
+	const matched = _match(target, exp, childNodes);
+
+	matchingCacheMap.set(cacheKey, matched);
+	return matched;
+}
+
+function _match(target: string, exp: RegExp, childNodes: TargetNodes) {
 	const result = exp.exec(target);
 	if (!result) {
 		return false;
