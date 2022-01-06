@@ -94,4 +94,14 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 	toString(withSpace = true) {
 		return (withSpace ? this.spacesBeforeName.raw : '') + this.raw;
 	}
+
+	toNormalizeString() {
+		return (
+			this.name.originRaw +
+			this.equal.originRaw +
+			this.startQuote.originRaw +
+			this.value.originRaw +
+			this.endQuote.originRaw
+		);
+	}
 }

@@ -17,12 +17,14 @@ export async function command(files: Target[], options: CLIOptions) {
 
 	const fileList = await resolveFiles(files);
 
-	log(
-		'File list: %O',
-		fileList.map(f => f.path),
-	);
-	log('Config: %s', configFile || 'N/A');
-	log('Fix option: %s', fix);
+	if (log.enabled) {
+		log(
+			'File list: %O',
+			fileList.map(f => f.path),
+		);
+		log('Config: %s', configFile || 'N/A');
+		log('Fix option: %s', fix);
+	}
 
 	for (const file of fileList) {
 		const engine = new MLEngine(file, { configFile });

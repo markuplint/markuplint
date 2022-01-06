@@ -23,12 +23,14 @@ export function checkKeywordType(value: string, type: KeywordDefinedType, cache 
 
 	if (cache) {
 		resultCache.set(key, result);
-		log('Cache checking: %O', {
-			input: value,
-			type,
-			key,
-			result: result,
-		});
+		if (log.enabled) {
+			log('Cache checking: %O', {
+				input: value,
+				type,
+				key,
+				result: result,
+			});
+		}
 	}
 
 	return result;

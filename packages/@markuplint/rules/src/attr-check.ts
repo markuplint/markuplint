@@ -112,7 +112,9 @@ export function valueCheck(
 
 	const matches = check(value, type);
 
-	log(`Result ([${name}="${value}"]): %O`, { ...matches, type });
+	if (log.enabled) {
+		log(`Result ([${name}="${value}"]): %O`, { ...matches, type });
+	}
 
 	if (!matches.matched) {
 		const location = {

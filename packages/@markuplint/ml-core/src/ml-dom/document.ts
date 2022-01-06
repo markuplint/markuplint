@@ -202,7 +202,9 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 				continue;
 			}
 
-			docLog('Add rules to node <%s>', 'nodeName' in node ? node.nodeName : `#${node.type}`);
+			if (docLog.enabled) {
+				docLog('Add rules to node <%s>', 'nodeName' in node ? node.nodeName : `#${node.type}`);
+			}
 
 			// global rules
 			Object.keys(ruleset.rules).forEach(ruleName => {
@@ -251,11 +253,13 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 					return;
 				}
 
-				docLog(
-					'Matched nodeRule: <%s>(%s)',
-					'nodeName' in node ? node.nodeName : node.type,
-					matches.selector || '*',
-				);
+				if (docLog.enabled) {
+					docLog(
+						'Matched nodeRule: <%s>(%s)',
+						'nodeName' in node ? node.nodeName : node.type,
+						matches.selector || '*',
+					);
+				}
 
 				const ruleList = Object.keys(nodeRule.rules);
 
@@ -305,12 +309,14 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 						return;
 					}
 
-					docLog(
-						'Matched childNodeRule: <%s>(%s), inheritance: %o',
-						selectorTarget.nodeName,
-						matches.selector || '*',
-						!!nodeRule.inheritance,
-					);
+					if (docLog.enabled) {
+						docLog(
+							'Matched childNodeRule: <%s>(%s), inheritance: %o',
+							selectorTarget.nodeName,
+							matches.selector || '*',
+							!!nodeRule.inheritance,
+						);
+					}
 
 					const targetDescendants = nodeRule.inheritance ? descendants : children;
 

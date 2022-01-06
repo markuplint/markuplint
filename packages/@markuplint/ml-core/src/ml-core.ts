@@ -102,18 +102,20 @@ export class MLCore {
 			}
 			log('%s Rule: verify end', rule.name);
 		}
-		const { e, w, i } = violations.reduce(
-			(c, v) => {
-				if (v.severity === 'error') c.e += 1;
-				if (v.severity === 'warning') c.w += 1;
-				if (v.severity === 'info') c.i += 1;
-				return c;
-			},
-			{ e: 0, w: 0, i: 0 },
-		);
-		resultLog('Error: %d', e);
-		resultLog('Warning: %d', w);
-		resultLog('Info: %d', i);
+		if (resultLog.enabled) {
+			const { e, w, i } = violations.reduce(
+				(c, v) => {
+					if (v.severity === 'error') c.e += 1;
+					if (v.severity === 'warning') c.w += 1;
+					if (v.severity === 'info') c.i += 1;
+					return c;
+				},
+				{ e: 0, w: 0, i: 0 },
+			);
+			resultLog('Error: %d', e);
+			resultLog('Warning: %d', w);
+			resultLog('Info: %d', i);
+		}
 		log('verify: end');
 		return violations;
 	}

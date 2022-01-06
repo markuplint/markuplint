@@ -96,8 +96,11 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 
 	// eslint-disable-next-line no-console
 	const _w = console.warn;
-	// eslint-disable-next-line no-console
-	console.warn = warn => log('WARNING: %s (by %s => %s)', warn, value, type);
+
+	if (log.enabled) {
+		// eslint-disable-next-line no-console
+		console.warn = warn => log('WARNING: %s (by %s => %s)', warn, value, type);
+	}
 
 	const tokens = prepareTokens(value, lexer.syntax);
 	const result = matchAsTree(tokens, matcher.match, lexer);
@@ -122,7 +125,9 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	console.warn = _w;
 
 	if (result.match) {
-		log('css-tree/result.match: %s', JSON.stringify(result.match, null, 2));
+		if (log.enabled) {
+			log('css-tree/result.match: %s', JSON.stringify(result.match, null, 2));
+		}
 		return matched();
 	}
 
