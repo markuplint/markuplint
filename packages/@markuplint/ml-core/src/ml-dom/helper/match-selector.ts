@@ -83,13 +83,13 @@ class SelectorTarget {
 		switch (combinator) {
 			// Descendant combinator
 			case ' ': {
-				let ancestor = el.parentNode;
+				let ancestor = el.getParentElement();
 				while (ancestor) {
 					const matches = target.match(ancestor);
 					if (matches.matched) {
 						return mergeMatches(matches, unitCheck, ' ');
 					}
-					ancestor = ancestor.parentNode;
+					ancestor = ancestor.getParentElement();
 				}
 				return {
 					matched: false,
@@ -97,10 +97,11 @@ class SelectorTarget {
 			}
 			// Child combinator
 			case '>': {
-				if (!el.parentNode) {
+				const parentNode = el.getParentElement();
+				if (!parentNode) {
 					return { matched: false };
 				}
-				const matches = target.match(el.parentNode);
+				const matches = target.match(parentNode);
 				if (matches.matched) {
 					return mergeMatches(matches, unitCheck, ' > ');
 				}

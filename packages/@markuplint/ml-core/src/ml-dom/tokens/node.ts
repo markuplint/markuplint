@@ -1,7 +1,7 @@
 import type { Document } from '../';
 import type { RuleInfo } from '../../';
 import type { AnonymousNode, IMLDOMNode, NodeType } from '../types';
-import type { MLDOMElement, MLDOMOmittedElement } from './';
+import type { MLDOMElement, MLDOMOmittedElement, MLDOMPreprocessorSpecificBlock } from './';
 import type { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
 import type { AnyRule, RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
 
@@ -34,7 +34,7 @@ export default abstract class MLDOMNode<
 		this.#doc.nodeStore.setNode(astNode, this);
 	}
 
-	get parentNode(): MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null {
+	get parentNode(): MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | MLDOMPreprocessorSpecificBlock<T, O> | null {
 		if (!this._astToken.parentNode) {
 			return null;
 		}
@@ -55,8 +55,9 @@ export default abstract class MLDOMNode<
 		return this.#doc.nodeStore.getNode<MLASTNode, T, O>(this._astToken.nextNode);
 	}
 
-	get syntaxicalParentNode(): MLDOMElement<T, O> | null {
-		let parentNode: MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | null = this.parentNode;
+	get syntaxicalParentNode(): MLDOMElement<T, O> | MLDOMPreprocessorSpecificBlock<T, O> | null {
+		let parentNode: MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | MLDOMPreprocessorSpecificBlock<T, O> | null =
+			this.parentNode;
 		while (parentNode && parentNode.type === 'OmittedElement') {
 			parentNode = parentNode.parentNode;
 		}
@@ -94,14 +95,6 @@ export default abstract class MLDOMNode<
 		return this.#doc.nodeStore;
 	}
 
-	toString() {
-		return this.raw;
-	}
-
-	is(type: NodeType) {
-		return this.type === type;
-	}
-
 	get rule(): RuleInfo<T, O> {
 		if (!this.#doc.currentRule) {
 			throw new Error('Invalid call.');
@@ -115,5 +108,30 @@ export default abstract class MLDOMNode<
 		}
 
 		return this.#doc.currentRule.optimizeOption(rule);
+	}
+
+	getParentElement() {
+		let parent = this.parentNode;
+		if (!parent) {
+			return null;
+		}
+
+		while (parent) {
+			if (parent.type === 'PSBlock') {
+				parent = parent.parentNode;
+				continue;
+			}
+			return parent;
+		}
+
+		return null;
+	}
+
+	is(type: NodeType) {
+		return this.type === type;
+	}
+
+	toString() {
+		return this.raw;
 	}
 }

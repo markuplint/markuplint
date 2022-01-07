@@ -145,7 +145,7 @@ class SelectorTarget {
 		switch (combinator.value) {
 			// Descendant combinator
 			case ' ': {
-				let ancestor = el.parentNode;
+				let ancestor = el.getParentElement();
 				let matched = false;
 				let specificity: Specificity | void;
 				while (ancestor) {
@@ -160,7 +160,7 @@ class SelectorTarget {
 					if (res.matched) {
 						matched = true;
 					}
-					ancestor = ancestor.parentNode;
+					ancestor = ancestor.getParentElement();
 				}
 				if (!specificity) {
 					const res = target.match(el, caller);
@@ -179,9 +179,10 @@ class SelectorTarget {
 			case '>': {
 				let matched: boolean;
 				const specificity = unitCheck.specificity;
+				const parentNode = el.getParentElement();
 
-				if (el.parentNode) {
-					const res = target.match(el.parentNode, caller);
+				if (parentNode) {
+					const res = target.match(parentNode, caller);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
@@ -418,7 +419,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: TargetElement, caller: TargetEle
 		case ':closest': {
 			const ruleset = new Ruleset(pseudo.nodes);
 			const specificity = getSpecificity(ruleset.match(el, caller));
-			let parent = el.parentNode;
+			let parent = el.getParentElement();
 			while (parent) {
 				if (ruleset.match(parent, caller).some(r => r.matched)) {
 					return {
@@ -426,7 +427,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: TargetElement, caller: TargetEle
 						matched: true,
 					};
 				}
-				parent = parent.parentNode;
+				parent = parent.getParentElement();
 			}
 			return {
 				specificity,

@@ -194,3 +194,33 @@ describe('specificity', () => {
 		expect(createSelector(':where(div, #foo.bar)').match(el)).toStrictEqual([0, 0, 0]);
 	});
 });
+
+describe('pug', () => {
+	it('has PSBlock', async () => {
+		const el = createTestElement(
+			`
+div#hoge.foo.bar
+	if foo
+		a(href="path/to")`,
+			{
+				parser: require('@markuplint/pug-parser'),
+			},
+		);
+		// @ts-ignore
+		const a = el.childNodes[0].childNodes[0];
+		expect(createSelector('*').match(el)).toBeTruthy();
+		expect(createSelector('div').match(el)).toBeTruthy();
+		expect(createSelector('div#hoge').match(el)).toBeTruthy();
+		expect(createSelector('div#fuga').match(el)).toBe(false);
+		expect(createSelector('#hoge').match(el)).toBeTruthy();
+		expect(createSelector('div.foo').match(el)).toBeTruthy();
+		expect(createSelector('div.bar').match(el)).toBeTruthy();
+		expect(createSelector('.foo').match(el)).toBeTruthy();
+		expect(createSelector('.foo.bar').match(el)).toBeTruthy();
+		expect(createSelector('.any').match(el)).toBe(false);
+		expect(createSelector('*').match(a)).toBeTruthy();
+		expect(createSelector('a').match(a)).toBeTruthy();
+		expect(createSelector('div a').match(a)).toBeTruthy();
+		expect(createSelector('div > a').match(a)).toBeTruthy();
+	});
+});

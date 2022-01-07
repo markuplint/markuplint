@@ -148,7 +148,7 @@ export default abstract class MLDOMAbstractElement<
 			if (selecor.match(el, this)) {
 				return el;
 			}
-			el = el.parentNode;
+			el = el.getParentElement();
 		} while (el !== null && el.type === 'Element');
 		return null;
 	}
@@ -219,7 +219,7 @@ export default abstract class MLDOMAbstractElement<
 	}
 
 	isDescendantByUUIDList(uuidList: string[]) {
-		let el: MLDOMAbstractElement<T, O> | null = this.parentNode;
+		let el: MLDOMAbstractElement<T, O> | null = this.getParentElement();
 
 		if (el === null) {
 			return false;
@@ -229,7 +229,7 @@ export default abstract class MLDOMAbstractElement<
 			if (uuidList.includes(el.uuid)) {
 				return true;
 			}
-			el = el.parentNode;
+			el = el.getParentElement();
 		} while (el !== null && el.type === 'Element');
 		return false;
 	}
