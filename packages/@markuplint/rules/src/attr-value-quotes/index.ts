@@ -12,7 +12,6 @@ const quoteList: QuoteMap = {
 export default createRule<Type>({
 	defaultServerity: 'warning',
 	defaultValue: 'double',
-	defaultOptions: null,
 	async verify(context) {
 		await context.document.walkOn('Element', async node => {
 			const message = context.translate(

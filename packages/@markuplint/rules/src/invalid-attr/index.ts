@@ -27,8 +27,7 @@ type Rule =
 			disallowed: true;
 	  };
 
-export default createRule<true, Option>({
-	defaultValue: true,
+export default createRule<boolean, Option>({
 	defaultOptions: {},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', async node => {

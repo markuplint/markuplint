@@ -2,10 +2,8 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 import { toNormalizedValue } from '../helpers';
 
-export default createRule<boolean, null>({
+export default createRule({
 	defaultServerity: 'warning',
-	defaultValue: true,
-	defaultOptions: null,
 	async verify({ document, report, t }) {
 		document.walkOn('Element', el => {
 			const attrSpec = getAttrSpecs(el.nameWithNS, document.specs);

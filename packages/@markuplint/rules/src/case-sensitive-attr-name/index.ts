@@ -2,10 +2,9 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 export type Value = 'no-upper' | 'no-lower';
 
-export default createRule<Value, null>({
+export default createRule<Value>({
 	defaultServerity: 'warning',
 	defaultValue: 'no-upper',
-	defaultOptions: null,
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', async node => {
 			if (node.isForeignElement || node.isCustomElement) {

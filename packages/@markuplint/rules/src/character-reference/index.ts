@@ -1,13 +1,9 @@
 import { createRule, getLocationFromChars } from '@markuplint/ml-core';
 
-export type Value = boolean;
-
 const defaultChars = ['"', '&', '<', '>'];
 const ignoreParentElement = ['script', 'style'];
 
-export default createRule<Value>({
-	defaultValue: true,
-	defaultOptions: null,
+export default createRule({
 	async verify({ document, report, t }) {
 		const targetNodes: Parameters<typeof report>[0][] = [];
 

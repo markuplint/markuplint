@@ -33,8 +33,8 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	constructor(o: RuleSeed<T, O> & { name: string }) {
 		this.name = o.name;
 		this.defaultServerity = o.defaultServerity || 'error';
-		this.defaultValue = o.defaultValue;
-		this.defaultOptions = o.defaultOptions;
+		this.defaultValue = o.defaultValue ?? (true as T);
+		this.defaultOptions = o.defaultOptions ?? (null as unknown as O);
 		this.#v = o.verify;
 		this.#f = o.fix;
 	}

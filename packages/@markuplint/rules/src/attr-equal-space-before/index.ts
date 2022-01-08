@@ -8,7 +8,6 @@ const neverMsg = 'Never insert {0} before {1} of {2}';
 export default createRule<Value>({
 	defaultServerity: 'warning',
 	defaultValue: 'never',
-	defaultOptions: null,
 	async verify(context) {
 		await context.document.walkOn('Element', async node => {
 			for (const attr of node.attributes) {

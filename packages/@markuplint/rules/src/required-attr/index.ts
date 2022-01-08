@@ -11,9 +11,8 @@ type Attr = {
 	value: string | string[];
 };
 
-export default createRule<RequiredAttributes, null>({
+export default createRule<RequiredAttributes>({
 	defaultValue: [],
-	defaultOptions: null,
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', async node => {
 			if (node.hasSpreadAttr) {

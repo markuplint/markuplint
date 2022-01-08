@@ -3,8 +3,6 @@ import { createRule } from '@markuplint/ml-core';
 import { getSpecByTagName } from '@markuplint/ml-spec';
 
 export default createRule({
-	defaultValue: null,
-	defaultOptions: null,
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', async el => {
 			const ns = el.ns;

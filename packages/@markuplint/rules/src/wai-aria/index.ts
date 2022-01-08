@@ -20,8 +20,7 @@ type Options = {
 	disallowDefaultValue?: boolean;
 };
 
-export default createRule<true, Options>({
-	defaultValue: true,
+export default createRule<boolean, Options>({
 	defaultOptions: {
 		checkingValue: true,
 		checkingDeprecatedProps: true,

@@ -29,7 +29,6 @@ const topLevelRoles: TopLevelRoles[] = ['banner', 'main', 'complementary', 'cont
 
 export default createRule<boolean, Options>({
 	defaultServerity: 'warning',
-	defaultValue: true,
 	defaultOptions: {
 		ignoreRoles: [],
 		labelEachArea: true,

@@ -1,9 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
-export default createRule<boolean, null>({
+export default createRule({
 	defaultServerity: 'warning',
-	defaultValue: true,
-	defaultOptions: null,
 	async verify({ document, report, t }) {
 		if (!document.isFragment) {
 			return;
