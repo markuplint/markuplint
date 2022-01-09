@@ -2,9 +2,7 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 import { ariaSpec } from '../helpers';
 
-export default createRule<boolean, null>({
-	defaultValue: true,
-	defaultOptions: null,
+export default createRule({
 	async verify({ document, report, t }) {
 		const { ariaAttrs } = ariaSpec();
 

@@ -8,7 +8,6 @@ type Options = {
 
 export default createRule<boolean, Options>({
 	defaultServerity: 'warning',
-	defaultValue: true,
 	defaultOptions: {},
 	async verify({ document, report, t }) {
 		document.walkOn('Element', el => {

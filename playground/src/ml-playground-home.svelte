@@ -1,7 +1,7 @@
 <script>
 	import MlPlayground from './ml-playground.svelte';
-	import rulsJSON from 'json-loader!../.markuplintrc';
 
+	const rulsJSON = require('@markuplint/ml-core/markuplint-recommended.json');
 	const ruleset = JSON.stringify(rulsJSON);
 </script>
 

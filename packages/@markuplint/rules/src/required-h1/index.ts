@@ -2,21 +2,18 @@ import type { Element } from '@markuplint/ml-core';
 
 import { createRule } from '@markuplint/ml-core';
 
-export type Value = boolean;
-
-export interface RequiredH1Options {
+export interface Options {
 	'expected-once'?: boolean;
 	'in-document-fragment'?: boolean;
 }
 
-export default createRule<Value, RequiredH1Options>({
-	defaultValue: true,
+export default createRule<boolean, Options>({
 	defaultOptions: {
 		'expected-once': true,
 		'in-document-fragment': false,
 	},
 	async verify({ document, report, globalRule, t }) {
-		const h1Stack: Element<Value, RequiredH1Options>[] = [];
+		const h1Stack: Element<boolean, Options>[] = [];
 
 		if (document.nodeList.length === 0) {
 			return;

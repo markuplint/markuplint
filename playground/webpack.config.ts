@@ -95,13 +95,6 @@ async function build(mode: Mode): Promise<Configuration & DevServerConfiguration
 					use: ['style-loader', 'css-loader'],
 				},
 				{
-					test: /\.(png|jpe?g|gif|svg)$/i,
-					loader: 'file-loader',
-					options: {
-						name: '[hash].[ext]',
-					},
-				},
-				{
 					test: /\.ttf$/,
 					use: [
 						'file-loader',

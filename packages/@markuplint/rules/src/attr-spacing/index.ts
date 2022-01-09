@@ -7,7 +7,6 @@ export interface AttrSpasingOptions {
 
 export default createRule<boolean, AttrSpasingOptions>({
 	defaultServerity: 'warning',
-	defaultValue: true,
 	defaultOptions: {
 		lineBreak: 'either',
 		width: 1,
