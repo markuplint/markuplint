@@ -51,12 +51,12 @@ test('TS', async () => {
 	await craeteRuleToCore({ name: testDirName1, lang: 'TYPESCRIPT', needTest: true });
 	const testDir = await getTestDir(testDirName1);
 	const fileList = await fs.readdir(testDir, { encoding: 'utf-8' });
-	expect(fileList.sort()).toEqual(['README.md', 'index.spec.ts', 'index.ts']);
+	expect(fileList.sort()).toEqual(['README.md', 'index.spec.ts', 'index.ts', 'schema.json']);
 });
 
 test('JS', async () => {
 	await craeteRuleToCore({ name: testDirName2, lang: 'JAVASCRIPT', needTest: false });
 	const testDir = await getTestDir(testDirName2);
 	const fileList = await fs.readdir(testDir, { encoding: 'utf-8' });
-	expect(fileList.sort()).toEqual(['README.md', 'index.js']);
+	expect(fileList.sort()).toEqual(['README.md', 'index.js', 'schema.json']);
 });
