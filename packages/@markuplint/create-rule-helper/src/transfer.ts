@@ -40,7 +40,15 @@ export async function transfer(
 
 	// Prettier
 	const parser =
-		extname === '.md' ? 'markdown' : extname === '.ts' ? (options?.transpile ? 'babel' : 'typescript') : undefined;
+		extname === '.md'
+			? 'markdown'
+			: extname === '.json'
+			? 'json'
+			: extname === '.ts'
+			? options?.transpile
+				? 'babel'
+				: 'typescript'
+			: undefined;
 	converted = format(converted, { parser });
 
 	if (!(await fsExists(destDir))) {

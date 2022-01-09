@@ -39,6 +39,9 @@ export async function createRule() {
 	if (result.test) {
 		output(name, '🖍 ', 'index.spec', result.test);
 	}
+	if (result.schemaJson) {
+		output(name, '⚙️ ', 'schema.json', result.schemaJson);
+	}
 	if (result.packageJson) {
 		output(name, '🎁 ', 'package.json', result.packageJson);
 		if (result.tsConfig) {
