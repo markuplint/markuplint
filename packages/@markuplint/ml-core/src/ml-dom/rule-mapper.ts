@@ -45,7 +45,7 @@ export class RuleMapper<N extends AnonymousNode<any, any> = AnonymousNode<any, a
 		if (node.type === 'Element' && node.closeTag) {
 			this.#ruleMap.set(node.closeTag.uuid, rules);
 		}
-		ruleMapperLog('Set %o to %s', rule, node);
+		ruleMapperLog('Set to %s from %s (%o): %O', node.raw, rule.from, rule.specificity, rule.rule);
 	}
 
 	apply() {
