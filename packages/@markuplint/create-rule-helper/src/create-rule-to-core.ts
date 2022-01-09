@@ -22,7 +22,12 @@ export async function craeteRuleToCore({
 		throw new CreateRuleHelperError(`A new rule "${name}" already exists`);
 	}
 
-	return await installScaffold('core', newRuleDir, '', { name, lang, needTest });
+	return await installScaffold('core', newRuleDir, '', {
+		name,
+		lang,
+		needTest,
+		schemaJson: true,
+	});
 }
 
 export async function getRulesDir() {

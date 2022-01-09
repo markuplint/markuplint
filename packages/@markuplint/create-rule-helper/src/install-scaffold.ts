@@ -10,7 +10,10 @@ export async function installScaffold(
 	scaffoldDir: string,
 	dest: string,
 	sourceDir: string,
-	params: CreateRuleCreatorParams & { packageJson?: boolean },
+	params: CreateRuleCreatorParams & {
+		packageJson?: boolean;
+		schemaJson?: boolean;
+	},
 ): Promise<CreateRuleHelperResult> {
 	const exists = await fsExists(dest);
 	if (!exists) {
@@ -20,6 +23,7 @@ export async function installScaffold(
 	const scaffoldReadmeFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'README.md');
 	const scaffoldMainFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'index.ts');
 	const scaffoldTestFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'index.spec.ts');
+	const scaffoldSchemaFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'schema.json');
 
 	const transpile = params.lang === 'JAVASCRIPT';
 	const readme = await transfer(scaffoldReadmeFile, dest, { name: params.name });
@@ -27,6 +31,7 @@ export async function installScaffold(
 	const test = params.needTest
 		? await transfer(scaffoldTestFile, path.resolve(dest, sourceDir), { name: params.name }, { transpile })
 		: null;
+	const schemaJson = params.schemaJson ? await transfer(scaffoldSchemaFile, dest, { name: params.name }) : null;
 
 	const packageJson = params.packageJson ? path.resolve(dest, 'package.json') : null;
 	const dependencies: string[] = [];
@@ -126,6 +131,7 @@ export async function installScaffold(
 		test,
 		packageJson,
 		tsConfig,
+		schemaJson,
 		dependencies,
 		devDependencies,
 	};
