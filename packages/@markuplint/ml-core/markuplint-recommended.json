@@ -1,13 +1,19 @@
 {
 	"rules": {
 		"attr-duplication": true,
+		"attr-equal-space-after": false,
+		"attr-equal-space-before": false,
+		"attr-spacing": false,
+		"attr-value-quotes": false,
+		"case-sensitive-attr-name": false,
+		"case-sensitive-tag-name": false,
 		"character-reference": true,
+		"class-naming": false,
 		"deprecated-attr": true,
 		"deprecated-element": true,
 		"doctype": true,
 		"id-duplication": true,
-		"permitted-contents": true,
-		"required-attr": true,
+		"indentation": false,
 		"ineffective-attr": true,
 		"invalid-attr": {
 			"option": {
@@ -23,6 +29,12 @@
 		},
 		"landmark-roles": true,
 		"no-boolean-attr-value": true,
+		"no-default-value": false,
+		"no-hard-code-id": false,
+		"no-refer-to-non-existent-id": true,
+		"no-use-event-handler-attr": false,
+		"permitted-contents": true,
+		"required-attr": true,
 		"required-h1": true,
 		"wai-aria": true
 	},
@@ -31,6 +43,38 @@
 			"selector": ":where(html)",
 			"rules": {
 				"required-attr": ["lang"]
+			}
+		},
+		{
+			"selector": ":where(meta[property])",
+			"rules": {
+				"invalid-attr": {
+					"option": {
+						"attrs": {
+							"property": {
+								"pattern": "/^og:[a-z_]+/"
+							},
+							"content": {
+								"type": "NoEmptyAny"
+							}
+						}
+					}
+				},
+				"required-attr": false
+			}
+		},
+		{
+			"selector": ":where(meta[itemprop])",
+			"rules": {
+				"invalid-attr": {
+					"option": {
+						"attrs": {
+							"content": {
+								"type": "NoEmptyAny"
+							}
+						}
+					}
+				}
 			}
 		},
 		{
@@ -103,7 +147,7 @@
 			}
 		},
 		{
-			"selector": ":where(:not(button))",
+			"selector": ":where(body :not(button))",
 			"rules": {
 				"invalid-attr": {
 					"option": {
