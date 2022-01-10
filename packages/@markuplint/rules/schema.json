@@ -39,6 +39,9 @@
 				"deprecated-element": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/deprecated-element/schema.json"
 				},
+				"disallowed-element": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/disallowed-element/schema.json"
+				},
 				"doctype": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/doctype/schema.json"
 				},

@@ -9,6 +9,7 @@ import CharacterReference from './character-reference';
 import ClassNaming from './class-naming';
 import DeprecatedAttr from './deprecated-attr';
 import DeprecatedElement from './deprecated-element';
+import DisallowedElement from './disallowed-element';
 import Doctype from './doctype';
 import IdDuplication from './id-duplication';
 import Indentation from './indentation';
@@ -38,6 +39,7 @@ export default {
 	'class-naming': ClassNaming,
 	'deprecated-attr': DeprecatedAttr,
 	'deprecated-element': DeprecatedElement,
+	'disallowed-element': DisallowedElement,
 	doctype: Doctype,
 	'id-duplication': IdDuplication,
 	indentation: Indentation,
