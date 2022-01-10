@@ -67,6 +67,15 @@ test('disable', async () => {
 	expect(violations.length).toBe(0);
 });
 
+test('global attribute', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<a title="the a element"><abbr title="the abbr element">text</abbr></a>',
+	);
+
+	expect(violations).toStrictEqual([]);
+});
+
 test('the input element type case-insensitive', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked>', { rule: true });
 

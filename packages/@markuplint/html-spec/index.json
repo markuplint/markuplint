@@ -10592,7 +10592,12 @@
 				"role": false
 			},
 			"omittion": false,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#DocumentElementEventAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {}
 		},
 		{
@@ -13024,7 +13029,12 @@
 				"role": false
 			},
 			"omittion": false,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#DocumentElementEventAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {}
 		},
 		{
