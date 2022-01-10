@@ -48,6 +48,9 @@
 				"indentation": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/indentation/schema.json"
 				},
+				"ineffective-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/ineffective-attr/schema.json"
+				},
 				"invalid-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/invalid-attr/schema.json"
 				},

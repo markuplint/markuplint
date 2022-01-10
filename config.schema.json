@@ -8,6 +8,31 @@
 		}
 	},
 	"properties": {
+		"extends": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
+		},
+		"plugins": {
+			"type": "array",
+			"items": {
+				"oneOf": [
+					{
+						"type": "string"
+					},
+					{
+						"type": "object",
+						"required": ["name"],
+						"additionalProperties": false,
+						"properties": {
+							"name": { "type": "string" },
+							"settings": { "type": "object" }
+						}
+					}
+				]
+			}
+		},
 		"parser": {
 			"type": "object",
 			"additionalProperties": {
@@ -21,6 +46,12 @@
 				"ignoreFrontMatter": {
 					"type": "boolean"
 				}
+			}
+		},
+		"excludeFiles": {
+			"type": "array",
+			"items": {
+				"type": "string"
 			}
 		},
 		"specs": {
@@ -93,12 +124,6 @@
 						"$ref": "#/definitions/rules"
 					}
 				}
-			}
-		},
-		"excludeFiles": {
-			"type": "array",
-			"items": {
-				"type": "string"
 			}
 		}
 	}
