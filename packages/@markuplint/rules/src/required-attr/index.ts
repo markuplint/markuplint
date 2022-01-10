@@ -29,7 +29,7 @@ export default createRule<RequiredAttributes>({
 				}
 			> = {};
 
-			if (attrSpec) {
+			if (attrSpec && !node.isCustomElement) {
 				for (const spec of attrSpec) {
 					if (spec.required || spec.requiredEither || spec.condition) {
 						attributeSpecs[spec.name] = {
