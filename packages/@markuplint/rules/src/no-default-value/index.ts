@@ -5,7 +5,7 @@ import { toNormalizedValue } from '../helpers';
 export default createRule({
 	defaultServerity: 'warning',
 	async verify({ document, report, t }) {
-		document.walkOn('Element', el => {
+		await document.walkOn('Element', el => {
 			const attrSpec = getAttrSpecs(el.nameWithNS, document.specs);
 
 			if (!attrSpec) {
