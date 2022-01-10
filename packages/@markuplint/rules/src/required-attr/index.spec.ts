@@ -416,3 +416,56 @@ test('React', async () => {
 		).violations,
 	).toStrictEqual([]);
 });
+
+test('custom element', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<Link href="path/to"></Link>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+			})
+		).violations.length,
+	).toBe(0);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<Link></Link>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				nodeRule: [
+					{
+						selector: 'Link',
+						rule: ['href'],
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "Link" element expects the "href" attribute',
+			raw: '<Link>',
+		},
+	]);
+
+	expect((await mlRuleTest(rule, '<Link href="path/to"></Link>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "Link" element expects the "itemprop" attribute',
+			raw: '<Link href="path/to">',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "Link" element expects the "rel" attribute',
+			raw: '<Link href="path/to">',
+		},
+	]);
+});
