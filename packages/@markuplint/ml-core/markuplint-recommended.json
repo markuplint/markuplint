@@ -47,7 +47,7 @@
 			}
 		},
 		{
-			"selector": "head",
+			"selector": ":where(head)",
 			"rules": {
 				"required-element": ["meta[charset=\"UTF-8\" i]"]
 			}
@@ -131,6 +131,12 @@
 			"selector": ":where(abbr)",
 			"rules": {
 				"required-attr": ["title"]
+			}
+		},
+		{
+			"selector": ":where(video, audio)",
+			"rules": {
+				"required-element": ["track"]
 			}
 		},
 		{
