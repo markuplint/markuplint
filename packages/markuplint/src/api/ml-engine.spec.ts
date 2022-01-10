@@ -56,7 +56,7 @@ describe('Watcher', () => {
 		await fs.writeFile(targetFile, targetFileOriginData, { encoding: 'utf-8' });
 		await engine.close();
 		expect(result1st?.violations.length).toBe(7);
-		expect(result2nd.length).toBe(0);
+		expect(result2nd.length).toBe(5);
 		return Promise.resolve();
 	});
 });
