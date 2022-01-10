@@ -53,7 +53,7 @@ export default createRule<MainValue, Options>({
 		/**
 		 * Example: Use `walk` method to traverse the node tree
 		 */
-		document.walk(node => {
+		await document.walk(node => {
 			/**
 			 * Example: Compare the type of the node to filter it
 			 */

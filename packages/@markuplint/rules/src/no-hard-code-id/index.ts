@@ -6,7 +6,7 @@ export default createRule({
 		if (!document.isFragment) {
 			return;
 		}
-		document.walkOn('Element', el => {
+		await document.walkOn('Element', el => {
 			for (const attr of el.attributes) {
 				if (
 					(attr.attrType === 'html-attr' && !attr.isDynamicValue) ||

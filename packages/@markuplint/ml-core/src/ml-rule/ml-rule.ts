@@ -1,7 +1,16 @@
+import type { Ruleset } from '..';
 import type Document from '../ml-dom/document';
 import type { RuleSeed } from './types';
 import type { LocaleSet } from '@markuplint/i18n';
-import type { RuleConfig, RuleConfigValue, RuleInfo, Severity, Violation } from '@markuplint/ml-config';
+import type {
+	GlobalRuleInfo,
+	RuleConfig,
+	RuleConfigValue,
+	RuleInfo,
+	Rules,
+	Severity,
+	Violation,
+} from '@markuplint/ml-config';
 
 import { MLRuleContext } from './ml-rule-context';
 
@@ -101,8 +110,24 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		return violation;
 	}
 
-	optimizeOption(configSettings: T | RuleConfig<T, O>): RuleInfo<T, O> {
-		if (typeof configSettings === 'boolean') {
+	getRuleInfo(ruleSet: Ruleset, ruleName: string): GlobalRuleInfo<T, O> {
+		const info = this._optimize(ruleSet.rules, ruleName);
+
+		return {
+			...info,
+			nodeRules: ruleSet.nodeRules.map(r => this._optimize(r.rules, ruleName)).filter(r => !r.disabled),
+			childNodeRules: ruleSet.childNodeRules.map(r => this._optimize(r.rules, ruleName)).filter(r => !r.disabled),
+		};
+	}
+
+	_optimize(rules: Rules | undefined, ruleName: string) {
+		const rule = (rules && rules[ruleName]) || false;
+		const info = this.optimizeOption(rule as T | RuleConfig<T, O>);
+		return info;
+	}
+
+	optimizeOption(configSettings: T | RuleConfig<T, O> | undefined): RuleInfo<T, O> {
+		if (configSettings === undefined || typeof configSettings === 'boolean') {
 			return {
 				disabled: !configSettings,
 				severity: this.defaultServerity,

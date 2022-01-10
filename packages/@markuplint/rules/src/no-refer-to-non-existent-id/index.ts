@@ -9,7 +9,7 @@ export default createRule({
 		const idList = new Set<string>();
 		let hasDynamicId = false;
 
-		document.walkOn('Element', el => {
+		await document.walkOn('Element', el => {
 			for (const attr of el.attributes) {
 				if (attr.getName().potential.toLowerCase() !== 'id') {
 					continue;

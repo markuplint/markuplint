@@ -5,7 +5,7 @@ export default createRule<boolean, null>({
 	defaultOptions: null,
 	async verify({ document, report, t }) {
 		// Node
-		document.walk(node => {
+		await document.walk(node => {
 			const raw = node.raw.trim();
 			if (/./i.test(raw)) {
 				report({
@@ -16,7 +16,7 @@ export default createRule<boolean, null>({
 		});
 
 		// Element
-		document.walkOn('Element', el => {
+		await document.walkOn('Element', el => {
 			const raw = el.raw.trim();
 			if (/./i.test(raw)) {
 				report({
@@ -27,7 +27,7 @@ export default createRule<boolean, null>({
 		});
 
 		// Attribute
-		document.walkOn('Element', el => {
+		await document.walkOn('Element', el => {
 			for (const attr of el.attributes) {
 				if (attr.attrType !== 'html-attr') {
 					continue;

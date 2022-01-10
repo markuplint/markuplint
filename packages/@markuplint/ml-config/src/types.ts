@@ -128,4 +128,9 @@ export interface RuleInfo<T extends RuleConfigValue, O = null> {
 	reason?: string;
 }
 
+export type GlobalRuleInfo<T extends RuleConfigValue, O = null> = RuleInfo<T, O> & {
+	nodeRules: RuleInfo<T, O>[];
+	childNodeRules: RuleInfo<T, O>[];
+};
+
 export type Nullable<T> = T | null | undefined;

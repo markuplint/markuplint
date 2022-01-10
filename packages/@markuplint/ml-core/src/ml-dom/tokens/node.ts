@@ -100,12 +100,7 @@ export default abstract class MLDOMNode<
 			throw new Error('Invalid call.');
 		}
 		const name = this.#doc.currentRule.name;
-
-		const rule = this.rules[name] as RuleConfig<T, O> | T;
-
-		if (rule == null) {
-			throw new Error('Invalid call "rule" property.');
-		}
+		const rule = this.rules[name] as RuleConfig<T, O> | T | undefined;
 
 		return this.#doc.currentRule.optimizeOption(rule);
 	}

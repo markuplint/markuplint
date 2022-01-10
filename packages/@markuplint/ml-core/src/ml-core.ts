@@ -74,8 +74,8 @@ export class MLCore {
 		}
 
 		for (const rule of this.#rules) {
-			const ruleInfo = rule.optimizeOption(this.#ruleset.rules[rule.name] || false);
-			if (ruleInfo.disabled) {
+			const ruleInfo = rule.getRuleInfo(this.#ruleset, rule.name);
+			if (ruleInfo.disabled && ruleInfo.nodeRules.length === 0 && ruleInfo.childNodeRules.length === 0) {
 				continue;
 			}
 
