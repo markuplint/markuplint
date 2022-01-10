@@ -22514,28 +22514,28 @@
 			"attributes": {
 				"x1": {
 					"ref": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElementX1Attribute",
-					"description": "This attribute defines the x coordinate of the starting point of the vector gradient along which the linear gradient is drawn. Value type: <length> ; Default value: 0%; Animatable: yes",
+					"description": "This attribute defines the x coordinate of the starting point of the vector gradient along which the linear gradient is drawn. Value type: <length-percentage> | <number>; Default value: 0%; Animatable: yes",
 					"type": ["<svg-length>", "<percentage>"],
 					"defaultValue": "0%",
 					"animatable": true
 				},
 				"y1": {
 					"ref": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElementY1Attribute",
-					"description": "This attribute defines the y coordinate of the starting point of the vector gradient along which the linear gradient is drawn. Value type: <length> ; Default value: 0%; Animatable: yes",
+					"description": "This attribute defines the y coordinate of the starting point of the vector gradient along which the linear gradient is drawn. Value type: <length-percentage> | <number>; Default value: 0%; Animatable: yes",
 					"type": ["<svg-length>", "<percentage>"],
 					"defaultValue": "0%",
 					"animatable": true
 				},
 				"x2": {
 					"ref": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElementX2Attribute",
-					"description": "This attribute defines the x coordinate of the ending point of the vector gradient along which the linear gradient is drawn. Value type: <length> ; Default value: 100%; Animatable: yes",
+					"description": "This attribute defines the x coordinate of the ending point of the vector gradient along which the linear gradient is drawn. Value type: <length-percentage> | <number>; Default value: 100%; Animatable: yes",
 					"type": ["<svg-length>", "<percentage>"],
 					"defaultValue": "100%",
 					"animatable": true
 				},
 				"y2": {
 					"ref": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElementY2Attribute",
-					"description": "This attribute defines the y coordinate of the ending point of the vector gradient along which the linear gradient is drawn. Value type: <length> ; Default value: 0%; Animatable: yes",
+					"description": "This attribute defines the y coordinate of the ending point of the vector gradient along which the linear gradient is drawn. Value type: <length-percentage> | <number>; Default value: 0%; Animatable: yes",
 					"type": ["<svg-length>", "<percentage>"],
 					"defaultValue": "0%",
 					"animatable": true
