@@ -35,6 +35,7 @@
 		"no-use-event-handler-attr": false,
 		"permitted-contents": true,
 		"required-attr": true,
+		"required-element": false,
 		"required-h1": true,
 		"wai-aria": true
 	},
@@ -43,6 +44,12 @@
 			"selector": ":where(html)",
 			"rules": {
 				"required-attr": ["lang"]
+			}
+		},
+		{
+			"selector": "head",
+			"rules": {
+				"required-element": ["meta[charset=\"UTF-8\" i]"]
 			}
 		},
 		{
