@@ -11,6 +11,7 @@
 		"class-naming": false,
 		"deprecated-attr": true,
 		"deprecated-element": true,
+		"disallowed-element": ["hgroup"],
 		"doctype": true,
 		"id-duplication": true,
 		"indentation": false,
@@ -88,6 +89,15 @@
 			"selector": ":where(script[src])",
 			"rules": {
 				"required-attr": ["defer"]
+			}
+		},
+		{
+			"selector": "h1, h2, h3, h4, h5, h6",
+			"rules": {
+				"disallowed-element": {
+					"value": ["small"],
+					"reason": "The small element must not be used for subheadings. https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element"
+				}
 			}
 		},
 		{
