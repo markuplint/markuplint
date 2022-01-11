@@ -1,7 +1,7 @@
 {
 	"name": "@markuplint/playground",
 	"description": "https://playground.markuplint.dev",
-	"version": "2.0.0-dev.20220110.0",
+	"version": "2.0.0-dev.20220111.0",
 	"private": true,
 	"scripts": {
 		"pg:dev": "webpack-dev-server --progress",
@@ -51,7 +51,7 @@
 		"@markuplint/ml-core": "2.0.0-dev.20220110.0",
 		"@markuplint/ml-spec": "2.0.0-dev.20220106.0",
 		"@markuplint/parser-utils": "2.0.0-dev.20220106.0",
-		"@markuplint/rules": "2.0.0-dev.20220110.0",
+		"@markuplint/rules": "2.0.0-dev.20220111.0",
 		"monaco-editor": "0.31.0",
 		"svelte": "3.44.2",
 		"tslib": "2.3.1"
