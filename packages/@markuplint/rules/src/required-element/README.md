@@ -63,6 +63,15 @@ If specified to `nodeRules` or `childNodeRules`, It searches the element from ch
 -   Type: `string[]`
 -   Deafult Value: `[]`
 
+### Options
+
+#### `ignoreHasMutableContents`
+
+-   Type: `boolean`
+-   Default: `true`
+
+Ignore if it has mutable child elements in a preprocessor language like _Pug_ or a component library like _Vue_. (If use _Pug_ or _Vue_ need each [@markuplint/pug-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/pug-parser) and [@markuplint/vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/vue-parser))
+
 ### Default severity
 
 `error`

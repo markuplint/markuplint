@@ -81,9 +81,9 @@
 					{
 						"type": "object",
 						"additionalProperties": false,
-						"required": ["tagName", "rules"],
+						"required": ["selector", "rules"],
 						"properties": {
-							"tagName": {
+							"selector": {
 								"type": "string"
 							},
 							"rules": {
@@ -94,9 +94,9 @@
 					{
 						"type": "object",
 						"additionalProperties": false,
-						"required": ["selector", "rules"],
+						"required": ["regexSelector", "rules"],
 						"properties": {
-							"selector": {
+							"regexSelector": {
 								"type": "string"
 							},
 							"rules": {
@@ -110,20 +110,40 @@
 		"childNodeRules": {
 			"type": "array",
 			"items": {
-				"type": "object",
-				"additionalProperties": false,
-				"required": ["selector", "rules"],
-				"properties": {
-					"selector": {
-						"type": "string"
+				"oneOf": [
+					{
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["selector", "rules"],
+						"properties": {
+							"selector": {
+								"type": "string"
+							},
+							"inheritance": {
+								"type": "boolean"
+							},
+							"rules": {
+								"$ref": "#/definitions/rules"
+							}
+						}
 					},
-					"inheritance": {
-						"type": "boolean"
-					},
-					"rules": {
-						"$ref": "#/definitions/rules"
+					{
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["regexSelector", "rules"],
+						"properties": {
+							"regexSelector": {
+								"type": "string"
+							},
+							"inheritance": {
+								"type": "boolean"
+							},
+							"rules": {
+								"$ref": "#/definitions/rules"
+							}
+						}
 					}
-				}
+				]
 			}
 		}
 	}
