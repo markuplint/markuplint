@@ -57,6 +57,15 @@ h1 要素が必要な場合は [`required-h1`](../required-h1/)ルールを使�
 -   型: `string[]`
 -   デフォルト値: `[]`
 
+### オプション
+
+#### `ignoreHasMutableContents`
+
+-   型: `boolean`
+-   初期値: `true`
+
+_Pug_ のようなプリプロセッサ言語や _Vue_ のようなコンポーネントライブラリにおけるミュータブルな子要素を含む場合、無視します。（_Pug_ も _Vue_ もそれぞれ [@markuplint/pug-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/pug-parser) や [@markuplint/vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/vue-parser) が必要です。）
+
 ### デフォルトの警告の厳しさ
 
 `error`
