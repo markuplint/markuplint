@@ -10,6 +10,10 @@
 	},
 	"oneOf": [
 		{
+			"type": "boolean",
+			"enum": [false]
+		},
+		{
 			"$ref": "#/definitions/value"
 		},
 		{
