@@ -124,6 +124,10 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 			return null;
 		}
 
+		if (fabric.configErrors) {
+			this.emit('config-errors', this.#file.path, fabric.configErrors);
+		}
+
 		const core = this.cretateCore(fabric);
 		return core;
 	}
@@ -133,6 +137,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		fileLog('Fetched Config files: %O', configSet.files);
 		fileLog('Resolved Config: %O', configSet.config);
 		fileLog('Resolved Plugins: %O', configSet.plugins);
+		fileLog('Resolve Errors: %O', configSet.errs);
 
 		// Exclude
 		const excludeFiles = configSet.config.excludeFiles || [];
@@ -187,6 +192,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 			schemas,
 			rules,
 			locale,
+			configErrors: configSet.errs,
 		};
 	}
 
@@ -275,6 +281,10 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 
 		if (!fabric) {
 			return;
+		}
+
+		if (fabric.configErrors) {
+			this.emit('config-errors', this.#file.path, fabric.configErrors);
 		}
 
 		this.emit('log', 'update:core', this.#file.path);

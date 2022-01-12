@@ -17,69 +17,12 @@ class ConfigProvider {
 	#store = new Map<string, Config>();
 	#cache = new Map<string, ConfigSet>();
 	#held = new Set<string>();
+	#recursiveLoadKeyAndDepth = new Map<string, number>();
 
 	set(config: Config, key?: string) {
 		key = key || uuid();
 		this.#store.set(key, config);
 		return key;
-	}
-
-	async load(filePath: string) {
-		const entity = this.#store.get(filePath);
-		if (entity) {
-			return entity;
-		}
-
-		if (isPrefixedName(filePath)) {
-			this.#held.add(filePath);
-			return null;
-		}
-
-		if (!path.isAbsolute(filePath)) {
-			throw new TypeError(`${filePath} is not an absolute path`);
-		}
-
-		const config = await load(filePath);
-		if (!config) {
-			return null;
-		}
-
-		const pathResolvedConfig = this.pathResolve(config, filePath);
-
-		this.#store.set(filePath, pathResolvedConfig);
-		return pathResolvedConfig;
-	}
-
-	async recursiveLoad(key: string) {
-		const stack = new Set<string>();
-		const config = this.#store.get(key);
-		if (config) {
-			const depKeys = config.extends ? (Array.isArray(config.extends) ? config.extends : [config.extends]) : null;
-			if (depKeys) {
-				for (const depKey of depKeys) {
-					const keys = await this.recursiveLoad(depKey);
-					for (const key of keys) {
-						stack.add(key);
-					}
-				}
-			}
-		} else {
-			await this.load(key);
-		}
-		stack.add(key);
-		return stack;
-	}
-
-	pathResolve(config: Config, filePath: string): Config {
-		const dir = path.dirname(filePath);
-		return {
-			...config,
-			extends: pathResolve(dir, config.extends),
-			plugins: pathResolve(dir, config.plugins, ['name']),
-			parser: pathResolve(dir, config.parser),
-			specs: pathResolve(dir, config.specs),
-			excludeFiles: pathResolve(dir, config.excludeFiles),
-		};
 	}
 
 	async search(targetFile: MLFile) {
@@ -91,7 +34,7 @@ class ConfigProvider {
 			return null;
 		}
 		const { filePath, config } = res;
-		const pathResolvedConfig = this.pathResolve(config, filePath);
+		const pathResolvedConfig = this._pathResolve(config, filePath);
 		this.#store.set(filePath, pathResolvedConfig);
 		return filePath;
 	}
@@ -103,7 +46,7 @@ class ConfigProvider {
 		if (!remerge && currentConfig) {
 			return currentConfig;
 		}
-		let configSet = await this.mergeConfigs(keys);
+		let configSet = await this._mergeConfigs(keys);
 
 		const plugins = await resolvePlugins(configSet.config.plugins);
 
@@ -131,7 +74,7 @@ class ConfigProvider {
 				}
 			});
 
-			configSet = await this.mergeConfigs([...keys, ...extendHelds]);
+			configSet = await this._mergeConfigs([...keys, ...extendHelds]);
 
 			this.#held.clear();
 		}
@@ -145,12 +88,17 @@ class ConfigProvider {
 		return result;
 	}
 
-	async mergeConfigs(keys: string[]) {
+	private async _mergeConfigs(keys: string[]) {
 		const resolvedKeys = new Set<string>();
+		const errs: Error[] = [];
 		for (const key of keys) {
-			const keySet = await this.recursiveLoad(key);
-			for (const k of keySet) {
+			this.#recursiveLoadKeyAndDepth.clear();
+			const keySet = await this._recursiveLoad(key);
+			for (const k of keySet.stack) {
 				resolvedKeys.add(k);
+			}
+			if (keySet.errs) {
+				errs.push(...keySet.errs);
 			}
 		}
 		const configs = Array.from(resolvedKeys)
@@ -163,7 +111,88 @@ class ConfigProvider {
 		return {
 			config: resultConfig,
 			files: resolvedKeys,
-			errs: [],
+			errs,
+		};
+	}
+
+	private async _recursiveLoad(
+		key: string,
+		depth = 1,
+	): Promise<{ stack: Set<string>; errs: CircularReferenceError[] | null }> {
+		const stack = new Set<string>();
+		const errs: CircularReferenceError[] = [];
+
+		const ancestorDepth = this.#recursiveLoadKeyAndDepth.get(key);
+		if (ancestorDepth != null && ancestorDepth < depth) {
+			return {
+				stack,
+				errs: [new CircularReferenceError(`Circular reference detected: ${key}`)],
+			};
+		}
+
+		this.#recursiveLoadKeyAndDepth.set(key, depth);
+
+		let config = this.#store.get(key) || null;
+		if (!config) {
+			config = await this._load(key);
+		}
+
+		if (!config) {
+			return { stack, errs: null };
+		}
+
+		const depKeys = config.extends ? (Array.isArray(config.extends) ? config.extends : [config.extends]) : null;
+		if (depKeys) {
+			for (const depKey of depKeys) {
+				const keys = await this._recursiveLoad(depKey, depth + 1);
+				for (const key of keys.stack) {
+					stack.add(key);
+				}
+				if (keys.errs) {
+					errs.push(...keys.errs);
+				}
+			}
+		}
+
+		stack.add(key);
+		return { stack, errs };
+	}
+
+	private async _load(filePath: string) {
+		const entity = this.#store.get(filePath);
+		if (entity) {
+			return entity;
+		}
+
+		if (isPrefixedName(filePath)) {
+			this.#held.add(filePath);
+			return null;
+		}
+
+		if (!path.isAbsolute(filePath)) {
+			throw new TypeError(`${filePath} is not an absolute path`);
+		}
+
+		const config = await load(filePath);
+		if (!config) {
+			return null;
+		}
+
+		const pathResolvedConfig = this._pathResolve(config, filePath);
+
+		this.#store.set(filePath, pathResolvedConfig);
+		return pathResolvedConfig;
+	}
+
+	private _pathResolve(config: Config, filePath: string): Config {
+		const dir = path.dirname(filePath);
+		return {
+			...config,
+			extends: pathResolve(dir, config.extends),
+			plugins: pathResolve(dir, config.plugins, ['name']),
+			parser: pathResolve(dir, config.parser),
+			specs: pathResolve(dir, config.specs),
+			excludeFiles: pathResolve(dir, config.excludeFiles),
 		};
 	}
 }
@@ -241,6 +270,10 @@ function moduleExists(name: string) {
 
 function isPrefixedName(name: string) {
 	return /^(?:markuplint|plugin):/.test(name);
+}
+
+class CircularReferenceError extends ReferenceError {
+	name = 'CircularReferenceError';
 }
 
 export const configProvider = new ConfigProvider();

@@ -6,7 +6,6 @@ import { getFile } from './ml-file';
 it('001 + 002', async () => {
 	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '002', '.markuplintrc.json');
-	await configProvider.load(key);
 	const configSet = await configProvider.resolve([key]);
 	expect(configSet.config).toStrictEqual({
 		dummy: true,
@@ -61,8 +60,7 @@ it('001 + 002', async () => {
 
 it('001 + 002 + 003', async () => {
 	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
-	const filePath = path.resolve(testDir, '003', 'dir', 'target.html');
-	const file = getFile(filePath);
+	const file = getFile(path.resolve(testDir, '003', 'dir', 'target.html'));
 	const key = await configProvider.search(file);
 	const configSet = await configProvider.resolve([key]);
 	expect(configSet.config).toStrictEqual({
@@ -141,4 +139,21 @@ it('001 + 002 + 003', async () => {
 			},
 		],
 	});
+});
+
+it('Deep target', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '004', 'dir', 'dir', 'dir', 'dir', 'dir', '.markuplintrc');
+	const configSet = await configProvider.resolve([key]);
+	expect(configSet.config).toStrictEqual({
+		dir01: true,
+		dir02: true,
+		dir03: true,
+		dir04: true,
+		dir05: true,
+		dir06: true,
+	});
+	expect(configSet.errs.length).toBe(1);
+	expect(configSet.errs[0] instanceof ReferenceError).toBe(true);
+	expect(configSet.errs[0].message).toBe(`Circular reference detected: ${key}`);
 });
