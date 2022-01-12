@@ -27,6 +27,7 @@ export type MLFabric = {
 	parser: MLMarkupLanguageParser;
 	parserOptions: ParserOptions;
 	locale: LocaleSet;
+	configErrors?: Error[];
 };
 
 export type MLEngineEventMap = {
@@ -48,4 +49,5 @@ export type MLEngineEventMap = {
 		message?: string,
 	) => void;
 	'lint-error': (filePath: string, sourceCode: string, error: Error) => void;
+	'config-errors': (filePath: string, errors: Error[]) => void;
 };
