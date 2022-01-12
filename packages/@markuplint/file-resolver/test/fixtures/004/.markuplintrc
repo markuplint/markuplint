@@ -1,0 +1,4 @@
+{
+	"extends": ["./dir/dir/dir/dir/dir/.markuplintrc"],
+	"dir01": true
+}
