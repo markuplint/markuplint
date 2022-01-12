@@ -5,6 +5,46 @@
 	"definitions": {
 		"rules": {
 			"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/schema.json#/definitions/rules"
+		},
+		"regexSelector": {
+			"allOf": [
+				{
+					"$ref": "#/definitions/regexSelectorWithoutCompination"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"combination": {
+							"allOf": [
+								{
+									"type": "object",
+									"required": ["combinator"],
+									"properties": {
+										"combinator": {
+											"$ref": "#/definitions/regexSelectorCombinator"
+										}
+									}
+								},
+								{
+									"$ref": "#/definitions/regexSelector"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		"regexSelectorWithoutCompination": {
+			"type": "object",
+			"properties": {
+				"nodeName": { "type": "string" },
+				"attrName": { "type": "string" },
+				"attrValue": { "type": "string" }
+			}
+		},
+		"regexSelectorCombinator": {
+			"type": "string",
+			"enum": [" ", ">", "+", "~", ":has(+)", ":has(~)"]
 		}
 	},
 	"properties": {
@@ -97,7 +137,7 @@
 						"required": ["regexSelector", "rules"],
 						"properties": {
 							"regexSelector": {
-								"type": "string"
+								"$ref": "#/definitions/regexSelector"
 							},
 							"rules": {
 								"$ref": "#/definitions/rules"
@@ -133,7 +173,7 @@
 						"required": ["regexSelector", "rules"],
 						"properties": {
 							"regexSelector": {
-								"type": "string"
+								"$ref": "#/definitions/regexSelector"
 							},
 							"inheritance": {
 								"type": "boolean"
