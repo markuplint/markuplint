@@ -30,8 +30,9 @@ describe('STDOUT Test', () => {
 
 	it('verify', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/001.html');
-		const { stdout } = await execa(entryFilePath, ['--no-color', targetFilePath]);
+		const { stdout, exitCode } = await execa(entryFilePath, ['--no-color', targetFilePath]);
 		expect(stdout).toBe(`<markuplint> passed ${targetFilePath}`);
+		expect(exitCode).toBe(0);
 	});
 
 	it('verify --problem-only', async () => {
@@ -42,11 +43,12 @@ describe('STDOUT Test', () => {
 
 	it('verify and feilure', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
-		const { stdout, stderr } = await execa(entryFilePath, ['--no-color', targetFilePath], {
+		const { stdout, stderr, exitCode } = await execa(entryFilePath, ['--no-color', targetFilePath], {
 			reject: false,
 		});
 		expect(stdout).toBe('');
 		expect(stderr.split('\n').length).toBe(34);
+		expect(exitCode).toBe(1);
 	});
 
 	it('format', async () => {
