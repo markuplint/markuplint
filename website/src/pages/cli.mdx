@@ -1,0 +1,59 @@
+---
+title: Command Line Interface
+back:
+  title: The setting for other languages
+  href: setting-for-other-languages
+---
+
+## Usage
+
+```
+$ markuplint target.html
+$ markuplint target.html target2.html
+$ markuplint **/*.html
+```
+
+The CLI takes target HTML files as variadic arguments.
+Or it accepts glob formats.
+
+It returns the exit code `0` when it succeeded.
+And returns `1` if the result has problems one or more.
+
+## Options
+
+| Long Option      | Short Option | Argument                       | Default    | Description                            |
+| ---------------- | ------------ | ------------------------------ | ---------- | -------------------------------------- |
+| `--fix`          | none         | none                           | false      | Fix target files if the rule supports. |
+| `--format`       | `-f`         | `JSON`, `Simple` or `Standard` | `Standard` | Select ouput format.                   |
+| `--no-color`     | none         | none                           | false      | Output no color.                       |
+| `--problem-only` | `-p`         | none                           | false      | Output only problems.                  |
+| `--verbose`      | none         | none                           | false      | Output with detailed information.      |
+
+## Particular run
+
+### Show help
+
+Use add the `--help` option. (Short option: `-h`)
+
+### Show version
+
+Use add the `--version` option. (Short option: `-v`)
+
+### Initialization
+
+Create a [configuration](./configuration) file and install dependencies.
+
+Use add the `--init` option.
+
+```
+$ npx markuplint --init
+# or
+$ yarn run markuplint --init
+```
+
+Answer questions interactively.
+By doing this, needed modules are installed includes `markuplint`.
+
+### Creating a custom rule
+
+It adds the scaffold of a custom rule to some project.
