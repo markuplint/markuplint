@@ -26,11 +26,16 @@ export async function command(files: Target[], options: CLIOptions) {
 		log('Fix option: %s', fix);
 	}
 
+	let hasError = false;
+
 	for (const file of fileList) {
 		const engine = new MLEngine(file, { configFile });
 		const result = await engine.exec();
 		if (!result) {
 			continue;
+		}
+		if (!hasError && result.violations.length) {
+			hasError = true;
 		}
 		if (fix) {
 			log('Overwrite file: %s', result.filePath);
@@ -41,4 +46,6 @@ export async function command(files: Target[], options: CLIOptions) {
 			await output(result, options);
 		}
 	}
+
+	return hasError;
 }

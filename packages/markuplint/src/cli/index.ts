@@ -38,22 +38,22 @@ import { initialize } from './init';
 
 	const files = cli.input;
 	if (files.length) {
-		await command(files, cli.flags).catch(err => {
+		const hasError = await command(files, cli.flags).catch(err => {
 			throw err;
 			// process.exit(1);
 		});
-		process.exit(0);
+		process.exit(hasError ? 1 : 0);
 	}
 
 	if (usePipe()) {
 		getStdin()
 			.then(async stdin => {
 				if (stdin) {
-					await command([{ sourceCode: stdin }], cli.flags).catch(err => {
+					const hasError = await command([{ sourceCode: stdin }], cli.flags).catch(err => {
 						process.stderr.write(err + '\n');
 						process.exit(1);
 					});
-					process.exit(0);
+					process.exit(hasError ? 1 : 0);
 				}
 				// result is empty
 				cli.showHelp(1);
