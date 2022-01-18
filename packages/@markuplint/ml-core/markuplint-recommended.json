@@ -24,6 +24,9 @@
 					},
 					"accesskey": {
 						"disallowed": true
+					},
+					"tabindex": {
+						"enum": ["-1", "0"]
 					}
 				}
 			}
