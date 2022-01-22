@@ -23,7 +23,7 @@
 		"cli-progress": "^3.9.1",
 		"fast-xml-parser": "^3.21.1",
 		"jsonschema": "^1.4.0",
-		"node-fetch": "2"
+		"node-fetch": "3"
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "2.0.0-rc.3"
