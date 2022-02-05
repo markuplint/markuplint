@@ -60,3 +60,43 @@ describe('dynamic', () => {
 		expect(violations.length).toBe(0);
 	});
 });
+
+describe('React', () => {
+	it('native element', async () => {
+		const { violations } = await mlRuleTest(rule, '<html><head><title>Title</title></head></html>', {
+			nodeRule: [
+				{
+					selector: 'head',
+					rule: ['meta[charset="UTF-8"]'],
+				},
+			],
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				raw: '<head>',
+				message: 'Require the "meta[charset="UTF-8"]" element',
+			},
+		]);
+	});
+
+	it('custom element (Component)', async () => {
+		const { violations } = await mlRuleTest(rule, '<><Head><title>Title</title></Head></>', {
+			nodeRule: [
+				{
+					selector: 'head',
+					rule: ['meta[charset="UTF-8"]'],
+				},
+			],
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+});

@@ -126,6 +126,7 @@ export interface MLMarkupLanguageParser {
 		offsetColumn?: number,
 		ignoreFrontMatter?: boolean,
 	): MLASTDocument;
+	tagNameCaseSensitive?: boolean;
 }
 
 export type Parse = MLMarkupLanguageParser['parse'];

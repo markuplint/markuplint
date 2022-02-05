@@ -9,8 +9,8 @@ const resLog = log.extend('result');
 
 export type Specificity = [number, number, number];
 
-export function createSelector(selector: string) {
-	return new Selector(selector);
+export function createSelector(selector: string, tagNameCaseSensitive?: boolean) {
+	return new Selector(selector, !!tagNameCaseSensitive);
 }
 
 export function compareSpecificity(a: Specificity, b: Specificity) {
@@ -42,8 +42,8 @@ type SelectorResult = {
 class Selector {
 	#ruleset: Ruleset;
 
-	constructor(selector: string) {
-		this.#ruleset = Ruleset.parse(selector);
+	constructor(selector: string, tagNameCaseSensitive: boolean) {
+		this.#ruleset = Ruleset.parse(selector, tagNameCaseSensitive);
 	}
 
 	match(el: TargetElement, caller: TargetElement | null = el): Specificity | false {
@@ -58,18 +58,18 @@ class Selector {
 }
 
 class Ruleset {
-	static parse(selector: string) {
+	static parse(selector: string, tagNameCaseSensitive: boolean) {
 		const selectors: parser.Selector[] = [];
 		parser(root => {
 			selectors.push(...root.nodes);
 		}).processSync(selector);
-		return new Ruleset(selectors);
+		return new Ruleset(selectors, tagNameCaseSensitive);
 	}
 
 	#selectorGroup: StructuredSelector[] = [];
 
-	constructor(selectors: parser.Selector[]) {
-		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector)));
+	constructor(selectors: parser.Selector[], tagNameCaseSensitive: boolean) {
+		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector, tagNameCaseSensitive)));
 	}
 
 	match(el: TargetElement, caller: TargetElement | null): MultipleSelectorResult {
@@ -86,14 +86,14 @@ class StructuredSelector {
 	#edge: SelectorTarget;
 	#selector: parser.Selector;
 
-	constructor(selector: parser.Selector) {
+	constructor(selector: parser.Selector, tagNameCaseSensitive: boolean) {
 		this.#selector = selector;
 
-		this.#edge = new SelectorTarget();
+		this.#edge = new SelectorTarget(tagNameCaseSensitive);
 		this.#selector.nodes.forEach(node => {
 			switch (node.type) {
 				case 'combinator': {
-					const combinatedTarget = new SelectorTarget();
+					const combinatedTarget = new SelectorTarget(tagNameCaseSensitive);
 					combinatedTarget.from(this.#edge, node);
 					this.#edge = combinatedTarget;
 					break;
@@ -130,8 +130,13 @@ class SelectorTarget {
 	class: parser.ClassName[] = [];
 	attr: parser.Attribute[] = [];
 	pseudo: parser.Pseudo[] = [];
+	#tagNameCaseSensitive: boolean;
 	#isAdded = false;
 	#combinatedFrom: { target: SelectorTarget; combinator: parser.Combinator } | null = null;
+
+	constructor(tagNameCaseSensitive: boolean) {
+		this.#tagNameCaseSensitive = tagNameCaseSensitive;
+	}
 
 	match(el: TargetElement, caller: TargetElement | null): SelectorResult {
 		const unitCheck = this._matchWithoutCombinateChecking(el, caller);
@@ -291,7 +296,7 @@ class SelectorTarget {
 		specificity[1] += this.attr.length;
 
 		for (const pseudo of this.pseudo) {
-			const pseudoRes = pseudoMatch(pseudo, el, caller);
+			const pseudoRes = pseudoMatch(pseudo, el, caller, this.#tagNameCaseSensitive);
 
 			specificity[0] += pseudoRes.specificity[0];
 			specificity[1] += pseudoRes.specificity[1];
@@ -305,7 +310,15 @@ class SelectorTarget {
 		if (this.tag && this.tag.type === 'tag') {
 			specificity[2] += 1;
 
-			if (this.tag.value.toLowerCase() !== el.nodeName.toLowerCase()) {
+			let a = this.tag.value;
+			let b = el.nodeName;
+
+			if (!this.#tagNameCaseSensitive) {
+				a = a.toLowerCase();
+				b = b.toLowerCase();
+			}
+
+			if (a !== b) {
 				matched = false;
 			}
 		}
@@ -411,13 +424,18 @@ function attrMatch(attr: parser.Attribute, el: TargetElement) {
 	});
 }
 
-function pseudoMatch(pseudo: parser.Pseudo, el: TargetElement, caller: TargetElement | null): SelectorResult {
+function pseudoMatch(
+	pseudo: parser.Pseudo,
+	el: TargetElement,
+	caller: TargetElement | null,
+	tagNameCaseSensitive: boolean,
+): SelectorResult {
 	switch (pseudo.value) {
 		/**
 		 * Below, markuplint Specific Selector
 		 */
 		case ':closest': {
-			const ruleset = new Ruleset(pseudo.nodes);
+			const ruleset = new Ruleset(pseudo.nodes, tagNameCaseSensitive);
 			const specificity = getSpecificity(ruleset.match(el, caller));
 			let parent = el.getParentElement();
 			while (parent) {
@@ -439,7 +457,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: TargetElement, caller: TargetEle
 		 * Below, Selector Level 4
 		 */
 		case ':not': {
-			const ruleset = new Ruleset(pseudo.nodes);
+			const ruleset = new Ruleset(pseudo.nodes, tagNameCaseSensitive);
 			const resList = ruleset.match(el, caller);
 			const specificity = getSpecificity(resList);
 			const matched = resList.every(r => !r.matched);
@@ -449,7 +467,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: TargetElement, caller: TargetEle
 			};
 		}
 		case ':is': {
-			const ruleset = new Ruleset(pseudo.nodes);
+			const ruleset = new Ruleset(pseudo.nodes, tagNameCaseSensitive);
 			const resList = ruleset.match(el, caller);
 			const specificity = getSpecificity(resList);
 			const matched = resList.some(r => r.matched);
@@ -459,7 +477,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: TargetElement, caller: TargetEle
 			};
 		}
 		case ':has': {
-			const ruleset = new Ruleset(pseudo.nodes);
+			const ruleset = new Ruleset(pseudo.nodes, tagNameCaseSensitive);
 			const specificity = getSpecificity(ruleset.match(el, caller));
 			const descendants = getDescendants(el);
 			const matched = descendants.some(desc => ruleset.match(desc, caller).some(m => m.matched));
@@ -469,7 +487,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: TargetElement, caller: TargetEle
 			};
 		}
 		case ':where': {
-			const ruleset = new Ruleset(pseudo.nodes);
+			const ruleset = new Ruleset(pseudo.nodes, tagNameCaseSensitive);
 			const resList = ruleset.match(el, caller);
 			const matched = resList.some(r => r.matched);
 			return {

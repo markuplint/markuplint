@@ -24,6 +24,24 @@ test('CSS Selector', async () => {
 	expect(matchSelector(el, '.any')).toStrictEqual({ matched: false });
 });
 
+test('nodeName case-sensitive', async () => {
+	expect(matchSelector(createTestElement('<DIV></DIV>'), 'div')).toStrictEqual({
+		matched: true,
+		selector: 'div',
+		specificity: [0, 0, 1],
+	});
+
+	expect(matchSelector(createTestElement('<DIV></DIV>'), 'div', true)).toStrictEqual({
+		matched: false,
+	});
+
+	expect(matchSelector(createTestElement('<DIV></DIV>'), 'DIV', true)).toStrictEqual({
+		matched: true,
+		selector: 'DIV',
+		specificity: [0, 0, 1],
+	});
+});
+
 test('nodeName', async () => {
 	const el = createTestElement('<div></div>');
 	expect(
