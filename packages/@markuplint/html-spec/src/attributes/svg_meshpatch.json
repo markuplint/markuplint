@@ -65,6 +65,7 @@
 			"text-decoration",
 			"text-overflow",
 			"text-rendering",
+			"transform",
 			"transform-origin",
 			"unicode-bidi",
 			"vector-effect",

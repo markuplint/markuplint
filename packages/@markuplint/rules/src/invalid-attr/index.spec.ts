@@ -392,6 +392,21 @@ test('svg', async () => {
 	]);
 });
 
+test('svg', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<svg>
+					<rect transform="translate(300px, 300px)" />
+				</svg>
+				`,
+				{ rule: true },
+			)
+		).violations,
+	).toStrictEqual([]);
+});
+
 test('Pug', async () => {
 	const { violations } = await mlRuleTest(rule, 'button(type=buttonType)', {
 		parser: {
