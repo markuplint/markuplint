@@ -144,7 +144,10 @@ export class MLCore {
 
 	private _createDocument() {
 		try {
-			this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, this.#filename);
+			this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, {
+				filename: this.#filename,
+				tagNameCaseSensitive: this.#parser.tagNameCaseSensitive,
+			});
 		} catch (err) {
 			if (err instanceof MLParseError) {
 				this.#document = err;

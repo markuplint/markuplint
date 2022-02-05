@@ -21,7 +21,11 @@ type SelectorUnmatched = {
 
 type TargetElement = MLDOMAbstractElement<any, any>;
 
-export function matchSelector(el: TargetElement, selector: string | RegexSelector | undefined): SelectorMatches {
+export function matchSelector(
+	el: TargetElement,
+	selector: string | RegexSelector | undefined,
+	tagNameCaseSensitive?: boolean,
+): SelectorMatches {
 	if (!selector) {
 		return {
 			matched: false,
@@ -29,7 +33,7 @@ export function matchSelector(el: TargetElement, selector: string | RegexSelecto
 	}
 
 	if (typeof selector === 'string') {
-		const sel = createSelector(selector);
+		const sel = createSelector(selector, tagNameCaseSensitive);
 		const specificity = sel.match(el);
 		if (specificity) {
 			return {

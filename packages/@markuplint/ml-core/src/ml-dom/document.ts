@@ -71,11 +71,14 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		ast: MLASTDocument,
 		ruleset: Ruleset,
 		schemas: readonly [MLMLSpec, ...ExtendedSpec[]],
-		filename?: string,
+		options?: {
+			filename?: string;
+			tagNameCaseSensitive?: boolean;
+		},
 	) {
 		this.isFragment = ast.isFragment;
 		this.specs = getSpec(schemas);
-		this.#filename = filename;
+		this.#filename = options?.filename;
 
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
 		this.nodeList = Object.freeze(
@@ -87,7 +90,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 			}),
 		);
 
-		this._ruleMapping(ruleset);
+		this._ruleMapping(ruleset, options?.tagNameCaseSensitive);
 	}
 
 	get doctype() {
@@ -191,7 +194,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		return nodeListToDebugMaps(this.nodeList, true);
 	}
 
-	private _ruleMapping(ruleset: Ruleset) {
+	private _ruleMapping(ruleset: Ruleset, tagNameCaseSensitive?: boolean) {
 		docLog('Rule Mapping');
 
 		const ruleMapper = new RuleMapper(this.nodeList);
@@ -247,7 +250,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 						: /**
 						   * v2.0.0 or later
 						   */
-						  matchSelector(selectorTarget, selector);
+						  matchSelector(selectorTarget, selector, tagNameCaseSensitive);
 
 				if (!matches.matched) {
 					return;
@@ -304,7 +307,7 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 						return;
 					}
 
-					const matches = matchSelector(selectorTarget, selector);
+					const matches = matchSelector(selectorTarget, selector, tagNameCaseSensitive);
 					if (!matches.matched) {
 						return;
 					}
