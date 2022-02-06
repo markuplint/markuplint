@@ -17,6 +17,7 @@
 				"OPTIONAL_PROP": "CHANGED_OPTIONAL_VALUE"
 			}
 		},
+		"rule__custom-setting2": false,
 		"additional_rule": {
 			"value": "VALUE"
 		}
