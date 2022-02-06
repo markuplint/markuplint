@@ -402,6 +402,10 @@
 					"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-onabort",
 					"type": "FunctionBody"
 				},
+				"onbeforeinput": {
+					"ref": "https://w3c.github.io/uievents/#beforeinput",
+					"type": "FunctionBody"
+				},
 				"onblur": {
 					"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-onabort",
 					"type": "FunctionBody"
@@ -432,6 +436,18 @@
 				},
 				"oncontextlost": {
 					"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncontextlost",
+					"type": "FunctionBody"
+				},
+				"oncompositionstart": {
+					"ref": "https://w3c.github.io/uievents/#compositionstart",
+					"type": "FunctionBody"
+				},
+				"oncompositionupdate": {
+					"ref": "https://w3c.github.io/uievents/#compositionupdate",
+					"type": "FunctionBody"
+				},
+				"oncompositionend": {
+					"ref": "https://w3c.github.io/uievents/#compositionend",
 					"type": "FunctionBody"
 				},
 				"oncontextmenu": {
@@ -500,6 +516,14 @@
 				},
 				"onformdata": {
 					"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-onformdata",
+					"type": "FunctionBody"
+				},
+				"onfocusin": {
+					"ref": "https://w3c.github.io/uievents/#focusin",
+					"type": "FunctionBody"
+				},
+				"onfocusout": {
+					"ref": "https://w3c.github.io/uievents/#focusout",
 					"type": "FunctionBody"
 				},
 				"oninput": {
@@ -644,6 +668,10 @@
 				},
 				"onwaiting": {
 					"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-onwaiting",
+					"type": "FunctionBody"
+				},
+				"onunload": {
+					"ref": "https://w3c.github.io/uievents/#unload",
 					"type": "FunctionBody"
 				},
 				"onwheel": {
