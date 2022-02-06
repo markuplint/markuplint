@@ -63,6 +63,7 @@
 			"enum": [
 				"onabort",
 				"onauxclick",
+				"onbeforeinput",
 				"onblur",
 				"oncancel",
 				"oncanplay",
@@ -71,6 +72,9 @@
 				"onclick",
 				"onclose",
 				"oncontextlost",
+				"oncompositionstart",
+				"oncompositionupdate",
+				"oncompositionend",
 				"oncontextmenu",
 				"oncontextrestored",
 				"oncuechange",
@@ -88,6 +92,8 @@
 				"onerror",
 				"onfocus",
 				"onformdata",
+				"onfocusin",
+				"onfocusout",
 				"oninput",
 				"oninvalid",
 				"onkeydown",
@@ -128,6 +134,7 @@
 				"onwebkitanimationiteration",
 				"onwebkitanimationstart",
 				"onwebkittransitionend",
+				"onunload",
 				"onwheel"
 			]
 		},
@@ -384,11 +391,12 @@
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }
 		},
 		"#GlobalEventAttrs": {
-			"description": "[GlobalEventHandlers]( https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers )",
+			"description": "[GlobalEventHandlers]( https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers ) and [UIEvent]( https://w3c.github.io/uievents/#event-types-list )",
 			"type": "object",
 			"required": [
 				"onabort",
 				"onauxclick",
+				"onbeforeinput",
 				"onblur",
 				"oncancel",
 				"oncanplay",
@@ -397,6 +405,9 @@
 				"onclick",
 				"onclose",
 				"oncontextlost",
+				"oncompositionstart",
+				"oncompositionupdate",
+				"oncompositionend",
 				"oncontextmenu",
 				"oncontextrestored",
 				"oncuechange",
@@ -414,6 +425,8 @@
 				"onerror",
 				"onfocus",
 				"onformdata",
+				"onfocusin",
+				"onfocusout",
 				"oninput",
 				"oninvalid",
 				"onkeydown",
@@ -454,6 +467,7 @@
 				"onwebkitanimationiteration",
 				"onwebkitanimationstart",
 				"onwebkittransitionend",
+				"onunload",
 				"onwheel"
 			],
 			"propertyNames": { "$ref": "#/definitions/GlobalEventAttrs" },
