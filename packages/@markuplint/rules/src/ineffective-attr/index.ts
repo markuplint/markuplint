@@ -34,7 +34,7 @@ export default createRule({
 						line: attr.startLine,
 						col: attr.startCol,
 						message:
-							t('{0} is {1:c}', t('the "{0}" {1}', name, 'attribute'), 'ineffective') +
+							t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'ineffective') +
 							t('. ') +
 							t("It doesn't need {0}", t('the {0}', 'attribute')),
 					});

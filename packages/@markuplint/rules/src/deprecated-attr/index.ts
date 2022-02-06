@@ -18,7 +18,7 @@ export default createRule({
 				if (attrSpec.deprecated || attrSpec.obsolete) {
 					const message = t(
 						'{0} is {1:c}',
-						t('the "{0}" {1}', name.potential, 'attribute'),
+						t('the "{0*}" {1}', name.potential, 'attribute'),
 						attrSpec.obsolete ? 'obsolete' : 'deprecated',
 					);
 					report({

@@ -29,7 +29,7 @@ export default createRule<boolean, Options>({
 			}
 		});
 		if (h1Stack.length === 0) {
-			const message = t('Require {0}', t('the "{0}" {1}', 'h1', 'element'));
+			const message = t('Require {0}', t('the "{0*}" {1}', 'h1', 'element'));
 			report({
 				message,
 				line: 1,
@@ -37,7 +37,7 @@ export default createRule<boolean, Options>({
 				raw: document.nodeList[0].raw.slice(0, 1),
 			});
 		} else if (globalRule.option['expected-once'] && h1Stack.length > 1) {
-			const message = t('{0} is {1:c}', t('the "{0}" {1}', 'h1', 'element'), 'duplicated');
+			const message = t('{0} is {1:c}', t('the "{0*}" {1}', 'h1', 'element'), 'duplicated');
 			report({
 				message,
 				line: h1Stack[1].startLine,

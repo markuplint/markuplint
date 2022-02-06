@@ -35,7 +35,7 @@ export default createRule<boolean, Options>({
 						raw: attr.raw,
 						line: attr.startLine,
 						col: attr.startCol,
-						message: t('{0} is disallowed', t('the "{0}" {1}', name, 'attribute')),
+						message: t('{0} is disallowed', t('the "{0*}" {1}', name, 'attribute')),
 					});
 				}
 			});

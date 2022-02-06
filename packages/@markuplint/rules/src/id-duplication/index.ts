@@ -4,7 +4,7 @@ export default createRule({
 	async verify({ document, report, t }) {
 		const message = t(
 			'{0} is {1:c}',
-			t('{0} of {1}', t('the {0}', 'value'), t('the "{0}" {1}', 'id', 'attribute')),
+			t('{0} of {1}', t('the {0}', 'value'), t('the "{0*}" {1}', 'id', 'attribute')),
 			'duplicated',
 		);
 		const idStack: string[] = [];

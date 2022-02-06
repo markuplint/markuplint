@@ -43,7 +43,7 @@ export default createRule<boolean, Option>({
 
 				if (!node.isCustomElement && attr.attrType === 'html-attr' && attr.candidate) {
 					const message =
-						t('{0} is {1:c}', t('the "{0}" {1}', attrName.raw, 'attribute'), 'disallowed') +
+						t('{0} is {1:c}', t('the "{0*}" {1}', attrName.raw, 'attribute'), 'disallowed') +
 						t('. ') +
 						t('Did you mean "{0}"?', attr.candidate);
 					report({
@@ -87,7 +87,7 @@ export default createRule<boolean, Option>({
 
 								message: t(
 									'{0} is unmatched with the below patterns: {1}',
-									t('the "{0}" {1}', name, 'attribute'),
+									t('the "{0*}" {1}', name, 'attribute'),
 									customRule.pattern,
 								),
 							};
@@ -97,7 +97,7 @@ export default createRule<boolean, Option>({
 					} else if ('disallowed' in customRule && customRule.disallowed) {
 						invalid = {
 							invalidType: 'non-existent',
-							message: t('{0} is disallowed', t('the "{0}" {1}', name, 'attribute')),
+							message: t('{0} is disallowed', t('the "{0*}" {1}', name, 'attribute')),
 						};
 					}
 				} else if (!node.isCustomElement && attrSpecs) {

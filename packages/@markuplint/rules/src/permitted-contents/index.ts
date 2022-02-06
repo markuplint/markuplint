@@ -44,8 +44,8 @@ export default createRule<TagRule[], Options>({
 						scope: node,
 						message: t(
 							'{0} must be {1}',
-							t('the "{0}" {1}', node.nodeName, 'element'),
-							t('{0} of {1}', 'descendant', t('the "{0}" {1}', spec.ancestor, 'element')),
+							t('the "{0*}" {1}', node.nodeName, 'element'),
+							t('{0} of {1}', 'descendant', t('the "{0*}" {1}', spec.ancestor, 'element')),
 						),
 					});
 					return;
@@ -73,7 +73,7 @@ export default createRule<TagRule[], Options>({
 										t(
 											'{0} of {1}',
 											t('the {0}', 'content'),
-											t('the "{0}" {1}', node.nodeName, 'element'),
+											t('the "{0*}" {1}', node.nodeName, 'element'),
 										),
 										'invalid',
 									);
@@ -109,7 +109,7 @@ export default createRule<TagRule[], Options>({
 						if (!specResult) {
 							const message = t(
 								'{0} is {1:c}',
-								t('{0} of {1}', t('the {0}', 'content'), t('the "{0}" {1}', node.nodeName, 'element')),
+								t('{0} of {1}', t('the {0}', 'content'), t('the "{0*}" {1}', node.nodeName, 'element')),
 								'invalid',
 							);
 							report({
@@ -147,7 +147,7 @@ export default createRule<TagRule[], Options>({
 							scope: node,
 							message: t(
 								'{0} is {1:c}',
-								t('{0} of {1}', t('the {0}', 'content'), t('the "{0}" {1}', node.nodeName, 'element')),
+								t('{0} of {1}', t('the {0}', 'content'), t('the "{0*}" {1}', node.nodeName, 'element')),
 								'invalid',
 							),
 							line: node.startLine,
