@@ -72,6 +72,9 @@ export default createRule<boolean, Option>({
 				const customRule = node.rule.option.attrs ? node.rule.option.attrs[name] : null;
 
 				if (customRule) {
+					if (attr.attrType === 'html-attr' && attr.isDynamicValue) {
+						continue;
+					}
 					if ('enum' in customRule) {
 						invalid = attrCheck(t, name.toLowerCase(), value, true, {
 							name,

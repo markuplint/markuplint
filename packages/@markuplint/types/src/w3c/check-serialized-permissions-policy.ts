@@ -17,6 +17,14 @@ import { TokenCollection } from '../token';
  * > allow-list = allow-list-value *(RWS allow-list-value)
  * > allow-list-value = serialized-origin / "*" / "'self'" / "'src'" / "'none'"
  * > ```
+ *
+ * But change below according to current supported:
+ *
+ * ```abnf
+ * serialized-policy-directive = feature-identifier [RWS allow-list]
+ * ```
+ *
+ * `allow-list` is optional.
  */
 export const checkSerializedPermissionsPolicy: CustomSyntaxChecker = () => value => {
 	const res = _checkSerializedPermissionsPolicy(value);
@@ -99,17 +107,19 @@ function _checkSerializedPermissionsPolicy(value: string) {
 		}
 
 		if (!rws || !rws.value) {
-			return unmatched('', 'missing-token', {
-				expects: [{ type: 'common', value: 'whitespace' }],
-				partName: 'directive',
-			});
+			// return unmatched('', 'missing-token', {
+			// 	expects: [{ type: 'common', value: 'whitespace' }],
+			// 	partName: 'directive',
+			// });
+			continue;
 		}
 
 		if (!allowListValue || !allowListValue.value) {
-			return unmatched('', 'missing-token', {
-				expects: [{ type: 'common', value: 'allow-list' }],
-				partName: 'allow-list',
-			});
+			// return unmatched('', 'missing-token', {
+			// 	expects: [{ type: 'common', value: 'allow-list' }],
+			// 	partName: 'allow-list',
+			// });
+			continue;
 		}
 
 		const allowListPatterns = [

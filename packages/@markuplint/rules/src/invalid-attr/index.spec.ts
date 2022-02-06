@@ -753,6 +753,38 @@ test('React spec', async () => {
 	]);
 });
 
+test('React: a custom rule and a mutable attribute', async () => {
+	const { violations } = await mlRuleTest(rule, '<a href={href} target={target} invalidAttr={invalidAttr} />', {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
+		},
+		nodeRule: [
+			{
+				selector: 'a',
+				rule: {
+					option: {
+						attrs: {
+							href: {
+								enum: ['https://markuplint.dev'],
+							},
+						},
+					},
+				},
+			},
+		],
+	});
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: 'The "invalidAttr" attribute is disallowed',
+			raw: 'invalidAttr',
+		},
+	]);
+});
+
 test('regexSelector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
