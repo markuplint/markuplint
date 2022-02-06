@@ -41,10 +41,11 @@ export const globalAttrs: Record<
 	},
 	'#GlobalEventAttrs': {
 		description:
-			'[GlobalEventHandlers]( https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers )',
+			'[GlobalEventHandlers]( https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers ) and [UIEvent]( https://w3c.github.io/uievents/#event-types-list )',
 		attrs: [
 			'onabort',
 			'onauxclick',
+			'onbeforeinput', // UI Events
 			'onblur',
 			'oncancel',
 			'oncanplay',
@@ -53,6 +54,9 @@ export const globalAttrs: Record<
 			'onclick',
 			'onclose',
 			'oncontextlost',
+			'oncompositionstart', // UI Events
+			'oncompositionupdate', // UI Events
+			'oncompositionend', // UI Events
 			'oncontextmenu',
 			'oncontextrestored',
 			'oncuechange',
@@ -70,6 +74,8 @@ export const globalAttrs: Record<
 			'onerror',
 			'onfocus',
 			'onformdata',
+			'onfocusin', // UI Events
+			'onfocusout', // UI Events
 			'oninput',
 			'oninvalid',
 			'onkeydown',
@@ -110,6 +116,7 @@ export const globalAttrs: Record<
 			'onwebkitanimationiteration',
 			'onwebkitanimationstart',
 			'onwebkittransitionend',
+			'onunload', // UI Events
 			'onwheel',
 		],
 	},

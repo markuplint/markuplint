@@ -998,17 +998,17 @@ export type ExtendedType =
 	| '<key-splines>'
 	| '<key-times>'
 	| '<system-language>'
-	| '<list-of-lengths>'
-	| '<list-of-numbers>'
-	| '<number-optional-number>'
 	| '<origin>'
 	| '<svg-path>'
-	| '<list-of-percentages>'
 	| '<points>'
 	| '<preserve-aspect-ratio>'
 	| '<view-box>'
 	| '<rotate>'
-	| '<text-coordinate>';
+	| '<text-coordinate>'
+	| '<list-of-lengths>'
+	| '<list-of-numbers>'
+	| '<list-of-percentages>'
+	| '<number-optional-number>';
 export type HtmlAttrRequirement = 'Boolean';
 
 export interface TypesSchema {
