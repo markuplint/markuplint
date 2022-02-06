@@ -88,8 +88,8 @@ export default createRule<RequiredAttributes>({
 				if (invalid) {
 					const message = t(
 						'{0} expects {1}',
-						t('the "{0}" {1}', node.nodeName, 'element'),
-						t('the "{0}" {1}', spec.name, 'attribute'),
+						t('the "{0*}" {1}', node.nodeName, 'element'),
+						t('the "{0*}" {1}', spec.name, 'attribute'),
 					);
 					report({
 						scope: node,
@@ -103,7 +103,7 @@ export default createRule<RequiredAttributes>({
 					const matched = spec.values.some(pattern => match(value, pattern));
 					if (!matched) {
 						const expects = spec.values.length === 1 ? t(spec.values) : t('either {0}', t(spec.values));
-						const message = t('{0} expects {1}', t('the "{0}" {1}', spec.name, 'attribute'), expects);
+						const message = t('{0} expects {1}', t('the "{0*}" {1}', spec.name, 'attribute'), expects);
 						const attrToken = node.getAttributeToken(spec.name);
 						const valueToken = attrToken[0]?.attrType === 'html-attr' ? attrToken[0].value : null;
 						const token = valueToken || attrToken[0];

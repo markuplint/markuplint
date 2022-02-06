@@ -50,7 +50,7 @@ export function attrCheck(
 		log('The "%s" attribute DOES\'NT EXIST in the spec', name);
 		return {
 			invalidType: 'non-existent',
-			message: t('{0} is {1:c}', t('the "{0}" {1}', name, 'attribute'), 'disallowed'),
+			message: t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed'),
 		};
 	}
 
@@ -60,7 +60,7 @@ export function attrCheck(
 		return {
 			invalidType: 'non-existent',
 			message:
-				t('{0} is {1:c}', t('the "{0}" {1}', name, 'attribute'), 'disallowed') +
+				t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed') +
 				t('. ') +
 				t('Did you mean "{0*}"?', spec.name),
 		};

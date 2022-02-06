@@ -54,7 +54,7 @@ export default createRule<boolean, Options>({
 						message:
 							t(
 								'{0} according to {1}',
-								t('{0} does not exist', t('the "{0}" {1}', value, 'role')),
+								t('{0} does not exist', t('the "{0*}" {1}', value, 'role')),
 								'the WAI-ARIA specification',
 							) + `This "${value}" role does not exist in WAI-ARIA.`,
 						line: roleAttr.startLine,
@@ -65,7 +65,7 @@ export default createRule<boolean, Options>({
 					// the abstract role
 					report({
 						scope: node,
-						message: t('{0} is {1}', t('the "{0}" {1}', value, 'role'), 'the abstract role'),
+						message: t('{0} is {1}', t('the "{0*}" {1}', value, 'role'), 'the abstract role'),
 						line: roleAttr.startLine,
 						col: roleAttr.startCol,
 						raw: roleAttr.raw,
@@ -81,8 +81,8 @@ export default createRule<boolean, Options>({
 							scope: node,
 							message: t(
 								'{0} is {1}',
-								t('the "{0}" {1}', value, 'role'),
-								t('{0} of {1}', 'the implicit role', t('the "{0}" {1}', node.nodeName, 'element')),
+								t('the "{0*}" {1}', value, 'role'),
+								t('{0} of {1}', 'the implicit role', t('the "{0*}" {1}', node.nodeName, 'element')),
 							),
 							line: roleAttr.startLine,
 							col: roleAttr.startCol,
@@ -101,7 +101,11 @@ export default createRule<boolean, Options>({
 								'{0} according to {1}',
 								t(
 									'Cannot overwrite {0}',
-									t('{0} of {1}', t('the {0}', 'role'), t('the "{0}" {1}', node.nodeName, 'element')),
+									t(
+										'{0} of {1}',
+										t('the {0}', 'role'),
+										t('the "{0*}" {1}', node.nodeName, 'element'),
+									),
 								),
 								'ARIA in HTML specification',
 							),
@@ -116,8 +120,8 @@ export default createRule<boolean, Options>({
 								'{0} according to {1}',
 								t(
 									'Cannot overwrite {0} to {1}',
-									t('the "{0}" {1}', value, 'role'),
-									t('the "{0}" {1}', node.nodeName, 'element'),
+									t('the "{0*}" {1}', value, 'role'),
+									t('the "{0*}" {1}', node.nodeName, 'element'),
 								),
 								'ARIA in HTML specification',
 							),
@@ -146,10 +150,10 @@ export default createRule<boolean, Options>({
 											'{0:c} on {1}',
 											t(
 												'{0} is {1:c}',
-												t('the "{0}" {1}', attrName, 'ARIA state/property'),
+												t('the "{0*}" {1}', attrName, 'ARIA state/property'),
 												'deprecated',
 											),
-											t('the "{0}" {1}', role.name, 'role'),
+											t('the "{0*}" {1}', role.name, 'role'),
 										),
 										line: attr.startLine,
 										col: attr.startCol,
@@ -163,10 +167,10 @@ export default createRule<boolean, Options>({
 										'{0:c} on {1}',
 										t(
 											'{0} is {1:c}',
-											t('the "{0}" {1}', attrName, 'ARIA state/property'),
+											t('the "{0*}" {1}', attrName, 'ARIA state/property'),
 											'disallowed',
 										),
-										t('the "{0}" {1}', role.name, 'role'),
+										t('the "{0*}" {1}', role.name, 'role'),
 									),
 									line: attr.startLine,
 									col: attr.startCol,
@@ -189,8 +193,8 @@ export default createRule<boolean, Options>({
 									scope: node,
 									message: t(
 										'{0:c} on {1}',
-										t('Require {0}', t('the "{0}" {1}', requiredProp, 'ARIA state/property')),
-										t('the "{0}" {1}', role.name, 'role'),
+										t('Require {0}', t('the "{0*}" {1}', requiredProp, 'ARIA state/property')),
+										t('the "{0*}" {1}', role.name, 'role'),
 									),
 								});
 							}
@@ -209,7 +213,7 @@ export default createRule<boolean, Options>({
 								scope: node,
 								message: t(
 									'{0} is not {1}',
-									t('the "{0}" {1}', attrName, 'ARIA state/property'),
+									t('the "{0*}" {1}', attrName, 'ARIA state/property'),
 									'global state/property',
 								),
 								line: attr.startLine,
@@ -240,7 +244,7 @@ export default createRule<boolean, Options>({
 									t(
 										'{0:c} on {1}',
 										t('{0} is {1:c}', t('the "{0}"', value), 'disallowed'),
-										t('the "{0}" {1}', attrName, 'ARIA state/property'),
+										t('the "{0*}" {1}', attrName, 'ARIA state/property'),
 									) +
 									('enum' in result && result.enum.length
 										? t('. ') + t('Allowed values are: {0}', t(result.enum))
@@ -278,7 +282,7 @@ export default createRule<boolean, Options>({
 											scope: node,
 											message: t(
 												'{0} has {1}',
-												t('the "{0}" {1}', attrName, 'ARIA state/property'),
+												t('the "{0*}" {1}', attrName, 'ARIA state/property'),
 												t(
 													'the same {0} as {1}',
 													'semantics',
@@ -310,7 +314,7 @@ export default createRule<boolean, Options>({
 										scope: node,
 										message: t(
 											'{0} contradicts {1}',
-											t('the "{0}" {1}', attrName, 'ARIA state/property'),
+											t('the "{0*}" {1}', attrName, 'ARIA state/property'),
 											t('the current "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
 										),
 										line: attr.startLine,
@@ -323,7 +327,7 @@ export default createRule<boolean, Options>({
 											scope: node,
 											message: t(
 												'{0} contradicts {1}',
-												t('the "{0}" {1}', attrName, 'ARIA state/property'),
+												t('the "{0*}" {1}', attrName, 'ARIA state/property'),
 												t(
 													'the implicit "{0}" {1}',
 													equivalentHtmlAttr.htmlAttrName,

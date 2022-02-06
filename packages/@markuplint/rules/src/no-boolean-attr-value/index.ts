@@ -43,7 +43,7 @@ export default createRule({
 						line: attr.spacesBeforeEqual.startLine,
 						col: attr.spacesBeforeEqual.startCol,
 						message:
-							t('{0} is {1}', t('the "{0}" {1}', name, 'attribute'), t('a {0}', 'boolean attribute')) +
+							t('{0} is {1}', t('the "{0*}" {1}', name, 'attribute'), t('a {0}', 'boolean attribute')) +
 							t('. ') +
 							t("It doesn't need {0}", t('the {0}', 'value')),
 					});

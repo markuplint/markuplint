@@ -102,7 +102,7 @@ export function isValidAttr(
 	if (!invalid && spec && spec.condition && !node.hasSpreadAttr && !attrMatches(node, spec.condition)) {
 		invalid = {
 			invalidType: 'non-existent',
-			message: t('{0} is {1}', t('the "{0}" {1}', name, 'attribute'), 'disallowed'),
+			message: t('{0} is {1}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed'),
 		};
 	}
 	if (invalid && invalid.invalidType === 'invalid-value' && isDynamicValue) {

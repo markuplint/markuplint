@@ -29,7 +29,7 @@ export default createRule<Value>({
 							scope: node,
 							message: t(
 								'{0} is unmatched with the below patterns: {1}',
-								t('the "{0}" {1}', className, 'class name'),
+								t('the "{0*}" {1}', className, 'class name'),
 								`"${classPatterns.join('", "')}"`,
 							),
 							line: classAttr.line,

@@ -100,7 +100,7 @@ export default createRule<boolean, Options>({
 				if (el.isDescendantByUUIDList(uuidList)) {
 					report({
 						scope: el,
-						message: t('{0} should be {1}', t('the "{0}" {1}', role, 'role'), 'top level'),
+						message: t('{0} should be {1}', t('the "{0*}" {1}', role, 'role'), 'top level'),
 					});
 				}
 			}
