@@ -37,6 +37,10 @@ it('001 + 002', async () => {
 				value: 'VALUE',
 				option: { OPTIONAL_PROP: 'OPTIONAL_VALUE' },
 			},
+			'rule__custom-setting2': {
+				severity: 'error',
+				value: 'VALUE',
+			},
 		},
 		nodeRules: [
 			{
@@ -86,7 +90,7 @@ it('001 + 002 + 003', async () => {
 			path.resolve(testDir, '..', 'plugins', '001.js'),
 		],
 		rules: {
-			rule__enabled: true,
+			rule__enabled: false,
 			rule__disabled: true,
 			'rule__custom-setting': {
 				severity: 'error',
@@ -96,6 +100,7 @@ it('001 + 002 + 003', async () => {
 				value: 'VALUE',
 				option: { OPTIONAL_PROP: 'CHANGED_OPTIONAL_VALUE' },
 			},
+			'rule__custom-setting2': false,
 			additional_rule: {
 				value: 'VALUE',
 			},

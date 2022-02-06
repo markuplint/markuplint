@@ -150,16 +150,16 @@ function getName(item: any, comparePropName: string) {
 }
 
 function mergeRules(a: Nullable<Rules>, b: Nullable<Rules>): Rules | undefined {
-	if (!a) {
+	if (a == null) {
 		return b || undefined;
 	}
-	if (!b) {
+	if (b == null) {
 		return a || undefined;
 	}
 	const res = { ...a };
 	for (const [key, rule] of Object.entries(b)) {
 		const merged = mergeRule(res[key], rule);
-		if (merged) {
+		if (merged != null) {
 			res[key] = merged;
 		}
 	}

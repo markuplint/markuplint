@@ -24,6 +24,10 @@
 			"option": {
 				"OPTIONAL_PROP": "OPTIONAL_VALUE"
 			}
+		},
+		"rule__custom-setting2": {
+			"severity": "error",
+			"value": "VALUE"
 		}
 	},
 	"nodeRules": [
