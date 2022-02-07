@@ -127,6 +127,7 @@ const defaultRules: Record<
 };
 
 const extRExp = {
+	jsx: '\\.[jt]sx?$',
 	vue: '\\.vue$',
 	svelte: '\\.svelte$',
 	pug: '\\.pug$',
@@ -164,14 +165,8 @@ export async function initialize() {
 
 	const customize = await confirm('Do you customize rules?');
 
-	if (langs && langs.length) {
-		config.parser = {};
-	}
-
 	for (const lang of langs) {
-		if (!config.parser) {
-			continue;
-		}
+		config.parser = config.parser || {};
 		// @ts-ignore
 		const ext: string | undefined = extRExp[lang];
 		if (!ext) {
