@@ -104,6 +104,21 @@ test('Vue', async () => {
 	]);
 });
 
+test('Vue (exception)', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<template><div class="foo" v-bind:class="bar" style="a: b;" :style="{c: d}" /></template>',
+		{
+			rule: true,
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+		},
+	);
+
+	expect(violations.length).toBe(0);
+});
+
 test('React', async () => {
 	const { violations } = await mlRuleTest(rule, '<div tabindex tabIndex />', {
 		rule: true,
