@@ -6,6 +6,7 @@ import util from 'util';
 
 import { mergeConfig } from '@markuplint/ml-config';
 
+import { head, write, error } from '../../util';
 import { confirm, confirmSequence, multiSelect } from '../prompt';
 
 import { installModule } from './install-module';
@@ -143,7 +144,7 @@ const extRExp = {
 export async function initialize() {
 	let config: Config = {};
 
-	write('markuplit initialization');
+	write(head('Initialization'));
 	write.break();
 
 	const langs = await multiSelect({
@@ -255,15 +256,3 @@ export async function initialize() {
 		}
 	}
 }
-
-function write(message: string) {
-	process.stdout.write(message + '\n');
-}
-
-write.break = () => process.stdout.write('\n');
-
-function error(message: string) {
-	process.stderr.write(message + '\n');
-}
-
-error.exit = () => process.exit(1);
