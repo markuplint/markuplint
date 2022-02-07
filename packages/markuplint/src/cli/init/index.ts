@@ -220,11 +220,17 @@ export async function initialize() {
 			}
 		}
 	} else {
-		config.rules = {};
-		const ruleNames = Object.keys(defaultRules);
-		for (const ruleName of ruleNames) {
-			const rule = defaultRules[ruleName];
-			config.rules[ruleName] = rule.default;
+		const recommended = await confirm('Does it import the recommended config?');
+
+		if (recommended) {
+			config.extends = [...(config.extends || []), 'markuplint:recommended'];
+		} else {
+			config.rules = {};
+			const ruleNames = Object.keys(defaultRules);
+			for (const ruleName of ruleNames) {
+				const rule = defaultRules[ruleName];
+				config.rules[ruleName] = rule.default;
+			}
 		}
 	}
 
