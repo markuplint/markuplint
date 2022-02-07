@@ -10,7 +10,7 @@ export default createRule({
 			}
 
 			for (const attr of el.attributes) {
-				if (attr.attrType === 'ps-attr') {
+				if (attr.attrType === 'ps-attr' || attr.isDynamicValue) {
 					continue;
 				}
 
