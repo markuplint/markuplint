@@ -1,10 +1,11 @@
+import specs from '@markuplint/html-spec';
 import { createTestElement } from '@markuplint/ml-core';
 
 import { checkAria, checkAriaValue, getComputedRole, getImplicitRole, getPermittedRoles, getRoleSpec } from './helpers';
 
 describe('getRoleSpec', () => {
 	test('the button role', () => {
-		const role = getRoleSpec('button')!;
+		const role = getRoleSpec(specs, 'button')!;
 		const superClassRoles = role.superClassRoles.map(r => r.name);
 		expect(role.statesAndProps.map(p => p.name + (p.deprecated ? ':deprecated' : ''))).toStrictEqual([
 			'aria-atomic',
@@ -36,7 +37,7 @@ describe('getRoleSpec', () => {
 	});
 
 	test('the roletype role', () => {
-		const role = getRoleSpec('roletype')!;
+		const role = getRoleSpec(specs, 'roletype')!;
 		const superClassRoles = role.superClassRoles.map(r => r.name);
 		expect(role.statesAndProps.map(p => p.name + (p.deprecated ? ':deprecated' : ''))).toStrictEqual([
 			'aria-atomic',
@@ -68,8 +69,8 @@ describe('getRoleSpec', () => {
 
 describe('getPermittedRoles', () => {
 	test('the a element', async () => {
-		expect(getPermittedRoles(createTestElement('<a></a>')!)).toBe(true);
-		expect(getPermittedRoles(createTestElement('<a href="path/to"></a>')!)).toStrictEqual([
+		expect(getPermittedRoles(specs, createTestElement('<a></a>')!)).toBe(true);
+		expect(getPermittedRoles(specs, createTestElement('<a href="path/to"></a>')!)).toStrictEqual([
 			'link',
 			'button',
 			'checkbox',
@@ -85,19 +86,19 @@ describe('getPermittedRoles', () => {
 	});
 
 	test('the area element', async () => {
-		expect(getPermittedRoles(createTestElement('<area></area>')!)).toBe(false);
-		expect(getPermittedRoles(createTestElement('<area href="path/to"></area>')!)).toStrictEqual(['link']);
+		expect(getPermittedRoles(specs, createTestElement('<area></area>')!)).toBe(false);
+		expect(getPermittedRoles(specs, createTestElement('<area href="path/to"></area>')!)).toStrictEqual(['link']);
 	});
 
 	test('the figure element', async () => {
-		expect(getPermittedRoles(createTestElement('<figure></figure>')!)).toStrictEqual(['figure']);
-		expect(getPermittedRoles(createTestElement('<figure><figcaption></figcaption></figure>')!)).toBe(true);
+		expect(getPermittedRoles(specs, createTestElement('<figure></figure>')!)).toStrictEqual(['figure']);
+		expect(getPermittedRoles(specs, createTestElement('<figure><figcaption></figcaption></figure>')!)).toBe(true);
 	});
 
 	test('the img element', async () => {
-		expect(getPermittedRoles(createTestElement('<img>')!)).toStrictEqual(['img']);
-		expect(getPermittedRoles(createTestElement('<img alt="">')!)).toStrictEqual(['none', 'presentation']);
-		expect(getPermittedRoles(createTestElement('<img alt="photo: something">')!)).toStrictEqual([
+		expect(getPermittedRoles(specs, createTestElement('<img>')!)).toStrictEqual(['img']);
+		expect(getPermittedRoles(specs, createTestElement('<img alt="">')!)).toStrictEqual(['none', 'presentation']);
+		expect(getPermittedRoles(specs, createTestElement('<img alt="photo: something">')!)).toStrictEqual([
 			'img',
 			'button',
 			'checkbox',
@@ -117,8 +118,8 @@ describe('getPermittedRoles', () => {
 	});
 
 	test('the input element', async () => {
-		expect(getPermittedRoles(createTestElement('<input>')!)).toBe(false);
-		expect(getPermittedRoles(createTestElement('<input type="button">')!)).toStrictEqual([
+		expect(getPermittedRoles(specs, createTestElement('<input>')!)).toBe(false);
+		expect(getPermittedRoles(specs, createTestElement('<input type="button">')!)).toStrictEqual([
 			'button',
 			'link',
 			'menuitem',
@@ -129,60 +130,59 @@ describe('getPermittedRoles', () => {
 			'switch',
 			'tab',
 		]);
-		expect(getPermittedRoles(createTestElement('<input type="checkbox" aria-pressed="true">')!)).toStrictEqual([
-			'checkbox',
-			'button',
-		]);
+		expect(
+			getPermittedRoles(specs, createTestElement('<input type="checkbox" aria-pressed="true">')!),
+		).toStrictEqual(['checkbox', 'button']);
 	});
 });
 
 describe('getImplicitRole', () => {
 	test('the a element', async () => {
-		expect(getImplicitRole(createTestElement('<a></a>')!)).toBe(false);
-		expect(getImplicitRole(createTestElement('<a name="foo"></a>')!)).toBe(false);
-		expect(getImplicitRole(createTestElement('<a href></a>')!)).toBe('link');
-		expect(getImplicitRole(createTestElement('<a href=""></a>')!)).toBe('link');
-		expect(getImplicitRole(createTestElement('<a href="path/to"></a>')!)).toBe('link');
+		expect(getImplicitRole(specs, createTestElement('<a></a>')!)).toBe(false);
+		expect(getImplicitRole(specs, createTestElement('<a name="foo"></a>')!)).toBe(false);
+		expect(getImplicitRole(specs, createTestElement('<a href></a>')!)).toBe('link');
+		expect(getImplicitRole(specs, createTestElement('<a href=""></a>')!)).toBe('link');
+		expect(getImplicitRole(specs, createTestElement('<a href="path/to"></a>')!)).toBe('link');
 	});
 
 	test('the area element', async () => {
-		expect(getImplicitRole(createTestElement('<area />')!)).toBe(false);
-		expect(getImplicitRole(createTestElement('<area shape="rect" />')!)).toBe(false);
-		expect(getImplicitRole(createTestElement('<area href />')!)).toBe('link');
-		expect(getImplicitRole(createTestElement('<area href="" />')!)).toBe('link');
-		expect(getImplicitRole(createTestElement('<area href="path/to" />')!)).toBe('link');
+		expect(getImplicitRole(specs, createTestElement('<area />')!)).toBe(false);
+		expect(getImplicitRole(specs, createTestElement('<area shape="rect" />')!)).toBe(false);
+		expect(getImplicitRole(specs, createTestElement('<area href />')!)).toBe('link');
+		expect(getImplicitRole(specs, createTestElement('<area href="" />')!)).toBe('link');
+		expect(getImplicitRole(specs, createTestElement('<area href="path/to" />')!)).toBe('link');
 	});
 
 	test('the article element', async () => {
-		expect(getImplicitRole(createTestElement('<article></article>')!)).toBe('article');
+		expect(getImplicitRole(specs, createTestElement('<article></article>')!)).toBe('article');
 	});
 
 	test('the aside element', async () => {
-		expect(getImplicitRole(createTestElement('<aside></aside>')!)).toBe('complementary');
+		expect(getImplicitRole(specs, createTestElement('<aside></aside>')!)).toBe('complementary');
 	});
 
 	test('the audio element', async () => {
-		expect(getImplicitRole(createTestElement('<audio></audio>')!)).toBe(false);
+		expect(getImplicitRole(specs, createTestElement('<audio></audio>')!)).toBe(false);
 	});
 
 	test('the h1 element', async () => {
-		expect(getImplicitRole(createTestElement('<h1></h1>')!)).toBe('heading');
+		expect(getImplicitRole(specs, createTestElement('<h1></h1>')!)).toBe('heading');
 	});
 
 	test('the header element', async () => {
-		expect(getImplicitRole(createTestElement('<header></header>')!)).toBe('banner');
-		expect(getImplicitRole(createTestElement('<header><article></article></header>')!)).toBe(false);
-		expect(getImplicitRole(createTestElement('<header><div></div></header>')!)).toBe('banner');
-		expect(getImplicitRole(createTestElement('<header><div role="article"></div></header>')!)).toBe(false);
+		expect(getImplicitRole(specs, createTestElement('<header></header>')!)).toBe('banner');
+		expect(getImplicitRole(specs, createTestElement('<header><article></article></header>')!)).toBe(false);
+		expect(getImplicitRole(specs, createTestElement('<header><div></div></header>')!)).toBe('banner');
+		expect(getImplicitRole(specs, createTestElement('<header><div role="article"></div></header>')!)).toBe(false);
 	});
 });
 
 describe('getComputedRole', () => {
 	test('the a element', async () => {
-		expect(getComputedRole(createTestElement('<a></a>')!)).toBe(null);
-		expect(getComputedRole(createTestElement('<a href></a>')!)?.name).toBe('link');
-		expect(getComputedRole(createTestElement('<a role="button"></a>')!)?.name).toBe('button');
-		expect(getComputedRole(createTestElement('<a role="button" href></a>')!)?.name).toBe('button');
+		expect(getComputedRole(specs, createTestElement('<a></a>')!)).toBe(null);
+		expect(getComputedRole(specs, createTestElement('<a href></a>')!)?.name).toBe('link');
+		expect(getComputedRole(specs, createTestElement('<a role="button"></a>')!)?.name).toBe('button');
+		expect(getComputedRole(specs, createTestElement('<a role="button" href></a>')!)?.name).toBe('button');
 	});
 });
 
@@ -220,23 +220,23 @@ describe('checkAriaValue', () => {
 
 describe('checkAria', () => {
 	test('aria-activedescendant', () => {
-		expect(checkAria('aria-activedescendant', 'foo').isValid).toBe(true);
-		expect(checkAria('aria-activedescendant', '').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-activedescendant', 'foo').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-activedescendant', '').isValid).toBe(true);
 	});
 
 	test('aria-atomic', () => {
-		expect(checkAria('aria-atomic', '').isValid).toBe(false);
-		expect(checkAria('aria-atomic', 'true').isValid).toBe(true);
-		expect(checkAria('aria-atomic', 'false').isValid).toBe(true);
-		expect(checkAria('aria-atomic', 'undefined').isValid).toBe(false);
+		expect(checkAria(specs, 'aria-atomic', '').isValid).toBe(false);
+		expect(checkAria(specs, 'aria-atomic', 'true').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-atomic', 'false').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-atomic', 'undefined').isValid).toBe(false);
 	});
 
 	test('aria-autocomplete', () => {
-		expect(checkAria('aria-autocomplete', '').isValid).toBe(false);
-		expect(checkAria('aria-autocomplete', 'inline').isValid).toBe(true);
-		expect(checkAria('aria-autocomplete', 'list').isValid).toBe(true);
-		expect(checkAria('aria-autocomplete', 'both').isValid).toBe(true);
-		expect(checkAria('aria-autocomplete', 'none').isValid).toBe(true);
-		expect(checkAria('aria-autocomplete', 'foo').isValid).toBe(false);
+		expect(checkAria(specs, 'aria-autocomplete', '').isValid).toBe(false);
+		expect(checkAria(specs, 'aria-autocomplete', 'inline').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-autocomplete', 'list').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-autocomplete', 'both').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-autocomplete', 'none').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-autocomplete', 'foo').isValid).toBe(false);
 	});
 });

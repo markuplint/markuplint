@@ -1,3 +1,5 @@
+import specs from '@markuplint/html-spec';
+
 import { htmlSpec } from '../helpers';
 
 import ExpGenerator from './permitted-content.spec-to-regexp';
@@ -242,56 +244,56 @@ test('content model alias', () => {
 
 test('a', () => {
 	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec('a')!.permittedStructures.contents).source).toEqual(
+	expect(expGen.specToRegExp(htmlSpec(specs, 'a')!.permittedStructures.contents).source).toEqual(
 		'^(?<NAD_00__interactive___InTRANSPARENT>(?:(?<TRANSPARENT_01>(?:<[^>]+>)?))*)$',
 	);
 });
 
 test('audio', () => {
 	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec('audio')!.permittedStructures.contents).source).toEqual(
+	expect(expGen.specToRegExp(htmlSpec(specs, 'audio')!.permittedStructures.contents).source).toEqual(
 		'^(?<NAD_00_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01>(?:<[^>]+>)?))*)$',
 	);
 });
 
 test('head', () => {
 	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec('head')!.permittedStructures.contents).source).toEqual(
+	expect(expGen.specToRegExp(htmlSpec(specs, 'head')!.permittedStructures.contents).source).toEqual(
 		'^(?:<base>|<link>|<meta>|<noscript>|<script>|<style>|<template>)*<title>(?:<base>|<link>|<meta>|<noscript>|<script>|<style>|<template>)*$',
 	);
 });
 
 test('picture', () => {
 	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec('picture')!.permittedStructures.contents).source).toEqual(
+	expect(expGen.specToRegExp(htmlSpec(specs, 'picture')!.permittedStructures.contents).source).toEqual(
 		'^(?:<script>|<template>)*(?:<source>)*(?:<script>|<template>)*<img>(?:<script>|<template>)*$',
 	);
 });
 
 test('ruby', () => {
 	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec('ruby')!.permittedStructures.contents).source).toEqual(
+	expect(expGen.specToRegExp(htmlSpec(specs, 'ruby')!.permittedStructures.contents).source).toEqual(
 		'^(?<NAD_01_ruby>(?:(?:<[a-z](?:\\-|\\.|[0-9]|_|[a-z]|\u00B7|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u203F-\u2040]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\uD800-\uDBFF][\uDC00-\uDFFF])*\\-(?:\\-|\\.|[0-9]|_|[a-z]|\u00B7|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u203F-\u2040]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\uD800-\uDBFF][\uDC00-\uDFFF])*>)|<#text>|<a>|<abbr>|<area>|<audio>|<b>|<bdi>|<bdo>|<br>|<button>|<canvas>|<cite>|<code>|<data>|<datalist>|<del>|<dfn>|<em>|<embed>|<i>|<iframe>|<img>|<input>|<ins>|<kbd>|<label>|(?<ACM_00_phrasing_link><link>)|<map>|<mark>|<math>|(?<ACM_00_phrasing_meta><meta>)|<meter>|<noscript>|<object>|<output>|<picture>|<progress>|<q>|<ruby>|<s>|<samp>|<script>|<select>|<slot>|<small>|<span>|<strong>|<sub>|<sup>|<svg:svg>|<template>|<textarea>|<time>|<u>|<var>|<video>|<wbr>)(?:(?:<rt>)+|(?:<rp>(?:<rt><rp>)+)+))+$',
 	);
 });
 
 test('select', () => {
 	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec('select')!.permittedStructures.contents).source).toEqual(
+	expect(expGen.specToRegExp(htmlSpec(specs, 'select')!.permittedStructures.contents).source).toEqual(
 		'^(?:<option>|<optgroup>)*$',
 	);
 });
 
 test('summary', () => {
 	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec('summary')!.permittedStructures.contents).source).toEqual(
+	expect(expGen.specToRegExp(htmlSpec(specs, 'summary')!.permittedStructures.contents).source).toEqual(
 		'^(?:(?:(?:<[a-z](?:\\-|\\.|[0-9]|_|[a-z]|\u00B7|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u203F-\u2040]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\uD800-\uDBFF][\uDC00-\uDFFF])*\\-(?:\\-|\\.|[0-9]|_|[a-z]|\u00B7|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u203F-\u2040]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\uD800-\uDBFF][\uDC00-\uDFFF])*>)|<#text>|<a>|<abbr>|<area>|<audio>|<b>|<bdi>|<bdo>|<br>|<button>|<canvas>|<cite>|<code>|<data>|<datalist>|<del>|<dfn>|<em>|<embed>|<i>|<iframe>|<img>|<input>|<ins>|<kbd>|<label>|(?<ACM_00_phrasing_link><link>)|<map>|<mark>|<math>|(?<ACM_00_phrasing_meta><meta>)|<meter>|<noscript>|<object>|<output>|<picture>|<progress>|<q>|<ruby>|<s>|<samp>|<script>|<select>|<slot>|<small>|<span>|<strong>|<sub>|<sup>|<svg:svg>|<template>|<textarea>|<time>|<u>|<var>|<video>|<wbr>)*|(?:<h1>|<h2>|<h3>|<h4>|<h5>|<h6>|<hgroup>))$',
 	);
 });
 
 test('table', () => {
 	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec('table')!.permittedStructures.contents).source).toEqual(
+	expect(expGen.specToRegExp(htmlSpec(specs, 'table')!.permittedStructures.contents).source).toEqual(
 		'^(?:<script>|<template>)*(?:<caption>)?(?:<script>|<template>)*(?:<colgroup>)*(?:<script>|<template>)*(?:<thead>)?(?:<script>|<template>)*(?:(?:<tbody>)?|(?:<tr>)+)(?:<script>|<template>)*(?:<tfoot>)?(?:<script>|<template>)*$',
 	);
 });
@@ -300,8 +302,8 @@ test('audio in audio / Duplicate capture group name', () => {
 	const expGen = new ExpGenerator(0);
 	expect(
 		expGen.specToRegExp(
-			htmlSpec('audio')!.permittedStructures.contents,
-			expGen.specToRegExp(htmlSpec('audio')!.permittedStructures.contents),
+			htmlSpec(specs, 'audio')!.permittedStructures.contents,
+			expGen.specToRegExp(htmlSpec(specs, 'audio')!.permittedStructures.contents),
 		).source,
 	).toEqual(
 		'^(?<NAD_02_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_03>(?<NAD_00_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01>(?:<[^>]+>)?))*)))*)$',
@@ -310,7 +312,7 @@ test('audio in audio / Duplicate capture group name', () => {
 
 test('area / Ancestor', () => {
 	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec('table')!.permittedStructures.contents).source).toEqual(
+	expect(expGen.specToRegExp(htmlSpec(specs, 'table')!.permittedStructures.contents).source).toEqual(
 		'^(?:<script>|<template>)*(?:<caption>)?(?:<script>|<template>)*(?:<colgroup>)*(?:<script>|<template>)*(?:<thead>)?(?:<script>|<template>)*(?:(?:<tbody>)?|(?:<tr>)+)(?:<script>|<template>)*(?:<tfoot>)?(?:<script>|<template>)*$',
 	);
 });

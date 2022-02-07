@@ -4,7 +4,7 @@ import { ariaSpec } from '../helpers';
 
 export default createRule({
 	async verify({ document, report, t }) {
-		const { ariaAttrs } = ariaSpec();
+		const { ariaAttrs } = ariaSpec(document.specs);
 
 		const idList = new Set<string>();
 		let hasDynamicId = false;

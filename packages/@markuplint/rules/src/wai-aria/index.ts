@@ -32,8 +32,8 @@ export default createRule<boolean, Options>({
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', async node => {
 			const attrSpecs = getAttrSpecs(node.nameWithNS, document.specs);
-			const html = htmlSpec(node.nodeName);
-			const { roles, ariaAttrs } = ariaSpec();
+			const html = htmlSpec(document.specs, node.nodeName);
+			const { roles, ariaAttrs } = ariaSpec(document.specs);
 
 			if (!html || !attrSpecs) {
 				return;
@@ -74,7 +74,7 @@ export default createRule<boolean, Options>({
 
 				// Set the implicit role explicitly
 				if (node.rule.option.disallowSetImplicitRole) {
-					const implictRole = getImplicitRole(node);
+					const implictRole = getImplicitRole(document.specs, node);
 					if (implictRole && implictRole === value) {
 						// the implicit role
 						report({
@@ -93,7 +93,7 @@ export default createRule<boolean, Options>({
 
 				// Permitted ARIA Roles
 				if (node.rule.option.permittedAriaRoles) {
-					const permittedRoles = getPermittedRoles(node);
+					const permittedRoles = getPermittedRoles(document.specs, node);
 					if (permittedRoles === false) {
 						report({
 							scope: node,
@@ -133,9 +133,9 @@ export default createRule<boolean, Options>({
 				}
 			}
 
-			const computedRole = getComputedRole(node);
+			const computedRole = getComputedRole(document.specs, node);
 			if (computedRole) {
-				const role = getRoleSpec(computedRole.name);
+				const role = getRoleSpec(document.specs, computedRole.name);
 				if (role) {
 					// Checking aria-* on the role
 					for (const attr of node.attributes) {
@@ -203,7 +203,7 @@ export default createRule<boolean, Options>({
 				}
 			} else {
 				// No role element
-				const { ariaAttrs } = ariaSpec();
+				const { ariaAttrs } = ariaSpec(document.specs);
 				for (const attr of node.attributes) {
 					const attrName = attr.getName().potential.trim().toLowerCase();
 					if (/^aria-/i.test(attrName)) {
@@ -236,7 +236,7 @@ export default createRule<boolean, Options>({
 
 					// Checking ARIA Value
 					if (node.rule.option.checkingValue) {
-						const result = checkAria(attrName, value, computedRole?.name);
+						const result = checkAria(document.specs, attrName, value, computedRole?.name);
 						if (!result.isValid) {
 							report({
 								scope: node,

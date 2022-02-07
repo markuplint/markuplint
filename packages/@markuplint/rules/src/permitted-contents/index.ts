@@ -1,5 +1,5 @@
 import type { Element } from '@markuplint/ml-core';
-import type { ContentModel, PermittedStructuresSchema } from '@markuplint/ml-spec';
+import type { ContentModel, MLMLSpec, PermittedStructuresSchema } from '@markuplint/ml-spec';
 
 import { createRule } from '@markuplint/ml-core';
 
@@ -34,7 +34,7 @@ export default createRule<TagRule[], Options>({
 			const specType = node.ns === 'html' ? 'HTML' : node.ns === 'svg' ? 'SVG' : 'Any Language';
 
 			const childNodes = node.getChildElementsAndTextNodeWithoutWhitespaces();
-			const spec = !node.isCustomElement && htmlSpec(node.nameWithNS)?.permittedStructures;
+			const spec = !node.isCustomElement && htmlSpec(document.specs, node.nameWithNS)?.permittedStructures;
 
 			const expGen = new ExpGenerator(idCounter++);
 
@@ -64,7 +64,7 @@ export default createRule<TagRule[], Options>({
 						// console.log({ ...conditional, matched });
 						if (matched) {
 							try {
-								const parentExp = getRegExpFromParentNode(node, expGen);
+								const parentExp = getRegExpFromParentNode(document.specs, node, expGen);
 								const exp = expGen.specToRegExp(conditional.contents, parentExp, node.ns);
 								const conditionalResult = match(exp, childNodes, node.ns, false);
 								if (!conditionalResult) {
@@ -103,7 +103,7 @@ export default createRule<TagRule[], Options>({
 
 				if (!matched) {
 					try {
-						const exp = getRegExpFromNode(node, expGen);
+						const exp = getRegExpFromNode(document.specs, node, expGen);
 						const specResult = match(exp, childNodes, node.ns, false);
 
 						if (!specResult) {
@@ -136,7 +136,7 @@ export default createRule<TagRule[], Options>({
 					continue;
 				}
 
-				const parentExp = getRegExpFromParentNode(node, expGen);
+				const parentExp = getRegExpFromParentNode(document.specs, node, expGen);
 				try {
 					const exp = expGen.specToRegExp(rule.contents, parentExp, node.ns);
 					// Evaluate the custom element if the optional schema.
@@ -198,22 +198,23 @@ type El = {
 	ns?: string | null;
 };
 
-function getRegExpFromNode(node: El, expGen: ExpGenerator) {
+function getRegExpFromNode(specs: Readonly<MLMLSpec>, node: El, expGen: ExpGenerator) {
 	// console.log({ n: node.nodeName });
 	if (expMapOnNodeId.has(node.uuid)) {
 		return expMapOnNodeId.get(node.uuid)!;
 	}
-	const parentExp = node.parentNode ? getRegExpFromNode(node.parentNode, expGen) : null;
-	const spec = !node.isCustomElement && htmlSpec(node.nameWithNS || node.nodeName.toLowerCase())?.permittedStructures;
+	const parentExp = node.parentNode ? getRegExpFromNode(specs, node.parentNode, expGen) : null;
+	const spec =
+		!node.isCustomElement && htmlSpec(specs, node.nameWithNS || node.nodeName.toLowerCase())?.permittedStructures;
 	const contentRule = spec ? spec.contents : true;
 	const exp = expGen.specToRegExp(contentRule, parentExp, node.ns || null);
 	expMapOnNodeId.set(node.uuid, exp);
 	return exp;
 }
 
-function getRegExpFromParentNode(node: El, expGen: ExpGenerator) {
+function getRegExpFromParentNode(specs: Readonly<MLMLSpec>, node: El, expGen: ExpGenerator) {
 	// console.log({ p: node.nodeName });
-	const parentExp = node.parentNode ? getRegExpFromNode(node.parentNode, expGen) : null;
+	const parentExp = node.parentNode ? getRegExpFromNode(specs, node.parentNode, expGen) : null;
 	return parentExp;
 }
 

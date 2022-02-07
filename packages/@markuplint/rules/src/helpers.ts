@@ -1,9 +1,7 @@
 import type { Log } from './debug';
 import type { Translator } from '@markuplint/i18n';
 import type { Element, RuleConfigValue } from '@markuplint/ml-core';
-import type { ARIRRoleAttribute, Attribute, PermittedRoles } from '@markuplint/ml-spec';
-
-import { def, specs } from '@markuplint/html-spec';
+import type { ARIRRoleAttribute, Attribute, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
 
 import { attrCheck } from './attr-check';
 
@@ -81,8 +79,8 @@ export const rePCENChar = [
 	'[\uD800-\uDBFF][\uDC00-\uDFFF]',
 ].join('|');
 
-export function htmlSpec(nameWithNS: string) {
-	const spec = specs.find(spec => spec.name === nameWithNS);
+export function htmlSpec(specs: Readonly<MLMLSpec>, nameWithNS: string) {
+	const spec = specs.specs.find(spec => spec.name === nameWithNS);
 	return spec || null;
 }
 
@@ -142,21 +140,21 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 	return normalized;
 }
 
-export function ariaSpec() {
-	const roles = def['#roles'];
-	const ariaAttrs = def['#ariaAttrs'];
+export function ariaSpec(specs: Readonly<MLMLSpec>) {
+	const roles = specs.def['#roles'];
+	const ariaAttrs = specs.def['#ariaAttrs'];
 	return {
 		roles,
 		ariaAttrs,
 	};
 }
 
-export function getRoleSpec(roleName: string) {
-	const role = getRoleByName(roleName);
+export function getRoleSpec(specs: Readonly<MLMLSpec>, roleName: string) {
+	const role = getRoleByName(specs, roleName);
 	if (!role) {
 		return null;
 	}
-	const superClassRoles = recursiveTraverseSuperClassRoles(roleName);
+	const superClassRoles = recursiveTraverseSuperClassRoles(specs, roleName);
 	return {
 		name: role.name,
 		isAbstract: !!role.isAbstract,
@@ -165,28 +163,28 @@ export function getRoleSpec(roleName: string) {
 	};
 }
 
-function getRoleByName(roleName: string) {
-	const roles = def['#roles'];
+function getRoleByName(specs: Readonly<MLMLSpec>, roleName: string) {
+	const roles = specs.def['#roles'];
 	const role = roles.find(r => r.name === roleName);
 	return role;
 }
 
-function getSuperClassRoles(roleName: string) {
-	const role = getRoleByName(roleName);
+function getSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string) {
+	const role = getRoleByName(specs, roleName);
 	return (
 		role?.generalization
-			.map(roleName => getRoleByName(roleName))
+			.map(roleName => getRoleByName(specs, roleName))
 			.filter((role): role is ARIRRoleAttribute => !!role) || null
 	);
 }
 
-function recursiveTraverseSuperClassRoles(roleName: string) {
+function recursiveTraverseSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string) {
 	const roles: ARIRRoleAttribute[] = [];
-	const superClassRoles = getSuperClassRoles(roleName);
+	const superClassRoles = getSuperClassRoles(specs, roleName);
 	if (superClassRoles) {
 		roles.push(...superClassRoles);
 		for (const superClassRole of superClassRoles) {
-			const ancestorRoles = recursiveTraverseSuperClassRoles(superClassRole.name);
+			const ancestorRoles = recursiveTraverseSuperClassRoles(specs, superClassRole.name);
 			roles.push(...ancestorRoles);
 		}
 	}
@@ -200,9 +198,9 @@ function recursiveTraverseSuperClassRoles(roleName: string) {
  * - If `true`, this mean is "Any".
  * - If `false`, this mean is "No".
  */
-export function getPermittedRoles(el: Element<any, any>) {
-	const implicitRole = getImplicitRole(el);
-	const spec = htmlSpec(el.nodeName)?.permittedRoles;
+export function getPermittedRoles(specs: Readonly<MLMLSpec>, el: Element<any, any>) {
+	const implicitRole = getImplicitRole(specs, el);
+	const spec = htmlSpec(specs, el.nodeName)?.permittedRoles;
 	if (!spec) {
 		return true;
 	}
@@ -232,8 +230,8 @@ function mergeRoleList(implicitRole: string | false, permittedRoles: PermittedRo
 	return permittedRoles;
 }
 
-export function getImplicitRole(el: Element<any, any>) {
-	const implicitRole = htmlSpec(el.nodeName)?.implicitRole;
+export function getImplicitRole(specs: Readonly<MLMLSpec>, el: Element<any, any>) {
+	const implicitRole = htmlSpec(specs, el.nodeName)?.implicitRole;
 	if (!implicitRole) {
 		return false;
 	}
@@ -247,7 +245,7 @@ export function getImplicitRole(el: Element<any, any>) {
 	return implicitRole.role;
 }
 
-export function getComputedRole(el: Element<any, any>) {
+export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element<any, any>) {
 	const roleAttrTokens = el.getAttributeToken('role');
 	const roleAttr = roleAttrTokens[0];
 	if (roleAttr) {
@@ -257,7 +255,7 @@ export function getComputedRole(el: Element<any, any>) {
 			isImplicit: false,
 		};
 	}
-	const implicitRole = getImplicitRole(el);
+	const implicitRole = getImplicitRole(specs, el);
 	if (implicitRole) {
 		return {
 			name: implicitRole,
@@ -309,8 +307,8 @@ export function checkAriaValue(type: string, value: string, tokenEnum: string[])
 	return true;
 }
 
-export function checkAria(attrName: string, currentValue: string, role?: string) {
-	const ariaAttrs = def['#ariaAttrs'];
+export function checkAria(specs: Readonly<MLMLSpec>, attrName: string, currentValue: string, role?: string) {
+	const ariaAttrs = specs.def['#ariaAttrs'];
 	const aria = ariaAttrs.find(a => a.name === attrName);
 	if (!aria) {
 		return {
