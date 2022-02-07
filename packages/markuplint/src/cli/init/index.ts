@@ -47,55 +47,6 @@ const defaultRules: Record<
 		category: 'validation',
 		default: true,
 	},
-	'character-reference': {
-		category: 'validation',
-		default: true,
-	},
-	'deprecated-attr': {
-		category: 'validation',
-		default: true,
-	},
-	'deprecated-element': {
-		category: 'validation',
-		default: true,
-	},
-	doctype: {
-		category: 'validation',
-		default: true,
-	},
-	'id-duplication': {
-		category: 'validation',
-		default: true,
-	},
-	'permitted-contents': {
-		category: 'validation',
-		default: true,
-	},
-	'required-attr': {
-		category: 'validation',
-		default: true,
-	},
-	'invalid-attr': {
-		category: 'validation',
-		default: true,
-	},
-	'landmark-roles': {
-		category: 'a11y',
-		default: true,
-	},
-	'required-h1': {
-		category: 'a11y',
-		default: true,
-	},
-	'wai-aria': {
-		category: 'a11y',
-		default: true,
-	},
-	'class-naming': {
-		category: 'naming-convention',
-		default: false,
-		recommendedValue: '/.+/',
-	},
 	'attr-equal-space-after': {
 		category: 'style',
 		default: true,
@@ -116,14 +67,99 @@ const defaultRules: Record<
 		category: 'style',
 		default: true,
 	},
+	'case-sensitive-attr-value': {
+		category: 'style',
+		default: true,
+	},
 	'case-sensitive-tag-name': {
 		category: 'style',
+		default: true,
+	},
+	'character-reference': {
+		category: 'validation',
+		default: true,
+	},
+	'class-naming': {
+		category: 'naming-convention',
+		default: false,
+		recommendedValue: '/.+/',
+	},
+	'deprecated-attr': {
+		category: 'validation',
+		default: true,
+	},
+	'deprecated-element': {
+		category: 'validation',
+		default: true,
+	},
+	'disallowed-element': {
+		category: 'validation',
+		default: false,
+	},
+	doctype: {
+		category: 'validation',
+		default: true,
+	},
+	'id-duplication': {
+		category: 'validation',
 		default: true,
 	},
 	indentation: {
 		category: 'style',
 		default: false,
 		recommendedValue: 2,
+	},
+	'ineffective-attr': {
+		category: 'validation',
+		default: true,
+	},
+	'invalid-attr': {
+		category: 'validation',
+		default: true,
+	},
+	'landmark-roles': {
+		category: 'a11y',
+		default: true,
+	},
+	'no-boolean-attr-value': {
+		category: 'style',
+		default: true,
+	},
+	'no-default-value': {
+		category: 'style',
+		default: true,
+	},
+	'no-hard-code-id': {
+		category: 'style',
+		default: true,
+	},
+	'no-refer-to-non-existent-id': {
+		category: 'a11y',
+		default: true,
+	},
+	'no-use-event-handler-attr': {
+		category: 'style',
+		default: true,
+	},
+	'permitted-contents': {
+		category: 'validation',
+		default: true,
+	},
+	'required-attr': {
+		category: 'validation',
+		default: true,
+	},
+	'required-element': {
+		category: 'validation',
+		default: true,
+	},
+	'required-h1': {
+		category: 'a11y',
+		default: true,
+	},
+	'wai-aria': {
+		category: 'a11y',
+		default: true,
 	},
 };
 
