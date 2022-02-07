@@ -177,14 +177,14 @@ export async function initialize() {
 		if (lang === 'vue') {
 			config = mergeConfig(config, {
 				specs: {
-					'/\\.vue$/i': '@markuplint/vue-spec',
+					'\\.vue$': '@markuplint/vue-spec',
 				},
 			});
 		}
 		if (lang === 'jsx') {
 			config = mergeConfig(config, {
 				specs: {
-					'/\\.[jt]sx?$/i': '@markuplint/react-spec',
+					'\\.[jt]sx?$': '@markuplint/react-spec',
 				},
 			});
 		}
