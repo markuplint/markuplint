@@ -39,7 +39,7 @@ export default createRule({
 			}
 
 			for (const attr of el.attributes) {
-				if (attr.attrType !== 'html-attr') {
+				if (attr.attrType !== 'html-attr' || attr.isDynamicValue) {
 					continue;
 				}
 

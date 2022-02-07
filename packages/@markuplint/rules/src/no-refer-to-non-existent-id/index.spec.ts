@@ -61,6 +61,25 @@ test('td[headers] (Dynamic)', async () => {
 	expect(violations.length).toBe(0);
 });
 
+test('td[headers] (Dynamic)', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		`<table>
+  <tr>
+    <th id="a"></th>
+    <th id="b"></th>
+    <td headers={aandb}></td>
+  </tr>
+</table>`,
+		{
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+		},
+	);
+	expect(violations.length).toBe(0);
+});
+
 test('aria-describedby', async () => {
 	const { violations } = await mlRuleTest(rule, '<section aria-describedby="foo"></section>');
 	expect(violations).toStrictEqual([
