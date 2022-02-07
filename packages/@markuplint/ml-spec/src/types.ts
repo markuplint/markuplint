@@ -135,6 +135,16 @@ export type ElementSpec = {
 	 * Attributes
 	 */
 	attributes: Record<string, Attribute>;
+
+	/**
+	 * If true, it is possible to add any properties as attributes,
+	 * for example, when using a template engine or a view language.
+	 *
+	 * @see https://v2.vuejs.org/v2/guide/components-slots.html#Scoped-Slots
+	 *
+	 * **It assumes to specify it on the parser plugin.**
+	 */
+	possibleToAddProperties?: true;
 };
 
 /**
