@@ -3,10 +3,14 @@ import type { CreateRulePurpose, CreateRuleLanguage } from '@markuplint/create-r
 import { createRuleHelper } from '@markuplint/create-rule-helper';
 import c from 'cli-color';
 
+import { write, head } from '../../util';
 import { installModule } from '../init/install-module';
 import { input, select, confirm } from '../prompt';
 
 export async function createRule() {
+	write(head('Create a rule'));
+	write.break();
+
 	const purpose = await select<CreateRulePurpose>({
 		message: 'What purpose do you create the rule for?',
 		choices: [
@@ -57,5 +61,5 @@ function output(name: string, icon: string, title: string, path: string) {
 	const _marker = c.xterm(39)('✔') + ' ';
 	const _title = (icon: string, title: string) => `${icon} ` + c.bold(`${name}/${title}`);
 	const _file = (path: string) => ' ' + c.cyanBright(path);
-	process.stdout.write(_marker + _title(icon, title) + _file(path) + '\n');
+	write(_marker + _title(icon, title) + _file(path));
 }

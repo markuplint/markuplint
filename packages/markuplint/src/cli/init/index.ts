@@ -6,6 +6,7 @@ import util from 'util';
 
 import { mergeConfig } from '@markuplint/ml-config';
 
+import { head, write, error } from '../../util';
 import { confirm, confirmSequence, multiSelect } from '../prompt';
 
 import { installModule } from './install-module';
@@ -46,55 +47,6 @@ const defaultRules: Record<
 		category: 'validation',
 		default: true,
 	},
-	'character-reference': {
-		category: 'validation',
-		default: true,
-	},
-	'deprecated-attr': {
-		category: 'validation',
-		default: true,
-	},
-	'deprecated-element': {
-		category: 'validation',
-		default: true,
-	},
-	doctype: {
-		category: 'validation',
-		default: true,
-	},
-	'id-duplication': {
-		category: 'validation',
-		default: true,
-	},
-	'permitted-contents': {
-		category: 'validation',
-		default: true,
-	},
-	'required-attr': {
-		category: 'validation',
-		default: true,
-	},
-	'invalid-attr': {
-		category: 'validation',
-		default: true,
-	},
-	'landmark-roles': {
-		category: 'a11y',
-		default: true,
-	},
-	'required-h1': {
-		category: 'a11y',
-		default: true,
-	},
-	'wai-aria': {
-		category: 'a11y',
-		default: true,
-	},
-	'class-naming': {
-		category: 'naming-convention',
-		default: false,
-		recommendedValue: '/.+/',
-	},
 	'attr-equal-space-after': {
 		category: 'style',
 		default: true,
@@ -115,8 +67,41 @@ const defaultRules: Record<
 		category: 'style',
 		default: true,
 	},
+	'case-sensitive-attr-value': {
+		category: 'style',
+		default: true,
+	},
 	'case-sensitive-tag-name': {
 		category: 'style',
+		default: true,
+	},
+	'character-reference': {
+		category: 'validation',
+		default: true,
+	},
+	'class-naming': {
+		category: 'naming-convention',
+		default: false,
+		recommendedValue: '/.+/',
+	},
+	'deprecated-attr': {
+		category: 'validation',
+		default: true,
+	},
+	'deprecated-element': {
+		category: 'validation',
+		default: true,
+	},
+	'disallowed-element': {
+		category: 'validation',
+		default: false,
+	},
+	doctype: {
+		category: 'validation',
+		default: true,
+	},
+	'id-duplication': {
+		category: 'validation',
 		default: true,
 	},
 	indentation: {
@@ -124,11 +109,65 @@ const defaultRules: Record<
 		default: false,
 		recommendedValue: 2,
 	},
+	'ineffective-attr': {
+		category: 'validation',
+		default: true,
+	},
+	'invalid-attr': {
+		category: 'validation',
+		default: true,
+	},
+	'landmark-roles': {
+		category: 'a11y',
+		default: true,
+	},
+	'no-boolean-attr-value': {
+		category: 'style',
+		default: true,
+	},
+	'no-default-value': {
+		category: 'style',
+		default: true,
+	},
+	'no-hard-code-id': {
+		category: 'style',
+		default: true,
+	},
+	'no-refer-to-non-existent-id': {
+		category: 'a11y',
+		default: true,
+	},
+	'no-use-event-handler-attr': {
+		category: 'style',
+		default: true,
+	},
+	'permitted-contents': {
+		category: 'validation',
+		default: true,
+	},
+	'required-attr': {
+		category: 'validation',
+		default: true,
+	},
+	'required-element': {
+		category: 'validation',
+		default: true,
+	},
+	'required-h1': {
+		category: 'a11y',
+		default: true,
+	},
+	'wai-aria': {
+		category: 'a11y',
+		default: true,
+	},
 };
 
 const extRExp = {
+	jsx: '\\.[jt]sx?$',
 	vue: '\\.vue$',
 	svelte: '\\.svelte$',
+	astro: '\\.astro',
 	pug: '\\.pug$',
 	php: '\\.php$',
 	erb: '\\.erb$',
@@ -141,7 +180,7 @@ const extRExp = {
 export async function initialize() {
 	let config: Config = {};
 
-	write('markuplit initialization');
+	write(head('Initialization'));
 	write.break();
 
 	const langs = await multiSelect({
@@ -150,6 +189,7 @@ export async function initialize() {
 			{ name: 'React (JSX)', value: 'jsx' },
 			{ name: 'Vue', value: 'vue' },
 			{ name: 'Svelte', value: 'svelte' },
+			{ name: 'Astro', value: 'astro' },
 			{ name: 'Pug', value: 'pug' },
 			{ name: 'PHP', value: 'php' },
 			{ name: 'eRuby', value: 'erb' },
@@ -164,14 +204,8 @@ export async function initialize() {
 
 	const customize = await confirm('Do you customize rules?');
 
-	if (langs && langs.length) {
-		config.parser = {};
-	}
-
 	for (const lang of langs) {
-		if (!config.parser) {
-			continue;
-		}
+		config.parser = config.parser || {};
 		// @ts-ignore
 		const ext: string | undefined = extRExp[lang];
 		if (!ext) {
@@ -182,14 +216,14 @@ export async function initialize() {
 		if (lang === 'vue') {
 			config = mergeConfig(config, {
 				specs: {
-					'/\\.vue$/i': '@markuplint/vue-spec',
+					'\\.vue$': '@markuplint/vue-spec',
 				},
 			});
 		}
 		if (lang === 'jsx') {
 			config = mergeConfig(config, {
 				specs: {
-					'/\\.[jt]sx?$/i': '@markuplint/react-spec',
+					'\\.[jt]sx?$': '@markuplint/react-spec',
 				},
 			});
 		}
@@ -222,11 +256,17 @@ export async function initialize() {
 			}
 		}
 	} else {
-		config.rules = {};
-		const ruleNames = Object.keys(defaultRules);
-		for (const ruleName of ruleNames) {
-			const rule = defaultRules[ruleName];
-			config.rules[ruleName] = rule.default;
+		const recommended = await confirm('Does it import the recommended config?');
+
+		if (recommended) {
+			config.extends = [...(config.extends || []), 'markuplint:recommended'];
+		} else {
+			config.rules = {};
+			const ruleNames = Object.keys(defaultRules);
+			for (const ruleName of ruleNames) {
+				const rule = defaultRules[ruleName];
+				config.rules[ruleName] = rule.default;
+			}
 		}
 	}
 
@@ -258,15 +298,3 @@ export async function initialize() {
 		}
 	}
 }
-
-function write(message: string) {
-	process.stdout.write(message + '\n');
-}
-
-write.break = () => process.stdout.write('\n');
-
-function error(message: string) {
-	process.stderr.write(message + '\n');
-}
-
-error.exit = () => process.exit(1);

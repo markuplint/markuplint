@@ -3,7 +3,7 @@ import type { MLResultInfo } from '../types';
 
 import c from 'cli-color';
 
-import { markuplint, messageToString, p, w } from './utils';
+import { markuplint, messageToString, p, w } from '../util';
 
 const loggerError = c.red;
 const loggerWarning = c.xterm(208);
