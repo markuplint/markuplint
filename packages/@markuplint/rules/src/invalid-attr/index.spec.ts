@@ -482,6 +482,24 @@ test('Vue iterator', async () => {
 	expect(violations2.length).toBe(0);
 });
 
+test('Vue slot', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<template><div><slot v-bind:foo="foo">{{ foo.bar }}</slot></div></template>',
+		{
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+			specs: {
+				'.*': '@markuplint/vue-spec',
+			},
+			rule: true,
+		},
+	);
+
+	expect(violations.length).toBe(0);
+});
+
 test('React Component', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
