@@ -132,12 +132,15 @@
 		{
 			"selector": ":where(a[target=_blank], area[target=_blank])",
 			"rules": {
-				"required-attr": [
-					{
-						"name": "rel",
-						"value": "noreferrer"
-					}
-				]
+				"required-attr": {
+					"value": [
+						{
+							"name": "rel",
+							"value": "/(?<![^\\s]+)noreferrer(?![^\\s]+)/"
+						}
+					],
+					"reason": "The \"rel\" attribute should be required with \"noreferrer\" if the \"a\" element has the \"target=_black\""
+				}
 			}
 		},
 		{

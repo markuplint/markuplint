@@ -249,6 +249,27 @@ test('with value requirement (regex)', async () => {
 			raw: './path/to',
 		},
 	]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<a rel="noreferrer noopener">link</a><a rel="noreferrernoopener">link2</a>', {
+				rule: [
+					{
+						name: 'rel',
+						value: '/(?<![^\\s]+)noreferrer(?![^\\s]+)/',
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 46,
+			message: 'The "rel" attribute expects "/(?<![^\\s]+)noreferrer(?![^\\s]+)/"',
+			raw: 'noreferrernoopener',
+		},
+	]);
 });
 
 test('nodeRules', async () => {
