@@ -28,4 +28,11 @@ test('checkSerializedPermissionsPolicy', () => {
 	expect(check("a * https://markuplint.dev 'none';b ").matched).toBe(true); // Current supported
 	expect(check("a * https://markuplint.dev 'none';b *").matched).toBe(true);
 	expect(check("a * https://markuplint.dev 'none';b *;c 'none'").matched).toBe(true);
+	expect(check("a * https://markuplint.dev 'none'; b *; c 'none'").matched).toBe(true);
+});
+
+test('YouTube embed', () => {
+	expect(
+		check('accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture').matched,
+	).toBe(true);
 });

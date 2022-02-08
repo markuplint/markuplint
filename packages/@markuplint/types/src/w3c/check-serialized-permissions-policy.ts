@@ -64,7 +64,12 @@ function _checkSerializedPermissionsPolicy(value: string) {
 			return unmatched('', 'empty-token');
 		}
 
-		const [featureIdentifier, rws, allowListValue] = TokenCollection.fromPatterns(serializedPolicyDirective, [
+		const [aw, featureIdentifier, rws, allowListValue] = TokenCollection.fromPatterns(serializedPolicyDirective, [
+			/**
+			 * Any whitespace
+			 */
+			/\s*/,
+
 			/**
 			 * feature-identifier
 			 *
@@ -88,6 +93,7 @@ function _checkSerializedPermissionsPolicy(value: string) {
 		]);
 
 		log('Serialized Policy Directive: %s => %O', serializedPolicyDirective.value, {
+			aw,
 			featureIdentifier,
 			rws,
 			allowListValue,
