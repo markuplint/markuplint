@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/types",
-	"version": "2.0.0-rc.3",
+	"version": "2.0.0-rc.4",
 	"description": "Types of attributes and properties and more",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
