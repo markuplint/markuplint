@@ -4,7 +4,7 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 import { attrCheck } from '../attr-check';
 import { log as ruleLog } from '../debug';
-import { isValidAttr, match } from '../helpers';
+import { htmlSpec, isValidAttr, match } from '../helpers';
 
 const log = ruleLog.extend('invalid-attr');
 
@@ -129,6 +129,11 @@ export default createRule<boolean, Option>({
 							break;
 						}
 						case 'non-existent': {
+							const spec = htmlSpec(document.specs, node.nameWithNS);
+							if (spec?.possibleToAddProperties) {
+								continue;
+							}
+
 							report({
 								scope: node,
 								message: invalid.message,

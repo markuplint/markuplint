@@ -18,6 +18,12 @@ const spec: ExtendedSpec = {
 			},
 		},
 	},
+	specs: [
+		{
+			name: 'slot',
+			possibleToAddProperties: true,
+		},
+	],
 };
 
 export default spec;
