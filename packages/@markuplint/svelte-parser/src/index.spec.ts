@@ -5,12 +5,10 @@ import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-u
 import { parse } from './';
 
 describe('parser', () => {
-	test('parse error', () => {
-		const ast = parse('<div></div\nattr>');
-		expect(ast.parseError).toBe(`Expected > (2:0)
-1: <div></div
-2: attr>
-   ^`);
+	test('syntax error', () => {
+		expect(() => {
+			parse('<div></div\nattr>');
+		}).toThrow('Expected >\n1: <div></div\n2: attr>\n   ^');
 	});
 
 	test('standard', () => {

@@ -86,7 +86,7 @@ describe('basic test', () => {
 		expect(violations).toEqual([
 			{
 				severity: 'error',
-				message: 'The a is invalid element (7:6)',
+				message: 'The a is invalid element (7:6): Broke mapping nodes.',
 				line: 7,
 				col: 6,
 				raw: '<a>',

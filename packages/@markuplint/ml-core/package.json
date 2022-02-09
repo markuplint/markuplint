@@ -21,6 +21,7 @@
 		"@markuplint/ml-ast": "2.0.0-rc.5",
 		"@markuplint/ml-config": "2.0.0-rc.5",
 		"@markuplint/ml-spec": "2.0.0-rc.5",
+		"@markuplint/parser-utils": "2.0.0-rc.5",
 		"debug": "^4.3.2",
 		"postcss-selector-parser": "^6.0.6",
 		"tslib": "^2.3.1"
