@@ -127,6 +127,10 @@ export interface MLMarkupLanguageParser {
 		ignoreFrontMatter?: boolean,
 	): MLASTDocument;
 	tagNameCaseSensitive?: boolean;
+	/**
+	 * @default "omittable"
+	 */
+	endTag?: 'xml' | 'omittable' | 'never';
 }
 
 export type Parse = MLMarkupLanguageParser['parse'];
