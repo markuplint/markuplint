@@ -9,6 +9,10 @@ import { toRegxp } from '@markuplint/ml-config';
 const parsers = new Map<string, MLMarkupLanguageParser>();
 
 export async function resolveParser(file: MLFile, parserConfig?: ParserConfig, parserOptions?: ParserOptions) {
+	parserConfig = {
+		...parserConfig,
+		'/\\.html?$/i': '@markuplint/html-parser',
+	};
 	parserOptions = parserOptions || {};
 
 	let parserModName = '@markuplint/html-parser';
