@@ -100,6 +100,10 @@ const defaultRules: Record<
 		category: 'validation',
 		default: true,
 	},
+	'end-tag': {
+		category: 'style',
+		default: true,
+	},
 	'id-duplication': {
 		category: 'validation',
 		default: true,

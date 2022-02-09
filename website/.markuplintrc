@@ -16,6 +16,7 @@
     "deprecated-attr": true,
     "deprecated-element": true,
     "doctype": true,
+    "end-tag": true,
     "id-duplication": true,
     "indentation": false,
     "ineffective-attr": true,

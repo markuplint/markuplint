@@ -11,6 +11,7 @@ import DeprecatedAttr from './deprecated-attr';
 import DeprecatedElement from './deprecated-element';
 import DisallowedElement from './disallowed-element';
 import Doctype from './doctype';
+import EndTag from './end-tag';
 import IdDuplication from './id-duplication';
 import Indentation from './indentation';
 import IneffectiveAttr from './ineffective-attr';
@@ -41,6 +42,7 @@ export default {
 	'deprecated-element': DeprecatedElement,
 	'disallowed-element': DisallowedElement,
 	doctype: Doctype,
+	'end-tag': EndTag,
 	'id-duplication': IdDuplication,
 	indentation: Indentation,
 	'ineffective-attr': IneffectiveAttr,
