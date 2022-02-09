@@ -13,6 +13,7 @@
 		"deprecated-element": true,
 		"disallowed-element": ["hgroup"],
 		"doctype": true,
+		"end-tag": false,
 		"id-duplication": true,
 		"indentation": false,
 		"ineffective-attr": true,

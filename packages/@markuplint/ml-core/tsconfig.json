@@ -20,6 +20,9 @@
 		},
 		{
 			"path": "../html-parser"
+		},
+		{
+			"path": "../parser-utils"
 		}
 	],
 	"include": ["./src/**/*"],

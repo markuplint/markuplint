@@ -115,7 +115,7 @@ export interface MLASTPreprocessorSpecificAttr extends MLToken {
 export interface MLASTDocument {
 	nodeList: MLASTNode[];
 	isFragment: boolean;
-	parseError?: string;
+	unkownParseError?: string;
 }
 
 export interface MLMarkupLanguageParser {
@@ -127,6 +127,10 @@ export interface MLMarkupLanguageParser {
 		ignoreFrontMatter?: boolean,
 	): MLASTDocument;
 	tagNameCaseSensitive?: boolean;
+	/**
+	 * @default "omittable"
+	 */
+	endTag?: 'xml' | 'omittable' | 'never';
 }
 
 export type Parse = MLMarkupLanguageParser['parse'];

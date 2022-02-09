@@ -3,7 +3,6 @@ export { getAttrSpecs } from '@markuplint/ml-spec';
 export * from './convert-ruleset';
 export * from './ml-core';
 export * from './ml-rule';
-export { default as MLParseError } from './ml-error/ml-parse-error';
 export { default as Ruleset } from './ruleset';
 export * from './ml-dom';
 export * from './plugin';

@@ -2,7 +2,7 @@ import type { JSXNode } from './jsx';
 import type { MLASTNode, Parse } from '@markuplint/ml-ast';
 
 import { flattenNodes } from '@markuplint/html-parser';
-import { walk } from '@markuplint/parser-utils';
+import { ParserError, walk } from '@markuplint/parser-utils';
 
 import jsxParser from './jsx';
 import { traverse } from './traverse';
@@ -12,10 +12,22 @@ export const parse: Parse = rawCode => {
 	try {
 		ast = jsxParser(rawCode);
 	} catch (err) {
+		if (err instanceof Error && 'lineNumber' in err && 'column' in err) {
+			throw new ParserError(
+				// @ts-ignore
+				err.message,
+				{
+					// @ts-ignore
+					line: err.lineNumber,
+					// @ts-ignore
+					col: err.column,
+				},
+			);
+		}
 		return {
 			nodeList: [],
 			isFragment: true,
-			parseError: err instanceof Error ? err.message : new Error(`${err}`).message,
+			unkownParseError: err instanceof Error ? err.message : new Error(`${err}`).message,
 		};
 	}
 
