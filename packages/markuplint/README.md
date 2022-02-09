@@ -30,18 +30,25 @@ Usage
 	$ <stdout> | markuplint
 
 Options
-	--config-file,  -c FILE_PATH  Ruleset file path.
-	--fix,                        Fix HTML.
-	--format,       -f FORMAT     Output format. Support "JSON", "Simple" and "Standard". Default: "Standard".
-	--no-color,                   Output no color.
-	--problem-only, -p            Output only problems, without passeds.
-	--verbose                     Output with detailed information.
+	--config,                -c FILE_PATH  A configuration file path.
+	--fix,                                 Fix HTML.
+	--format,                -f FORMAT     Output format. Support "JSON", "Simple" and "Standard". Default: "Standard".
+	--no-search-config                     No search a configure file automatically.
+	--ignore-ext                           Evaluate files that are received even though the type of extension.
+	--no-import-preset-rules               No import preset rules.
+	--locale                               Locale of the message of violation. Default is an OS setting.
+	--no-color,                            Output no color.
+	--problem-only,          -p            Output only problems, without passeds.
+	--verbose                              Output with detailed information.
 
-	--help,         -h            Show help.
-	--version,      -v            Show version.
+	--init                                 Initialize settings interactively.
+	--create-rule                          Add the scaffold of a custom rule.
+
+	--help,                  -h            Show help.
+	--version,               -v            Show version.
 
 Examples
-	$ markuplint verifyee.html --ruleset path/to/.markuplintrc
+	$ markuplint verifyee.html --config path/to/.markuplintrc
 	$ cat verifyee.html | markuplint
 ```
 
