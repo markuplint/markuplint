@@ -26,14 +26,6 @@ Examples
 
 export const cli = meow(help, {
 	flags: {
-		init: {
-			type: 'boolean',
-			default: false,
-		},
-		createRule: {
-			type: 'boolean',
-			default: false,
-		},
 		configFile: {
 			type: 'string',
 			alias: 'c',
@@ -60,6 +52,14 @@ export const cli = meow(help, {
 			default: false,
 		},
 		verbose: {
+			type: 'boolean',
+			default: false,
+		},
+		init: {
+			type: 'boolean',
+			default: false,
+		},
+		createRule: {
 			type: 'boolean',
 			default: false,
 		},
