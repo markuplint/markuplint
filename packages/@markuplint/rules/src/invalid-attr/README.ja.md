@@ -151,3 +151,63 @@ const Component = (props) => {
 	return <a target="_blank" {...props}>;
 }
 ```
+
+## 参考
+
+_[Open Graph プロトコル](https://ogp.me/)_ および _[RDFa](https://rdfa.info/)_ は、_HTML 標準_ とは異なる仕様です。そのため、必要な場合は次のように手動で指定する必要があります。
+
+### Open Graph プロトコル
+
+```json
+{
+	"nodeRules": {
+		"selector": "meta[property]",
+		"rules": {
+			"invalid-attr": {
+				"option": {
+					"attrs": {
+						"property": {
+							"type": "Any"
+						},
+						"content": {
+							"type": "Any"
+						}
+					}
+				}
+			}
+		}
+	}
+}
+```
+
+### RDFa (RDFa lite)
+
+```json
+{
+	"rules": {
+		"invalid-attr": {
+			"option": {
+				"attrs": {
+					"vocab": {
+						"type": "URL"
+					},
+					"typeof": {
+						"type": "Any"
+					},
+					"property": {
+						"type": "Any"
+					},
+					"resource": {
+						"type": "Any"
+					},
+					"prefix": {
+						"type": "Any"
+					}
+				}
+			}
+		}
+	}
+}
+```
+
+構造化データを利用する場合 _RDFa_ ではなく _[Microdata](https://developer.mozilla.org/en-US/docs/Web/HTML/Microdata)_ を利用することを進めます。

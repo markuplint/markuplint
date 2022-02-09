@@ -157,3 +157,63 @@ const Component = (props) => {
 	return <a target="_blank" {...props}>;
 }
 ```
+
+## FYI
+
+_[The Open Graph protocol](https://ogp.me/)_ and _[RDFa](https://rdfa.info/)_ are specifications that are different from the _HTML Standard_. So you should specify it manually as follow if you need it:
+
+### The Open Graph protocol
+
+```json
+{
+	"nodeRules": {
+		"selector": "meta[property]",
+		"rules": {
+			"invalid-attr": {
+				"option": {
+					"attrs": {
+						"property": {
+							"type": "Any"
+						},
+						"content": {
+							"type": "Any"
+						}
+					}
+				}
+			}
+		}
+	}
+}
+```
+
+### RDFa (RDFa lite)
+
+```json
+{
+	"rules": {
+		"invalid-attr": {
+			"option": {
+				"attrs": {
+					"vocab": {
+						"type": "URL"
+					},
+					"typeof": {
+						"type": "Any"
+					},
+					"property": {
+						"type": "Any"
+					},
+					"resource": {
+						"type": "Any"
+					},
+					"prefix": {
+						"type": "Any"
+					}
+				}
+			}
+		}
+	}
+}
+```
+
+We recommend you use _[Microdata](https://developer.mozilla.org/en-US/docs/Web/HTML/Microdata)_ instead of _RDFa_ if you need structured data.
