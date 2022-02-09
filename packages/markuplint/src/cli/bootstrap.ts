@@ -26,7 +26,7 @@ Examples
 
 export const cli = meow(help, {
 	flags: {
-		configFile: {
+		config: {
 			type: 'string',
 			alias: 'c',
 		},

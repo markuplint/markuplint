@@ -13,7 +13,7 @@ import { output } from './output';
 
 export async function command(files: Target[], options: CLIOptions) {
 	const fix = options.fix;
-	const configFile = options.configFile && path.join(process.cwd(), options.configFile);
+	const configFile = options.config && path.join(process.cwd(), options.config);
 	const ignoreExt = options.ignoreExt;
 
 	const fileList = await resolveFiles(files);
