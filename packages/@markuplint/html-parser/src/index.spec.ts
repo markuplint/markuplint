@@ -1021,7 +1021,7 @@ describe('parser', () => {
 	it('code in script', () => {
 		const doc = parse("<script>const $span = '<span>text</span>';</script>");
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.parseError).toBeUndefined();
+		expect(doc.unkownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:9](0,8)script: <script>',
 			"[1:9]>[1:43](8,42)#text: const␣$span␣=␣'<span>text</span>';",

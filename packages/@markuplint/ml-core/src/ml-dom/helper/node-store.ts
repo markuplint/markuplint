@@ -3,7 +3,7 @@ import type { MappedNode } from './mapped-nodes';
 import type { MLASTAbstructNode } from '@markuplint/ml-ast';
 import type { RuleConfigValue } from '@markuplint/ml-config';
 
-import MLParseError from '../../ml-error/ml-parse-error';
+import { ParserError } from '@markuplint/parser-utils';
 
 export default class NodeStore {
 	#store = new Map<string, MLDOMNode<any, any, any>>();
@@ -16,7 +16,12 @@ export default class NodeStore {
 		// console.log(`Get: ${astNode.uuid} -> ${astNode.raw.trim()}(${astNode.type})`);
 		const node = this.#store.get(astNode.uuid);
 		if (!node) {
-			throw new MLParseError(astNode.startLine, astNode.startCol, astNode.raw, astNode.nodeName);
+			throw new ParserError('Broke mapping nodes.', {
+				line: astNode.startLine,
+				col: astNode.startCol,
+				raw: astNode.raw,
+				nodeName: astNode.nodeName,
+			});
 		}
 		return node as MappedNode<N, T, O>;
 	}

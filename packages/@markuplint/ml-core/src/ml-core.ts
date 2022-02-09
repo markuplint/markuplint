@@ -5,11 +5,10 @@ import type { LocaleSet } from '@markuplint/i18n';
 import type { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import type { RuleConfigValue, Violation } from '@markuplint/ml-config';
 
-import { log } from './debug';
-import { Document } from './ml-dom';
-import MLParseError from './ml-error/ml-parse-error';
+import { ParserError } from '@markuplint/parser-utils';
 
-import { enableDebug } from '.';
+import { log, enableDebug } from './debug';
+import { Document } from './ml-dom';
 
 const resultLog = log.extend('result');
 
@@ -21,10 +20,10 @@ export type MLCoreParams = {
 
 export class MLCore {
 	#filename: string;
-	#document!: Document<RuleConfigValue, unknown> | MLParseError;
+	#document!: Document<RuleConfigValue, unknown> | ParserError;
 	#parser: MLMarkupLanguageParser;
 	#sourceCode: string;
-	#ast: MLASTDocument;
+	#ast: MLASTDocument | null = null;
 	#ruleset: Ruleset;
 	#locale: LocaleSet;
 	#rules: MLRule<RuleConfigValue, unknown>[];
@@ -32,6 +31,10 @@ export class MLCore {
 	#ignoreFrontMatter: boolean;
 
 	constructor({ parser, sourceCode, ruleset, rules, locale, schemas, parserOptions, filename, debug }: MLCoreParams) {
+		if (debug) {
+			enableDebug();
+		}
+
 		this.#parser = parser;
 		this.#sourceCode = sourceCode;
 		this.#ignoreFrontMatter = !!parserOptions.ignoreFrontMatter;
@@ -42,14 +45,10 @@ export class MLCore {
 		};
 		this.#locale = locale;
 		this.#schemas = schemas;
-		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
 		this.#filename = filename;
 		this.#rules = rules;
 
-		if (debug) {
-			enableDebug();
-		}
-
+		this._parse();
 		this._createDocument();
 	}
 
@@ -60,7 +59,7 @@ export class MLCore {
 	async verify(fix = false) {
 		log('verify: start');
 		const violations: Violation[] = [];
-		if (this.#document instanceof MLParseError) {
+		if (this.#document instanceof ParserError) {
 			violations.push({
 				ruleId: 'parse-error',
 				severity: 'error',
@@ -81,13 +80,13 @@ export class MLCore {
 
 			log('%s Rule: verify', rule.name);
 			const results = await rule.verify(this.#document, this.#locale, ruleInfo, fix).catch(e => {
-				if (e instanceof MLParseError) {
+				if (e instanceof ParserError) {
 					return e;
 				}
 				throw e;
 			});
 
-			if (results instanceof MLParseError) {
+			if (results instanceof ParserError) {
 				log('%s Rule: verify error %o', rule.name, results.message);
 				violations.push({
 					ruleId: 'parse-error',
@@ -122,7 +121,7 @@ export class MLCore {
 
 	setCode(sourceCode: string) {
 		this.#sourceCode = sourceCode;
-		this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
+		this._parse();
 		this._createDocument();
 	}
 
@@ -137,19 +136,37 @@ export class MLCore {
 		this.#locale = locale ?? this.#locale;
 		this.#schemas = schemas ?? this.#schemas;
 		if (parserOptions && parserOptions.ignoreFrontMatter !== this.#ignoreFrontMatter) {
-			this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
+			this._parse();
 		}
 		this._createDocument();
 	}
 
+	private _parse() {
+		try {
+			this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
+		} catch (err) {
+			log('Caught the parse error: %O', err);
+			this.#ast = null;
+			if (err instanceof ParserError) {
+				this.#document = err;
+			} else {
+				throw err;
+			}
+		}
+	}
+
 	private _createDocument() {
+		if (!this.#ast) {
+			return;
+		}
 		try {
 			this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, {
 				filename: this.#filename,
 				tagNameCaseSensitive: this.#parser.tagNameCaseSensitive,
+				endTag: this.#parser.endTag,
 			});
 		} catch (err) {
-			if (err instanceof MLParseError) {
+			if (err instanceof ParserError) {
 				this.#document = err;
 			} else {
 				throw err;
