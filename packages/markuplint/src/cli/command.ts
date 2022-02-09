@@ -14,7 +14,11 @@ import { output } from './output';
 export async function command(files: Target[], options: CLIOptions) {
 	const fix = options.fix;
 	const configFile = options.config && path.join(process.cwd(), options.config);
+	const locale = options.locale;
+	const searchConfig = options.searchConfig;
 	const ignoreExt = options.ignoreExt;
+	const importPresetRules = options.importPresetRules;
+	const verbose = options.verbose;
 
 	const fileList = await resolveFiles(files);
 
@@ -32,7 +36,12 @@ export async function command(files: Target[], options: CLIOptions) {
 	for (const file of fileList) {
 		const engine = new MLEngine(file, {
 			configFile,
+			fix,
+			locale,
+			noSearchConfig: !searchConfig,
 			ignoreExt,
+			importPresetRules,
+			debug: verbose,
 		});
 		const result = await engine.exec();
 		if (!result) {

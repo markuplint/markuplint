@@ -38,9 +38,20 @@ export const cli = meow(help, {
 			type: 'string',
 			alias: 'f',
 		},
+		searchConfig: {
+			type: 'boolean',
+			default: true,
+		},
 		ignoreExt: {
 			type: 'boolean',
 			default: false,
+		},
+		importPresetRules: {
+			type: 'boolean',
+			default: true,
+		},
+		locale: {
+			type: 'string',
 		},
 		color: {
 			type: 'boolean',
