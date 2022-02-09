@@ -139,6 +139,11 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		fileLog('Resolved Plugins: %O', configSet.plugins);
 		fileLog('Resolve Errors: %O', configSet.errs);
 
+		if (!(await this.#file.isFile())) {
+			this.emit('log', 'file-no-exists', `The file doesn't exist or it is not a file: ${this.#file.path}`);
+			return null;
+		}
+
 		// Exclude
 		const excludeFiles = configSet.config.excludeFiles || [];
 		for (const excludeFile of excludeFiles) {

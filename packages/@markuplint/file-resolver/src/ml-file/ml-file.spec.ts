@@ -28,5 +28,5 @@ it('file matches', async () => {
 
 it('file exists', async () => {
 	const file = new MLFile({ sourceCode: '<html></html>' });
-	expect(await file.isExist()).toBeFalsy();
+	expect(await file.isExist()).toBeTruthy();
 });
