@@ -154,10 +154,14 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		}
 
 		const { parser, parserOptions, matched } = await this.resolveParser(configSet);
+		const checkingExt = !this.#options?.ignoreExt;
 
-		// Ext Matching
-		if (this.#options?.extMatch && !matched && !this.#file.path.match(/\.html?$/i)) {
-			this.emit('log', 'extension-matching', `${this.#file.path}`);
+		if (checkingExt && !matched) {
+			this.emit(
+				'log',
+				'ext-unmatched',
+				`Avoided linting because a file is unmatched by the extension: ${this.#file.path}`,
+			);
 			return null;
 		}
 

@@ -46,6 +46,10 @@ export const cli = meow(help, {
 			type: 'string',
 			alias: 'f',
 		},
+		ignoreExt: {
+			type: 'boolean',
+			default: false,
+		},
 		color: {
 			type: 'boolean',
 			default: true,

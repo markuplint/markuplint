@@ -14,6 +14,7 @@ import { output } from './output';
 export async function command(files: Target[], options: CLIOptions) {
 	const fix = options.fix;
 	const configFile = options.configFile && path.join(process.cwd(), options.configFile);
+	const ignoreExt = options.ignoreExt;
 
 	const fileList = await resolveFiles(files);
 
@@ -29,7 +30,10 @@ export async function command(files: Target[], options: CLIOptions) {
 	let hasError = false;
 
 	for (const file of fileList) {
-		const engine = new MLEngine(file, { configFile });
+		const engine = new MLEngine(file, {
+			configFile,
+			ignoreExt,
+		});
 		const result = await engine.exec();
 		if (!result) {
 			continue;

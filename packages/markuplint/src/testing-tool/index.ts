@@ -14,6 +14,7 @@ export async function mlTest(sourceCode: string, config: Config, rules?: AnyMLRu
 		rules,
 		locale: locale ?? global.locale,
 		fix,
+		ignoreExt: true,
 		autoLoad: true,
 		importPresetRules: !rules,
 	});
@@ -102,6 +103,7 @@ export async function mlTestFile(target: Target, config?: Config, rules?: AnyMLR
 		rules,
 		locale: locale ?? global.locale,
 		fix,
+		ignoreExt: true,
 		noSearchConfig: !!config,
 		autoLoad: true,
 		importPresetRules: !rules,
