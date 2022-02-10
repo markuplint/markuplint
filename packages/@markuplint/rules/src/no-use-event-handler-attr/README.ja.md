@@ -16,14 +16,14 @@
 <div id="foo">Click</div>
 
 <script>
-	document.getElementById('foo').addEventListener('click', () => doSomething());
+  document.getElementById('foo').addEventListener('click', () => doSomething());
 </script>
 ```
 
 ### 設定値
 
--   型: `boolean`
--   デフォルト値: `true`
+- 型: `boolean`
+- デフォルト値: `true`
 
 ### オプション
 

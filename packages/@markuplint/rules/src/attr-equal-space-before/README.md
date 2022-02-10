@@ -146,6 +146,6 @@ Type: `"always" | "never" | "always-single-line" | "never-single-line"`
 | `"never-single-line"`  |         | Warns that there is not spaces **before** `=` of attribute. Line breaks are included in the spaces. |
 | `"always-single-line"` |         | Warns that there is not spaces **before** `=` of attribute. But warns if there is line breaks.      |
 
-### Default notification severity
+### Default severity
 
 `warning`

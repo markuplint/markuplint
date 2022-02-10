@@ -54,6 +54,6 @@ Type: `number | false`
 | [number] | ✓ `1`   | Warn if not equal spaces and the set number. |
 | `false`  |         | Not warn about spaces.                       |
 
-### Default notification severity
+### Default severity
 
 `warning`

@@ -17,15 +17,15 @@ Warn that if the attribute specified cannot affect (in other words, mean-less) t
 <script type="module" src="/path/to/script.js" defer></script>
 
 <script defer>
-	const code = 'It is inline';
+  const code = 'It is inline';
 </script>
 
 <script type="module" async>
-	export const code = 'It is inline module';
+  export const code = 'It is inline module';
 </script>
 
 <script async>
-	const code = 'It is inline';
+  const code = 'It is inline';
 </script>
 ```
 
@@ -35,22 +35,22 @@ Warn that if the attribute specified cannot affect (in other words, mean-less) t
 <script type="module" src="/path/to/script.js"></script>
 
 <script>
-	const code = 'It is inline';
+  const code = 'It is inline';
 </script>
 
 <script type="module" async>
-	export const code = 'It is inline module';
+  export const code = 'It is inline module';
 </script>
 
 <script>
-	const code = 'It is inline';
+  const code = 'It is inline';
 </script>
 ```
 
 ### Interface
 
--   Type: `boolean`
--   Deafult Value: `true`
+- Type: `boolean`
+- Deafult Value: `true`
 
 ### Default severity
 

@@ -10,14 +10,14 @@
 
 ```html
 <html>
-	<head>
-		<title>page</title>
-	</head>
-	<body>
-		<main>
-			<p>text</p>
-		</main>
-	</body>
+  <head>
+    <title>page</title>
+  </head>
+  <body>
+    <main>
+      <p>text</p>
+    </main>
+  </body>
 </html>
 ```
 
@@ -25,15 +25,15 @@
 
 ```html
 <html>
-	<head>
-		<title>page</title>
-	</head>
-	<body>
-		<main>
-			<h1>heading</h1>
-			<p>text</p>
-		</main>
-	</body>
+  <head>
+    <title>page</title>
+  </head>
+  <body>
+    <main>
+      <h1>heading</h1>
+      <p>text</p>
+    </main>
+  </body>
 </html>
 ```
 
@@ -41,28 +41,28 @@
 
 ```json
 {
-	"rules": {
-		"required-h1": true
-	}
+  "rules": {
+    "required-h1": true
+  }
 }
 ```
 
 ```json
 {
-	"rules": {
-		"required-h1": {
-			"option": {
-				"expected-once": true,
-				"in-document-fragment": true
-			}
-		}
-	}
+  "rules": {
+    "required-h1": {
+      "option": {
+        "expected-once": true,
+        "in-document-fragment": true
+      }
+    }
+  }
 }
 ```
 
--   型: `boolean`
--   省略可
--   初期値: `true`
+- 型: `boolean`
+- 省略可
+- 初期値: `true`
 
 ## オプション
 
@@ -70,17 +70,17 @@
 
 ドキュメント内で `h1`タグに重複があると警告します。
 
--   型: `boolean`
--   省略可
--   初期値: `true`
+- 型: `boolean`
+- 省略可
+- 初期値: `true`
 
 ### `in-document-fragment`
 
 ドキュメント全体ではなく、コードの断片内でこのルールを適用させたい場合に `true` にしてください。
 
--   型: `boolean`
--   省略可
--   初期値: `false`
+- 型: `boolean`
+- 省略可
+- 初期値: `false`
 
 ### デフォルトの警告の厳しさ
 

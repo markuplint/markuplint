@@ -9,9 +9,9 @@ The rule [`textlint`](https://github.com/textlint/textlint) for HTML, Vue and so
 ## Install
 
 ```sh
-$ npm install @markuplint/rule-textlint
+$ npm install -D @markuplint/rule-textlint
 
-$ yarn add @markuplint/rule-textlint
+$ yarn add -D @markuplint/rule-textlint
 ```
 
 ## Usage
@@ -27,24 +27,24 @@ $ yarn add -D textlint-rule-prh
 ```json
 // `.markuplintrc`
 {
-	"rules": {
-		"textlint": true
-	}
+  "rules": {
+    "textlint": true
+  }
 }
 ```
 
 ```json
 // `.textlintrc`
 {
-	// `html` plugin will be used automatically by `markuplint`
-	// but make sure to enable it manually
-	// if you are using `textlint` as cli at the same time
-	// "plugins": ["html"],
-	"rules": {
-		"prh": {
-			"rulePaths": ["../prh.yml"]
-		}
-	}
+  // `html` plugin will be used automatically by `markuplint`
+  // but make sure to enable it manually
+  // if you are using `textlint` as cli at the same time
+  // "plugins": ["html"],
+  "rules": {
+    "prh": {
+      "rulePaths": ["../prh.yml"]
+    }
+  }
 }
 ```
 
@@ -55,33 +55,20 @@ $ yarn add -D textlint-rule-prh
 const path = require('path');
 
 module.exports = {
-	rules: {
-		textlint: {
-			option: {
-				rules: [
-					{
-						ruleId: 'prh',
-						rule: require('textlint-rule-prh'),
-						options: {
-							rulePaths: [path.resolve(__dirname, '../', 'prh.yml')],
-						},
-					},
-				],
-			},
-		},
-	},
+  rules: {
+    textlint: {
+      option: {
+        rules: [
+          {
+            ruleId: 'prh',
+            rule: require('textlint-rule-prh'),
+            options: {
+              rulePaths: [path.resolve(__dirname, '../', 'prh.yml')],
+            },
+          },
+        ],
+      },
+    },
+  },
 };
 ```
-
-## Contributing
-
-```
-$ git clone git@github.com:markuplint/markuplint.git -b main
-$ yarn
-$ yarn build
-$ yarn test
-```
-
----
-
-Copyright &copy; 2021 markuplint. Under the MIT License.

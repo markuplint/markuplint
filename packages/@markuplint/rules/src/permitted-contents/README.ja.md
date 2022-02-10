@@ -44,33 +44,33 @@
 
 ### 設定値
 
--   型: `Array`
--   省略可
--   初期値: `[]`
+- 型: `Array`
+- 省略可
+- 初期値: `[]`
 
 ルールを設定したい対象の要素を配列で指定します。次の例はカスタム要素の `x-container` と `x-item` それぞれにルールを指定していることになります。
 
 ```json
 {
-	"rules": {
-		"permitted-contents": [
-			{
-				"tag": "x-container",
-				"contents": []
-			},
-			{
-				"tag": "x-item",
-				"contents": []
-			}
-		]
-	}
+  "rules": {
+    "permitted-contents": [
+      {
+        "tag": "x-container",
+        "contents": []
+      },
+      {
+        "tag": "x-item",
+        "contents": []
+      }
+    ]
+  }
 }
 ```
 
 #### `tag`
 
--   型: `string`
--   省略不可
+- 型: `string`
+- 省略不可
 
 対象の要素（タグ）名を指定します。大文字小文字は区別しません。
 
@@ -84,24 +84,24 @@
 
 ```json
 {
-	"rules": {
-		"permitted-contents": [
-			{
-				"tag": "x-container",
-				"contents": [
-					{ "require": "x-item" },
-					{ "optional": "y-item" },
-					{ "oneOrMore": "z-item" },
-					{ "zeroOrMore": "#text" },
-					// ❌ キーワードの同時の指定はできない
-					{
-						"require": "x-item",
-						"optional": "y-item"
-					}
-				]
-			}
-		]
-	}
+  "rules": {
+    "permitted-contents": [
+      {
+        "tag": "x-container",
+        "contents": [
+          { "require": "x-item" },
+          { "optional": "y-item" },
+          { "oneOrMore": "z-item" },
+          { "zeroOrMore": "#text" },
+          // ❌ キーワードの同時の指定はできない
+          {
+            "require": "x-item",
+            "optional": "y-item"
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
@@ -132,21 +132,21 @@
 
 ```json
 {
-	"rules": {
-		"permitted-contents": [
-			{
-				"tag": "x-container",
-				"contents": [
-					{
-						"choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
-					},
-					{
-						"interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
-					}
-				]
-			}
-		]
-	}
+  "rules": {
+    "permitted-contents": [
+      {
+        "tag": "x-container",
+        "contents": [
+          {
+            "choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
+          },
+          {
+            "interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
@@ -154,8 +154,8 @@
 
 #### `ignoreHasMutableChildren`
 
--   型: `boolean`
--   初期値: `true`
+- 型: `boolean`
+- 初期値: `true`
 
 _Pug_ のようなプリプロセッサ言語や _Vue_ のようなコンポーネントライブラリにおけるミュータブルな子要素を含む場合、無視します。（_Pug_ も _Vue_ もそれぞれ [@markuplint/pug-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/pug-parser) や [@markuplint/vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/vue-parser) が必要です。）
 

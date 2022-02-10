@@ -29,8 +29,8 @@ const Component = ({ id }) => <div id={id}></div>;
 
 ### Interface
 
--   Type: `boolean`
--   Deafult Value: `true`
+- Type: `boolean`
+- Deafult Value: `true`
 
 ### Default severity
 

@@ -24,8 +24,8 @@ TODO: Write a description
 
 ### Interface
 
--   Type: `string`
--   Deafult Value: `"__DEFAULT_MAIN_VALUE__"`
+- Type: `string`
+- Deafult Value: `"__DEFAULT_MAIN_VALUE__"`
 
 ### Options
 

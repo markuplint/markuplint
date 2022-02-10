@@ -24,7 +24,7 @@ Note: Currently, this rule doesn't evaluate whether omit possible the end tag.
 
 ```html
 <div>
-	<span>There is an end tag.</span>
+  <span>There is an end tag.</span>
 </div>
 ```
 

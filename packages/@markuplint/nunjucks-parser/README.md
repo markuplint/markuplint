@@ -6,12 +6,10 @@
 
 ## Install
 
-Prerequisites: [Node.js](https://nodejs.org) (Version 12.4.0 or later)
-
 ```sh
-$ npm install @markuplint/nunjucks-parser
+$ npm install -D @markuplint/nunjucks-parser
 
-$ yarn add @markuplint/nunjucks-parser
+$ yarn add -D @markuplint/nunjucks-parser
 ```
 
 ## Usage
@@ -20,9 +18,9 @@ Add `parser` option into your [confugration file](https://markuplint.dev/configu
 
 ```json
 {
-	"parser": {
-		".njk$": "@markuplint/nunjucks-parser"
-	}
+  "parser": {
+    ".njk$": "@markuplint/nunjucks-parser"
+  }
 }
 ```
 
@@ -65,16 +63,3 @@ Mixed the tags and spaces.
 ```html
 <div attr="{{ value }} {{ value2 }}"></div>
 ```
-
-## Contributing
-
-```
-$ git clone git@github.com:markuplint/markuplint.git -b main
-$ yarn
-$ yarn build
-$ yarn test
-```
-
----
-
-Copyright &copy; 2021 markuplint. Under the MIT License.

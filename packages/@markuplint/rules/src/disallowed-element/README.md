@@ -14,13 +14,13 @@ Use [`permitted-contents`](../permitted-contents) rule if you expect to check co
 
 ## Rule Details
 
-When specified `{ "required-element": ["hgroup"] }`:
+When specified `{ "disallowed-element": ["hgroup"] }`:
 
 👎 Examples of **incorrect** code for this rule
 
 ```html
 <div>
-	<hgroup><h1>Heading</h1></hgroup>
+  <hgroup><h1>Heading</h1></hgroup>
 </div>
 ```
 
@@ -28,7 +28,7 @@ When specified `{ "required-element": ["hgroup"] }`:
 
 ```html
 <div>
-	<h1>Heading</h1>
+  <h1>Heading</h1>
 </div>
 ```
 
@@ -36,9 +36,9 @@ If specified to `rules`, It searches the element from a document.
 
 ```json
 {
-	"rules": {
-		"required-element": ["hgroup"]
-	}
+  "rules": {
+    "disallowed-element": ["hgroup"]
+  }
 }
 ```
 
@@ -46,21 +46,21 @@ If specified to `nodeRules` or `childNodeRules`, It searches the element from ch
 
 ```json
 {
-	"nodeRules": [
-		{
-			"selector": "h1, h2, h3, h4, h5, h6",
-			"rules": {
-				"required-element": ["small"]
-			}
-		}
-	]
+  "nodeRules": [
+    {
+      "selector": "h1, h2, h3, h4, h5, h6",
+      "rules": {
+        "disallowed-element": ["small"]
+      }
+    }
+  ]
 }
 ```
 
 ### Interface
 
--   Type: `string[]`
--   Deafult Value: `[]`
+- Type: `string[]`
+- Deafult Value: `[]`
 
 ### Default severity
 

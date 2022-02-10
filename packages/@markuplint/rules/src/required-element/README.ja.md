@@ -14,7 +14,7 @@ h1 要素が必要な場合は [`required-h1`](../required-h1/)ルールを使�
 
 ```html
 <head>
-	<title>Page title</title>
+  <title>Page title</title>
 </head>
 ```
 
@@ -22,8 +22,8 @@ h1 要素が必要な場合は [`required-h1`](../required-h1/)ルールを使�
 
 ```html
 <head>
-	<meta charset="UTF-8" />
-	<title>Page title</title>
+  <meta charset="UTF-8" />
+  <title>Page title</title>
 </head>
 ```
 
@@ -31,9 +31,9 @@ h1 要素が必要な場合は [`required-h1`](../required-h1/)ルールを使�
 
 ```json
 {
-	"rules": {
-		"required-element": ["meta[charset=\"UTF-8\"]"]
-	}
+  "rules": {
+    "required-element": ["meta[charset=\"UTF-8\"]"]
+  }
 }
 ```
 
@@ -41,28 +41,28 @@ h1 要素が必要な場合は [`required-h1`](../required-h1/)ルールを使�
 
 ```json
 {
-	"nodeRules": [
-		{
-			"selector": "head",
-			"rules": {
-				"required-element": ["meta[charset=\"UTF-8\"]"]
-			}
-		}
-	]
+  "nodeRules": [
+    {
+      "selector": "head",
+      "rules": {
+        "required-element": ["meta[charset=\"UTF-8\"]"]
+      }
+    }
+  ]
 }
 ```
 
 ### 設定値
 
--   型: `string[]`
--   デフォルト値: `[]`
+- 型: `string[]`
+- デフォルト値: `[]`
 
 ### オプション
 
 #### `ignoreHasMutableContents`
 
--   型: `boolean`
--   初期値: `true`
+- 型: `boolean`
+- 初期値: `true`
 
 _Pug_ のようなプリプロセッサ言語や _Vue_ のようなコンポーネントライブラリにおけるミュータブルな子要素を含む場合、無視します。（_Pug_ も _Vue_ もそれぞれ [@markuplint/pug-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/pug-parser) や [@markuplint/vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/vue-parser) が必要です。）
 

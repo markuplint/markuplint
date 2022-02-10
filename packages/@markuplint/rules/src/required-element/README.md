@@ -20,7 +20,7 @@ When specified `{ "required-element": ["meta[charset=\"UTF-8\"]"] }`:
 
 ```html
 <head>
-	<title>Page title</title>
+  <title>Page title</title>
 </head>
 ```
 
@@ -28,8 +28,8 @@ When specified `{ "required-element": ["meta[charset=\"UTF-8\"]"] }`:
 
 ```html
 <head>
-	<meta charset="UTF-8" />
-	<title>Page title</title>
+  <meta charset="UTF-8" />
+  <title>Page title</title>
 </head>
 ```
 
@@ -37,9 +37,9 @@ If specified to `rules`, It searches the element from a document.
 
 ```json
 {
-	"rules": {
-		"required-element": ["meta[charset=\"UTF-8\"]"]
-	}
+  "rules": {
+    "required-element": ["meta[charset=\"UTF-8\"]"]
+  }
 }
 ```
 
@@ -47,28 +47,28 @@ If specified to `nodeRules` or `childNodeRules`, It searches the element from ch
 
 ```json
 {
-	"nodeRules": [
-		{
-			"selector": "head",
-			"rules": {
-				"required-element": ["meta[charset=\"UTF-8\"]"]
-			}
-		}
-	]
+  "nodeRules": [
+    {
+      "selector": "head",
+      "rules": {
+        "required-element": ["meta[charset=\"UTF-8\"]"]
+      }
+    }
+  ]
 }
 ```
 
 ### Interface
 
--   Type: `string[]`
--   Deafult Value: `[]`
+- Type: `string[]`
+- Deafult Value: `[]`
 
 ### Options
 
 #### `ignoreHasMutableContents`
 
--   Type: `boolean`
--   Default: `true`
+- Type: `boolean`
+- Default: `true`
 
 Ignore if it has mutable child elements in a preprocessor language like _Pug_ or a component library like _Vue_. (If use _Pug_ or _Vue_ need each [@markuplint/pug-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/pug-parser) and [@markuplint/vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/vue-parser))
 

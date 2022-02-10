@@ -18,7 +18,7 @@
 
 ```html
 <div>
-	<span>There is an end tag.</span>
+  <span>There is an end tag.</span>
 </div>
 ```
 

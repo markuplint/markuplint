@@ -6,8 +6,6 @@
 
 ## Install
 
-Prerequisites: [Node.js](https://nodejs.org) (Version 12.4.0 or later)
-
 ```sh
 $ npm install @markuplint/i18n
 
@@ -20,8 +18,8 @@ $ yarn add @markuplint/i18n
 import { translator } from '@markuplint/i18n';
 
 const t = translator({
-	locale: 'ja',
-	...require('@markuplint/i18n/locales/ja.json'),
+  locale: 'ja',
+  ...require('@markuplint/i18n/locales/ja.json'),
 });
 ```
 
@@ -36,31 +34,31 @@ type T = (template?: string, ...values: string[]) => string;
 
 ```ts
 const message = t(
-	// Template #1
-	'{0} is {1:c}',
-	// The {0} value of template #1
-	t(
-		// Template #2
-		'{0} of {1}',
-		// The {0} value of template #2
-		t(
-			// Template #3
-			'the {0}',
-			// The {0} value of template #3
-			'value',
-		),
-		// The {1} value of template #2
-		t(
-			// Template #4
-			'the "{0*}" {1}',
-			// The {0} value of template #4
-			'id',
-			// The {1} value of template #4
-			'attribute',
-		),
-	),
-	// The {1} value of template #1
-	'duplicated',
+  // Template #1
+  '{0} is {1:c}',
+  // The {0} value of template #1
+  t(
+    // Template #2
+    '{0} of {1}',
+    // The {0} value of template #2
+    t(
+      // Template #3
+      'the {0}',
+      // The {0} value of template #3
+      'value',
+    ),
+    // The {1} value of template #2
+    t(
+      // Template #4
+      'the "{0*}" {1}',
+      // The {0} value of template #4
+      'id',
+      // The {1} value of template #4
+      'attribute',
+    ),
+  ),
+  // The {1} value of template #1
+  'duplicated',
 );
 
 console.log(message);
@@ -77,20 +75,24 @@ There is a placeholder that the number is surrounded by `{}` on template strings
 
 ```ts
 import { taggedTemplateTranslator } from '@markuplint/i18n';
-const _ = taggedTemplateTranslator(ja);
+
+const _ = taggedTemplateTranslator({
+  locale: 'ja',
+  ...require('path/to/dictionary/ja.json'),
+});
 
 const message = _`${
-	//
-	_`${
-		//
-		_`the ${'value'}`
-	} of ${
-		//
-		_`the "${'id'}" ${'attribute'}`
-	}`
+  //
+  _`${
+    //
+    _`the ${'value'}`
+  } of ${
+    //
+    _`the "${'id'}" ${'attribute'}`
+  }`
 } is ${
-	//
-	'c:duplicated'
+  //
+  'c:duplicated'
 }`;
 
 console.log(message);
@@ -161,16 +163,3 @@ const list = t(['element', '%attribute%', 'value']);
 console.log(list);
 // => 「要素」「attribute」「値」
 ```
-
-## Contributing
-
-```
-$ git clone git@github.com:markuplint/markuplint.git -b main
-$ yarn
-$ yarn build
-$ yarn test
-```
-
----
-
-Copyright &copy; 2021 markuplint. Under the MIT License.
