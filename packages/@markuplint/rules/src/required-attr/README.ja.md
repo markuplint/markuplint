@@ -40,31 +40,31 @@
 
 ```json
 {
-	"rules": {
-		"required-attr": "alt"
-	}
+  "rules": {
+    "required-attr": "alt"
+  }
 }
 ```
 
 ```json
 {
-	"rules": {
-		"required-attr": ["alt", "width", "height"]
-	}
+  "rules": {
+    "required-attr": ["alt", "width", "height"]
+  }
 }
 ```
 
 ```json
 {
-	"rules": {
-		"required-attr": [
-			"alt",
-			{
-				"name": "src",
-				"value": "/^\\/|^https:\\/\\//i"
-			}
-		]
-	}
+  "rules": {
+    "required-attr": [
+      "alt",
+      {
+        "name": "src",
+        "value": "/^\\/|^https:\\/\\//i"
+      }
+    ]
+  }
 }
 ```
 
@@ -74,8 +74,8 @@
 
 ```ts
 type Attr = {
-	name: string;
-	value: string | string[];
+  name: string;
+  value: string | string[];
 };
 ```
 
@@ -87,17 +87,17 @@ type Attr = {
 
 ```json
 {
-	"rules": {
-		"required-attr": true
-	},
-	"nodeRules": [
-		{
-			"tagName": "img",
-			"rules": {
-				"required-attr": "alt"
-			}
-		}
-	]
+  "rules": {
+    "required-attr": true
+  },
+  "nodeRules": [
+    {
+      "tagName": "img",
+      "rules": {
+        "required-attr": "alt"
+      }
+    }
+  ]
 }
 ```
 

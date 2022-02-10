@@ -6,3 +6,4 @@ export * from './walker';
 export * from './ignore-block';
 export * from './ignore-front-matter';
 export * from './debugger';
+export * from './parser-error';

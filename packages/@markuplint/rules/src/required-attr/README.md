@@ -46,31 +46,31 @@ When the `alt` attribute is required, set `{"required-attr": "alt"}`.
 
 ```json
 {
-	"rules": {
-		"required-attr": "alt"
-	}
+  "rules": {
+    "required-attr": "alt"
+  }
 }
 ```
 
 ```json
 {
-	"rules": {
-		"required-attr": ["alt", "src"]
-	}
+  "rules": {
+    "required-attr": ["alt", "src"]
+  }
 }
 ```
 
 ```json
 {
-	"rules": {
-		"required-attr": [
-			"alt",
-			{
-				"name": "src",
-				"value": "/^\\/|^https:\\/\\//i"
-			}
-		]
-	}
+  "rules": {
+    "required-attr": [
+      "alt",
+      {
+        "name": "src",
+        "value": "/^\\/|^https:\\/\\//i"
+      }
+    ]
+  }
 }
 ```
 
@@ -80,8 +80,8 @@ Type: `string | (string | Attr)[]`
 
 ```ts
 type Attr = {
-	name: string;
-	value: string | string[];
+  name: string;
+  value: string | string[];
 };
 ```
 
@@ -93,17 +93,17 @@ Example configuration that `alt` attribute must be required on `<img>` element:
 
 ```json
 {
-	"rules": {
-		"required-attr": true
-	},
-	"nodeRules": [
-		{
-			"tagName": "img",
-			"rules": {
-				"required-attr": "alt"
-			}
-		}
-	]
+  "rules": {
+    "required-attr": true
+  },
+  "nodeRules": [
+    {
+      "tagName": "img",
+      "rules": {
+        "required-attr": "alt"
+      }
+    }
+  ]
 }
 ```
 

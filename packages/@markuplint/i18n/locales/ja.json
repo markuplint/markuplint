@@ -60,6 +60,7 @@
 		"element": "要素",
 		"empty string": "空文字",
 		"empty": "空",
+		"end tag": "終了タグ",
 		"escape in character reference": "文字参照でエスケープ",
 		"extension": "拡張子",
 		"feature-identifier": "機能ID",

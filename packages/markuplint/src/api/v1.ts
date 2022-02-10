@@ -60,16 +60,6 @@ export async function lint_v1(options: {
 	 * Locale
 	 */
 	locale?: string;
-
-	/**
-	 * Confirm the extension of the target file to the regexp of parser plugins.
-	 * It doesn't run the linting if it doesn't match.
-	 * If you don't set a parser plugin and the target file is HTML, It confirms the regexp as `/\.html?$/i`.
-	 * Default is false.
-	 *
-	 * @default false
-	 */
-	extMatch?: boolean;
 }) {
 	const filePathList = options.files ? (Array.isArray(options.files) ? options.files : [options.files]) : [];
 	const codes = options.sourceCodes
@@ -101,7 +91,6 @@ export async function lint_v1(options: {
 		noSearchConfig: !options.files,
 		rules: options.rules,
 		autoLoad: options.rulesAutoResolve ?? true,
-		extMatch: options.extMatch,
 		locale: options.locale,
 	});
 

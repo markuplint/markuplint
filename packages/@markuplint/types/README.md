@@ -6,8 +6,6 @@
 
 ## Install
 
-Prerequisites: [Node.js](https://nodejs.org) (Version 12.4.0 or later)
-
 ```sh
 $ npm install @markuplint/types
 
@@ -102,16 +100,3 @@ check('2020-02-30', 'DateTime');
 | `<number-optional-number>`     | Some attributes for SVG             |                                                                                                                    | ✅        |
 
 In addition, you can use types **[CSSTree](https://github.com/csstree/csstree)** defined.
-
-## Contributing
-
-```
-$ git clone git@github.com:markuplint/markuplint.git -b main
-$ yarn
-$ yarn build
-$ yarn test
-```
-
----
-
-Copyright &copy; 2021 markuplint. Under the MIT License.

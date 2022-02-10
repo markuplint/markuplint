@@ -6,23 +6,20 @@
 
 ## Install
 
-Prerequisites: [Node.js](https://nodejs.org) (Version 12.4.0 or later)
-
 ```sh
-$ npm install @markuplint/react-spec
+$ npm install -D @markuplint/react-spec
 
-$ yarn add @markuplint/react-spec
+$ yarn add -D @markuplint/react-spec
 ```
 
-## Contributing
+## Usage
 
+Add `specs` option into your [confugration file](https://markuplint.dev/configuration#parser).
+
+```json
+{
+  "specs": {
+    ".[jt]sx?$": "@markuplint/react-spec"
+  }
+}
 ```
-$ git clone git@github.com:markuplint/markuplint.git -b main
-$ yarn
-$ yarn build
-$ yarn test
-```
-
----
-
-Copyright &copy; 2021 markuplint. Under the MIT License.

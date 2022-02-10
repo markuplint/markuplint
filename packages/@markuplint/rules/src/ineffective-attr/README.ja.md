@@ -10,15 +10,15 @@
 <script type="module" src="/path/to/script.js" defer></script>
 
 <script defer>
-	const code = 'It is inline';
+  const code = 'It is inline';
 </script>
 
 <script type="module" async>
-	export const code = 'It is inline module';
+  export const code = 'It is inline module';
 </script>
 
 <script async>
-	const code = 'It is inline';
+  const code = 'It is inline';
 </script>
 ```
 
@@ -28,22 +28,22 @@
 <script type="module" src="/path/to/script.js"></script>
 
 <script>
-	const code = 'It is inline';
+  const code = 'It is inline';
 </script>
 
 <script type="module" async>
-	export const code = 'It is inline module';
+  export const code = 'It is inline module';
 </script>
 
 <script>
-	const code = 'It is inline';
+  const code = 'It is inline';
 </script>
 ```
 
 ### 設定値
 
--   Type: `boolean`
--   Deafult Value: `true`
+- Type: `boolean`
+- Deafult Value: `true`
 
 ### デフォルトの警告の厳しさ
 

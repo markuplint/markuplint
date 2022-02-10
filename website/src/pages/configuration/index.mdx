@@ -45,8 +45,7 @@ The priority applied names are:
 - [`specs`](#properties/specs)
 - [`excludeFiles`](#properties/exclude-files)
 - [`rules`](#properties/rules)
-- [`nodeRules`](#properties/node-rules)
-- [`childNodeRules`](#properties/child-node-rules)
+- [`nodeRules` &amp; `childNodeRules`](#properties/node-rules-&-child-node-rules)
 
 ### Specification about paths
 
@@ -54,8 +53,8 @@ The priority applied names are:
 [`plugins`](#properties/plugins),
 [`specs`](#properties/specs),
 [`specs`](#properties/specs),
-and [`excludeFiles`](#properties/exclude-files) can set paths.
-In `extends`, `plugins`, `parser,` and `specs` four, it can set a package name instead of a path.
+and [`excludeFiles`](#properties/exclude-files) can specify paths.
+In `extends`, `plugins`, `parser,` and `specs` four, it can specify a package name instead of a path.
 
 First, it tries to import it as a package.
 If it fails, such as the package doesn't exist, or the strings are not a package, **it resolves strings as just a path**.
@@ -64,7 +63,7 @@ A relative path becomes an absolute path on the base of the config file path bei
 
 ### `extends`
 
-If you set other config file [paths](#properties/specification-about-paths), it merges the current setting with them.
+If you specify other config file [paths](#properties/specification-about-paths), it merges the current setting with them.
 
 ```json
 {
@@ -108,8 +107,8 @@ interface Config {
 ### `plugins`
 
 You can load any plugins.
-Set a package name or a [path](#properties/specification-about-paths).
-Can set settings if the plugin has it.
+Specify a package name or a [path](#properties/specification-about-paths).
+Can specify settings if the plugin has it.
 
 ```json
 {
@@ -149,8 +148,8 @@ interface Config {
 
 ### `parser`
 
-Set a regex to the key, and the parser file [path](#properties/specification-about-paths) or a package name to the value.
-The regex should be set it matches the target lintee file (ex., the extension part).
+Specify a regex to the key, and the parser file [path](#properties/specification-about-paths) or a package name to the value.
+The regex should be specify it matches the target lintee file (ex., the extension part).
 
 ```json
 {
@@ -213,8 +212,8 @@ interface Config {
 
 ### `specs`
 
-Set a regex to the key, and the spec file [path](#properties/specification-about-paths) or a package name to the value.
-The regex should be set it matches the target lintee file (ex., the extension part).
+Specify a regex to the key, and the spec file [path](#properties/specification-about-paths) or a package name to the value.
+The regex should be specify it matches the target lintee file (ex., the extension part).
 
 ```json
 {
@@ -286,11 +285,11 @@ And add some rules to this property.
 }
 ```
 
-Set a value for each rule.
+Specify a value for each rule.
 Those are any strings, any number, and an array.
-The rule becomes disabled if set false.
-It evaluates as the default value if set true.
-Otherwise, you can set details if you set structure like:
+The rule becomes disabled if specify `false`.
+It evaluates as the default value if specify `true`.
+Otherwise, you can specify details by structure:
 
 ```json
 {
@@ -371,17 +370,19 @@ type Rule<T, O> =
     };
 ```
 
-### `nodeRules`
+### `nodeRules` &amp; `childNodeRules`
 
-If you want only any specific element to apply some rule, you can set by this property.
+#### `nodeRules`
+
+If you want only any specific element to apply some rule, you can specify by this property.
 Be careful to the value is an array.
-You can set the `rules` property of this property like the [`rules`](#properties/rules) property of the root.
+You can specify the `rules` property of this property like the [`rules`](#properties/rules) property of the root.
 
 ```json
 {
   "nodeRules": [
     {
-      "tagName": "main",
+      "selector": "main",
       "rules": {
         "class-naming": "/[a-z]+(__[a-z]+)?/"
       }
@@ -390,40 +391,76 @@ You can set the `rules` property of this property like the [`rules`](#properties
 }
 ```
 
-#### Interface
+#### `childNodeRules`
 
-```ts
-interface Config {
-  nodeRules?: {
-    tagName: string;
-    rules: {
-      [ruleName: string]: Rule<T, O>;
-    };
-  }[];
-}
-```
-
-You should set only element name to the `tagName`, but you can set `"#text"` exceptionally when you expect the _text node_.
-
-### `childNodeRules`
-
-If you want any specific element or its descendants to apply some rule, you can set by this property.
-If set true to the `inheritance` property, _affects all descendant nodes_ of the target element.
+If you want any specific element's descendants to apply some rule, you can specify by this property.
+If specifies true to the `inheritance` property, _affects all descendant nodes_ of the target element,
+if not, _affects only child nodes_.
 Be careful; **This value is an array**.
-You can set the `rules` property of this property like the [`rules`](#properties/rules) property of the root.
+You can specify the `rules` property of this property like the [`rules`](#properties/rules) property of the root.
 
 ```json
 {
+  "rules": {
+    "character-reference": true
+  },
   "childNodeRules": [
     {
       "selector": ".ignoreClass",
       "inheritance": true,
       "rules": {
-        "character-reference": true
+        "character-reference": false
       }
     }
   ]
 }
+```
+
+##### Interface
+
+```ts
+interface Config {
+  nodeRules?: (
+    | {
+        selector: string;
+        rules: {
+          [ruleName: string]: Rule<T, O>;
+        };
+      }
+    | {
+        regexSelector: RegexSelector;
+        rules: {
+          [ruleName: string]: Rule<T, O>;
+        };
+      }
+  )[];
+
+  childNodeRules?: (
+    | {
+        selector: string;
+        inheritance?: boolean;
+        rules: {
+          [ruleName: string]: Rule<T, O>;
+        };
+      }
+    | {
+        regexSelector: RegexSelector;
+        inheritance?: boolean;
+        rules: {
+          [ruleName: string]: Rule<T, O>;
+        };
+      }
+  )[];
+}
+
+type RegexSelector = {
+  nodeName?: string;
+  attrName?: string;
+  attrValue?: string;
+  combination?: RegexSelector & {
+    combinator: ' ' | '>' | '+' | '~' | ':has(+)' | ':has(~)';
+  };
+};
 ```
 
 #### `selector`
@@ -644,35 +681,3 @@ The above is the same as CSS selector `el1 el2 > el3 + el4 ~ el5`.
 
 - [Check designed CSS class name](/configuration/regex-selector-sample#Case%201:%20Check%20designed%20CSS%20class%20name)
 - [Check filenames of images](/configuration/regex-selector-sample#Case%202:%20Check%20filenames%20of%20images)
-
-#### Interface
-
-```ts
-interface Config {
-  childNodeRules?: (
-    | {
-        selector: string;
-        inheritance?: boolean;
-        rules: {
-          [ruleName: string]: Rule<T, O>;
-        };
-      }
-    | {
-        regexSelector: RegexSelector;
-        inheritance?: boolean;
-        rules: {
-          [ruleName: string]: Rule<T, O>;
-        };
-      }
-  )[];
-}
-
-type RegexSelector = {
-  nodeName?: string;
-  attrName?: string;
-  attrValue?: string;
-  combination?: RegexSelector & {
-    combinator: ' ' | '>' | '+' | '~' | ':has(+)' | ':has(~)';
-  };
-};
-```

@@ -6,39 +6,24 @@
 
 ## Install
 
-Prerequisites: [Node.js](https://nodejs.org) (Version 12.4.0 or later)
-
 ```sh
-$ npm install @markuplint/jsx-parser
+$ npm install -D @markuplint/jsx-parser
 
-$ yarn add @markuplint/jsx-parser
+$ yarn add -D @markuplint/jsx-parser
 ```
 
 ## Usage
 
-Add `parser` option into your `.markuplintrc.*` file.
+Add `parser` option into your [confugration file](https://markuplint.dev/configuration#parser).
 
 ```json
 {
-	"parser": {
-		".[jt]sx?$": "@markuplint/jsx-parser"
-	}
+  "parser": {
+    ".[jt]sx?$": "@markuplint/jsx-parser"
+  }
 }
 ```
 
 ### Unsupported rule
 
--   [`indentation`](https://markuplint.dev/rules/indentation)
-
-## Contributing
-
-```
-$ git clone git@github.com:markuplint/markuplint.git -b main
-$ yarn
-$ yarn build
-$ yarn test
-```
-
----
-
-Copyright &copy; 2021 markuplint. Under the MIT License.
+- [`indentation`](https://markuplint.dev/rules/indentation)

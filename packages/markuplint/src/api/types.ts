@@ -11,7 +11,7 @@ export type APIOptions = {
 	noSearchConfig?: boolean;
 	locale?: string;
 	fix?: boolean;
-	extMatch?: boolean;
+	ignoreExt?: boolean;
 	rules?: AnyMLRule[];
 	importPresetRules?: boolean;
 	/**

@@ -1,4 +1,5 @@
 import type { Target } from '../types';
+import type { Stats } from 'fs';
 
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -10,6 +11,13 @@ export class MLFile {
 	#basename: string;
 	#dirname: string;
 	#code: string | null;
+
+	/**
+	 * - `Stats`: Exists
+	 * - `null`: Not exists
+	 * - `undefined`: Doesn't read yet
+	 */
+	#stat: Stats | null | undefined = undefined;
 
 	constructor(target: Target) {
 		if (typeof target === 'string') {
@@ -52,12 +60,24 @@ export class MLFile {
 		return pathNormalize(this.dirname);
 	}
 
+	async isFile() {
+		if (this.#type === 'code-base') {
+			return true;
+		}
+		const stat = await this._stat();
+		return !!stat && stat.isFile();
+	}
+
 	async isExist() {
-		return await exist(this.path);
+		if (this.#type === 'code-base') {
+			return true;
+		}
+		const stat = await this._stat();
+		return !!stat;
 	}
 
 	async dirExists() {
-		return await exist(this.#dirname);
+		return !!(await stat(this.#dirname));
 	}
 
 	async getCode() {
@@ -86,12 +106,19 @@ export class MLFile {
 		this.#code = code;
 		return code;
 	}
+
+	private async _stat() {
+		if (this.#stat) {
+			return this.#stat;
+		}
+		this.#stat = await stat(this.path);
+		return this.#stat;
+	}
 }
 
-async function exist(filePath: string) {
+async function stat(filePath: string) {
 	try {
-		await fs.stat(filePath);
-		return true;
+		return await fs.stat(filePath);
 	} catch (err) {
 		if (
 			// @ts-ignore
@@ -99,7 +126,7 @@ async function exist(filePath: string) {
 			// @ts-ignore
 			err.code === 'ENOENT'
 		) {
-			return false;
+			return null;
 		}
 		throw err;
 	}

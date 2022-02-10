@@ -51,6 +51,11 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	/**
 	 *
 	 */
+	readonly endTag: 'xml' | 'omittable' | 'never';
+
+	/**
+	 *
+	 */
 	readonly nodeStore = new NodeStore();
 
 	#filename?: string;
@@ -74,10 +79,12 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		options?: {
 			filename?: string;
 			tagNameCaseSensitive?: boolean;
+			endTag?: 'xml' | 'omittable' | 'never';
 		},
 	) {
 		this.isFragment = ast.isFragment;
 		this.specs = getSpec(schemas);
+		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
 
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));

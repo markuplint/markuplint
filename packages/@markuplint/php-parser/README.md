@@ -6,12 +6,10 @@
 
 ## Install
 
-Prerequisites: [Node.js](https://nodphp.org) (Version 12.4.0 or later)
-
 ```sh
-$ npm install @markuplint/php-parser
+$ npm install -D @markuplint/php-parser
 
-$ yarn add @markuplint/php-parser
+$ yarn add -D @markuplint/php-parser
 ```
 
 ## Usage
@@ -20,9 +18,9 @@ Add `parser` option into your [confugration file](https://markuplint.dev/configu
 
 ```json
 {
-	"parser": {
-		".php$": "@markuplint/php-parser"
-	}
+  "parser": {
+    ".php$": "@markuplint/php-parser"
+  }
 }
 ```
 
@@ -65,16 +63,3 @@ Mixed the tags and spaces.
 ```html
 <div attr="<?php echo value; ?> <?php echo value2; ?>"></div>
 ```
-
-## Contributing
-
-```
-$ git clone git@github.com:markuplint/markuplint.git -b main
-$ yarn
-$ yarn build
-$ yarn test
-```
-
----
-
-Copyright &copy; 2021 markuplint. Under the MIT License.

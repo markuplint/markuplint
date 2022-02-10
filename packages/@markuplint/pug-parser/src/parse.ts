@@ -9,13 +9,20 @@ import type {
 } from '@markuplint/ml-ast';
 
 import { getNamespace, parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
-import { ignoreFrontMatter, isPotentialCustomElementName, tokenizer, uuid, walk } from '@markuplint/parser-utils';
+import {
+	ignoreFrontMatter,
+	isPotentialCustomElementName,
+	ParserError,
+	tokenizer,
+	uuid,
+	walk,
+} from '@markuplint/parser-utils';
 
 import attrTokenizer from './attr-tokenizer';
 import { pugParse } from './pug-parser';
 
 export const parse: Parse = (rawCode, _, __, ___, isIgnoringFrontMatter) => {
-	let parseError: string | undefined;
+	let unkownParseError: string | undefined;
 	let nodeList: MLASTNode[];
 
 	if (isIgnoringFrontMatter) {
@@ -27,17 +34,27 @@ export const parse: Parse = (rawCode, _, __, ___, isIgnoringFrontMatter) => {
 		nodeList = parser.getNodeList();
 	} catch (err) {
 		nodeList = [];
-		if (err instanceof Error) {
-			parseError = err.message;
-		} else {
-			parseError = 'Unknown Error';
+		if (err instanceof Error && 'msg' in err && 'line' in err && 'column' in err && 'src' in err) {
+			throw new ParserError(
+				// @ts-ignore
+				err.msg,
+				{
+					// @ts-ignore
+					line: err.line,
+					// @ts-ignore
+					col: err.column,
+					// @ts-ignore
+					raw: err.src,
+				},
+			);
 		}
+		unkownParseError = err instanceof Error ? err.message : new Error(`${err}`).message;
 	}
 
 	return {
 		nodeList,
 		isFragment: isDocumentFragment(rawCode),
-		parseError,
+		unkownParseError,
 	};
 };
 

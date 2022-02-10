@@ -5,6 +5,18 @@ import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-u
 import { parse } from './parse';
 
 describe('parse', () => {
+	it('parse error', () => {
+		expect(() => {
+			parse('<div><sp</div>');
+		}).toThrow('Identifier expected.');
+	});
+
+	it('parse error', () => {
+		expect(() => {
+			parse('<div><span></div>');
+		}).toThrow("JSX element 'span' has no corresponding closing tag.");
+	});
+
 	it('Element only', () => {
 		const ast = parse('<div></div>');
 		const maps = nodeListToDebugMaps(ast.nodeList);

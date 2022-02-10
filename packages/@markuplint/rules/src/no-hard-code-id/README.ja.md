@@ -23,8 +23,8 @@ const Component = ({ id }) => <div id={id}></div>;
 
 ### 設定値
 
--   型: `boolean`
--   デフォルト値: `true`
+- 型: `boolean`
+- デフォルト値: `true`
 
 ### デフォルトの警告の厳しさ
 

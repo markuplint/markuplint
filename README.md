@@ -18,27 +18,22 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 
 ## Packages
 
-| Package                                                             | NPM                                                                                                                                   | Platform  |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| [`markuplint`](./packages/markuplint)                               | [![npm version](https://badge.fury.io/js/markuplint.svg)](https://badge.fury.io/js/markuplint)                                        | Node.js   |
-| [`@markuplint/file-resolver`](./packages/@markuplint/file-resolver) | [![npm version](https://badge.fury.io/js/%40markuplint%2Ffile-resolver.svg)](https://www.npmjs.com/package/@markuplint/file-resolver) | Node.js   |
-| [`@markuplint/html-spec`](./packages/@markuplint/html-spec)         | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-spec.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-spec)          | Universal |
-| [`@markuplint/html-parser`](./packages/@markuplint/html-parser)     | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-parser.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-parser)      | Universal |
-| [`@markuplint/i18n`](./packages/@markuplint/i18n)                   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fi18n.svg)](https://badge.fury.io/js/%40markuplint%2Fi18n)                    | Universal |
-| [`@markuplint/ml-ast`](./packages/@markuplint/ml-ast)               | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-ast.svg)](https://badge.fury.io/js/%40markuplint%2Fml-ast)                | Universal |
-| [`@markuplint/parser-utils`](./packages/@markuplint/parser-utils)   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fparser-utils.svg)](https://badge.fury.io/js/%40markuplint%2Fparser-utils)    | Universal |
-| [`@markuplint/ml-config`](./packages/@markuplint/ml-config)         | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-config.svg)](https://badge.fury.io/js/%40markuplint%2Fml-config)          | Universal |
-| [`@markuplint/ml-core`](./packages/@markuplint/ml-core)             | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-core.svg)](https://badge.fury.io/js/%40markuplint%2Fml-core)              | Universal |
-| [`@markuplint/ml-spec`](./packages/@markuplint/ml-spec)             | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-spec.svg)](https://badge.fury.io/js/%40markuplint%2Fml-spec)              | Universal |
-| [`@markuplint/rules`](./packages/@markuplint/rules)                 | [![npm version](https://badge.fury.io/js/%40markuplint%2Frules.svg)](https://badge.fury.io/js/%40markuplint%2Frules)                  | Universal |
+| Package                                                                       | NPM                                                                                                                                             | Platform  |
+| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| [`markuplint`](./packages/markuplint)                                         | [![npm version](https://badge.fury.io/js/markuplint.svg)](https://badge.fury.io/js/markuplint)                                                  | Node.js   |
+| [`@markuplint/create-rule-helper`](./packages/@markuplint/create-rule-helper) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fcreate-rule-helper.svg)](https://www.npmjs.com/package/@markuplint/create-rule-helper) | Node.js   |
+| [`@markuplint/html-parser`](./packages/@markuplint/html-parser)               | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-parser.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-parser)                | Universal |
+| [`@markuplint/html-spec`](./packages/@markuplint/html-spec)                   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-spec.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-spec)                    | Universal |
+| [`@markuplint/i18n`](./packages/@markuplint/i18n)                             | [![npm version](https://badge.fury.io/js/%40markuplint%2Fi18n.svg)](https://badge.fury.io/js/%40markuplint%2Fi18n)                              | Universal |
+| [`@markuplint/ml-ast`](./packages/@markuplint/ml-ast)                         | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-ast.svg)](https://badge.fury.io/js/%40markuplint%2Fml-ast)                          | Universal |
+| [`@markuplint/ml-config`](./packages/@markuplint/ml-config)                   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-config.svg)](https://badge.fury.io/js/%40markuplint%2Fml-config)                    | Universal |
+| [`@markuplint/ml-core`](./packages/@markuplint/ml-core)                       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-core.svg)](https://badge.fury.io/js/%40markuplint%2Fml-core)                        | Universal |
+| [`@markuplint/ml-spec`](./packages/@markuplint/ml-spec)                       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-spec.svg)](https://badge.fury.io/js/%40markuplint%2Fml-spec)                        | Universal |
+| [`@markuplint/parser-utils`](./packages/@markuplint/parser-utils)             | [![npm version](https://badge.fury.io/js/%40markuplint%2Fparser-utils.svg)](https://badge.fury.io/js/%40markuplint%2Fparser-utils)              | Universal |
+| [`@markuplint/rules`](./packages/@markuplint/rules)                           | [![npm version](https://badge.fury.io/js/%40markuplint%2Frules.svg)](https://badge.fury.io/js/%40markuplint%2Frules)                            | Universal |
+| [`@markuplint/types`](./packages/@markuplint/types)                           | [![npm version](https://badge.fury.io/js/%40markuplint%2Ftypes.svg)](https://badge.fury.io/js/%40markuplint%2Ftypes)                            | Universal |
 
 ### Plugins
-
-#### Rule plugins
-
-| Package                                                             | NPM                                                                                                                                   | Platform  |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| [`@markuplint/rule-textlint`](./packages/@markuplint/rule-textlint) | [![npm version](https://badge.fury.io/js/%40markuplint%2Frule-textlint.svg)](https://www.npmjs.com/package/@markuplint/rule-textlint) | Universal |
 
 #### Language plugins
 
@@ -58,16 +53,17 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 | [`@markuplint/nunjucks-parser`](./packages/@markuplint/nunjucks-parser) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fnunjucks-parser.svg)](https://www.npmjs.com/package/@markuplint/nunjucks-parser) | Universal |
 | [`@markuplint/liquid-parser`](./packages/@markuplint/liquid-parser)     | [![npm version](https://badge.fury.io/js/%40markuplint%2Fliquid-parser.svg)](https://www.npmjs.com/package/@markuplint/liquid-parser)     | Universal |
 
+#### Rule plugins
+
+| Package                                                             | NPM                                                                                                                                   | Platform  |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| [`@markuplint/rule-textlint`](./packages/@markuplint/rule-textlint) | [![npm version](https://badge.fury.io/js/%40markuplint%2Frule-textlint.svg)](https://www.npmjs.com/package/@markuplint/rule-textlint) | Universal |
+
 ## Editor Extensions
 
-| Editor                                                                                                                                                                                 | Page                                                                                                    | Author                                         |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| <a href="https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint"><img src="media/vscode.png" width="75" alt="Visual Studio Code: markuplint extension"></a> | [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint) | [@YusukeHirao](https://github.com/YusukeHirao) |
-| <a href="https://github.com/heavenshell/vim-markuplint"><img src="media/vim.png" width="75" alt="Vim: markuplint plugin"></a>                                                          | [Vim](https://github.com/heavenshell/vim-markuplint) (Not support v1.x yet)                             | [@heavenshell](https://github.com/heavenshell) |
-
-## Other Tools
-
--   [gulp-markuplint](https://github.com/oro-oss/gulp-markuplint) (Not support v1.x yet) Author: [@ktsn](https://twitter.com/ktsn)
+| Editor                                                                                                                                                                                                                                                          | Installation Page                                                                                       | Author                                         |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| <a href="https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint"><img src="https://raw.githubusercontent.com/markuplint/markuplint/main/media/vscode.png" width="75" height="82" alt="Visual Studio Code: markuplint extension"></a> | [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint) | [@YusukeHirao](https://github.com/YusukeHirao) |
 
 ## License
 

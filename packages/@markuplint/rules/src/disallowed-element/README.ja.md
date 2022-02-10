@@ -8,13 +8,13 @@ HTML 標準に準拠しているかどうかは[`permitted-contents`](../permitt
 
 ## ルールの詳細
 
-`{ "required-element": ["hgroup"] }` を指定した場合:
+`{ "disallowed-element": ["hgroup"] }` を指定した場合:
 
 👎 間違ったコード例
 
 ```html
 <div>
-	<hgroup><h1>Heading</h1></hgroup>
+  <hgroup><h1>Heading</h1></hgroup>
 </div>
 ```
 
@@ -22,7 +22,7 @@ HTML 標準に準拠しているかどうかは[`permitted-contents`](../permitt
 
 ```html
 <div>
-	<h1>Heading</h1>
+  <h1>Heading</h1>
 </div>
 ```
 
@@ -30,9 +30,9 @@ HTML 標準に準拠しているかどうかは[`permitted-contents`](../permitt
 
 ```json
 {
-	"rules": {
-		"required-element": ["hgroup"]
-	}
+  "rules": {
+    "disallowed-element": ["hgroup"]
+  }
 }
 ```
 
@@ -40,21 +40,21 @@ HTML 標準に準拠しているかどうかは[`permitted-contents`](../permitt
 
 ```json
 {
-	"nodeRules": [
-		{
-			"selector": "h1, h2, h3, h4, h5, h6",
-			"rules": {
-				"required-element": ["small"]
-			}
-		}
-	]
+  "nodeRules": [
+    {
+      "selector": "h1, h2, h3, h4, h5, h6",
+      "rules": {
+        "disallowed-element": ["small"]
+      }
+    }
+  ]
 }
 ```
 
 ### 設定値
 
--   型: `string[]`
--   デフォルト値: `[]`
+- 型: `string[]`
+- デフォルト値: `[]`
 
 ### デフォルトの警告の厳しさ
 

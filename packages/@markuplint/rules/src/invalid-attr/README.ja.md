@@ -10,8 +10,8 @@
 
 ```html
 <div unexist-attr>
-	<button tabindex="non-integer">The Button</button>
-	<a href="/" referrerpolicy="invalid-value">The Anchor</a>
+  <button tabindex="non-integer">The Button</button>
+  <a href="/" referrerpolicy="invalid-value">The Anchor</a>
 </div>
 ```
 
@@ -19,8 +19,8 @@
 
 ```html
 <div>
-	<button tabindex="0">The Button</button>
-	<a href="/" referrerpolicy="no-referrer">The Anchor</a>
+  <button tabindex="0">The Button</button>
+  <a href="/" referrerpolicy="no-referrer">The Anchor</a>
 </div>
 ```
 
@@ -44,15 +44,15 @@
 
 ```json
 {
-	"invalid-attr": {
-		"option": {
-			"attrs": {
-				"x-attr": {
-					"enum": ["value1", "value2", "value3"]
-				}
-			}
-		}
-	}
+  "invalid-attr": {
+    "option": {
+      "attrs": {
+        "x-attr": {
+          "enum": ["value1", "value2", "value3"]
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -64,15 +64,15 @@
 
 ```json
 {
-	"invalid-attr": {
-		"option": {
-			"attrs": {
-				"x-attr": {
-					"pattern": "/[a-z]+/"
-				}
-			}
-		}
-	}
+  "invalid-attr": {
+    "option": {
+      "attrs": {
+        "x-attr": {
+          "pattern": "/[a-z]+/"
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -84,15 +84,15 @@
 
 ```json
 {
-	"invalid-attr": {
-		"option": {
-			"attrs": {
-				"x-attr": {
-					"type": "Boolean"
-				}
-			}
-		}
-	}
+  "invalid-attr": {
+    "option": {
+      "attrs": {
+        "x-attr": {
+          "type": "Boolean"
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -104,15 +104,15 @@
 
 ```json
 {
-	"invalid-attr": {
-		"option": {
-			"attrs": {
-				"x-attr": {
-					"disallowed": true
-				}
-			}
-		}
-	}
+  "invalid-attr": {
+    "option": {
+      "attrs": {
+        "x-attr": {
+          "disallowed": true
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -124,15 +124,15 @@ HTML の仕様には存在しない、View ライブラリやテンプレート�
 
 ```json
 {
-	"invalid-attr": {
-		"option": {
-			"ignoreAttrNamePrefix": [
-				// Angularの場合
-				"app",
-				"*ng"
-			]
-		}
-	}
+  "invalid-attr": {
+    "option": {
+      "ignoreAttrNamePrefix": [
+        // Angularの場合
+        "app",
+        "*ng"
+      ]
+    }
+  }
 }
 ```
 
@@ -151,3 +151,63 @@ const Component = (props) => {
 	return <a target="_blank" {...props}>;
 }
 ```
+
+## 参考
+
+_[Open Graph プロトコル](https://ogp.me/)_ および _[RDFa](https://rdfa.info/)_ は、_HTML 標準_ とは異なる仕様です。そのため、必要な場合は次のように手動で指定する必要があります。
+
+### Open Graph プロトコル
+
+```json
+{
+  "nodeRules": {
+    "selector": "meta[property]",
+    "rules": {
+      "invalid-attr": {
+        "option": {
+          "attrs": {
+            "property": {
+              "type": "Any"
+            },
+            "content": {
+              "type": "Any"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### RDFa (RDFa lite)
+
+```json
+{
+  "rules": {
+    "invalid-attr": {
+      "option": {
+        "attrs": {
+          "vocab": {
+            "type": "URL"
+          },
+          "typeof": {
+            "type": "Any"
+          },
+          "property": {
+            "type": "Any"
+          },
+          "resource": {
+            "type": "Any"
+          },
+          "prefix": {
+            "type": "Any"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+構造化データを利用する場合 _RDFa_ ではなく _[Microdata](https://developer.mozilla.org/en-US/docs/Web/HTML/Microdata)_ を利用することを進めます。

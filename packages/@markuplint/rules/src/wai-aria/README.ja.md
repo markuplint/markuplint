@@ -4,19 +4,19 @@
 
 次の場合に警告します。
 
--   明らかな仕様違反
-    -   仕様に存在しないロールを指定した場合。
-    -   抽象ロールを指定した場合。
-    -   指定したロール（もしくは暗黙のロール）が持たないプロパティ/ステートを指定した場合。
-    -   プロパティ/ステートに無効な値を指定した場合。
-    -   ARIA in HTML の仕様における要素に許可されていないロールを指定した場合。
-    -   必須のプロパティ/ステートを指定していない場合。
--   推奨されない使い方
-    -   非推奨（廃止予定）のプロパティ/ステートを指定した場合。
-    -   ARIA in HTML の仕様における要素の暗黙のロールを明示的に指定した場合。
-    -   ARIA in HTML の仕様において、HTML の属性と同等の意味を持つプロパティ/ステートを指定した場合。
--   プリファレンス
-    -   プロパティ/ステートのデフォルト値を明示的に指定した場合。
+- 明らかな仕様違反
+  - 仕様に存在しないロールを指定した場合。
+  - 抽象ロールを指定した場合。
+  - 指定したロール（もしくは暗黙のロール）が持たないプロパティ/ステートを指定した場合。
+  - プロパティ/ステートに無効な値を指定した場合。
+  - ARIA in HTML の仕様における要素に許可されていないロールを指定した場合。
+  - 必須のプロパティ/ステートを指定していない場合。
+- 推奨されない使い方
+  - 非推奨（廃止予定）のプロパティ/ステートを指定した場合。
+  - ARIA in HTML の仕様における要素の暗黙のロールを明示的に指定した場合。
+  - ARIA in HTML の仕様において、HTML の属性と同等の意味を持つプロパティ/ステートを指定した場合。
+- プリファレンス
+  - プロパティ/ステートのデフォルト値を明示的に指定した場合。
 
 **ARIA in HTML** に関しては [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/aria-in-html) に設定値を持っています。またこの仕様はまだドラフトであるため、任意に無効化できるようにしています。
 
@@ -26,10 +26,10 @@
 
 ```html
 <div role="landmark" aria-busy="busy">
-	<ul>
-		<li role="button">an item</li>
-	</ul>
-	<button aria-checked="true">Click me!</button>
+  <ul>
+    <li role="button">an item</li>
+  </ul>
+  <button aria-checked="true">Click me!</button>
 </div>
 ```
 
@@ -37,10 +37,10 @@
 
 ```html
 <div role="banner" aria-busy="true">
-	<ul>
-		<li role="menuitemcheckbox">an item</li>
-	</ul>
-	<button aria-pressed="true">Click me!</button>
+  <ul>
+    <li role="menuitemcheckbox">an item</li>
+  </ul>
+  <button aria-pressed="true">Click me!</button>
 </div>
 ```
 
@@ -54,49 +54,49 @@
 
 プロパティ/ステートの値をチェックします。このオプションは、markuplint が許可リストに追加するよりも先に WAI-ARIA の仕様が更新された場合などに、必要に応じて一時的に無効化できるようにしています。基本的に無効化を推奨しません。
 
--   型: `boolean`
--   省略可
--   初期値: `true`
+- 型: `boolean`
+- 省略可
+- 初期値: `true`
 
 #### `checkingDeprecatedProps`
 
 非推奨（廃止予定）のプロパティ/ステートの値をチェックします。WAI-ARIA の古いバージョンのためにこの評価を無効化することができます。基本的に無効化を推奨しません。
 
--   型: `boolean`
--   省略可
--   初期値: `true`
+- 型: `boolean`
+- 省略可
+- 初期値: `true`
 
 ##### `permittedAriaRoles`
 
 ARIA in HTML の仕様において要素に許可されているロールかどうかチェックします。ARIA in HTML によるもので厳密には WAI ARIA の仕様ではないためオプションとしています。
 
--   型: `boolean`
--   省略可
--   初期値: `true`
+- 型: `boolean`
+- 省略可
+- 初期値: `true`
 
 ##### `disallowSetImplicitRole`
 
 暗黙的なロールの明示的な設定を禁止します。ARIA in HTML によるもので厳密には WAI ARIA の仕様ではないためオプションとしています。
 
--   型: `boolean`
--   省略可
--   初期値: `true`
+- 型: `boolean`
+- 省略可
+- 初期値: `true`
 
 ##### `disallowSetImplicitProps`
 
 暗黙的なプロパティ/ステートの明示的な設定を禁止します。ARIA in HTML によるもので厳密には WAI ARIA の仕様ではないためオプションとしています。
 
--   型: `boolean`
--   省略可
--   初期値: `true`
+- 型: `boolean`
+- 省略可
+- 初期値: `true`
 
 ##### `disallowDefaultValue`
 
 プロパティ/ステートのデフォルト値の明示的な設定を禁止します。
 
--   型: `boolean`
--   省略可
--   初期値: `false`
+- 型: `boolean`
+- 省略可
+- 初期値: `false`
 
 ### デフォルトの警告の厳しさ
 
@@ -110,34 +110,34 @@ ARIA in HTML の仕様において要素に許可されているロールかど�
 
 ```json
 {
-	"rules": {
-		"wai-aria": true
-	},
-	"nodeRules": [
-		{
-			"selector": "img[src$=.svg]",
-			"rules": {
-				// 暗黙のロールを許可する
-				"wai-aria": {
-					"option": {
-						"disallowSetImplicitRole": false
-					}
-				},
-				// role属性を必須とする
-				"required-attr": "role",
-				// role属性の値をimgのみとする
-				"invalid-attr": {
-					"option": {
-						"attrs": {
-							"role": {
-								"enum": ["img"]
-							}
-						}
-					}
-				}
-			}
-		}
-	]
+  "rules": {
+    "wai-aria": true
+  },
+  "nodeRules": [
+    {
+      "selector": "img[src$=.svg]",
+      "rules": {
+        // 暗黙のロールを許可する
+        "wai-aria": {
+          "option": {
+            "disallowSetImplicitRole": false
+          }
+        },
+        // role属性を必須とする
+        "required-attr": "role",
+        // role属性の値をimgのみとする
+        "invalid-attr": {
+          "option": {
+            "attrs": {
+              "role": {
+                "enum": ["img"]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }
 ```
 

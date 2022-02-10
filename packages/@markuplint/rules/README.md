@@ -8,86 +8,54 @@
 
 ### Conformance checking
 
-| Avaiable | Docs | Docs(ja) | Rule                                              | Fixable |
-| -------- | ---- | -------- | ------------------------------------------------- | ------- |
-| ✅       | ✅   | ✅       | [attr-duplication](./src/attr-duplication/)       | 🚧      |
-| ✅       | ✅   | ✅       | [character-reference](./src/character-reference/) | 🚧      |
-| 🚧       | 🚧   | 🚧       | [comment](./src/comment/)                         |         |
-| ✅       | ✅   | ✅       | [deprecated-attr](./src/deprecated-attr/)         |         |
-| ✅       | ✅   | ✅       | [deprecated-element](./src/deprecated-element/)   |         |
-| ✅       | ✅   | ✅       | [doctype](./src/doctype/)                         | 🚧      |
-| ✅       | ✅   | ✅       | [id-duplication](./src/id-duplication/)           |         |
-| ✅       | ✅   | ✅       | [permitted-contents](./src/permitted-contents/)   |         |
-| ✅       | ✅   | ✅       | [required-attr](./src/required-attr/)             |         |
-| ✅       | ✅   | ✅       | [invalid-attr](./src/invalid-attr/)               |         |
+- [`attr-duplication`](./src/attr-duplication)
+- [`character-reference`](./src/character-reference)
+- [`deprecated-attr`](./src/deprecated-attr)
+- [`deprecated-element`](./src/deprecated-element)
+- [`disallowed-element`](./src/disallowed-element)
+- [`doctype`](./src/doctype)
+- [`id-duplication`](./src/id-duplication)
+- [`ineffective-attr`](./src/ineffective-attr)
+- [`invalid-attr`](./src/invalid-attr)
+- [`permitted-contents`](./src/permitted-contents)
+- [`required-attr`](./src/required-attr)
+- [`required-element`](./src/required-element)
 
 ### Accessibility
 
-| Avaiable | Docs | Docs(ja) | Rule                                                                  | Fixable |
-| -------- | ---- | -------- | --------------------------------------------------------------------- | ------- |
-| 🚧       | 🚧   | 🚧       | [accessible-text](./src/accessible-text/)                             |         |
-| 🚧       | 🚧   | 🚧       | [attr-role](./src/permitted-role/)                                    |         |
-| 🚧       | 🚧   | 🚧       | [heading-in-sectioning-content](./src/heading-in-sectioning-content/) |         |
-| 🚧       | 🚧   | 🚧       | [heading-in-sectioning-root](./src/heading-in-sectioning-root/)       |         |
-| 🚧       | 🚧   | 🚧       | [heading-levels-skipping](./src/heading-levels-skipping/)             |         |
-| 🚧       | 🚧   | 🚧       | [labeling-controls](./src/labeling-controls/)                         |         |
-| ✅       | ✅   | ✅       | [landmark-roles](./src/landmark-roles/)                               |         |
-| ✅       | ✅   | ✅       | [required-h1](./src/required-h1/)                                     |         |
+- [`landmark-roles`](./src/landmark-roles)
+- [`no-refer-to-non-existent-id`](./src/no-refer-to-non-existent-id)
+- [`required-h1`](./src/required-h1)
+- [`wai-aria`](./src/wai-aria)
 
-### Usability
+### Naming Convention
 
-| Avaiable | Docs | Docs(ja) | Rule                                  | Fixable |
-| -------- | ---- | -------- | ------------------------------------- | ------- |
-| 🚧       | 🚧   | 🚧       | [external-link](./src/external-link/) | 🚧      |
+- [`class-naming`](./src/class-naming)
 
-### Structure Design and Naming Convention
+### Maintenability
 
-| Avaiable | Docs | Docs(ja) | Rule                                                  | Fixable |
-| -------- | ---- | -------- | ----------------------------------------------------- | ------- |
-| ✅       | ✅   | ✅       | [class-naming](./src/class-naming/)                   |         |
-| 🚧       | 🚧   | 🚧       | [custom-element-naming](./src/custom-element-naming/) |         |
-| 🚧       | 🚧   | 🚧       | [data-attr-naming](./src/data-attr-naming/)           |         |
-| 🚧       | 🚧   | 🚧       | [required-element](./src/required-element/)           |         |
+- [`no-hard-code-id`](./src/no-hard-code-id)
+- [`no-use-event-handler-attr`](./src/no-use-event-handler-attr)
 
 ### Style
 
-| Avaiable | Docs | Docs(ja) | Rule                                                        | Fixable |
-| -------- | ---- | -------- | ----------------------------------------------------------- | ------- |
-| ✅       | ✅   | ✅       | [attr-equal-space-after](./src/attr-equal-space-after/)     | ✅      |
-| ✅       | ✅   | ✅       | [attr-equal-space-before](./src/attr-equal-space-before/)   | ✅      |
-| ✅       | ✅   | ✅       | [attr-spacing](./src/attr-spacing/)                         | ✅      |
-| ✅       | ✅   | ✅       | [attr-value-quotes](./src/attr-value-quotes/)               | ✅      |
-| ✅       | ✅   | ✅       | [case-sensitive-attr-name](./src/case-sensitive-attr-name/) | ✅      |
-| ✅       | ✅   | ✅       | [case-sensitive-tag-name](./src/case-sensitive-tag-name/)   | ✅      |
-| 🚧       | 🚧   | 🚧       | [comment-spasing](./src/comment-spasing/)                   | 🚧      |
-| 🚧       | 🚧   | 🚧       | [event-attr](./src/event-attr/)                             |         |
-| ✅       | ✅   | ✅       | [indentation](./src/indentation/)                           | ✅      |
-| 🚧       | 🚧   | 🚧       | [indentation-attr](./src/indentation-attr/)                 | 🚧      |
-| 🚧       | 🚧   | 🚧       | [path](./src/path/)                                         |         |
-| 🚧       | 🚧   | ✅       | [self-closing-tag](./src/self-closing-tag/)                 | 🚧      |
-| 🚧       | 🚧   | 🚧       | [tag-omission](./src/tag-omission/)                         | 🚧      |
+- [`attr-equal-space-after`](./src/attr-equal-space-after)
+- [`attr-equal-space-before`](./src/attr-equal-space-before)
+- [`attr-spacing`](./src/attr-spacing)
+- [`attr-value-quotes`](./src/attr-value-quotes)
+- [`case-sensitive-attr-name`](./src/case-sensitive-attr-name)
+- [`case-sensitive-tag-name`](./src/case-sensitive-tag-name)
+- [`end-tag`](./src/end-tag)
+- [`indentation`](./src/indentation)
+- [`no-boolean-attr-value`](./src/no-boolean-attr-value)
+- [`no-default-value`](./src/no-default-value)
 
 ## Install
 
-This package is **default** used that dependenced by [`markuplint`](https://www.npmjs.com/package/markuplint/).
-
-Prerequisites: [Node.js](https://nodejs.org) (Version 12.4.0 or later)
+Generally, you **don't have to install** this package because markuplint dependents it defaultly.
 
 ```sh
-$ npm install @markuplint/rules
+$ npm install -D @markuplint/rules
 
-$ yarn add @markuplint/rules
+$ yarn add -D @markuplint/rules
 ```
-
-## Contributing
-
-```
-$ git clone git@github.com:markuplint/markuplint.git -b main
-$ yarn
-$ yarn build
-$ yarn test
-```
-
----
-
-Copyright &copy; 2021 markuplint. Under the MIT License.

@@ -16,8 +16,8 @@ This rule refers the [HTML Living Standard](https://html.spec.whatwg.org/) based
 
 ```html
 <div unexist-attr>
-	<button tabindex="non-integer">The Button</button>
-	<a href="/" referrerpolicy="invalid-value">The Anchor</a>
+  <button tabindex="non-integer">The Button</button>
+  <a href="/" referrerpolicy="invalid-value">The Anchor</a>
 </div>
 ```
 
@@ -25,8 +25,8 @@ This rule refers the [HTML Living Standard](https://html.spec.whatwg.org/) based
 
 ```html
 <div>
-	<button tabindex="0">The Button</button>
-	<a href="/" referrerpolicy="no-referrer">The Anchor</a>
+  <button tabindex="0">The Button</button>
+  <a href="/" referrerpolicy="no-referrer">The Anchor</a>
 </div>
 ```
 
@@ -50,15 +50,15 @@ Type: `string[]`
 
 ```json
 {
-	"invalid-attr": {
-		"option": {
-			"attrs": {
-				"x-attr": {
-					"enum": ["value1", "value2", "value3"]
-				}
-			}
-		}
-	}
+  "invalid-attr": {
+    "option": {
+      "attrs": {
+        "x-attr": {
+          "enum": ["value1", "value2", "value3"]
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -70,15 +70,15 @@ Type: `string`
 
 ```json
 {
-	"invalid-attr": {
-		"option": {
-			"attrs": {
-				"x-attr": {
-					"pattern": "/[a-z]+/"
-				}
-			}
-		}
-	}
+  "invalid-attr": {
+    "option": {
+      "attrs": {
+        "x-attr": {
+          "pattern": "/[a-z]+/"
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -90,15 +90,15 @@ Type: `string`
 
 ```json
 {
-	"invalid-attr": {
-		"option": {
-			"attrs": {
-				"x-attr": {
-					"type": "Boolean"
-				}
-			}
-		}
-	}
+  "invalid-attr": {
+    "option": {
+      "attrs": {
+        "x-attr": {
+          "type": "Boolean"
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -110,15 +110,15 @@ Type: `boolean`
 
 ```json
 {
-	"invalid-attr": {
-		"option": {
-			"attrs": {
-				"x-attr": {
-					"disallowed": true
-				}
-			}
-		}
-	}
+  "invalid-attr": {
+    "option": {
+      "attrs": {
+        "x-attr": {
+          "disallowed": true
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -130,15 +130,15 @@ Type: `string | string[]`
 
 ```json
 {
-	"invalid-attr": {
-		"option": {
-			"ignoreAttrNamePrefix": [
-				// If Angular
-				"app",
-				"*ng"
-			]
-		}
-	}
+  "invalid-attr": {
+    "option": {
+      "ignoreAttrNamePrefix": [
+        // If Angular
+        "app",
+        "*ng"
+      ]
+    }
+  }
 }
 ```
 
@@ -157,3 +157,63 @@ const Component = (props) => {
 	return <a target="_blank" {...props}>;
 }
 ```
+
+## FYI
+
+_[The Open Graph protocol](https://ogp.me/)_ and _[RDFa](https://rdfa.info/)_ are specifications that are different from the _HTML Standard_. So you should specify it manually as follow if you need it:
+
+### The Open Graph protocol
+
+```json
+{
+  "nodeRules": {
+    "selector": "meta[property]",
+    "rules": {
+      "invalid-attr": {
+        "option": {
+          "attrs": {
+            "property": {
+              "type": "Any"
+            },
+            "content": {
+              "type": "Any"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### RDFa (RDFa lite)
+
+```json
+{
+  "rules": {
+    "invalid-attr": {
+      "option": {
+        "attrs": {
+          "vocab": {
+            "type": "URL"
+          },
+          "typeof": {
+            "type": "Any"
+          },
+          "property": {
+            "type": "Any"
+          },
+          "resource": {
+            "type": "Any"
+          },
+          "prefix": {
+            "type": "Any"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+We recommend you use _[Microdata](https://developer.mozilla.org/en-US/docs/Web/HTML/Microdata)_ instead of _RDFa_ if you need structured data.

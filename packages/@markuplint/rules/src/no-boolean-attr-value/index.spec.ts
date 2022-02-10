@@ -22,7 +22,7 @@ test('input[required]', async () => {
 test('input[disabled] (Mutable)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
-		'<input type="text" disabled /><input type="text" disabled={disabled} />',
+		'<><input type="text" disabled /><input type="text" disabled={disabled} /></>',
 		{
 			parser: {
 				'.*': '@markuplint/jsx-parser',

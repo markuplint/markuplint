@@ -6,12 +6,10 @@
 
 ## Install
 
-Prerequisites: [Node.js](https://nodmustache.org) (Version 12.4.0 or later)
-
 ```sh
-$ npm install @markuplint/mustache-parser
+$ npm install -D @markuplint/mustache-parser
 
-$ yarn add @markuplint/mustache-parser
+$ yarn add -D @markuplint/mustache-parser
 ```
 
 ## Usage
@@ -20,9 +18,9 @@ Add `parser` option into your [confugration file](https://markuplint.dev/configu
 
 ```json
 {
-	"parser": {
-		".mustache$|.hbs$": "@markuplint/mustache-parser"
-	}
+  "parser": {
+    ".mustache$|.hbs$": "@markuplint/mustache-parser"
+  }
 }
 ```
 
@@ -65,16 +63,3 @@ Mixed the tags and spaces.
 ```html
 <div attr="{{ value }} {{ value2 }}"></div>
 ```
-
-## Contributing
-
-```
-$ git clone git@github.com:markuplint/markuplint.git -b main
-$ yarn
-$ yarn build
-$ yarn test
-```
-
----
-
-Copyright &copy; 2021 markuplint. Under the MIT License.

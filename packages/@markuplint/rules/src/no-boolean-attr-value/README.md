@@ -25,8 +25,8 @@ Warn when it specified any value to the boolean attribute.
 
 ### Interface
 
--   Type: `boolean`
--   Deafult Value: `true`
+- Type: `boolean`
+- Deafult Value: `true`
 
 ### Default severity
 

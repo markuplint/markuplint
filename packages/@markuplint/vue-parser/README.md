@@ -6,37 +6,22 @@
 
 ## Install
 
-Prerequisites: [Node.js](https://nodejs.org) (Version 12.4.0 or later)
-
 ```sh
-$ npm install @markuplint/vue-parser
+$ npm install -D @markuplint/vue-parser
 
-$ yarn add @markuplint/vue-parser
+$ yarn add -D @markuplint/vue-parser
 ```
 
 ## Usage
 
-Add `parser` option into your `.markuplintrc.*` file.
+Add `parser` option into your [confugration file](https://markuplint.dev/configuration#parser).
 
 ```json
 {
-	"parser": {
-		".vue$": "@markuplint/vue-parser"
-	}
+  "parser": {
+    ".vue$": "@markuplint/vue-parser"
+  }
 }
 ```
 
 `parserOptions` option is work in progress. current setting is `{ "sourceType": "module" }` that hard coded.
-
-## Contributing
-
-```
-$ git clone git@github.com:markuplint/markuplint.git -b main
-$ yarn
-$ yarn build
-$ yarn test
-```
-
----
-
-Copyright &copy; 2021 markuplint. Under the MIT License.

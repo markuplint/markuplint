@@ -22,14 +22,14 @@ Warn when specifying the event handler attribute.
 <div id="foo">Click</div>
 
 <script>
-	document.getElementById('foo').addEventListener('click', () => doSomething());
+  document.getElementById('foo').addEventListener('click', () => doSomething());
 </script>
 ```
 
 ### Interface
 
--   Type: `boolean`
--   Deafult Value: `true`
+- Type: `boolean`
+- Deafult Value: `true`
 
 ### Options
 
