@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/html-parser",
-	"version": "2.0.0-rc.6",
+	"version": "2.0.0",
 	"description": "HTML parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -20,8 +20,8 @@
 		"@types/parse5": "^6.0.3"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "2.0.0-rc.6",
-		"@markuplint/parser-utils": "2.0.0-rc.6",
+		"@markuplint/ml-ast": "2.0.0",
+		"@markuplint/parser-utils": "2.0.0",
 		"parse5": "^6.0.1",
 		"tslib": "^2.3.1"
 	}
