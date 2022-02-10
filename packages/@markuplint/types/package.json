@@ -18,8 +18,8 @@
 	},
 	"dependencies": {
 		"bcp-47": "1",
-		"css-tree": "^1.1.3",
-		"debug": "^4.3.2",
+		"css-tree": "1",
+		"debug": "^4.3.3",
 		"leven": "3",
 		"whatwg-mimetype": "2"
 	},
