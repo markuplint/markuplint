@@ -1,6 +1,6 @@
 # 許可するコンテンツ (`permitted-contents`)
 
-許可された要素もしくはテキストノードを子要素にもつ場合に警告します。
+許可されていない要素もしくはテキストノードを子要素にもつ場合に警告します。
 
 [HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/html-spec/index.json)に設定値を持っています。
 
