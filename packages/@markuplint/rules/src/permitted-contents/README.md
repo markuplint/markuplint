@@ -6,7 +6,7 @@ category: validation
 
 # Permitted contents
 
-Warn if a child element has an allowed element or text node.
+Warn if a child element has a not allowed element or text node.
 
 This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/html-spec/index.json).
 
