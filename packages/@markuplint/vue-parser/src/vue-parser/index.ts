@@ -1,6 +1,8 @@
 import * as VueESLintParser from 'vue-eslint-parser';
 
-export default function vueParse(vueTemplate: string): VueESLintParser.AST.ESLintProgram {
+export type VueTokens = VueESLintParser.AST.ESLintProgram;
+
+export default function vueParse(vueTemplate: string): VueTokens {
 	const ast = VueESLintParser.parse(vueTemplate, { parser: false });
 	return ast;
 }
