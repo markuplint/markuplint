@@ -5,7 +5,25 @@ import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 import { parse } from './';
 
 describe('parser', () => {
-	it('empty code', () => {
+	it('empty', () => {
+		const doc = parse('');
+		expect(doc.nodeList).toStrictEqual([]);
+		expect(doc.nodeList.length).toBe(0);
+	});
+
+	it('syntax error', () => {
+		expect(() => {
+			parse('"');
+		}).toThrow('Unterminated string constant');
+	});
+
+	it('silent syntax error', () => {
+		const doc = parse('<!--');
+		expect(doc.nodeList).toStrictEqual([]);
+		expect(doc.nodeList.length).toBe(0);
+	});
+
+	it('template empty', () => {
 		const doc = parse('<template></template>');
 		expect(doc.nodeList).toStrictEqual([]);
 		expect(doc.nodeList.length).toBe(0);

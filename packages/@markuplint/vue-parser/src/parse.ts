@@ -1,14 +1,37 @@
-import type { ASTNode } from './vue-parser';
+import type { ASTNode, VueTokens } from './vue-parser';
 import type { MLASTElementCloseTag, MLASTNode, MLASTParentNode, MLASTTag, MLASTText, Parse } from '@markuplint/ml-ast';
 
 import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
-import { getEndCol, getEndLine, isPotentialCustomElementName, uuid } from '@markuplint/parser-utils';
+import { getEndCol, getEndLine, isPotentialCustomElementName, uuid, ParserError } from '@markuplint/parser-utils';
 
 import { attr } from './attr';
 import vueParse from './vue-parser';
 
 export const parse: Parse = rawCode => {
-	const ast = vueParse(rawCode);
+	let ast: VueTokens;
+
+	try {
+		ast = vueParse(rawCode);
+	} catch (err) {
+		if (err instanceof SyntaxError && 'lineNumber' in err && 'column' in err) {
+			throw new ParserError(
+				// @ts-ignore
+				err.message,
+				{
+					// @ts-ignore
+					line: err.lineNumber,
+					// @ts-ignore
+					col: err.column,
+					raw: '',
+				},
+			);
+		}
+		return {
+			nodeList: [],
+			isFragment: true,
+			parseError: err instanceof Error ? err.message : new Error(`${err}`).message,
+		};
+	}
 
 	const nodeList: MLASTNode[] = ast.templateBody
 		? flattenNodes(traverse(ast.templateBody, null, rawCode), rawCode)
