@@ -1,6 +1,6 @@
 {
 	"tag": "link",
-	"ref": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link",
+	"ref": "https://html.spec.whatwg.org/multipage/semantics.html#the-link-element",
 	"global": {
 		"#HTMLGlobalAttrs": true,
 		"#GlobalEventAttrs": true,
