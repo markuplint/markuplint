@@ -10671,7 +10671,7 @@
 				"roles": true
 			},
 			"implicitRole": {
-				"summary": "",
+				"summary": "No corresponding role",
 				"role": false
 			},
 			"omittion": false,
@@ -10904,7 +10904,7 @@
 				"roles": ["feed", "none", "note", "presentation", "region", "search"]
 			},
 			"implicitRole": {
-				"summary": "",
+				"summary": "complementary",
 				"role": "complementary"
 			},
 			"omittion": false,
