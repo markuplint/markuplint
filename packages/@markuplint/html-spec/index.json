@@ -10586,14 +10586,14 @@
 					"deprecated": true
 				},
 				"shape": {
-					"description": "The shape of the hyperlink’s region in an image map. Note: Use the <area> element for image maps instead.",
+					"description": "The shape of the hyperlink's region in an image map. Note: Use the <area> element for image maps instead.",
 					"deprecated": true
 				},
 				"target": {
-					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: the current browsing context. (Default) _blank: usually a new tab, but users can configure browsers to open a new window instead. _parent: the parent browsing context of the current one. If no parent, behaves as _self. _top: the topmost browsing context (the \"highest\" context that’s an ancestor of the current one). If no ancestors, behaves as _self. Note: Setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener. See browser compatibility for support status."
+					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: the current browsing context. (Default) _blank: usually a new tab, but users can configure browsers to open a new window instead. _parent: the parent browsing context of the current one. If no parent, behaves as _self. _top: the topmost browsing context (the \"highest\" context that's an ancestor of the current one). If no ancestors, behaves as _self. Note: Setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener. See browser compatibility for support status."
 				},
 				"type": {
-					"description": "Hints at the linked URL’s format with a MIME type. No built-in functionality."
+					"description": "Hints at the linked URL's format with a MIME type. No built-in functionality."
 				}
 			}
 		},
@@ -10671,7 +10671,7 @@
 				"roles": true
 			},
 			"implicitRole": {
-				"summary": "",
+				"summary": "No corresponding role",
 				"role": false
 			},
 			"omittion": false,
@@ -10904,7 +10904,7 @@
 				"roles": ["feed", "none", "note", "presentation", "region", "search"]
 			},
 			"implicitRole": {
-				"summary": "",
+				"summary": "complementary",
 				"role": "complementary"
 			},
 			"omittion": false,
@@ -11538,19 +11538,19 @@
 					"description": "The URL that processes the information submitted by the button. Overrides the action attribute of the button's form owner. Does nothing if there is no form owner."
 				},
 				"formenctype": {
-					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), specifies how to encode the form data that is submitted. Possible values: application/x-www-form-urlencoded: The default if the attribute is not used. multipart/form-data: Use to submit <input> elements with their type attributes set to file. text/plain: Specified as a debugging aid; shouldn’t be used for real form submission. If this attribute is specified, it overrides the enctype attribute of the button's form owner."
+					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), specifies how to encode the form data that is submitted. Possible values: application/x-www-form-urlencoded: The default if the attribute is not used. multipart/form-data: Use to submit <input> elements with their type attributes set to file. text/plain: Specified as a debugging aid; shouldn't be used for real form submission. If this attribute is specified, it overrides the enctype attribute of the button's form owner."
 				},
 				"formmethod": {
-					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), this attribute specifies the HTTP method used to submit the form. Possible values: post: The data from the form are included in the body of the HTTP request when sent to the server. Use when the form contains information that shouldn’t be public, like login credentials. get: The form data are appended to the form's action URL, with a ? as a separator, and the resulting URL is sent to the server. Use this method when the form has no side effects, like search forms. If specified, this attribute overrides the method attribute of the button's form owner."
+					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), this attribute specifies the HTTP method used to submit the form. Possible values: post: The data from the form are included in the body of the HTTP request when sent to the server. Use when the form contains information that shouldn't be public, like login credentials. get: The form data are appended to the form's action URL, with a ? as a separator, and the resulting URL is sent to the server. Use this method when the form has no side effects, like search forms. If specified, this attribute overrides the method attribute of the button's form owner."
 				},
 				"formnovalidate": {
 					"description": "If the button is a submit button, this Boolean attribute specifies that the form is not to be validated when it is submitted. If this attribute is specified, it overrides the novalidate attribute of the button's form owner. This attribute is also available on <input type=\"image\"> and <input type=\"submit\"> elements."
 				},
 				"formtarget": {
-					"description": "If the button is a submit button, this attribute is an author-defined name or standardized, underscore-prefixed keyword indicating where to display the response from submitting the form. This is the name of, or keyword for, a browsing context (a tab, window, or <iframe>). If this attribute is specified, it overrides the target attribute of the button's form owner. The following keywords have special meanings: _self: Load the response into the same browsing context as the current one. This is the default if the attribute is not specified. _blank: Load the response into a new unnamed browsing context — usually a new tab or window, depending on the user’s browser settings. _parent: Load the response into the parent browsing context of the current one. If there is no parent, this option behaves the same way as _self. _top: Load the response into the top-level browsing context (that is, the browsing context that is an ancestor of the current one, and has no parent). If there is no parent, this option behaves the same way as _self."
+					"description": "If the button is a submit button, this attribute is an author-defined name or standardized, underscore-prefixed keyword indicating where to display the response from submitting the form. This is the name of, or keyword for, a browsing context (a tab, window, or <iframe>). If this attribute is specified, it overrides the target attribute of the button's form owner. The following keywords have special meanings: _self: Load the response into the same browsing context as the current one. This is the default if the attribute is not specified. _blank: Load the response into a new unnamed browsing context — usually a new tab or window, depending on the user's browser settings. _parent: Load the response into the parent browsing context of the current one. If there is no parent, this option behaves the same way as _self. _top: Load the response into the top-level browsing context (that is, the browsing context that is an ancestor of the current one, and has no parent). If there is no parent, this option behaves the same way as _self."
 				},
 				"name": {
-					"description": "The name of the button, submitted as a pair with the button’s value as part of the form data, when that button is used to submit the form."
+					"description": "The name of the button, submitted as a pair with the button's value as part of the form data, when that button is used to submit the form."
 				},
 				"type": {
 					"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-type",
@@ -11760,7 +11760,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color kewords can also be used. To achieve a similar effect, use the CSS background-color property.",
+					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color keywords can also be used. To achieve a similar effect, use the CSS background-color property.",
 					"deprecated": true
 				},
 				"char": {
@@ -11834,7 +11834,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color kewords can also be used. To achieve a similar effect, use the CSS background-color property.",
+					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color keywords can also be used. To achieve a similar effect, use the CSS background-color property.",
 					"deprecated": true
 				},
 				"char": {
@@ -12735,7 +12735,7 @@
 			"globalAttrs": {},
 			"attributes": {
 				"frameborder": {
-					"description": "This attribute allows you to specify a frame’s border."
+					"description": "This attribute allows you to specify a frame's border."
 				},
 				"marginheight": {
 					"description": "This attribute defines the height of the margin between frames."
@@ -12744,7 +12744,7 @@
 					"description": "This attribute defines the width of the margin between frames."
 				},
 				"name": {
-					"description": "This attribute is used for labeling frames. Without labeling, every link will open in the frame that it’s in – the closest parent frame. See the target attribute for more information."
+					"description": "This attribute is used for labeling frames. Without labeling, every link will open in the frame that it's in – the closest parent frame. See the target attribute for more information."
 				},
 				"noresize": {
 					"description": "This attribute prevents resizing of frames by users."
@@ -13147,7 +13147,7 @@
 			},
 			"attributes": {
 				"manifest": {
-					"description": "Specifies the URI of a resource manifest indicating resources that should be cached locally. See Using the application cache for details.",
+					"description": "Specifies the URI of a resource manifest indicating resources that should be cached locally.",
 					"deprecated": true
 				},
 				"version": {
@@ -13429,7 +13429,7 @@
 					"deprecated": true
 				},
 				"intrinsicsize": {
-					"description": "This attribute tells the browser to ignore the actual intrinsic size of the image and pretend it’s the size specified in the attribute. Specifically, the image would raster at these dimensions and naturalWidth/naturalHeight on images would return the values specified in this attribute. Explainer, examples",
+					"description": "This attribute tells the browser to ignore the actual intrinsic size of the image and pretend it's the size specified in the attribute. Specifically, the image would raster at these dimensions and naturalWidth/naturalHeight on images would return the values specified in this attribute. Explainer, examples",
 					"deprecated": true
 				},
 				"ismap": {
@@ -13444,7 +13444,7 @@
 					"experimental": true
 				},
 				"longdesc": {
-					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG’s HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
+					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG's HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
 					"deprecated": true
 				},
 				"name": {
@@ -13455,7 +13455,7 @@
 					"description": "A string indicating which referrer to use when fetching the resource: no-referrer: The Referer header will not be sent. no-referrer-when-downgrade: The Referer header will not be sent to origins without TLS (HTTPS). origin: The sent referrer will be limited to the origin of the referring page: its scheme, host, and port. origin-when-cross-origin: The referrer sent to other origins will be limited to the scheme, the host, and the port. Navigations on the same origin will still include the path. same-origin: A referrer will be sent for same origin, but cross-origin requests will contain no referrer information. strict-origin: Only send the origin of the document as the referrer when the protocol security level stays the same (HTTPS→HTTPS), but don't send it to a less secure destination (HTTPS→HTTP). strict-origin-when-cross-origin (default): Send a full URL when performing a same-origin request, only send the origin when the protocol security level stays the same (HTTPS→HTTPS), and send no header to a less secure destination (HTTPS→HTTP). unsafe-url: The referrer will include the origin and the path (but not the fragment, password, or username). This value is unsafe, because it leaks origins and paths from TLS-protected resources to insecure origins."
 				},
 				"sizes": {
-					"description": "One or more strings separated by commas, indicating a set of source sizes. Each source size consists of: A media condition. This must be omitted for the last item in the list. A source size value. Media Conditions describe properties of the viewport, not of the image. For example, (max-height: 500px) 1000px proposes to use a source of 1000px width, if the viewport is not higher than 500px. Source size values specify the intended display size of the image. User agents use the current source size to select one of the sources supplied by the srcset attribute, when those sources are described using width (w) descriptors. The selected source size affects the intrinsic size of the image (the image’s display size if no CSS styling is applied). If the srcset attribute is absent, or contains no values with a width descriptor, then the sizes attribute has no effect."
+					"description": "One or more strings separated by commas, indicating a set of source sizes. Each source size consists of: A media condition. This must be omitted for the last item in the list. A source size value. Media Conditions describe properties of the viewport, not of the image. For example, (max-height: 500px) 1000px proposes to use a source of 1000px width, if the viewport is not higher than 500px. Source size values specify the intended display size of the image. User agents use the current source size to select one of the sources supplied by the srcset attribute, when those sources are described using width (w) descriptors. The selected source size affects the intrinsic size of the image (the image's display size if no CSS styling is applied). If the srcset attribute is absent, or contains no values with a width descriptor, then the sizes attribute has no effect."
 				},
 				"src": {
 					"ref": "https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-src",
@@ -14430,6 +14430,12 @@
 						"self": ["[rel='preload' i]", "[rel='modulepreload' i]"]
 					}
 				},
+				"blocking": {
+					"ref": "https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking",
+					"type": {
+						"enum": ["render"]
+					}
+				},
 				"charset": {
 					"description": "This attribute defines the character encoding of the linked resource. The value is a space- and/or comma-delimited list of character sets as defined in RFC 2045. The default value is iso-8859-1. Note: To produce the same effect as this obsolete attribute, use the Content-Type HTTP header on the linked resource.",
 					"obsolete": true,
@@ -14497,7 +14503,7 @@
 					"experimental": true
 				},
 				"referrerpolicy": {
-					"description": "A string indicating which referrer to use when fetching the resource: no-referrer means that the Referer header will not be sent. no-referrer-when-downgrade means that no Referer header will be sent when navigating to an origin without TLS (HTTPS). This is a user agent’s default behavior, if no policy is otherwise specified. origin means that the referrer will be the origin of the page, which is roughly the scheme, the host, and the port. origin-when-cross-origin means that navigating to other origins will be limited to the scheme, the host, and the port, while navigating on the same origin will include the referrer's path. unsafe-url means that the referrer will include the origin and the path (but not the fragment, password, or username). This case is unsafe because it can leak origins and paths from TLS-protected resources to insecure origins.",
+					"description": "A string indicating which referrer to use when fetching the resource: no-referrer means that the Referer header will not be sent. no-referrer-when-downgrade means that no Referer header will be sent when navigating to an origin without TLS (HTTPS). This is a user agent's default behavior, if no policy is otherwise specified. origin means that the referrer will be the origin of the page, which is roughly the scheme, the host, and the port. origin-when-cross-origin means that navigating to other origins will be limited to the scheme, the host, and the port, while navigating on the same origin will include the referrer's path. unsafe-url means that the referrer will include the origin and the path (but not the fragment, password, or username). This case is unsafe because it can leak origins and paths from TLS-protected resources to insecure origins.",
 					"experimental": true
 				},
 				"rel": {
@@ -16064,8 +16070,14 @@
 					},
 					"ineffective": ":not([src]):not([type='module' i])"
 				},
+				"blocking": {
+					"ref": "https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking",
+					"type": {
+						"enum": ["render"]
+					}
+				},
 				"charset": {
-					"description": "If present, its value must be an ASCII case-insensitive match for \"utf-8\". It’s unnecessary to specify the charset attribute, because documents must use UTF-8, and the script element inherits its character encoding from the document.",
+					"description": "If present, its value must be an ASCII case-insensitive match for \"utf-8\". It's unnecessary to specify the charset attribute, because documents must use UTF-8, and the script element inherits its character encoding from the document.",
 					"deprecated": true
 				},
 				"crossorigin": {
@@ -16087,7 +16099,7 @@
 					}
 				},
 				"language": {
-					"description": "Like the type attribute, this attribute identifies the scripting language in use. Unlike the type attribute, however, this attribute’s possible values were never standardized. The type attribute should be used instead.",
+					"description": "Like the type attribute, this attribute identifies the scripting language in use. Unlike the type attribute, however, this attribute's possible values were never standardized. The type attribute should be used instead.",
 					"deprecated": true
 				},
 				"nomodule": {
@@ -16566,12 +16578,18 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"blocking": {
+					"ref": "https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking",
+					"type": {
+						"enum": ["render"]
+					}
+				},
 				"media": {
 					"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-style-media",
 					"type": "<media-query-list>"
 				},
 				"nonce": {
-					"description": "A cryptographic nonce (number used once) used to allow inline styles in a style-src Content-Security-Policy. The server must generate a unique nonce value each time it transmits a policy. It is critical to provide a nonce that cannot be guessed as bypassing a resource’s policy is otherwise trivial."
+					"description": "A cryptographic nonce (number used once) used to allow inline styles in a style-src Content-Security-Policy. The server must generate a unique nonce value each time it transmits a policy. It is critical to provide a nonce that cannot be guessed as bypassing a resource's policy is otherwise trivial."
 				},
 				"scoped": {
 					"description": "This attribute specifies that the styles only apply to the elements of its parent(s) and children. Note: This attribute may be re-introduced in the future per https://github.com/w3c/csswg-drafts/issues/3547. If you want to use the attribute now, you can use a polyfill.",
@@ -16767,7 +16785,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color kewords can also be used. To achieve a similar effect, use the CSS background-color property.",
+					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color keywords can also be used. To achieve a similar effect, use the CSS background-color property.",
 					"deprecated": true
 				},
 				"border": {
@@ -16835,7 +16853,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color kewords can also be used. As this attribute is deprecated, use the CSS background-color property instead.",
+					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color keywords can also be used. As this attribute is deprecated, use the CSS background-color property instead.",
 					"deprecated": true
 				},
 				"char": {
@@ -16912,7 +16930,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "This attribute defines the background color of each cell in a column. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color kewords can also be used. To achieve a similar effect, use the CSS background-color property.",
+					"description": "This attribute defines the background color of each cell in a column. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color keywords can also be used. To achieve a similar effect, use the CSS background-color property.",
 					"deprecated": true
 				},
 				"char": {
@@ -17125,7 +17143,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color kewords can also be used. To achieve a similar effect, use the CSS background-color property.",
+					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color keywords can also be used. To achieve a similar effect, use the CSS background-color property.",
 					"deprecated": true
 				},
 				"char": {

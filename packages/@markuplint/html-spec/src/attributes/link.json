@@ -1,6 +1,6 @@
 {
 	"tag": "link",
-	"ref": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link",
+	"ref": "https://html.spec.whatwg.org/multipage/semantics.html#the-link-element",
 	"global": {
 		"#HTMLGlobalAttrs": true,
 		"#GlobalEventAttrs": true,
@@ -111,6 +111,12 @@
 			"_TODO_": "If the rel attribute is modulepreload, invalidValueDefault and missingValueDefault will be `script`",
 			"condition": {
 				"self": ["[rel='preload' i]", "[rel='modulepreload' i]"]
+			}
+		},
+		"blocking": {
+			"ref": "https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking",
+			"type": {
+				"enum": ["render"]
 			}
 		},
 		"color": {

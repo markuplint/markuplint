@@ -11,6 +11,12 @@
 		"media": {
 			"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-style-media",
 			"type": "<media-query-list>"
+		},
+		"blocking": {
+			"ref": "https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking",
+			"type": {
+				"enum": ["render"]
+			}
 		}
 	}
 }

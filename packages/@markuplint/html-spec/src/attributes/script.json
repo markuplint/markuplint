@@ -53,6 +53,12 @@
 			"condition": {
 				"self": "[src]"
 			}
+		},
+		"blocking": {
+			"ref": "https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking",
+			"type": {
+				"enum": ["render"]
+			}
 		}
 	}
 }
