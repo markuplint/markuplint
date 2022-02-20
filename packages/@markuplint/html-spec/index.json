@@ -14430,6 +14430,12 @@
 						"self": ["[rel='preload' i]", "[rel='modulepreload' i]"]
 					}
 				},
+				"blocking": {
+					"ref": "https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking",
+					"type": {
+						"enum": ["render"]
+					}
+				},
 				"charset": {
 					"description": "This attribute defines the character encoding of the linked resource. The value is a space- and/or comma-delimited list of character sets as defined in RFC 2045. The default value is iso-8859-1. Note: To produce the same effect as this obsolete attribute, use the Content-Type HTTP header on the linked resource.",
 					"obsolete": true,
@@ -16064,6 +16070,12 @@
 					},
 					"ineffective": ":not([src]):not([type='module' i])"
 				},
+				"blocking": {
+					"ref": "https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking",
+					"type": {
+						"enum": ["render"]
+					}
+				},
 				"charset": {
 					"description": "If present, its value must be an ASCII case-insensitive match for \"utf-8\". It's unnecessary to specify the charset attribute, because documents must use UTF-8, and the script element inherits its character encoding from the document.",
 					"deprecated": true
@@ -16566,6 +16578,12 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"blocking": {
+					"ref": "https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking",
+					"type": {
+						"enum": ["render"]
+					}
+				},
 				"media": {
 					"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-style-media",
 					"type": "<media-query-list>"

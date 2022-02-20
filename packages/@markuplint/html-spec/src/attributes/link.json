@@ -113,6 +113,12 @@
 				"self": ["[rel='preload' i]", "[rel='modulepreload' i]"]
 			}
 		},
+		"blocking": {
+			"ref": "https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking",
+			"type": {
+				"enum": ["render"]
+			}
+		},
 		"color": {
 			"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-link-color",
 			"type": "<color>",
