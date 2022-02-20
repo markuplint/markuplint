@@ -364,4 +364,24 @@ describe('parser', () => {
 		expect(doc.nodeList[2].nodeName).toBe('text');
 		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
 	});
+
+	it('isCustomElement', () => {
+		expect((parse('<template><div/></template>').nodeList[0] as MLASTElement).isCustomElement).toBe(false);
+		expect((parse('<template><Div/></template>').nodeList[0] as MLASTElement).isCustomElement).toBe(true);
+		expect((parse('<template><x-div/></template>').nodeList[0] as MLASTElement).isCustomElement).toBe(true);
+		expect((parse('<template><foo/></template>').nodeList[0] as MLASTElement).isCustomElement).toBe(false);
+		expect((parse('<template><Foo/></template>').nodeList[0] as MLASTElement).isCustomElement).toBe(true);
+		expect((parse('<template><div><Foo/></div></template>').nodeList[1] as MLASTElement).isCustomElement).toBe(
+			true,
+		);
+		expect(
+			(parse('<template><div><Component/></div></template>').nodeList[1] as MLASTElement).isCustomElement,
+		).toBe(true);
+		expect(
+			(parse('<template><svg><Component/></svg></template>').nodeList[1] as MLASTElement).isCustomElement,
+		).toBe(true);
+		expect((parse('<template><svg><feBlend/></svg></template>').nodeList[1] as MLASTElement).isCustomElement).toBe(
+			false,
+		);
+	});
 });

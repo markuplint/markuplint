@@ -211,5 +211,5 @@ function nodeize(
 }
 
 function isVueComponentName(name: string) {
-	return isPotentialCustomElementName(name) || /[A-Z]|\./.test(name);
+	return isPotentialCustomElementName(name) || /^[A-Z]|\./.test(name);
 }

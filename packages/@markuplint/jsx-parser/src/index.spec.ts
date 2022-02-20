@@ -450,4 +450,16 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
 		expect((doc.nodeList[2] as MLASTElement).isCustomElement).toBeFalsy();
 	});
+
+	it('isCustomElement', () => {
+		expect((parse('<div/>').nodeList[0] as MLASTElement).isCustomElement).toBe(false);
+		expect((parse('<Div/>').nodeList[0] as MLASTElement).isCustomElement).toBe(true);
+		expect((parse('<x-div/>').nodeList[0] as MLASTElement).isCustomElement).toBe(true);
+		expect((parse('<foo/>').nodeList[0] as MLASTElement).isCustomElement).toBe(false);
+		expect((parse('<Foo/>').nodeList[0] as MLASTElement).isCustomElement).toBe(true);
+		expect((parse('<div><Foo/></div>').nodeList[1] as MLASTElement).isCustomElement).toBe(true);
+		expect((parse('<div><Component/></div>').nodeList[1] as MLASTElement).isCustomElement).toBe(true);
+		expect((parse('<svg><Component/></svg>').nodeList[1] as MLASTElement).isCustomElement).toBe(true);
+		expect((parse('<svg><feBlend/></svg>').nodeList[1] as MLASTElement).isCustomElement).toBe(false);
+	});
 });

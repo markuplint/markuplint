@@ -176,6 +176,7 @@ type TargetNodes = ReturnType<Element<TagRule[], Options>['getChildElementsAndTe
 function normalization(nodes: TargetNodes, ownNS: string | null, evalCustomElement: boolean) {
 	return nodes
 		.map(node => {
+			// FIXME: https://github.com/markuplint/markuplint/issues/388
 			if (!evalCustomElement && node.type === 'Element' && node.isCustomElement) {
 				return '';
 			}
