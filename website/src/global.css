@@ -283,11 +283,11 @@ td code {
 .language-jsx .token.tag .token.punctuation,
 .language-jsx .token.tag .token.script,
 .language-jsx .token.plain-text {
-  color: #24292e;
+  color: var(--sh-html-color-punctuation);
 }
 
 .language-jsx .token.tag .token.attr-name {
-  color: #6f42c1;
+  color: var(--sh-html-color-attr-name);
 }
 
 .language-jsx .token.tag .token.class-name {
@@ -300,7 +300,7 @@ td code {
 }
 
 .language-jsx .token.attr-value {
-  color: #032f62;
+  color: var(--sh-html-color-attr-value);
 }
 
 .language-jsx span[class='comment'] {
