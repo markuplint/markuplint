@@ -866,6 +866,33 @@ describe('React', () => {
 			[],
 		);
 	});
+
+	test('Element has only custom components', async () => {
+		expect((await mlRuleTest(rule, '<div><Component/></div>', jsxRuleOn)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<ul><Component/></ul>', jsxRuleOn)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<svg><Component/></svg>', jsxRuleOn)).violations).toStrictEqual([]);
+	});
+});
+
+describe('Vue', () => {
+	const vueRuleOn = {
+		...ruleOn,
+		parser: {
+			'.*': '@markuplint/vue-parser',
+		},
+	};
+
+	test('Element has only custom components', async () => {
+		expect(
+			(await mlRuleTest(rule, '<template><div><x-component/></div></template>', vueRuleOn)).violations,
+		).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<template><ul><x-component/></ul></template>', vueRuleOn)).violations,
+		).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<template><svg><x-component/></svg></template>', vueRuleOn)).violations,
+		).toStrictEqual([]);
+	});
 });
 
 describe('EJS', () => {

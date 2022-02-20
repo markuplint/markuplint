@@ -247,8 +247,12 @@ export function nodeize(
 	}
 }
 
+/**
+ * @see https://reactjs.org/docs/jsx-in-depth.html#user-defined-components-must-be-capitalized
+ *
+ */
 function isJSXComponentName(name: string, namespace: NamespaceURI) {
 	return (
-		namespace === 'http://www.w3.org/1999/xhtml' && (isPotentialCustomElementName(name) || /[A-Z]|\./.test(name))
+		(namespace === 'http://www.w3.org/1999/xhtml' && isPotentialCustomElementName(name)) || /^[A-Z]|\./.test(name)
 	);
 }
