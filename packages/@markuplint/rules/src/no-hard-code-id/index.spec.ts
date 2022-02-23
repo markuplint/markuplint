@@ -15,6 +15,16 @@ it('is hard-coeded', async () => {
 	]);
 });
 
+it("does't have id", async () => {
+	const { violations } = await mlRuleTest(rule, '<div class="foo"></div>');
+	expect(violations).toStrictEqual([]);
+});
+
+it("does't have id", async () => {
+	const { violations } = await mlRuleTest(rule, '<div data-id="foo"></div>');
+	expect(violations).toStrictEqual([]);
+});
+
 it('is hard-coeded', async () => {
 	const { violations } = await mlRuleTest(rule, 'div#foo', {
 		parser: {
