@@ -9,10 +9,9 @@ export default createRule({
 		await document.walkOn('Element', el => {
 			for (const attr of el.attributes) {
 				if (
-					(attr.attrType === 'html-attr' && !attr.isDynamicValue) ||
-					(attr.attrType === 'ps-attr' &&
-						attr.potentialName.toLowerCase() === 'id' &&
-						attr.valueType !== 'code')
+					attr.potentialName.toLowerCase() === 'id' &&
+					((attr.attrType === 'html-attr' && !attr.isDynamicValue) ||
+						(attr.attrType === 'ps-attr' && attr.valueType !== 'code'))
 				) {
 					report({
 						scope: el,
