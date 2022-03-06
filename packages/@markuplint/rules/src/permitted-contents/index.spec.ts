@@ -938,3 +938,29 @@ describe('EJS', () => {
 		expect((await mlRuleTest(rule, '<title><%- "title" _%></title>', ejsRuleOn)).violations).toStrictEqual([]);
 	});
 });
+
+describe('Issues', () => {
+	test('#396', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+					<table>
+						<tbody>
+						<tr>
+							<td></td>
+						</tr>
+						</tbody>
+						<tbody>
+						<tr>
+							<td></td>
+						</tr>
+						</tbody>
+					</table>`,
+					ruleOn,
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+});
