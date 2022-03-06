@@ -22,6 +22,7 @@ export async function resolveParser(file: MLFile, parserConfig?: ParserConfig, p
 			if (path.basename(file.path).match(toRegxp(pattern))) {
 				parserModName = parserConfig[pattern];
 				matched = true;
+				break;
 			}
 		}
 	}
