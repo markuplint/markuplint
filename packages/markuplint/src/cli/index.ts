@@ -6,6 +6,7 @@ import { cli } from './bootstrap';
 import { command } from './command';
 import { createRule } from './create-rule';
 import { initialize } from './init';
+import search from './search';
 
 (async () => {
 	if (cli.flags.v) {
@@ -38,6 +39,14 @@ import { initialize } from './init';
 
 	const files = cli.input;
 	if (files.length) {
+		if (cli.flags.search) {
+			await search(files, cli.flags, cli.flags.search).catch(err => {
+				process.stderr.write(err + '\n');
+				process.exit(1);
+			});
+			return;
+		}
+
 		const hasError = await command(files, cli.flags).catch(err => {
 			throw err;
 			// process.exit(1);

@@ -19,6 +19,7 @@ Options
 
 	--init                                 Initialize settings interactively.
 	--create-rule                          Add the scaffold of a custom rule.
+	--search                               Search lines of codes that include the target element by selectors.
 
 	--help,                  -h            Show help.
 	--version,               -v            Show version.
@@ -77,6 +78,9 @@ export const cli = meow(help, {
 		createRule: {
 			type: 'boolean',
 			default: false,
+		},
+		search: {
+			type: 'string',
 		},
 	},
 });
