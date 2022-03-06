@@ -441,3 +441,10 @@ describe('childNodeRules', () => {
 		expect(violations.length).toBe(0);
 	});
 });
+
+describe('Issues', () => {
+	test('#397', async () => {
+		const { violations } = await mlRuleTest(rule, '<th aria-sort="ascending"></th>');
+		expect(violations.length).toBe(0);
+	});
+});

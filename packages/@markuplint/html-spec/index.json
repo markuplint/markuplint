@@ -2837,6 +2837,9 @@
 					},
 					{
 						"name": "aria-selected"
+					},
+					{
+						"name": "aria-sort"
 					}
 				],
 				"childrenPresentational": true
@@ -4476,6 +4479,9 @@
 					},
 					{
 						"name": "aria-details"
+					},
+					{
+						"name": "aria-disabled"
 					},
 					{
 						"name": "aria-dropeffect"
@@ -7606,6 +7612,9 @@
 						"name": "aria-live"
 					},
 					{
+						"name": "aria-orientation"
+					},
+					{
 						"name": "aria-owns"
 					},
 					{
@@ -9097,6 +9106,9 @@
 						"name": "aria-live"
 					},
 					{
+						"name": "aria-orientation"
+					},
+					{
 						"name": "aria-owns"
 					},
 					{
@@ -9612,6 +9624,9 @@
 					},
 					{
 						"name": "aria-live"
+					},
+					{
+						"name": "aria-modal"
 					},
 					{
 						"name": "aria-owns"
@@ -11809,7 +11824,7 @@
 				],
 				"contents": [
 					{
-						"oneOrMore": "col"
+						"zeroOrMore": "col"
 					}
 				]
 			},
@@ -16743,7 +16758,7 @@
 						"choice": [
 							[
 								{
-									"optional": "tbody"
+									"zeroOrMore": "tbody"
 								}
 							],
 							[

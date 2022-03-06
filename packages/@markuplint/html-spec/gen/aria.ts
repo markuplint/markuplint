@@ -83,7 +83,7 @@ export async function getAria() {
 		const ownedRequiredProps = $ownedRequiredProps.map(getAttr);
 		ownedRequiredProps.forEach(p => (p.required = true));
 		const ownedInheritedProps = $feaures.find('.role-inherited li').toArray().map(getAttr);
-		const ownedProps = $feaures.find('.role-properties li').toArray().map(getAttr);
+		const ownedProps = $feaures.find('.role-properties li, .role-properties > a').toArray().map(getAttr);
 		const requiredContextRole = $feaures
 			.find('.role-scope li')
 			.toArray()

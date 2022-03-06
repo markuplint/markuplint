@@ -26,7 +26,7 @@
 			"choice": [
 				[
 					{
-						"optional": "tbody"
+						"zeroOrMore": "tbody"
 					}
 				],
 				[
