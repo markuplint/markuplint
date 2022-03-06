@@ -58,6 +58,21 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 	 */
 	readonly nodeStore = new NodeStore();
 
+	/**
+	 * Window object for calling the `getComputedStyle` and the `getPropertyValue` that are needed by **Accessible Name and Description Computation**.
+	 * But it always returns the empty object.
+	 * (It may improve to possible to compute the name from the `style` attribute in the future.)
+	 */
+	readonly defaultView = {
+		getComputedStyle(_el: MLDOMElement<any, any>) {
+			return {
+				getPropertyValue(_propName: string) {
+					return {};
+				},
+			};
+		},
+	};
+
 	#filename?: string;
 
 	/**
@@ -187,6 +202,18 @@ export default class MLDOMDocument<T extends RuleConfigValue, O = null> {
 		return this.nodeList.filter(
 			(node: AnonymousNode<T, O>): node is MLDOMElement<T, O> => node.type === 'Element' && node.matches(query),
 		);
+	}
+
+	querySelectorAll(query: string) {
+		return this.matchNodes(query);
+	}
+
+	querySelector(query: string) {
+		return this.querySelectorAll(query)[0] || null;
+	}
+
+	getElementById(id: string) {
+		return this.querySelector(`#${id}`);
 	}
 
 	toString() {

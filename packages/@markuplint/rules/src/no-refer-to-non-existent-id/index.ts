@@ -62,9 +62,9 @@ export default createRule({
 					if (spec.type === 'DOMID' && !idList.has(value)) {
 						report({
 							scope: el,
-							line: attr.value.startLine,
-							col: attr.value.startCol,
-							raw: attr.value.raw,
+							line: attr.valueNode.startLine,
+							col: attr.valueNode.startCol,
+							raw: attr.valueNode.raw,
 							message: t('Missing {0}', t('"{0*}" ID', value)),
 						});
 					}
@@ -79,9 +79,9 @@ export default createRule({
 							if (!idList.has(ref)) {
 								report({
 									scope: el,
-									line: attr.value.startLine,
-									col: attr.value.startCol,
-									raw: attr.value.raw,
+									line: attr.valueNode.startLine,
+									col: attr.valueNode.startCol,
+									raw: attr.valueNode.raw,
 									message: t('Missing {0}', t('"{0*}" ID', ref)),
 								});
 							}
@@ -94,9 +94,9 @@ export default createRule({
 					if (aria.value === 'ID reference' && !idList.has(value)) {
 						report({
 							scope: el,
-							line: attr.value.startLine,
-							col: attr.value.startCol,
-							raw: attr.value.raw,
+							line: attr.valueNode.startLine,
+							col: attr.valueNode.startCol,
+							raw: attr.valueNode.raw,
 							message: t('Missing {0}', t('"{0*}" ID', value)),
 						});
 					} else if (aria.value === 'ID reference list') {
@@ -109,9 +109,9 @@ export default createRule({
 							if (!idList.has(ref)) {
 								report({
 									scope: el,
-									line: attr.value.startLine,
-									col: attr.value.startCol,
-									raw: attr.value.raw,
+									line: attr.valueNode.startLine,
+									col: attr.valueNode.startCol,
+									raw: attr.valueNode.raw,
 									message: t('Missing {0}', t('"{0*}" ID', ref)),
 								});
 							}

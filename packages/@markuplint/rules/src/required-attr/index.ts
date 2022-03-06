@@ -105,7 +105,7 @@ export default createRule<RequiredAttributes>({
 						const expects = spec.values.length === 1 ? t(spec.values) : t('either {0}', t(spec.values));
 						const message = t('{0} expects {1}', t('the "{0*}" {1}', spec.name, 'attribute'), expects);
 						const attrToken = node.getAttributeToken(spec.name);
-						const valueToken = attrToken[0]?.attrType === 'html-attr' ? attrToken[0].value : null;
+						const valueToken = attrToken[0]?.attrType === 'html-attr' ? attrToken[0].valueNode : null;
 						const token = valueToken || attrToken[0];
 						report({
 							scope: {

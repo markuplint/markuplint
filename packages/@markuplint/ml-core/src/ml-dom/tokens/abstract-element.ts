@@ -17,6 +17,7 @@ export default abstract class MLDOMAbstractElement<
 	O = null,
 	E extends MLASTElement | MLASTOmittedElement = MLASTElement | MLASTOmittedElement,
 > extends MLDOMNode<T, O, E> {
+	readonly nodeType = 1;
 	readonly nodeName: string;
 	readonly attributes: (MLDOMAttribute | MLDOMPreprocessorSpecificAttribute)[] = [];
 	readonly hasSpreadAttr: boolean = false;
@@ -40,6 +41,10 @@ export default abstract class MLDOMAbstractElement<
 		this.isForeignElement = this.namespaceURI !== 'http://www.w3.org/1999/xhtml';
 		this.isCustomElement = astNode.isCustomElement;
 		this.isInFragmentDocument = document.isFragment;
+	}
+
+	get tagName() {
+		return this.nodeName;
 	}
 
 	get childNodes(): AnonymousNode<T, O>[] {
@@ -107,7 +112,7 @@ export default abstract class MLDOMAbstractElement<
 		const classList: string[] = [];
 		const classAttrs = this.getAttributeToken('class');
 		for (const classAttr of classAttrs) {
-			const value = classAttr.attrType === 'html-attr' ? classAttr.value.raw : classAttr.potentialValue;
+			const value = classAttr.attrType === 'html-attr' ? classAttr.value : classAttr.potentialValue;
 			classList.push(
 				...value
 					.split(/\s+/g)
@@ -124,6 +129,10 @@ export default abstract class MLDOMAbstractElement<
 
 	get fixedNodeName() {
 		return this.#fixedNodeName;
+	}
+
+	get textContent(): string {
+		return this.childNodes.map(child => child.textContent || '').join('');
 	}
 
 	querySelectorAll(selector: string) {
@@ -164,12 +173,16 @@ export default abstract class MLDOMAbstractElement<
 		return attrs;
 	}
 
+	getAttributeNode(attrName: string) {
+		return this.getAttributeToken(attrName)[0] || null;
+	}
+
 	getAttribute(attrName: string) {
 		attrName = attrName.toLowerCase();
 		for (const attr of this.attributes) {
 			if (attr.potentialName === attrName) {
 				if (attr.attrType === 'html-attr') {
-					return attr.value ? attr.value.raw : null;
+					return attr.value ? attr.value : null;
 				} else {
 					return attr.potentialValue;
 				}
