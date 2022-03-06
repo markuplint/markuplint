@@ -97,7 +97,7 @@ describe('basic test', () => {
 
 	it('is reported from 007.html', async () => {
 		const { violations } = await mlTestFile('test/fixture/007.html');
-		expect(violations.length).toEqual(31);
+		expect(violations.length).toEqual(55);
 	});
 
 	it('is ignoring 008.html', async () => {

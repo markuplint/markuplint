@@ -39,6 +39,7 @@
 		"no-refer-to-non-existent-id": true,
 		"no-use-event-handler-attr": false,
 		"permitted-contents": true,
+		"require-accessible-name": true,
 		"required-attr": true,
 		"required-element": false,
 		"required-h1": true,

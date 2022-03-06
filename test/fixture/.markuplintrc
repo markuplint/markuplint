@@ -20,6 +20,7 @@
 		"landmark-roles": true,
 		"no-boolean-attr-value": true,
 		"permitted-contents": true,
+		"require-accessible-name": true,
 		"required-attr": true,
 		"required-h1": true,
 		"wai-aria": true
