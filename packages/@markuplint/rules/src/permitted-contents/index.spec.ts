@@ -963,4 +963,27 @@ describe('Issues', () => {
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#398', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<table>
+						<colgroup></colgroup><!-- ← error -->
+						<colgroup><col /></colgroup><!-- ← no errors -->
+						<colgroup span="1"></colgroup><!-- ← no errors -->
+						<tbody>
+							<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>`,
+					ruleOn,
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
 });
