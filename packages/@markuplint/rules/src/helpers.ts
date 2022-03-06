@@ -158,6 +158,7 @@ export function getRoleSpec(specs: Readonly<MLMLSpec>, roleName: string) {
 	return {
 		name: role.name,
 		isAbstract: !!role.isAbstract,
+		accessibleNameRequired: role.accessibleNameRequired,
 		statesAndProps: role.ownedAttribute,
 		superClassRoles,
 	};

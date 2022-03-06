@@ -30,7 +30,7 @@ export default createRule({
 					attr.equal,
 					attr.spacesAfterEqual,
 					attr.startQuote,
-					attr.value,
+					attr.valueNode,
 					attr.endQuote,
 				];
 

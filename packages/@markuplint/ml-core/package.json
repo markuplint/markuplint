@@ -23,6 +23,7 @@
 		"@markuplint/ml-spec": "2.0.0",
 		"@markuplint/parser-utils": "2.0.0",
 		"debug": "^4.3.3",
+		"dom-accessibility-api": "^0.5.13",
 		"postcss-selector-parser": "^6.0.9",
 		"tslib": "^2.3.1"
 	},

@@ -12,6 +12,7 @@ export default class MLDOMElementCloseTag<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTElementCloseTag>
 	implements IMLDOMElementCloseTag
 {
+	readonly nodeType = 1;
 	readonly type = 'ElementCloseTag';
 	readonly nodeName: string;
 	readonly startTag: MLDOMElement<T, O>;

@@ -33,9 +33,9 @@ export default createRule({
 				if (defaultValue === normalizedValue) {
 					report({
 						scope: el,
-						line: attr.value.startLine,
-						col: attr.value.startCol,
-						raw: attr.value.raw,
+						line: attr.valueNode.startLine,
+						col: attr.valueNode.startCol,
+						raw: attr.valueNode.raw,
 						message: t('It is {0}', t('the {0}', 'default value')),
 					});
 				}

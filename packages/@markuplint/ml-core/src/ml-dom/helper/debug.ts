@@ -50,7 +50,7 @@ function attributesToDebugMaps(attributes: (MLDOMAttribute | MLDOMPreprocessorSp
 			r.push(`  ${tokenDebug(n.equal, 'equal')}`);
 			r.push(`  ${tokenDebug(n.spacesAfterEqual, 'aE')}`);
 			r.push(`  ${tokenDebug(n.startQuote, 'sQ')}`);
-			r.push(`  ${tokenDebug(n.value, 'value')}`);
+			r.push(`  ${tokenDebug(n.valueNode, 'value')}`);
 			r.push(`  ${tokenDebug(n.endQuote, 'eQ')}`);
 			r.push(`  isDirective: ${!!n.isDirective}`);
 			r.push(`  isDynamicValue: ${!!n.isDynamicValue}`);

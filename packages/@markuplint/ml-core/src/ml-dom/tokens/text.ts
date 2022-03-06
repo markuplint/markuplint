@@ -17,6 +17,7 @@ export default class MLDOMText<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTText>
 	implements IMLDOMText
 {
+	readonly nodeType = 3;
 	readonly type = 'Text';
 	readonly isRawText: boolean;
 	readonly ownModels: Set<ContentModel> = new Set();
@@ -24,6 +25,10 @@ export default class MLDOMText<T extends RuleConfigValue, O = null>
 	constructor(astNode: MLASTText, document: Document<T, O>) {
 		super(astNode, document);
 		this.isRawText = this.parentNode ? rawTextElements.includes(this.parentNode.nodeName.toLowerCase()) : false;
+	}
+
+	get textContent() {
+		return this.raw;
 	}
 
 	isWhitespace() {

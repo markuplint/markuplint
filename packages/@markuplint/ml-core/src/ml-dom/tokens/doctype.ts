@@ -9,6 +9,7 @@ export default class MLDOMDoctype<T extends RuleConfigValue, O = null>
 	extends MLDOMNode<T, O, MLASTNode>
 	implements IMLDOMDoctype
 {
+	readonly nodeType = 10;
 	readonly type = 'Doctype';
 
 	#name: string;
@@ -32,5 +33,9 @@ export default class MLDOMDoctype<T extends RuleConfigValue, O = null>
 
 	get systemId() {
 		return this.#systemId;
+	}
+
+	get textContent() {
+		return null;
 	}
 }

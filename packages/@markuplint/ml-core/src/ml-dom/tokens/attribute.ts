@@ -3,6 +3,7 @@ import type { MLASTHTMLAttr, MLToken } from '@markuplint/ml-ast';
 import MLDOMToken from './token';
 
 export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
+	readonly nodeType = 2;
 	readonly attrType = 'html-attr';
 	readonly name: MLDOMToken<MLToken>;
 	readonly spacesBeforeName: MLDOMToken<MLToken>;
@@ -10,7 +11,7 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 	readonly equal: MLDOMToken<MLToken>;
 	readonly spacesAfterEqual: MLDOMToken<MLToken>;
 	readonly startQuote: MLDOMToken<MLToken>;
-	readonly value: MLDOMToken<MLToken>;
+	readonly valueNode: MLDOMToken<MLToken>;
 	readonly endQuote: MLDOMToken<MLToken>;
 	readonly isDynamicValue?: true;
 	readonly isDirective?: true;
@@ -27,7 +28,7 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 		this.equal = new MLDOMToken(this._astToken.equal);
 		this.spacesAfterEqual = new MLDOMToken(this._astToken.spacesAfterEqual);
 		this.startQuote = new MLDOMToken(this._astToken.startQuote);
-		this.value = new MLDOMToken(this._astToken.value);
+		this.valueNode = new MLDOMToken(this._astToken.value);
 		this.endQuote = new MLDOMToken(this._astToken.endQuote);
 		this.isDynamicValue = astToken.isDynamicValue;
 		this.isDirective = astToken.isDirective;
@@ -43,7 +44,7 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 			raw.push(this.equal.raw);
 			raw.push(this.spacesAfterEqual.raw);
 			raw.push(this.startQuote.raw);
-			raw.push(this.value.raw);
+			raw.push(this.valueNode.raw);
 			raw.push(this.endQuote.raw);
 		}
 		return raw.join('');
@@ -73,6 +74,11 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 		return this.endQuote.endCol;
 	}
 
+	get value() {
+		const value = this.getValue();
+		return value.raw;
+	}
+
 	getName() {
 		return {
 			line: this.name.startLine,
@@ -84,10 +90,10 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 
 	getValue() {
 		return {
-			line: this.value.startLine,
-			col: this.value.startCol,
-			potential: this.value.raw,
-			raw: this.value.raw,
+			line: this.valueNode.startLine,
+			col: this.valueNode.startCol,
+			potential: this.valueNode.raw,
+			raw: this.valueNode.raw,
 		};
 	}
 
@@ -100,7 +106,7 @@ export default class MLDOMAttribute extends MLDOMToken<MLASTHTMLAttr> {
 			this.name.originRaw +
 			this.equal.originRaw +
 			this.startQuote.originRaw +
-			this.value.originRaw +
+			this.valueNode.originRaw +
 			this.endQuote.originRaw
 		);
 	}
