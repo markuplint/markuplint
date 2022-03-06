@@ -8,6 +8,7 @@ import type { ContentModel } from '@markuplint/ml-spec';
 import { getNS } from '@markuplint/ml-spec';
 
 import { createSelector } from '../helper';
+import { getAccname } from '../helper/accname';
 import { syncWalk } from '../helper/walkers';
 
 import MLDOMNode from './node';
@@ -245,6 +246,10 @@ export default abstract class MLDOMAbstractElement<
 			el = el.getParentElement();
 		} while (el !== null && el.type === 'Element');
 		return false;
+	}
+
+	getAccessibleName(): string {
+		return getAccname(this);
 	}
 
 	toNormalizeString(): string {
