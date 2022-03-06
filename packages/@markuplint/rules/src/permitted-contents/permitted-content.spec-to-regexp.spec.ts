@@ -294,7 +294,7 @@ test('summary', () => {
 test('table', () => {
 	const expGen = new ExpGenerator(0);
 	expect(expGen.specToRegExp(htmlSpec(specs, 'table')!.permittedStructures.contents).source).toEqual(
-		'^(?:<script>|<template>)*(?:<caption>)?(?:<script>|<template>)*(?:<colgroup>)*(?:<script>|<template>)*(?:<thead>)?(?:<script>|<template>)*(?:(?:<tbody>)?|(?:<tr>)+)(?:<script>|<template>)*(?:<tfoot>)?(?:<script>|<template>)*$',
+		'^(?:<script>|<template>)*(?:<caption>)?(?:<script>|<template>)*(?:<colgroup>)*(?:<script>|<template>)*(?:<thead>)?(?:<script>|<template>)*(?:(?:<tbody>)*|(?:<tr>)+)(?:<script>|<template>)*(?:<tfoot>)?(?:<script>|<template>)*$',
 	);
 });
 
@@ -309,12 +309,3 @@ test('audio in audio / Duplicate capture group name', () => {
 		'^(?<NAD_02_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_03>(?<NAD_00_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01>(?:<[^>]+>)?))*)))*)$',
 	);
 });
-
-test('area / Ancestor', () => {
-	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec(specs, 'table')!.permittedStructures.contents).source).toEqual(
-		'^(?:<script>|<template>)*(?:<caption>)?(?:<script>|<template>)*(?:<colgroup>)*(?:<script>|<template>)*(?:<thead>)?(?:<script>|<template>)*(?:(?:<tbody>)?|(?:<tr>)+)(?:<script>|<template>)*(?:<tfoot>)?(?:<script>|<template>)*$',
-	);
-});
-
-//
