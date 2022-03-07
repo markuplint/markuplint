@@ -3,12 +3,6 @@
 		"roles": false
 	},
 	"implicitRole": {
-		"role": false,
-		"conditions": [
-			{
-				"condition": "[href]",
-				"role": "link"
-			}
-		]
+		"role": false
 	}
 }
