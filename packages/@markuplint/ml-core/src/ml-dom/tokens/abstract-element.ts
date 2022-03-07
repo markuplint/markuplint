@@ -228,8 +228,33 @@ export default abstract class MLDOMAbstractElement<
 	/**
 	 * This element has "Preprocessor Specific Block". In other words, Its children are potentially mutable.
 	 */
-	hasMutableChildren() {
-		return this.childNodes.some(node => node.type === 'PSBlock');
+	hasMutableChildren(attr = false) {
+		for (const child of this.childNodes) {
+			if (child.type === 'PSBlock') {
+				return true;
+			}
+			if (child.type === 'Element' || child.type === 'OmittedElement') {
+				if (attr && child.hasMutableAttributes()) {
+					return true;
+				}
+				if (child.hasMutableChildren()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	hasMutableAttributes() {
+		for (const attr of this.attributes) {
+			if (attr.attrType === 'ps-attr') {
+				return true;
+			}
+			if (attr.isDynamicValue) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	isDescendantByUUIDList(uuidList: string[]) {

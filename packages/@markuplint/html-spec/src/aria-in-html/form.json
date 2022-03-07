@@ -3,11 +3,11 @@
 		"roles": ["search", "none", "presentation"]
 	},
 	"implicitRole": {
-		"role": "form",
+		"role": false,
 		"conditions": [
 			{
 				"condition": "#hasAccname",
-				"role": false
+				"role": "form"
 			}
 		]
 	}

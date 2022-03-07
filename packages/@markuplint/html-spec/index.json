@@ -12633,11 +12633,11 @@
 			},
 			"implicitRole": {
 				"summary": "form if the form has an accessible name, otherwise no corresponding role",
-				"role": "form",
+				"role": false,
 				"conditions": [
 					{
 						"condition": "#hasAccname",
-						"role": false
+						"role": "form"
 					}
 				]
 			},
@@ -14388,13 +14388,7 @@
 			},
 			"implicitRole": {
 				"summary": "link with href attribute",
-				"role": false,
-				"conditions": [
-					{
-						"condition": "[href]",
-						"role": "link"
-					}
-				]
+				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {

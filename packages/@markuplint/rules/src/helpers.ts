@@ -1,6 +1,6 @@
 import type { Log } from './debug';
 import type { Translator } from '@markuplint/i18n';
-import type { Element, RuleConfigValue } from '@markuplint/ml-core';
+import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { ARIRRoleAttribute, Attribute, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
 
 import { attrCheck } from './attr-check';
@@ -333,4 +333,35 @@ export function checkAria(specs: Readonly<MLMLSpec>, attrName: string, currentVa
 		currentValue,
 		isValid,
 	};
+}
+
+export function accnameMayBeMutable(el: Element<any, any>, document: Document<any, any>) {
+	if (el.hasMutableAttributes() || el.hasMutableChildren(true)) {
+		return true;
+	}
+
+	const ownedLable = getOwnedLabel(el, document);
+	if (ownedLable && (ownedLable.hasMutableAttributes() || ownedLable.hasMutableChildren(true))) {
+		return true;
+	}
+
+	return false;
+}
+
+const labelable = ['button', 'input:not([type=hidden])', 'meter', 'output', 'progress', 'select', 'textarea'];
+export function getOwnedLabel<V extends RuleConfigValue, O>(el: Element<V, O>, docuemnt: Document<V, O>) {
+	if (!labelable.some(cond => el.matches(cond))) {
+		return null;
+	}
+
+	let ownedLable = el.closest('label');
+
+	if (!ownedLable) {
+		const id = el.getAttribute('id');
+		if (id) {
+			ownedLable = docuemnt.querySelector(`label[for="${id}"]`);
+		}
+	}
+
+	return ownedLable;
 }
