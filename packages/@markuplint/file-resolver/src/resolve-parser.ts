@@ -10,8 +10,8 @@ const parsers = new Map<string, MLMarkupLanguageParser>();
 
 export async function resolveParser(file: MLFile, parserConfig?: ParserConfig, parserOptions?: ParserOptions) {
 	parserConfig = {
-		...parserConfig,
 		'/\\.html?$/i': '@markuplint/html-parser',
+		...parserConfig,
 	};
 	parserOptions = parserOptions || {};
 
