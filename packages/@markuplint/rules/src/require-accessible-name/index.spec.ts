@@ -100,3 +100,91 @@ it('has accessible name', async () => {
 	);
 	expect(violations.length).toBe(0);
 });
+
+it('needs no accessible name', async () => {
+	const { violations } = await mlRuleTest(rule, '<link rel="stylesheet" href="path/to" />');
+	expect(violations.length).toBe(0);
+});
+
+it("does'nt have accessible name", async () => {
+	const { violations } = await mlRuleTest(rule, '<form>text</form>');
+	expect(violations.length).toBe(0);
+});
+
+test('The accessible name may be mutable', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<input type="text" aria-label={label} />', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rule: true,
+			})
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('The accessible name may be mutable', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<button>{label}</button>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rule: true,
+			})
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('The accessible name may be mutable', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<button><span>{label}</span></button>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rule: true,
+			})
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('The accessible name may be mutable', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<button><img alt={alt} /></button>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rule: true,
+			})
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('The accessible name may be mutable', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<label><input type="text" /><span>{label}</span></label>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rule: true,
+			})
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('The accessible name may be mutable', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<><label for="foo">{label}</label><input type="text" id="foo" /></>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rule: true,
+			})
+		).violations,
+	).toStrictEqual([]);
+});
