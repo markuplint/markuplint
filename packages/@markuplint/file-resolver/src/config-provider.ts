@@ -9,7 +9,7 @@ import { configs } from '@markuplint/ml-core';
 
 import { load as loadConfig, search } from './cosmiconfig';
 import { resolvePlugins } from './resolve-plugins';
-import { nonNullableFilter, uuid } from './utils';
+import { fileExists, nonNullableFilter, uuid } from './utils';
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
 
@@ -169,7 +169,7 @@ class ConfigProvider {
 			return null;
 		}
 
-		if (!path.isAbsolute(filePath)) {
+		if (!moduleExists(filePath) && !path.isAbsolute(filePath)) {
 			throw new TypeError(`${filePath} is not an absolute path`);
 		}
 
@@ -198,6 +198,11 @@ class ConfigProvider {
 }
 
 async function load(filePath: string) {
+	if (!fileExists(filePath) && moduleExists(filePath)) {
+		const mod = await import(filePath);
+		const config: Config | null = mod?.default || null;
+		return config;
+	}
 	const res = await loadConfig<Config>(filePath, false);
 	if (!res) {
 		return null;

@@ -162,3 +162,12 @@ it('Deep target', async () => {
 	expect(configSet.errs[0] instanceof ReferenceError).toBe(true);
 	expect(configSet.errs[0].message).toBe(`Circular reference detected: ${key}`);
 });
+
+test('Import packaged config (Issue: #403)', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '005', '.markuplintrc');
+	const configSet = await configProvider.resolve([key]);
+	expect(configSet.config).toStrictEqual({
+		mock: true,
+	});
+});
