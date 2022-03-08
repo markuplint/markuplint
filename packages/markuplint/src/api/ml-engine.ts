@@ -3,7 +3,7 @@ import type { APIOptions, MLEngineEventMap, MLFabric } from './types';
 import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
 import type { Ruleset, Plugin } from '@markuplint/ml-core';
 
-import { configProvider, resolveFiles, resolveParser, resolveRules, resolveSpecs } from '@markuplint/file-resolver';
+import { ConfigProvider, resolveFiles, resolveParser, resolveRules, resolveSpecs } from '@markuplint/file-resolver';
 import { MLCore, convertRuleset } from '@markuplint/ml-core';
 import { FSWatcher } from 'chokidar';
 import { StrictEventEmitter } from 'strict-event-emitter';
@@ -24,6 +24,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 	#options?: APIOptions & MLEngineOptions;
 	#core: MLCore | null = null;
 	#watcher = new FSWatcher();
+	#configProvider: ConfigProvider;
 
 	static async toMLFile(target: Target) {
 		const files = await resolveFiles([target]);
@@ -34,6 +35,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		super();
 		this.#file = file;
 		this.#options = options;
+		this.#configProvider = new ConfigProvider(!!options?.watch);
 
 		if (this.#options?.debug) {
 			verbosely();
@@ -226,11 +228,11 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 	private async resolveConfig(remerge: boolean) {
 		const configFilePathsFromTarget = this.#options?.noSearchConfig
 			? null
-			: await configProvider.search(this.#file);
+			: await this.#configProvider.search(this.#file);
 		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget || 'null');
-		const configKey = this.#options?.config && configProvider.set(this.#options.config);
+		const configKey = this.#options?.config && this.#configProvider.set(this.#options.config);
 		this.emit('log', 'configKey', configKey || 'null');
-		const configSet = await configProvider.resolve(
+		const configSet = await this.#configProvider.resolve(
 			[configFilePathsFromTarget, this.#options?.configFile, configKey],
 			remerge,
 		);

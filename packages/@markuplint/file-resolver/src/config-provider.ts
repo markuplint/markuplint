@@ -13,11 +13,16 @@ import { fileExists, nonNullableFilter, uuid } from './utils';
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
 
-class ConfigProvider {
+export class ConfigProvider {
 	#store = new Map<string, Config>();
 	#cache = new Map<string, ConfigSet>();
 	#held = new Set<string>();
 	#recursiveLoadKeyAndDepth = new Map<string, number>();
+	#watch: boolean;
+
+	constructor(watch: boolean) {
+		this.#watch = true;
+	}
 
 	set(config: Config, key?: string) {
 		key = key || uuid();
@@ -29,7 +34,7 @@ class ConfigProvider {
 		if (!(await targetFile.dirExists())) {
 			return null;
 		}
-		const res = await search<Config>(targetFile.path, false);
+		const res = await search<Config>(targetFile.path, this.#watch);
 		if (!res) {
 			return null;
 		}
@@ -173,7 +178,7 @@ class ConfigProvider {
 			throw new TypeError(`${filePath} is not an absolute path`);
 		}
 
-		const config = await load(filePath);
+		const config = await load(filePath, this.#watch);
 		if (!config) {
 			return null;
 		}
@@ -197,13 +202,13 @@ class ConfigProvider {
 	}
 }
 
-async function load(filePath: string) {
+async function load(filePath: string, watch: boolean) {
 	if (!fileExists(filePath) && moduleExists(filePath)) {
 		const mod = await import(filePath);
 		const config: Config | null = mod?.default || null;
 		return config;
 	}
-	const res = await loadConfig<Config>(filePath, false);
+	const res = await loadConfig<Config>(filePath, watch);
 	if (!res) {
 		return null;
 	}
@@ -280,5 +285,3 @@ function isPrefixedName(name: string) {
 class CircularReferenceError extends ReferenceError {
 	name = 'CircularReferenceError';
 }
-
-export const configProvider = new ConfigProvider();

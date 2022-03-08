@@ -1,7 +1,9 @@
 import path from 'path';
 
-import { configProvider } from './config-provider';
+import { ConfigProvider } from './config-provider';
 import { getFile } from './ml-file';
+
+const configProvider = new ConfigProvider(false);
 
 it('001 + 002', async () => {
 	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
