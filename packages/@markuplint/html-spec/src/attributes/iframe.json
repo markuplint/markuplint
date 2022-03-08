@@ -39,7 +39,8 @@
 						"allow-scripts",
 						"allow-top-navigation",
 						"allow-top-navigation-by-user-activation",
-						"allow-downloads"
+						"allow-downloads",
+						"allow-custom-protocols-navigation"
 					]
 				},
 				"caseInsensitive": true,
