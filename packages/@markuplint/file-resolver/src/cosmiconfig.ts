@@ -9,7 +9,7 @@ const explorer = cosmiconfig('markuplint');
 type CosmiConfig = ReturnType<LoaderSync>;
 
 export async function search<T = CosmiConfig>(dir: string, cacheClear: boolean) {
-	if (!cacheClear) {
+	if (cacheClear) {
 		explorer.clearCaches();
 	}
 	dir = path.dirname(dir);
@@ -24,7 +24,7 @@ export async function search<T = CosmiConfig>(dir: string, cacheClear: boolean) 
 }
 
 export async function load<T = CosmiConfig>(filePath: string, cacheClear: boolean) {
-	if (!cacheClear) {
+	if (cacheClear) {
 		explorer.clearCaches();
 	}
 	const result = await explorer.load(filePath);
