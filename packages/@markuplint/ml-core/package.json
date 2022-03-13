@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-core",
-	"version": "2.1.1-dev.20220307.1",
+	"version": "2.1.1",
 	"description": "The core module of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -20,7 +20,7 @@
 		"@markuplint/i18n": "2.0.1-dev.20220307.0",
 		"@markuplint/ml-ast": "2.0.1-dev.20220307.0",
 		"@markuplint/ml-config": "2.0.1-dev.20220307.0",
-		"@markuplint/ml-spec": "2.0.1-dev.20220307.0",
+		"@markuplint/ml-spec": "^2.0.1",
 		"@markuplint/parser-utils": "2.0.1-dev.20220307.0",
 		"debug": "^4.3.3",
 		"dom-accessibility-api": "^0.5.13",
