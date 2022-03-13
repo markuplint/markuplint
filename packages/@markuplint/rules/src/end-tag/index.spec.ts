@@ -38,6 +38,24 @@ it('HTML', async () => {
 	expect((await mlRuleTest(rule, '<div><img><img /></div>')).violations).toStrictEqual([]);
 });
 
+it('SVG', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<svg>
+	<defs>
+		<clipPath>
+			<circle />
+			<circle></circle>
+		</clipPath>
+	</defs>
+</svg>`,
+			)
+		).violations,
+	).toStrictEqual([]);
+});
+
 it('pug', async () => {
 	expect(
 		(
