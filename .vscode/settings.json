@@ -13,7 +13,7 @@
 		}
 	],
 	"files.associations": {
-		".markuplintrc": "json",
+		".markuplintrc": "jsonc",
 		"*.schema.json": "jsonc"
 	},
 	"json.schemas": [

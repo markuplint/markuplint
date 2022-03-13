@@ -27,7 +27,8 @@
 		"@markuplint/ml-spec": "2.0.1-dev.20220307.0",
 		"cosmiconfig": "^7.0.1",
 		"glob": "^7.2.0",
-		"minimatch": "^3.0.5",
+		"jsonc": "^2.0.0",
+		"minimatch": "^5.0.1",
 		"tslib": "^2.3.1"
 	}
 }
