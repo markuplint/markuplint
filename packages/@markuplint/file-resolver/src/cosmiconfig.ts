@@ -1,10 +1,24 @@
-import type { LoaderSync } from 'cosmiconfig';
+import type { LoaderSync, Loader } from 'cosmiconfig';
 
 import path from 'path';
 
-import { cosmiconfig } from 'cosmiconfig';
+import { cosmiconfig, defaultLoaders } from 'cosmiconfig';
+import { jsonc } from 'jsonc';
 
-const explorer = cosmiconfig('markuplint');
+const explorer = cosmiconfig('markuplint', {
+	loaders: {
+		noExt: ((path, content) => {
+			try {
+				return jsonc.parse(content);
+			} catch (error: unknown) {
+				if (error instanceof Error && error.name === 'JSONError') {
+					return defaultLoaders['noExt'](path, content);
+				}
+				throw error;
+			}
+		}) as Loader,
+	},
+});
 
 type CosmiConfig = ReturnType<LoaderSync>;
 
