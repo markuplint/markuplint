@@ -16,6 +16,7 @@ export const globalAttrs: Record<
 			'draggable',
 			'enterkeyhint',
 			'hidden',
+			'inert',
 			'inputmode',
 			'is',
 			'itemid',
