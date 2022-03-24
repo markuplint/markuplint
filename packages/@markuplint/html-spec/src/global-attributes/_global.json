@@ -203,6 +203,10 @@
 			"ref": "https://w3c.github.io/uievents/#beforeinput",
 			"type": "FunctionBody"
 		},
+		"onbeforematch": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-onbeforematch",
+			"type": "FunctionBody"
+		},
 		"onblur": {
 			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-onabort",
 			"type": "FunctionBody"

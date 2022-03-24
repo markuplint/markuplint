@@ -1141,6 +1141,7 @@ export interface GlobalAttributes {
 				| 'onabort'
 				| 'onauxclick'
 				| 'onbeforeinput'
+				| 'onbeforematch'
 				| 'onblur'
 				| 'oncancel'
 				| 'oncanplay'
