@@ -270,7 +270,9 @@
 				},
 				"hidden": {
 					"ref": "https://html.spec.whatwg.org/multipage/interaction.html#attr-hidden",
-					"type": "Boolean"
+					"type": {
+						"enum": ["", "hidden", "until-found"]
+					}
 				},
 				"inert": {
 					"ref": "https://html.spec.whatwg.org/multipage/interaction.html#the-inert-attribute",
