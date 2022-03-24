@@ -14977,9 +14977,6 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"form": {
-					"description": "The <form> element to associate the <meter> element with (its form owner). The value of this attribute must be the id of a <form> in the same document. If this attribute is not set, the <meter> is associated with its ancestor <form> element, if any. This attribute is only used if the <meter> element is being used as a form-associated element, such as one displaying a range corresponding to an <input type=\"number\">."
-				},
 				"high": {
 					"ref": "https://html.spec.whatwg.org/multipage/form-elements.html#attr-meter-high",
 					"type": "Number"
