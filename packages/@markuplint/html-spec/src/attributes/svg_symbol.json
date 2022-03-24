@@ -28,8 +28,7 @@
 				{
 					"enum": ["left", "center", "right"]
 				}
-			],
-			"defaultValue": "0"
+			]
 		},
 		"refY": {
 			"ref": "https://svgwg.org/svg2-draft/struct.html#SymbolElementRefYAttribute",
@@ -40,8 +39,7 @@
 				{
 					"enum": ["top", "center", "bottom"]
 				}
-			],
-			"defaultValue": "0"
+			]
 		}
 	}
 }

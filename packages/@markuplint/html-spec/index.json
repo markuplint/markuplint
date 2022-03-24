@@ -24624,7 +24624,7 @@
 				},
 				"refX": {
 					"ref": "https://svgwg.org/svg2-draft/struct.html#SymbolElementRefXAttribute",
-					"description": "This attribute determines the x coordinate of the reference point of the symbol. Value type: <length>|<percentage>|left|center|right ; Default value: 0; Animatable: yes",
+					"description": "This attribute determines the x coordinate of the reference point of the symbol. Value type: <length>|<percentage>|left|center|right ; Default value: None; Animatable: yes",
 					"type": [
 						"<svg-length>",
 						"<percentage>",
@@ -24632,12 +24632,11 @@
 						{
 							"enum": ["left", "center", "right"]
 						}
-					],
-					"defaultValue": "0"
+					]
 				},
 				"refY": {
 					"ref": "https://svgwg.org/svg2-draft/struct.html#SymbolElementRefYAttribute",
-					"description": "This attribute determines the y coordinate of the reference point of the symbol. Value type: <length>|<percentage>|top|center|bottom ; Default value: 0; Animatable: yes",
+					"description": "This attribute determines the y coordinate of the reference point of the symbol. Value type: <length>|<percentage>|top|center|bottom ; Default value: None; Animatable: yes",
 					"type": [
 						"<svg-length>",
 						"<percentage>",
@@ -24645,8 +24644,7 @@
 						{
 							"enum": ["top", "center", "bottom"]
 						}
-					],
-					"defaultValue": "0"
+					]
 				},
 				"height": {
 					"description": "This attribute determines the height of the symbol. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
