@@ -47,6 +47,7 @@ export const globalAttrs: Record<
 			'onabort',
 			'onauxclick',
 			'onbeforeinput', // UI Events
+			'onbeforematch',
 			'onblur',
 			'oncancel',
 			'oncanplay',

@@ -61,7 +61,9 @@
 		},
 		"hidden": {
 			"ref": "https://html.spec.whatwg.org/multipage/interaction.html#attr-hidden",
-			"type": "Boolean"
+			"type": {
+				"enum": ["", "hidden", "until-found"]
+			}
 		},
 		"inert": {
 			"ref": "https://html.spec.whatwg.org/multipage/interaction.html#the-inert-attribute",
@@ -199,6 +201,10 @@
 		},
 		"onbeforeinput": {
 			"ref": "https://w3c.github.io/uievents/#beforeinput",
+			"type": "FunctionBody"
+		},
+		"onbeforematch": {
+			"ref": "https://html.spec.whatwg.org/multipage/webappapis.html#handler-onbeforematch",
 			"type": "FunctionBody"
 		},
 		"onblur": {

@@ -65,3 +65,10 @@ test('svg|image', async () => {
 		},
 	]);
 });
+
+test('Updated the hidden attribute type to Enum form Boolean', async () => {
+	expect((await mlRuleTest(rule, '<div hidden></div>')).violations.length).toBe(0);
+	expect((await mlRuleTest(rule, '<div hidden=""></div>')).violations.length).toBe(0);
+	expect((await mlRuleTest(rule, '<div hidden="hidden"></div>')).violations.length).toBe(0);
+	expect((await mlRuleTest(rule, '<div hidden="until-found"></div>')).violations.length).toBe(0);
+});
