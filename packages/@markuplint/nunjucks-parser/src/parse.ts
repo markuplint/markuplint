@@ -15,6 +15,11 @@ export const parse: Parse = rawCode => {
 			start: /{{/,
 			end: /}}/,
 		},
+		{
+			type: 'nunjucks-comment',
+			start: /{#/,
+			end: /#}/,
+		},
 	]);
 	const doc = htmlParse(blocks.replaced);
 	doc.nodeList = restoreNode(doc.nodeList, blocks);
