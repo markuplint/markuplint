@@ -19,7 +19,7 @@
 	"dependencies": {
 		"bcp-47": "1",
 		"css-tree": "1",
-		"debug": "^4.3.3",
+		"debug": "^4.3.4",
 		"leven": "3",
 		"whatwg-mimetype": "2"
 	},

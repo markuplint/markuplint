@@ -632,6 +632,15 @@
 					"anonymous": [""]
 				}
 			}
+		},
+		"fetchpriority": {
+			"ref": "https://wicg.github.io/priority-hints/#solution",
+			"type": {
+				"enum": ["high", "low", "auto"],
+				"invalidValueDefault": "auto",
+				"missingValueDefault": "auto"
+			},
+			"experimental": true
 		}
 	},
 	"#HTMLEmbededAndMediaContentAttrs": {

@@ -3,6 +3,6 @@
 		"roles": false
 	},
 	"implicitRole": {
-		"role": false
+		"role": "document"
 	}
 }

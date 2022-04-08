@@ -47,7 +47,8 @@
 				"noUse": { "type": "boolean" },
 				"condition": { "$ref": "#/definitions/AttributeCondition" },
 				"ineffective": { "$ref": "#/definitions/Selectors" },
-				"animatable": { "type": "boolean" }
+				"animatable": { "type": "boolean" },
+				"experimental": { "type": "boolean" }
 			}
 		},
 		"GlobalAttributes": {

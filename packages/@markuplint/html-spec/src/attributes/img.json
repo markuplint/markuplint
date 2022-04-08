@@ -7,7 +7,7 @@
 		"#DocumentElementEventAttrs": true,
 		"#ARIAAttrs": true,
 		"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "srcset", "sizes", "width"],
-		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "loading"]
+		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "loading", "fetchpriority"]
 	},
 	"attributes": {
 		"alt": {

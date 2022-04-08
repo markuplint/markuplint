@@ -6,7 +6,16 @@
 		"#GlobalEventAttrs": true,
 		"#DocumentElementEventAttrs": true,
 		"#ARIAAttrs": true,
-		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "href", "hreflang", "type", "referrerpolicy", "integrity", "media"]
+		"#HTMLLinkAndFetchingAttrs": [
+			"crossorigin",
+			"href",
+			"hreflang",
+			"type",
+			"referrerpolicy",
+			"integrity",
+			"media",
+			"fetchpriority"
+		]
 	},
 	"attributes": {
 		"rel": {

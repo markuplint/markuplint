@@ -1229,6 +1229,7 @@ export interface GlobalAttributes {
 		| 'rel'
 		| 'target'
 		| 'type'
+		| 'fetchpriority'
 	)[];
 	'#HTMLEmbededAndMediaContentAttrs'?: (
 		| 'autoplay'
@@ -1423,4 +1424,5 @@ export interface AttributeJSON {
 	condition?: AttributeCondition;
 	ineffective?: Selectors;
 	animatable?: boolean;
+	experimental?: boolean;
 }

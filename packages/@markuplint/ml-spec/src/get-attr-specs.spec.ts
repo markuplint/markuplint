@@ -41,4 +41,10 @@ describe('getSpec', () => {
 			deprecated: true,
 		});
 	});
+
+	test('img[fetchpriority] (experimental spec)', () => {
+		const attrs = getAttrSpecs('img', htmlSpec);
+		const fetchpriority = attrs?.find(attr => attr.name === 'fetchpriority');
+		expect(fetchpriority?.experimental).toBe(true);
+	});
 });

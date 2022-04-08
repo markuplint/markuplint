@@ -19,7 +19,7 @@
 		"conditions": [
 			{
 				"condition": "[alt=\"\"]",
-				"roles": ["none", "presentation"]
+				"roles": false
 			},
 			{
 				"condition": ":not([alt])",
@@ -32,7 +32,7 @@
 		"conditions": [
 			{
 				"condition": "[alt=\"\"]",
-				"role": false
+				"role": "presentation"
 			}
 		]
 	}

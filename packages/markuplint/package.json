@@ -17,12 +17,12 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/cli-color": "^2.0.1",
+		"@types/cli-color": "^2.0.2",
 		"@types/debug": "^4.1.7",
 		"@types/has-yarn": "^1.0.1",
 		"@types/meow": "6.0.0",
-		"@types/uuid": "^8.3.1",
-		"execa": "^5.1.1"
+		"@types/uuid": "^8.3.4",
+		"execa": "5"
 	},
 	"dependencies": {
 		"@markuplint/create-rule-helper": "^2.1.2",
@@ -36,8 +36,8 @@
 		"@markuplint/ml-spec": "^2.0.2",
 		"@markuplint/rules": "^2.2.3",
 		"chokidar": "^3.5.3",
-		"cli-color": "^2.0.1",
-		"debug": "^4.3.3",
+		"cli-color": "^2.0.2",
+		"debug": "^4.3.4",
 		"detect-installed": "^2.0.4",
 		"eastasianwidth": "^0.2.0",
 		"enquirer": "^2.3.6",
@@ -45,7 +45,7 @@
 		"has-yarn": "2",
 		"meow": "9",
 		"os-locale": "5",
-		"strict-event-emitter": "^0.2.0",
+		"strict-event-emitter": "^0.2.4",
 		"strip-ansi": "6",
 		"tslib": "^2.3.1",
 		"uuid": "^8.3.2"

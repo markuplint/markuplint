@@ -841,6 +841,15 @@
 							"anonymous": [""]
 						}
 					}
+				},
+				"fetchpriority": {
+					"ref": "https://wicg.github.io/priority-hints/#solution",
+					"type": {
+						"enum": ["high", "low", "auto"],
+						"invalidValueDefault": "auto",
+						"missingValueDefault": "auto"
+					},
+					"experimental": true
 				}
 			},
 			"#HTMLEmbededAndMediaContentAttrs": {
@@ -11325,8 +11334,8 @@
 				"roles": false
 			},
 			"implicitRole": {
-				"summary": "document",
-				"role": "document"
+				"summary": "generic",
+				"role": "generic"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11337,27 +11346,27 @@
 			},
 			"attributes": {
 				"alink": {
-					"description": "Color of text for hyperlinks when selected. This method is non-conforming, use CSS color property in conjunction with the :active pseudo-class instead.",
+					"description": "Color of text for hyperlinks when selected. Do not use this attribute! Use the CSS color property in conjunction with the :active pseudo-class instead.",
 					"deprecated": true
 				},
 				"background": {
-					"description": "URI of a image to use as a background. This method is non-conforming, use CSS background property on the element instead.",
+					"description": "URI of a image to use as a background. Do not use this attribute! Use the CSS background property on the element instead.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Background color for the document. This method is non-conforming, use CSS background-color property on the element instead.",
+					"description": "Background color for the document. Do not use this attribute! Use the CSS background-color property on the element instead.",
 					"deprecated": true
 				},
 				"bottommargin": {
-					"description": "The margin of the bottom of the body. This method is non-conforming, use CSS margin-bottom property on the element instead.",
+					"description": "The margin of the bottom of the body. Do not use this attribute! Use the CSS margin-bottom property on the element instead.",
 					"deprecated": true
 				},
 				"leftmargin": {
-					"description": "The margin of the left of the body. This method is non-conforming, use CSS margin-left property on the element instead.",
+					"description": "The margin of the left of the body. Do not use this attribute! Use the CSS margin-left property on the element instead.",
 					"deprecated": true
 				},
 				"link": {
-					"description": "Color of text for unvisited hypertext links. This method is non-conforming, use CSS color property in conjunction with the :link pseudo-class instead.",
+					"description": "Color of text for unvisited hypertext links. Do not use this attribute! Use the CSS color property in conjunction with the :link pseudo-class instead.",
 					"deprecated": true
 				},
 				"onafterprint": {
@@ -11446,19 +11455,19 @@
 					"type": "FunctionBody"
 				},
 				"rightmargin": {
-					"description": "The margin of the right of the body. This method is non-conforming, use CSS margin-right property on the element instead.",
+					"description": "The margin of the right of the body. Do not use this attribute! Use the CSS margin-right property on the element instead.",
 					"deprecated": true
 				},
 				"text": {
-					"description": "Foreground color of text. This method is non-conforming, use CSS color property on the element instead.",
+					"description": "Foreground color of text. Do not use this attribute! Use CSS color property on the element instead.",
 					"deprecated": true
 				},
 				"topmargin": {
-					"description": "The margin of the top of the body. This method is non-conforming, use CSS margin-top property on the element instead.",
+					"description": "The margin of the top of the body. Do not use this attribute! Use the CSS margin-top property on the element instead.",
 					"deprecated": true
 				},
 				"vlink": {
-					"description": "Color of text for visited hypertext links. This method is non-conforming, use CSS color property in conjunction with the :visited pseudo-class instead.",
+					"description": "Color of text for visited hypertext links. Do not use this attribute! Use the CSS color property in conjunction with the :visited pseudo-class instead.",
 					"deprecated": true
 				}
 			}
@@ -13160,8 +13169,8 @@
 				"roles": false
 			},
 			"implicitRole": {
-				"summary": "No corresponding role",
-				"role": false
+				"summary": "document",
+				"role": "document"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -13244,7 +13253,7 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "width"],
 				"#HTMLGlobalAttrs": true,
-				"#HTMLLinkAndFetchingAttrs": ["referrerpolicy", "loading"]
+				"#HTMLLinkAndFetchingAttrs": ["referrerpolicy", "loading", "fetchpriority"]
 			},
 			"attributes": {
 				"align": {
@@ -13265,6 +13274,9 @@
 				"csp": {
 					"description": "A Content Security Policy enforced for the embedded resource. See HTMLIFrameElement.csp for details.",
 					"experimental": true
+				},
+				"fetchpriority": {
+					"description": "Provides a hint of the relative priority to use when fetching the iframe document. Allowed values: high Signals a high-priority fetch relative to other iframe documents. low Signals a low-priority fetch relative to other iframe documents. auto Default: Signals automatic determination of fetch priority relative to other iframe documents."
 				},
 				"frameborder": {
 					"description": "The value 1 (the default) draws a border around this frame. The value 0 removes the border around this frame, but you should instead use the CSS property border to control <iframe> borders.",
@@ -13396,7 +13408,7 @@
 				"conditions": [
 					{
 						"condition": "[alt=\"\"]",
-						"roles": ["none", "presentation"]
+						"roles": false
 					},
 					{
 						"condition": ":not([alt])",
@@ -13405,12 +13417,12 @@
 				]
 			},
 			"implicitRole": {
-				"summary": "with non-empty alt attribute or no alt attribute: img with empty alt attribute: no corresponding role",
+				"summary": "with non-empty alt attribute or no alt attribute: img with empty alt attribute: presentation",
 				"role": "img",
 				"conditions": [
 					{
 						"condition": "[alt=\"\"]",
-						"role": false
+						"role": "presentation"
 					}
 				]
 			},
@@ -13421,7 +13433,7 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "srcset", "sizes", "width"],
 				"#HTMLGlobalAttrs": true,
-				"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "loading"]
+				"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "loading", "fetchpriority"]
 			},
 			"attributes": {
 				"align": {
@@ -13446,6 +13458,9 @@
 						"invalidValueDefault": "auto",
 						"missingValueDefault": "auto"
 					}
+				},
+				"fetchpriority": {
+					"description": "Provides a hint of the relative priority to use when fetching the image. Allowed values: high Signals a high-priority fetch relative to other images. low Signals a low-priority fetch relative to other images. auto Default: Signals automatic determination of fetch priority relative to other images."
 				},
 				"height": {
 					"description": "The intrinsic height of the image, in pixels. Must be an integer without a unit."
@@ -14414,7 +14429,8 @@
 					"type",
 					"referrerpolicy",
 					"integrity",
-					"media"
+					"media",
+					"fetchpriority"
 				]
 			},
 			"attributes": {
@@ -14474,6 +14490,9 @@
 				"disabled": {
 					"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-link-disabled",
 					"type": "Boolean"
+				},
+				"fetchpriority": {
+					"description": "Provides a hint of the relative priority to use when fetching a preloaded resource. Allowed values: high Signals a high-priority fetch relative to other resources of the same type. low Signals a low-priority fetch relative to other resources of the same type. auto Default: Signals automatic determination of fetch priority relative to other resources of the same type."
 				},
 				"href": {
 					"description": "This attribute specifies the URL of the linked resource. A URL can be absolute or relative."
@@ -14771,7 +14790,7 @@
 		{
 			"name": "menu",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu",
-			"description": "The <menu> HTML element is a semantic alternative to <ul>. It represents an unordered list of items (represented by <li> elements), each of these represent a link or other command that the user can activate.",
+			"description": "The <menu> HTML element is a semantic alternative to <ul>. It represents an unordered list of items (represented by <li> elements), each of which represents a link or other command that the user can activate.",
 			"experimental": true,
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
@@ -15694,7 +15713,7 @@
 		{
 			"name": "pre",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre",
-			"description": "The <pre> HTML element represents preformatted text which is to be presented exactly as written in the HTML file. The text is typically rendered using a non-proportional, or \"monospaced, font. Whitespace inside this element is displayed as written.",
+			"description": "The <pre> HTML element represents preformatted text which is to be presented exactly as written in the HTML file. The text is typically rendered using a non-proportional, or monospaced, font. Whitespace inside this element is displayed as written.",
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
 				"summary": "Phrasing content.",
@@ -16076,7 +16095,7 @@
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
-				"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "integrity"]
+				"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "integrity", "fetchpriority"]
 			},
 			"attributes": {
 				"async": {
@@ -16108,6 +16127,9 @@
 					},
 					"ineffective": ["[type='module' i]", ":not([src])", "[async]"],
 					"_TODO_": "The defer attribute affects the element that has the async attribute if it doesn't support the async"
+				},
+				"fetchpriority": {
+					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Signals a high-priority fetch relative to other external scripts.. low Signals a low-priority fetch relative to other external scripts. auto Default: Signals automatic determination of fetch priority relative to other external scripts."
 				},
 				"integrity": {
 					"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-script-integrity",

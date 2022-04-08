@@ -97,7 +97,7 @@ describe('getPermittedRoles', () => {
 
 	test('the img element', async () => {
 		expect(getPermittedRoles(specs, createTestElement('<img>')!)).toStrictEqual(['img']);
-		expect(getPermittedRoles(specs, createTestElement('<img alt="">')!)).toStrictEqual(['none', 'presentation']);
+		expect(getPermittedRoles(specs, createTestElement('<img alt="">')!)).toStrictEqual(['presentation']);
 		expect(getPermittedRoles(specs, createTestElement('<img alt="photo: something">')!)).toStrictEqual([
 			'img',
 			'button',

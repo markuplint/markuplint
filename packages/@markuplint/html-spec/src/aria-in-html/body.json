@@ -3,6 +3,6 @@
 		"roles": false
 	},
 	"implicitRole": {
-		"role": "document"
+		"role": "generic"
 	}
 }
