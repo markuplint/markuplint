@@ -11337,27 +11337,27 @@
 			},
 			"attributes": {
 				"alink": {
-					"description": "Color of text for hyperlinks when selected. This method is non-conforming, use CSS color property in conjunction with the :active pseudo-class instead.",
+					"description": "Color of text for hyperlinks when selected. Do not use this attribute! Use the CSS color property in conjunction with the :active pseudo-class instead.",
 					"deprecated": true
 				},
 				"background": {
-					"description": "URI of a image to use as a background. This method is non-conforming, use CSS background property on the element instead.",
+					"description": "URI of a image to use as a background. Do not use this attribute! Use the CSS background property on the element instead.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Background color for the document. This method is non-conforming, use CSS background-color property on the element instead.",
+					"description": "Background color for the document. Do not use this attribute! Use the CSS background-color property on the element instead.",
 					"deprecated": true
 				},
 				"bottommargin": {
-					"description": "The margin of the bottom of the body. This method is non-conforming, use CSS margin-bottom property on the element instead.",
+					"description": "The margin of the bottom of the body. Do not use this attribute! Use the CSS margin-bottom property on the element instead.",
 					"deprecated": true
 				},
 				"leftmargin": {
-					"description": "The margin of the left of the body. This method is non-conforming, use CSS margin-left property on the element instead.",
+					"description": "The margin of the left of the body. Do not use this attribute! Use the CSS margin-left property on the element instead.",
 					"deprecated": true
 				},
 				"link": {
-					"description": "Color of text for unvisited hypertext links. This method is non-conforming, use CSS color property in conjunction with the :link pseudo-class instead.",
+					"description": "Color of text for unvisited hypertext links. Do not use this attribute! Use the CSS color property in conjunction with the :link pseudo-class instead.",
 					"deprecated": true
 				},
 				"onafterprint": {
@@ -11446,19 +11446,19 @@
 					"type": "FunctionBody"
 				},
 				"rightmargin": {
-					"description": "The margin of the right of the body. This method is non-conforming, use CSS margin-right property on the element instead.",
+					"description": "The margin of the right of the body. Do not use this attribute! Use the CSS margin-right property on the element instead.",
 					"deprecated": true
 				},
 				"text": {
-					"description": "Foreground color of text. This method is non-conforming, use CSS color property on the element instead.",
+					"description": "Foreground color of text. Do not use this attribute! Use CSS color property on the element instead.",
 					"deprecated": true
 				},
 				"topmargin": {
-					"description": "The margin of the top of the body. This method is non-conforming, use CSS margin-top property on the element instead.",
+					"description": "The margin of the top of the body. Do not use this attribute! Use the CSS margin-top property on the element instead.",
 					"deprecated": true
 				},
 				"vlink": {
-					"description": "Color of text for visited hypertext links. This method is non-conforming, use CSS color property in conjunction with the :visited pseudo-class instead.",
+					"description": "Color of text for visited hypertext links. Do not use this attribute! Use the CSS color property in conjunction with the :visited pseudo-class instead.",
 					"deprecated": true
 				}
 			}
@@ -14771,7 +14771,7 @@
 		{
 			"name": "menu",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu",
-			"description": "The <menu> HTML element is a semantic alternative to <ul>. It represents an unordered list of items (represented by <li> elements), each of these represent a link or other command that the user can activate.",
+			"description": "The <menu> HTML element is a semantic alternative to <ul>. It represents an unordered list of items (represented by <li> elements), each of which represents a link or other command that the user can activate.",
 			"experimental": true,
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
@@ -15694,7 +15694,7 @@
 		{
 			"name": "pre",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre",
-			"description": "The <pre> HTML element represents preformatted text which is to be presented exactly as written in the HTML file. The text is typically rendered using a non-proportional, or \"monospaced, font. Whitespace inside this element is displayed as written.",
+			"description": "The <pre> HTML element represents preformatted text which is to be presented exactly as written in the HTML file. The text is typically rendered using a non-proportional, or monospaced, font. Whitespace inside this element is displayed as written.",
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
 				"summary": "Phrasing content.",
