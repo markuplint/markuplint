@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Layout from '../components/Layout';
 import BasicMeta from '../components/meta/BasicMeta';
 
-type Props = {
+export type MetaData = {
   title: string;
   back?: {
     title: string;
@@ -17,8 +17,8 @@ type Props = {
   };
 };
 
-export default function Index({ children, frontMatter }: PropsWithChildren<{ frontMatter: Props }>) {
-  const { title, back, next } = frontMatter;
+export default function Index({ children, meta }: PropsWithChildren<{ meta: MetaData }>) {
+  const { title, back, next } = meta;
   return (
     <Layout>
       <BasicMeta title={title} />

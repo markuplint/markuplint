@@ -1,6 +1,7 @@
 dist
 src/pages/rules/*.mdx
 !src/pages/rules/index.mdx
+!lib
 
 # Ignore next-mdx-enhanced cache directory
 .mdx-data

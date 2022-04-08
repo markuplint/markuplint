@@ -17,9 +17,9 @@
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
 		"all": "yarn lint; yarn clean; yarn gen; yarn build; yarn schema; yarn test:clear; yarn test;",
 		"cli": "./packages/markuplint/bin/markuplint",
-		"site:dev": "cd website; yarn site:dev",
+		"site:dev": "cd website; yarn; yarn site:dev",
 		"site:lint": "prettier --write './website/**/*{ts,tsx,mdx}' './website/*{json,rc,js}'; eslint --fix './website/**/*.{ts,tsx}' './website/*.{js,ts}'; yarn cli './website/**/*.tsx'",
-		"site:build": "cd website; yarn site:build",
+		"site:build": "cd website; yarn; yarn site:build",
 		"pg:dev": "cd playground; yarn pg:dev",
 		"pg:build": "cd playground; yarn pg:build",
 		"apidoc": "typedoc --ignoreCompilerErrors --exclude '**/*+(index|.spec|.e2e|.d).ts,node_modules/**/*' --mode file --out apidoc --media packages/markuplint/media --readme ./packages/markuplint/README.md ./packages/markuplint/",
@@ -87,7 +87,6 @@
 	"workspaces": [
 		"packages/*",
 		"packages/@markuplint/*",
-		"website",
 		"playground"
 	],
 	"devDependencies": {
