@@ -11325,8 +11325,8 @@
 				"roles": false
 			},
 			"implicitRole": {
-				"summary": "document",
-				"role": "document"
+				"summary": "generic",
+				"role": "generic"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -13160,8 +13160,8 @@
 				"roles": false
 			},
 			"implicitRole": {
-				"summary": "No corresponding role",
-				"role": false
+				"summary": "document",
+				"role": "document"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -13396,7 +13396,7 @@
 				"conditions": [
 					{
 						"condition": "[alt=\"\"]",
-						"roles": ["none", "presentation"]
+						"roles": false
 					},
 					{
 						"condition": ":not([alt])",
@@ -13405,12 +13405,12 @@
 				]
 			},
 			"implicitRole": {
-				"summary": "with non-empty alt attribute or no alt attribute: img with empty alt attribute: no corresponding role",
+				"summary": "with non-empty alt attribute or no alt attribute: img with empty alt attribute: presentation",
 				"role": "img",
 				"conditions": [
 					{
 						"condition": "[alt=\"\"]",
-						"role": false
+						"role": "presentation"
 					}
 				]
 			},
