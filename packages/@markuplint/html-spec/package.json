@@ -21,7 +21,7 @@
 		"@types/node-fetch": "2",
 		"cheerio": "^1.0.0-rc.10",
 		"cli-progress": "^3.10.0",
-		"fast-xml-parser": "^4.0.2",
+		"fast-xml-parser": "^4.0.7",
 		"jsonschema": "^1.4.0",
 		"node-fetch": "2"
 	},

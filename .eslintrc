@@ -69,9 +69,13 @@
 				"returns": "return"
 			}
 		},
+		"import/parsers": {
+			"@typescript-eslint/parser": [".ts", ".tsx"]
+		},
 		"import/resolver": {
 			"typescript": {
-				"alwaysTryTypes": true
+				"alwaysTryTypes": true,
+				"project": ["packages/*/tsconfig.json"]
 			}
 		}
 	}

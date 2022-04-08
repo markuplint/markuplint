@@ -20,6 +20,6 @@
 		"@markuplint/ml-ast": "2.0.1-dev.20220307.0",
 		"@markuplint/parser-utils": "2.0.1-dev.20220307.0",
 		"tslib": "^2.3.1",
-		"vue-eslint-parser": "^8.2.0"
+		"vue-eslint-parser": "^8.3.0"
 	}
 }
