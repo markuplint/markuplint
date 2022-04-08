@@ -6,7 +6,7 @@
 		"#GlobalEventAttrs": true,
 		"#DocumentElementEventAttrs": true,
 		"#ARIAAttrs": true,
-		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "integrity"]
+		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "integrity", "fetchpriority"]
 	},
 	"attributes": {
 		"src": {

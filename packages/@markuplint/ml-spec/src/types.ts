@@ -174,7 +174,7 @@ export type Attribute = {
 	type: AttributeType | AttributeType[];
 	description?: string;
 	caseSensitive?: true;
-	experimental?: true;
+	experimental?: boolean;
 	obsolete?: true;
 	deprecated?: boolean;
 	nonStandard?: true;

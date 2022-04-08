@@ -142,6 +142,7 @@ export const globalAttrs: Record<
 			'rel',
 			'target',
 			'type',
+			'fetchpriority',
 		],
 	},
 	'#HTMLEmbededAndMediaContentAttrs': {

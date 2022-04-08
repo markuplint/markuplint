@@ -94,13 +94,12 @@ async function getSVGElement({ name, url }: { name: string; url: string | null }
 				.replace(/(?:\r?\n|\s)+/gi, ' ');
 			const current = attributes[name];
 			if (typeof current === 'object' && 'type' in current) {
-				// @ts-ignore
 				attributes[name] = {
 					// @ts-ignore
 					ref: current.ref,
+					// @ts-ignore
 					description,
 					...current,
-					// @ts-ignore
 					experimental,
 				};
 				return;

@@ -190,6 +190,9 @@ fs.writeFileSync(
 					animatable: {
 						type: 'boolean',
 					},
+					experimental: {
+						type: 'boolean',
+					},
 				},
 			},
 			GlobalAttributes: {

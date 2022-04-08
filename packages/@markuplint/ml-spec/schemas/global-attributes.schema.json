@@ -155,7 +155,8 @@
 				"referrerpolicy",
 				"rel",
 				"target",
-				"type"
+				"type",
+				"fetchpriority"
 			]
 		},
 		"HTMLEmbededAndMediaContentAttrs": {
@@ -499,7 +500,8 @@
 				"referrerpolicy",
 				"rel",
 				"target",
-				"type"
+				"type",
+				"fetchpriority"
 			],
 			"propertyNames": { "$ref": "#/definitions/HTMLLinkAndFetchingAttrs" },
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }

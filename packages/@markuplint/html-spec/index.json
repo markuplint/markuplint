@@ -841,6 +841,15 @@
 							"anonymous": [""]
 						}
 					}
+				},
+				"fetchpriority": {
+					"ref": "https://wicg.github.io/priority-hints/#solution",
+					"type": {
+						"enum": ["high", "low", "auto"],
+						"invalidValueDefault": "auto",
+						"missingValueDefault": "auto"
+					},
+					"experimental": true
 				}
 			},
 			"#HTMLEmbededAndMediaContentAttrs": {
@@ -13244,7 +13253,7 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "width"],
 				"#HTMLGlobalAttrs": true,
-				"#HTMLLinkAndFetchingAttrs": ["referrerpolicy", "loading"]
+				"#HTMLLinkAndFetchingAttrs": ["referrerpolicy", "loading", "fetchpriority"]
 			},
 			"attributes": {
 				"align": {
@@ -13265,6 +13274,9 @@
 				"csp": {
 					"description": "A Content Security Policy enforced for the embedded resource. See HTMLIFrameElement.csp for details.",
 					"experimental": true
+				},
+				"fetchpriority": {
+					"description": "Provides a hint of the relative priority to use when fetching the iframe document. Allowed values: high Signals a high-priority fetch relative to other iframe documents. low Signals a low-priority fetch relative to other iframe documents. auto Default: Signals automatic determination of fetch priority relative to other iframe documents."
 				},
 				"frameborder": {
 					"description": "The value 1 (the default) draws a border around this frame. The value 0 removes the border around this frame, but you should instead use the CSS property border to control <iframe> borders.",
@@ -13421,7 +13433,7 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "srcset", "sizes", "width"],
 				"#HTMLGlobalAttrs": true,
-				"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "loading"]
+				"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "loading", "fetchpriority"]
 			},
 			"attributes": {
 				"align": {
@@ -13446,6 +13458,9 @@
 						"invalidValueDefault": "auto",
 						"missingValueDefault": "auto"
 					}
+				},
+				"fetchpriority": {
+					"description": "Provides a hint of the relative priority to use when fetching the image. Allowed values: high Signals a high-priority fetch relative to other images. low Signals a low-priority fetch relative to other images. auto Default: Signals automatic determination of fetch priority relative to other images."
 				},
 				"height": {
 					"description": "The intrinsic height of the image, in pixels. Must be an integer without a unit."
@@ -14414,7 +14429,8 @@
 					"type",
 					"referrerpolicy",
 					"integrity",
-					"media"
+					"media",
+					"fetchpriority"
 				]
 			},
 			"attributes": {
@@ -14474,6 +14490,9 @@
 				"disabled": {
 					"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-link-disabled",
 					"type": "Boolean"
+				},
+				"fetchpriority": {
+					"description": "Provides a hint of the relative priority to use when fetching a preloaded resource. Allowed values: high Signals a high-priority fetch relative to other resources of the same type. low Signals a low-priority fetch relative to other resources of the same type. auto Default: Signals automatic determination of fetch priority relative to other resources of the same type."
 				},
 				"href": {
 					"description": "This attribute specifies the URL of the linked resource. A URL can be absolute or relative."
@@ -16076,7 +16095,7 @@
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
-				"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "integrity"]
+				"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "integrity", "fetchpriority"]
 			},
 			"attributes": {
 				"async": {
@@ -16108,6 +16127,9 @@
 					},
 					"ineffective": ["[type='module' i]", ":not([src])", "[async]"],
 					"_TODO_": "The defer attribute affects the element that has the async attribute if it doesn't support the async"
+				},
+				"fetchpriority": {
+					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Signals a high-priority fetch relative to other external scripts.. low Signals a low-priority fetch relative to other external scripts. auto Default: Signals automatic determination of fetch priority relative to other external scripts."
 				},
 				"integrity": {
 					"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-script-integrity",
