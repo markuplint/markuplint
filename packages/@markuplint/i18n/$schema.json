@@ -230,6 +230,7 @@
 				"the same {0} as {1}": { "type": "string" },
 				"unexpected {0}": { "type": "string" },
 				"unique {0}": { "type": "string" },
+				"use {0}": { "type": "string" },
 				"valid {0}": { "type": "string" }
 			}
 		}
