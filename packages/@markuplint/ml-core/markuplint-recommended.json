@@ -142,7 +142,7 @@
 							"value": "/(?<![^\\s]+)noreferrer(?![^\\s]+)/"
 						}
 					],
-					"reason": "The \"rel\" attribute should be required with \"noreferrer\" if the \"a\" element has the \"target=_black\""
+					"reason": "The \"rel\" attribute should be required with \"noreferrer\" if the \"a\" element has the \"target=_blank\""
 				}
 			}
 		},
