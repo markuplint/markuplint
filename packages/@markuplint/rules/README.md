@@ -26,6 +26,7 @@
 - [`landmark-roles`](./src/landmark-roles)
 - [`no-refer-to-non-existent-id`](./src/no-refer-to-non-existent-id)
 - [`required-h1`](./src/required-h1)
+- [`use-list`](./src/use-list)
 - [`wai-aria`](./src/wai-aria)
 
 ### Naming Convention

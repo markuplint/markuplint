@@ -161,6 +161,10 @@ const defaultRules: Record<
 		category: 'a11y',
 		default: true,
 	},
+	'use-list': {
+		category: 'a11y',
+		default: false,
+	},
 	'wai-aria': {
 		category: 'a11y',
 		default: true,

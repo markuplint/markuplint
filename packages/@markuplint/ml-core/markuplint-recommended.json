@@ -43,6 +43,7 @@
 		"required-attr": true,
 		"required-element": false,
 		"required-h1": true,
+		"use-list": false,
 		"wai-aria": true
 	},
 	"nodeRules": [

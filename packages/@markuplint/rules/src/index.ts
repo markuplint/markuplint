@@ -27,6 +27,7 @@ import RequireAccessibleName from './require-accessible-name';
 import RequiredAttr from './required-attr';
 import RequiredElement from './required-element';
 import RequiredH1 from './required-h1';
+import UseList from './use-list';
 import WaiAria from './wai-aria';
 
 export default {
@@ -59,5 +60,6 @@ export default {
 	'required-attr': RequiredAttr,
 	'required-element': RequiredElement,
 	'required-h1': RequiredH1,
+	'use-list': UseList,
 	'wai-aria': WaiAria,
 };
