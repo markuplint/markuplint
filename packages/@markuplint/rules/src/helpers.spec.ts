@@ -1,7 +1,15 @@
 import specs from '@markuplint/html-spec';
 import { createTestElement } from '@markuplint/ml-core';
 
-import { checkAria, checkAriaValue, getComputedRole, getImplicitRole, getPermittedRoles, getRoleSpec } from './helpers';
+import {
+	checkAria,
+	checkAriaValue,
+	decodeCharRef,
+	getComputedRole,
+	getImplicitRole,
+	getPermittedRoles,
+	getRoleSpec,
+} from './helpers';
 
 describe('getRoleSpec', () => {
 	test('the button role', () => {
@@ -238,5 +246,16 @@ describe('checkAria', () => {
 		expect(checkAria(specs, 'aria-autocomplete', 'both').isValid).toBe(true);
 		expect(checkAria(specs, 'aria-autocomplete', 'none').isValid).toBe(true);
 		expect(checkAria(specs, 'aria-autocomplete', 'foo').isValid).toBe(false);
+	});
+});
+
+describe('decodeCharRef', () => {
+	test('decode', () => {
+		expect(decodeCharRef('&#8226;')).toBe('\u2022');
+		expect(decodeCharRef('&bull;')).toBe('\u2022');
+		expect(decodeCharRef('&bullet;')).toBe('\u2022');
+		expect(decodeCharRef('&#8227;')).toBe('\u2023');
+		expect(decodeCharRef('&#8259;')).toBe('\u2043');
+		expect(decodeCharRef('&hybull;')).toBe('\u2043');
 	});
 });
