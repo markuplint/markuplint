@@ -92,11 +92,12 @@ export default createRule<Bullets, Options>({
 });
 
 function isMayListItem(text: string, bullets: Bullets, spaceNeededBullets: string[]) {
-	const firstLetter = text[0];
+	const textArray = Array.from(text);
+	const firstLetter = textArray[0];
 	const isBullet = bullets.includes(firstLetter);
 	const needSpace = spaceNeededBullets.includes(firstLetter);
 
-	const continuous = firstLetter === text[1];
+	const continuous = firstLetter === textArray[1];
 	if (continuous) {
 		return false;
 	}

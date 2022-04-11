@@ -82,3 +82,28 @@ test('continuous', async () => {
 		).violations.length,
 	).toBe(0);
 });
+
+test('emoji (surrogate pair character)', async () => {
+	/**
+	 * surrogate pair character
+	 */
+	const sp = '\u{1F846}';
+	expect(sp.length).toBe(2);
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<div>
+	${sp}A<br/>
+	${sp}B<br/>
+	${sp}C
+</div>`,
+				{
+					rule: {
+						value: [sp],
+					},
+				},
+			)
+		).violations.length,
+	).toBe(3);
+});
