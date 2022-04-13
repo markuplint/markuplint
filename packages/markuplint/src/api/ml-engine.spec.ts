@@ -1,3 +1,4 @@
+import type { ConfigSet } from '@markuplint/file-resolver';
 import type { Config, Violation } from '@markuplint/ml-config';
 
 import { promises as fs } from 'fs';
@@ -94,5 +95,74 @@ describe('Resolving the plugin', () => {
 				raw: '',
 			},
 		]);
+	});
+});
+
+describe('Config Priority', () => {
+	it('config', async () => {
+		const file = await MLEngine.toMLFile('test/fixture/001.html');
+		const engine = new MLEngine(file, {
+			config: {
+				rules: {
+					__hoge: true,
+				},
+			},
+		});
+
+		let configSet: ConfigSet | null = null;
+		engine.once('config', (_, _configSet) => {
+			configSet = _configSet;
+		});
+		await engine.exec();
+
+		// @ts-ignore
+		expect(configSet?.config.rules?.__hoge).toBe(true);
+		// @ts-ignore
+		expect(configSet?.config.rules?.['wai-aria']).toBe(true);
+	});
+
+	it('defaultConfig', async () => {
+		const file = await MLEngine.toMLFile('test/fixture/001.html');
+		const engine = new MLEngine(file, {
+			defaultConfig: {
+				rules: {
+					__hoge: true,
+				},
+			},
+		});
+
+		let configSet: ConfigSet | null = null;
+		engine.once('config', (_, _configSet) => {
+			configSet = _configSet;
+		});
+		await engine.exec();
+
+		// @ts-ignore
+		expect(configSet?.config.rules?.__hoge).toBe(undefined);
+		// @ts-ignore
+		expect(configSet?.config.rules?.['wai-aria']).toBe(true);
+	});
+
+	it('defaultConfig + noSearchConfig', async () => {
+		const file = await MLEngine.toMLFile('test/fixture/001.html');
+		const engine = new MLEngine(file, {
+			defaultConfig: {
+				rules: {
+					__hoge: true,
+				},
+			},
+			noSearchConfig: true,
+		});
+
+		let configSet: ConfigSet | null = null;
+		engine.once('config', (_, _configSet) => {
+			configSet = _configSet;
+		});
+		await engine.exec();
+
+		// @ts-ignore
+		expect(configSet?.config.rules?.__hoge).toBe(true);
+		// @ts-ignore
+		expect(configSet?.config.rules?.['wai-aria']).toBe(undefined);
 	});
 });

@@ -226,9 +226,10 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 	}
 
 	private async resolveConfig(remerge: boolean) {
+		const defaultConfigKey = this.#options?.defaultConfig && this.#configProvider.set(this.#options?.defaultConfig);
 		const configFilePathsFromTarget = this.#options?.noSearchConfig
-			? null
-			: await this.#configProvider.search(this.#file);
+			? defaultConfigKey ?? null
+			: (await this.#configProvider.search(this.#file)) || defaultConfigKey;
 		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget || 'null');
 		const configKey = this.#options?.config && this.#configProvider.set(this.#options.config);
 		this.emit('log', 'configKey', configKey || 'null');
