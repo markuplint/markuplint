@@ -92,7 +92,7 @@
 			}
 		},
 		{
-			"selector": ":where(script[src])",
+			"selector": ":where(script[src]:not([type=module]))",
 			"rules": {
 				"required-attr": ["defer"]
 			}
