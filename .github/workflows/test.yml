@@ -18,8 +18,8 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                os: [ubuntu-latest, macos-latest, windows-latest]
-                node: [16]
+                os: [ubuntu-latest, macos-latest, windows-2022]
+                node: [12]
                 include:
                     - node: 17
                       os: ubuntu-latest
@@ -45,8 +45,14 @@ jobs:
               with:
                   node-version: ${{ matrix.node }}
 
+            - name: Add VS 16.x
+              if: matrix.os == 'windows-2022'
+              uses: microsoft/setup-msbuild@v1.1
+              with:
+                  vs-version: '[16.0,17.0)'
+
             - name: Install dependencies
-              if: steps.cache.outputs.cache-hit != 'true' || matrix.os == 'windows-latest'
+              if: steps.cache.outputs.cache-hit != 'true' || matrix.os == 'windows-2022'
               run: yarn install
 
             - name: Bootstrap
