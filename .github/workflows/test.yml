@@ -45,9 +45,9 @@ jobs:
               with:
                   node-version: ${{ matrix.node }}
 
-            - name: Install windows-build--tools for Windows
+            - name: Install windows-build-tools for Windows
               if: matrix.os == 'windows-latest'
-              run: yarn add global windows-build-tools
+              run: yarn global add windows-build-tools
 
             - name: Install dependencies
               if: steps.cache.outputs.cache-hit != 'true' || matrix.os == 'windows-latest'
