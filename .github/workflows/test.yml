@@ -47,7 +47,9 @@ jobs:
 
             - name: VS version
               if: matrix.os == 'windows-latest'
-              run: npm config set msvs_version 2022
+              run: |
+                  npm config set msvs_version 2022
+                  SET VCINSTALLDIR='C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\'
 
             - name: Install dependencies
               if: steps.cache.outputs.cache-hit != 'true' || matrix.os == 'windows-latest'
