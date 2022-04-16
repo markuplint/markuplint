@@ -47,7 +47,9 @@ jobs:
 
             - name: Add msbuild to PATH
               if: matrix.os == 'windows-latest'
-              uses: microsoft/setup-msbuild@v1.0.2
+              uses: microsoft/setup-msbuild@v1.1
+              with:
+                  vs-version: '[15.0,16.0)'
 
             - name: msbuild version
               if: matrix.os == 'windows-latest'
