@@ -45,6 +45,7 @@ jobs:
               with:
                   node-version: ${{ matrix.node }}
 
+            # test
             - name: Install dependencies
               if: steps.cache.outputs.cache-hit != 'true' || matrix.os == 'windows-latest'
               run: yarn install
