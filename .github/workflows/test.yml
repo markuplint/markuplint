@@ -45,9 +45,13 @@ jobs:
               with:
                   node-version: ${{ matrix.node }}
 
-            - name: Install windows-build-tools for Windows
+            - name: Add msbuild to PATH
               if: matrix.os == 'windows-latest'
-              run: yarn global add windows-build-tools
+              uses: microsoft/setup-msbuild@v1.0.2
+
+            - name: msbuild version
+              if: matrix.os == 'windows-latest'
+              run: msbuild -version
 
             - name: Install dependencies
               if: steps.cache.outputs.cache-hit != 'true' || matrix.os == 'windows-latest'
