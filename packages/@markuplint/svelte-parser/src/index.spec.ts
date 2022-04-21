@@ -28,6 +28,8 @@ describe('parser', () => {
 	<span></span>`);
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
+			'[1:1]>[1:28](0,27)#ps:Script: <script>let␣i␣=␣1;</script>',
+			'[1:28]>[3:1](27,29)#text: ⏎⏎',
 			'[3:1]>[3:20](29,48)div: <div␣data-attr={i}>',
 			'[3:20]>[3:23](48,51)#comment: {i}',
 			'[3:23]>[3:29](51,57)div: </div>',
@@ -51,11 +53,15 @@ describe('parser', () => {
 			'[2:1]>[2:6](1,6)div: <div>',
 			'[2:6]>[2:7](6,7)#text: 1',
 			'[2:7]>[2:13](7,13)div: </div>',
-			'[2:13]>[4:1](13,42)#text: ⏎⏎',
+			'[2:13]>[3:1](13,14)#text: ⏎',
+			'[3:1]>[3:28](14,41)#ps:Script: <script>let␣i␣=␣1;</script>',
+			'[3:28]>[4:1](41,42)#text: ⏎',
 			'[4:1]>[4:6](42,47)div: <div>',
 			'[4:6]>[4:7](47,48)#text: 2',
 			'[4:7]>[4:13](48,54)div: </div>',
-			'[4:13]>[6:1](54,93)#text: ⏎⏎',
+			'[4:13]>[5:1](54,55)#text: ⏎',
+			'[5:1]>[5:38](55,92)#ps:Style: <style>div␣{␣display:␣none;␣}</style>',
+			'[5:38]>[6:1](92,93)#text: ⏎',
 			'[6:1]>[6:6](93,98)div: <div>',
 			'[6:6]>[6:7](98,99)#text: 3',
 			'[6:7]>[6:13](99,105)div: </div>',
@@ -367,5 +373,21 @@ describe('parser', () => {
 		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
 		expect(doc.nodeList[2].nodeName).toBe('text');
 		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+	});
+});
+
+describe('Issues', () => {
+	test('#444', () => {
+		parse(`<script lang="ts">
+  let count: number = 0
+  const increment = () => {
+    count += 1
+  }
+</script>
+
+<button on:click={increment}>
+  Clicks: {count}
+</button>`);
+		// No Error is success
 	});
 });

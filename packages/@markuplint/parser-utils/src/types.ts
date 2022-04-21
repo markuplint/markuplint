@@ -16,4 +16,5 @@ export type IgnoreBlock = {
 	source: string;
 	replaced: string;
 	stack: Code[];
+	maskChar: string;
 };
