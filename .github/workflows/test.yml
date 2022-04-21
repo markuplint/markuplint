@@ -18,7 +18,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                os: [ubuntu-latest, macos-latest, windows-latest]
+                os: [ubuntu-latest, macos-latest, windows-2019]
                 node: [12]
                 include:
                     - node: 17
@@ -46,7 +46,7 @@ jobs:
                   node-version: ${{ matrix.node }}
 
             - name: Install dependencies
-              if: steps.cache.outputs.cache-hit != 'true' || matrix.os == 'windows-latest'
+              if: steps.cache.outputs.cache-hit != 'true' || matrix.os == 'windows-2019'
               run: yarn install
 
             - name: Bootstrap
