@@ -369,3 +369,19 @@ describe('parser', () => {
 		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
 	});
 });
+
+describe('Issues', () => {
+	test('#444', () => {
+		parse(`<script lang="ts">
+  let count: number = 0
+  const increment = () => {
+    count += 1
+  }
+</script>
+
+<button on:click={increment}>
+  Clicks: {count}
+</button>`);
+		// No Error is success
+	});
+});
