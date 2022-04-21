@@ -28,6 +28,7 @@ describe('ignoreBlock', () => {
 					endTag: '%>',
 				},
 			],
+			maskChar: '',
 		});
 	});
 
@@ -52,6 +53,7 @@ describe('ignoreBlock', () => {
 					endTag: '%>',
 				},
 			],
+			maskChar: '',
 		});
 	});
 
@@ -69,6 +71,7 @@ describe('ignoreBlock', () => {
 					endTag: null,
 				},
 			],
+			maskChar: '',
 		});
 	});
 
@@ -86,6 +89,7 @@ describe('ignoreBlock', () => {
 					endTag: '%>',
 				},
 			],
+			maskChar: '',
 		});
 	});
 
@@ -151,6 +155,7 @@ describe('ignoreBlock', () => {
 					endTag: '%>',
 				},
 			],
+			maskChar: '',
 		});
 	});
 });
