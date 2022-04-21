@@ -6,7 +6,7 @@ import { uuid } from './create-token';
 import { sliceFragment } from './get-location';
 import { siblingsCorrection } from './siblings-correction';
 
-export function ignoreBlock(source: string, tags: IgnoreTag[]): IgnoreBlock {
+export function ignoreBlock(source: string, tags: IgnoreTag[], maskChar = MASK_CHAR): IgnoreBlock {
 	let replaced = source;
 	const stack: Code[] = [];
 	for (const tag of tags) {
@@ -17,9 +17,9 @@ export function ignoreBlock(source: string, tags: IgnoreTag[]): IgnoreBlock {
 			replaced,
 			(startTag, taggedCode, endTag) => {
 				const mask =
-					MASK_CHAR.repeat(startTag.length) +
-					taggedCode.replace(/[^\n]/g, MASK_CHAR) +
-					MASK_CHAR.repeat((endTag || '').length);
+					maskChar.repeat(startTag.length) +
+					taggedCode.replace(/[^\n]/g, maskChar) +
+					maskChar.repeat((endTag || '').length);
 				return mask;
 			},
 		);
@@ -29,9 +29,9 @@ export function ignoreBlock(source: string, tags: IgnoreTag[]): IgnoreBlock {
 		// Replace tags in other nodes
 		const text = maskText(tag.start, tag.end, replaced, (startTag, taggedCode, endTag) => {
 			const mask =
-				MASK_CHAR.repeat(startTag.length) +
-				taggedCode.replace(/[^\n]/g, MASK_CHAR) +
-				MASK_CHAR.repeat((endTag || '').length);
+				maskChar.repeat(startTag.length) +
+				taggedCode.replace(/[^\n]/g, maskChar) +
+				maskChar.repeat((endTag || '').length);
 			const taggedMask = `<!${mask.slice(2).slice(0, -1)}>`;
 			return taggedMask;
 		});
@@ -44,6 +44,7 @@ export function ignoreBlock(source: string, tags: IgnoreTag[]): IgnoreBlock {
 		source,
 		replaced,
 		stack,
+		maskChar,
 	};
 }
 
@@ -81,10 +82,10 @@ function maskText(
 
 export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 	nodeList = nodeList.slice();
-	const { source, stack } = ignoreBlock;
+	const { source, stack, maskChar } = ignoreBlock;
 	for (const node of nodeList) {
 		if (node.type === 'comment' || node.type === 'text') {
-			if (!hasIgnoreBlock(node.raw)) {
+			if (!hasIgnoreBlock(node.raw, maskChar)) {
 				continue;
 			}
 			const parentNode = node.parentNode;
@@ -181,7 +182,7 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 		}
 		if (node.type === 'starttag') {
 			for (const attr of node.attributes) {
-				if (attr.type === 'ps-attr' || attr.value.raw === '' || !hasIgnoreBlock(attr.value.raw)) {
+				if (attr.type === 'ps-attr' || attr.value.raw === '' || !hasIgnoreBlock(attr.value.raw, maskChar)) {
 					continue;
 				}
 				for (const tag of stack) {
@@ -227,6 +228,6 @@ function append(reg: RegExp, str: string) {
 	return new RegExp(reg.source + str, reg.ignoreCase ? 'i' : '');
 }
 
-function hasIgnoreBlock(textContent: string) {
-	return textContent.includes(MASK_CHAR);
+function hasIgnoreBlock(textContent: string, maskChar: string) {
+	return textContent.includes(maskChar);
 }
