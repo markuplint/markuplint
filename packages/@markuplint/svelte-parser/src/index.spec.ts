@@ -31,7 +31,7 @@ describe('parser', () => {
 			'[1:1]>[1:28](0,27)#ps:Script: <script>let␣i␣=␣1;</script>',
 			'[1:28]>[3:1](27,29)#text: ⏎⏎',
 			'[3:1]>[3:20](29,48)div: <div␣data-attr={i}>',
-			'[3:20]>[3:23](48,51)#comment: {i}',
+			'[3:20]>[3:23](48,51)#ps:MustacheTag: {i}',
 			'[3:23]>[3:29](51,57)div: </div>',
 			'[3:29]>[4:2](57,59)#text: ⏎→',
 			'[4:2]>[4:8](59,65)span: <span>',
@@ -66,6 +66,16 @@ describe('parser', () => {
 			'[6:6]>[6:7](98,99)#text: 3',
 			'[6:7]>[6:13](99,105)div: </div>',
 			'[6:13]>[7:1](105,106)#text: ⏎',
+		]);
+	});
+
+	test('variable', () => {
+		const r = parse('<div>{varibale}</div>');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:6](0,5)div: <div>',
+			'[1:6]>[1:16](5,15)#ps:MustacheTag: {varibale}',
+			'[1:16]>[1:22](15,21)div: </div>',
 		]);
 	});
 
