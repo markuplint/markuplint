@@ -12,6 +12,7 @@ export function getAccname(el: MLDOMAbstractElement<any, any>) {
 		const name = computeAccessibleName(el);
 		return name;
 	} catch (err) {
+		accnameLog('Raw: %s', el.raw);
 		accnameLog('Error: %O', err);
 		return '';
 	}
