@@ -140,6 +140,21 @@ describe('parser', () => {
 		]);
 	});
 
+	test('deep each statement', () => {
+		const r = parse('<ul>{#each a as b}<li>{#each c as d}{/each}</li>{/each}</ul>');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:5](0,4)ul: <ul>',
+			'[1:5]>[1:19](4,18)EachBlock: {#each␣a␣as␣b}',
+			'[1:19]>[1:23](18,22)li: <li>',
+			'[1:23]>[1:37](22,36)EachBlock: {#each␣c␣as␣d}',
+			'[1:37]>[1:44](36,43)EachBlock: {/each}',
+			'[1:44]>[1:49](43,48)li: </li>',
+			'[1:49]>[1:56](48,55)EachBlock: {/each}',
+			'[1:56]>[1:61](55,60)ul: </ul>',
+		]);
+	});
+
 	test('await then catch statement', () => {
 		const r = parse('{#await expression}...{:then name}...{:catch name}...{/await}');
 		const map = nodeListToDebugMaps(r.nodeList);
