@@ -47,6 +47,15 @@ export default abstract class MLDOMNode<
 		this.ownerDocument.nodeStore.setNode(astNode, this);
 	}
 
+	get childNodes(): AnonymousNode<T, O>[] {
+		if (this._astToken.type === 'starttag' || this._astToken.type === 'omittedtag') {
+			// @ts-ignore
+			const astChildren: MLASTNode[] = this._astToken.childNodes || [];
+			return astChildren.map(node => this.nodeStore.getNode<typeof node, T, O>(node));
+		}
+		return [];
+	}
+
 	get parentNode(): MLDOMElement<T, O> | MLDOMOmittedElement<T, O> | MLDOMPreprocessorSpecificBlock<T, O> | null {
 		if (!this._astToken.parentNode) {
 			return null;
