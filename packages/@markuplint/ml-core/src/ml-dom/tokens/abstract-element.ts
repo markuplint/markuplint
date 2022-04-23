@@ -1,4 +1,4 @@
-import type { AnonymousNode, Document } from '../';
+import type { Document } from '../';
 import type { MLDOMAttribute, MLDOMElement, MLDOMOmittedElement, MLDOMText } from './';
 import type MLDOMPreprocessorSpecificAttribute from './preprocessor-specific-attribute';
 import type { MLASTElement, MLASTOmittedElement } from '@markuplint/ml-ast';
@@ -46,11 +46,6 @@ export default abstract class MLDOMAbstractElement<
 
 	get tagName() {
 		return this.nodeName;
-	}
-
-	get childNodes(): AnonymousNode<T, O>[] {
-		const astChildren = this._astToken.childNodes || [];
-		return astChildren.map(node => this.nodeStore.getNode<typeof node, T, O>(node));
 	}
 
 	get children(): (MLDOMElement<T, O> | MLDOMOmittedElement<T, O>)[] {

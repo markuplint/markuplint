@@ -218,9 +218,13 @@ div#hoge.foo.bar
 		expect(createSelector('.foo').match(el)).toBeTruthy();
 		expect(createSelector('.foo.bar').match(el)).toBeTruthy();
 		expect(createSelector('.any').match(el)).toBe(false);
+		// @ts-ignore
 		expect(createSelector('*').match(a)).toBeTruthy();
+		// @ts-ignore
 		expect(createSelector('a').match(a)).toBeTruthy();
+		// @ts-ignore
 		expect(createSelector('div a').match(a)).toBeTruthy();
+		// @ts-ignore
 		expect(createSelector('div > a').match(a)).toBeTruthy();
 	});
 });
