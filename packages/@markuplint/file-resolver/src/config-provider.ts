@@ -6,6 +6,7 @@ import path from 'path';
 
 import { mergeConfig } from '@markuplint/ml-config';
 import { configs } from '@markuplint/ml-core';
+import minimatch from 'minimatch';
 
 import { load as loadConfig, search } from './cosmiconfig';
 import { resolvePlugins } from './resolve-plugins';
@@ -82,6 +83,19 @@ export class ConfigProvider {
 			configSet = await this._mergeConfigs([...keys, ...extendHelds]);
 
 			this.#held.clear();
+		}
+
+		// Resolves `overrides`
+		if (configSet.config.overrides) {
+			const overrides = configSet.config.overrides;
+			const globs = Object.keys(overrides);
+			for (const glob of globs) {
+				const isMatched = minimatch(targetFile.nPath, glob);
+				if (isMatched) {
+					// Note: Original config disappears
+					configSet.config = overrides[glob];
+				}
+			}
 		}
 
 		const result = {
@@ -198,6 +212,7 @@ export class ConfigProvider {
 			parser: pathResolve(dir, config.parser),
 			specs: pathResolve(dir, config.specs),
 			excludeFiles: pathResolve(dir, config.excludeFiles),
+			overrides: pathResolve(dir, config.overrides, undefined, true),
 		};
 	}
 }
@@ -219,6 +234,7 @@ function pathResolve<T extends string | (string | Record<string, unknown>)[] | R
 	dir: string,
 	filePath?: T,
 	resolveProps?: string[],
+	resolveKey = false,
 ): T {
 	if (filePath == null) {
 		// @ts-ignore
@@ -234,16 +250,20 @@ function pathResolve<T extends string | (string | Record<string, unknown>)[] | R
 	}
 	const res: Record<string, unknown> = {};
 	for (const [key, fp] of Object.entries(filePath)) {
+		let _key = key;
+		if (resolveKey) {
+			_key = resolve(dir, key);
+		}
 		if (typeof fp === 'string') {
 			if (!resolveProps) {
-				res[key] = resolve(dir, fp);
+				res[_key] = resolve(dir, fp);
 			} else if (resolveProps.includes(key)) {
-				res[key] = resolve(dir, fp);
+				res[_key] = resolve(dir, fp);
 			} else {
-				res[key] = fp;
+				res[_key] = fp;
 			}
 		} else {
-			res[key] = fp;
+			res[_key] = fp;
 		}
 	}
 	// @ts-ignore

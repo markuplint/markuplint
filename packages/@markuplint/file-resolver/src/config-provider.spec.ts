@@ -176,3 +176,15 @@ test('Import packaged config (Issue: #403)', async () => {
 		mock: true,
 	});
 });
+
+test('Overrides', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '006', '.markuplintrc');
+	const file = getFile(path.resolve(testDir, '006', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	expect(configSet.config).toStrictEqual({
+		rules: {
+			foo: false,
+		},
+	});
+});
