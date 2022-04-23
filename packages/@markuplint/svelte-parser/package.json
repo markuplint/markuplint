@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/svelte-parser",
-	"version": "2.2.0",
+	"version": "2.2.1",
 	"description": "Svelte parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",

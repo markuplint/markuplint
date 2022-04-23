@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-core",
-	"version": "2.2.3",
+	"version": "2.3.0",
 	"description": "The core module of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -19,7 +19,7 @@
 	"dependencies": {
 		"@markuplint/i18n": "2.1.0",
 		"@markuplint/ml-ast": "2.0.1-dev.20220307.0",
-		"@markuplint/ml-config": "2.0.1-dev.20220307.0",
+		"@markuplint/ml-config": "2.1.0",
 		"@markuplint/ml-spec": "2.1.0",
 		"@markuplint/parser-utils": "2.2.0",
 		"debug": "^4.3.4",
