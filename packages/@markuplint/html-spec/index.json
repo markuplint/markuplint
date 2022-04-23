@@ -13640,7 +13640,7 @@
 				]
 			},
 			"implicitRole": {
-				"summary": "type=button: button type=checkbox: checkbox type=email with no list attribute: textbox with list attribute: combobox type=image: button type=number: spinbutton type=radio: radio type=range: slider type=reset: button type=search with no list attribute: searchbox with list attribute: combobox type=submit: button type=tel with no list attribute: textbox with list attribute: combobox type=text with no list attribute: textbox with list attribute: combobox type=url with no list attribute: textbox with list attribute: combobox type=color|date|datetime-local|file|hidden|month|password|time|week: no corresponding role",
+				"summary": "type=button: button type=checkbox: checkbox type=email with no list attribute: textbox with list attribute: combobox type=image: button type=number: spinbutton type=radio: radio type=range: slider type=reset: button type=search with no list attribute: searchbox with list attribute:combobox type=submit: button type=tel with no list attribute: textbox with list attribute: combobox type=text with no list attribute: textbox with list attribute: combobox type=url with no list attribute: textbox with list attribute: combobox type=color|date|datetime-local|file|hidden|month|password|time|week: no corresponding role",
 				"role": false,
 				"conditions": [
 					{
@@ -13801,7 +13801,7 @@
 					}
 				},
 				"autocorrect": {
-					"description": "A Safari extension, the autocorrect attribute is a string which indicates whether or not to activate automatic correction while the user is editing this field. Permitted values are: on Enable automatic correction of typos, as well as processing of text substitutions if any are configured. off Disable automatic correction and text substitutions.",
+					"description": "(Safari only). A string which indicates whether or not to activate automatic correction while the user is editing this field. Permitted values are: on Enable automatic correction of typos, as well as processing of text substitutions if any are configured. off Disable automatic correction and text substitutions.",
 					"nonStandard": true
 				},
 				"autofocus": {
@@ -16129,7 +16129,7 @@
 					"_TODO_": "The defer attribute affects the element that has the async attribute if it doesn't support the async"
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Signals a high-priority fetch relative to other external scripts.. low Signals a low-priority fetch relative to other external scripts. auto Default: Signals automatic determination of fetch priority relative to other external scripts."
+					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Signals a high-priority fetch relative to other external scripts. low Signals a low-priority fetch relative to other external scripts. auto Default: Signals automatic determination of fetch priority relative to other external scripts."
 				},
 				"integrity": {
 					"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-script-integrity",
