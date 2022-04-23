@@ -175,8 +175,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/filter",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/g",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatch",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatchpath",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/image",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/line",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/linearGradient",
@@ -1328,7 +1326,7 @@
 				},
 				"r": {
 					"ref": "https://svgwg.org/svg2-draft/geometry.html#RProperty",
-					"type": "<svg-length>",
+					"type": ["<svg-length>", "<percentage>"],
 					"defaultValue": "0",
 					"animatable": true
 				},
@@ -13640,7 +13638,7 @@
 				]
 			},
 			"implicitRole": {
-				"summary": "type=button: button type=checkbox: checkbox type=email with no list attribute: textbox with list attribute: combobox type=image: button type=number: spinbutton type=radio: radio type=range: slider type=reset: button type=search with no list attribute: searchbox with list attribute: combobox type=submit: button type=tel with no list attribute: textbox with list attribute: combobox type=text with no list attribute: textbox with list attribute: combobox type=url with no list attribute: textbox with list attribute: combobox type=color|date|datetime-local|file|hidden|month|password|time|week: no corresponding role",
+				"summary": "type=button: button type=checkbox: checkbox type=email with no list attribute: textbox with list attribute: combobox type=image: button type=number: spinbutton type=radio: radio type=range: slider type=reset: button type=search with no list attribute: searchbox with list attribute:combobox type=submit: button type=tel with no list attribute: textbox with list attribute: combobox type=text with no list attribute: textbox with list attribute: combobox type=url with no list attribute: textbox with list attribute: combobox type=color|date|datetime-local|file|hidden|month|password|time|week: no corresponding role",
 				"role": false,
 				"conditions": [
 					{
@@ -13801,7 +13799,7 @@
 					}
 				},
 				"autocorrect": {
-					"description": "A Safari extension, the autocorrect attribute is a string which indicates whether or not to activate automatic correction while the user is editing this field. Permitted values are: on Enable automatic correction of typos, as well as processing of text substitutions if any are configured. off Disable automatic correction and text substitutions.",
+					"description": "(Safari only). A string which indicates whether or not to activate automatic correction while the user is editing this field. Permitted values are: on Enable automatic correction of typos, as well as processing of text substitutions if any are configured. off Disable automatic correction and text substitutions.",
 					"nonStandard": true
 				},
 				"autofocus": {
@@ -15222,9 +15220,6 @@
 				"tag": "object",
 				"contents": [
 					{
-						"zeroOrMore": "param"
-					},
-					{
 						"zeroOrMore": "#transparent"
 					}
 				]
@@ -15563,8 +15558,8 @@
 			"categories": [],
 			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"tag": "optgroup",
-				"contents": false
+				"tag": "param",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
@@ -15575,26 +15570,17 @@
 				"role": false
 			},
 			"omittion": false,
-			"globalAttrs": {
-				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
-				"#GlobalEventAttrs": true,
-				"#HTMLGlobalAttrs": true
-			},
+			"globalAttrs": {},
 			"attributes": {
 				"name": {
-					"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-param-name",
-					"type": "Any",
-					"required": true
+					"description": "Name of the parameter."
 				},
 				"type": {
 					"description": "Only used if the valuetype is set to ref. Specifies the MIME type of values found at the URI specified by value.",
 					"deprecated": true
 				},
 				"value": {
-					"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-param-value",
-					"type": "Any",
-					"required": true
+					"description": "Specifies the value of the parameter."
 				},
 				"valuetype": {
 					"description": "Specifies the type of the value attribute. Possible values are: data: Default value. The value is passed to the object's implementation as a string. ref: The value is a URI to a resource where run-time values are stored. object: An ID of another <object> in the same document.",
@@ -16129,7 +16115,7 @@
 					"_TODO_": "The defer attribute affects the element that has the async attribute if it doesn't support the async"
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Signals a high-priority fetch relative to other external scripts.. low Signals a low-priority fetch relative to other external scripts. auto Default: Signals automatic determination of fetch priority relative to other external scripts."
+					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Signals a high-priority fetch relative to other external scripts. low Signals a low-priority fetch relative to other external scripts. auto Default: Signals automatic determination of fetch priority relative to other external scripts."
 				},
 				"integrity": {
 					"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-script-integrity",
@@ -17079,10 +17065,6 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"autocapitalize": {
-					"description": "This is a non-standard attribute supported by WebKit on iOS (therefore nearly all browsers running on iOS, including Safari, Firefox, and Chrome), which controls whether and how the text value should be automatically capitalized as it is entered/edited by the user. The non-deprecated values are available in iOS 5 and later. Possible values are: none: Completely disables automatic capitalization. sentences: Automatically capitalize the first letter of sentences. words: Automatically capitalize the first letter of words. characters: Automatically capitalize all characters. on: Deprecated since iOS 5. off: Deprecated since iOS 5.",
-					"nonStandard": true
-				},
 				"autocomplete": {
 					"description": "This attribute indicates whether the value of the control can be automatically completed by the browser. Possible values are: off: The user must explicitly enter a value into this field for every use, or the document provides its own auto-completion method; the browser does not automatically complete the entry. on: The browser can automatically complete the value based on values that the user has entered during previous uses. If the autocomplete attribute is not specified on a <textarea> element, then the browser uses the autocomplete attribute value of the <textarea> element's form owner. The form owner is either the <form> element that this <textarea> element is a descendant of or the form element whose id is specified by the form attribute of the input element. For more information, see the autocomplete attribute in <form>."
 				},
@@ -18484,7 +18466,7 @@
 					"description": "The y-axis coordinate of the center of the circle. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
 				},
 				"r": {
-					"description": "The radius of the circle. A value lower or equal to zero disables rendering of the circle. Value type: <length> ; Default value: 0; Animatable: yes"
+					"description": "The radius of the circle. A value lower or equal to zero disables rendering of the circle. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -21974,244 +21956,6 @@
 			"globalAttrs": {},
 			"attributes": {},
 			"deprecated": true
-		},
-		{
-			"name": "svg:hatch",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatch",
-			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "hatch",
-				"contents": [
-					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "svg:hatchpath", "svg:script", "svg:style"]
-					}
-				]
-			},
-			"omittion": false,
-			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "lang", "tabindex", "xml:base", "xml:lang", "xml:space", "class", "style"],
-				"#GlobalEventAttrs": true,
-				"#SVGPresentationAttrs": [
-					"alignment-baseline",
-					"baseline-shift",
-					"clip",
-					"clip-path",
-					"clip-rule",
-					"color",
-					"color-interpolation",
-					"color-interpolation-filters",
-					"color-profile",
-					"color-rendering",
-					"cursor",
-					"direction",
-					"display",
-					"dominant-baseline",
-					"enable-background",
-					"fill",
-					"fill-opacity",
-					"fill-rule",
-					"filter",
-					"flood-color",
-					"flood-opacity",
-					"font-family",
-					"font-size",
-					"font-size-adjust",
-					"font-stretch",
-					"font-style",
-					"font-variant",
-					"font-weight",
-					"glyph-orientation-horizontal",
-					"glyph-orientation-vertical",
-					"image-rendering",
-					"kerning",
-					"letter-spacing",
-					"lighting-color",
-					"marker-end",
-					"marker-mid",
-					"marker-start",
-					"mask",
-					"opacity",
-					"overflow",
-					"pointer-events",
-					"shape-rendering",
-					"stop-color",
-					"stop-opacity",
-					"stroke",
-					"stroke-dasharray",
-					"stroke-dashoffset",
-					"stroke-linecap",
-					"stroke-linejoin",
-					"stroke-miterlimit",
-					"stroke-opacity",
-					"stroke-width",
-					"text-anchor",
-					"text-decoration",
-					"text-rendering",
-					"transform",
-					"transform-origin",
-					"unicode-bidi",
-					"vector-effect",
-					"visibility",
-					"word-spacing",
-					"writing-mode"
-				]
-			},
-			"attributes": {
-				"x": {
-					"ref": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatch#specific_attributes",
-					"type": "Any",
-					"_TODO_": "It's an experimental technology"
-				},
-				"y": {
-					"ref": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatch#specific_attributes",
-					"type": "Any",
-					"_TODO_": "It's an experimental technology"
-				},
-				"pitch": {
-					"ref": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatch#specific_attributes",
-					"type": "Any",
-					"_TODO_": "It's an experimental technology"
-				},
-				"rotate": {
-					"ref": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatch#specific_attributes",
-					"type": "Any",
-					"_TODO_": "It's an experimental technology"
-				},
-				"hatchUnits": {
-					"ref": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatch#specific_attributes",
-					"type": "Any",
-					"_TODO_": "It's an experimental technology"
-				},
-				"hatchContentUnits": {
-					"ref": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatch#specific_attributes",
-					"type": "Any",
-					"_TODO_": "It's an experimental technology"
-				},
-				"transform": {
-					"ref": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatch#specific_attributes",
-					"type": "Any",
-					"_TODO_": "It's an experimental technology"
-				},
-				"href": {
-					"ref": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatch#specific_attributes",
-					"type": "Any",
-					"_TODO_": "It's an experimental technology"
-				}
-			}
-		},
-		{
-			"name": "svg:hatchpath",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatchpath",
-			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "hatch",
-				"contents": [
-					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "svg:script", "svg:style"]
-					}
-				]
-			},
-			"omittion": false,
-			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "lang", "tabindex", "xml:base", "xml:lang", "xml:space", "class", "style"],
-				"#GlobalEventAttrs": true,
-				"#SVGPresentationAttrs": [
-					"alignment-baseline",
-					"baseline-shift",
-					"clip",
-					"clip-path",
-					"clip-rule",
-					"color",
-					"color-interpolation",
-					"color-interpolation-filters",
-					"color-profile",
-					"color-rendering",
-					"cursor",
-					"direction",
-					"display",
-					"dominant-baseline",
-					"enable-background",
-					"fill",
-					"fill-opacity",
-					"fill-rule",
-					"filter",
-					"flood-color",
-					"flood-opacity",
-					"font-family",
-					"font-size",
-					"font-size-adjust",
-					"font-stretch",
-					"font-style",
-					"font-variant",
-					"font-weight",
-					"glyph-orientation-horizontal",
-					"glyph-orientation-vertical",
-					"image-rendering",
-					"kerning",
-					"letter-spacing",
-					"lighting-color",
-					"marker-end",
-					"marker-mid",
-					"marker-start",
-					"mask",
-					"opacity",
-					"overflow",
-					"pointer-events",
-					"shape-rendering",
-					"stop-color",
-					"stop-opacity",
-					"stroke",
-					"stroke-dasharray",
-					"stroke-dashoffset",
-					"stroke-linecap",
-					"stroke-linejoin",
-					"stroke-miterlimit",
-					"stroke-opacity",
-					"stroke-width",
-					"text-anchor",
-					"text-decoration",
-					"text-rendering",
-					"transform",
-					"transform-origin",
-					"unicode-bidi",
-					"vector-effect",
-					"visibility",
-					"word-spacing",
-					"writing-mode"
-				]
-			},
-			"attributes": {
-				"d": {
-					"ref": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatchpath#specific_attributes",
-					"type": "Any",
-					"_TODO_": "It's an experimental technology"
-				},
-				"offset": {
-					"ref": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hatchpath#specific_attributes",
-					"type": "Any",
-					"_TODO_": "It's an experimental technology"
-				}
-			}
 		},
 		{
 			"name": "svg:hkern",
