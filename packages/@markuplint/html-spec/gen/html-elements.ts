@@ -304,6 +304,7 @@ function getObsoleteElements(specs: ExtendedElementSpec[]): ExtendedElementSpec[
 		'menuitem',
 		'nextid',
 		'noembed',
+		'param',
 		'plaintext',
 		'rb',
 		'rtc',

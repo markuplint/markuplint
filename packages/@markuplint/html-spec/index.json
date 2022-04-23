@@ -15220,9 +15220,6 @@
 				"tag": "object",
 				"contents": [
 					{
-						"zeroOrMore": "param"
-					},
-					{
 						"zeroOrMore": "#transparent"
 					}
 				]
@@ -15561,8 +15558,8 @@
 			"categories": [],
 			"permittedStructures": {
 				"summary": "None, it is an empty element.",
-				"tag": "optgroup",
-				"contents": false
+				"tag": "param",
+				"contents": true
 			},
 			"permittedRoles": {
 				"summary": "No role permitted",
@@ -15573,26 +15570,17 @@
 				"role": false
 			},
 			"omittion": false,
-			"globalAttrs": {
-				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
-				"#GlobalEventAttrs": true,
-				"#HTMLGlobalAttrs": true
-			},
+			"globalAttrs": {},
 			"attributes": {
 				"name": {
-					"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-param-name",
-					"type": "Any",
-					"required": true
+					"description": "Name of the parameter."
 				},
 				"type": {
 					"description": "Only used if the valuetype is set to ref. Specifies the MIME type of values found at the URI specified by value.",
 					"deprecated": true
 				},
 				"value": {
-					"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-param-value",
-					"type": "Any",
-					"required": true
+					"description": "Specifies the value of the parameter."
 				},
 				"valuetype": {
 					"description": "Specifies the type of the value attribute. Possible values are: data: Default value. The value is passed to the object's implementation as a string. ref: The value is a URI to a resource where run-time values are stored. object: An ID of another <object> in the same document.",
