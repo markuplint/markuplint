@@ -52,7 +52,13 @@ export async function getSVG() {
 async function getSVGElementList() {
 	const index = 'https://developer.mozilla.org/en-US/docs/Web/SVG/Element';
 	const $ = await fetch(index);
-	const $index = getThisOutline($, $('article.main-page-content h2').eq(0));
+	$('section').each((_, sec) => {
+		const $sec = $(sec);
+		const children = $sec.children();
+		$sec.before(children);
+		$sec.remove();
+	});
+	const $index = getThisOutline($, $('#svg_elements_a_to_z'));
 	const $linkList = $index.find('ul code');
 	const linkList = $linkList.toArray().map(el => ({
 		name: $(el).text().trim().replace(/<|>/g, ''),
