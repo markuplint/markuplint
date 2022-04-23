@@ -6,7 +6,6 @@ import path from 'path';
 
 import { mergeConfig } from '@markuplint/ml-config';
 import { configs } from '@markuplint/ml-core';
-import minimatch from 'minimatch';
 
 import { load as loadConfig, search } from './cosmiconfig';
 import { resolvePlugins } from './resolve-plugins';
@@ -90,7 +89,7 @@ export class ConfigProvider {
 			const overrides = configSet.config.overrides;
 			const globs = Object.keys(overrides);
 			for (const glob of globs) {
-				const isMatched = minimatch(targetFile.nPath, glob);
+				const isMatched = targetFile.matches(glob);
 				if (isMatched) {
 					// Note: Original config disappears
 					configSet.config = overrides[glob];
