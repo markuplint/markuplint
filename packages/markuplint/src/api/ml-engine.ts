@@ -234,6 +234,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		const configKey = this.#options?.config && this.#configProvider.set(this.#options.config);
 		this.emit('log', 'configKey', configKey || 'null');
 		const configSet = await this.#configProvider.resolve(
+			this.#file,
 			[configFilePathsFromTarget, this.#options?.configFile, configKey],
 			remerge,
 		);

@@ -44,7 +44,7 @@ export class ConfigProvider {
 		return filePath;
 	}
 
-	async resolve(names: Nullable<string>[], remerge = false): Promise<ConfigSet> {
+	async resolve(targetFile: MLFile, names: Nullable<string>[], remerge = false): Promise<ConfigSet> {
 		const keys = names.filter(nonNullableFilter);
 		const key = keys.join(KEY_SEPARATOR);
 		const currentConfig = this.#cache.get(key);
