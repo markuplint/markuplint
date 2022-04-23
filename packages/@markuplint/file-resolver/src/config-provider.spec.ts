@@ -8,7 +8,8 @@ const configProvider = new ConfigProvider(false);
 it('001 + 002', async () => {
 	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '002', '.markuplintrc.json');
-	const configSet = await configProvider.resolve([key]);
+	const file = getFile(path.resolve(testDir, '002', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
 	expect(configSet.config).toStrictEqual({
 		dummy: true,
 		dummy2: false,
@@ -68,7 +69,7 @@ it('001 + 002 + 003', async () => {
 	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
 	const file = getFile(path.resolve(testDir, '003', 'dir', 'target.html'));
 	const key = await configProvider.search(file);
-	const configSet = await configProvider.resolve([key]);
+	const configSet = await configProvider.resolve(file, [key]);
 	expect(configSet.config).toStrictEqual({
 		___configs: 'test',
 		dummy: true,
@@ -151,7 +152,8 @@ it('001 + 002 + 003', async () => {
 it('Deep target', async () => {
 	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '004', 'dir', 'dir', 'dir', 'dir', 'dir', '.markuplintrc');
-	const configSet = await configProvider.resolve([key]);
+	const file = getFile(path.resolve(testDir, '004', 'dir', 'dir', 'dir', 'dir', 'dir', 'deep-target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
 	expect(configSet.config).toStrictEqual({
 		dir01: true,
 		dir02: true,
@@ -168,8 +170,21 @@ it('Deep target', async () => {
 test('Import packaged config (Issue: #403)', async () => {
 	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '005', '.markuplintrc');
-	const configSet = await configProvider.resolve([key]);
+	const file = getFile(path.resolve(testDir, '005', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
 	expect(configSet.config).toStrictEqual({
 		mock: true,
+	});
+});
+
+test('Overrides', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '006', '.markuplintrc');
+	const file = getFile(path.resolve(testDir, '006', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	expect(configSet.config).toStrictEqual({
+		rules: {
+			foo: false,
+		},
 	});
 });

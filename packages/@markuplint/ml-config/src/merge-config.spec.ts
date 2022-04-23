@@ -148,3 +148,46 @@ it('test', () => {
 		},
 	});
 });
+
+it('test', () => {
+	expect(
+		mergeConfig(
+			{
+				overrides: {
+					a: {
+						rules: {
+							rule1: true,
+						},
+					},
+				},
+			},
+			{
+				overrides: {
+					a: {
+						rules: {
+							rule1: false,
+						},
+					},
+					b: {
+						rules: {
+							rule1: true,
+						},
+					},
+				},
+			},
+		),
+	).toStrictEqual({
+		overrides: {
+			a: {
+				rules: {
+					rule1: false,
+				},
+			},
+			b: {
+				rules: {
+					rule1: true,
+				},
+			},
+		},
+	});
+});
