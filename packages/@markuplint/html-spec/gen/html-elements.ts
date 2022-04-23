@@ -124,8 +124,18 @@ export async function getHTMLElement(link: string) {
 	const implicitRole = getProperty($, 'Implicit ARIA role');
 
 	let { globalAttrs, attributes } = getAttributes($, '#attributes', name);
+	const { attributes: deprecatedAttributes } = getAttributes($, '#deprecated_attributes', name);
+	const { attributes: individualAttributes } = getAttributes($, '#individual_attributes', name);
+	const { attributes: nonStandardAttributes } = getAttributes($, '#non-standard_attributes', name);
+	const { attributes: obsoleteAttributes } = getAttributes($, '#obsolete_attributes', name);
 	globalAttrs = sortObjectByKey(globalAttrs || {});
-	attributes = sortObjectByKey(attributes);
+	attributes = sortObjectByKey({
+		...attributes,
+		...deprecatedAttributes,
+		...individualAttributes,
+		...nonStandardAttributes,
+		...obsoleteAttributes,
+	});
 
 	const ariaInHtml = getAriaInHtml(name);
 
