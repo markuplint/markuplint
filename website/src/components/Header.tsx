@@ -16,8 +16,8 @@ export default memo(({ isHome = false }: Props) => {
           </div>
         ) : (
           <div>
-            <Link href="/">
-              <a href="/">
+            <Link href="/" passHref>
+              <a>
                 <Logo />
               </a>
             </Link>
@@ -26,23 +26,23 @@ export default memo(({ isHome = false }: Props) => {
         <nav aria-label="main menu">
           <ul>
             <li>
-              <Link href="/getting-started">
-                <a href="/getting-started">Getting Started</a>
+              <Link href="/getting-started" passHref>
+                <a>Getting Started</a>
               </Link>
             </li>
             <li>
-              <Link href="/rules">
-                <a href="/rules">Rules</a>
+              <Link href="/rules" passHref>
+                <a>Rules</a>
               </Link>
             </li>
             <li>
-              <Link href="/configuration">
-                <a href="/configuration">Configuration</a>
+              <Link href="/configuration" passHref>
+                <a>Configuration</a>
               </Link>
             </li>
             <li>
-              <Link href="/api-docs">
-                <a href="/api-docs">
+              <Link href="/api-docs" passHref>
+                <a>
                   <abbr title="Application Programming Interface">API</abbr>
                 </a>
               </Link>

@@ -16,8 +16,8 @@ export default function Index() {
         <div className="hero">
           <h1>markuplint</h1>
           <h2>Peace of mind in your markup</h2>
-          <Link href="/getting-started">
-            <a href="/getting-started">Get Started</a>
+          <Link href="/getting-started" passHref>
+            <a>Get Started</a>
           </Link>
         </div>
         <div className="body">
