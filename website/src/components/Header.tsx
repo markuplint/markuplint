@@ -10,7 +10,7 @@ type Props = {
   isHome?: boolean;
 };
 export default memo(({ isHome = false }: Props) => {
-  const { locale } = useRouter();
+  const { locale, asPath } = useRouter();
   const { t } = useTranslation();
 
   return (
@@ -58,11 +58,11 @@ export default memo(({ isHome = false }: Props) => {
             </li>
             <li>
               {locale === 'en' ? (
-                <Link href="/" locale="ja" passHref>
+                <Link href={asPath} locale="ja" passHref>
                   <a>日本語（ベータ）</a>
                 </Link>
               ) : (
-                <Link href="/" locale="en" passHref>
+                <Link href={asPath} locale="en" passHref>
                   <a>English</a>
                 </Link>
               )}
