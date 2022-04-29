@@ -1,3 +1,7 @@
+---
+title: イベントハンドラ属性の使用禁止(no-use-event-handler-attr)
+---
+
 # イベントハンドラ属性の使用禁止(`no-use-event-handler-attr`)
 
 イベントハンドラ属性を指定すると警告します。

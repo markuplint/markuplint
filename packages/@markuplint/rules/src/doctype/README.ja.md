@@ -1,3 +1,7 @@
+---
+title: DOCTYPE 宣言 (doctype)
+---
+
 # DOCTYPE 宣言 (`doctype`)
 
 DOCTYPE 宣言が書かれていないと警告します。また、古い廃止された DOCTYPE を宣言をしていた場合にも警告します。

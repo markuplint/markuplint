@@ -1,3 +1,7 @@
+---
+title: id の重複 (id-duplication)
+---
+
 # id の重複 (`id-duplication`)
 
 **id 属性**の値がドキュメント内で重複していたら警告します。

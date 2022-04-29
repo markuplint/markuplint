@@ -1,3 +1,7 @@
+---
+title: 非推奨要素 (deprecated-element)
+---
+
 # 非推奨要素 (`deprecated-element`)
 
 非推奨（**deprecated**）もしくは廃止（**obsolete**）または非標準（**non-standard**）な要素があると警告します。
