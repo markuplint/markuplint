@@ -1,12 +1,16 @@
 import Link from 'next/link';
 import { memo } from 'react';
 
+import { useTranslation } from '../lib/i18n';
+
 import Logo from './Logo';
 
 type Props = {
   isHome?: boolean;
 };
 export default memo(({ isHome = false }: Props) => {
+  const { t } = useTranslation();
+
   return (
     <>
       <header>
@@ -27,28 +31,28 @@ export default memo(({ isHome = false }: Props) => {
           <ul>
             <li>
               <Link href="/getting-started" passHref>
-                <a>Getting Started</a>
+                <a>{t('Getting Started')}</a>
               </Link>
             </li>
             <li>
               <Link href="/rules" passHref>
-                <a>Rules</a>
+                <a>{t('Rules')}</a>
               </Link>
             </li>
             <li>
               <Link href="/configuration" passHref>
-                <a>Configuration</a>
+                <a>{t('Configuration')}</a>
               </Link>
             </li>
             <li>
               <Link href="/api-docs" passHref>
                 <a>
-                  <abbr title="Application Programming Interface">API</abbr>
+                  <abbr title="Application Programming Interface">{t('API')}</abbr>
                 </a>
               </Link>
             </li>
             <li>
-              <a href="https://playground.markuplint.dev">Playground</a>
+              <a href="https://playground.markuplint.dev">{t('Playground')}</a>
             </li>
           </ul>
         </nav>
