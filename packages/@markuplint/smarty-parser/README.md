@@ -31,17 +31,17 @@ Unsupported the syntax that is complex on the attribute value.
 ✅ Available code:
 
 ```html
-<div attr="<%= value %>"></div>
+<div attr="{ $value }"></div>
 ```
 
 <!-- prettier-ignore-start -->
 ```html
-<div attr='<%= value %>'></div>
+<div attr='{ $value }'></div>
 ```
 <!-- prettier-ignore-end -->
 
 ```html
-<div attr="<%= value %>-<%= value2 %>-<%= value3 %>"></div>
+<div attr="{ $value }-{ $value2 }-{ $value3 }"></div>
 ```
 
 ❌ Unavailable code:
@@ -50,16 +50,16 @@ Didn't nest by quotations.
 
 <!-- prettier-ignore-start -->
 ```html
-<div attr=<%= value %>></div>
+<div attr={ value }></div>
 ```
 <!-- prettier-ignore-end -->
 
 Mixed the tags and spaces.
 
 ```html
-<div attr=" <%= value %> "></div>
+<div attr=" { $value } "></div>
 ```
 
 ```html
-<div attr="<%= value %> <%= value2 %>"></div>
+<div attr="{ value } { value2 }"></div>
 ```
