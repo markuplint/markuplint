@@ -50,7 +50,7 @@ Didn't nest by quotations.
 
 <!-- prettier-ignore-start -->
 ```html
-<div attr={ value }></div>
+<div attr={ $value }></div>
 ```
 <!-- prettier-ignore-end -->
 
@@ -61,5 +61,5 @@ Mixed the tags and spaces.
 ```
 
 ```html
-<div attr="{ value } { value2 }"></div>
+<div attr="{ $value } { $value2 }"></div>
 ```
