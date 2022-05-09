@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/smarty-parser",
-	"version": "2.2.0",
+	"version": "2.0.0-alpha",
 	"description": "Smarty parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
