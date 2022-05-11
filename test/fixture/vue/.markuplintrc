@@ -2,9 +2,9 @@
 	"parser": {
 		".vue$": "@markuplint/vue-parser"
 	},
-	"specs": [
-		"@markuplint/vue-spec"
-	],
+	"specs": {
+		".vue$": "@markuplint/vue-spec"
+	},
 	"rules": {
 		"attr-duplication": true,
 		"character-reference": true,

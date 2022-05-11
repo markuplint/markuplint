@@ -4,7 +4,7 @@ export interface Config {
 	plugins?: (PluginConfig | string)[];
 	parser?: ParserConfig;
 	parserOptions?: ParserOptions;
-	specs?: SpecConfig | SpecConfig_v1;
+	specs?: SpecConfig;
 	excludeFiles?: string[];
 	rules?: Rules;
 	nodeRules?: NodeRule[];
@@ -28,11 +28,6 @@ export type ParserOptions = {
 export type SpecConfig = {
 	[extensionPattern: string]: string /* module name or path */;
 };
-
-/**
- * @deprecated
- */
-export type SpecConfig_v1 = string | string[];
 
 export type Rule<T extends RuleConfigValue, O = void> = RuleConfig<T, O> | T | boolean;
 

@@ -451,7 +451,9 @@ test('Vue iterator', async () => {
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
-			specs: ['@markuplint/vue-spec'],
+			specs: {
+				'.*': '@markuplint/vue-spec',
+			},
 		},
 	);
 	const { violations: violations2 } = await mlRuleTest(
@@ -632,7 +634,9 @@ test('React spec', async () => {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
 		},
-		specs: ['@markuplint/react-spec'],
+		specs: {
+			'.*': '@markuplint/react-spec',
+		},
 	});
 
 	expect(violations1).toStrictEqual([
