@@ -65,13 +65,6 @@ export interface MLASTElementCloseTag extends MLASTAbstructNode {
 	isCustomElement: boolean;
 }
 
-export interface MLASTOmittedElement extends MLASTAbstructNode {
-	type: 'omittedtag';
-	namespace: string;
-	childNodes?: MLASTNode[];
-	isCustomElement: boolean;
-}
-
 export interface MLASTPreprocessorSpecificBlock extends MLASTAbstructNode {
 	type: 'psblock';
 	nodeName: string;
@@ -82,9 +75,9 @@ export interface MLASTPreprocessorSpecificBlock extends MLASTAbstructNode {
 	branchedChildNodes?: MLASTNode[];
 }
 
-export type MLASTTag = MLASTElement | MLASTElementCloseTag | MLASTOmittedElement;
+export type MLASTTag = MLASTElement | MLASTElementCloseTag;
 
-export type MLASTParentNode = MLASTElement | MLASTOmittedElement | MLASTPreprocessorSpecificBlock;
+export type MLASTParentNode = MLASTElement | MLASTPreprocessorSpecificBlock;
 
 export interface MLASTComment extends MLASTAbstructNode {
 	type: 'comment';
@@ -140,7 +133,6 @@ export interface MLMarkupLanguageParser {
 		offsetColumn?: number,
 		ignoreFrontMatter?: boolean,
 	): MLASTDocument;
-	tagNameCaseSensitive?: boolean;
 	/**
 	 * @default "omittable"
 	 */

@@ -1,9 +1,9 @@
-import type MLDOMAbstractElement from '../tokens/abstract-element';
 import type { Specificity } from './selector';
 import type { RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCompination } from '@markuplint/ml-config';
 
 import { regexSelectorMatches } from '@markuplint/ml-config';
 
+import { isPureHTMLElement } from './is-pure-html-element';
 import { createSelector } from './selector';
 
 export type SelectorMatches = SelectorMatched | SelectorUnmatched;
@@ -19,13 +19,7 @@ type SelectorUnmatched = {
 	matched: false;
 };
 
-type TargetElement = MLDOMAbstractElement<any, any>;
-
-export function matchSelector(
-	el: TargetElement,
-	selector: string | RegexSelector | undefined,
-	tagNameCaseSensitive?: boolean,
-): SelectorMatches {
+export function matchSelector(el: Element, selector: string | RegexSelector | undefined): SelectorMatches {
 	if (!selector) {
 		return {
 			matched: false,
@@ -33,7 +27,7 @@ export function matchSelector(
 	}
 
 	if (typeof selector === 'string') {
-		const sel = createSelector(selector, tagNameCaseSensitive);
+		const sel = createSelector(selector);
 		const specificity = sel.match(el);
 		if (specificity) {
 			return {
@@ -50,7 +44,7 @@ export function matchSelector(
 	return regexSelect(el, selector);
 }
 
-function regexSelect(el: TargetElement, selector: RegexSelector): SelectorMatches {
+function regexSelect(el: Element, selector: RegexSelector): SelectorMatches {
 	let edge = new SelectorTarget(selector);
 	let edgeSelector = selector.combination;
 	while (edgeSelector) {
@@ -68,14 +62,14 @@ class SelectorTarget {
 	_combinatedFrom: { target: SelectorTarget; combinator: RegexSelectorCombinator } | null = null;
 
 	constructor(selector: RegexSelectorWithoutCompination) {
-		this._selector = {
-			nodeName: selector.nodeName,
-			attrName: selector.attrName,
-			attrValue: selector.attrValue,
-		};
+		this._selector = selector;
 	}
 
-	match(el: TargetElement): SelectorMatches {
+	from(target: SelectorTarget, combinator: RegexSelectorCombinator) {
+		this._combinatedFrom = { target, combinator };
+	}
+
+	match(el: Element): SelectorMatches {
 		const unitCheck = this._matchWithoutCombinateChecking(el);
 		if (!unitCheck.matched) {
 			return unitCheck;
@@ -87,13 +81,13 @@ class SelectorTarget {
 		switch (combinator) {
 			// Descendant combinator
 			case ' ': {
-				let ancestor = el.getParentElement();
+				let ancestor = el.parentElement;
 				while (ancestor) {
 					const matches = target.match(ancestor);
 					if (matches.matched) {
 						return mergeMatches(matches, unitCheck, ' ');
 					}
-					ancestor = ancestor.getParentElement();
+					ancestor = ancestor.parentElement;
 				}
 				return {
 					matched: false,
@@ -101,7 +95,7 @@ class SelectorTarget {
 			}
 			// Child combinator
 			case '>': {
-				const parentNode = el.getParentElement();
+				const parentNode = el.parentElement;
 				if (!parentNode) {
 					return { matched: false };
 				}
@@ -163,16 +157,12 @@ class SelectorTarget {
 		}
 	}
 
-	_matchWithoutCombinateChecking(el: TargetElement) {
+	_matchWithoutCombinateChecking(el: Element) {
 		return uncombinatedRegexSelect(el, this._selector);
-	}
-
-	from(target: SelectorTarget, combinator: RegexSelectorCombinator) {
-		this._combinatedFrom = { target, combinator };
 	}
 }
 
-function uncombinatedRegexSelect(el: TargetElement, selector: RegexSelectorWithoutCompination): SelectorMatches {
+function uncombinatedRegexSelect(el: Element, selector: RegexSelectorWithoutCompination): SelectorMatches {
 	let matched = true;
 	let data: Record<string, string> = {};
 	let tagSelector = '';
@@ -180,7 +170,7 @@ function uncombinatedRegexSelect(el: TargetElement, selector: RegexSelectorWitho
 	const specifiedAttr = new Map<string, string>();
 
 	if (selector.nodeName) {
-		const matchedNodeName = regexSelectorMatches(selector.nodeName, el.nodeName);
+		const matchedNodeName = regexSelectorMatches(selector.nodeName, el.localName, isPureHTMLElement(el));
 		if (matchedNodeName) {
 			delete matchedNodeName.$0;
 		} else {
@@ -191,16 +181,16 @@ function uncombinatedRegexSelect(el: TargetElement, selector: RegexSelectorWitho
 			...matchedNodeName,
 		};
 
-		tagSelector = el.nodeName;
+		tagSelector = el.localName;
 
 		specificity[2] = 1;
 	}
 
 	if (selector.attrName) {
 		const selectorAttrName = selector.attrName;
-		const matchedAttrNameList = el.attributes.map(attr => {
-			const attrName = attr.getName().potential;
-			const matchedAttrName = regexSelectorMatches(selectorAttrName, attrName);
+		const matchedAttrNameList = Array.from(el.attributes).map(attr => {
+			const attrName = attr.name;
+			const matchedAttrName = regexSelectorMatches(selectorAttrName, attrName, isPureHTMLElement(el));
 
 			if (matchedAttrName) {
 				delete matchedAttrName.$0;
@@ -221,10 +211,10 @@ function uncombinatedRegexSelect(el: TargetElement, selector: RegexSelectorWitho
 
 	if (selector.attrValue) {
 		const selectorAttrValue = selector.attrValue;
-		const matchedAttrValueList = el.attributes.map(attr => {
-			const attrName = attr.getName().potential;
-			const attrValue = attr.getValue().potential;
-			const matchedAttrValue = regexSelectorMatches(selectorAttrValue, attrValue);
+		const matchedAttrValueList = Array.from(el.attributes).map(attr => {
+			const attrName = attr.name;
+			const attrValue = attr.value;
+			const matchedAttrValue = regexSelectorMatches(selectorAttrValue, attrValue, isPureHTMLElement(el));
 
 			if (matchedAttrValue) {
 				delete matchedAttrValue.$0;

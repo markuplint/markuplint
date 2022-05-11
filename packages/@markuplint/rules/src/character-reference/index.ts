@@ -28,19 +28,15 @@ export default createRule({
 			const ms = severity === 'error' ? 'must' : 'should';
 			const message = t(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			for (const attr of node.attributes) {
-				if (
-					attr.attrType === 'ps-attr' ||
-					(attr.attrType === 'html-attr' && attr.isDynamicValue) ||
-					(attr.attrType === 'html-attr' && attr.isDirective)
-				) {
+				if (attr.isDynamicValue || attr.isDirective) {
 					continue;
 				}
-				const value = attr.getValue();
+				const valueNode = attr.valueNode;
 				targetNodes.push({
 					scope: node,
-					line: value.line,
-					col: value.col,
-					raw: value.raw,
+					line: valueNode?.startLine,
+					col: valueNode?.startCol,
+					raw: valueNode?.raw,
 					message,
 				});
 			}

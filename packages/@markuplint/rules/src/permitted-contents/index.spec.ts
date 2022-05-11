@@ -759,7 +759,7 @@ describe('React', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'The content of the "A" element is invalid according to the HTML specification',
+				message: 'The content of the "a" element is invalid according to the HTML specification',
 				raw: '<A>',
 			},
 		]);

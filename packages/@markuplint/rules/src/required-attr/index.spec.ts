@@ -400,14 +400,14 @@ test('custom element', async () => {
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: 'The "Link" element expects the "itemprop" attribute',
+			message: 'The "link" element expects the "itemprop" attribute',
 			raw: '<Link href="path/to">',
 		},
 		{
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: 'The "Link" element expects the "rel" attribute',
+			message: 'The "link" element expects the "rel" attribute',
 			raw: '<Link href="path/to">',
 		},
 	]);

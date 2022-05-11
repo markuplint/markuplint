@@ -2,7 +2,7 @@ import type {
 	MLASTDoctype,
 	MLASTElementCloseTag,
 	MLASTNode,
-	MLASTOmittedElement,
+	MLASTElement,
 	MLASTParentNode,
 	MLASTTag,
 	MLASTText,
@@ -97,7 +97,7 @@ function nodeize(
 		const endLine = prevToken ? prevToken.endLine : 0;
 		const startCol = prevToken ? prevToken.endCol : 0;
 		const endCol = prevToken ? prevToken.endCol : 0;
-		const node: MLASTOmittedElement = {
+		const node: MLASTElement = {
 			uuid: uuid(),
 			raw: '',
 			startOffset: startOffset + offsetOffset,
@@ -107,8 +107,13 @@ function nodeize(
 			startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 			endCol: endCol + (endLine === 1 ? offsetColumn : 0),
 			nodeName: originNode.nodeName,
-			type: 'omittedtag',
+			type: 'starttag',
 			namespace: getNamespace(originNode),
+			attributes: [],
+			hasSpreadAttr: false,
+			pearNode: null,
+			tagCloseChar: '',
+			tagOpenChar: '',
 			parentNode,
 			prevNode,
 			nextNode,

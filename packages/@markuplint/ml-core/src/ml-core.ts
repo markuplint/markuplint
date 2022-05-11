@@ -19,16 +19,21 @@ export type MLCoreParams = {
 } & MLFabric;
 
 export class MLCore {
-	#filename: string;
-	#document!: Document<RuleConfigValue, unknown> | ParserError;
-	#parser: MLMarkupLanguageParser;
-	#sourceCode: string;
 	#ast: MLASTDocument | null = null;
-	#ruleset: Ruleset;
-	#locale: LocaleSet;
-	#rules: MLRule<RuleConfigValue, unknown>[];
-	#schemas: MLSchema;
+	#document!: Document<RuleConfigValue, unknown> | ParserError;
+	#filename: string;
+
 	#ignoreFrontMatter: boolean;
+	#locale: LocaleSet;
+	#parser: MLMarkupLanguageParser;
+	#rules: MLRule<RuleConfigValue, unknown>[];
+	#ruleset: Ruleset;
+	#schemas: MLSchema;
+	#sourceCode: string;
+
+	get document() {
+		return this.#document;
+	}
 
 	constructor({ parser, sourceCode, ruleset, rules, locale, schemas, parserOptions, filename, debug }: MLCoreParams) {
 		if (debug) {
@@ -52,8 +57,26 @@ export class MLCore {
 		this._createDocument();
 	}
 
-	get document() {
-		return this.#document;
+	setCode(sourceCode: string) {
+		this.#sourceCode = sourceCode;
+		this._parse();
+		this._createDocument();
+	}
+
+	update({ parser, ruleset, rules, locale, schemas, parserOptions }: Partial<MLFabric>) {
+		this.#parser = parser ?? this.#parser;
+		this.#ruleset = {
+			rules: ruleset?.rules ?? this.#ruleset.rules,
+			nodeRules: ruleset?.nodeRules ?? this.#ruleset.nodeRules,
+			childNodeRules: ruleset?.childNodeRules ?? this.#ruleset.childNodeRules,
+		};
+		this.#rules = rules ?? this.#rules;
+		this.#locale = locale ?? this.#locale;
+		this.#schemas = schemas ?? this.#schemas;
+		if (parserOptions && parserOptions.ignoreFrontMatter !== this.#ignoreFrontMatter) {
+			this._parse();
+		}
+		this._createDocument();
 	}
 
 	async verify(fix = false) {
@@ -79,7 +102,7 @@ export class MLCore {
 			}
 
 			log('%s Rule: verify', rule.name);
-			const results = await rule.verify(this.#document, this.#locale, ruleInfo, fix).catch(e => {
+			const results = await rule.verify(this.#document, this.#locale, fix).catch(e => {
 				if (e instanceof ParserError) {
 					return e;
 				}
@@ -119,42 +142,6 @@ export class MLCore {
 		return violations;
 	}
 
-	setCode(sourceCode: string) {
-		this.#sourceCode = sourceCode;
-		this._parse();
-		this._createDocument();
-	}
-
-	update({ parser, ruleset, rules, locale, schemas, parserOptions }: Partial<MLFabric>) {
-		this.#parser = parser ?? this.#parser;
-		this.#ruleset = {
-			rules: ruleset?.rules ?? this.#ruleset.rules,
-			nodeRules: ruleset?.nodeRules ?? this.#ruleset.nodeRules,
-			childNodeRules: ruleset?.childNodeRules ?? this.#ruleset.childNodeRules,
-		};
-		this.#rules = rules ?? this.#rules;
-		this.#locale = locale ?? this.#locale;
-		this.#schemas = schemas ?? this.#schemas;
-		if (parserOptions && parserOptions.ignoreFrontMatter !== this.#ignoreFrontMatter) {
-			this._parse();
-		}
-		this._createDocument();
-	}
-
-	private _parse() {
-		try {
-			this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
-		} catch (err) {
-			log('Caught the parse error: %O', err);
-			this.#ast = null;
-			if (err instanceof ParserError) {
-				this.#document = err;
-			} else {
-				throw err;
-			}
-		}
-	}
-
 	private _createDocument() {
 		if (!this.#ast) {
 			return;
@@ -162,10 +149,22 @@ export class MLCore {
 		try {
 			this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, {
 				filename: this.#filename,
-				tagNameCaseSensitive: this.#parser.tagNameCaseSensitive,
 				endTag: this.#parser.endTag,
 			});
 		} catch (err) {
+			if (err instanceof ParserError) {
+				this.#document = err;
+			} else {
+				throw err;
+			}
+		}
+	}
+	private _parse() {
+		try {
+			this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
+		} catch (err) {
+			log('Caught the parse error: %O', err);
+			this.#ast = null;
 			if (err instanceof ParserError) {
 				this.#document = err;
 			} else {

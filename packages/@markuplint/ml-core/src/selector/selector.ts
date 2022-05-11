@@ -1,16 +1,25 @@
-import type MLDOMAbstractElement from '../tokens/abstract-element';
-
 import parser from 'postcss-selector-parser';
 
-import { log as coreLog } from '../../debug';
+import { log as coreLog } from '../debug';
+
+import { isPureHTMLElement } from './is-pure-html-element';
 
 const log = coreLog.extend('selector');
 const resLog = log.extend('result');
 
+const caches = new Map<string, Selector>();
+
 export type Specificity = [number, number, number];
 
-export function createSelector(selector: string, tagNameCaseSensitive?: boolean) {
-	return new Selector(selector, !!tagNameCaseSensitive);
+export function createSelector(selector: string) {
+	let instance = caches.get(selector);
+	if (instance) {
+		return instance;
+	}
+
+	instance = new Selector(selector);
+	caches.set(selector, instance);
+	return instance;
 }
 
 export function compareSpecificity(a: Specificity, b: Specificity) {
@@ -30,8 +39,6 @@ export function compareSpecificity(a: Specificity, b: Specificity) {
 	return 0;
 }
 
-type TargetElement = MLDOMAbstractElement<any, any>;
-
 type MultipleSelectorResult = SelectorResult[];
 
 type SelectorResult = {
@@ -42,11 +49,11 @@ type SelectorResult = {
 class Selector {
 	#ruleset: Ruleset;
 
-	constructor(selector: string, tagNameCaseSensitive: boolean) {
-		this.#ruleset = Ruleset.parse(selector, tagNameCaseSensitive);
+	constructor(selector: string) {
+		this.#ruleset = Ruleset.parse(selector);
 	}
 
-	match(el: TargetElement, caller: TargetElement | null = el): Specificity | false {
+	match(el: Element, caller: ParentNode | null = el): Specificity | false {
 		const results = this.#ruleset.match(el, caller);
 		for (const result of results) {
 			if (result.matched) {
@@ -58,22 +65,22 @@ class Selector {
 }
 
 class Ruleset {
-	static parse(selector: string, tagNameCaseSensitive: boolean) {
+	static parse(selector: string) {
 		const selectors: parser.Selector[] = [];
 		parser(root => {
 			selectors.push(...root.nodes);
 		}).processSync(selector);
-		return new Ruleset(selectors, tagNameCaseSensitive);
+		return new Ruleset(selectors);
 	}
 
 	#selectorGroup: StructuredSelector[] = [];
 
-	constructor(selectors: parser.Selector[], tagNameCaseSensitive: boolean) {
-		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector, tagNameCaseSensitive)));
+	constructor(selectors: parser.Selector[]) {
+		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector)));
 	}
 
-	match(el: TargetElement, caller: TargetElement | null): MultipleSelectorResult {
-		log('%s', el.raw);
+	match(el: Element, caller: ParentNode | null): MultipleSelectorResult {
+		log('%s', el.localName);
 		return this.#selectorGroup.map(selector => {
 			const res = selector.match(el, caller);
 			resLog('%s => %o', selector.selector, res);
@@ -86,14 +93,18 @@ class StructuredSelector {
 	#edge: SelectorTarget;
 	#selector: parser.Selector;
 
-	constructor(selector: parser.Selector, tagNameCaseSensitive: boolean) {
+	get selector() {
+		return this.#selector.nodes.join('');
+	}
+
+	constructor(selector: parser.Selector) {
 		this.#selector = selector;
 
-		this.#edge = new SelectorTarget(tagNameCaseSensitive);
+		this.#edge = new SelectorTarget();
 		this.#selector.nodes.forEach(node => {
 			switch (node.type) {
 				case 'combinator': {
-					const combinatedTarget = new SelectorTarget(tagNameCaseSensitive);
+					const combinatedTarget = new SelectorTarget();
 					combinatedTarget.from(this.#edge, node);
 					this.#edge = combinatedTarget;
 					break;
@@ -115,30 +126,60 @@ class StructuredSelector {
 		});
 	}
 
-	get selector() {
-		return this.#selector.nodes.join('');
-	}
-
-	match(el: TargetElement, caller: TargetElement | null): SelectorResult {
+	match(el: Element, caller: ParentNode | null): SelectorResult {
 		return this.#edge.match(el, caller);
 	}
 }
 
 class SelectorTarget {
-	tag: parser.Tag | parser.Universal | null = null;
-	id: parser.Identifier[] = [];
-	class: parser.ClassName[] = [];
-	attr: parser.Attribute[] = [];
-	pseudo: parser.Pseudo[] = [];
-	#tagNameCaseSensitive: boolean;
-	#isAdded = false;
 	#combinatedFrom: { target: SelectorTarget; combinator: parser.Combinator } | null = null;
+	#isAdded = false;
+	attr: parser.Attribute[] = [];
+	class: parser.ClassName[] = [];
+	id: parser.Identifier[] = [];
+	pseudo: parser.Pseudo[] = [];
+	tag: parser.Tag | parser.Universal | null = null;
 
-	constructor(tagNameCaseSensitive: boolean) {
-		this.#tagNameCaseSensitive = tagNameCaseSensitive;
+	add(
+		selector:
+			| parser.Tag
+			| parser.Identifier
+			| parser.ClassName
+			| parser.Attribute
+			| parser.Universal
+			| parser.Pseudo,
+	) {
+		this.#isAdded = true;
+		switch (selector.type) {
+			case 'tag':
+			case 'universal': {
+				this.tag = selector;
+				break;
+			}
+			case 'id': {
+				this.id.push(selector);
+				break;
+			}
+			case 'class': {
+				this.class.push(selector);
+				break;
+			}
+			case 'attribute': {
+				this.attr.push(selector);
+				break;
+			}
+			case 'pseudo': {
+				this.pseudo.push(selector);
+				break;
+			}
+		}
 	}
 
-	match(el: TargetElement, caller: TargetElement | null): SelectorResult {
+	from(target: SelectorTarget, combinator: parser.Combinator) {
+		this.#combinatedFrom = { target, combinator };
+	}
+
+	match(el: Element, caller: ParentNode | null): SelectorResult {
 		const unitCheck = this._matchWithoutCombinateChecking(el, caller);
 		if (!unitCheck.matched) {
 			return unitCheck;
@@ -150,7 +191,7 @@ class SelectorTarget {
 		switch (combinator.value) {
 			// Descendant combinator
 			case ' ': {
-				let ancestor = el.getParentElement();
+				let ancestor = el.parentElement;
 				let matched = false;
 				let specificity: Specificity | void;
 				while (ancestor) {
@@ -165,7 +206,7 @@ class SelectorTarget {
 					if (res.matched) {
 						matched = true;
 					}
-					ancestor = ancestor.getParentElement();
+					ancestor = ancestor.parentElement;
 				}
 				if (!specificity) {
 					const res = target.match(el, caller);
@@ -184,7 +225,7 @@ class SelectorTarget {
 			case '>': {
 				let matched: boolean;
 				const specificity = unitCheck.specificity;
-				const parentNode = el.getParentElement();
+				const parentNode = el.parentElement;
 
 				if (parentNode) {
 					const res = target.match(parentNode, caller);
@@ -227,7 +268,7 @@ class SelectorTarget {
 					matched,
 				};
 			}
-			// // Subsequent-sibling combinator
+			// Subsequent-sibling combinator
 			case '~': {
 				let prev = el.previousElementSibling;
 				let matched = false;
@@ -271,7 +312,7 @@ class SelectorTarget {
 		}
 	}
 
-	_matchWithoutCombinateChecking(el: TargetElement, caller: TargetElement | null): SelectorResult {
+	_matchWithoutCombinateChecking(el: Element, caller: ParentNode | null): SelectorResult {
 		const specificity: Specificity = [0, 0, 0];
 
 		let matched = true;
@@ -285,7 +326,7 @@ class SelectorTarget {
 		}
 		specificity[0] += this.id.length;
 
-		if (!this.class.every(className => el.classList.includes(className.value))) {
+		if (!this.class.every(className => el.classList.contains(className.value))) {
 			matched = false;
 		}
 		specificity[1] += this.class.length;
@@ -296,7 +337,7 @@ class SelectorTarget {
 		specificity[1] += this.attr.length;
 
 		for (const pseudo of this.pseudo) {
-			const pseudoRes = pseudoMatch(pseudo, el, caller, this.#tagNameCaseSensitive);
+			const pseudoRes = pseudoMatch(pseudo, el, caller);
 
 			specificity[0] += pseudoRes.specificity[0];
 			specificity[1] += pseudoRes.specificity[1];
@@ -311,9 +352,9 @@ class SelectorTarget {
 			specificity[2] += 1;
 
 			let a = this.tag.value;
-			let b = el.nodeName;
+			let b = el.localName;
 
-			if (!this.#tagNameCaseSensitive) {
+			if (isPureHTMLElement(el)) {
 				a = a.toLowerCase();
 				b = b.toLowerCase();
 			}
@@ -328,55 +369,16 @@ class SelectorTarget {
 			matched,
 		};
 	}
-
-	add(
-		selector:
-			| parser.Tag
-			| parser.Identifier
-			| parser.ClassName
-			| parser.Attribute
-			| parser.Universal
-			| parser.Pseudo,
-	) {
-		this.#isAdded = true;
-		switch (selector.type) {
-			case 'tag':
-			case 'universal': {
-				this.tag = selector;
-				break;
-			}
-			case 'id': {
-				this.id.push(selector);
-				break;
-			}
-			case 'class': {
-				this.class.push(selector);
-				break;
-			}
-			case 'attribute': {
-				this.attr.push(selector);
-				break;
-			}
-			case 'pseudo': {
-				this.pseudo.push(selector);
-				break;
-			}
-		}
-	}
-
-	from(target: SelectorTarget, combinator: parser.Combinator) {
-		this.#combinatedFrom = { target, combinator };
-	}
 }
 
-function attrMatch(attr: parser.Attribute, el: TargetElement) {
-	return el.attributes.some(attrOfEl => {
-		if (attr.attribute !== attrOfEl.getName().potential) {
+function attrMatch(attr: parser.Attribute, el: Element) {
+	return Array.from(el.attributes).some(attrOfEl => {
+		if (attr.attribute !== attrOfEl.name) {
 			return false;
 		}
 		if (attr.value != null) {
 			let value = attr.value;
-			let valueOfEl = attrOfEl.getValue().potential;
+			let valueOfEl = attrOfEl.value;
 			if (attr.insensitive) {
 				value = value.toLowerCase();
 				valueOfEl = valueOfEl.toLowerCase();
@@ -424,20 +426,17 @@ function attrMatch(attr: parser.Attribute, el: TargetElement) {
 	});
 }
 
-function pseudoMatch(
-	pseudo: parser.Pseudo,
-	el: TargetElement,
-	caller: TargetElement | null,
-	tagNameCaseSensitive: boolean,
-): SelectorResult {
+function pseudoMatch(pseudo: parser.Pseudo, el: Element, caller: ParentNode | null): SelectorResult {
 	switch (pseudo.value) {
+		//
+
 		/**
 		 * Below, markuplint Specific Selector
 		 */
 		case ':closest': {
-			const ruleset = new Ruleset(pseudo.nodes, tagNameCaseSensitive);
+			const ruleset = new Ruleset(pseudo.nodes);
 			const specificity = getSpecificity(ruleset.match(el, caller));
-			let parent = el.getParentElement();
+			let parent = el.parentElement;
 			while (parent) {
 				if (ruleset.match(parent, caller).some(r => r.matched)) {
 					return {
@@ -445,7 +444,7 @@ function pseudoMatch(
 						matched: true,
 					};
 				}
-				parent = parent.getParentElement();
+				parent = parent.parentElement;
 			}
 			return {
 				specificity,
@@ -457,7 +456,7 @@ function pseudoMatch(
 		 * Below, Selector Level 4
 		 */
 		case ':not': {
-			const ruleset = new Ruleset(pseudo.nodes, tagNameCaseSensitive);
+			const ruleset = new Ruleset(pseudo.nodes);
 			const resList = ruleset.match(el, caller);
 			const specificity = getSpecificity(resList);
 			const matched = resList.every(r => !r.matched);
@@ -467,7 +466,7 @@ function pseudoMatch(
 			};
 		}
 		case ':is': {
-			const ruleset = new Ruleset(pseudo.nodes, tagNameCaseSensitive);
+			const ruleset = new Ruleset(pseudo.nodes);
 			const resList = ruleset.match(el, caller);
 			const specificity = getSpecificity(resList);
 			const matched = resList.some(r => r.matched);
@@ -477,7 +476,7 @@ function pseudoMatch(
 			};
 		}
 		case ':has': {
-			const ruleset = new Ruleset(pseudo.nodes, tagNameCaseSensitive);
+			const ruleset = new Ruleset(pseudo.nodes);
 			const specificity = getSpecificity(ruleset.match(el, caller));
 			const descendants = getDescendants(el);
 			const matched = descendants.some(desc => ruleset.match(desc, caller).some(m => m.matched));
@@ -487,7 +486,7 @@ function pseudoMatch(
 			};
 		}
 		case ':where': {
-			const ruleset = new Ruleset(pseudo.nodes, tagNameCaseSensitive);
+			const ruleset = new Ruleset(pseudo.nodes);
 			const resList = ruleset.match(el, caller);
 			const matched = resList.some(r => r.matched);
 			return {
@@ -496,27 +495,27 @@ function pseudoMatch(
 			};
 		}
 		case ':scope': {
-			if (!isScope(el, caller)) {
+			if (isScope(el, caller)) {
 				return {
 					specificity: [0, 1, 0],
-					matched: false,
+					matched: true,
 				};
 			}
 			return {
 				specificity: [0, 1, 0],
-				matched: true,
+				matched: false,
 			};
 		}
 		case ':root': {
-			if (!(!el.isInFragmentDocument && el.parentNode === null)) {
+			if (el.localName === 'html') {
 				return {
 					specificity: [0, 1, 0],
-					matched: false,
+					matched: true,
 				};
 			}
 			return {
 				specificity: [0, 1, 0],
-				matched: true,
+				matched: false,
 			};
 		}
 		case ':enable':
@@ -576,12 +575,17 @@ function pseudoMatch(
 	}
 }
 
-function isScope(el: TargetElement, caller: TargetElement | null) {
-	return el.uuid === caller?.uuid || (!el.isInFragmentDocument && el.parentNode === null);
+function isScope(el: Element, caller: ParentNode | null) {
+	return el === caller || el.parentNode === null;
 }
 
-function getDescendants(el: TargetElement, includeSelf = false): TargetElement[] {
-	return [...el.children.map(child => getDescendants(child, true)).flat(), ...(includeSelf ? [el] : [])];
+function getDescendants(el: Element, includeSelf = false): Element[] {
+	return [
+		...Array.from(el.children)
+			.map(child => getDescendants(child, true))
+			.flat(),
+		...(includeSelf ? [el] : []),
+	];
 }
 
 function getSpecificity(result: MultipleSelectorResult) {

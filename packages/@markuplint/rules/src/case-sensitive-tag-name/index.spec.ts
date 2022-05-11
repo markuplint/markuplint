@@ -72,9 +72,9 @@ describe('verify', () => {
 	});
 });
 
-describe('fix', () => {
-	test('upper case', async () => {
-		const { fixedCode } = await mlRuleTest(rule, '<DIV data-lowercase></DIV>', undefined, true);
-		expect(fixedCode).toBe('<div data-lowercase></div>');
-	});
-});
+// describe('fix', () => {
+// 	test('upper case', async () => {
+// 		const { fixedCode } = await mlRuleTest(rule, '<DIV data-lowercase></DIV>', undefined, true);
+// 		expect(fixedCode).toBe('<div data-lowercase></div>');
+// 	});
+// });

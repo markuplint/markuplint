@@ -1,4 +1,4 @@
-import { createTestElement } from '../../test';
+import { createTestElement } from '../test';
 
 import { createSelector } from './selector';
 
@@ -101,7 +101,7 @@ describe('selector matching', () => {
 	it('Descendant combinator', async () => {
 		const el = createTestElement('<div><span><a></a></span></div>');
 		const a = el.children[0].children[0];
-		expect(a.nodeName).toBe('a');
+		expect(a.nodeName).toBe('A');
 		expect(createSelector('div a').match(a)).toBeTruthy();
 		expect(createSelector('div span a').match(a)).toBeTruthy();
 		expect(createSelector('span a').match(a)).toBeTruthy();
@@ -112,7 +112,7 @@ describe('selector matching', () => {
 		const el = createTestElement('<div><span><a></a></span></div>');
 		const a = el.children[0].children[0];
 		expect(createSelector('div > div').match(el)).toBe(false);
-		expect(a.nodeName).toBe('a');
+		expect(a.nodeName).toBe('A');
 		expect(createSelector('span > a').match(a)).toBeTruthy();
 		expect(createSelector('div span > a').match(a)).toBeTruthy();
 		expect(createSelector('div > a').match(a)).toBe(false);
@@ -162,6 +162,14 @@ describe('selector matching', () => {
 		expect(createSelector(':closest(tr)').match(td)).toBeTruthy();
 		expect(createSelector(':closest(tbody)').match(td)).toBeTruthy();
 		expect(createSelector(':closest(div)').match(td)).toBe(false);
+	});
+
+	it('is invisible tags', async () => {
+		const el = createTestElement('<html><head><title></title></head></html>');
+		const head = el.children[0];
+		const title = head.children[0];
+		expect(createSelector('head').match(head)).toBeTruthy();
+		expect(createSelector('title').match(title)).toBeTruthy();
 	});
 });
 

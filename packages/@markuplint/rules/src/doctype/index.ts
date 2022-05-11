@@ -10,16 +10,16 @@ export default createRule<Value, Option>({
 	defaultOptions: {
 		denyObsolateType: true,
 	},
-	async verify(context) {
-		if (context.document.isFragment) {
+	async verify({ document, report, t }) {
+		if (document.isFragment) {
 			return;
 		}
 
-		const doctype = context.document.doctype;
+		const doctype = document.doctype;
 
 		if (!doctype) {
-			context.report({
-				message: context.translate('Require {0}', 'doctype'),
+			report({
+				message: t('Require {0}', 'doctype'),
 				line: 1,
 				col: 1,
 				raw: '',
@@ -28,9 +28,9 @@ export default createRule<Value, Option>({
 		}
 
 		if ((doctype.name.toLowerCase() === 'html' && doctype.publicId) || doctype.systemId) {
-			context.report({
+			report({
 				scope: doctype,
-				message: context.translate('Never {0} {1}', 'declarate', 'obsolete doctype'),
+				message: t('Never {0} {1}', 'declarate', 'obsolete doctype'),
 			});
 		}
 	},

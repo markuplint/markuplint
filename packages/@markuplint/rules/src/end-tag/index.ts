@@ -24,7 +24,10 @@ export default createRule<boolean>({
 			return;
 		}
 		await document.walkOn('Element', el => {
-			if (voidElements.some(vE => vE === el.nodeName.toLowerCase())) {
+			if (el.isOmitted) {
+				return;
+			}
+			if (voidElements.some(vE => vE === el.localName)) {
 				return;
 			}
 			if (el.closeTag != null) {

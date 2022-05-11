@@ -22,29 +22,29 @@ export default createRule<TagRule[], Options>({
 	},
 	async verify({ document, report, t }) {
 		let idCounter = 0;
-		await document.walkOn('Element', async node => {
-			if (!node.rule.value) {
+		await document.walkOn('Element', async el => {
+			if (!el.rule.value) {
 				return;
 			}
 
-			if (node.rule.option.ignoreHasMutableChildren && node.hasMutableChildren()) {
+			if (el.rule.option.ignoreHasMutableChildren && el.hasMutableChildren()) {
 				return;
 			}
 
-			const specType = node.ns === 'html' ? 'HTML' : node.ns === 'svg' ? 'SVG' : 'Any Language';
+			const specType = el.ns === 'html' ? 'HTML' : el.ns === 'svg' ? 'SVG' : 'Any Language';
 
-			const childNodes = node.getChildElementsAndTextNodeWithoutWhitespaces();
-			const spec = !node.isCustomElement && htmlSpec(document.specs, node.nameWithNS)?.permittedStructures;
+			const childNodes = el.getChildElementsAndTextNodeWithoutWhitespaces();
+			const spec = !el.isCustomElement && htmlSpec(document.specs, el.nameWithNS)?.permittedStructures;
 
 			const expGen = new ExpGenerator(idCounter++);
 
 			if (spec) {
-				if (spec.ancestor && !node.closest(spec.ancestor)) {
+				if (spec.ancestor && !el.closest(spec.ancestor)) {
 					report({
-						scope: node,
+						scope: el,
 						message: t(
 							'{0} must be {1}',
-							t('the "{0*}" {1}', node.nodeName, 'element'),
+							t('the "{0*}" {1}', el.localName, 'element'),
 							t('{0} of {1}', 'descendant', t('the "{0*}" {1}', spec.ancestor, 'element')),
 						),
 					});
@@ -56,43 +56,42 @@ export default createRule<TagRule[], Options>({
 				if (spec.conditional) {
 					for (const conditional of spec.conditional) {
 						matched =
-							('hasAttr' in conditional.condition && node.hasAttribute(conditional.condition.hasAttr)) ||
+							('hasAttr' in conditional.condition && el.hasAttribute(conditional.condition.hasAttr)) ||
 							('parent' in conditional.condition &&
-								!!node.parentNode &&
-								node.parentNode.type === 'Element' &&
-								node.parentNode.matches(conditional.condition.parent));
+								!!el.parentElement &&
+								el.parentElement.matches(conditional.condition.parent));
 						// console.log({ ...conditional, matched });
 						if (matched) {
 							try {
-								const parentExp = getRegExpFromParentNode(document.specs, node, expGen);
-								const exp = expGen.specToRegExp(conditional.contents, parentExp, node.ns);
-								const conditionalResult = match(exp, childNodes, node.ns, false);
+								const parentExp = getRegExpFromParentNode(document.specs, el, expGen);
+								const exp = expGen.specToRegExp(conditional.contents, parentExp, el.ns);
+								const conditionalResult = match(exp, childNodes, el.ns, false);
 								if (!conditionalResult) {
 									const message = t(
 										'{0} is {1:c}',
 										t(
 											'{0} of {1}',
 											t('the {0}', 'content'),
-											t('the "{0*}" {1}', node.nodeName, 'element'),
+											t('the "{0*}" {1}', el.localName, 'element'),
 										),
 										'invalid',
 									);
 									report({
-										scope: node,
+										scope: el,
 										message:
 											specType !== 'Any Language'
 												? t('{0} according to {1}', message, `the ${specType} specification`)
 												: message,
-										line: node.startLine,
-										col: node.startCol,
-										raw: node.raw,
+										line: el.startLine,
+										col: el.startCol,
+										raw: el.raw,
 									});
 									break;
 								}
 							} catch (e) {
 								if (e instanceof Error) {
 									// eslint-disable-next-line no-console
-									console.warn(node.raw, 'conditional', conditional, e.message);
+									console.warn(el.raw, 'conditional', conditional, e.message);
 								} else {
 									throw e;
 								}
@@ -103,17 +102,17 @@ export default createRule<TagRule[], Options>({
 
 				if (!matched) {
 					try {
-						const exp = getRegExpFromNode(document.specs, node, expGen);
-						const specResult = match(exp, childNodes, node.ns, false);
+						const exp = getRegExpFromNode(document.specs, el, expGen);
+						const specResult = match(exp, childNodes, el.ns, false);
 
 						if (!specResult) {
 							const message = t(
 								'{0} is {1:c}',
-								t('{0} of {1}', t('the {0}', 'content'), t('the "{0*}" {1}', node.nodeName, 'element')),
+								t('{0} of {1}', t('the {0}', 'content'), t('the "{0*}" {1}', el.localName, 'element')),
 								'invalid',
 							);
 							report({
-								scope: node,
+								scope: el,
 								message:
 									specType !== 'Any Language'
 										? t('{0} according to {1}', message, `the ${specType} specification`)
@@ -123,7 +122,7 @@ export default createRule<TagRule[], Options>({
 					} catch (e) {
 						if (e instanceof Error) {
 							// eslint-disable-next-line no-console
-							console.warn(node.raw, 'HTML Spec', e.message);
+							console.warn(el.raw, 'HTML Spec', e.message);
 						} else {
 							throw e;
 						}
@@ -131,35 +130,35 @@ export default createRule<TagRule[], Options>({
 				}
 			}
 
-			for (const rule of node.rule.value) {
-				if (rule.tag.toLowerCase() !== node.nodeName.toLowerCase()) {
+			for (const rule of el.rule.value) {
+				if (rule.tag.toLowerCase() !== el.localName.toLowerCase()) {
 					continue;
 				}
 
-				const parentExp = getRegExpFromParentNode(document.specs, node, expGen);
+				const parentExp = getRegExpFromParentNode(document.specs, el, expGen);
 				try {
-					const exp = expGen.specToRegExp(rule.contents, parentExp, node.ns);
+					const exp = expGen.specToRegExp(rule.contents, parentExp, el.ns);
 					// Evaluate the custom element if the optional schema.
-					const r = match(exp, childNodes, node.ns, node.isCustomElement);
+					const r = match(exp, childNodes, el.ns, el.isCustomElement);
 
 					if (!r) {
 						report({
-							scope: node,
+							scope: el,
 							message: t(
 								'{0} is {1:c}',
-								t('{0} of {1}', t('the {0}', 'content'), t('the "{0*}" {1}', node.nodeName, 'element')),
+								t('{0} of {1}', t('the {0}', 'content'), t('the "{0*}" {1}', el.localName, 'element')),
 								'invalid',
 							),
-							line: node.startLine,
-							col: node.startCol,
-							raw: node.raw,
+							line: el.startLine,
+							col: el.startCol,
+							raw: el.raw,
 						});
 						return;
 					}
 				} catch (e) {
 					if (e instanceof Error) {
 						// eslint-disable-next-line no-console
-						console.warn(node.raw, 'rule', rule, e.message);
+						console.warn(el.raw, 'rule', rule, e.message);
 					} else {
 						throw e;
 					}
@@ -177,10 +176,10 @@ function normalization(nodes: TargetNodes, ownNS: string | null, evalCustomEleme
 	return nodes
 		.map(node => {
 			// FIXME: https://github.com/markuplint/markuplint/issues/388
-			if (!evalCustomElement && node.type === 'Element' && node.isCustomElement) {
+			if (!evalCustomElement && node.is(node.ELEMENT_NODE) && node.isCustomElement) {
 				return '';
 			}
-			if (node.type !== 'Element') {
+			if (!node.is(node.ELEMENT_NODE)) {
 				return '<#text>';
 			}
 			ownNS = ownNS || 'html';
@@ -224,7 +223,9 @@ const matchingCacheMap = new Map<string, boolean>();
 function match(exp: RegExp, childNodes: TargetNodes, ownNS: string | null, evalCustomElement: boolean) {
 	const target = normalization(childNodes, ownNS, evalCustomElement);
 	const cacheKey =
-		target + exp.source + childNodes.map(n => (n.type == 'Element' ? n.toNormalizeString() : n.originRaw)).join('');
+		target +
+		exp.source +
+		childNodes.map(n => (n.is(n.ELEMENT_NODE) ? n.toNormalizeString() : n.originRaw)).join('');
 	const res = matchingCacheMap.get(cacheKey);
 
 	if (res != null) {
@@ -263,7 +264,7 @@ function _match(target: string, exp: RegExp, childNodes: TargetNodes) {
 					return tagName.toLowerCase() === tag.toLowerCase();
 				});
 				for (const node of childNodes) {
-					if (node.type === 'Text') {
+					if (node.is(node.TEXT_NODE)) {
 						continue;
 					}
 					if (node.nodeName.toLowerCase() !== tag.toLowerCase()) {
@@ -315,7 +316,7 @@ function _match(target: string, exp: RegExp, childNodes: TargetNodes) {
 				// });
 				for (const node of childNodes) {
 					for (const target of targetsMaybeIncludesNotAllowedDescendants) {
-						if (node.type === 'Text') {
+						if (node.is(node.TEXT_NODE)) {
 							if (selectors.includes('#text')) {
 								return false;
 							}

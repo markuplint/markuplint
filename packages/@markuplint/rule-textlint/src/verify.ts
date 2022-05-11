@@ -15,9 +15,9 @@ export const defaultOptions = true;
 
 export const textlintVerify: (
 	...args: Parameters<RuleSeed<boolean, Option>['verify']>
-) => Promise<TextlintResult | undefined> = async ({ document, globalRule }) => {
+) => Promise<TextlintResult | undefined> = async ({ document }) => {
 	const html = document.toString();
-	const option = globalRule.option;
+	const option = document.rule.option;
 
 	if (typeof option === 'object') {
 		return await lintText(html, option);

@@ -126,7 +126,7 @@ describe('async and sync rules', () => {
 		defaultValue: null,
 		defaultOptions: null,
 		async verify(context) {
-			await context.document.walk(async node => {});
+			await context.document.walkOn('Element', el => {});
 			context.report(asyncReport);
 		},
 	});
@@ -136,7 +136,7 @@ describe('async and sync rules', () => {
 		defaultValue: null,
 		defaultOptions: null,
 		verify(context) {
-			context.document.walk(node => {});
+			context.document.walkOn('Element', el => {});
 			context.report(syncReport);
 		},
 	});

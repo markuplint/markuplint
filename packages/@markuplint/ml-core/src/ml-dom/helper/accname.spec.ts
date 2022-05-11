@@ -1,10 +1,10 @@
-import type { MLDOMElement } from '../tokens';
+import type { MLElement } from '../node/element';
 
 import { parse } from '@markuplint/html-parser';
 
-import { Document } from '../';
 import { convertRuleset } from '../../';
 import { dummySchemas } from '../../test';
+import { MLDocument } from '../node/document';
 
 import { getAccname } from './accname';
 import { createNode } from './create-node';
@@ -13,9 +13,9 @@ function c(sourceCode: string) {
 	const ast = parse(sourceCode);
 	const astNode = ast.nodeList[0];
 	const ruleset = convertRuleset({});
-	const document = new Document(ast, ruleset, dummySchemas());
+	const document = new MLDocument(ast, ruleset, dummySchemas());
 	const node = createNode(astNode, document);
-	if (node.type === 'Element') {
+	if (node.is(node.ELEMENT_NODE)) {
 		return node;
 	}
 	throw new Error();
@@ -29,7 +29,7 @@ test('Get accessible name', () => {
 	expect(getAccname(c('<img alt="alterative-text" />'))).toBe('alterative-text');
 	expect(getAccname(c('<img title="title" />'))).toBe('title');
 	expect(
-		getAccname(c('<div><label for="a">label</label><input id="a" /></div>').children[1] as MLDOMElement<any, any>),
+		getAccname(c('<div><label for="a">label</label><input id="a" /></div>').children[1] as MLElement<any, any>),
 	).toBe('label');
 });
 
@@ -50,9 +50,9 @@ test('accname-1.1 Expample 1', () => {
 <input id="el2" aria-labelledby="el1" />
 <h1 id="el3"> hello </h1>
 </div>`);
-	expect(getAccname(complex.children[0] as MLDOMElement<any, any>)).toBe('hello');
-	expect(getAccname(complex.children[1] as MLDOMElement<any, any>)).toBe('');
-	expect(getAccname(complex.children[2] as MLDOMElement<any, any>)).toBe('hello');
+	expect(getAccname(complex.children[0] as MLElement<any, any>)).toBe('hello');
+	expect(getAccname(complex.children[1] as MLElement<any, any>)).toBe('');
+	expect(getAccname(complex.children[2] as MLElement<any, any>)).toBe('hello');
 });
 
 /**
@@ -70,8 +70,8 @@ test('accname-1.1 Expample 2', () => {
 	</li>
 </ul>`);
 	const spans = complex.querySelectorAll('span');
-	expect(getAccname(spans[0] as MLDOMElement<any, any>)).toBe('Delete Documentation.pdf');
-	expect(getAccname(spans[1] as MLDOMElement<any, any>)).toBe('Delete HolidayLetter.pdf');
+	expect(getAccname(spans[0] as MLElement<any, any>)).toBe('Delete Documentation.pdf');
+	expect(getAccname(spans[1] as MLElement<any, any>)).toBe('Delete HolidayLetter.pdf');
 });
 
 /**

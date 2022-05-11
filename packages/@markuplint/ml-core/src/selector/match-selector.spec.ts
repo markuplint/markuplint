@@ -1,4 +1,6 @@
-import { createTestElement } from '../../test';
+// @ts-nocheck
+
+import { createTestElement } from '../test';
 
 import { matchSelector } from './match-selector';
 
@@ -31,13 +33,30 @@ test('nodeName case-sensitive', async () => {
 		specificity: [0, 0, 1],
 	});
 
-	expect(matchSelector(createTestElement('<DIV></DIV>'), 'div', true)).toStrictEqual({
-		matched: false,
-	});
-
-	expect(matchSelector(createTestElement('<DIV></DIV>'), 'DIV', true)).toStrictEqual({
+	expect(matchSelector(createTestElement('<DIV></DIV>'), 'DIV')).toStrictEqual({
 		matched: true,
 		selector: 'DIV',
+		specificity: [0, 0, 1],
+	});
+
+	expect(
+		matchSelector(
+			createTestElement('<Div></Div>', {
+				parser: require('@markuplint/jsx-parser'),
+			}),
+			'div',
+		),
+	).toStrictEqual({
+		matched: false,
+	});
+});
+
+test('invisible tag', async () => {
+	const head = createTestElement('<html><head></head></html>').childNodes[0];
+	expect(head.nodeName).toBe('HEAD');
+	expect(matchSelector(head, 'head')).toStrictEqual({
+		matched: true,
+		selector: 'head',
 		specificity: [0, 0, 1],
 	});
 });
