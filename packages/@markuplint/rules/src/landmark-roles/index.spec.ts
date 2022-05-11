@@ -19,7 +19,6 @@ test('No warning', async () => {
 </body>
 </html>
 `,
-		{ rule: true },
 	);
 
 	expect(violations).toStrictEqual([]);
@@ -42,7 +41,6 @@ test('Top level landmarks', async () => {
 </body>
 </html>
 `,
-		{ rule: true },
 	);
 
 	expect(violations).toStrictEqual([
@@ -74,8 +72,6 @@ test('Top level landmarks: disabled', async () => {
 </html>
 `,
 		{
-			rule: true,
-
 			nodeRule: [
 				{
 					selector: 'aside',

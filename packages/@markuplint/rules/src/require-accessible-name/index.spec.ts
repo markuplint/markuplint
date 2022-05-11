@@ -118,7 +118,6 @@ test('The accessible name may be mutable', async () => {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([]);
@@ -131,7 +130,6 @@ test('The accessible name may be mutable', async () => {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([]);
@@ -144,20 +142,13 @@ test('The accessible name may be mutable', async () => {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([]);
 });
 
 test('has comment', async () => {
-	expect(
-		(
-			await mlRuleTest(rule, '<button>label<!-- comment --></button>', {
-				rule: true,
-			})
-		).violations,
-	).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<button>label<!-- comment --></button>')).violations).toStrictEqual([]);
 });
 
 test('The accessible name may be mutable (Svelte)', async () => {
@@ -167,7 +158,6 @@ test('The accessible name may be mutable (Svelte)', async () => {
 				parser: {
 					'.*': '@markuplint/svelte-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([]);
@@ -180,7 +170,6 @@ test('The accessible name may be mutable', async () => {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([]);
@@ -193,7 +182,6 @@ test('The accessible name may be mutable', async () => {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([]);
@@ -206,7 +194,6 @@ test('The accessible name may be mutable', async () => {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([]);

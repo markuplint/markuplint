@@ -4,8 +4,6 @@ import rule from './';
 
 test('warns if specified attribute is not appeared', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="/path/to/image.png">', {
-		rule: true,
-
 		nodeRule: [
 			{
 				selector: 'img',
@@ -30,8 +28,6 @@ test('warns if specified attribute is not appeared', async () => {
 
 test('multiple required attributes', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="/path/to/image.png">', {
-		rule: true,
-
 		nodeRule: [
 			{
 				selector: 'img',
@@ -69,69 +65,21 @@ test('multiple required attributes', async () => {
 });
 
 test('"alt" attribute on "<area>" is required only if the href attribute is used', async () => {
-	expect(
-		(
-			await mlRuleTest(rule, '<area href="path/to">', {
-				rule: true,
+	expect((await mlRuleTest(rule, '<area href="path/to">')).violations.length).toBe(1);
 
-				nodeRule: [],
-			})
-		).violations.length,
-	).toBe(1);
-
-	expect(
-		(
-			await mlRuleTest(rule, '<area href="path/to" alt="alternate text">', {
-				rule: true,
-
-				nodeRule: [],
-			})
-		).violations.length,
-	).toBe(0);
+	expect((await mlRuleTest(rule, '<area href="path/to" alt="alternate text">')).violations.length).toBe(0);
 });
 
 test('At least one of data and type must be defined to <object>.', async () => {
-	expect(
-		(
-			await mlRuleTest(rule, '<object data="https://example.com/data">', {
-				rule: true,
+	expect((await mlRuleTest(rule, '<object data="https://example.com/data">')).violations.length).toBe(0);
 
-				nodeRule: [],
-			})
-		).violations.length,
-	).toBe(0);
+	expect((await mlRuleTest(rule, '<object type="XXXX_YYYY_ZZZZ">')).violations.length).toBe(0);
 
-	expect(
-		(
-			await mlRuleTest(rule, '<object type="XXXX_YYYY_ZZZZ">', {
-				rule: true,
-
-				nodeRule: [],
-			})
-		).violations.length,
-	).toBe(0);
-
-	expect(
-		(
-			await mlRuleTest(rule, '<object>', {
-				rule: true,
-
-				nodeRule: [],
-			})
-		).violations.length,
-	).toBe(2);
+	expect((await mlRuleTest(rule, '<object>')).violations.length).toBe(2);
 });
 
 test('The ancestors of the <source> element.', async () => {
-	expect(
-		(
-			await mlRuleTest(rule, '<audio><source></audio>', {
-				rule: true,
-
-				nodeRule: [],
-			})
-		).violations,
-	).toStrictEqual([
+	expect((await mlRuleTest(rule, '<audio><source></audio>')).violations).toStrictEqual([
 		{
 			severity: 'error',
 			line: 1,
@@ -141,15 +89,7 @@ test('The ancestors of the <source> element.', async () => {
 		},
 	]);
 
-	expect(
-		(
-			await mlRuleTest(rule, '<video><source></video>', {
-				rule: true,
-
-				nodeRule: [],
-			})
-		).violations,
-	).toStrictEqual([
+	expect((await mlRuleTest(rule, '<video><source></video>')).violations).toStrictEqual([
 		{
 			severity: 'error',
 			line: 1,
@@ -159,15 +99,7 @@ test('The ancestors of the <source> element.', async () => {
 		},
 	]);
 
-	expect(
-		(
-			await mlRuleTest(rule, '<picture><source></picture>', {
-				rule: true,
-
-				nodeRule: [],
-			})
-		).violations,
-	).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<picture><source></picture>')).violations).toStrictEqual([]);
 });
 
 test('with value requirement', async () => {
@@ -274,8 +206,6 @@ test('with value requirement (regex)', async () => {
 
 test('nodeRules', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="path/to.svg" alt="text" />', {
-		rule: true,
-
 		nodeRule: [
 			{
 				selector: 'img[src$=.svg]',
@@ -299,8 +229,6 @@ test('Foreign element', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<svg></svg>', {
-				rule: true,
-
 				nodeRule: [
 					{
 						selector: 'svg',
@@ -336,8 +264,6 @@ test('svg', async () => {
 				</svg>
 				`,
 				{
-					rule: true,
-
 					nodeRule: [
 						{
 							selector: 'circle',
@@ -379,7 +305,6 @@ test('Pug', async () => {
 				parser: {
 					'.*': '@markuplint/pug-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([
@@ -400,7 +325,6 @@ test('Vue', async () => {
 				parser: {
 					'.*': '@markuplint/vue-parser',
 				},
-				rule: true,
 			})
 		).violations.length,
 	).toBe(0);
@@ -413,7 +337,6 @@ test('React', async () => {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([
@@ -432,7 +355,6 @@ test('React', async () => {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([]);

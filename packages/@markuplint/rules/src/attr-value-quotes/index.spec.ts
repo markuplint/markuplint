@@ -12,7 +12,6 @@ describe('verify', () => {
 			<p>ipsam</p>
 		</div>
 		`,
-			{ rule: true },
 		);
 		expect(violations).toStrictEqual([
 			{
@@ -111,7 +110,6 @@ describe('verify', () => {
 			<p>ipsam</p>
 		</div>
 		`,
-			{ rule: true },
 		);
 		expect(violations.length).toBe(0);
 	});
@@ -119,12 +117,7 @@ describe('verify', () => {
 
 describe('fix', () => {
 	test('empty', async () => {
-		const { fixedCode } = await mlRuleTest(
-			rule,
-			'<div attr noop=noop foo="bar" hoge=\'fuga\'>',
-			{ rule: true },
-			true,
-		);
+		const { fixedCode } = await mlRuleTest(rule, '<div attr noop=noop foo="bar" hoge=\'fuga\'>', undefined, true);
 		expect(fixedCode).toEqual('<div attr noop="noop" foo="bar" hoge="fuga">');
 	});
 

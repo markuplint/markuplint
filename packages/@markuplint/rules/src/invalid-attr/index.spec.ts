@@ -6,7 +6,6 @@ test('warns if specified attribute value is invalid', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
-		{ rule: true },
 	);
 
 	expect(violations).toStrictEqual([
@@ -29,7 +28,7 @@ test('warns if specified attribute value is invalid', async () => {
 });
 
 test('Type check', async () => {
-	const { violations } = await mlRuleTest(rule, '<form name=""></form>', { rule: true });
+	const { violations } = await mlRuleTest(rule, '<form name=""></form>');
 
 	expect(violations).toStrictEqual([
 		{
@@ -51,7 +50,7 @@ test('Updated the hidden attribute type to Enum form Boolean', async () => {
 });
 
 test('complex type', async () => {
-	const { violations } = await mlRuleTest(rule, '<input autocomplete="section-a section-b"/>', { rule: true });
+	const { violations } = await mlRuleTest(rule, '<input autocomplete="section-a section-b"/>');
 
 	expect(violations).toStrictEqual([
 		{
@@ -85,21 +84,19 @@ test('global attribute', async () => {
 });
 
 test('the input element type case-insensitive', async () => {
-	const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked>', { rule: true });
+	const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked>');
 
 	expect(violations.length).toBe(0);
 
-	const { violations: violations2 } = await mlRuleTest(rule, '<input type="checkBox" checked>', { rule: true });
+	const { violations: violations2 } = await mlRuleTest(rule, '<input type="checkBox" checked>');
 
 	expect(violations2.length).toBe(0);
 });
 
 test('ancestor condition', async () => {
-	expect(
-		(await mlRuleTest(rule, '<picture><source media="print"></picture>', { rule: true })).violations,
-	).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<picture><source media="print"></picture>')).violations).toStrictEqual([]);
 
-	expect((await mlRuleTest(rule, '<audio><source media="print"></audio>', { rule: true })).violations).toStrictEqual([
+	expect((await mlRuleTest(rule, '<audio><source media="print"></audio>')).violations).toStrictEqual([
 		{
 			severity: 'error',
 			line: 1,
@@ -159,15 +156,13 @@ test('custom rule: type', async () => {
 });
 
 test('custom element', async () => {
-	const { violations } = await mlRuleTest(rule, '<custom-element any-attr></custom-element>', { rule: true });
+	const { violations } = await mlRuleTest(rule, '<custom-element any-attr></custom-element>');
 
 	expect(violations.length).toBe(0);
 });
 
 test('custom element and custom rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<custom-element any-attr="any-string"></custom-element>', {
-		rule: true,
-
 		nodeRule: [
 			{
 				selector: 'custom-element',
@@ -188,9 +183,7 @@ test('custom element and custom rule', async () => {
 });
 
 test('prefix attribute', async () => {
-	const { violations } = await mlRuleTest(rule, '<div v-bind:title="title" :class="classes" @click="click"></div>', {
-		rule: true,
-	});
+	const { violations } = await mlRuleTest(rule, '<div v-bind:title="title" :class="classes" @click="click"></div>');
 
 	expect(violations).toStrictEqual([
 		{
@@ -230,42 +223,40 @@ test('ignore prefix attribute', async () => {
 });
 
 test('URL attribute', async () => {
-	const { violations } = await mlRuleTest(rule, '<img src="https://sample.com/path/to">', { rule: true });
+	const { violations } = await mlRuleTest(rule, '<img src="https://sample.com/path/to">');
 	expect(violations.length).toBe(0);
 
-	const { violations: violations2 } = await mlRuleTest(rule, '<img src="//sample.com/path/to">', { rule: true });
+	const { violations: violations2 } = await mlRuleTest(rule, '<img src="//sample.com/path/to">');
 	expect(violations2.length).toBe(0);
 
-	const { violations: violations3 } = await mlRuleTest(rule, '<img src="//user:pass@sample.com/path/to">', {
-		rule: true,
-	});
+	const { violations: violations3 } = await mlRuleTest(rule, '<img src="//user:pass@sample.com/path/to">');
 	expect(violations3.length).toBe(0);
 
-	const { violations: violations4 } = await mlRuleTest(rule, '<img src="/path/to">', { rule: true });
+	const { violations: violations4 } = await mlRuleTest(rule, '<img src="/path/to">');
 	expect(violations4.length).toBe(0);
 
-	const { violations: violations5 } = await mlRuleTest(rule, '<img src="/path/to?param=value">', { rule: true });
+	const { violations: violations5 } = await mlRuleTest(rule, '<img src="/path/to?param=value">');
 	expect(violations5.length).toBe(0);
 
-	const { violations: violations6 } = await mlRuleTest(rule, '<img src="/?param=value">', { rule: true });
+	const { violations: violations6 } = await mlRuleTest(rule, '<img src="/?param=value">');
 	expect(violations6.length).toBe(0);
 
-	const { violations: violations7 } = await mlRuleTest(rule, '<img src="?param=value">', { rule: true });
+	const { violations: violations7 } = await mlRuleTest(rule, '<img src="?param=value">');
 	expect(violations7.length).toBe(0);
 
-	const { violations: violations8 } = await mlRuleTest(rule, '<img src="path/to">', { rule: true });
+	const { violations: violations8 } = await mlRuleTest(rule, '<img src="path/to">');
 	expect(violations8.length).toBe(0);
 
-	const { violations: violations9 } = await mlRuleTest(rule, '<img src="./path/to">', { rule: true });
+	const { violations: violations9 } = await mlRuleTest(rule, '<img src="./path/to">');
 	expect(violations9.length).toBe(0);
 
-	const { violations: violations10 } = await mlRuleTest(rule, '<img src="../path/to">', { rule: true });
+	const { violations: violations10 } = await mlRuleTest(rule, '<img src="../path/to">');
 	expect(violations10.length).toBe(0);
 
-	const { violations: violations11 } = await mlRuleTest(rule, '<img src="/path/to#hash">', { rule: true });
+	const { violations: violations11 } = await mlRuleTest(rule, '<img src="/path/to#hash">');
 	expect(violations11.length).toBe(0);
 
-	const { violations: violations12 } = await mlRuleTest(rule, '<img src="#hash">', { rule: true });
+	const { violations: violations12 } = await mlRuleTest(rule, '<img src="#hash">');
 	expect(violations12.length).toBe(0);
 });
 
@@ -288,9 +279,6 @@ test('Overwrite type', async () => {
 	const { violations: violations2 } = await mlRuleTest(
 		rule,
 		'<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>',
-		{
-			rule: true,
-		},
 	);
 
 	expect(violations).toStrictEqual([
@@ -342,7 +330,6 @@ test('Foreign element', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div><svg width="10px" height="10px" viewBox="0 0 10 10"></svg></div>',
-		{ rule: true },
 	);
 
 	expect(violations.length).toBe(0);
@@ -361,7 +348,6 @@ test('svg', async () => {
 					</svg>
 				</svg>
 				`,
-				{ rule: true },
 			)
 		).violations,
 	).toStrictEqual([
@@ -385,7 +371,6 @@ test('svg', async () => {
 					hogehoge" />
 				</svg>
 				`,
-				{ rule: true },
 			)
 		).violations,
 	).toStrictEqual([
@@ -409,7 +394,6 @@ test('svg', async () => {
 					<rect transform="translate(300px, 300px)" />
 				</svg>
 				`,
-				{ rule: true },
 			)
 		).violations,
 	).toStrictEqual([]);
@@ -420,7 +404,6 @@ test('Pug', async () => {
 		parser: {
 			'.*': '@markuplint/pug-parser',
 		},
-		rule: true,
 	});
 
 	expect(violations.length).toBe(0);
@@ -431,7 +414,6 @@ test('Pug class', async () => {
 		parser: {
 			'.*': '@markuplint/pug-parser',
 		},
-		rule: true,
 	});
 
 	expect(violations.length).toBe(0);
@@ -445,7 +427,6 @@ test('Vue', async () => {
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
-			rule: true,
 		},
 	);
 	const { violations: violations2 } = await mlRuleTest(
@@ -455,7 +436,6 @@ test('Vue', async () => {
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
-			rule: true,
 		},
 	);
 
@@ -472,7 +452,6 @@ test('Vue iterator', async () => {
 				'.*': '@markuplint/vue-parser',
 			},
 			specs: ['@markuplint/vue-spec'],
-			rule: true,
 		},
 	);
 	const { violations: violations2 } = await mlRuleTest(
@@ -482,7 +461,6 @@ test('Vue iterator', async () => {
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
-			rule: true,
 		},
 	);
 
@@ -501,7 +479,6 @@ test('Vue slot', async () => {
 			specs: {
 				'.*': '@markuplint/vue-spec',
 			},
-			rule: true,
 		},
 	);
 
@@ -516,7 +493,6 @@ test('React Component', async () => {
 			parser: {
 				'.*': '@markuplint/jsx-parser',
 			},
-			rule: true,
 		},
 	);
 
@@ -531,7 +507,6 @@ test('React HTML', async () => {
 			parser: {
 				'.*': '@markuplint/jsx-parser',
 			},
-			rule: true,
 		},
 	);
 
@@ -558,7 +533,6 @@ test('React', async () => {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
 		},
-		rule: true,
 	});
 
 	expect(violations).toStrictEqual([
@@ -579,7 +553,6 @@ test('React with spread attribute', async () => {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([
@@ -598,7 +571,6 @@ test('React with spread attribute', async () => {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([]);
@@ -609,7 +581,6 @@ test('React with spread attribute', async () => {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([
@@ -628,7 +599,6 @@ test('React with spread attribute', async () => {
 				parser: {
 					'.*': '@markuplint/jsx-parser',
 				},
-				rule: true,
 			})
 		).violations,
 	).toStrictEqual([
@@ -656,7 +626,6 @@ test('React spec', async () => {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
 		},
-		rule: true,
 	});
 
 	const { violations: violations2 } = await mlRuleTest(rule, jsx, {
@@ -664,7 +633,6 @@ test('React spec', async () => {
 			'.*': '@markuplint/jsx-parser',
 		},
 		specs: ['@markuplint/react-spec'],
-		rule: true,
 	});
 
 	expect(violations1).toStrictEqual([
@@ -823,8 +791,6 @@ test('regexSelector', async () => {
 </picture>
 `,
 		{
-			rule: true,
-
 			nodeRule: [
 				{
 					regexSelector: {
