@@ -47,18 +47,6 @@ const defaultRules: Record<
 		category: 'validation',
 		default: true,
 	},
-	'attr-equal-space-after': {
-		category: 'style',
-		default: true,
-	},
-	'attr-equal-space-before': {
-		category: 'style',
-		default: true,
-	},
-	'attr-spacing': {
-		category: 'style',
-		default: true,
-	},
 	'attr-value-quotes': {
 		category: 'style',
 		default: true,
@@ -107,11 +95,6 @@ const defaultRules: Record<
 	'id-duplication': {
 		category: 'validation',
 		default: true,
-	},
-	indentation: {
-		category: 'style',
-		default: false,
-		recommendedValue: 2,
 	},
 	'ineffective-attr': {
 		category: 'validation',

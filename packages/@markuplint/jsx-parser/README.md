@@ -23,7 +23,3 @@ Add `parser` option into your [confugration file](https://markuplint.dev/configu
   }
 }
 ```
-
-### Unsupported rule
-
-- [`indentation`](https://markuplint.dev/rules/indentation)

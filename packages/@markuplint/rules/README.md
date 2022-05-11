@@ -40,14 +40,10 @@
 
 ### Style
 
-- [`attr-equal-space-after`](./src/attr-equal-space-after)
-- [`attr-equal-space-before`](./src/attr-equal-space-before)
-- [`attr-spacing`](./src/attr-spacing)
 - [`attr-value-quotes`](./src/attr-value-quotes)
 - [`case-sensitive-attr-name`](./src/case-sensitive-attr-name)
 - [`case-sensitive-tag-name`](./src/case-sensitive-tag-name)
 - [`end-tag`](./src/end-tag)
-- [`indentation`](./src/indentation)
 - [`no-boolean-attr-value`](./src/no-boolean-attr-value)
 - [`no-default-value`](./src/no-default-value)
 

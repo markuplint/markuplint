@@ -5,9 +5,6 @@
   "specs": ["@markuplint/react-spec"],
   "rules": {
     "attr-duplication": true,
-    "attr-equal-space-after": true,
-    "attr-equal-space-before": true,
-    "attr-spacing": true,
     "attr-value-quotes": true,
     "case-sensitive-attr-name": true,
     "case-sensitive-tag-name": true,
@@ -18,7 +15,6 @@
     "doctype": true,
     "end-tag": true,
     "id-duplication": true,
-    "indentation": false,
     "ineffective-attr": true,
     "invalid-attr": true,
     "landmark-roles": true,

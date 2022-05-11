@@ -2,9 +2,6 @@
 	"excludeFiles": ["./008.html"],
 	"rules": {
 		"attr-duplication": true,
-		"attr-equal-space-after": true,
-		"attr-equal-space-before": true,
-		"attr-spacing": true,
 		"attr-value-quotes": { "reason": "For consistency" },
 		"case-sensitive-attr-name": true,
 		"case-sensitive-tag-name": true,
@@ -14,7 +11,6 @@
 		"deprecated-element": true,
 		"doctype": true,
 		"id-duplication": true,
-		"indentation": "tab",
 		"ineffective-attr": true,
 		"invalid-attr": true,
 		"landmark-roles": true,
@@ -27,27 +23,7 @@
 	},
 	"nodeRules": [
 		{
-			"tagName": "head",
-			"rules": {
-				"indentation": {
-					"option": {
-						"indent-nested-nodes": "never"
-					}
-				}
-			}
-		},
-		{
-			"tagName": "body",
-			"rules": {
-				"indentation": {
-					"option": {
-						"indent-nested-nodes": "never"
-					}
-				}
-			}
-		},
-		{
-			"tagName": "meta",
+			"selector": "meta",
 			"rules": {
 				"attr-value-quotes": {
 					"reason": "Another reason"

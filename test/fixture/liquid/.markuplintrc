@@ -15,13 +15,9 @@
 		"landmark-roles": true,
 		"required-h1": true,
 		"class-naming": "/[a-z]+/",
-		"attr-equal-space-after": true,
-		"attr-equal-space-before": true,
-		"attr-spacing": true,
 		"attr-value-quotes": true,
 		"case-sensitive-attr-name": true,
 		"case-sensitive-tag-name": true,
-		"indentation": "tab",
 		"wai-aria": true
 	}
 }

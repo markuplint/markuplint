@@ -1,7 +1,4 @@
 import AttrDuplication from './attr-duplication';
-import AttrEqualSpaceAfter from './attr-equal-space-after';
-import AttrEqualSpaceBefore from './attr-equal-space-before';
-import AttrSpacing from './attr-spacing';
 import AttrValueQuotes from './attr-value-quotes';
 import CaseSensitiveAttrName from './case-sensitive-attr-name';
 import CaseSensitiveTagName from './case-sensitive-tag-name';
@@ -13,7 +10,6 @@ import DisallowedElement from './disallowed-element';
 import Doctype from './doctype';
 import EndTag from './end-tag';
 import IdDuplication from './id-duplication';
-import Indentation from './indentation';
 import IneffectiveAttr from './ineffective-attr';
 import InvalidAttr from './invalid-attr';
 import LandmarkRoles from './landmark-roles';
@@ -32,9 +28,6 @@ import WaiAria from './wai-aria';
 
 export default {
 	'attr-duplication': AttrDuplication,
-	'attr-equal-space-after': AttrEqualSpaceAfter,
-	'attr-equal-space-before': AttrEqualSpaceBefore,
-	'attr-spacing': AttrSpacing,
 	'attr-value-quotes': AttrValueQuotes,
 	'case-sensitive-attr-name': CaseSensitiveAttrName,
 	'case-sensitive-tag-name': CaseSensitiveTagName,
@@ -46,7 +39,6 @@ export default {
 	doctype: Doctype,
 	'end-tag': EndTag,
 	'id-duplication': IdDuplication,
-	indentation: Indentation,
 	'ineffective-attr': IneffectiveAttr,
 	'invalid-attr': InvalidAttr,
 	'landmark-roles': LandmarkRoles,
