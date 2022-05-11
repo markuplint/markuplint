@@ -2,33 +2,31 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 export default createRule({
 	async verify({ document, report, t }) {
-		await document.walkOn('Element', async element => {
-			const attrSpecs = getAttrSpecs(element.nameWithNS, document.specs);
+		await document.walkOn('Attr', async attr => {
+			const attrSpecs = getAttrSpecs(attr.ownerElement.nameWithNS, document.specs);
 
 			if (!attrSpecs) {
 				return;
 			}
 
-			for (const attr of element.attributes) {
-				const name = attr.getName();
-				const attrSpec = attrSpecs.find(item => item.name === name.potential);
-				if (!attrSpec) {
-					return;
-				}
-				if (attrSpec.deprecated || attrSpec.obsolete) {
-					const message = t(
-						'{0} is {1:c}',
-						t('the "{0*}" {1}', name.potential, 'attribute'),
-						attrSpec.obsolete ? 'obsolete' : 'deprecated',
-					);
-					report({
-						scope: element,
-						message,
-						line: name.line,
-						col: name.col,
-						raw: name.raw,
-					});
-				}
+			const name = attr.name;
+			const attrSpec = attrSpecs.find(item => item.name === name);
+			if (!attrSpec) {
+				return;
+			}
+			if (attrSpec.deprecated || attrSpec.obsolete) {
+				const message = t(
+					'{0} is {1:c}',
+					t('the "{0*}" {1}', name, 'attribute'),
+					attrSpec.obsolete ? 'obsolete' : 'deprecated',
+				);
+				report({
+					scope: attr,
+					line: attr.nameNode?.startLine,
+					col: attr.nameNode?.startCol,
+					raw: attr.nameNode?.raw,
+					message,
+				});
 			}
 		});
 	},

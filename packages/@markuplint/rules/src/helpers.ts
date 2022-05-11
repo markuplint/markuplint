@@ -18,18 +18,18 @@ export function attrMatches<T extends RuleConfigValue, R>(node: Element<T, R>, c
 		matched = node.matches(condSelector);
 	}
 	if ('ancestor' in condition && condition.ancestor) {
-		let _node = node.parentNode;
-		while (_node) {
-			if (_node.type === 'Element') {
+		let parent = node.parentNode;
+		while (parent) {
+			if (parent.is(parent.ELEMENT_NODE)) {
 				const condSelector = Array.isArray(condition.ancestor)
 					? condition.ancestor.join(',')
 					: condition.ancestor;
-				if (_node.matches(condSelector)) {
+				if (parent.matches(condSelector)) {
 					matched = true;
 					break;
 				}
 			}
-			_node = _node.parentNode;
+			parent = parent.parentNode;
 		}
 	}
 	return matched;
@@ -203,7 +203,7 @@ function recursiveTraverseSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: s
  */
 export function getPermittedRoles(specs: Readonly<MLMLSpec>, el: Element<any, any>) {
 	const implicitRole = getImplicitRole(specs, el);
-	const spec = htmlSpec(specs, el.nodeName)?.permittedRoles;
+	const spec = htmlSpec(specs, el.nameWithNS)?.permittedRoles;
 	if (!spec) {
 		return true;
 	}
@@ -234,7 +234,7 @@ function mergeRoleList(implicitRole: string | false, permittedRoles: PermittedRo
 }
 
 export function getImplicitRole(specs: Readonly<MLMLSpec>, el: Element<any, any>) {
-	const implicitRole = htmlSpec(specs, el.nodeName)?.implicitRole;
+	const implicitRole = htmlSpec(specs, el.nameWithNS)?.implicitRole;
 	if (!implicitRole) {
 		return false;
 	}
@@ -252,7 +252,7 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element<any, any>
 	const roleAttrTokens = el.getAttributeToken('role');
 	const roleAttr = roleAttrTokens[0];
 	if (roleAttr) {
-		const roleName = roleAttr.getValue().potential.trim().toLowerCase();
+		const roleName = roleAttr.value.trim().toLowerCase();
 		return {
 			name: roleName,
 			isImplicit: false,

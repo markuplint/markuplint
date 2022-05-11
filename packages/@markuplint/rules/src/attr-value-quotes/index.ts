@@ -12,39 +12,33 @@ const quoteList: QuoteMap = {
 export default createRule<Type>({
 	defaultServerity: 'warning',
 	defaultValue: 'double',
-	async verify(context) {
-		await context.document.walkOn('Element', async node => {
-			const message = context.translate(
+	async verify({ document, report, t }) {
+		await document.walkOn('Attr', async attr => {
+			const message = t(
 				'{0} is must {1} on {2}',
 				'Attribute value',
 				'quote',
-				`${node.rule.value} quotation mark`,
+				`${attr.rule.value} quotation mark`,
 			);
-			for (const attr of node.attributes) {
-				if (attr.attrType === 'ps-attr' || attr.isDynamicValue || attr.isDirective || attr.equal.raw === '') {
-					continue;
-				}
-				const quote = attr.startQuote.raw;
-				if (quote !== quoteList[node.rule.value]) {
-					context.report({
-						scope: node,
-						message,
-						line: attr.name.startLine,
-						col: attr.name.startCol,
-						raw: attr.raw.trim(),
-					});
-				}
+			if (attr.isDynamicValue || attr.isDirective || !attr.equal || attr.equal?.raw === '') {
+				return;
+			}
+			const quote = attr.startQuote?.raw;
+			if (quote !== quoteList[attr.rule.value]) {
+				report({
+					scope: attr,
+					message,
+				});
 			}
 		});
 	},
-	async fix(context) {
-		await context.document.walkOn('Element', async node => {
-			for (const attr of node.attributes) {
-				const quote = quoteList[node.rule.value];
-				if (attr.attrType === 'html-attr' && quote && attr.startQuote && attr.startQuote.raw !== quote) {
-					attr.startQuote.fix(quote);
-					attr.endQuote.fix(quote);
-				}
+	async fix({ document }) {
+		await document.walkOn('Attr', async attr => {
+			const quote = quoteList[attr.rule.value];
+			if (quote && attr.startQuote && attr.startQuote.raw !== quote) {
+				attr.startQuote.fix(quote);
+				// TODO: attr.endQuote = new MLToken(quote);
+				attr.endQuote?.fix(quote);
 			}
 		});
 	},

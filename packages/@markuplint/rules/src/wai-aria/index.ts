@@ -30,33 +30,35 @@ export default createRule<boolean, Options>({
 		disallowDefaultValue: false,
 	},
 	async verify({ document, report, t }) {
-		await document.walkOn('Element', async node => {
-			const attrSpecs = getAttrSpecs(node.nameWithNS, document.specs);
-			const html = htmlSpec(document.specs, node.nodeName);
+		await document.walkOn('Element', async el => {
+			const attrSpecs = getAttrSpecs(el.nameWithNS, document.specs);
+			const html = htmlSpec(document.specs, el.nameWithNS);
 			const { roles, ariaAttrs } = ariaSpec(document.specs);
 
 			if (!html || !attrSpecs) {
 				return;
 			}
 
-			const roleAttrTokens = node.getAttributeToken('role');
-			const roleAttr = roleAttrTokens[0];
+			const roleAttr = el.getAttributeNode('role');
 
 			// Roles in the spec
 			if (roleAttr) {
-				const value = roleAttr.getValue().potential.trim().toLowerCase();
+				const value = roleAttr.value.trim().toLowerCase();
 				const existedRole = roles.find(role => role.name === value);
 
 				if (!existedRole) {
 					// Not exist
 					report({
-						scope: node,
+						scope: el,
 						message:
 							t(
 								'{0} according to {1}',
 								t('{0} does not exist', t('the "{0*}" {1}', value, 'role')),
 								'the WAI-ARIA specification',
-							) + `This "${value}" role does not exist in WAI-ARIA.`,
+							) +
+							t('.') +
+							// TODO: Translate
+							` This "${value}" role does not exist in WAI-ARIA.`,
 						line: roleAttr.startLine,
 						col: roleAttr.startCol,
 						raw: roleAttr.raw,
@@ -64,7 +66,7 @@ export default createRule<boolean, Options>({
 				} else if (existedRole.isAbstract) {
 					// the abstract role
 					report({
-						scope: node,
+						scope: el,
 						message: t('{0} is {1}', t('the "{0*}" {1}', value, 'role'), 'the abstract role'),
 						line: roleAttr.startLine,
 						col: roleAttr.startCol,
@@ -73,16 +75,16 @@ export default createRule<boolean, Options>({
 				}
 
 				// Set the implicit role explicitly
-				if (node.rule.option.disallowSetImplicitRole) {
-					const implictRole = getImplicitRole(document.specs, node);
+				if (el.rule.option.disallowSetImplicitRole) {
+					const implictRole = getImplicitRole(document.specs, el);
 					if (implictRole && implictRole === value) {
 						// the implicit role
 						report({
-							scope: node,
+							scope: el,
 							message: t(
 								'{0} is {1}',
 								t('the "{0*}" {1}', value, 'role'),
-								t('{0} of {1}', 'the implicit role', t('the "{0*}" {1}', node.nodeName, 'element')),
+								t('{0} of {1}', 'the implicit role', t('the "{0*}" {1}', el.localName, 'element')),
 							),
 							line: roleAttr.startLine,
 							col: roleAttr.startCol,
@@ -92,20 +94,16 @@ export default createRule<boolean, Options>({
 				}
 
 				// Permitted ARIA Roles
-				if (node.rule.option.permittedAriaRoles) {
-					const permittedRoles = getPermittedRoles(document.specs, node);
+				if (el.rule.option.permittedAriaRoles) {
+					const permittedRoles = getPermittedRoles(document.specs, el);
 					if (permittedRoles === false) {
 						report({
-							scope: node,
+							scope: el,
 							message: t(
 								'{0} according to {1}',
 								t(
 									'Cannot overwrite {0}',
-									t(
-										'{0} of {1}',
-										t('the {0}', 'role'),
-										t('the "{0*}" {1}', node.nodeName, 'element'),
-									),
+									t('{0} of {1}', t('the {0}', 'role'), t('the "{0*}" {1}', el.localName, 'element')),
 								),
 								'ARIA in HTML specification',
 							),
@@ -115,13 +113,13 @@ export default createRule<boolean, Options>({
 						});
 					} else if (Array.isArray(permittedRoles) && !permittedRoles.includes(value)) {
 						report({
-							scope: node,
+							scope: el,
 							message: t(
 								'{0} according to {1}',
 								t(
 									'Cannot overwrite {0} to {1}',
 									t('the "{0*}" {1}', value, 'role'),
-									t('the "{0*}" {1}', node.nodeName, 'element'),
+									t('the "{0*}" {1}', el.localName, 'element'),
 								),
 								'ARIA in HTML specification',
 							),
@@ -133,19 +131,19 @@ export default createRule<boolean, Options>({
 				}
 			}
 
-			const computedRole = getComputedRole(document.specs, node);
+			const computedRole = getComputedRole(document.specs, el);
 			if (computedRole) {
 				const role = getRoleSpec(document.specs, computedRole.name);
 				if (role) {
 					// Checking aria-* on the role
-					for (const attr of node.attributes) {
-						const attrName = attr.getName().potential.trim().toLowerCase();
+					for (const attr of el.attributes) {
+						const attrName = attr.name.toLowerCase();
 						if (/^aria-/i.test(attrName)) {
 							const statesAndProp = role.statesAndProps.find(s => s.name === attrName);
 							if (statesAndProp) {
-								if (node.rule.option.checkingDeprecatedProps && statesAndProp.deprecated) {
+								if (el.rule.option.checkingDeprecatedProps && statesAndProp.deprecated) {
 									report({
-										scope: node,
+										scope: el,
 										message: t(
 											'{0:c} on {1}',
 											t(
@@ -162,7 +160,7 @@ export default createRule<boolean, Options>({
 								}
 							} else {
 								report({
-									scope: node,
+									scope: el,
 									message: t(
 										'{0:c} on {1}',
 										t(
@@ -184,13 +182,13 @@ export default createRule<boolean, Options>({
 					if (!computedRole.isImplicit) {
 						const requiredProps = role.statesAndProps.filter(s => s.required).map(s => s.name);
 						for (const requiredProp of requiredProps) {
-							const has = node.attributes.some(attr => {
-								const attrName = attr.getName().potential.trim().toLowerCase();
+							const has = el.attributes.some(attr => {
+								const attrName = attr.name.toLowerCase();
 								return attrName === requiredProp;
 							});
 							if (!has) {
 								report({
-									scope: node,
+									scope: el,
 									message: t(
 										'{0:c} on {1}',
 										t('Require {0}', t('the "{0*}" {1}', requiredProp, 'ARIA state/property')),
@@ -204,13 +202,13 @@ export default createRule<boolean, Options>({
 			} else {
 				// No role element
 				const { ariaAttrs } = ariaSpec(document.specs);
-				for (const attr of node.attributes) {
-					const attrName = attr.getName().potential.trim().toLowerCase();
+				for (const attr of el.attributes) {
+					const attrName = attr.name.toLowerCase();
 					if (/^aria-/i.test(attrName)) {
 						const ariaAttr = ariaAttrs.find(attr => attr.name === attrName);
 						if (ariaAttr && !ariaAttr.isGlobal) {
 							report({
-								scope: node,
+								scope: el,
 								message: t(
 									'{0} is not {1}',
 									t('the "{0*}" {1}', attrName, 'ARIA state/property'),
@@ -225,21 +223,21 @@ export default createRule<boolean, Options>({
 				}
 			}
 
-			for (const attr of node.attributes) {
-				if (attr.attrType === 'html-attr' && attr.isDynamicValue) {
+			for (const attr of el.attributes) {
+				if (attr.isDynamicValue) {
 					continue;
 				}
-				const attrName = attr.getName().potential.trim().toLowerCase();
+				const attrName = attr.name.toLowerCase();
 				if (/^aria-/i.test(attrName)) {
-					const value = attr.getValue().potential.trim().toLowerCase();
+					const value = attr.value.trim().toLowerCase();
 					const propSpec = ariaAttrs.find(p => p.name === attrName);
 
 					// Checking ARIA Value
-					if (node.rule.option.checkingValue) {
+					if (el.rule.option.checkingValue) {
 						const result = checkAria(document.specs, attrName, value, computedRole?.name);
 						if (!result.isValid) {
 							report({
-								scope: node,
+								scope: el,
 								message:
 									t(
 										'{0:c} on {1}',
@@ -257,7 +255,7 @@ export default createRule<boolean, Options>({
 					}
 
 					// Checking implicit props
-					if (node.rule.option.disallowSetImplicitProps) {
+					if (el.rule.option.disallowSetImplicitProps) {
 						if (propSpec && propSpec.equivalentHtmlAttrs) {
 							for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
 								const htmlAttrSpec = attrSpecs.find(a => a.name === equivalentHtmlAttr.htmlAttrName);
@@ -266,20 +264,20 @@ export default createRule<boolean, Options>({
 									equivalentHtmlAttr.htmlAttrName,
 									equivalentHtmlAttr.value || '',
 									false,
-									node,
+									el,
 									attrSpecs,
 								);
 								if (isValid && isValid.invalidType === 'non-existent') {
 									continue;
 								}
-								if (node.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
-									const targetAttrValue = node.getAttribute(equivalentHtmlAttr.htmlAttrName);
+								if (el.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
+									const targetAttrValue = el.getAttribute(equivalentHtmlAttr.htmlAttrName);
 									if (
 										(equivalentHtmlAttr.value == null && targetAttrValue === value) ||
 										equivalentHtmlAttr.value === value
 									) {
 										report({
-											scope: node,
+											scope: el,
 											message: t(
 												'{0} has {1}',
 												t('the "{0*}" {1}', attrName, 'ARIA state/property'),
@@ -311,7 +309,7 @@ export default createRule<boolean, Options>({
 										continue;
 									}
 									report({
-										scope: node,
+										scope: el,
 										message: t(
 											'{0} contradicts {1}',
 											t('the "{0*}" {1}', attrName, 'ARIA state/property'),
@@ -324,7 +322,7 @@ export default createRule<boolean, Options>({
 								} else if (value === 'true') {
 									if (!equivalentHtmlAttr.isNotStrictEquivalent && htmlAttrSpec?.type === 'Boolean') {
 										report({
-											scope: node,
+											scope: el,
 											message: t(
 												'{0} contradicts {1}',
 												t('the "{0*}" {1}', attrName, 'ARIA state/property'),
@@ -345,9 +343,9 @@ export default createRule<boolean, Options>({
 					}
 
 					// Default value
-					if (node.rule.option.disallowDefaultValue && propSpec && propSpec.defaultValue === value) {
+					if (el.rule.option.disallowDefaultValue && propSpec && propSpec.defaultValue === value) {
 						report({
-							scope: node,
+							scope: el,
 							message: t('It is {0}', 'default value'),
 							line: attr.startLine,
 							col: attr.startCol,

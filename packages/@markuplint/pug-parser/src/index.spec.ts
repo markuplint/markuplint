@@ -402,12 +402,12 @@ else
 		expect(input1.startLine).toBe(2);
 		expect(input1.startCol).toBe(2);
 		expect(input1.attributes[0].startLine).toBe(2);
-		expect(input1.attributes[0].startCol).toBe(8);
+		expect(input1.attributes[0].startCol).toBe(9);
 		expect(input2.startOffset).toBe(29);
 		expect(input2.startLine).toBe(3);
 		expect(input2.startCol).toBe(2);
 		expect(input2.attributes[0].startLine).toBe(3);
-		expect(input2.attributes[0].startCol).toBe(8);
+		expect(input2.attributes[0].startCol).toBe(9);
 	});
 
 	it('block-in-tag attr2', () => {
@@ -429,15 +429,15 @@ else
 		const attr2 = input2.attributes[0] as MLASTHTMLAttr;
 		const attr3 = input2.attributes[1] as MLASTHTMLAttr;
 		expect(attr1.startLine).toBe(22);
-		expect(attr1.startCol).toBe(8);
+		expect(attr1.startCol).toBe(9);
 		expect(attr1.name.startLine).toBe(22);
 		expect(attr1.name.startCol).toBe(9);
 		expect(attr2.startLine).toBe(23);
-		expect(attr2.startCol).toBe(8);
+		expect(attr2.startCol).toBe(9);
 		expect(attr2.name.startLine).toBe(23);
 		expect(attr2.name.startCol).toBe(9);
 		expect(attr3.startLine).toBe(23);
-		expect(attr3.startCol).toBe(21);
+		expect(attr3.startCol).toBe(22);
 		expect(attr3.name.startLine).toBe(23);
 		expect(attr3.name.startCol).toBe(22);
 	});
@@ -498,8 +498,8 @@ else
 		if (attr.type !== 'html-attr') {
 			return;
 		}
-		expect(attr.raw).toEqual(' data-attr="value"');
-		expect(attr.startCol).toEqual(7);
+		expect(attr.raw).toEqual('data-attr="value"');
+		expect(attr.startCol).toEqual(8);
 		expect(attr.name.raw).toEqual('data-attr');
 		expect(attr.name.startCol).toEqual(8);
 		expect(attr.equal.raw).toEqual('=');

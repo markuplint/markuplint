@@ -3,7 +3,7 @@ import { mlRuleTest } from 'markuplint';
 import rule from './';
 
 test('h1', async () => {
-	const { violations } = await mlRuleTest(rule, '<html><body>text</body></html>', { rule: true });
+	const { violations } = await mlRuleTest(rule, '<html><body>text</body></html>');
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -16,14 +16,12 @@ test('h1', async () => {
 });
 
 test('h1', async () => {
-	const { violations } = await mlRuleTest(rule, '<html><body><h1>text</h1></body></html>', { rule: true });
+	const { violations } = await mlRuleTest(rule, '<html><body><h1>text</h1></body></html>');
 	expect(violations.length).toBe(0);
 });
 
 test('h1', async () => {
-	const { violations } = await mlRuleTest(rule, '<html><body><h1>text</h1><h1>text</h1></body></html>', {
-		rule: true,
-	});
+	const { violations } = await mlRuleTest(rule, '<html><body><h1>text</h1><h1>text</h1></body></html>');
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -49,7 +47,7 @@ test('h1', async () => {
 });
 
 test('h1', async () => {
-	const { violations } = await mlRuleTest(rule, '<div><h2>text</h2></div>', { rule: true });
+	const { violations } = await mlRuleTest(rule, '<div><h2>text</h2></div>');
 	expect(violations.length).toBe(0);
 });
 
@@ -66,6 +64,6 @@ test('enable to opetion "in-document-fragment"', async () => {
 });
 
 test('Issue #57', async () => {
-	const { violations } = await mlRuleTest(rule, '', { rule: true });
+	const { violations } = await mlRuleTest(rule, '');
 	expect(violations.length).toBe(0);
 });

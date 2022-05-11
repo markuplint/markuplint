@@ -27,10 +27,15 @@ export function createTestNodeList(sourceCode: string, options?: CreateTestOptio
 	return document.nodeList;
 }
 
+export function createTestTokenList(sourceCode: string, options?: CreateTestOptions) {
+	const document = createTestDocument(sourceCode, options);
+	return document.getTokenList();
+}
+
 export function createTestElement(sourceCode: string, options?: CreateTestOptions) {
 	const document = createTestDocument(sourceCode, options);
 	const el = document.nodeList[0];
-	if (el.type === 'Element') {
+	if (el.is(el.ELEMENT_NODE)) {
 		return el;
 	}
 	throw TypeError(`Could not parse it to be an element from: ${sourceCode}`);

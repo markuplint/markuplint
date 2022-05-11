@@ -10,9 +10,18 @@ export interface MLToken {
 	[extendKey: `__${string}`]: string | number | boolean | null;
 }
 
-export type MLASTNodeType = 'doctype' | 'starttag' | 'endtag' | 'comment' | 'text' | 'omittedtag' | 'psblock';
+export type MLASTNodeType =
+	| 'doctype'
+	| 'starttag'
+	| 'endtag'
+	| 'comment'
+	| 'text'
+	| 'omittedtag'
+	| 'psblock'
+	| 'html-attr'
+	| 'ps-attr';
 
-export type MLASTNode = MLASTDoctype | MLASTTag | MLASTComment | MLASTText | MLASTPreprocessorSpecificBlock;
+export type MLASTNode = MLASTDoctype | MLASTTag | MLASTComment | MLASTText | MLASTPreprocessorSpecificBlock | MLASTAttr;
 
 export interface MLASTAbstructNode extends MLToken {
 	type: MLASTNodeType;
@@ -56,13 +65,6 @@ export interface MLASTElementCloseTag extends MLASTAbstructNode {
 	isCustomElement: boolean;
 }
 
-export interface MLASTOmittedElement extends MLASTAbstructNode {
-	type: 'omittedtag';
-	namespace: string;
-	childNodes?: MLASTNode[];
-	isCustomElement: boolean;
-}
-
 export interface MLASTPreprocessorSpecificBlock extends MLASTAbstructNode {
 	type: 'psblock';
 	nodeName: string;
@@ -73,9 +75,9 @@ export interface MLASTPreprocessorSpecificBlock extends MLASTAbstructNode {
 	branchedChildNodes?: MLASTNode[];
 }
 
-export type MLASTTag = MLASTElement | MLASTElementCloseTag | MLASTOmittedElement;
+export type MLASTTag = MLASTElement | MLASTElementCloseTag;
 
-export type MLASTParentNode = MLASTElement | MLASTOmittedElement | MLASTPreprocessorSpecificBlock;
+export type MLASTParentNode = MLASTElement | MLASTPreprocessorSpecificBlock;
 
 export interface MLASTComment extends MLASTAbstructNode {
 	type: 'comment';
@@ -87,7 +89,7 @@ export interface MLASTText extends MLASTAbstructNode {
 
 export type MLASTAttr = MLASTHTMLAttr | MLASTPreprocessorSpecificAttr;
 
-export interface MLASTHTMLAttr extends MLToken {
+export interface MLASTHTMLAttr extends MLASTAbstructNode {
 	type: 'html-attr';
 	spacesBeforeName: MLToken;
 	name: MLToken;
@@ -102,9 +104,14 @@ export interface MLASTHTMLAttr extends MLToken {
 	potentialName?: string;
 	candidate?: string;
 	isDuplicatable: boolean;
+	parentNode: null;
+	nextNode: null;
+	prevNode: null;
+	isFragment: false;
+	isGhost: false;
 }
 
-export interface MLASTPreprocessorSpecificAttr extends MLToken {
+export interface MLASTPreprocessorSpecificAttr extends MLASTAbstructNode {
 	type: 'ps-attr';
 	potentialName: string;
 	potentialValue: string;
@@ -126,7 +133,6 @@ export interface MLMarkupLanguageParser {
 		offsetColumn?: number,
 		ignoreFrontMatter?: boolean,
 	): MLASTDocument;
-	tagNameCaseSensitive?: boolean;
 	/**
 	 * @default "omittable"
 	 */

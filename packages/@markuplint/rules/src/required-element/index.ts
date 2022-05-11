@@ -9,13 +9,11 @@ export default createRule<string[], Options>({
 	defaultOptions: {
 		ignoreHasMutableContents: true,
 	},
-	async verify({ document, report, t, globalRule }) {
-		const hasMutableContent = document.nodeList.some(
-			n => (n.type === 'Element' || n.type === 'OmittedElement') && n.hasMutableChildren(),
-		);
+	async verify({ document, report, t }) {
+		const hasMutableContent = document.nodeList.some(n => n.is(n.ELEMENT_NODE) && n.hasMutableChildren());
 		if (!hasMutableContent) {
-			for (const query of globalRule.value) {
-				const exists = document.matchNodes(query);
+			for (const query of document.rule.value) {
+				const exists = document.querySelectorAll(query);
 				if (exists.length === 0) {
 					const message = t('Require {0}', t('the "{0*}" {1}', query, 'element'));
 					report({
@@ -29,14 +27,14 @@ export default createRule<string[], Options>({
 		}
 
 		await document.walkOn('Element', el => {
-			if (el.rule.value === globalRule.value) {
+			if (el.rule.value === document.rule.value) {
 				return;
 			}
 			if (el.rule.option.ignoreHasMutableContents && el.hasMutableChildren()) {
 				return;
 			}
 			for (const query of el.rule.value) {
-				const exists = el.children.find(child => child.matches(query));
+				const exists = Array.from(el.children).find(child => child.matches(query));
 				if (!exists) {
 					const message = t('Require {0}', t('the "{0*}" {1}', query, 'element'));
 					report({

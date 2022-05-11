@@ -1,19 +1,19 @@
-import type { MLDOMNode, MLDOMText } from '../tokens';
-import type { AnonymousNode } from '../types';
+import type { MLNode } from '../node/node';
+import type { MLText } from '../node/text';
 
 /**
  *
  * @deprecated
  * @param node
  */
-export function getIndent(node: AnonymousNode<any, any>) {
+export function getIndent(node: MLNode<any, any>) {
 	const prevToken = node.prevToken;
 	if (!prevToken) {
 		return null;
 	}
 
-	if (node.type === 'Text') {
-		if (node.isRawText) {
+	if (node.is(node.TEXT_NODE)) {
+		if (node.isRawTextElementContent()) {
 			return null;
 		}
 
@@ -32,7 +32,7 @@ export function getIndent(node: AnonymousNode<any, any>) {
 		return null;
 	}
 
-	if (prevToken.type !== 'Text') {
+	if (!prevToken.is(node.TEXT_NODE)) {
 		return null;
 	}
 
@@ -54,21 +54,20 @@ export function getIndent(node: AnonymousNode<any, any>) {
 }
 
 class MLDOMIndentation {
+	#fixed: string;
+	#node: MLText<any, any>;
+	#parent: MLNode<any, any>;
 	readonly line: number;
 
-	#node: MLDOMText<any, any>;
-	#parent: MLDOMNode<any, any>;
-	#fixed: string;
-
-	constructor(originTextNode: MLDOMText<any, any>, raw: string, line: number, parentNode: MLDOMNode<any, any>) {
-		this.line = line;
-		this.#node = originTextNode;
-		this.#parent = parentNode;
-		this.#fixed = raw;
+	get raw() {
+		if (!this.#parent.is(this.#parent.TEXT_NODE) && this.line !== this.#node.endLine) {
+			return '';
+		}
+		return this.#fixed;
 	}
 
 	get type(): 'tab' | 'space' | 'mixed' | 'none' {
-		if (this.#parent.type !== 'Text' && this.line !== this.#node.endLine) {
+		if (!this.#parent.is(this.#parent.TEXT_NODE) && this.line !== this.#node.endLine) {
 			return 'none';
 		}
 		const raw = this.#fixed;
@@ -76,17 +75,17 @@ class MLDOMIndentation {
 	}
 
 	get width() {
-		if (this.#parent.type !== 'Text' && this.line !== this.#node.endLine) {
+		if (!this.#parent.is(this.#parent.TEXT_NODE) && this.line !== this.#node.endLine) {
 			return 0;
 		}
 		return this.#fixed.length;
 	}
 
-	get raw() {
-		if (this.#parent.type !== 'Text' && this.line !== this.#node.endLine) {
-			return '';
-		}
-		return this.#fixed;
+	constructor(originTextNode: MLText<any, any>, raw: string, line: number, parentNode: MLNode<any, any>) {
+		this.line = line;
+		this.#node = originTextNode;
+		this.#parent = parentNode;
+		this.#fixed = raw;
 	}
 
 	fix(raw: string) {
@@ -105,6 +104,6 @@ class MLDOMIndentation {
 	}
 }
 
-function isFirstToken(node: AnonymousNode<any, any>) {
+function isFirstToken(node: MLNode<any, any>) {
 	return !node.prevToken;
 }

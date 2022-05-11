@@ -1,23 +1,14 @@
-import type Document from '../ml-dom/document';
+import type { MLDocument } from '../ml-dom/node/document';
 import type { LocaleSet, Translator } from '@markuplint/i18n';
-import type { Report, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
+import type { Report, RuleConfigValue } from '@markuplint/ml-config';
 
 import { translator } from '@markuplint/i18n';
 
 export class MLRuleContext<T extends RuleConfigValue, O = null> {
-	readonly document: Document<T, O>;
-	readonly globalRule: RuleInfo<T, O>;
-	readonly translate: Translator;
-	readonly locale: string;
-
 	#reports: Report<T, O>[] = [];
-
-	constructor(document: Document<T, O>, locale: LocaleSet, rule: RuleInfo<T, O>) {
-		this.document = document;
-		this.globalRule = rule;
-		this.translate = translator(locale);
-		this.locale = locale.locale;
-	}
+	readonly document: MLDocument<T, O>;
+	readonly locale: string;
+	readonly translate: Translator;
 
 	get reports() {
 		return this.#reports.map(report => ({
@@ -26,8 +17,10 @@ export class MLRuleContext<T extends RuleConfigValue, O = null> {
 		}));
 	}
 
-	report(report: Report<T, O>) {
-		this.#reports.push(report);
+	constructor(document: MLDocument<T, O>, locale: LocaleSet) {
+		this.document = document;
+		this.translate = translator(locale);
+		this.locale = locale.locale;
 	}
 
 	provide() {
@@ -35,10 +28,13 @@ export class MLRuleContext<T extends RuleConfigValue, O = null> {
 			document: this.document,
 			translate: this.translate,
 			t: this.translate,
-			globalRule: this.globalRule,
 			reports: this.reports,
 			report: this.report.bind(this),
 		};
+	}
+
+	report(report: Report<T, O>) {
+		this.#reports.push(report);
 	}
 }
 

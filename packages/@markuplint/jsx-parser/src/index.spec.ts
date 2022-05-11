@@ -308,7 +308,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		]);
 		expect(attrMaps).toStrictEqual([
 			[
-				'[1:11]>[1:27](10,26)class: ␣className="foo"',
+				'[1:12]>[1:27](11,26)class: className="foo"',
 				'  [1:11]>[1:12](10,11)bN: ␣',
 				'  [1:12]>[1:21](11,20)name: className',
 				'  [1:21]>[1:21](20,20)bE: ',
@@ -322,7 +322,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  potentialName: class',
 			],
 			[
-				'[1:27]>[1:41](26,40)tabindex: ␣tabIndex="-1"',
+				'[1:28]>[1:41](27,40)tabindex: tabIndex="-1"',
 				'  [1:27]>[1:28](26,27)bN: ␣',
 				'  [1:28]>[1:36](27,35)name: tabIndex',
 				'  [1:36]>[1:36](35,35)bE: ',
@@ -336,7 +336,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  potentialName: tabindex',
 			],
 			[
-				'[1:41]>[1:55](40,54)tabindex: ␣tabindex="-1"',
+				'[1:42]>[1:55](41,54)tabindex: tabindex="-1"',
 				'  [1:41]>[1:42](40,41)bN: ␣',
 				'  [1:42]>[1:50](41,49)name: tabindex',
 				'  [1:50]>[1:50](49,49)bE: ',
@@ -351,7 +351,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  candidate: tabIndex',
 			],
 			[
-				'[1:55]>[1:76](54,75)aria-label: ␣aria-label="accname"',
+				'[1:56]>[1:76](55,75)aria-label: aria-label="accname"',
 				'  [1:55]>[1:56](54,55)bN: ␣',
 				'  [1:56]>[1:66](55,65)name: aria-label',
 				'  [1:66]>[1:66](65,65)bE: ',
@@ -385,7 +385,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		const attrMaps = attributesToDebugMaps(ast.nodeList[0].attributes);
 		expect(attrMaps).toStrictEqual([
 			[
-				'[1:3]>[1:11](2,10)href: ␣href=""',
+				'[1:4]>[1:11](3,10)href: href=""',
 				'  [1:3]>[1:4](2,3)bN: ␣',
 				'  [1:4]>[1:8](3,7)name: href',
 				'  [1:8]>[1:8](7,7)bE: ',

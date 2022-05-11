@@ -1,9 +1,6 @@
 {
 	"rules": {
 		"attr-duplication": true,
-		"attr-equal-space-after": false,
-		"attr-equal-space-before": false,
-		"attr-spacing": false,
 		"attr-value-quotes": false,
 		"case-sensitive-attr-name": false,
 		"case-sensitive-tag-name": false,
@@ -15,7 +12,6 @@
 		"doctype": true,
 		"end-tag": false,
 		"id-duplication": true,
-		"indentation": false,
 		"ineffective-attr": true,
 		"invalid-attr": {
 			"option": {

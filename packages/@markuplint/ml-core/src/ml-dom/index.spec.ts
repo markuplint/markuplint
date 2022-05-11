@@ -1,80 +1,85 @@
-import type { MLDOMElement } from './tokens';
+import type { MLElement } from './node/element';
 
 import { createRule } from '../ml-rule/create-test-rule';
-import { createTestDocument, createTestElement, createTestNodeList } from '../test';
+import { createTestDocument, createTestElement, createTestNodeList, createTestTokenList } from '../test';
+
+type Element = MLElement<any, any>;
 
 test('node count', async () => {
 	const nodeList = createTestNodeList('<div>text</div>');
-	expect(nodeList.length).toBe(3);
+	expect(nodeList.length).toBe(2);
 });
 
 test('raw', async () => {
 	const nodeList = createTestNodeList('<div>text</div>');
 	expect(nodeList[0].raw).toBe('<div>');
 	expect(nodeList[1].raw).toBe('text');
-	expect(nodeList[2].raw).toBe('</div>');
+	expect((nodeList[0] as Element).closeTag?.raw).toBe('</div>');
 });
 
 test('raw', async () => {
-	const nodeList = createTestNodeList(`
+	const tokens = createTestTokenList(`
 <div>
 	text
 </div>`);
-	expect(nodeList[0].raw).toBe('\n');
-	expect(nodeList[1].raw).toBe('<div>');
-	expect(nodeList[2].raw).toBe('\n\ttext\n');
-	expect(nodeList[3].raw).toBe('</div>');
+	expect(tokens[0].raw).toBe('\n');
+	expect(tokens[1].raw).toBe('<div>');
+	expect(tokens[2].raw).toBe('\n\ttext\n');
+	expect(tokens[3].raw).toBe('</div>');
 });
 
 test('raw', async () => {
-	const nodeList = createTestNodeList(`
+	const tokens = createTestTokenList(`
     <div>
         text
     </div>`);
-	expect(nodeList[0].raw).toBe('\n    ');
-	expect(nodeList[1].raw).toBe('<div>');
-	expect(nodeList[2].raw).toBe('\n        text\n    ');
-	expect(nodeList[3].raw).toBe('</div>');
-	expect(nodeList[0].prevToken).toBe(null);
-	expect(nodeList[1].prevToken!.raw).toBe('\n    ');
-	expect(nodeList[2].prevToken!.raw).toBe('<div>');
-	expect(nodeList[3].prevToken!.raw).toBe('\n        text\n    ');
-	expect(nodeList[1].prevToken!.uuid).toBe(nodeList[0].uuid);
-	expect(nodeList[2].prevToken!.uuid).toBe(nodeList[1].uuid);
-	expect(nodeList[3].prevToken!.uuid).toBe(nodeList[2].uuid);
+	expect(tokens[0].raw).toBe('\n    ');
+	expect(tokens[1].raw).toBe('<div>');
+	expect(tokens[2].raw).toBe('\n        text\n    ');
+	expect(tokens[3].raw).toBe('</div>');
+	expect((tokens[0] as Element).prevToken).toBe(null);
+	expect((tokens[1] as Element).prevToken?.raw).toBe('\n    ');
+	expect((tokens[2] as Element).prevToken?.raw).toBe('<div>');
+	expect((tokens[1] as Element).prevToken?.uuid).toBe(tokens[0].uuid);
+	expect((tokens[2] as Element).prevToken?.uuid).toBe(tokens[1].uuid);
 });
 
 test('raw', async () => {
-	const nodeList = createTestNodeList(`
+	const tokens = createTestTokenList(`
     <div>
         <span>text</span>
     </div>`);
-	expect(nodeList[0].raw).toBe('\n    ');
-	expect(nodeList[1].raw).toBe('<div>');
-	expect(nodeList[2].raw).toBe('\n        ');
-	expect(nodeList[3].raw).toBe('<span>');
-	expect(nodeList[4].raw).toBe('text');
-	expect(nodeList[5].raw).toBe('</span>');
-	expect(nodeList[6].raw).toBe('\n    ');
-	expect(nodeList[7].raw).toBe('</div>');
+	expect(tokens[0].raw).toBe('\n    ');
+	expect(tokens[1].raw).toBe('<div>');
+	expect(tokens[2].raw).toBe('\n        ');
+	expect(tokens[3].raw).toBe('<span>');
+	expect(tokens[4].raw).toBe('text');
+	expect(tokens[5].raw).toBe('</span>');
+	expect(tokens[6].raw).toBe('\n    ');
+	expect(tokens[7].raw).toBe('</div>');
 });
 
 test('raw', async () => {
-	const nodeList = createTestNodeList(`
+	const tokens = createTestTokenList(`
 <div>
 	<span>text</span>
 </div>`);
-	expect(nodeList[0].raw).toBe('\n');
-	expect(nodeList[1].raw).toBe('<div>');
-	expect(nodeList[2].raw).toBe('\n\t');
-	expect(nodeList[3].raw).toBe('<span>');
-	expect(nodeList[4].raw).toBe('text');
-	expect(nodeList[5].raw).toBe('</span>');
-	expect(nodeList[6].raw).toBe('\n');
-	expect(nodeList[7].raw).toBe('</div>');
+	expect(tokens[0].raw).toBe('\n');
+	expect(tokens[1].raw).toBe('<div>');
+	expect(tokens[2].raw).toBe('\n\t');
+	expect(tokens[3].raw).toBe('<span>');
+	expect(tokens[4].raw).toBe('text');
+	expect(tokens[5].raw).toBe('</span>');
+	expect(tokens[6].raw).toBe('\n');
+	expect(tokens[7].raw).toBe('</div>');
 });
 
-test('raw', async () => {
+test('classList', async () => {
+	const el = createTestElement('<div class="a b c"></div>');
+	expect(Array.from(el.classList)).toStrictEqual(['a', 'b', 'c']);
+});
+
+test('fixNodeName', async () => {
 	const el = createTestElement('<div></div>');
 	expect(el.raw).toBe('<div>');
 	el.fixNodeName('x-div');
@@ -82,7 +87,7 @@ test('raw', async () => {
 });
 
 test('namespace', async () => {
-	const nodeList = createTestNodeList(`<div>
+	const tokens = createTestTokenList(`<div>
 	<svg>
 		<a></a>
 		<foreignObject>
@@ -92,18 +97,27 @@ test('namespace', async () => {
 	<a></a>
 </div>
 `);
-	expect((nodeList[0] as MLDOMElement<any, any>).nodeName).toBe('div');
-	expect((nodeList[0] as MLDOMElement<any, any>).namespaceURI).toBe('http://www.w3.org/1999/xhtml');
-	expect((nodeList[2] as MLDOMElement<any, any>).nodeName).toBe('svg');
-	expect((nodeList[2] as MLDOMElement<any, any>).namespaceURI).toBe('http://www.w3.org/2000/svg');
-	expect((nodeList[4] as MLDOMElement<any, any>).nodeName).toBe('a');
-	expect((nodeList[4] as MLDOMElement<any, any>).namespaceURI).toBe('http://www.w3.org/2000/svg');
-	expect((nodeList[7] as MLDOMElement<any, any>).nodeName).toBe('foreignObject');
-	expect((nodeList[7] as MLDOMElement<any, any>).namespaceURI).toBe('http://www.w3.org/2000/svg');
-	expect((nodeList[9] as MLDOMElement<any, any>).nodeName).toBe('div');
-	expect((nodeList[9] as MLDOMElement<any, any>).namespaceURI).toBe('http://www.w3.org/1999/xhtml');
-	expect((nodeList[16] as MLDOMElement<any, any>).nodeName).toBe('a');
-	expect((nodeList[16] as MLDOMElement<any, any>).namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+	expect((tokens[0] as Element).nodeName).toBe('DIV');
+	expect((tokens[0] as Element).namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+	expect((tokens[2] as Element).nodeName).toBe('svg');
+	expect((tokens[2] as Element).namespaceURI).toBe('http://www.w3.org/2000/svg');
+	expect((tokens[4] as Element).nodeName).toBe('a');
+	expect((tokens[4] as Element).namespaceURI).toBe('http://www.w3.org/2000/svg');
+	expect((tokens[7] as Element).nodeName).toBe('foreignObject');
+	expect((tokens[7] as Element).namespaceURI).toBe('http://www.w3.org/2000/svg');
+	expect((tokens[9] as Element).nodeName).toBe('DIV');
+	expect((tokens[9] as Element).namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+	expect((tokens[16] as Element).nodeName).toBe('A');
+	expect((tokens[16] as Element).namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+});
+
+test('toString', async () => {
+	const raw = `
+	<div>
+		<span attr attr2 attr3="value" attr4=value>text</span>
+	</div>`;
+	const doc = createTestDocument(raw);
+	expect(doc.toString()).toBe(raw);
 });
 
 test('rule', async () => {
@@ -115,7 +129,7 @@ test('rule', async () => {
 			},
 			nodeRules: [
 				{
-					tagName: 'span',
+					selector: 'span',
 					rules: {
 						ruleA: false,
 					},
@@ -249,12 +263,9 @@ test('extend rule settings', async () => {
 		},
 	});
 
-	expect((document.nodeList[0] as MLDOMElement<any, any>).nodeName).toBe('span');
-	expect((document.nodeList[1] as MLDOMElement<any, any>).nodeName).toBe('span');
-	expect((document.nodeList[2] as MLDOMElement<any, any>).nodeName).toBe('div');
-	expect((document.nodeList[3] as MLDOMElement<any, any>).nodeName).toBe('span');
-	expect((document.nodeList[4] as MLDOMElement<any, any>).nodeName).toBe('span');
-	expect((document.nodeList[5] as MLDOMElement<any, any>).nodeName).toBe('div');
+	expect((document.nodeList[0] as Element).nodeName).toBe('SPAN');
+	expect((document.nodeList[1] as Element).nodeName).toBe('DIV');
+	expect((document.nodeList[2] as Element).nodeName).toBe('SPAN');
 
 	const ruleA = createRule({
 		name: 'ruleA',
@@ -306,11 +317,8 @@ test('extend rule settings', async () => {
 		option: null,
 	};
 	expect(document.nodeList[0].rule).toStrictEqual(resultA);
-	expect(document.nodeList[1].rule).toStrictEqual(resultA);
-	expect(document.nodeList[2].rule).not.toStrictEqual(resultA);
-	expect(document.nodeList[3].rule).toStrictEqual(resultA);
-	expect(document.nodeList[4].rule).toStrictEqual(resultA);
-	expect(document.nodeList[5].rule).not.toStrictEqual(resultA);
+	expect(document.nodeList[1].rule).not.toStrictEqual(resultA);
+	expect(document.nodeList[2].rule).toStrictEqual(resultA);
 
 	document.setRule(ruleB);
 	const resultB = {
@@ -323,9 +331,6 @@ test('extend rule settings', async () => {
 	expect(document.nodeList[0].rule).toStrictEqual(resultB);
 	expect(document.nodeList[1].rule).toStrictEqual(resultB);
 	expect(document.nodeList[2].rule).toStrictEqual(resultB);
-	expect(document.nodeList[3].rule).toStrictEqual(resultB);
-	expect(document.nodeList[4].rule).toStrictEqual(resultB);
-	expect(document.nodeList[5].rule).toStrictEqual(resultB);
 
 	document.setRule(ruleC);
 	const resultC = {
@@ -336,11 +341,8 @@ test('extend rule settings', async () => {
 		option: null,
 	};
 	expect(document.nodeList[0].rule).toStrictEqual(resultC);
-	expect(document.nodeList[1].rule).toStrictEqual(resultC);
-	expect(document.nodeList[2].rule).not.toStrictEqual(resultC);
-	expect(document.nodeList[3].rule).toStrictEqual(resultC);
-	expect(document.nodeList[4].rule).toStrictEqual(resultC);
-	expect(document.nodeList[5].rule).not.toStrictEqual(resultC);
+	expect(document.nodeList[1].rule).not.toStrictEqual(resultC);
+	expect(document.nodeList[2].rule).toStrictEqual(resultC);
 
 	document.setRule(ruleD);
 	const resultD = {
@@ -351,11 +353,8 @@ test('extend rule settings', async () => {
 		option: null,
 	};
 	expect(document.nodeList[0].rule).toStrictEqual(resultD);
-	expect(document.nodeList[1].rule).toStrictEqual(resultD);
-	expect(document.nodeList[2].rule).not.toStrictEqual(resultC);
-	expect(document.nodeList[3].rule).toStrictEqual(resultD);
-	expect(document.nodeList[4].rule).toStrictEqual(resultD);
-	expect(document.nodeList[5].rule).not.toStrictEqual(resultC);
+	expect(document.nodeList[1].rule).not.toStrictEqual(resultC);
+	expect(document.nodeList[2].rule).toStrictEqual(resultD);
 
 	document.setRule(ruleE);
 	const resultE = {
@@ -366,11 +365,8 @@ test('extend rule settings', async () => {
 		option: null,
 	};
 	expect(document.nodeList[0].rule).toStrictEqual(resultE);
-	expect(document.nodeList[1].rule).toStrictEqual(resultE);
-	expect(document.nodeList[2].rule).not.toStrictEqual(resultE);
-	expect(document.nodeList[3].rule).toStrictEqual(resultE);
-	expect(document.nodeList[4].rule).toStrictEqual(resultE);
-	expect(document.nodeList[5].rule).not.toStrictEqual(resultE);
+	expect(document.nodeList[1].rule).not.toStrictEqual(resultE);
+	expect(document.nodeList[2].rule).toStrictEqual(resultE);
 });
 
 test('regexSelector + pug', async () => {
@@ -530,15 +526,13 @@ test('Rule Mapping', () => {
 	const html = createTestDocument('<x-a><x-b><x-c></x-c></x-b></x-a>', {
 		config,
 	});
-	// @ts-ignore
-	const htmlRules = html.nodeList.map(node => node.nodeName + ':' + node.rules['ruleA']);
-	expect(htmlRules).toStrictEqual(['x-a:global', 'x-b:a', 'x-c:b', 'x-c:b', 'x-b:a', 'x-a:global']);
+	const htmlRules = html.nodeList.map(node => node.nodeName.toLowerCase() + ':' + node.rules['ruleA']);
+	expect(htmlRules).toStrictEqual(['x-a:global', 'x-b:a', 'x-c:b']);
 
 	const pug = createTestDocument('x-a: x-b: x-c', {
 		config,
 		parser: require('@markuplint/pug-parser'),
 	});
-	// @ts-ignore
-	const pugRules = pug.nodeList.map(node => node.nodeName + ':' + node.rules['ruleA']);
+	const pugRules = pug.nodeList.map(node => node.nodeName.toLowerCase() + ':' + node.rules['ruleA']);
 	expect(pugRules).toStrictEqual(['x-a:global', 'x-b:a', 'x-c:b']);
 });

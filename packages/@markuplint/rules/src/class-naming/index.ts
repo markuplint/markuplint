@@ -8,33 +8,33 @@ export default createRule<Value>({
 	defaultServerity: 'warning',
 	defaultValue: null,
 	async verify({ document, report, t }) {
-		await document.walkOn('Element', async node => {
-			if (!node.rule.value) {
+		await document.walkOn('Element', async el => {
+			if (!el.rule.value) {
 				return;
 			}
-			const classPatterns = Array.isArray(node.rule.value) ? node.rule.value : [node.rule.value];
-			const attrs = node.getAttributeToken('class');
+			const classPatterns = Array.isArray(el.rule.value) ? el.rule.value : [el.rule.value];
+			const attrs = el.getAttributeToken('class');
 			for (const attr of attrs) {
-				if (attr.attrType === 'html-attr' && attr.isDynamicValue) {
+				if (attr.isDynamicValue) {
 					continue;
 				}
-				const classAttr = attr.getValue();
-				const classList = classAttr.potential
+				const classAttr = attr.valueNode;
+				const classList = attr.value
 					.split(/\s+/g)
 					.map(c => c.trim())
 					.filter(c => c);
 				for (const className of classList) {
 					if (!classPatterns.some(pattern => match(className, pattern))) {
 						report({
-							scope: node,
+							scope: attr,
 							message: t(
 								'{0} is unmatched with the below patterns: {1}',
 								t('the "{0*}" {1}', className, 'class name'),
 								`"${classPatterns.join('", "')}"`,
 							),
-							line: classAttr.line,
-							col: classAttr.col,
-							raw: classAttr.raw,
+							line: classAttr?.startLine,
+							col: classAttr?.startCol,
+							raw: classAttr?.raw,
 						});
 					}
 				}

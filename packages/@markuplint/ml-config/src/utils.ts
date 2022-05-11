@@ -10,10 +10,10 @@ export function toRegxp(pattern: string) {
 	return pattern;
 }
 
-export function regexSelectorMatches(reg: string, raw: string) {
+export function regexSelectorMatches(reg: string, raw: string, ignoreCase: boolean) {
 	const res: Record<string, string> = {};
 	const pattern = toRegxp(reg);
-	const regex = pattern instanceof RegExp ? pattern : new RegExp(`^${pattern.trim()}$`);
+	const regex = new RegExp(pattern instanceof RegExp ? pattern : `^${pattern.trim()}$`, ignoreCase ? 'i' : undefined);
 	const matched = regex.exec(raw);
 	if (!matched) {
 		return null;

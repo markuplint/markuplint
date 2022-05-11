@@ -338,15 +338,15 @@ describe('parser', () => {
 			'<template><div v-if="bool" data-attr v-bind:data-attr2="variable" @click.once="event" v-on:click.foobar="event"></div></template>',
 		);
 		// @ts-ignore
-		expect(doc.nodeList[0].attributes[0].raw).toBe(' v-if="bool"');
+		expect(doc.nodeList[0].attributes[0].raw).toBe('v-if="bool"');
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[0].isDirective).toBeTruthy();
 		// @ts-ignore
-		expect(doc.nodeList[0].attributes[1].raw).toBe(' data-attr');
+		expect(doc.nodeList[0].attributes[1].raw).toBe('data-attr');
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[1].isDirective).toBeUndefined();
 		// @ts-ignore
-		expect(doc.nodeList[0].attributes[2].raw).toBe(' v-bind:data-attr2="variable"');
+		expect(doc.nodeList[0].attributes[2].raw).toBe('v-bind:data-attr2="variable"');
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[2].potentialName).toBe('data-attr2');
 		// @ts-ignore

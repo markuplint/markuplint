@@ -47,7 +47,7 @@ it('001 + 002', async () => {
 		},
 		nodeRules: [
 			{
-				tagName: 'div',
+				selector: 'div',
 				rules: { 'rule__disable-for-div-tag': false },
 			},
 		],
@@ -114,15 +114,15 @@ it('001 + 002 + 003', async () => {
 		},
 		nodeRules: [
 			{
-				tagName: 'div',
+				selector: 'div',
 				rules: { 'rule__disable-for-div-tag': false },
 			},
 			{
-				tagName: 'div',
+				selector: 'div',
 				rules: { 'rule__disable-for-div-tag': true },
 			},
 			{
-				tagName: 'a',
+				selector: 'a',
 				rules: { 'rule__enble-for-a-tag': true },
 			},
 		],

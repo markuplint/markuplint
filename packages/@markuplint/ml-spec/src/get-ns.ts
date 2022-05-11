@@ -1,4 +1,4 @@
-export function getNS(namespaceURI: string) {
+export function getNS(namespaceURI: string | null) {
 	switch (namespaceURI) {
 		case 'http://www.w3.org/2000/svg': {
 			return 'svg';

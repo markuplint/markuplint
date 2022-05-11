@@ -13,7 +13,7 @@ export default createRule({
 			if (spec && (spec.obsolete || spec.deprecated || spec.nonStandard)) {
 				const message = t(
 					'{0} is {1:c}',
-					t('the "{0*}" {1}', el.nodeName, 'element'),
+					t('the "{0*}" {1}', el.localName, 'element'),
 					spec.deprecated ? 'deprecated' : spec.obsolete ? 'obsolete' : 'non-standard',
 				);
 				report({

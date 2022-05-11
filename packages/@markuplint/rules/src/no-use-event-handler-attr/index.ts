@@ -10,35 +10,34 @@ export default createRule<boolean, Options>({
 	defaultServerity: 'warning',
 	defaultOptions: {},
 	async verify({ document, report, t }) {
-		await document.walkOn('Element', el => {
-			if (el.isCustomElement) {
+		await document.walkOn('Attr', attr => {
+			if (attr.ownerElement.isCustomElement) {
 				return;
 			}
-			const ignoreList = Array.isArray(el.rule.option.ignore)
-				? el.rule.option.ignore
-				: el.rule.option.ignore
-				? [el.rule.option.ignore]
+
+			const ignoreList = Array.isArray(attr.rule.option.ignore)
+				? attr.rule.option.ignore
+				: attr.rule.option.ignore
+				? [attr.rule.option.ignore]
 				: [];
 
-			el.attributes.forEach(attr => {
-				const name = attr.getName().potential;
+			const name = attr.name;
 
-				for (const ignore of ignoreList) {
-					if (match(name, ignore)) {
-						return;
-					}
+			for (const ignore of ignoreList) {
+				if (match(name, ignore)) {
+					return;
 				}
+			}
 
-				if (/^on/i.test(name)) {
-					report({
-						scope: el,
-						raw: attr.raw,
-						line: attr.startLine,
-						col: attr.startCol,
-						message: t('{0} is disallowed', t('the "{0*}" {1}', name, 'attribute')),
-					});
-				}
-			});
+			if (/^on/i.test(name)) {
+				report({
+					scope: attr,
+					raw: attr.raw,
+					line: attr.startLine,
+					col: attr.startCol,
+					message: t('{0} is disallowed', t('the "{0*}" {1}', name, 'attribute')),
+				});
+			}
 		});
 	},
 });

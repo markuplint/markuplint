@@ -2,17 +2,15 @@ import { mlRuleTest } from 'markuplint';
 
 import rule from './';
 
-const ruleOn = { rule: true };
-
 describe('verify', () => {
 	test('a', async () => {
-		const { violations: violations1 } = await mlRuleTest(rule, '<a><div></div><span></span><em></em></a>', ruleOn);
+		const { violations: violations1 } = await mlRuleTest(rule, '<a><div></div><span></span><em></em></a>');
 		expect(violations1).toStrictEqual([]);
 
-		const { violations: violations2 } = await mlRuleTest(rule, '<a><h1></h1></a>', ruleOn);
+		const { violations: violations2 } = await mlRuleTest(rule, '<a><h1></h1></a>');
 		expect(violations2).toStrictEqual([]);
 
-		const { violations: violations3 } = await mlRuleTest(rule, '<div><a><option></option></a><div>', ruleOn);
+		const { violations: violations3 } = await mlRuleTest(rule, '<div><a><option></option></a><div>');
 		expect(violations3).toStrictEqual([
 			{
 				severity: 'error',
@@ -23,7 +21,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const { violations: violations4 } = await mlRuleTest(rule, '<a><button></button></a>', ruleOn);
+		const { violations: violations4 } = await mlRuleTest(rule, '<a><button></button></a>');
 		expect(violations4).toStrictEqual([
 			{
 				severity: 'error',
@@ -34,11 +32,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const { violations: violations5 } = await mlRuleTest(
-			rule,
-			'<a><div><div><button></button></div></div></a>',
-			ruleOn,
-		);
+		const { violations: violations5 } = await mlRuleTest(rule, '<a><div><div><button></button></div></div></a>');
 		expect(violations5).toStrictEqual([
 			{
 				severity: 'error',
@@ -49,7 +43,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const { violations: violations6 } = await mlRuleTest(rule, '<span><a><div></div></a></span>', ruleOn);
+		const { violations: violations6 } = await mlRuleTest(rule, '<span><a><div></div></a></span>');
 		expect(violations6).toStrictEqual([
 			{
 				severity: 'error',
@@ -62,7 +56,7 @@ describe('verify', () => {
 	});
 
 	test('address', async () => {
-		const { violations: violations1 } = await mlRuleTest(rule, '<address><address></address></address>', ruleOn);
+		const { violations: violations1 } = await mlRuleTest(rule, '<address><address></address></address>');
 		expect(violations1).toStrictEqual([
 			{
 				severity: 'error',
@@ -75,11 +69,7 @@ describe('verify', () => {
 	});
 
 	test('audio', async () => {
-		const { violations: violations1 } = await mlRuleTest(
-			rule,
-			'<div><audio src="path/to"><source></audio></div>',
-			ruleOn,
-		);
+		const { violations: violations1 } = await mlRuleTest(rule, '<div><audio src="path/to"><source></audio></div>');
 		expect(violations1).toStrictEqual([
 			{
 				severity: 'error',
@@ -90,14 +80,10 @@ describe('verify', () => {
 			},
 		]);
 
-		const { violations: violations2 } = await mlRuleTest(
-			rule,
-			'<div><audio><source><div></div></audio></div>',
-			ruleOn,
-		);
+		const { violations: violations2 } = await mlRuleTest(rule, '<div><audio><source><div></div></audio></div>');
 		expect(violations2).toStrictEqual([]);
 
-		const { violations: violations3 } = await mlRuleTest(rule, '<div><audio><source></audio></div>', ruleOn);
+		const { violations: violations3 } = await mlRuleTest(rule, '<div><audio><source></audio></div>');
 		expect(violations3).toStrictEqual([]);
 	});
 
@@ -108,7 +94,6 @@ describe('verify', () => {
 				<dt></dt>
 				<dd></dd>
 			</dl>`,
-			ruleOn,
 		);
 		expect(violations1).toStrictEqual([]);
 
@@ -119,7 +104,6 @@ describe('verify', () => {
 				<dd></dd>
 				<div></div>
 			</dl>`,
-			ruleOn,
 		);
 		expect(violations2).toStrictEqual([
 			{
@@ -146,7 +130,6 @@ describe('verify', () => {
 				<dd></dd>
 				<div></div>
 			</dl>`,
-			ruleOn,
 		);
 		expect(violations3).toStrictEqual([
 			{
@@ -180,7 +163,6 @@ describe('verify', () => {
 				<div></div>
 				<div></div>
 			</dl>`,
-			ruleOn,
 		);
 		expect(violations4.length).toStrictEqual(4);
 
@@ -192,7 +174,6 @@ describe('verify', () => {
 					<dd></dd>
 				</div>
 			</dl>`,
-			ruleOn,
 		);
 		expect(violations5).toStrictEqual([]);
 
@@ -202,7 +183,6 @@ describe('verify', () => {
 				<dt></dt>
 				<dd></dd>
 			</div>`,
-			ruleOn,
 		);
 		expect(violations6).toStrictEqual([
 			{
@@ -221,7 +201,6 @@ describe('verify', () => {
 					<span></span>
 				</div>
 			</dl>`,
-			ruleOn,
 		);
 		expect(violations7).toStrictEqual([
 			{
@@ -243,7 +222,6 @@ describe('verify', () => {
 				<td>cell</td>
 			</tr>
 		</table>`,
-			ruleOn,
 		);
 		expect(violations1).toStrictEqual([]);
 
@@ -257,7 +235,6 @@ describe('verify', () => {
 			</tbody>
 			<thead></thead>
 		</table>`,
-			ruleOn,
 		);
 		expect(violations2).toStrictEqual([
 			{
@@ -279,7 +256,6 @@ describe('verify', () => {
 			<rt>かんじ</rt>
 			<rp>)</rp>
 		</ruby>`,
-			ruleOn,
 		);
 		expect(violations1).toStrictEqual([]);
 
@@ -290,7 +266,6 @@ describe('verify', () => {
 			<rp>(</rp>
 			<rt>かんじ</rt>
 		</ruby>`,
-			ruleOn,
 		);
 		expect(violations2).toStrictEqual([
 			{
@@ -309,13 +284,12 @@ describe('verify', () => {
 				☘ <rt> Shamrock <rt lang=fr> Trèfle </rt>
 				✶ <rt> Star <rt lang=fr> Étoile </rt>
 			</ruby>`,
-			ruleOn,
 		);
 		expect(violations3).toStrictEqual([]);
 	});
 
 	test('ul', async () => {
-		const { violations: violations1 } = await mlRuleTest(rule, '<ul><div></div></ul>', ruleOn);
+		const { violations: violations1 } = await mlRuleTest(rule, '<ul><div></div></ul>');
 		expect(violations1).toStrictEqual([
 			{
 				severity: 'error',
@@ -326,15 +300,15 @@ describe('verify', () => {
 			},
 		]);
 
-		const { violations: violations2 } = await mlRuleTest(rule, '<ul><li></li></ul>', ruleOn);
+		const { violations: violations2 } = await mlRuleTest(rule, '<ul><li></li></ul>');
 		expect(violations2).toStrictEqual([]);
 
-		const { violations: violations3 } = await mlRuleTest(rule, '<ul><li></li><li></li><li></li></ul>', ruleOn);
+		const { violations: violations3 } = await mlRuleTest(rule, '<ul><li></li><li></li><li></li></ul>');
 		expect(violations3).toStrictEqual([]);
 	});
 
 	test('area', async () => {
-		const { violations: violations1 } = await mlRuleTest(rule, '<div><area></div>', ruleOn);
+		const { violations: violations1 } = await mlRuleTest(rule, '<div><area></div>');
 		expect(violations1).toStrictEqual([
 			{
 				severity: 'error',
@@ -345,10 +319,10 @@ describe('verify', () => {
 			},
 		]);
 
-		const { violations: violations2 } = await mlRuleTest(rule, '<map><area></map>', ruleOn);
+		const { violations: violations2 } = await mlRuleTest(rule, '<map><area></map>');
 		expect(violations2).toStrictEqual([]);
 
-		const { violations: violations3 } = await mlRuleTest(rule, '<map><div><area></div></map>', ruleOn);
+		const { violations: violations3 } = await mlRuleTest(rule, '<map><div><area></div></map>');
 		expect(violations3).toStrictEqual([]);
 	});
 
@@ -361,7 +335,6 @@ describe('verify', () => {
 					<meta content="3" />
 				</li>
 			</ol>`,
-			ruleOn,
 		);
 		expect(violations1).toStrictEqual([
 			{
@@ -393,7 +366,6 @@ describe('verify', () => {
 					<meta itemprop="position" content="3" />
 				</li>
 			</ol>`,
-			ruleOn,
 		);
 		expect(violations2).toStrictEqual([]);
 	});
@@ -404,7 +376,6 @@ describe('verify', () => {
 			`<hgroup>
 				<h1>Heading</h1>
 			</hgroup>`,
-			ruleOn,
 		);
 		expect(violations1).toStrictEqual([]);
 
@@ -415,7 +386,6 @@ describe('verify', () => {
 				<h2>Sub</h2>
 				<h2>Sub2</h2>
 			</hgroup>`,
-			ruleOn,
 		);
 		expect(violations2).toStrictEqual([]);
 
@@ -430,7 +400,6 @@ describe('verify', () => {
 				<h2>Sub2</h2>
 				<template></template>
 			</hgroup>`,
-			ruleOn,
 		);
 		expect(violations3).toStrictEqual([]);
 
@@ -439,7 +408,6 @@ describe('verify', () => {
 			`<hgroup>
 				<template></template>
 			</hgroup>`,
-			ruleOn,
 		);
 		expect(violations4).toStrictEqual([
 			{
@@ -457,7 +425,6 @@ describe('verify', () => {
 			rule,
 			`<select>
 			</select>`,
-			ruleOn,
 		);
 		expect(violations1).toStrictEqual([]);
 
@@ -466,7 +433,6 @@ describe('verify', () => {
 			`<select>
 				<option>1</option>
 			</select>`,
-			ruleOn,
 		);
 		expect(violations2).toStrictEqual([]);
 
@@ -477,7 +443,6 @@ describe('verify', () => {
 				<option>2</option>
 				<option>3</option>
 			</select>`,
-			ruleOn,
 		);
 		expect(violations3).toStrictEqual([]);
 
@@ -487,7 +452,6 @@ describe('verify', () => {
 				<optgroup>
 				</optgroup>
 			</select>`,
-			ruleOn,
 		);
 		expect(violations4).toStrictEqual([]);
 
@@ -498,7 +462,6 @@ describe('verify', () => {
 					<option>1</option>
 				</optgroup>
 			</select>`,
-			ruleOn,
 		);
 		expect(violations5).toStrictEqual([]);
 
@@ -511,7 +474,6 @@ describe('verify', () => {
 					<option>3</option>
 				</optgroup>
 			</select>`,
-			ruleOn,
 		);
 		expect(violations6).toStrictEqual([]);
 
@@ -520,7 +482,6 @@ describe('verify', () => {
 			`<select>
 				<div>1</div>
 			</select>`,
-			ruleOn,
 		);
 		expect(violations7).toStrictEqual([
 			{
@@ -539,7 +500,6 @@ describe('verify', () => {
 					<div>1</div>
 				</optgroup>
 			</select>`,
-			ruleOn,
 		);
 		expect(violations8).toStrictEqual([
 			{
@@ -558,7 +518,6 @@ describe('verify', () => {
 			`<script>
 				alert("checking");
 			</script>`,
-			ruleOn,
 		);
 		expect(violations1).toStrictEqual([]);
 	});
@@ -571,7 +530,6 @@ describe('verify', () => {
 					prop: value;
 				}
 			</style>`,
-			ruleOn,
 		);
 		expect(violations1).toStrictEqual([]);
 	});
@@ -586,7 +544,6 @@ describe('verify', () => {
 					</template>
 				</a>
 			</div>`,
-			ruleOn,
 		);
 		expect(violations1).toStrictEqual([]);
 
@@ -599,7 +556,6 @@ describe('verify', () => {
 					</template>
 				</a>
 			</div>`,
-			ruleOn,
 		);
 		expect(violations2).toStrictEqual([
 			{
@@ -620,20 +576,20 @@ describe('verify', () => {
 	});
 
 	test('Dep exp named capture in interleave', async () => {
-		const { violations: violations1 } = await mlRuleTest(rule, '<figure><img><figcaption></figure>', ruleOn);
+		const { violations: violations1 } = await mlRuleTest(rule, '<figure><img><figcaption></figure>');
 		expect(violations1).toStrictEqual([]);
 	});
 
 	test('Custom element', async () => {
-		const { violations: violations1 } = await mlRuleTest(rule, '<div><x-item></x-item></div>', ruleOn);
+		const { violations: violations1 } = await mlRuleTest(rule, '<div><x-item></x-item></div>');
 		expect(violations1).toStrictEqual([]);
 	});
 
 	test('svg:a', async () => {
-		const { violations: violations1 } = await mlRuleTest(rule, '<svg><a><text>text</text></a></svg>', ruleOn);
+		const { violations: violations1 } = await mlRuleTest(rule, '<svg><a><text>text</text></a></svg>');
 		expect(violations1).toStrictEqual([]);
 
-		const { violations: violations2 } = await mlRuleTest(rule, '<svg><a><feBlend /></a></svg>', ruleOn);
+		const { violations: violations2 } = await mlRuleTest(rule, '<svg><a><feBlend /></a></svg>');
 		expect(violations2).toStrictEqual([
 			{
 				severity: 'error',
@@ -649,21 +605,18 @@ describe('verify', () => {
 		const { violations: violations1 } = await mlRuleTest(
 			rule,
 			'<svg><foreignObject><div>text</div></foreignObject></svg>',
-			ruleOn,
 		);
 		expect(violations1).toStrictEqual([]);
 
 		const { violations: violations2 } = await mlRuleTest(
 			rule,
 			'<svg><foreignObject><rect /></foreignObject></svg>',
-			ruleOn,
 		);
 		expect(violations2).toStrictEqual([]);
 
 		const { violations: violations3 } = await mlRuleTest(
 			rule,
 			'<svg><foreignObject><div><rect /></div></foreignObject></svg>',
-			ruleOn,
 		);
 		expect(violations3).toStrictEqual([
 			{
@@ -677,7 +630,7 @@ describe('verify', () => {
 	});
 
 	test('Interactive Element in SVG', async () => {
-		const { violations: violations1 } = await mlRuleTest(rule, '<svg><video></video></svg>', ruleOn);
+		const { violations: violations1 } = await mlRuleTest(rule, '<svg><video></video></svg>');
 		expect(violations1).toStrictEqual([
 			{
 				severity: 'error',
@@ -688,7 +641,7 @@ describe('verify', () => {
 			},
 		]);
 
-		const { violations: violations2 } = await mlRuleTest(rule, '<svg><html:video></html:video></svg>', ruleOn);
+		const { violations: violations2 } = await mlRuleTest(rule, '<svg><html:video></html:video></svg>');
 		expect(violations2).toStrictEqual([]);
 	});
 
@@ -696,14 +649,12 @@ describe('verify', () => {
 		const { violations: violations1 } = await mlRuleTest(
 			rule,
 			'<html:div><svg:svg><svg:a><svg:text>text</svg:text></svg:a></svg:svg><html:div>',
-			ruleOn,
 		);
 		expect(violations1).toStrictEqual([]);
 
 		const { violations: violations2 } = await mlRuleTest(
 			rule,
 			'<html:div><svg:svg><svg:a><svg:feBlend /></svg:a></svg:svg><html:div>',
-			ruleOn,
 		);
 		expect(violations2).toStrictEqual([
 			{
@@ -797,19 +748,18 @@ describe('verify', () => {
 
 describe('React', () => {
 	const jsxRuleOn = {
-		...ruleOn,
 		parser: {
 			'.*': '@markuplint/jsx-parser',
 		},
 	};
 
 	test('case-sensitive', async () => {
-		expect((await mlRuleTest(rule, '<A><button></button></A>', ruleOn)).violations).toStrictEqual([
+		expect((await mlRuleTest(rule, '<A><button></button></A>')).violations).toStrictEqual([
 			{
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'The content of the "A" element is invalid according to the HTML specification',
+				message: 'The content of the "a" element is invalid according to the HTML specification',
 				raw: '<A>',
 			},
 		]);
@@ -840,8 +790,8 @@ describe('React', () => {
 	});
 
 	test('Expect to contain a text node', async () => {
-		expect((await mlRuleTest(rule, '<head><title>{variable}</title></head>', ruleOn)).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<head><title>\n</title></head>', ruleOn)).violations).toStrictEqual([
+		expect((await mlRuleTest(rule, '<head><title>{variable}</title></head>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<head><title>\n</title></head>')).violations).toStrictEqual([
 			{
 				severity: 'error',
 				line: 1,
@@ -876,7 +826,6 @@ describe('React', () => {
 
 describe('Vue', () => {
 	const vueRuleOn = {
-		...ruleOn,
 		parser: {
 			'.*': '@markuplint/vue-parser',
 		},
@@ -897,7 +846,6 @@ describe('Vue', () => {
 
 describe('EJS', () => {
 	const ejsRuleOn = {
-		...ruleOn,
 		parser: {
 			'.*': '@markuplint/ejs-parser',
 		},
@@ -958,7 +906,6 @@ describe('Issues', () => {
 						</tr>
 						</tbody>
 					</table>`,
-					ruleOn,
 				)
 			).violations,
 		).toStrictEqual([]);
@@ -981,7 +928,6 @@ describe('Issues', () => {
 							</tr>
 						</tbody>
 					</table>`,
-					ruleOn,
 				)
 			).violations,
 		).toStrictEqual([]);

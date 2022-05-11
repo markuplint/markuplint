@@ -45,12 +45,12 @@ test('has attribute', () => {
 		tagName: 'div',
 		attrs: [
 			{
-				raw: ' a',
+				raw: 'a',
 				startLine: 1,
 				endLine: 1,
-				startCol: 5,
+				startCol: 6,
 				endCol: 7,
-				startOffset: 4,
+				startOffset: 5,
 				endOffset: 6,
 				spacesBeforeName: {
 					raw: ' ',
@@ -80,12 +80,12 @@ test('2 attributes', () => {
 		tagName: 'div',
 		attrs: [
 			{
-				raw: ' b',
+				raw: 'b',
 				startLine: 1,
 				endLine: 1,
-				startCol: 5,
+				startCol: 6,
 				endCol: 7,
-				startOffset: 4,
+				startOffset: 5,
 				endOffset: 6,
 				spacesBeforeName: {
 					raw: ' ',
@@ -107,12 +107,12 @@ test('2 attributes', () => {
 				},
 			},
 			{
-				raw: ' c',
+				raw: 'c',
 				startLine: 1,
 				endLine: 1,
-				startCol: 7,
+				startCol: 8,
 				endCol: 9,
-				startOffset: 6,
+				startOffset: 7,
 				endOffset: 8,
 				spacesBeforeName: {
 					raw: ' ',
@@ -154,12 +154,12 @@ a>`,
 		tagName: 'div',
 		attrs: [
 			{
-				raw: '\na',
-				startLine: 1,
+				raw: 'a',
+				startLine: 2,
 				endLine: 2,
-				startCol: 5,
+				startCol: 1,
 				endCol: 2,
-				startOffset: 4,
+				startOffset: 5,
 				endOffset: 6,
 				spacesBeforeName: {
 					raw: '\n',
@@ -199,12 +199,12 @@ test('has multiple line breaks', () => {
 		tagName: 'div',
 		attrs: [
 			{
-				raw: '\n\n\n\t\t\ta',
-				startLine: 1,
+				raw: 'a',
+				startLine: 4,
 				endLine: 4,
-				startCol: 5,
+				startCol: 4,
 				endCol: 5,
-				startOffset: 4,
+				startOffset: 10,
 				endOffset: 11,
 				spacesBeforeName: {
 					raw: '\n\n\n\t\t\t',
@@ -271,33 +271,33 @@ test('standard', () => {
 				name: {
 					raw: 'a',
 				},
-				startLine: 1,
-				startCol: 5,
-				raw: '\n     a',
+				startLine: 2,
+				startCol: 6,
+				raw: 'a',
 			},
 			{
 				name: {
 					raw: 'b',
 				},
-				startLine: 2,
+				startLine: 3,
 				startCol: 7,
-				raw: '\n      b',
+				raw: 'b',
 			},
 			{
 				name: {
 					raw: 'c',
 				},
 				startLine: 3,
-				startCol: 8,
-				raw: ' c',
+				startCol: 9,
+				raw: 'c',
 			},
 			{
 				name: {
 					raw: 'd',
 				},
-				startLine: 3,
-				startCol: 10,
-				raw: '\n      d',
+				startLine: 4,
+				startCol: 7,
+				raw: 'd',
 			},
 		],
 	});
@@ -308,7 +308,7 @@ test('standard', () => {
 		tagName: 'div',
 		attrs: [
 			{
-				raw: ' a=a',
+				raw: 'a=a',
 				spacesBeforeName: { raw: ' ' },
 				name: { raw: 'a' },
 				spacesBeforeEqual: { raw: '' },
@@ -318,7 +318,7 @@ test('standard', () => {
 				value: { raw: 'a' },
 				endQuote: { raw: '' },
 				startLine: 1,
-				startCol: 5,
+				startCol: 6,
 			},
 		],
 	});
@@ -341,12 +341,12 @@ c"
 		tagName: 'div',
 		attrs: [
 			{
-				raw: '\na\n\t=\n\t"ab\nc"',
-				startLine: 1,
+				raw: 'a\n\t=\n\t"ab\nc"',
+				startLine: 2,
 				endLine: 5,
-				startCol: 5,
+				startCol: 1,
 				endCol: 3,
-				startOffset: 4,
+				startOffset: 5,
 				endOffset: 17,
 				spacesBeforeName: {
 					raw: '\n',
@@ -479,5 +479,5 @@ describe('error', () => {
 });
 
 test('include gt sign', () => {
-	expect(parseRawTag('<div a=" > ">', 1, 1, 0).attrs[0].raw).toBe(' a=" > "');
+	expect(parseRawTag('<div a=" > ">', 1, 1, 0).attrs[0].raw).toBe('a=" > "');
 });

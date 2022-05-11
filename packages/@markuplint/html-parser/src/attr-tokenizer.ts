@@ -22,11 +22,6 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 
 	let offset = startOffset;
 
-	const attrToken = tokenizer(raw, line, col, offset);
-	line = attrToken.startLine;
-	col = attrToken.startCol;
-	offset = attrToken.startOffset;
-
 	const spacesBeforeName = tokenizer(spacesBeforeAttrString, line, col, offset);
 	line = spacesBeforeName.endLine;
 	col = spacesBeforeName.endCol;
@@ -64,6 +59,19 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 
 	const endQuote = tokenizer(quoteChars, line, col, offset);
 
+	const attrToken = tokenizer(
+		nameChars +
+			spacesBeforeEqualChars +
+			(equalChars || '') +
+			spacesAfterEqualChars +
+			(quoteChars || '') +
+			(valueChars || '') +
+			(quoteChars || ''),
+		name.startLine,
+		name.startCol,
+		name.startOffset,
+	);
+
 	return {
 		type: 'html-attr',
 		uuid: uuid(),
@@ -83,5 +91,11 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 		value,
 		endQuote,
 		isDuplicatable: false,
+		nodeName: name.raw,
+		parentNode: null,
+		prevNode: null,
+		nextNode: null,
+		isFragment: false,
+		isGhost: false,
 	};
 }
