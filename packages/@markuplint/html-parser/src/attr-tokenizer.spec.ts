@@ -2,12 +2,12 @@ import attrTokenizer from './attr-tokenizer';
 
 it('void attribute', async () => {
 	expect(attrTokenizer(' abc', 1, 1, 0)).toMatchObject({
-		raw: ' abc',
+		raw: 'abc',
 		startLine: 1,
 		endLine: 1,
-		startCol: 1,
+		startCol: 2,
 		endCol: 5,
-		startOffset: 0,
+		startOffset: 1,
 		endOffset: 4,
 		spacesBeforeName: {
 			raw: ' ',
@@ -88,11 +88,11 @@ test('normal', async () => {
 	expect(attrTokenizer(' abc="123"', 1, 1, 0)).toMatchObject({
 		startLine: 1,
 		endLine: 1,
-		startCol: 1,
+		startCol: 2,
 		endCol: 11,
-		startOffset: 0,
+		startOffset: 1,
 		endOffset: 10,
-		raw: ' abc="123"',
+		raw: 'abc="123"',
 		spacesBeforeName: {
 			raw: ' ',
 			startLine: 1,
@@ -170,13 +170,13 @@ test('normal', async () => {
 
 test('after line break', async () => {
 	expect(attrTokenizer('\n abc="123"', 1, 1, 0)).toMatchObject({
-		startLine: 1,
+		startLine: 2,
 		endLine: 2,
-		startCol: 1,
+		startCol: 2,
 		endCol: 11,
-		startOffset: 0,
+		startOffset: 2,
 		endOffset: 11,
-		raw: '\n abc="123"',
+		raw: 'abc="123"',
 		spacesBeforeName: {
 			raw: '\n ',
 			startLine: 1,
@@ -270,11 +270,11 @@ test('single quote', () => {
 	expect(attrTokenizer("  q='a'", 1, 1, 0)).toMatchObject({
 		startLine: 1,
 		endLine: 1,
-		startCol: 1,
+		startCol: 3,
 		endCol: 8,
-		startOffset: 0,
+		startOffset: 2,
 		endOffset: 7,
-		raw: "  q='a'",
+		raw: "q='a'",
 		spacesBeforeName: {
 			raw: '  ',
 			startLine: 1,
@@ -472,13 +472,13 @@ test('line break', () => {
 			0,
 		),
 	).toMatchObject({
-		startLine: 1,
+		startLine: 2,
 		endLine: 10,
-		startCol: 1,
+		startCol: 2,
 		endCol: 2,
-		startOffset: 0,
+		startOffset: 2,
 		endOffset: 29,
-		raw: '\n abc\n\n   =\n\n  "e\n\n     fg\n\n"',
+		raw: 'abc\n\n   =\n\n  "e\n\n     fg\n\n"',
 		name: {
 			raw: 'abc',
 			startLine: 2,

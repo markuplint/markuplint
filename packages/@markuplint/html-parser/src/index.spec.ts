@@ -996,7 +996,7 @@ describe('parser', () => {
 		]);
 
 		// @ts-ignore
-		expect(doc.nodeList[2].attributes[0].startOffset).toBe(29);
+		expect(doc.nodeList[2].attributes[0].startOffset).toBe(30);
 		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].endOffset).toBe(43);
 		// @ts-ignore
@@ -1004,7 +1004,7 @@ describe('parser', () => {
 		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].endLine).toBe(4);
 		// @ts-ignore
-		expect(doc.nodeList[2].attributes[0].startCol).toBe(8);
+		expect(doc.nodeList[2].attributes[0].startCol).toBe(9);
 		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].endCol).toBe(22);
 	});
@@ -1052,7 +1052,7 @@ describe('parser', () => {
 		const attrMaps = attributesToDebugMaps(ast.nodeList[0].attributes);
 		expect(attrMaps).toStrictEqual([
 			[
-				'[1:3]>[1:11](2,10)href: ␣href=""',
+				'[1:4]>[1:11](3,10)href: href=""',
 				'  [1:3]>[1:4](2,3)bN: ␣',
 				'  [1:4]>[1:8](3,7)name: href',
 				'  [1:8]>[1:8](7,7)bE: ',

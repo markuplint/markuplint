@@ -25,6 +25,12 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 			potentialValue: value,
 			valueType: 'string',
 			isDuplicatable: attr.raw[0] === '.',
+			nodeName: '#pug-special-attr',
+			parentNode: null,
+			nextNode: null,
+			prevNode: null,
+			isFragment: false,
+			isGhost: false,
 		};
 	}
 
@@ -138,5 +144,11 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 		endQuote,
 		isDynamicValue,
 		isDuplicatable,
+		nodeName: name.raw,
+		parentNode: null,
+		nextNode: null,
+		prevNode: null,
+		isFragment: false,
+		isGhost: false,
 	};
 }
