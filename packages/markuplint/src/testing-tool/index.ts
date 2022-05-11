@@ -117,7 +117,6 @@ export async function mlTestFile(target: Target, config?: Config, rules?: AnyMLR
 }
 
 export interface NodeRule<T extends RuleConfigValue, O = void> {
-	tagName?: string;
 	selector?: string;
 	regexSelector?: RegexSelector;
 	categories?: string[];
@@ -127,7 +126,6 @@ export interface NodeRule<T extends RuleConfigValue, O = void> {
 }
 
 export interface ChildNodeRule<T extends RuleConfigValue, O = void> {
-	tagName?: string;
 	selector?: string;
 	regexSelector?: RegexSelector;
 	inheritance?: boolean;

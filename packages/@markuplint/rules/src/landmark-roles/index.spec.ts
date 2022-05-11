@@ -78,7 +78,7 @@ test('Top level landmarks: disabled', async () => {
 
 			nodeRule: [
 				{
-					tagName: 'aside',
+					selector: 'aside',
 					rule: false,
 				},
 			],

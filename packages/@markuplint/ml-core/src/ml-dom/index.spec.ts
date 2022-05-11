@@ -115,7 +115,7 @@ test('rule', async () => {
 			},
 			nodeRules: [
 				{
-					tagName: 'span',
+					selector: 'span',
 					rules: {
 						ruleA: false,
 					},

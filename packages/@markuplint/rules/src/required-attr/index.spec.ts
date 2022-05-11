@@ -8,7 +8,7 @@ test('warns if specified attribute is not appeared', async () => {
 
 		nodeRule: [
 			{
-				tagName: 'img',
+				selector: 'img',
 				rule: {
 					severity: 'error',
 					value: 'alt',
@@ -34,7 +34,7 @@ test('multiple required attributes', async () => {
 
 		nodeRule: [
 			{
-				tagName: 'img',
+				selector: 'img',
 				rule: {
 					severity: 'error',
 					value: ['width', 'height', 'alt'],
@@ -303,7 +303,7 @@ test('Foreign element', async () => {
 
 				nodeRule: [
 					{
-						tagName: 'svg',
+						selector: 'svg',
 						rule: {
 							severity: 'error',
 							value: 'viewBox',

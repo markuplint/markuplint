@@ -92,7 +92,7 @@ type Attr = {
   },
   "nodeRules": [
     {
-      "tagName": "img",
+      "selector": "img",
       "rules": {
         "required-attr": "alt"
       }

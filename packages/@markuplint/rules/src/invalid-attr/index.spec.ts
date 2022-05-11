@@ -170,7 +170,7 @@ test('custom element and custom rule', async () => {
 
 		nodeRule: [
 			{
-				tagName: 'custom-element',
+				selector: 'custom-element',
 				rule: {
 					option: {
 						attrs: {

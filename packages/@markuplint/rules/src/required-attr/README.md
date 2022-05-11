@@ -98,7 +98,7 @@ Example configuration that `alt` attribute must be required on `<img>` element:
   },
   "nodeRules": [
     {
-      "tagName": "img",
+      "selector": "img",
       "rules": {
         "required-attr": "alt"
       }
