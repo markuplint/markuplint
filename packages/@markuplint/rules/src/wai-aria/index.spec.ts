@@ -12,7 +12,7 @@ describe("Use the role that doesn't exist in the spec", () => {
 				line: 1,
 				col: 6,
 				message:
-					'The "hoge" role does not exist according to the WAI-ARIA specificationThis "hoge" role does not exist in WAI-ARIA.',
+					'The "hoge" role does not exist according to the WAI-ARIA specification. This "hoge" role does not exist in WAI-ARIA.',
 				raw: 'role="hoge"',
 			},
 		]);

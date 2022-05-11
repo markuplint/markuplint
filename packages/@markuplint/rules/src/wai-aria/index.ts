@@ -56,7 +56,10 @@ export default createRule<boolean, Options>({
 								'{0} according to {1}',
 								t('{0} does not exist', t('the "{0*}" {1}', value, 'role')),
 								'the WAI-ARIA specification',
-							) + `This "${value}" role does not exist in WAI-ARIA.`,
+							) +
+							t('.') +
+							// TODO: Translate
+							` This "${value}" role does not exist in WAI-ARIA.`,
 						line: roleAttr.startLine,
 						col: roleAttr.startCol,
 						raw: roleAttr.raw,
