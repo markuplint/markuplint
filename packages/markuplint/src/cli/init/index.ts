@@ -200,6 +200,7 @@ export async function initialize() {
 			{ name: 'Astro', value: 'astro' },
 			{ name: 'Pug', value: 'pug' },
 			{ name: 'PHP', value: 'php' },
+			{ name: 'Smarty', value: 'smarty' },
 			{ name: 'eRuby', value: 'erb' },
 			{ name: 'EJS', value: 'ejs' },
 			{ name: 'Mustache/Handlebars', value: 'mustache' },
