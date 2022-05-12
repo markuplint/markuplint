@@ -76,7 +76,6 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 
 ### Personal Supporters
 
-[<img width="36" src="https://avatars.githubusercontent.com/u/6581173?v=4" alt="mikimhk"/>](https://github.com/mikimhk)
 [<img width="36" src="https://avatars.githubusercontent.com/u/91733847?v=4" alt="Tokitake" />](https://github.com/Tokitake)
 
 ## Thanks
