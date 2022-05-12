@@ -10,11 +10,11 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 
 ## Usage
 
--   [Getting Started](https://markuplint.dev/getting-started)
--   [Rules](https://markuplint.dev/rules)
--   [Configuration](https://markuplint.dev/configuration)
--   [API](https://markuplint.dev/api-docs)
--   [Playground](https://playground.markuplint.dev/)
+- [Getting Started](https://markuplint.dev/getting-started)
+- [Rules](https://markuplint.dev/rules)
+- [Configuration](https://markuplint.dev/configuration)
+- [API](https://markuplint.dev/api-docs)
+- [Playground](https://playground.markuplint.dev/)
 
 ## Packages
 
@@ -82,7 +82,7 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 
 This linter is inspired by:
 
--   [HTMLHint](https://htmlhint.com/)
--   [ESLint](https://eslint.org/)
--   [stylelint](https://stylelint.io/)
--   [textlint](https://textlint.github.io/)
+- [HTMLHint](https://htmlhint.com/)
+- [ESLint](https://eslint.org/)
+- [stylelint](https://stylelint.io/)
+- [textlint](https://textlint.github.io/)
