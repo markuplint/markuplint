@@ -12594,7 +12594,7 @@
 		{
 			"name": "footer",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer",
-			"description": "The <footer> HTML element represents a footer for its nearest sectioning content or sectioning root element. A <footer> typically contains information about the author of the section, copyright data or links to related documents.",
+			"description": "The <footer> HTML element represents a footer for its nearest ancestor sectioning content or sectioning root element. A <footer> typically contains information about the author of the section, copyright data or links to related documents.",
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
 				"summary": "Flow content, but with no <footer> or <header> descendants.",
