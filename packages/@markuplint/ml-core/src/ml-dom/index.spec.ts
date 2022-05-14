@@ -5,19 +5,19 @@ import { createTestDocument, createTestElement, createTestNodeList, createTestTo
 
 type Element = MLElement<any, any>;
 
-test('node count', async () => {
+test('node count', () => {
 	const nodeList = createTestNodeList('<div>text</div>');
 	expect(nodeList.length).toBe(2);
 });
 
-test('raw', async () => {
+test('raw', () => {
 	const nodeList = createTestNodeList('<div>text</div>');
 	expect(nodeList[0].raw).toBe('<div>');
 	expect(nodeList[1].raw).toBe('text');
 	expect((nodeList[0] as Element).closeTag?.raw).toBe('</div>');
 });
 
-test('raw', async () => {
+test('raw', () => {
 	const tokens = createTestTokenList(`
 <div>
 	text
@@ -28,7 +28,7 @@ test('raw', async () => {
 	expect(tokens[3].raw).toBe('</div>');
 });
 
-test('raw', async () => {
+test('raw', () => {
 	const tokens = createTestTokenList(`
     <div>
         text
@@ -44,7 +44,7 @@ test('raw', async () => {
 	expect((tokens[2] as Element).prevToken?.uuid).toBe(tokens[1].uuid);
 });
 
-test('raw', async () => {
+test('raw', () => {
 	const tokens = createTestTokenList(`
     <div>
         <span>text</span>
@@ -59,7 +59,7 @@ test('raw', async () => {
 	expect(tokens[7].raw).toBe('</div>');
 });
 
-test('raw', async () => {
+test('raw', () => {
 	const tokens = createTestTokenList(`
 <div>
 	<span>text</span>
@@ -74,19 +74,19 @@ test('raw', async () => {
 	expect(tokens[7].raw).toBe('</div>');
 });
 
-test('classList', async () => {
+test('classList', () => {
 	const el = createTestElement('<div class="a b c"></div>');
 	expect(Array.from(el.classList)).toStrictEqual(['a', 'b', 'c']);
 });
 
-test('fixNodeName', async () => {
+test('fixNodeName', () => {
 	const el = createTestElement('<div></div>');
 	expect(el.raw).toBe('<div>');
 	el.fixNodeName('x-div');
 	expect(el.raw).toBe('<x-div>');
 });
 
-test('namespace', async () => {
+test('namespace', () => {
 	const tokens = createTestTokenList(`<div>
 	<svg>
 		<a></a>
@@ -111,7 +111,7 @@ test('namespace', async () => {
 	expect((tokens[16] as Element).namespaceURI).toBe('http://www.w3.org/1999/xhtml');
 });
 
-test('toString', async () => {
+test('toString', () => {
 	const raw = `
 	<div>
 		<span attr attr2 attr3="value" attr4=value>text</span>
@@ -120,7 +120,7 @@ test('toString', async () => {
 	expect(doc.toString()).toBe(raw);
 });
 
-test('rule', async () => {
+test('rule', () => {
 	const document = createTestDocument<'foo', any>('<div><span>text</span></div>', {
 		config: {
 			rules: {
@@ -141,7 +141,7 @@ test('rule', async () => {
 		name: 'ruleA',
 		defaultValue: 'foo',
 		defaultOptions: null,
-		async verify() {
+		verify() {
 			throw new Error();
 		},
 	});
@@ -151,7 +151,7 @@ test('rule', async () => {
 		name: 'ruleB',
 		defaultValue: 'foo',
 		defaultOptions: null,
-		async verify() {
+		verify() {
 			throw new Error();
 		},
 	});
@@ -159,7 +159,7 @@ test('rule', async () => {
 	expect(document.nodeList[1].rule.disabled).toBe(false);
 });
 
-test('regexSelector', async () => {
+test('regexSelector', () => {
 	const document = createTestDocument('<img src="path/to/name.png" />', {
 		config: {
 			rules: {
@@ -192,7 +192,7 @@ test('regexSelector', async () => {
 		name: 'ruleA',
 		defaultValue: 'foo',
 		defaultOptions: null,
-		async verify() {
+		verify() {
 			throw new Error();
 		},
 	});
@@ -212,7 +212,7 @@ test('regexSelector', async () => {
 	});
 });
 
-test('extend rule settings', async () => {
+test('extend rule settings', () => {
 	const document = createTestDocument('<span class="a"></span><div class="b"><span></span></div>', {
 		config: {
 			rules: {
@@ -271,7 +271,7 @@ test('extend rule settings', async () => {
 		name: 'ruleA',
 		defaultValue: 'foo',
 		defaultOptions: null,
-		async verify() {
+		verify() {
 			throw new Error();
 		},
 	});
@@ -279,7 +279,7 @@ test('extend rule settings', async () => {
 		name: 'ruleB',
 		defaultValue: 'bar',
 		defaultOptions: null,
-		async verify() {
+		verify() {
 			throw new Error();
 		},
 	});
@@ -287,7 +287,7 @@ test('extend rule settings', async () => {
 		name: 'ruleC',
 		defaultValue: 'buz',
 		defaultOptions: null,
-		async verify() {
+		verify() {
 			throw new Error();
 		},
 	});
@@ -295,7 +295,7 @@ test('extend rule settings', async () => {
 		name: 'ruleD',
 		defaultValue: 'fuz',
 		defaultOptions: null,
-		async verify() {
+		verify() {
 			throw new Error();
 		},
 	});
@@ -303,7 +303,7 @@ test('extend rule settings', async () => {
 		name: 'ruleE',
 		defaultValue: 'piyo',
 		defaultOptions: null,
-		async verify() {
+		verify() {
 			throw new Error();
 		},
 	});
@@ -369,7 +369,7 @@ test('extend rule settings', async () => {
 	expect(document.nodeList[2].rule).toStrictEqual(resultE);
 });
 
-test('regexSelector + pug', async () => {
+test('regexSelector + pug', () => {
 	const document = createTestDocument(
 		`section.Card
 	.Card__inner1
@@ -401,7 +401,7 @@ test('regexSelector + pug', async () => {
 		name: 'ruleA',
 		defaultValue: 'foo',
 		defaultOptions: null,
-		async verify() {
+		verify() {
 			throw new Error();
 		},
 	});
@@ -436,7 +436,7 @@ test('regexSelector + pug', async () => {
 	});
 });
 
-test('regexSelector + jsx', async () => {
+test('regexSelector + jsx', () => {
 	const document = createTestDocument(
 		`<section className="Card">
 	<div className="Card__inner1">
@@ -470,7 +470,7 @@ test('regexSelector + jsx', async () => {
 		name: 'ruleA',
 		defaultValue: 'foo',
 		defaultOptions: null,
-		async verify() {
+		verify() {
 			throw new Error();
 		},
 	});

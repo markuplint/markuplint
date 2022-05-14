@@ -76,7 +76,7 @@ describe('getRoleSpec', () => {
 });
 
 describe('getPermittedRoles', () => {
-	test('the a element', async () => {
+	test('the a element', () => {
 		expect(getPermittedRoles(specs, createTestElement('<a></a>')!)).toBe(true);
 		expect(getPermittedRoles(specs, createTestElement('<a href="path/to"></a>')!)).toStrictEqual([
 			'link',
@@ -93,17 +93,17 @@ describe('getPermittedRoles', () => {
 		]);
 	});
 
-	test('the area element', async () => {
+	test('the area element', () => {
 		expect(getPermittedRoles(specs, createTestElement('<area></area>')!)).toBe(false);
 		expect(getPermittedRoles(specs, createTestElement('<area href="path/to"></area>')!)).toStrictEqual(['link']);
 	});
 
-	test('the figure element', async () => {
+	test('the figure element', () => {
 		expect(getPermittedRoles(specs, createTestElement('<figure></figure>')!)).toStrictEqual(['figure']);
 		expect(getPermittedRoles(specs, createTestElement('<figure><figcaption></figcaption></figure>')!)).toBe(true);
 	});
 
-	test('the img element', async () => {
+	test('the img element', () => {
 		expect(getPermittedRoles(specs, createTestElement('<img>')!)).toStrictEqual(['img']);
 		expect(getPermittedRoles(specs, createTestElement('<img alt="">')!)).toStrictEqual(['presentation']);
 		expect(getPermittedRoles(specs, createTestElement('<img alt="photo: something">')!)).toStrictEqual([
@@ -125,7 +125,7 @@ describe('getPermittedRoles', () => {
 		]);
 	});
 
-	test('the input element', async () => {
+	test('the input element', () => {
 		expect(getPermittedRoles(specs, createTestElement('<input>')!)).toBe(false);
 		expect(getPermittedRoles(specs, createTestElement('<input type="button">')!)).toStrictEqual([
 			'button',
@@ -145,7 +145,7 @@ describe('getPermittedRoles', () => {
 });
 
 describe('getImplicitRole', () => {
-	test('the a element', async () => {
+	test('the a element', () => {
 		expect(getImplicitRole(specs, createTestElement('<a></a>')!)).toBe(false);
 		expect(getImplicitRole(specs, createTestElement('<a name="foo"></a>')!)).toBe(false);
 		expect(getImplicitRole(specs, createTestElement('<a href></a>')!)).toBe('link');
@@ -153,7 +153,7 @@ describe('getImplicitRole', () => {
 		expect(getImplicitRole(specs, createTestElement('<a href="path/to"></a>')!)).toBe('link');
 	});
 
-	test('the area element', async () => {
+	test('the area element', () => {
 		expect(getImplicitRole(specs, createTestElement('<area />')!)).toBe(false);
 		expect(getImplicitRole(specs, createTestElement('<area shape="rect" />')!)).toBe(false);
 		expect(getImplicitRole(specs, createTestElement('<area href />')!)).toBe('link');
@@ -161,23 +161,23 @@ describe('getImplicitRole', () => {
 		expect(getImplicitRole(specs, createTestElement('<area href="path/to" />')!)).toBe('link');
 	});
 
-	test('the article element', async () => {
+	test('the article element', () => {
 		expect(getImplicitRole(specs, createTestElement('<article></article>')!)).toBe('article');
 	});
 
-	test('the aside element', async () => {
+	test('the aside element', () => {
 		expect(getImplicitRole(specs, createTestElement('<aside></aside>')!)).toBe('complementary');
 	});
 
-	test('the audio element', async () => {
+	test('the audio element', () => {
 		expect(getImplicitRole(specs, createTestElement('<audio></audio>')!)).toBe(false);
 	});
 
-	test('the h1 element', async () => {
+	test('the h1 element', () => {
 		expect(getImplicitRole(specs, createTestElement('<h1></h1>')!)).toBe('heading');
 	});
 
-	test('the header element', async () => {
+	test('the header element', () => {
 		expect(getImplicitRole(specs, createTestElement('<header></header>')!)).toBe('banner');
 		expect(getImplicitRole(specs, createTestElement('<header><article></article></header>')!)).toBe(false);
 		expect(getImplicitRole(specs, createTestElement('<header><div></div></header>')!)).toBe('banner');
@@ -186,7 +186,7 @@ describe('getImplicitRole', () => {
 });
 
 describe('getComputedRole', () => {
-	test('the a element', async () => {
+	test('the a element', () => {
 		expect(getComputedRole(specs, createTestElement('<a></a>')!)).toBe(null);
 		expect(getComputedRole(specs, createTestElement('<a href></a>')!)?.name).toBe('link');
 		expect(getComputedRole(specs, createTestElement('<a role="button"></a>')!)?.name).toBe('button');

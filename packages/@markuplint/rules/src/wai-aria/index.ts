@@ -30,7 +30,7 @@ export default createRule<boolean, Options>({
 		disallowDefaultValue: false,
 	},
 	async verify({ document, report, t }) {
-		await document.walkOn('Element', async el => {
+		await document.walkOn('Element', el => {
 			const attrSpecs = getAttrSpecs(el.nameWithNS, document.specs);
 			const html = htmlSpec(document.specs, el.nameWithNS);
 			const { roles, ariaAttrs } = ariaSpec(document.specs);

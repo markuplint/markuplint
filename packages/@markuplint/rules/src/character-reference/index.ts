@@ -7,7 +7,7 @@ export default createRule({
 	async verify({ document, report, t }) {
 		const targetNodes: Parameters<typeof report>[0][] = [];
 
-		await document.walkOn('Text', async node => {
+		await document.walkOn('Text', node => {
 			if (node.parentNode && ignoreParentElement.includes(node.parentNode.nodeName.toLowerCase())) {
 				return;
 			}
@@ -23,7 +23,7 @@ export default createRule({
 			});
 		});
 
-		await document.walkOn('Element', async node => {
+		await document.walkOn('Element', node => {
 			const severity = node.rule.severity;
 			const ms = severity === 'error' ? 'must' : 'should';
 			const message = t(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');

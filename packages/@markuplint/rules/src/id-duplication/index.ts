@@ -8,7 +8,7 @@ export default createRule({
 			'duplicated',
 		);
 		const idStack: string[] = [];
-		await document.walkOn('Element', async node => {
+		await document.walkOn('Element', node => {
 			const idAttrs = node.getAttributeToken('id');
 			for (const idAttr of idAttrs) {
 				if (idAttr.isDynamicValue || idAttr.isDirective) {

@@ -6,7 +6,7 @@ export default createRule<Value>({
 	defaultServerity: 'warning',
 	defaultValue: 'lower',
 	async verify({ document, report, t }) {
-		await document.walkOn('Element', async el => {
+		await document.walkOn('Element', el => {
 			if (el.isForeignElement || el.isCustomElement) {
 				return;
 			}
@@ -42,7 +42,7 @@ export default createRule<Value>({
 		});
 	},
 	async fix({ document }) {
-		await document.walkOn('Element', async el => {
+		await document.walkOn('Element', el => {
 			if (el.isForeignElement || el.isCustomElement) {
 				return;
 			}

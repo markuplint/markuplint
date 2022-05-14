@@ -30,7 +30,7 @@ type Rule =
 export default createRule<boolean, Option>({
 	defaultOptions: {},
 	async verify({ document, report, t }) {
-		await document.walkOn('Attr', async attr => {
+		await document.walkOn('Attr', attr => {
 			if (attr.isDirective) {
 				return;
 			}

@@ -4,7 +4,7 @@ import { createTestElement } from '../test';
 
 import { matchSelector } from './match-selector';
 
-test('CSS Selector', async () => {
+test('CSS Selector', () => {
 	const el = createTestElement('<div id="hoge" class="foo bar"></div>');
 	expect(matchSelector(el, '*')).toStrictEqual({ matched: true, selector: '*', specificity: [0, 0, 0] });
 	expect(matchSelector(el, 'div')).toStrictEqual({ matched: true, selector: 'div', specificity: [0, 0, 1] });
@@ -26,7 +26,7 @@ test('CSS Selector', async () => {
 	expect(matchSelector(el, '.any')).toStrictEqual({ matched: false });
 });
 
-test('nodeName case-sensitive', async () => {
+test('nodeName case-sensitive', () => {
 	expect(matchSelector(createTestElement('<DIV></DIV>'), 'div')).toStrictEqual({
 		matched: true,
 		selector: 'div',
@@ -51,7 +51,7 @@ test('nodeName case-sensitive', async () => {
 	});
 });
 
-test('invisible tag', async () => {
+test('invisible tag', () => {
 	const head = createTestElement('<html><head></head></html>').childNodes[0];
 	expect(head.nodeName).toBe('HEAD');
 	expect(matchSelector(head, 'head')).toStrictEqual({
@@ -61,7 +61,7 @@ test('invisible tag', async () => {
 	});
 });
 
-test('nodeName', async () => {
+test('nodeName', () => {
 	const el = createTestElement('<div></div>');
 	expect(
 		matchSelector(el, {
@@ -75,7 +75,7 @@ test('nodeName', async () => {
 	});
 });
 
-test('nodeName named group capture', async () => {
+test('nodeName named group capture', () => {
 	const el = createTestElement('<h6></h6>');
 	expect(
 		matchSelector(el, {
@@ -92,7 +92,7 @@ test('nodeName named group capture', async () => {
 	});
 });
 
-test('nodeName (No RegExp)', async () => {
+test('nodeName (No RegExp)', () => {
 	const el = createTestElement('<div></div>');
 	expect(
 		matchSelector(el, {
@@ -106,7 +106,7 @@ test('nodeName (No RegExp)', async () => {
 	});
 });
 
-test('attrName', async () => {
+test('attrName', () => {
 	const el = createTestElement('<div data-attr></div>');
 	expect(
 		matchSelector(el, {
@@ -122,7 +122,7 @@ test('attrName', async () => {
 	});
 });
 
-test('attrValue', async () => {
+test('attrValue', () => {
 	const el = createTestElement('<div data-attr="abc"></div>');
 	expect(
 		matchSelector(el, {
@@ -136,7 +136,7 @@ test('attrValue', async () => {
 	});
 });
 
-test('No matched', async () => {
+test('No matched', () => {
 	const el = createTestElement('<div data-attr="abc"></div>');
 	expect(
 		matchSelector(el, {
@@ -149,7 +149,7 @@ test('No matched', async () => {
 	});
 });
 
-test('nodeName & attrName', async () => {
+test('nodeName & attrName', () => {
 	const el = createTestElement('<div data-attr="abc"></div>');
 	expect(
 		matchSelector(el, {
@@ -164,7 +164,7 @@ test('nodeName & attrName', async () => {
 	});
 });
 
-test('attrName & attrValue', async () => {
+test('attrName & attrValue', () => {
 	const el = createTestElement('<div data-attr="abc"></div>');
 	expect(
 		matchSelector(el, {
@@ -179,7 +179,7 @@ test('attrName & attrValue', async () => {
 	});
 });
 
-test('nodeName & attrName & attrValue', async () => {
+test('nodeName & attrName & attrValue', () => {
 	const el = createTestElement('<div data-attr="abc"></div>');
 	expect(
 		matchSelector(el, {
@@ -195,7 +195,7 @@ test('nodeName & attrName & attrValue', async () => {
 	});
 });
 
-test('combination " "', async () => {
+test('combination " "', () => {
 	const el = createTestElement('<div data-attr="abc"><span></span></div>');
 	const span = el.children[0];
 	expect(
@@ -216,7 +216,7 @@ test('combination " "', async () => {
 	});
 });
 
-test('combination >', async () => {
+test('combination >', () => {
 	const el = createTestElement('<div data-attr="abc"><span><a></a></span></div>');
 	const span = el.children[0];
 	const a = span.children[0];
@@ -245,7 +245,7 @@ test('combination >', async () => {
 	});
 });
 
-test('combination +', async () => {
+test('combination +', () => {
 	const el = createTestElement(`<ul>
 	<li class="i1"><a class="a1">1</a></li>
 	<li class="i2"><a class="a2">2</a></li>
@@ -270,7 +270,7 @@ test('combination +', async () => {
 	});
 });
 
-test('combination ~', async () => {
+test('combination ~', () => {
 	const el = createTestElement(`<ul>
 	<li class="i1"><a class="a1">1</a></li>
 	<li class="i2"><a class="a2">2</a></li>
@@ -295,7 +295,7 @@ test('combination ~', async () => {
 	});
 });
 
-test('combination :has(+)', async () => {
+test('combination :has(+)', () => {
 	const el = createTestElement(`<ul>
 	<li class="i1"><a class="a1">1</a></li>
 	<li class="i2"><a class="a2">2</a></li>
@@ -320,7 +320,7 @@ test('combination :has(+)', async () => {
 	});
 });
 
-test('combination :has(~)', async () => {
+test('combination :has(~)', () => {
 	const el = createTestElement(`<ul>
 	<li class="i1"><a class="a1">1</a></li>
 	<li class="i2"><a class="a2">2</a></li>
@@ -345,7 +345,7 @@ test('combination :has(~)', async () => {
 	});
 });
 
-test('pug', async () => {
+test('pug', () => {
 	const el = createTestElement('div#foo.bar', { parser: require('@markuplint/pug-parser') });
 	expect(
 		matchSelector(el, {
