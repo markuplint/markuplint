@@ -3,7 +3,7 @@ import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import path from 'path';
 
-import { toRegxp } from '@markuplint/ml-config';
+import { toRegxp } from './utils';
 
 const caches = new Map<string, MLMLSpec | ExtendedSpec>();
 

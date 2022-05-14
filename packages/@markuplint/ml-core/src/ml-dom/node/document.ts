@@ -15,9 +15,9 @@ import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
 import { getSpec } from '@markuplint/ml-spec';
+import { matchSelector } from '@markuplint/selector';
 
 import { log as coreLog } from '../../debug';
-import { matchSelector } from '../../selector/match-selector';
 import { createNode } from '../helper/create-node';
 import { nodeListToDebugMaps } from '../helper/debug';
 import { sequentialWalker, syncWalk } from '../helper/walkers';

@@ -1,8 +1,15 @@
-// @ts-nocheck
-
-import { createTestElement } from '../test';
+import { JSDOM } from 'jsdom';
 
 import { matchSelector } from './match-selector';
+
+function createTestElement(html: string) {
+	if (/^<html>/i.test(html)) {
+		const dom = new JSDOM(html);
+		return dom.window.document.querySelector('html') as Element;
+	}
+	const fragment = JSDOM.fragment(html);
+	return fragment.firstChild as Element;
+}
 
 test('CSS Selector', () => {
 	const el = createTestElement('<div id="hoge" class="foo bar"></div>');
@@ -37,17 +44,6 @@ test('nodeName case-sensitive', () => {
 		matched: true,
 		selector: 'DIV',
 		specificity: [0, 0, 1],
-	});
-
-	expect(
-		matchSelector(
-			createTestElement('<Div></Div>', {
-				parser: require('@markuplint/jsx-parser'),
-			}),
-			'div',
-		),
-	).toStrictEqual({
-		matched: false,
 	});
 });
 
@@ -342,26 +338,5 @@ test('combination :has(~)', () => {
 		selector: '[class="i5"]:has(~ li)',
 		specificity: [0, 1, 1],
 		data: {},
-	});
-});
-
-test('pug', () => {
-	const el = createTestElement('div#foo.bar', { parser: require('@markuplint/pug-parser') });
-	expect(
-		matchSelector(el, {
-			nodeName: '/^(?<tag>[a-z]+)$/',
-			attrName: '/^(?<attr>[a-z]+)$/',
-			attrValue: '/^(?<value>[a-z]+)$/',
-		}),
-	).toStrictEqual({
-		matched: true,
-		selector: 'div[id="foo"][class="bar"]',
-		specificity: [0, 2, 1],
-		data: {
-			tag: 'div',
-			attr: 'class',
-			value: 'bar',
-			$1: 'bar',
-		},
 	});
 });

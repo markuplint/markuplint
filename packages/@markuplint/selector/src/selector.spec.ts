@@ -1,6 +1,20 @@
-import { createTestElement } from '../test';
+import { JSDOM } from 'jsdom';
 
 import { createSelector } from './selector';
+
+beforeEach(() => {
+	const dom = new JSDOM();
+	global.Element = dom.window.Element;
+});
+
+function createTestElement(html: string) {
+	if (/^<html>/i.test(html)) {
+		const dom = new JSDOM(html);
+		return dom.window.document.querySelector('html') as Element;
+	}
+	const fragment = JSDOM.fragment(html);
+	return fragment.firstChild as Element;
+}
 
 describe('selector matching', () => {
 	it('Multiple selector', () => {
@@ -200,39 +214,5 @@ describe('specificity', () => {
 		expect(createSelector(':where(div, #foo)').match(el)).toStrictEqual([0, 0, 0]);
 		expect(createSelector(':where(div, #foo, .bar)').match(el)).toStrictEqual([0, 0, 0]);
 		expect(createSelector(':where(div, #foo.bar)').match(el)).toStrictEqual([0, 0, 0]);
-	});
-});
-
-describe('pug', () => {
-	it('has PSBlock', () => {
-		const el = createTestElement(
-			`
-div#hoge.foo.bar
-	if foo
-		a(href="path/to")`,
-			{
-				parser: require('@markuplint/pug-parser'),
-			},
-		);
-		// @ts-ignore
-		const a = el.childNodes[0].childNodes[0];
-		expect(createSelector('*').match(el)).toBeTruthy();
-		expect(createSelector('div').match(el)).toBeTruthy();
-		expect(createSelector('div#hoge').match(el)).toBeTruthy();
-		expect(createSelector('div#fuga').match(el)).toBe(false);
-		expect(createSelector('#hoge').match(el)).toBeTruthy();
-		expect(createSelector('div.foo').match(el)).toBeTruthy();
-		expect(createSelector('div.bar').match(el)).toBeTruthy();
-		expect(createSelector('.foo').match(el)).toBeTruthy();
-		expect(createSelector('.foo.bar').match(el)).toBeTruthy();
-		expect(createSelector('.any').match(el)).toBe(false);
-		// @ts-ignore
-		expect(createSelector('*').match(a)).toBeTruthy();
-		// @ts-ignore
-		expect(createSelector('a').match(a)).toBeTruthy();
-		// @ts-ignore
-		expect(createSelector('div a').match(a)).toBeTruthy();
-		// @ts-ignore
-		expect(createSelector('div > a').match(a)).toBeTruthy();
 	});
 });
