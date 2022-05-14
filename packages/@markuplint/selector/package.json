@@ -1,7 +1,7 @@
 {
-	"name": "@markuplint/ml-config",
-	"version": "2.1.0",
-	"description": "JSON Schema and TypeScript types of markuplint configure JSON",
+	"name": "@markuplint/selector",
+	"version": "3.0.0-alpha",
+	"description": "W3C Selector and Regex selector",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
@@ -13,15 +13,17 @@
 	},
 	"scripts": {
 		"build": "tsc",
+		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean"
 	},
-	"devDependencies": {
-		"@types/mustache": "^4.1.2"
-	},
 	"dependencies": {
-		"@markuplint/selector": "3.0.0-alpha",
-		"deepmerge": "^4.2.2",
-		"is-plain-object": "^5.0.0",
-		"mustache": "^4.2.0"
+		"debug": "^4.3.4",
+		"postcss-selector-parser": "^6.0.10",
+		"tslib": "^2.4.0"
+	},
+	"devDependencies": {
+		"@types/debug": "^4.1.7",
+		"@types/jsdom": "^16.2.14",
+		"jsdom": "^19.0.0"
 	}
 }

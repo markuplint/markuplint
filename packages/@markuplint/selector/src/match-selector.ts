@@ -1,9 +1,7 @@
-import type { Specificity } from './selector';
-import type { RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCompination } from '@markuplint/ml-config';
+import type { Specificity, RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCompination } from './types';
 
-import { regexSelectorMatches } from '@markuplint/ml-config';
-
-import { isPureHTMLElement } from './is-pure-html-element';
+import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is';
+import { regexSelectorMatches } from './regex-selector-matches';
 import { createSelector } from './selector';
 
 export type SelectorMatches = SelectorMatched | SelectorUnmatched;
@@ -19,7 +17,7 @@ type SelectorUnmatched = {
 	matched: false;
 };
 
-export function matchSelector(el: Element, selector: string | RegexSelector | undefined): SelectorMatches {
+export function matchSelector(el: Node, selector: string | RegexSelector | undefined): SelectorMatches {
 	if (!selector) {
 		return {
 			matched: false,
@@ -44,7 +42,7 @@ export function matchSelector(el: Element, selector: string | RegexSelector | un
 	return regexSelect(el, selector);
 }
 
-function regexSelect(el: Element, selector: RegexSelector): SelectorMatches {
+function regexSelect(el: Node, selector: RegexSelector): SelectorMatches {
 	let edge = new SelectorTarget(selector);
 	let edgeSelector = selector.combination;
 	while (edgeSelector) {
@@ -69,12 +67,15 @@ class SelectorTarget {
 		this._combinatedFrom = { target, combinator };
 	}
 
-	match(el: Element): SelectorMatches {
+	match(el: Node): SelectorMatches {
 		const unitCheck = this._matchWithoutCombinateChecking(el);
 		if (!unitCheck.matched) {
 			return unitCheck;
 		}
 		if (!this._combinatedFrom) {
+			return unitCheck;
+		}
+		if (!isNonDocumentTypeChildNode(el)) {
 			return unitCheck;
 		}
 		const { target, combinator } = this._combinatedFrom;
@@ -157,12 +158,18 @@ class SelectorTarget {
 		}
 	}
 
-	_matchWithoutCombinateChecking(el: Element) {
+	_matchWithoutCombinateChecking(el: Node) {
 		return uncombinatedRegexSelect(el, this._selector);
 	}
 }
 
-function uncombinatedRegexSelect(el: Element, selector: RegexSelectorWithoutCompination): SelectorMatches {
+function uncombinatedRegexSelect(el: Node, selector: RegexSelectorWithoutCompination): SelectorMatches {
+	if (!isElement(el)) {
+		return {
+			matched: false,
+		};
+	}
+
 	let matched = true;
 	let data: Record<string, string> = {};
 	let tagSelector = '';

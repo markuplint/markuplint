@@ -1,3 +1,7 @@
+import type { RegexSelector } from '@markuplint/selector';
+
+export type { RegexSelector } from '@markuplint/selector';
+
 export interface Config {
 	$schema?: string;
 	extends?: string | string[];
@@ -62,20 +66,6 @@ export interface ChildNodeRule {
 	inheritance?: boolean;
 	rules?: Rules;
 }
-
-export type RegexSelector = RegexSelectorWithoutCompination & {
-	combination?: {
-		combinator: RegexSelectorCombinator;
-	} & RegexSelector;
-};
-
-export type RegexSelectorCombinator = ' ' | '>' | '+' | '~' | ':has(+)' | ':has(~)';
-
-export type RegexSelectorWithoutCompination = {
-	nodeName?: string;
-	attrName?: string;
-	attrValue?: string;
-};
 
 export type Report<T extends RuleConfigValue, O = null> = Report1<T, O> | Report2 | (Report1<T, O> & Report2);
 

@@ -1,15 +1,14 @@
+import type { Specificity } from './types';
+
 import parser from 'postcss-selector-parser';
 
-import { log as coreLog } from '../debug';
+import { compareSpecificity } from './compare-specificity';
+import { log as coreLog } from './debug';
+import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is';
 
-import { isPureHTMLElement } from './is-pure-html-element';
-
-const log = coreLog.extend('selector');
-const resLog = log.extend('result');
+const resLog = coreLog.extend('result');
 
 const caches = new Map<string, Selector>();
-
-export type Specificity = [number, number, number];
 
 export function createSelector(selector: string) {
 	let instance = caches.get(selector);
@@ -20,23 +19,6 @@ export function createSelector(selector: string) {
 	instance = new Selector(selector);
 	caches.set(selector, instance);
 	return instance;
-}
-
-export function compareSpecificity(a: Specificity, b: Specificity) {
-	if (a[0] < b[0]) {
-		return -1;
-	} else if (a[0] > b[0]) {
-		return 1;
-	} else if (a[1] < b[1]) {
-		return -1;
-	} else if (a[1] > b[1]) {
-		return 1;
-	} else if (a[2] < b[2]) {
-		return -1;
-	} else if (a[2] > b[2]) {
-		return 1;
-	}
-	return 0;
 }
 
 type MultipleSelectorResult = SelectorResult[];
@@ -53,7 +35,7 @@ class Selector {
 		this.#ruleset = Ruleset.parse(selector);
 	}
 
-	match(el: Element, caller: ParentNode | null = el): Specificity | false {
+	match(el: Node, caller: ParentNode | null = isElement(el) ? el : null): Specificity | false {
 		const results = this.#ruleset.match(el, caller);
 		for (const result of results) {
 			if (result.matched) {
@@ -79,8 +61,8 @@ class Ruleset {
 		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector)));
 	}
 
-	match(el: Element, caller: ParentNode | null): MultipleSelectorResult {
-		log('%s', el.localName);
+	match(el: Node, caller: ParentNode | null): MultipleSelectorResult {
+		coreLog('%s', isElement(el) ? el.localName : el.nodeName);
 		return this.#selectorGroup.map(selector => {
 			const res = selector.match(el, caller);
 			resLog('%s => %o', selector.selector, res);
@@ -126,7 +108,7 @@ class StructuredSelector {
 		});
 	}
 
-	match(el: Element, caller: ParentNode | null): SelectorResult {
+	match(el: Node, caller: ParentNode | null): SelectorResult {
 		return this.#edge.match(el, caller);
 	}
 }
@@ -179,12 +161,15 @@ class SelectorTarget {
 		this.#combinatedFrom = { target, combinator };
 	}
 
-	match(el: Element, caller: ParentNode | null): SelectorResult {
+	match(el: Node, caller: ParentNode | null): SelectorResult {
 		const unitCheck = this._matchWithoutCombinateChecking(el, caller);
 		if (!unitCheck.matched) {
 			return unitCheck;
 		}
 		if (!this.#combinatedFrom) {
+			return unitCheck;
+		}
+		if (!isNonDocumentTypeChildNode(el)) {
 			return unitCheck;
 		}
 		const { target, combinator } = this.#combinatedFrom;
@@ -312,8 +297,15 @@ class SelectorTarget {
 		}
 	}
 
-	_matchWithoutCombinateChecking(el: Element, caller: ParentNode | null): SelectorResult {
+	_matchWithoutCombinateChecking(el: Node, caller: ParentNode | null): SelectorResult {
 		const specificity: Specificity = [0, 0, 0];
+
+		if (!isElement(el)) {
+			return {
+				specificity,
+				matched: false,
+			};
+		}
 
 		let matched = true;
 
