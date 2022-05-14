@@ -22,6 +22,7 @@
 		"@markuplint/ml-config": "2.1.0",
 		"@markuplint/ml-spec": "2.1.0",
 		"@markuplint/parser-utils": "2.2.0",
+		"@markuplint/selector": "3.0.0-alpha",
 		"debug": "^4.3.4",
 		"dom-accessibility-api": "^0.5.13",
 		"postcss-selector-parser": "^6.0.10",

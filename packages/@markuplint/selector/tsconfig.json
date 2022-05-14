@@ -9,11 +9,7 @@
 			"*": ["../../../node_modules"]
 		}
 	},
-	"references": [
-		{
-			"path": "../selector"
-		}
-	],
+	"references": [],
 	"include": ["./src/**/*"],
 	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
 }

@@ -6,8 +6,8 @@ import type { MLASTElement } from '@markuplint/ml-ast';
 import type { RuleConfigValue } from '@markuplint/ml-config';
 
 import { getNS } from '@markuplint/ml-spec';
+import { createSelector } from '@markuplint/selector';
 
-import { createSelector } from '../../selector/selector';
 import { stringSplice } from '../../utils/string-splice';
 import { getAccname } from '../helper/accname';
 import {
