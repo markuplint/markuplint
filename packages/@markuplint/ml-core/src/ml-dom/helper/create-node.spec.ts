@@ -7,7 +7,7 @@ import { dummySchemas } from '../../test';
 import { createNode } from './create-node';
 
 describe('create Node', () => {
-	it('Element', async () => {
+	it('Element', () => {
 		const sourceCode = '<div>text</div>';
 		const ast = parse(sourceCode);
 		const astNode = ast.nodeList[0];

@@ -6,7 +6,7 @@ export default createRule<Value>({
 	defaultServerity: 'warning',
 	defaultValue: 'lower',
 	async verify({ document, report, t }) {
-		await document.walk(async node => {
+		await document.walk(node => {
 			if ('fixNodeName' in node) {
 				if (node.isForeignElement || node.isCustomElement || node.type === 'OmittedElement') {
 					return;
@@ -32,7 +32,7 @@ export default createRule<Value>({
 		});
 	},
 	async fix({ document }) {
-		await document.walk(async node => {
+		await document.walk(node => {
 			if ('fixNodeName' in node) {
 				if (node.isForeignElement || node.isCustomElement) {
 					return;

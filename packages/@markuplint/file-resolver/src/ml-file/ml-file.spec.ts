@@ -1,6 +1,6 @@
 import { MLFile } from './ml-file';
 
-it('file path', async () => {
+it('file path', () => {
 	const file = new MLFile('/dir/file');
 	expect(file.nPath).toBe('/dir/file');
 	expect(file.nDirname).toBe('/dir');
@@ -10,7 +10,7 @@ it('file path', async () => {
 	expect(file2.nDirname).toBe('/dir/dir2');
 });
 
-it('file matches', async () => {
+it('file matches', () => {
 	const file = new MLFile('/dir/file');
 	expect(file.matches('/dir/*')).toBeTruthy();
 	expect(file.matches('/**/*')).toBeTruthy();
