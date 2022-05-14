@@ -14781,7 +14781,6 @@
 			"name": "menu",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu",
 			"description": "The <menu> HTML element is a semantic alternative to <ul>. It represents an unordered list of items (represented by <li> elements), each of which represents a link or other command that the user can activate.",
-			"experimental": true,
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
 				"summary": "Zero or more occurrences of <li>, <script>, and <template>.",
