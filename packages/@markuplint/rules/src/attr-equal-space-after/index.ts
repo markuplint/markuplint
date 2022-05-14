@@ -9,7 +9,7 @@ export default createRule<Value>({
 	defaultServerity: 'warning',
 	defaultValue: 'never',
 	async verify(context) {
-		await context.document.walkOn('Element', async node => {
+		await context.document.walkOn('Element', node => {
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'ps-attr' || !(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {
 					continue;
@@ -55,7 +55,7 @@ export default createRule<Value>({
 		});
 	},
 	async fix({ document }) {
-		await document.walkOn('Element', async node => {
+		await document.walkOn('Element', node => {
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'ps-attr' || !(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {
 					continue;

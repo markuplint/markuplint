@@ -5,7 +5,7 @@ import stripAnsi from 'strip-ansi';
 
 import { simpleReporter, standardReporter } from '../reporter';
 
-export async function output(results: MLResultInfo, options: CLIOptions) {
+export function output(results: MLResultInfo, options: CLIOptions) {
 	const format = options.format ?? 'Standard';
 	let out: string[];
 	switch (format.toLowerCase()) {

@@ -8,7 +8,7 @@ export default createRule<Value>({
 	defaultServerity: 'warning',
 	defaultValue: null,
 	async verify({ document, report, t }) {
-		await document.walkOn('Element', async node => {
+		await document.walkOn('Element', node => {
 			if (!node.rule.value) {
 				return;
 			}

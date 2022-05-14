@@ -30,7 +30,7 @@ type Rule =
 export default createRule<boolean, Option>({
 	defaultOptions: {},
 	async verify({ document, report, t }) {
-		await document.walkOn('Element', async node => {
+		await document.walkOn('Element', node => {
 			const attrSpecs = getAttrSpecs(node.nameWithNS, document.specs);
 
 			for (const attr of node.attributes) {

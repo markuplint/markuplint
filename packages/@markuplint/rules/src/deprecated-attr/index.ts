@@ -2,7 +2,7 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 export default createRule({
 	async verify({ document, report, t }) {
-		await document.walkOn('Element', async element => {
+		await document.walkOn('Element', element => {
 			const attrSpecs = getAttrSpecs(element.nameWithNS, document.specs);
 
 			if (!attrSpecs) {

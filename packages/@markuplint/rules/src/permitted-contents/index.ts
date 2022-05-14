@@ -22,7 +22,7 @@ export default createRule<TagRule[], Options>({
 	},
 	async verify({ document, report, t }) {
 		let idCounter = 0;
-		await document.walkOn('Element', async node => {
+		await document.walkOn('Element', node => {
 			if (!node.rule.value) {
 				return;
 			}
