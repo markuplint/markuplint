@@ -35,8 +35,8 @@ class Selector {
 		this.#ruleset = Ruleset.parse(selector);
 	}
 
-	match(el: Node, caller: ParentNode | null = isElement(el) ? el : null): Specificity | false {
-		const results = this.#ruleset.match(el, caller);
+	match(el: Node, scope: ParentNode | null = isElement(el) ? el : null): Specificity | false {
+		const results = this.#ruleset.match(el, scope);
 		for (const result of results) {
 			if (result.matched) {
 				return result.specificity;
@@ -61,10 +61,10 @@ class Ruleset {
 		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector)));
 	}
 
-	match(el: Node, caller: ParentNode | null): MultipleSelectorResult {
+	match(el: Node, scope: ParentNode | null): MultipleSelectorResult {
 		coreLog('%s', isElement(el) ? el.localName : el.nodeName);
 		return this.#selectorGroup.map(selector => {
-			const res = selector.match(el, caller);
+			const res = selector.match(el, scope);
 			resLog('%s => %o', selector.selector, res);
 			return res;
 		});
@@ -108,8 +108,8 @@ class StructuredSelector {
 		});
 	}
 
-	match(el: Node, caller: ParentNode | null): SelectorResult {
-		return this.#edge.match(el, caller);
+	match(el: Node, scope: ParentNode | null): SelectorResult {
+		return this.#edge.match(el, scope);
 	}
 }
 
@@ -161,8 +161,8 @@ class SelectorTarget {
 		this.#combinatedFrom = { target, combinator };
 	}
 
-	match(el: Node, caller: ParentNode | null): SelectorResult {
-		const unitCheck = this._matchWithoutCombinateChecking(el, caller);
+	match(el: Node, scope: ParentNode | null): SelectorResult {
+		const unitCheck = this._matchWithoutCombinateChecking(el, scope);
 		if (!unitCheck.matched) {
 			return unitCheck;
 		}
@@ -180,7 +180,7 @@ class SelectorTarget {
 				let matched = false;
 				let specificity: Specificity | void;
 				while (ancestor) {
-					const res = target.match(ancestor, caller);
+					const res = target.match(ancestor, scope);
 					if (!specificity) {
 						specificity = [
 							unitCheck.specificity[0] + res.specificity[0],
@@ -194,7 +194,7 @@ class SelectorTarget {
 					ancestor = ancestor.parentElement;
 				}
 				if (!specificity) {
-					const res = target.match(el, caller);
+					const res = target.match(el, scope);
 					specificity = [
 						unitCheck.specificity[0] + res.specificity[0],
 						unitCheck.specificity[1] + res.specificity[1],
@@ -213,13 +213,13 @@ class SelectorTarget {
 				const parentNode = el.parentElement;
 
 				if (parentNode) {
-					const res = target.match(parentNode, caller);
+					const res = target.match(parentNode, scope);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
 					matched = res.matched;
 				} else {
-					const res = target.match(el, caller);
+					const res = target.match(el, scope);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
@@ -236,13 +236,13 @@ class SelectorTarget {
 				const specificity = unitCheck.specificity;
 
 				if (el.previousElementSibling) {
-					const res = target.match(el.previousElementSibling, caller);
+					const res = target.match(el.previousElementSibling, scope);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
 					matched = res.matched;
 				} else {
-					const res = target.match(el, caller);
+					const res = target.match(el, scope);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
@@ -259,7 +259,7 @@ class SelectorTarget {
 				let matched = false;
 				let specificity: Specificity | void;
 				while (prev) {
-					const res = target.match(prev, caller);
+					const res = target.match(prev, scope);
 					if (!specificity) {
 						specificity = [
 							unitCheck.specificity[0] + res.specificity[0],
@@ -273,7 +273,7 @@ class SelectorTarget {
 					prev = prev.previousElementSibling;
 				}
 				if (!specificity) {
-					const res = target.match(el, caller);
+					const res = target.match(el, scope);
 					specificity = [
 						unitCheck.specificity[0] + res.specificity[0],
 						unitCheck.specificity[1] + res.specificity[1],
@@ -297,7 +297,7 @@ class SelectorTarget {
 		}
 	}
 
-	_matchWithoutCombinateChecking(el: Node, caller: ParentNode | null): SelectorResult {
+	_matchWithoutCombinateChecking(el: Node, scope: ParentNode | null): SelectorResult {
 		const specificity: Specificity = [0, 0, 0];
 
 		if (!isElement(el)) {
@@ -309,7 +309,7 @@ class SelectorTarget {
 
 		let matched = true;
 
-		if (!this.#isAdded && !isScope(el, caller)) {
+		if (!this.#isAdded && !isScope(el, scope)) {
 			matched = false;
 		}
 
@@ -329,7 +329,7 @@ class SelectorTarget {
 		specificity[1] += this.attr.length;
 
 		for (const pseudo of this.pseudo) {
-			const pseudoRes = pseudoMatch(pseudo, el, caller);
+			const pseudoRes = pseudoMatch(pseudo, el, scope);
 
 			specificity[0] += pseudoRes.specificity[0];
 			specificity[1] += pseudoRes.specificity[1];
@@ -418,7 +418,7 @@ function attrMatch(attr: parser.Attribute, el: Element) {
 	});
 }
 
-function pseudoMatch(pseudo: parser.Pseudo, el: Element, caller: ParentNode | null): SelectorResult {
+function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | null): SelectorResult {
 	switch (pseudo.value) {
 		//
 
@@ -427,10 +427,10 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, caller: ParentNode | nu
 		 */
 		case ':closest': {
 			const ruleset = new Ruleset(pseudo.nodes);
-			const specificity = getSpecificity(ruleset.match(el, caller));
+			const specificity = getSpecificity(ruleset.match(el, scope));
 			let parent = el.parentElement;
 			while (parent) {
-				if (ruleset.match(parent, caller).some(r => r.matched)) {
+				if (ruleset.match(parent, scope).some(r => r.matched)) {
 					return {
 						specificity,
 						matched: true,
@@ -449,7 +449,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, caller: ParentNode | nu
 		 */
 		case ':not': {
 			const ruleset = new Ruleset(pseudo.nodes);
-			const resList = ruleset.match(el, caller);
+			const resList = ruleset.match(el, scope);
 			const specificity = getSpecificity(resList);
 			const matched = resList.every(r => !r.matched);
 			return {
@@ -459,7 +459,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, caller: ParentNode | nu
 		}
 		case ':is': {
 			const ruleset = new Ruleset(pseudo.nodes);
-			const resList = ruleset.match(el, caller);
+			const resList = ruleset.match(el, scope);
 			const specificity = getSpecificity(resList);
 			const matched = resList.some(r => r.matched);
 			return {
@@ -469,9 +469,9 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, caller: ParentNode | nu
 		}
 		case ':has': {
 			const ruleset = new Ruleset(pseudo.nodes);
-			const specificity = getSpecificity(ruleset.match(el, caller));
+			const specificity = getSpecificity(ruleset.match(el, scope));
 			const descendants = getDescendants(el);
-			const matched = descendants.some(desc => ruleset.match(desc, caller).some(m => m.matched));
+			const matched = descendants.some(desc => ruleset.match(desc, scope).some(m => m.matched));
 			return {
 				specificity,
 				matched,
@@ -479,7 +479,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, caller: ParentNode | nu
 		}
 		case ':where': {
 			const ruleset = new Ruleset(pseudo.nodes);
-			const resList = ruleset.match(el, caller);
+			const resList = ruleset.match(el, scope);
 			const matched = resList.some(r => r.matched);
 			return {
 				specificity: [0, 0, 0],
@@ -487,7 +487,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, caller: ParentNode | nu
 			};
 		}
 		case ':scope': {
-			if (isScope(el, caller)) {
+			if (isScope(el, scope)) {
 				return {
 					specificity: [0, 1, 0],
 					matched: true,
@@ -567,8 +567,8 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, caller: ParentNode | nu
 	}
 }
 
-function isScope(el: Element, caller: ParentNode | null) {
-	return el === caller || el.parentNode === null;
+function isScope(el: Element, scope: ParentNode | null) {
+	return el === scope || el.parentNode === null;
 }
 
 function getDescendants(el: Element, includeSelf = false): Element[] {
