@@ -187,6 +187,16 @@
 					}
 				}
 			}
+		},
+		{
+			"selector": ":where(figcaption ~ table, table:has(~ figcaption))",
+			"rules": {
+				"disallowed-element": {
+					"value": ["caption"],
+					"reason": "When a table element is the only content in a figure element other than the figcaption, the caption element should be omitted in favor of the figcaption. (https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)"
+				},
+				"require-accessible-name": false
+			}
 		}
 	]
 }

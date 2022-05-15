@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom';
 
+import { InvalidSelectorError } from './invalid-selector-error';
 import { createSelector } from './selector';
 
 beforeEach(() => {
@@ -7,12 +8,22 @@ beforeEach(() => {
 	global.Element = dom.window.Element;
 });
 
-function createTestElement(html: string) {
+function createTestElement(html: string, selector?: string) {
 	if (/^<html>/i.test(html)) {
 		const dom = new JSDOM(html);
 		return dom.window.document.querySelector('html') as Element;
 	}
 	const fragment = JSDOM.fragment(html);
+	if (selector) {
+		const el = fragment.querySelector(selector);
+		if (!el) {
+			throw new Error('An element is not created');
+		}
+		return el;
+	}
+	if (!fragment.firstChild) {
+		throw new Error('An element is not created');
+	}
 	return fragment.firstChild as Element;
 }
 
@@ -168,6 +179,24 @@ describe('selector matching', () => {
 		expect(createSelector('.i2 ~ li').match(el.children[4])).toBeTruthy();
 	});
 
+	it('combinator start error', () => {
+		const el = createTestElement('<div><a></a><span></span></div>', 'a');
+		InvalidSelectorError;
+		expect(() => createSelector('> a').match(el)).toThrow(InvalidSelectorError);
+		expect(() => createSelector('+ a').match(el)).toThrow(InvalidSelectorError);
+		expect(() => createSelector('~ a').match(el)).toThrow(InvalidSelectorError);
+	});
+
+	it(':has(+ E)', () => {
+		const el = createTestElement('<figure><table></table><figcaption></figcaption></figure>', 'table');
+		expect(createSelector('table:has(+ figcaption)').match(el)).toBeTruthy();
+	});
+
+	it(':has(~ E)', () => {
+		const el = createTestElement('<figure><table></table><p></p><figcaption></figcaption></figure>', 'table');
+		expect(createSelector('table:has(~ figcaption)').match(el)).toBeTruthy();
+	});
+
 	it(':closest', () => {
 		const el = createTestElement('<table><tr><td></td></tr></table>');
 		const td = el.children[0].children[0].children[0];
@@ -176,6 +205,19 @@ describe('selector matching', () => {
 		expect(createSelector(':closest(tr)').match(td)).toBeTruthy();
 		expect(createSelector(':closest(tbody)').match(td)).toBeTruthy();
 		expect(createSelector(':closest(div)').match(td)).toBe(false);
+	});
+
+	it('namespace', () => {
+		const svgA = createTestElement('<svg><a></a></svg>', 'a');
+		expect(createSelector('a').match(svgA)).toBeTruthy();
+		expect(createSelector('|a').match(svgA)).toBeTruthy();
+		expect(createSelector('*|a').match(svgA)).toBeTruthy();
+		expect(createSelector('svg|a').match(svgA)).toBeTruthy();
+		const htmlA = createTestElement('<div><a></a></div>', 'a');
+		expect(createSelector('a').match(htmlA)).toBeTruthy();
+		expect(createSelector('|a').match(htmlA)).toBeTruthy();
+		expect(createSelector('*|a').match(htmlA)).toBeTruthy();
+		expect(createSelector('svg|a').match(htmlA)).toBeFalsy();
 	});
 
 	it('is invisible tags', () => {
