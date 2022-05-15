@@ -345,7 +345,7 @@ class SelectorTarget {
 
 	toString() {
 		return [
-			this.tag?.value ?? '',
+			this.tag?.toString() ?? '',
 			this.id.map(id => `#${id.value}`).join(''),
 			this.class.map(c => `.${c.value}`).join(''),
 			this.attr.map(attr => `[${attr.toString()}]`).join(''),
@@ -361,6 +361,30 @@ class SelectorTarget {
 				specificity,
 				matched: false,
 			};
+		}
+
+		// @ts-ignore
+		if (this.tag && this.tag._namespace) {
+			// @ts-ignore
+			const namespace: string = `${this.tag._namespace}`.toLowerCase();
+			switch (namespace) {
+				case '*':
+				case 'true': {
+					break;
+				}
+				case 'svg': {
+					if (el.namespaceURI !== 'http://www.w3.org/2000/svg') {
+						return {
+							specificity,
+							matched: false,
+						};
+					}
+					break;
+				}
+				default: {
+					throw new InvalidSelectorError(`The ${namespace} namespace is not supported`);
+				}
+			}
 		}
 
 		let matched = true;

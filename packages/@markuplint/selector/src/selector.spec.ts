@@ -207,6 +207,19 @@ describe('selector matching', () => {
 		expect(createSelector(':closest(div)').match(td)).toBe(false);
 	});
 
+	it('namespace', () => {
+		const svgA = createTestElement('<svg><a></a></svg>', 'a');
+		expect(createSelector('a').match(svgA)).toBeTruthy();
+		expect(createSelector('|a').match(svgA)).toBeTruthy();
+		expect(createSelector('*|a').match(svgA)).toBeTruthy();
+		expect(createSelector('svg|a').match(svgA)).toBeTruthy();
+		const htmlA = createTestElement('<div><a></a></div>', 'a');
+		expect(createSelector('a').match(htmlA)).toBeTruthy();
+		expect(createSelector('|a').match(htmlA)).toBeTruthy();
+		expect(createSelector('*|a').match(htmlA)).toBeTruthy();
+		expect(createSelector('svg|a').match(htmlA)).toBeFalsy();
+	});
+
 	it('is invisible tags', () => {
 		const el = createTestElement('<html><head><title></title></head></html>');
 		const head = el.children[0];
