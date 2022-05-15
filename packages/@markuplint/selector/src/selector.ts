@@ -4,6 +4,7 @@ import parser from 'postcss-selector-parser';
 
 import { compareSpecificity } from './compare-specificity';
 import { log as coreLog } from './debug';
+import { InvalidSelectorError } from './invalid-selector-error';
 import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is';
 
 const resLog = coreLog.extend('result');
@@ -52,13 +53,22 @@ class Ruleset {
 		parser(root => {
 			selectors.push(...root.nodes);
 		}).processSync(selector);
-		return new Ruleset(selectors);
+		return new Ruleset(selectors, 0);
 	}
 
 	#selectorGroup: StructuredSelector[] = [];
+	readonly headCombinator: string | null;
 
-	constructor(selectors: parser.Selector[]) {
-		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector)));
+	constructor(selectors: parser.Selector[], depth: number) {
+		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector, depth)));
+		const head = this.#selectorGroup[0];
+		this.headCombinator = head?.headCombinator || null;
+
+		if (this.headCombinator) {
+			if (depth <= 0) {
+				throw new InvalidSelectorError(`'${this.#selectorGroup[0].selector}' is not a valid selector`);
+			}
+		}
 	}
 
 	match(el: Node, scope: ParentNode | null): MultipleSelectorResult {
@@ -72,21 +82,23 @@ class Ruleset {
 }
 
 class StructuredSelector {
-	#edge: SelectorTarget;
 	#selector: parser.Selector;
+	#edge: SelectorTarget;
+	readonly headCombinator: string | null;
 
 	get selector() {
 		return this.#selector.nodes.join('');
 	}
 
-	constructor(selector: parser.Selector) {
+	constructor(selector: parser.Selector, depth: number) {
 		this.#selector = selector;
-
-		this.#edge = new SelectorTarget();
+		this.#edge = new SelectorTarget(depth);
+		this.headCombinator =
+			this.#selector.nodes[0].type === 'combinator' ? this.#selector.nodes[0].value || null : null;
 		this.#selector.nodes.forEach(node => {
 			switch (node.type) {
 				case 'combinator': {
-					const combinatedTarget = new SelectorTarget();
+					const combinatedTarget = new SelectorTarget(depth);
 					combinatedTarget.from(this.#edge, node);
 					this.#edge = combinatedTarget;
 					break;
@@ -116,11 +128,17 @@ class StructuredSelector {
 class SelectorTarget {
 	#combinatedFrom: { target: SelectorTarget; combinator: parser.Combinator } | null = null;
 	#isAdded = false;
+
+	readonly depth: number;
 	attr: parser.Attribute[] = [];
 	class: parser.ClassName[] = [];
 	id: parser.Identifier[] = [];
 	pseudo: parser.Pseudo[] = [];
 	tag: parser.Tag | parser.Universal | null = null;
+
+	constructor(depth: number) {
+		this.depth = depth;
+	}
 
 	add(
 		selector:
@@ -329,7 +347,7 @@ class SelectorTarget {
 		specificity[1] += this.attr.length;
 
 		for (const pseudo of this.pseudo) {
-			const pseudoRes = pseudoMatch(pseudo, el, scope);
+			const pseudoRes = pseudoMatch(pseudo, el, scope, this.depth);
 
 			specificity[0] += pseudoRes.specificity[0];
 			specificity[1] += pseudoRes.specificity[1];
@@ -418,7 +436,7 @@ function attrMatch(attr: parser.Attribute, el: Element) {
 	});
 }
 
-function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | null): SelectorResult {
+function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | null, depth: number): SelectorResult {
 	switch (pseudo.value) {
 		//
 
@@ -426,7 +444,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | nul
 		 * Below, markuplint Specific Selector
 		 */
 		case ':closest': {
-			const ruleset = new Ruleset(pseudo.nodes);
+			const ruleset = new Ruleset(pseudo.nodes, depth + 1);
 			const specificity = getSpecificity(ruleset.match(el, scope));
 			let parent = el.parentElement;
 			while (parent) {
@@ -448,7 +466,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | nul
 		 * Below, Selector Level 4
 		 */
 		case ':not': {
-			const ruleset = new Ruleset(pseudo.nodes);
+			const ruleset = new Ruleset(pseudo.nodes, depth + 1);
 			const resList = ruleset.match(el, scope);
 			const specificity = getSpecificity(resList);
 			const matched = resList.every(r => !r.matched);
@@ -458,7 +476,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | nul
 			};
 		}
 		case ':is': {
-			const ruleset = new Ruleset(pseudo.nodes);
+			const ruleset = new Ruleset(pseudo.nodes, depth + 1);
 			const resList = ruleset.match(el, scope);
 			const specificity = getSpecificity(resList);
 			const matched = resList.some(r => r.matched);
@@ -468,7 +486,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | nul
 			};
 		}
 		case ':has': {
-			const ruleset = new Ruleset(pseudo.nodes);
+			const ruleset = new Ruleset(pseudo.nodes, depth + 1);
 			const specificity = getSpecificity(ruleset.match(el, scope));
 			const descendants = getDescendants(el);
 			const matched = descendants.some(desc => ruleset.match(desc, scope).some(m => m.matched));
@@ -478,7 +496,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | nul
 			};
 		}
 		case ':where': {
-			const ruleset = new Ruleset(pseudo.nodes);
+			const ruleset = new Ruleset(pseudo.nodes, depth + 1);
 			const resList = ruleset.match(el, scope);
 			const matched = resList.some(r => r.matched);
 			return {

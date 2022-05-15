@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom';
 
+import { InvalidSelectorError } from './invalid-selector-error';
 import { createSelector } from './selector';
 
 beforeEach(() => {
@@ -7,12 +8,22 @@ beforeEach(() => {
 	global.Element = dom.window.Element;
 });
 
-function createTestElement(html: string) {
+function createTestElement(html: string, selector?: string) {
 	if (/^<html>/i.test(html)) {
 		const dom = new JSDOM(html);
 		return dom.window.document.querySelector('html') as Element;
 	}
 	const fragment = JSDOM.fragment(html);
+	if (selector) {
+		const el = fragment.querySelector(selector);
+		if (!el) {
+			throw new Error('An element is not created');
+		}
+		return el;
+	}
+	if (!fragment.firstChild) {
+		throw new Error('An element is not created');
+	}
 	return fragment.firstChild as Element;
 }
 
@@ -166,6 +177,14 @@ describe('selector matching', () => {
 		expect(createSelector('.i2 ~ li').match(el.children[2])).toBeTruthy();
 		expect(createSelector('.i2 ~ li').match(el.children[3])).toBeTruthy();
 		expect(createSelector('.i2 ~ li').match(el.children[4])).toBeTruthy();
+	});
+
+	it('combinator start error', () => {
+		const el = createTestElement('<div><a></a><span></span></div>', 'a');
+		InvalidSelectorError;
+		expect(() => createSelector('> a').match(el)).toThrow(InvalidSelectorError);
+		expect(() => createSelector('+ a').match(el)).toThrow(InvalidSelectorError);
+		expect(() => createSelector('~ a').match(el)).toThrow(InvalidSelectorError);
 	});
 
 	it(':closest', () => {
