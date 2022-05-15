@@ -187,6 +187,16 @@ describe('selector matching', () => {
 		expect(() => createSelector('~ a').match(el)).toThrow(InvalidSelectorError);
 	});
 
+	it(':has(+ E)', () => {
+		const el = createTestElement('<figure><table></table><figcaption></figcaption></figure>', 'table');
+		expect(createSelector('table:has(+ figcaption)').match(el)).toBeTruthy();
+	});
+
+	it(':has(~ E)', () => {
+		const el = createTestElement('<figure><table></table><p></p><figcaption></figcaption></figure>', 'table');
+		expect(createSelector('table:has(~ figcaption)').match(el)).toBeTruthy();
+	});
+
 	it(':closest', () => {
 		const el = createTestElement('<table><tr><td></td></tr></table>');
 		const td = el.children[0].children[0].children[0];

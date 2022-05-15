@@ -1,12 +1,13 @@
 import type { Specificity } from './types';
 
-import parser from 'postcss-selector-parser';
+import parser, { pseudo } from 'postcss-selector-parser';
 
 import { compareSpecificity } from './compare-specificity';
 import { log as coreLog } from './debug';
 import { InvalidSelectorError } from './invalid-selector-error';
 import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is';
 
+const selLog = coreLog.extend('selector');
 const resLog = coreLog.extend('result');
 
 const caches = new Map<string, Selector>();
@@ -72,10 +73,15 @@ class Ruleset {
 	}
 
 	match(el: Node, scope: ParentNode | null): MultipleSelectorResult {
-		coreLog('%s', isElement(el) ? el.localName : el.nodeName);
+		coreLog(
+			'<%s> (%s)',
+			isElement(el) ? el.localName : el.nodeName,
+			scope ? (isElement(scope) ? scope.localName : scope.nodeName) : null,
+		);
 		return this.#selectorGroup.map(selector => {
+			selLog('"%s"', selector.selector);
 			const res = selector.match(el, scope);
-			resLog('%s => %o', selector.selector, res);
+			resLog('%s "%s" => %o', isElement(el) ? el.localName : el.nodeName, selector.selector, res);
 			return res;
 		});
 	}
@@ -95,6 +101,9 @@ class StructuredSelector {
 		this.#edge = new SelectorTarget(depth);
 		this.headCombinator =
 			this.#selector.nodes[0].type === 'combinator' ? this.#selector.nodes[0].value || null : null;
+		if (0 < depth && this.headCombinator) {
+			this.#selector.nodes.unshift(pseudo({ value: ':scope' }));
+		}
 		this.#selector.nodes.forEach(node => {
 			switch (node.type) {
 				case 'combinator': {
@@ -121,7 +130,7 @@ class StructuredSelector {
 	}
 
 	match(el: Node, scope: ParentNode | null): SelectorResult {
-		return this.#edge.match(el, scope);
+		return this.#edge.match(el, scope, 0);
 	}
 }
 
@@ -179,7 +188,22 @@ class SelectorTarget {
 		this.#combinatedFrom = { target, combinator };
 	}
 
-	match(el: Node, scope: ParentNode | null): SelectorResult {
+	match(el: Node, scope: ParentNode | null, count: number): SelectorResult {
+		const result = this._match(el, scope, count);
+		if (selLog.enabled) {
+			const nodeName = el.nodeName;
+			const selector = this.#combinatedFrom?.target.toString() || this.toString();
+			const combinator = result.combinator ? ` ${result.combinator}` : '';
+			selLog('The %s element by "%s" => %s (%d)', nodeName, `${selector}${combinator}`, result.matched, count);
+			if (selector === ':scope') {
+				selLog(`† Scope is the ${scope?.nodeName || null}`);
+			}
+		}
+		delete result.combinator;
+		return result;
+	}
+
+	_match(el: Node, scope: ParentNode | null, count: number): SelectorResult & { combinator?: string } {
 		const unitCheck = this._matchWithoutCombinateChecking(el, scope);
 		if (!unitCheck.matched) {
 			return unitCheck;
@@ -198,7 +222,7 @@ class SelectorTarget {
 				let matched = false;
 				let specificity: Specificity | void;
 				while (ancestor) {
-					const res = target.match(ancestor, scope);
+					const res = target.match(ancestor, scope, count + 1);
 					if (!specificity) {
 						specificity = [
 							unitCheck.specificity[0] + res.specificity[0],
@@ -212,7 +236,7 @@ class SelectorTarget {
 					ancestor = ancestor.parentElement;
 				}
 				if (!specificity) {
-					const res = target.match(el, scope);
+					const res = target.match(el, scope, count + 1);
 					specificity = [
 						unitCheck.specificity[0] + res.specificity[0],
 						unitCheck.specificity[1] + res.specificity[1],
@@ -220,6 +244,7 @@ class SelectorTarget {
 					];
 				}
 				return {
+					combinator: '␣',
 					specificity,
 					matched,
 				};
@@ -231,19 +256,20 @@ class SelectorTarget {
 				const parentNode = el.parentElement;
 
 				if (parentNode) {
-					const res = target.match(parentNode, scope);
+					const res = target.match(parentNode, scope, count + 1);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
 					matched = res.matched;
 				} else {
-					const res = target.match(el, scope);
+					const res = target.match(el, scope, count + 1);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
 					matched = false;
 				}
 				return {
+					combinator: '>',
 					specificity,
 					matched,
 				};
@@ -254,19 +280,20 @@ class SelectorTarget {
 				const specificity = unitCheck.specificity;
 
 				if (el.previousElementSibling) {
-					const res = target.match(el.previousElementSibling, scope);
+					const res = target.match(el.previousElementSibling, scope, count + 1);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
 					matched = res.matched;
 				} else {
-					const res = target.match(el, scope);
+					const res = target.match(el, scope, count + 1);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
 					matched = false;
 				}
 				return {
+					combinator: '+',
 					specificity,
 					matched,
 				};
@@ -277,7 +304,7 @@ class SelectorTarget {
 				let matched = false;
 				let specificity: Specificity | void;
 				while (prev) {
-					const res = target.match(prev, scope);
+					const res = target.match(prev, scope, count + 1);
 					if (!specificity) {
 						specificity = [
 							unitCheck.specificity[0] + res.specificity[0],
@@ -291,7 +318,7 @@ class SelectorTarget {
 					prev = prev.previousElementSibling;
 				}
 				if (!specificity) {
-					const res = target.match(el, scope);
+					const res = target.match(el, scope, count + 1);
 					specificity = [
 						unitCheck.specificity[0] + res.specificity[0],
 						unitCheck.specificity[1] + res.specificity[1],
@@ -299,6 +326,7 @@ class SelectorTarget {
 					];
 				}
 				return {
+					combinator: '~',
 					specificity,
 					matched,
 				};
@@ -313,6 +341,16 @@ class SelectorTarget {
 				throw new Error(`Unsupported ${this.#combinatedFrom.combinator.value} combinator in selector`);
 			}
 		}
+	}
+
+	toString() {
+		return [
+			this.tag?.value ?? '',
+			this.id.map(id => `#${id.value}`).join(''),
+			this.class.map(c => `.${c.value}`).join(''),
+			this.attr.map(attr => `[${attr.toString()}]`).join(''),
+			this.pseudo.map(pseudo => pseudo.value).join(''),
+		].join('');
 	}
 
 	_matchWithoutCombinateChecking(el: Node, scope: ParentNode | null): SelectorResult {
@@ -488,12 +526,23 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | nul
 		case ':has': {
 			const ruleset = new Ruleset(pseudo.nodes, depth + 1);
 			const specificity = getSpecificity(ruleset.match(el, scope));
-			const descendants = getDescendants(el);
-			const matched = descendants.some(desc => ruleset.match(desc, scope).some(m => m.matched));
-			return {
-				specificity,
-				matched,
-			};
+			switch (ruleset.headCombinator) {
+				case '+':
+				case '~': {
+					const matched = getSiblings(el).some(sib => ruleset.match(sib, el).some(m => m.matched));
+					return {
+						specificity,
+						matched,
+					};
+				}
+				default: {
+					const matched = getDescendants(el).some(desc => ruleset.match(desc, el).some(m => m.matched));
+					return {
+						specificity,
+						matched,
+					};
+				}
+			}
 		}
 		case ':where': {
 			const ruleset = new Ruleset(pseudo.nodes, depth + 1);
@@ -596,6 +645,10 @@ function getDescendants(el: Element, includeSelf = false): Element[] {
 			.flat(),
 		...(includeSelf ? [el] : []),
 	];
+}
+
+function getSiblings(el: Element) {
+	return Array.from(el.parentElement?.children || []);
 }
 
 function getSpecificity(result: MultipleSelectorResult) {
