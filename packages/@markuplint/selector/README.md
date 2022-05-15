@@ -23,16 +23,16 @@ Supported selectors and operators:
 | ID selector                                      | `#id`                                                                                     | ✅      |
 | Class selector                                   | `.class`                                                                                  | ✅      |
 | Attribute selector                               | `[data-attr]`                                                                             | ✅      |
-| Attribute selector, Exact match                  | `[data-attr=value]`                                                                       | ✅      |
-| Attribute selector, Include whitespace separated | `[data-attr~=value]`                                                                      | ✅      |
-| Attribute selector, Subcode match                | <code>[data-attr\|=value]</code>                                                          | ✅      |
-| Attribute selector, Partial match                | `[data-attr*=value]`                                                                      | ✅      |
-| Attribute selector, Forward match                | `[data-attr^=value]`                                                                      | ✅      |
-| Attribute selector, Backward match               | `[data-attr$=value]`                                                                      | ✅      |
+| Attribute selector, Exact match                  | `[data-attr=value]` `[data-attr=value i]`                                                 | ✅      |
+| Attribute selector, Include whitespace separated | `[data-attr~=value]` `[data-attr~=value i]`                                               | ✅      |
+| Attribute selector, Subcode match                | <code>[data-attr\|=value]</code> <code>[data-attr\|=value i]</code>                       | ✅      |
+| Attribute selector, Partial match                | `[data-attr*=value]` `[data-attr*=value i]`                                               | ✅      |
+| Attribute selector, Forward match                | `[data-attr^=value]` `[data-attr^=value i]`                                               | ✅      |
+| Attribute selector, Backward match               | `[data-attr$=value]` `[data-attr$=value i]`                                               | ✅      |
 | Negation pseudo-class                            | `:not(div)`                                                                               | ✅      |
 | Matches-Any pseudo-class                         | `:is(div)`                                                                                | ✅      |
 | Specificity-adjustment pseudo-class              | `:where(div)`                                                                             | ✅      |
-| Relational pseudo-class                          | `:has(div)` `:has(> div)`                                                                 | ✅      |
+| Relational pseudo-class                          | `:has(div)` `:has(> div)` `:has(+ div)` `:has(~ div)`                                     | ✅      |
 | Directionality pseudo-class                      | `:dir(ltr)`                                                                               | ❌      |
 | Language pseudo-class                            | `:lang(en)`                                                                               | ❌      |
 | Hyperlink pseudo-class                           | `:any-link`                                                                               | ❌      |
@@ -64,9 +64,9 @@ Supported selectors and operators:
 | Nth-col pseudo-class                             | `:nth-col(2)` `:nth-last-col(2)`                                                          | ❌      |
 | Pseudo elements                                  | `::before` `::after`                                                                      | ❌      |
 | Descendant combinator                            | `div span`                                                                                | ✅      |
-| Child combinator                                 | `div > span`                                                                              | ✅      |
-| Next-sibling combinator                          | `div + span`                                                                              | ✅      |
-| Subsequent-sibling combinator                    | `div ~ span`                                                                              | ✅      |
+| Child combinator                                 | `div > span` (`:has(> span)`)                                                             | ✅      |
+| Next-sibling combinator                          | `div + span` (`:has(+ span)`)                                                             | ✅      |
+| Subsequent-sibling combinator                    | `div ~ span` (`:has(~ span)`)                                                             | ✅      |
 | Column combinator                                | <code>div \|\| span</code>                                                                | ❌      |
 | Multiple selectors                               | `div, span`                                                                               | ✅      |
 
