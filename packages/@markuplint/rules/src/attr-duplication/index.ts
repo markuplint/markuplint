@@ -3,7 +3,7 @@ import { createRule } from '@markuplint/ml-core';
 export default createRule({
 	async verify({ document, report, t }) {
 		const message = t('{0} is {1:c}', t('the {0}', 'attribute name'), 'duplicated');
-		await document.walkOn('Element', async node => {
+		await document.walkOn('Element', node => {
 			const attrNameStack: string[] = [];
 			for (const attr of node.attributes) {
 				if (attr.isDuplicatable) {

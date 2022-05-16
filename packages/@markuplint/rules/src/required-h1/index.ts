@@ -23,7 +23,7 @@ export default createRule<boolean, Options>({
 			return;
 		}
 
-		await document.walkOn('Element', async node => {
+		await document.walkOn('Element', node => {
 			if (node.nodeName.toLowerCase() === 'h1') {
 				h1Stack.push(node);
 			}

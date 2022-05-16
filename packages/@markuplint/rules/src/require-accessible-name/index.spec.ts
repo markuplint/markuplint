@@ -150,6 +150,18 @@ test('The accessible name may be mutable', async () => {
 	).toStrictEqual([]);
 });
 
+test('The accessible name may be mutable', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<template><button>{{label}}</button></template>', {
+				parser: {
+					'.*': '@markuplint/vue-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([]);
+});
+
 test('has comment', async () => {
 	expect(
 		(
