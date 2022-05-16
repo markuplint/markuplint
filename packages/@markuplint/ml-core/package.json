@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-core",
-	"version": "2.3.1",
+	"version": "2.3.2",
 	"description": "The core module of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -28,7 +28,7 @@
 		"tslib": "^2.3.1"
 	},
 	"devDependencies": {
-		"@markuplint/html-parser": "2.2.0",
+		"@markuplint/html-parser": "2.2.1",
 		"@types/debug": "^4.1.7"
 	}
 }
