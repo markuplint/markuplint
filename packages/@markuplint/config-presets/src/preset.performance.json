@@ -1,0 +1,70 @@
+{
+	"nodeRules": [
+		{
+			/**
+			 * Require `charset=UTF-8`
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/semantics.html#charset
+			 */
+			"selector": ":where(head)",
+			"rules": {
+				"required-element": ["meta[charset=\"UTF-8\" i]"]
+			}
+		},
+		{
+			/**
+			 * Require `defer` attr
+			 *
+			 * Should load and parse scripts lazily to avoid render-blocking.
+			 */
+			"selector": ":where(script[src]:not([type=module]))",
+			"rules": {
+				"required-attr": ["defer"]
+			}
+		},
+		{
+			/**
+			 * Require **aspect-ratio**
+			 *
+			 * Require `width` and `height` attr with `<img>` to avoid **Cumulative Layout Shift**
+			 */
+			"selector": ":where(img[src])",
+			"rules": {
+				"required-attr": ["width", "height"]
+			}
+		},
+		{
+			/**
+			 * Require async decoding image
+			 *
+			 * Require `decoding=async` with `<img>` to avoid render-blocking.
+			 */
+			"selector": ":where(img[src][width][height])",
+			"rules": {
+				"required-attr": [
+					{
+						"name": "decoding",
+						"value": "async"
+					}
+				]
+			}
+		},
+		{
+			/**
+			 * Require loading `<iframe>` lazily
+			 *
+			 * Require `loading=lazy` with `<iframe>` to avoid render-blocking that causes loading if its element is out of the viewport.
+			 */
+			"selector": ":where(iframe)",
+			"rules": {
+				"required-attr": [
+					"title",
+					{
+						"name": "loading",
+						"value": "lazy"
+					}
+				]
+			}
+		}
+	]
+}

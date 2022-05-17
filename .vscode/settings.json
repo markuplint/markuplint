@@ -14,7 +14,8 @@
 	],
 	"files.associations": {
 		".markuplintrc": "jsonc",
-		"*.schema.json": "jsonc"
+		"*.schema.json": "jsonc",
+		"preset.*.json": "jsonc"
 	},
 	"json.schemas": [
 		{
@@ -22,7 +23,11 @@
 			"url": "http://json-schema.org/draft-07/schema#"
 		},
 		{
-			"fileMatch": ["/**/*.markuplintrc", "/**/markuplint-*.json"],
+			"fileMatch": [
+				"/**/*.markuplintrc",
+				"/**/markuplint-*.json",
+				"/packages/@markuplint/config-presets/src/*.json"
+			],
 			"url": "https://raw.githubusercontent.com/markuplint/markuplint/main/config.schema.json"
 		},
 		{
