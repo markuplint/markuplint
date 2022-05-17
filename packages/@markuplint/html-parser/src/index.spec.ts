@@ -252,6 +252,78 @@ describe('parser', () => {
 		]);
 	});
 
+	it('<head><title>TITLE</title></head>', () => {
+		const doc = parse('<head><title>TITLE</title></head>');
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:7](0,6)head: <head>',
+			'[1:7]>[1:14](6,13)title: <title>',
+			'[1:14]>[1:19](13,18)#text: TITLE',
+			'[1:19]>[1:27](18,26)title: </title>',
+			'[1:27]>[1:34](26,33)head: </head>',
+		]);
+	});
+
+	it('<body><p>TEXT</p></body>', () => {
+		const doc = parse('<body><p>TEXT</p></body>');
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:7](0,6)body: <body>',
+			'[1:7]>[1:10](6,9)p: <p>',
+			'[1:10]>[1:14](9,13)#text: TEXT',
+			'[1:14]>[1:18](13,17)p: </p>',
+			'[1:18]>[1:25](17,24)body: </body>',
+		]);
+	});
+
+	it('<head><title>TITLE</title></head><body><p>TEXT</p></body>', () => {
+		const doc = parse('<head><title>TITLE</title></head><body><p>TEXT</p></body>');
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:7](0,6)head: <head>',
+			'[1:7]>[1:14](6,13)title: <title>',
+			'[1:14]>[1:19](13,18)#text: TITLE',
+			'[1:19]>[1:27](18,26)title: </title>',
+			'[1:27]>[1:34](26,33)head: </head>',
+			'[1:34]>[1:40](33,39)body: <body>',
+			'[1:40]>[1:43](39,42)p: <p>',
+			'[1:43]>[1:47](42,46)#text: TEXT',
+			'[1:47]>[1:51](46,50)p: </p>',
+			'[1:51]>[1:58](50,57)body: </body>',
+		]);
+	});
+
+	it('<head><title>TITLE</title>', () => {
+		const doc = parse('<head><title>TITLE</title>');
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:7](0,6)head: <head>',
+			'[1:7]>[1:14](6,13)title: <title>',
+			'[1:14]>[1:19](13,18)#text: TITLE',
+			'[1:19]>[1:27](18,26)title: </title>',
+		]);
+	});
+
+	it('<body><p>TEXT</p>', () => {
+		const doc = parse('<body><p>TEXT</p>');
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:7](0,6)body: <body>',
+			'[1:7]>[1:10](6,9)p: <p>',
+			'[1:10]>[1:14](9,13)#text: TEXT',
+			'[1:14]>[1:18](13,17)p: </p>',
+		]);
+	});
+
+	it('<head><title>TITLE</title><body><p>TEXT</p>', () => {
+		const doc = parse('<head><title>TITLE</title><body><p>TEXT</p>');
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:7](0,6)head: <head>',
+			'[1:7]>[1:14](6,13)title: <title>',
+			'[1:14]>[1:19](13,18)#text: TITLE',
+			'[1:19]>[1:27](18,26)title: </title>',
+			'[1:27]>[1:33](26,32)body: <body>',
+			'[1:33]>[1:36](32,35)p: <p>',
+			'[1:36]>[1:40](35,39)#text: TEXT',
+			'[1:40]>[1:44](39,43)p: </p>',
+		]);
+	});
+
 	it('standard code', () => {
 		const doc = parse(`
 	<!DOCTYPE html>
