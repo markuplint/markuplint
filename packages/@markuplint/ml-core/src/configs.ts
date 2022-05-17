@@ -1,11 +1,6 @@
 import type { Config } from '@markuplint/ml-config';
 
-export const configs: Record<string, Config> = {
-	recommended: require('../markuplint-recommended.json'),
-
-	// For test
-	___test: {
-		// @ts-ignore
-		___configs: 'test',
-	},
-};
+export async function getPreset(name: string): Promise<Config> {
+	const json = await import(`@markuplint/config-presets/${name}.json`);
+	return json.default as Config;
+}
