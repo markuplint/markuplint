@@ -1,0 +1,10 @@
+{
+	"extends": [
+		"markuplint:code-style",
+		"markuplint:html-standard",
+		"markuplint:a11y",
+		"markuplint:performance",
+		"markuplint:security",
+		"markuplint:rdfa"
+	]
+}

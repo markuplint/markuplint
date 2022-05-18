@@ -17,6 +17,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
+		"@markuplint/config-presets": "3.0.0-alpha",
 		"@markuplint/i18n": "2.1.1",
 		"@markuplint/ml-ast": "2.0.1-dev.20220307.0",
 		"@markuplint/ml-config": "2.1.0",

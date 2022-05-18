@@ -1,0 +1,153 @@
+{
+	"rules": {
+		"disallowed-element": [
+			/**
+			 * Disallow `<hgroup>`
+			 *
+			 * The hgroup element should not be used because no assistive technology supports it.
+			 *
+			 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup
+			 */
+			"hgroup"
+		],
+
+		/**
+		 * Must not duplicate **ID**
+		 *
+		 * Be able to avoid problems in assistive technologies from the viewpoint of machine readability.
+		 *
+		 * @see https://www.w3.org/WAI/WCAG21/Techniques/html/H93.html
+		 */
+		"id-duplication": true,
+
+		"invalid-attr": {
+			"option": {
+				"attrs": {
+					/**
+					 * Disallow `autofocus` attr
+					 *
+					 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations
+					 */
+					"autofocus": {
+						"disallowed": true
+					},
+
+					/**
+					 * Disallow `autofocus` attr
+					 *
+					 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey#accessibility_concerns
+					 */
+					"accesskey": {
+						"disallowed": true
+					},
+
+					/**
+					 * `tabindex` attr only `-1` or `0`
+					 *
+					 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns
+					 */
+					"tabindex": {
+						"enum": ["-1", "0"]
+					}
+				}
+			}
+		},
+
+		/**
+		 * Use **landmark**
+		 *
+		 * @see https://www.w3.org/TR/wai-aria-practices/examples/landmarks/
+		 */
+		"landmark-roles": true,
+
+		/**
+		 * No refer to no existent **ID**
+		 */
+		"no-refer-to-non-existent-id": true,
+
+		/**
+		 * Require **accessible name**
+		 */
+		"require-accessible-name": true,
+
+		/**
+		 * Require `<h1>`
+		 *
+		 */
+		"required-h1": true,
+
+		/**
+		 * Use `<ul>`
+		 *
+		 */
+		"use-list": true,
+
+		/**
+		 * Conform to **WAI-ARIA**
+		 *
+		 */
+		"wai-aria": true
+	},
+	"nodeRules": [
+		{
+			"selector": ":where(html)",
+			"rules": {
+				/**
+				 * Require `<html lang>`
+				 *
+				 */
+				"required-attr": ["lang"]
+			}
+		},
+		{
+			"selector": ":where(abbr)",
+			"rules": {
+				/**
+				 * Require `<abbr title>`
+				 */
+				"required-attr": ["title"]
+			}
+		},
+		{
+			"selector": ":where(video, audio)",
+			"rules": {
+				/**
+				 * Require `<track>`
+				 *
+				 */
+				"required-element": ["track"]
+			}
+		},
+		{
+			"selector": ":where(video[autoplay])",
+			"rules": {
+				/**
+				 * Require `<video muted>`
+				 *
+				 */
+				"required-attr": ["muted"]
+			}
+		},
+		{
+			/**
+			 * No merge cells
+			 *
+			 */
+			"selector": ":where(th, td)",
+			"rules": {
+				"invalid-attr": {
+					"option": {
+						"attrs": {
+							"colspan": {
+								"disallowed": true
+							},
+							"rowspan": {
+								"disallowed": true
+							}
+						}
+					}
+				}
+			}
+		}
+	]
+}

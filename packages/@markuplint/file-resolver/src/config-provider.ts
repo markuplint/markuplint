@@ -5,7 +5,7 @@ import type { Config } from '@markuplint/ml-config';
 import path from 'path';
 
 import { mergeConfig } from '@markuplint/ml-config';
-import { configs } from '@markuplint/ml-core';
+import { getPreset } from '@markuplint/ml-core';
 
 import { load as loadConfig, search } from './cosmiconfig';
 import { resolvePlugins } from './resolve-plugins';
@@ -57,7 +57,7 @@ export class ConfigProvider {
 
 		if (this.#held.size) {
 			const extendHelds = Array.from(this.#held.values());
-			extendHelds.forEach(held => {
+			for (const held of extendHelds) {
 				const [, prefix, namespace, name] = held.match(/^([a-z]+:)([^/]+)(?:\/(.+))?$/) || [];
 
 				switch (prefix) {
@@ -70,14 +70,14 @@ export class ConfigProvider {
 						break;
 					}
 					case 'markuplint:': {
-						const config = configs[namespace];
+						const config = await getPreset(namespace);
 						if (config) {
 							this.set(config, held);
 						}
 						break;
 					}
 				}
-			});
+			}
 
 			configSet = await this._mergeConfigs([...keys, ...extendHelds]);
 
