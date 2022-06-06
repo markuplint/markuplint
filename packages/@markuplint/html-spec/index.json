@@ -17823,14 +17823,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/a",
 			"categories": ["#SVGContainer"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elementsShape elementsStructural elementsGradient elements<a>, <altGlyphDef>, <clipPath>, <color-profile>, <cursor>, <filter>, <font>, <font-face>, <foreignObject>, <image>, <marker>, <mask>, <pattern>, <script>, <style>, <switch>, <text>, <view>",
 				"tag": "a",
@@ -17855,6 +17847,14 @@
 						"ignore": "svg:a"
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -17985,6 +17985,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "altGlyph",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -17992,11 +17997,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "altGlyph",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -18008,6 +18008,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "altGlyphDef",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -18015,11 +18020,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "altGlyphDef",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -18031,6 +18031,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "altGlyphItem",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -18038,11 +18043,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "altGlyphItem",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -18054,14 +18054,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animate",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "animate",
@@ -18070,6 +18062,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:script"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18171,6 +18171,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "animateColor",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -18178,11 +18183,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "animateColor",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -18194,14 +18194,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateMotion",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "animateMotion",
@@ -18227,6 +18219,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18278,14 +18278,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateTransform",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "animateTransform",
@@ -18294,6 +18286,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:script"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18333,14 +18333,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/circle",
 			"categories": ["#SVGGraphics", "#SVGShape"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elements",
 				"tag": "circle",
@@ -18358,6 +18350,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18464,14 +18464,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/clipPath",
 			"categories": ["#SVGNone"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elementsShape elements<text>, <use>",
 				"tag": "clipPath",
@@ -18487,6 +18479,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18582,6 +18582,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "cursor",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -18589,11 +18594,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "cursor",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -18605,14 +18605,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/defs",
 			"categories": ["#SVGContainer", "#SVGStructural"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elementsShape elementsStructural elementsGradient elements<a>, <altGlyphDef>, <clipPath>, <color-profile>, <cursor>, <filter>, <font>, <font-face>, <foreignObject>, <image>, <marker>, <mask>, <pattern>, <script>, <style>, <switch>, <text>, <view>",
 				"tag": "defs",
@@ -18639,6 +18631,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18723,14 +18723,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/desc",
 			"categories": ["#SVGDescriptive"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any elements or character data",
 				"tag": "desc",
@@ -18739,6 +18731,14 @@
 						"require": ["#SVGOtherXMLNamespace", "#text"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18753,14 +18753,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/discard",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "discard",
@@ -18769,6 +18761,14 @@
 						"require": ["#SVGDescriptive", "svg:script"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18793,14 +18793,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/ellipse",
 			"categories": ["#SVGGraphics", "#SVGShape"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elements",
 				"tag": "ellipse",
@@ -18818,6 +18810,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18928,14 +18928,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feBlend",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feBlend",
@@ -18944,6 +18936,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19052,14 +19052,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feColorMatrix",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feColorMatrix",
@@ -19068,6 +19060,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19165,14 +19165,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feComponentTransfer",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feComponentTransfer",
@@ -19188,6 +19180,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19271,14 +19271,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feComposite",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feComposite",
@@ -19287,6 +19279,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19426,14 +19426,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feConvolveMatrix",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feConvolveMatrix",
@@ -19442,6 +19434,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19582,14 +19582,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDiffuseLighting",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feDiffuseLighting",
@@ -19615,6 +19607,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19717,14 +19717,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDisplacementMap",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feDisplacementMap",
@@ -19733,6 +19725,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19859,14 +19859,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDistantLight",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feDistantLight",
@@ -19875,6 +19867,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19900,14 +19900,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDropShadow",
 			"categories": ["#SVGFilterPrimitive"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:<animate>, <script>, <set>",
 				"tag": "feDropShadow",
@@ -19916,6 +19908,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20021,14 +20021,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFlood",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feDropShadow",
@@ -20037,6 +20029,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20131,14 +20131,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFuncA",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feFuncA",
@@ -20147,6 +20139,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20168,14 +20168,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFuncB",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feFuncB",
@@ -20184,6 +20176,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20205,14 +20205,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFuncG",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feFuncB",
@@ -20221,6 +20213,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20242,14 +20242,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFuncR",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feFuncR",
@@ -20258,6 +20250,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20279,14 +20279,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feGaussianBlur",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feGaussianBlur",
@@ -20295,6 +20287,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20393,14 +20393,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feImage",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feImage",
@@ -20415,6 +20407,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20531,14 +20531,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feMerge",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feMerge",
@@ -20547,6 +20539,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:feMergeNode", "svg:script"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20630,14 +20630,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feMergeNode",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feMergeNode",
@@ -20646,6 +20638,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20659,14 +20659,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feMorphology",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feMorphology",
@@ -20675,6 +20667,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20774,14 +20774,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feOffset",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feOffset",
@@ -20790,6 +20782,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20886,14 +20886,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/fePointLight",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "fePointLight",
@@ -20902,6 +20894,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20933,14 +20933,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feSpecularLighting",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feSpecularLighting",
@@ -20966,6 +20958,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21073,14 +21073,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feSpotLight",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feSpotLight",
@@ -21089,6 +21081,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21149,14 +21149,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTile",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feTile",
@@ -21165,6 +21157,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21248,14 +21248,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTurbulence",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "feTurbulence",
@@ -21264,6 +21256,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21383,14 +21383,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/filter",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "filter",
@@ -21399,6 +21391,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "#SVGFilterPrimitive", "svg:animate", "svg:script", "svg:set"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21530,6 +21530,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "font",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -21537,11 +21542,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "font",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -21553,6 +21553,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "font-face",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -21560,11 +21565,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "font-face",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -21576,6 +21576,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "font-face-format",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -21583,11 +21588,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "font-face-format",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -21599,6 +21599,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "font-face-name",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -21606,11 +21611,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "font-face-name",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -21622,6 +21622,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "font-face-src",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -21629,11 +21634,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "font-face-src",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -21645,6 +21645,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "font-face-uri",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -21652,11 +21657,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "font-face-uri",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -21668,18 +21668,18 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject",
 			"categories": ["#SVGNone"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
+			"permittedStructures": {
+				"summary": "Any elements or character data",
+				"tag": "foreignObject",
+				"contents": true
 			},
 			"implicitRole": {
 				"summary": "WIP",
 				"role": false
 			},
-			"permittedStructures": {
-				"summary": "Any elements or character data",
-				"tag": "foreignObject",
-				"contents": true
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21784,14 +21784,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/g",
 			"categories": ["#SVGContainer", "#SVGStructural"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elementsShape elementsStructural elementsGradient elements<a>, <altGlyphDef>, <clipPath>, <color-profile>, <cursor>, <filter>, <font>, <font-face>, <foreignObject>, <image>, <marker>, <mask>, <pattern>, <script>, <style>, <switch>, <text>, <view>",
 				"tag": "g",
@@ -21818,6 +21810,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21905,6 +21905,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "glyph",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -21912,11 +21917,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "glyph",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -21928,6 +21928,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "glyphRef",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -21935,11 +21940,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "glyphRef",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -21951,6 +21951,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "hkern",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -21958,11 +21963,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "hkern",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -21974,14 +21974,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/image",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "image",
@@ -21997,6 +21989,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22108,14 +22108,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/line",
 			"categories": ["#SVGGraphics", "#SVGShape"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elements",
 				"tag": "line",
@@ -22133,6 +22125,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22255,14 +22255,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/linearGradient",
 			"categories": ["#SVGGradient"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Descriptive elements<animate>, <animateTransform>, <set>, <stop>",
 				"tag": "linearGradient",
@@ -22279,6 +22271,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22427,14 +22427,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/marker",
 			"categories": ["#SVGContainer"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elementsShape elementsStructural elementsGradient elements<a>, <altGlyphDef>, <clipPath>, <color-profile>, <cursor>, <filter>, <font>, <font-face>, <foreignObject>, <image>, <marker>, <mask>, <pattern>, <script>, <style>, <switch>, <text>, <view>",
 				"tag": "marker",
@@ -22461,6 +22453,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22624,14 +22624,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mask",
 			"categories": ["#SVGContainer"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elementsShape elementsStructural elementsGradient elements<a>, <altGlyphDef>, <clipPath>, <color-profile>, <cursor>, <filter>, <font>, <font-face>, <foreignObject>, <image>, <marker>, <mask>, <pattern>, <script>, <style>, <switch>, <text>, <view>",
 				"tag": "marker",
@@ -22664,6 +22656,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22773,14 +22773,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/metadata",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "metadata",
@@ -22789,6 +22781,14 @@
 						"zeroOrMore": ["#SVGOtherXMLNamespace", "#text"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22803,6 +22803,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "missing-glyph",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -22810,11 +22815,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "missing-glyph",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -22826,14 +22826,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mpath",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "mpath",
@@ -22842,6 +22834,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:script"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22861,14 +22861,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/path",
 			"categories": ["#SVGGraphics", "#SVGShape"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elements",
 				"tag": "path",
@@ -22886,6 +22878,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22985,14 +22985,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/pattern",
 			"categories": ["#SVGContainer"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elementsShape elementsStructural elementsGradient elements<a>, <altGlyphDef>, <clipPath>, <color-profile>, <cursor>, <filter>, <font>, <font-face>, <foreignObject>, <image>, <marker>, <mask>, <pattern>, <script>, <style>, <switch>, <text>, <view>",
 				"tag": "pattern",
@@ -23019,6 +23011,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23164,14 +23164,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/polygon",
 			"categories": ["#SVGGraphics", "#SVGShape"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elements",
 				"tag": "polygon",
@@ -23189,6 +23181,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23289,14 +23289,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/polyline",
 			"categories": ["#SVGGraphics", "#SVGShape"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elements",
 				"tag": "polyline",
@@ -23314,6 +23306,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23414,14 +23414,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/radialGradient",
 			"categories": ["#SVGGradient"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Descriptive elements<animate>, <animateTransform>, <set>, <stop>",
 				"tag": "radialGradient",
@@ -23438,6 +23430,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23598,14 +23598,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect",
 			"categories": ["#SVGGraphics", "#SVGShape"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elements",
 				"tag": "rect",
@@ -23623,6 +23615,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23741,14 +23741,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/script",
 			"categories": ["#SVGNone"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any elements or character data",
 				"tag": "script",
@@ -23757,6 +23749,14 @@
 						"zeroOrMore": ["#SVGOtherXMLNamespace", "#text"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23796,14 +23796,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/set",
 			"categories": ["#SVGAnimation"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Descriptive elements",
 				"tag": "set",
@@ -23812,6 +23804,14 @@
 						"zeroOrMore": ["#SVGDescriptive", "svg:script"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23848,14 +23848,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/stop",
 			"categories": ["#SVGGradient"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:<animate>, <animateColor>, <set>",
 				"tag": "stop",
@@ -23864,6 +23856,14 @@
 						"zeroOrMore": ["svg:animate", "svg:animateColor", "svg:script", "svg:set", "svg:style"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23970,14 +23970,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/style",
 			"categories": ["#SVGNone"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any elements or character data",
 				"tag": "style",
@@ -23986,6 +23978,14 @@
 						"zeroOrMore": "#text"
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -24018,14 +24018,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg",
 			"categories": ["#SVGContainer", "#SVGStructural"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elementsShape elementsStructural elementsGradient elements<a>, <altGlyphDef>, <clipPath>, <color-profile>, <cursor>, <filter>, <font>, <font-face>, <foreignObject>, <image>, <marker>, <mask>, <pattern>, <script>, <style>, <switch>, <text>, <view>",
 				"tag": "svg",
@@ -24056,6 +24048,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -24204,14 +24204,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/switch",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "switch",
@@ -24231,6 +24223,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -24318,14 +24318,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/symbol",
 			"categories": ["#SVGContainer", "#SVGStructural"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elementsShape elementsStructural elementsGradient elements<a>, <altGlyphDef>, <clipPath>, <color-profile>, <cursor>, <filter>, <font>, <font-face>, <foreignObject>, <image>, <marker>, <mask>, <pattern>, <script>, <style>, <switch>, <text>, <view>",
 				"tag": "symbol",
@@ -24352,6 +24344,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -24417,14 +24417,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/text",
 			"categories": ["#SVGGraphics", "#SVGTextContent"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Character data and any number of the following elements, in any order:Animation elementsDescriptive elementsText content child elements<a>",
 				"tag": "text",
@@ -24445,6 +24437,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -24581,14 +24581,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/textPath",
 			"categories": ["#SVGTextContent", "#SVGTextContentChild"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Character data and any number of the following elements, in any order:Descriptive elements<a>, <altGlyph>, <animate>, <animateColor>, <set>, <tref>, <tspan>",
 				"tag": "textPath",
@@ -24610,6 +24602,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -24763,14 +24763,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/title",
 			"categories": ["#SVGDescriptive"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any elements or character data",
 				"tag": "title",
@@ -24779,6 +24771,14 @@
 						"zeroOrMore": ["#SVGOtherXMLNamespace", "#text"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -24793,6 +24793,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "tref",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -24800,11 +24805,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "tref",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},
@@ -24816,14 +24816,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/tspan",
 			"categories": ["#SVGTextContent", "#SVGTextContentChild"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Character data and any number of the following elements, in any order:Descriptive elements<a>, <altGlyph>, <animate>, <animateColor>, <set>, <tref>, <tspan>",
 				"tag": "tspan",
@@ -24841,6 +24833,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -24975,14 +24975,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use",
 			"categories": ["#SVGGraphics", "#SVGGraphicsReferencing", "#SVGStructural"],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "Any number of the following elements, in any order:Animation elementsDescriptive elements",
 				"tag": "use",
@@ -24998,6 +24990,14 @@
 						]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -25111,14 +25111,6 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/view",
 			"categories": [],
-			"permittedRoles": {
-				"summary": "WIP",
-				"roles": []
-			},
-			"implicitRole": {
-				"summary": "WIP",
-				"role": false
-			},
 			"permittedStructures": {
 				"summary": "",
 				"tag": "view",
@@ -25127,6 +25119,14 @@
 						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "svg:script", "svg:style"]
 					}
 				]
+			},
+			"implicitRole": {
+				"summary": "WIP",
+				"role": false
+			},
+			"permittedRoles": {
+				"summary": "WIP",
+				"roles": []
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -25165,6 +25165,11 @@
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements",
 			"categories": [],
+			"permittedStructures": {
+				"summary": "",
+				"tag": "vkern",
+				"contents": false
+			},
 			"permittedRoles": {
 				"summary": "",
 				"roles": []
@@ -25172,11 +25177,6 @@
 			"implicitRole": {
 				"summary": "",
 				"role": false
-			},
-			"permittedStructures": {
-				"summary": "",
-				"tag": "vkern",
-				"contents": false
 			},
 			"omittion": false,
 			"globalAttrs": {},

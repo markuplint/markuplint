@@ -26,6 +26,11 @@ export async function getSVG() {
 			namespace: 'http://www.w3.org/2000/svg',
 			cite: 'https://developer.mozilla.org/en-US/docs/Web/SVG/Element#obsolete_and_deprecated_elements',
 			categories: [],
+			permittedStructures: {
+				summary: '',
+				tag: name,
+				contents: false,
+			},
 			permittedRoles: {
 				summary: '',
 				roles: [],
@@ -33,11 +38,6 @@ export async function getSVG() {
 			implicitRole: {
 				summary: '',
 				role: false,
-			},
-			permittedStructures: {
-				summary: '',
-				tag: name,
-				contents: false,
 			},
 			omittion: false,
 			globalAttrs: {},
@@ -156,17 +156,17 @@ async function getSVGElement({ name, url }: { name: string; url: string | null }
 		namespace: 'http://www.w3.org/2000/svg',
 		cite: url,
 		categories: categories,
-		permittedRoles: {
-			summary: 'WIP',
-			roles: [],
+		permittedStructures: {
+			summary: permittedStructuresSummary,
+			...structures,
 		},
 		implicitRole: {
 			summary: 'WIP',
 			role: false,
 		},
-		permittedStructures: {
-			summary: permittedStructuresSummary,
-			...structures,
+		permittedRoles: {
+			summary: 'WIP',
+			roles: [],
 		},
 		omittion: false,
 		globalAttrs: global || {},
