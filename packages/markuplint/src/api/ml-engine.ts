@@ -302,6 +302,6 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 
 		this.emit('log', 'update:core', this.#file.path);
 		this.#core?.update(fabric);
-		this.exec();
+		await this.exec();
 	}
 }
