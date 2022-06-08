@@ -99,8 +99,10 @@ describe('getPermittedRoles', () => {
 	});
 
 	test('the figure element', () => {
-		expect(getPermittedRoles(specs, createTestElement('<figure></figure>')!)).toStrictEqual(['figure']);
-		expect(getPermittedRoles(specs, createTestElement('<figure><figcaption></figcaption></figure>')!)).toBe(true);
+		expect(getPermittedRoles(specs, createTestElement('<figure></figure>')!)).toBe(true);
+		expect(
+			getPermittedRoles(specs, createTestElement('<figure><figcaption></figcaption></figure>')!),
+		).toStrictEqual(['figure']);
 	});
 
 	test('the img element', () => {

@@ -309,3 +309,10 @@ test('audio in audio / Duplicate capture group name', () => {
 		'^(?<NAD_02_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_03>(?<NAD_00_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01>(?:<[^>]+>)?))*)))*)$',
 	);
 });
+
+test('svg', () => {
+	const expGen = new ExpGenerator(0);
+	expect(expGen.specToRegExp(htmlSpec(specs, 'svg:svg')!.contentModel.contents).source).toEqual(
+		'^(?:<svg:animate>|<svg:animateColor>|<svg:animateMotion>|<svg:animateTransform>|<svg:discard>|<svg:mpath>|<svg:set>|<svg:desc>|<svg:metadata>|<svg:title>|<svg:linearGradient>|<svg:pattern>|<svg:radialGradient>|<svg:solidcolor>|<svg:circle>|<svg:ellipse>|<svg:line>|<svg:path>|<svg:polygon>|<svg:polyline>|<svg:rect>|<svg:defs>|<svg:g>|<svg:svg>|<svg:symbol>|<svg:use>|<svg:a>|<svg:clipPath>|<svg:filter>|<svg:foreignObject>|<svg:image>|<svg:marker>|<svg:mask>|<svg:script>|<svg:style>|<svg:switch>|<svg:text>|<svg:view>|<video>|<audio>|<iframe>|<canvas>)*$',
+	);
+});

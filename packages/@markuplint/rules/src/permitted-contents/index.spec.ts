@@ -667,6 +667,27 @@ describe('verify', () => {
 		]);
 	});
 
+	test('The SVG <image> element and the HTML obsolete <image> element', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<svg><g><image width="100" height="100" xlink:href="path/to"/></g></svg>',
+		);
+		const { violations: violations2 } = await mlRuleTest(
+			rule,
+			'<div><span><image width="100" height="100" xlink:href="path/to"/></span></div>',
+		);
+		expect(violations).toStrictEqual([]);
+		expect(violations2).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 6,
+				raw: '<span>',
+				message: 'The content of the "span" element is invalid according to the HTML specification',
+			},
+		]);
+	});
+
 	test('Custom element', async () => {
 		const o = {
 			rule: [
