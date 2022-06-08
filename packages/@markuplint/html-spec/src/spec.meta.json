@@ -1,0 +1,60 @@
+// https://html.spec.whatwg.org/multipage/semantics.html#the-meta-element
+// https://www.w3.org/TR/html-aria/#el-meta
+{
+	"contentModel": {
+		"contents": false
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["media"]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/semantics.html#the-meta-element:names:-the-itemprop-attribute-5
+		"itemprop": {
+			"requiredEither": ["name", "http-equiv", "charset"],
+			"condition": [":not([name])", ":not([http-equiv])", ":not([charset])"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-name
+		"name": {
+			"type": "Any",
+			"requiredEither": ["itemprop", "http-equiv", "charset"],
+			"condition": [":not([itemprop])", ":not([http-equiv])", ":not([charset])"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv
+		"http-equiv": {
+			"type": {
+				"enum": ["content-type", "default-style", "refresh", "x-ua-compatible", "content-security-policy"]
+			},
+			"requiredEither": ["itemprop", "name", "charset"],
+			"condition": [":not([itemprop])", ":not([name])", ":not([charset])"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-content
+		"content": {
+			"type": "Any",
+			"required": ["[name]", "[http-equiv]", "[itemprop]"],
+			"condition": ["[name]", "[http-equiv]", "[itemprop]"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset
+		"charset": {
+			"type": {
+				"enum": ["utf-8"],
+				"caseInsensitive": true
+			},
+			"condition": [":not([itemprop])", ":not([name])", ":not([http-equiv])"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-media
+		"media": {
+			"condition": "[name='theme-color']"
+		}
+	},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": false,
+		"properties": false
+	}
+}

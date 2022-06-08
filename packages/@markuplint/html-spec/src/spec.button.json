@@ -1,0 +1,58 @@
+// https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element
+// https://www.w3.org/TR/html-aria/#el-button
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#phrasing",
+				"notAllowedDescendants": ["#interactive"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": [
+			"disabled",
+			"form",
+			"formaction",
+			"formenctype",
+			"formmethod",
+			"formnovalidate",
+			"formtarget",
+			"name"
+		]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-type
+		"type": {
+			"type": {
+				"enum": ["submit", "reset", "button"],
+				"invalidValueDefault": "submit",
+				"missingValueDefault": "submit"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-value
+		"value": {
+			"type": "Any"
+		}
+	},
+	"implicitRole": {
+		"role": "button"
+	},
+	"permittedRoles": {
+		"roles": [
+			"checkbox",
+			"link",
+			"menuitem",
+			"menuitemcheckbox",
+			"menuitemradio",
+			"option",
+			"radio",
+			"switch",
+			"tab"
+		]
+	}
+}

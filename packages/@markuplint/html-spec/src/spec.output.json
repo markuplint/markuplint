@@ -1,0 +1,30 @@
+// https://html.spec.whatwg.org/multipage/form-elements.html#the-output-element
+// https://www.w3.org/TR/html-aria/#el-output
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#phrasing"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": ["form", "name"]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-output-for
+		"for": {
+			"type": "DOMID"
+		}
+	},
+	"implicitRole": {
+		"role": "status"
+	},
+	"permittedRoles": {
+		"roles": false
+	}
+}

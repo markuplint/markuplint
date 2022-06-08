@@ -1,0 +1,73 @@
+// https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element
+// https://www.w3.org/TR/html-aria/#el-select
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": ["option", "optgroup"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": ["autocomplete", "disabled", "form", "name", "required"]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-select-multiple
+		"multiple": {
+			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-select-size
+		"size": {
+			"type": {
+				"type": "integer",
+				"gt": 0
+			}
+		}
+	},
+	"implicitRole": {
+		"role": "combobox",
+		"conditions": [
+			{
+				"condition": "[multiple], [size]:not([size=1])",
+				"role": "listbox"
+			}
+		]
+	},
+	"permittedRoles": {
+		"roles": ["menu"],
+		"properties": {
+			// Otherwise, any global aria-* attributes and any other aria-* attributes applicable to the combobox or menu role.
+			"global": true,
+			"role": ["combobox", "menu"],
+			// Authors SHOULD NOT use the aria-multiselectable attribute on a select element.
+			"whithout": [
+				{
+					"type": "should-not",
+					"name": "multiselectable"
+				}
+			]
+		},
+		"conditions": [
+			{
+				"condition": "[multiple], [size]:not([size=1])",
+				"roles": false,
+				"properties": {
+					// Otherwise, any global aria-* attributes and any other aria-* attributes applicable to the listbox role.
+					"global": true,
+					"role": "listbox",
+					// Authors SHOULD NOT use the aria-multiselectable attribute on a select element.
+					"whithout": [
+						{
+							"type": "should-not",
+							"name": "multiselectable"
+						}
+					]
+				}
+			}
+		]
+	}
+}

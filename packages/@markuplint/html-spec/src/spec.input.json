@@ -1,0 +1,631 @@
+// https://html.spec.whatwg.org/multipage/input.html#the-input-element
+// https://www.w3.org/TR/html-aria/#el-input
+{
+	"contentModel": {
+		"contents": false
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "width"],
+		"#HTMLFormControlElementAttrs": [
+			"autocomplete",
+			"dirname",
+			"disabled",
+			"form",
+			"formaction",
+			"formenctype",
+			"formmethod",
+			"formnovalidate",
+			"formtarget",
+			"name",
+			"maxlength",
+			"minlength",
+			"readonly",
+			"required"
+		]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-accept
+		"accept": {
+			"type": {
+				"token": "Accept",
+				"caseInsensitive": true,
+				"unique": true,
+				"separator": "comma"
+			},
+			"condition": "[type='file' i]"
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-alt
+		"alt": {
+			"type": "Any",
+			"condition": "[type='image' i]"
+		},
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete
+		"autocomplete": {
+			"condition": [
+				":not([type])",
+				"[type='hidden' i]",
+				"[type='text' i]",
+				"[type='search' i]",
+				"[type='url' i]",
+				"[type='tel' i]",
+				"[type='email' i]",
+				"[type='password' i]",
+				"[type='date' i]",
+				"[type='month' i]",
+				"[type='week' i]",
+				"[type='time' i]",
+				"[type='datetime-local' i]",
+				"[type='number' i]",
+				"[type='range' i]",
+				"[type='color' i]"
+			]
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-checked
+		"checked": {
+			"type": "Boolean",
+			"condition": ["[type='checkbox' i]", "[type='radio' i]"]
+		},
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-dirname
+		"dirname": {
+			"condition": [":not([type])", "[type='text' i]", "[type='search' i]"]
+		},
+		// https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-height
+		"height": {
+			"condition": "[type='image' i]"
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-list
+		"list": {
+			"type": "DOMID",
+			"condition": [
+				":not([type])",
+				"[type='text' i]",
+				"[type='search' i]",
+				"[type='url' i]",
+				"[type='tel' i]",
+				"[type='email' i]",
+				"[type='date' i]",
+				"[type='month' i]",
+				"[type='week' i]",
+				"[type='time' i]",
+				"[type='datetime-local' i]",
+				"[type='number' i]",
+				"[type='range' i]",
+				"[type='color' i]"
+			]
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-max
+		"max": {
+			"type": ["DateTime", "Number"],
+			"condition": [
+				"[type='date' i]",
+				"[type='month' i]",
+				"[type='week' i]",
+				"[type='time' i]",
+				"[type='datetime-local' i]",
+				"[type='number' i]",
+				"[type='range' i]"
+			]
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-maxlength
+		"maxlength": {
+			"condition": [
+				":not([type])",
+				"[type='text' i]",
+				"[type='search' i]",
+				"[type='url' i]",
+				"[type='tel' i]",
+				"[type='email' i]",
+				"[type='password' i]"
+			]
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-min
+		"min": {
+			"type": ["DateTime", "Number"],
+			"condition": [
+				"[type='date' i]",
+				"[type='month' i]",
+				"[type='week' i]",
+				"[type='time' i]",
+				"[type='datetime-local' i]",
+				"[type='number' i]",
+				"[type='range' i]"
+			]
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-minlength
+		"minlength": {
+			"condition": [
+				":not([type])",
+				"[type='text' i]",
+				"[type='search' i]",
+				"[type='url' i]",
+				"[type='tel' i]",
+				"[type='email' i]",
+				"[type='password' i]"
+			]
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-multiple
+		"multiple": {
+			"type": "Boolean",
+			"condition": ["[type='email' i]", "[type='file' i]"]
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-pattern
+		"pattern": {
+			"type": "Pattern",
+			"condition": [
+				":not([type])",
+				"[type='text' i]",
+				"[type='search' i]",
+				"[type='url' i]",
+				"[type='tel' i]",
+				"[type='email' i]",
+				"[type='password' i]"
+			]
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-placeholder
+		"placeholder": {
+			"type": "OneLineAny",
+			"condition": [
+				":not([type])",
+				"[type='text' i]",
+				"[type='search' i]",
+				"[type='url' i]",
+				"[type='tel' i]",
+				"[type='email' i]",
+				"[type='password' i]",
+				"[type='number' i]"
+			]
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-readonly
+		"readonly": {
+			"condition": [
+				":not([type])",
+				"[type='text' i]",
+				"[type='search' i]",
+				"[type='url' i]",
+				"[type='tel' i]",
+				"[type='email' i]",
+				"[type='password' i]",
+				"[type='date' i]",
+				"[type='month' i]",
+				"[type='week' i]",
+				"[type='time' i]",
+				"[type='datetime-local' i]",
+				"[type='number' i]"
+			]
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-required
+		"required": {
+			"condition": [
+				":not([type])",
+				"[type='text' i]",
+				"[type='search' i]",
+				"[type='url' i]",
+				"[type='tel' i]",
+				"[type='email' i]",
+				"[type='password' i]",
+				"[type='date' i]",
+				"[type='month' i]",
+				"[type='week' i]",
+				"[type='time' i]",
+				"[type='datetime-local' i]",
+				"[type='number' i]",
+				"[type='checkbox' i]",
+				"[type='radio' i]",
+				"[type='file' i]"
+			]
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-size
+		"size": {
+			"type": {
+				"type": "integer",
+				"gt": 0
+			},
+			"condition": [
+				":not([type])",
+				"[type='text' i]",
+				"[type='search' i]",
+				"[type='url' i]",
+				"[type='tel' i]",
+				"[type='email' i]",
+				"[type='password' i]"
+			],
+			"defaultValue": "20"
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-src
+		"src": {
+			"condition": "[type='image' i]"
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-step
+		"step": {
+			"type": [
+				"Number",
+				{
+					"enum": ["any"],
+					"caseInsensitive": true
+				}
+			],
+			"condition": [
+				"[type='date' i]",
+				"[type='month' i]",
+				"[type='week' i]",
+				"[type='time' i]",
+				"[type='datetime-local' i]",
+				"[type='number' i]",
+				"[type='range' i]"
+			]
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-type
+		"type": {
+			"type": {
+				"enum": [
+					"hidden",
+					"text",
+					"search",
+					"tel",
+					"url",
+					"email",
+					"password",
+					"date",
+					"month",
+					"week",
+					"time",
+					"datetime-local",
+					"number",
+					"range",
+					"color",
+					"checkbox",
+					"radio",
+					"file",
+					"submit",
+					"image",
+					"reset",
+					"button"
+				],
+				"invalidValueDefault": "text",
+				"missingValueDefault": "text"
+			},
+			"defaultValue": "text"
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-value
+		"value": {
+			// The `type` attribute determines the type
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-width
+		"width": {
+			"condition": "[type='image' i]"
+		}
+	},
+	"implicitRole": {
+		"role": false,
+		"conditions": [
+			{
+				"condition": "[type=button]",
+				"role": "button"
+			},
+			{
+				"condition": "[type=checkbox]",
+				"role": "checkbox"
+			},
+			{
+				"condition": "[type=color]",
+				"role": false
+			},
+			{
+				"condition": "[type=date]",
+				"role": false
+			},
+			{
+				"condition": "[type=email]:not([list])",
+				"role": "textbox"
+			},
+			{
+				"condition": "[type=file]",
+				"role": false
+			},
+			{
+				"condition": "[type=hidden]",
+				"role": false
+			},
+			{
+				"condition": "[type=image]",
+				"role": "button"
+			},
+			{
+				"condition": "[type=month]",
+				"role": false
+			},
+			{
+				"condition": "[type=number]",
+				"role": "spinbutton"
+			},
+			{
+				"condition": "[type=password]",
+				"role": false
+			},
+			{
+				"condition": "[type=radio]",
+				"role": "radio"
+			},
+			{
+				"condition": "[type=range]",
+				"role": "slider"
+			},
+			{
+				"condition": "[type=reset]",
+				"role": "button"
+			},
+			{
+				"condition": "[type=search]:not([list])",
+				"role": "searchbox"
+			},
+			{
+				"condition": "[type=submit]",
+				"role": "button"
+			},
+			{
+				"condition": "[type=tel]:not([list])",
+				"role": "textbox"
+			},
+			{
+				"condition": "[type=text]:not([list])",
+				"role": "textbox"
+			},
+			{
+				"condition": "[type=text][list], [type=search][list], [type=tel][list], [type=url][list], [type=email][list]",
+				"role": "combobox"
+			},
+			{
+				"condition": "[type=time]",
+				"role": false
+			},
+			{
+				"condition": "[type=url]:not([list])",
+				"role": "textbox"
+			},
+			{
+				"condition": "[type=week]",
+				"role": false
+			}
+		]
+	},
+	"permittedRoles": {
+		"roles": false,
+		"conditions": [
+			// input type=button
+			{
+				// Roles: link, menuitem, menuitemcheckbox, menuitemradio, option, radio, switch or tab.
+				"condition": "[type=button i]",
+				"roles": ["link", "menuitem", "menuitemcheckbox", "menuitemradio", "option", "radio", "switch", "tab"]
+			},
+			// input type=checkbox
+			{
+				// button if used with aria-pressed.
+				"condition": "[type=checkbox i][aria-pressed]",
+				"roles": ["button"],
+				"properties": {
+					// Authors SHOULD NOT use the aria-checked attribute on input type=checkbox elements.
+					// Otherwise, any global aria-* attributes and any aria-* attributes applicable to the allowed roles.
+					"global": true,
+					"role": true,
+					"whithout": [
+						{
+							"type": "should-not",
+							"name": "checked"
+						}
+					]
+				}
+			},
+			{
+				// Roles: menuitemcheckbox, option or switch;
+				"condition": "[type=checkbox i]",
+				"roles": ["menuitemcheckbox", "option", "switch"],
+				"properties": {
+					// Authors SHOULD NOT use the aria-checked attribute on input type=checkbox elements.
+					// Otherwise, any global aria-* attributes and any aria-* attributes applicable to the allowed roles.
+					"global": true,
+					"role": true,
+					"whithout": [
+						{
+							"type": "should-not",
+							"name": "checked", // The HTML checked attribute can be used instead of the aria-checked attribute for menuitemcheckbox, option or switch roles when used on type=checkbox.
+							"alt": {
+								"method": "set-attr",
+								"target": "checked"
+							}
+						}
+					]
+				}
+			},
+			{
+				"condition": "[type=color i]",
+				"roles": false,
+				"properties": {
+					"global": true
+				}
+			},
+			{
+				"condition": "[type=date i]",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "textbox"
+				}
+			},
+			{
+				"condition": "[type=datetime-local i]",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "textbox"
+				}
+			},
+			{
+				"condition": "[type=email i]:not([list])",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "textbox"
+				}
+			},
+			{
+				"condition": "[type=file i]",
+				"roles": false,
+				"properties": {
+					"global": true
+				}
+			},
+			{
+				"condition": "[type=hidden i]",
+				"roles": false,
+				"properties": false
+			},
+			{
+				"condition": "[type=image i]",
+				"roles": ["link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch"]
+			},
+			{
+				"condition": "[type=month i]",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "textbox"
+				}
+			},
+			{
+				"condition": "[type=number i]",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "spinbutton"
+				}
+			},
+			{
+				"condition": "[type=password i]",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "textbox"
+				}
+			},
+			{
+				"condition": "[type=radio i]",
+				"roles": ["menuitemradio"],
+				"properties": {
+					"global": true,
+					"role": true,
+					// Authors SHOULD NOT use the aria-checked attribute on input type=radio elements.
+					"whithout": [
+						{
+							"type": "should-not",
+							"name": "checked",
+							// The HTML checked attribute can be used instead of the aria-checked attribute for the menuitemradio role when used on type=radio.
+							"alt": {
+								"method": "set-attr",
+								"target": "checked"
+							}
+						}
+					]
+				}
+			},
+			{
+				"condition": "[type=range i]",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "slider",
+					// Authors SHOULD NOT use the aria-valuemax or aria-valuemin attributes on input type=range.
+					"whithout": [
+						{
+							"type": "should-not",
+							"name": "valuemax"
+						},
+						{
+							"type": "should-not",
+							"name": "valuemin"
+						}
+					]
+				}
+			},
+			{
+				"condition": "[type=reset i]",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "button"
+				}
+			},
+			{
+				"condition": "[type=search i]:not([list])",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "searchbox"
+				}
+			},
+			{
+				"condition": "[type=submit i]",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "button"
+				}
+			},
+			{
+				"condition": "[type=tel i]:not([list])",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "textbox"
+				}
+			},
+			{
+				"condition": "[type=text i]:not([list])",
+				"roles": ["combobox", "searchbox", "spinbutton"]
+			},
+			{
+				"condition": "[list]:is([type=text], [type=search], [type=tel], [type=url], [type=email])",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "combobox",
+					// Authors SHOULD NOT use the aria-haspopup attribute on the indicated inputs with a list attribute.
+					"whithout": [
+						{
+							"type": "should-not",
+							"name": "haspopup"
+						}
+					]
+				}
+			},
+			{
+				"condition": "[type=time i]",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "textbox"
+				}
+			},
+			{
+				"condition": "[type=url i]:not([list])",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "textbox"
+				}
+			},
+			{
+				"condition": "[type=week i]",
+				"roles": false,
+				"properties": {
+					"global": true,
+					"role": "textbox"
+				}
+			}
+		]
+	}
+}

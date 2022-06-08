@@ -1,0 +1,37 @@
+// https://html.spec.whatwg.org/multipage/embedded-content.html#the-picture-element
+// https://www.w3.org/TR/html-aria/#el-picture
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#script-supporting"
+			},
+			{
+				"zeroOrMore": "source"
+			},
+			{
+				"zeroOrMore": "#script-supporting"
+			},
+			{
+				"require": "img"
+			},
+			{
+				"zeroOrMore": "#script-supporting"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": false,
+		"properties": false
+	}
+}

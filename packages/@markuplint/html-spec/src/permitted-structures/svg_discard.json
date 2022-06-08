@@ -1,8 +1,0 @@
-{
-	"tag": "discard",
-	"contents": [
-		{
-			"require": ["#SVGDescriptive", "svg:script"]
-		}
-	]
-}

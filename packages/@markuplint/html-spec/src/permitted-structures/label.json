@@ -1,9 +1,0 @@
-{
-	"tag": "label",
-	"contents": [
-		{
-			"zeroOrMore": "#phrasing",
-			"notAllowedDescendants": ["label"]
-		}
-	]
-}

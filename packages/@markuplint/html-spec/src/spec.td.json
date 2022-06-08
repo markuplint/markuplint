@@ -1,0 +1,45 @@
+// https://html.spec.whatwg.org/multipage/tables.html#the-td-element
+// https://www.w3.org/TR/html-aria/#el-td
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#flow"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLTableCellElementAttrs": ["colspan", "rowspan", "headers"]
+	},
+	"attributes": {},
+	"implicitRole": {
+		// No corresponding role if the ancestor table element is not exposed as a role=table, grid or treegrid.
+		"role": false,
+		"conditions": [
+			{
+				// role=cell if the ancestor table element is exposed as a role=table.
+				"condition": "table:is(:not([role]), [role=table]) > :is(thead, tfoot, tbody) > tr > td",
+				"role": "cell"
+			},
+			{
+				// role=gridcell if the ancestor table element is exposed as a role=grid or treegrid.
+				"condition": "table:is([role=table], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td",
+				"role": "gridcell"
+			}
+		]
+	},
+	"permittedRoles": {
+		// No role if the ancestor table element has role=table, grid, or treegrid; otherwise any role.
+		"roles": true,
+		"conditions": [
+			{
+				"condition": "table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td",
+				"roles": false
+			}
+		]
+	}
+}

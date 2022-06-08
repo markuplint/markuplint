@@ -1,0 +1,23 @@
+// https://svgwg.org/svg2-draft/struct.html#MetadataElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-52
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": ["#SVGOtherXMLNamespace", "#text"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+	},
+	"attributes": {},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": false
+	}
+}

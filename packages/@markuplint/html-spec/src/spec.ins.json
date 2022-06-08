@@ -1,0 +1,33 @@
+// https://html.spec.whatwg.org/multipage/edits.html#the-ins-element
+// https://www.w3.org/TR/html-aria/#el-ins
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#transparent"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"cite": {
+			// https://html.spec.whatwg.org/multipage/edits.html#attr-mod-cite
+			"type": "URL"
+		},
+		"datetime": {
+			// https://html.spec.whatwg.org/multipage/edits.html#attr-mod-datetime
+			"type": "DateTime"
+		}
+	},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": true
+	}
+}

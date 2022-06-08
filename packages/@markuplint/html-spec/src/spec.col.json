@@ -1,0 +1,32 @@
+// https://html.spec.whatwg.org/multipage/tables.html#the-col-element
+// https://www.w3.org/TR/html-aria/#el-col
+{
+	"contentModel": {
+		"contents": false
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/tables.html#attr-col-span
+		"span": {
+			"type": {
+				"type": "integer",
+				"gt": 0,
+				"lte": 1000,
+				"clampable": true
+			},
+			"defaultValue": "1"
+		}
+	},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": false,
+		"properties": false
+	}
+}

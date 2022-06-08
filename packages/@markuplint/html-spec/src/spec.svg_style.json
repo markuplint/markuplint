@@ -1,0 +1,38 @@
+// https://svgwg.org/svg2-draft/styling.html#StyleElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-65
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#text"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+	},
+	"attributes": {
+		// https://svgwg.org/svg2-draft/styling.html#StyleElementTypeAttribute
+		"type": {
+			"type": "MIMEType",
+			"defaultValue": "text/css"
+		},
+		// https://svgwg.org/svg2-draft/styling.html#StyleElementMediaAttribute
+		"media": {
+			"type": "<media-query-list>",
+			"defaultValue": "all"
+		},
+		// https://svgwg.org/svg2-draft/styling.html#StyleElementTitleAttribute
+		"title": {
+			"type": "Any"
+		}
+	},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": false
+	}
+}

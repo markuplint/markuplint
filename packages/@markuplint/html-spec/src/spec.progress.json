@@ -1,0 +1,46 @@
+// https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element
+// https://www.w3.org/TR/html-aria/#el-progress
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#phrasing",
+				"notAllowedDescendants": ["progress"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-progress-value
+		"value": {
+			// The range is 0 to 1 but, the maximum will be the value when setting the `max` attribute from 1
+			"type": "Number"
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-progress-max
+		"max": {
+			"type": "Number"
+		}
+	},
+	"implicitRole": {
+		"role": "progressbar"
+	},
+	"permittedRoles": {
+		"roles": false,
+		"properties": {
+			"global": true,
+			"role": "progressbar",
+			// Authors SHOULD NOT use the aria-valuemax attribute on progress elements.
+			"whithout": [
+				{
+					"type": "should-not",
+					"name": "valuemax"
+				}
+			]
+		}
+	}
+}

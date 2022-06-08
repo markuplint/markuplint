@@ -1,0 +1,47 @@
+// https://html.spec.whatwg.org/multipage/media.html#the-audio-element
+// https://www.w3.org/TR/html-aria/#el-audio
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "source"
+			},
+			{
+				"zeroOrMore": "track"
+			},
+			{
+				"zeroOrMore": "#transparent",
+				"notAllowedDescendants": ["audio", "video"]
+			}
+		],
+		"conditional": [
+			{
+				"condition": "[src]",
+				"contents": [
+					{
+						"zeroOrMore": "track"
+					},
+					{
+						"zeroOrMore": "#transparent",
+						"notAllowedDescendants": ["audio", "video"]
+					}
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["crossorigin"],
+		"#HTMLEmbededAndMediaContentAttrs": ["src", "preload", "autoplay", "loop", "muted", "controls"]
+	},
+	"attributes": {},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": ["application"]
+	}
+}

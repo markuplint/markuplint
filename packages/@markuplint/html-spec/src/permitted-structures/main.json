@@ -1,8 +1,0 @@
-{
-	"tag": "main",
-	"contents": [
-		{
-			"zeroOrMore": "#flow"
-		}
-	]
-}

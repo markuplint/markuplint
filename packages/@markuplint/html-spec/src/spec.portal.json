@@ -1,0 +1,27 @@
+// https://wicg.github.io/portals/
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#transparent"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		// https://wicg.github.io/portals/#dom-htmlportalelement-referrerpolicy
+		"#HTMLLinkAndFetchingAttrs": ["referrerpolicy"],
+		// https://wicg.github.io/portals/#dom-htmlportalelement-src
+		"#HTMLEmbededAndMediaContentAttrs": ["src"]
+	},
+	"attributes": {},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": false
+	}
+}

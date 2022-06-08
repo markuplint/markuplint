@@ -1,0 +1,39 @@
+// https://html.spec.whatwg.org/multipage/interactive-elements.html#the-summary-element
+// https://www.w3.org/TR/html-aria/#el-summary
+{
+	"contentModel": {
+		"contents": [
+			{
+				"choice": [
+					[
+						{
+							"zeroOrMore": "#phrasing"
+						}
+					],
+					[
+						{
+							"require": "#heading"
+						}
+					]
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"implicitRole": {
+		"role": "button"
+	},
+	"permittedRoles": {
+		"roles": false,
+		"properties": {
+			"global": true,
+			"role": "button"
+		}
+	}
+}

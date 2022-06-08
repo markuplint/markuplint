@@ -1,0 +1,93 @@
+// https://html.spec.whatwg.org/multipage/sections.html#the-body-element
+// https://www.w3.org/TR/html-aria/#el-body
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#flow"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onafterprint
+		"onafterprint": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onbeforeprint
+		"onbeforeprint": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onbeforeunload
+		"onbeforeunload": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onhashchange
+		"onhashchange": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onlanguagechange
+		"onlanguagechange": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onmessage
+		"onmessage": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onmessageerror
+		"onmessageerror": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onoffline
+		"onoffline": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-ononline
+		"ononline": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onpagehide
+		"onpagehide": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onpageshow
+		"onpageshow": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onpopstate
+		"onpopstate": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onrejectionhandled
+		"onrejectionhandled": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onstorage
+		"onstorage": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onunhandledrejection
+		"onunhandledrejection": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onunload
+		"onunload": {
+			"type": "FunctionBody"
+		}
+	},
+	"implicitRole": {
+		"role": "generic"
+	},
+	"permittedRoles": {
+		"roles": false,
+		"properties": {
+			"global": true,
+			"role": "document"
+		}
+	}
+}

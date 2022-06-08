@@ -1,0 +1,36 @@
+// https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element
+// https://www.w3.org/TR/html-aria/#el-details
+{
+	"contentModel": {
+		"contents": [
+			{
+				"require": "summary"
+			},
+			{
+				"zeroOrMore": "#flow"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/interactive-elements.html#attr-details-open
+		"open": {
+			"type": "Boolean"
+		}
+	},
+	"implicitRole": {
+		"role": "group"
+	},
+	"permittedRoles": {
+		"roles": false,
+		"properties": {
+			"global": true,
+			"role": "group"
+		}
+	}
+}

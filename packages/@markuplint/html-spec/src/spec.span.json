@@ -1,0 +1,24 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-span-element
+// https://www.w3.org/TR/html-aria/#el-span
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#phrasing"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": true
+	}
+}
