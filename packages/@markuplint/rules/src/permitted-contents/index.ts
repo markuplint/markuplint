@@ -1,5 +1,5 @@
 import type { Element } from '@markuplint/ml-core';
-import type { ContentModel, MLMLSpec, PermittedStructuresSchema } from '@markuplint/ml-spec';
+import type { Category, MLMLSpec, ContentModel } from '@markuplint/ml-spec';
 
 import { createRule } from '@markuplint/ml-core';
 
@@ -8,7 +8,7 @@ import { htmlSpec } from '../helpers';
 import ExpGenerator from './permitted-content.spec-to-regexp';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
-type TagRule = PermittedStructuresSchema;
+type TagRule = ContentModel & { tag: string };
 type Options = {
 	ignoreHasMutableChildren: boolean;
 };
@@ -34,18 +34,18 @@ export default createRule<TagRule[], Options>({
 			const specType = el.ns === 'html' ? 'HTML' : el.ns === 'svg' ? 'SVG' : 'Any Language';
 
 			const childNodes = el.getChildElementsAndTextNodeWithoutWhitespaces();
-			const spec = !el.isCustomElement && htmlSpec(document.specs, el.nameWithNS)?.permittedStructures;
+			const spec = !el.isCustomElement && htmlSpec(document.specs, el.nameWithNS)?.contentModel;
 
 			const expGen = new ExpGenerator(idCounter++);
 
 			if (spec) {
-				if (spec.ancestor && !el.closest(spec.ancestor)) {
+				if (spec.descendantOf && !el.closest(spec.descendantOf)) {
 					report({
 						scope: el,
 						message: t(
 							'{0} must be {1}',
 							t('the "{0*}" {1}', el.localName, 'element'),
-							t('{0} of {1}', 'descendant', t('the "{0*}" {1}', spec.ancestor, 'element')),
+							t('{0} of {1}', 'descendant', t('the "{0*}" {1}', spec.descendantOf, 'element')),
 						),
 					});
 					return;
@@ -55,17 +55,13 @@ export default createRule<TagRule[], Options>({
 
 				if (spec.conditional) {
 					for (const conditional of spec.conditional) {
-						matched =
-							('hasAttr' in conditional.condition && el.hasAttribute(conditional.condition.hasAttr)) ||
-							('parent' in conditional.condition &&
-								!!el.parentElement &&
-								el.parentElement.matches(conditional.condition.parent));
+						matched = el.matches(conditional.condition);
 						// console.log({ ...conditional, matched });
 						if (matched) {
 							try {
 								const parentExp = getRegExpFromParentNode(document.specs, el, expGen);
 								const exp = expGen.specToRegExp(conditional.contents, parentExp, el.ns);
-								const conditionalResult = match(exp, childNodes, el.ns, false);
+								const conditionalResult = match(exp, childNodes, false);
 								if (!conditionalResult) {
 									const message = t(
 										'{0} is {1:c}',
@@ -103,7 +99,7 @@ export default createRule<TagRule[], Options>({
 				if (!matched) {
 					try {
 						const exp = getRegExpFromNode(document.specs, el, expGen);
-						const specResult = match(exp, childNodes, el.ns, false);
+						const specResult = match(exp, childNodes, false);
 
 						if (!specResult) {
 							const message = t(
@@ -139,7 +135,7 @@ export default createRule<TagRule[], Options>({
 				try {
 					const exp = expGen.specToRegExp(rule.contents, parentExp, el.ns);
 					// Evaluate the custom element if the optional schema.
-					const r = match(exp, childNodes, el.ns, el.isCustomElement);
+					const r = match(exp, childNodes, el.isCustomElement);
 
 					if (!r) {
 						report({
@@ -172,7 +168,7 @@ export default createRule<TagRule[], Options>({
 
 type TargetNodes = ReturnType<Element<TagRule[], Options>['getChildElementsAndTextNodeWithoutWhitespaces']>;
 
-function normalization(nodes: TargetNodes, ownNS: string | null, evalCustomElement: boolean) {
+function normalization(nodes: TargetNodes, evalCustomElement: boolean) {
 	return nodes
 		.map(node => {
 			// FIXME: https://github.com/markuplint/markuplint/issues/388
@@ -182,8 +178,7 @@ function normalization(nodes: TargetNodes, ownNS: string | null, evalCustomEleme
 			if (!node.is(node.ELEMENT_NODE)) {
 				return '<#text>';
 			}
-			ownNS = ownNS || 'html';
-			const name = node.nameWithNS.replace(new RegExp(`^${ownNS}:`), '');
+			const name = node.nameWithNS.replace(/^html:/i, '');
 			return `<${name}>`;
 		})
 		.join('');
@@ -204,8 +199,7 @@ function getRegExpFromNode(specs: Readonly<MLMLSpec>, node: El, expGen: ExpGener
 		return expMapOnNodeId.get(node.uuid)!;
 	}
 	const parentExp = node.parentNode ? getRegExpFromNode(specs, node.parentNode, expGen) : null;
-	const spec =
-		!node.isCustomElement && htmlSpec(specs, node.nameWithNS || node.nodeName.toLowerCase())?.permittedStructures;
+	const spec = !node.isCustomElement && htmlSpec(specs, node.nameWithNS || node.nodeName.toLowerCase())?.contentModel;
 	const contentRule = spec ? spec.contents : true;
 	const exp = expGen.specToRegExp(contentRule, parentExp, node.ns || null);
 	expMapOnNodeId.set(node.uuid, exp);
@@ -220,8 +214,8 @@ function getRegExpFromParentNode(specs: Readonly<MLMLSpec>, node: El, expGen: Ex
 
 const matchingCacheMap = new Map<string, boolean>();
 
-function match(exp: RegExp, childNodes: TargetNodes, ownNS: string | null, evalCustomElement: boolean) {
-	const target = normalization(childNodes, ownNS, evalCustomElement);
+function match(exp: RegExp, childNodes: TargetNodes, evalCustomElement: boolean) {
+	const target = normalization(childNodes, evalCustomElement);
 	const cacheKey =
 		target +
 		exp.source +
@@ -259,7 +253,7 @@ function _match(target: string, exp: RegExp, childNodes: TargetNodes) {
 		switch (type) {
 			case 'ACM': {
 				const [model, tag] = _selector;
-				const selectors = unfoldContentModelsToTags(`#${model}` as ContentModel).filter(selector => {
+				const selectors = unfoldContentModelsToTags(`#${model}` as Category).filter(selector => {
 					const [, tagName] = /^([^[\]]+)(?:\[[^\]]+\])?$/.exec(selector) || [];
 					return tagName.toLowerCase() === tag.toLowerCase();
 				});
@@ -294,7 +288,7 @@ function _match(target: string, exp: RegExp, childNodes: TargetNodes) {
 					: null;
 				_selector.forEach(content => {
 					if (content[0] === '_') {
-						unfoldContentModelsToTags(content.replace('_', '#') as ContentModel).forEach(tag =>
+						unfoldContentModelsToTags(content.replace('_', '#') as Category).forEach(tag =>
 							contents.add(tag),
 						);
 						return;

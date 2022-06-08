@@ -1,5 +1,5 @@
 import type {
-	ContentModel,
+	Category,
 	PermittedContent,
 	PermittedContentChoice,
 	PermittedContentInterleave,
@@ -178,7 +178,7 @@ export default class ExpGenerator {
 						break;
 					}
 					default: {
-						const selectors = unfoldContentModelsToTags(name as ContentModel);
+						const selectors = unfoldContentModelsToTags(name as Category);
 						const counter = this._idCounter++;
 						selectors.forEach(selector => {
 							if (selector === '#custom') {
@@ -213,9 +213,8 @@ class TagList {
 	}
 
 	addTag(tagNameOrSelector: string, ownNS: string | null) {
-		if (ownNS) {
-			tagNameOrSelector = tagNameOrSelector.replace(new RegExp(`^${ownNS}:`, 'i'), '');
-		}
+		tagNameOrSelector = tagNameOrSelector.replace(/\|/g, ':');
+		tagNameOrSelector = tagNameOrSelector.replace(/^html:/i, '');
 		this.#list.add(`<${tagNameOrSelector}>`);
 	}
 

@@ -1,33 +1,56 @@
 {
 	"definitions": {
-		"Node": {
+		"ContentModel": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["contents"],
+			"properties": {
+				"contents": {
+					"oneOf": [
+						{
+							"$ref": "#/definitions/PermittedContentSpec"
+						},
+						{ "type": "boolean" }
+					]
+				},
+				"descendantOf": { "type": "string" },
+				"conditional": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["condition", "contents"],
+						"properties": {
+							"condition": {
+								"type": "string"
+							},
+							"contents": {
+								"oneOf": [
+									{
+										"$ref": "#/definitions/PermittedContentSpec"
+									},
+									{ "type": "boolean" }
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"ContentType": {
 			"oneOf": [
 				{
-					"description": "HTML Element",
+					"description": "Element",
 					"type": "string",
-					"pattern": "^[a-z][a-z0-9]*$"
+					"pattern": "^[^#]+$"
 				},
-				{
-					"description": "Namespaced HTML Element",
-					"type": "string",
-					"pattern": "^html:[a-z][a-z0-9]*$"
-				},
-				{
-					"description": "SVG Element",
-					"type": "string",
-					"pattern": "^svg:(?:[a-z][a-zA-Z0-9]*|[a-z][a-z0-9]*-[a-z][a-z0-9]*)$"
-				},
-				{
-					"description": "Text Node",
-					"type": "string",
-					"enum": ["#text"]
-				},
-				{ "$ref": "#/definitions/ContentModel" }
+				{ "$ref": "#/definitions/Category" }
 			]
 		},
-		"ContentModel": {
+		"Category": {
 			"type": "string",
 			"enum": [
+				"#text",
 				"#phrasing",
 				"#flow",
 				"#interactive",
@@ -62,10 +85,10 @@
 		},
 		"Target": {
 			"oneOf": [
-				{ "$ref": "#/definitions/Node" },
+				{ "$ref": "#/definitions/ContentType" },
 				{
 					"type": "array",
-					"items": { "$ref": "#/definitions/Node" },
+					"items": { "$ref": "#/definitions/ContentType" },
 					"uniqueItems": true
 				}
 			]
@@ -94,7 +117,7 @@
 				"ignore": { "$ref": "#/definitions/Target" },
 				"notAllowedDescendants": {
 					"type": "array",
-					"items": { "$ref": "#/definitions/Node" },
+					"items": { "$ref": "#/definitions/ContentType" },
 					"uniqueItems": true
 				},
 				"max": { "type": "number" },
@@ -111,7 +134,7 @@
 				"ignore": { "$ref": "#/definitions/Target" },
 				"notAllowedDescendants": {
 					"type": "array",
-					"items": { "$ref": "#/definitions/Node" },
+					"items": { "$ref": "#/definitions/ContentType" },
 					"uniqueItems": true
 				},
 				"max": { "type": "number" },
@@ -129,7 +152,7 @@
 				"ignore": { "$ref": "#/definitions/Target" },
 				"notAllowedDescendants": {
 					"type": "array",
-					"items": { "$ref": "#/definitions/Node" },
+					"items": { "$ref": "#/definitions/ContentType" },
 					"uniqueItems": true
 				},
 				"max": { "type": "number" },
@@ -147,7 +170,7 @@
 				"ignore": { "$ref": "#/definitions/Target" },
 				"notAllowedDescendants": {
 					"type": "array",
-					"items": { "$ref": "#/definitions/Node" },
+					"items": { "$ref": "#/definitions/ContentType" },
 					"uniqueItems": true
 				},
 				"max": { "type": "number" },
@@ -184,61 +207,9 @@
 	},
 	"type": "object",
 	"additionalProperties": false,
-	"required": ["tag", "contents"],
 	"properties": {
-		"summary": { "type": "string" },
-		"tag": { "type": "string" },
-		"conditional": {
-			"type": "array",
-			"items": {
-				"type": "object",
-				"additionalProperties": false,
-				"required": ["condition", "contents"],
-				"properties": {
-					"condition": {
-						"type": "object",
-						"oneOf": [
-							{
-								"additionalProperties": false,
-								"required": ["hasAttr"],
-								"properties": {
-									"hasAttr": { "type": "string" }
-								}
-							},
-							{
-								"additionalProperties": false,
-								"required": ["parent"],
-								"properties": {
-									"parent": { "type": "string" },
-									"hasNotAttr": {
-										"type": "string",
-										"description": "Not support yet"
-									},
-									"_TODO_": { "type": "string" },
-									"_parent": { "type": "string" }
-								}
-							}
-						]
-					},
-					"contents": {
-						"oneOf": [
-							{
-								"$ref": "#/definitions/PermittedContentSpec"
-							},
-							{ "type": "boolean" }
-						]
-					}
-				}
-			}
-		},
-		"contents": {
-			"oneOf": [
-				{
-					"$ref": "#/definitions/PermittedContentSpec"
-				},
-				{ "type": "boolean" }
-			]
-		},
-		"ancestor": { "$ref": "#/definitions/Node" }
+		"__contentModel": {
+			"$ref": "#/definitions/ContentModel"
+		}
 	}
 }

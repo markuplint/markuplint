@@ -5,23 +5,22 @@ import path from 'path';
 import util from 'util';
 
 import { getAria } from './aria';
-import getContentModels from './content-models';
 import { getReferences } from './fetch';
 import { getGlobalAttrs } from './global-attrs';
-import { getHTMLElements } from './html-elements';
-import { getSVG } from './svg';
+import { getElements } from './html-elements';
+import { readJson } from './read-json';
+// import { getSVG } from './svg';
 
 const writeFile = util.promisify(fs.writeFile);
 
 async function main() {
 	const outputFilePath = path.resolve(__dirname, '../index.json');
 
-	const [specs, globalAttrs, { roles, arias }, contentModels, svg] = await Promise.all([
-		await getHTMLElements(),
+	const [specs, globalAttrs, { roles, arias } /*, svg*/] = await Promise.all([
+		await getElements(),
 		await getGlobalAttrs(),
 		await getAria(),
-		await getContentModels(),
-		await getSVG(),
+		// await getSVG(),
 	]);
 
 	const cites = getReferences();
@@ -32,9 +31,9 @@ async function main() {
 			'#globalAttrs': globalAttrs,
 			'#roles': roles,
 			'#ariaAttrs': arias,
-			'#contentModels': contentModels,
+			'#contentModels': (await readJson('../src/spec-common.contents.json')).models,
 		},
-		specs: [...specs, ...svg],
+		specs: [...specs /*, ...svg*/],
 	};
 
 	const jsonString = JSON.stringify(json, null, 2);
@@ -45,4 +44,5 @@ async function main() {
 	console.log(`🎁 Output: ${outputFilePath}`);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 main();

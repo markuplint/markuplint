@@ -18,7 +18,7 @@ function getSpecOM(spec: MLMLSpec): SpecOM {
 			deprecated: !!el.deprecated,
 			nonStandard: !!el.nonStandard,
 			categories: el.categories,
-			permittedStructures: el.permittedStructures,
+			contentModel: el.contentModel,
 			attributes: Object.values(attributes || {}),
 		};
 	}

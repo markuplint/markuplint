@@ -54,9 +54,7 @@ const spec: ExtendedSpec = {
 				defaultChecked: {
 					type: 'Boolean',
 					caseSensitive: true,
-					condition: {
-						self: ['[type=checkbox]', '[type=radio]'],
-					},
+					condition: ['[type=checkbox]', '[type=radio]'],
 				},
 				/**
 				 * defaultValue is the uncontrolled equivalent,

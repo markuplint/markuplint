@@ -1118,18 +1118,10 @@ export type AttributeType =
 			lte?: number;
 			clampable?: boolean;
 	  };
-export type AttributeCondition =
-	| {
-			ancestor: Selectors;
-	  }
-	| {
-			self: Selectors;
-	  };
-export type Selectors = string | [string, string, ...string[]];
+export type AttributeCondition = string | [string, string, ...string[]];
 
 export interface AttributesSchema {
 	tag: string;
-	ref: string;
 	global?: GlobalAttributes;
 	attributes: Attributes;
 }
@@ -1413,8 +1405,6 @@ export interface Attributes {
  * via the `patternProperty` ".*".
  */
 export interface AttributeJSON {
-	_TODO_?: string;
-	ref: string;
 	type?: AttributeType | [AttributeType, ...AttributeType[]];
 	defaultValue?: string;
 	deprecated?: boolean;
@@ -1422,7 +1412,7 @@ export interface AttributeJSON {
 	requiredEither?: string[];
 	noUse?: boolean;
 	condition?: AttributeCondition;
-	ineffective?: Selectors;
+	ineffective?: AttributeCondition;
 	animatable?: boolean;
 	experimental?: boolean;
 }
