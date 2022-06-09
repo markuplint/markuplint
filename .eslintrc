@@ -36,6 +36,8 @@
 		"@typescript-eslint/no-unnecessary-type-assertion": 2,
 		"@typescript-eslint/restrict-plus-operands": 0,
 		"@typescript-eslint/consistent-type-imports": 1,
+		"@typescript-eslint/require-await": "error",
+		"@typescript-eslint/no-floating-promises": "error",
 
 		"eslint-comments/disable-enable-pair": "error",
 		"eslint-comments/no-duplicate-disable": "error",
