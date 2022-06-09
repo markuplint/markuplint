@@ -1,8 +1,0 @@
-{
-	"tag": "aside",
-	"contents": [
-		{
-			"zeroOrMore": "#flow"
-		}
-	]
-}

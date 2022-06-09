@@ -12,9 +12,10 @@ export type PermittedContent =
 	| PermittedContentZeroOrMore
 	| PermittedContentChoice
 	| PermittedContentInterleave;
-export type Target = Node | Node[];
-export type Node = string | '#text' | ContentModel;
-export type ContentModel =
+export type Target = ContentType | ContentType[];
+export type ContentType = string | Category;
+export type Category =
+	| '#text'
 	| '#phrasing'
 	| '#flow'
 	| '#interactive'
@@ -47,32 +48,21 @@ export type ContentModel =
 	| '#SVGOtherXMLNamespace';
 export type PermittedContentSpec = PermittedContent[];
 
-export interface PermittedStructuresSchema {
-	summary?: string;
-	tag: string;
+export interface ContentModelsSchema {
+	__contentModel?: ContentModel;
+}
+export interface ContentModel {
+	contents: PermittedContentSpec | boolean;
+	descendantOf?: string;
 	conditional?: {
-		condition:
-			| {
-					hasAttr: string;
-			  }
-			| {
-					parent: string;
-					/**
-					 * Not support yet
-					 */
-					hasNotAttr?: string;
-					_TODO_?: string;
-					_parent?: string;
-			  };
+		condition: string;
 		contents: PermittedContentSpec | boolean;
 	}[];
-	contents: PermittedContentSpec | boolean;
-	ancestor?: Node;
 }
 export interface PermittedContentRequire {
 	require: Target;
 	ignore?: Target;
-	notAllowedDescendants?: Node[];
+	notAllowedDescendants?: ContentType[];
 	max?: number;
 	min?: number;
 	_TODO_?: string;
@@ -80,21 +70,21 @@ export interface PermittedContentRequire {
 export interface PermittedContentOptional {
 	optional: Target;
 	ignore?: Target;
-	notAllowedDescendants?: Node[];
+	notAllowedDescendants?: ContentType[];
 	max?: number;
 	_TODO_?: string;
 }
 export interface PermittedContentOneOrMore {
 	oneOrMore: Target | PermittedContentSpec;
 	ignore?: Target;
-	notAllowedDescendants?: Node[];
+	notAllowedDescendants?: ContentType[];
 	max?: number;
 	_TODO_?: string;
 }
 export interface PermittedContentZeroOrMore {
 	zeroOrMore: Target | PermittedContentSpec;
 	ignore?: Target;
-	notAllowedDescendants?: Node[];
+	notAllowedDescendants?: ContentType[];
 	max?: number;
 	_TODO_?: string;
 }

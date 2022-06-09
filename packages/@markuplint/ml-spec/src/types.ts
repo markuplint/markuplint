@@ -1,6 +1,6 @@
 import type { AttributeJSON } from '.';
 import type { AttributeType, GlobalAttributes } from './attributes';
-import type { ContentModel, PermittedStructuresSchema } from './permitted-structres';
+import type { ContentModel, Category } from './permitted-structres';
 
 /**
  * markuplit Markup-language spec
@@ -35,7 +35,7 @@ export type SpecDefs = {
 	}>;
 	'#ariaAttrs': ARIAAttribute[];
 	'#roles': ARIRRoleAttribute[];
-	'#contentModels': { [model in ContentModel]?: string[] };
+	'#contentModels': { [model in Category]?: string[] };
 };
 
 /**
@@ -90,36 +90,12 @@ export type ElementSpec = {
 	/**
 	 * Element cateogries
 	 */
-	categories: ContentModel[];
+	categories: Category[];
 
 	/**
 	 * Permitted contents and permitted parents
 	 */
-	permittedStructures: PermittedStructuresSchema;
-
-	/**
-	 * Permitted ARIA roles
-	 */
-	permittedRoles: {
-		summary: string;
-		roles: PermittedRoles;
-		conditions?: {
-			condition: string;
-			roles: PermittedRoles;
-		}[];
-	};
-
-	/**
-	 * Implicit ARIA role
-	 */
-	implicitRole: {
-		summary: string;
-		role: ImplicitRole;
-		conditions?: {
-			condition: string;
-			role: ImplicitRole;
-		}[];
-	};
+	contentModel: ContentModel;
 
 	/**
 	 * Tag omittion
@@ -135,6 +111,38 @@ export type ElementSpec = {
 	 * Attributes
 	 */
 	attributes: Record<string, Attribute>;
+
+	/**
+	 * Implicit ARIA role
+	 */
+	implicitRole: {
+		role: ImplicitRole;
+		conditions?: {
+			condition: string;
+			role: ImplicitRole;
+		}[];
+	};
+
+	implicitRole_aria1_1?: {
+		role: ImplicitRole;
+		conditions?: {
+			condition: string;
+			role: ImplicitRole;
+		}[];
+	};
+
+	/**
+	 * Permitted ARIA roles
+	 */
+	permittedRoles: {
+		roles: PermittedRoles;
+		properties?: PermittedARIAProperties;
+		conditions?: {
+			condition: string;
+			roles: PermittedRoles;
+			properties?: PermittedARIAProperties;
+		}[];
+	};
 
 	/**
 	 * If true, it is possible to add any properties as attributes,
@@ -156,7 +164,36 @@ type ImplicitRole = string | false;
  * If `true`, this mean is "Any".
  * If `false`, this mean is "No".
  */
-export type PermittedRoles = string[] | boolean;
+export type PermittedRoles =
+	| string[]
+	| boolean
+	| {
+			'core-aam'?: true;
+			'graphics-aam'?: true;
+	  };
+
+/**
+ * If `false`, no specify aria-* attributes
+ */
+export type PermittedARIAProperties =
+	| false
+	| {
+			global?: true;
+			role?: true | string | string[];
+			expect?: {
+				name: string;
+				value?: string;
+			};
+			whithout?: {
+				type: 'not-recommended' | 'should-not' | 'must-not';
+				name: string;
+				value?: string;
+				alt?: {
+					method: 'remove-attr' | 'set-attr';
+					target: string;
+				};
+			}[];
+	  };
 
 type ElementSpecOmittion = false | ElementSpecOmittionTags;
 
@@ -180,7 +217,7 @@ export type Attribute = {
 	nonStandard?: true;
 } & ExtendableAttributeSpec;
 
-type ExtendableAttributeSpec = Omit<AttributeJSON, 'ref' | '_TODO_' | 'type'>;
+type ExtendableAttributeSpec = Omit<AttributeJSON, 'type'>;
 
 export type ARIRRoleAttribute = {
 	name: string;
@@ -248,7 +285,7 @@ export interface MLDOMElementSpec {
 	obsolete: boolean | string;
 	deprecated: boolean;
 	nonStandard: boolean;
-	categories: ContentModel[];
-	permittedStructures: PermittedStructuresSchema;
+	categories: Category[];
+	contentModel: ContentModel;
 	attributes: Attribute[];
 }

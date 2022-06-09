@@ -1,0 +1,36 @@
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-ul-element
+// https://www.w3.org/TR/html-aria/#el-ul
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": ["li", "#script-supporting"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"implicitRole": {
+		"role": "list"
+	},
+	"permittedRoles": {
+		"roles": [
+			"directory",
+			"group",
+			"listbox",
+			"menu",
+			"menubar",
+			"none",
+			"presentation",
+			"radiogroup",
+			"tablist",
+			"toolbar",
+			"tree"
+		]
+	}
+}

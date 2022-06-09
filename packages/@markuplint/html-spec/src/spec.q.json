@@ -1,0 +1,30 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-q-element
+// https://www.w3.org/TR/html-aria/#el-q
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#phrasing",
+				"notAllowedDescendants": ["progress"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/text-level-semantics.html#attr-q-cite
+		"cite": {
+			"type": "URL"
+		}
+	},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": true
+	}
+}

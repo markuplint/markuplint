@@ -1,0 +1,215 @@
+{
+	"definitions": {
+		"ContentModel": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["contents"],
+			"properties": {
+				"contents": {
+					"oneOf": [
+						{
+							"$ref": "#/definitions/PermittedContentSpec"
+						},
+						{ "type": "boolean" }
+					]
+				},
+				"descendantOf": { "type": "string" },
+				"conditional": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["condition", "contents"],
+						"properties": {
+							"condition": {
+								"type": "string"
+							},
+							"contents": {
+								"oneOf": [
+									{
+										"$ref": "#/definitions/PermittedContentSpec"
+									},
+									{ "type": "boolean" }
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"ContentType": {
+			"oneOf": [
+				{
+					"description": "Element",
+					"type": "string",
+					"pattern": "^[^#]+$"
+				},
+				{ "$ref": "#/definitions/Category" }
+			]
+		},
+		"Category": {
+			"type": "string",
+			"enum": [
+				"#text",
+				"#phrasing",
+				"#flow",
+				"#interactive",
+				"#heading",
+				"#sectioning",
+				"#metadata",
+				"#transparent",
+				"#embedded",
+				"#palpable",
+				"#script-supporting",
+				"#SVGAnimation",
+				"#SVGBasicShapes",
+				"#SVGContainer",
+				"#SVGDescriptive",
+				"#SVGFilterPrimitive",
+				"#SVGFont",
+				"#SVGGradient",
+				"#SVGGraphics",
+				"#SVGGraphicsReferencing",
+				"#SVGLightSource",
+				"#SVGNeverRendered",
+				"#SVGNone",
+				"#SVGPaintServer",
+				"#SVGRenderable",
+				"#SVGShape",
+				"#SVGStructural",
+				"#SVGStructurallyExternal",
+				"#SVGTextContent",
+				"#SVGTextContentChild",
+				"#SVGOtherXMLNamespace"
+			]
+		},
+		"Target": {
+			"oneOf": [
+				{ "$ref": "#/definitions/ContentType" },
+				{
+					"type": "array",
+					"items": { "$ref": "#/definitions/ContentType" },
+					"uniqueItems": true
+				}
+			]
+		},
+		"PermittedContentSpec": {
+			"type": "array",
+			"items": { "$ref": "#/definitions/PermittedContent" }
+		},
+		"PermittedContent": {
+			"type": "object",
+			"oneOf": [
+				{ "$ref": "#/definitions/PermittedContentRequire" },
+				{ "$ref": "#/definitions/PermittedContentOptional" },
+				{ "$ref": "#/definitions/PermittedContentOneOrMore" },
+				{ "$ref": "#/definitions/PermittedContentZeroOrMore" },
+				{ "$ref": "#/definitions/PermittedContentChoice" },
+				{ "$ref": "#/definitions/PermittedContentInterleave" }
+			]
+		},
+		"PermittedContentRequire": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["require"],
+			"properties": {
+				"require": { "$ref": "#/definitions/Target" },
+				"ignore": { "$ref": "#/definitions/Target" },
+				"notAllowedDescendants": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/ContentType" },
+					"uniqueItems": true
+				},
+				"max": { "type": "number" },
+				"min": { "type": "number" },
+				"_TODO_": { "type": "string" }
+			}
+		},
+		"PermittedContentOptional": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["optional"],
+			"properties": {
+				"optional": { "$ref": "#/definitions/Target" },
+				"ignore": { "$ref": "#/definitions/Target" },
+				"notAllowedDescendants": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/ContentType" },
+					"uniqueItems": true
+				},
+				"max": { "type": "number" },
+				"_TODO_": { "type": "string" }
+			}
+		},
+		"PermittedContentOneOrMore": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["oneOrMore"],
+			"properties": {
+				"oneOrMore": {
+					"oneOf": [{ "$ref": "#/definitions/Target" }, { "$ref": "#/definitions/PermittedContentSpec" }]
+				},
+				"ignore": { "$ref": "#/definitions/Target" },
+				"notAllowedDescendants": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/ContentType" },
+					"uniqueItems": true
+				},
+				"max": { "type": "number" },
+				"_TODO_": { "type": "string" }
+			}
+		},
+		"PermittedContentZeroOrMore": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["zeroOrMore"],
+			"properties": {
+				"zeroOrMore": {
+					"oneOf": [{ "$ref": "#/definitions/Target" }, { "$ref": "#/definitions/PermittedContentSpec" }]
+				},
+				"ignore": { "$ref": "#/definitions/Target" },
+				"notAllowedDescendants": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/ContentType" },
+					"uniqueItems": true
+				},
+				"max": { "type": "number" },
+				"_TODO_": { "type": "string" }
+			}
+		},
+		"PermittedContentChoice": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["choice"],
+			"properties": {
+				"choice": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/PermittedContentSpec" },
+					"minItems": 2,
+					"maxItems": 5
+				},
+				"_TODO_": { "type": "string" }
+			}
+		},
+		"PermittedContentInterleave": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["interleave"],
+			"properties": {
+				"interleave": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/PermittedContentSpec" },
+					"minItems": 2
+				},
+				"_TODO_": { "type": "string" }
+			}
+		}
+	},
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"__contentModel": {
+			"$ref": "#/definitions/ContentModel"
+		}
+	}
+}

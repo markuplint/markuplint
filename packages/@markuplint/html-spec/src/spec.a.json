@@ -1,0 +1,65 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element
+// https://www.w3.org/TR/html-aria/#el-a
+// https://www.w3.org/TR/html-aam-1.0/#:~:text=Collapse%20all-,a%20(represents%20a%20hyperlink),-a%20(no%20href
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#transparent",
+				"notAllowedDescendants": ["#interactive"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["href", "target", "download", "ping", "rel", "hreflang", "type", "referrerpolicy"]
+	},
+	"attributes": {},
+	"implicitRole": {
+		"role": "link",
+		"conditions": [
+			{
+				"condition": ":not([href])",
+				"role": false
+			}
+		]
+	},
+	"permittedRoles": {
+		"roles": true,
+		"conditions": [
+			{
+				"condition": "[href]",
+				"roles": [
+					"button",
+					"checkbox",
+					"menuitem",
+					"menuitemcheckbox",
+					"menuitemradio",
+					"option",
+					"radio",
+					"switch",
+					"tab",
+					"treeitem"
+				],
+				"properties": {
+					"global": true,
+					"role": true,
+					"whithout": [
+						{
+							"type": "not-recommended",
+							"name": "disabled",
+							"value": "true",
+							"alt": {
+								"method": "remove-attr",
+								"target": "href"
+							}
+						}
+					]
+				}
+			}
+		]
+	}
+}

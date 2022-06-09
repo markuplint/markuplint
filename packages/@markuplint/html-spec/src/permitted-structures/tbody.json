@@ -1,8 +1,0 @@
-{
-	"tag": "tbody",
-	"contents": [
-		{
-			"zeroOrMore": "tr"
-		}
-	]
-}

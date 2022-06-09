@@ -1,0 +1,140 @@
+// https://html.spec.whatwg.org/multipage/semantics.html#the-link-element
+// https://www.w3.org/TR/html-aria/#el-link
+{
+	"contentModel": {
+		"contents": false
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": [
+			"crossorigin",
+			"href",
+			"hreflang",
+			"type",
+			"referrerpolicy",
+			"integrity",
+			"media",
+			"fetchpriority"
+		]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-rel
+		"rel": {
+			"type": [
+				"Any",
+				{
+					"token": {
+						"enum": [
+							"alternate",
+							"canonical",
+							"author",
+							"dns-prefetch",
+							"help",
+							"icon",
+							"manifest",
+							"modulepreload",
+							"license",
+							"next",
+							"pingback",
+							"preconnect",
+							"prefetch",
+							"preload",
+							"prerender",
+							"prev",
+							"search",
+							"stylesheet"
+						]
+					},
+					"unique": true,
+					"separator": "space"
+				}
+			],
+			"requiredEither": ["itemprop"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#the-link-element:names:-the-itemprop-attribute
+		"itemprop": {
+			"requiredEither": ["rel"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-integrity
+		"integrity": {
+			"condition": ["[rel~='stylesheet' i]", "[rel~='preload' i]", "[rel~='modulepreload' i]"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-sizes
+		"sizes": {
+			"type": {
+				"token": "IconSize",
+				"caseInsensitive": true,
+				"ordered": false,
+				"unique": true,
+				"separator": "space"
+			},
+			"condition": ["[rel~='icon' i]", "[rel~='apple-touch-icon' i]"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-imagesrcset
+		"imagesrcset": {
+			"type": "Srcset",
+			"condition": "[imagesizes][rel~='preload' i][as='image' i]",
+			"required": "[imagesizes]"
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-imagesizes
+		"imagesizes": {
+			"type": "SourceSizeList",
+			"condition": "[imagesrcset][rel~='preload' i][as='image' i]",
+			"required": "[imagesrcset]"
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-as
+		"as": {
+			"type": {
+				"enum": [
+					"fetch",
+					"audio",
+					"audioworklet",
+					"document",
+					"embed",
+					"font",
+					"frame",
+					"iframe",
+					"image",
+					"manifest",
+					"object",
+					"paintworklet",
+					"report",
+					"script",
+					"serviceworker",
+					"sharedworker",
+					"style",
+					"track",
+					"video",
+					"worker",
+					"xslt"
+				]
+			},
+			// If the rel attribute is modulepreload, invalidValueDefault and missingValueDefault will be `script`
+			"condition": ["[rel='preload' i]", "[rel='modulepreload' i]"]
+		},
+		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking
+		"blocking": {
+			"type": {
+				"enum": ["render"]
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-color
+		"color": {
+			"type": "<color>",
+			"condition": "[rel~='mask-icon' i]"
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-disabled
+		"disabled": {
+			"type": "Boolean"
+		}
+	},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": false
+	}
+}

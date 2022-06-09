@@ -1,0 +1,24 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-strong-element
+// https://www.w3.org/TR/html-aria/#el-strong
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#flow"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": true
+	}
+}

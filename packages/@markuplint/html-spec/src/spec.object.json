@@ -1,0 +1,41 @@
+// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element
+// https://www.w3.org/TR/html-aria/#el-object
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#flow"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["height", "width"],
+		"#HTMLFormControlElementAttrs": ["form"]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-data
+		"data": {
+			"type": "URL",
+			"requiredEither": ["type"]
+		},
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-type
+		"type": {
+			"type": "MIMEType",
+			"requiredEither": ["data"]
+		},
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-name
+		"name": {
+			"type": "BrowsingContextName"
+		}
+	},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": ["application", "document", "img"]
+	}
+}

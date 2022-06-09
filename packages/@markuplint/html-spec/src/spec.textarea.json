@@ -1,0 +1,68 @@
+// https://html.spec.whatwg.org/multipage/form-elements.html#the-textarea-element
+// https://www.w3.org/TR/html-aria/#el-textarea
+{
+	"contentModel": {
+		"contents": [
+			{
+				"optional": "#text"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": [
+			"autocomplete",
+			"dirname",
+			"disabled",
+			"form",
+			"maxlength",
+			"minlength",
+			"name",
+			"readonly",
+			"required"
+		]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-textarea-cols",
+		"cols": {
+			"type": {
+				"type": "integer",
+				"gt": 0
+			},
+			"defaultValue": "20"
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-textarea-placeholder",
+		"placeholder": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-textarea-rows",
+		"rows": {
+			"type": {
+				"type": "integer",
+				"gt": 0
+			},
+			"defaultValue": "2"
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-textarea-wrap",
+		"wrap": {
+			"type": {
+				"enum": ["soft", "hard"],
+				"missingValueDefault": "soft",
+				"invalidValueDefault": "soft"
+			}
+		}
+	},
+	"implicitRole": {
+		"role": "textbox"
+	},
+	"permittedRoles": {
+		"roles": false,
+		"properties": {
+			"global": true,
+			"role": "textbox"
+		}
+	}
+}

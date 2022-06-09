@@ -1,0 +1,55 @@
+// https://html.spec.whatwg.org/multipage/media.html#the-track-element
+// https://www.w3.org/TR/html-aria/#el-track
+{
+	"contentModel": {
+		"contents": false
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/media.html#attr-track-kind
+		"kind": {
+			"type": {
+				"enum": ["subtitles", "captions", "descriptions", "chapters", "metadata"],
+				"missingValueDefault": "metadata",
+				"invalidValueDefault": "metadata"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/media.html#attr-track-src
+		"src": {
+			"type": "URL",
+			"required": true
+		},
+		// https://html.spec.whatwg.org/multipage/media.html#attr-track-srclang
+		"srclang": {
+			"type": "BCP47"
+		},
+		// https://html.spec.whatwg.org/multipage/media.html#attr-track-label
+		"label": {
+			// TODO:
+			// The value of the label attribute,
+			// if the attribute is present, must not be the empty string.
+			// Furthermore, there must not be two track element children of
+			// the same media element whose kind attributes are in the same state,
+			// whose srclang attributes are both missing or have values
+			// that represent the same language,
+			// and whose label attributes are again both missing or both have the same value.
+			"type": "NoEmptyAny"
+		},
+		// https://html.spec.whatwg.org/multipage/media.html#attr-track-default
+		"default": {
+			"type": "Boolean"
+		}
+	},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": false,
+		"properties": false
+	}
+}

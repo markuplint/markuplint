@@ -1,0 +1,42 @@
+// https://svgwg.org/svg2-draft/interact.html#ScriptElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-60
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": ["#SVGOtherXMLNamespace", "#text"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#XLinkAttrs": ["xlink:href", "xlink:title"]
+	},
+	"attributes": {
+		// https://svgwg.org/svg2-draft/interact.html#ScriptElementTypeAttribute
+		"type": {
+			"type": "MIMEType",
+			"defaultValue": "application/ecmascript"
+		},
+		// https://svgwg.org/svg2-draft/interact.html#ScriptElementHrefAttribute
+		"href": {
+			"type": "URL"
+		},
+		// https://svgwg.org/svg2-draft/interact.html#ScriptElementCrossoriginAttribute
+		"crossorigin": {
+			"type": {
+				"enum": ["anonymous", "use-credentials", ""],
+				"disallowToSurroundBySpaces": false
+			},
+			"animatable": true
+		}
+	},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": false
+	}
+}

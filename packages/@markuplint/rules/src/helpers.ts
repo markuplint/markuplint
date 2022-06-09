@@ -12,27 +12,9 @@ export function attrMatches<T extends RuleConfigValue, R>(node: Element<T, R>, c
 		return true;
 	}
 
-	let matched = false;
-	if ('self' in condition && condition.self) {
-		const condSelector = Array.isArray(condition.self) ? condition.self.join(',') : condition.self;
-		matched = node.matches(condSelector);
-	}
-	if ('ancestor' in condition && condition.ancestor) {
-		let parent = node.parentNode;
-		while (parent) {
-			if (parent.is(parent.ELEMENT_NODE)) {
-				const condSelector = Array.isArray(condition.ancestor)
-					? condition.ancestor.join(',')
-					: condition.ancestor;
-				if (parent.matches(condSelector)) {
-					matched = true;
-					break;
-				}
-			}
-			parent = parent.parentNode;
-		}
-	}
-	return matched;
+	const condSelector = Array.isArray(condition) ? condition.join(',') : condition;
+
+	return node.matches(condSelector);
 }
 
 export function match(needle: string, pattern: string) {

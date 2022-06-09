@@ -1,8 +1,0 @@
-{
-	"permittedRoles": {
-		"roles": ["none", "presentation"]
-	},
-	"implicitRole": {
-		"role": false
-	}
-}

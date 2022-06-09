@@ -27,9 +27,14 @@ export async function fetchText(url: string) {
 	if (cache.has(url)) {
 		text = cache.get(url)!;
 	} else {
-		const res = await fetch(url);
-		text = await res.text();
-		cache.set(url, text);
+		try {
+			const res = await fetch(url);
+			text = await res.text();
+			cache.set(url, text);
+		} catch (e) {
+			cache.set(url, '');
+			text = '';
+		}
 	}
 	current += 1;
 	bar.update(current, { process: `🔗 ${url.length > 30 ? `${url.slice(0, 15)}...${url.slice(-15)}` : url}` });

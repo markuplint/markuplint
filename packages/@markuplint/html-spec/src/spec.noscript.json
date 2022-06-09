@@ -1,0 +1,25 @@
+// https://html.spec.whatwg.org/multipage/scripting.html#the-noscript-element
+// https://www.w3.org/TR/html-aria/#el-noscript
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#flow"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": false,
+		"properties": false
+	}
+}

@@ -73,16 +73,8 @@ export default createRule<RequiredAttributes>({
 				} else if (spec.required === true) {
 					invalid = attrMatches(node, spec.condition) && didntHave;
 				} else if (spec.required) {
-					if ('ancestor' in spec.required && spec.required.ancestor) {
-						const ancestorList = Array.isArray(spec.required.ancestor)
-							? spec.required.ancestor
-							: [spec.required.ancestor];
-						const ancestors = ancestorList
-							.join(',')
-							.split(',')
-							.map(a => a.trim());
-						invalid = ancestors.some(a => node.closest(a)) && didntHave;
-					}
+					const selector = Array.isArray(spec.required) ? spec.required.join(',') : spec.required;
+					invalid = node.matches(selector) && didntHave;
 				}
 
 				if (invalid) {

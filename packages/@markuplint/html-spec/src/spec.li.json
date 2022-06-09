@@ -1,0 +1,41 @@
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-li-element
+// https://www.w3.org/TR/html-aria/#el-li
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#flow"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/grouping-content.html#attr-li-value
+		"value": {
+			"type": "Int",
+			"condition": "ol > li"
+		}
+	},
+	"implicitRole": {
+		"role": "listitem"
+	},
+	"permittedRoles": {
+		"roles": [
+			"menuitem",
+			"menuitemcheckbox",
+			"menuitemradio",
+			"option",
+			"none",
+			"presentation",
+			"radio",
+			"separator",
+			"tab",
+			"treeitem"
+		]
+	}
+}

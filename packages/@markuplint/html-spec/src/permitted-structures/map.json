@@ -1,8 +1,0 @@
-{
-	"tag": "map",
-	"contents": [
-		{
-			"zeroOrMore": "#transparent"
-		}
-	]
-}

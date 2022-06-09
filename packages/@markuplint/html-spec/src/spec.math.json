@@ -1,0 +1,21 @@
+// https://momdo.github.io/html/embedded-content-other.html#mathml
+// https://www.w3.org/TR/html-aria/#el-math
+{
+	"contentModel": {
+		"contents": true
+	},
+	"globalAttrs": {
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"implicitRole": {
+		"role": "math"
+	},
+	"permittedRoles": {
+		"roles": false,
+		"properties": {
+			"global": true,
+			"role": "math"
+		}
+	}
+}

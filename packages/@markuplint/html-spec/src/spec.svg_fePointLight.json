@@ -1,0 +1,40 @@
+// https://drafts.fxtf.org/filter-effects/#fePointLightElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-33
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
+	},
+	"attributes": {
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fepointlight-x
+		"x": {
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fepointlight-y
+		"y": {
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fepointlight-z
+		"z": {
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		}
+	},
+	"implicitRole": {
+		"role": false
+	},
+	"permittedRoles": {
+		"roles": false
+	}
+}

@@ -429,8 +429,28 @@ describe('childNodeRules', () => {
 });
 
 describe('Issues', () => {
+	// https://github.com/markuplint/markuplint/issues/397
+	// And https://github.com/markuplint/markuplint/issues/397#issuecomment-1148349418
 	test('#397', async () => {
-		const { violations } = await mlRuleTest(rule, '<th aria-sort="ascending"></th>');
-		expect(violations.length).toBe(0);
+		{
+			const { violations } = await mlRuleTest(rule, '<table><tr><th aria-sort="ascending"></th></tr></table>');
+			expect(violations).toStrictEqual([
+				{
+					severity: 'error',
+					line: 1,
+					col: 16,
+					message: 'The "aria-sort" ARIA state/property is disallowed on the "cell" role',
+					raw: 'aria-sort="ascending"',
+				},
+			]);
+		}
+
+		{
+			const { violations } = await mlRuleTest(
+				rule,
+				'<table><tr><th scope="row" aria-sort="ascending"></th></tr></table>',
+			);
+			expect(violations).toStrictEqual([]);
+		}
 	});
 });

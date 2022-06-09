@@ -12,45 +12,24 @@ test('deprecated', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'The "font" element is deprecated',
+			message: 'The "font" element is obsolete',
 			line: 1,
 			col: 1,
 			raw: '<font>',
 		},
 		{
 			severity: 'error',
-			message: 'The "big" element is deprecated',
+			message: 'The "big" element is obsolete',
 			line: 1,
 			col: 14,
 			raw: '<big>',
 		},
 		{
 			severity: 'error',
-			message: 'The "blink" element is deprecated',
+			message: 'The "blink" element is obsolete',
 			line: 1,
 			col: 19,
 			raw: '<blink>',
-		},
-	]);
-});
-
-test('Foreign element', async () => {
-	const { violations } = await mlRuleTest(
-		rule,
-		'<svg><g><image width="100" height="100" xlink:href="path/to"/></g></svg>',
-	);
-	const { violations: violations2 } = await mlRuleTest(
-		rule,
-		'<div><span><image width="100" height="100" xlink:href="path/to"/></span></div>',
-	);
-	expect(violations).toStrictEqual([]);
-	expect(violations2).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 12,
-			raw: '<image width="100" height="100" xlink:href="path/to"/>',
-			message: 'The "image" element is deprecated',
 		},
 	]);
 });
@@ -60,7 +39,7 @@ test('svg', async () => {
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
-			message: 'The "altGlyph" element is deprecated',
+			message: 'The "altGlyph" element is obsolete',
 			line: 1,
 			col: 6,
 			raw: '<altGlyph>',
