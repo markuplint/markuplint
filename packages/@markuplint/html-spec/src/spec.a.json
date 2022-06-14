@@ -19,48 +19,41 @@
 		"#HTMLLinkAndFetchingAttrs": ["href", "target", "download", "ping", "rel", "hreflang", "type", "referrerpolicy"]
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "link",
-		"conditions": [
-			{
-				"condition": ":not([href])",
-				"role": false
-			}
-		]
-	},
-	"permittedRoles": {
-		"roles": true,
-		"conditions": [
-			{
-				"condition": "[href]",
-				"roles": [
-					"button",
-					"checkbox",
-					"menuitem",
-					"menuitemcheckbox",
-					"menuitemradio",
-					"option",
-					"radio",
-					"switch",
-					"tab",
-					"treeitem"
-				],
-				"properties": {
-					"global": true,
-					"role": true,
-					"whithout": [
-						{
-							"type": "not-recommended",
-							"name": "disabled",
-							"value": "true",
-							"alt": {
-								"method": "remove-attr",
-								"target": "href"
-							}
-						}
-					]
+	"aria": {
+		"implicitRole": "link",
+		"permittedRoles": [
+			"button",
+			"checkbox",
+			"menuitem",
+			"menuitemcheckbox",
+			"menuitemradio",
+			"option",
+			"radio",
+			"switch",
+			"tab",
+			"treeitem"
+		],
+		"properties": {
+			"global": true,
+			"role": true,
+			"whithout": [
+				{
+					"type": "not-recommended",
+					"name": "aria-disabled",
+					"value": "true",
+					"alt": {
+						"method": "remove-attr",
+						"target": "href"
+					}
 				}
+			]
+		},
+		"conditions": {
+			":not([href])": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			}
-		]
+		}
 	}
 }

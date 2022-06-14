@@ -21,10 +21,11 @@
 			"type": "URL"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": true
+	"aria": {
+		"implicitRole": "blockquote",
+		"permittedRoles": true,
+		"1.1": {
+			"implicitRole": false
+		}
 	}
 }

@@ -56,11 +56,9 @@
 			}
 		}
 	},
-	"implicitRole": {
-		"role": "textbox"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "textbox",
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			"role": "textbox"

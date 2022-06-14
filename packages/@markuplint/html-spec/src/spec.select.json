@@ -29,17 +29,9 @@
 			}
 		}
 	},
-	"implicitRole": {
-		"role": "combobox",
-		"conditions": [
-			{
-				"condition": "[multiple], [size]:not([size=1])",
-				"role": "listbox"
-			}
-		]
-	},
-	"permittedRoles": {
-		"roles": ["menu"],
+	"aria": {
+		"implicitRole": "combobox",
+		"permittedRoles": ["menu"],
 		"properties": {
 			// Otherwise, any global aria-* attributes and any other aria-* attributes applicable to the combobox or menu role.
 			"global": true,
@@ -48,14 +40,14 @@
 			"whithout": [
 				{
 					"type": "should-not",
-					"name": "multiselectable"
+					"name": "aria-multiselectable"
 				}
 			]
 		},
-		"conditions": [
-			{
-				"condition": "[multiple], [size]:not([size=1])",
-				"roles": false,
+		"conditions": {
+			"[multiple], [size]:not([size=1])": {
+				"implicitRole": "listbox",
+				"permittedRoles": false,
 				"properties": {
 					// Otherwise, any global aria-* attributes and any other aria-* attributes applicable to the listbox role.
 					"global": true,
@@ -64,11 +56,11 @@
 					"whithout": [
 						{
 							"type": "should-not",
-							"name": "multiselectable"
+							"name": "aria-multiselectable"
 						}
 					]
 				}
 			}
-		]
+		}
 	}
 }

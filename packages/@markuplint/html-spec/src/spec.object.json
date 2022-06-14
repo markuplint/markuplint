@@ -33,10 +33,8 @@
 			"type": "BrowsingContextName"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": ["application", "document", "img"]
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["application", "document", "img"]
 	}
 }

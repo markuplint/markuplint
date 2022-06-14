@@ -22,13 +22,9 @@
 			"type": "DOMID"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false,
-		"properties": {
-			"global": true
-		}
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"namingProhibited": true
 	}
 }

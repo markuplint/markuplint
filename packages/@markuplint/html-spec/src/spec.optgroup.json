@@ -23,11 +23,9 @@
 			"required": true
 		}
 	},
-	"implicitRole": {
-		"role": "group"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "group",
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			"role": "group"

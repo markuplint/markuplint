@@ -28,11 +28,19 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false,
-		"properties": false
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": {
+			"only": [
+				{
+					"name": "aria-hidden",
+					"value": "true"
+				}
+			]
+		},
+		"1.1": {
+			"properties": false
+		}
 	}
 }

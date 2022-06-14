@@ -9,11 +9,9 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "math"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "math",
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			"role": "math"

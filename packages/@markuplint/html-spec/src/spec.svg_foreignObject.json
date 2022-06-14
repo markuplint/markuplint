@@ -87,11 +87,9 @@
 		]
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "group"
-	},
-	"permittedRoles": {
-		"roles": {
+	"aria": {
+		"implicitRole": "group",
+		"permittedRoles": {
 			"core-aam": true,
 			"graphics-aam": true
 		}

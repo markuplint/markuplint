@@ -13,10 +13,8 @@
 		"#SVGTransferFunctionAttrs": ["type", "tableValues", "slope", "intercept", "amplitude", "exponent", "offset"]
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false
 	}
 }

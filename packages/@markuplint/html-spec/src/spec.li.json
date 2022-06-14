@@ -22,11 +22,9 @@
 			"condition": "ol > li"
 		}
 	},
-	"implicitRole": {
-		"role": "listitem"
-	},
-	"permittedRoles": {
-		"roles": [
+	"aria": {
+		"implicitRole": "listitem",
+		"permittedRoles": [
 			"menuitem",
 			"menuitemcheckbox",
 			"menuitemradio",

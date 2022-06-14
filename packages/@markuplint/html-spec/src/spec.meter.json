@@ -42,22 +42,20 @@
 			"type": "Number"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			// Authors SHOULD NOT use the aria-valuemax or aria-valuemin attributes on meter elements.
 			"whithout": [
 				{
 					"type": "should-not",
-					"name": "valuemax"
+					"name": "aria-valuemax"
 				},
 				{
 					"type": "should-not",
-					"name": "valuemin"
+					"name": "aria-valuemin"
 				}
 			]
 		}

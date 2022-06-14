@@ -69,11 +69,9 @@
 			}
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": ["application"],
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["application"],
 		"properties": {
 			"global": true,
 			"role": "application"

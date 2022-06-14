@@ -38,26 +38,25 @@
 			}
 		}
 	},
-	"implicitRole": {
-		"role": "link",
-		"conditions": [
-			{
-				"condition": ":not([href])",
-				"role": false
-			}
-		]
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "link",
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			"role": "link"
 		},
-		"conditions": [
-			{
-				"condition": ":not([href])",
-				"roles": false
+		"conditions": {
+			":not([href])": {
+				"permittedRoles": ["button", "link"],
+				"namingProhibited": true
 			}
-		]
+		},
+		"1.1": {
+			"conditions": {
+				":not([href])": {
+					"permittedRoles": false
+				}
+			}
+		}
 	}
 }

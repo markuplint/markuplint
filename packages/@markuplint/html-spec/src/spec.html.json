@@ -19,11 +19,9 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "document"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "document",
+		"permittedRoles": false,
 		"properties": false
 	}
 }

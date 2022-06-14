@@ -86,17 +86,17 @@
 			}
 		}
 	},
-	"implicitRole": {
-		"role": false,
-		"conditions": [
-			{
+	"aria": {
+		"implicitRole": "form",
+		"permittedRoles": ["search", "none", "presentation"],
+		"1.1": {
+			"implicitRole": false,
+			"conditions": {
 				// TODO: Use `aria/` selector
-				"condition": "#hasAccname",
-				"role": "form"
+				"#hasAccname": {
+					"implicitRole": "form"
+				}
 			}
-		]
-	},
-	"permittedRoles": {
-		"roles": ["search", "none", "presentation"]
+		}
 	}
 }

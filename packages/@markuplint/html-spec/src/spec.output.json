@@ -22,10 +22,8 @@
 			"type": "DOMID"
 		}
 	},
-	"implicitRole": {
-		"role": "status"
-	},
-	"permittedRoles": {
-		"roles": false
+	"aria": {
+		"implicitRole": "status",
+		"permittedRoles": false
 	}
 }

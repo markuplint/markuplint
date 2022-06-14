@@ -20,10 +20,8 @@
 		"#HTMLFormControlElementAttrs": ["disabled", "form", "name"]
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "group"
-	},
-	"permittedRoles": {
-		"roles": ["radiogroup", "presentation", "none"]
+	"aria": {
+		"implicitRole": "group",
+		"permittedRoles": ["radiogroup", "presentation", "none"]
 	}
 }

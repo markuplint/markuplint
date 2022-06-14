@@ -16,14 +16,15 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "definition"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			"role": "definition"
+		},
+		"1.1": {
+			"implicitRole": "definition"
 		}
 	}
 }

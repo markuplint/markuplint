@@ -25,11 +25,9 @@
 			"type": "Boolean"
 		}
 	},
-	"implicitRole": {
-		"role": "dialog"
-	},
-	"permittedRoles": {
-		"roles": ["alertdialog"],
+	"aria": {
+		"implicitRole": "dialog",
+		"permittedRoles": ["alertdialog"],
 		"properties": {
 			"global": true,
 			"role": "dialog"

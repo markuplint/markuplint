@@ -27,11 +27,9 @@
 			"type": "Number"
 		}
 	},
-	"implicitRole": {
-		"role": "progressbar"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "progressbar",
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			"role": "progressbar",
@@ -39,7 +37,7 @@
 			"whithout": [
 				{
 					"type": "should-not",
-					"name": "valuemax"
+					"name": "aria-valuemax"
 				}
 			]
 		}

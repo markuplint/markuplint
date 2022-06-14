@@ -42,17 +42,9 @@
 			}
 		}
 	},
-	"implicitRole": {
-		"role": "img",
-		"conditions": [
-			{
-				"condition": "[alt=\"\"]",
-				"role": "presentation"
-			}
-		]
-	},
-	"permittedRoles": {
-		"roles": [
+	"aria": {
+		"implicitRole": "img",
+		"permittedRoles": [
 			"button",
 			"checkbox",
 			"link",
@@ -61,6 +53,7 @@
 			"menuitemradio",
 			"option",
 			"progressbar",
+			"radio",
 			"scrollbar",
 			"separator",
 			"slider",
@@ -68,17 +61,48 @@
 			"tab",
 			"treeitem"
 		],
-		"conditions": [
-			{
-				"condition": "[alt=\"\"], :not([alt])",
-				"roles": false,
+		"conditions": {
+			"[alt=\"\"]": {
+				"implicitRole": "presentation",
 				"properties": {
-					"expect": {
-						"name": "hidden",
-						"value": "true"
-					}
+					"only": [
+						{
+							"name": "aria-hidden",
+							"value": "true"
+						}
+					]
+				}
+			},
+			// TODO: ":not([alt]):not(#hasAccname)"
+			":not([alt])": {
+				"implicitRole": "img",
+				"properties": {
+					"only": [
+						{
+							"name": "aria-hidden",
+							"value": "true"
+						}
+					]
 				}
 			}
-		]
+		},
+		"1.1": {
+			"permittedRoles": [
+				"button",
+				"checkbox",
+				"link",
+				"menuitem",
+				"menuitemcheckbox",
+				"menuitemradio",
+				"option",
+				"progressbar",
+				"scrollbar",
+				"separator",
+				"slider",
+				"switch",
+				"tab",
+				"treeitem"
+			]
+		}
 	}
 }

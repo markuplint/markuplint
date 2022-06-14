@@ -159,11 +159,9 @@
 			"deprecated": true
 		}
 	},
-	"implicitRole": {
-		"role": "graphics-document"
-	},
-	"permittedRoles": {
-		"roles": {
+	"aria": {
+		"implicitRole": "graphics-document",
+		"permittedRoles": {
 			"core-aam": true,
 			"graphics-aam": true
 		}

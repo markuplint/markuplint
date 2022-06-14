@@ -16,10 +16,17 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": ["none", "presentation"]
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["none", "presentation"],
+		"properties": {
+			"only": ["aria-hidden"]
+		},
+		"1.1": {
+			"properties": {
+				"global": true,
+				"role": true
+			}
+		}
 	}
 }

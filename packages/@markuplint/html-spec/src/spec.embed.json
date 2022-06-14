@@ -23,10 +23,8 @@
 			"type": "MIMEType"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": ["application", "document", "img", "none", "presentation"]
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["application", "document", "img", "none", "presentation"]
 	}
 }

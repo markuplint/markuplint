@@ -43,10 +43,8 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": ["group", "list", "none", "presentation"]
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["group", "list", "none", "presentation"]
 	}
 }

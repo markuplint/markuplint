@@ -16,11 +16,9 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "main"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "main",
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			"role": "main"

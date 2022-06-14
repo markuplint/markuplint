@@ -16,10 +16,11 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "heading"
-	},
-	"permittedRoles": {
-		"roles": ["tab", "presentation", "none"]
+	"aria": {
+		"implicitRole": "heading",
+		"implicitProperties": {
+			"aria-level": "4"
+		},
+		"permittedRoles": ["tab", "presentation", "none"]
 	}
 }

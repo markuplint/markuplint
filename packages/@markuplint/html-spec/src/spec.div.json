@@ -38,10 +38,18 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": true
+	"aria": {
+		"implicitRole": "generic",
+		"permittedRoles": true,
+		"namingProhibited": true,
+		"conditions": {
+			"dl > div": {
+				"permittedRoles": ["presentation", "none"]
+			}
+		},
+		"1.1": {
+			"implicitRole": false,
+			"permittedRoles": true
+		}
 	}
 }

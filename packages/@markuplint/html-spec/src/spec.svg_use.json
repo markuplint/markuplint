@@ -104,12 +104,10 @@
 			"type": "URL"
 		}
 	},
-	"implicitRole": {
+	"aria": {
 		// Note that the re-used graphics in the use element's shadow tree may still be included in the accessibility tree, even if the host element is not.
-		"role": "graphics-object"
-	},
-	"permittedRoles": {
-		"roles": {
+		"implicitRole": "graphics-object",
+		"permittedRoles": {
 			"core-aam": true,
 			"graphics-aam": true
 		}

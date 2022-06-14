@@ -17,10 +17,8 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "article"
-	},
-	"permittedRoles": {
-		"roles": ["application", "document", "feed", "main", "none", "presentation", "region"]
+	"aria": {
+		"implicitRole": "article",
+		"permittedRoles": ["application", "document", "feed", "main", "none", "presentation", "region"]
 	}
 }

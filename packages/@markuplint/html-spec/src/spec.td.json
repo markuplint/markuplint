@@ -17,30 +17,21 @@
 		"#HTMLTableCellElementAttrs": ["colspan", "rowspan", "headers"]
 	},
 	"attributes": {},
-	"implicitRole": {
+	"aria": {
 		// No corresponding role if the ancestor table element is not exposed as a role=table, grid or treegrid.
-		"role": false,
-		"conditions": [
-			{
-				// role=cell if the ancestor table element is exposed as a role=table.
-				"condition": "table:is(:not([role]), [role=table]) > :is(thead, tfoot, tbody) > tr > td",
-				"role": "cell"
+		"implicitRole": false,
+		"permittedRoles": true,
+		"conditions": {
+			"table:is(:not([role]), [role=table]) > :is(thead, tfoot, tbody) > tr > td": {
+				"implicitRole": "cell"
 			},
-			{
-				// role=gridcell if the ancestor table element is exposed as a role=grid or treegrid.
-				"condition": "table:is([role=table], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td",
-				"role": "gridcell"
+			"table:is([role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td": {
+				"implicitRole": "gridcell"
+			},
+			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td": {
+				// No role if the ancestor table element has role=table, grid, or treegrid; otherwise any role.
+				"permittedRoles": false
 			}
-		]
-	},
-	"permittedRoles": {
-		// No role if the ancestor table element has role=table, grid, or treegrid; otherwise any role.
-		"roles": true,
-		"conditions": [
-			{
-				"condition": "table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td",
-				"roles": false
-			}
-		]
+		}
 	}
 }

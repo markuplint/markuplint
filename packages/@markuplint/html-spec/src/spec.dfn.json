@@ -17,10 +17,8 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "term"
-	},
-	"permittedRoles": {
-		"roles": true
+	"aria": {
+		"implicitRole": "term",
+		"permittedRoles": true
 	}
 }

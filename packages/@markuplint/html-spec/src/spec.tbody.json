@@ -16,10 +16,8 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "rowgroup"
-	},
-	"permittedRoles": {
-		"roles": true
+	"aria": {
+		"implicitRole": "rowgroup",
+		"permittedRoles": true
 	}
 }

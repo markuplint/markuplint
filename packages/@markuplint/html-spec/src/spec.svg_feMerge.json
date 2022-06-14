@@ -83,10 +83,8 @@
 		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"]
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false
 	}
 }
