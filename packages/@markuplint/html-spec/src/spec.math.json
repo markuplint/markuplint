@@ -1,5 +1,6 @@
 // https://momdo.github.io/html/embedded-content-other.html#mathml
 // https://www.w3.org/TR/html-aria/#el-math
+// https://w3c.github.io/html-aria/#el-math
 {
 	"contentModel": {
 		"contents": true

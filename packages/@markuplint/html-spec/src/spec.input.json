@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/input.html#the-input-element
 // https://www.w3.org/TR/html-aria/#el-input
+// https://w3c.github.io/html-aria/#el-input
 {
 	"contentModel": {
 		"contents": false

@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element
 // https://www.w3.org/TR/html-aria/#el-progress
+// https://w3c.github.io/html-aria/#el-progress
 {
 	"contentModel": {
 		"contents": [

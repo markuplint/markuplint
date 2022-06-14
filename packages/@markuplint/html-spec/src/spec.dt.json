@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/grouping-content.html#the-dt-element
 // https://www.w3.org/TR/html-aria/#el-dt
+// https://w3c.github.io/html-aria/#el-dt
 {
 	"contentModel": {
 		"contents": [

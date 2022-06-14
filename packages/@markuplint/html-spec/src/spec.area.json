@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element
 // https://www.w3.org/TR/html-aria/#el-area
+// https://w3c.github.io/html-aria/#el-area
 // https://www.w3.org/TR/html-aam-1.0/#:~:text=Comments-,area%20(represents%20a%20hyperlink),-area%20(no%20href
 {
 	"contentModel": {

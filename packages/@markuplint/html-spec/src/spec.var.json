@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-var-element
 // https://www.w3.org/TR/html-aria/#el-var
+// https://w3c.github.io/html-aria/#el-var
 {
 	"contentModel": {
 		"contents": [

@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-fieldset-element
 // https://www.w3.org/TR/html-aria/#el-fieldset
+// https://w3c.github.io/html-aria/#el-fieldset
 {
 	"contentModel": {
 		"contents": [

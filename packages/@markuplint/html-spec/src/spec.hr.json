@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/grouping-content.html#the-hr-element
 // https://www.w3.org/TR/html-aria/#el-hr
+// https://w3c.github.io/html-aria/#el-hr
 {
 	"contentModel": {
 		"contents": false

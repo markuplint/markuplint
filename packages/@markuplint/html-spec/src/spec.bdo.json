@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdo-element
 // https://www.w3.org/TR/html-aria/#el-bdo
+// https://w3c.github.io/html-aria/#el-bdo
 {
 	"contentModel": {
 		"contents": [

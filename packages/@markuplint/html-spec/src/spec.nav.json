@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/sections.html#the-nav-element
 // https://www.w3.org/TR/html-aria/#el-nav
+// https://w3c.github.io/html-aria/#el-nav
 {
 	"contentModel": {
 		"contents": [

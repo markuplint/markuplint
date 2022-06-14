@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element
 // https://www.w3.org/TR/html-aria/#el-dl
+// https://w3c.github.io/html-aria/#el-dl
 {
 	"contentModel": {
 		"contents": [

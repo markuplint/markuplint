@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/edits.html#the-ins-element
 // https://www.w3.org/TR/html-aria/#el-ins
+// https://w3c.github.io/html-aria/#el-ins
 {
 	"contentModel": {
 		"contents": [

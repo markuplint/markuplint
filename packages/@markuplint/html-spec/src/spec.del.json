@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/edits.html#the-del-element
 // https://www.w3.org/TR/html-aria/#el-del
+// https://w3c.github.io/html-aria/#el-del
 {
 	"contentModel": {
 		"contents": [

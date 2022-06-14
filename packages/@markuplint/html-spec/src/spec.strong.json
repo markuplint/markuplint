@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-strong-element
 // https://www.w3.org/TR/html-aria/#el-strong
+// https://w3c.github.io/html-aria/#el-strong
 {
 	"contentModel": {
 		"contents": [

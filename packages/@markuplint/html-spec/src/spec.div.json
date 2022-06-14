@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/grouping-content.html#the-div-element
 // https://www.w3.org/TR/html-aria/#el-div
+// https://w3c.github.io/html-aria/#el-div
 {
 	"contentModel": {
 		"contents": [

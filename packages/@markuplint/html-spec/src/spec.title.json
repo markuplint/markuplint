@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/semantics.html#the-title-element
 // https://www.w3.org/TR/html-aria/#el-title
+// https://w3c.github.io/html-aria/#el-title
 {
 	"contentModel": {
 		"contents": [

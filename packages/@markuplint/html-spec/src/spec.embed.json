@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element
 // https://www.w3.org/TR/html-aria/#el-embed
+// https://w3c.github.io/html-aria/#el-embed
 {
 	"contentModel": {
 		"contents": false

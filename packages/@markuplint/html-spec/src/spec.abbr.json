@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-abbr-element
 // https://www.w3.org/TR/html-aria/#el-abbr
+// https://w3c.github.io/html-aria/#el-abbr
 // https://www.w3.org/TR/html-aam-1.0/#:~:text=no%20href%20attribute)-,abbr,-address
 {
 	"contentModel": {

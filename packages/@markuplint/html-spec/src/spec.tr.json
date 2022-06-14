@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/tables.html#the-tr-element
 // https://www.w3.org/TR/html-aria/#el-tr
+// https://w3c.github.io/html-aria/#el-tr
 {
 	"contentModel": {
 		"contents": [

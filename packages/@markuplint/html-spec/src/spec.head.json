@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/semantics.html#the-head-element
 // https://www.w3.org/TR/html-aria/#el-head
+// https://w3c.github.io/html-aria/#el-head
 {
 	"contentModel": {
 		"contents": [

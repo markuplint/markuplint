@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-sub-and-sup-elements
 // https://www.w3.org/TR/html-aria/#el-sup
+// https://w3c.github.io/html-aria/#el-sup
 {
 	"contentModel": {
 		"contents": [

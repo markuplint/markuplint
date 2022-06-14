@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/forms.html#the-label-element
 // https://www.w3.org/TR/html-aria/#el-label
+// https://w3c.github.io/html-aria/#el-label
 {
 	"contentModel": {
 		"contents": [

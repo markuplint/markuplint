@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-kbd-element
 // https://www.w3.org/TR/html-aria/#el-kbd
+// https://w3c.github.io/html-aria/#el-kbd
 {
 	"contentModel": {
 		"contents": [

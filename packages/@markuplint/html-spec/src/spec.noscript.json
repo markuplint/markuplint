@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/scripting.html#the-noscript-element
 // https://www.w3.org/TR/html-aria/#el-noscript
+// https://w3c.github.io/html-aria/#el-noscript
 {
 	"contentModel": {
 		"contents": [

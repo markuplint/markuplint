@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/grouping-content.html#the-blockquote-element
 // https://www.w3.org/TR/html-aria/#el-blockquote
+// https://w3c.github.io/html-aria/#el-blockquote
 {
 	"contentModel": {
 		"contents": [

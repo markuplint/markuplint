@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/sections.html#the-section-element
 // https://www.w3.org/TR/html-aria/#el-section
+// https://w3c.github.io/html-aria/#el-section
 {
 	"contentModel": {
 		"contents": [

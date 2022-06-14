@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/semantics.html#the-meta-element
 // https://www.w3.org/TR/html-aria/#el-meta
+// https://w3c.github.io/html-aria/#el-meta
 {
 	"contentModel": {
 		"contents": false

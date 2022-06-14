@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-output-element
 // https://www.w3.org/TR/html-aria/#el-output
+// https://w3c.github.io/html-aria/#el-output
 {
 	"contentModel": {
 		"contents": [

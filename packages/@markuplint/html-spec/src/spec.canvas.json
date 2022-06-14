@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/canvas.html#the-canvas-element
 // https://www.w3.org/TR/html-aria/#el-canvas
+// https://w3c.github.io/html-aria/#el-canvas
 {
 	"contentModel": {
 		"contents": [

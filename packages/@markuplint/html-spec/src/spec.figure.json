@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/grouping-content.html#the-figure-element
 // https://www.w3.org/TR/html-aria/#el-figure
+// https://w3c.github.io/html-aria/#el-figure
 {
 	"contentModel": {
 		"contents": [

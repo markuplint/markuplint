@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-samp-element
 // https://www.w3.org/TR/html-aria/#el-samp
+// https://w3c.github.io/html-aria/#el-samp
 {
 	"contentModel": {
 		"contents": [

@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-textarea-element
 // https://www.w3.org/TR/html-aria/#el-textarea
+// https://w3c.github.io/html-aria/#el-textarea
 {
 	"contentModel": {
 		"contents": [

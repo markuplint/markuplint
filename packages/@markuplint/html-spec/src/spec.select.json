@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element
 // https://www.w3.org/TR/html-aria/#el-select
+// https://w3c.github.io/html-aria/#el-select
 {
 	"contentModel": {
 		"contents": [

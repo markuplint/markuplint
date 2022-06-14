@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/tables.html#the-col-element
 // https://www.w3.org/TR/html-aria/#el-col
+// https://w3c.github.io/html-aria/#el-col
 {
 	"contentModel": {
 		"contents": false
