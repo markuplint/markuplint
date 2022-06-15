@@ -1,15 +1,14 @@
+import type { ARIAVersion } from '@markuplint/ml-spec';
+
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
-import {
-	ariaSpec,
-	checkAria,
-	getComputedRole,
-	getImplicitRole,
-	getPermittedRoles,
-	getRoleSpec,
-	htmlSpec,
-	isValidAttr,
-} from '../helpers';
+import { getComputedRole } from '../helper/aria/get-computed-role';
+import { getImplicitRole } from '../helper/aria/get-implicit-role';
+import { getPermittedRoles } from '../helper/aria/get-permitted-roles';
+import { ariaSpec } from '../helper/spec/aria-spec';
+import { getRoleSpec } from '../helper/spec/get-role-spec';
+import { htmlSpec } from '../helper/spec/html-spec';
+import { checkAria, isValidAttr } from '../helpers';
 
 type Options = {
 	checkingValue: boolean;
@@ -18,6 +17,7 @@ type Options = {
 	disallowSetImplicitRole: boolean;
 	disallowSetImplicitProps: boolean;
 	disallowDefaultValue: boolean;
+	version: ARIAVersion;
 };
 
 export default createRule<boolean, Options>({
@@ -28,6 +28,7 @@ export default createRule<boolean, Options>({
 		disallowSetImplicitRole: true,
 		disallowSetImplicitProps: true,
 		disallowDefaultValue: false,
+		version: '1.2',
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
@@ -76,7 +77,7 @@ export default createRule<boolean, Options>({
 
 				// Set the implicit role explicitly
 				if (el.rule.option.disallowSetImplicitRole) {
-					const implictRole = getImplicitRole(document.specs, el);
+					const implictRole = getImplicitRole(document.specs, el, el.rule.option.version);
 					if (implictRole && implictRole === value) {
 						// the implicit role
 						report({
@@ -95,7 +96,7 @@ export default createRule<boolean, Options>({
 
 				// Permitted ARIA Roles
 				if (el.rule.option.permittedAriaRoles) {
-					const permittedRoles = getPermittedRoles(document.specs, el);
+					const permittedRoles = getPermittedRoles(document.specs, el, el.rule.option.version);
 					if (permittedRoles === false) {
 						report({
 							scope: el,
@@ -131,7 +132,7 @@ export default createRule<boolean, Options>({
 				}
 			}
 
-			const computedRole = getComputedRole(document.specs, el);
+			const computedRole = getComputedRole(document.specs, el, el.rule.option.version);
 			if (computedRole) {
 				const role = getRoleSpec(document.specs, computedRole.name);
 				if (role) {
