@@ -18,7 +18,7 @@
 		"schema:gen": "ts-node ./gen/gen.ts; prettier --write './schemas/*.json';",
 		"schema:content-models": "json2ts ./schemas/content-models.schema.json > ./src/permitted-structres.ts; prettier --write ./src/permitted-structres.ts; eslint --fix --config ../../../.eslintrc ./src/permitted-structres.ts",
 		"schema:attributes": "json2ts ./schemas/attributes.schema.json --cwd ./schemas > ./src/attributes.ts; prettier --write ./src/attributes.ts; eslint --fix --config ../../../.eslintrc ./src/attributes.ts",
-		"schema": "yarn schema:gen; yarn schema:content-models; yarn schema:attributes; tsc;"
+		"schema": "run-s schema:*"
 	},
 	"dependencies": {
 		"tslib": "^2.3.1"
