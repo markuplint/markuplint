@@ -12,12 +12,12 @@ import {
 } from '../helpers';
 
 type Options = {
-	checkingValue?: boolean;
-	checkingDeprecatedProps?: boolean;
-	permittedAriaRoles?: boolean;
-	disallowSetImplicitRole?: boolean;
-	disallowSetImplicitProps?: boolean;
-	disallowDefaultValue?: boolean;
+	checkingValue: boolean;
+	checkingDeprecatedProps: boolean;
+	permittedAriaRoles: boolean;
+	disallowSetImplicitRole: boolean;
+	disallowSetImplicitProps: boolean;
+	disallowDefaultValue: boolean;
 };
 
 export default createRule<boolean, Options>({

@@ -3,8 +3,8 @@ import type { Element } from '@markuplint/ml-core';
 import { createRule } from '@markuplint/ml-core';
 
 type Options = {
-	ignoreRoles?: Roles[];
-	labelEachArea?: boolean;
+	ignoreRoles: Roles[];
+	labelEachArea: boolean;
 };
 
 type TopLevelRoles = 'banner' | 'main' | 'complementary' | 'contentinfo';

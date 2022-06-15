@@ -1,7 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
 type Options = {
-	ignoreHasMutableContents?: boolean;
+	ignoreHasMutableContents: boolean;
 };
 
 export default createRule<string[], Options>({
