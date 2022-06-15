@@ -16860,7 +16860,7 @@
 					"experimental": true
 				},
 				"height": {
-					"description": "The height of the video's display area, in CSS pixels (absolute values only; no percentages.)"
+					"description": "The height of the video's display area, in CSS pixels (absolute values only; no percentages)."
 				},
 				"loop": {
 					"description": "A Boolean attribute; if specified, the browser will automatically seek back to the start upon reaching the end of the video."
