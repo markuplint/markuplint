@@ -44,6 +44,24 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 				severity: 'error',
 				line: 1,
 				col: 6,
+				message: 'The "aria-checked" ARIA state/property is disallowed on the "generic" role',
+				raw: 'aria-checked="true"',
+			},
+		]);
+	});
+
+	test('[aria-checked=true]', async () => {
+		const { violations } = await mlRuleTest(rule, '<div aria-checked="true"></div>', {
+			rule: {
+				option: { version: '1.1' },
+			},
+		});
+
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 6,
 				message: 'The "aria-checked" ARIA state/property is not global state/property',
 				raw: 'aria-checked="true"',
 			},
@@ -431,17 +449,20 @@ describe('childNodeRules', () => {
 describe('Issues', () => {
 	// https://github.com/markuplint/markuplint/issues/397
 	// And https://github.com/markuplint/markuplint/issues/397#issuecomment-1148349418
+	// And https://github.com/markuplint/markuplint/issues/397#issuecomment-1156728358
 	test('#397', async () => {
 		{
 			const { violations } = await mlRuleTest(rule, '<table><tr><th aria-sort="ascending"></th></tr></table>');
 			expect(violations).toStrictEqual([
-				{
-					severity: 'error',
-					line: 1,
-					col: 16,
-					message: 'The "aria-sort" ARIA state/property is disallowed on the "cell" role',
-					raw: 'aria-sort="ascending"',
-				},
+				// https://github.com/markuplint/markuplint/issues/397#issuecomment-1156728358
+				// The element role is not `cell`.
+				// {
+				// 	severity: 'error',
+				// 	line: 1,
+				// 	col: 16,
+				// 	message: 'The "aria-sort" ARIA state/property is disallowed on the "cell" role',
+				// 	raw: 'aria-sort="ascending"',
+				// },
 			]);
 		}
 
