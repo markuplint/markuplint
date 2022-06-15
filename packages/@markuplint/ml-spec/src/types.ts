@@ -1,4 +1,5 @@
 import type { AttributeJSON } from '.';
+import type { ARIA } from './types/aria';
 import type { AttributeType, GlobalAttributes } from './types/attributes';
 import type { ContentModel, Category } from './types/permitted-structres';
 
@@ -113,36 +114,9 @@ export type ElementSpec = {
 	attributes: Record<string, Attribute>;
 
 	/**
-	 * Implicit ARIA role
+	 * WAI-ARIA role and properies
 	 */
-	implicitRole: {
-		role: ImplicitRole;
-		conditions?: {
-			condition: string;
-			role: ImplicitRole;
-		}[];
-	};
-
-	implicitRole_aria1_1?: {
-		role: ImplicitRole;
-		conditions?: {
-			condition: string;
-			role: ImplicitRole;
-		}[];
-	};
-
-	/**
-	 * Permitted ARIA roles
-	 */
-	permittedRoles: {
-		roles: PermittedRoles;
-		properties?: PermittedARIAProperties;
-		conditions?: {
-			condition: string;
-			roles: PermittedRoles;
-			properties?: PermittedARIAProperties;
-		}[];
-	};
+	aria: ARIA;
 
 	/**
 	 * If true, it is possible to add any properties as attributes,
@@ -154,46 +128,6 @@ export type ElementSpec = {
 	 */
 	possibleToAddProperties?: true;
 };
-
-/**
- * If `false`, this mean is "No corresponding role".
- */
-type ImplicitRole = string | false;
-
-/**
- * If `true`, this mean is "Any".
- * If `false`, this mean is "No".
- */
-export type PermittedRoles =
-	| string[]
-	| boolean
-	| {
-			'core-aam'?: true;
-			'graphics-aam'?: true;
-	  };
-
-/**
- * If `false`, no specify aria-* attributes
- */
-export type PermittedARIAProperties =
-	| false
-	| {
-			global?: true;
-			role?: true | string | string[];
-			expect?: {
-				name: string;
-				value?: string;
-			};
-			whithout?: {
-				type: 'not-recommended' | 'should-not' | 'must-not';
-				name: string;
-				value?: string;
-				alt?: {
-					method: 'remove-attr' | 'set-attr';
-					target: string;
-				};
-			}[];
-	  };
 
 type ElementSpecOmittion = false | ElementSpecOmittionTags;
 
@@ -269,6 +203,8 @@ export type ARIAAttributeValue =
 	| 'token'
 	| 'token list'
 	| 'URI';
+
+export type ARIAVersion = '1.1' | '1.2';
 
 export type EquivalentHtmlAttr = {
 	htmlAttrName: string;

@@ -5,3 +5,4 @@ export * from './get-ns';
 export * from './types';
 export * from './types/permitted-structres';
 export * from './types/attributes';
+export * from './types/aria';
