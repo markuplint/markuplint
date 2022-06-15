@@ -1,6 +1,6 @@
 import type { AttributeJSON } from '.';
-import type { AttributeType, GlobalAttributes } from './attributes';
-import type { ContentModel, Category } from './permitted-structres';
+import type { AttributeType, GlobalAttributes } from './types/attributes';
+import type { ContentModel, Category } from './types/permitted-structres';
 
 /**
  * markuplit Markup-language spec
