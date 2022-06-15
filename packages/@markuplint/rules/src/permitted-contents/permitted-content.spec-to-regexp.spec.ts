@@ -1,6 +1,6 @@
 import specs from '@markuplint/html-spec';
 
-import { htmlSpec } from '../helpers';
+import { htmlSpec } from '../helper/spec/html-spec';
 
 import ExpGenerator from './permitted-content.spec-to-regexp';
 

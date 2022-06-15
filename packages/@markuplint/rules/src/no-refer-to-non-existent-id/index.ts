@@ -1,6 +1,6 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
-import { ariaSpec } from '../helpers';
+import { ariaSpec } from '../helper/spec/aria-spec';
 
 export default createRule({
 	async verify({ document, report, t }) {

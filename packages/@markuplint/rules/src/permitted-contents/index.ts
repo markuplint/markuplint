@@ -3,7 +3,7 @@ import type { Category, MLMLSpec, ContentModel } from '@markuplint/ml-spec';
 
 import { createRule } from '@markuplint/ml-core';
 
-import { htmlSpec } from '../helpers';
+import { htmlSpec } from '../helper/spec/html-spec';
 
 import ExpGenerator from './permitted-content.spec-to-regexp';
 import unfoldContentModelsToTags from './unfold-content-models-to-tags';

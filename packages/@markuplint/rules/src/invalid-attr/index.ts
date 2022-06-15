@@ -4,7 +4,8 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 import { attrCheck } from '../attr-check';
 import { log as ruleLog } from '../debug';
-import { htmlSpec, isValidAttr, match } from '../helpers';
+import { htmlSpec } from '../helper/spec/html-spec';
+import { isValidAttr, match } from '../helpers';
 
 const log = ruleLog.extend('invalid-attr');
 
