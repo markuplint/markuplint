@@ -38,11 +38,9 @@ export function fetchObsoleteElements(obsoleteList: string[], specs: ExtendedEle
 				contentModel: {
 					contents: true,
 				},
-				permittedRoles: {
-					roles: false,
-				},
-				implicitRole: {
-					role: false,
+				aria: {
+					permittedRoles: true,
+					implicitRole: false,
 				},
 				omittion: false,
 				globalAttrs: {},
@@ -151,11 +149,9 @@ export async function fetchHTMLElement(link: string) {
 		contentModel: {
 			contents: false,
 		},
-		permittedRoles: {
-			roles: ['N/A'],
-		},
-		implicitRole: {
-			role: 'N/A',
+		aria: {
+			implicitRole: false,
+			permittedRoles: true,
 		},
 		omittion: false,
 		attributes,
