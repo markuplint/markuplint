@@ -302,8 +302,11 @@
 		}
 	},
 	"aria": {
-		"implicitRole": false,
-		"permittedRoles": false,
+		// No condition:
+		// > input type=text or with a missing or invalid type, with no list attribute
+		// @see https://w3c.github.io/html-aria/#el-input-text
+		"implicitRole": "textbox",
+		"permittedRoles": ["combobox", "searchbox", "spinbutton"],
 		"conditions": {
 			"[type='button' i]": {
 				"implicitRole": "button",
@@ -505,10 +508,6 @@
 					"role": "textbox"
 				}
 			},
-			":is(:not([type]), [type='text' i]):not([list])": {
-				"implicitRole": "textbox",
-				"permittedRoles": ["combobox", "searchbox", "spinbutton"]
-			},
 			":is(:not([type]), [type='text' i], [type='search' i], [type='tel' i], [type='url' i], [type='email' i])[list]": {
 				"implicitRole": "combobox",
 				"permittedRoles": false,
@@ -550,6 +549,11 @@
 			}
 		},
 		"1.1": {
+			// No condition:
+			// > input type=text or with a missing or invalid type, with no list attribute
+			// https://www.w3.org/TR/html-aria/#el-input-text
+			"implicitRole": "textbox",
+			"permittedRoles": ["combobox", "searchbox", "spinbutton"],
 			"conditions": {
 				"[type='button' i]": {
 					"implicitRole": "button",
@@ -742,10 +746,6 @@
 						"global": true,
 						"role": "textbox"
 					}
-				},
-				":is(:not([type]), [type='text' i]):not([list])": {
-					"implicitRole": "textbox",
-					"permittedRoles": ["combobox", "searchbox", "spinbutton"]
 				},
 				":is(:not([type]), [type='text' i], [type='search' i], [type='tel' i], [type='url' i], [type='email' i])[list]": {
 					"implicitRole": "combobox",

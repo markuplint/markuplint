@@ -13,6 +13,10 @@ const schemas = {
 		$id: '@markuplint/ml-spec/schemas/element.schema.json',
 		...require('../../ml-spec/schemas/element.schema.json'),
 	},
+	aria: {
+		$id: '@markuplint/ml-spec/schemas/aria.schema.json',
+		...require('../../ml-spec/schemas/aria.schema.json'),
+	},
 	contentModels: {
 		$id: '@markuplint/ml-spec/schemas/content-models.schema.json',
 		...require('../../ml-spec/schemas/content-models.schema.json'),
@@ -44,6 +48,7 @@ describe('schema', () => {
 			new Ajv({
 				schemas: [
 					schemas.element,
+					schemas.aria,
 					schemas.contentModels,
 					schemas.globalAttributes,
 					schemas.attributes,

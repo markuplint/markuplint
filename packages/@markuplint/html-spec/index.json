@@ -10229,49 +10229,42 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true,
-				"conditions": [
-					{
-						"condition": "[href]",
-						"roles": [
-							"button",
-							"checkbox",
-							"menuitem",
-							"menuitemcheckbox",
-							"menuitemradio",
-							"option",
-							"radio",
-							"switch",
-							"tab",
-							"treeitem"
-						],
-						"properties": {
-							"global": true,
-							"role": true,
-							"whithout": [
-								{
-									"type": "not-recommended",
-									"name": "disabled",
-									"value": "true",
-									"alt": {
-										"method": "remove-attr",
-										"target": "href"
-									}
-								}
-							]
+			"aria": {
+				"implicitRole": "link",
+				"permittedRoles": [
+					"button",
+					"checkbox",
+					"menuitem",
+					"menuitemcheckbox",
+					"menuitemradio",
+					"option",
+					"radio",
+					"switch",
+					"tab",
+					"treeitem"
+				],
+				"properties": {
+					"global": true,
+					"role": true,
+					"whithout": [
+						{
+							"type": "not-recommended",
+							"name": "aria-disabled",
+							"value": "true",
+							"alt": {
+								"method": "remove-attr",
+								"target": "href"
+							}
 						}
+					]
+				},
+				"conditions": {
+					":not([href])": {
+						"implicitRole": false,
+						"permittedRoles": true,
+						"namingProhibited": true
 					}
-				]
-			},
-			"implicitRole": {
-				"role": "link",
-				"conditions": [
-					{
-						"condition": ":not([href])",
-						"role": false
-					}
-				]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -10349,11 +10342,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -10372,11 +10364,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -10396,11 +10386,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -10419,11 +10408,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -10485,27 +10472,28 @@
 				"contents": false,
 				"descendantOf": "map"
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": "link",
+				"permittedRoles": false,
 				"properties": {
 					"global": true,
 					"role": "link"
 				},
-				"conditions": [
-					{
-						"condition": ":not([href])",
-						"roles": false
+				"conditions": {
+					":not([href])": {
+						"implicitRole": false,
+						"permittedRoles": ["button", "link"],
+						"namingProhibited": true
 					}
-				]
-			},
-			"implicitRole": {
-				"role": "link",
-				"conditions": [
-					{
-						"condition": ":not([href])",
-						"role": false
+				},
+				"1.1": {
+					"conditions": {
+						":not([href])": {
+							"implicitRole": false,
+							"permittedRoles": false
+						}
 					}
-				]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -10591,11 +10579,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["application", "document", "feed", "main", "none", "presentation", "region"]
-			},
-			"implicitRole": {
-				"role": "article"
+			"aria": {
+				"implicitRole": "article",
+				"permittedRoles": ["application", "document", "feed", "main", "none", "presentation", "region"]
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -10618,11 +10604,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["feed", "none", "note", "presentation", "region", "search"]
-			},
-			"implicitRole": {
-				"role": "complementary"
+			"aria": {
+				"implicitRole": "complementary",
+				"permittedRoles": ["feed", "none", "note", "presentation", "region", "search"]
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -10666,11 +10650,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["application"]
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": ["application"],
+				"properties": {
+					"global": true,
+					"role": "application"
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -10721,11 +10707,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -10744,12 +10729,10 @@
 			"contentModel": {
 				"contents": false
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -10776,11 +10759,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -10809,11 +10790,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -10836,11 +10816,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -10863,11 +10842,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -10895,11 +10872,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -10914,11 +10889,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -10937,11 +10910,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": "blockquote",
+				"permittedRoles": true,
+				"1.1": {
+					"implicitRole": false
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -10968,15 +10942,21 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": "generic",
+				"permittedRoles": false,
+				"namingProhibited": true,
 				"properties": {
-					"global": true,
-					"role": "document"
+					"global": true
+				},
+				"1.1": {
+					"implicitRole": false,
+					"permittedRoles": false,
+					"properties": {
+						"global": true,
+						"role": "document"
+					}
 				}
-			},
-			"implicitRole": {
-				"role": "generic"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11109,11 +11089,18 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["none", "presentation"]
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": ["none", "presentation"],
+				"properties": {
+					"only": ["aria-hidden"]
+				},
+				"1.1": {
+					"properties": {
+						"global": true,
+						"role": true
+					}
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11142,9 +11129,11 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": [
+			"aria": {
+				"implicitRole": "button",
+				"permittedRoles": [
 					"checkbox",
+					"combobox",
 					"link",
 					"menuitem",
 					"menuitemcheckbox",
@@ -11153,10 +11142,20 @@
 					"radio",
 					"switch",
 					"tab"
-				]
-			},
-			"implicitRole": {
-				"role": "button"
+				],
+				"1.1": {
+					"permittedRoles": [
+						"checkbox",
+						"link",
+						"menuitem",
+						"menuitemcheckbox",
+						"menuitemradio",
+						"option",
+						"radio",
+						"switch",
+						"tab"
+					]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11232,11 +11231,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11272,11 +11269,16 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": "caption",
+				"permittedRoles": false,
+				"namingProhibited": true,
+				"properties": {
+					"global": true
+				},
+				"1.1": {
+					"implicitRole": false
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11300,11 +11302,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -11323,11 +11323,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11350,11 +11349,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": "code",
+				"permittedRoles": true,
+				"namingProhibited": true,
+				"1.1": {
+					"implicitRole": false
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11373,12 +11374,10 @@
 			"contentModel": {
 				"contents": false
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11441,12 +11440,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11499,11 +11496,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11541,15 +11537,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": "listbox",
+				"permittedRoles": false,
 				"properties": {
 					"global": true,
 					"role": "listbox"
 				}
-			},
-			"implicitRole": {
-				"role": "listbox"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11572,15 +11566,16 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": {
 					"global": true,
 					"role": "definition"
+				},
+				"1.1": {
+					"implicitRole": "definition"
 				}
-			},
-			"implicitRole": {
-				"role": "definition"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11608,11 +11603,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": "deletion",
+				"permittedRoles": true,
+				"namingProhibited": true,
+				"1.1": {
+					"implicitRole": false
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11645,15 +11642,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": "group",
+				"permittedRoles": false,
 				"properties": {
 					"global": true,
 					"role": "group"
 				}
-			},
-			"implicitRole": {
-				"role": "group"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11681,11 +11676,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": "term"
+			"aria": {
+				"implicitRole": "term",
+				"permittedRoles": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11708,15 +11701,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["alertdialog"],
+			"aria": {
+				"implicitRole": "dialog",
+				"permittedRoles": ["alertdialog"],
 				"properties": {
 					"global": true,
 					"role": "dialog"
 				}
-			},
-			"implicitRole": {
-				"role": "dialog"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11742,11 +11733,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -11791,11 +11780,19 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": "generic",
+				"permittedRoles": true,
+				"namingProhibited": true,
+				"conditions": {
+					"dl > div": {
+						"permittedRoles": ["presentation", "none"]
+					}
+				},
+				"1.1": {
+					"implicitRole": false,
+					"permittedRoles": true
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11845,11 +11842,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["group", "list", "none", "presentation"]
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": ["group", "list", "none", "presentation"]
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11873,11 +11868,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["listitem"]
-			},
-			"implicitRole": {
-				"role": "term"
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": ["listitem"],
+				"1.1": {
+					"implicitRole": "term"
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11900,11 +11896,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": "emphasis",
+				"permittedRoles": true,
+				"namingProhibited": true,
+				"1.1": {
+					"implicitRole": false
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11923,11 +11921,9 @@
 			"contentModel": {
 				"contents": false
 			},
-			"permittedRoles": {
-				"roles": ["application", "document", "img", "none", "presentation"]
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": ["application", "document", "img", "none", "presentation"]
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -11968,11 +11964,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["radiogroup", "presentation", "none"]
-			},
-			"implicitRole": {
-				"role": "group"
+			"aria": {
+				"implicitRole": "group",
+				"permittedRoles": ["radiogroup", "presentation", "none"]
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12006,11 +12000,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["group", "none", "presentation"]
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": ["group", "none", "presentation"],
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12044,17 +12037,14 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true,
-				"conditions": [
-					{
-						"condition": ":has(figcaption)",
-						"roles": false
+			"aria": {
+				"implicitRole": "figure",
+				"permittedRoles": true,
+				"conditions": {
+					":has(figcaption)": {
+						"permittedRoles": false
 					}
-				]
-			},
-			"implicitRole": {
-				"role": "figure"
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12073,11 +12063,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -12107,17 +12095,23 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["group", "presentation", "none"]
-			},
-			"implicitRole": {
-				"role": "contentinfo",
-				"conditions": [
-					{
-						"condition": ":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])",
-						"role": false
+			"aria": {
+				"implicitRole": "contentinfo",
+				"permittedRoles": ["group", "presentation", "none"],
+				"conditions": {
+					":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])": {
+						"implicitRole": "generic",
+						"namingProhibited": true
 					}
-				]
+				},
+				"1.1": {
+					"implicitRole": "contentinfo",
+					"conditions": {
+						":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])": {
+							"implicitRole": false
+						}
+					}
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12141,17 +12135,17 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["search", "none", "presentation"]
-			},
-			"implicitRole": {
-				"role": false,
-				"conditions": [
-					{
-						"condition": "#hasAccname",
-						"role": "form"
+			"aria": {
+				"implicitRole": "form",
+				"permittedRoles": ["search", "none", "presentation"],
+				"1.1": {
+					"implicitRole": false,
+					"conditions": {
+						"#hasAccname": {
+							"implicitRole": "form"
+						}
 					}
-				]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12238,11 +12232,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -12279,11 +12271,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -12309,11 +12299,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["tab", "presentation", "none"]
-			},
-			"implicitRole": {
-				"role": "heading"
+			"aria": {
+				"implicitRole": "heading",
+				"implicitProperties": {
+					"aria-level": "1"
+				},
+				"permittedRoles": ["tab", "presentation", "none"]
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12336,11 +12327,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["tab", "presentation", "none"]
-			},
-			"implicitRole": {
-				"role": "heading"
+			"aria": {
+				"implicitRole": "heading",
+				"implicitProperties": {
+					"aria-level": "2"
+				},
+				"permittedRoles": ["tab", "presentation", "none"]
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12363,11 +12355,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["tab", "presentation", "none"]
-			},
-			"implicitRole": {
-				"role": "heading"
+			"aria": {
+				"implicitRole": "heading",
+				"implicitProperties": {
+					"aria-level": "3"
+				},
+				"permittedRoles": ["tab", "presentation", "none"]
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12390,11 +12383,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["tab", "presentation", "none"]
-			},
-			"implicitRole": {
-				"role": "heading"
+			"aria": {
+				"implicitRole": "heading",
+				"implicitProperties": {
+					"aria-level": "4"
+				},
+				"permittedRoles": ["tab", "presentation", "none"]
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12417,11 +12411,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["tab", "presentation", "none"]
-			},
-			"implicitRole": {
-				"role": "heading"
+			"aria": {
+				"implicitRole": "heading",
+				"implicitProperties": {
+					"aria-level": "5"
+				},
+				"permittedRoles": ["tab", "presentation", "none"]
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12444,11 +12439,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["tab", "presentation", "none"]
-			},
-			"implicitRole": {
-				"role": "heading"
+			"aria": {
+				"implicitRole": "heading",
+				"implicitProperties": {
+					"aria-level": "6"
+				},
+				"permittedRoles": ["tab", "presentation", "none"]
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12479,12 +12475,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12513,17 +12507,23 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["group", "presentation", "none"]
-			},
-			"implicitRole": {
-				"role": "banner",
-				"conditions": [
-					{
-						"condition": ":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])",
-						"role": false
+			"aria": {
+				"implicitRole": "banner",
+				"permittedRoles": ["group", "presentation", "none"],
+				"conditions": {
+					":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])": {
+						"implicitRole": "generic",
+						"namingProhibited": true
 					}
-				]
+				},
+				"1.1": {
+					"implicitRole": "banner",
+					"conditions": {
+						":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])": {
+							"implicitRole": false
+						}
+					}
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12556,11 +12556,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": "generic",
+				"permittedRoles": true,
+				"namingProhibited": true,
+				"1.1": {
+					"implicitRole": false
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12579,12 +12581,13 @@
 			"contentModel": {
 				"contents": false
 			},
-			"permittedRoles": {
-				"roles": ["presentation", "none"],
-				"properties": false
-			},
-			"implicitRole": {
-				"role": "separator"
+			"aria": {
+				"implicitRole": "separator",
+				"permittedRoles": ["presentation", "none"],
+				"properties": {
+					"global": true,
+					"role": "separator"
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12631,12 +12634,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": "document",
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": "document"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12671,11 +12672,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12698,11 +12698,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["application", "document", "img", "none", "presentation"]
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": ["application", "document", "img", "none", "presentation"]
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12812,8 +12810,9 @@
 			"contentModel": {
 				"contents": false
 			},
-			"permittedRoles": {
-				"roles": [
+			"aria": {
+				"implicitRole": "img",
+				"permittedRoles": [
 					"button",
 					"checkbox",
 					"link",
@@ -12822,6 +12821,7 @@
 					"menuitemradio",
 					"option",
 					"progressbar",
+					"radio",
 					"scrollbar",
 					"separator",
 					"slider",
@@ -12829,27 +12829,50 @@
 					"tab",
 					"treeitem"
 				],
-				"conditions": [
-					{
-						"condition": "[alt=\"\"], :not([alt])",
-						"roles": false,
+				"conditions": {
+					"[alt=\"\"]": {
+						"implicitRole": "presentation",
+						"permittedRoles": false,
 						"properties": {
-							"expect": {
-								"name": "hidden",
-								"value": "true"
-							}
+							"only": [
+								{
+									"name": "aria-hidden",
+									"value": "true"
+								}
+							]
+						}
+					},
+					":not([alt])": {
+						"implicitRole": "img",
+						"permittedRoles": false,
+						"properties": {
+							"only": [
+								{
+									"name": "aria-hidden",
+									"value": "true"
+								}
+							]
 						}
 					}
-				]
-			},
-			"implicitRole": {
-				"role": "img",
-				"conditions": [
-					{
-						"condition": "[alt=\"\"]",
-						"role": "presentation"
-					}
-				]
+				},
+				"1.1": {
+					"permittedRoles": [
+						"button",
+						"checkbox",
+						"link",
+						"menuitem",
+						"menuitemcheckbox",
+						"menuitemradio",
+						"option",
+						"progressbar",
+						"scrollbar",
+						"separator",
+						"slider",
+						"switch",
+						"tab",
+						"treeitem"
+					]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -12942,12 +12965,15 @@
 			"contentModel": {
 				"contents": false
 			},
-			"permittedRoles": {
-				"roles": false,
-				"conditions": [
-					{
-						"condition": "[type=button i]",
-						"roles": [
+			"aria": {
+				"implicitRole": "textbox",
+				"permittedRoles": ["combobox", "searchbox", "spinbutton"],
+				"conditions": {
+					"[type='button' i]": {
+						"implicitRole": "button",
+						"permittedRoles": [
+							"checkbox",
+							"combobox",
 							"link",
 							"menuitem",
 							"menuitemcheckbox",
@@ -12958,30 +12984,16 @@
 							"tab"
 						]
 					},
-					{
-						"condition": "[type=checkbox i][aria-pressed]",
-						"roles": ["button"],
+					"[type='checkbox' i]": {
+						"implicitRole": "checkbox",
+						"permittedRoles": ["menuitemcheckbox", "option", "switch"],
 						"properties": {
 							"global": true,
 							"role": true,
 							"whithout": [
 								{
-									"type": "should-not",
-									"name": "checked"
-								}
-							]
-						}
-					},
-					{
-						"condition": "[type=checkbox i]",
-						"roles": ["menuitemcheckbox", "option", "switch"],
-						"properties": {
-							"global": true,
-							"role": true,
-							"whithout": [
-								{
-									"type": "should-not",
-									"name": "checked",
+									"type": "must-not",
+									"name": "aria-checked",
 									"alt": {
 										"method": "set-attr",
 										"target": "checked"
@@ -12990,87 +13002,104 @@
 							]
 						}
 					},
-					{
-						"condition": "[type=color i]",
-						"roles": false,
+					"[type='checkbox' i][aria-pressed]": {
+						"implicitRole": "checkbox",
+						"permittedRoles": ["button"],
+						"properties": {
+							"global": true,
+							"role": true,
+							"whithout": [
+								{
+									"type": "must-not",
+									"name": "aria-checked",
+									"alt": {
+										"method": "set-attr",
+										"target": "checked"
+									}
+								}
+							]
+						}
+					},
+					"[type='color' i]": {
+						"implicitRole": false,
+						"permittedRoles": false,
 						"properties": {
 							"global": true
 						}
 					},
-					{
-						"condition": "[type=date i]",
-						"roles": false,
+					"[type='date' i]": {
+						"implicitRole": false,
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "textbox"
 						}
 					},
-					{
-						"condition": "[type=datetime-local i]",
-						"roles": false,
+					"[type='datetime-local' i]": {
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "textbox"
 						}
 					},
-					{
-						"condition": "[type=email i]:not([list])",
-						"roles": false,
+					"[type='email' i]:not([list])": {
+						"implicitRole": "textbox",
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "textbox"
 						}
 					},
-					{
-						"condition": "[type=file i]",
-						"roles": false,
+					"[type='file' i]": {
+						"implicitRole": false,
+						"permittedRoles": false,
 						"properties": {
 							"global": true
 						}
 					},
-					{
-						"condition": "[type=hidden i]",
-						"roles": false,
+					"[type='hidden' i]": {
+						"implicitRole": false,
+						"permittedRoles": false,
 						"properties": false
 					},
-					{
-						"condition": "[type=image i]",
-						"roles": ["link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch"]
+					"[type='image' i]": {
+						"implicitRole": "button",
+						"permittedRoles": ["link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch"]
 					},
-					{
-						"condition": "[type=month i]",
-						"roles": false,
+					"[type='month' i]": {
+						"implicitRole": false,
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "textbox"
 						}
 					},
-					{
-						"condition": "[type=number i]",
-						"roles": false,
+					"[type='number' i]": {
+						"implicitRole": "spinbutton",
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "spinbutton"
 						}
 					},
-					{
-						"condition": "[type=password i]",
-						"roles": false,
+					"[type='password' i]": {
+						"implicitRole": false,
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "textbox"
 						}
 					},
-					{
-						"condition": "[type=radio i]",
-						"roles": ["menuitemradio"],
+					"[type='radio' i]": {
+						"implicitRole": "radio",
+						"permittedRoles": ["menuitemradio"],
 						"properties": {
 							"global": true,
 							"role": true,
 							"whithout": [
 								{
-									"type": "should-not",
-									"name": "checked",
+									"type": "must-not",
+									"name": "aria-checked",
 									"alt": {
 										"method": "set-attr",
 										"target": "checked"
@@ -13079,192 +13108,329 @@
 							]
 						}
 					},
-					{
-						"condition": "[type=range i]",
-						"roles": false,
+					"[type='range' i]": {
+						"implicitRole": "slider",
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "slider",
 							"whithout": [
 								{
 									"type": "should-not",
-									"name": "valuemax"
+									"name": "aria-valuemax"
 								},
 								{
 									"type": "should-not",
-									"name": "valuemin"
+									"name": "aria-valuemin"
 								}
 							]
 						}
 					},
-					{
-						"condition": "[type=reset i]",
-						"roles": false,
+					"[type='reset' i]": {
+						"implicitRole": "button",
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "button"
 						}
 					},
-					{
-						"condition": "[type=search i]:not([list])",
-						"roles": false,
+					"[type='search' i]:not([list])": {
+						"implicitRole": "searchbox",
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "searchbox"
 						}
 					},
-					{
-						"condition": "[type=submit i]",
-						"roles": false,
+					"[type='submit' i]": {
+						"implicitRole": "button",
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "button"
 						}
 					},
-					{
-						"condition": "[type=tel i]:not([list])",
-						"roles": false,
+					"[type='tel' i]:not([list])": {
+						"implicitRole": "textbox",
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "textbox"
 						}
 					},
-					{
-						"condition": "[type=text i]:not([list])",
-						"roles": ["combobox", "searchbox", "spinbutton"]
-					},
-					{
-						"condition": "[list]:is([type=text], [type=search], [type=tel], [type=url], [type=email])",
-						"roles": false,
+					":is(:not([type]), [type='text' i], [type='search' i], [type='tel' i], [type='url' i], [type='email' i])[list]": {
+						"implicitRole": "combobox",
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "combobox",
 							"whithout": [
 								{
 									"type": "should-not",
-									"name": "haspopup"
+									"name": "aria-haspopup"
 								}
 							]
 						}
 					},
-					{
-						"condition": "[type=time i]",
-						"roles": false,
+					"[type='time' i]": {
+						"implicitRole": false,
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "textbox"
 						}
 					},
-					{
-						"condition": "[type=url i]:not([list])",
-						"roles": false,
+					"[type='url' i]:not([list])": {
+						"implicitRole": "textbox",
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "textbox"
 						}
 					},
-					{
-						"condition": "[type=week i]",
-						"roles": false,
+					"[type='week' i]": {
+						"implicitRole": false,
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "textbox"
 						}
 					}
-				]
-			},
-			"implicitRole": {
-				"role": false,
-				"conditions": [
-					{
-						"condition": "[type=button]",
-						"role": "button"
-					},
-					{
-						"condition": "[type=checkbox]",
-						"role": "checkbox"
-					},
-					{
-						"condition": "[type=color]",
-						"role": false
-					},
-					{
-						"condition": "[type=date]",
-						"role": false
-					},
-					{
-						"condition": "[type=email]:not([list])",
-						"role": "textbox"
-					},
-					{
-						"condition": "[type=file]",
-						"role": false
-					},
-					{
-						"condition": "[type=hidden]",
-						"role": false
-					},
-					{
-						"condition": "[type=image]",
-						"role": "button"
-					},
-					{
-						"condition": "[type=month]",
-						"role": false
-					},
-					{
-						"condition": "[type=number]",
-						"role": "spinbutton"
-					},
-					{
-						"condition": "[type=password]",
-						"role": false
-					},
-					{
-						"condition": "[type=radio]",
-						"role": "radio"
-					},
-					{
-						"condition": "[type=range]",
-						"role": "slider"
-					},
-					{
-						"condition": "[type=reset]",
-						"role": "button"
-					},
-					{
-						"condition": "[type=search]:not([list])",
-						"role": "searchbox"
-					},
-					{
-						"condition": "[type=submit]",
-						"role": "button"
-					},
-					{
-						"condition": "[type=tel]:not([list])",
-						"role": "textbox"
-					},
-					{
-						"condition": "[type=text]:not([list])",
-						"role": "textbox"
-					},
-					{
-						"condition": "[type=text][list], [type=search][list], [type=tel][list], [type=url][list], [type=email][list]",
-						"role": "combobox"
-					},
-					{
-						"condition": "[type=time]",
-						"role": false
-					},
-					{
-						"condition": "[type=url]:not([list])",
-						"role": "textbox"
-					},
-					{
-						"condition": "[type=week]",
-						"role": false
+				},
+				"1.1": {
+					"implicitRole": "textbox",
+					"permittedRoles": ["combobox", "searchbox", "spinbutton"],
+					"conditions": {
+						"[type='button' i]": {
+							"implicitRole": "button",
+							"permittedRoles": [
+								"link",
+								"menuitem",
+								"menuitemcheckbox",
+								"menuitemradio",
+								"option",
+								"radio",
+								"switch",
+								"tab"
+							]
+						},
+						"[type='checkbox' i]": {
+							"implicitRole": "checkbox",
+							"permittedRoles": ["menuitemcheckbox", "option", "switch"],
+							"properties": {
+								"global": true,
+								"role": true,
+								"whithout": [
+									{
+										"type": "should-not",
+										"name": "aria-checked",
+										"alt": {
+											"method": "set-attr",
+											"target": "checked"
+										}
+									}
+								]
+							}
+						},
+						"[type='checkbox' i][aria-pressed]": {
+							"implicitRole": "checkbox",
+							"permittedRoles": ["button"],
+							"properties": {
+								"global": true,
+								"role": true,
+								"whithout": [
+									{
+										"type": "should-not",
+										"name": "aria-hecked"
+									}
+								]
+							}
+						},
+						"[type='color' i]": {
+							"implicitRole": false,
+							"permittedRoles": false,
+							"properties": {
+								"global": true
+							}
+						},
+						"[type='date' i]": {
+							"implicitRole": false,
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "textbox"
+							}
+						},
+						"[type='datetime-local' i]": {
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "textbox"
+							}
+						},
+						"[type='email' i]:not([list])": {
+							"implicitRole": "textbox",
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "textbox"
+							}
+						},
+						"[type='file' i]": {
+							"implicitRole": false,
+							"permittedRoles": false,
+							"properties": {
+								"global": true
+							}
+						},
+						"[type='hidden' i]": {
+							"implicitRole": false,
+							"permittedRoles": false,
+							"properties": false
+						},
+						"[type='image' i]": {
+							"implicitRole": "button",
+							"permittedRoles": [
+								"link",
+								"menuitem",
+								"menuitemcheckbox",
+								"menuitemradio",
+								"radio",
+								"switch"
+							]
+						},
+						"[type='month' i]": {
+							"implicitRole": false,
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "textbox"
+							}
+						},
+						"[type='number' i]": {
+							"implicitRole": "spinbutton",
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "spinbutton"
+							}
+						},
+						"[type='password' i]": {
+							"implicitRole": false,
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "textbox"
+							}
+						},
+						"[type='radio' i]": {
+							"implicitRole": "radio",
+							"permittedRoles": ["menuitemradio"],
+							"properties": {
+								"global": true,
+								"role": true,
+								"whithout": [
+									{
+										"type": "should-not",
+										"name": "aria-checked",
+										"alt": {
+											"method": "set-attr",
+											"target": "checked"
+										}
+									}
+								]
+							}
+						},
+						"[type='range' i]": {
+							"implicitRole": "slider",
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "slider",
+								"whithout": [
+									{
+										"type": "should-not",
+										"name": "aria-valuemax"
+									},
+									{
+										"type": "should-not",
+										"name": "aria-valuemin"
+									}
+								]
+							}
+						},
+						"[type='reset' i]": {
+							"implicitRole": "button",
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "button"
+							}
+						},
+						"[type='search' i]:not([list])": {
+							"implicitRole": "searchbox",
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "searchbox"
+							}
+						},
+						"[type='submit' i]": {
+							"implicitRole": "button",
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "button"
+							}
+						},
+						"[type='tel' i]:not([list])": {
+							"implicitRole": "textbox",
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "textbox"
+							}
+						},
+						":is(:not([type]), [type='text' i], [type='search' i], [type='tel' i], [type='url' i], [type='email' i])[list]": {
+							"implicitRole": "combobox",
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "combobox",
+								"whithout": [
+									{
+										"type": "should-not",
+										"name": "aria-haspopup"
+									}
+								]
+							}
+						},
+						"[type='time' i]": {
+							"implicitRole": false,
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "textbox"
+							}
+						},
+						"[type='url' i]:not([list])": {
+							"implicitRole": "textbox",
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "textbox"
+							}
+						},
+						"[type='week' i]": {
+							"implicitRole": false,
+							"permittedRoles": false,
+							"properties": {
+								"global": true,
+								"role": "textbox"
+							}
+						}
 					}
-				]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -13615,11 +13781,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": "insertion",
+				"permittedRoles": true,
+				"namingProhibited": true,
+				"1.1": {
+					"implicitRole": false
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -13645,11 +13813,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -13668,11 +13834,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -13691,11 +13856,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -13734,14 +13897,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
-				"properties": {
-					"global": true
-				}
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -13768,14 +13927,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
-				"properties": {
-					"global": true
-				}
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -13798,8 +13953,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": [
+			"aria": {
+				"implicitRole": "listitem",
+				"permittedRoles": [
 					"menuitem",
 					"menuitemcheckbox",
 					"menuitemradio",
@@ -13811,9 +13967,6 @@
 					"tab",
 					"treeitem"
 				]
-			},
-			"implicitRole": {
-				"role": "listitem"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -13841,11 +13994,10 @@
 			"contentModel": {
 				"contents": false
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
+				"properties": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14020,11 +14172,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -14043,15 +14193,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": "main",
+				"permittedRoles": false,
 				"properties": {
 					"global": true,
 					"role": "main"
 				}
-			},
-			"implicitRole": {
-				"role": "main"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14074,12 +14222,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14106,11 +14252,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14129,11 +14274,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -14182,15 +14325,13 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": "math",
+				"permittedRoles": false,
 				"properties": {
 					"global": true,
 					"role": "math"
 				}
-			},
-			"implicitRole": {
-				"role": "math"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14210,9 +14351,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": [
-					"directory",
+			"aria": {
+				"implicitRole": "list",
+				"permittedRoles": [
 					"group",
 					"listbox",
 					"menu",
@@ -14222,11 +14363,27 @@
 					"radiogroup",
 					"tablist",
 					"toolbar",
-					"tree"
-				]
-			},
-			"implicitRole": {
-				"role": "list"
+					"tree",
+					{
+						"name": "directory",
+						"deprecated": true
+					}
+				],
+				"1.1": {
+					"permittedRoles": [
+						"directory",
+						"group",
+						"listbox",
+						"menu",
+						"menubar",
+						"none",
+						"presentation",
+						"radiogroup",
+						"tablist",
+						"toolbar",
+						"tree"
+					]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14245,11 +14402,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -14289,12 +14444,10 @@
 			"contentModel": {
 				"contents": false
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14357,24 +14510,22 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": {
 					"global": true,
 					"whithout": [
 						{
 							"type": "should-not",
-							"name": "valuemax"
+							"name": "aria-valuemax"
 						},
 						{
 							"type": "should-not",
-							"name": "valuemin"
+							"name": "aria-valuemin"
 						}
 					]
 				}
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14412,11 +14563,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -14435,11 +14584,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["group", "menu", "menubar", "none", "presentation", "tablist"]
-			},
-			"implicitRole": {
-				"role": "navigation"
+			"aria": {
+				"implicitRole": "navigation",
+				"permittedRoles": ["menu", "menubar", "none", "presentation", "tablist"],
+				"1.1": {
+					"permittedRoles": ["menu", "menubar", "tablist"]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14458,11 +14608,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -14477,11 +14625,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -14496,11 +14642,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -14515,11 +14659,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -14538,12 +14680,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14566,11 +14706,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["application", "document", "img"]
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": ["application", "document", "img"]
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14647,9 +14785,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": [
-					"directory",
+			"aria": {
+				"implicitRole": "list",
+				"permittedRoles": [
 					"group",
 					"listbox",
 					"menu",
@@ -14659,11 +14797,27 @@
 					"radiogroup",
 					"tablist",
 					"toolbar",
-					"tree"
-				]
-			},
-			"implicitRole": {
-				"role": "list"
+					"tree",
+					{
+						"name": "directory",
+						"deprecated": true
+					}
+				],
+				"1.1": {
+					"permittedRoles": [
+						"directory",
+						"group",
+						"listbox",
+						"menu",
+						"menubar",
+						"none",
+						"presentation",
+						"radiogroup",
+						"tablist",
+						"toolbar",
+						"tree"
+					]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14701,15 +14855,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": "group",
+				"permittedRoles": false,
 				"properties": {
 					"global": true,
 					"role": "group"
 				}
-			},
-			"implicitRole": {
-				"role": "group"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14763,21 +14915,19 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": "option",
+				"permittedRoles": false,
 				"properties": {
 					"global": true,
 					"role": "option",
 					"whithout": [
 						{
 							"type": "should-not",
-							"name": "selected"
+							"name": "aria-selected"
 						}
 					]
 				}
-			},
-			"implicitRole": {
-				"role": "option"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14814,11 +14964,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": "status"
+			"aria": {
+				"implicitRole": "status",
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14852,11 +15000,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": "paragraph",
+				"permittedRoles": true,
+				"namingProhibited": true,
+				"1.1": {
+					"implicitRole": false
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14875,11 +15025,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -14927,12 +15075,20 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
-				"properties": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
+				"properties": {
+					"only": [
+						{
+							"name": "aria-hidden",
+							"value": "true"
+						}
+					]
+				},
+				"1.1": {
+					"properties": false
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -14951,11 +15107,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -14974,11 +15128,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15010,11 +15162,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15052,21 +15203,19 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": "progressbar",
+				"permittedRoles": false,
 				"properties": {
 					"global": true,
 					"role": "progressbar",
 					"whithout": [
 						{
 							"type": "should-not",
-							"name": "valuemax"
+							"name": "aria-valuemax"
 						}
 					]
 				}
-			},
-			"implicitRole": {
-				"role": "progressbar"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15097,11 +15246,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15124,11 +15272,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -15148,11 +15294,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15175,11 +15319,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15198,11 +15341,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -15254,11 +15395,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15281,11 +15420,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15308,11 +15446,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15335,12 +15472,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15419,8 +15554,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": [
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": [
 					"alert",
 					"alertdialog",
 					"application",
@@ -15430,6 +15566,7 @@
 					"dialog",
 					"document",
 					"feed",
+					"group",
 					"log",
 					"main",
 					"marquee",
@@ -15440,16 +15577,35 @@
 					"search",
 					"status",
 					"tabpanel"
-				]
-			},
-			"implicitRole": {
-				"role": false,
-				"conditions": [
-					{
-						"condition": "#hasAccname",
-						"role": "region"
+				],
+				"conditions": {
+					"#hasAccname": {
+						"implicitRole": "region"
 					}
-				]
+				},
+				"1.1": {
+					"permittedRoles": [
+						"alert",
+						"alertdialog",
+						"application",
+						"banner",
+						"complementary",
+						"contentinfo",
+						"dialog",
+						"document",
+						"feed",
+						"log",
+						"main",
+						"marquee",
+						"navigation",
+						"none",
+						"note",
+						"presentation",
+						"search",
+						"status",
+						"tabpanel"
+					]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15472,43 +15628,35 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["menu"],
+			"aria": {
+				"implicitRole": "combobox",
+				"permittedRoles": ["menu"],
 				"properties": {
 					"global": true,
 					"role": ["combobox", "menu"],
 					"whithout": [
 						{
 							"type": "should-not",
-							"name": "multiselectable"
+							"name": "aria-multiselectable"
 						}
 					]
 				},
-				"conditions": [
-					{
-						"condition": "[multiple], [size]:not([size=1])",
-						"roles": false,
+				"conditions": {
+					"[multiple], [size]:not([size=1])": {
+						"implicitRole": "listbox",
+						"permittedRoles": false,
 						"properties": {
 							"global": true,
 							"role": "listbox",
 							"whithout": [
 								{
 									"type": "should-not",
-									"name": "multiselectable"
+									"name": "aria-multiselectable"
 								}
 							]
 						}
 					}
-				]
-			},
-			"implicitRole": {
-				"role": "combobox",
-				"conditions": [
-					{
-						"condition": "[multiple], [size]:not([size=1])",
-						"role": "listbox"
-					}
-				]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15560,12 +15708,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15592,11 +15738,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15615,12 +15760,10 @@
 			"contentModel": {
 				"contents": false
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15664,11 +15807,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -15703,11 +15844,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15726,11 +15866,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -15749,11 +15887,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": "strong",
+				"permittedRoles": true,
+				"namingProhibited": true,
+				"1.1": {
+					"implicitRole": false
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15776,12 +15916,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15823,11 +15961,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": "subscript",
+				"permittedRoles": true,
+				"namingProhibited": true,
+				"1.1": {
+					"implicitRole": false
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15861,15 +16001,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": "button",
+				"permittedRoles": false,
 				"properties": {
 					"global": true,
 					"role": "button"
 				}
-			},
-			"implicitRole": {
-				"role": "button"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15892,11 +16030,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": "superscript",
+				"permittedRoles": true,
+				"namingProhibited": true,
+				"1.1": {
+					"implicitRole": false
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -15960,11 +16100,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": "table"
+			"aria": {
+				"implicitRole": "table",
+				"permittedRoles": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16024,11 +16162,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": "rowgroup"
+			"aria": {
+				"implicitRole": "rowgroup",
+				"permittedRoles": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16072,27 +16208,20 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true,
-				"conditions": [
-					{
-						"condition": "table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td",
-						"roles": false
-					}
-				]
-			},
-			"implicitRole": {
-				"role": false,
-				"conditions": [
-					{
-						"condition": "table:is(:not([role]), [role=table]) > :is(thead, tfoot, tbody) > tr > td",
-						"role": "cell"
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"conditions": {
+					"table:is(:not([role]), [role=table]) > :is(thead, tfoot, tbody) > tr > td": {
+						"implicitRole": "cell"
 					},
-					{
-						"condition": "table:is([role=table], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td",
-						"role": "gridcell"
+					"table:is([role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td": {
+						"implicitRole": "gridcell"
+					},
+					"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td": {
+						"permittedRoles": false
 					}
-				]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16166,12 +16295,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16194,15 +16321,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": "textbox",
+				"permittedRoles": false,
 				"properties": {
 					"global": true,
 					"role": "textbox"
 				}
-			},
-			"implicitRole": {
-				"role": "textbox"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16295,11 +16420,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": "rowgroup"
+			"aria": {
+				"implicitRole": "rowgroup",
+				"permittedRoles": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16344,35 +16467,32 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true,
-				"conditions": [
-					{
-						"condition": "table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th",
-						"roles": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"conditions": {
+					"table:is(:not([role]), [role=table]) > :is(thead, tfoot, tbody) > tr > th": {
+						"implicitRole": "cell"
+					},
+					"table:is([role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th": {
+						"implicitRole": "gridcell"
+					},
+					"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > thead > tr > th:not([scope])": {
+						"implicitRole": "columnheader"
+					},
+					"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(tfoot, tbody) > tr > th:not([scope])": {
+						"implicitRole": "rowheader"
+					},
+					"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=col]": {
+						"implicitRole": "columnheader"
+					},
+					"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=row]": {
+						"implicitRole": "rowheader"
+					},
+					"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th": {
+						"permittedRoles": false
 					}
-				]
-			},
-			"implicitRole": {
-				"role": false,
-				"conditions": [
-					{
-						"condition": "table:is(:not([role]), [role=table], [role=table], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=col]",
-						"role": "columnheader"
-					},
-					{
-						"condition": "table:is(:not([role]), [role=table], [role=table], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=row]",
-						"role": "rowheader"
-					},
-					{
-						"condition": "table:is(:not([role]), [role=table]) > :is(thead, tfoot, tbody) > tr > th",
-						"role": "cell"
-					},
-					{
-						"condition": "table:is([role=table], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th",
-						"role": "gridcell"
-					}
-				]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16449,11 +16569,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": "rowgroup"
+			"aria": {
+				"implicitRole": "rowgroup",
+				"permittedRoles": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16498,11 +16616,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": "time",
+				"permittedRoles": true,
+				"namingProhibited": true,
+				"1.1": {
+					"implicitRole": false
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16529,12 +16649,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16557,17 +16675,14 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true,
-				"conditions": [
-					{
-						"condition": "table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr",
-						"roles": false
+			"aria": {
+				"implicitRole": "row",
+				"permittedRoles": true,
+				"conditions": {
+					"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr": {
+						"permittedRoles": false
 					}
-				]
-			},
-			"implicitRole": {
-				"role": "row"
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16607,12 +16722,10 @@
 			"contentModel": {
 				"contents": false
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16652,11 +16765,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -16675,11 +16786,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16702,9 +16812,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": [
-					"directory",
+			"aria": {
+				"implicitRole": "list",
+				"permittedRoles": [
 					"group",
 					"listbox",
 					"menu",
@@ -16714,11 +16824,27 @@
 					"radiogroup",
 					"tablist",
 					"toolbar",
-					"tree"
-				]
-			},
-			"implicitRole": {
-				"role": "list"
+					"tree",
+					{
+						"name": "directory",
+						"deprecated": true
+					}
+				],
+				"1.1": {
+					"permittedRoles": [
+						"directory",
+						"group",
+						"listbox",
+						"menu",
+						"menubar",
+						"none",
+						"presentation",
+						"radiogroup",
+						"tablist",
+						"toolbar",
+						"tree"
+					]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16750,11 +16876,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16798,15 +16923,13 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": ["application"],
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": ["application"],
 				"properties": {
 					"global": true,
 					"role": "application"
 				}
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16893,11 +17016,15 @@
 			"contentModel": {
 				"contents": false
 			},
-			"permittedRoles": {
-				"roles": true
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": ["none", "presentation"],
+				"properties": {
+					"only": ["aria-hidden"]
+				},
+				"1.1": {
+					"permittedRoles": true
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -16916,11 +17043,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -16951,20 +17076,17 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "group",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
-				}
-			},
-			"implicitRole": {
-				"role": "group",
-				"conditions": [
-					{
-						"condition": "[href], [xlink:href]",
-						"role": "link"
+				},
+				"conditions": {
+					"[href], [xlink:href]": {
+						"implicitRole": "link"
 					}
-				]
+				}
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -17100,11 +17222,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -17145,11 +17265,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -17165,11 +17283,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -17189,12 +17305,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -17300,11 +17414,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -17341,12 +17453,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -17399,12 +17509,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false,
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
 				"properties": false
-			},
-			"implicitRole": {
-				"role": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -17460,14 +17568,10 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
-					"core-aam": true,
-					"graphics-aam": true
-				}
-			},
-			"implicitRole": {
-				"role": "graphics-symbol"
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false,
+				"properties": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -17587,11 +17691,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -17688,11 +17790,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -17730,11 +17830,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -17827,11 +17925,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -17854,11 +17950,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -17898,14 +17992,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "graphics-symbol",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "graphics-symbol"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18022,11 +18114,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18141,11 +18231,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18256,11 +18344,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18352,11 +18438,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18498,11 +18582,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18659,11 +18741,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18771,11 +18851,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18906,11 +18984,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -18942,11 +19018,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19054,11 +19128,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19159,11 +19231,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19193,11 +19263,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19227,11 +19295,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19261,11 +19327,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19295,11 +19359,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19410,11 +19472,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19534,11 +19594,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19630,11 +19688,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19656,11 +19712,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19766,11 +19820,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19873,11 +19925,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -19931,11 +19981,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20047,11 +20095,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20112,11 +20158,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20208,11 +20252,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20334,11 +20376,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20466,11 +20506,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -20486,11 +20524,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -20506,11 +20542,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -20526,11 +20560,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -20546,11 +20578,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -20566,11 +20596,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -20586,14 +20614,12 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "group",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "group"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20724,14 +20750,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "group",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "group"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -20823,11 +20847,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -20843,11 +20865,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -20863,11 +20883,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -20894,14 +20912,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "img",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "img"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21027,14 +21043,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "graphics-symbol",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "graphics-symbol"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21163,11 +21177,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21326,11 +21338,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21510,11 +21520,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21628,11 +21636,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21651,11 +21657,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -21675,11 +21679,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21715,14 +21717,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "graphics-symbol",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "graphics-symbol"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -21846,11 +21846,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22002,14 +22000,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "graphics-symbol",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "graphics-symbol"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22123,14 +22119,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "graphics-symbol",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "graphics-symbol"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22243,11 +22237,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22405,14 +22397,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "graphics-symbol",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "graphics-symbol"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22537,11 +22527,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22584,11 +22572,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22630,11 +22616,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22743,11 +22727,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22804,14 +22786,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "graphics-document",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "graphics-document"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -22965,11 +22945,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23083,14 +23061,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "graphics-object",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "graphics-object"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23168,14 +23144,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "group",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "group"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23319,14 +23293,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "group",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "group"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23472,11 +23444,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23495,11 +23465,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,
@@ -23528,14 +23496,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "group",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "group"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23671,14 +23637,12 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": {
+			"aria": {
+				"implicitRole": "graphics-object",
+				"permittedRoles": {
 					"core-aam": true,
 					"graphics-aam": true
 				}
-			},
-			"implicitRole": {
-				"role": "graphics-object"
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23798,11 +23762,9 @@
 					}
 				]
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": false
 			},
 			"omittion": false,
 			"globalAttrs": {
@@ -23841,11 +23803,9 @@
 			"contentModel": {
 				"contents": true
 			},
-			"permittedRoles": {
-				"roles": false
-			},
-			"implicitRole": {
-				"role": false
+			"aria": {
+				"permittedRoles": true,
+				"implicitRole": false
 			},
 			"omittion": false,
 			"obsolete": true,

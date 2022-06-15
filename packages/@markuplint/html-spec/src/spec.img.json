@@ -64,6 +64,7 @@
 		"conditions": {
 			"[alt=\"\"]": {
 				"implicitRole": "presentation",
+				"permittedRoles": false,
 				"properties": {
 					"only": [
 						{
@@ -76,6 +77,7 @@
 			// TODO: ":not([alt]):not(#hasAccname)"
 			":not([alt])": {
 				"implicitRole": "img",
+				"permittedRoles": false,
 				"properties": {
 					"only": [
 						{
