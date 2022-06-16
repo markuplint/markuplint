@@ -103,6 +103,15 @@ Disallow set the default value of the property/state explicitly.
 - Type: `boolean`
 - Optional
 - Default: `false`
+
+##### `version`
+
+Choose the version of WAI-ARIA to evaluate.
+
+- Type: `"1.1" | "1.2"`
+- Optional
+- Default: `1.2`
+
 - ### Default severity
 
 `error`

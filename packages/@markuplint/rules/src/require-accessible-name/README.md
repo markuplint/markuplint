@@ -36,6 +36,16 @@ Warn if the element has no accessible name. It is according to its ARIA role whe
 - Type: `boolean`
 - Deafult Value: `true`
 
+### Options
+
+##### `ariaVersion`
+
+Choose the version of WAI-ARIA to evaluate.
+
+- Type: `"1.1" | "1.2"`
+- Optional
+- Default: `1.2`
+
 ### Default severity
 
 `error`
