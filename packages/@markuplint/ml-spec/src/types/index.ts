@@ -42,8 +42,8 @@ export type SpecDefs = {
 };
 
 type ARIASpec = {
-	roles: ARIRRoleAttribute[];
-	props: ARIAAttribute[];
+	roles: ARIRRole[];
+	props: ARIAProperty[];
 };
 
 /**
@@ -160,7 +160,7 @@ export type Attribute = {
 
 type ExtendableAttributeSpec = Omit<AttributeJSON, 'type'>;
 
-export type ARIRRoleAttribute = {
+export type ARIRRole = {
 	name: string;
 	description: string;
 	isAbstract?: true;
@@ -182,7 +182,7 @@ export type ARIARoleOwnedProperties = {
 	deprecated?: true;
 };
 
-export type ARIAAttribute = {
+export type ARIAProperty = {
 	name: string;
 	type: 'property' | 'state';
 	deprecated?: true;

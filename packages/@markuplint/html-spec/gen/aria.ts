@@ -1,11 +1,11 @@
 /* global cheerio */
 
 import type {
-	ARIAAttribute,
+	ARIAProperty,
 	ARIAAttributeValue,
 	ARIARoleOwnedProperties,
 	ARIAVersion,
-	ARIRRoleAttribute,
+	ARIRRole,
 	EquivalentHtmlAttr,
 } from '@markuplint/ml-spec';
 
@@ -31,7 +31,7 @@ export async function getAria() {
 async function getRoles(version: ARIAVersion) {
 	const $ = await fetch(`https://www.w3.org/TR/wai-aria-${version}/`);
 	const $roleList = $('#role_definitions section.role');
-	const roles: ARIRRoleAttribute[] = [];
+	const roles: ARIRRole[] = [];
 	const getAttr = (li: cheerio.Element): ARIARoleOwnedProperties => {
 		const $li = $(li);
 		const text = $li.text();
@@ -136,7 +136,7 @@ async function getRoles(version: ARIAVersion) {
 	return roles;
 }
 
-async function getProps(version: ARIAVersion, roles: ARIRRoleAttribute[]) {
+async function getProps(version: ARIAVersion, roles: ARIRRole[]) {
 	const $ = await fetch(`https://www.w3.org/TR/wai-aria-${version}/`);
 
 	const ariaNameList: Set<string> = new Set();
@@ -154,7 +154,7 @@ async function getProps(version: ARIAVersion, roles: ARIRRoleAttribute[]) {
 		.filter((s): s is string => !!s);
 	const arias = Array.from(ariaNameList)
 		.sort()
-		.map((name): ARIAAttribute => {
+		.map((name): ARIAProperty => {
 			const $section = $(`#${name}`);
 			const className = $section.attr('class');
 			const type = className && /property/i.test(className) ? 'property' : 'state';
@@ -202,7 +202,7 @@ async function getProps(version: ARIAVersion, roles: ARIRRoleAttribute[]) {
 				}));
 			}
 
-			const aria: ARIAAttribute = {
+			const aria: ARIAProperty = {
 				name,
 				type,
 				deprecated,

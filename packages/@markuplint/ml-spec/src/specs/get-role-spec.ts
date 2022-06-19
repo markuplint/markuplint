@@ -1,4 +1,4 @@
-import type { ARIAVersion, ARIRRoleAttribute, MLMLSpec } from '../types';
+import type { ARIAVersion, ARIRRole, MLMLSpec } from '../types';
 
 import { ariaSpecs } from './aria-specs';
 
@@ -24,7 +24,7 @@ function getRoleByName(specs: Readonly<MLMLSpec>, roleName: string, version: ARI
 }
 
 function recursiveTraverseSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string, version: ARIAVersion) {
-	const roles: ARIRRoleAttribute[] = [];
+	const roles: ARIRRole[] = [];
 	const superClassRoles = getSuperClassRoles(specs, roleName, version);
 	if (superClassRoles) {
 		roles.push(...superClassRoles);
@@ -41,6 +41,6 @@ function getSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string, version
 	return (
 		role?.generalization
 			.map(roleName => getRoleByName(specs, roleName, version))
-			.filter((role): role is ARIRRoleAttribute => !!role) || null
+			.filter((role): role is ARIRRole => !!role) || null
 	);
 }
