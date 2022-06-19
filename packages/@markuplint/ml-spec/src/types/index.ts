@@ -163,7 +163,7 @@ type ExtendableAttributeSpec = Omit<AttributeJSON, 'type'>;
 export type ARIRRole = {
 	name: string;
 	description: string;
-	isAbstract?: true;
+	isAbstract?: boolean;
 	generalization: string[];
 	requiredContextRole?: string[];
 	accessibleNameRequired: boolean;

@@ -143,7 +143,7 @@ export default createRule<boolean, Options>({
 					for (const attr of el.attributes) {
 						const attrName = attr.name.toLowerCase();
 						if (/^aria-/i.test(attrName)) {
-							const statesAndProp = role.statesAndProps.find(s => s.name === attrName);
+							const statesAndProp = role.ownedProperties.find(p => p.name === attrName);
 							if (statesAndProp) {
 								if (el.rule.option.checkingDeprecatedProps && statesAndProp.deprecated) {
 									report({
@@ -184,7 +184,7 @@ export default createRule<boolean, Options>({
 
 					// Checing required props
 					if (!computedRole.isImplicit) {
-						const requiredProps = role.statesAndProps.filter(s => s.required).map(s => s.name);
+						const requiredProps = role.ownedProperties.filter(s => s.required).map(s => s.name);
 						for (const requiredProp of requiredProps) {
 							const has = el.attributes.some(attr => {
 								const attrName = attr.name.toLowerCase();
