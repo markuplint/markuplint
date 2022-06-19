@@ -21,11 +21,17 @@ export function getPermittedRoles(
 		return true;
 	}
 	const { implicitRole, permittedRoles } = aria;
-	if (implicitRole && Array.isArray(permittedRoles)) {
-		return [implicitRole, ...permittedRoles];
-	}
-	if (implicitRole && permittedRoles === false) {
-		return [implicitRole];
+
+	if (implicitRole) {
+		const implicitRoles =
+			implicitRole === 'presentation' || implicitRole === 'none' ? ['none', 'presentation'] : [implicitRole];
+
+		if (Array.isArray(permittedRoles)) {
+			return [...implicitRoles, ...permittedRoles];
+		}
+		if (permittedRoles === false) {
+			return implicitRoles;
+		}
 	}
 	return permittedRoles;
 }

@@ -48,7 +48,7 @@ describe('getPermittedRoles', () => {
 
 	test('the img element', () => {
 		expect(c('<img>', '1.2')).toStrictEqual(['img']);
-		expect(c('<img alt="">', '1.2')).toStrictEqual(['presentation']);
+		expect(c('<img alt="">', '1.2')).toStrictEqual(['none', 'presentation']);
 		expect(c('<img alt="photo: something">', '1.2')).toStrictEqual([
 			'img',
 			'button',
@@ -136,8 +136,8 @@ describe('getPermittedRoles', () => {
 			'treeitem',
 		];
 		expect(c('<img />', '1.2')).toStrictEqual(['img']);
-		expect(c('<img alt />', '1.2')).toStrictEqual(['presentation']);
-		expect(c('<img alt="" />', '1.2')).toStrictEqual(['presentation']);
+		expect(c('<img alt />', '1.2')).toStrictEqual(['none', 'presentation']);
+		expect(c('<img alt="" />', '1.2')).toStrictEqual(['none', 'presentation']);
 		expect(c('<img alt="foo" />', '1.2')).toStrictEqual(imgPermitted);
 		expect(c('<img aria-label="foo" />', '1.2')).toStrictEqual(imgPermitted);
 	});
