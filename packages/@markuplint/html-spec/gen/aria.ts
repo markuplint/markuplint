@@ -4,6 +4,7 @@ import type {
 	ARIAAttribute,
 	ARIAAttributeValue,
 	ARIARoleOwnedProperties,
+	ARIAVersion,
 	ARIRRoleAttribute,
 	EquivalentHtmlAttr,
 } from '@markuplint/ml-spec';
@@ -11,36 +12,24 @@ import type {
 import fetch from './fetch';
 import { arrayUnique, nameCompare } from './utils';
 
-async function getAriaInHtml() {
-	const $ = await fetch('https://www.w3.org/TR/html-aria/');
-	const implicitProps: { name: string; value: string | null; htmlAttrName: string }[] = [];
-	const $implicitProps = $(
-		'#requirements-for-use-of-aria-attributes-in-place-of-equivalent-html-attributes table tbody tr',
-	).toArray();
-	for (const $implicitProp of $implicitProps) {
-		const htmlAttrName = $($implicitProp).find('th:nth-of-type(1) a').eq(0).text();
-		if (htmlAttrName === 'contenteditable') {
-			// FIXME:
-			// Cannot design yet because the contenteditable attribute is evaluated with ancestors.
-			continue;
-		}
-		const implicitProp = $($implicitProp).find('td:nth-of-type(1) code').eq(0).text();
-		const [name, _value] = implicitProp.split('=');
-		const value = _value.replace(/"|'/g, '').trim();
-		const data = {
-			name,
-			value: value === '...' ? null : value,
-			htmlAttrName,
-		};
-		implicitProps.push(data);
-	}
+export async function getAria() {
+	const roles12 = await getRoles('1.2');
+	const roles11 = await getRoles('1.2');
+
 	return {
-		implicitProps,
+		'1.2': {
+			roles: roles12,
+			props: await getProps('1.2', roles12),
+		},
+		'1.1': {
+			roles: roles11,
+			props: await getProps('1.1', roles11),
+		},
 	};
 }
 
-export async function getAria() {
-	const $ = await fetch('https://www.w3.org/TR/wai-aria-1.2/');
+async function getRoles(version: ARIAVersion) {
+	const $ = await fetch(`https://www.w3.org/TR/wai-aria-${version}/`);
 	const $roleList = $('#role_definitions section.role');
 	const roles: ARIRRoleAttribute[] = [];
 	const getAttr = (li: cheerio.Element): ARIARoleOwnedProperties => {
@@ -59,8 +48,6 @@ export async function getAria() {
 			deprecated: isDeprecated,
 		};
 	};
-
-	const { implicitProps } = await getAriaInHtml();
 
 	$roleList.each((_, el) => {
 		const $el = $(el);
@@ -146,12 +133,20 @@ export async function getAria() {
 
 	roles.sort(nameCompare);
 
+	return roles;
+}
+
+async function getProps(version: ARIAVersion, roles: ARIRRoleAttribute[]) {
+	const $ = await fetch(`https://www.w3.org/TR/wai-aria-${version}/`);
+
 	const ariaNameList: Set<string> = new Set();
 	for (const role of roles) {
 		role.ownedProperties.forEach(prop => {
 			ariaNameList.add(prop.name);
 		});
 	}
+
+	const { implicitProps } = await getAriaInHtml();
 
 	const globalStatesAndProperties = $('#global_states li a')
 		.toArray()
@@ -244,8 +239,35 @@ export async function getAria() {
 			return aria;
 		});
 
+	arias.sort(nameCompare);
+
+	return arias;
+}
+
+async function getAriaInHtml() {
+	const $ = await fetch('https://www.w3.org/TR/html-aria/');
+	const implicitProps: { name: string; value: string | null; htmlAttrName: string }[] = [];
+	const $implicitProps = $(
+		'#requirements-for-use-of-aria-attributes-in-place-of-equivalent-html-attributes table tbody tr',
+	).toArray();
+	for (const $implicitProp of $implicitProps) {
+		const htmlAttrName = $($implicitProp).find('th:nth-of-type(1) a').eq(0).text();
+		if (htmlAttrName === 'contenteditable') {
+			// FIXME:
+			// Cannot design yet because the contenteditable attribute is evaluated with ancestors.
+			continue;
+		}
+		const implicitProp = $($implicitProp).find('td:nth-of-type(1) code').eq(0).text();
+		const [name, _value] = implicitProp.split('=');
+		const value = _value.replace(/"|'/g, '').trim();
+		const data = {
+			name,
+			value: value === '...' ? null : value,
+			htmlAttrName,
+		};
+		implicitProps.push(data);
+	}
 	return {
-		roles,
-		arias,
+		implicitProps,
 	};
 }

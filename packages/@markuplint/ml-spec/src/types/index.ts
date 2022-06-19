@@ -34,9 +34,16 @@ export type SpecDefs = {
 		'#HTMLGlobalAttrs': Record<string, Partial<Attribute>>;
 		[OtherGlobalAttrs: string]: Record<string, Partial<Attribute>>;
 	}>;
-	'#ariaAttrs': ARIAAttribute[];
-	'#roles': ARIRRoleAttribute[];
+	'#aria': {
+		'1.2': ARIASpec;
+		'1.1': ARIASpec;
+	};
 	'#contentModels': { [model in Category]?: string[] };
+};
+
+type ARIASpec = {
+	roles: ARIRRoleAttribute[];
+	props: ARIAAttribute[];
 };
 
 /**

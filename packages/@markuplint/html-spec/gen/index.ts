@@ -16,7 +16,7 @@ const writeFile = util.promisify(fs.writeFile);
 async function main() {
 	const outputFilePath = path.resolve(__dirname, '../index.json');
 
-	const [specs, globalAttrs, { roles, arias } /*, svg*/] = await Promise.all([
+	const [specs, globalAttrs, aria /*, svg*/] = await Promise.all([
 		await getElements(),
 		await getGlobalAttrs(),
 		await getAria(),
@@ -29,8 +29,7 @@ async function main() {
 		cites,
 		def: {
 			'#globalAttrs': globalAttrs,
-			'#roles': roles,
-			'#ariaAttrs': arias,
+			'#aria': aria,
 			'#contentModels': (await readJson('../src/spec-common.contents.json')).models,
 		},
 		specs: [...specs /*, ...svg*/],
