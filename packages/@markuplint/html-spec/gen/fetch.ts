@@ -3,6 +3,7 @@ import { Bar, Presets } from 'cli-progress';
 import fetch from 'node-fetch';
 
 const cache = new Map<string, string>();
+const domCache = new Map<string, cheerio.Root>();
 
 let total = 1;
 let current = 0;
@@ -15,8 +16,12 @@ const bar = new Bar(
 bar.start(total, current, { process: '🚀 Started.' });
 
 export default async function (url: string) {
+	if (domCache.has(url)) {
+		return domCache.get(url)!;
+	}
 	const html = await fetchText(url);
 	const $ = cheerio.load(html);
+	domCache.set(url, $);
 	return $;
 }
 
