@@ -42,8 +42,7 @@
 			"tabpanel"
 		],
 		"conditions": {
-			// TODO: Selector is diabled
-			"#hasAccname": {
+			":aria(has name)": {
 				"implicitRole": "region"
 			}
 		},

@@ -73,4 +73,9 @@ describe('getImplicitRole', () => {
 		expect(c('<form aria-label="foo"></form>', '1.2')).toBe('form');
 		expect(c('<form aria-label="foo"></form>', '1.1')).toBe('form');
 	});
+
+	test('the section element', () => {
+		expect(c('<section></section>', '1.2')).toBe(false);
+		expect(c('<section aria-label="foo"></section>', '1.2')).toBe('region');
+	});
 });

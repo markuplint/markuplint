@@ -15579,7 +15579,7 @@
 					"tabpanel"
 				],
 				"conditions": {
-					"#hasAccname": {
+					":aria(has name)": {
 						"implicitRole": "region"
 					}
 				},
