@@ -4,7 +4,7 @@ import { getAttrSpecs } from './get-attr-specs';
 
 describe('getSpec', () => {
 	test('svg:image[x]', () => {
-		const specs = getAttrSpecs('svg:image', htmlSpec);
+		const specs = getAttrSpecs('image', 'http://www.w3.org/2000/svg', htmlSpec);
 		const x = specs?.find(spec => spec.name === 'x');
 		expect(x).toStrictEqual({
 			defaultValue: '0',
@@ -15,7 +15,7 @@ describe('getSpec', () => {
 	});
 
 	test('svg:foreignObject[x]', () => {
-		const specs = getAttrSpecs('svg:foreignObject', htmlSpec);
+		const specs = getAttrSpecs('foreignObject', 'http://www.w3.org/2000/svg', htmlSpec);
 		const x = specs?.find(spec => spec.name === 'x');
 		expect(x).toStrictEqual({
 			defaultValue: '0',
@@ -28,7 +28,7 @@ describe('getSpec', () => {
 	});
 
 	test('svg:linearGradient[xlink:href]', () => {
-		const specs = getAttrSpecs('svg:linearGradient', htmlSpec);
+		const specs = getAttrSpecs('linearGradient', 'http://www.w3.org/2000/svg', htmlSpec);
 		const x = specs?.find(spec => spec.name === 'xlink:href');
 		expect(x).toStrictEqual({
 			description:
@@ -40,7 +40,7 @@ describe('getSpec', () => {
 	});
 
 	test('img[fetchpriority] (experimental spec)', () => {
-		const attrs = getAttrSpecs('img', htmlSpec);
+		const attrs = getAttrSpecs('img', null, htmlSpec);
 		const fetchpriority = attrs?.find(attr => attr.name === 'fetchpriority');
 		expect(fetchpriority?.experimental).toBe(true);
 	});

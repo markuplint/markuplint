@@ -3,9 +3,19 @@
 	"compilerOptions": {
 		"composite": true,
 		"outDir": "./lib",
-		"rootDir": "./src"
+		"rootDir": "./src",
+		"paths": {
+			"@markuplint/*": ["../../../node_modules"],
+			"*": ["../../../node_modules"]
+		}
 	},
 	"references": [
+		{
+			"path": "../ml-ast"
+		},
+		{
+			"path": "../test-tools"
+		},
 		{
 			"path": "../types"
 		}

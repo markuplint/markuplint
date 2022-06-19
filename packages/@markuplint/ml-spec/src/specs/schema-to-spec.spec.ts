@@ -1,6 +1,6 @@
 import htmlSpec from '@markuplint/html-spec';
 
-import { getSpec } from './get-spec';
+import { schemaToSpec } from './schema-to-spec';
 
 describe('getSpec', () => {
 	test('Overriding', () => {
@@ -14,7 +14,7 @@ describe('getSpec', () => {
 			type: 'Boolean',
 			description: 'For the unit test. Override.',
 		} as const;
-		const mergedSpec = getSpec([
+		const mergedSpec = schemaToSpec([
 			htmlSpec,
 			{
 				specs: [

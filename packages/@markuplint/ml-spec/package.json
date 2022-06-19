@@ -22,9 +22,12 @@
 		"schema": "run-s schema:*"
 	},
 	"dependencies": {
+		"@markuplint/ml-ast": "^2.0.0",
+		"dom-accessibility-api": "^0.5.14",
 		"tslib": "^2.3.1"
 	},
 	"devDependencies": {
+		"@markuplint/test-tools": "3.0.0-alpha",
 		"@markuplint/types": "2.1.0",
 		"json-schema-to-typescript": "^10.1.5"
 	}

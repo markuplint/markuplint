@@ -1,6 +1,6 @@
-import type { ElementSpec, ExtendedSpec, MLMLSpec, Attribute } from './types';
+import type { ElementSpec, ExtendedSpec, MLMLSpec, Attribute } from '../types';
 
-import { mergeArray } from './utils';
+import { mergeArray } from '../utils/merge-array';
 
 /**
  * Merging HTML-spec schema and extended spec schemas
@@ -9,7 +9,7 @@ import { mergeArray } from './utils';
  *
  * @param schemas `MLDocument.schemas`
  */
-export function getSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
+export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 	const [main, ...extendedSpecs] = schemas;
 	const result = { ...main };
 	for (const extendedSpec of extendedSpecs) {

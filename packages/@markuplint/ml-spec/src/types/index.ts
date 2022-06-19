@@ -1,7 +1,7 @@
-import type { AttributeJSON } from '.';
-import type { ARIA } from './types/aria';
-import type { AttributeType, GlobalAttributes } from './types/attributes';
-import type { ContentModel, Category } from './types/permitted-structres';
+import type { ARIA } from './aria';
+import type { AttributeJSON, AttributeType, GlobalAttributes } from './attributes';
+import type { ContentModel, Category } from './permitted-structres';
+import type { NamespaceURI } from '@markuplint/ml-ast';
 
 /**
  * markuplit Markup-language spec
@@ -52,7 +52,7 @@ export type ElementSpec = {
 	 * Namespaces in XML
 	 * @see https://www.w3.org/TR/xml-names/
 	 */
-	namespace?: 'http://www.w3.org/1999/xhtml' | 'http://www.w3.org/2000/svg' | 'http://www.w3.org/1998/Math/MathML';
+	namespace?: NamespaceURI;
 
 	/**
 	 * Reference URL
@@ -212,16 +212,4 @@ export type EquivalentHtmlAttr = {
 	value: string | null;
 };
 
-export interface SpecOM {
-	[tagName: string]: MLDOMElementSpec;
-}
-
-export interface MLDOMElementSpec {
-	experimental: boolean;
-	obsolete: boolean | string;
-	deprecated: boolean;
-	nonStandard: boolean;
-	categories: Category[];
-	contentModel: ContentModel;
-	attributes: Attribute[];
-}
+export type Matches = (selector: string) => boolean;

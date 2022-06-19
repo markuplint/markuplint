@@ -1,14 +1,19 @@
-import type { MLMLSpec, Attribute } from './types';
+import type { MLMLSpec, Attribute } from '../types';
+import type { NamespaceURI } from '@markuplint/ml-ast';
+
+import { resolveNamespace } from '../utils/resolve-namespace';
 
 const cacheMap = new Map<string, Attribute[] | null>();
 const schemaCache = new WeakSet<MLMLSpec>();
 
-export function getAttrSpecs(nameWithNS: string, schema: MLMLSpec) {
+export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, schema: MLMLSpec) {
 	if (!schemaCache.has(schema)) {
 		cacheMap.clear();
 	}
 
-	const cache = cacheMap.get(nameWithNS);
+	const { localNameWithNS } = resolveNamespace(localName, namespace || undefined);
+
+	const cache = cacheMap.get(localNameWithNS);
 
 	if (cache !== undefined) {
 		return cache;
@@ -16,9 +21,9 @@ export function getAttrSpecs(nameWithNS: string, schema: MLMLSpec) {
 
 	schemaCache.add(schema);
 
-	const elSpec = schema.specs.find(spec => spec.name === nameWithNS);
+	const elSpec = schema.specs.find(spec => spec.name === localNameWithNS);
 	if (!elSpec) {
-		cacheMap.set(nameWithNS, null);
+		cacheMap.set(localNameWithNS, null);
 		return null;
 	}
 
@@ -78,7 +83,7 @@ export function getAttrSpecs(nameWithNS: string, schema: MLMLSpec) {
 	for (const attr of attrList) {
 		if (!attr.type) {
 			throw new Error(
-				`The type is empty in the ${attr.name} attribute of the ${nameWithNS} element,
+				`The type is empty in the ${attr.name} attribute of the ${localName} element,
 					'packages',
 					'@markuplint',
 					'html-spec',
@@ -92,7 +97,7 @@ export function getAttrSpecs(nameWithNS: string, schema: MLMLSpec) {
 
 	attrList.sort(nameCompare);
 
-	cacheMap.set(nameWithNS, attrList);
+	cacheMap.set(localNameWithNS, attrList);
 	return attrList;
 }
 
