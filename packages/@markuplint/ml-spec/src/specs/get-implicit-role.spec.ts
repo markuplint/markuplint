@@ -58,4 +58,12 @@ describe('getImplicitRole', () => {
 		expect(c('<header><div role="article"></div></header>', '1.2')).toBe('generic');
 		expect(c('<header><div role="article"></div></header>', '1.1')).toBe(false);
 	});
+
+	test('the img element', () => {
+		expect(c('<img />', '1.2')).toBe('img');
+		expect(c('<img alt />', '1.2')).toBe('presentation');
+		expect(c('<img alt="" />', '1.2')).toBe('presentation');
+		expect(c('<img alt="foo" />', '1.2')).toBe('img');
+		expect(c('<img aria-label="foo" />', '1.2')).toBe('img');
+	});
 });

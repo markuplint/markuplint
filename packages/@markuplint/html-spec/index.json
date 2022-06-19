@@ -12842,7 +12842,7 @@
 							]
 						}
 					},
-					":not([alt])": {
+					":not([alt]):aria(has no name)": {
 						"implicitRole": "img",
 						"permittedRoles": false,
 						"properties": {
