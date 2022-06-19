@@ -162,11 +162,11 @@ export type ARIRRoleAttribute = {
 	accessibleNameRequired: boolean;
 	accessibleNameFromContent: boolean;
 	accessibleNameProhibited: boolean;
-	ownedAttribute: ARIARoleOwnedPropOrState[];
 	childrenPresentational?: boolean;
+	ownedProperties: ARIARoleOwnedProperties[];
 };
 
-export type ARIARoleOwnedPropOrState = {
+export type ARIARoleOwnedProperties = {
 	name: string;
 	inherited?: true;
 	required?: true;

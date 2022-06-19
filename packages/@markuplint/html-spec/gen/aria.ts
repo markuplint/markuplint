@@ -3,7 +3,7 @@
 import type {
 	ARIAAttribute,
 	ARIAAttributeValue,
-	ARIARoleOwnedPropOrState,
+	ARIARoleOwnedProperties,
 	ARIRRoleAttribute,
 	EquivalentHtmlAttr,
 } from '@markuplint/ml-spec';
@@ -43,7 +43,7 @@ export async function getAria() {
 	const $ = await fetch('https://www.w3.org/TR/wai-aria-1.2/');
 	const $roleList = $('#role_definitions section.role');
 	const roles: ARIRRoleAttribute[] = [];
-	const getAttr = (li: cheerio.Element): ARIARoleOwnedPropOrState => {
+	const getAttr = (li: cheerio.Element): ARIARoleOwnedProperties => {
 		const $li = $(li);
 		const text = $li.text();
 		const isDeprecated = /deprecated/i.test(text) || undefined;
@@ -103,7 +103,7 @@ export async function getAria() {
 			: $childrenPresentational.match(/false/i)
 			? false
 			: undefined;
-		const ownedAttribute = arrayUnique(
+		const ownedProperties = arrayUnique(
 			[...ownedRequiredProps, ...ownedInheritedProps, ...ownedProps].sort(nameCompare),
 		);
 		roles.push({
@@ -115,8 +115,8 @@ export async function getAria() {
 			accessibleNameRequired,
 			accessibleNameFromContent,
 			accessibleNameProhibited,
-			ownedAttribute,
 			childrenPresentational,
+			ownedProperties,
 		});
 	});
 
@@ -135,8 +135,8 @@ export async function getAria() {
 
 	const ariaNameList: Set<string> = new Set();
 	for (const role of roles) {
-		role.ownedAttribute.forEach(attr => {
-			ariaNameList.add(attr.name);
+		role.ownedProperties.forEach(prop => {
+			ariaNameList.add(prop.name);
 		});
 	}
 
