@@ -1,5 +1,5 @@
 import type { ARIAVersion, Matches, MLMLSpec } from '../types';
-import type { ARIA } from '../types/aria';
+import type { ARIA, PermittedRoles } from '../types/aria';
 
 import { getSpecByTagName } from './get-spec-by-tag-name';
 import { resolveVersion } from './resolve-version';
@@ -60,6 +60,26 @@ function getVersionResolvedARIA(
 		return null;
 	}
 	aria = resolveVersion(spec, version);
+	if (aria.permittedRoles) {
+		aria.permittedRoles = optimizePermittedRoles(aria.permittedRoles);
+	}
 	cache.set(key, aria);
 	return aria;
+}
+
+function optimizePermittedRoles(permittedRoles: PermittedRoles) {
+	if (!Array.isArray(permittedRoles)) {
+		return permittedRoles;
+	}
+	const unique = new Set(permittedRoles);
+
+	// https://www.w3.org/TR/wai-aria-1.2/#note-regarding-the-aria-1-1-none-role
+	if (unique.has('presentation')) {
+		unique.add('none');
+	}
+	if (unique.has('none')) {
+		unique.add('presentation');
+	}
+
+	return Array.from(unique).sort();
 }
