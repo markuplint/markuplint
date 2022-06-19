@@ -1,4 +1,4 @@
-import type { Specificity } from './types';
+import type { SelectorResult, Specificity } from './types';
 
 import parser, { pseudo } from 'postcss-selector-parser';
 
@@ -10,31 +10,15 @@ import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is';
 const selLog = coreLog.extend('selector');
 const resLog = coreLog.extend('result');
 
-const caches = new Map<string, Selector>();
-
-export function createSelector(selector: string) {
-	let instance = caches.get(selector);
-	if (instance) {
-		return instance;
-	}
-
-	instance = new Selector(selector);
-	caches.set(selector, instance);
-	return instance;
-}
+type ExtendedPseudoClass = Record<string, (content: string) => (el: Element) => SelectorResult>;
 
 type MultipleSelectorResult = SelectorResult[];
 
-type SelectorResult = {
-	specificity: Specificity;
-	matched: boolean;
-};
-
-class Selector {
+export class Selector {
 	#ruleset: Ruleset;
 
-	constructor(selector: string) {
-		this.#ruleset = Ruleset.parse(selector);
+	constructor(selector: string, extended: ExtendedPseudoClass = {}) {
+		this.#ruleset = Ruleset.parse(selector, extended);
 	}
 
 	match(el: Node, scope: ParentNode | null = isElement(el) ? el : null): Specificity | false {
@@ -49,19 +33,19 @@ class Selector {
 }
 
 class Ruleset {
-	static parse(selector: string) {
+	static parse(selector: string, extended: ExtendedPseudoClass) {
 		const selectors: parser.Selector[] = [];
 		parser(root => {
 			selectors.push(...root.nodes);
 		}).processSync(selector);
-		return new Ruleset(selectors, 0);
+		return new Ruleset(selectors, extended, 0);
 	}
 
 	#selectorGroup: StructuredSelector[] = [];
 	readonly headCombinator: string | null;
 
-	constructor(selectors: parser.Selector[], depth: number) {
-		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector, depth)));
+	constructor(selectors: parser.Selector[], extended: ExtendedPseudoClass, depth: number) {
+		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector, depth, extended)));
 		const head = this.#selectorGroup[0];
 		this.headCombinator = head?.headCombinator || null;
 
@@ -96,9 +80,9 @@ class StructuredSelector {
 		return this.#selector.nodes.join('');
 	}
 
-	constructor(selector: parser.Selector, depth: number) {
+	constructor(selector: parser.Selector, depth: number, extended: ExtendedPseudoClass) {
 		this.#selector = selector;
-		this.#edge = new SelectorTarget(depth);
+		this.#edge = new SelectorTarget(extended, depth);
 		this.headCombinator =
 			this.#selector.nodes[0].type === 'combinator' ? this.#selector.nodes[0].value || null : null;
 		if (0 < depth && this.headCombinator) {
@@ -107,7 +91,7 @@ class StructuredSelector {
 		this.#selector.nodes.forEach(node => {
 			switch (node.type) {
 				case 'combinator': {
-					const combinatedTarget = new SelectorTarget(depth);
+					const combinatedTarget = new SelectorTarget(extended, depth);
 					combinatedTarget.from(this.#edge, node);
 					this.#edge = combinatedTarget;
 					break;
@@ -135,6 +119,7 @@ class StructuredSelector {
 }
 
 class SelectorTarget {
+	#extended: ExtendedPseudoClass;
 	#combinatedFrom: { target: SelectorTarget; combinator: parser.Combinator } | null = null;
 	#isAdded = false;
 
@@ -145,7 +130,8 @@ class SelectorTarget {
 	pseudo: parser.Pseudo[] = [];
 	tag: parser.Tag | parser.Universal | null = null;
 
-	constructor(depth: number) {
+	constructor(extended: ExtendedPseudoClass, depth: number) {
+		this.#extended = extended;
 		this.depth = depth;
 	}
 
@@ -409,7 +395,7 @@ class SelectorTarget {
 		specificity[1] += this.attr.length;
 
 		for (const pseudo of this.pseudo) {
-			const pseudoRes = pseudoMatch(pseudo, el, scope, this.depth);
+			const pseudoRes = pseudoMatch(pseudo, el, scope, this.#extended, this.depth);
 
 			specificity[0] += pseudoRes.specificity[0];
 			specificity[1] += pseudoRes.specificity[1];
@@ -498,7 +484,13 @@ function attrMatch(attr: parser.Attribute, el: Element) {
 	});
 }
 
-function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | null, depth: number): SelectorResult {
+function pseudoMatch(
+	pseudo: parser.Pseudo,
+	el: Element,
+	scope: ParentNode | null,
+	extended: ExtendedPseudoClass,
+	depth: number,
+): SelectorResult {
 	switch (pseudo.value) {
 		//
 
@@ -506,7 +498,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | nul
 		 * Below, markuplint Specific Selector
 		 */
 		case ':closest': {
-			const ruleset = new Ruleset(pseudo.nodes, depth + 1);
+			const ruleset = new Ruleset(pseudo.nodes, extended, depth + 1);
 			const specificity = getSpecificity(ruleset.match(el, scope));
 			let parent = el.parentElement;
 			while (parent) {
@@ -528,7 +520,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | nul
 		 * Below, Selector Level 4
 		 */
 		case ':not': {
-			const ruleset = new Ruleset(pseudo.nodes, depth + 1);
+			const ruleset = new Ruleset(pseudo.nodes, extended, depth + 1);
 			const resList = ruleset.match(el, scope);
 			const specificity = getSpecificity(resList);
 			const matched = resList.every(r => !r.matched);
@@ -538,7 +530,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | nul
 			};
 		}
 		case ':is': {
-			const ruleset = new Ruleset(pseudo.nodes, depth + 1);
+			const ruleset = new Ruleset(pseudo.nodes, extended, depth + 1);
 			const resList = ruleset.match(el, scope);
 			const specificity = getSpecificity(resList);
 			const matched = resList.some(r => r.matched);
@@ -548,7 +540,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | nul
 			};
 		}
 		case ':has': {
-			const ruleset = new Ruleset(pseudo.nodes, depth + 1);
+			const ruleset = new Ruleset(pseudo.nodes, extended, depth + 1);
 			const specificity = getSpecificity(ruleset.match(el, scope));
 			switch (ruleset.headCombinator) {
 				case '+':
@@ -569,7 +561,7 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | nul
 			}
 		}
 		case ':where': {
-			const ruleset = new Ruleset(pseudo.nodes, depth + 1);
+			const ruleset = new Ruleset(pseudo.nodes, extended, depth + 1);
 			const resList = ruleset.match(el, scope);
 			const matched = resList.some(r => r.matched);
 			return {
@@ -653,6 +645,16 @@ function pseudoMatch(pseudo: parser.Pseudo, el: Element, scope: ParentNode | nul
 		case '::before':
 		case '::after':
 		default: {
+			for (const ext of Object.keys(extended)) {
+				if (pseudo.value !== `:${ext}`) {
+					continue;
+				}
+
+				const content = pseudo.nodes.map(node => node.toString()).join('');
+				const hook = extended[ext];
+				const matcher = hook(content);
+				return matcher(el);
+			}
 			throw new Error(`Unsupported pseudo ${pseudo.toString()} selector.`);
 		}
 	}

@@ -1,5 +1,10 @@
 export type Specificity = [number, number, number];
 
+export type SelectorResult = {
+	specificity: Specificity;
+	matched: boolean;
+};
+
 export type RegexSelector = RegexSelectorWithoutCompination & {
 	combination?: {
 		combinator: RegexSelectorCombinator;

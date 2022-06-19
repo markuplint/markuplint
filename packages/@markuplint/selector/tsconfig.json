@@ -9,7 +9,14 @@
 			"*": ["../../../node_modules"]
 		}
 	},
-	"references": [],
+	"references": [
+		{
+			"path": "../html-spec"
+		},
+		{
+			"path": "../ml-spec"
+		}
+	],
 	"include": ["./src/**/*"],
 	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
 }

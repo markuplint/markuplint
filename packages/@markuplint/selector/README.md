@@ -70,6 +70,27 @@ Supported selectors and operators:
 | Column combinator                                | <code>div \|\| span</code>                                                                | ❌      |
 | Multiple selectors                               | `div, span`                                                                               | ✅      |
 
+## Extended Selector
+
+The below is selectors that are extended by markuplint:
+
+| Selector Type     | Code Example      |
+| ----------------- | ----------------- |
+| ARIA pseudo-class | `:aria(has name)` |
+
+### ARIA pseudo-class
+
+```
+:aria(syntax)
+:aria(syntax/version)
+```
+
+| Syntax         | Example                                                 | Description                     |
+| -------------- | ------------------------------------------------------- | ------------------------------- |
+| `has name`     | `:aria(has name)`<br>`:aria(has name/1.1)`              | It has accessible name          |
+| `has no name`  | `:aria(has no name)`<br>`:aria(has no name/1.1)`        | It does'nt have accessible name |
+| `role is Role` | `:aria(role is banner)`<br>`:aria(role is generic/1.2)` | It matches the specfied role    |
+
 ## Regex Selector
 
 ```json

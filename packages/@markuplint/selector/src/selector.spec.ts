@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom';
 
 import { InvalidSelectorError } from './invalid-selector-error';
-import { createSelector } from './selector';
+import { Selector } from './selector';
 
 beforeEach(() => {
 	const dom = new JSDOM();
@@ -25,6 +25,10 @@ function createTestElement(html: string, selector?: string) {
 		throw new Error('An element is not created');
 	}
 	return fragment.firstChild as Element;
+}
+
+function createSelector(selector: string) {
+	return new Selector(selector);
 }
 
 describe('selector matching', () => {
