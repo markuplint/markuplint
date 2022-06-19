@@ -141,4 +141,11 @@ describe('getPermittedRoles', () => {
 		expect(c('<img alt="foo" />', '1.2')).toStrictEqual(imgPermitted);
 		expect(c('<img aria-label="foo" />', '1.2')).toStrictEqual(imgPermitted);
 	});
+
+	test('the form element', () => {
+		expect(c('<form></form>', '1.2')).toStrictEqual(['form', 'none', 'presentation', 'search']);
+		expect(c('<form></form>', '1.1')).toStrictEqual(['none', 'presentation', 'search']);
+		expect(c('<form aria-label="foo"></form>', '1.2')).toStrictEqual(['form', 'none', 'presentation', 'search']);
+		expect(c('<form aria-label="foo"></form>', '1.1')).toStrictEqual(['form', 'none', 'presentation', 'search']);
+	});
 });

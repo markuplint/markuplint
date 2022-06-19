@@ -12141,7 +12141,7 @@
 				"1.1": {
 					"implicitRole": false,
 					"conditions": {
-						"#hasAccname": {
+						":aria(has name)": {
 							"implicitRole": "form"
 						}
 					}

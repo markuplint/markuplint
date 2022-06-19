@@ -66,4 +66,11 @@ describe('getImplicitRole', () => {
 		expect(c('<img alt="foo" />', '1.2')).toBe('img');
 		expect(c('<img aria-label="foo" />', '1.2')).toBe('img');
 	});
+
+	test('the form element', () => {
+		expect(c('<form></form>', '1.2')).toBe('form');
+		expect(c('<form></form>', '1.1')).toBe(false);
+		expect(c('<form aria-label="foo"></form>', '1.2')).toBe('form');
+		expect(c('<form aria-label="foo"></form>', '1.1')).toBe('form');
+	});
 });
