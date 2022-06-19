@@ -37,7 +37,7 @@ export default createRule<boolean, Options>({
 		await document.walkOn('Element', el => {
 			const attrSpecs = getAttrSpecs(el, document.specs);
 			const html = getSpec(el, document.specs);
-			const { roles, ariaAttrs } = ariaSpecs(document.specs);
+			const { roles, props } = ariaSpecs(document.specs, el.rule.option.version);
 
 			if (!html || !attrSpecs) {
 				return;
@@ -137,7 +137,7 @@ export default createRule<boolean, Options>({
 
 			const computedRole = getComputedRole(document.specs, el, el.rule.option.version);
 			if (computedRole) {
-				const role = getRoleSpec(document.specs, computedRole.name);
+				const role = getRoleSpec(document.specs, computedRole.name, el.rule.option.version);
 				if (role) {
 					// Checking aria-* on the role
 					for (const attr of el.attributes) {
@@ -208,7 +208,7 @@ export default createRule<boolean, Options>({
 				for (const attr of el.attributes) {
 					const attrName = attr.name.toLowerCase();
 					if (/^aria-/i.test(attrName)) {
-						const ariaAttr = ariaAttrs.find(attr => attr.name === attrName);
+						const ariaAttr = props.find(prop => prop.name === attrName);
 						if (ariaAttr && !ariaAttr.isGlobal) {
 							report({
 								scope: el,
@@ -233,11 +233,17 @@ export default createRule<boolean, Options>({
 				const attrName = attr.name.toLowerCase();
 				if (/^aria-/i.test(attrName)) {
 					const value = attr.value.trim().toLowerCase();
-					const propSpec = ariaAttrs.find(p => p.name === attrName);
+					const propSpec = props.find(p => p.name === attrName);
 
 					// Checking ARIA Value
 					if (el.rule.option.checkingValue) {
-						const result = checkAria(document.specs, attrName, value, computedRole?.name);
+						const result = checkAria(
+							document.specs,
+							attrName,
+							value,
+							el.rule.option.version,
+							computedRole?.name,
+						);
 						if (!result.isValid) {
 							report({
 								scope: el,

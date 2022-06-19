@@ -36,24 +36,24 @@ describe('checkAriaValue', () => {
 
 describe('checkAria', () => {
 	test('aria-activedescendant', () => {
-		expect(checkAria(specs, 'aria-activedescendant', 'foo').isValid).toBe(true);
-		expect(checkAria(specs, 'aria-activedescendant', '').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-activedescendant', 'foo', '1.2').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-activedescendant', '', '1.2').isValid).toBe(true);
 	});
 
 	test('aria-atomic', () => {
-		expect(checkAria(specs, 'aria-atomic', '').isValid).toBe(false);
-		expect(checkAria(specs, 'aria-atomic', 'true').isValid).toBe(true);
-		expect(checkAria(specs, 'aria-atomic', 'false').isValid).toBe(true);
-		expect(checkAria(specs, 'aria-atomic', 'undefined').isValid).toBe(false);
+		expect(checkAria(specs, 'aria-atomic', '', '1.2').isValid).toBe(false);
+		expect(checkAria(specs, 'aria-atomic', 'true', '1.2').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-atomic', 'false', '1.2').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-atomic', 'undefined', '1.2').isValid).toBe(false);
 	});
 
 	test('aria-autocomplete', () => {
-		expect(checkAria(specs, 'aria-autocomplete', '').isValid).toBe(false);
-		expect(checkAria(specs, 'aria-autocomplete', 'inline').isValid).toBe(true);
-		expect(checkAria(specs, 'aria-autocomplete', 'list').isValid).toBe(true);
-		expect(checkAria(specs, 'aria-autocomplete', 'both').isValid).toBe(true);
-		expect(checkAria(specs, 'aria-autocomplete', 'none').isValid).toBe(true);
-		expect(checkAria(specs, 'aria-autocomplete', 'foo').isValid).toBe(false);
+		expect(checkAria(specs, 'aria-autocomplete', '', '1.2').isValid).toBe(false);
+		expect(checkAria(specs, 'aria-autocomplete', 'inline', '1.2').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-autocomplete', 'list', '1.2').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-autocomplete', 'both', '1.2').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-autocomplete', 'none', '1.2').isValid).toBe(true);
+		expect(checkAria(specs, 'aria-autocomplete', 'foo', '1.2').isValid).toBe(false);
 	});
 });
 

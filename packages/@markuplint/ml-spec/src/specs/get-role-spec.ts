@@ -1,11 +1,13 @@
-import type { ARIRRoleAttribute, MLMLSpec } from '../types';
+import type { ARIAVersion, ARIRRoleAttribute, MLMLSpec } from '../types';
 
-export function getRoleSpec(specs: Readonly<MLMLSpec>, roleName: string) {
-	const role = getRoleByName(specs, roleName);
+import { ariaSpecs } from './aria-specs';
+
+export function getRoleSpec(specs: Readonly<MLMLSpec>, roleName: string, version: ARIAVersion) {
+	const role = getRoleByName(specs, roleName, version);
 	if (!role) {
 		return null;
 	}
-	const superClassRoles = recursiveTraverseSuperClassRoles(specs, roleName);
+	const superClassRoles = recursiveTraverseSuperClassRoles(specs, roleName, version);
 	return {
 		name: role.name,
 		isAbstract: !!role.isAbstract,
@@ -15,30 +17,30 @@ export function getRoleSpec(specs: Readonly<MLMLSpec>, roleName: string) {
 	};
 }
 
-function getRoleByName(specs: Readonly<MLMLSpec>, roleName: string) {
-	const roles = specs.def['#roles'];
+function getRoleByName(specs: Readonly<MLMLSpec>, roleName: string, version: ARIAVersion) {
+	const { roles } = ariaSpecs(specs, version);
 	const role = roles.find(r => r.name === roleName);
 	return role;
 }
 
-function recursiveTraverseSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string) {
+function recursiveTraverseSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string, version: ARIAVersion) {
 	const roles: ARIRRoleAttribute[] = [];
-	const superClassRoles = getSuperClassRoles(specs, roleName);
+	const superClassRoles = getSuperClassRoles(specs, roleName, version);
 	if (superClassRoles) {
 		roles.push(...superClassRoles);
 		for (const superClassRole of superClassRoles) {
-			const ancestorRoles = recursiveTraverseSuperClassRoles(specs, superClassRole.name);
+			const ancestorRoles = recursiveTraverseSuperClassRoles(specs, superClassRole.name, version);
 			roles.push(...ancestorRoles);
 		}
 	}
 	return roles;
 }
 
-function getSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string) {
-	const role = getRoleByName(specs, roleName);
+function getSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string, version: ARIAVersion) {
+	const role = getRoleByName(specs, roleName, version);
 	return (
 		role?.generalization
-			.map(roleName => getRoleByName(specs, roleName))
+			.map(roleName => getRoleByName(specs, roleName, version))
 			.filter((role): role is ARIRRoleAttribute => !!role) || null
 	);
 }

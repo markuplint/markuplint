@@ -1,8 +1,9 @@
 import type { Log } from './debug';
 import type { Translator } from '@markuplint/i18n';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
-import type { Attribute, MLMLSpec } from '@markuplint/ml-spec';
+import type { ARIAVersion, Attribute, MLMLSpec } from '@markuplint/ml-spec';
 
+import { ariaSpecs } from '@markuplint/ml-core';
 import { decode as decodeHtmlEntities } from 'html-entities';
 
 import { attrCheck } from './attr-check';
@@ -161,8 +162,14 @@ export function checkAriaValue(type: string, value: string, tokenEnum: string[])
 	return true;
 }
 
-export function checkAria(specs: Readonly<MLMLSpec>, attrName: string, currentValue: string, role?: string) {
-	const ariaAttrs = specs.def['#ariaAttrs'];
+export function checkAria(
+	specs: Readonly<MLMLSpec>,
+	attrName: string,
+	currentValue: string,
+	version: ARIAVersion,
+	role?: string,
+) {
+	const ariaAttrs = ariaSpecs(specs, version).props;
 	const aria = ariaAttrs.find(a => a.name === attrName);
 	if (!aria) {
 		return {

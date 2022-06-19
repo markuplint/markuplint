@@ -17,17 +17,23 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 			result.cites = [...result.cites, ...extendedSpec.cites];
 		}
 		if (extendedSpec.def) {
-			if (extendedSpec.def['#ariaAttrs']) {
-				result.def['#ariaAttrs'] = [...result.def['#ariaAttrs'], ...extendedSpec.def['#ariaAttrs']];
-			}
 			if (extendedSpec.def['#globalAttrs']?.['#extends']) {
 				result.def['#globalAttrs']['#HTMLGlobalAttrs'] = {
 					...(result.def['#globalAttrs']?.['#HTMLGlobalAttrs'] || {}),
 					...(extendedSpec.def['#globalAttrs']?.['#extends'] || {}),
 				};
 			}
-			if (extendedSpec.def['#roles']) {
-				result.def['#roles'] = [...result.def['#roles'], ...extendedSpec.def['#roles']];
+			if (extendedSpec.def['#aria']) {
+				result.def['#aria'] = {
+					'1.1': {
+						roles: mergeArray(result.def['#aria']['1.1'].roles, extendedSpec.def['#aria']['1.1'].roles),
+						props: mergeArray(result.def['#aria']['1.1'].props, extendedSpec.def['#aria']['1.1'].props),
+					},
+					'1.2': {
+						roles: mergeArray(result.def['#aria']['1.2'].roles, extendedSpec.def['#aria']['1.2'].roles),
+						props: mergeArray(result.def['#aria']['1.2'].props, extendedSpec.def['#aria']['1.2'].props),
+					},
+				};
 			}
 			if (extendedSpec.def['#contentModels']) {
 				const keys = new Set([

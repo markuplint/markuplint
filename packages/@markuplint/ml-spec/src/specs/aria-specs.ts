@@ -1,10 +1,6 @@
-import type { MLMLSpec } from '../types';
+import type { ARIAVersion, MLMLSpec } from '../types';
 
-export function ariaSpecs(specs: Readonly<MLMLSpec>) {
-	const roles = specs.def['#roles'];
-	const ariaAttrs = specs.def['#ariaAttrs'];
-	return {
-		roles,
-		ariaAttrs,
-	};
+export function ariaSpecs(specs: Readonly<MLMLSpec>, version: ARIAVersion) {
+	const aria = specs.def['#aria'];
+	return aria[version];
 }

@@ -1,9 +1,12 @@
+import type { ARIAVersion } from '@markuplint/ml-spec';
+
 import { createRule, getAttrSpecs, ariaSpecs } from '@markuplint/ml-core';
 
 export default createRule({
+	defaultOptions: {
+		ariaVersion: '1.2' as ARIAVersion,
+	},
 	async verify({ document, report, t }) {
-		const { ariaAttrs } = ariaSpecs(document.specs);
-
 		const idList = new Set<string>();
 		let hasDynamicId = false;
 
@@ -80,7 +83,9 @@ export default createRule({
 				}
 			}
 
-			const aria = ariaAttrs.find(aria => aria.name === name);
+			const { props } = ariaSpecs(document.specs, attr.rule.option.ariaVersion);
+
+			const aria = props.find(prop => prop.name === name);
 			if (aria) {
 				if (aria.value === 'ID reference' && !idList.has(value)) {
 					report({
