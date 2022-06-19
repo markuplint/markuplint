@@ -160,10 +160,12 @@ export type ARIRRoleAttribute = {
 	generalization: string[];
 	requiredContextRole?: string[];
 	accessibleNameRequired: boolean;
+	accessibleNameFromAuthor: boolean;
 	accessibleNameFromContent: boolean;
 	accessibleNameProhibited: boolean;
 	childrenPresentational?: boolean;
 	ownedProperties: ARIARoleOwnedProperties[];
+	prohibitedProperties: string[];
 };
 
 export type ARIARoleOwnedProperties = {
@@ -171,8 +173,6 @@ export type ARIARoleOwnedProperties = {
 	inherited?: true;
 	required?: true;
 	deprecated?: true;
-	prohibited?: true;
-	defaultValue?: boolean | string | number;
 };
 
 export type ARIAAttribute = {

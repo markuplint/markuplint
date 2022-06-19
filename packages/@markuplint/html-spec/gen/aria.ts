@@ -80,24 +80,31 @@ export async function getAria() {
 		if (!$ownedRequiredProps.length) {
 			$ownedRequiredProps = $feaures.find('.role-required-properties').toArray();
 		}
-		const ownedRequiredProps = $ownedRequiredProps.map(getAttr);
-		ownedRequiredProps.forEach(p => (p.required = true));
-		const ownedInheritedProps = $feaures.find('.role-inherited li').toArray().map(getAttr);
+		const ownedRequiredProps = $ownedRequiredProps.map(getAttr).map(p => ({ ...p, required: true as const }));
+		const ownedInheritedProps = $feaures
+			.find('.role-inherited li')
+			.toArray()
+			.map(getAttr)
+			.map(p => ({ ...p, inherited: true as const }));
 		const ownedProps = $feaures.find('.role-properties li, .role-properties > a').toArray().map(getAttr);
 		const requiredContextRole = $feaures
 			.find('.role-scope li')
 			.toArray()
 			.map(el => $(el).text().trim());
 		const accessibleNameRequired = !!$feaures.find('.role-namerequired').text().match(/true/i);
+		const accessibleNameFromAuthor = !!$feaures
+			.find('.role-namefrom')
+			.text()
+			.match(/author/i);
 		const accessibleNameFromContent = !!$feaures
 			.find('.role-namefrom')
 			.text()
 			.match(/content/i);
 		const accessibleNameProhibited = !!$feaures
-			.find('.role-childpresentational')
+			.find('.role-namefrom')
 			.text()
 			.match(/prohibited/i);
-		const $childrenPresentational = $feaures.find('.role-namerequired').text();
+		const $childrenPresentational = $feaures.find('.role-childpresentational').text();
 		const childrenPresentational = $childrenPresentational.match(/true/i)
 			? true
 			: $childrenPresentational.match(/false/i)
@@ -106,6 +113,10 @@ export async function getAria() {
 		const ownedProperties = arrayUnique(
 			[...ownedRequiredProps, ...ownedInheritedProps, ...ownedProps].sort(nameCompare),
 		);
+		const prohibitedProperties = $feaures
+			.find('.role-disallowed li code')
+			.toArray()
+			.map(el => $(el).text().trim());
 		roles.push({
 			name,
 			description,
@@ -113,10 +124,12 @@ export async function getAria() {
 			generalization,
 			requiredContextRole,
 			accessibleNameRequired,
+			accessibleNameFromAuthor,
 			accessibleNameFromContent,
 			accessibleNameProhibited,
 			childrenPresentational,
 			ownedProperties,
+			prohibitedProperties,
 		});
 	});
 
