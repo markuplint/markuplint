@@ -144,6 +144,7 @@ export default createRule<boolean, Options>({
 						const attrName = attr.name.toLowerCase();
 						if (/^aria-/i.test(attrName)) {
 							const statesAndProp = role.ownedProperties.find(p => p.name === attrName);
+							const propSpec = props.find(p => p.name === attrName);
 							if (statesAndProp) {
 								if (el.rule.option.checkingDeprecatedProps && statesAndProp.deprecated) {
 									report({
@@ -152,7 +153,7 @@ export default createRule<boolean, Options>({
 											'{0:c} on {1}',
 											t(
 												'{0} is {1:c}',
-												t('the "{0*}" {1}', attrName, 'ARIA state/property'),
+												t('the "{0*}" {1}', attrName, `ARIA ${propSpec?.type ?? 'property'}`),
 												'deprecated',
 											),
 											t('the "{0*}" {1}', role.name, 'role'),
@@ -169,7 +170,7 @@ export default createRule<boolean, Options>({
 										'{0:c} on {1}',
 										t(
 											'{0} is {1:c}',
-											t('the "{0*}" {1}', attrName, 'ARIA state/property'),
+											t('the "{0*}" {1}', attrName, `ARIA ${propSpec?.type ?? 'property'}`),
 											'disallowed',
 										),
 										t('the "{0*}" {1}', role.name, 'role'),
@@ -191,11 +192,15 @@ export default createRule<boolean, Options>({
 								return attrName === requiredProp;
 							});
 							if (!has) {
+								const propSpec = props.find(p => p.name === requiredProp);
 								report({
 									scope: el,
 									message: t(
 										'{0:c} on {1}',
-										t('Require {0}', t('the "{0*}" {1}', requiredProp, 'ARIA state/property')),
+										t(
+											'Require {0}',
+											t('the "{0*}" {1}', requiredProp, `ARIA ${propSpec?.type ?? 'property'}`),
+										),
 										t('the "{0*}" {1}', role.name, 'role'),
 									),
 								});
@@ -214,8 +219,8 @@ export default createRule<boolean, Options>({
 								scope: el,
 								message: t(
 									'{0} is not {1}',
-									t('the "{0*}" {1}', attrName, 'ARIA state/property'),
-									'global state/property',
+									t('the "{0*}" {1}', attrName, `ARIA ${ariaAttr.type ?? 'property'}`),
+									`global ${ariaAttr.type ?? 'property'}`,
 								),
 								line: attr.startLine,
 								col: attr.startCol,
@@ -251,7 +256,7 @@ export default createRule<boolean, Options>({
 									t(
 										'{0:c} on {1}',
 										t('{0} is {1:c}', t('the "{0}"', value), 'disallowed'),
-										t('the "{0*}" {1}', attrName, 'ARIA state/property'),
+										t('the "{0*}" {1}', attrName, `ARIA ${propSpec?.type ?? 'property'}`),
 									) +
 									('enum' in result && result.enum.length
 										? t('. ') + t('Allowed values are: {0}', t(result.enum))
@@ -289,7 +294,7 @@ export default createRule<boolean, Options>({
 											scope: el,
 											message: t(
 												'{0} has {1}',
-												t('the "{0*}" {1}', attrName, 'ARIA state/property'),
+												t('the "{0*}" {1}', attrName, `ARIA ${propSpec.type}`),
 												t(
 													'the same {0} as {1}',
 													'semantics',
@@ -321,7 +326,7 @@ export default createRule<boolean, Options>({
 										scope: el,
 										message: t(
 											'{0} contradicts {1}',
-											t('the "{0*}" {1}', attrName, 'ARIA state/property'),
+											t('the "{0*}" {1}', attrName, `ARIA ${propSpec.type}`),
 											t('the current "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
 										),
 										line: attr.startLine,
@@ -334,7 +339,7 @@ export default createRule<boolean, Options>({
 											scope: el,
 											message: t(
 												'{0} contradicts {1}',
-												t('the "{0*}" {1}', attrName, 'ARIA state/property'),
+												t('the "{0*}" {1}', attrName, `ARIA ${propSpec.type}`),
 												t(
 													'the implicit "{0}" {1}',
 													equivalentHtmlAttr.htmlAttrName,
