@@ -1,18 +1,25 @@
-import specs from '@markuplint/html-spec';
+import type { NamespaceURI } from '@markuplint/ml-ast';
 
-import { htmlSpec } from '../helper/spec/html-spec';
+import specs from '@markuplint/html-spec';
+import { getSpecByTagName } from '@markuplint/ml-spec';
 
 import ExpGenerator from './permitted-content.spec-to-regexp';
 
+function h(localName: string, namespace: NamespaceURI = 'http://www.w3.org/1999/xhtml') {
+	return getSpecByTagName(specs, localName, namespace);
+}
+
+function expGen() {
+	return new ExpGenerator(specs, 0);
+}
+
 test('empty', () => {
-	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp([]).source).toEqual('^$');
+	expect(expGen().specToRegExp([]).source).toEqual('^$');
 });
 
 test('ordered required', () => {
-	const expGen = new ExpGenerator(0);
 	expect(
-		expGen.specToRegExp([
+		expGen().specToRegExp([
 			{
 				require: 'a',
 			},
@@ -27,9 +34,8 @@ test('ordered required', () => {
 });
 
 test('ordered optional', () => {
-	const expGen = new ExpGenerator(0);
 	expect(
-		expGen.specToRegExp([
+		expGen().specToRegExp([
 			{
 				optional: 'a',
 			},
@@ -44,9 +50,8 @@ test('ordered optional', () => {
 });
 
 test('ordered zeroOrMore', () => {
-	const expGen = new ExpGenerator(0);
 	expect(
-		expGen.specToRegExp([
+		expGen().specToRegExp([
 			{
 				zeroOrMore: 'a',
 			},
@@ -61,9 +66,8 @@ test('ordered zeroOrMore', () => {
 });
 
 test('ordered oneOrMore', () => {
-	const expGen = new ExpGenerator(0);
 	expect(
-		expGen.specToRegExp([
+		expGen().specToRegExp([
 			{
 				oneOrMore: 'a',
 			},
@@ -78,9 +82,8 @@ test('ordered oneOrMore', () => {
 });
 
 test('ordered mixed', () => {
-	const expGen = new ExpGenerator(0);
 	expect(
-		expGen.specToRegExp([
+		expGen().specToRegExp([
 			{
 				oneOrMore: 'a',
 			},
@@ -111,9 +114,8 @@ test('ordered mixed', () => {
 });
 
 test('choice required', () => {
-	const expGen = new ExpGenerator(0);
 	expect(
-		expGen.specToRegExp([
+		expGen().specToRegExp([
 			{
 				choice: [
 					[
@@ -138,9 +140,8 @@ test('choice required', () => {
 });
 
 test('choice required', () => {
-	const expGen = new ExpGenerator(0);
 	expect(
-		expGen.specToRegExp([
+		expGen().specToRegExp([
 			{
 				require: ['a', 'b', 'c'],
 			},
@@ -149,9 +150,8 @@ test('choice required', () => {
 });
 
 test('interleave required', () => {
-	const expGen = new ExpGenerator(0);
 	expect(
-		expGen.specToRegExp([
+		expGen().specToRegExp([
 			{
 				interleave: [
 					[
@@ -176,9 +176,8 @@ test('interleave required', () => {
 });
 
 test('ignore', () => {
-	const expGen = new ExpGenerator(0);
 	expect(
-		expGen.specToRegExp([
+		expGen().specToRegExp([
 			{
 				require: ['a', 'b', 'c'],
 				ignore: 'a',
@@ -188,9 +187,8 @@ test('ignore', () => {
 });
 
 test('group oneOrMore', () => {
-	const expGen = new ExpGenerator(0);
 	expect(
-		expGen.specToRegExp([
+		expGen().specToRegExp([
 			{
 				oneOrMore: [
 					{
@@ -206,9 +204,8 @@ test('group oneOrMore', () => {
 });
 
 test('content model alias', () => {
-	const expGen = new ExpGenerator(0);
 	expect(
-		expGen.specToRegExp([
+		expGen().specToRegExp([
 			{
 				require: '#flow',
 			},
@@ -219,9 +216,8 @@ test('content model alias', () => {
 });
 
 test('content model alias', () => {
-	const expGen = new ExpGenerator(0);
 	expect(
-		expGen.specToRegExp([
+		expGen().specToRegExp([
 			{
 				require: ['a', '#flow'],
 			},
@@ -232,9 +228,8 @@ test('content model alias', () => {
 });
 
 test('content model alias', () => {
-	const expGen = new ExpGenerator(0);
 	expect(
-		expGen.specToRegExp([
+		expGen().specToRegExp([
 			{
 				require: '#transparent',
 			},
@@ -243,76 +238,63 @@ test('content model alias', () => {
 });
 
 test('a', () => {
-	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec(specs, 'a')!.contentModel.contents).source).toEqual(
+	expect(expGen().specToRegExp(h('a')!.contentModel.contents).source).toEqual(
 		'^(?<NAD_00__interactive___InTRANSPARENT>(?:(?<TRANSPARENT_01>(?:<[^>]+>)?))*)$',
 	);
 });
 
 test('audio', () => {
-	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec(specs, 'audio')!.contentModel.contents).source).toEqual(
+	expect(expGen().specToRegExp(h('audio')!.contentModel.contents).source).toEqual(
 		'^(?<NAD_00_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01>(?:<[^>]+>)?))*)$',
 	);
 });
 
 test('head', () => {
-	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec(specs, 'head')!.contentModel.contents).source).toEqual(
+	expect(expGen().specToRegExp(h('head')!.contentModel.contents).source).toEqual(
 		'^(?:<base>|<link>|<meta>|<noscript>|<script>|<style>|<template>)*<title>(?:<base>|<link>|<meta>|<noscript>|<script>|<style>|<template>)*$',
 	);
 });
 
 test('picture', () => {
-	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec(specs, 'picture')!.contentModel.contents).source).toEqual(
+	expect(expGen().specToRegExp(h('picture')!.contentModel.contents).source).toEqual(
 		'^(?:<script>|<template>)*(?:<source>)*(?:<script>|<template>)*<img>(?:<script>|<template>)*$',
 	);
 });
 
 test('ruby', () => {
-	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec(specs, 'ruby')!.contentModel.contents).source).toEqual(
+	expect(expGen().specToRegExp(h('ruby')!.contentModel.contents).source).toEqual(
 		'^(?<NAD_01_ruby>(?:(?:<[a-z](?:\\-|\\.|[0-9]|_|[a-z]|\u00B7|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u203F-\u2040]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\uD800-\uDBFF][\uDC00-\uDFFF])*\\-(?:\\-|\\.|[0-9]|_|[a-z]|\u00B7|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u203F-\u2040]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\uD800-\uDBFF][\uDC00-\uDFFF])*>)|<#text>|<a>|<abbr>|<area>|<audio>|<b>|<bdi>|<bdo>|<br>|<button>|<canvas>|<cite>|<code>|<data>|<datalist>|<del>|<dfn>|<em>|<embed>|<i>|<iframe>|<img>|<input>|<ins>|<kbd>|<label>|(?<ACM_00_phrasing_link><link>)|<map>|<mark>|<math>|(?<ACM_00_phrasing_meta><meta>)|<meter>|<noscript>|<object>|<output>|<picture>|<progress>|<q>|<ruby>|<s>|<samp>|<script>|<select>|<slot>|<small>|<span>|<strong>|<sub>|<sup>|<svg:svg>|<template>|<textarea>|<time>|<u>|<var>|<video>|<wbr>)(?:(?:<rt>)+|(?:<rp>(?:<rt><rp>)+)+))+$',
 	);
 });
 
 test('select', () => {
-	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec(specs, 'select')!.contentModel.contents).source).toEqual(
-		'^(?:<option>|<optgroup>)*$',
-	);
+	expect(expGen().specToRegExp(h('select')!.contentModel.contents).source).toEqual('^(?:<option>|<optgroup>)*$');
 });
 
 test('summary', () => {
-	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec(specs, 'summary')!.contentModel.contents).source).toEqual(
+	expect(expGen().specToRegExp(h('summary')!.contentModel.contents).source).toEqual(
 		'^(?:(?:(?:<[a-z](?:\\-|\\.|[0-9]|_|[a-z]|\u00B7|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u203F-\u2040]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\uD800-\uDBFF][\uDC00-\uDFFF])*\\-(?:\\-|\\.|[0-9]|_|[a-z]|\u00B7|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u203F-\u2040]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\uD800-\uDBFF][\uDC00-\uDFFF])*>)|<#text>|<a>|<abbr>|<area>|<audio>|<b>|<bdi>|<bdo>|<br>|<button>|<canvas>|<cite>|<code>|<data>|<datalist>|<del>|<dfn>|<em>|<embed>|<i>|<iframe>|<img>|<input>|<ins>|<kbd>|<label>|(?<ACM_00_phrasing_link><link>)|<map>|<mark>|<math>|(?<ACM_00_phrasing_meta><meta>)|<meter>|<noscript>|<object>|<output>|<picture>|<progress>|<q>|<ruby>|<s>|<samp>|<script>|<select>|<slot>|<small>|<span>|<strong>|<sub>|<sup>|<svg:svg>|<template>|<textarea>|<time>|<u>|<var>|<video>|<wbr>)*|(?:<h1>|<h2>|<h3>|<h4>|<h5>|<h6>|<hgroup>))$',
 	);
 });
 
 test('table', () => {
-	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec(specs, 'table')!.contentModel.contents).source).toEqual(
+	expect(expGen().specToRegExp(h('table')!.contentModel.contents).source).toEqual(
 		'^(?:<script>|<template>)*(?:<caption>)?(?:<script>|<template>)*(?:<colgroup>)*(?:<script>|<template>)*(?:<thead>)?(?:<script>|<template>)*(?:(?:<tbody>)*|(?:<tr>)+)(?:<script>|<template>)*(?:<tfoot>)?(?:<script>|<template>)*$',
 	);
 });
 
 test('audio in audio / Duplicate capture group name', () => {
-	const expGen = new ExpGenerator(0);
+	const expGen = new ExpGenerator(specs, 0);
 	expect(
-		expGen.specToRegExp(
-			htmlSpec(specs, 'audio')!.contentModel.contents,
-			expGen.specToRegExp(htmlSpec(specs, 'audio')!.contentModel.contents),
-		).source,
+		expGen.specToRegExp(h('audio')!.contentModel.contents, expGen.specToRegExp(h('audio')!.contentModel.contents))
+			.source,
 	).toEqual(
 		'^(?<NAD_02_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_03>(?<NAD_00_audio_video___InTRANSPARENT>(?:<source>)*(?:<track>)*(?:(?<TRANSPARENT_01>(?:<[^>]+>)?))*)))*)$',
 	);
 });
 
 test('svg', () => {
-	const expGen = new ExpGenerator(0);
-	expect(expGen.specToRegExp(htmlSpec(specs, 'svg:svg')!.contentModel.contents).source).toEqual(
-		'^(?:<svg:animate>|<svg:animateColor>|<svg:animateMotion>|<svg:animateTransform>|<svg:discard>|<svg:mpath>|<svg:set>|<svg:desc>|<svg:metadata>|<svg:title>|<svg:linearGradient>|<svg:pattern>|<svg:radialGradient>|<svg:solidcolor>|<svg:circle>|<svg:ellipse>|<svg:line>|<svg:path>|<svg:polygon>|<svg:polyline>|<svg:rect>|<svg:defs>|<svg:g>|<svg:svg>|<svg:symbol>|<svg:use>|<svg:a>|<svg:clipPath>|<svg:filter>|<svg:foreignObject>|<svg:image>|<svg:marker>|<svg:mask>|<svg:script>|<svg:style>|<svg:switch>|<svg:text>|<svg:view>|<video>|<audio>|<iframe>|<canvas>)*$',
+	expect(expGen().specToRegExp(h('svg', 'http://www.w3.org/2000/svg')!.contentModel.contents).source).toEqual(
+		'^(?:<svg:animate>|<svg:animateColor>|<svg:animateMotion>|<svg:animateTransform>|<svg:discard>|<svg:mpath>|<svg:set>|<svg:desc>|<svg:metadata>|<svg:title>|<svg:linearGradient>|<svg:pattern>|<svg:radialGradient>|<svg:solidcolor>|<svg:circle>|<svg:ellipse>|<svg:line>|<svg:path>|<svg:polygon>|<svg:polyline>|<svg:rect>|<svg:defs>|<svg:g>|<svg:svg>|<svg:symbol>|<svg:use>|<svg:a>|<svg:clipPath>|<svg:filter>|<svg:foreignObject>|<svg:image>|<svg:marker>|<svg:mask>|<svg:script>|<svg:style>|<svg:switch>|<svg:text>|<svg:view>)*$',
 	);
 });

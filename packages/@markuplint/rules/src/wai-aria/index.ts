@@ -1,13 +1,16 @@
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
-import { createRule, getAttrSpecs } from '@markuplint/ml-core';
+import {
+	createRule,
+	getAttrSpecs,
+	getRoleSpec,
+	getComputedRole,
+	getPermittedRoles,
+	getImplicitRole,
+	ariaSpecs,
+	getSpec,
+} from '@markuplint/ml-core';
 
-import { getComputedRole } from '../helper/aria/get-computed-role';
-import { getImplicitRole } from '../helper/aria/get-implicit-role';
-import { getPermittedRoles } from '../helper/aria/get-permitted-roles';
-import { ariaSpec } from '../helper/spec/aria-spec';
-import { getRoleSpec } from '../helper/spec/get-role-spec';
-import { htmlSpec } from '../helper/spec/html-spec';
 import { checkAria, isValidAttr } from '../helpers';
 
 type Options = {
@@ -32,9 +35,9 @@ export default createRule<boolean, Options>({
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			const attrSpecs = getAttrSpecs(el.nameWithNS, document.specs);
-			const html = htmlSpec(document.specs, el.nameWithNS);
-			const { roles, ariaAttrs } = ariaSpec(document.specs);
+			const attrSpecs = getAttrSpecs(el, document.specs);
+			const html = getSpec(el, document.specs);
+			const { roles, ariaAttrs } = ariaSpecs(document.specs);
 
 			if (!html || !attrSpecs) {
 				return;
@@ -77,7 +80,7 @@ export default createRule<boolean, Options>({
 
 				// Set the implicit role explicitly
 				if (el.rule.option.disallowSetImplicitRole) {
-					const implictRole = getImplicitRole(document.specs, el, el.rule.option.version);
+					const implictRole = getImplicitRole(el, el.rule.option.version, document.specs);
 					if (implictRole && implictRole === value) {
 						// the implicit role
 						report({
@@ -96,7 +99,7 @@ export default createRule<boolean, Options>({
 
 				// Permitted ARIA Roles
 				if (el.rule.option.permittedAriaRoles) {
-					const permittedRoles = getPermittedRoles(document.specs, el, el.rule.option.version);
+					const permittedRoles = getPermittedRoles(el, el.rule.option.version, document.specs);
 					if (permittedRoles === false) {
 						report({
 							scope: el,
@@ -202,7 +205,6 @@ export default createRule<boolean, Options>({
 				}
 			} else {
 				// No role element
-				const { ariaAttrs } = ariaSpec(document.specs);
 				for (const attr of el.attributes) {
 					const attrName = attr.name.toLowerCase();
 					if (/^aria-/i.test(attrName)) {

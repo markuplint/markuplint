@@ -640,31 +640,6 @@ describe('verify', () => {
 				raw: '<svg>',
 			},
 		]);
-
-		const { violations: violations2 } = await mlRuleTest(rule, '<svg><html:video></html:video></svg>');
-		expect(violations2).toStrictEqual([]);
-	});
-
-	test('with namespace', async () => {
-		const { violations: violations1 } = await mlRuleTest(
-			rule,
-			'<html:div><svg:svg><svg:a><svg:text>text</svg:text></svg:a></svg:svg><html:div>',
-		);
-		expect(violations1).toStrictEqual([]);
-
-		const { violations: violations2 } = await mlRuleTest(
-			rule,
-			'<html:div><svg:svg><svg:a><svg:feBlend /></svg:a></svg:svg><html:div>',
-		);
-		expect(violations2).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 20,
-				message: 'The content of the "svg:a" element is invalid according to the SVG specification',
-				raw: '<svg:a>',
-			},
-		]);
 	});
 
 	test('The SVG <image> element and the HTML obsolete <image> element', async () => {

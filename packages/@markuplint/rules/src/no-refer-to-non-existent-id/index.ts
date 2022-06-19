@@ -1,10 +1,8 @@
-import { createRule, getAttrSpecs } from '@markuplint/ml-core';
-
-import { ariaSpec } from '../helper/spec/aria-spec';
+import { createRule, getAttrSpecs, ariaSpecs } from '@markuplint/ml-core';
 
 export default createRule({
 	async verify({ document, report, t }) {
-		const { ariaAttrs } = ariaSpec(document.specs);
+		const { ariaAttrs } = ariaSpecs(document.specs);
 
 		const idList = new Set<string>();
 		let hasDynamicId = false;
@@ -26,7 +24,7 @@ export default createRule({
 		}
 
 		await document.walkOn('Attr', attr => {
-			const attrSpec = getAttrSpecs(attr.ownerElement.nameWithNS, document.specs);
+			const attrSpec = getAttrSpecs(attr.ownerElement, document.specs);
 
 			if (!attrSpec) {
 				return;

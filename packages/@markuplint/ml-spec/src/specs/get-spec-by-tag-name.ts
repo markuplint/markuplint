@@ -4,7 +4,7 @@ import { resolveNamespace } from '../utils/resolve-namespace';
 
 const cache = new Map<string, ElementSpec | null>();
 
-export function htmlSpec(specs: Readonly<MLMLSpec>, localName: string, namespace: string | null) {
+export function getSpecByTagName(specs: Readonly<MLMLSpec>, localName: string, namespace: string | null) {
 	const { localNameWithNS } = resolveNamespace(localName, namespace || undefined);
 	let spec = cache.get(localNameWithNS);
 	if (spec !== undefined) {

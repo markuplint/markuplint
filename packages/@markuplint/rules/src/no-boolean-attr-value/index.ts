@@ -4,7 +4,7 @@ export default createRule({
 	defaultServerity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
-			const attrSpec = getAttrSpecs(attr.ownerElement.nameWithNS, document.specs);
+			const attrSpec = getAttrSpecs(attr.ownerElement, document.specs);
 			if (!attrSpec) {
 				return;
 			}

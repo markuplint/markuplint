@@ -8,6 +8,7 @@ export * from './specs/aria-specs';
 export * from './specs/content-model-category-to-tag-names';
 export * from './specs/get-role-spec';
 export * from './specs/schema-to-spec';
+export * from './specs/get-spec-by-tag-name';
 export * from './types';
 export * from './types/aria';
 export * from './types/attributes';

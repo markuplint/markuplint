@@ -1,6 +1,6 @@
 import specs from '@markuplint/html-spec';
 
-import { htmlSpec } from './html-spec';
+import { getSpecByTagName } from './get-spec-by-tag-name';
 
 const divSpec = {
 	conditional: [
@@ -33,13 +33,13 @@ const divSpec = {
 };
 
 test('html:div', () => {
-	expect(htmlSpec(specs, 'div', null)?.contentModel).toStrictEqual(divSpec);
-	expect(htmlSpec(specs, 'div', 'unknown-namespace')?.contentModel).toStrictEqual(divSpec);
-	expect(htmlSpec(specs, 'div', 'http://www.w3.org/1999/xhtml')?.contentModel).toStrictEqual(divSpec);
+	expect(getSpecByTagName(specs, 'div', null)?.contentModel).toStrictEqual(divSpec);
+	expect(getSpecByTagName(specs, 'div', 'unknown-namespace')?.contentModel).toStrictEqual(divSpec);
+	expect(getSpecByTagName(specs, 'div', 'http://www.w3.org/1999/xhtml')?.contentModel).toStrictEqual(divSpec);
 });
 
 test('svg:svg', () => {
-	expect(htmlSpec(specs, 'svg', 'http://www.w3.org/2000/svg')?.contentModel).toStrictEqual({
+	expect(getSpecByTagName(specs, 'svg', 'http://www.w3.org/2000/svg')?.contentModel).toStrictEqual({
 		contents: [
 			{
 				zeroOrMore: [
@@ -64,5 +64,5 @@ test('svg:svg', () => {
 			},
 		],
 	});
-	expect(htmlSpec(specs, 'svg', null)).toBe(null);
+	expect(getSpecByTagName(specs, 'svg', null)).toBe(null);
 });

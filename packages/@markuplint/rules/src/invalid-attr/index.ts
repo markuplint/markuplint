@@ -1,10 +1,9 @@
 import type { AttributeType } from '@markuplint/ml-spec';
 
-import { createRule, getAttrSpecs } from '@markuplint/ml-core';
+import { createRule, getAttrSpecs, getSpec } from '@markuplint/ml-core';
 
 import { attrCheck } from '../attr-check';
 import { log as ruleLog } from '../debug';
-import { htmlSpec } from '../helper/spec/html-spec';
 import { isValidAttr, match } from '../helpers';
 
 const log = ruleLog.extend('invalid-attr');
@@ -36,7 +35,7 @@ export default createRule<boolean, Option>({
 				return;
 			}
 
-			const attrSpecs = getAttrSpecs(attr.ownerElement.nameWithNS, document.specs);
+			const attrSpecs = getAttrSpecs(attr.ownerElement, document.specs);
 
 			const attrName = attr.nameNode;
 			const name = attr.name;
@@ -122,7 +121,7 @@ export default createRule<boolean, Option>({
 						break;
 					}
 					case 'non-existent': {
-						const spec = htmlSpec(document.specs, attr.ownerElement.nameWithNS);
+						const spec = getSpec(attr.ownerElement, document.specs);
 						if (spec?.possibleToAddProperties) {
 							return;
 						}

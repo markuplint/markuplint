@@ -1,7 +1,7 @@
 import type { ARIAVersion, Matches, MLMLSpec } from '../types';
 import type { ARIA } from '../types/aria';
 
-import { htmlSpec } from './html-spec';
+import { getSpecByTagName } from './get-spec-by-tag-name';
 import { resolveVersion } from './resolve-version';
 
 const cache = new Map<string, Omit<ARIA, ARIAVersion> | null>();
@@ -54,7 +54,7 @@ function getVersionResolvedARIA(
 	if (aria !== undefined) {
 		return aria;
 	}
-	const spec = htmlSpec(specs, localName, namespace)?.aria;
+	const spec = getSpecByTagName(specs, localName, namespace)?.aria;
 	if (!spec) {
 		cache.set(key, null);
 		return null;

@@ -1,9 +1,7 @@
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
-import { createRule } from '@markuplint/ml-core';
+import { createRule, getRoleSpec, getComputedRole } from '@markuplint/ml-core';
 
-import { getComputedRole } from '../helper/aria/get-computed-role';
-import { getRoleSpec } from '../helper/spec/get-role-spec';
 import { accnameMayBeMutable } from '../helpers';
 
 type Option = {

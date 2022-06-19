@@ -1,7 +1,7 @@
 import type { MLMLSpec } from '../types';
 
-import { htmlSpec } from '../specs/html-spec';
+import { getSpecByTagName } from '../specs/get-spec-by-tag-name';
 
 export function getSpec(el: Element, schema: MLMLSpec) {
-	return htmlSpec(schema, el.localName, el.namespaceURI);
+	return getSpecByTagName(schema, el.localName, el.namespaceURI);
 }

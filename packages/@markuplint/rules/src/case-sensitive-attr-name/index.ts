@@ -18,7 +18,7 @@ export default createRule<Value>({
 			const deny = value === 'lower' ? /[A-Z]/ : /[a-z]/;
 			const cases = value === 'lower' ? 'lower' : 'upper';
 			const message = t(`{0} ${ms} be {1}`, t('{0} of {1}', 'attribute names', 'HTML elements'), `${cases}case`);
-			const attrSpecs = getAttrSpecs(el.nameWithNS, document.specs);
+			const attrSpecs = getAttrSpecs(el, document.specs);
 
 			/**
 			 * Ignore when it has the potential name,
@@ -56,7 +56,7 @@ export default createRule<Value>({
 				return;
 			}
 
-			const attrSpecs = getAttrSpecs(el.nameWithNS, document.specs);
+			const attrSpecs = getAttrSpecs(el, document.specs);
 
 			const value = attr.rule.value;
 
