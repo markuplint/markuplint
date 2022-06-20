@@ -37,7 +37,7 @@ export default createRule<boolean, Options>({
 		await document.walkOn('Element', el => {
 			const attrSpecs = getAttrSpecs(el, document.specs);
 			const html = getSpec(el, document.specs);
-			const { roles, props } = ariaSpecs(document.specs, el.rule.option.version);
+			const { roles: roleSpecs, props: propSpecs } = ariaSpecs(document.specs, el.rule.option.version);
 
 			if (!html || !attrSpecs) {
 				return;
@@ -48,7 +48,7 @@ export default createRule<boolean, Options>({
 			// Roles in the spec
 			if (roleAttr) {
 				const value = roleAttr.value.trim().toLowerCase();
-				const existedRole = roles.find(role => role.name === value);
+				const existedRole = roleSpecs.find(role => role.name === value);
 
 				if (!existedRole) {
 					// Not exist
@@ -144,7 +144,7 @@ export default createRule<boolean, Options>({
 						const attrName = attr.name.toLowerCase();
 						if (/^aria-/i.test(attrName)) {
 							const statesAndProp = role.ownedProperties.find(p => p.name === attrName);
-							const propSpec = props.find(p => p.name === attrName);
+							const propSpec = propSpecs.find(p => p.name === attrName);
 							if (statesAndProp) {
 								if (el.rule.option.checkingDeprecatedProps && statesAndProp.deprecated) {
 									report({
@@ -192,7 +192,7 @@ export default createRule<boolean, Options>({
 								return attrName === requiredProp;
 							});
 							if (!has) {
-								const propSpec = props.find(p => p.name === requiredProp);
+								const propSpec = propSpecs.find(p => p.name === requiredProp);
 								report({
 									scope: el,
 									message: t(
@@ -213,7 +213,7 @@ export default createRule<boolean, Options>({
 				for (const attr of el.attributes) {
 					const attrName = attr.name.toLowerCase();
 					if (/^aria-/i.test(attrName)) {
-						const ariaAttr = props.find(prop => prop.name === attrName);
+						const ariaAttr = propSpecs.find(prop => prop.name === attrName);
 						if (ariaAttr && !ariaAttr.isGlobal) {
 							report({
 								scope: el,
@@ -238,7 +238,7 @@ export default createRule<boolean, Options>({
 				const attrName = attr.name.toLowerCase();
 				if (/^aria-/i.test(attrName)) {
 					const value = attr.value.trim().toLowerCase();
-					const propSpec = props.find(p => p.name === attrName);
+					const propSpec = propSpecs.find(p => p.name === attrName);
 
 					// Checking ARIA Value
 					if (el.rule.option.checkingValue) {
