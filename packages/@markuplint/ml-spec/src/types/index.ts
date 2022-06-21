@@ -42,7 +42,7 @@ export type SpecDefs = {
 };
 
 type ARIASpec = {
-	roles: ARIARole[];
+	roles: ARIARoleInSchema[];
 	props: ARIAProperty[];
 };
 
@@ -162,17 +162,24 @@ type ExtendableAttributeSpec = Omit<AttributeJSON, 'type'>;
 
 export type ARIARole = {
 	name: string;
-	description: string;
-	isAbstract?: boolean;
-	generalization: string[];
-	requiredContextRole?: string[];
+	isAbstract: boolean;
+	requiredContextRole: string[];
 	accessibleNameRequired: boolean;
 	accessibleNameFromAuthor: boolean;
 	accessibleNameFromContent: boolean;
 	accessibleNameProhibited: boolean;
-	childrenPresentational?: boolean;
+	childrenPresentational: boolean;
 	ownedProperties: ARIARoleOwnedProperties[];
 	prohibitedProperties: string[];
+};
+
+export type ARIARoleInSchema = Partial<
+	ARIARole & {
+		description: string;
+		generalization: string[];
+	}
+> & {
+	name: string;
 };
 
 export type ARIARoleOwnedProperties = {

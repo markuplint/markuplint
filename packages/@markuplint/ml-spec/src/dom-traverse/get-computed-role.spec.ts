@@ -24,4 +24,11 @@ describe('getComputedRole', () => {
 		expect(c('<a role="button"></a>', '1.2')?.name).toBe('button');
 		expect(c('<a role="button" href></a>', '1.2')?.name).toBe('button');
 	});
+
+	test('the heading role', () => {
+		expect(c('<h1></h1>', '1.2')?.name).toBe('heading');
+		expect(c('<h1></h1>', '1.2')?.isImplicit).toBe(true);
+		expect(c('<div role="heading"></div>', '1.2')?.name).toBe('heading');
+		expect(c('<div role="heading"></div>', '1.2')?.isImplicit).toBe(false);
+	});
 });

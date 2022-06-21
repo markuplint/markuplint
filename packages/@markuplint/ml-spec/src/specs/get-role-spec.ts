@@ -1,4 +1,4 @@
-import type { ARIAVersion, ARIARole, MLMLSpec } from '../types';
+import type { ARIAVersion, ARIARoleInSchema, MLMLSpec, ARIARole } from '../types';
 
 import { ariaSpecs } from './aria-specs';
 
@@ -6,7 +6,7 @@ export function getRoleSpec(
 	specs: Readonly<MLMLSpec>,
 	roleName: string,
 	version: ARIAVersion,
-): (Omit<Required<ARIARole>, 'description' | 'generalization'> & { superClassRoles: ARIARole[] }) | null {
+): (ARIARole & { superClassRoles: ARIARoleInSchema[] }) | null {
 	const role = getRoleByName(specs, roleName, version);
 	if (!role) {
 		return null;
@@ -16,19 +16,19 @@ export function getRoleSpec(
 		name: role.name,
 		isAbstract: !!role.isAbstract,
 		requiredContextRole: role.requiredContextRole ?? [],
-		accessibleNameRequired: role.accessibleNameRequired,
-		accessibleNameFromAuthor: role.accessibleNameFromAuthor,
-		accessibleNameFromContent: role.accessibleNameFromContent,
-		accessibleNameProhibited: role.accessibleNameProhibited,
+		accessibleNameRequired: !!role.accessibleNameRequired,
+		accessibleNameFromAuthor: !!role.accessibleNameFromAuthor,
+		accessibleNameFromContent: !!role.accessibleNameFromContent,
+		accessibleNameProhibited: !!role.accessibleNameProhibited,
 		childrenPresentational: !!role.childrenPresentational,
-		ownedProperties: role.ownedProperties,
-		prohibitedProperties: role.prohibitedProperties,
+		ownedProperties: role.ownedProperties ?? [],
+		prohibitedProperties: role.prohibitedProperties ?? [],
 		superClassRoles,
 	};
 }
 
 function recursiveTraverseSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string, version: ARIAVersion) {
-	const roles: ARIARole[] = [];
+	const roles: ARIARoleInSchema[] = [];
 	const superClassRoles = getSuperClassRoles(specs, roleName, version);
 	if (superClassRoles) {
 		roles.push(...superClassRoles);
@@ -44,8 +44,8 @@ function getSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string, version
 	const role = getRoleByName(specs, roleName, version);
 	return (
 		role?.generalization
-			.map(roleName => getRoleByName(specs, roleName, version))
-			.filter((role): role is ARIARole => !!role) || null
+			?.map(roleName => getRoleByName(specs, roleName, version))
+			.filter((role): role is ARIARoleInSchema => !!role) || null
 	);
 }
 

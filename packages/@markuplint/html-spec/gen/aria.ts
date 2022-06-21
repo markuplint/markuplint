@@ -5,7 +5,7 @@ import type {
 	ARIAAttributeValue,
 	ARIARoleOwnedProperties,
 	ARIAVersion,
-	ARIARole,
+	ARIARoleInSchema,
 	EquivalentHtmlAttr,
 } from '@markuplint/ml-spec';
 
@@ -31,7 +31,7 @@ export async function getAria() {
 async function getRoles(version: ARIAVersion) {
 	const $ = await fetch(`https://www.w3.org/TR/wai-aria-${version}/`);
 	const $roleList = $('#role_definitions section.role');
-	const roles: ARIARole[] = [];
+	const roles: ARIARoleInSchema[] = [];
 	const getAttr = (li: cheerio.Element): ARIARoleOwnedProperties => {
 		const $li = $(li);
 		const text = $li.text();
@@ -136,7 +136,7 @@ async function getRoles(version: ARIAVersion) {
 	return roles;
 }
 
-async function getProps(version: ARIAVersion, roles: ARIARole[]) {
+async function getProps(version: ARIAVersion, roles: ARIARoleInSchema[]) {
 	const $ = await fetch(`https://www.w3.org/TR/wai-aria-${version}/`);
 
 	const ariaNameList: Set<string> = new Set();

@@ -1,21 +1,29 @@
 import type { ARIAVersion, MLMLSpec } from '../types';
 
+import { getRoleSpec } from '../specs/get-role-spec';
+
 import { getImplicitRole } from './get-implicit-role';
 
 export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion) {
-	const role = el.getAttribute('role');
-	if (role) {
-		return {
-			name: role.trim().toLowerCase(),
-			isImplicit: false,
-		};
+	let role: string | false | null = el.getAttribute('role');
+	let isImplicit = !role;
+
+	if (!role) {
+		role = getImplicitRole(el, version, specs);
+		if (!role) {
+			return null;
+		}
+		isImplicit = true;
 	}
-	const implicitRole = getImplicitRole(el, version, specs);
-	if (implicitRole) {
-		return {
-			name: implicitRole,
-			isImplicit: true,
-		};
+
+	const spec = getRoleSpec(specs, role, version);
+
+	if (!spec) {
+		return null;
 	}
-	return null;
+
+	return {
+		...spec,
+		isImplicit,
+	};
 }
