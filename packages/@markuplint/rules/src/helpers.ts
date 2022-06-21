@@ -229,3 +229,28 @@ export function getOwnedLabel<V extends RuleConfigValue, O>(el: Element<V, O>, d
 export function decodeCharRef(characterReference: string) {
 	return decodeHtmlEntities(characterReference);
 }
+
+export class Collection<T> {
+	#items = new Set<T>();
+
+	constructor(...items: (T | null | undefined)[]) {
+		this.add(...items);
+	}
+
+	add(...items: (T | null | undefined)[]) {
+		for (const item of items) {
+			if (item == null) {
+				continue;
+			}
+			this.#items.add(item);
+		}
+	}
+
+	toArray() {
+		return Object.freeze(Array.from(this.#items));
+	}
+
+	[Symbol.iterator](): Iterator<T> {
+		return this.#items.values();
+	}
+}

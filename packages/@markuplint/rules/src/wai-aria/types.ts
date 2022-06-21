@@ -1,0 +1,11 @@
+import type { ARIAVersion } from '@markuplint/ml-spec';
+
+export type Options = {
+	checkingValue: boolean;
+	checkingDeprecatedProps: boolean;
+	permittedAriaRoles: boolean;
+	disallowSetImplicitRole: boolean;
+	disallowSetImplicitProps: boolean;
+	disallowDefaultValue: boolean;
+	version: ARIAVersion;
+};
