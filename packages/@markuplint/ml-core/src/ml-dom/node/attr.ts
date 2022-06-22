@@ -5,6 +5,7 @@ import type { RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLToken } from '../token/token';
 
+import { MLDomTokenList } from './dom-token-list';
 import { MLNode } from './node';
 import UnexpectedCallError from './unexpected-call-error';
 
@@ -120,6 +121,13 @@ export class MLAttr<T extends RuleConfigValue, O = null> extends MLNode<T, O, ML
 	 */
 	get value(): string {
 		return this.#potentialValue;
+	}
+
+	/**
+	 * @implements `@markuplint/ml-core` API: `MLAttr`
+	 */
+	get tokenList(): MLDomTokenList | null {
+		return this.isDynamicValue ? null : new MLDomTokenList(this.value, [this]);
 	}
 
 	constructor(astToken: MLASTAttr, ownElement: MLElement<T, O>) {

@@ -20,7 +20,7 @@ import {
 import { MLToken } from '../token/token';
 
 import { MLAttr } from './attr';
-import { toDOMTokenList } from './dom-token-list';
+import { MLDomTokenList } from './dom-token-list';
 import { toNamedNodeMap } from './named-node-map';
 import { toHTMLCollection } from './node-list';
 import { MLParentNode } from './parent-node';
@@ -536,8 +536,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-classlist%E2%91%A0
 	 */
-	get classList() {
-		return toDOMTokenList(this.className);
+	get classList(): MLDomTokenList {
+		const classAttrs = this.getAttributeToken('class');
+		const value = classAttrs.map(c => c.value).join(' ');
+		return new MLDomTokenList(value, classAttrs);
 	}
 
 	/**
@@ -545,15 +547,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-classname%E2%91%A0
 	 */
 	get className() {
-		const classNames: string[] = [];
-
-		for (const classNameToken of this.getAttributeToken('class')) {
-			if (classNames.length === 0 || classNameToken.isDuplicatable) {
-				classNames.push(classNameToken.value);
-			}
-		}
-
-		return classNames.join(' ');
+		return this.classList.value;
 	}
 
 	/**
