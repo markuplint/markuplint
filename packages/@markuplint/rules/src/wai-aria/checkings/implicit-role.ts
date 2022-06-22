@@ -7,14 +7,24 @@ export const checkingImplicitRole: AttrChecker<boolean, Options> =
 	({ attr }) =>
 	t => {
 		const implictRole = getImplicitRole(attr.ownerElement, attr.rule.option.version, attr.ownerMLDocument.specs);
-		if (implictRole === attr.value) {
-			return {
-				scope: attr,
-				message: t(
-					'{0} is {1}',
-					t('the "{0*}" {1}', attr.value, 'role'),
-					t('{0} of {1}', 'the implicit role', t('the "{0*}" {1}', attr.ownerElement.localName, 'element')),
-				),
-			};
+		const tokens = attr.tokenList?.allTokens();
+		if (!tokens) {
+			return;
+		}
+		for (const token of tokens) {
+			if (implictRole === token.raw) {
+				return {
+					scope: token,
+					message: t(
+						'{0} is {1}',
+						t('the "{0*}" {1}', token.raw, 'role'),
+						t(
+							'{0} of {1}',
+							'the implicit role',
+							t('the "{0*}" {1}', attr.ownerElement.localName, 'element'),
+						),
+					),
+				};
+			}
 		}
 	};

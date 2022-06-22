@@ -20,18 +20,25 @@ export const checkingPermittedRoles: AttrChecker<boolean, Options> =
 					'ARIA in HTML specification',
 				),
 			};
-		} else if (Array.isArray(permittedRoles) && !permittedRoles.includes(attr.value)) {
-			return {
-				scope: attr,
-				message: t(
-					'{0} according to {1}',
-					t(
-						'Cannot overwrite {0} to {1}',
-						t('the "{0*}" {1}', attr.value, 'role'),
-						t('the "{0*}" {1}', el.localName, 'element'),
+		}
+		const tokens = attr.tokenList?.allTokens();
+		if (!tokens) {
+			return;
+		}
+		for (const token of tokens) {
+			if (Array.isArray(permittedRoles) && !permittedRoles.map(r => r.name).includes(token.raw)) {
+				return {
+					scope: token,
+					message: t(
+						'{0} according to {1}',
+						t(
+							'Cannot overwrite {0} to {1}',
+							t('the "{0*}" {1}', token.raw, 'role'),
+							t('the "{0*}" {1}', el.localName, 'element'),
+						),
+						'ARIA in HTML specification',
 					),
-					'ARIA in HTML specification',
-				),
-			};
+				};
+			}
 		}
 	};

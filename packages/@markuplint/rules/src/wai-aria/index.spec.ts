@@ -4,16 +4,25 @@ import rule from './';
 
 describe("Use the role that doesn't exist in the spec", () => {
 	test('[role=hoge]', async () => {
-		const { violations } = await mlRuleTest(rule, '<div role="hoge"></div>');
-
-		expect(violations).toStrictEqual([
+		expect((await mlRuleTest(rule, '<div role="hoge"></div>')).violations).toStrictEqual([
 			{
 				severity: 'error',
 				line: 1,
-				col: 6,
+				col: 12,
 				message:
 					'The "hoge" role does not exist according to the WAI-ARIA specification. This "hoge" role does not exist in WAI-ARIA.',
-				raw: 'role="hoge"',
+				raw: 'hoge',
+			},
+		]);
+
+		expect((await mlRuleTest(rule, '<div role="none hoge"></div>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				message:
+					'The "hoge" role does not exist according to the WAI-ARIA specification. This "hoge" role does not exist in WAI-ARIA.',
+				raw: 'hoge',
 			},
 		]);
 	});
@@ -21,15 +30,23 @@ describe("Use the role that doesn't exist in the spec", () => {
 
 describe('Use the abstract role', () => {
 	test('[role=roletype]', async () => {
-		const { violations } = await mlRuleTest(rule, '<div role="roletype"></div>');
-
-		expect(violations).toStrictEqual([
+		expect((await mlRuleTest(rule, '<div role="roletype"></div>')).violations).toStrictEqual([
 			{
 				severity: 'error',
 				line: 1,
-				col: 6,
+				col: 12,
 				message: 'The "roletype" role is the abstract role',
-				raw: 'role="roletype"',
+				raw: 'roletype',
+			},
+		]);
+
+		expect((await mlRuleTest(rule, '<div role="article roletype"></div>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 20,
+				message: 'The "roletype" role is the abstract role',
+				raw: 'roletype',
 			},
 		]);
 	});
@@ -146,10 +163,10 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 			{
 				severity: 'error',
 				line: 1,
-				col: 9,
+				col: 15,
 				message:
 					'Cannot overwrite the "document" role to the "a" element according to ARIA in HTML specification',
-				raw: 'role="document"',
+				raw: 'document',
 			},
 		]);
 	});
@@ -197,9 +214,9 @@ describe('Set the implicit role explicitly', () => {
 			{
 				severity: 'error',
 				line: 1,
-				col: 19,
+				col: 25,
 				message: 'The "link" role is the implicit role of the "a" element',
-				raw: 'role="link"',
+				raw: 'link',
 			},
 		]);
 	});
@@ -211,9 +228,9 @@ describe('Set the implicit role explicitly', () => {
 			{
 				severity: 'error',
 				line: 1,
-				col: 9,
+				col: 15,
 				message: 'The "banner" role is the implicit role of the "header" element',
-				raw: 'role="banner"',
+				raw: 'banner',
 			},
 		]);
 
@@ -226,10 +243,10 @@ describe('Set the implicit role explicitly', () => {
 			{
 				severity: 'error',
 				line: 1,
-				col: 9,
+				col: 15,
 				message:
 					'Cannot overwrite the "banner" role to the "header" element according to ARIA in HTML specification',
-				raw: 'role="banner"',
+				raw: 'banner',
 			},
 		]);
 	});
