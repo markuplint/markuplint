@@ -219,6 +219,8 @@
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/view",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/vkern",
+		"https://w3c.github.io/graphics-aria/",
+		"https://www.w3.org/TR/graphics-aria-1.0/",
 		"https://www.w3.org/TR/html-aria/",
 		"https://www.w3.org/TR/wai-aria-1.1/",
 		"https://www.w3.org/TR/wai-aria-1.2/"
@@ -12020,6 +12022,353 @@
 						"value": "string",
 						"enum": []
 					}
+				],
+				"graphicsRoles": [
+					{
+						"name": "graphics-document",
+						"description": "A type of document in which the visual appearance or layout of content conveys meaning.\n\nSimilar to other document types, the graphics-document role applies to the root element of a region of the page containing related information, where the user's primary interaction mode is expected to be browsing the document rather than controlling an application. The element with this role may be the root element of the document file, or of a nested structure within it.\n\nThe graphics-document may be distinguished from similar roles as follows:\n\nRelative to other documents, a graphics-document is distinguished by the semantic importance of its visual (usually two-dimensional) representation. User agents and assistive technologies SHOULD take this into consideration when supporting navigation of the graphic. Accessibility technologies that re-format or re-style a document SHOULD NOT alter the layout of a graphics-document except in ways that are consistent with the semantic roles and relationships of its content.\n\nRelative to an img, a graphics-document is distinguished by the structured nature of its content. Its child elements may have semantic meaning, and may include links or other interactive widgets.\n\nRelative to a graphics-object, a graphics-document is self-contained. Its meaning persists when separated from surrounding content. The element with the graphics-document role defines the scope and context for interpretation of the child content.\n\nIn general, authors SHOULD use the graphics-document role for structured graphics such as charts, maps, diagrams, technical drawing, blue prints and instructional graphics. However, if a single large graphic has discrete regions that may be safely re-arranged without sacrificing meaning, each of those regions SHOULD be a distinct graphics-document. An alternative role (such as figure) may be used to group them together. One graphics-document may also be nested inside another, for example a bar chart that is embedded in a map or a matrix of chart panels should have a role of graphics-document. The nested document provides encapsulation; navigation between components of the inner and outer graphics should be explicit.\n\nTo support user agents and assistive technologies based on the ARIA 1.0 specification, authors may wish to include the document role as a fallback value, in the form role=\"graphics-document document\".\n\nFuture specifications may define more specific roles for particular types of graphical documents with special semantic structures. Those more specific roles would be subclasses of graphics-document.\n\nAn SVG diagram of an electrical circuit is a simple graphical document:",
+						"generalization": ["document"],
+						"requiredContextRole": [],
+						"accessibleNameRequired": true,
+						"accessibleNameFromAuthor": true,
+						"accessibleNameFromContent": false,
+						"accessibleNameProhibited": false,
+						"childrenPresentational": false,
+						"ownedProperties": [
+							{
+								"name": "aria-atomic",
+								"inherited": true
+							},
+							{
+								"name": "aria-braillelabel",
+								"inherited": true
+							},
+							{
+								"name": "aria-brailleroledescription",
+								"inherited": true
+							},
+							{
+								"name": "aria-busy",
+								"inherited": true
+							},
+							{
+								"name": "aria-controls",
+								"inherited": true
+							},
+							{
+								"name": "aria-current",
+								"inherited": true
+							},
+							{
+								"name": "aria-describedby",
+								"inherited": true
+							},
+							{
+								"name": "aria-description",
+								"inherited": true
+							},
+							{
+								"name": "aria-details",
+								"inherited": true
+							},
+							{
+								"name": "aria-disabled",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-dropeffect",
+								"inherited": true
+							},
+							{
+								"name": "aria-errormessage",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-flowto",
+								"inherited": true
+							},
+							{
+								"name": "aria-grabbed",
+								"inherited": true
+							},
+							{
+								"name": "aria-haspopup",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-hidden",
+								"inherited": true
+							},
+							{
+								"name": "aria-invalid",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-keyshortcuts",
+								"inherited": true
+							},
+							{
+								"name": "aria-label",
+								"inherited": true
+							},
+							{
+								"name": "aria-labelledby",
+								"inherited": true
+							},
+							{
+								"name": "aria-live",
+								"inherited": true
+							},
+							{
+								"name": "aria-owns",
+								"inherited": true
+							},
+							{
+								"name": "aria-relevant",
+								"inherited": true
+							},
+							{
+								"name": "aria-roledescription",
+								"inherited": true
+							}
+						],
+						"prohibitedProperties": []
+					},
+					{
+						"name": "graphics-object",
+						"description": "A section of a graphics-document that represents a distinct object or sub-component with semantic meaning. A graphical object may itself have nested sub-components.\n\nContainer elements that represent a collection of disconnected objects should be given the group or list roles, instead. Grouping elements that do not have semantic meaning and do not alter the semantic context provided by an ancestor (for example, a div or SVG g that is only used for styling or layout) SHOULD NOT be given a role. The lack of role may be explicitly indicated with the role none or presentation.\n\nUnlike a graphics-document, a graphics-object need not be self-contained, and it does not establish a new context for navigation. However, user agents and assistive technologies SHOULD provide a way for users, particularly non-visual users, to navigate the nested structure of objects in a hierarchical manner, similar to nested lists.\n\nTo support user agents and assistive technologies based on the ARIA 1.0 specification, authors may wish to include the group role as a fallback value, in the form role=\"graphics-object group\".\n\nThe code that follows is a portion of the markup for a structured graphic. It includes SVG g grouping elements with various roles:\n\nWhere a graphical object has multiple sub-components, the group role is provided as an explicit fallback.",
+						"generalization": ["group"],
+						"requiredContextRole": [],
+						"accessibleNameRequired": false,
+						"accessibleNameFromAuthor": true,
+						"accessibleNameFromContent": true,
+						"accessibleNameProhibited": false,
+						"childrenPresentational": false,
+						"ownedProperties": [
+							{
+								"name": "aria-activedescendant",
+								"inherited": true
+							},
+							{
+								"name": "aria-atomic",
+								"inherited": true
+							},
+							{
+								"name": "aria-braillelabel",
+								"inherited": true
+							},
+							{
+								"name": "aria-brailleroledescription",
+								"inherited": true
+							},
+							{
+								"name": "aria-busy",
+								"inherited": true
+							},
+							{
+								"name": "aria-controls",
+								"inherited": true
+							},
+							{
+								"name": "aria-current",
+								"inherited": true
+							},
+							{
+								"name": "aria-describedby",
+								"inherited": true
+							},
+							{
+								"name": "aria-description",
+								"inherited": true
+							},
+							{
+								"name": "aria-details",
+								"inherited": true
+							},
+							{
+								"name": "aria-disabled",
+								"inherited": true
+							},
+							{
+								"name": "aria-dropeffect",
+								"inherited": true
+							},
+							{
+								"name": "aria-errormessage",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-flowto",
+								"inherited": true
+							},
+							{
+								"name": "aria-grabbed",
+								"inherited": true
+							},
+							{
+								"name": "aria-haspopup",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-hidden",
+								"inherited": true
+							},
+							{
+								"name": "aria-invalid",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-keyshortcuts",
+								"inherited": true
+							},
+							{
+								"name": "aria-label",
+								"inherited": true
+							},
+							{
+								"name": "aria-labelledby",
+								"inherited": true
+							},
+							{
+								"name": "aria-live",
+								"inherited": true
+							},
+							{
+								"name": "aria-owns",
+								"inherited": true
+							},
+							{
+								"name": "aria-relevant",
+								"inherited": true
+							},
+							{
+								"name": "aria-roledescription",
+								"inherited": true
+							}
+						],
+						"prohibitedProperties": []
+					},
+					{
+						"name": "graphics-symbol",
+						"description": "A graphical object used to convey a simple meaning or category, where the meaning is more important than the particular visual appearance. It may be a component of a larger structured graphic such as a chart or map. The symbol itself is an atomic object; children are presentational.\n\nWhen used as part of a structured symbolic language, the aria-roledescription property (introduced in ARIA 1.1 [WAI-ARIA-1.1]) can be used to name the symbol type separately from the name and description for the particular instance of the symbol.\n\nTo support user agents and assistive technologies based on the ARIA 1.0 specification, authors may wish to include the img role as a fallback value, in the form role=\"graphics-symbol img\", if that is not already the default semantic role for the element.\n\nWithin an HTML document for a restaurant menu, an img element can represent a repeated symbol:\n\nWithin an SVG diagram of an electrical circuit, the graphics that represent batteries, switches, and loads like this lightbulb are each symbols:\n\nNote that the visible text must be included in the label for its parent symbol, in this example. As the child of a graphics-symbol, it is treated as presentational content, and is therefore not accessible as a separate element of the graphic.\n\nWithin an architectural blueprint-style SVG diagram, each SVG use element that creates a copy of a simple SVG symbol is a graphics-symbol:",
+						"generalization": ["img"],
+						"requiredContextRole": [],
+						"accessibleNameRequired": true,
+						"accessibleNameFromAuthor": true,
+						"accessibleNameFromContent": false,
+						"accessibleNameProhibited": false,
+						"childrenPresentational": true,
+						"ownedProperties": [
+							{
+								"name": "aria-atomic",
+								"inherited": true
+							},
+							{
+								"name": "aria-braillelabel",
+								"inherited": true
+							},
+							{
+								"name": "aria-brailleroledescription",
+								"inherited": true
+							},
+							{
+								"name": "aria-busy",
+								"inherited": true
+							},
+							{
+								"name": "aria-controls",
+								"inherited": true
+							},
+							{
+								"name": "aria-current",
+								"inherited": true
+							},
+							{
+								"name": "aria-describedby",
+								"inherited": true
+							},
+							{
+								"name": "aria-description",
+								"inherited": true
+							},
+							{
+								"name": "aria-details",
+								"inherited": true
+							},
+							{
+								"name": "aria-disabled",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-dropeffect",
+								"inherited": true
+							},
+							{
+								"name": "aria-errormessage",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-flowto",
+								"inherited": true
+							},
+							{
+								"name": "aria-grabbed",
+								"inherited": true
+							},
+							{
+								"name": "aria-haspopup",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-hidden",
+								"inherited": true
+							},
+							{
+								"name": "aria-invalid",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-keyshortcuts",
+								"inherited": true
+							},
+							{
+								"name": "aria-label",
+								"inherited": true
+							},
+							{
+								"name": "aria-labelledby",
+								"inherited": true
+							},
+							{
+								"name": "aria-live",
+								"inherited": true
+							},
+							{
+								"name": "aria-owns",
+								"inherited": true
+							},
+							{
+								"name": "aria-relevant",
+								"inherited": true
+							},
+							{
+								"name": "aria-roledescription",
+								"inherited": true
+							}
+						],
+						"prohibitedProperties": []
+					}
 				]
 			},
 			"1.1": {
@@ -22459,6 +22808,318 @@
 						"type": "property",
 						"value": "string",
 						"enum": []
+					}
+				],
+				"graphicsRoles": [
+					{
+						"name": "graphics-document",
+						"description": "A type of document in which the visual appearance or layout of content conveys meaning.\n\nSimilar to other document types, the graphics-document role applies to the root element of a region of the page containing related information, where the user's primary interaction mode is expected to be browsing the document rather than controlling an application. The element with this role may be the root element of the document file, or of a nested structure within it.\n\nThe graphics-document may be distinguished from similar roles as follows:\n\nRelative to other documents, a graphics-document is distinguished by the semantic importance of its visual (usually two-dimensional) representation. User agents and assistive technologies SHOULD take this into consideration when supporting navigation of the graphic. Accessibility technologies that re-format or re-style a document SHOULD NOT alter the layout of a graphics-document except in ways that are consistent with the semantic roles and relationships of its content.\n\nRelative to an img, a graphics-document is distinguished by the structured nature of its content. Its child elements may have semantic meaning, and may include links or other interactive widgets.\n\nRelative to a graphics-object, a graphics-document is self-contained. Its meaning persists when separated from surrounding content. The element with the graphics-document role defines the scope and context for interpretation of the child content.\n\nIn general, authors SHOULD use the graphics-document role for structured graphics such as charts, maps, diagrams, technical drawing, blue prints and instructional graphics. However, if a single large graphic has discrete regions that may be safely re-arranged without sacrificing meaning, each of those regions SHOULD be a distinct graphics-document. An alternative role (such as figure) may be used to group them together. One graphics-document may also be nested inside another, for example a bar chart that is embedded in a map or a matrix of chart panels should have a role of graphics-document. The nested document provides encapsulation; navigation between components of the inner and outer graphics should be explicit.\n\nTo support user agents and assistive technologies based on the ARIA 1.0 specification, authors may wish to include the document role as a fallback value, in the form role=\"graphics-document document\".\n\nFuture specifications may define more specific roles for particular types of graphical documents with special semantic structures. Those more specific roles would be subclasses of graphics-document.\n\nAn SVG diagram of an electrical circuit is a simple graphical document:",
+						"generalization": ["document"],
+						"requiredContextRole": [],
+						"accessibleNameRequired": true,
+						"accessibleNameFromAuthor": true,
+						"accessibleNameFromContent": false,
+						"accessibleNameProhibited": false,
+						"childrenPresentational": false,
+						"ownedProperties": [
+							{
+								"name": "aria-atomic",
+								"inherited": true
+							},
+							{
+								"name": "aria-busy",
+								"inherited": true
+							},
+							{
+								"name": "aria-controls",
+								"inherited": true
+							},
+							{
+								"name": "aria-current",
+								"inherited": true
+							},
+							{
+								"name": "aria-describedby",
+								"inherited": true
+							},
+							{
+								"name": "aria-details",
+								"inherited": true
+							},
+							{
+								"name": "aria-disabled",
+								"inherited": true
+							},
+							{
+								"name": "aria-dropeffect",
+								"inherited": true
+							},
+							{
+								"name": "aria-errormessage",
+								"inherited": true
+							},
+							{
+								"name": "aria-expanded",
+								"inherited": true
+							},
+							{
+								"name": "aria-flowto",
+								"inherited": true
+							},
+							{
+								"name": "aria-grabbed",
+								"inherited": true
+							},
+							{
+								"name": "aria-haspopup",
+								"inherited": true
+							},
+							{
+								"name": "aria-hidden",
+								"inherited": true
+							},
+							{
+								"name": "aria-invalid",
+								"inherited": true
+							},
+							{
+								"name": "aria-keyshortcuts",
+								"inherited": true
+							},
+							{
+								"name": "aria-label",
+								"inherited": true
+							},
+							{
+								"name": "aria-labelledby",
+								"inherited": true
+							},
+							{
+								"name": "aria-live",
+								"inherited": true
+							},
+							{
+								"name": "aria-owns",
+								"inherited": true
+							},
+							{
+								"name": "aria-relevant",
+								"inherited": true
+							},
+							{
+								"name": "aria-roledescription",
+								"inherited": true
+							}
+						],
+						"prohibitedProperties": []
+					},
+					{
+						"name": "graphics-object",
+						"description": "A section of a graphics-document that represents a distinct object or sub-component with semantic meaning. A graphical object may itself have nested sub-components.\n\nContainer elements that represent a collection of disconnected objects should be given the group or list roles, instead. Grouping elements that do not have semantic meaning and do not alter the semantic context provided by an ancestor (for example, a div or SVG g that is only used for styling or layout) SHOULD NOT be given a role. The lack of role may be explicitly indicated with the role none or presentation.\n\nUnlike a graphics-document, a graphics-object need not be self-contained, and it does not establish a new context for navigation. However, user agents and assistive technologies SHOULD provide a way for users, particularly non-visual users, to navigate the nested structure of objects in a hierarchical manner, similar to nested lists.\n\nTo support user agents and assistive technologies based on the ARIA 1.0 specification, authors may wish to include the group role as a fallback value, in the form role=\"graphics-object group\".\n\nThe code that follows is a portion of the markup for a structured graphic. It includes SVG g grouping elements with various roles:\n\nWhere a graphical object has multiple sub-components, the group role is provided as an explicit fallback.",
+						"generalization": ["group"],
+						"requiredContextRole": [],
+						"accessibleNameRequired": false,
+						"accessibleNameFromAuthor": true,
+						"accessibleNameFromContent": true,
+						"accessibleNameProhibited": false,
+						"childrenPresentational": false,
+						"ownedProperties": [
+							{
+								"name": "aria-activedescendant",
+								"inherited": true
+							},
+							{
+								"name": "aria-atomic",
+								"inherited": true
+							},
+							{
+								"name": "aria-busy",
+								"inherited": true
+							},
+							{
+								"name": "aria-controls",
+								"inherited": true
+							},
+							{
+								"name": "aria-current",
+								"inherited": true
+							},
+							{
+								"name": "aria-describedby",
+								"inherited": true
+							},
+							{
+								"name": "aria-details",
+								"inherited": true
+							},
+							{
+								"name": "aria-disabled",
+								"inherited": true
+							},
+							{
+								"name": "aria-dropeffect",
+								"inherited": true
+							},
+							{
+								"name": "aria-errormessage",
+								"inherited": true
+							},
+							{
+								"name": "aria-expanded",
+								"inherited": true
+							},
+							{
+								"name": "aria-flowto",
+								"inherited": true
+							},
+							{
+								"name": "aria-grabbed",
+								"inherited": true
+							},
+							{
+								"name": "aria-haspopup",
+								"inherited": true
+							},
+							{
+								"name": "aria-hidden",
+								"inherited": true
+							},
+							{
+								"name": "aria-invalid",
+								"inherited": true
+							},
+							{
+								"name": "aria-keyshortcuts",
+								"inherited": true
+							},
+							{
+								"name": "aria-label",
+								"inherited": true
+							},
+							{
+								"name": "aria-labelledby",
+								"inherited": true
+							},
+							{
+								"name": "aria-live",
+								"inherited": true
+							},
+							{
+								"name": "aria-owns",
+								"inherited": true
+							},
+							{
+								"name": "aria-relevant",
+								"inherited": true
+							},
+							{
+								"name": "aria-roledescription",
+								"inherited": true
+							}
+						],
+						"prohibitedProperties": []
+					},
+					{
+						"name": "graphics-symbol",
+						"description": "A graphical object used to convey a simple meaning or category, where the meaning is more important than the particular visual appearance. It may be a component of a larger structured graphic such as a chart or map. The symbol itself is an atomic object; children are presentational.\n\nWhen used as part of a structured symbolic language, the aria-roledescription property (introduced in ARIA 1.1 [WAI-ARIA-1.1]) can be used to name the symbol type separately from the name and description for the particular instance of the symbol.\n\nTo support user agents and assistive technologies based on the ARIA 1.0 specification, authors may wish to include the img role as a fallback value, in the form role=\"graphics-symbol img\", if that is not already the default semantic role for the element.\n\nWithin an HTML document for a restaurant menu, an img element can represent a repeated symbol:\n\nWithin an SVG diagram of an electrical circuit, the graphics that represent batteries, switches, and loads like this lightbulb are each symbols:\n\nNote that the visible text must be included in the label for its parent symbol, in this example. As the child of a graphics-symbol, it is treated as presentational content, and is therefore not accessible as a separate element of the graphic.\n\nWithin an architectural blueprint-style SVG diagram, each SVG use element that creates a copy of a simple SVG symbol is a graphics-symbol:",
+						"generalization": ["img"],
+						"requiredContextRole": [],
+						"accessibleNameRequired": true,
+						"accessibleNameFromAuthor": true,
+						"accessibleNameFromContent": false,
+						"accessibleNameProhibited": false,
+						"childrenPresentational": true,
+						"ownedProperties": [
+							{
+								"name": "aria-atomic",
+								"inherited": true
+							},
+							{
+								"name": "aria-busy",
+								"inherited": true
+							},
+							{
+								"name": "aria-controls",
+								"inherited": true
+							},
+							{
+								"name": "aria-current",
+								"inherited": true
+							},
+							{
+								"name": "aria-describedby",
+								"inherited": true
+							},
+							{
+								"name": "aria-details",
+								"inherited": true
+							},
+							{
+								"name": "aria-disabled",
+								"inherited": true
+							},
+							{
+								"name": "aria-dropeffect",
+								"inherited": true
+							},
+							{
+								"name": "aria-errormessage",
+								"inherited": true
+							},
+							{
+								"name": "aria-expanded",
+								"inherited": true
+							},
+							{
+								"name": "aria-flowto",
+								"inherited": true
+							},
+							{
+								"name": "aria-grabbed",
+								"inherited": true
+							},
+							{
+								"name": "aria-haspopup",
+								"inherited": true
+							},
+							{
+								"name": "aria-hidden",
+								"inherited": true
+							},
+							{
+								"name": "aria-invalid",
+								"inherited": true
+							},
+							{
+								"name": "aria-keyshortcuts",
+								"inherited": true
+							},
+							{
+								"name": "aria-label",
+								"inherited": true
+							},
+							{
+								"name": "aria-labelledby",
+								"inherited": true
+							},
+							{
+								"name": "aria-live",
+								"inherited": true
+							},
+							{
+								"name": "aria-owns",
+								"inherited": true
+							},
+							{
+								"name": "aria-relevant",
+								"inherited": true
+							},
+							{
+								"name": "aria-roledescription",
+								"inherited": true
+							}
+						],
+						"prohibitedProperties": []
 					}
 				]
 			}

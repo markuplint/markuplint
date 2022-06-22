@@ -6,8 +6,8 @@ import { createJSDOMElement } from '@markuplint/test-tools';
 
 import { getComputedRole } from './get-computed-role';
 
-function c(html: string, version: ARIAVersion) {
-	const el = createJSDOMElement(html);
+function c(html: string, version: ARIAVersion, selector?: string) {
+	const el = createJSDOMElement(html, selector);
 
 	// JSDOM supports no level 4 selectors yet.
 	el.matches = (selector: string) => {
@@ -37,5 +37,12 @@ describe('getComputedRole', () => {
 		expect(c('<div role="roletype heading"></div>', '1.2')?.name).toBe('heading');
 		expect(c('<img alt="alt" role="banner button"/>', '1.2')?.name).toBe('button');
 		expect(c('<img alt="alt" role="foo button"/>', '1.2')?.name).toBe('button');
+		expect(c('<img alt="alt" role="graphics-symbol button"/>', '1.2')?.name).toBe('button');
+	});
+
+	test('svg', () => {
+		expect(c('<svg><rect role="graphics-symbol img"></rect></svg>', '1.2', 'rect')?.name).toBe('graphics-symbol');
+		expect(c('<svg><rect role="roletype img"></rect></svg>', '1.2', 'rect')?.name).toBe('img');
+		expect(c('<svg><rect role="roletype"></rect></svg>', '1.2', 'rect')?.name).toBe('graphics-symbol');
 	});
 });

@@ -26,6 +26,23 @@ describe("Use the role that doesn't exist in the spec", () => {
 			},
 		]);
 	});
+
+	test('Graphics ARIA to HTML', async () => {
+		expect((await mlRuleTest(rule, '<div role="graphics-document"></div>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 12,
+				message:
+					'The "graphics-document" role does not exist according to the WAI-ARIA specification. This "graphics-document" role does not exist in WAI-ARIA.',
+				raw: 'graphics-document',
+			},
+		]);
+
+		expect((await mlRuleTest(rule, '<svg><rect role="graphics-document"></rect></svg>')).violations).toStrictEqual(
+			[],
+		);
+	});
 });
 
 describe('Use the abstract role', () => {

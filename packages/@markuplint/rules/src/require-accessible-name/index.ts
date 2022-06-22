@@ -22,7 +22,7 @@ export default createRule<boolean, Option>({
 			if (!role) {
 				return;
 			}
-			const roleSpec = getRoleSpec(document.specs, role.name, el.rule.option.ariaVersion);
+			const roleSpec = getRoleSpec(document.specs, role.name, el.namespaceURI, el.rule.option.ariaVersion);
 			if (!roleSpec || !roleSpec.accessibleNameRequired) {
 				return;
 			}

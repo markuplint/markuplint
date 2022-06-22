@@ -1,17 +1,19 @@
 import type { ARIAVersion, ARIARoleInSchema, MLMLSpec, ARIARole } from '../types';
+import type { NamespaceURI } from '@markuplint/ml-ast';
 
 import { ariaSpecs } from './aria-specs';
 
 export function getRoleSpec(
 	specs: Readonly<MLMLSpec>,
 	roleName: string,
+	namespace: NamespaceURI,
 	version: ARIAVersion,
 ): (ARIARole & { superClassRoles: ARIARoleInSchema[] }) | null {
-	const role = getRoleByName(specs, roleName, version);
+	const role = getRoleByName(specs, roleName, namespace, version);
 	if (!role) {
 		return null;
 	}
-	const superClassRoles = recursiveTraverseSuperClassRoles(specs, roleName, version);
+	const superClassRoles = recursiveTraverseSuperClassRoles(specs, roleName, namespace, version);
 	return {
 		name: role.name,
 		isAbstract: !!role.isAbstract,
@@ -27,30 +29,43 @@ export function getRoleSpec(
 	};
 }
 
-function recursiveTraverseSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string, version: ARIAVersion) {
+function recursiveTraverseSuperClassRoles(
+	specs: Readonly<MLMLSpec>,
+	roleName: string,
+	namespace: NamespaceURI,
+	version: ARIAVersion,
+) {
 	const roles: ARIARoleInSchema[] = [];
-	const superClassRoles = getSuperClassRoles(specs, roleName, version);
+	const superClassRoles = getSuperClassRoles(specs, roleName, namespace, version);
 	if (superClassRoles) {
 		roles.push(...superClassRoles);
 		for (const superClassRole of superClassRoles) {
-			const ancestorRoles = recursiveTraverseSuperClassRoles(specs, superClassRole.name, version);
+			const ancestorRoles = recursiveTraverseSuperClassRoles(specs, superClassRole.name, namespace, version);
 			roles.push(...ancestorRoles);
 		}
 	}
 	return roles;
 }
 
-function getSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string, version: ARIAVersion) {
-	const role = getRoleByName(specs, roleName, version);
+function getSuperClassRoles(
+	specs: Readonly<MLMLSpec>,
+	roleName: string,
+	namespace: NamespaceURI,
+	version: ARIAVersion,
+) {
+	const role = getRoleByName(specs, roleName, namespace, version);
 	return (
 		role?.generalization
-			?.map(roleName => getRoleByName(specs, roleName, version))
+			?.map(roleName => getRoleByName(specs, roleName, namespace, version))
 			.filter((role): role is ARIARoleInSchema => !!role) || null
 	);
 }
 
-function getRoleByName(specs: Readonly<MLMLSpec>, roleName: string, version: ARIAVersion) {
-	const { roles } = ariaSpecs(specs, version);
-	const role = roles.find(r => r.name === roleName);
+function getRoleByName(specs: Readonly<MLMLSpec>, roleName: string, namespace: NamespaceURI, version: ARIAVersion) {
+	const { roles, graphicsRoles } = ariaSpecs(specs, version);
+	let role = roles.find(r => r.name === roleName);
+	if (!role && namespace === 'http://www.w3.org/2000/svg') {
+		role = graphicsRoles.find(r => r.name === roleName);
+	}
 	return role;
 }

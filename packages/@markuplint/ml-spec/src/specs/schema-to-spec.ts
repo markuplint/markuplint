@@ -28,10 +28,18 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 					'1.1': {
 						roles: mergeArray(result.def['#aria']['1.1'].roles, extendedSpec.def['#aria']['1.1'].roles),
 						props: mergeArray(result.def['#aria']['1.1'].props, extendedSpec.def['#aria']['1.1'].props),
+						graphicsRoles: mergeArray(
+							result.def['#aria']['1.1'].graphicsRoles,
+							extendedSpec.def['#aria']['1.1'].graphicsRoles,
+						),
 					},
 					'1.2': {
 						roles: mergeArray(result.def['#aria']['1.2'].roles, extendedSpec.def['#aria']['1.2'].roles),
 						props: mergeArray(result.def['#aria']['1.2'].props, extendedSpec.def['#aria']['1.2'].props),
+						graphicsRoles: mergeArray(
+							result.def['#aria']['1.2'].graphicsRoles,
+							extendedSpec.def['#aria']['1.2'].graphicsRoles,
+						),
 					},
 				};
 			}

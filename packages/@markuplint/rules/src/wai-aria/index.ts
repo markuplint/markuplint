@@ -56,8 +56,13 @@ export default createRule<boolean, Options>({
 			const { props: propSpecs } = ariaSpecs(document.specs, el.rule.option.version);
 
 			if (roleAttr) {
-				report(checkingNonExistantRole({ attr: roleAttr }));
-				report(checkingAbstractRole({ attr: roleAttr }));
+				if (report(checkingNonExistantRole({ attr: roleAttr }))) {
+					return;
+				}
+
+				if (report(checkingAbstractRole({ attr: roleAttr }))) {
+					return;
+				}
 				report(checkingRequiredProp({ el, role, propSpecs }));
 
 				if (el.rule.option.disallowSetImplicitRole) {

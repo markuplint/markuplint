@@ -43,6 +43,7 @@ export type SpecDefs = {
 
 type ARIASpec = {
 	roles: ARIARoleInSchema[];
+	graphicsRoles: ARIARoleInSchema[];
 	props: ARIAProperty[];
 };
 

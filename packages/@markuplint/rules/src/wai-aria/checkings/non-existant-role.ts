@@ -6,13 +6,16 @@ import { ariaSpecs } from '@markuplint/ml-spec';
 export const checkingNonExistantRole: AttrChecker<boolean, Options> =
 	({ attr }) =>
 	t => {
-		const { roles } = ariaSpecs(attr.ownerMLDocument.specs, attr.rule.option.version);
+		const { roles, graphicsRoles } = ariaSpecs(attr.ownerMLDocument.specs, attr.rule.option.version);
 		const tokens = attr.tokenList?.allTokens();
 		if (!tokens) {
 			return;
 		}
 		for (const token of tokens) {
-			const role = roles.find(r => r.name === token.raw);
+			let role = roles.find(r => r.name === token.raw);
+			if (!role && attr.ownerElement.namespaceURI === 'http://www.w3.org/2000/svg') {
+				role = graphicsRoles.find(r => r.name === token.raw);
+			}
 			if (!role) {
 				return {
 					scope: token,

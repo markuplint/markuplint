@@ -1,3 +1,5 @@
+import type { Report, RuleConfigValue } from '@markuplint/ml-config';
+
 import { createRule, getLocationFromChars } from '@markuplint/ml-core';
 
 const defaultChars = ['"', '&', '<', '>'];
@@ -5,7 +7,7 @@ const ignoreParentElement = ['script', 'style'];
 
 export default createRule({
 	async verify({ document, report, t }) {
-		const targetNodes: Parameters<typeof report>[0][] = [];
+		const targetNodes: Report<RuleConfigValue>[] = [];
 
 		await document.walkOn('Text', node => {
 			if (node.parentNode && ignoreParentElement.includes(node.parentNode.nodeName.toLowerCase())) {

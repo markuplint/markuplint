@@ -4,7 +4,7 @@ import { getRoleSpec } from './get-role-spec';
 
 describe('getRoleSpec', () => {
 	test('the button role', () => {
-		const role = getRoleSpec(specs, 'button', '1.2')!;
+		const role = getRoleSpec(specs, 'button', 'http://www.w3.org/1999/xhtml', '1.2')!;
 		const superClassRoles = role.superClassRoles.map(r => r.name);
 		expect(role.ownedProperties.map(p => p.name + (p.deprecated ? ':deprecated' : ''))).toStrictEqual([
 			'aria-atomic',
@@ -36,7 +36,7 @@ describe('getRoleSpec', () => {
 	});
 
 	test('the roletype role', () => {
-		const role = getRoleSpec(specs, 'roletype', '1.2')!;
+		const role = getRoleSpec(specs, 'roletype', 'http://www.w3.org/1999/xhtml', '1.2')!;
 		const superClassRoles = role.superClassRoles.map(r => r.name);
 		expect(role.ownedProperties.map(p => p.name + (p.deprecated ? ':deprecated' : ''))).toStrictEqual([
 			'aria-atomic',

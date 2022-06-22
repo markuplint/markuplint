@@ -20,16 +20,27 @@ export async function getAria() {
 		'1.2': {
 			roles: roles12,
 			props: await getProps('1.2', roles12),
+			graphicsRoles: await getRoles('1.2', true),
 		},
 		'1.1': {
 			roles: roles11,
 			props: await getProps('1.1', roles11),
+			graphicsRoles: await getRoles('1.1', true),
 		},
 	};
 }
 
-async function getRoles(version: ARIAVersion) {
-	const $ = await fetch(`https://www.w3.org/TR/wai-aria-${version}/`);
+async function getRoles(version: ARIAVersion, graphicsAria = false) {
+	const $ = await fetch(
+		(() => {
+			if (!graphicsAria) {
+				return `https://www.w3.org/TR/wai-aria-${version}/`;
+			}
+			return version === '1.1'
+				? 'https://www.w3.org/TR/graphics-aria-1.0/'
+				: 'https://w3c.github.io/graphics-aria/';
+		})(),
+	);
 	const $roleList = $('#role_definitions section.role');
 	const roles: ARIARoleInSchema[] = [];
 	const getAttr = (li: cheerio.Element): ARIARoleOwnedProperties => {
@@ -141,7 +152,7 @@ async function getProps(version: ARIAVersion, roles: ARIARoleInSchema[]) {
 
 	const ariaNameList: Set<string> = new Set();
 	for (const role of roles) {
-		role.ownedProperties.forEach(prop => {
+		role.ownedProperties?.forEach(prop => {
 			ariaNameList.add(prop.name);
 		});
 	}

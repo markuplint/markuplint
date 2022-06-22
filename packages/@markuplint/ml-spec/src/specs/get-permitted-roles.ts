@@ -1,5 +1,8 @@
 import type { ARIAVersion, Matches, MLMLSpec } from '../types';
 
+import { mergeArray } from '../utils/merge-array';
+
+import { ariaSpecs } from './aria-specs';
 import { getARIA } from './get-aria';
 
 /**
@@ -15,23 +18,70 @@ export function getPermittedRoles(
 	namespace: string | null,
 	version: ARIAVersion,
 	matches: Matches,
-) {
+): { name: string; deprecated?: boolean }[] {
 	const aria = getARIA(specs, localName, namespace, version, matches);
 	if (!aria) {
-		return true;
+		return [];
 	}
 	const { implicitRole, permittedRoles } = aria;
+	const { roles, graphicsRoles } = ariaSpecs(specs, version);
+
+	let permittedRoleList: { name: string }[] = [];
+
+	if (permittedRoles === true) {
+		permittedRoleList = mergeArray(
+			permittedRoleList,
+			roles
+				.filter(role => !role.isAbstract)
+				.map(role => ({
+					name: role.name,
+				})),
+		);
+	}
+
+	if (Array.isArray(permittedRoles)) {
+		permittedRoleList = mergeArray(
+			permittedRoleList,
+			permittedRoles.map(role => {
+				if (typeof role === 'string') {
+					return {
+						name: role,
+					};
+				}
+				return role;
+			}),
+		);
+	} else if (!(typeof permittedRoles === 'boolean')) {
+		if (permittedRoles['core-aam']) {
+			permittedRoleList = mergeArray(
+				permittedRoleList,
+				roles
+					.filter(role => !role.isAbstract)
+					.map(role => ({
+						name: role.name,
+					})),
+			);
+		}
+		if (permittedRoles['graphics-aam']) {
+			permittedRoleList = mergeArray(
+				permittedRoleList,
+				graphicsRoles
+					.filter(role => !role.isAbstract)
+					.map(role => ({
+						name: role.name,
+					})),
+			);
+		}
+	}
 
 	if (implicitRole) {
 		const implicitRoles =
 			implicitRole === 'presentation' || implicitRole === 'none' ? ['none', 'presentation'] : [implicitRole];
-
-		if (Array.isArray(permittedRoles)) {
-			return [...implicitRoles, ...permittedRoles];
-		}
-		if (permittedRoles === false) {
-			return implicitRoles;
-		}
+		return mergeArray(
+			implicitRoles.map(r => ({ name: r })),
+			permittedRoleList,
+		);
 	}
-	return permittedRoles;
+
+	return permittedRoleList;
 }

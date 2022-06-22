@@ -1,6 +1,7 @@
 import type { ARIAVersion, MLMLSpec } from '../types';
 
 import { getRoleSpec } from '../specs/get-role-spec';
+import { resolveNamespace } from '../utils/resolve-namespace';
 
 import { getImplicitRole } from './get-implicit-role';
 import { getPermittedRoles } from './get-permitted-roles';
@@ -10,25 +11,17 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version:
 	const roles = roleValue?.toLowerCase().trim().split(/\s+/g) || [];
 	const permittedRoles = getPermittedRoles(el, version, specs);
 	const implicitRole = getImplicitRole(el, version, specs);
+	const { namespaceURI } = resolveNamespace(el.localName, el.namespaceURI);
 
 	for (const role of roles) {
-		const spec = getRoleSpec(specs, role, version);
+		const spec = getRoleSpec(specs, role, namespaceURI, version);
 		if (!spec) {
 			continue;
 		}
 		if (spec.isAbstract) {
 			continue;
 		}
-		if (permittedRoles === false) {
-			continue;
-		}
-		if (permittedRoles === true) {
-			return {
-				...spec,
-				isImplicit: false,
-			};
-		}
-		if (Array.isArray(permittedRoles) && permittedRoles.some(r => r.name === role)) {
+		if (permittedRoles.some(r => r.name === role)) {
 			return {
 				...spec,
 				isImplicit: false,
@@ -40,7 +33,7 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version:
 		return null;
 	}
 
-	const spec = getRoleSpec(specs, implicitRole, version);
+	const spec = getRoleSpec(specs, implicitRole, namespaceURI, version);
 
 	if (!spec) {
 		return null;

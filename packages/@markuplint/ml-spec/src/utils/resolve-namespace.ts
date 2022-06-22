@@ -11,7 +11,7 @@ type NamespacedElementName = {
 	namespaceURI: NamespaceURI;
 };
 
-export function resolveNamespace(localName: string, namespaceURI: string = 'http://www.w3.org/1999/xhtml') {
+export function resolveNamespace(localName: string, namespaceURI: string | null = 'http://www.w3.org/1999/xhtml') {
 	const cached = cache.get(localName + namespaceURI);
 	if (cached) {
 		return cached;
