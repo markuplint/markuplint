@@ -23,6 +23,7 @@ describe('getComputedRole', () => {
 		expect(c('<a href></a>', '1.2')?.name).toBe('link');
 		expect(c('<a role="button"></a>', '1.2')?.name).toBe('button');
 		expect(c('<a role="button" href></a>', '1.2')?.name).toBe('button');
+		expect(c('<a role="foo" href></a>', '1.2')?.name).toBe('link');
 	});
 
 	test('the heading role', () => {
@@ -44,6 +45,15 @@ describe('getComputedRole', () => {
 		expect(c('<svg><rect role="graphics-symbol img"></rect></svg>', '1.2', 'rect')?.name).toBe('graphics-symbol');
 		expect(c('<svg><rect role="roletype img"></rect></svg>', '1.2', 'rect')?.name).toBe('img');
 		expect(c('<svg><rect role="roletype"></rect></svg>', '1.2', 'rect')?.name).toBe('graphics-symbol');
+	});
+
+	test('landmark', () => {
+		expect(c('<div role="region"></div>', '1.2')?.name).toBe('generic');
+		expect(c('<div role="region" aria-label="foo"></div>', '1.2')?.name).toBe('region');
+		expect(c('<div role="form"></div>', '1.2')?.name).toBe('generic');
+		expect(c('<div role="form" aria-label="foo"></div>', '1.2')?.name).toBe('form');
+		expect(c('<div role="navigation"></div>', '1.2')?.name).toBe('navigation');
+		expect(c('<div role="navigation" aria-label="foo"></div>', '1.2')?.name).toBe('navigation');
 	});
 
 	test('Presentational Roles Conflict Resolution (3) Global Props', () => {

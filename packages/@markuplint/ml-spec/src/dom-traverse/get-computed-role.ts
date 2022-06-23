@@ -4,21 +4,18 @@ import { ariaSpecs } from '../specs/aria-specs';
 import { getRoleSpec } from '../specs/get-role-spec';
 import { resolveNamespace } from '../utils/resolve-namespace';
 
-import { getImplicitRole } from './get-implicit-role';
+import { getImplicitRole as getImplicitRoleName } from './get-implicit-role';
 import { getPermittedRoles } from './get-permitted-roles';
 
 type Role<I extends boolean = boolean> = ReturnType<typeof getRoleSpec> & { isImplicit: I };
 
 export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): Role | null {
-	const implicitRole = getImplicitRoleSpec(specs, el, version);
-	const role = getComputedRoleWithoutRoleRequirementResolution(specs, el, version, implicitRole);
-	if (!role) {
-		return role;
+	const implicitRole = getImplicitRole(specs, el, version);
+	const explicitRole = getExplicitRole(specs, el, version);
+	if (!explicitRole) {
+		return implicitRole;
 	}
-	if (!isNotImplicit(role)) {
-		return role;
-	}
-	return resolvePresentationalRolesConflict(el, role, implicitRole, specs, version);
+	return resolvePresentationalRolesConflict(el, explicitRole, implicitRole, specs, version);
 }
 
 /**
@@ -78,38 +75,101 @@ function resolvePresentationalRolesConflict(
 	return role;
 }
 
-function getComputedRoleWithoutRoleRequirementResolution(
-	specs: Readonly<MLMLSpec>,
-	el: Element,
-	version: ARIAVersion,
-	implicitRole: Role<true> | null,
-): Role | null {
+function getExplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): Role<false> | null {
 	const roleValue = el.getAttribute('role');
-	const roles = roleValue?.toLowerCase().trim().split(/\s+/g) || [];
+	const roleNames = roleValue?.toLowerCase().trim().split(/\s+/g) || [];
 	const permittedRoles = getPermittedRoles(el, version, specs);
 	const { namespaceURI } = resolveNamespace(el.localName, el.namespaceURI);
 
-	for (const role of roles) {
-		const spec = getRoleSpec(specs, role, namespaceURI, version);
+	/**
+	 * Resolve from values and **Handling Author Errors**
+	 *
+	 * @see https://w3c.github.io/aria/#document-handling_author-errors_roles
+	 */
+	for (const roleName of roleNames) {
+		const spec = getRoleSpec(specs, roleName, namespaceURI, version);
+
+		/**
+		 * If `spec` is null, the role DOES NOT EXIST.
+		 *
+		 * > If the role attribute contains no tokens matching the name
+		 * > of a non-abstract WAI-ARIA role,
+		 * > the user agent MUST treat the element as
+		 * > if no role had been provided. For example,
+		 * > <table role="foo"> should be exposed
+		 * > in the same way as <table> and <input type="text" role="structure">
+		 * > in the same way as <input type="text">.
+		 */
 		if (!spec) {
 			continue;
 		}
+
+		/**
+		 * > As stated in the Definition of Roles section,
+		 * > it is considered an authoring error to use abstract roles in content.
+		 * > User agents MUST NOT map abstract roles
+		 * > via the standard role mechanism of the accessibility API.
+		 */
 		if (spec.isAbstract) {
 			continue;
 		}
-		if (permittedRoles.some(r => r.name === role)) {
-			return {
-				...spec,
-				isImplicit: false,
-			};
+
+		/**
+		 * Whether the role is the permitted role according to ARIA in HTML.
+		 */
+		if (!permittedRoles.some(r => r.name === roleName)) {
+			continue;
 		}
+
+		/**
+		 * > Certain landmark roles require names from authors.
+		 * > In situations where an author has not specified names for these landmarks,
+		 * > it is considered an authoring error.
+		 * > The user agent MUST treat such elements as if no role had been provided.
+		 * > If a valid fallback role had been specified,
+		 * > or if the element had an implicit ARIA role,
+		 * > then user agents would continue to expose that role, instead.
+		 */
+		if (isLandmarkRole(spec) && !isValidLandmarkRole(el, spec)) {
+			continue;
+		}
+
+		/**
+		 * Otherwise
+		 */
+		return {
+			...spec,
+			isImplicit: false,
+		};
 	}
 
-	return implicitRole;
+	return null;
 }
 
-function getImplicitRoleSpec(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): Role<true> | null {
-	const implicitRole = getImplicitRole(el, version, specs);
+function isValidLandmarkRole(el: Element, role: NonNullable<ReturnType<typeof getRoleSpec>>) {
+	if (!role.accessibleNameRequired) {
+		return true;
+	}
+	if (role.accessibleNameFromAuthor) {
+		if (el.getAttribute('aria-label')) {
+			return true;
+		}
+		const id = el.getAttribute('aria-labelledby');
+		if (id && el.ownerDocument.getElementById(id)) {
+			return true;
+		}
+	}
+	// The landmark role does not require names from the content
+	// if (role.accessibleNameFromContent) {}
+	return false;
+}
+
+function isLandmarkRole(role: NonNullable<ReturnType<typeof getRoleSpec>>) {
+	return role?.superClassRoles.some(su => su.name === 'landmark');
+}
+
+function getImplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): Role<true> | null {
+	const implicitRole = getImplicitRoleName(el, version, specs);
 	if (implicitRole === false) {
 		return null;
 	}
@@ -122,8 +182,4 @@ function getImplicitRoleSpec(specs: Readonly<MLMLSpec>, el: Element, version: AR
 		...spec,
 		isImplicit: true,
 	};
-}
-
-function isNotImplicit(role: Role): role is Role<false> {
-	return !role.isImplicit;
 }
