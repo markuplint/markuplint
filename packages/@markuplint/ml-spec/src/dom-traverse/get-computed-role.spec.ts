@@ -6,13 +6,26 @@ import { createJSDOMElement } from '@markuplint/test-tools';
 
 import { getComputedRole } from './get-computed-role';
 
-function c(html: string, version: ARIAVersion, selector?: string) {
-	const el = createJSDOMElement(html, selector, function (selector) {
+function _(html: string, selector?: string) {
+	return createJSDOMElement(html, selector, function (selector) {
 		// JSDOM supports no level 4 selectors yet.
 		return !!createSelector(selector, specs).match(this);
 	});
+}
 
-	return getComputedRole(specs, el, version);
+function c(html: string, version: ARIAVersion, selector?: string) {
+	return getComputedRole(specs, _(html, selector), version);
+}
+
+function tree(html: string, version: ARIAVersion) {
+	const el = _(html);
+	const tree: [string, string | null][] = [];
+	let current: Element | null = el;
+	while (current) {
+		tree.push([current.localName, getComputedRole(specs, current, version)?.name || null]);
+		current = current.children.item(0);
+	}
+	return tree;
 }
 
 describe('getComputedRole', () => {
@@ -62,6 +75,23 @@ describe('getComputedRole', () => {
 		);
 		expect(c('<ul><li></li></ul>', '1.2', 'li')?.name).toBe('listitem');
 		expect(c('<ul><li role="presentation"></li></ul>', '1.2', 'li')?.name).toBe('listitem');
+	});
+
+	test('Presentational Roles Conflict Resolution (2-2) the accessibility tree to be malformed', () => {
+		expect(c('<table><tr><td>foo</td></tr></table>', '1.2', 'td')?.name).toBe('cell');
+		expect(c('<table role="none"><tr><td>foo</td></tr></table>', '1.2', 'td')?.name).toBe(undefined);
+		expect(tree('<table><tr><td>foo</td></tr></table>', '1.2')).toStrictEqual([
+			['table', 'table'],
+			['tbody', 'rowgroup'],
+			['tr', 'row'],
+			['td', 'cell'],
+		]);
+		expect(tree('<table role="none"><tr><td>foo</td></tr></table>', '1.2')).toStrictEqual([
+			['table', 'none'],
+			['tbody', null],
+			['tr', null],
+			['td', null],
+		]);
 	});
 
 	test('Presentational Roles Conflict Resolution (3) Global Props', () => {

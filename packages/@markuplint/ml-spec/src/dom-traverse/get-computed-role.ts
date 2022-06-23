@@ -12,26 +12,34 @@ type Role<I extends boolean = boolean> = ReturnType<typeof getRoleSpec> & { isIm
 export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): Role | null {
 	const implicitRole = getImplicitRole(specs, el, version);
 	const explicitRole = getExplicitRole(specs, el, version);
-	if (!explicitRole) {
-		return implicitRole;
-	}
-	return resolvePresentationalRolesConflict(el, explicitRole, implicitRole, specs, version);
-}
+	const role = explicitRole || implicitRole;
 
-/**
- * Presentational Roles Conflict Resolution
- *
- * @see https://www.w3.org/TR/wai-aria/#conflict_resolution_presentation_none
- * @see https://w3c.github.io/aria/#conflict_resolution_presentation_none
- */
-function resolvePresentationalRolesConflict(
-	el: Element,
-	role: Role<false>,
-	implicitRole: Role<true> | null,
-	specs: Readonly<MLMLSpec>,
-	version: ARIAVersion,
-): Role | null {
-	if (!['presentation', 'none'].includes(role.name)) {
+	/**
+	 * Presentational Roles Conflict Resolution
+	 *
+	 * @see https://www.w3.org/TR/wai-aria/#conflict_resolution_presentation_none
+	 * @see https://w3c.github.io/aria/#conflict_resolution_presentation_none
+	 */
+
+	/**
+	 * > If the action of exposing the explicit role
+	 * > causes the accessibility tree to be malformed,
+	 * > the expected results are undefined.
+	 */
+	const parentRole = el.parentElement && getComputedRole(specs, el.parentElement, version);
+	if (parentRole?.requiredOwnedElements.length && isPresentational(parentRole.name)) {
+		return null;
+	}
+	if (role?.requiredContextRole.length) {
+		if (!parentRole) {
+			return null;
+		}
+		if (!role?.requiredContextRole.includes(parentRole.name)) {
+			return null;
+		}
+	}
+
+	if (role && !isPresentational(role.name)) {
 		return role;
 	}
 
@@ -61,13 +69,6 @@ function resolvePresentationalRolesConflict(
 			return implicitRole;
 		}
 	}
-
-	/**
-	 * > If the action of exposing the explicit role
-	 * > causes the accessibility tree to be malformed,
-	 * > the expected results are undefined.
-	 */
-	// TODO: implement
 
 	/**
 	 * > If an element has global WAI-ARIA states or properties,
@@ -196,4 +197,8 @@ function getImplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVe
 		...spec,
 		isImplicit: true,
 	};
+}
+
+function isPresentational(roleName: string) {
+	return ['presentation', 'none'].includes(roleName);
 }
