@@ -7,12 +7,10 @@ import { createJSDOMElement } from '@markuplint/test-tools';
 import { getComputedRole } from './get-computed-role';
 
 function c(html: string, version: ARIAVersion, selector?: string) {
-	const el = createJSDOMElement(html, selector);
-
-	// JSDOM supports no level 4 selectors yet.
-	el.matches = (selector: string) => {
-		return !!createSelector(selector, specs).match(el);
-	};
+	const el = createJSDOMElement(html, selector, function (selector) {
+		// JSDOM supports no level 4 selectors yet.
+		return !!createSelector(selector, specs).match(this);
+	});
 
 	return getComputedRole(specs, el, version);
 }
@@ -54,6 +52,16 @@ describe('getComputedRole', () => {
 		expect(c('<div role="form" aria-label="foo"></div>', '1.2')?.name).toBe('form');
 		expect(c('<div role="navigation"></div>', '1.2')?.name).toBe('navigation');
 		expect(c('<div role="navigation" aria-label="foo"></div>', '1.2')?.name).toBe('navigation');
+	});
+
+	test('Presentational Roles Conflict Resolution (2-1) Required Owend Elements', () => {
+		expect(c('<table><tr><td>foo</td></tr></table>', '1.2', 'td')?.name).toBe('cell');
+		expect(c('<table><tr><td role="none">foo</td></tr></table>', '1.2', 'td')?.name).toBe('cell');
+		expect(c('<table><tbody role="none"><tr><td>foo</td></tr></tbody></table>', '1.2', 'tbody')?.name).toBe(
+			'rowgroup',
+		);
+		expect(c('<ul><li></li></ul>', '1.2', 'li')?.name).toBe('listitem');
+		expect(c('<ul><li role="presentation"></li></ul>', '1.2', 'li')?.name).toBe('listitem');
 	});
 
 	test('Presentational Roles Conflict Resolution (3) Global Props', () => {

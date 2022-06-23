@@ -49,6 +49,20 @@ function resolvePresentationalRolesConflict(
 	 * > If a required owned element has an explicit non-presentational role,
 	 * > user agents MUST ignore an inherited presentational role
 	 * > and expose the element with its explicit role.
+	 *
+	 * In other words,
+	 * if the element has `role=presentation` and
+	 * the role of the parent element has a required owned element,
+	 * `role=presentation` is to be ignored absolutely.
+	 */
+	if (el.parentElement) {
+		const parentRole = getComputedRole(specs, el.parentElement, version);
+		if (parentRole?.requiredOwnedElements.length && implicitRole) {
+			return implicitRole;
+		}
+	}
+
+	/**
 	 * > If the action of exposing the explicit role
 	 * > causes the accessibility tree to be malformed,
 	 * > the expected results are undefined.
@@ -67,7 +81,7 @@ function resolvePresentationalRolesConflict(
 	 */
 	const { props } = ariaSpecs(specs, version);
 	for (const attr of Array.from(el.attributes)) {
-		if (props.find(p => p.name === attr.localName)?.isGlobal) {
+		if (props.find(p => p.name === attr.name)?.isGlobal) {
 			return implicitRole;
 		}
 	}
