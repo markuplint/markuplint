@@ -165,6 +165,7 @@ export type ARIARole = {
 	name: string;
 	isAbstract: boolean;
 	requiredContextRole: string[];
+	requiredOwnedElements: string[];
 	accessibleNameRequired: boolean;
 	accessibleNameFromAuthor: boolean;
 	accessibleNameFromContent: boolean;

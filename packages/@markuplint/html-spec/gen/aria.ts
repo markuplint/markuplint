@@ -14,7 +14,7 @@ import { arrayUnique, nameCompare } from './utils';
 
 export async function getAria() {
 	const roles12 = await getRoles('1.2');
-	const roles11 = await getRoles('1.2');
+	const roles11 = await getRoles('1.1');
 
 	return {
 		'1.2': {
@@ -85,10 +85,17 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			.map(getAttr)
 			.map(p => ({ ...p, inherited: true as const }));
 		const ownedProps = $feaures.find('.role-properties li, .role-properties > a').toArray().map(getAttr);
-		const requiredContextRole = $feaures
-			.find('.role-scope li')
+		const requiredContextRole = $$($feaures, ['.role-scope li', '.role-scope a'])
 			.toArray()
 			.map(el => $(el).text().trim());
+		const requiredOwnedElements = $$($feaures, ['.role-mustcontain li', '.role-mustcontain a'])
+			.toArray()
+			.map(el =>
+				$(el)
+					.text()
+					.trim()
+					.replace(/\s+(owning|→)\s+/gi, ' > '),
+			);
 		const accessibleNameRequired = !!$feaures.find('.role-namerequired').text().match(/true/i);
 		const accessibleNameFromAuthor = !!$feaures
 			.find('.role-namefrom')
@@ -121,6 +128,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			isAbstract,
 			generalization,
 			requiredContextRole,
+			requiredOwnedElements,
 			accessibleNameRequired,
 			accessibleNameFromAuthor,
 			accessibleNameFromContent,
@@ -281,4 +289,15 @@ async function getAriaInHtml() {
 	return {
 		implicitProps,
 	};
+}
+
+function $$($el: cheerio.Cheerio, selectors: string[]) {
+	let $found = $el;
+	for (const selector of selectors) {
+		$found = $el.find(selector);
+		if ($found.length) {
+			return $found;
+		}
+	}
+	return $found;
 }

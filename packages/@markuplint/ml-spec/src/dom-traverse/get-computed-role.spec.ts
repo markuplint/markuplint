@@ -46,7 +46,7 @@ describe('getComputedRole', () => {
 		expect(c('<svg><rect role="roletype"></rect></svg>', '1.2', 'rect')?.name).toBe('graphics-symbol');
 	});
 
-	test('Presentational Roles Conflict Resolution', () => {
+	test('Presentational Roles Conflict Resolution (3) Global Props', () => {
 		/**
 		 * @see https://w3c.github.io/aria/#example-41
 		 */

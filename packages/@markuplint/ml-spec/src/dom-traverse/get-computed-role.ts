@@ -74,6 +74,7 @@ function resolvePresentationalRolesConflict(
 			return implicitRole;
 		}
 	}
+
 	return role;
 }
 

@@ -18,6 +18,7 @@ export function getRoleSpec(
 		name: role.name,
 		isAbstract: !!role.isAbstract,
 		requiredContextRole: role.requiredContextRole ?? [],
+		requiredOwnedElements: role.requiredOwnedElements ?? [],
 		accessibleNameRequired: !!role.accessibleNameRequired,
 		accessibleNameFromAuthor: !!role.accessibleNameFromAuthor,
 		accessibleNameFromContent: !!role.accessibleNameFromContent,
