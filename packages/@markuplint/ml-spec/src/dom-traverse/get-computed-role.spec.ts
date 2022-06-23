@@ -45,4 +45,14 @@ describe('getComputedRole', () => {
 		expect(c('<svg><rect role="roletype img"></rect></svg>', '1.2', 'rect')?.name).toBe('img');
 		expect(c('<svg><rect role="roletype"></rect></svg>', '1.2', 'rect')?.name).toBe('graphics-symbol');
 	});
+
+	test('Presentational Roles Conflict Resolution', () => {
+		/**
+		 * @see https://w3c.github.io/aria/#example-41
+		 */
+		expect(c('<h1 role="presentation" aria-describedby="comment-1"> Sample Content </h1>', '1.2')?.name).toBe(
+			'heading',
+		);
+		expect(c('<h1 role="presentation" aria-level="2"> Sample Content </h1>', '1.2')?.name).toBe('presentation');
+	});
 });
