@@ -22262,13 +22262,11 @@
 				"embed",
 				"iframe",
 				"img[usemap]",
-				"input:not([type=hidden])",
+				"input:not([type='hidden' i])",
 				"label",
-				"object[usemap]",
 				"select",
 				"textarea",
-				"video[controls]",
-				"[tabindex]"
+				"video[controls]"
 			],
 			"#script-supporting": ["script", "template"],
 			"#SVGAnimation": [
