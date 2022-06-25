@@ -2,8 +2,10 @@ import type { ARIAVersion, MLMLSpec } from '../types';
 
 import { ariaSpecs } from '../specs/aria-specs';
 import { getRoleSpec } from '../specs/get-role-spec';
+import { getSelectorsByContentModelCategory } from '../specs/get-selectors-by-content-model-category';
 import { resolveNamespace } from '../utils/resolve-namespace';
 
+import { getAttrSpecs } from './get-attr-specs';
 import { getImplicitRole as getImplicitRoleName } from './get-implicit-role';
 import { getPermittedRoles } from './get-permitted-roles';
 
@@ -50,8 +52,49 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version:
 	 * > in order to ensure that the element is operable.
 	 *
 	 * With the issue: What does focusable or otherwise interactive mean](https://github.com/w3c/aria/issues/1192)
+	 *
+	 * - Focus: https://html.spec.whatwg.org/multipage/interaction.html#focus
+	 * - Interactive content: https://html.spec.whatwg.org/multipage/dom.html#interactive-content
 	 */
-	// TODO: implement
+	if (
+		/**
+		 * Interactive element
+		 */
+		[
+			/**
+			 * Interactive content
+			 *
+			 * THIS CONDITION(SELECTORS) IS ALMOST MEANINGLESS.
+			 * Because it has already been determined that
+			 * the interactive elements can not specify the presentational role
+			 * in the previous processing that computes the permitted role (`getExplicitRole`).
+			 *
+			 * @see  https://html.spec.whatwg.org/multipage/dom.html#interactive-content
+			 */
+			...getSelectorsByContentModelCategory(specs, '#interactive'),
+			/**
+			 * Interaction
+			 *
+			 * @see  https://html.spec.whatwg.org/multipage/interaction.html
+			 */
+			'[tabindex]',
+			'[contenteditable]:not([contenteditable="false" i])',
+		].some(selector => el.matches(selector)) &&
+		/**
+		 * No disabled
+		 */
+		!someAncestors(el, p => isEnabledAttr(p, specs, 'disabled')) &&
+		/**
+		 * No inert
+		 */
+		!someAncestors(el, p => isEnabledAttr(p, specs, 'inert')) &&
+		/**
+		 * No hidden
+		 */
+		!someAncestors(el, p => isEnabledAttr(p, specs, 'hidden'))
+	) {
+		return implicitRole;
+	}
 
 	/**
 	 * > If a required owned element has an explicit non-presentational role,
@@ -201,4 +244,27 @@ function getImplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVe
 
 function isPresentational(roleName: string) {
 	return ['presentation', 'none'].includes(roleName);
+}
+
+/**
+ * The attribute is available in its owner element,
+ * it has the attribute.
+ */
+function isEnabledAttr(el: Element, specs: MLMLSpec, attrName: string) {
+	const attrs = getAttrSpecs(el, specs);
+	const attr = attrs?.find(attr => attr.name === attrName);
+	return !!attr && el.hasAttribute(attrName);
+}
+
+/**
+ * Determines whether some ancestors match the condition that the specified callback function.
+ */
+function someAncestors(el: Element, predicate: (ancestor: Element) => boolean) {
+	const list: Element[] = [];
+	let current: Element | null = el;
+	while (current) {
+		list.push(current);
+		current = current.parentElement;
+	}
+	return list.some(predicate);
 }

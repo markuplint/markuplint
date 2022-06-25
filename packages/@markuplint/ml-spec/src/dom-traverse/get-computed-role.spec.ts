@@ -67,6 +67,30 @@ describe('getComputedRole', () => {
 		expect(c('<div role="navigation" aria-label="foo"></div>', '1.2')?.name).toBe('navigation');
 	});
 
+	test('Presentational Roles Conflict Resolution (1) Interactive Elements', () => {
+		expect(c('<a href="path/to"></a>', '1.2')?.name).toBe('link');
+		expect(c('<a role="none" href="path/to"></a>', '1.2')?.name).toBe('link'); // No permitted role
+		expect(c('<a></a>', '1.2')?.name).toBe(undefined);
+		expect(c('<a role="none"></a>', '1.2')?.name).toBe('none');
+		expect(c('<a role="none" href="path/to" disabled></a>', '1.2')?.name).toBe('link'); // No permitted role
+		expect(c('<button></button>', '1.2')?.name).toBe('button');
+		expect(c('<button disabled></button>', '1.2')?.name).toBe('button');
+		expect(c('<button role="none"></button>', '1.2')?.name).toBe('button'); // No permitted role
+		expect(c('<button role="none" disabled></button>', '1.2')?.name).toBe('button'); // No permitted role
+		expect(c('<div></div>', '1.2')?.name).toBe('generic');
+		expect(c('<div role="none"></div>', '1.2')?.name).toBe('none');
+		expect(c('<div tabindex="0"></div>', '1.2')?.name).toBe('generic');
+		expect(c('<div tabindex="0" role="none"></div>', '1.2')?.name).toBe('generic');
+		expect(c('<div><span></span></div>', '1.2', 'span')?.name).toBe(undefined);
+		expect(c('<div><span role="none"></span></div>', '1.2', 'span')?.name).toBe('none');
+		expect(c('<div><span tabindex="0"></span></div>', '1.2', 'span')?.name).toBe(undefined);
+		expect(c('<div><span tabindex="0" role="none"></span></div>', '1.2', 'span')?.name).toBe(undefined);
+		expect(c('<div hidden><span></span></div>', '1.2', 'span')?.name).toBe(undefined);
+		expect(c('<div hidden><span role="none"></span></div>', '1.2', 'span')?.name).toBe('none');
+		expect(c('<div hidden><span tabindex="0"></span></div>', '1.2', 'span')?.name).toBe(undefined);
+		expect(c('<div hidden><span tabindex="0" role="none"></span></div>', '1.2', 'span')?.name).toBe('none');
+	});
+
 	test('Presentational Roles Conflict Resolution (2-1) Required Owend Elements', () => {
 		expect(c('<table><tr><td>foo</td></tr></table>', '1.2', 'td')?.name).toBe('cell');
 		expect(c('<table><tr><td role="none">foo</td></tr></table>', '1.2', 'td')?.name).toBe('cell');
