@@ -25,10 +25,10 @@ export function ariaPseudoClass(specs: MLMLSpec) {
 					};
 				}
 				case 'roleIs': {
-					const role = getComputedRole(specs, el, aria.version ?? '1.2');
+					const computed = getComputedRole(specs, el, aria.version ?? '1.2');
 					return {
 						specificity: [0, 1, 0],
-						matched: role?.name === aria.role,
+						matched: computed.role?.name === aria.role,
 					};
 				}
 			}

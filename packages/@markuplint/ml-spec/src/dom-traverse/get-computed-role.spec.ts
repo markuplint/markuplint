@@ -22,7 +22,7 @@ function tree(html: string, version: ARIAVersion) {
 	const tree: [string, string | null][] = [];
 	let current: Element | null = el;
 	while (current) {
-		tree.push([current.localName, getComputedRole(specs, current, version)?.name || null]);
+		tree.push([current.localName, getComputedRole(specs, current, version).role?.name || null]);
 		current = current.children.item(0);
 	}
 	return tree;
@@ -30,80 +30,82 @@ function tree(html: string, version: ARIAVersion) {
 
 describe('getComputedRole', () => {
 	test('the a element', () => {
-		expect(c('<a></a>', '1.2')).toBe(null);
-		expect(c('<a href></a>', '1.2')?.name).toBe('link');
-		expect(c('<a role="button"></a>', '1.2')?.name).toBe('button');
-		expect(c('<a role="button" href></a>', '1.2')?.name).toBe('button');
-		expect(c('<a role="foo" href></a>', '1.2')?.name).toBe('link');
+		expect(c('<a></a>', '1.2').role?.name).toBe(undefined);
+		expect(c('<a href></a>', '1.2').role?.name).toBe('link');
+		expect(c('<a role="button"></a>', '1.2').role?.name).toBe('button');
+		expect(c('<a role="button" href></a>', '1.2').role?.name).toBe('button');
+		expect(c('<a role="foo" href></a>', '1.2').role?.name).toBe('link');
 	});
 
 	test('the heading role', () => {
-		expect(c('<h1></h1>', '1.2')?.name).toBe('heading');
-		expect(c('<h1></h1>', '1.2')?.isImplicit).toBe(true);
-		expect(c('<div role="heading"></div>', '1.2')?.name).toBe('heading');
-		expect(c('<div role="heading"></div>', '1.2')?.isImplicit).toBe(false);
+		expect(c('<h1></h1>', '1.2').role?.name).toBe('heading');
+		expect(c('<h1></h1>', '1.2').role?.isImplicit).toBe(true);
+		expect(c('<div role="heading"></div>', '1.2').role?.name).toBe('heading');
+		expect(c('<div role="heading"></div>', '1.2').role?.isImplicit).toBe(false);
 	});
 
 	test('multiple', () => {
-		expect(c('<div role="presentation heading"></div>', '1.2')?.name).toBe('presentation');
-		expect(c('<div role="roletype heading"></div>', '1.2')?.name).toBe('heading');
-		expect(c('<img alt="alt" role="banner button"/>', '1.2')?.name).toBe('button');
-		expect(c('<img alt="alt" role="foo button"/>', '1.2')?.name).toBe('button');
-		expect(c('<img alt="alt" role="graphics-symbol button"/>', '1.2')?.name).toBe('button');
+		expect(c('<div role="presentation heading"></div>', '1.2').role?.name).toBe('presentation');
+		expect(c('<div role="roletype heading"></div>', '1.2').role?.name).toBe('heading');
+		expect(c('<img alt="alt" role="banner button"/>', '1.2').role?.name).toBe('button');
+		expect(c('<img alt="alt" role="foo button"/>', '1.2').role?.name).toBe('button');
+		expect(c('<img alt="alt" role="graphics-symbol button"/>', '1.2').role?.name).toBe('button');
 	});
 
 	test('svg', () => {
-		expect(c('<svg><rect role="graphics-symbol img"></rect></svg>', '1.2', 'rect')?.name).toBe('graphics-symbol');
-		expect(c('<svg><rect role="roletype img"></rect></svg>', '1.2', 'rect')?.name).toBe('img');
-		expect(c('<svg><rect role="roletype"></rect></svg>', '1.2', 'rect')?.name).toBe('graphics-symbol');
+		expect(c('<svg><rect role="graphics-symbol img"></rect></svg>', '1.2', 'rect').role?.name).toBe(
+			'graphics-symbol',
+		);
+		expect(c('<svg><rect role="roletype img"></rect></svg>', '1.2', 'rect').role?.name).toBe('img');
+		expect(c('<svg><rect role="roletype"></rect></svg>', '1.2', 'rect').role?.name).toBe('graphics-symbol');
 	});
 
 	test('landmark', () => {
-		expect(c('<div role="region"></div>', '1.2')?.name).toBe('generic');
-		expect(c('<div role="region" aria-label="foo"></div>', '1.2')?.name).toBe('region');
-		expect(c('<div role="form"></div>', '1.2')?.name).toBe('generic');
-		expect(c('<div role="form" aria-label="foo"></div>', '1.2')?.name).toBe('form');
-		expect(c('<div role="navigation"></div>', '1.2')?.name).toBe('navigation');
-		expect(c('<div role="navigation" aria-label="foo"></div>', '1.2')?.name).toBe('navigation');
+		expect(c('<div role="region"></div>', '1.2').role?.name).toBe('generic');
+		expect(c('<div role="region" aria-label="foo"></div>', '1.2').role?.name).toBe('region');
+		expect(c('<div role="form"></div>', '1.2').role?.name).toBe('generic');
+		expect(c('<div role="form" aria-label="foo"></div>', '1.2').role?.name).toBe('form');
+		expect(c('<div role="navigation"></div>', '1.2').role?.name).toBe('navigation');
+		expect(c('<div role="navigation" aria-label="foo"></div>', '1.2').role?.name).toBe('navigation');
 	});
 
 	test('Presentational Roles Conflict Resolution (1) Interactive Elements', () => {
-		expect(c('<a href="path/to"></a>', '1.2')?.name).toBe('link');
-		expect(c('<a role="none" href="path/to"></a>', '1.2')?.name).toBe('link'); // No permitted role
-		expect(c('<a></a>', '1.2')?.name).toBe(undefined);
-		expect(c('<a role="none"></a>', '1.2')?.name).toBe('none');
-		expect(c('<a role="none" href="path/to" disabled></a>', '1.2')?.name).toBe('link'); // No permitted role
-		expect(c('<button></button>', '1.2')?.name).toBe('button');
-		expect(c('<button disabled></button>', '1.2')?.name).toBe('button');
-		expect(c('<button role="none"></button>', '1.2')?.name).toBe('button'); // No permitted role
-		expect(c('<button role="none" disabled></button>', '1.2')?.name).toBe('button'); // No permitted role
-		expect(c('<div></div>', '1.2')?.name).toBe('generic');
-		expect(c('<div role="none"></div>', '1.2')?.name).toBe('none');
-		expect(c('<div tabindex="0"></div>', '1.2')?.name).toBe('generic');
-		expect(c('<div tabindex="0" role="none"></div>', '1.2')?.name).toBe('generic');
-		expect(c('<div><span></span></div>', '1.2', 'span')?.name).toBe(undefined);
-		expect(c('<div><span role="none"></span></div>', '1.2', 'span')?.name).toBe('none');
-		expect(c('<div><span tabindex="0"></span></div>', '1.2', 'span')?.name).toBe(undefined);
-		expect(c('<div><span tabindex="0" role="none"></span></div>', '1.2', 'span')?.name).toBe(undefined);
-		expect(c('<div hidden><span></span></div>', '1.2', 'span')?.name).toBe(undefined);
-		expect(c('<div hidden><span role="none"></span></div>', '1.2', 'span')?.name).toBe('none');
-		expect(c('<div hidden><span tabindex="0"></span></div>', '1.2', 'span')?.name).toBe(undefined);
-		expect(c('<div hidden><span tabindex="0" role="none"></span></div>', '1.2', 'span')?.name).toBe('none');
+		expect(c('<a href="path/to"></a>', '1.2').role?.name).toBe('link');
+		expect(c('<a role="none" href="path/to"></a>', '1.2').role?.name).toBe('link'); // No permitted role
+		expect(c('<a></a>', '1.2').role?.name).toBe(undefined);
+		expect(c('<a role="none"></a>', '1.2').role?.name).toBe('none');
+		expect(c('<a role="none" href="path/to" disabled></a>', '1.2').role?.name).toBe('link'); // No permitted role
+		expect(c('<button></button>', '1.2').role?.name).toBe('button');
+		expect(c('<button disabled></button>', '1.2').role?.name).toBe('button');
+		expect(c('<button role="none"></button>', '1.2').role?.name).toBe('button'); // No permitted role
+		expect(c('<button role="none" disabled></button>', '1.2').role?.name).toBe('button'); // No permitted role
+		expect(c('<div></div>', '1.2').role?.name).toBe('generic');
+		expect(c('<div role="none"></div>', '1.2').role?.name).toBe('none');
+		expect(c('<div tabindex="0"></div>', '1.2').role?.name).toBe('generic');
+		expect(c('<div tabindex="0" role="none"></div>', '1.2').role?.name).toBe('generic');
+		expect(c('<div><span></span></div>', '1.2', 'span').role?.name).toBe(undefined);
+		expect(c('<div><span role="none"></span></div>', '1.2', 'span').role?.name).toBe('none');
+		expect(c('<div><span tabindex="0"></span></div>', '1.2', 'span').role?.name).toBe(undefined);
+		expect(c('<div><span tabindex="0" role="none"></span></div>', '1.2', 'span').role?.name).toBe(undefined);
+		expect(c('<div hidden><span></span></div>', '1.2', 'span').role?.name).toBe(undefined);
+		expect(c('<div hidden><span role="none"></span></div>', '1.2', 'span').role?.name).toBe('none');
+		expect(c('<div hidden><span tabindex="0"></span></div>', '1.2', 'span').role?.name).toBe(undefined);
+		expect(c('<div hidden><span tabindex="0" role="none"></span></div>', '1.2', 'span').role?.name).toBe('none');
 	});
 
 	test('Presentational Roles Conflict Resolution (2-1) Required Owend Elements', () => {
-		expect(c('<table><tr><td>foo</td></tr></table>', '1.2', 'td')?.name).toBe('cell');
-		expect(c('<table><tr><td role="none">foo</td></tr></table>', '1.2', 'td')?.name).toBe('cell');
-		expect(c('<table><tbody role="none"><tr><td>foo</td></tr></tbody></table>', '1.2', 'tbody')?.name).toBe(
+		expect(c('<table><tr><td>foo</td></tr></table>', '1.2', 'td').role?.name).toBe('cell');
+		expect(c('<table><tr><td role="none">foo</td></tr></table>', '1.2', 'td').role?.name).toBe('cell');
+		expect(c('<table><tbody role="none"><tr><td>foo</td></tr></tbody></table>', '1.2', 'tbody').role?.name).toBe(
 			'rowgroup',
 		);
-		expect(c('<ul><li></li></ul>', '1.2', 'li')?.name).toBe('listitem');
-		expect(c('<ul><li role="presentation"></li></ul>', '1.2', 'li')?.name).toBe('listitem');
+		expect(c('<ul><li></li></ul>', '1.2', 'li').role?.name).toBe('listitem');
+		expect(c('<ul><li role="presentation"></li></ul>', '1.2', 'li').role?.name).toBe('listitem');
 	});
 
 	test('Presentational Roles Conflict Resolution (2-2) the accessibility tree to be malformed', () => {
-		expect(c('<table><tr><td>foo</td></tr></table>', '1.2', 'td')?.name).toBe('cell');
-		expect(c('<table role="none"><tr><td>foo</td></tr></table>', '1.2', 'td')?.name).toBe(undefined);
+		expect(c('<table><tr><td>foo</td></tr></table>', '1.2', 'td').role?.name).toBe('cell');
+		expect(c('<table role="none"><tr><td>foo</td></tr></table>', '1.2', 'td').role?.name).toBe(undefined);
 		expect(tree('<table><tr><td>foo</td></tr></table>', '1.2')).toStrictEqual([
 			['table', 'table'],
 			['tbody', 'rowgroup'],
@@ -122,9 +124,11 @@ describe('getComputedRole', () => {
 		/**
 		 * @see https://w3c.github.io/aria/#example-41
 		 */
-		expect(c('<h1 role="presentation" aria-describedby="comment-1"> Sample Content </h1>', '1.2')?.name).toBe(
+		expect(c('<h1 role="presentation" aria-describedby="comment-1"> Sample Content </h1>', '1.2').role?.name).toBe(
 			'heading',
 		);
-		expect(c('<h1 role="presentation" aria-level="2"> Sample Content </h1>', '1.2')?.name).toBe('presentation');
+		expect(c('<h1 role="presentation" aria-level="2"> Sample Content </h1>', '1.2').role?.name).toBe(
+			'presentation',
+		);
 	});
 });

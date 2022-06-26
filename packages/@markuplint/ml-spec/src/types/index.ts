@@ -229,3 +229,27 @@ export type EquivalentHtmlAttr = {
 };
 
 export type Matches = (selector: string) => boolean;
+
+export type ComputedRole = {
+	el: Element;
+	role:
+		| (ARIARole & {
+				superClassRoles: ARIARoleInSchema[];
+				isImplicit?: boolean;
+		  })
+		| null;
+	errorType?: RoleComputationError;
+};
+
+export type RoleComputationError =
+	| 'ABSTRACT'
+	| 'GLOBAL_PROP_MUST_NOT_BE_PRESENTATIONAL'
+	| 'IMPLICIT_ROLE_NAMESPACE_ERROR'
+	| 'INTERACTIVE_ELEMENT_MUST_NOT_BE_PRESENTATIONAL'
+	| 'INVALID_LANDMARK'
+	| 'INVALID_REQUIRED_CONTEXT_ROLE'
+	| 'NO_EXPLICIT'
+	| 'NO_OWNER'
+	| 'NO_PERMITTED'
+	| 'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL'
+	| 'ROLE_NO_EXISTS';

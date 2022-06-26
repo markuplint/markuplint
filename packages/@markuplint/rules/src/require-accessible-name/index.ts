@@ -18,11 +18,16 @@ export default createRule<boolean, Option>({
 				return;
 			}
 
-			const role = getComputedRole(document.specs, el, el.rule.option.ariaVersion);
-			if (!role) {
+			const computed = getComputedRole(document.specs, el, el.rule.option.ariaVersion);
+			if (!computed.role) {
 				return;
 			}
-			const roleSpec = getRoleSpec(document.specs, role.name, el.namespaceURI, el.rule.option.ariaVersion);
+			const roleSpec = getRoleSpec(
+				document.specs,
+				computed.role.name,
+				el.namespaceURI,
+				el.rule.option.ariaVersion,
+			);
 			if (!roleSpec || !roleSpec.accessibleNameRequired) {
 				return;
 			}

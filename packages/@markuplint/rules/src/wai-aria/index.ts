@@ -52,7 +52,7 @@ export default createRule<boolean, Options>({
 				return;
 			}
 
-			const role = getComputedRole(document.specs, el, el.rule.option.version);
+			const computed = getComputedRole(document.specs, el, el.rule.option.version);
 			const { props: propSpecs } = ariaSpecs(document.specs, el.rule.option.version);
 
 			if (roleAttr) {
@@ -63,7 +63,7 @@ export default createRule<boolean, Options>({
 				if (report(checkingAbstractRole({ attr: roleAttr }))) {
 					return;
 				}
-				report(checkingRequiredProp({ el, role, propSpecs }));
+				report(checkingRequiredProp({ el, role: computed.role, propSpecs }));
 
 				if (el.rule.option.disallowSetImplicitRole) {
 					report(checkingImplicitRole({ attr: roleAttr }));
@@ -75,10 +75,10 @@ export default createRule<boolean, Options>({
 			}
 
 			for (const attr of propAttrs) {
-				report(checkingDisallowedProp({ attr, role, propSpecs }));
+				report(checkingDisallowedProp({ attr, role: computed.role, propSpecs }));
 
 				if (el.rule.option.checkingDeprecatedProps) {
-					report(checkingDeprecatedProps({ attr, role, propSpecs }));
+					report(checkingDeprecatedProps({ attr, role: computed.role, propSpecs }));
 				}
 
 				if (el.rule.option.disallowSetImplicitProps) {
@@ -87,14 +87,14 @@ export default createRule<boolean, Options>({
 				}
 
 				if (el.rule.option.checkingValue) {
-					report(checkingValue({ attr, role, propSpecs }));
+					report(checkingValue({ attr, role: computed.role, propSpecs }));
 				}
 
 				if (el.rule.option.disallowDefaultValue) {
 					report(checkingDefaultValue({ attr, propSpecs }));
 				}
 
-				if (!role) {
+				if (!computed.role) {
 					report(checkingNoGlobalProp({ attr, propSpecs }));
 				}
 			}

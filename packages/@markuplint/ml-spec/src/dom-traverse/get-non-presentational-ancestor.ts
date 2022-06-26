@@ -8,10 +8,13 @@ export function getNonPresentationalAncestor(el: Element, specs: MLMLSpec, versi
 	let ancestor: Element | null = el.parentElement;
 	while (ancestor) {
 		const ancestorRole = getComputedRole(specs, ancestor, version);
-		if (!isPresentational(ancestorRole?.name)) {
+		if (!isPresentational(ancestorRole.role?.name)) {
 			return ancestorRole;
 		}
 		ancestor = ancestor.parentElement;
 	}
-	return null;
+	return {
+		el: ancestor,
+		role: null,
+	};
 }

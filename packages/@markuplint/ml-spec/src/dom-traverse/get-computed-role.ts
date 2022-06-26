@@ -1,4 +1,4 @@
-import type { ARIAVersion, MLMLSpec } from '../types';
+import type { ARIAVersion, ComputedRole, MLMLSpec, RoleComputationError } from '../types';
 
 import { ariaSpecs } from '../specs/aria-specs';
 import { getRoleSpec } from '../specs/get-role-spec';
@@ -11,12 +11,10 @@ import { getImplicitRole as getImplicitRoleName } from './get-implicit-role';
 import { getNonPresentationalAncestor } from './get-non-presentational-ancestor';
 import { getPermittedRoles } from './get-permitted-roles';
 
-type Role<I extends boolean = boolean> = ReturnType<typeof getRoleSpec> & { isImplicit: I };
-
-export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): Role | null {
+export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): ComputedRole {
 	const implicitRole = getImplicitRole(specs, el, version);
 	const explicitRole = getExplicitRole(specs, el, version);
-	const role = explicitRole || implicitRole;
+	const computedRole = explicitRole.role ? explicitRole : implicitRole;
 
 	/**
 	 * Presentational Roles Conflict Resolution
@@ -44,18 +42,26 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version:
 	 * However, the presentational role behaves transparently
 	 * according to the sample code in WAI-ARIA specification.
 	 */
-	const nonPresentationalAncestor = getNonPresentationalAncestor(el, specs, version);
-	if (role?.requiredContextRole.length) {
-		if (!nonPresentationalAncestor) {
-			return null;
+	if (computedRole.role?.requiredContextRole.length) {
+		const nonPresentationalAncestor = getNonPresentationalAncestor(el, specs, version);
+		if (!nonPresentationalAncestor.role) {
+			return {
+				el,
+				role: null,
+				errorType: 'NO_OWNER',
+			};
 		}
-		if (!role?.requiredContextRole.includes(nonPresentationalAncestor.name)) {
-			return null;
+		if (!computedRole.role?.requiredContextRole.includes(nonPresentationalAncestor.role.name)) {
+			return {
+				el,
+				role: null,
+				errorType: 'INVALID_REQUIRED_CONTEXT_ROLE',
+			};
 		}
 	}
 
-	if (role && !isPresentational(role.name)) {
-		return role;
+	if (computedRole.role && !isPresentational(computedRole.role.name)) {
+		return computedRole;
 	}
 
 	/**
@@ -106,7 +112,10 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version:
 		 */
 		!someAncestors(el, p => isEnabledAttr(p, specs, 'hidden'))
 	) {
-		return implicitRole;
+		return {
+			...implicitRole,
+			errorType: 'INTERACTIVE_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
+		};
 	}
 
 	/**
@@ -121,8 +130,11 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version:
 	 */
 	if (el.parentElement) {
 		const parentRole = getComputedRole(specs, el.parentElement, version);
-		if (parentRole?.requiredOwnedElements.length && implicitRole) {
-			return implicitRole;
+		if (parentRole.role?.requiredOwnedElements.length && implicitRole) {
+			return {
+				...implicitRole,
+				errorType: 'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
+			};
 		}
 	}
 
@@ -139,18 +151,23 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version:
 	const { props } = ariaSpecs(specs, version);
 	for (const attr of Array.from(el.attributes)) {
 		if (props.find(p => p.name === attr.name)?.isGlobal) {
-			return implicitRole;
+			return {
+				...implicitRole,
+				errorType: 'GLOBAL_PROP_MUST_NOT_BE_PRESENTATIONAL',
+			};
 		}
 	}
 
-	return role;
+	return computedRole;
 }
 
-function getExplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): Role<false> | null {
+function getExplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): ComputedRole {
 	const roleValue = el.getAttribute('role');
 	const roleNames = roleValue?.toLowerCase().trim().split(/\s+/g) || [];
 	const permittedRoles = getPermittedRoles(el, version, specs);
 	const { namespaceURI } = resolveNamespace(el.localName, el.namespaceURI);
+
+	let error: RoleComputationError = 'NO_EXPLICIT';
 
 	/**
 	 * Resolve from values and **Handling Author Errors**
@@ -172,6 +189,7 @@ function getExplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVe
 		 * > in the same way as <input type="text">.
 		 */
 		if (!spec) {
+			error = 'ROLE_NO_EXISTS';
 			continue;
 		}
 
@@ -182,6 +200,7 @@ function getExplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVe
 		 * > via the standard role mechanism of the accessibility API.
 		 */
 		if (spec.isAbstract) {
+			error = 'ABSTRACT';
 			continue;
 		}
 
@@ -189,6 +208,7 @@ function getExplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVe
 		 * Whether the role is the permitted role according to ARIA in HTML.
 		 */
 		if (!permittedRoles.some(r => r.name === roleName)) {
+			error = 'NO_PERMITTED';
 			continue;
 		}
 
@@ -202,6 +222,7 @@ function getExplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVe
 		 * > then user agents would continue to expose that role, instead.
 		 */
 		if (isLandmarkRole(spec) && !isValidLandmarkRole(el, spec)) {
+			error = 'INVALID_LANDMARK';
 			continue;
 		}
 
@@ -209,12 +230,19 @@ function getExplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVe
 		 * Otherwise
 		 */
 		return {
-			...spec,
-			isImplicit: false,
+			el,
+			role: {
+				...spec,
+				isImplicit: false,
+			},
 		};
 	}
 
-	return null;
+	return {
+		el,
+		role: null,
+		errorType: error,
+	};
 }
 
 function isValidLandmarkRole(el: Element, role: NonNullable<ReturnType<typeof getRoleSpec>>) {
@@ -239,19 +267,30 @@ function isLandmarkRole(role: NonNullable<ReturnType<typeof getRoleSpec>>) {
 	return role?.superClassRoles.some(su => su.name === 'landmark');
 }
 
-function getImplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): Role<true> | null {
+function getImplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): ComputedRole {
 	const implicitRole = getImplicitRoleName(el, version, specs);
 	if (implicitRole === false) {
-		return null;
+		// No Corresponding Role
+		return {
+			el,
+			role: null,
+		};
 	}
 	const { namespaceURI } = resolveNamespace(el.localName, el.namespaceURI);
 	const spec = getRoleSpec(specs, implicitRole, namespaceURI, version);
 	if (!spec) {
-		return null;
+		return {
+			el,
+			role: null,
+			errorType: 'IMPLICIT_ROLE_NAMESPACE_ERROR',
+		};
 	}
 	return {
-		...spec,
-		isImplicit: true,
+		el,
+		role: {
+			...spec,
+			isImplicit: true,
+		},
 	};
 }
 
