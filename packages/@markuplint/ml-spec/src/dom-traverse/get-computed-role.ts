@@ -3,10 +3,12 @@ import type { ARIAVersion, MLMLSpec } from '../types';
 import { ariaSpecs } from '../specs/aria-specs';
 import { getRoleSpec } from '../specs/get-role-spec';
 import { getSelectorsByContentModelCategory } from '../specs/get-selectors-by-content-model-category';
+import { isPresentational } from '../specs/is-presentational';
 import { resolveNamespace } from '../utils/resolve-namespace';
 
 import { getAttrSpecs } from './get-attr-specs';
 import { getImplicitRole as getImplicitRoleName } from './get-implicit-role';
+import { getNonPresentationalAncestor } from './get-non-presentational-ancestor';
 import { getPermittedRoles } from './get-permitted-roles';
 
 type Role<I extends boolean = boolean> = ReturnType<typeof getRoleSpec> & { isImplicit: I };
@@ -27,16 +29,27 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version:
 	 * > If the action of exposing the explicit role
 	 * > causes the accessibility tree to be malformed,
 	 * > the expected results are undefined.
+	 *
+	 * Determines whether the context is valid.
+	 * ⚠ THE SPECIFICATION HAS AN ISSUE
+	 * that has not decided whether the context is a parent or an ancestor.
+	 *
+	 * @see https://github.com/w3c/aria/issues/1033
+	 * @see https://github.com/w3c/aria/issues/748
+	 * @see https://github.com/w3c/aria/pull/1162
+	 * @see https://github.com/w3c/aria/pull/1213
+	 *
+	 * Currently, this process interprets that as A PARENT
+	 * because it wants to be near to HTML semantics.
+	 * However, the presentational role behaves transparently
+	 * according to the sample code in WAI-ARIA specification.
 	 */
-	const parentRole = el.parentElement && getComputedRole(specs, el.parentElement, version);
-	if (parentRole?.requiredOwnedElements.length && isPresentational(parentRole.name)) {
-		return null;
-	}
+	const nonPresentationalAncestor = getNonPresentationalAncestor(el, specs, version);
 	if (role?.requiredContextRole.length) {
-		if (!parentRole) {
+		if (!nonPresentationalAncestor) {
 			return null;
 		}
-		if (!role?.requiredContextRole.includes(parentRole.name)) {
+		if (!role?.requiredContextRole.includes(nonPresentationalAncestor.name)) {
 			return null;
 		}
 	}
@@ -240,10 +253,6 @@ function getImplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVe
 		...spec,
 		isImplicit: true,
 	};
-}
-
-function isPresentational(roleName: string) {
-	return ['presentation', 'none'].includes(roleName);
 }
 
 /**
