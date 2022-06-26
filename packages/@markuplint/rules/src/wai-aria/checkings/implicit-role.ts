@@ -1,12 +1,16 @@
 import type { Options } from '../types';
 import type { AttrChecker } from '@markuplint/ml-core';
 
-import { getImplicitRole } from '@markuplint/ml-spec';
+import { getImplicitRoleName } from '@markuplint/ml-spec';
 
 export const checkingImplicitRole: AttrChecker<boolean, Options> =
 	({ attr }) =>
 	t => {
-		const implictRole = getImplicitRole(attr.ownerElement, attr.rule.option.version, attr.ownerMLDocument.specs);
+		const implictRole = getImplicitRoleName(
+			attr.ownerElement,
+			attr.rule.option.version,
+			attr.ownerMLDocument.specs,
+		);
 		const tokens = attr.tokenList?.allTokens();
 		if (!tokens) {
 			return;

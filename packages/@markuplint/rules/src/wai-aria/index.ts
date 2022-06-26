@@ -13,6 +13,7 @@ import { checkingImplicitRole } from './checkings/implicit-role';
 import { checkingNoGlobalProp } from './checkings/no-global-prop';
 import { checkingNonExistantRole } from './checkings/non-existant-role';
 import { checkingPermittedRoles } from './checkings/permitted-roles';
+import { checkingRequiredOwnedElements } from './checkings/required-owned-elements';
 import { checkingRequiredProp } from './checkings/required-prop';
 import { checkingValue } from './checkings/value';
 
@@ -21,6 +22,7 @@ export default createRule<boolean, Options>({
 		checkingValue: true,
 		checkingDeprecatedProps: true,
 		permittedAriaRoles: true,
+		checkingRequiredOwnedElements: true,
 		disallowSetImplicitRole: true,
 		disallowSetImplicitProps: true,
 		disallowDefaultValue: false,
@@ -32,10 +34,6 @@ export default createRule<boolean, Options>({
 			const propAttrs = el.attributes.filter(attr => /^aria-/i.test(attr.name));
 
 			const ariaAttrs = new Collection(roleAttr, ...propAttrs);
-
-			if (!roleAttr && propAttrs.length === 0) {
-				return;
-			}
 
 			const elSpec = getSpec(el, document.specs);
 			if (!elSpec) {
@@ -97,6 +95,10 @@ export default createRule<boolean, Options>({
 				if (!computed.role) {
 					report(checkingNoGlobalProp({ attr, propSpecs }));
 				}
+			}
+
+			if (el.rule.option.checkingRequiredOwnedElements) {
+				report(checkingRequiredOwnedElements({ el, role: computed.role }));
 			}
 		});
 	},

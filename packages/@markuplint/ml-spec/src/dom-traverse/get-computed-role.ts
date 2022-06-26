@@ -1,15 +1,14 @@
-import type { ARIAVersion, ComputedRole, MLMLSpec, RoleComputationError } from '../types';
+import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types';
 
 import { ariaSpecs } from '../specs/aria-specs';
-import { getRoleSpec } from '../specs/get-role-spec';
 import { getSelectorsByContentModelCategory } from '../specs/get-selectors-by-content-model-category';
 import { isPresentational } from '../specs/is-presentational';
-import { resolveNamespace } from '../utils/resolve-namespace';
 
 import { getAttrSpecs } from './get-attr-specs';
-import { getImplicitRole as getImplicitRoleName } from './get-implicit-role';
+import { getExplicitRole } from './get-explicit-role';
+import { getImplicitRole } from './get-implicit-role';
 import { getNonPresentationalAncestor } from './get-non-presentational-ancestor';
-import { getPermittedRoles } from './get-permitted-roles';
+import { isRequiredOwnedElement } from './has-required-owned-elements';
 
 export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): ComputedRole {
 	const implicitRole = getImplicitRole(specs, el, version);
@@ -128,13 +127,22 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version:
 	 * the role of the parent element has a required owned element,
 	 * `role=presentation` is to be ignored absolutely.
 	 */
-	if (el.parentElement) {
-		const parentRole = getComputedRole(specs, el.parentElement, version);
-		if (parentRole.role?.requiredOwnedElements.length && implicitRole) {
-			return {
-				...implicitRole,
-				errorType: 'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
-			};
+	if (explicitRole.role) {
+		const nonPresentationalAncestor = getNonPresentationalAncestor(el, specs, version);
+		if (nonPresentationalAncestor.role?.requiredOwnedElements.length) {
+			if (
+				nonPresentationalAncestor.role.requiredOwnedElements.some(expected => {
+					// const ancestor = nonPresentationalAncestor.el;
+					// const ancestorImplicitRole = getImplicitRole(specs, ancestor, version);
+					// console.log({ nonPresentationalAncestor, ancestorImplicitRole });
+					return isRequiredOwnedElement(implicitRole, expected, specs, version);
+				})
+			) {
+				return {
+					...implicitRole,
+					errorType: 'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
+				};
+			}
 		}
 	}
 
@@ -159,139 +167,6 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version:
 	}
 
 	return computedRole;
-}
-
-function getExplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): ComputedRole {
-	const roleValue = el.getAttribute('role');
-	const roleNames = roleValue?.toLowerCase().trim().split(/\s+/g) || [];
-	const permittedRoles = getPermittedRoles(el, version, specs);
-	const { namespaceURI } = resolveNamespace(el.localName, el.namespaceURI);
-
-	let error: RoleComputationError = 'NO_EXPLICIT';
-
-	/**
-	 * Resolve from values and **Handling Author Errors**
-	 *
-	 * @see https://w3c.github.io/aria/#document-handling_author-errors_roles
-	 */
-	for (const roleName of roleNames) {
-		const spec = getRoleSpec(specs, roleName, namespaceURI, version);
-
-		/**
-		 * If `spec` is null, the role DOES NOT EXIST.
-		 *
-		 * > If the role attribute contains no tokens matching the name
-		 * > of a non-abstract WAI-ARIA role,
-		 * > the user agent MUST treat the element as
-		 * > if no role had been provided. For example,
-		 * > <table role="foo"> should be exposed
-		 * > in the same way as <table> and <input type="text" role="structure">
-		 * > in the same way as <input type="text">.
-		 */
-		if (!spec) {
-			error = 'ROLE_NO_EXISTS';
-			continue;
-		}
-
-		/**
-		 * > As stated in the Definition of Roles section,
-		 * > it is considered an authoring error to use abstract roles in content.
-		 * > User agents MUST NOT map abstract roles
-		 * > via the standard role mechanism of the accessibility API.
-		 */
-		if (spec.isAbstract) {
-			error = 'ABSTRACT';
-			continue;
-		}
-
-		/**
-		 * Whether the role is the permitted role according to ARIA in HTML.
-		 */
-		if (!permittedRoles.some(r => r.name === roleName)) {
-			error = 'NO_PERMITTED';
-			continue;
-		}
-
-		/**
-		 * > Certain landmark roles require names from authors.
-		 * > In situations where an author has not specified names for these landmarks,
-		 * > it is considered an authoring error.
-		 * > The user agent MUST treat such elements as if no role had been provided.
-		 * > If a valid fallback role had been specified,
-		 * > or if the element had an implicit ARIA role,
-		 * > then user agents would continue to expose that role, instead.
-		 */
-		if (isLandmarkRole(spec) && !isValidLandmarkRole(el, spec)) {
-			error = 'INVALID_LANDMARK';
-			continue;
-		}
-
-		/**
-		 * Otherwise
-		 */
-		return {
-			el,
-			role: {
-				...spec,
-				isImplicit: false,
-			},
-		};
-	}
-
-	return {
-		el,
-		role: null,
-		errorType: error,
-	};
-}
-
-function isValidLandmarkRole(el: Element, role: NonNullable<ReturnType<typeof getRoleSpec>>) {
-	if (!role.accessibleNameRequired) {
-		return true;
-	}
-	if (role.accessibleNameFromAuthor) {
-		if (el.getAttribute('aria-label')) {
-			return true;
-		}
-		const id = el.getAttribute('aria-labelledby');
-		if (id && el.ownerDocument.getElementById(id)) {
-			return true;
-		}
-	}
-	// The landmark role does not require names from the content
-	// if (role.accessibleNameFromContent) {}
-	return false;
-}
-
-function isLandmarkRole(role: NonNullable<ReturnType<typeof getRoleSpec>>) {
-	return role?.superClassRoles.some(su => su.name === 'landmark');
-}
-
-function getImplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): ComputedRole {
-	const implicitRole = getImplicitRoleName(el, version, specs);
-	if (implicitRole === false) {
-		// No Corresponding Role
-		return {
-			el,
-			role: null,
-		};
-	}
-	const { namespaceURI } = resolveNamespace(el.localName, el.namespaceURI);
-	const spec = getRoleSpec(specs, implicitRole, namespaceURI, version);
-	if (!spec) {
-		return {
-			el,
-			role: null,
-			errorType: 'IMPLICIT_ROLE_NAMESPACE_ERROR',
-		};
-	}
-	return {
-		el,
-		role: {
-			...spec,
-			isImplicit: true,
-		},
-	};
 }
 
 /**

@@ -459,6 +459,59 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	});
 });
 
+describe('Required Owned Elements', () => {
+	test('Empty content', async () => {
+		expect((await mlRuleTest(rule, '<div role="list"></div>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require the "listitem" role to content. Or, require aria-busy="true"',
+				raw: '<div role="list">',
+			},
+		]);
+
+		expect((await mlRuleTest(rule, '<div role="list" aria-busy="true"></div>')).violations).toStrictEqual([]);
+	});
+
+	test('Empty content (Implicit role)', async () => {
+		expect((await mlRuleTest(rule, '<ul></ul>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require the "listitem" role to content. Or, require aria-busy="true"',
+				raw: '<ul>',
+			},
+		]);
+
+		expect((await mlRuleTest(rule, '<ul aria-busy="true"></ul>')).violations).toStrictEqual([]);
+	});
+
+	test('Invalid contents', async () => {
+		expect((await mlRuleTest(rule, '<table><tbody><tr><td></td></tr></tbody></table>')).violations).toStrictEqual(
+			[],
+		);
+		expect((await mlRuleTest(rule, '<table><tr><td></td></tr></table>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<table><tbody></tbody></table>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "table" role expects the "row", "rowgroup > row" roles',
+				raw: '<table>',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 8,
+				message: 'Require the "row" role to content. Or, require aria-busy="true"',
+				raw: '<tbody>',
+			},
+		]);
+	});
+});
+
 describe('childNodeRules', () => {
 	test('ex. For Safari + VoiceOver', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="path/to.svg" alt="text" role="img" />', {
