@@ -7,6 +7,19 @@ import { getExplicitRole } from './get-explicit-role';
 import { getImplicitRole } from './get-implicit-role';
 
 export function hasRequiredOwnedElement(el: Element, specs: Readonly<MLMLSpec>, version: ARIAVersion): boolean {
+	/**
+	 * The element has aria-owns which means it may have owned elements.
+	 *
+	 * THIS CONDITION IS PARTIAL SUPPORT.
+	 */
+	if (el.hasAttribute('aria-owns')) {
+		// FIXME
+		return true;
+	}
+
+	/**
+	 * Otherwise, traverses descendants to find owned elements.
+	 */
 	const computed = getComputedRole(specs, el, version);
 	if (!computed.role || computed.role.requiredOwnedElements.length === 0) {
 		return true;
