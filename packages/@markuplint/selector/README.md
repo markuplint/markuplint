@@ -74,22 +74,32 @@ Supported selectors and operators:
 
 The below is selectors that are extended by markuplint:
 
-| Selector Type     | Code Example      |
-| ----------------- | ----------------- |
-| ARIA pseudo-class | `:aria(has name)` |
+| Selector Type          | Code Example      |
+| ---------------------- | ----------------- |
+| ARIA pseudo-class      | `:aria(has name)` |
+| ARIA Role pseudo-class | `:role(heading)`  |
 
 ### ARIA pseudo-class
 
 ```
 :aria(syntax)
-:aria(syntax/version)
 ```
 
-| Syntax         | Example                                                 | Description                     |
-| -------------- | ------------------------------------------------------- | ------------------------------- |
-| `has name`     | `:aria(has name)`<br>`:aria(has name/1.1)`              | It has accessible name          |
-| `has no name`  | `:aria(has no name)`<br>`:aria(has no name/1.1)`        | It does'nt have accessible name |
-| `role is Role` | `:aria(role is banner)`<br>`:aria(role is generic/1.2)` | It matches the specfied role    |
+| Syntax        | Example              | Description                                    |
+| ------------- | -------------------- | ---------------------------------------------- |
+| `has name`    | `:aria(has name)`    | Matches the element has accessible name        |
+| `has no name` | `:aria(has no name)` | Matches the element has **no** accessible name |
+
+### ARIA Role pseudo-class
+
+```
+:role(roleName)
+:role(roleName|version)
+```
+
+For example, `:role(button)` matches `<button>` and `<div role="button">`.
+
+You can specify the version of WAI-ARIA by separating the pipe like `:role(form|1.1)`.
 
 ## Regex Selector
 

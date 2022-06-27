@@ -12,8 +12,13 @@ describe('Extended Selector', () => {
 		expect(c(':aria(has name)', '<button>foo</button>')).toBeTruthy();
 		expect(c(':aria(has name|1.1)', '<button>foo</button>')).toBeTruthy();
 		expect(c(':aria(has name|1.2)', '<button>foo</button>')).toBeTruthy();
-		expect(c(':aria(role is button)', '<button>foo</button>')).toBeTruthy();
-		expect(c(':aria(role is button|1.1)', '<button>foo</button>')).toBeTruthy();
-		expect(c(':aria(role is button|1.2)', '<button>foo</button>')).toBeTruthy();
+	});
+
+	it(':role', () => {
+		expect(c(':role(button)', '<button>foo</button>')).toBeTruthy();
+		expect(c(':role(button|1.1)', '<button>foo</button>')).toBeTruthy();
+		expect(c(':role(button|1.2)', '<button>foo</button>')).toBeTruthy();
+		expect(c(':role(button|1.2)', '<div role="button">foo</div>')).toBeTruthy();
+		expect(c(':role(button|1.2)', '<div>foo</div>')).toBeFalsy();
 	});
 });
