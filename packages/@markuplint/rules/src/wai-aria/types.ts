@@ -5,6 +5,7 @@ export type Options = {
 	checkingDeprecatedProps: boolean;
 	permittedAriaRoles: boolean;
 	checkingRequiredOwnedElements: boolean;
+	checkingPresentationalChildren: boolean;
 	disallowSetImplicitRole: boolean;
 	disallowSetImplicitProps: boolean;
 	disallowDefaultValue: boolean;

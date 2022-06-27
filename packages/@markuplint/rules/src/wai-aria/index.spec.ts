@@ -512,6 +512,45 @@ describe('Required Owned Elements', () => {
 	});
 });
 
+describe('Presentational Children', () => {
+	const enable = { rule: { option: { checkingPresentationalChildren: true } } };
+	test('The role attribute in the button', async () => {
+		expect(
+			(await mlRuleTest(rule, '<button><div role="none">foo</div></button>', enable)).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message:
+					'It may be ineffective because it has the "button" role as an ancestor that doesn\'t expose its descendants to the accessibility tree',
+				raw: '<div role="none">',
+			},
+		]);
+	});
+
+	test('The aria-* attribute in the tab', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<ul role="tablist"><li role="tab"><span aria-hidden="true">foo</span></li></ul>',
+					enable,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 35,
+				message:
+					'It may be ineffective because it has the "tab" role as an ancestor that doesn\'t expose its descendants to the accessibility tree',
+				raw: '<span aria-hidden="true">',
+			},
+		]);
+	});
+});
+
 describe('childNodeRules', () => {
 	test('ex. For Safari + VoiceOver', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="path/to.svg" alt="text" role="img" />', {

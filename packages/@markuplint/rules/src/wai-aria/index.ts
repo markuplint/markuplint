@@ -13,6 +13,7 @@ import { checkingImplicitRole } from './checkings/implicit-role';
 import { checkingNoGlobalProp } from './checkings/no-global-prop';
 import { checkingNonExistantRole } from './checkings/non-existant-role';
 import { checkingPermittedRoles } from './checkings/permitted-roles';
+import { checkingPresentationalChildren } from './checkings/presentational-children';
 import { checkingRequiredOwnedElements } from './checkings/required-owned-elements';
 import { checkingRequiredProp } from './checkings/required-prop';
 import { checkingValue } from './checkings/value';
@@ -23,6 +24,7 @@ export default createRule<boolean, Options>({
 		checkingDeprecatedProps: true,
 		permittedAriaRoles: true,
 		checkingRequiredOwnedElements: true,
+		checkingPresentationalChildren: false,
 		disallowSetImplicitRole: true,
 		disallowSetImplicitProps: true,
 		disallowDefaultValue: false,
@@ -99,6 +101,10 @@ export default createRule<boolean, Options>({
 
 			if (el.rule.option.checkingRequiredOwnedElements) {
 				report(checkingRequiredOwnedElements({ el, role: computed.role }));
+			}
+
+			if (el.rule.option.checkingPresentationalChildren) {
+				report(checkingPresentationalChildren({ el }));
 			}
 		});
 	},
