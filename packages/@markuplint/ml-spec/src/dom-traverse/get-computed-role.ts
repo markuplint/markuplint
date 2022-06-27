@@ -1,7 +1,6 @@
 import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types';
 
 import { ariaSpecs } from '../specs/aria-specs';
-import { getSelectorsByContentModelCategory } from '../specs/get-selectors-by-content-model-category';
 import { isPresentational } from '../specs/is-presentational';
 
 import { getAttrSpecs } from './get-attr-specs';
@@ -9,6 +8,7 @@ import { getExplicitRole } from './get-explicit-role';
 import { getImplicitRole } from './get-implicit-role';
 import { getNonPresentationalAncestor } from './get-non-presentational-ancestor';
 import { isRequiredOwnedElement } from './has-required-owned-elements';
+import { mayBeFocusable } from './may-be-focusable';
 
 export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): ComputedRole {
 	const implicitRole = getImplicitRole(specs, el, version);
@@ -76,38 +76,26 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version:
 	 */
 	if (
 		/**
-		 * Interactive element
+		 * If interactive element
+		 *
+		 * 1. It may be focusable
+		 *
+		 * THIS CONDITION IS ALMOST MEANINGLESS.
+		 * Because it has already been determined that
+		 * the interactive elements can not specify the presentational role
+		 * in the previous processing that computes the permitted role (`getExplicitRole`).
 		 */
-		[
-			/**
-			 * Interactive content
-			 *
-			 * THIS CONDITION(SELECTORS) IS ALMOST MEANINGLESS.
-			 * Because it has already been determined that
-			 * the interactive elements can not specify the presentational role
-			 * in the previous processing that computes the permitted role (`getExplicitRole`).
-			 *
-			 * @see  https://html.spec.whatwg.org/multipage/dom.html#interactive-content
-			 */
-			...getSelectorsByContentModelCategory(specs, '#interactive'),
-			/**
-			 * Interaction
-			 *
-			 * @see  https://html.spec.whatwg.org/multipage/interaction.html
-			 */
-			'[tabindex]',
-			'[contenteditable]:not([contenteditable="false" i])',
-		].some(selector => el.matches(selector)) &&
+		mayBeFocusable(el, specs) &&
 		/**
-		 * No disabled
+		 * 2. No disabled
 		 */
 		!someAncestors(el, p => isEnabledAttr(p, specs, 'disabled')) &&
 		/**
-		 * No inert
+		 * 3. No inert
 		 */
 		!someAncestors(el, p => isEnabledAttr(p, specs, 'inert')) &&
 		/**
-		 * No hidden
+		 * 4. No hidden
 		 */
 		!someAncestors(el, p => isEnabledAttr(p, specs, 'hidden'))
 	) {
