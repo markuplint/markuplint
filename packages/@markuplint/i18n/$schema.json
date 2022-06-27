@@ -218,6 +218,8 @@
 				"It includes {0}": { "type": "string" },
 				"It is {0:c}": { "type": "string" },
 				"It is {0}": { "type": "string" },
+				"It may be focusable in spite of it has aria-hidden=true": { "type": "string" },
+				"It may be focusable in spite of it has the ancestor that has aria-hidden=true": { "type": "string" },
 				"it may be ineffective because {0}": { "type": "string" },
 				"It needs {0}": { "type": "string" },
 				"less than {0}": { "type": "string" },

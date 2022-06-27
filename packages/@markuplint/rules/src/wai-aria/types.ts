@@ -6,6 +6,7 @@ export type Options = {
 	permittedAriaRoles: boolean;
 	checkingRequiredOwnedElements: boolean;
 	checkingPresentationalChildren: boolean;
+	checkingInteractionInHidden: boolean;
 	disallowSetImplicitRole: boolean;
 	disallowSetImplicitProps: boolean;
 	disallowDefaultValue: boolean;

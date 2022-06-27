@@ -10,6 +10,7 @@ import { checkingDeprecatedProps } from './checkings/deprecated-props';
 import { checkingDisallowedProp } from './checkings/disallowed-prop';
 import { checkingImplicitProps } from './checkings/implicit-props';
 import { checkingImplicitRole } from './checkings/implicit-role';
+import { checkingInteractionInHidden } from './checkings/interaction-in-hidden';
 import { checkingNoGlobalProp } from './checkings/no-global-prop';
 import { checkingNonExistantRole } from './checkings/non-existant-role';
 import { checkingPermittedRoles } from './checkings/permitted-roles';
@@ -25,6 +26,7 @@ export default createRule<boolean, Options>({
 		permittedAriaRoles: true,
 		checkingRequiredOwnedElements: true,
 		checkingPresentationalChildren: false,
+		checkingInteractionInHidden: false,
 		disallowSetImplicitRole: true,
 		disallowSetImplicitProps: true,
 		disallowDefaultValue: false,
@@ -105,6 +107,10 @@ export default createRule<boolean, Options>({
 
 			if (el.rule.option.checkingPresentationalChildren) {
 				report(checkingPresentationalChildren({ el }));
+			}
+
+			if (el.rule.option.checkingInteractionInHidden) {
+				report(checkingInteractionInHidden({ el }));
 			}
 		});
 	},

@@ -551,6 +551,53 @@ describe('Presentational Children', () => {
 	});
 });
 
+describe('Including Elements in the Accessibility Tree', () => {
+	const enable = { rule: { option: { checkingInteractionInHidden: true } } };
+	test('Parent has aria-hidden', async () => {
+		expect(
+			(await mlRuleTest(rule, '<div aria-hidden="true"><button>foo</button></div>', enable)).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 25,
+				message: 'It may be focusable in spite of it has the ancestor that has aria-hidden=true',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('Ancestor has aria-hidden', async () => {
+		expect(
+			(await mlRuleTest(rule, '<div aria-hidden="true"><span><button>foo</button></span></div>', enable))
+				.violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 31,
+				message: 'It may be focusable in spite of it has the ancestor that has aria-hidden=true',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('Has aria-hidden', async () => {
+		expect(
+			(await mlRuleTest(rule, '<div><span><button aria-hidden="true">foo</button></span></div>', enable))
+				.violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 12,
+				message: 'It may be focusable in spite of it has aria-hidden=true',
+				raw: '<button aria-hidden="true">',
+			},
+		]);
+	});
+});
+
 describe('childNodeRules', () => {
 	test('ex. For Safari + VoiceOver', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="path/to.svg" alt="text" role="img" />', {

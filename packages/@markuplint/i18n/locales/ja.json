@@ -199,6 +199,8 @@
 		"It includes {0}": "{0}を含んでいます",
 		"It is {0:c}": "{0:c}",
 		"It is {0}": "{0}です",
+		"It may be focusable in spite of it has aria-hidden=true": "aria-hidden=trueを持っていますが、フォーカスできてしまうかもしれません",
+		"It may be focusable in spite of it has the ancestor that has aria-hidden=true": "先祖がaria-hidden=trueを持っていますが、フォーカスできてしまうかもしれません",
 		"it may be ineffective because {0}": "{0}、そのため効果がない可能性があります",
 		"It needs {0}": "{0}が必要です",
 		"less than {0}": "{0}未満",
