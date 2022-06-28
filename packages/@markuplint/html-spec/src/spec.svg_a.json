@@ -111,7 +111,7 @@
 			"graphics-aam": true
 		},
 		"conditions": {
-			"[href], [xlink:href]": {
+			"[href], [xlink|href]": {
 				"implicitRole": "link"
 			}
 		}
