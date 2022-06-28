@@ -22,7 +22,7 @@
 		"tslib": "^2.4.0"
 	},
 	"devDependencies": {
-		"@markuplint/ml-spec": "^2.1.0",
+		"@markuplint/ml-spec": "3.0.0-alpha.0",
 		"@types/debug": "^4.1.7",
 		"@types/jsdom": "^16.2.14",
 		"jsdom": "^19.0.0"
