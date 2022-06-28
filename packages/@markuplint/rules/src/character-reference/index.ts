@@ -45,7 +45,7 @@ export default createRule({
 		});
 
 		for (const targetNode of targetNodes) {
-			if (!('scope' in targetNode && 'line' in targetNode)) {
+			if (!('scope' in targetNode && 'line' in targetNode && targetNode.line != null)) {
 				continue;
 			}
 			const escapedText = targetNode.raw.replace(/&(?:[a-z]+|#[0-9]+|x[0-9]);/gi, $0 => '*'.repeat($0.length));
