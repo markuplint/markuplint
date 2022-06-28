@@ -1,4 +1,4 @@
-import type { NamespaceURI } from '@markuplint/ml-ast';
+import type { NamespaceURI, Namespace } from '@markuplint/ml-ast';
 
 import { getNS } from './get-ns';
 
@@ -7,30 +7,34 @@ const cache = new Map<string, NamespacedElementName>();
 type NamespacedElementName = {
 	localNameWithNS: string;
 	localName: string;
-	namespace: 'html' | 'svg' | 'mml';
+	namespace: Namespace;
 	namespaceURI: NamespaceURI;
 };
 
-export function resolveNamespace(localName: string, namespaceURI: string | null = 'http://www.w3.org/1999/xhtml') {
-	const cached = cache.get(localName + namespaceURI);
+const namespaceURIMap: Record<Namespace, NamespaceURI> = {
+	html: 'http://www.w3.org/1999/xhtml',
+	svg: 'http://www.w3.org/2000/svg',
+	mml: 'http://www.w3.org/1998/Math/MathML',
+	xlink: 'http://www.w3.org/1999/xlink',
+};
+
+export function resolveNamespace(name: string, namespaceURI: string | null = 'http://www.w3.org/1999/xhtml') {
+	const cached = cache.get(name + namespaceURI);
 	if (cached) {
 		return cached;
 	}
-	const name = localName.split(':')[1] || localName;
-	const ns = getNS(namespaceURI || null);
+	const [_explicitNS, _localName] = name.split(':');
+	const explicitNS = _localName ? _explicitNS : null;
+	const localName = _localName ?? _explicitNS;
+	const namespace =
+		(['html', 'svg', 'mml', 'xlink'] as const).find(_ns => _ns === (explicitNS || getNS(namespaceURI || null))) ||
+		'html';
 	const result: NamespacedElementName = {
-		localNameWithNS: `${ns === 'html' ? '' : `${ns}:`}${name}`,
-		localName: name,
-		namespace: ns,
-		namespaceURI:
-			(
-				[
-					'http://www.w3.org/1999/xhtml',
-					'http://www.w3.org/2000/svg',
-					'http://www.w3.org/1998/Math/MathML',
-				] as const
-			).find(ns => ns === namespaceURI) || 'http://www.w3.org/1999/xhtml',
+		localNameWithNS: `${namespace === 'html' ? '' : `${namespace}:`}${localName}`,
+		localName,
+		namespace,
+		namespaceURI: namespaceURIMap[namespace],
 	};
-	cache.set(localName + namespaceURI, result);
+	cache.set(name + namespaceURI, result);
 	return result;
 }

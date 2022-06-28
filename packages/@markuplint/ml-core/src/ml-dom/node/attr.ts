@@ -3,6 +3,8 @@ import type { AttributeNodeType } from './types';
 import type { MLASTAttr } from '@markuplint/ml-ast';
 import type { RuleConfigValue } from '@markuplint/ml-config';
 
+import { resolveNamespace } from '@markuplint/ml-spec';
+
 import { MLToken } from '../token/token';
 
 import { MLDomTokenList } from './dom-token-list';
@@ -10,6 +12,8 @@ import { MLNode } from './node';
 import UnexpectedCallError from './unexpected-call-error';
 
 export class MLAttr<T extends RuleConfigValue, O = null> extends MLNode<T, O, MLASTAttr> implements Attr {
+	readonly #localName: string;
+	readonly #namespaceURI: string;
 	readonly #potentialName: string;
 	readonly #potentialValue: string;
 	readonly candidate?: string;
@@ -47,7 +51,7 @@ export class MLAttr<T extends RuleConfigValue, O = null> extends MLNode<T, O, ML
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-attr-localname
 	 */
 	get localName(): string {
-		throw new UnexpectedCallError('Not supported "localname" property');
+		return this.#localName;
 	}
 
 	/**
@@ -67,7 +71,7 @@ export class MLAttr<T extends RuleConfigValue, O = null> extends MLNode<T, O, ML
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-attr-namespaceuri
 	 */
 	get namespaceURI(): string | null {
-		throw new UnexpectedCallError('Not supported "namespaceURI" property');
+		return this.#namespaceURI;
 	}
 
 	/**
@@ -153,6 +157,10 @@ export class MLAttr<T extends RuleConfigValue, O = null> extends MLNode<T, O, ML
 			this.#potentialName = this._astToken.potentialName;
 			this.#potentialValue = this._astToken.potentialValue;
 		}
+
+		const ns = resolveNamespace(this.#potentialName, ownElement.namespaceURI);
+		this.#localName = ns.localName;
+		this.#namespaceURI = ns.namespaceURI;
 
 		this.ownerElement = ownElement;
 		this.isDuplicatable = this._astToken.isDuplicatable;

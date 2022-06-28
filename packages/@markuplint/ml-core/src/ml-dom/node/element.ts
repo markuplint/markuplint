@@ -5,6 +5,7 @@ import type { ElementNodeType } from './types';
 import type { MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
 import type { RuleConfigValue } from '@markuplint/ml-config';
 
+import { resolveNamespace } from '@markuplint/ml-spec';
 import { createSelector } from '@markuplint/selector';
 
 import { stringSplice } from '../../utils/string-splice';
@@ -37,6 +38,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	#getChildElementsAndTextNodeWithoutWhitespacesCache: (MLElement<T, O> | MLText<T, O>)[] | null = null;
 	#normalizedAttrs: MLNamedNodeMap<T, O> | null = null;
 	#normalizedString: string | null = null;
+	#localName: string;
 	readonly #tagOpenChar: string;
 
 	readonly closeTag: MLToken | null;
@@ -747,9 +749,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 */
 	get localName(): string {
 		if (this.isForeignElement || this.isCustomElement) {
-			return this._astToken.nodeName;
+			return this.#localName;
 		}
-		return this._astToken.nodeName.toLowerCase();
+		return this.#localName.toLowerCase();
 	}
 
 	/**
@@ -2070,14 +2072,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 		this.selfClosingSolidus = astNode.selfClosingSolidus ? new MLToken(astNode.selfClosingSolidus) : null;
 		this.endSpace = astNode.endSpace ? new MLToken(astNode.endSpace) : null;
 		this.closeTag = astNode.pearNode ? new MLToken(astNode.pearNode) : null;
-		this.namespaceURI =
-			(
-				[
-					'http://www.w3.org/1999/xhtml',
-					'http://www.w3.org/2000/svg',
-					'http://www.w3.org/1998/Math/MathML',
-				] as const
-			).find(ns => astNode.namespace === ns) ?? HTML_NAMESPACE;
+		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
+		this.namespaceURI = ns.namespaceURI;
+		this.#localName = ns.localName;
 		this.isForeignElement = this.namespaceURI !== HTML_NAMESPACE;
 		this.isCustomElement = astNode.isCustomElement;
 		this.#fixedNodeName = astNode.nodeName;
