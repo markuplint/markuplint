@@ -1,5 +1,6 @@
 import type { SelectorResult, Specificity } from './types';
 
+import { resolveNamespace } from '@markuplint/ml-spec';
 import parser, { pseudo } from 'postcss-selector-parser';
 
 import { compareSpecificity } from './compare-specificity';
@@ -35,9 +36,16 @@ export class Selector {
 class Ruleset {
 	static parse(selector: string, extended: ExtendedPseudoClass) {
 		const selectors: parser.Selector[] = [];
-		parser(root => {
-			selectors.push(...root.nodes);
-		}).processSync(selector);
+		try {
+			parser(root => {
+				selectors.push(...root.nodes);
+			}).processSync(selector);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				throw new Error(`${e.message} At the selector: "${selector}"`);
+			}
+			throw e;
+		}
 		return new Ruleset(selectors, extended, 0);
 	}
 
@@ -431,8 +439,14 @@ class SelectorTarget {
 
 function attrMatch(attr: parser.Attribute, el: Element) {
 	return Array.from(el.attributes).some(attrOfEl => {
-		if (attr.attribute !== attrOfEl.name) {
+		if (attr.attribute !== attrOfEl.localName) {
 			return false;
+		}
+		if (attr.namespace != null && attr.namespace !== true && attr.namespace !== '*') {
+			const ns = resolveNamespace(attrOfEl.localName, attrOfEl.namespaceURI);
+			if (attr.namespace !== ns.namespace) {
+				return false;
+			}
 		}
 		if (attr.value != null) {
 			let value = attr.value;

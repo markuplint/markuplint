@@ -224,6 +224,19 @@ describe('selector matching', () => {
 		expect(createSelector('svg|a').match(htmlA)).toBeFalsy();
 	});
 
+	it('namespaced attribute', () => {
+		const svgA = createTestElement('<svg><a href></a></svg>', 'a');
+		expect(createSelector('[href]').match(svgA)).toBeTruthy();
+		expect(createSelector('[|href]').match(svgA)).toBeTruthy();
+		expect(createSelector('[*|href]').match(svgA)).toBeTruthy();
+		expect(createSelector('[xlink|href]').match(svgA)).toBeFalsy();
+		const svgAx = createTestElement('<svg><a xlink:href></a></svg>', 'a');
+		expect(createSelector('[href]').match(svgAx)).toBeTruthy();
+		expect(createSelector('[|href]').match(svgAx)).toBeTruthy();
+		expect(createSelector('[*|href]').match(svgAx)).toBeTruthy();
+		expect(createSelector('[xlink|href]').match(svgAx)).toBeTruthy();
+	});
+
 	it('is invisible tags', () => {
 		const el = createTestElement('<html><head><title></title></head></html>');
 		const head = el.children[0];
