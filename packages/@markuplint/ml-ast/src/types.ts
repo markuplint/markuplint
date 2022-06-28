@@ -146,4 +146,7 @@ export type Walker = (node: MLASTNode, depth: number) => void;
 export type NamespaceURI =
 	| 'http://www.w3.org/1999/xhtml'
 	| 'http://www.w3.org/2000/svg'
-	| 'http://www.w3.org/1998/Math/MathML';
+	| 'http://www.w3.org/1998/Math/MathML'
+	| 'http://www.w3.org/1999/xlink';
+
+export type Namespace = 'html' | 'svg' | 'mml' | 'xlink';

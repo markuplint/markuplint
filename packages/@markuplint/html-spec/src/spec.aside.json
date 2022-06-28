@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/sections.html#the-aside-element
 // https://www.w3.org/TR/html-aria/#el-aside
+// https://w3c.github.io/html-aria/#el-aside
 // https://www.w3.org/TR/html-aam-1.0/#:~:text=Comments-,aside%20(scoped%20to%20the%20body%20or%20main%20element),-aside%20(scoped%20to
 {
 	"contentModel": {
@@ -16,26 +17,22 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "complementary"
-	},
-	// v1.2 later
-	// "implicitRole": {
-	// 	"role": "generic",
-	// 	"conditions": [
-	// 		{
-	// 			"condition": ":is(body, main) aside",
-	// 			"role": "complementary"
-	// 		},
-	// 		{
-	// 			// Sectioning content elements are: article, aside, nav, section
-	// 			// Sectioning root elements are: blockquote, body, details, dialog, fieldset, figure, td
-	// 			"condition": ":is(article, aside, nav, section, blockquote, details, dialog, fieldset, figure, td) aside:hasaccname",
-	// 			"role": "complementary"
-	// 		}
-	// 	]
-	// },
-	"permittedRoles": {
-		"roles": ["feed", "none", "note", "presentation", "region", "search"]
+	"aria": {
+		// v1.2 later
+		// 	"implicitRole": "generic",
+		// 	"conditions": [
+		// 		{
+		// 			"condition": ":is(body, main) aside",
+		// 			"role": "complementary"
+		// 		},
+		// 		{
+		// 			// Sectioning content elements are: article, aside, nav, section
+		// 			// Sectioning root elements are: blockquote, body, details, dialog, fieldset, figure, td
+		// 			"condition": ":is(article, aside, nav, section, blockquote, details, dialog, fieldset, figure, td) aside:hasaccname",
+		// 			"role": "complementary"
+		// 		}
+		// 	]
+		"implicitRole": "complementary",
+		"permittedRoles": ["feed", "none", "note", "presentation", "region", "search"]
 	}
 }

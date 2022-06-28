@@ -1,2 +1,3 @@
 preset.*.json
+!preset.___test.json
 !src/preset.*.json

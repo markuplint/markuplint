@@ -136,12 +136,10 @@
 			"animatable": true
 		}
 	},
-	"implicitRole": {
+	"aria": {
 		// The role mappings for textPath and tspan are an open issue.
-		"role": "group"
-	},
-	"permittedRoles": {
-		"roles": {
+		"implicitRole": "group",
+		"permittedRoles": {
 			"core-aam": true,
 			"graphics-aam": true
 		}

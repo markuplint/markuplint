@@ -18,10 +18,8 @@
 		"#HTMLEmbededAndMediaContentAttrs": ["src"]
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
 	}
 }

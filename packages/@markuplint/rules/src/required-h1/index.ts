@@ -3,8 +3,8 @@ import type { Element } from '@markuplint/ml-core';
 import { createRule } from '@markuplint/ml-core';
 
 export interface Options {
-	'expected-once'?: boolean;
-	'in-document-fragment'?: boolean;
+	'expected-once': boolean;
+	'in-document-fragment': boolean;
 }
 
 export default createRule<boolean, Options>({

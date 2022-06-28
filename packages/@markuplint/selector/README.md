@@ -70,6 +70,37 @@ Supported selectors and operators:
 | Column combinator                                | <code>div \|\| span</code>                                                                | ❌      |
 | Multiple selectors                               | `div, span`                                                                               | ✅      |
 
+## Extended Selector
+
+The below is selectors that are extended by markuplint:
+
+| Selector Type          | Code Example      |
+| ---------------------- | ----------------- |
+| ARIA pseudo-class      | `:aria(has name)` |
+| ARIA Role pseudo-class | `:role(heading)`  |
+
+### ARIA pseudo-class
+
+```
+:aria(syntax)
+```
+
+| Syntax        | Example              | Description                                    |
+| ------------- | -------------------- | ---------------------------------------------- |
+| `has name`    | `:aria(has name)`    | Matches the element has accessible name        |
+| `has no name` | `:aria(has no name)` | Matches the element has **no** accessible name |
+
+### ARIA Role pseudo-class
+
+```
+:role(roleName)
+:role(roleName|version)
+```
+
+For example, `:role(button)` matches `<button>` and `<div role="button">`.
+
+You can specify the version of WAI-ARIA by separating the pipe like `:role(form|1.1)`.
+
 ## Regex Selector
 
 ```json

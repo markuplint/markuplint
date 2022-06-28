@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element
 // https://www.w3.org/TR/html-aria/#el-slot
+// https://w3c.github.io/html-aria/#el-slot
 {
 	"contentModel": {
 		"contents": [
@@ -20,11 +21,9 @@
 			"type": "NoEmptyAny"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
 		"properties": false
 	}
 }

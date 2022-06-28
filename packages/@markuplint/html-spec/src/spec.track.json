@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/media.html#the-track-element
 // https://www.w3.org/TR/html-aria/#el-track
+// https://w3c.github.io/html-aria/#el-track
 {
 	"contentModel": {
 		"contents": false
@@ -45,11 +46,9 @@
 			"type": "Boolean"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
 		"properties": false
 	}
 }

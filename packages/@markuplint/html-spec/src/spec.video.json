@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/media.html#the-video-element
 // https://www.w3.org/TR/html-aria/#el-video
+// https://w3c.github.io/html-aria/#el-video
 {
 	"contentModel": {
 		"contents": [
@@ -68,11 +69,9 @@
 			}
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": ["application"],
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["application"],
 		"properties": {
 			"global": true,
 			"role": "application"

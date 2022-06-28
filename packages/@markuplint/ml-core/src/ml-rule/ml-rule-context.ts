@@ -1,4 +1,5 @@
 import type { MLDocument } from '../ml-dom/node/document';
+import type { CheckerReport } from './types';
 import type { LocaleSet, Translator } from '@markuplint/i18n';
 import type { Report, RuleConfigValue } from '@markuplint/ml-config';
 
@@ -33,7 +34,17 @@ export class MLRuleContext<T extends RuleConfigValue, O = null> {
 		};
 	}
 
-	report(report: Report<T, O>) {
+	report(report: Report<T, O>): undefined;
+	report(report: CheckerReport<T, O>): boolean;
+	report(report: Report<T, O> | CheckerReport<T, O>): undefined | boolean {
+		if (typeof report === 'function') {
+			const r = report(this.translate);
+			if (r) {
+				this.#reports.push(r);
+				return true;
+			}
+			return false;
+		}
 		this.#reports.push(report);
 	}
 }

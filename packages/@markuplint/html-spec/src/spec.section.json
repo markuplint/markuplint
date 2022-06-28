@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/sections.html#the-section-element
 // https://www.w3.org/TR/html-aria/#el-section
+// https://w3c.github.io/html-aria/#el-section
 {
 	"contentModel": {
 		"contents": [
@@ -15,19 +16,10 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
+	"aria": {
 		// role=region if the section element has an accessible name. Otherwise, no corresponding role.
-		"role": false,
-		"conditions": [
-			{
-				// TODO: Selector is diabled
-				"condition": "#hasAccname",
-				"role": "region"
-			}
-		]
-	},
-	"permittedRoles": {
-		"roles": [
+		"implicitRole": false,
+		"permittedRoles": [
 			"alert",
 			"alertdialog",
 			"application",
@@ -37,6 +29,7 @@
 			"dialog",
 			"document",
 			"feed",
+			"group",
 			"log",
 			"main",
 			"marquee",
@@ -47,6 +40,34 @@
 			"search",
 			"status",
 			"tabpanel"
-		]
+		],
+		"conditions": {
+			":aria(has name)": {
+				"implicitRole": "region"
+			}
+		},
+		"1.1": {
+			"permittedRoles": [
+				"alert",
+				"alertdialog",
+				"application",
+				"banner",
+				"complementary",
+				"contentinfo",
+				"dialog",
+				"document",
+				"feed",
+				"log",
+				"main",
+				"marquee",
+				"navigation",
+				"none",
+				"note",
+				"presentation",
+				"search",
+				"status",
+				"tabpanel"
+			]
+		}
 	}
 }

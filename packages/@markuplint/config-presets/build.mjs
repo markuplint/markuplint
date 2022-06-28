@@ -11,7 +11,7 @@ const asyncGlob = promisify(glob);
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const srcDir = path.resolve(dirname, 'src');
 
-const currents = await asyncGlob('preset.*.json');
+const currents = await asyncGlob('preset.*.json,!preset.___json');
 await Promise.all(currents.map(current => rm(current)));
 
 const files = await asyncGlob(path.resolve(srcDir, '*.json'));

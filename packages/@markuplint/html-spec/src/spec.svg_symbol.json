@@ -67,11 +67,9 @@
 			]
 		}
 	},
-	"implicitRole": {
-		"role": "graphics-object"
-	},
-	"permittedRoles": {
-		"roles": {
+	"aria": {
+		"implicitRole": "graphics-object",
+		"permittedRoles": {
 			"core-aam": true,
 			"graphics-aam": true
 		}

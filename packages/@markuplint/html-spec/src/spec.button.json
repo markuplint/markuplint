@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element
 // https://www.w3.org/TR/html-aria/#el-button
+// https://w3c.github.io/html-aria/#el-button
 {
 	"contentModel": {
 		"contents": [
@@ -39,12 +40,11 @@
 			"type": "Any"
 		}
 	},
-	"implicitRole": {
-		"role": "button"
-	},
-	"permittedRoles": {
-		"roles": [
+	"aria": {
+		"implicitRole": "button",
+		"permittedRoles": [
 			"checkbox",
+			"combobox",
 			"link",
 			"menuitem",
 			"menuitemcheckbox",
@@ -53,6 +53,19 @@
 			"radio",
 			"switch",
 			"tab"
-		]
+		],
+		"1.1": {
+			"permittedRoles": [
+				"checkbox",
+				"link",
+				"menuitem",
+				"menuitemcheckbox",
+				"menuitemradio",
+				"option",
+				"radio",
+				"switch",
+				"tab"
+			]
+		}
 	}
 }

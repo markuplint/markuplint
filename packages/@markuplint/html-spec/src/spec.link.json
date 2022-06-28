@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/semantics.html#the-link-element
 // https://www.w3.org/TR/html-aria/#el-link
+// https://w3c.github.io/html-aria/#el-link
 {
 	"contentModel": {
 		"contents": false
@@ -131,10 +132,9 @@
 			"type": "Boolean"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": false
 	}
 }

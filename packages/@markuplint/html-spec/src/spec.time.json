@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-time-element
 // https://www.w3.org/TR/html-aria/#el-time
+// https://w3c.github.io/html-aria/#el-time
 {
 	"contentModel": {
 		"contents": [
@@ -20,10 +21,12 @@
 			"type": "DateTime"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": true
+	"aria": {
+		"implicitRole": "time",
+		"permittedRoles": true,
+		"namingProhibited": true,
+		"1.1": {
+			"implicitRole": false
+		}
 	}
 }

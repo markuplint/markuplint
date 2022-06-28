@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-option-element
 // https://www.w3.org/TR/html-aria/#el-option
+// https://w3c.github.io/html-aria/#el-option
 {
 	"contentModel": {
 		"contents": [
@@ -51,11 +52,9 @@
 			"type": "Any"
 		}
 	},
-	"implicitRole": {
-		"role": "option"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "option",
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			"role": "option",
@@ -63,7 +62,7 @@
 			"whithout": [
 				{
 					"type": "should-not",
-					"name": "selected"
+					"name": "aria-selected"
 				}
 			]
 		}

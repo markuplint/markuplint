@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/sections.html#the-hgroup-element
 // https://www.w3.org/TR/html-aria/#el-hgroup
+// https://w3c.github.io/html-aria/#el-hgroup
 {
 	"contentModel": {
 		"contents": [
@@ -25,10 +26,12 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": true
+	"aria": {
+		"implicitRole": "generic",
+		"permittedRoles": true,
+		"namingProhibited": true,
+		"1.1": {
+			"implicitRole": false
+		}
 	}
 }

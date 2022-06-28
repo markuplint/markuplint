@@ -1,5 +1,6 @@
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog
 // https://www.w3.org/TR/html-aria/#el-dialog
+// https://w3c.github.io/html-aria/#el-dialog
 {
 	"contentModel": {
 		"contents": [
@@ -24,11 +25,9 @@
 			"type": "Boolean"
 		}
 	},
-	"implicitRole": {
-		"role": "dialog"
-	},
-	"permittedRoles": {
-		"roles": ["alertdialog"],
+	"aria": {
+		"implicitRole": "dialog",
+		"permittedRoles": ["alertdialog"],
 		"properties": {
 			"global": true,
 			"role": "dialog"

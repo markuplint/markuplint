@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/grouping-content.html#the-pre-element
 // https://www.w3.org/TR/html-aria/#el-pre
+// https://w3c.github.io/html-aria/#el-pre
 {
 	"contentModel": {
 		"contents": [
@@ -15,10 +16,9 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": true
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true,
+		"namingProhibited": true
 	}
 }

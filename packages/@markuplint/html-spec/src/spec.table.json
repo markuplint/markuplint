@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/tables.html#the-table-element
 // https://www.w3.org/TR/html-aria/#el-table
+// https://w3c.github.io/html-aria/#el-table
 {
 	"contentModel": {
 		"contents": [
@@ -56,10 +57,8 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "table"
-	},
-	"permittedRoles": {
-		"roles": true
+	"aria": {
+		"implicitRole": "table",
+		"permittedRoles": true
 	}
 }

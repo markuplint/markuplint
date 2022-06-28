@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/tables.html#the-th-elemen
 // https://www.w3.org/TR/html-aria/#el-th
+// https://w3c.github.io/html-aria/#el-th
 {
 	"contentModel": {
 		"contents": [
@@ -30,40 +31,37 @@
 			"type": "Any"
 		}
 	},
-	"implicitRole": {
+	"aria": {
 		// No corresponding role if the ancestor table element is not exposed as a role=table, grid or treegrid.
-		"role": false,
-		"conditions": [
-			// role=columnheader, rowheader or cell if the ancestor table element is exposed as a role=table.
-			// role=columnheader, rowheader or gridcell if the ancestor table element is exposed as a role=grid or treegrid.
-			// https://www.w3.org/TR/wai-aria-1.1/#columnheader Base Concept: HTML th[scope="col"]
-			// https://www.w3.org/TR/wai-aria-1.1/#rowheader Base Concept: HTML th[scope="row"]
-			{
-				"condition": "table:is(:not([role]), [role=table], [role=table], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=col]",
-				"role": "columnheader"
-			},
-			{
-				"condition": "table:is(:not([role]), [role=table], [role=table], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=row]",
-				"role": "rowheader"
-			},
-			{
-				"condition": "table:is(:not([role]), [role=table]) > :is(thead, tfoot, tbody) > tr > th",
-				"role": "cell"
-			},
-			{
-				"condition": "table:is([role=table], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th",
-				"role": "gridcell"
-			}
-		]
-	},
-	"permittedRoles": {
+		"implicitRole": false,
 		// No role if the ancestor table element has role=table, grid, or treegrid; otherwise any role.
-		"roles": true,
-		"conditions": [
-			{
-				"condition": "table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th",
-				"roles": false
+		"permittedRoles": true,
+		// role=columnheader, rowheader or cell if the ancestor table element is exposed as a role=table.
+		// role=columnheader, rowheader or gridcell if the ancestor table element is exposed as a role=grid or treegrid.
+		"conditions": {
+			"table:is(:not([role]), [role=table]) > :is(thead, tfoot, tbody) > tr > th": {
+				"implicitRole": "cell"
+			},
+			"table:is([role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th": {
+				"implicitRole": "gridcell"
+			},
+			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > thead > tr > th:not([scope])": {
+				"implicitRole": "columnheader"
+			},
+			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(tfoot, tbody) > tr > th:not([scope])": {
+				"implicitRole": "rowheader"
+			},
+			// https://www.w3.org/TR/wai-aria-1.1/#columnheader Base Concept: HTML th[scope="col"]
+			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=col]": {
+				"implicitRole": "columnheader"
+			},
+			// https://www.w3.org/TR/wai-aria-1.1/#rowheader Base Concept: HTML th[scope="row"]
+			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=row]": {
+				"implicitRole": "rowheader"
+			},
+			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th": {
+				"permittedRoles": false
 			}
-		]
+		}
 	}
 }

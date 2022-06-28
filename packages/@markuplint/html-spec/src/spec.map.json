@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/image-maps.html#attr-map-name
 // https://www.w3.org/TR/html-aria/#el-map
+// https://w3c.github.io/html-aria/#el-map
 {
 	"contentModel": {
 		"contents": [
@@ -21,11 +22,9 @@
 			"type": "NoEmptyAny"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
 		"properties": false
 	}
 }

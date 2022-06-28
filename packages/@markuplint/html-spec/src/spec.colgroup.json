@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/tables.html#the-colgroup-element
 // https://www.w3.org/TR/html-aria/#el-colgroup
+// https://w3c.github.io/html-aria/#el-colgroup
 {
 	"contentModel": {
 		"contents": [
@@ -32,11 +33,9 @@
 			"defaultValue": "1"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
 		"properties": false
 	}
 }

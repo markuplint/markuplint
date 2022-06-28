@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element
 // https://www.w3.org/TR/html-aria/#el-details
+// https://w3c.github.io/html-aria/#el-details
 {
 	"contentModel": {
 		"contents": [
@@ -23,11 +24,9 @@
 			"type": "Boolean"
 		}
 	},
-	"implicitRole": {
-		"role": "group"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "group",
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			"role": "group"

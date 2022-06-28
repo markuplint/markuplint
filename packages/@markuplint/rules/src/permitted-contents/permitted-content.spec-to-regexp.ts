@@ -1,5 +1,7 @@
+import type { NamespaceURI } from '@markuplint/ml-ast';
 import type {
 	Category,
+	MLMLSpec,
 	PermittedContent,
 	PermittedContentChoice,
 	PermittedContentInterleave,
@@ -10,10 +12,11 @@ import type {
 	Target,
 } from '@markuplint/ml-spec';
 
+import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
+
 import { rePCENChar } from '../helpers';
 
 import combination from './array.combination';
-import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
 const ALL = '(?:<[^>]+>)?';
 const ___TRANSPARENT___ = '___TRANSPARENT___';
@@ -21,14 +24,19 @@ const ___InTRANSPARENT = '___InTRANSPARENT';
 const CUSTOM_ELEMENT = `(?:<[a-z](?:${rePCENChar})*\\-(?:${rePCENChar})*>)`;
 
 export default class ExpGenerator {
-	private _idCounter = 0;
+	#id: number;
+	#specs: MLMLSpec;
+	#idCounter = 0;
 
-	constructor(private _id: number) {}
+	constructor(specs: MLMLSpec, id: number) {
+		this.#id = id;
+		this.#specs = specs;
+	}
 
 	public specToRegExp(
 		contentRule: PermittedContent[] | boolean,
 		parentExp: RegExp | null = null,
-		ownNS: string | null = null,
+		ownNS: NamespaceURI = 'http://www.w3.org/1999/xhtml',
 	) {
 		if (contentRule === true) {
 			return new RegExp(`^(?:${ALL})+$`);
@@ -39,7 +47,7 @@ export default class ExpGenerator {
 		const parentPattern = parentExp ? parentExp.source.replace(/^\^|\$$/g, '') : ALL;
 		const pattern = this._toPattern(contentRule, null, ownNS, 1, 1).replace(
 			___TRANSPARENT___,
-			() => `(?<TRANSPARENT_${this._id}${this._idCounter++}>${parentPattern})`,
+			() => `(?<TRANSPARENT_${this.#id}${this.#idCounter++}>${parentPattern})`,
 		);
 
 		return new RegExp(`^${pattern}$`, 'i');
@@ -126,7 +134,7 @@ export default class ExpGenerator {
 		}
 		const range = createRange(min, max);
 		const c = notAllowedDescendantsNamedCapture
-			? `?<NAD_${this._id}${this._idCounter++}_${notAllowedDescendantsNamedCapture}>`
+			? `?<NAD_${this.#id}${this.#idCounter++}_${notAllowedDescendantsNamedCapture}>`
 			: '?:';
 		if (1 === exp.length && range === '') {
 			if (notAllowedDescendantsNamedCapture) {
@@ -178,8 +186,8 @@ export default class ExpGenerator {
 						break;
 					}
 					default: {
-						const selectors = unfoldContentModelsToTags(name as Category);
-						const counter = this._idCounter++;
+						const selectors = contentModelCategoryToTagNames(name as Category, this.#specs);
+						const counter = this.#idCounter++;
 						selectors.forEach(selector => {
 							if (selector === '#custom') {
 								tagList.addPattern(CUSTOM_ELEMENT);
@@ -188,7 +196,7 @@ export default class ExpGenerator {
 							if (/]$/i.test(selector)) {
 								const [, tagName] = /^([^[\]]+)\[[^\]]+\]$/.exec(selector) || [];
 								// ACM = Attributes by content model
-								const exp = `(?<ACM_${this._id}${counter}_${name.slice(1)}_${tagName}><${tagName}>)`;
+								const exp = `(?<ACM_${this.#id}${counter}_${name.slice(1)}_${tagName}><${tagName}>)`;
 								tagList.addPattern(exp);
 								return;
 							}

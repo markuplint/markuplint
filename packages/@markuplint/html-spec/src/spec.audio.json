@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/media.html#the-audio-element
 // https://www.w3.org/TR/html-aria/#el-audio
+// https://w3c.github.io/html-aria/#el-audio
 {
 	"contentModel": {
 		"contents": [
@@ -38,10 +39,12 @@
 		"#HTMLEmbededAndMediaContentAttrs": ["src", "preload", "autoplay", "loop", "muted", "controls"]
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": ["application"]
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["application"],
+		"properties": {
+			"global": true,
+			"role": "application"
+		}
 	}
 }

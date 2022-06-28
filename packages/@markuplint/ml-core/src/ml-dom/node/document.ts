@@ -14,7 +14,7 @@ import type { RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
-import { getSpec } from '@markuplint/ml-spec';
+import { schemaToSpec } from '@markuplint/ml-spec';
 import { matchSelector } from '@markuplint/selector';
 
 import { log as coreLog } from '../../debug';
@@ -1698,7 +1698,7 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 		super(ast, null);
 
 		this.isFragment = ast.isFragment;
-		this.specs = getSpec(schemas);
+		this.specs = schemaToSpec(schemas);
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
 

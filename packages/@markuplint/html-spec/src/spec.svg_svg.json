@@ -21,11 +21,12 @@
 					"svg|style",
 					"svg|switch",
 					"svg|text",
-					"svg|view",
-					"html|video",
-					"html|audio",
-					"html|iframe",
-					"html|canvas"
+					"svg|view"
+					// Removed HTML media elements: https://github.com/w3c/svgwg/issues/563
+					// "html|video",
+					// "html|audio",
+					// "html|iframe",
+					// "html|canvas"
 				]
 			}
 		]
@@ -159,11 +160,9 @@
 			"deprecated": true
 		}
 	},
-	"implicitRole": {
-		"role": "graphics-document"
-	},
-	"permittedRoles": {
-		"roles": {
+	"aria": {
+		"implicitRole": "graphics-document",
+		"permittedRoles": {
 			"core-aam": true,
 			"graphics-aam": true
 		}

@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/canvas.html#the-canvas-element
 // https://www.w3.org/TR/html-aria/#el-canvas
+// https://w3c.github.io/html-aria/#el-canvas
 {
 	"contentModel": {
 		"contents": [
@@ -26,10 +27,8 @@
 			"defaultValue": "300"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": true
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
 	}
 }

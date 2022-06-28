@@ -1,358 +1,116 @@
-import { createRule, getAttrSpecs } from '@markuplint/ml-core';
+import type { Options } from './types';
 
-import {
-	ariaSpec,
-	checkAria,
-	getComputedRole,
-	getImplicitRole,
-	getPermittedRoles,
-	getRoleSpec,
-	htmlSpec,
-	isValidAttr,
-} from '../helpers';
+import { createRule, getAttrSpecs, getComputedRole, ariaSpecs, getSpec } from '@markuplint/ml-core';
 
-type Options = {
-	checkingValue?: boolean;
-	checkingDeprecatedProps?: boolean;
-	permittedAriaRoles?: boolean;
-	disallowSetImplicitRole?: boolean;
-	disallowSetImplicitProps?: boolean;
-	disallowDefaultValue?: boolean;
-};
+import { Collection } from '../helpers';
+
+import { checkingAbstractRole } from './checkings/abstract-role';
+import { checkingDefaultValue } from './checkings/default-value';
+import { checkingDeprecatedProps } from './checkings/deprecated-props';
+import { checkingDisallowedProp } from './checkings/disallowed-prop';
+import { checkingImplicitProps } from './checkings/implicit-props';
+import { checkingImplicitRole } from './checkings/implicit-role';
+import { checkingInteractionInHidden } from './checkings/interaction-in-hidden';
+import { checkingNoGlobalProp } from './checkings/no-global-prop';
+import { checkingNonExistantRole } from './checkings/non-existant-role';
+import { checkingPermittedRoles } from './checkings/permitted-roles';
+import { checkingPresentationalChildren } from './checkings/presentational-children';
+import { checkingRequiredOwnedElements } from './checkings/required-owned-elements';
+import { checkingRequiredProp } from './checkings/required-prop';
+import { checkingValue } from './checkings/value';
 
 export default createRule<boolean, Options>({
 	defaultOptions: {
 		checkingValue: true,
 		checkingDeprecatedProps: true,
 		permittedAriaRoles: true,
+		checkingRequiredOwnedElements: true,
+		checkingPresentationalChildren: false,
+		checkingInteractionInHidden: false,
 		disallowSetImplicitRole: true,
 		disallowSetImplicitProps: true,
 		disallowDefaultValue: false,
+		version: '1.2',
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			const attrSpecs = getAttrSpecs(el.nameWithNS, document.specs);
-			const html = htmlSpec(document.specs, el.nameWithNS);
-			const { roles, ariaAttrs } = ariaSpec(document.specs);
+			const roleAttr = el.getAttributeNode('role');
+			const propAttrs = el.attributes.filter(attr => /^aria-/i.test(attr.name));
 
-			if (!html || !attrSpecs) {
+			const ariaAttrs = new Collection(roleAttr, ...propAttrs);
+
+			const elSpec = getSpec(el, document.specs);
+			if (!elSpec) {
 				return;
 			}
 
-			const roleAttr = el.getAttributeNode('role');
+			if (!elSpec.globalAttrs['#ARIAAttrs']) {
+				for (const ariaAttr of ariaAttrs) {
+					report({
+						scope: ariaAttr,
+						message: 'ARIA attribute is disallowed',
+					});
+				}
+				return;
+			}
 
-			// Roles in the spec
+			const computed = getComputedRole(document.specs, el, el.rule.option.version);
+			const { props: propSpecs } = ariaSpecs(document.specs, el.rule.option.version);
+
 			if (roleAttr) {
-				const value = roleAttr.value.trim().toLowerCase();
-				const existedRole = roles.find(role => role.name === value);
-
-				if (!existedRole) {
-					// Not exist
-					report({
-						scope: el,
-						message:
-							t(
-								'{0} according to {1}',
-								t('{0} does not exist', t('the "{0*}" {1}', value, 'role')),
-								'the WAI-ARIA specification',
-							) +
-							t('.') +
-							// TODO: Translate
-							` This "${value}" role does not exist in WAI-ARIA.`,
-						line: roleAttr.startLine,
-						col: roleAttr.startCol,
-						raw: roleAttr.raw,
-					});
-				} else if (existedRole.isAbstract) {
-					// the abstract role
-					report({
-						scope: el,
-						message: t('{0} is {1}', t('the "{0*}" {1}', value, 'role'), 'the abstract role'),
-						line: roleAttr.startLine,
-						col: roleAttr.startCol,
-						raw: roleAttr.raw,
-					});
+				if (report(checkingNonExistantRole({ attr: roleAttr }))) {
+					return;
 				}
 
-				// Set the implicit role explicitly
+				if (report(checkingAbstractRole({ attr: roleAttr }))) {
+					return;
+				}
+				report(checkingRequiredProp({ el, role: computed.role, propSpecs }));
+
 				if (el.rule.option.disallowSetImplicitRole) {
-					const implictRole = getImplicitRole(document.specs, el);
-					if (implictRole && implictRole === value) {
-						// the implicit role
-						report({
-							scope: el,
-							message: t(
-								'{0} is {1}',
-								t('the "{0*}" {1}', value, 'role'),
-								t('{0} of {1}', 'the implicit role', t('the "{0*}" {1}', el.localName, 'element')),
-							),
-							line: roleAttr.startLine,
-							col: roleAttr.startCol,
-							raw: roleAttr.raw,
-						});
-					}
+					report(checkingImplicitRole({ attr: roleAttr }));
 				}
 
-				// Permitted ARIA Roles
 				if (el.rule.option.permittedAriaRoles) {
-					const permittedRoles = getPermittedRoles(document.specs, el);
-					if (permittedRoles === false) {
-						report({
-							scope: el,
-							message: t(
-								'{0} according to {1}',
-								t(
-									'Cannot overwrite {0}',
-									t('{0} of {1}', t('the {0}', 'role'), t('the "{0*}" {1}', el.localName, 'element')),
-								),
-								'ARIA in HTML specification',
-							),
-							line: roleAttr.startLine,
-							col: roleAttr.startCol,
-							raw: roleAttr.raw,
-						});
-					} else if (Array.isArray(permittedRoles) && !permittedRoles.includes(value)) {
-						report({
-							scope: el,
-							message: t(
-								'{0} according to {1}',
-								t(
-									'Cannot overwrite {0} to {1}',
-									t('the "{0*}" {1}', value, 'role'),
-									t('the "{0*}" {1}', el.localName, 'element'),
-								),
-								'ARIA in HTML specification',
-							),
-							line: roleAttr.startLine,
-							col: roleAttr.startCol,
-							raw: roleAttr.raw,
-						});
-					}
+					report(checkingPermittedRoles({ attr: roleAttr }));
 				}
 			}
 
-			const computedRole = getComputedRole(document.specs, el);
-			if (computedRole) {
-				const role = getRoleSpec(document.specs, computedRole.name);
-				if (role) {
-					// Checking aria-* on the role
-					for (const attr of el.attributes) {
-						const attrName = attr.name.toLowerCase();
-						if (/^aria-/i.test(attrName)) {
-							const statesAndProp = role.statesAndProps.find(s => s.name === attrName);
-							if (statesAndProp) {
-								if (el.rule.option.checkingDeprecatedProps && statesAndProp.deprecated) {
-									report({
-										scope: el,
-										message: t(
-											'{0:c} on {1}',
-											t(
-												'{0} is {1:c}',
-												t('the "{0*}" {1}', attrName, 'ARIA state/property'),
-												'deprecated',
-											),
-											t('the "{0*}" {1}', role.name, 'role'),
-										),
-										line: attr.startLine,
-										col: attr.startCol,
-										raw: attr.raw,
-									});
-								}
-							} else {
-								report({
-									scope: el,
-									message: t(
-										'{0:c} on {1}',
-										t(
-											'{0} is {1:c}',
-											t('the "{0*}" {1}', attrName, 'ARIA state/property'),
-											'disallowed',
-										),
-										t('the "{0*}" {1}', role.name, 'role'),
-									),
-									line: attr.startLine,
-									col: attr.startCol,
-									raw: attr.raw,
-								});
-							}
-						}
-					}
+			for (const attr of propAttrs) {
+				report(checkingDisallowedProp({ attr, role: computed.role, propSpecs }));
 
-					// Checing required props
-					if (!computedRole.isImplicit) {
-						const requiredProps = role.statesAndProps.filter(s => s.required).map(s => s.name);
-						for (const requiredProp of requiredProps) {
-							const has = el.attributes.some(attr => {
-								const attrName = attr.name.toLowerCase();
-								return attrName === requiredProp;
-							});
-							if (!has) {
-								report({
-									scope: el,
-									message: t(
-										'{0:c} on {1}',
-										t('Require {0}', t('the "{0*}" {1}', requiredProp, 'ARIA state/property')),
-										t('the "{0*}" {1}', role.name, 'role'),
-									),
-								});
-							}
-						}
-					}
+				if (el.rule.option.checkingDeprecatedProps) {
+					report(checkingDeprecatedProps({ attr, role: computed.role, propSpecs }));
 				}
-			} else {
-				// No role element
-				const { ariaAttrs } = ariaSpec(document.specs);
-				for (const attr of el.attributes) {
-					const attrName = attr.name.toLowerCase();
-					if (/^aria-/i.test(attrName)) {
-						const ariaAttr = ariaAttrs.find(attr => attr.name === attrName);
-						if (ariaAttr && !ariaAttr.isGlobal) {
-							report({
-								scope: el,
-								message: t(
-									'{0} is not {1}',
-									t('the "{0*}" {1}', attrName, 'ARIA state/property'),
-									'global state/property',
-								),
-								line: attr.startLine,
-								col: attr.startCol,
-								raw: attr.raw,
-							});
-						}
-					}
+
+				if (el.rule.option.disallowSetImplicitProps) {
+					const attrSpecs = getAttrSpecs(el, document.specs);
+					report(checkingImplicitProps({ attr, propSpecs, attrSpecs }));
+				}
+
+				if (el.rule.option.checkingValue) {
+					report(checkingValue({ attr, role: computed.role, propSpecs }));
+				}
+
+				if (el.rule.option.disallowDefaultValue) {
+					report(checkingDefaultValue({ attr, propSpecs }));
+				}
+
+				if (!computed.role) {
+					report(checkingNoGlobalProp({ attr, propSpecs }));
 				}
 			}
 
-			for (const attr of el.attributes) {
-				if (attr.isDynamicValue) {
-					continue;
-				}
-				const attrName = attr.name.toLowerCase();
-				if (/^aria-/i.test(attrName)) {
-					const value = attr.value.trim().toLowerCase();
-					const propSpec = ariaAttrs.find(p => p.name === attrName);
+			if (el.rule.option.checkingRequiredOwnedElements) {
+				report(checkingRequiredOwnedElements({ el, role: computed.role }));
+			}
 
-					// Checking ARIA Value
-					if (el.rule.option.checkingValue) {
-						const result = checkAria(document.specs, attrName, value, computedRole?.name);
-						if (!result.isValid) {
-							report({
-								scope: el,
-								message:
-									t(
-										'{0:c} on {1}',
-										t('{0} is {1:c}', t('the "{0}"', value), 'disallowed'),
-										t('the "{0*}" {1}', attrName, 'ARIA state/property'),
-									) +
-									('enum' in result && result.enum.length
-										? t('. ') + t('Allowed values are: {0}', t(result.enum))
-										: ''),
-								line: attr.startLine,
-								col: attr.startCol,
-								raw: attr.raw,
-							});
-						}
-					}
+			if (el.rule.option.checkingPresentationalChildren) {
+				report(checkingPresentationalChildren({ el }));
+			}
 
-					// Checking implicit props
-					if (el.rule.option.disallowSetImplicitProps) {
-						if (propSpec && propSpec.equivalentHtmlAttrs) {
-							for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
-								const htmlAttrSpec = attrSpecs.find(a => a.name === equivalentHtmlAttr.htmlAttrName);
-								const isValid = isValidAttr(
-									t,
-									equivalentHtmlAttr.htmlAttrName,
-									equivalentHtmlAttr.value || '',
-									false,
-									el,
-									attrSpecs,
-								);
-								if (isValid && isValid.invalidType === 'non-existent') {
-									continue;
-								}
-								if (el.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
-									const targetAttrValue = el.getAttribute(equivalentHtmlAttr.htmlAttrName);
-									if (
-										(equivalentHtmlAttr.value == null && targetAttrValue === value) ||
-										equivalentHtmlAttr.value === value
-									) {
-										report({
-											scope: el,
-											message: t(
-												'{0} has {1}',
-												t('the "{0*}" {1}', attrName, 'ARIA state/property'),
-												t(
-													'the same {0} as {1}',
-													'semantics',
-													t(
-														'{0} or {1}',
-														t(
-															'the current "{0}" {1}',
-															equivalentHtmlAttr.htmlAttrName,
-															'attribute',
-														),
-														t(
-															'the implicit "{0}" {1}',
-															equivalentHtmlAttr.htmlAttrName,
-															'attribute',
-														),
-													),
-												),
-											),
-											line: attr.startLine,
-											col: attr.startCol,
-											raw: attr.raw,
-										});
-										continue;
-									}
-									if (htmlAttrSpec?.type === 'Boolean' && value !== 'false') {
-										continue;
-									}
-									report({
-										scope: el,
-										message: t(
-											'{0} contradicts {1}',
-											t('the "{0*}" {1}', attrName, 'ARIA state/property'),
-											t('the current "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
-										),
-										line: attr.startLine,
-										col: attr.startCol,
-										raw: attr.raw,
-									});
-								} else if (value === 'true') {
-									if (!equivalentHtmlAttr.isNotStrictEquivalent && htmlAttrSpec?.type === 'Boolean') {
-										report({
-											scope: el,
-											message: t(
-												'{0} contradicts {1}',
-												t('the "{0*}" {1}', attrName, 'ARIA state/property'),
-												t(
-													'the implicit "{0}" {1}',
-													equivalentHtmlAttr.htmlAttrName,
-													'attribute',
-												),
-											),
-											line: attr.startLine,
-											col: attr.startCol,
-											raw: attr.raw,
-										});
-									}
-								}
-							}
-						}
-					}
-
-					// Default value
-					if (el.rule.option.disallowDefaultValue && propSpec && propSpec.defaultValue === value) {
-						report({
-							scope: el,
-							message: t('It is {0}', 'default value'),
-							line: attr.startLine,
-							col: attr.startCol,
-							raw: attr.raw,
-						});
-					}
-				}
+			if (el.rule.option.checkingInteractionInHidden) {
+				report(checkingInteractionInHidden({ el }));
 			}
 		});
 	},

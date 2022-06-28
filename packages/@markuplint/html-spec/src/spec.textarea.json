@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-textarea-element
 // https://www.w3.org/TR/html-aria/#el-textarea
+// https://w3c.github.io/html-aria/#el-textarea
 {
 	"contentModel": {
 		"contents": [
@@ -55,11 +56,9 @@
 			}
 		}
 	},
-	"implicitRole": {
-		"role": "textbox"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "textbox",
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			"role": "textbox"

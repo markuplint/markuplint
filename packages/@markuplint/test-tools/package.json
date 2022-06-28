@@ -1,0 +1,21 @@
+{
+	"name": "@markuplint/test-tools",
+	"version": "3.0.0-alpha",
+	"description": "Test tools for markuplint",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"private": true,
+	"main": "./lib/index.js",
+	"types": "./lib/index.d.ts",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsc",
+		"clean": "tsc --build --clean"
+	},
+	"dependencies": {
+		"jsdom": "^19.0.0"
+	}
+}

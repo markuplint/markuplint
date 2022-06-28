@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/grouping-content.html#the-ol-element
 // https://www.w3.org/TR/html-aria/#el-ol
+// https://w3c.github.io/html-aria/#el-ol
 {
 	"contentModel": {
 		"contents": [
@@ -33,12 +34,9 @@
 			}
 		}
 	},
-	"implicitRole": {
-		"role": "list"
-	},
-	"permittedRoles": {
-		"roles": [
-			"directory",
+	"aria": {
+		"implicitRole": "list",
+		"permittedRoles": [
 			"group",
 			"listbox",
 			"menu",
@@ -48,7 +46,26 @@
 			"radiogroup",
 			"tablist",
 			"toolbar",
-			"tree"
-		]
+			"tree",
+			{
+				"name": "directory",
+				"deprecated": true
+			}
+		],
+		"1.1": {
+			"permittedRoles": [
+				"directory",
+				"group",
+				"listbox",
+				"menu",
+				"menubar",
+				"none",
+				"presentation",
+				"radiogroup",
+				"tablist",
+				"toolbar",
+				"tree"
+			]
+		}
 	}
 }

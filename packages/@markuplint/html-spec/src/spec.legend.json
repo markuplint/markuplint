@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-legend-element
 // https://www.w3.org/TR/html-aria/#el-legend
+// https://w3c.github.io/html-aria/#el-legend
 {
 	"contentModel": {
 		"contents": [
@@ -15,13 +16,9 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false,
-		"properties": {
-			"global": true
-		}
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"namingProhibited": true
 	}
 }

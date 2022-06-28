@@ -1,12 +1,10 @@
-import type { Element } from '@markuplint/ml-core';
+import type { Element, Document, DocumentFragment } from '@markuplint/ml-core';
 import type { Category, MLMLSpec, ContentModel } from '@markuplint/ml-spec';
 
-import { createRule } from '@markuplint/ml-core';
-
-import { htmlSpec } from '../helpers';
+import { createRule, getSpec, resolveNamespace } from '@markuplint/ml-core';
+import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
 
 import ExpGenerator from './permitted-content.spec-to-regexp';
-import unfoldContentModelsToTags from './unfold-content-models-to-tags';
 
 type TagRule = ContentModel & { tag: string };
 type Options = {
@@ -31,12 +29,17 @@ export default createRule<TagRule[], Options>({
 				return;
 			}
 
-			const specType = el.ns === 'html' ? 'HTML' : el.ns === 'svg' ? 'SVG' : 'Any Language';
+			const specType =
+				el.namespaceURI === 'http://www.w3.org/1999/xhtml'
+					? 'HTML'
+					: el.namespaceURI === 'http://www.w3.org/2000/svg'
+					? 'SVG'
+					: 'Any Language';
 
 			const childNodes = el.getChildElementsAndTextNodeWithoutWhitespaces();
-			const spec = !el.isCustomElement && htmlSpec(document.specs, el.nameWithNS)?.contentModel;
+			const spec = !el.isCustomElement && getSpec(el, document.specs)?.contentModel;
 
-			const expGen = new ExpGenerator(idCounter++);
+			const expGen = new ExpGenerator(document.specs, idCounter++);
 
 			if (spec) {
 				if (spec.descendantOf && !el.closest(spec.descendantOf)) {
@@ -60,8 +63,8 @@ export default createRule<TagRule[], Options>({
 						if (matched) {
 							try {
 								const parentExp = getRegExpFromParentNode(document.specs, el, expGen);
-								const exp = expGen.specToRegExp(conditional.contents, parentExp, el.ns);
-								const conditionalResult = match(exp, childNodes, false);
+								const exp = expGen.specToRegExp(conditional.contents, parentExp, el.namespaceURI);
+								const conditionalResult = match(exp, childNodes, false, document.specs);
 								if (!conditionalResult) {
 									const message = t(
 										'{0} is {1:c}',
@@ -99,7 +102,7 @@ export default createRule<TagRule[], Options>({
 				if (!matched) {
 					try {
 						const exp = getRegExpFromNode(document.specs, el, expGen);
-						const specResult = match(exp, childNodes, false);
+						const specResult = match(exp, childNodes, false, document.specs);
 
 						if (!specResult) {
 							const message = t(
@@ -133,9 +136,9 @@ export default createRule<TagRule[], Options>({
 
 				const parentExp = getRegExpFromParentNode(document.specs, el, expGen);
 				try {
-					const exp = expGen.specToRegExp(rule.contents, parentExp, el.ns);
+					const exp = expGen.specToRegExp(rule.contents, parentExp, el.namespaceURI);
 					// Evaluate the custom element if the optional schema.
-					const r = match(exp, childNodes, el.isCustomElement);
+					const r = match(exp, childNodes, el.isCustomElement, document.specs);
 
 					if (!r) {
 						report({
@@ -168,8 +171,8 @@ export default createRule<TagRule[], Options>({
 
 type TargetNodes = ReturnType<Element<TagRule[], Options>['getChildElementsAndTextNodeWithoutWhitespaces']>;
 
-function normalization(nodes: TargetNodes, evalCustomElement: boolean) {
-	return nodes
+function normalization(el: TargetNodes, evalCustomElement: boolean) {
+	return el
 		.map(node => {
 			// FIXME: https://github.com/markuplint/markuplint/issues/388
 			if (!evalCustomElement && node.is(node.ELEMENT_NODE) && node.isCustomElement) {
@@ -178,43 +181,42 @@ function normalization(nodes: TargetNodes, evalCustomElement: boolean) {
 			if (!node.is(node.ELEMENT_NODE)) {
 				return '<#text>';
 			}
-			const name = node.nameWithNS.replace(/^html:/i, '');
-			return `<${name}>`;
+			const { localNameWithNS } = resolveNamespace(node.localName, node.namespaceURI);
+			return `<${localNameWithNS}>`;
 		})
 		.join('');
 }
 
-type El = {
-	uuid: string;
-	nodeName: string;
-	parentNode: El | null;
-	isCustomElement?: boolean;
-	nameWithNS?: string;
-	ns?: string | null;
-};
-
-function getRegExpFromNode(specs: Readonly<MLMLSpec>, node: El, expGen: ExpGenerator) {
+function getRegExpFromNode(
+	specs: Readonly<MLMLSpec>,
+	el: Element<any, any> | Document<any, any> | DocumentFragment<any, any>,
+	expGen: ExpGenerator,
+) {
 	// console.log({ n: node.nodeName });
-	if (expMapOnNodeId.has(node.uuid)) {
-		return expMapOnNodeId.get(node.uuid)!;
+	if (expMapOnNodeId.has(el.uuid)) {
+		return expMapOnNodeId.get(el.uuid)!;
 	}
-	const parentExp = node.parentNode ? getRegExpFromNode(specs, node.parentNode, expGen) : null;
-	const spec = !node.isCustomElement && htmlSpec(specs, node.nameWithNS || node.nodeName.toLowerCase())?.contentModel;
+	const parentExp = el.parentNode ? getRegExpFromNode(specs, el.parentNode, expGen) : null;
+	const spec = el.nodeType === el.ELEMENT_NODE && !el.isCustomElement && getSpec(el, specs)?.contentModel;
 	const contentRule = spec ? spec.contents : true;
-	const exp = expGen.specToRegExp(contentRule, parentExp, node.ns || null);
-	expMapOnNodeId.set(node.uuid, exp);
+	const exp = expGen.specToRegExp(
+		contentRule,
+		parentExp,
+		el.nodeType === el.ELEMENT_NODE ? el.namespaceURI : undefined,
+	);
+	expMapOnNodeId.set(el.uuid, exp);
 	return exp;
 }
 
-function getRegExpFromParentNode(specs: Readonly<MLMLSpec>, node: El, expGen: ExpGenerator) {
+function getRegExpFromParentNode(specs: Readonly<MLMLSpec>, el: Element<any, any>, expGen: ExpGenerator) {
 	// console.log({ p: node.nodeName });
-	const parentExp = node.parentNode ? getRegExpFromNode(specs, node.parentNode, expGen) : null;
+	const parentExp = el.parentNode ? getRegExpFromNode(specs, el.parentNode, expGen) : null;
 	return parentExp;
 }
 
 const matchingCacheMap = new Map<string, boolean>();
 
-function match(exp: RegExp, childNodes: TargetNodes, evalCustomElement: boolean) {
+function match(exp: RegExp, childNodes: TargetNodes, evalCustomElement: boolean, specs: MLMLSpec) {
 	const target = normalization(childNodes, evalCustomElement);
 	const cacheKey =
 		target +
@@ -226,13 +228,13 @@ function match(exp: RegExp, childNodes: TargetNodes, evalCustomElement: boolean)
 		return res;
 	}
 
-	const matched = _match(target, exp, childNodes);
+	const matched = _match(target, exp, childNodes, specs);
 
 	matchingCacheMap.set(cacheKey, matched);
 	return matched;
 }
 
-function _match(target: string, exp: RegExp, childNodes: TargetNodes) {
+function _match(target: string, exp: RegExp, childNodes: TargetNodes, specs: MLMLSpec) {
 	const result = exp.exec(target);
 	if (!result) {
 		return false;
@@ -253,7 +255,7 @@ function _match(target: string, exp: RegExp, childNodes: TargetNodes) {
 		switch (type) {
 			case 'ACM': {
 				const [model, tag] = _selector;
-				const selectors = unfoldContentModelsToTags(`#${model}` as Category).filter(selector => {
+				const selectors = contentModelCategoryToTagNames(`#${model}` as Category, specs).filter(selector => {
 					const [, tagName] = /^([^[\]]+)(?:\[[^\]]+\])?$/.exec(selector) || [];
 					return tagName.toLowerCase() === tag.toLowerCase();
 				});
@@ -288,7 +290,7 @@ function _match(target: string, exp: RegExp, childNodes: TargetNodes) {
 					: null;
 				_selector.forEach(content => {
 					if (content[0] === '_') {
-						unfoldContentModelsToTags(content.replace('_', '#') as Category).forEach(tag =>
+						contentModelCategoryToTagNames(content.replace('_', '#') as Category, specs).forEach(tag =>
 							contents.add(tag),
 						);
 						return;

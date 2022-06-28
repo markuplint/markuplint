@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element
 // https://www.w3.org/TR/html-aria/#el-progress
+// https://w3c.github.io/html-aria/#el-progress
 {
 	"contentModel": {
 		"contents": [
@@ -26,11 +27,9 @@
 			"type": "Number"
 		}
 	},
-	"implicitRole": {
-		"role": "progressbar"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "progressbar",
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			"role": "progressbar",
@@ -38,7 +37,7 @@
 			"whithout": [
 				{
 					"type": "should-not",
-					"name": "valuemax"
+					"name": "aria-valuemax"
 				}
 			]
 		}

@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-datalist-element
 // https://www.w3.org/TR/html-aria/#el-datalist
+// https://w3c.github.io/html-aria/#el-datalist
 {
 	"contentModel": {
 		"contents": [
@@ -26,11 +27,9 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "listbox"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "listbox",
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			"role": "listbox"

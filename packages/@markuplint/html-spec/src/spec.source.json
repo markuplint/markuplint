@@ -1,5 +1,6 @@
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source
 // https://www.w3.org/TR/html-aria/#el-source
+// https://w3c.github.io/html-aria/#el-source
 {
 	"contentModel": {
 		"contents": false
@@ -43,11 +44,9 @@
 			"condition": "picture > source"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
 		"properties": false
 	}
 }

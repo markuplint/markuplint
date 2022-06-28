@@ -141,13 +141,11 @@
 			"animatable": true
 		}
 	},
-	"implicitRole": {
+	"aria": {
 		// The platform mappings given above are similar to those recommended for the HTML p element in the HTML Accessibility API Mappings specification [HTML-AAM].
 		// There is currently no WAI-ARIA role available that defines a distinct text block. However, such roles (denoting paragraphs or distinct text regions) exist in many platform accessibility APIs and are therefore used instead of a generic group role.
-		"role": "group"
-	},
-	"permittedRoles": {
-		"roles": {
+		"implicitRole": "group",
+		"permittedRoles": {
 			"core-aam": true,
 			"graphics-aam": true
 		}

@@ -1,8 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
-export default createRule<string[], null>({
+export default createRule<string[]>({
 	defaultValue: [],
-	defaultOptions: null,
 	async verify({ document, report, t }) {
 		for (const query of document.rule.value) {
 			const elements = document.querySelectorAll(query);

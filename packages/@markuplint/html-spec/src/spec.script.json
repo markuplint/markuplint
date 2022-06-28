@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/scripting.html#the-script-element
 // https://www.w3.org/TR/html-aria/#el-script
+// https://w3c.github.io/html-aria/#el-script
 {
 	"contentModel": {
 		"contents": [
@@ -64,11 +65,9 @@
 			}
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
 		"properties": false
 	}
 }

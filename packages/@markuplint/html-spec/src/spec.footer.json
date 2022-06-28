@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/sections.html#the-footer-element
 // https://www.w3.org/TR/html-aria/#el-footer
+// https://w3c.github.io/html-aria/#el-footer
 {
 	"contentModel": {
 		"contents": [
@@ -16,16 +17,22 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "contentinfo",
-		"conditions": [
-			{
-				"condition": ":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])",
-				"role": false
+	"aria": {
+		"implicitRole": "contentinfo",
+		"permittedRoles": ["group", "presentation", "none"],
+		"conditions": {
+			":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])": {
+				"implicitRole": "generic",
+				"namingProhibited": true
 			}
-		]
-	},
-	"permittedRoles": {
-		"roles": ["group", "presentation", "none"]
+		},
+		"1.1": {
+			"implicitRole": "contentinfo",
+			"conditions": {
+				":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])": {
+					"implicitRole": false
+				}
+			}
+		}
 	}
 }

@@ -1,6 +1,6 @@
-import type { ElementSpec, ExtendedSpec, MLMLSpec, Attribute } from './types';
+import type { ElementSpec, ExtendedSpec, MLMLSpec, Attribute } from '../types';
 
-import { mergeArray } from './utils';
+import { mergeArray } from '../utils/merge-array';
 
 /**
  * Merging HTML-spec schema and extended spec schemas
@@ -9,7 +9,7 @@ import { mergeArray } from './utils';
  *
  * @param schemas `MLDocument.schemas`
  */
-export function getSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
+export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 	const [main, ...extendedSpecs] = schemas;
 	const result = { ...main };
 	for (const extendedSpec of extendedSpecs) {
@@ -17,17 +17,31 @@ export function getSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 			result.cites = [...result.cites, ...extendedSpec.cites];
 		}
 		if (extendedSpec.def) {
-			if (extendedSpec.def['#ariaAttrs']) {
-				result.def['#ariaAttrs'] = [...result.def['#ariaAttrs'], ...extendedSpec.def['#ariaAttrs']];
-			}
 			if (extendedSpec.def['#globalAttrs']?.['#extends']) {
 				result.def['#globalAttrs']['#HTMLGlobalAttrs'] = {
 					...(result.def['#globalAttrs']?.['#HTMLGlobalAttrs'] || {}),
 					...(extendedSpec.def['#globalAttrs']?.['#extends'] || {}),
 				};
 			}
-			if (extendedSpec.def['#roles']) {
-				result.def['#roles'] = [...result.def['#roles'], ...extendedSpec.def['#roles']];
+			if (extendedSpec.def['#aria']) {
+				result.def['#aria'] = {
+					'1.1': {
+						roles: mergeArray(result.def['#aria']['1.1'].roles, extendedSpec.def['#aria']['1.1'].roles),
+						props: mergeArray(result.def['#aria']['1.1'].props, extendedSpec.def['#aria']['1.1'].props),
+						graphicsRoles: mergeArray(
+							result.def['#aria']['1.1'].graphicsRoles,
+							extendedSpec.def['#aria']['1.1'].graphicsRoles,
+						),
+					},
+					'1.2': {
+						roles: mergeArray(result.def['#aria']['1.2'].roles, extendedSpec.def['#aria']['1.2'].roles),
+						props: mergeArray(result.def['#aria']['1.2'].props, extendedSpec.def['#aria']['1.2'].props),
+						graphicsRoles: mergeArray(
+							result.def['#aria']['1.2'].graphicsRoles,
+							extendedSpec.def['#aria']['1.2'].graphicsRoles,
+						),
+					},
+				};
 			}
 			if (extendedSpec.def['#contentModels']) {
 				const keys = new Set([

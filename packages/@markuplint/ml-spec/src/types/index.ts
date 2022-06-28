@@ -1,6 +1,7 @@
-import type { AttributeJSON } from '.';
-import type { AttributeType, GlobalAttributes } from './attributes';
+import type { ARIA } from './aria';
+import type { AttributeJSON, AttributeType, GlobalAttributes } from './attributes';
 import type { ContentModel, Category } from './permitted-structres';
+import type { NamespaceURI } from '@markuplint/ml-ast';
 
 /**
  * markuplit Markup-language spec
@@ -33,9 +34,17 @@ export type SpecDefs = {
 		'#HTMLGlobalAttrs': Record<string, Partial<Attribute>>;
 		[OtherGlobalAttrs: string]: Record<string, Partial<Attribute>>;
 	}>;
-	'#ariaAttrs': ARIAAttribute[];
-	'#roles': ARIRRoleAttribute[];
+	'#aria': {
+		'1.2': ARIASpec;
+		'1.1': ARIASpec;
+	};
 	'#contentModels': { [model in Category]?: string[] };
+};
+
+type ARIASpec = {
+	roles: ARIARoleInSchema[];
+	graphicsRoles: ARIARoleInSchema[];
+	props: ARIAProperty[];
 };
 
 /**
@@ -51,7 +60,7 @@ export type ElementSpec = {
 	 * Namespaces in XML
 	 * @see https://www.w3.org/TR/xml-names/
 	 */
-	namespace?: 'http://www.w3.org/1999/xhtml' | 'http://www.w3.org/2000/svg' | 'http://www.w3.org/1998/Math/MathML';
+	namespace?: NamespaceURI;
 
 	/**
 	 * Reference URL
@@ -113,36 +122,9 @@ export type ElementSpec = {
 	attributes: Record<string, Attribute>;
 
 	/**
-	 * Implicit ARIA role
+	 * WAI-ARIA role and properies
 	 */
-	implicitRole: {
-		role: ImplicitRole;
-		conditions?: {
-			condition: string;
-			role: ImplicitRole;
-		}[];
-	};
-
-	implicitRole_aria1_1?: {
-		role: ImplicitRole;
-		conditions?: {
-			condition: string;
-			role: ImplicitRole;
-		}[];
-	};
-
-	/**
-	 * Permitted ARIA roles
-	 */
-	permittedRoles: {
-		roles: PermittedRoles;
-		properties?: PermittedARIAProperties;
-		conditions?: {
-			condition: string;
-			roles: PermittedRoles;
-			properties?: PermittedARIAProperties;
-		}[];
-	};
+	aria: ARIA;
 
 	/**
 	 * If true, it is possible to add any properties as attributes,
@@ -154,46 +136,6 @@ export type ElementSpec = {
 	 */
 	possibleToAddProperties?: true;
 };
-
-/**
- * If `false`, this mean is "No corresponding role".
- */
-type ImplicitRole = string | false;
-
-/**
- * If `true`, this mean is "Any".
- * If `false`, this mean is "No".
- */
-export type PermittedRoles =
-	| string[]
-	| boolean
-	| {
-			'core-aam'?: true;
-			'graphics-aam'?: true;
-	  };
-
-/**
- * If `false`, no specify aria-* attributes
- */
-export type PermittedARIAProperties =
-	| false
-	| {
-			global?: true;
-			role?: true | string | string[];
-			expect?: {
-				name: string;
-				value?: string;
-			};
-			whithout?: {
-				type: 'not-recommended' | 'should-not' | 'must-not';
-				name: string;
-				value?: string;
-				alt?: {
-					method: 'remove-attr' | 'set-attr';
-					target: string;
-				};
-			}[];
-	  };
 
 type ElementSpecOmittion = false | ElementSpecOmittionTags;
 
@@ -219,29 +161,37 @@ export type Attribute = {
 
 type ExtendableAttributeSpec = Omit<AttributeJSON, 'type'>;
 
-export type ARIRRoleAttribute = {
+export type ARIARole = {
 	name: string;
-	description: string;
-	isAbstract?: true;
-	generalization: string[];
-	requiredContextRole?: string[];
+	isAbstract: boolean;
+	requiredContextRole: string[];
+	requiredOwnedElements: string[];
 	accessibleNameRequired: boolean;
+	accessibleNameFromAuthor: boolean;
 	accessibleNameFromContent: boolean;
 	accessibleNameProhibited: boolean;
-	ownedAttribute: ARIARoleOwnedPropOrState[];
-	childrenPresentational?: boolean;
+	childrenPresentational: boolean;
+	ownedProperties: ARIARoleOwnedProperties[];
+	prohibitedProperties: string[];
 };
 
-export type ARIARoleOwnedPropOrState = {
+export type ARIARoleInSchema = Partial<
+	ARIARole & {
+		description: string;
+		generalization: string[];
+	}
+> & {
+	name: string;
+};
+
+export type ARIARoleOwnedProperties = {
 	name: string;
 	inherited?: true;
 	required?: true;
 	deprecated?: true;
-	prohibited?: true;
-	defaultValue?: boolean | string | number;
 };
 
-export type ARIAAttribute = {
+export type ARIAProperty = {
 	name: string;
 	type: 'property' | 'state';
 	deprecated?: true;
@@ -270,22 +220,36 @@ export type ARIAAttributeValue =
 	| 'token list'
 	| 'URI';
 
+export type ARIAVersion = '1.1' | '1.2';
+
 export type EquivalentHtmlAttr = {
 	htmlAttrName: string;
 	isNotStrictEquivalent?: true;
 	value: string | null;
 };
 
-export interface SpecOM {
-	[tagName: string]: MLDOMElementSpec;
-}
+export type Matches = (selector: string) => boolean;
 
-export interface MLDOMElementSpec {
-	experimental: boolean;
-	obsolete: boolean | string;
-	deprecated: boolean;
-	nonStandard: boolean;
-	categories: Category[];
-	contentModel: ContentModel;
-	attributes: Attribute[];
-}
+export type ComputedRole = {
+	el: Element;
+	role:
+		| (ARIARole & {
+				superClassRoles: ARIARoleInSchema[];
+				isImplicit?: boolean;
+		  })
+		| null;
+	errorType?: RoleComputationError;
+};
+
+export type RoleComputationError =
+	| 'ABSTRACT'
+	| 'GLOBAL_PROP_MUST_NOT_BE_PRESENTATIONAL'
+	| 'IMPLICIT_ROLE_NAMESPACE_ERROR'
+	| 'INTERACTIVE_ELEMENT_MUST_NOT_BE_PRESENTATIONAL'
+	| 'INVALID_LANDMARK'
+	| 'INVALID_REQUIRED_CONTEXT_ROLE'
+	| 'NO_EXPLICIT'
+	| 'NO_OWNER'
+	| 'NO_PERMITTED'
+	| 'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL'
+	| 'ROLE_NO_EXISTS';

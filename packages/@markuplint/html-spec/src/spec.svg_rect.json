@@ -108,11 +108,9 @@
 			"animatable": true
 		}
 	},
-	"implicitRole": {
-		"role": "graphics-symbol"
-	},
-	"permittedRoles": {
-		"roles": {
+	"aria": {
+		"implicitRole": "graphics-symbol",
+		"permittedRoles": {
 			"core-aam": true,
 			"graphics-aam": true
 		}

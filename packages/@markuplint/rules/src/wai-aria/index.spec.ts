@@ -4,32 +4,66 @@ import rule from './';
 
 describe("Use the role that doesn't exist in the spec", () => {
 	test('[role=hoge]', async () => {
-		const { violations } = await mlRuleTest(rule, '<div role="hoge"></div>');
-
-		expect(violations).toStrictEqual([
+		expect((await mlRuleTest(rule, '<div role="hoge"></div>')).violations).toStrictEqual([
 			{
 				severity: 'error',
 				line: 1,
-				col: 6,
+				col: 12,
 				message:
 					'The "hoge" role does not exist according to the WAI-ARIA specification. This "hoge" role does not exist in WAI-ARIA.',
-				raw: 'role="hoge"',
+				raw: 'hoge',
 			},
 		]);
+
+		expect((await mlRuleTest(rule, '<div role="none hoge"></div>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				message:
+					'The "hoge" role does not exist according to the WAI-ARIA specification. This "hoge" role does not exist in WAI-ARIA.',
+				raw: 'hoge',
+			},
+		]);
+	});
+
+	test('Graphics ARIA to HTML', async () => {
+		expect((await mlRuleTest(rule, '<div role="graphics-document"></div>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 12,
+				message:
+					'The "graphics-document" role does not exist according to the WAI-ARIA specification. This "graphics-document" role does not exist in WAI-ARIA.',
+				raw: 'graphics-document',
+			},
+		]);
+
+		expect((await mlRuleTest(rule, '<svg><rect role="graphics-document"></rect></svg>')).violations).toStrictEqual(
+			[],
+		);
 	});
 });
 
 describe('Use the abstract role', () => {
 	test('[role=roletype]', async () => {
-		const { violations } = await mlRuleTest(rule, '<div role="roletype"></div>');
-
-		expect(violations).toStrictEqual([
+		expect((await mlRuleTest(rule, '<div role="roletype"></div>')).violations).toStrictEqual([
 			{
 				severity: 'error',
 				line: 1,
-				col: 6,
+				col: 12,
 				message: 'The "roletype" role is the abstract role',
-				raw: 'role="roletype"',
+				raw: 'roletype',
+			},
+		]);
+
+		expect((await mlRuleTest(rule, '<div role="article roletype"></div>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 20,
+				message: 'The "roletype" role is the abstract role',
+				raw: 'roletype',
 			},
 		]);
 	});
@@ -44,7 +78,25 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 				severity: 'error',
 				line: 1,
 				col: 6,
-				message: 'The "aria-checked" ARIA state/property is not global state/property',
+				message: 'The "aria-checked" ARIA state is disallowed on the "generic" role',
+				raw: 'aria-checked="true"',
+			},
+		]);
+	});
+
+	test('[aria-checked=true]', async () => {
+		const { violations } = await mlRuleTest(rule, '<div aria-checked="true"></div>', {
+			rule: {
+				option: { version: '1.1' },
+			},
+		});
+
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'The "aria-checked" ARIA state is not global state',
 				raw: 'aria-checked="true"',
 			},
 		]);
@@ -58,7 +110,7 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 				severity: 'error',
 				line: 1,
 				col: 9,
-				message: 'The "aria-checked" ARIA state/property is disallowed on the "button" role',
+				message: 'The "aria-checked" ARIA state is disallowed on the "button" role',
 				raw: 'aria-checked="true"',
 			},
 		]);
@@ -81,7 +133,7 @@ describe('Use an invalid value of the property/state', () => {
 				line: 1,
 				col: 6,
 				message:
-					'The "foo" is disallowed on the "aria-current" ARIA state/property. Allowed values are: "page", "step", "location", "date", "time", "true", "false"',
+					'The "foo" is disallowed on the "aria-current" ARIA state. Allowed values are: "page", "step", "location", "date", "time", "true", "false"',
 				raw: 'aria-current="foo"',
 			},
 		]);
@@ -128,10 +180,10 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 			{
 				severity: 'error',
 				line: 1,
-				col: 9,
+				col: 15,
 				message:
 					'Cannot overwrite the "document" role to the "a" element according to ARIA in HTML specification',
-				raw: 'role="document"',
+				raw: 'document',
 			},
 		]);
 	});
@@ -158,7 +210,7 @@ describe("Don't set the required property/state", () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "aria-level" ARIA state/property on the "heading" role',
+				message: 'Require the "aria-level" ARIA property on the "heading" role',
 				raw: '<div role="heading">',
 			},
 		]);
@@ -179,9 +231,9 @@ describe('Set the implicit role explicitly', () => {
 			{
 				severity: 'error',
 				line: 1,
-				col: 19,
+				col: 25,
 				message: 'The "link" role is the implicit role of the "a" element',
-				raw: 'role="link"',
+				raw: 'link',
 			},
 		]);
 	});
@@ -193,9 +245,9 @@ describe('Set the implicit role explicitly', () => {
 			{
 				severity: 'error',
 				line: 1,
-				col: 9,
+				col: 15,
 				message: 'The "banner" role is the implicit role of the "header" element',
-				raw: 'role="banner"',
+				raw: 'banner',
 			},
 		]);
 
@@ -208,10 +260,10 @@ describe('Set the implicit role explicitly', () => {
 			{
 				severity: 'error',
 				line: 1,
-				col: 9,
+				col: 15,
 				message:
 					'Cannot overwrite the "banner" role to the "header" element according to ARIA in HTML specification',
-				raw: 'role="banner"',
+				raw: 'banner',
 			},
 		]);
 	});
@@ -260,7 +312,7 @@ describe('Set the deprecated property/state', () => {
 				severity: 'error',
 				line: 1,
 				col: 10,
-				message: 'The "aria-disabled" ARIA state/property is deprecated on the "article" role',
+				message: 'The "aria-disabled" ARIA state is deprecated on the "article" role',
 				raw: 'aria-disabled="true"',
 			},
 		]);
@@ -274,7 +326,7 @@ describe('Set the deprecated property/state', () => {
 				severity: 'error',
 				line: 1,
 				col: 21,
-				message: 'The "aria-disabled" ARIA state/property is deprecated on the "article" role',
+				message: 'The "aria-disabled" ARIA state is deprecated on the "article" role',
 				raw: 'aria-disabled="true"',
 			},
 		]);
@@ -303,7 +355,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				line: 1,
 				col: 32,
 				message:
-					'The "aria-checked" ARIA state/property has the same semantics as the current "checked" attribute or the implicit "checked" attribute',
+					'The "aria-checked" ARIA state has the same semantics as the current "checked" attribute or the implicit "checked" attribute',
 				raw: 'aria-checked="true"',
 			},
 		]);
@@ -317,7 +369,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				severity: 'error',
 				line: 1,
 				col: 32,
-				message: 'The "aria-checked" ARIA state/property contradicts the current "checked" attribute',
+				message: 'The "aria-checked" ARIA state contradicts the current "checked" attribute',
 				raw: 'aria-checked="false"',
 			},
 		]);
@@ -331,7 +383,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				severity: 'error',
 				line: 1,
 				col: 24,
-				message: 'The "aria-checked" ARIA state/property contradicts the implicit "checked" attribute',
+				message: 'The "aria-checked" ARIA state contradicts the implicit "checked" attribute',
 				raw: 'aria-checked="true"',
 			},
 		]);
@@ -355,7 +407,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				line: 1,
 				col: 45,
 				message:
-					'The "aria-placeholder" ARIA state/property has the same semantics as the current "placeholder" attribute or the implicit "placeholder" attribute',
+					'The "aria-placeholder" ARIA property has the same semantics as the current "placeholder" attribute or the implicit "placeholder" attribute',
 				raw: 'aria-placeholder="type hints"',
 			},
 		]);
@@ -372,7 +424,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				severity: 'error',
 				line: 1,
 				col: 45,
-				message: 'The "aria-placeholder" ARIA state/property contradicts the current "placeholder" attribute',
+				message: 'The "aria-placeholder" ARIA property contradicts the current "placeholder" attribute',
 				raw: 'aria-placeholder="different value"',
 			},
 		]);
@@ -387,11 +439,9 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 
 		expect(violations1[0]?.message).toBe(undefined);
 		expect(violations2[0]?.message).toBe(
-			'The "aria-hidden" ARIA state/property has the same semantics as the current "hidden" attribute or the implicit "hidden" attribute',
+			'The "aria-hidden" ARIA state has the same semantics as the current "hidden" attribute or the implicit "hidden" attribute',
 		);
-		expect(violations3[0]?.message).toBe(
-			'The "aria-hidden" ARIA state/property contradicts the current "hidden" attribute',
-		);
+		expect(violations3[0]?.message).toBe('The "aria-hidden" ARIA state contradicts the current "hidden" attribute');
 		expect(violations4[0]?.message).toBe(undefined);
 		expect(violations5[0]?.message).toBe(undefined);
 	});
@@ -406,6 +456,145 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 		});
 
 		expect(violations).toStrictEqual([]);
+	});
+});
+
+describe('Required Owned Elements', () => {
+	test('Empty content', async () => {
+		expect((await mlRuleTest(rule, '<div role="list"></div>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require the "listitem" role to content. Or, require aria-busy="true"',
+				raw: '<div role="list">',
+			},
+		]);
+
+		expect((await mlRuleTest(rule, '<div role="list" aria-busy="true"></div>')).violations).toStrictEqual([]);
+	});
+
+	test('Empty content (Implicit role)', async () => {
+		expect((await mlRuleTest(rule, '<ul></ul>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require the "listitem" role to content. Or, require aria-busy="true"',
+				raw: '<ul>',
+			},
+		]);
+
+		expect((await mlRuleTest(rule, '<ul aria-busy="true"></ul>')).violations).toStrictEqual([]);
+	});
+
+	test('Invalid contents', async () => {
+		expect((await mlRuleTest(rule, '<table><tbody><tr><td></td></tr></tbody></table>')).violations).toStrictEqual(
+			[],
+		);
+		expect((await mlRuleTest(rule, '<table><tr><td></td></tr></table>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<table><tbody></tbody></table>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "table" role expects the "row", "rowgroup > row" roles',
+				raw: '<table>',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 8,
+				message: 'Require the "row" role to content. Or, require aria-busy="true"',
+				raw: '<tbody>',
+			},
+		]);
+	});
+});
+
+describe('Presentational Children', () => {
+	const enable = { rule: { option: { checkingPresentationalChildren: true } } };
+	test('The role attribute in the button', async () => {
+		expect(
+			(await mlRuleTest(rule, '<button><div role="none">foo</div></button>', enable)).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message:
+					'It may be ineffective because it has the "button" role as an ancestor that doesn\'t expose its descendants to the accessibility tree',
+				raw: '<div role="none">',
+			},
+		]);
+	});
+
+	test('The aria-* attribute in the tab', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<ul role="tablist"><li role="tab"><span aria-hidden="true">foo</span></li></ul>',
+					enable,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 35,
+				message:
+					'It may be ineffective because it has the "tab" role as an ancestor that doesn\'t expose its descendants to the accessibility tree',
+				raw: '<span aria-hidden="true">',
+			},
+		]);
+	});
+});
+
+describe('Including Elements in the Accessibility Tree', () => {
+	const enable = { rule: { option: { checkingInteractionInHidden: true } } };
+	test('Parent has aria-hidden', async () => {
+		expect(
+			(await mlRuleTest(rule, '<div aria-hidden="true"><button>foo</button></div>', enable)).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 25,
+				message: 'It may be focusable in spite of it has the ancestor that has aria-hidden=true',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('Ancestor has aria-hidden', async () => {
+		expect(
+			(await mlRuleTest(rule, '<div aria-hidden="true"><span><button>foo</button></span></div>', enable))
+				.violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 31,
+				message: 'It may be focusable in spite of it has the ancestor that has aria-hidden=true',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('Has aria-hidden', async () => {
+		expect(
+			(await mlRuleTest(rule, '<div><span><button aria-hidden="true">foo</button></span></div>', enable))
+				.violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 12,
+				message: 'It may be focusable in spite of it has aria-hidden=true',
+				raw: '<button aria-hidden="true">',
+			},
+		]);
 	});
 });
 
@@ -431,17 +620,20 @@ describe('childNodeRules', () => {
 describe('Issues', () => {
 	// https://github.com/markuplint/markuplint/issues/397
 	// And https://github.com/markuplint/markuplint/issues/397#issuecomment-1148349418
+	// And https://github.com/markuplint/markuplint/issues/397#issuecomment-1156728358
 	test('#397', async () => {
 		{
 			const { violations } = await mlRuleTest(rule, '<table><tr><th aria-sort="ascending"></th></tr></table>');
 			expect(violations).toStrictEqual([
-				{
-					severity: 'error',
-					line: 1,
-					col: 16,
-					message: 'The "aria-sort" ARIA state/property is disallowed on the "cell" role',
-					raw: 'aria-sort="ascending"',
-				},
+				// https://github.com/markuplint/markuplint/issues/397#issuecomment-1156728358
+				// The element role is not `cell`.
+				// {
+				// 	severity: 'error',
+				// 	line: 1,
+				// 	col: 16,
+				// 	message: 'The "aria-sort" ARIA state/property is disallowed on the "cell" role',
+				// 	raw: 'aria-sort="ascending"',
+				// },
 			]);
 		}
 

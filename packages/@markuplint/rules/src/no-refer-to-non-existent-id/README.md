@@ -27,6 +27,16 @@ Checking for whether **ID** or **the list of ID** specified to `for`, `form`, `a
 - Type: `boolean`
 - Deafult Value: `true`
 
+### Options
+
+##### `ariaVersion`
+
+Choose the version of WAI-ARIA to evaluate.
+
+- Type: `"1.1" | "1.2"`
+- Optional
+- Default: `1.2`
+
 ### Default severity
 
 `error`

@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-optgroup-element
 // https://www.w3.org/TR/html-aria/#el-optgroup
+// https://w3c.github.io/html-aria/#el-optgroup
 {
 	"contentModel": {
 		"contents": [
@@ -22,11 +23,9 @@
 			"required": true
 		}
 	},
-	"implicitRole": {
-		"role": "group"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "group",
+		"permittedRoles": false,
 		"properties": {
 			"global": true,
 			"role": "group"

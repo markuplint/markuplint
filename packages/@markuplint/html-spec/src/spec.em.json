@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-em-element
 // https://www.w3.org/TR/html-aria/#el-em
+// https://w3c.github.io/html-aria/#el-em
 {
 	"contentModel": {
 		"contents": [
@@ -15,10 +16,12 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": true
+	"aria": {
+		"implicitRole": "emphasis",
+		"permittedRoles": true,
+		"namingProhibited": true,
+		"1.1": {
+			"implicitRole": false
+		}
 	}
 }

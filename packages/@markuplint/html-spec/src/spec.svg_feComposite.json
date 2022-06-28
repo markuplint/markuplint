@@ -139,10 +139,8 @@
 			"ineffective": ":not([operator='arithmetic' i])"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false
 	}
 }

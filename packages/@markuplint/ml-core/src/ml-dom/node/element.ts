@@ -2,10 +2,10 @@ import type { MLDocument } from './document';
 import type { MLNamedNodeMap } from './named-node-map';
 import type { MLText } from './text';
 import type { ElementNodeType } from './types';
-import type { MLASTElement } from '@markuplint/ml-ast';
+import type { MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
 import type { RuleConfigValue } from '@markuplint/ml-config';
 
-import { getNS } from '@markuplint/ml-spec';
+import { resolveNamespace } from '@markuplint/ml-spec';
 import { createSelector } from '@markuplint/selector';
 
 import { stringSplice } from '../../utils/string-splice';
@@ -21,7 +21,7 @@ import {
 import { MLToken } from '../token/token';
 
 import { MLAttr } from './attr';
-import { toDOMTokenList } from './dom-token-list';
+import { MLDomTokenList } from './dom-token-list';
 import { toNamedNodeMap } from './named-node-map';
 import { toHTMLCollection } from './node-list';
 import { MLParentNode } from './parent-node';
@@ -38,6 +38,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	#getChildElementsAndTextNodeWithoutWhitespacesCache: (MLElement<T, O> | MLText<T, O>)[] | null = null;
 	#normalizedAttrs: MLNamedNodeMap<T, O> | null = null;
 	#normalizedString: string | null = null;
+	#localName: string;
 	readonly #tagOpenChar: string;
 
 	readonly closeTag: MLToken | null;
@@ -46,7 +47,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	readonly isCustomElement: boolean;
 	readonly isForeignElement: boolean;
 	readonly isOmitted: boolean;
-	readonly namespaceURI: string | null;
+	readonly namespaceURI: NamespaceURI;
 	readonly ontouchcancel?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
 	readonly ontouchend?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
 	readonly ontouchmove?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
@@ -537,8 +538,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-classlist%E2%91%A0
 	 */
-	get classList() {
-		return toDOMTokenList(this.className);
+	get classList(): MLDomTokenList {
+		const classAttrs = this.getAttributeToken('class');
+		const value = classAttrs.map(c => c.value).join(' ');
+		return new MLDomTokenList(value, classAttrs);
 	}
 
 	/**
@@ -546,15 +549,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-classname%E2%91%A0
 	 */
 	get className() {
-		const classNames: string[] = [];
-
-		for (const classNameToken of this.getAttributeToken('class')) {
-			if (classNames.length === 0 || classNameToken.isDuplicatable) {
-				classNames.push(classNameToken.value);
-			}
-		}
-
-		return classNames.join(' ');
+		return this.classList.value;
 	}
 
 	/**
@@ -754,23 +749,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 */
 	get localName(): string {
 		if (this.isForeignElement || this.isCustomElement) {
-			return this._astToken.nodeName;
+			return this.#localName;
 		}
-		return this._astToken.nodeName.toLowerCase();
-	}
-
-	/**
-	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 */
-	get nameWithNS() {
-		if (/[a-z]:[a-z]/i.test(this.localName)) {
-			return this.localName;
-		}
-		const ns = getNS(this.namespaceURI || '');
-		if (ns === 'html') {
-			return this.localName;
-		}
-		return `${ns}:${this.localName}`;
+		return this.#localName.toLowerCase();
 	}
 
 	/**
@@ -812,16 +793,6 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 */
 	get nonce(): string | undefined {
 		throw new UnexpectedCallError('Not supported "nonce" property');
-	}
-
-	/**
-	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 */
-	get ns() {
-		if (/[a-z]:[a-z]/i.test(this.localName)) {
-			return this.localName.split(':')[0];
-		}
-		return getNS(this.namespaceURI || '');
 	}
 
 	/**
@@ -2101,8 +2072,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 		this.selfClosingSolidus = astNode.selfClosingSolidus ? new MLToken(astNode.selfClosingSolidus) : null;
 		this.endSpace = astNode.endSpace ? new MLToken(astNode.endSpace) : null;
 		this.closeTag = astNode.pearNode ? new MLToken(astNode.pearNode) : null;
-
-		this.namespaceURI = astNode.namespace || HTML_NAMESPACE;
+		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
+		this.namespaceURI = ns.namespaceURI;
+		this.#localName = ns.localName;
 		this.isForeignElement = this.namespaceURI !== HTML_NAMESPACE;
 		this.isCustomElement = astNode.isCustomElement;
 		this.#fixedNodeName = astNode.nodeName;
@@ -2535,7 +2507,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-matches%E2%91%A0
 	 */
 	matches(selector: string): boolean {
-		return !!createSelector(selector).match(this);
+		return !!createSelector(selector, this.ownerMLDocument.specs).match(this);
 	}
 
 	/**

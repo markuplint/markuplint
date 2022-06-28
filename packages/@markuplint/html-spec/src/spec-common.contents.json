@@ -170,6 +170,7 @@
 			"#text"
 		],
 		"#embedded": ["audio", "canvas", "embed", "iframe", "img", "math", "object", "picture", "svg|svg", "video"],
+		// https://html.spec.whatwg.org/multipage/dom.html#interactive-content
 		"#interactive": [
 			"a[href]",
 			"audio[controls]",
@@ -178,13 +179,11 @@
 			"embed",
 			"iframe",
 			"img[usemap]",
-			"input:not([type=hidden])",
+			"input:not([type='hidden' i])",
 			"label",
-			"object[usemap]",
 			"select",
 			"textarea",
-			"video[controls]",
-			"[tabindex]"
+			"video[controls]"
 		],
 		"#script-supporting": ["script", "template"],
 		"#SVGAnimation": [

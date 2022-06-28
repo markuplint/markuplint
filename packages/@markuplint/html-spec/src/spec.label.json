@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/forms.html#the-label-element
 // https://www.w3.org/TR/html-aria/#el-label
+// https://w3c.github.io/html-aria/#el-label
 {
 	"contentModel": {
 		"contents": [
@@ -21,13 +22,9 @@
 			"type": "DOMID"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false,
-		"properties": {
-			"global": true
-		}
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"namingProhibited": true
 	}
 }

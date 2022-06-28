@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element
 // https://www.w3.org/TR/html-aria/#el-object
+// https://w3c.github.io/html-aria/#el-object
 {
 	"contentModel": {
 		"contents": [
@@ -32,10 +33,8 @@
 			"type": "BrowsingContextName"
 		}
 	},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": ["application", "document", "img"]
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["application", "document", "img"]
 	}
 }

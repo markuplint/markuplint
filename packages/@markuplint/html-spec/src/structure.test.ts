@@ -1,7 +1,8 @@
 import { readFile } from 'fs/promises';
 import path from 'path';
 
-import { getAttrSpecs } from '@markuplint/ml-spec';
+import { resolveNamespace } from '@markuplint/ml-spec';
+import { getAttrSpecs } from '@markuplint/ml-spec/lib/specs/get-attr-specs';
 import Ajv, { type ValidateFunction } from 'ajv';
 import { sync as glob } from 'glob';
 import strip from 'strip-json-comments';
@@ -12,6 +13,10 @@ const schemas = {
 	element: {
 		$id: '@markuplint/ml-spec/schemas/element.schema.json',
 		...require('../../ml-spec/schemas/element.schema.json'),
+	},
+	aria: {
+		$id: '@markuplint/ml-spec/schemas/aria.schema.json',
+		...require('../../ml-spec/schemas/aria.schema.json'),
 	},
 	contentModels: {
 		$id: '@markuplint/ml-spec/schemas/content-models.schema.json',
@@ -33,7 +38,8 @@ const schemas = {
 
 test('structure', () => {
 	specs.forEach(el => {
-		getAttrSpecs(el.name, htmlSpec);
+		const { localName, namespaceURI } = resolveNamespace(el.name);
+		getAttrSpecs(localName, namespaceURI, htmlSpec);
 	});
 });
 
@@ -44,6 +50,7 @@ describe('schema', () => {
 			new Ajv({
 				schemas: [
 					schemas.element,
+					schemas.aria,
 					schemas.contentModels,
 					schemas.globalAttributes,
 					schemas.attributes,

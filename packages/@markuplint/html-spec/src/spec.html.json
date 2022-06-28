@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/semantics.html#the-html-element
 // https://www.w3.org/TR/html-aria/#el-html
+// https://w3c.github.io/html-aria/#el-html
 {
 	"contentModel": {
 		"contents": [
@@ -18,11 +19,9 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": "document"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "document",
+		"permittedRoles": false,
 		"properties": false
 	}
 }

@@ -613,15 +613,8 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 		if (options) {
 			throw new UnexpectedCallError('Not supported options');
 		}
-
-		let parent = this.parentNode;
-		while (parent) {
-			if (!parent.parentNode) {
-				return parent;
-			}
-			parent = parent.parentNode;
-		}
-		return parent || this;
+		// The original DOM API returns a document fragment if the element is a fragment.
+		return this.#ownerDocument;
 	}
 
 	/**

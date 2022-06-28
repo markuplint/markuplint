@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-ruby-element
 // https://www.w3.org/TR/html-aria/#el-ruby
+// https://w3c.github.io/html-aria/#el-ruby
 {
 	"contentModel": {
 		"contents": [
@@ -48,10 +49,8 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": true
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
 	}
 }

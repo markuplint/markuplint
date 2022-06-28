@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/embedded-content.html#the-picture-element
 // https://www.w3.org/TR/html-aria/#el-picture
+// https://w3c.github.io/html-aria/#el-picture
 {
 	"contentModel": {
 		"contents": [
@@ -27,11 +28,19 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": false,
-		"properties": false
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": {
+			"only": [
+				{
+					"name": "aria-hidden",
+					"value": "true"
+				}
+			]
+		},
+		"1.1": {
+			"properties": false
+		}
 	}
 }

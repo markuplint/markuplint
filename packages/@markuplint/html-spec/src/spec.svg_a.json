@@ -100,23 +100,20 @@
 		"#HTMLLinkAndFetchingAttrs": ["href", "target", "download", "ping", "rel", "hreflang", "type", "referrerpolicy"]
 	},
 	"attributes": {},
-	"implicitRole": {
+	"aria": {
 		// link role if the element has a valid href or xlink:href attribute.
 		// For a elements that are not links,
 		// use the mapping for tspan if the a element is a descendent of text,
 		// or the mapping for g otherwise.
-		"role": "group",
-		"conditions": [
-			{
-				"condition": "[href], [xlink:href]",
-				"role": "link"
-			}
-		]
-	},
-	"permittedRoles": {
-		"roles": {
+		"implicitRole": "group",
+		"permittedRoles": {
 			"core-aam": true,
 			"graphics-aam": true
+		},
+		"conditions": {
+			"[href], [xlink|href]": {
+				"implicitRole": "link"
+			}
 		}
 	}
 }

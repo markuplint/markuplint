@@ -1,8 +1,9 @@
 import type { Log } from './debug';
 import type { Translator } from '@markuplint/i18n';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
-import type { ARIRRoleAttribute, Attribute, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
+import type { ARIAVersion, Attribute, MLMLSpec } from '@markuplint/ml-spec';
 
+import { ariaSpecs } from '@markuplint/ml-core';
 import { decode as decodeHtmlEntities } from 'html-entities';
 
 import { attrCheck } from './attr-check';
@@ -63,11 +64,6 @@ export const rePCENChar = [
 	'[\uD800-\uDBFF][\uDC00-\uDFFF]',
 ].join('|');
 
-export function htmlSpec(specs: Readonly<MLMLSpec>, nameWithNS: string) {
-	const spec = specs.specs.find(spec => spec.name === nameWithNS);
-	return spec || null;
-}
-
 export function isValidAttr(
 	t: Translator,
 	name: string,
@@ -124,132 +120,6 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 	return normalized;
 }
 
-export function ariaSpec(specs: Readonly<MLMLSpec>) {
-	const roles = specs.def['#roles'];
-	const ariaAttrs = specs.def['#ariaAttrs'];
-	return {
-		roles,
-		ariaAttrs,
-	};
-}
-
-export function getRoleSpec(specs: Readonly<MLMLSpec>, roleName: string) {
-	const role = getRoleByName(specs, roleName);
-	if (!role) {
-		return null;
-	}
-	const superClassRoles = recursiveTraverseSuperClassRoles(specs, roleName);
-	return {
-		name: role.name,
-		isAbstract: !!role.isAbstract,
-		accessibleNameRequired: role.accessibleNameRequired,
-		statesAndProps: role.ownedAttribute,
-		superClassRoles,
-	};
-}
-
-function getRoleByName(specs: Readonly<MLMLSpec>, roleName: string) {
-	const roles = specs.def['#roles'];
-	const role = roles.find(r => r.name === roleName);
-	return role;
-}
-
-function getSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string) {
-	const role = getRoleByName(specs, roleName);
-	return (
-		role?.generalization
-			.map(roleName => getRoleByName(specs, roleName))
-			.filter((role): role is ARIRRoleAttribute => !!role) || null
-	);
-}
-
-function recursiveTraverseSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string) {
-	const roles: ARIRRoleAttribute[] = [];
-	const superClassRoles = getSuperClassRoles(specs, roleName);
-	if (superClassRoles) {
-		roles.push(...superClassRoles);
-		for (const superClassRole of superClassRoles) {
-			const ancestorRoles = recursiveTraverseSuperClassRoles(specs, superClassRole.name);
-			roles.push(...ancestorRoles);
-		}
-	}
-	return roles;
-}
-
-/**
- * Getting permitted ARIA roles.
- *
- * - If an array, it is role list.
- * - If `true`, this mean is "Any".
- * - If `false`, this mean is "No".
- */
-export function getPermittedRoles(specs: Readonly<MLMLSpec>, el: Element<any, any>) {
-	const implicitRole = getImplicitRole(specs, el);
-	const spec = htmlSpec(specs, el.nameWithNS)?.permittedRoles;
-	if (!spec) {
-		return true;
-	}
-	if (spec.conditions) {
-		for (const { condition, roles } of spec.conditions) {
-			if (el.matches(condition)) {
-				return mergeRoleList(implicitRole, roles);
-			}
-		}
-	}
-	if (implicitRole && Array.isArray(spec.roles)) {
-		return [implicitRole, ...spec.roles];
-	}
-	if (implicitRole && spec.roles === false) {
-		return [implicitRole];
-	}
-	return mergeRoleList(implicitRole, spec.roles);
-}
-
-function mergeRoleList(implicitRole: string | false, permittedRoles: PermittedRoles) {
-	if (implicitRole && Array.isArray(permittedRoles)) {
-		return [implicitRole, ...permittedRoles];
-	}
-	if (implicitRole && permittedRoles === false) {
-		return [implicitRole];
-	}
-	return permittedRoles;
-}
-
-export function getImplicitRole(specs: Readonly<MLMLSpec>, el: Element<any, any>) {
-	const implicitRole = htmlSpec(specs, el.nameWithNS)?.implicitRole;
-	if (!implicitRole) {
-		return false;
-	}
-	if (implicitRole.conditions) {
-		for (const { condition, role } of implicitRole.conditions) {
-			if (el.matches(condition)) {
-				return role;
-			}
-		}
-	}
-	return implicitRole.role;
-}
-
-export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element<any, any>) {
-	const roleAttrTokens = el.getAttributeToken('role');
-	const roleAttr = roleAttrTokens[0];
-	if (roleAttr) {
-		const roleName = roleAttr.value.trim().toLowerCase();
-		return {
-			name: roleName,
-			isImplicit: false,
-		};
-	}
-	const implicitRole = getImplicitRole(specs, el);
-	if (implicitRole) {
-		return {
-			name: implicitRole,
-			isImplicit: true,
-		};
-	}
-	return null;
-}
-
 /**
  *
  * @see https://www.w3.org/TR/wai-aria-1.2/#propcharacteristic_value
@@ -292,8 +162,14 @@ export function checkAriaValue(type: string, value: string, tokenEnum: string[])
 	return true;
 }
 
-export function checkAria(specs: Readonly<MLMLSpec>, attrName: string, currentValue: string, role?: string) {
-	const ariaAttrs = specs.def['#ariaAttrs'];
+export function checkAria(
+	specs: Readonly<MLMLSpec>,
+	attrName: string,
+	currentValue: string,
+	version: ARIAVersion,
+	role?: string,
+) {
+	const ariaAttrs = ariaSpecs(specs, version).props;
 	const aria = ariaAttrs.find(a => a.name === attrName);
 	if (!aria) {
 		return {
@@ -352,4 +228,29 @@ export function getOwnedLabel<V extends RuleConfigValue, O>(el: Element<V, O>, d
 
 export function decodeCharRef(characterReference: string) {
 	return decodeHtmlEntities(characterReference);
+}
+
+export class Collection<T> {
+	#items = new Set<T>();
+
+	constructor(...items: (T | null | undefined)[]) {
+		this.add(...items);
+	}
+
+	add(...items: (T | null | undefined)[]) {
+		for (const item of items) {
+			if (item == null) {
+				continue;
+			}
+			this.#items.add(item);
+		}
+	}
+
+	toArray() {
+		return Object.freeze(Array.from(this.#items));
+	}
+
+	[Symbol.iterator](): Iterator<T> {
+		return this.#items.values();
+	}
 }

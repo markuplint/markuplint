@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/forms.html#the-form-element
 // https://www.w3.org/TR/html-aria/#el-form
+// https://w3c.github.io/html-aria/#el-form
 {
 	"contentModel": {
 		"contents": [
@@ -85,17 +86,16 @@
 			}
 		}
 	},
-	"implicitRole": {
-		"role": false,
-		"conditions": [
-			{
-				// TODO: Use `aria/` selector
-				"condition": "#hasAccname",
-				"role": "form"
+	"aria": {
+		"implicitRole": "form",
+		"permittedRoles": ["search", "none", "presentation"],
+		"1.1": {
+			"implicitRole": false,
+			"conditions": {
+				":aria(has name)": {
+					"implicitRole": "form"
+				}
 			}
-		]
-	},
-	"permittedRoles": {
-		"roles": ["search", "none", "presentation"]
+		}
 	}
 }

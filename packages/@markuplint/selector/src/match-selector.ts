@@ -2,7 +2,7 @@ import type { Specificity, RegexSelector, RegexSelectorCombinator, RegexSelector
 
 import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is';
 import { regexSelectorMatches } from './regex-selector-matches';
-import { createSelector } from './selector';
+import { Selector } from './selector';
 
 export type SelectorMatches = SelectorMatched | SelectorUnmatched;
 
@@ -25,7 +25,7 @@ export function matchSelector(el: Node, selector: string | RegexSelector | undef
 	}
 
 	if (typeof selector === 'string') {
-		const sel = createSelector(selector);
+		const sel = new Selector(selector);
 		const specificity = sel.match(el);
 		if (specificity) {
 			return {

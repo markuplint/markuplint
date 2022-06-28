@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom';
 
 import { InvalidSelectorError } from './invalid-selector-error';
-import { createSelector } from './selector';
+import { Selector } from './selector';
 
 beforeEach(() => {
 	const dom = new JSDOM();
@@ -25,6 +25,10 @@ function createTestElement(html: string, selector?: string) {
 		throw new Error('An element is not created');
 	}
 	return fragment.firstChild as Element;
+}
+
+function createSelector(selector: string) {
+	return new Selector(selector);
 }
 
 describe('selector matching', () => {
@@ -218,6 +222,19 @@ describe('selector matching', () => {
 		expect(createSelector('|a').match(htmlA)).toBeTruthy();
 		expect(createSelector('*|a').match(htmlA)).toBeTruthy();
 		expect(createSelector('svg|a').match(htmlA)).toBeFalsy();
+	});
+
+	it('namespaced attribute', () => {
+		const svgA = createTestElement('<svg><a href></a></svg>', 'a');
+		expect(createSelector('[href]').match(svgA)).toBeTruthy();
+		expect(createSelector('[|href]').match(svgA)).toBeTruthy();
+		expect(createSelector('[*|href]').match(svgA)).toBeTruthy();
+		expect(createSelector('[xlink|href]').match(svgA)).toBeFalsy();
+		const svgAx = createTestElement('<svg><a xlink:href></a></svg>', 'a');
+		expect(createSelector('[href]').match(svgAx)).toBeTruthy();
+		expect(createSelector('[|href]').match(svgAx)).toBeTruthy();
+		expect(createSelector('[*|href]').match(svgAx)).toBeTruthy();
+		expect(createSelector('[xlink|href]').match(svgAx)).toBeTruthy();
 	});
 
 	it('is invisible tags', () => {

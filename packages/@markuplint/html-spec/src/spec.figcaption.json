@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/grouping-content.html#the-figcaption-element
 // https://www.w3.org/TR/html-aria/#el-figcaption
+// https://w3c.github.io/html-aria/#el-figcaption
 {
 	"contentModel": {
 		"contents": [
@@ -15,10 +16,9 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {},
-	"implicitRole": {
-		"role": false
-	},
-	"permittedRoles": {
-		"roles": ["group", "none", "presentation"]
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["group", "none", "presentation"],
+		"namingProhibited": true
 	}
 }

@@ -1,5 +1,6 @@
 // https://html.spec.whatwg.org/multipage/sections.html#the-body-element
 // https://www.w3.org/TR/html-aria/#el-body
+// https://w3c.github.io/html-aria/#el-body
 {
 	"contentModel": {
 		"contents": [
@@ -80,14 +81,20 @@
 			"type": "FunctionBody"
 		}
 	},
-	"implicitRole": {
-		"role": "generic"
-	},
-	"permittedRoles": {
-		"roles": false,
+	"aria": {
+		"implicitRole": "generic",
+		"permittedRoles": false,
+		"namingProhibited": true,
 		"properties": {
-			"global": true,
-			"role": "document"
+			"global": true
+		},
+		"1.1": {
+			"implicitRole": false,
+			"permittedRoles": false,
+			"properties": {
+				"global": true,
+				"role": "document"
+			}
 		}
 	}
 }
