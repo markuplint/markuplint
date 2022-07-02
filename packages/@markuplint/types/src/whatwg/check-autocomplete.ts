@@ -1,9 +1,12 @@
 import type { Expect } from '..';
 import type { CustomSyntaxChecker } from '../types';
 
+import { log } from '../debug';
 import { getCandicate } from '../get-candicate';
 import { matched } from '../match-result';
 import { TokenCollection } from '../token';
+
+const acLog = log.extend('autocomplete');
 
 /**
  * https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-section
@@ -123,6 +126,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		ref: URL_AUTOCOMPLET,
 	});
 	if (!listingChecked.matched) {
+		acLog('Unmatch: %s', listingChecked.reason);
 		return listingChecked;
 	}
 
@@ -141,6 +145,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 	// > (i.e. the "on" and "off" keywords are not allowed).
 	if (head.match(['on', 'off'], true)) {
 		if (tail.length) {
+			acLog('[Unmatched ("%s")] Unexpected pair with "on" or "off": "%s"', value, tail.value);
 			return tail[0].unmatched({
 				reason: 'extra-token',
 				expects: [
@@ -163,6 +168,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		hasNamedGroup = true;
 		const sectionToken = tail.search(namedGroup);
 		if (sectionToken) {
+			acLog('[Unmatched ("%s")] Deprecated in autofill named group: "%s"', value, sectionToken.value);
 			return sectionToken.unmatched({
 				partName: 'autofill named group',
 				reason: 'duplicated',
@@ -188,6 +194,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		hasPartOfAddress = true;
 		const partToken = tail.search(partOfAddress);
 		if (partToken) {
+			acLog('[Unmatched ("%s")] Duplicated values: "%s"', value, partToken.value);
 			return partToken.unmatched({
 				reason: 'duplicated',
 				expects: [
@@ -220,6 +227,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 
 		if (!contactableFiledToken.match(contactableFieldNames, true)) {
 			const candicate = getCandicate(contactableFiledToken.value, contactableFieldNames);
+			acLog('[Unmatched ("%s")] Unexpected token: "%s"', value, contactableFiledToken.value);
 			return contactableFiledToken.unmatched({
 				reason: 'unexpected-token',
 				expects: contactableFieldNames.slice().map(token => ({
@@ -232,6 +240,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		}
 
 		if (tail[1]) {
+			acLog('[Unmatched ("%s")] Unnecessarily token: "%s"', value, tail[1].value);
 			return tail[1].unmatched({
 				reason: 'extra-token',
 				expects: [
@@ -249,6 +258,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 
 	if (head.match([...autofillFieldNames, ...contactableFieldNames], true)) {
 		if (tail.length) {
+			acLog('[Unmatched ("%s")] Unnecessarily token: "%s"', value, tail[0].value);
 			return tail[0].unmatched({
 				reason: 'extra-token',
 				expects: [
@@ -315,6 +325,11 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 
 	candicate = candicate || getCandicate(head.value, autofillFieldNames);
 
+	if (candicate) {
+		acLog('[Unmatched ("%s")] Unexpected token: "%s", Do you mean "%s"? ', value, head.value, candicate);
+	} else {
+		acLog('[Unmatched ("%s")] Unexpected token: "%s"', value, head.value);
+	}
 	return head.unmatched({
 		reason: 'unexpected-token',
 		expects,
