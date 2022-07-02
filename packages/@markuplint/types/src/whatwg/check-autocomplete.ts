@@ -89,6 +89,11 @@ const contactableFieldNames = [
 	'impp',
 ];
 
+/**
+ * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn
+ */
+const webauthnFieldNames = ['webauthn'];
+
 const URL_AUTOCOMPLET = 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete';
 const URL_ON_OFF =
 	'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls:-the-autocomplete-attribute:attr-fe-autocomplete-on-2';
@@ -240,7 +245,23 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		}
 
 		if (tail[1]) {
-			acLog('[Unmatched ("%s")] Unnecessarily token: "%s"', value, tail[1].value);
+			if (tail[1].match(webauthnFieldNames)) {
+				return matched();
+			}
+
+			const candicate = getCandicate(tail[1].value, webauthnFieldNames);
+
+			if (candicate) {
+				acLog(
+					'[Unmatched ("%s")] Unnecessarily token: "%s", Do you mean "%s"? ',
+					value,
+					tail[1].value,
+					candicate,
+				);
+			} else {
+				acLog('[Unmatched ("%s")] Unnecessarily token: "%s"', value, tail[1].value);
+			}
+
 			return tail[1].unmatched({
 				reason: 'extra-token',
 				expects: [
@@ -258,7 +279,23 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 
 	if (head.match([...autofillFieldNames, ...contactableFieldNames], true)) {
 		if (tail.length) {
-			acLog('[Unmatched ("%s")] Unnecessarily token: "%s"', value, tail[0].value);
+			if (tail[0].match(webauthnFieldNames)) {
+				return matched();
+			}
+
+			const candicate = getCandicate(tail[0].value, webauthnFieldNames);
+
+			if (candicate) {
+				acLog(
+					'[Unmatched ("%s")] Unnecessarily token: "%s", Do you mean "%s"? ',
+					value,
+					tail[0].value,
+					candicate,
+				);
+			} else {
+				acLog('[Unmatched ("%s")] Unnecessarily token: "%s"', value, tail[0].value);
+			}
+
 			return tail[0].unmatched({
 				reason: 'extra-token',
 				expects: [
@@ -271,6 +308,10 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 			});
 		}
 
+		return matched();
+	}
+
+	if (head.match(webauthnFieldNames)) {
 		return matched();
 	}
 
