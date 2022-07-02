@@ -2,28 +2,37 @@ import { checkAutoComplete } from './check-autocomplete';
 
 const check = checkAutoComplete();
 
-test('valid', () => {
+test('basic', () => {
 	expect(check('on').matched).toBe(true);
+	expect(check('on webauthn').matched).toBe(false);
 	expect(check('off').matched).toBe(true);
+	expect(check('off webauthn').matched).toBe(false);
 	expect(check('name').matched).toBe(true);
 	expect(check('given-name').matched).toBe(true);
+	expect(check('given-name webauthn').matched).toBe(true);
+	expect(check('given-name webauthun').matched).toBe(false);
 	expect(check('section-').matched).toBe(true);
 	expect(check('section-foo').matched).toBe(true);
+	expect(check('section-foo webauthn').matched).toBe(true);
 	expect(check('section-foo name').matched).toBe(true);
+	expect(check('section-foo name webauthn').matched).toBe(true);
 	expect(check('section-foo shipping name').matched).toBe(true);
 	expect(check('section-foo billing name').matched).toBe(true);
 	expect(check('section-foo billing home').matched).toBe(true);
 	expect(check('section-foo billing work').matched).toBe(true);
 	expect(check('section-foo billing home tel').matched).toBe(true);
 	expect(check('section-foo billing work email').matched).toBe(true);
+	expect(check('section-foo billing work email webauthn').matched).toBe(true);
 	expect(check('shipping name').matched).toBe(true);
 	expect(check('billing name').matched).toBe(true);
 	expect(check('billing home').matched).toBe(true);
 	expect(check('billing work').matched).toBe(true);
 	expect(check('billing home tel').matched).toBe(true);
 	expect(check('billing work email').matched).toBe(true);
+	expect(check('billing work email webauthn').matched).toBe(true);
 	expect(check('home tel').matched).toBe(true);
 	expect(check('work email').matched).toBe(true);
+	expect(check('work email webauthn').matched).toBe(true);
 });
 
 test('unexpected-token', () => {
