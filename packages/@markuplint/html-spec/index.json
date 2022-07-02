@@ -13071,7 +13071,19 @@
 								"zeroOrMore": "#script-supporting"
 							},
 							{
-								"oneOrMore": ["h1", "h2", "h3", "h4", "h5", "h6"]
+								"zeroOrMore": "p"
+							},
+							{
+								"zeroOrMore": "#script-supporting"
+							},
+							{
+								"require": ["h1", "h2", "h3", "h4", "h5", "h6"]
+							},
+							{
+								"zeroOrMore": "#script-supporting"
+							},
+							{
+								"zeroOrMore": "p"
 							},
 							{
 								"zeroOrMore": "#script-supporting"
@@ -14780,7 +14792,7 @@
 		{
 			"name": "menu",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu",
-			"description": "The <menu> HTML element is a semantic alternative to <ul>. It represents an unordered list of items (represented by <li> elements), each of which represents a link or other command that the user can activate.",
+			"description": "The <menu> HTML element is described in the HTML specification as a semantic alternative to <ul>, but treated by browsers (and exposed through the accessibility tree) as no different than <ul>. It represents an unordered list of items (which are represented by <li> elements).",
 			"categories": ["#flow", "#palpable"],
 			"permittedStructures": {
 				"summary": "Zero or more occurrences of <li>, <script>, and <template>.",
@@ -15266,7 +15278,7 @@
 					"description": "The form element, if any, that the object element is associated with (its form owner). The value of the attribute must be an ID of a <form> element in the same document."
 				},
 				"height": {
-					"description": "The height of the displayed resource, in CSS pixels. -- (Absolute values only. NO percentages)"
+					"description": "The height of the displayed resource, in CSS pixels. — (Absolute values only. NO percentages)"
 				},
 				"name": {
 					"ref": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-name",
@@ -15285,7 +15297,7 @@
 					"description": "A hash-name reference to a <map> element; that is a '#' followed by the value of a name of a map element."
 				},
 				"width": {
-					"description": "The width of the display resource, in CSS pixels. -- (Absolute values only. NO percentages)"
+					"description": "The width of the display resource, in CSS pixels. — (Absolute values only. NO percentages)"
 				}
 			}
 		},
@@ -17649,7 +17661,7 @@
 			"description": "The <video> HTML element embeds a media player which supports video playback into the document. You can use <video> for audio content as well, but the <audio> element may provide a more appropriate user experience.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"permittedStructures": {
-				"summary": "If the element has a src attribute: zero or more <track> elements, followed by transparent content that contains no media elements–that is no <audio> or <video> Else: zero or more <source> elements, followed by zero or more <track> elements, followed by transparent content that contains no media elements–that is no <audio> or <video>.",
+				"summary": "If the element has a src attribute: zero or more <track> elements, followed by transparent content that contains no media elements–that is no <audio> or <video>. Else: zero or more <source> elements, followed by zero or more <track> elements, followed by transparent content that contains no media elements–that is no <audio> or <video>.",
 				"tag": "video",
 				"conditional": [
 					{
@@ -17741,7 +17753,7 @@
 					"experimental": true
 				},
 				"height": {
-					"description": "The height of the video's display area, in CSS pixels (absolute values only; no percentages.)"
+					"description": "The height of the video's display area, in CSS pixels (absolute values only; no percentages)."
 				},
 				"loop": {
 					"description": "A Boolean attribute; if specified, the browser will automatically seek back to the start upon reaching the end of the video."
