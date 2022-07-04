@@ -13,6 +13,10 @@ export async function resolvePlugins(pluginPaths?: (string | PluginConfig)[]) {
 	return plugins.slice();
 }
 
+export function cacheClear() {
+	cache.clear();
+}
+
 async function importPlugin(pluginPath: string | PluginConfig): Promise<Plugin> {
 	const config = getPluginConfig(pluginPath);
 	const cached = cache.get(config.name);
