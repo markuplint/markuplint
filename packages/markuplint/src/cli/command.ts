@@ -78,7 +78,8 @@ export async function command(files: Target[], options: CLIOptions, apiOptions?:
 	}
 
 	if (format === 'json') {
-		return process.stdout.write(JSON.stringify(jsonOuput, null, 2) + '\n');
+		process.stdout.write(JSON.stringify(jsonOuput, null, 2) + '\n');
+		return false;
 	}
 
 	return hasError;
