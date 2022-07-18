@@ -10,26 +10,32 @@
 						{
 							"oneOrMore": [
 								{
-									"zeroOrMore": "#script-supporting"
+									"zeroOrMore": ":model(script-supporting)"
 								},
 								{
 									"oneOrMore": "dt"
 								},
 								{
-									"zeroOrMore": "#script-supporting"
+									"zeroOrMore": ":model(script-supporting)"
 								},
 								{
 									"oneOrMore": "dd"
 								},
 								{
-									"zeroOrMore": "#script-supporting"
+									"zeroOrMore": ":model(script-supporting)"
 								}
 							]
 						}
 					],
 					[
 						{
-							"oneOrMore": ["div", "#script-supporting"]
+							"zeroOrMore": ":model(script-supporting)"
+						},
+						{
+							"oneOrMore": "div"
+						},
+						{
+							"zeroOrMore": ":model(script-supporting)"
 						}
 					]
 				]

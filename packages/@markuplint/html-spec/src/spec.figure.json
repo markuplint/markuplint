@@ -5,15 +5,26 @@
 	"contentModel": {
 		"contents": [
 			{
-				"interleave": [
+				"choice": [
 					[
 						{
-							"optional": "figcaption"
+							"require": "figcaption"
+						},
+						{
+							"oneOrMore": ":model(flow)"
 						}
 					],
 					[
 						{
-							"zeroOrMore": "#flow"
+							"oneOrMore": ":model(flow)"
+						},
+						{
+							"require": "figcaption"
+						}
+					],
+					[
+						{
+							"oneOrMore": ":model(flow)"
 						}
 					]
 				]

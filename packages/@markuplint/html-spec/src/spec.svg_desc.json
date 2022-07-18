@@ -4,7 +4,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"require": ["#SVGOtherXMLNamespace", "#text"]
+				"require": [":model(SVGOtherXMLNamespace)", "#text"]
 			}
 		]
 	},

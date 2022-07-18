@@ -5,7 +5,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "#flow"
+				"oneOrMore": ":model(flow)"
 			}
 		],
 		"conditional": [
@@ -13,19 +13,19 @@
 				"condition": "dl > div",
 				"contents": [
 					{
-						"zeroOrMore": "#script-supporting"
+						"zeroOrMore": ":model(script-supporting)"
 					},
 					{
 						"oneOrMore": "dt"
 					},
 					{
-						"zeroOrMore": "#script-supporting"
+						"zeroOrMore": ":model(script-supporting)"
 					},
 					{
 						"oneOrMore": "dd"
 					},
 					{
-						"zeroOrMore": "#script-supporting"
+						"zeroOrMore": ":model(script-supporting)"
 					}
 				]
 			}

@@ -5,8 +5,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "#phrasing",
-				"notAllowedDescendants": ["meter"]
+				"oneOrMore": ":model(phrasing):not(meter, :has(meter))"
 			}
 		]
 	},

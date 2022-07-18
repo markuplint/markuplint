@@ -113,7 +113,6 @@ export async function fetchHTMLElement(link: string) {
 
 	const categories: Category[] = [];
 	const cat = getProperty($, 'Content categories');
-	if (/transparent/i.test(cat)) categories.push('#transparent');
 	if (/metadata content/i.test(cat)) categories.push('#metadata');
 	if (/flow content/i.test(cat)) categories.push('#flow');
 	if (/sectioning content/i.test(cat)) categories.push('#sectioning');

@@ -5,7 +5,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": ["th", "td", "#script-supporting"]
+				"zeroOrMore": ["th", "td", ":model(script-supporting)"]
 			}
 		]
 	},

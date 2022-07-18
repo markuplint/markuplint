@@ -7,15 +7,14 @@
 				"condition": "svg|switch > svg|a",
 				"contents": [
 					{
-						"zeroOrMore": "#transparent"
+						"transparent": "*"
 					}
 				]
 			}
 		],
 		"contents": [
 			{
-				"zeroOrMore": ["#SVGDescriptive", "#transparent"],
-				"ignore": "svg|a"
+				"transparent": "*, :model(SVGDescriptive):not(svg|a, :has(svg|a))"
 			}
 		]
 	},

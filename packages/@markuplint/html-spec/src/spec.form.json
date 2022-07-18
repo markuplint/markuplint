@@ -5,8 +5,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "#flow",
-				"notAllowedDescendants": ["form"]
+				"oneOrMore": ":model(flow):not(form, :has(form))"
 			}
 		]
 	},

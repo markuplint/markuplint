@@ -4,7 +4,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": ["#SVGDescriptive", "svg|script"]
+				"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
 			}
 		]
 	},

@@ -5,15 +5,13 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "#metadata",
-				"ignore": "title"
+				"zeroOrMore": ":model(metadata):not(title)"
 			},
 			{
 				"require": "title"
 			},
 			{
-				"zeroOrMore": "#metadata",
-				"ignore": "title"
+				"zeroOrMore": ":model(metadata):not(title)"
 			}
 		]
 	},

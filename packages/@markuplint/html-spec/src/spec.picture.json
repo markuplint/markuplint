@@ -5,19 +5,19 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "#script-supporting"
+				"zeroOrMore": ":model(script-supporting)"
 			},
 			{
 				"zeroOrMore": "source"
 			},
 			{
-				"zeroOrMore": "#script-supporting"
+				"zeroOrMore": ":model(script-supporting)"
 			},
 			{
 				"require": "img"
 			},
 			{
-				"zeroOrMore": "#script-supporting"
+				"zeroOrMore": ":model(script-supporting)"
 			}
 		]
 	},

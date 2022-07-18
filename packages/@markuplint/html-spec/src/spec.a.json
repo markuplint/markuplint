@@ -6,8 +6,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "#transparent",
-				"notAllowedDescendants": ["#interactive"]
+				"transparent": ":not(:model(interactive), a, [tabindex], :has(:model(interactive), a, [tabindex]))"
 			}
 		]
 	},

@@ -6,7 +6,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "#flow"
+				"oneOrMore": ":model(flow)"
 			}
 		]
 	},

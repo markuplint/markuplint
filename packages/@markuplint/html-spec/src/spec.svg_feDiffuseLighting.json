@@ -4,21 +4,21 @@
 	"contentModel": {
 		"contents": [
 			{
-				"interleave": [
+				"choice": [
 					[
 						{
-							"zeroOrMore": ["#SVGDescriptive", "svg|script"]
+							"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
 						},
 						{
-							"require": "#SVGLightSource"
+							"require": ":model(SVGLightSource)"
 						}
 					],
 					[
 						{
-							"require": "#SVGLightSource"
+							"require": ":model(SVGLightSource)"
 						},
 						{
-							"zeroOrMore": ["#SVGDescriptive", "svg|script"]
+							"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
 						}
 					]
 				]

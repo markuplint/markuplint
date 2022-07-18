@@ -5,11 +5,11 @@
 		"contents": [
 			{
 				"zeroOrMore": [
-					"#SVGAnimation",
-					"#SVGDescriptive",
-					"#SVGShape",
-					"#SVGStructural",
-					"#SVGGradient",
+					":model(SVGAnimation)",
+					":model(SVGDescriptive)",
+					":model(SVGShape)",
+					":model(SVGStructural)",
+					":model(SVGGradient)",
 					"svg|a",
 					"svg|altGlyphDef",
 					"svg|clipPath",

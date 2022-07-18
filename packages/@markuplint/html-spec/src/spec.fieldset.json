@@ -8,7 +8,7 @@
 				"optional": "legend"
 			},
 			{
-				"zeroOrMore": "#flow"
+				"oneOrMore": ":model(flow)"
 			}
 		]
 	},

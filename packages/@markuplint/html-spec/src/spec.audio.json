@@ -11,8 +11,7 @@
 				"zeroOrMore": "track"
 			},
 			{
-				"zeroOrMore": "#transparent",
-				"notAllowedDescendants": ["audio", "video"]
+				"transparent": ":not(audio, video, :has(audio, video))"
 			}
 		],
 		"conditional": [
@@ -23,8 +22,7 @@
 						"zeroOrMore": "track"
 					},
 					{
-						"zeroOrMore": "#transparent",
-						"notAllowedDescendants": ["audio", "video"]
+						"transparent": ":not(audio, video, :has(audio, video))"
 					}
 				]
 			}

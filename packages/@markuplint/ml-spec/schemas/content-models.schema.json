@@ -8,7 +8,8 @@
 				"contents": {
 					"oneOf": [
 						{
-							"$ref": "#/definitions/PermittedContentSpec"
+							"type": "array",
+							"items": { "$ref": "#/definitions/PermittedContentPattern" }
 						},
 						{ "type": "boolean" }
 					]
@@ -27,7 +28,8 @@
 							"contents": {
 								"oneOf": [
 									{
-										"$ref": "#/definitions/PermittedContentSpec"
+										"type": "array",
+										"items": { "$ref": "#/definitions/PermittedContentPattern" }
 									},
 									{ "type": "boolean" }
 								]
@@ -57,7 +59,6 @@
 				"#heading",
 				"#sectioning",
 				"#metadata",
-				"#transparent",
 				"#embedded",
 				"#palpable",
 				"#script-supporting",
@@ -83,7 +84,7 @@
 				"#SVGOtherXMLNamespace"
 			]
 		},
-		"Target": {
+		"Model": {
 			"oneOf": [
 				{ "$ref": "#/definitions/ContentType" },
 				{
@@ -93,11 +94,7 @@
 				}
 			]
 		},
-		"PermittedContentSpec": {
-			"type": "array",
-			"items": { "$ref": "#/definitions/PermittedContent" }
-		},
-		"PermittedContent": {
+		"PermittedContentPattern": {
 			"type": "object",
 			"oneOf": [
 				{ "$ref": "#/definitions/PermittedContentRequire" },
@@ -105,7 +102,7 @@
 				{ "$ref": "#/definitions/PermittedContentOneOrMore" },
 				{ "$ref": "#/definitions/PermittedContentZeroOrMore" },
 				{ "$ref": "#/definitions/PermittedContentChoice" },
-				{ "$ref": "#/definitions/PermittedContentInterleave" }
+				{ "$ref": "#/definitions/PermittedContentTransparent" }
 			]
 		},
 		"PermittedContentRequire": {
@@ -113,13 +110,7 @@
 			"additionalProperties": false,
 			"required": ["require"],
 			"properties": {
-				"require": { "$ref": "#/definitions/Target" },
-				"ignore": { "$ref": "#/definitions/Target" },
-				"notAllowedDescendants": {
-					"type": "array",
-					"items": { "$ref": "#/definitions/ContentType" },
-					"uniqueItems": true
-				},
+				"require": { "$ref": "#/definitions/Model" },
 				"max": { "type": "number" },
 				"min": { "type": "number" },
 				"_TODO_": { "type": "string" }
@@ -130,13 +121,7 @@
 			"additionalProperties": false,
 			"required": ["optional"],
 			"properties": {
-				"optional": { "$ref": "#/definitions/Target" },
-				"ignore": { "$ref": "#/definitions/Target" },
-				"notAllowedDescendants": {
-					"type": "array",
-					"items": { "$ref": "#/definitions/ContentType" },
-					"uniqueItems": true
-				},
+				"optional": { "$ref": "#/definitions/Model" },
 				"max": { "type": "number" },
 				"_TODO_": { "type": "string" }
 			}
@@ -147,13 +132,13 @@
 			"required": ["oneOrMore"],
 			"properties": {
 				"oneOrMore": {
-					"oneOf": [{ "$ref": "#/definitions/Target" }, { "$ref": "#/definitions/PermittedContentSpec" }]
-				},
-				"ignore": { "$ref": "#/definitions/Target" },
-				"notAllowedDescendants": {
-					"type": "array",
-					"items": { "$ref": "#/definitions/ContentType" },
-					"uniqueItems": true
+					"oneOf": [
+						{ "$ref": "#/definitions/Model" },
+						{
+							"type": "array",
+							"items": { "$ref": "#/definitions/PermittedContentPattern" }
+						}
+					]
 				},
 				"max": { "type": "number" },
 				"_TODO_": { "type": "string" }
@@ -165,13 +150,13 @@
 			"required": ["zeroOrMore"],
 			"properties": {
 				"zeroOrMore": {
-					"oneOf": [{ "$ref": "#/definitions/Target" }, { "$ref": "#/definitions/PermittedContentSpec" }]
-				},
-				"ignore": { "$ref": "#/definitions/Target" },
-				"notAllowedDescendants": {
-					"type": "array",
-					"items": { "$ref": "#/definitions/ContentType" },
-					"uniqueItems": true
+					"oneOf": [
+						{ "$ref": "#/definitions/Model" },
+						{
+							"type": "array",
+							"items": { "$ref": "#/definitions/PermittedContentPattern" }
+						}
+					]
 				},
 				"max": { "type": "number" },
 				"_TODO_": { "type": "string" }
@@ -184,24 +169,24 @@
 			"properties": {
 				"choice": {
 					"type": "array",
-					"items": { "$ref": "#/definitions/PermittedContentSpec" },
+					"items": {
+						"type": "array",
+						"items": { "$ref": "#/definitions/PermittedContentPattern" }
+					},
 					"minItems": 2,
 					"maxItems": 5
 				},
 				"_TODO_": { "type": "string" }
 			}
 		},
-		"PermittedContentInterleave": {
+		"PermittedContentTransparent": {
 			"type": "object",
 			"additionalProperties": false,
-			"required": ["interleave"],
+			"required": ["transparent"],
 			"properties": {
-				"interleave": {
-					"type": "array",
-					"items": { "$ref": "#/definitions/PermittedContentSpec" },
-					"minItems": 2
-				},
-				"_TODO_": { "type": "string" }
+				"transparent": {
+					"type": "string"
+				}
 			}
 		}
 	},

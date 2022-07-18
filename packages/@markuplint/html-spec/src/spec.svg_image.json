@@ -5,8 +5,8 @@
 		"contents": [
 			{
 				"zeroOrMore": [
-					"#SVGAnimation",
-					"#SVGDescriptive",
+					":model(SVGAnimation)",
+					":model(SVGDescriptive)",
 					"svg|clipPath",
 					"svg|mask",
 					"svg|script",

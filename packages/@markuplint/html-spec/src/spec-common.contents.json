@@ -101,13 +101,7 @@
 		],
 		"#sectioning": ["article", "aside", "nav", "section"],
 		// https://html.spec.whatwg.org/multipage/dom.html#heading-content
-		// TODO:
-		// Defer specifying `:has(...)` to hgroup until the permitted-content rule improves its evaluation
-		// because can not use the selector at RegExp in JavaScript.
-		// ISSUE: https://github.com/markuplint/markuplint/issues/491
-		// ISSUE: https://github.com/markuplint/markuplint/issues/375
-		// "#heading": ["h1", "h2", "h3", "h4", "h5", "h6", "hgroup:has(h1,h2,h3,h4,h5,h6)"],
-		"#heading": ["h1", "h2", "h3", "h4", "h5", "h6", "hgroup"],
+		"#heading": ["h1", "h2", "h3", "h4", "h5", "h6", "hgroup:has(h1,h2,h3,h4,h5,h6)"],
 		"#phrasing": [
 			"a",
 			"abbr",

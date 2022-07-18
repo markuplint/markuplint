@@ -5,8 +5,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "#phrasing",
-				"notAllowedDescendants": ["progress"]
+				"oneOrMore": ":model(phrasing):not(progress, :has(progress))"
 			}
 		]
 	},

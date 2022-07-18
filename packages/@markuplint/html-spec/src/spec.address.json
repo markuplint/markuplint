@@ -6,8 +6,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "#flow",
-				"notAllowedDescendants": ["address", "#heading", "#sectioning", "header", "footer"]
+				"oneOrMore": ":model(flow):not(address, :model(heading), :model(sectioning), header, foooter, :has(address, :model(heading), :model(sectioning), header, foooter))"
 			}
 		]
 	},
