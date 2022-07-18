@@ -54,7 +54,7 @@ function getVersionResolvedARIA(
 	if (aria !== undefined) {
 		return aria;
 	}
-	const spec = getSpecByTagName(specs, localName, namespace)?.aria;
+	const spec = getSpecByTagName(specs.specs, localName, namespace)?.aria;
 	if (!spec) {
 		cache.set(key, null);
 		return null;
