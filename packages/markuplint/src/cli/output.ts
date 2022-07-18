@@ -10,7 +10,16 @@ export function output(results: MLResultInfo, options: CLIOptions) {
 	let out: string[];
 	switch (format.toLowerCase()) {
 		case 'json': {
-			process.stdout.write(JSON.stringify(results.violations, null, 2));
+			process.stdout.write(
+				JSON.stringify(
+					results.violations.map(v => ({
+						...v,
+						filePath: results.filePath,
+					})),
+					null,
+					2,
+				),
+			);
 			return;
 		}
 		case 'simple': {
