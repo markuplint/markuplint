@@ -1,6 +1,7 @@
 import type { APIOptions } from '../api/types';
 import type { CLIOptions } from './bootstrap';
 import type { Target } from '@markuplint/file-resolver';
+import type { Violation } from '@markuplint/ml-config';
 
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -32,7 +33,11 @@ export async function command(files: Target[], options: CLIOptions, apiOptions?:
 		log('Fix option: %s', fix);
 	}
 
+	const format = options.format?.toLowerCase().trim();
+
 	let hasError = false;
+
+	const jsonOuput: (Violation & { filePath: string })[] = [];
 
 	for (const file of fileList) {
 		const engine = new MLEngine(file, {
@@ -57,9 +62,23 @@ export async function command(files: Target[], options: CLIOptions, apiOptions?:
 			await fs.writeFile(result.filePath, result.fixedCode, { encoding: 'utf8' });
 			process.stdout.write(`markuplint: Fix "${result.filePath}"\n`);
 		} else {
+			if (format === 'json') {
+				jsonOuput.push(
+					...result.violations.map(v => ({
+						...v,
+						filePath: result.filePath,
+					})),
+				);
+				continue;
+			}
+
 			log('Output reports');
-			await output(result, options);
+			output(result, options);
 		}
+	}
+
+	if (format === 'json') {
+		return process.stdout.write(JSON.stringify(jsonOuput, null, 2) + '\n');
 	}
 
 	return hasError;
