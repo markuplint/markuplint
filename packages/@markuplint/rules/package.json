@@ -21,6 +21,7 @@
 		"@markuplint/ml-core": "3.0.0-alpha.0",
 		"@markuplint/ml-spec": "3.0.0-alpha.0",
 		"@markuplint/types": "3.0.0-alpha.0",
+		"@ungap/structured-clone": "^1.0.1",
 		"debug": "^4.3.4",
 		"html-entities": "^2.3.3",
 		"tslib": "^2.3.1"
