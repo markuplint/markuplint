@@ -10,6 +10,7 @@ import { Document } from '../ml-dom';
 export type CreateTestOptions = {
 	config?: Config;
 	parser?: MLMarkupLanguageParser;
+	specs?: MLMLSpec;
 };
 
 export function createTestDocument<T extends RuleConfigValue = any, O = any>(
@@ -18,7 +19,7 @@ export function createTestDocument<T extends RuleConfigValue = any, O = any>(
 ) {
 	const ast = options?.parser ? options.parser.parse(sourceCode) : parse(sourceCode);
 	const ruleset = convertRuleset(options?.config);
-	const document = new Document<T, O>(ast, ruleset, [{} as any, {}]);
+	const document = new Document<T, O>(ast, ruleset, [options?.specs ?? ({} as any), {}]);
 	return document;
 }
 
