@@ -5,8 +5,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "#phrasing",
-				"notAllowedDescendants": ["#interactive"]
+				"oneOrMore": ":model(phrasing):not(:model(interactive), :has(:model(interactive)))"
 			}
 		]
 	},

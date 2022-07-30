@@ -5,8 +5,8 @@
 		"contents": [
 			{
 				"zeroOrMore": [
-					"#SVGDescriptive",
-					"#SVGPaintServer",
+					":model(SVGDescriptive)",
+					":model(SVGPaintServer)",
 					"svg|a",
 					"svg|animate",
 					"svg|script",

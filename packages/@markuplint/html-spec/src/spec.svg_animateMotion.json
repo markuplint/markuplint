@@ -4,10 +4,10 @@
 	"contentModel": {
 		"contents": [
 			{
-				"interleave": [
+				"choice": [
 					[
 						{
-							"oneOrMore": ["#SVGDescriptive", "svg|script"]
+							"oneOrMore": [":model(SVGDescriptive)", "svg|script"]
 						},
 						{
 							"optional": "svg|mpath"
@@ -18,7 +18,7 @@
 							"optional": "svg|mpath"
 						},
 						{
-							"oneOrMore": ["#SVGDescriptive", "svg|script"]
+							"oneOrMore": [":model(SVGDescriptive)", "svg|script"]
 						}
 					]
 				]

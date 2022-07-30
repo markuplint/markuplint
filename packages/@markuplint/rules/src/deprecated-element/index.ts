@@ -12,7 +12,7 @@ export default createRule({
 			) {
 				return;
 			}
-			const spec = getSpec(el, document.specs);
+			const spec = getSpec(el, document.specs.specs);
 			if (spec && (spec.obsolete || spec.deprecated || spec.nonStandard)) {
 				const message = t(
 					'{0} is {1:c}',

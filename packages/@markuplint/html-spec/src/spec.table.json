@@ -5,25 +5,25 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "#script-supporting"
+				"zeroOrMore": ":model(script-supporting)"
 			},
 			{
 				"optional": "caption"
 			},
 			{
-				"zeroOrMore": "#script-supporting"
+				"zeroOrMore": ":model(script-supporting)"
 			},
 			{
 				"zeroOrMore": "colgroup"
 			},
 			{
-				"zeroOrMore": "#script-supporting"
+				"zeroOrMore": ":model(script-supporting)"
 			},
 			{
 				"optional": "thead"
 			},
 			{
-				"zeroOrMore": "#script-supporting"
+				"zeroOrMore": ":model(script-supporting)"
 			},
 			{
 				"choice": [
@@ -40,13 +40,13 @@
 				]
 			},
 			{
-				"zeroOrMore": "#script-supporting"
+				"zeroOrMore": ":model(script-supporting)"
 			},
 			{
 				"optional": "tfoot"
 			},
 			{
-				"zeroOrMore": "#script-supporting"
+				"zeroOrMore": ":model(script-supporting)"
 			}
 		]
 	},

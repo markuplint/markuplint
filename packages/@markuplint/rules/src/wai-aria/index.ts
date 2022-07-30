@@ -39,7 +39,7 @@ export default createRule<boolean, Options>({
 
 			const ariaAttrs = new Collection(roleAttr, ...propAttrs);
 
-			const elSpec = getSpec(el, document.specs);
+			const elSpec = getSpec(el, document.specs.specs);
 			if (!elSpec) {
 				return;
 			}

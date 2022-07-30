@@ -1,6 +1,7 @@
 export * from './dom-traverse/accname-computation';
 export * from './dom-traverse/get-attr-specs';
 export * from './dom-traverse/get-computed-role';
+export * from './dom-traverse/get-content-model';
 export * from './dom-traverse/get-implicit-role';
 export * from './dom-traverse/get-permitted-roles';
 export * from './dom-traverse/get-spec';

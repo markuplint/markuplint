@@ -1,3 +1,5 @@
+import type { SelectorMatchedResult } from './types';
+
 import { JSDOM } from 'jsdom';
 
 import { InvalidSelectorError } from './invalid-selector-error';
@@ -273,5 +275,14 @@ describe('specificity', () => {
 		expect(createSelector(':where(div, #foo)').match(el)).toStrictEqual([0, 0, 0]);
 		expect(createSelector(':where(div, #foo, .bar)').match(el)).toStrictEqual([0, 0, 0]);
 		expect(createSelector(':where(div, #foo.bar)').match(el)).toStrictEqual([0, 0, 0]);
+	});
+});
+
+describe('search', () => {
+	it('search', () => {
+		const el = createTestElement('<a><div><button></button></div></a>');
+		expect(
+			(createSelector(':has(button)').search(el)[0] as SelectorMatchedResult).has?.[0].nodes?.[0].nodeName,
+		).toBe('BUTTON');
 	});
 });

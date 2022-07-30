@@ -8,7 +8,7 @@
 				"require": "summary"
 			},
 			{
-				"zeroOrMore": "#flow"
+				"oneOrMore": ":model(flow)"
 			}
 		]
 	},

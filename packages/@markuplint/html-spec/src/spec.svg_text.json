@@ -6,10 +6,10 @@
 			{
 				"zeroOrMore": [
 					"#text",
-					"#SVGAnimation",
-					"#SVGDescriptive",
-					"#SVGPaintServer",
-					"#SVGTextContentChild",
+					":model(SVGAnimation)",
+					":model(SVGDescriptive)",
+					":model(SVGPaintServer)",
+					":model(SVGTextContentChild)",
 					"svg|a",
 					"svg|clipPath",
 					"svg|marker",

@@ -4,7 +4,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|animateTransform", "svg|script", "svg|set"]
+				"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|animateTransform", "svg|script", "svg|set"]
 			}
 		]
 	},

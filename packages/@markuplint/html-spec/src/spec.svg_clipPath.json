@@ -4,7 +4,14 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "#SVGShape", "svg|text", "svg|use", "svg|script"]
+				"zeroOrMore": [
+					":model(SVGAnimation)",
+					":model(SVGDescriptive)",
+					":model(SVGShape)",
+					"svg|text",
+					"svg|use",
+					"svg|script"
+				]
 			}
 		]
 	},

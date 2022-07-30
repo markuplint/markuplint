@@ -5,14 +5,14 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type PermittedContent =
+export type PermittedContentPattern =
 	| PermittedContentRequire
 	| PermittedContentOptional
 	| PermittedContentOneOrMore
 	| PermittedContentZeroOrMore
 	| PermittedContentChoice
-	| PermittedContentInterleave;
-export type Target = ContentType | ContentType[];
+	| PermittedContentTransparent;
+export type Model = ContentType | ContentType[];
 export type ContentType = string | Category;
 export type Category =
 	| '#text'
@@ -22,7 +22,6 @@ export type Category =
 	| '#heading'
 	| '#sectioning'
 	| '#metadata'
-	| '#transparent'
 	| '#embedded'
 	| '#palpable'
 	| '#script-supporting'
@@ -46,63 +45,53 @@ export type Category =
 	| '#SVGTextContent'
 	| '#SVGTextContentChild'
 	| '#SVGOtherXMLNamespace';
-export type PermittedContentSpec = PermittedContent[];
 
 export interface ContentModelsSchema {
 	__contentModel?: ContentModel;
 }
 export interface ContentModel {
-	contents: PermittedContentSpec | boolean;
+	contents: PermittedContentPattern[] | boolean;
 	descendantOf?: string;
 	conditional?: {
 		condition: string;
-		contents: PermittedContentSpec | boolean;
+		contents: PermittedContentPattern[] | boolean;
 	}[];
 }
 export interface PermittedContentRequire {
-	require: Target;
-	ignore?: Target;
-	notAllowedDescendants?: ContentType[];
+	require: Model;
 	max?: number;
 	min?: number;
 	_TODO_?: string;
 }
 export interface PermittedContentOptional {
-	optional: Target;
-	ignore?: Target;
-	notAllowedDescendants?: ContentType[];
+	optional: Model;
 	max?: number;
 	_TODO_?: string;
 }
 export interface PermittedContentOneOrMore {
-	oneOrMore: Target | PermittedContentSpec;
-	ignore?: Target;
-	notAllowedDescendants?: ContentType[];
+	oneOrMore: Model | PermittedContentPattern[];
 	max?: number;
 	_TODO_?: string;
 }
 export interface PermittedContentZeroOrMore {
-	zeroOrMore: Target | PermittedContentSpec;
-	ignore?: Target;
-	notAllowedDescendants?: ContentType[];
+	zeroOrMore: Model | PermittedContentPattern[];
 	max?: number;
 	_TODO_?: string;
 }
 export interface PermittedContentChoice {
 	choice:
-		| [PermittedContentSpec, PermittedContentSpec]
-		| [PermittedContentSpec, PermittedContentSpec, PermittedContentSpec]
-		| [PermittedContentSpec, PermittedContentSpec, PermittedContentSpec, PermittedContentSpec]
+		| [PermittedContentPattern[], PermittedContentPattern[]]
+		| [PermittedContentPattern[], PermittedContentPattern[], PermittedContentPattern[]]
+		| [PermittedContentPattern[], PermittedContentPattern[], PermittedContentPattern[], PermittedContentPattern[]]
 		| [
-				PermittedContentSpec,
-				PermittedContentSpec,
-				PermittedContentSpec,
-				PermittedContentSpec,
-				PermittedContentSpec,
+				PermittedContentPattern[],
+				PermittedContentPattern[],
+				PermittedContentPattern[],
+				PermittedContentPattern[],
+				PermittedContentPattern[],
 		  ];
 	_TODO_?: string;
 }
-export interface PermittedContentInterleave {
-	interleave: [PermittedContentSpec, PermittedContentSpec, ...PermittedContentSpec[]];
-	_TODO_?: string;
+export interface PermittedContentTransparent {
+	transparent: string;
 }

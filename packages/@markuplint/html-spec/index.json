@@ -22184,7 +22184,7 @@
 				"#text"
 			],
 			"#sectioning": ["article", "aside", "nav", "section"],
-			"#heading": ["h1", "h2", "h3", "h4", "h5", "h6", "hgroup"],
+			"#heading": ["h1", "h2", "h3", "h4", "h5", "h6", "hgroup:has(h1,h2,h3,h4,h5,h6)"],
 			"#phrasing": [
 				"a",
 				"abbr",
@@ -22411,8 +22411,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#transparent",
-						"notAllowedDescendants": ["#interactive"]
+						"transparent": ":not(:model(interactive), a, [tabindex], :has(:model(interactive), a, [tabindex]))"
 					}
 				]
 			},
@@ -22525,7 +22524,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -22568,8 +22567,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow",
-						"notAllowedDescendants": ["address", "#heading", "#sectioning", "header", "footer"]
+						"oneOrMore": ":model(flow):not(address, :model(heading), :model(sectioning), header, foooter, :has(address, :model(heading), :model(sectioning), header, foooter))"
 					}
 				]
 			},
@@ -22762,7 +22760,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -22787,7 +22785,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -22818,8 +22816,7 @@
 						"zeroOrMore": "track"
 					},
 					{
-						"zeroOrMore": "#transparent",
-						"notAllowedDescendants": ["audio", "video"]
+						"transparent": ":not(audio, video, :has(audio, video))"
 					}
 				],
 				"conditional": [
@@ -22830,8 +22827,7 @@
 								"zeroOrMore": "track"
 							},
 							{
-								"zeroOrMore": "#transparent",
-								"notAllowedDescendants": ["audio", "video"]
+								"transparent": ":not(audio, video, :has(audio, video))"
 							}
 						]
 					}
@@ -22890,7 +22886,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -22973,7 +22969,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -22999,7 +22995,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -23093,7 +23089,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -23125,7 +23121,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -23272,7 +23268,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -23311,8 +23307,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing",
-						"notAllowedDescendants": ["#interactive"]
+						"oneOrMore": ":model(phrasing):not(:model(interactive), :has(:model(interactive)))"
 					}
 				]
 			},
@@ -23413,8 +23408,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing",
-						"notAllowedDescendants": ["#interactive"]
+						"transparent": ":not(:model(interactive), :has(:model(interactive)))"
 					}
 				]
 			},
@@ -23452,7 +23446,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -23506,7 +23500,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -23532,7 +23526,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -23679,7 +23673,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -23712,12 +23706,12 @@
 						"choice": [
 							[
 								{
-									"zeroOrMore": "#phrasing"
+									"oneOrMore": ":model(phrasing)"
 								}
 							],
 							[
 								{
-									"zeroOrMore": ["option", "#script-supporting"]
+									"zeroOrMore": ["option", ":model(script-supporting)"]
 								}
 							]
 						]
@@ -23749,7 +23743,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -23786,7 +23780,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#transparent"
+						"transparent": "*"
 					}
 				]
 			},
@@ -23825,7 +23819,7 @@
 						"require": "summary"
 					},
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -23858,8 +23852,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing",
-						"notAllowedDescendants": ["dfn"]
+						"oneOrMore": ":model(phrasing):not(dfn, :has(dfn))"
 					}
 				]
 			},
@@ -23884,7 +23877,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -23941,7 +23934,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				],
 				"conditional": [
@@ -23949,19 +23942,19 @@
 						"condition": "dl > div",
 						"contents": [
 							{
-								"zeroOrMore": "#script-supporting"
+								"zeroOrMore": ":model(script-supporting)"
 							},
 							{
 								"oneOrMore": "dt"
 							},
 							{
-								"zeroOrMore": "#script-supporting"
+								"zeroOrMore": ":model(script-supporting)"
 							},
 							{
 								"oneOrMore": "dd"
 							},
 							{
-								"zeroOrMore": "#script-supporting"
+								"zeroOrMore": ":model(script-supporting)"
 							}
 						]
 					}
@@ -24003,26 +23996,32 @@
 								{
 									"oneOrMore": [
 										{
-											"zeroOrMore": "#script-supporting"
+											"zeroOrMore": ":model(script-supporting)"
 										},
 										{
 											"oneOrMore": "dt"
 										},
 										{
-											"zeroOrMore": "#script-supporting"
+											"zeroOrMore": ":model(script-supporting)"
 										},
 										{
 											"oneOrMore": "dd"
 										},
 										{
-											"zeroOrMore": "#script-supporting"
+											"zeroOrMore": ":model(script-supporting)"
 										}
 									]
 								}
 							],
 							[
 								{
-									"oneOrMore": ["div", "#script-supporting"]
+									"zeroOrMore": ":model(script-supporting)"
+								},
+								{
+									"oneOrMore": "div"
+								},
+								{
+									"zeroOrMore": ":model(script-supporting)"
 								}
 							]
 						]
@@ -24050,8 +24049,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow",
-						"notAllowedDescendants": ["header", "footer", "#sectioning", "#heading"]
+						"oneOrMore": ":model(flow):not(header, footer, :model(sectioning), :model(heading), :has(header, footer, :model(sectioning), :model(heading)))"
 					}
 				]
 			},
@@ -24079,7 +24077,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -24147,7 +24145,7 @@
 						"optional": "legend"
 					},
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -24183,7 +24181,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -24209,15 +24207,26 @@
 			"contentModel": {
 				"contents": [
 					{
-						"interleave": [
+						"choice": [
 							[
 								{
-									"optional": "figcaption"
+									"require": "figcaption"
+								},
+								{
+									"oneOrMore": ":model(flow)"
 								}
 							],
 							[
 								{
-									"zeroOrMore": "#flow"
+									"oneOrMore": ":model(flow)"
+								},
+								{
+									"require": "figcaption"
+								}
+							],
+							[
+								{
+									"oneOrMore": ":model(flow)"
 								}
 							]
 						]
@@ -24277,8 +24286,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow",
-						"notAllowedDescendants": ["header", "footer"]
+						"oneOrMore": ":model(flow):not(header, footer, :has(header, footer))"
 					}
 				]
 			},
@@ -24317,8 +24325,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow",
-						"notAllowedDescendants": ["form"]
+						"oneOrMore": ":model(flow):not(form, :has(form))"
 					}
 				]
 			},
@@ -24482,7 +24489,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -24510,7 +24517,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -24538,7 +24545,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -24566,7 +24573,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -24594,7 +24601,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -24622,7 +24629,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -24650,15 +24657,13 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#metadata",
-						"ignore": "title"
+						"zeroOrMore": ":model(metadata):not(title)"
 					},
 					{
 						"require": "title"
 					},
 					{
-						"zeroOrMore": "#metadata",
-						"ignore": "title"
+						"zeroOrMore": ":model(metadata):not(title)"
 					}
 				]
 			},
@@ -24689,8 +24694,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow",
-						"notAllowedDescendants": ["header", "footer"]
+						"oneOrMore": ":model(flow):not(header, footer, :has(header, footer))"
 					}
 				]
 			},
@@ -24729,29 +24733,25 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [
-							{
-								"zeroOrMore": "#script-supporting"
-							},
-							{
-								"zeroOrMore": "p"
-							},
-							{
-								"zeroOrMore": "#script-supporting"
-							},
-							{
-								"require": ["h1", "h2", "h3", "h4", "h5", "h6"]
-							},
-							{
-								"zeroOrMore": "#script-supporting"
-							},
-							{
-								"zeroOrMore": "p"
-							},
-							{
-								"zeroOrMore": "#script-supporting"
-							}
-						]
+						"zeroOrMore": ":model(script-supporting)"
+					},
+					{
+						"zeroOrMore": "p"
+					},
+					{
+						"zeroOrMore": ":model(script-supporting)"
+					},
+					{
+						"require": ["h1", "h2", "h3", "h4", "h5", "h6"]
+					},
+					{
+						"zeroOrMore": ":model(script-supporting)"
+					},
+					{
+						"zeroOrMore": "p"
+					},
+					{
+						"zeroOrMore": ":model(script-supporting)"
 					}
 				]
 			},
@@ -24867,7 +24867,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -24893,7 +24893,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#transparent"
+						"transparent": "*"
 					}
 				]
 			},
@@ -25976,7 +25976,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#transparent"
+						"transparent": "*"
 					}
 				]
 			},
@@ -26029,7 +26029,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -26091,8 +26091,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing",
-						"notAllowedDescendants": ["label"]
+						"oneOrMore": ":model(phrasing):not(label, :has(label))"
 					}
 				]
 			},
@@ -26122,7 +26121,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#phrasing", "#heading"]
+						"zeroOrMore": [":model(phrasing)", ":model(heading)"]
 					}
 				]
 			},
@@ -26148,7 +26147,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -26388,7 +26387,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -26417,7 +26416,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#transparent"
+						"transparent": "*"
 					}
 				]
 			},
@@ -26447,7 +26446,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -26546,7 +26545,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["li", "#script-supporting"]
+						"zeroOrMore": ["li", ":model(script-supporting)"]
 					}
 				]
 			},
@@ -26704,8 +26703,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing",
-						"notAllowedDescendants": ["meter"]
+						"oneOrMore": ":model(phrasing):not(meter, :has(meter))"
 					}
 				]
 			},
@@ -26779,7 +26777,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -26875,7 +26873,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -26901,7 +26899,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -26980,7 +26978,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["li", "#script-supporting"]
+						"zeroOrMore": ["li", ":model(script-supporting)"]
 					}
 				]
 			},
@@ -27159,7 +27157,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -27195,7 +27193,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -27258,19 +27256,19 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#script-supporting"
+						"zeroOrMore": ":model(script-supporting)"
 					},
 					{
 						"zeroOrMore": "source"
 					},
 					{
-						"zeroOrMore": "#script-supporting"
+						"zeroOrMore": ":model(script-supporting)"
 					},
 					{
 						"require": "img"
 					},
 					{
-						"zeroOrMore": "#script-supporting"
+						"zeroOrMore": ":model(script-supporting)"
 					}
 				]
 			},
@@ -27323,7 +27321,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#transparent"
+						"transparent": "*"
 					}
 				]
 			},
@@ -27357,7 +27355,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -27397,8 +27395,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing",
-						"notAllowedDescendants": ["progress"]
+						"oneOrMore": ":model(phrasing):not(progress, :has(progress))"
 					}
 				]
 			},
@@ -27440,8 +27437,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing",
-						"notAllowedDescendants": ["progress"]
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -27488,8 +27484,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing",
-						"notAllowedDescendants": ["progress"]
+						"oneOrMore": "#text"
 					}
 				]
 			},
@@ -27514,7 +27509,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -27559,8 +27554,7 @@
 					{
 						"oneOrMore": [
 							{
-								"require": "#phrasing",
-								"notAllowedDescendants": ["ruby"]
+								"require": ":model(phrasing):not(ruby, :has(ruby))"
 							},
 							{
 								"choice": [
@@ -27615,7 +27609,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -27641,7 +27635,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -27749,7 +27743,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -27903,7 +27897,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#transparent"
+						"transparent": "*"
 					}
 				]
 			},
@@ -27933,7 +27927,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -28039,7 +28033,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -28082,7 +28076,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -28156,7 +28150,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -28188,12 +28182,12 @@
 						"choice": [
 							[
 								{
-									"zeroOrMore": "#phrasing"
+									"oneOrMore": ":model(phrasing)"
 								}
 							],
 							[
 								{
-									"require": "#heading"
+									"require": ":model(heading)"
 								}
 							]
 						]
@@ -28225,7 +28219,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -28254,25 +28248,25 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#script-supporting"
+						"zeroOrMore": ":model(script-supporting)"
 					},
 					{
 						"optional": "caption"
 					},
 					{
-						"zeroOrMore": "#script-supporting"
+						"zeroOrMore": ":model(script-supporting)"
 					},
 					{
 						"zeroOrMore": "colgroup"
 					},
 					{
-						"zeroOrMore": "#script-supporting"
+						"zeroOrMore": ":model(script-supporting)"
 					},
 					{
 						"optional": "thead"
 					},
 					{
-						"zeroOrMore": "#script-supporting"
+						"zeroOrMore": ":model(script-supporting)"
 					},
 					{
 						"choice": [
@@ -28289,13 +28283,13 @@
 						]
 					},
 					{
-						"zeroOrMore": "#script-supporting"
+						"zeroOrMore": ":model(script-supporting)"
 					},
 					{
 						"optional": "tfoot"
 					},
 					{
-						"zeroOrMore": "#script-supporting"
+						"zeroOrMore": ":model(script-supporting)"
 					}
 				]
 			},
@@ -28403,7 +28397,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow"
+						"oneOrMore": ":model(flow)"
 					}
 				]
 			},
@@ -28488,11 +28482,7 @@
 			"description": "The <template> HTML element is a mechanism for holding HTML that is not to be rendered immediately when a page is loaded but may be instantiated subsequently during runtime using JavaScript.",
 			"categories": ["#metadata", "#flow", "#phrasing", "#script-supporting"],
 			"contentModel": {
-				"contents": [
-					{
-						"zeroOrMore": "#transparent"
-					}
-				]
+				"contents": true
 			},
 			"aria": {
 				"implicitRole": false,
@@ -28661,8 +28651,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#flow",
-						"notAllowedDescendants": ["header", "footer", "#sectioning", "#heading"]
+						"oneOrMore": ":model(flow):not(header, footer, :model(sectioning), :model(heading), :has(header, footer, :model(sectioning), :model(heading)))"
 					}
 				]
 			},
@@ -28811,7 +28800,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -28870,7 +28859,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["th", "td", "#script-supporting"]
+						"zeroOrMore": ["th", "td", ":model(script-supporting)"]
 					}
 				]
 			},
@@ -28981,7 +28970,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -29007,7 +28996,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["li", "#script-supporting"]
+						"zeroOrMore": ["li", ":model(script-supporting)"]
 					}
 				]
 			},
@@ -29071,7 +29060,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "#phrasing"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -29103,8 +29092,7 @@
 						"zeroOrMore": "track"
 					},
 					{
-						"zeroOrMore": "#transparent",
-						"notAllowedDescendants": ["audio", "video"]
+						"transparent": ":not(audio, video, :has(audio, video))"
 					}
 				],
 				"conditional": [
@@ -29115,8 +29103,7 @@
 								"zeroOrMore": "track"
 							},
 							{
-								"zeroOrMore": "#transparent",
-								"notAllowedDescendants": ["audio", "video"]
+								"transparent": ":not(audio, video, :has(audio, video))"
 							}
 						]
 					}
@@ -29263,15 +29250,14 @@
 						"condition": "svg|switch > svg|a",
 						"contents": [
 							{
-								"zeroOrMore": "#transparent"
+								"transparent": "*"
 							}
 						]
 					}
 				],
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "#transparent"],
-						"ignore": "svg|a"
+						"transparent": "*, :model(SVGDescriptive):not(svg|a, :has(svg|a))"
 					}
 				]
 			},
@@ -29500,7 +29486,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|script"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
 					}
 				]
 			},
@@ -29631,10 +29617,10 @@
 			"contentModel": {
 				"contents": [
 					{
-						"interleave": [
+						"choice": [
 							[
 								{
-									"oneOrMore": ["#SVGDescriptive", "svg|script"]
+									"oneOrMore": [":model(SVGDescriptive)", "svg|script"]
 								},
 								{
 									"optional": "svg|mpath"
@@ -29645,7 +29631,7 @@
 									"optional": "svg|mpath"
 								},
 								{
-									"oneOrMore": ["#SVGDescriptive", "svg|script"]
+									"oneOrMore": [":model(SVGDescriptive)", "svg|script"]
 								}
 							]
 						]
@@ -29704,7 +29690,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|script"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
 					}
 				]
 			},
@@ -29755,9 +29741,9 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
 							"svg|clipPath",
 							"svg|marker",
 							"svg|mask",
@@ -29880,9 +29866,9 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGShape",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGShape)",
 							"svg|text",
 							"svg|use",
 							"svg|script"
@@ -30008,11 +29994,11 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
-							"#SVGShape",
-							"#SVGStructural",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
+							":model(SVGShape)",
+							":model(SVGStructural)",
 							"svg|a",
 							"svg|clipPath",
 							"svg|filter",
@@ -30120,7 +30106,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"require": ["#SVGOtherXMLNamespace", "#text"]
+						"require": [":model(SVGOtherXMLNamespace)", "#text"]
 					}
 				]
 			},
@@ -30145,7 +30131,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"require": ["#SVGDescriptive", "svg|script"]
+						"require": [":model(SVGDescriptive)", "svg|script"]
 					}
 				]
 			},
@@ -30179,9 +30165,9 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
 							"svg|clipPath",
 							"svg|marker",
 							"svg|mask",
@@ -30309,7 +30295,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -30426,7 +30412,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -30533,7 +30519,7 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGDescriptive",
+							":model(SVGDescriptive)",
 							"svg|feFuncA",
 							"svg|feFuncR",
 							"svg|feFuncB",
@@ -30633,7 +30619,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -30777,7 +30763,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -30919,21 +30905,21 @@
 			"contentModel": {
 				"contents": [
 					{
-						"interleave": [
+						"choice": [
 							[
 								{
-									"zeroOrMore": ["#SVGDescriptive", "svg|script"]
+									"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
 								},
 								{
-									"require": "#SVGLightSource"
+									"require": ":model(SVGLightSource)"
 								}
 							],
 							[
 								{
-									"require": "#SVGLightSource"
+									"require": ":model(SVGLightSource)"
 								},
 								{
-									"zeroOrMore": ["#SVGDescriptive", "svg|script"]
+									"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
 								}
 							]
 						]
@@ -31046,7 +31032,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -31179,7 +31165,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -31213,7 +31199,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -31323,7 +31309,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -31426,7 +31412,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -31458,7 +31444,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -31490,7 +31476,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -31522,7 +31508,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -31554,7 +31540,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -31662,7 +31648,7 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGDescriptive",
+							":model(SVGDescriptive)",
 							"svg|animate",
 							"svg|animateTransform",
 							"svg|script",
@@ -31789,7 +31775,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|feMergeNode", "svg|script"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|feMergeNode", "svg|script"]
 					}
 				]
 			},
@@ -31883,7 +31869,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -31907,7 +31893,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -32015,7 +32001,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -32120,7 +32106,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -32159,21 +32145,21 @@
 			"contentModel": {
 				"contents": [
 					{
-						"interleave": [
+						"choice": [
 							[
 								{
-									"zeroOrMore": ["#SVGDescriptive", "svg|script"]
+									"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
 								},
 								{
-									"require": "#SVGLightSource"
+									"require": ":model(SVGLightSource)"
 								}
 							],
 							[
 								{
-									"require": "#SVGLightSource"
+									"require": ":model(SVGLightSource)"
 								},
 								{
-									"zeroOrMore": ["#SVGDescriptive", "svg|script"]
+									"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
 								}
 							]
 						]
@@ -32290,7 +32276,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -32353,7 +32339,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -32447,7 +32433,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
 					}
 				]
 			},
@@ -32571,7 +32557,13 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "#SVGFilterPrimitive", "svg|animate", "svg|script", "svg|set"]
+						"zeroOrMore": [
+							":model(SVGDescriptive)",
+							"#SVGFilterPrimitive",
+							"svg|animate",
+							"svg|script",
+							"svg|set"
+						]
 					}
 				]
 			},
@@ -32928,11 +32920,11 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
-							"#SVGShape",
-							"#SVGStructural",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
+							":model(SVGShape)",
+							":model(SVGStructural)",
 							"svg|a",
 							"svg|clipPath",
 							"svg|filter",
@@ -33101,8 +33093,8 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
 							"svg|clipPath",
 							"svg|mask",
 							"svg|script",
@@ -33230,9 +33222,9 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
 							"svg|clipPath",
 							"svg|marker",
 							"svg|mask",
@@ -33365,7 +33357,7 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGDescriptive",
+							":model(SVGDescriptive)",
 							"svg|animate",
 							"svg|animateTransform",
 							"svg|script",
@@ -33516,11 +33508,11 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
-							"#SVGShape",
-							"#SVGStructural",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
+							":model(SVGShape)",
+							":model(SVGStructural)",
 							"svg|a",
 							"svg|clipPath",
 							"svg|filter",
@@ -33692,11 +33684,11 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGShape",
-							"#SVGStructural",
-							"#SVGGradient",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGShape)",
+							":model(SVGStructural)",
+							":model(SVGGradient)",
 							"svg|a",
 							"svg|altGlyphDef",
 							"svg|clipPath",
@@ -33831,7 +33823,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGOtherXMLNamespace", "#text"]
+						"zeroOrMore": [":model(SVGOtherXMLNamespace)", "#text"]
 					}
 				]
 			},
@@ -33874,7 +33866,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|script"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
 					}
 				]
 			},
@@ -33904,9 +33896,9 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
 							"svg|clipPath",
 							"svg|marker",
 							"svg|mask",
@@ -34024,11 +34016,11 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
-							"#SVGShape",
-							"#SVGStructural",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
+							":model(SVGShape)",
+							":model(SVGStructural)",
 							"svg|a",
 							"svg|clipPath",
 							"svg|filter",
@@ -34187,9 +34179,9 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
 							"svg|clipPath",
 							"svg|marker",
 							"svg|mask",
@@ -34306,9 +34298,9 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
 							"svg|clipPath",
 							"svg|marker",
 							"svg|mask",
@@ -34425,7 +34417,7 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGDescriptive",
+							":model(SVGDescriptive)",
 							"svg|animate",
 							"svg|animateTransform",
 							"svg|script",
@@ -34584,9 +34576,9 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
 							"svg|clipPath",
 							"svg|marker",
 							"svg|mask",
@@ -34722,7 +34714,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGOtherXMLNamespace", "#text"]
+						"zeroOrMore": [":model(SVGOtherXMLNamespace)", "#text"]
 					}
 				]
 			},
@@ -34767,7 +34759,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGDescriptive", "svg|script"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
 					}
 				]
 			},
@@ -34960,11 +34952,11 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
-							"#SVGShape",
-							"#SVGStructural",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
+							":model(SVGShape)",
+							":model(SVGStructural)",
 							"svg|a",
 							"svg|clipPath",
 							"svg|filter",
@@ -35126,8 +35118,8 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGShape",
+							":model(SVGAnimation)",
+							":model(SVGShape)",
 							"svg|a",
 							"svg|foreignObject",
 							"svg|g",
@@ -35235,11 +35227,11 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
-							"#SVGShape",
-							"#SVGStructural",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
+							":model(SVGShape)",
+							":model(SVGStructural)",
 							"svg|a",
 							"svg|clipPath",
 							"svg|filter",
@@ -35325,10 +35317,10 @@
 					{
 						"zeroOrMore": [
 							"#text",
-							"#SVGAnimation",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
-							"#SVGTextContentChild",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
+							":model(SVGTextContentChild)",
 							"svg|a",
 							"svg|clipPath",
 							"svg|marker",
@@ -35473,8 +35465,8 @@
 					{
 						"zeroOrMore": [
 							"#text",
-							"#SVGDescriptive",
-							"#SVGPaintServer",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
 							"svg|a",
 							"svg|animate",
 							"svg|clipPath",
@@ -35635,7 +35627,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGOtherXMLNamespace", "#text"]
+						"zeroOrMore": [":model(SVGOtherXMLNamespace)", "#text"]
 					}
 				]
 			},
@@ -35679,8 +35671,8 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGDescriptive",
-							"#SVGPaintServer",
+							":model(SVGDescriptive)",
+							":model(SVGPaintServer)",
 							"svg|a",
 							"svg|animate",
 							"svg|script",
@@ -35822,8 +35814,8 @@
 				"contents": [
 					{
 						"zeroOrMore": [
-							"#SVGAnimation",
-							"#SVGDescriptive",
+							":model(SVGAnimation)",
+							":model(SVGDescriptive)",
 							"svg|clipPath",
 							"svg|mask",
 							"svg|script",
@@ -35953,7 +35945,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "svg|script", "svg|style"]
+						"zeroOrMore": [":model(SVGAnimation)", ":model(SVGDescriptive)", "svg|script", "svg|style"]
 					}
 				]
 			},

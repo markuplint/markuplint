@@ -40,12 +40,18 @@ export class MLRuleContext<T extends RuleConfigValue, O = null> {
 		if (typeof report === 'function') {
 			const r = report(this.translate);
 			if (r) {
-				this.#reports.push(r);
+				this._push(r);
 				return true;
 			}
 			return false;
 		}
-		this.#reports.push(report);
+		this._push(report);
+	}
+
+	private _push(report: Report<T, O>) {
+		if (!this.#reports.find(r => is(r, report))) {
+			this.#reports.push(report);
+		}
 	}
 }
 
@@ -56,4 +62,20 @@ function finish(message: string, locale = 'en') {
 		}
 	}
 	return message;
+}
+
+function is<T extends RuleConfigValue, O = null>(r1: Report<T, O>, r2: Report<T, O>): boolean {
+	if ('col' in r1 && 'col' in r2) {
+		return r1.col === r2.col && r1.line === r2.line && r1.message === r2.message && r1.raw === r2.raw;
+	}
+
+	if ('scope' in r1) {
+		if (!('scope' in r2)) {
+			return false;
+		}
+
+		return r1.scope === r2.scope && r1.message === r2.message;
+	}
+
+	return false;
 }

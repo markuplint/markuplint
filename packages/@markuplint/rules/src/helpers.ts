@@ -4,6 +4,8 @@ import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { ARIAVersion, Attribute, MLMLSpec } from '@markuplint/ml-spec';
 
 import { ariaSpecs } from '@markuplint/ml-core';
+// @ts-ignore
+import structuredClone from '@ungap/structured-clone';
 import { decode as decodeHtmlEntities } from 'html-entities';
 
 import { attrCheck } from './attr-check';
@@ -253,4 +255,9 @@ export class Collection<T> {
 	[Symbol.iterator](): Iterator<T> {
 		return this.#items.values();
 	}
+}
+
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+export function deepCopy<T>(value: T): Writeable<T> {
+	return structuredClone(value);
 }

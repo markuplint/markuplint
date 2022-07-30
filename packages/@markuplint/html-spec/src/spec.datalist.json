@@ -8,12 +8,12 @@
 				"choice": [
 					[
 						{
-							"zeroOrMore": "#phrasing"
+							"oneOrMore": ":model(phrasing)"
 						}
 					],
 					[
 						{
-							"zeroOrMore": ["option", "#script-supporting"]
+							"zeroOrMore": ["option", ":model(script-supporting)"]
 						}
 					]
 				]

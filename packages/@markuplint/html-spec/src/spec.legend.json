@@ -5,7 +5,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": ["#phrasing", "#heading"]
+				"zeroOrMore": [":model(phrasing)", ":model(heading)"]
 			}
 		]
 	},

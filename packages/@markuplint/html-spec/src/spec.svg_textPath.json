@@ -6,8 +6,8 @@
 			{
 				"zeroOrMore": [
 					"#text",
-					"#SVGDescriptive",
-					"#SVGPaintServer",
+					":model(SVGDescriptive)",
+					":model(SVGPaintServer)",
 					"svg|a",
 					"svg|animate",
 					"svg|clipPath",

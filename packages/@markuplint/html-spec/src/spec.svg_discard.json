@@ -4,7 +4,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"require": ["#SVGDescriptive", "svg|script"]
+				"require": [":model(SVGDescriptive)", "svg|script"]
 			}
 		]
 	},

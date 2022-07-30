@@ -121,7 +121,7 @@ export default createRule<boolean, Option>({
 						break;
 					}
 					case 'non-existent': {
-						const spec = getSpec(attr.ownerElement, document.specs);
+						const spec = getSpec(attr.ownerElement, document.specs.specs);
 						if (spec?.possibleToAddProperties) {
 							return;
 						}

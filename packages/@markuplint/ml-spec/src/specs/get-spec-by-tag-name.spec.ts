@@ -1,4 +1,4 @@
-import specs from '@markuplint/html-spec';
+import { specs } from '@markuplint/html-spec';
 
 import { getSpecByTagName } from './get-spec-by-tag-name';
 
@@ -8,26 +8,26 @@ const divSpec = {
 			condition: 'dl > div',
 			contents: [
 				{
-					zeroOrMore: '#script-supporting',
+					zeroOrMore: ':model(script-supporting)',
 				},
 				{
 					oneOrMore: 'dt',
 				},
 				{
-					zeroOrMore: '#script-supporting',
+					zeroOrMore: ':model(script-supporting)',
 				},
 				{
 					oneOrMore: 'dd',
 				},
 				{
-					zeroOrMore: '#script-supporting',
+					zeroOrMore: ':model(script-supporting)',
 				},
 			],
 		},
 	],
 	contents: [
 		{
-			zeroOrMore: '#flow',
+			oneOrMore: ':model(flow)',
 		},
 	],
 };
@@ -43,11 +43,11 @@ test('svg:svg', () => {
 		contents: [
 			{
 				zeroOrMore: [
-					'#SVGAnimation',
-					'#SVGDescriptive',
-					'#SVGPaintServer',
-					'#SVGShape',
-					'#SVGStructural',
+					':model(SVGAnimation)',
+					':model(SVGDescriptive)',
+					':model(SVGPaintServer)',
+					':model(SVGShape)',
+					':model(SVGStructural)',
 					'svg|a',
 					'svg|clipPath',
 					'svg|filter',

@@ -5,8 +5,8 @@
 		"contents": [
 			{
 				"zeroOrMore": [
-					"#SVGAnimation",
-					"#SVGShape",
+					":model(SVGAnimation)",
+					":model(SVGShape)",
 					"svg|a",
 					"svg|foreignObject",
 					"svg|g",

@@ -5,7 +5,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": ["li", "#script-supporting"]
+				"zeroOrMore": ["li", ":model(script-supporting)"]
 			}
 		]
 	},

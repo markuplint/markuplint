@@ -5,7 +5,7 @@
 		"contents": [
 			{
 				"zeroOrMore": [
-					"#SVGDescriptive",
+					":model(SVGDescriptive)",
 					"svg|animate",
 					"svg|animateTransform",
 					"svg|script",

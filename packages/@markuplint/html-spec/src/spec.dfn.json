@@ -5,8 +5,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "#phrasing",
-				"notAllowedDescendants": ["dfn"]
+				"oneOrMore": ":model(phrasing):not(dfn, :has(dfn))"
 			}
 		]
 	},

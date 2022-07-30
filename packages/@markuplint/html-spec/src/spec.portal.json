@@ -3,7 +3,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "#transparent"
+				"transparent": "*"
 			}
 		]
 	},

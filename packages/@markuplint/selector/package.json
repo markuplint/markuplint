@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/selector",
-	"version": "3.0.0-alpha",
+	"version": "3.0.0-alpha.0",
 	"description": "W3C Selector and Regex selector",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",

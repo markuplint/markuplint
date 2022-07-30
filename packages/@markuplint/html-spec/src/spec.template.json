@@ -3,11 +3,7 @@
 // https://w3c.github.io/html-aria/#el-template
 {
 	"contentModel": {
-		"contents": [
-			{
-				"zeroOrMore": "#transparent"
-			}
-		]
+		"contents": true
 	},
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,
