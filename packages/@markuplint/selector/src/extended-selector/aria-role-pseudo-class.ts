@@ -9,9 +9,19 @@ export function ariaRolePseudoClass(specs: MLMLSpec) {
 			const aria = ariaPseudoClassParser(content);
 
 			const computed = getComputedRole(specs, el, aria.version ?? '1.2');
+
+			if (computed.role?.name === aria.role) {
+				return {
+					specificity: [0, 1, 0],
+					matched: true,
+					nodes: [el],
+					has: [],
+				};
+			}
+
 			return {
 				specificity: [0, 1, 0],
-				matched: computed.role?.name === aria.role,
+				matched: false,
 			};
 		};
 }

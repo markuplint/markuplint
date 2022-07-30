@@ -10,19 +10,34 @@ export function ariaPseudoClass() {
 	return (content: string) =>
 		(el: Element): SelectorResult => {
 			const aria = ariaPseudoClassParser(content);
+			const name = getAccname(el);
 			switch (aria.type) {
 				case 'hasName': {
-					const name = getAccname(el);
+					if (name) {
+						return {
+							specificity: [0, 1, 0],
+							matched: true,
+							nodes: [el],
+							has: [],
+						};
+					}
 					return {
 						specificity: [0, 1, 0],
-						matched: !!name,
+						matched: false,
 					};
 				}
 				case 'hasNoName': {
-					const name = getAccname(el);
+					if (!name) {
+						return {
+							specificity: [0, 1, 0],
+							matched: true,
+							nodes: [el],
+							has: [],
+						};
+					}
 					return {
 						specificity: [0, 1, 0],
-						matched: !name,
+						matched: false,
 					};
 				}
 			}

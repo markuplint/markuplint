@@ -1,8 +1,18 @@
 export type Specificity = [number, number, number];
 
-export type SelectorResult = {
+export type SelectorResult = SelectorMatchedResult | SelectorUnmatchedResult;
+
+export type SelectorMatchedResult = {
 	specificity: Specificity;
-	matched: boolean;
+	matched: true;
+	nodes: (Element | Text)[];
+	has: SelectorMatchedResult[];
+};
+
+export type SelectorUnmatchedResult = {
+	specificity: Specificity;
+	matched: false;
+	not?: SelectorMatchedResult[];
 };
 
 export type RegexSelector = RegexSelectorWithoutCompination & {

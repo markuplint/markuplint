@@ -1,4 +1,4 @@
-import type { SelectorResult, Specificity } from './types';
+import type { SelectorMatchedResult, SelectorResult, Specificity } from './types';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
 import parser, { pseudo } from 'postcss-selector-parser';
@@ -13,8 +13,6 @@ const resLog = coreLog.extend('result');
 
 type ExtendedPseudoClass = Record<string, (content: string) => (el: Element) => SelectorResult>;
 
-type MultipleSelectorResult = SelectorResult[];
-
 export class Selector {
 	#ruleset: Ruleset;
 
@@ -23,13 +21,17 @@ export class Selector {
 	}
 
 	match(el: Node, scope: ParentNode | null = isElement(el) ? el : null): Specificity | false {
-		const results = this.#ruleset.match(el, scope);
+		const results = this.search(el, scope);
 		for (const result of results) {
 			if (result.matched) {
 				return result.specificity;
 			}
 		}
 		return false;
+	}
+
+	search(el: Node, scope: ParentNode | null = isElement(el) ? el : null) {
+		return this.#ruleset.match(el, scope);
 	}
 }
 
@@ -64,7 +66,7 @@ class Ruleset {
 		}
 	}
 
-	match(el: Node, scope: ParentNode | null): MultipleSelectorResult {
+	match(el: Node, scope: ParentNode | null): SelectorResult[] {
 		coreLog(
 			'<%s> (%s)',
 			isElement(el) ? el.localName : el.nodeName,
@@ -212,8 +214,10 @@ class SelectorTarget {
 		switch (combinator.value) {
 			// Descendant combinator
 			case ' ': {
+				const matchedNodes: (Element | Text)[] = [];
+				const has: SelectorMatchedResult[] = [];
+				const not: SelectorMatchedResult[] = [];
 				let ancestor = el.parentElement;
-				let matched = false;
 				let specificity: Specificity | void;
 				while (ancestor) {
 					const res = target.match(ancestor, scope, count + 1);
@@ -225,7 +229,12 @@ class SelectorTarget {
 						];
 					}
 					if (res.matched) {
-						matched = true;
+						matchedNodes.push(...res.nodes);
+						has.push(...res.has);
+					} else {
+						if (res.not) {
+							not.push(...res.not);
+						}
 					}
 					ancestor = ancestor.parentElement;
 				}
@@ -237,15 +246,27 @@ class SelectorTarget {
 						unitCheck.specificity[2] + res.specificity[2],
 					];
 				}
+				if (matchedNodes.length) {
+					return {
+						combinator: '␣',
+						specificity,
+						matched: true,
+						nodes: matchedNodes,
+						has,
+					};
+				}
 				return {
 					combinator: '␣',
 					specificity,
-					matched,
+					matched: false,
+					not,
 				};
 			}
 			// Child combinator
 			case '>': {
-				let matched: boolean;
+				const matchedNodes: (Element | Text)[] = [];
+				const has: SelectorMatchedResult[] = [];
+				const not: SelectorMatchedResult[] = [];
 				const specificity = unitCheck.specificity;
 				const parentNode = el.parentElement;
 
@@ -254,23 +275,41 @@ class SelectorTarget {
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
-					matched = res.matched;
+					if (res.matched) {
+						matchedNodes.push(...res.nodes);
+						has.push(...res.has);
+					} else {
+						if (res.not) {
+							not.push(...res.not);
+						}
+					}
 				} else {
 					const res = target.match(el, scope, count + 1);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
-					matched = false;
+				}
+				if (matchedNodes.length) {
+					return {
+						combinator: '>',
+						specificity,
+						matched: true,
+						nodes: matchedNodes,
+						has,
+					};
 				}
 				return {
 					combinator: '>',
 					specificity,
-					matched,
+					matched: false,
+					not,
 				};
 			}
 			// Next-sibling combinator
 			case '+': {
-				let matched: boolean;
+				const matchedNodes: (Element | Text)[] = [];
+				const has: SelectorMatchedResult[] = [];
+				const not: SelectorMatchedResult[] = [];
 				const specificity = unitCheck.specificity;
 
 				if (el.previousElementSibling) {
@@ -278,24 +317,42 @@ class SelectorTarget {
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
-					matched = res.matched;
+					if (res.matched) {
+						matchedNodes.push(...res.nodes);
+						has.push(...res.has);
+					} else {
+						if (res.not) {
+							not.push(...res.not);
+						}
+					}
 				} else {
 					const res = target.match(el, scope, count + 1);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
-					matched = false;
+				}
+				if (matchedNodes.length) {
+					return {
+						combinator: '+',
+						specificity,
+						matched: true,
+						nodes: matchedNodes,
+						has,
+					};
 				}
 				return {
 					combinator: '+',
 					specificity,
-					matched,
+					matched: false,
+					not,
 				};
 			}
 			// Subsequent-sibling combinator
 			case '~': {
+				const matchedNodes: (Element | Text)[] = [];
+				const has: SelectorMatchedResult[] = [];
+				const not: SelectorMatchedResult[] = [];
 				let prev = el.previousElementSibling;
-				let matched = false;
 				let specificity: Specificity | void;
 				while (prev) {
 					const res = target.match(prev, scope, count + 1);
@@ -307,7 +364,12 @@ class SelectorTarget {
 						];
 					}
 					if (res.matched) {
-						matched = true;
+						matchedNodes.push(...res.nodes);
+						has.push(...res.has);
+					} else {
+						if (res.not) {
+							not.push(...res.not);
+						}
 					}
 					prev = prev.previousElementSibling;
 				}
@@ -319,10 +381,20 @@ class SelectorTarget {
 						unitCheck.specificity[2] + res.specificity[2],
 					];
 				}
+				if (matchedNodes.length) {
+					return {
+						combinator: '~',
+						specificity,
+						matched: true,
+						nodes: matchedNodes,
+						has,
+					};
+				}
 				return {
 					combinator: '~',
 					specificity,
-					matched,
+					matched: false,
+					not,
 				};
 			}
 			// Column combinator
@@ -356,6 +428,9 @@ class SelectorTarget {
 				matched: false,
 			};
 		}
+
+		const has: SelectorMatchedResult[] = [];
+		const not: SelectorMatchedResult[] = [];
 
 		// @ts-ignore
 		if (this.tag && this.tag._namespace) {
@@ -409,7 +484,10 @@ class SelectorTarget {
 			specificity[1] += pseudoRes.specificity[1];
 			specificity[2] += pseudoRes.specificity[2];
 
-			if (!pseudoRes.matched) {
+			if (pseudoRes.matched) {
+				has.push(...pseudoRes.has);
+			} else {
+				not.push(...(pseudoRes.not ?? []));
 				matched = false;
 			}
 		}
@@ -430,9 +508,19 @@ class SelectorTarget {
 			}
 		}
 
+		if (matched) {
+			return {
+				specificity,
+				matched,
+				nodes: [el],
+				has,
+			};
+		}
+
 		return {
 			specificity,
 			matched,
+			not,
 		};
 	}
 }
@@ -516,10 +604,13 @@ function pseudoMatch(
 			const specificity = getSpecificity(ruleset.match(el, scope));
 			let parent = el.parentElement;
 			while (parent) {
-				if (ruleset.match(parent, scope).some(r => r.matched)) {
+				const matched = ruleset.match(parent, scope).filter((r): r is SelectorMatchedResult => r.matched);
+				if (matched.length) {
 					return {
 						specificity,
 						matched: true,
+						nodes: [el],
+						has: matched,
 					};
 				}
 				parent = parent.parentElement;
@@ -537,20 +628,31 @@ function pseudoMatch(
 			const ruleset = new Ruleset(pseudo.nodes, extended, depth + 1);
 			const resList = ruleset.match(el, scope);
 			const specificity = getSpecificity(resList);
-			const matched = resList.every(r => !r.matched);
+			const not = resList.filter((r): r is SelectorMatchedResult => r.matched);
+			if (not.length === 0) {
+				return {
+					specificity,
+					matched: true,
+					nodes: [el],
+					has: [],
+				};
+			}
 			return {
 				specificity,
-				matched,
+				matched: false,
+				not,
 			};
 		}
 		case ':is': {
 			const ruleset = new Ruleset(pseudo.nodes, extended, depth + 1);
 			const resList = ruleset.match(el, scope);
 			const specificity = getSpecificity(resList);
-			const matched = resList.some(r => r.matched);
+			const matched = resList.filter((r): r is SelectorMatchedResult => r.matched);
 			return {
 				specificity,
-				matched,
+				matched: !!matched.length,
+				nodes: matched.map(m => m.nodes).flat(),
+				has: matched.map(m => m.has).flat(),
 			};
 		}
 		case ':has': {
@@ -559,17 +661,37 @@ function pseudoMatch(
 			switch (ruleset.headCombinator) {
 				case '+':
 				case '~': {
-					const matched = getSiblings(el).some(sib => ruleset.match(sib, el).some(m => m.matched));
+					const has = getSiblings(el)
+						.map(sib => ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched))
+						.flat();
+					if (has.length) {
+						return {
+							specificity,
+							matched: true,
+							nodes: [el],
+							has,
+						};
+					}
 					return {
 						specificity,
-						matched,
+						matched: false,
 					};
 				}
 				default: {
-					const matched = getDescendants(el).some(desc => ruleset.match(desc, el).some(m => m.matched));
+					const has = getDescendants(el)
+						.map(sib => ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched))
+						.flat();
+					if (has.length) {
+						return {
+							specificity,
+							matched: true,
+							nodes: [el],
+							has,
+						};
+					}
 					return {
 						specificity,
-						matched,
+						matched: false,
 					};
 				}
 			}
@@ -577,10 +699,12 @@ function pseudoMatch(
 		case ':where': {
 			const ruleset = new Ruleset(pseudo.nodes, extended, depth + 1);
 			const resList = ruleset.match(el, scope);
-			const matched = resList.some(r => r.matched);
+			const matched = resList.filter((r): r is SelectorMatchedResult => r.matched);
 			return {
 				specificity: [0, 0, 0],
-				matched,
+				matched: !!matched.length,
+				nodes: matched.map(m => m.nodes).flat(),
+				has: matched.map(m => m.has).flat(),
 			};
 		}
 		case ':scope': {
@@ -588,6 +712,8 @@ function pseudoMatch(
 				return {
 					specificity: [0, 1, 0],
 					matched: true,
+					nodes: [el],
+					has: [],
 				};
 			}
 			return {
@@ -600,6 +726,8 @@ function pseudoMatch(
 				return {
 					specificity: [0, 1, 0],
 					matched: true,
+					nodes: [el],
+					has: [],
 				};
 			}
 			return {
@@ -691,16 +819,16 @@ function getSiblings(el: Element) {
 	return Array.from(el.parentElement?.children || []);
 }
 
-function getSpecificity(result: MultipleSelectorResult) {
+function getSpecificity(results: SelectorResult[]) {
 	let specificity: Specificity | void;
-	for (const res of result) {
+	for (const result of results) {
 		if (specificity) {
-			const order = compareSpecificity(specificity, res.specificity);
+			const order = compareSpecificity(specificity, result.specificity);
 			if (order === -1) {
-				specificity = res.specificity;
+				specificity = result.specificity;
 			}
 		} else {
-			specificity = res.specificity;
+			specificity = result.specificity;
 		}
 	}
 	if (!specificity) {
