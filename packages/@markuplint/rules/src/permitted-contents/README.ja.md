@@ -78,7 +78,7 @@
 
 対象の許可する要素を配列で指定します。この配列の順番は **許可するコンテンツの順番** を意味します。（この配列に含まれないコンテンツは、すなわち **許可されないコンテンツ** になります。）
 
-`require`、`optional`、`oneOrMore`、`zeroOrMore`、`choice`、`interleave`、の 6 つのいずれかのキーワードを使って定義します。
+`require`、`optional`、`oneOrMore`、`zeroOrMore`、`choice`の 5 つのいずれかのキーワードを使って定義します。
 
 そのうち`require`、`optional`、`oneOrMore`、`zeroOrMore`は要素の個数を意味します。そのキーワードをキーとしてタグ名（もしくはテキストノードの場合 `#text` ）を指定します。それぞれのキーワードを同時に指定することはできません。
 
@@ -123,12 +123,11 @@
 
 ---
 
-`choice`、`interleave`の 2 つのキーワードは指定した配列に対して次の意味をもちます。
+`choice`キーワードは指定した配列に対して次の意味をもちます。
 
-| キーワード   | 意味          |
-| ------------ | ------------- |
-| `choice`     | いずれか 1 つ |
-| `interleave` | 順不同        |
+| キーワード | 意味          |
+| ---------- | ------------- |
+| `choice`   | いずれか 1 つ |
 
 ```json
 {
@@ -139,9 +138,6 @@
         "contents": [
           {
             "choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
-          },
-          {
-            "interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
           }
         ]
       }
