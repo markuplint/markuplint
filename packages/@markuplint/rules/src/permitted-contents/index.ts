@@ -1,17 +1,10 @@
-import type { Element, Document, DocumentFragment } from '@markuplint/ml-core';
-import type { Category, MLMLSpec, ContentModel } from '@markuplint/ml-spec';
+import type { ChildNode, Options, TagRule } from './types';
+import type { Translator } from '@markuplint/i18n';
 
-import { createRule, getSpec, resolveNamespace } from '@markuplint/ml-core';
-import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
+import { createRule } from '@markuplint/ml-core';
 
-import ExpGenerator from './permitted-content.spec-to-regexp';
-
-type TagRule = ContentModel & { tag: string };
-type Options = {
-	ignoreHasMutableChildren: boolean;
-};
-
-const expMapOnNodeId: Map<string, RegExp> = new Map();
+import { contentModel } from './content-model';
+import { transparentMode } from './represent-transparent-nodes';
 
 export default createRule<TagRule[], Options>({
 	defaultValue: [],
@@ -19,7 +12,6 @@ export default createRule<TagRule[], Options>({
 		ignoreHasMutableChildren: true,
 	},
 	async verify({ document, report, t }) {
-		let idCounter = 0;
 		await document.walkOn('Element', el => {
 			if (!el.rule.value) {
 				return;
@@ -29,317 +21,113 @@ export default createRule<TagRule[], Options>({
 				return;
 			}
 
-			const specType =
-				el.namespaceURI === 'http://www.w3.org/1999/xhtml'
-					? 'HTML'
-					: el.namespaceURI === 'http://www.w3.org/2000/svg'
-					? 'SVG'
-					: 'Any Language';
+			const results = contentModel(el, el.rule.value, el.rule.option);
+			for (const { type, scope, query, hint } of results) {
+				let message = '';
 
-			const childNodes = el.getChildElementsAndTextNodeWithoutWhitespaces();
-			const spec = !el.isCustomElement && getSpec(el, document.specs)?.contentModel;
-
-			const expGen = new ExpGenerator(document.specs, idCounter++);
-
-			if (spec) {
-				if (spec.descendantOf && !el.closest(spec.descendantOf)) {
-					report({
-						scope: el,
-						message: t(
-							'{0} must be {1}',
-							t('the "{0*}" {1}', el.localName, 'element'),
-							t('{0} of {1}', 'descendant', t('the "{0*}" {1}', spec.descendantOf, 'element')),
-						),
-					});
-					return;
-				}
-
-				let matched = false;
-
-				if (spec.conditional) {
-					for (const conditional of spec.conditional) {
-						matched = el.matches(conditional.condition);
-						// console.log({ ...conditional, matched });
-						if (matched) {
-							try {
-								const parentExp = getRegExpFromParentNode(document.specs, el, expGen);
-								const exp = expGen.specToRegExp(conditional.contents, parentExp, el.namespaceURI);
-								const conditionalResult = match(exp, childNodes, false, document.specs);
-								if (!conditionalResult) {
-									const message = t(
-										'{0} is {1:c}',
-										t(
-											'{0} of {1}',
-											t('the {0}', 'content'),
-											t('the "{0*}" {1}', el.localName, 'element'),
-										),
-										'invalid',
-									);
-									report({
-										scope: el,
-										message:
-											specType !== 'Any Language'
-												? t('{0} according to {1}', message, `the ${specType} specification`)
-												: message,
-										line: el.startLine,
-										col: el.startCol,
-										raw: el.raw,
-									});
-									break;
-								}
-							} catch (e) {
-								if (e instanceof Error) {
-									// eslint-disable-next-line no-console
-									console.warn(el.raw, 'conditional', conditional, e.message);
-								} else {
-									throw e;
-								}
-							}
-						}
+				if (hint) {
+					if (hint.max != null) {
+						message =
+							t('there is more content than it needs') +
+							t('. ') +
+							t('the max number of elements required is {0}', `${hint.max}`);
 					}
 				}
 
-				if (!matched) {
-					try {
-						const exp = getRegExpFromNode(document.specs, el, expGen);
-						const specResult = match(exp, childNodes, false, document.specs);
-
-						if (!specResult) {
-							const message = t(
-								'{0} is {1:c}',
-								t('{0} of {1}', t('the {0}', 'content'), t('the "{0*}" {1}', el.localName, 'element')),
-								'invalid',
-							);
-							report({
-								scope: el,
-								message:
-									specType !== 'Any Language'
-										? t('{0} according to {1}', message, `the ${specType} specification`)
-										: message,
-							});
-						}
-					} catch (e) {
-						if (e instanceof Error) {
-							// eslint-disable-next-line no-console
-							console.warn(el.raw, 'HTML Spec', e.message);
-						} else {
-							throw e;
-						}
+				switch (type) {
+					case 'MATCHED':
+					case 'MATCHED_ZERO': {
+						break;
 					}
-				}
-			}
+					case 'MISSING_NODE_ONE_OR_MORE': {
+						message =
+							message ||
+							t('Require {0}', t('one or more elements')) + t('. ') + '(' + t('Need "{0*}"', query) + ')';
 
-			for (const rule of el.rule.value) {
-				if (rule.tag.toLowerCase() !== el.localName.toLowerCase()) {
-					continue;
-				}
+						report({
+							scope,
+							message,
+						});
+						break;
+					}
+					case 'MISSING_NODE_REQUIRED': {
+						message =
+							message ||
+							t('Require {0}', t('an {0}', 'element')) + t('. ') + '(' + t('Need "{0*}"', query) + ')';
 
-				const parentExp = getRegExpFromParentNode(document.specs, el, expGen);
-				try {
-					const exp = expGen.specToRegExp(rule.contents, parentExp, el.namespaceURI);
-					// Evaluate the custom element if the optional schema.
-					const r = match(exp, childNodes, el.isCustomElement, document.specs);
+						report({
+							scope,
+							message,
+						});
+						break;
+					}
+					case 'UNEXPECTED_EXTRA_NODE': {
+						const not = hint.not ?? scope;
 
-					if (!r) {
+						message =
+							message ||
+							(transparentMode.has(scope)
+								? t(
+										'{0} is not allowed in {1} through the transparent model in this context',
+										name(not, t),
+										name(el, t),
+								  )
+								: t('{0} is not allowed in {1} in this context', name(not, t), name(el, t)));
+
+						report({
+							scope: not,
+							message,
+						});
+						break;
+					}
+					case 'TRANSPARENT_MODEL_DISALLOWS': {
+						const not = hint.not ?? scope;
+						const tp = hint.transparent ?? el;
+
+						report({
+							scope: not,
+							message: t(
+								'{0} is {1} but {2}',
+								name(tp, t),
+								t('a {0}', 'transparent model'),
+								t('also disallows {0} in this context', name(not, t)),
+							),
+						});
+						break;
+					}
+					case 'VOID_ELEMENT': {
 						report({
 							scope: el,
-							message: t(
-								'{0} is {1:c}',
-								t('{0} of {1}', t('the {0}', 'content'), t('the "{0*}" {1}', el.localName, 'element')),
-								'invalid',
-							),
-							line: el.startLine,
-							col: el.startCol,
-							raw: el.raw,
+							message: t('{0} is {1}', t('the {0}', 'element'), t('a {0}', 'void element')),
 						});
-						return;
+						break;
 					}
-				} catch (e) {
-					if (e instanceof Error) {
-						// eslint-disable-next-line no-console
-						console.warn(el.raw, 'rule', rule, e.message);
-					} else {
-						throw e;
+					default: {
+						throw new Error('Unreachable code');
 					}
 				}
 			}
-		});
 
-		expMapOnNodeId.clear();
+			transparentMode.clear();
+		});
 	},
 });
 
-type TargetNodes = ReturnType<Element<TagRule[], Options>['getChildElementsAndTextNodeWithoutWhitespaces']>;
-
-function normalization(el: TargetNodes, evalCustomElement: boolean) {
-	return el
-		.map(node => {
-			// FIXME: https://github.com/markuplint/markuplint/issues/388
-			if (!evalCustomElement && node.is(node.ELEMENT_NODE) && node.isCustomElement) {
-				return '';
-			}
-			if (!node.is(node.ELEMENT_NODE)) {
-				return '<#text>';
-			}
-			const { localNameWithNS } = resolveNamespace(node.localName, node.namespaceURI);
-			return `<${localNameWithNS}>`;
-		})
-		.join('');
-}
-
-function getRegExpFromNode(
-	specs: Readonly<MLMLSpec>,
-	el: Element<any, any> | Document<any, any> | DocumentFragment<any, any>,
-	expGen: ExpGenerator,
-) {
-	// console.log({ n: node.nodeName });
-	if (expMapOnNodeId.has(el.uuid)) {
-		return expMapOnNodeId.get(el.uuid)!;
+function name(scope: ChildNode, t: Translator) {
+	if (scope.is(scope.ELEMENT_NODE)) {
+		return t('the "{0}" {1}', scope.localName, 'element');
 	}
-	const parentExp = el.parentNode ? getRegExpFromNode(specs, el.parentNode, expGen) : null;
-	const spec = el.nodeType === el.ELEMENT_NODE && !el.isCustomElement && getSpec(el, specs)?.contentModel;
-	const contentRule = spec ? spec.contents : true;
-	const exp = expGen.specToRegExp(
-		contentRule,
-		parentExp,
-		el.nodeType === el.ELEMENT_NODE ? el.namespaceURI : undefined,
-	);
-	expMapOnNodeId.set(el.uuid, exp);
-	return exp;
-}
-
-function getRegExpFromParentNode(specs: Readonly<MLMLSpec>, el: Element<any, any>, expGen: ExpGenerator) {
-	// console.log({ p: node.nodeName });
-	const parentExp = el.parentNode ? getRegExpFromNode(specs, el.parentNode, expGen) : null;
-	return parentExp;
-}
-
-const matchingCacheMap = new Map<string, boolean>();
-
-function match(exp: RegExp, childNodes: TargetNodes, evalCustomElement: boolean, specs: MLMLSpec) {
-	const target = normalization(childNodes, evalCustomElement);
-	const cacheKey =
-		target +
-		exp.source +
-		childNodes.map(n => (n.is(n.ELEMENT_NODE) ? n.toNormalizeString() : n.originRaw)).join('');
-	const res = matchingCacheMap.get(cacheKey);
-
-	if (res != null) {
-		return res;
+	if (scope.is(scope.TEXT_NODE)) {
+		return t('the {0}', 'text node');
 	}
-
-	const matched = _match(target, exp, childNodes, specs);
-
-	matchingCacheMap.set(cacheKey, matched);
-	return matched;
-}
-
-function _match(target: string, exp: RegExp, childNodes: TargetNodes, specs: MLMLSpec) {
-	const result = exp.exec(target);
-	if (!result) {
-		return false;
+	if (scope.is(scope.CDATA_SECTION_NODE)) {
+		return t('the {0}', 'comment');
 	}
-	const capGroups = result.groups;
-	// console.log({ exp, target, capGroups });
-	if (!capGroups) {
-		return true;
+	if (scope.is(scope.DOCUMENT_TYPE_NODE)) {
+		return t('the {0}', 'doctype');
 	}
-	const groupNames = Object.keys(capGroups);
-	for (const groupName of groupNames) {
-		const matched = capGroups[groupName];
-		if (!matched) {
-			continue;
-		}
-		const [type, , ..._selector] = groupName.split(/(?<=[a-z0-9])_/gi);
-		// console.log({ type, _selector });
-		switch (type) {
-			case 'ACM': {
-				const [model, tag] = _selector;
-				const selectors = contentModelCategoryToTagNames(`#${model}` as Category, specs).filter(selector => {
-					const [, tagName] = /^([^[\]]+)(?:\[[^\]]+\])?$/.exec(selector) || [];
-					return tagName.toLowerCase() === tag.toLowerCase();
-				});
-				for (const node of childNodes) {
-					if (node.is(node.TEXT_NODE)) {
-						continue;
-					}
-					if (node.nodeName.toLowerCase() !== tag.toLowerCase()) {
-						continue;
-					}
-					for (const selector of selectors) {
-						const matched = node.matches(selector);
-						// console.log({ raw: node.raw, selector, matched });
-						if (matched) {
-							return true;
-						}
-					}
-					return false;
-				}
-				break;
-			}
-			case 'NAD': {
-				let targetsMaybeIncludesNotAllowedDescendants = Array.from(
-					new Set(matched.split(/><|<|>/g).filter(_ => _)),
-				);
-				const contents: Set<string> = new Set();
-				const transparentGroupName = groupNames.find(name => /^TRANSPARENT_[0-9]+$/.test(name));
-				const inTransparent = _selector.includes('__InTRANSPARENT')
-					? transparentGroupName && capGroups[transparentGroupName]
-						? capGroups[transparentGroupName].split(/><|<|>/g).filter(_ => _)
-						: null
-					: null;
-				_selector.forEach(content => {
-					if (content[0] === '_') {
-						contentModelCategoryToTagNames(content.replace('_', '#') as Category, specs).forEach(tag =>
-							contents.add(tag),
-						);
-						return;
-					}
-					contents.add(content);
-				});
-				const selectors = Array.from(contents);
-				targetsMaybeIncludesNotAllowedDescendants = targetsMaybeIncludesNotAllowedDescendants.filter(content =>
-					inTransparent ? inTransparent.includes(content) : true,
-				);
-				// console.log({
-				// 	groupName,
-				// 	matched,
-				// 	_selector,
-				// 	type,
-				// 	selectors,
-				// 	inTransparent,
-				// 	targetsMaybeIncludesNotAllowedDescendants,
-				// });
-				for (const node of childNodes) {
-					for (const target of targetsMaybeIncludesNotAllowedDescendants) {
-						if (node.is(node.TEXT_NODE)) {
-							if (selectors.includes('#text')) {
-								return false;
-							}
-							continue;
-						}
-						if (node.nodeName.toLowerCase() !== target.toLowerCase()) {
-							continue;
-						}
-						for (const selector of selectors) {
-							// console.log({ selector, target });
-
-							// Self
-							if (node.matches(selector)) {
-								return false;
-							}
-
-							// Descendants
-							const nodeList = node.querySelectorAll(selector);
-							if (nodeList.length) {
-								return false;
-							}
-						}
-					}
-				}
-				break;
-			}
-		}
+	if (scope.is(scope.MARKUPLINT_PREPROCESSOR_BLOCK)) {
+		return t('the {0}', 'code block');
 	}
-	return true;
+	return t('the {0}', 'node');
 }
