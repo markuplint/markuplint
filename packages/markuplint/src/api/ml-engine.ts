@@ -150,6 +150,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 
 		if (!(await this.#file.isFile())) {
 			this.emit('log', 'file-no-exists', `The file doesn't exist or it is not a file: ${this.#file.path}`);
+			fileLog("The file doesn't exist or it is not a file: %s", this.#file.path);
 			return null;
 		}
 
@@ -158,6 +159,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		for (const excludeFile of excludeFiles) {
 			if (this.#file.matches(excludeFile)) {
 				this.emit('exclude', this.#file.path, excludeFile);
+				fileLog('Excludes the file: %s', this.#file.path);
 				return null;
 			}
 		}
@@ -171,6 +173,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 				'ext-unmatched',
 				`Avoided linting because a file is unmatched by the extension: ${this.#file.path}`,
 			);
+			fileLog('Avoided linting because a file is unmatched by the extension: %s', this.#file.path);
 			return null;
 		}
 

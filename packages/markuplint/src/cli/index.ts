@@ -59,7 +59,10 @@ import search from './search';
 		getStdin()
 			.then(async stdin => {
 				if (stdin) {
-					const hasError = await command([{ sourceCode: stdin }], cli.flags).catch(err => {
+					const hasError = await command([{ sourceCode: stdin }], {
+						...cli.flags,
+						ignoreExt: true,
+					}).catch(err => {
 						process.stderr.write(err + '\n');
 						process.exit(1);
 					});
