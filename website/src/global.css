@@ -96,23 +96,23 @@ h1 {
 }
 
 h2 {
-  font-size: calc(1em * 8 / 3.5);
-}
-
-h3 {
   font-size: calc(1em * 8 / 4);
 }
 
-h4 {
+h3 {
   font-size: calc(1em * 8 / 5);
 }
 
-h5 {
+h4 {
   font-size: calc(1em * 8 / 6);
 }
 
-h6 {
+h5 {
   font-size: calc(1em * 8 / 7);
+}
+
+h6 {
+  font-size: calc(1em * 8 / 8);
 }
 
 p {
