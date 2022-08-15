@@ -84,8 +84,23 @@ function toString(value: Primitive, locale = 'en') {
 		case 'string':
 			return value;
 		case 'number':
-			return value.toLocaleString(locale);
+			return toLocaleString(value, locale);
 		case 'boolean':
 			return `${value}`;
 	}
+}
+
+function toLocaleString(value: number, locale: string) {
+	try {
+		return value.toLocaleString(locale);
+	} catch (e: unknown) {
+		if (e instanceof RangeError) {
+			try {
+				return value.toLocaleString('en');
+			} catch (_) {
+				// void
+			}
+		}
+	}
+	return value.toString(10);
 }

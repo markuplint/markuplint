@@ -10,11 +10,11 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 
 ## Usage
 
--   [Getting Started](https://markuplint.dev/getting-started)
--   [Rules](https://markuplint.dev/rules)
--   [Configuration](https://markuplint.dev/configuration)
--   [API](https://markuplint.dev/api-docs)
--   [Playground](https://playground.markuplint.dev/)
+- [Getting Started](https://markuplint.dev/getting-started)
+- [Rules](https://markuplint.dev/rules)
+- [Configuration](https://markuplint.dev/configuration)
+- [API](https://markuplint.dev/api-docs)
+- [Playground](https://playground.markuplint.dev/)
 
 ## Packages
 
@@ -22,6 +22,7 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
 | [`markuplint`](./packages/markuplint)                                         | [![npm version](https://badge.fury.io/js/markuplint.svg)](https://badge.fury.io/js/markuplint)                                                  | Node.js   |
 | [`@markuplint/create-rule-helper`](./packages/@markuplint/create-rule-helper) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fcreate-rule-helper.svg)](https://www.npmjs.com/package/@markuplint/create-rule-helper) | Node.js   |
+| [`@markuplint/file-resolver`](./packages/@markuplint/file-resolver)           | [![npm version](https://badge.fury.io/js/%40markuplint%2Ffile-resolver.svg)](https://badge.fury.io/js/%40markuplint%2Ffile-resolver)            | Node.js   |
 | [`@markuplint/html-parser`](./packages/@markuplint/html-parser)               | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-parser.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-parser)                | Universal |
 | [`@markuplint/html-spec`](./packages/@markuplint/html-spec)                   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-spec.svg)](https://badge.fury.io/js/%40markuplint%2Fhtml-spec)                    | Universal |
 | [`@markuplint/i18n`](./packages/@markuplint/i18n)                             | [![npm version](https://badge.fury.io/js/%40markuplint%2Fi18n.svg)](https://badge.fury.io/js/%40markuplint%2Fi18n)                              | Universal |
@@ -47,6 +48,7 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 | [`@markuplint/svelte-parser`](./packages/@markuplint/svelte-parser)     | [![npm version](https://badge.fury.io/js/%40markuplint%2Fsvelte-parser.svg)](https://www.npmjs.com/package/@markuplint/svelte-parser)     | Universal |
 | [`@markuplint/astro-parser`](./packages/@markuplint/astro-parser)       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fastro-parser.svg)](https://www.npmjs.com/package/@markuplint/astro-parser)       | Universal |
 | [`@markuplint/php-parser`](./packages/@markuplint/php-parser)           | [![npm version](https://badge.fury.io/js/%40markuplint%2Fphp-parser.svg)](https://www.npmjs.com/package/@markuplint/php-parser)           | Universal |
+| [`@markuplint/smarty-parser`](./packages/@markuplint/smarty-parser)     | [![npm version](https://badge.fury.io/js/%40markuplint%2Fsmarty-parser.svg)](https://www.npmjs.com/package/@markuplint/smarty-parser)     | Universal |
 | [`@markuplint/erb-parser`](./packages/@markuplint/erb-parser)           | [![npm version](https://badge.fury.io/js/%40markuplint%2Ferb-parser.svg)](https://www.npmjs.com/package/@markuplint/erb-parser)           | Universal |
 | [`@markuplint/ejs-parser`](./packages/@markuplint/ejs-parser)           | [![npm version](https://badge.fury.io/js/%40markuplint%2Fejs-parser.svg)](https://www.npmjs.com/package/@markuplint/ejs-parser)           | Universal |
 | [`@markuplint/mustache-parser`](./packages/@markuplint/mustache-parser) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fmustache-parser.svg)](https://www.npmjs.com/package/@markuplint/mustache-parser) | Universal |
@@ -75,14 +77,13 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 
 ### Personal Supporters
 
-[<img width="36" src="https://avatars.githubusercontent.com/u/6581173?v=4" alt="mikimhk"/>](https://github.com/mikimhk)
 [<img width="36" src="https://avatars.githubusercontent.com/u/91733847?v=4" alt="Tokitake" />](https://github.com/Tokitake)
 
 ## Thanks
 
 This linter is inspired by:
 
--   [HTMLHint](https://htmlhint.com/)
--   [ESLint](https://eslint.org/)
--   [stylelint](https://stylelint.io/)
--   [textlint](https://textlint.github.io/)
+- [HTMLHint](https://htmlhint.com/)
+- [ESLint](https://eslint.org/)
+- [stylelint](https://stylelint.io/)
+- [textlint](https://textlint.github.io/)

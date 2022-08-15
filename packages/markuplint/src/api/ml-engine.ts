@@ -35,16 +35,24 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		super();
 		this.#file = file;
 		this.#options = options;
-		this.#configProvider = new ConfigProvider(!!options?.watch);
+		this.#configProvider = new ConfigProvider();
+		this.watchMode(!!this.#options?.watch);
 
 		if (this.#options?.debug) {
 			verbosely();
 		}
+	}
 
-		if (options?.watch) {
-			this.#watcher.on('all', this.watch.bind(this));
+	watchMode(enable: boolean) {
+		this.#options = {
+			...this.#options,
+			watch: enable,
+		};
+
+		if (enable) {
+			this.#watcher.on('change', this.onChange.bind(this));
 		} else {
-			this.#watcher.close();
+			this.#watcher.removeAllListeners();
 		}
 	}
 
@@ -120,7 +128,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		if (this.#core) {
 			return this.#core;
 		}
-		const fabric = await this.provide(false);
+		const fabric = await this.provide();
 
 		if (!fabric) {
 			return null;
@@ -130,12 +138,11 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 			this.emit('config-errors', this.#file.path, fabric.configErrors);
 		}
 
-		const core = this.cretateCore(fabric);
-		return core;
+		return this.cretateCore(fabric);
 	}
 
-	private async provide(remerge: boolean): Promise<MLFabric | null> {
-		const configSet = await this.resolveConfig(remerge);
+	private async provide(cache = true): Promise<MLFabric | null> {
+		const configSet = await this.resolveConfig(cache);
 		fileLog('Fetched Config files: %O', configSet.files);
 		fileLog('Resolved Config: %O', configSet.config);
 		fileLog('Resolved Plugins: %O', configSet.plugins);
@@ -143,6 +150,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 
 		if (!(await this.#file.isFile())) {
 			this.emit('log', 'file-no-exists', `The file doesn't exist or it is not a file: ${this.#file.path}`);
+			fileLog("The file doesn't exist or it is not a file: %s", this.#file.path);
 			return null;
 		}
 
@@ -151,6 +159,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		for (const excludeFile of excludeFiles) {
 			if (this.#file.matches(excludeFile)) {
 				this.emit('exclude', this.#file.path, excludeFile);
+				fileLog('Excludes the file: %s', this.#file.path);
 				return null;
 			}
 		}
@@ -164,6 +173,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 				'ext-unmatched',
 				`Avoided linting because a file is unmatched by the extension: ${this.#file.path}`,
 			);
+			fileLog('Avoided linting because a file is unmatched by the extension: %s', this.#file.path);
 			return null;
 		}
 
@@ -225,7 +235,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		return core;
 	}
 
-	private async resolveConfig(remerge: boolean) {
+	private async resolveConfig(cache: boolean) {
 		const defaultConfigKey = this.#options?.defaultConfig && this.#configProvider.set(this.#options?.defaultConfig);
 		const configFilePathsFromTarget = this.#options?.noSearchConfig
 			? defaultConfigKey ?? null
@@ -236,11 +246,12 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		const configSet = await this.#configProvider.resolve(
 			this.#file,
 			[configFilePathsFromTarget, this.#options?.configFile, configKey],
-			remerge,
+			cache,
 		);
 		this.emit('config', this.#file.path, configSet);
 
 		if (this.#options?.watch) {
+			// It doesn't watch the main HTML file because it may is watched and managed by a language server or text editor or more.
 			this.#watcher.add(Array.from(configSet.files));
 		}
 
@@ -287,10 +298,14 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		return i18nSettings;
 	}
 
-	private async watch(type: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir', filePath: string) {
-		this.emit('log', `watch:${type}`, filePath);
+	private async onChange(filePath: string) {
+		if (!this.#options?.watch) {
+			return;
+		}
 
-		const fabric = await this.provide(true);
+		this.emit('log', 'watch:onChange', filePath);
+
+		const fabric = await this.provide(false);
 
 		if (!fabric) {
 			return;
