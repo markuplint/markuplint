@@ -1,3 +1,7 @@
+---
+title: 論理属性への値の指定禁止 (no-boolean-attr-value)
+---
+
 # 論理属性への値の指定禁止 (`no-boolean-attr-value`)
 
 論理属性に値を指定すると警告します。

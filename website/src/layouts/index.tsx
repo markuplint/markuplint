@@ -28,8 +28,8 @@ export default function Index({ children, meta }: PropsWithChildren<{ meta: Meta
         <nav className="step-nav" aria-label="Step">
           <div className="step-nav-back">
             {back && (
-              <Link href={`./${back.href}/`}>
-                <a href={`./${back.href}/`}>
+              <Link href={`./${back.href}/`} passHref>
+                <a>
                   <span>Back:</span>
                   <span>{back.title}</span>
                 </a>
@@ -38,8 +38,8 @@ export default function Index({ children, meta }: PropsWithChildren<{ meta: Meta
           </div>
           <div className="step-nav-next">
             {next && (
-              <Link href={`./${next.href}/`}>
-                <a href={`./${next.href}/`}>
+              <Link href={`./${next.href}/`} passHref>
+                <a>
                   <span>Next:</span>
                   <span>{next.title}</span>
                 </a>

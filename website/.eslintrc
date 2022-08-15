@@ -1,4 +1,5 @@
 {
+  "root": true,
   "extends": ["../.eslintrc", "plugin:react/recommended", "plugin:react-hooks/recommended"],
   "plugins": ["react"],
   "env": {

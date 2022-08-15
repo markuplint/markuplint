@@ -1,3 +1,7 @@
+---
+title: 属性の=の後のスペース (attr-equal-space-after)
+---
+
 # 属性の`=`の後のスペース (`attr-equal-space-after`)
 
 属性の`=`の後にスペースがあると警告します。もしくはスペースなければ警告します。改行は許可しない設定も可能です。`=`の前のスペースのルールは[`attr-equal-space-before`](../markuplint-rule-attr-equal-space-before)で設定してください。

@@ -1,5 +1,8 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { memo } from 'react';
+
+import { useTranslation } from '../lib/i18n';
 
 import Logo from './Logo';
 
@@ -7,6 +10,9 @@ type Props = {
   isHome?: boolean;
 };
 export default memo(({ isHome = false }: Props) => {
+  const { locale, asPath } = useRouter();
+  const { t } = useTranslation();
+
   return (
     <>
       <header>
@@ -16,8 +22,8 @@ export default memo(({ isHome = false }: Props) => {
           </div>
         ) : (
           <div>
-            <Link href="/">
-              <a href="/">
+            <Link href="/" passHref>
+              <a>
                 <Logo />
               </a>
             </Link>
@@ -26,29 +32,40 @@ export default memo(({ isHome = false }: Props) => {
         <nav aria-label="main menu">
           <ul>
             <li>
-              <Link href="/getting-started">
-                <a href="/getting-started">Getting Started</a>
+              <Link href="/getting-started" passHref>
+                <a>{t('Getting Started')}</a>
               </Link>
             </li>
             <li>
-              <Link href="/rules">
-                <a href="/rules">Rules</a>
+              <Link href="/rules" passHref>
+                <a>{t('Rules')}</a>
               </Link>
             </li>
             <li>
-              <Link href="/configuration">
-                <a href="/configuration">Configuration</a>
+              <Link href="/configuration" passHref>
+                <a>{t('Configuration')}</a>
               </Link>
             </li>
             <li>
-              <Link href="/api-docs">
-                <a href="/api-docs">
-                  <abbr title="Application Programming Interface">API</abbr>
+              <Link href="/api-docs" passHref>
+                <a>
+                  <abbr title="Application Programming Interface">{t('API')}</abbr>
                 </a>
               </Link>
             </li>
             <li>
-              <a href="https://playground.markuplint.dev">Playground</a>
+              <a href="https://playground.markuplint.dev">{t('Playground')}</a>
+            </li>
+            <li>
+              {locale === 'en' ? (
+                <Link href={asPath} locale="ja" passHref>
+                  <a>日本語（ベータ）</a>
+                </Link>
+              ) : (
+                <Link href={asPath} locale="en" passHref>
+                  <a>English</a>
+                </Link>
+              )}
             </li>
           </ul>
         </nav>
