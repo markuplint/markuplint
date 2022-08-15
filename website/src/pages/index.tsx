@@ -4,9 +4,11 @@ import { useRouter } from 'next/router';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import BasicMeta from '../components/meta/BasicMeta';
+import { useTranslation } from '../lib/i18n';
 
 export default function Index() {
   const { locale } = useRouter();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -18,9 +20,9 @@ export default function Index() {
       <main>
         <div className="hero">
           <h1>markuplint</h1>
-          <h2>Peace of mind in your markup</h2>
+          <h2>{t('Peace of mind in your markup')}</h2>
           <Link href="/getting-started" passHref>
-            <a>Get Started</a>
+            <a>{t('Get Started')}</a>
           </Link>
         </div>
         {locale === 'ja' && (
