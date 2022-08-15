@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { memo } from 'react';
 
 import { useTranslation } from '../lib/i18n';
@@ -10,7 +9,6 @@ type Props = {
   isHome?: boolean;
 };
 export default memo(({ isHome = false }: Props) => {
-  const { locale, asPath } = useRouter();
   const { t } = useTranslation();
 
   return (
@@ -55,17 +53,6 @@ export default memo(({ isHome = false }: Props) => {
             </li>
             <li>
               <a href="https://playground.markuplint.dev">{t('Playground')}</a>
-            </li>
-            <li>
-              {locale === 'en' ? (
-                <Link href={asPath} locale="ja" passHref>
-                  <a>日本語（ベータ）</a>
-                </Link>
-              ) : (
-                <Link href={asPath} locale="en" passHref>
-                  <a>English</a>
-                </Link>
-              )}
             </li>
           </ul>
         </nav>
