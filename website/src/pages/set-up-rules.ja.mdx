@@ -1,0 +1,101 @@
+---
+title: ルールの設定
+back:
+  title: Getting started
+  href: getting-started
+next:
+  title: The setting for other languages
+  href: setting-for-other-languages
+---
+
+## コンフィグファイルの作成
+
+`package.json` があるプロジェクトディレクトリに、`.markuplintrc` というファイルを作成します。
+このファイルのルール・プロパティにいくつかのルールを追加していきます。
+
+```json
+{
+  "rules": {
+    "rule-name": "value" // さらにルールが必要であれば追加します
+  }
+}
+```
+
+このファイルは、CLI での実行や VS Code でファイルを開いたり開いたりする際に _自動的にロードされます_。
+
+```json
+{
+  "rules": {
+    "attr-duplication": true,
+    "attr-equal-space-after": true,
+    "attr-equal-space-before": true,
+    "attr-spacing": true,
+    "attr-value-quotes": true,
+    "case-sensitive-attr-name": true,
+    "case-sensitive-tag-name": true,
+    "character-reference": true,
+    "class-naming": false,
+    "deprecated-attr": true,
+    "deprecated-element": true,
+    "disallowed-element": true,
+    "doctype": true,
+    "end-tag": true,
+    "id-duplication": true,
+    "indentation": true,
+    "ineffective-attr": true,
+    "invalid-attr": true,
+    "landmark-roles": true,
+    "no-boolean-attr-value": true,
+    "no-default-value": true,
+    "no-hard-code-id": true,
+    "no-refer-to-non-existent-id": true,
+    "no-use-event-handler-attr": true,
+    "permitted-contents": true,
+    "require-accessible-name": true,
+    "required-attr": true,
+    "required-element": true,
+    "required-h1": true,
+    "use-list": true,
+    "wai-aria": true
+  }
+}
+```
+
+デフォルトではルールは何も設定されていません。もし一度も使ったことがないのであれば、上記の設定をファイルにコピーして、好みにカスタマイズしてください。
+
+## スコープド・ルール
+
+構造の一部にのみルールを適用させたい場合は、タグ名やセレクタを `nodeRules` や `childNodeRules` に指定することで、期待の範囲のみに影響を与えます。
+また、`childNodeRules` は、対象要素の子要素（`inheritance` を設定していれば子孫も含む）に対して適用されます。
+
+```json
+{
+  "nodeRules": [
+    {
+      "tagName": "main",
+      "rules": {
+        "class-naming": "/[a-z]+(__[a-z]+)?/"
+      }
+    },
+    {
+      "selector": ".some-class-name",
+      "rules": {
+        "required-attr": true
+      }
+    }
+  ],
+  "childNodeRules": [
+    {
+      "selector": ".ignoreClass",
+      "inheritance": true,
+      "rules": {
+        "character-reference": true
+      }
+    }
+  ]
+}
+```
+
+## ルール
+
+各ルールの詳細は、[ルールページ](/rules)でご確認ください。

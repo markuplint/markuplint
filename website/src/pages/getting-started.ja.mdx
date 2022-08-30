@@ -1,0 +1,52 @@
+---
+title: はじめる
+next:
+  title: ルールの設定
+  href: set-up-rules
+---
+
+## 簡単な試し方
+
+```
+$ npx markuplint target.html
+```
+
+## 必要なスペック
+
+- Node.js v12.4.0 以上
+
+## プロジェクトでの利用
+
+コマンドから[コンフィグ](./configuration)ファイルの作成と依存パッケージのインストールをします。
+
+```
+$ npx markuplint --init
+# もしくは
+$ yarn run markuplint --init
+```
+
+質問に答えていくことで、必要なモジュールが自動的にインストールされます。
+
+`package.json`の`scripts`オプションにコマンドを追加します。
+
+```json
+{
+  "scripts": {
+    "html:lint": "markuplint **/*.html"
+  }
+}
+```
+
+ターゲットパスを変更したい場合は、プロジェクトに合わせて変更することができます。
+
+次のスクリプトで実行します:
+
+```
+$ npm run html:lint
+# もしくは
+$ yarn html:lint
+```
+
+## Visual Studio Code で利用する
+
+[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint)からインストールできます。もしくは VS Code の拡張機能から&ldquo;markuplint&rdquo;を検索してください。
