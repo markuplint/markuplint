@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 
 import Footer from '../components/Footer';
 import Header from '../components/Header';
@@ -7,7 +6,6 @@ import BasicMeta from '../components/meta/BasicMeta';
 import { useTranslation } from '../lib/i18n';
 
 export default function Index() {
-  const { locale } = useRouter();
   const { t } = useTranslation();
 
   return (
@@ -25,54 +23,26 @@ export default function Index() {
             <a>{t('Get Started')}</a>
           </Link>
         </div>
-        {locale === 'ja' && (
-          <div className="notice">
-            <p>
-              日本語版サイトは作成途中です。
-              <br />
-              現在は個別のルールのページのみ日本語化されています。
-            </p>
-          </div>
-        )}
         <div className="body">
           <section>
-            <h2>Conformance checking</h2>
-            <p>
-              The markup needs to written valid code. This is important to keep the promise of the standards that do not
-              break webpages through each user agent more than your policy. markuplint can conformance checking given
-              the specs that are HTML Living Standard.
-            </p>
+            <h2>{t('Conformance checking')}</h2>
+            <p>{t('[Conformance checking]__body')}</p>
           </section>
           <section>
-            <h2>On Your House Rules</h2>
-            <p>
-              You may have the house rules on your project or your organization. You can check based on your policy
-              and/or your rules. For example, if you must give the alt attribute to the img element, You should set up
-              that rule.
-            </p>
+            <h2>{t('On Your House Rules')}</h2>
+            <p>{t('[On Your House Rules]__body')}</p>
           </section>
           <section>
-            <h2>For Designed Structures</h2>
-            <p>
-              markuplint checks whether to correct the structure of elements made on the design system of your project.
-              It can check the relation parent-child of the elements by class name and/or the custom element name.
-            </p>
+            <h2>{t('For Designed Structures')}</h2>
+            <p>{t('[For Designed Structures]__body')}</p>
           </section>
           <section>
-            <h2>Set for each Selector</h2>
-            <p>
-              Depending on the situation, You may want the part of structures only to apply some rule. Or want it is
-              ignored from the rule. If that, markuplint can that. There are settings to apply in any scope by the
-              selector in the spec W3C Selectors.
-            </p>
+            <h2>{t('Set for each Selector')}</h2>
+            <p>{t('[Set for each Selector]__body')}</p>
           </section>
           <section>
-            <h2>Supporting Template Engine</h2>
-            <p>
-              You can use it for other markup languages with plugins. Currently, There are plugins for Pug, JSX(React),
-              Vue, Svelte, Astro, PHP, Smarty, eRuby, EJS, Mustache/Handlebars, Nunjucks, and Liquid. And it provides
-              the API that creates the plugin for any markup language.
-            </p>
+            <h2>{t('Supporting Template Engine')}</h2>
+            <p>{t('[Supporting Template Engine]__body')} </p>
           </section>
         </div>
       </main>
