@@ -9,7 +9,7 @@
     "attr-equal-space-before": true,
     "attr-spacing": true,
     "attr-value-quotes": true,
-    "case-sensitive-attr-name": true,
+    "case-sensitive-attr-name": false,
     "case-sensitive-tag-name": true,
     "character-reference": true,
     "class-naming": false,

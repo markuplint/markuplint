@@ -28,7 +28,7 @@ const Page = memo<Props>(({ content }) => {
   );
 });
 
-export async function getStaticPaths() {
+export function getStaticPaths() {
   const paths = getAllPostIds();
   return {
     paths,

@@ -29,5 +29,5 @@ async function copy() {
 
 // Main
 (async () => {
-  copy();
+  await copy();
 })();
