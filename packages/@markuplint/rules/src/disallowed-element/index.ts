@@ -3,7 +3,7 @@ import { createRule } from '@markuplint/ml-core';
 export default createRule<string[], null>({
 	defaultValue: [],
 	defaultOptions: null,
-	async verify({ document, report, t, globalRule }) {
+	verify({ document, report, t, globalRule }) {
 		for (const query of globalRule.value) {
 			const elements = document.matchNodes(query);
 			for (const el of elements) {
@@ -15,7 +15,7 @@ export default createRule<string[], null>({
 			}
 		}
 
-		await document.walkOn('Element', el => {
+		document.walkOn('Element', el => {
 			if (el.rule.value === globalRule.value) {
 				return;
 			}

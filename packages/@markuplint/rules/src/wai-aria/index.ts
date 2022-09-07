@@ -29,8 +29,8 @@ export default createRule<boolean, Options>({
 		disallowSetImplicitProps: true,
 		disallowDefaultValue: false,
 	},
-	async verify({ document, report, t }) {
-		await document.walkOn('Element', node => {
+	verify({ document, report, t }) {
+		document.walkOn('Element', node => {
 			const attrSpecs = getAttrSpecs(node.nameWithNS, document.specs);
 			const html = htmlSpec(document.specs, node.nodeName);
 			const { roles, ariaAttrs } = ariaSpec(document.specs);

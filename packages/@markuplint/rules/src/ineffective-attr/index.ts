@@ -2,8 +2,8 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 export default createRule({
 	defaultServerity: 'warning',
-	async verify({ document, report, t }) {
-		await document.walkOn('Element', el => {
+	verify({ document, report, t }) {
+		document.walkOn('Element', el => {
 			const attrSpec = getAttrSpecs(el.nameWithNS, document.specs);
 			if (!attrSpec) {
 				return;

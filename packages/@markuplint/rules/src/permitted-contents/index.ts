@@ -20,9 +20,9 @@ export default createRule<TagRule[], Options>({
 	defaultOptions: {
 		ignoreHasMutableChildren: true,
 	},
-	async verify({ document, report, t }) {
+	verify({ document, report, t }) {
 		let idCounter = 0;
-		await document.walkOn('Element', node => {
+		document.walkOn('Element', node => {
 			if (!node.rule.value) {
 				return;
 			}

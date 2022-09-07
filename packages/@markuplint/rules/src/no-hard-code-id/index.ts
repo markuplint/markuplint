@@ -2,11 +2,11 @@ import { createRule } from '@markuplint/ml-core';
 
 export default createRule({
 	defaultServerity: 'warning',
-	async verify({ document, report, t }) {
+	verify({ document, report, t }) {
 		if (!document.isFragment) {
 			return;
 		}
-		await document.walkOn('Element', el => {
+		document.walkOn('Element', el => {
 			for (const attr of el.attributes) {
 				if (
 					attr.potentialName.toLowerCase() === 'id' &&

@@ -7,8 +7,8 @@ export type Value = string | string[] | null;
 export default createRule<Value>({
 	defaultServerity: 'warning',
 	defaultValue: null,
-	async verify({ document, report, t }) {
-		await document.walkOn('Element', node => {
+	verify({ document, report, t }) {
+		document.walkOn('Element', node => {
 			if (!node.rule.value) {
 				return;
 			}

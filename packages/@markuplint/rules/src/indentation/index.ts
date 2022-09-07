@@ -13,8 +13,8 @@ export default createRule<Value, IndentationOptions>({
 		alignment: true,
 		'indent-nested-nodes': true,
 	},
-	async verify(context) {
-		await context.document.walk(node => {
+	verify(context) {
+		context.document.walk(node => {
 			if (node.rule.disabled) {
 				return;
 			}
@@ -134,11 +134,11 @@ export default createRule<Value, IndentationOptions>({
 			}
 		});
 	},
-	async fix({ document }) {
+	fix({ document }) {
 		/**
 		 * Validate indent type and length.
 		 */
-		await document.walk(node => {
+		document.walk(node => {
 			const indent = getIndent(node);
 			if (!node.rule.disabled && indent) {
 				if (indent.type !== 'none') {
@@ -162,7 +162,7 @@ export default createRule<Value, IndentationOptions>({
 			}
 		});
 
-		await document.walk(node => {
+		document.walk(node => {
 			if (node.rule.disabled) {
 				return;
 			}
@@ -206,7 +206,7 @@ export default createRule<Value, IndentationOptions>({
 		/**
 		 * Validate alignment end-tags.
 		 */
-		await document.walkOn('ElementCloseTag', endTag => {
+		document.walkOn('ElementCloseTag', endTag => {
 			if (!endTag.rule || !endTag.rule.option) {
 				return;
 			}

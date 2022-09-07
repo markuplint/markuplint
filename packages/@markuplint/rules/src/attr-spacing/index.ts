@@ -11,8 +11,8 @@ export default createRule<boolean, AttrSpasingOptions>({
 		lineBreak: 'either',
 		width: 1,
 	},
-	async verify(context) {
-		await context.document.walkOn('Element', node => {
+	verify(context) {
+		context.document.walkOn('Element', node => {
 			const attrs = node.attributes;
 			for (const attr of attrs) {
 				if (attr.attrType === 'ps-attr') {
@@ -64,8 +64,8 @@ export default createRule<boolean, AttrSpasingOptions>({
 			}
 		});
 	},
-	async fix({ document }) {
-		await document.walkOn('Element', node => {
+	fix({ document }) {
+		document.walkOn('Element', node => {
 			const attrs = node.attributes;
 			for (const attr of attrs) {
 				if (attr.attrType === 'ps-attr') {

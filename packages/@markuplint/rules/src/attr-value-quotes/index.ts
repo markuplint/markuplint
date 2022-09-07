@@ -12,8 +12,8 @@ const quoteList: QuoteMap = {
 export default createRule<Type>({
 	defaultServerity: 'warning',
 	defaultValue: 'double',
-	async verify(context) {
-		await context.document.walkOn('Element', node => {
+	verify(context) {
+		context.document.walkOn('Element', node => {
 			const message = context.translate(
 				'{0} is must {1} on {2}',
 				'Attribute value',
@@ -37,8 +37,8 @@ export default createRule<Type>({
 			}
 		});
 	},
-	async fix(context) {
-		await context.document.walkOn('Element', node => {
+	fix(context) {
+		context.document.walkOn('Element', node => {
 			for (const attr of node.attributes) {
 				const quote = quoteList[node.rule.value];
 				if (attr.attrType === 'html-attr' && quote && attr.startQuote && attr.startQuote.raw !== quote) {

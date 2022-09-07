@@ -3,13 +3,13 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 import { ariaSpec } from '../helpers';
 
 export default createRule({
-	async verify({ document, report, t }) {
+	verify({ document, report, t }) {
 		const { ariaAttrs } = ariaSpec(document.specs);
 
 		const idList = new Set<string>();
 		let hasDynamicId = false;
 
-		await document.walkOn('Element', el => {
+		document.walkOn('Element', el => {
 			for (const attr of el.attributes) {
 				if (attr.getName().potential.toLowerCase() !== 'id') {
 					continue;

@@ -64,8 +64,8 @@ export default createRule<Bullets, Options>({
 		],
 	},
 	defaultServerity: 'warning',
-	async verify({ document, report, t }) {
-		await document.walkOn('Text', textNode => {
+	verify({ document, report, t }) {
+		document.walkOn('Text', textNode => {
 			const text = decodeCharRef(textNode.raw.trim());
 
 			if (!text) {

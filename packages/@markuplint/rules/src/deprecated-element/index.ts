@@ -3,8 +3,8 @@ import { createRule } from '@markuplint/ml-core';
 import { getSpecByTagName } from '@markuplint/ml-spec';
 
 export default createRule({
-	async verify({ document, report, t }) {
-		await document.walkOn('Element', el => {
+	verify({ document, report, t }) {
+		document.walkOn('Element', el => {
 			const ns = el.ns;
 			if (!(ns === 'html' || ns === 'svg') || el.isCustomElement) {
 				return;

@@ -12,7 +12,7 @@ export default createRule<boolean, Options>({
 		'expected-once': true,
 		'in-document-fragment': false,
 	},
-	async verify({ document, report, globalRule, t }) {
+	verify({ document, report, globalRule, t }) {
 		const h1Stack: Element<boolean, Options>[] = [];
 
 		if (document.nodeList.length === 0) {
@@ -23,7 +23,7 @@ export default createRule<boolean, Options>({
 			return;
 		}
 
-		await document.walkOn('Element', node => {
+		document.walkOn('Element', node => {
 			if (node.nodeName.toLowerCase() === 'h1') {
 				h1Stack.push(node);
 			}

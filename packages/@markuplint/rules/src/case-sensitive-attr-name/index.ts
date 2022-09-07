@@ -10,8 +10,8 @@ export type Value_v1 = 'no-upper' | 'no-lower';
 export default createRule<Value | Value_v1>({
 	defaultServerity: 'warning',
 	defaultValue: 'lower',
-	async verify({ document, report, t }) {
-		await document.walkOn('Element', node => {
+	verify({ document, report, t }) {
+		document.walkOn('Element', node => {
 			if (node.isForeignElement || node.isCustomElement) {
 				return;
 			}
@@ -68,8 +68,8 @@ export default createRule<Value | Value_v1>({
 			}
 		});
 	},
-	async fix({ document }) {
-		await document.walkOn('Element', node => {
+	fix({ document }) {
+		document.walkOn('Element', node => {
 			if (node.isForeignElement || node.isCustomElement) {
 				return;
 			}

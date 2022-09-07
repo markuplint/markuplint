@@ -3,8 +3,8 @@ import { createRule } from '@markuplint/ml-core';
 import { accnameMayBeMutable, getComputedRole, getRoleSpec } from '../helpers';
 
 export default createRule<boolean, null>({
-	async verify({ document, report, t }) {
-		await document.walkOn('Element', el => {
+	verify({ document, report, t }) {
+		document.walkOn('Element', el => {
 			if (accnameMayBeMutable(el, document)) {
 				return;
 			}

@@ -19,11 +19,11 @@ const voidElements = [
 
 export default createRule<boolean>({
 	defaultServerity: 'warning',
-	async verify({ document, report, t }) {
+	verify({ document, report, t }) {
 		if (document.endTag === 'never') {
 			return;
 		}
-		await document.walkOn('Element', el => {
+		document.walkOn('Element', el => {
 			if (voidElements.some(vE => vE === el.nodeName.toLowerCase())) {
 				return;
 			}

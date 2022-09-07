@@ -5,8 +5,8 @@ export type Value = 'lower' | 'upper';
 export default createRule<Value>({
 	defaultServerity: 'warning',
 	defaultValue: 'lower',
-	async verify({ document, report, t }) {
-		await document.walk(node => {
+	verify({ document, report, t }) {
+		document.walk(node => {
 			if ('fixNodeName' in node) {
 				if (node.isForeignElement || node.isCustomElement || node.type === 'OmittedElement') {
 					return;
@@ -31,8 +31,8 @@ export default createRule<Value>({
 			}
 		});
 	},
-	async fix({ document }) {
-		await document.walk(node => {
+	fix({ document }) {
+		document.walk(node => {
 			if ('fixNodeName' in node) {
 				if (node.isForeignElement || node.isCustomElement) {
 					return;

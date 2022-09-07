@@ -8,8 +8,8 @@ const neverMsg = 'Never insert {0} before {1} of {2}';
 export default createRule<Value>({
 	defaultServerity: 'warning',
 	defaultValue: 'never',
-	async verify(context) {
-		await context.document.walkOn('Element', node => {
+	verify(context) {
+		context.document.walkOn('Element', node => {
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'ps-attr' || !(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {
 					continue;
@@ -54,8 +54,8 @@ export default createRule<Value>({
 			}
 		});
 	},
-	async fix({ document }) {
-		await document.walkOn('Element', node => {
+	fix({ document }) {
+		document.walkOn('Element', node => {
 			for (const attr of node.attributes) {
 				if (attr.attrType === 'ps-attr' || !(attr.equal && attr.spacesAfterEqual && attr.spacesBeforeEqual)) {
 					continue;
