@@ -11,8 +11,8 @@ export default createRule<TagRule[], Options>({
 	defaultOptions: {
 		ignoreHasMutableChildren: true,
 	},
-	async verify({ document, report, t }) {
-		await document.walkOn('Element', el => {
+	verify({ document, report, t }) {
+		void document.walkOn('Element', el => {
 			if (!el.rule.value) {
 				return;
 			}

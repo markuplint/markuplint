@@ -12,8 +12,8 @@ export default createRule<boolean, Option>({
 	defaultOptions: {
 		ariaVersion: '1.2',
 	},
-	async verify({ document, report, t }) {
-		await document.walkOn('Element', el => {
+	verify({ document, report, t }) {
+		void document.walkOn('Element', el => {
 			if (accnameMayBeMutable(el, document)) {
 				return;
 			}

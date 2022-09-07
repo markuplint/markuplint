@@ -6,10 +6,10 @@ const defaultChars = ['"', '&', '<', '>'];
 const ignoreParentElement = ['script', 'style'];
 
 export default createRule({
-	async verify({ document, report, t }) {
+	verify({ document, report, t }) {
 		const targetNodes: Report<RuleConfigValue>[] = [];
 
-		await document.walkOn('Text', node => {
+		void document.walkOn('Text', node => {
 			if (node.parentNode && ignoreParentElement.includes(node.parentNode.nodeName.toLowerCase())) {
 				return;
 			}
@@ -25,7 +25,7 @@ export default createRule({
 			});
 		});
 
-		await document.walkOn('Element', node => {
+		void document.walkOn('Element', node => {
 			const severity = node.rule.severity;
 			const ms = severity === 'error' ? 'must' : 'should';
 			const message = t(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');

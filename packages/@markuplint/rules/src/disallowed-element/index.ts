@@ -2,7 +2,7 @@ import { createRule } from '@markuplint/ml-core';
 
 export default createRule<string[]>({
 	defaultValue: [],
-	async verify({ document, report, t }) {
+	verify({ document, report, t }) {
 		for (const query of document.rule.value) {
 			const elements = document.querySelectorAll(query);
 			elements.forEach(el => {
@@ -14,7 +14,7 @@ export default createRule<string[]>({
 			});
 		}
 
-		await document.walkOn('Element', el => {
+		void document.walkOn('Element', el => {
 			if (el.rule.value === document.rule.value) {
 				return;
 			}

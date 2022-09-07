@@ -32,8 +32,8 @@ export default createRule<boolean, Options>({
 		disallowDefaultValue: false,
 		version: '1.2',
 	},
-	async verify({ document, report, t }) {
-		await document.walkOn('Element', el => {
+	verify({ document, report, t }) {
+		void document.walkOn('Element', el => {
 			const roleAttr = el.getAttributeNode('role');
 			const propAttrs = el.attributes.filter(attr => /^aria-/i.test(attr.name));
 

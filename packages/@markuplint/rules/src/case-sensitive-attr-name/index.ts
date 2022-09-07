@@ -5,8 +5,8 @@ export type Value = 'lower' | 'upper';
 export default createRule<Value>({
 	defaultServerity: 'warning',
 	defaultValue: 'lower',
-	async verify({ document, report, t }) {
-		await document.walkOn('Attr', attr => {
+	verify({ document, report, t }) {
+		void document.walkOn('Attr', attr => {
 			const el = attr.ownerElement;
 			if (el.isForeignElement || el.isCustomElement) {
 				return;
@@ -48,8 +48,8 @@ export default createRule<Value>({
 			}
 		});
 	},
-	async fix({ document }) {
-		await document.walkOn('Attr', attr => {
+	fix({ document }) {
+		void document.walkOn('Attr', attr => {
 			const el = attr.ownerElement;
 
 			if (el.isForeignElement || el.isCustomElement) {

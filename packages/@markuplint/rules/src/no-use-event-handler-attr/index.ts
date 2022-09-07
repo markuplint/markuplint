@@ -9,8 +9,8 @@ type Options = {
 export default createRule<boolean, Options>({
 	defaultServerity: 'warning',
 	defaultOptions: {},
-	async verify({ document, report, t }) {
-		await document.walkOn('Attr', attr => {
+	verify({ document, report, t }) {
+		void document.walkOn('Attr', attr => {
 			if (attr.ownerElement.isCustomElement) {
 				return;
 			}

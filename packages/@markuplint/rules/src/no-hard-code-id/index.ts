@@ -2,11 +2,11 @@ import { createRule } from '@markuplint/ml-core';
 
 export default createRule({
 	defaultServerity: 'warning',
-	async verify({ document, report, t }) {
+	verify({ document, report, t }) {
 		if (!document.isFragment) {
 			return;
 		}
-		await document.walkOn('Attr', attr => {
+		void document.walkOn('Attr', attr => {
 			if (attr.name.toLowerCase() === 'id' && !attr.isDynamicValue && attr.valueType !== 'code') {
 				report({
 					scope: attr,

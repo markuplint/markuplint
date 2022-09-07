@@ -1,14 +1,14 @@
 import { createRule } from '@markuplint/ml-core';
 
 export default createRule({
-	async verify({ document, report, t }) {
+	verify({ document, report, t }) {
 		const message = t(
 			'{0} is {1:c}',
 			t('{0} of {1}', t('the {0}', 'value'), t('the "{0*}" {1}', 'id', 'attribute')),
 			'duplicated',
 		);
 		const idStack: string[] = [];
-		await document.walkOn('Element', node => {
+		void document.walkOn('Element', node => {
 			const idAttrs = node.getAttributeToken('id');
 			for (const idAttr of idAttrs) {
 				if (idAttr.isDynamicValue || idAttr.isDirective) {

@@ -19,11 +19,11 @@ const voidElements = [
 
 export default createRule<boolean>({
 	defaultServerity: 'warning',
-	async verify({ document, report, t }) {
+	verify({ document, report, t }) {
 		if (document.endTag === 'never') {
 			return;
 		}
-		await document.walkOn('Element', el => {
+		void document.walkOn('Element', el => {
 			if (el.isOmitted) {
 				return;
 			}

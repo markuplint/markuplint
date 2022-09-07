@@ -1,8 +1,8 @@
 import { createRule, getSpec } from '@markuplint/ml-core';
 
 export default createRule({
-	async verify({ document, report, t }) {
-		await document.walkOn('Element', el => {
+	verify({ document, report, t }) {
+		void document.walkOn('Element', el => {
 			if (
 				!(
 					el.namespaceURI === 'http://www.w3.org/1999/xhtml' ||

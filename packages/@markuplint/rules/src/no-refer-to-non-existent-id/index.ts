@@ -6,11 +6,11 @@ export default createRule({
 	defaultOptions: {
 		ariaVersion: '1.2' as ARIAVersion,
 	},
-	async verify({ document, report, t }) {
+	verify({ document, report, t }) {
 		const idList = new Set<string>();
 		let hasDynamicId = false;
 
-		await document.walkOn('Attr', attr => {
+		void document.walkOn('Attr', attr => {
 			if (attr.name.toLowerCase() !== 'id') {
 				return;
 			}
@@ -26,7 +26,7 @@ export default createRule({
 			return;
 		}
 
-		await document.walkOn('Attr', attr => {
+		void document.walkOn('Attr', attr => {
 			const attrSpec = getAttrSpecs(attr.ownerElement, document.specs);
 
 			if (!attrSpec) {

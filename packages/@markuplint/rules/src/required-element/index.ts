@@ -9,7 +9,7 @@ export default createRule<string[], Options>({
 	defaultOptions: {
 		ignoreHasMutableContents: true,
 	},
-	async verify({ document, report, t }) {
+	verify({ document, report, t }) {
 		const hasMutableContent = document.nodeList.some(n => n.is(n.ELEMENT_NODE) && n.hasMutableChildren());
 		if (!hasMutableContent) {
 			for (const query of document.rule.value) {
@@ -26,7 +26,7 @@ export default createRule<string[], Options>({
 			}
 		}
 
-		await document.walkOn('Element', el => {
+		void document.walkOn('Element', el => {
 			if (el.rule.value === document.rule.value) {
 				return;
 			}
