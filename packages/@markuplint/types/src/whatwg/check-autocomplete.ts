@@ -94,7 +94,7 @@ const contactableFieldNames = [
  */
 const webauthnFieldNames = ['webauthn'];
 
-const URL_AUTOCOMPLET = 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete';
+const URL_AUTOCOMPLETE = 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete';
 const URL_ON_OFF =
 	'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls:-the-autocomplete-attribute:attr-fe-autocomplete-on-2';
 const URL_NAMED_GROUP =
@@ -128,15 +128,15 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 				value: 'autocomplete',
 			},
 		],
-		ref: URL_AUTOCOMPLET,
+		ref: URL_AUTOCOMPLETE,
 	});
 	if (!listingChecked.matched) {
 		acLog('Unmatch: %s', listingChecked.reason);
 		return listingChecked;
 	}
 
-	const idents = tokens.getIdentTokens();
-	const headAndTail1 = idents.headAndTail();
+	const identTokens = tokens.getIdentTokens();
+	const headAndTail1 = identTokens.headAndTail();
 	let { head, tail } = headAndTail1;
 	if (!head) {
 		// Never

@@ -64,6 +64,7 @@ test('td[headers] (Dynamic)', async () => {
 test('td[headers] (Dynamic)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
+		// cspell: disable
 		`<table>
   <tr>
     <th id="a"></th>
@@ -71,6 +72,7 @@ test('td[headers] (Dynamic)', async () => {
     <td headers={aandb}></td>
   </tr>
 </table>`,
+		// cspell: enable
 		{
 			parser: {
 				'.*': '@markuplint/jsx-parser',

@@ -44,34 +44,5 @@
 			"fileMatch": ["/packages/*markuplint/i18n/locales/*.json"],
 			"url": "/packages/@markuplint/i18n/$schema.json"
 		}
-	],
-	"cSpell.words": [
-		"accname",
-		"arrayize",
-		"checkings",
-		"clampable",
-		"didnt",
-		"doesnt",
-		"DOMID",
-		"Duplicatable",
-		"ebnf",
-		"hasname",
-		"hasnoname",
-		"Hirao",
-		"hoge",
-		"Jsons",
-		"labelable",
-		"lintee",
-		"MLASTHTML",
-		"MLDOM",
-		"MLHTML",
-		"MLML",
-		"nodeize",
-		"omittedtag",
-		"pipeless",
-		"psblock",
-		"Renderable",
-		"syntaxical",
-		"Yusuke"
 	]
 }

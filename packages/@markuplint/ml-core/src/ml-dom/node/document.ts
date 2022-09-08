@@ -368,7 +368,7 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	 * @implements DOM API: `Document`
 	 */
 	get fullscreenEnabled(): boolean {
-		throw new UnexpectedCallError('Not supported "UfullscreenEnabledRL" property');
+		throw new UnexpectedCallError('Not supported "FullscreenEnabledURL" property');
 	}
 
 	/**

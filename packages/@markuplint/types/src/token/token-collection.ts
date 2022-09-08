@@ -23,7 +23,7 @@ export class TokenCollection extends Array<Token> {
 	static fromPatterns(
 		value: Token | string,
 		patterns: RegExp[],
-		typeOptions?: Omit<TokenCollectionOptions, 'speificSeparator'> & { repeat?: boolean },
+		typeOptions?: Omit<TokenCollectionOptions, 'specificSeparator'> & { repeat?: boolean },
 	) {
 		const origin = typeof value === 'string' ? value : value.origin;
 		let strings = typeof value === 'string' ? value : value.value;
@@ -40,15 +40,15 @@ export class TokenCollection extends Array<Token> {
 			return token;
 		}
 
-		let isBreaked = false;
+		let isBroken = false;
 		do {
-			isBreaked = false;
+			isBroken = false;
 			for (const pattern of patterns) {
 				const res = pattern.exec(strings);
 				let value: string;
 
 				if (!res) {
-					isBreaked = true;
+					isBroken = true;
 					value = '';
 				} else {
 					if (res.index !== 0) {
@@ -63,7 +63,7 @@ export class TokenCollection extends Array<Token> {
 				// @ts-ignore
 				token._ = pattern;
 			}
-			if (isBreaked) {
+			if (isBroken) {
 				addToken(strings);
 			}
 		} while (typeOptions?.repeat && strings);

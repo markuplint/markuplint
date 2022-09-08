@@ -58,7 +58,7 @@ Require **aspect-ratio**|Require `width` and `height` attr with `<img>` to avoid
 Require async decoding image|Require `decoding=async` with `<img>` to avoid render-blocking.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|
 Require loading `<iframe>` lazily|Require `loading=lazy` with `<iframe>` to avoid render-blocking that causes loading if its element is out of the viewport.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|
 Allow `property` attr with `<meta>`|Be able to use **Open-Graph** etc.|✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|
-No hard coding **ID**|The component that hard-coded ID cannot mount to an app duplicately because the IDs must be unique in a document. Recommend to specify dynamic IDs to avoid doing that.|❌|✅|✅|❌|✅|❌|❌|❌|❌|❌|❌|
+No hard coding **ID**|The component that hard-coded ID cannot mount to an app duplicated because the IDs must be unique in a document. Recommend to specify dynamic IDs to avoid doing that.|❌|✅|✅|❌|✅|❌|❌|❌|❌|❌|❌|
 No omit **end-tag**|Recommend to write an end-tag always because it is too difficult for a human decide an element is end-tag omittable.|❌|❌|❌|✅|❌|❌|❌|❌|❌|❌|❌|
 Require `noreferrer` with `target=_blank`|Require `rel=noreferrer` with an element that has `target=_blank` to prevent leaking referrer information and to block operating referrer documents.|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|✅|
 

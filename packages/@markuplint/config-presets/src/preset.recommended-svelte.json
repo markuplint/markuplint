@@ -11,7 +11,7 @@
 		/**
 		 * No hard coding **ID**
 		 *
-		 * The component that hard-coded ID cannot mount to an app duplicately because the IDs must be unique in a document.
+		 * The component that hard-coded ID cannot mount to an app duplicated because the IDs must be unique in a document.
 		 * Recommend to specify dynamic IDs to avoid doing that.
 		 */
 		"no-hard-code-id": true

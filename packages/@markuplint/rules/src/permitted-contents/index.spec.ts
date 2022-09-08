@@ -340,11 +340,13 @@ describe('verify', () => {
 
 		const { violations: violations3 } = await mlRuleTest(
 			rule,
+			// cspell: disable
 			`<ruby>
 				♥ <rt> Heart <rt lang=fr> Cœur </rt>
 				☘ <rt> Shamrock <rt lang=fr> Trèfle </rt>
 				✶ <rt> Star <rt lang=fr> Étoile </rt>
 			</ruby>`,
+			// cspell: enable
 		);
 		expect(violations3).toStrictEqual([]);
 	});

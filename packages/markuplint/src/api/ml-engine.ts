@@ -221,6 +221,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		fileLog('Get source code');
 		const sourceCode = await this.#file.getCode();
 		fileLog('Source code path: %s', this.#file.path);
+		// cspell: disable-next-line
 		fileLog('Source code size: %dbyte', sourceCode.length);
 		this.emit('code', this.#file.path, sourceCode);
 

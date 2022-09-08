@@ -21,9 +21,9 @@ export function getARIA(
 	if (!conditions) {
 		return aria;
 	}
-	const conds = Object.keys(conditions);
+	const conditionKeys = Object.keys(conditions);
 	let { implicitRole, permittedRoles, implicitProperties, properties, namingProhibited } = aria;
-	for (const cond of conds) {
+	for (const cond of conditionKeys) {
 		if (!matches(cond)) {
 			continue;
 		}

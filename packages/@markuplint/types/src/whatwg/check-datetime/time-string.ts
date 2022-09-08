@@ -33,9 +33,9 @@ export const checkTimeString: CustomSyntaxChecker = () =>
 
 		const res = tokens.eachCheck(
 			datetimeTokenCheck.hour,
-			datetimeTokenCheck.coron,
+			datetimeTokenCheck.colon,
 			datetimeTokenCheck.minute,
-			datetimeTokenCheck.coronOrEnd,
+			datetimeTokenCheck.colonOrEnd,
 			datetimeTokenCheck.second,
 			datetimeTokenCheck.decimalPointOrEnd,
 			datetimeTokenCheck.secondFractionalPart,

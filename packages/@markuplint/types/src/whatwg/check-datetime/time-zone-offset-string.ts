@@ -68,13 +68,13 @@ export function parseTimeZone(zone: string | Token) {
 			}
 		},
 		datetimeTokenCheck.hour,
-		coron => {
-			if (!coron || !coron.value) {
+		colon => {
+			if (!colon || !colon.value) {
 				return;
 			}
 
-			if (!coron.match(':')) {
-				return coron.unmatched({
+			if (!colon.match(':')) {
+				return colon.unmatched({
 					reason: 'unexpected-token',
 					expects: [{ type: 'const', value: ':' }],
 					partName: 'time-zone',

@@ -58,3 +58,6 @@ jobs:
 
             - name: Test
               run: yarn test:coverage
+
+            - name: Spell Check
+              run: yarn spellcheck

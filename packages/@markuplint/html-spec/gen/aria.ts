@@ -68,27 +68,27 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			.toArray()
 			.map(p => $(p).text().trim().replace(/\s+/g, ' ').replace(/\t+/g, ''))
 			.join('\n\n');
-		const $feaures = $el.find('.role-features tr');
-		const generalization = $feaures
+		const $features = $el.find('.role-features tr');
+		const generalization = $features
 			.find('.role-parent a')
 			.toArray()
 			.map(a => $(a).text().trim());
-		const isAbstract = $feaures.find('.role-abstract').text().trim().toLowerCase() === 'true' || undefined;
-		let $ownedRequiredProps = $feaures.find('.role-required-properties li').toArray();
+		const isAbstract = $features.find('.role-abstract').text().trim().toLowerCase() === 'true' || undefined;
+		let $ownedRequiredProps = $features.find('.role-required-properties li').toArray();
 		if (!$ownedRequiredProps.length) {
-			$ownedRequiredProps = $feaures.find('.role-required-properties').toArray();
+			$ownedRequiredProps = $features.find('.role-required-properties').toArray();
 		}
 		const ownedRequiredProps = $ownedRequiredProps.map(getAttr).map(p => ({ ...p, required: true as const }));
-		const ownedInheritedProps = $feaures
+		const ownedInheritedProps = $features
 			.find('.role-inherited li')
 			.toArray()
 			.map(getAttr)
 			.map(p => ({ ...p, inherited: true as const }));
-		const ownedProps = $feaures.find('.role-properties li, .role-properties > a').toArray().map(getAttr);
-		const requiredContextRole = $$($feaures, ['.role-scope li', '.role-scope a'])
+		const ownedProps = $features.find('.role-properties li, .role-properties > a').toArray().map(getAttr);
+		const requiredContextRole = $$($features, ['.role-scope li', '.role-scope a'])
 			.toArray()
 			.map(el => $(el).text().trim());
-		const requiredOwnedElements = $$($feaures, ['.role-mustcontain li', '.role-mustcontain a'])
+		const requiredOwnedElements = $$($features, ['.role-mustcontain li', '.role-mustcontain a'])
 			.toArray()
 			.map(el =>
 				$(el)
@@ -96,20 +96,20 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 					.trim()
 					.replace(/\s+(owning|→)\s+/gi, ' > '),
 			);
-		const accessibleNameRequired = !!$feaures.find('.role-namerequired').text().match(/true/i);
-		const accessibleNameFromAuthor = !!$feaures
+		const accessibleNameRequired = !!$features.find('.role-namerequired').text().match(/true/i);
+		const accessibleNameFromAuthor = !!$features
 			.find('.role-namefrom')
 			.text()
 			.match(/author/i);
-		const accessibleNameFromContent = !!$feaures
+		const accessibleNameFromContent = !!$features
 			.find('.role-namefrom')
 			.text()
 			.match(/content/i);
-		const accessibleNameProhibited = !!$feaures
+		const accessibleNameProhibited = !!$features
 			.find('.role-namefrom')
 			.text()
 			.match(/prohibited/i);
-		const $childrenPresentational = $feaures.find('.role-childpresentational').text();
+		const $childrenPresentational = $features.find('.role-childpresentational').text();
 		const childrenPresentational = $childrenPresentational.match(/true/i)
 			? true
 			: $childrenPresentational.match(/false/i)
@@ -118,7 +118,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		const ownedProperties = arrayUnique(
 			[...ownedRequiredProps, ...ownedInheritedProps, ...ownedProps].sort(nameCompare),
 		);
-		const prohibitedProperties = $feaures
+		const prohibitedProperties = $features
 			.find('.role-disallowed li code')
 			.toArray()
 			.map(el => $(el).text().trim());

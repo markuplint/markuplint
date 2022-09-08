@@ -73,9 +73,9 @@ test('unexpected-token', () => {
 });
 
 test('unexpected-token', () => {
-	expect(check('section-foo neme')).toStrictEqual({
+	expect(check('section-foo name')).toStrictEqual({
 		matched: false,
-		raw: 'neme',
+		raw: 'name',
 		offset: 12,
 		length: 4,
 		line: 1,
@@ -89,9 +89,9 @@ test('unexpected-token', () => {
 		candidate: 'name',
 		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field',
 	});
-	expect(check('section-foo shipping neme')).toStrictEqual({
+	expect(check('section-foo shipping name')).toStrictEqual({
 		matched: false,
-		raw: 'neme',
+		raw: 'name',
 		offset: 21,
 		length: 4,
 		line: 1,
@@ -108,9 +108,9 @@ test('unexpected-token', () => {
 		candidate: 'name',
 		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field',
 	});
-	expect(check('section-foo shipping home neme')).toStrictEqual({
+	expect(check('section-foo shipping home name')).toStrictEqual({
 		matched: false,
-		raw: 'neme',
+		raw: 'name',
 		offset: 26,
 		length: 4,
 		line: 1,
@@ -131,9 +131,9 @@ test('unexpected-token', () => {
 		candidate: undefined,
 		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls:-the-autocomplete-attribute:attr-fe-autocomplete-tel',
 	});
-	expect(check('section-foo shipping home emall')).toStrictEqual({
+	expect(check('section-foo shipping home email')).toStrictEqual({
 		matched: false,
-		raw: 'emall',
+		raw: 'email',
 		offset: 26,
 		length: 5,
 		line: 1,

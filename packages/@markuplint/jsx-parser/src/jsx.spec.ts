@@ -1,7 +1,7 @@
 import jsxParser, { getName } from './jsx';
 
 describe('jsxParser', () => {
-	it('spraedAttribute', () => {
+	it('spreadAttribute', () => {
 		const ast = jsxParser('<div {...pros} />');
 		// @ts-ignore
 		expect(ast[0].__hasSpreadAttribute).toBeTruthy();

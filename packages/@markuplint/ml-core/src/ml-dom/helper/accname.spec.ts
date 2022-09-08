@@ -38,7 +38,7 @@ test('Invisible element', () => {
 	expect(getAccname(c('<button aria-disabled="true">label</button>'))).toBe('label');
 	expect(getAccname(c('<button aria-hidden="true">label</button>'))).toBe('');
 	expect(getAccname(c('<button hidden>label</button>'))).toBe('');
-	expect(getAccname(c('<button style="display: none">label</button>'))).toBe('label'); // Unsupport the style attribute yet.
+	expect(getAccname(c('<button style="display: none">label</button>'))).toBe('label'); // Do not support the style attribute yet.
 });
 
 /**
