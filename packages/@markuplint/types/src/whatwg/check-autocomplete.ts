@@ -2,7 +2,7 @@ import type { Expect } from '..';
 import type { CustomSyntaxChecker } from '../types';
 
 import { log } from '../debug';
-import { getCandicate } from '../get-candicate';
+import { getCandidate } from '../get-candidate';
 import { matched } from '../match-result';
 import { TokenCollection } from '../token';
 
@@ -231,7 +231,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		}
 
 		if (!contactableFiledToken.match(contactableFieldNames, true)) {
-			const candicate = getCandicate(contactableFiledToken.value, contactableFieldNames);
+			const candidate = getCandidate(contactableFiledToken.value, contactableFieldNames);
 			acLog('[Unmatched ("%s")] Unexpected token: "%s"', value, contactableFiledToken.value);
 			return contactableFiledToken.unmatched({
 				reason: 'unexpected-token',
@@ -239,7 +239,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 					type: 'const' as const,
 					value: token,
 				})),
-				candicate,
+				candidate,
 				ref: URL_CONTACTABLE_FIELD,
 			});
 		}
@@ -249,14 +249,14 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 				return matched();
 			}
 
-			const candicate = getCandicate(tail[1].value, webauthnFieldNames);
+			const candidate = getCandidate(tail[1].value, webauthnFieldNames);
 
-			if (candicate) {
+			if (candidate) {
 				acLog(
 					'[Unmatched ("%s")] Unnecessarily token: "%s", Do you mean "%s"? ',
 					value,
 					tail[1].value,
-					candicate,
+					candidate,
 				);
 			} else {
 				acLog('[Unmatched ("%s")] Unnecessarily token: "%s"', value, tail[1].value);
@@ -283,14 +283,14 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 				return matched();
 			}
 
-			const candicate = getCandicate(tail[0].value, webauthnFieldNames);
+			const candidate = getCandidate(tail[0].value, webauthnFieldNames);
 
-			if (candicate) {
+			if (candidate) {
 				acLog(
 					'[Unmatched ("%s")] Unnecessarily token: "%s", Do you mean "%s"? ',
 					value,
 					tail[0].value,
-					candicate,
+					candidate,
 				);
 			} else {
 				acLog('[Unmatched ("%s")] Unnecessarily token: "%s"', value, tail[0].value);
@@ -321,7 +321,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 			value: 'autofill field name',
 		},
 	];
-	let candicate: string | undefined;
+	let candidate: string | undefined;
 
 	if (!hasNamedGroup) {
 		expects.unshift({
@@ -331,9 +331,9 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 
 		// Potentially typo a named group
 		const [prefix, namedGroupStr] = head.value.split('-');
-		const candicatePrefix = getCandicate(prefix, 'section');
-		if (candicatePrefix) {
-			candicate = `${candicatePrefix}-${namedGroupStr || ''}`;
+		const candidatePrefix = getCandidate(prefix, 'section');
+		if (candidatePrefix) {
+			candidate = `${candidatePrefix}-${namedGroupStr || ''}`;
 		}
 	} else if (!hasPartOfAddress) {
 		expects.unshift(
@@ -346,7 +346,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 				})),
 		);
 
-		candicate = getCandicate(
+		candidate = getCandidate(
 			head.value,
 			partOfAddress,
 			autofillFieldNames,
@@ -361,20 +361,20 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 			})),
 		);
 
-		candicate = getCandicate(head.value, autofillFieldNames, contactingTokens, contactableFieldNames);
+		candidate = getCandidate(head.value, autofillFieldNames, contactingTokens, contactableFieldNames);
 	}
 
-	candicate = candicate || getCandicate(head.value, autofillFieldNames);
+	candidate = candidate || getCandidate(head.value, autofillFieldNames);
 
-	if (candicate) {
-		acLog('[Unmatched ("%s")] Unexpected token: "%s", Do you mean "%s"? ', value, head.value, candicate);
+	if (candidate) {
+		acLog('[Unmatched ("%s")] Unexpected token: "%s", Do you mean "%s"? ', value, head.value, candidate);
 	} else {
 		acLog('[Unmatched ("%s")] Unexpected token: "%s"', value, head.value);
 	}
 	return head.unmatched({
 		reason: 'unexpected-token',
 		expects,
-		candicate,
+		candidate,
 		ref: URL_AUTOFILL_FIELD,
 	});
 };

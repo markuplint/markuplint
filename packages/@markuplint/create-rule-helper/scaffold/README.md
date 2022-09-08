@@ -19,7 +19,7 @@ TODO: Write a description
 ### Interface
 
 - Type: `string`
-- Deafult Value: `"__DEFAULT_MAIN_VALUE__"`
+- Default Value: `"__DEFAULT_MAIN_VALUE__"`
 
 ### Options
 

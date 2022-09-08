@@ -20,25 +20,25 @@ export function checkNumber(value: string, type: Number, ref?: string): Result {
 
 		if (type.gt != null && n <= type.gt) {
 			return unmatched(value, 'out-of-range', {
-				candicate: clampable && isInt ? `${type.gt + 1}` : undefined,
+				candidate: clampable && isInt ? `${type.gt + 1}` : undefined,
 			});
 		}
 
 		if (type.gte != null && n < type.gte) {
 			return unmatched(value, 'out-of-range', {
-				candicate: clampable ? `${type.gte}` : undefined,
+				candidate: clampable ? `${type.gte}` : undefined,
 			});
 		}
 
 		if (type.lt != null && type.lt <= n) {
 			return unmatched(value, 'out-of-range', {
-				candicate: clampable && isInt ? `${type.lt - 1}` : undefined,
+				candidate: clampable && isInt ? `${type.lt - 1}` : undefined,
 			});
 		}
 
 		if (type.lte != null && type.lte < n) {
 			return unmatched(value, 'out-of-range', {
-				candicate: clampable ? `${type.lte}` : undefined,
+				candidate: clampable ? `${type.lte}` : undefined,
 			});
 		}
 	}

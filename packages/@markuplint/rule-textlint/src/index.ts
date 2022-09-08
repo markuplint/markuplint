@@ -5,7 +5,7 @@ import { createRule } from '@markuplint/ml-core';
 import { defaultOptions, textlintVerify } from './verify';
 
 export default createRule<boolean, Option>({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	defaultValue: true,
 	defaultOptions,
 	async verify(context) {

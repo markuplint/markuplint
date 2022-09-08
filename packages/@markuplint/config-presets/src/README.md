@@ -10,7 +10,7 @@ To the `extends` property of the configuration, specify like below:
 
 ```json
 {
-  "exnteds": ["markuplint:recommended"]
+  "extends": ["markuplint:recommended"]
 }
 ```
 
@@ -18,7 +18,7 @@ You can choose some presets appropriately for your preference.
 
 ```json
 {
-  "exnteds": ["markuplint:html-standard", "markuplint:a11y"]
+  "extends": ["markuplint:html-standard", "markuplint:a11y"]
 }
 ```
 

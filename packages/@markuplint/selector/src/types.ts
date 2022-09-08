@@ -15,7 +15,7 @@ export type SelectorUnmatchedResult = {
 	not?: SelectorMatchedResult[];
 };
 
-export type RegexSelector = RegexSelectorWithoutCompination & {
+export type RegexSelector = RegexSelectorWithoutCombination & {
 	combination?: {
 		combinator: RegexSelectorCombinator;
 	} & RegexSelector;
@@ -23,7 +23,7 @@ export type RegexSelector = RegexSelectorWithoutCompination & {
 
 export type RegexSelectorCombinator = ' ' | '>' | '+' | '~' | ':has(+)' | ':has(~)';
 
-export type RegexSelectorWithoutCompination = {
+export type RegexSelectorWithoutCombination = {
 	nodeName?: string;
 	attrName?: string;
 	attrValue?: string;

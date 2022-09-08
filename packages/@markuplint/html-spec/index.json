@@ -22432,7 +22432,7 @@
 				"properties": {
 					"global": true,
 					"role": true,
-					"whithout": [
+					"without": [
 						{
 							"type": "not-recommended",
 							"name": "aria-disabled",
@@ -25189,7 +25189,7 @@
 						"properties": {
 							"global": true,
 							"role": true,
-							"whithout": [
+							"without": [
 								{
 									"type": "must-not",
 									"name": "aria-checked",
@@ -25207,7 +25207,7 @@
 						"properties": {
 							"global": true,
 							"role": true,
-							"whithout": [
+							"without": [
 								{
 									"type": "must-not",
 									"name": "aria-checked",
@@ -25295,7 +25295,7 @@
 						"properties": {
 							"global": true,
 							"role": true,
-							"whithout": [
+							"without": [
 								{
 									"type": "must-not",
 									"name": "aria-checked",
@@ -25313,7 +25313,7 @@
 						"properties": {
 							"global": true,
 							"role": "slider",
-							"whithout": [
+							"without": [
 								{
 									"type": "should-not",
 									"name": "aria-valuemax"
@@ -25363,7 +25363,7 @@
 						"properties": {
 							"global": true,
 							"role": "combobox",
-							"whithout": [
+							"without": [
 								{
 									"type": "should-not",
 									"name": "aria-haspopup"
@@ -25419,7 +25419,7 @@
 							"properties": {
 								"global": true,
 								"role": true,
-								"whithout": [
+								"without": [
 									{
 										"type": "should-not",
 										"name": "aria-checked",
@@ -25437,7 +25437,7 @@
 							"properties": {
 								"global": true,
 								"role": true,
-								"whithout": [
+								"without": [
 									{
 										"type": "should-not",
 										"name": "aria-hecked"
@@ -25528,7 +25528,7 @@
 							"properties": {
 								"global": true,
 								"role": true,
-								"whithout": [
+								"without": [
 									{
 										"type": "should-not",
 										"name": "aria-checked",
@@ -25546,7 +25546,7 @@
 							"properties": {
 								"global": true,
 								"role": "slider",
-								"whithout": [
+								"without": [
 									{
 										"type": "should-not",
 										"name": "aria-valuemax"
@@ -25596,7 +25596,7 @@
 							"properties": {
 								"global": true,
 								"role": "combobox",
-								"whithout": [
+								"without": [
 									{
 										"type": "should-not",
 										"name": "aria-haspopup"
@@ -26712,7 +26712,7 @@
 				"permittedRoles": false,
 				"properties": {
 					"global": true,
-					"whithout": [
+					"without": [
 						{
 							"type": "should-not",
 							"name": "aria-valuemax"
@@ -27118,7 +27118,7 @@
 				"properties": {
 					"global": true,
 					"role": "option",
-					"whithout": [
+					"without": [
 						{
 							"type": "should-not",
 							"name": "aria-selected"
@@ -27405,7 +27405,7 @@
 				"properties": {
 					"global": true,
 					"role": "progressbar",
-					"whithout": [
+					"without": [
 						{
 							"type": "should-not",
 							"name": "aria-valuemax"
@@ -27827,7 +27827,7 @@
 				"properties": {
 					"global": true,
 					"role": ["combobox", "menu"],
-					"whithout": [
+					"without": [
 						{
 							"type": "should-not",
 							"name": "aria-multiselectable"
@@ -27841,7 +27841,7 @@
 						"properties": {
 							"global": true,
 							"role": "listbox",
-							"whithout": [
+							"without": [
 								{
 									"type": "should-not",
 									"name": "aria-multiselectable"

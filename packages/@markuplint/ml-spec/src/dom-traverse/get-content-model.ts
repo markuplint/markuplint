@@ -1,5 +1,5 @@
 import type { ElementSpec } from '../types';
-import type { PermittedContentPattern } from '../types/permitted-structres';
+import type { PermittedContentPattern } from '../types/permitted-structures';
 
 import { getSpec } from './get-spec';
 

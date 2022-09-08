@@ -2,13 +2,13 @@ import { createRule } from '@markuplint/ml-core';
 
 type Value = 'always';
 type Option = {
-	denyObsolateType: boolean;
+	denyObsoleteType: boolean;
 };
 
 export default createRule<Value, Option>({
 	defaultValue: 'always',
 	defaultOptions: {
-		denyObsolateType: true,
+		denyObsoleteType: true,
 	},
 	verify({ document, report, t }) {
 		if (document.isFragment) {

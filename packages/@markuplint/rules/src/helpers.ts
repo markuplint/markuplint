@@ -202,8 +202,8 @@ export function accnameMayBeMutable(el: Element<any, any>, document: Document<an
 		return true;
 	}
 
-	const ownedLable = getOwnedLabel(el, document);
-	if (ownedLable && (ownedLable.hasMutableAttributes() || ownedLable.hasMutableChildren(true))) {
+	const ownedLabel = getOwnedLabel(el, document);
+	if (ownedLabel && (ownedLabel.hasMutableAttributes() || ownedLabel.hasMutableChildren(true))) {
 		return true;
 	}
 
@@ -211,21 +211,21 @@ export function accnameMayBeMutable(el: Element<any, any>, document: Document<an
 }
 
 const labelable = ['button', 'input:not([type=hidden])', 'meter', 'output', 'progress', 'select', 'textarea'];
-export function getOwnedLabel<V extends RuleConfigValue, O>(el: Element<V, O>, docuemnt: Document<V, O>) {
+export function getOwnedLabel<V extends RuleConfigValue, O>(el: Element<V, O>, document: Document<V, O>) {
 	if (!labelable.some(cond => el.matches(cond))) {
 		return null;
 	}
 
-	let ownedLable = el.closest('label');
+	let ownedLabel = el.closest('label');
 
-	if (!ownedLable) {
+	if (!ownedLabel) {
 		const id = el.getAttribute('id');
 		if (id) {
-			ownedLable = docuemnt.querySelector(`label[for="${id}"]`);
+			ownedLabel = document.querySelector(`label[for="${id}"]`);
 		}
 	}
 
-	return ownedLable;
+	return ownedLabel;
 }
 
 export function decodeCharRef(characterReference: string) {

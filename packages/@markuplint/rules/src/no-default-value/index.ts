@@ -3,7 +3,7 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 import { toNormalizedValue } from '../helpers';
 
 export default createRule({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
 			const attrSpec = getAttrSpecs(attr.ownerElement, document.specs);

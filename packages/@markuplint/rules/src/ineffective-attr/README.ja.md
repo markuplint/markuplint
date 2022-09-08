@@ -43,7 +43,7 @@
 ### 設定値
 
 - Type: `boolean`
-- Deafult Value: `true`
+- Default Value: `true`
 
 ### デフォルトの警告の厳しさ
 

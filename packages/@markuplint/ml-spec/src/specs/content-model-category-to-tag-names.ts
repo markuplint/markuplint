@@ -1,5 +1,5 @@
 import type { MLMLSpec } from '../types';
-import type { Category } from '../types/permitted-structres';
+import type { Category } from '../types/permitted-structures';
 
 const cache = new Map<Category, ReadonlyArray<string>>();
 

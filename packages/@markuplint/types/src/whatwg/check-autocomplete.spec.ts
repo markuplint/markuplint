@@ -49,7 +49,7 @@ test('unexpected-token', () => {
 			{ type: 'const', value: 'shipping' },
 			{ type: 'common', value: 'autofill field name' },
 		],
-		candicate: undefined,
+		candidate: undefined,
 		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field',
 	});
 });
@@ -67,7 +67,7 @@ test('unexpected-token', () => {
 			{ type: 'common', value: 'autofill named group' },
 			{ type: 'common', value: 'autofill field name' },
 		],
-		candicate: undefined,
+		candidate: undefined,
 		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field',
 	});
 });
@@ -86,7 +86,7 @@ test('unexpected-token', () => {
 			{ type: 'const', value: 'shipping' },
 			{ type: 'common', value: 'autofill field name' },
 		],
-		candicate: 'name',
+		candidate: 'name',
 		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field',
 	});
 	expect(check('section-foo shipping neme')).toStrictEqual({
@@ -105,7 +105,7 @@ test('unexpected-token', () => {
 			{ type: 'const', value: 'fax' },
 			{ type: 'const', value: 'pager' },
 		],
-		candicate: 'name',
+		candidate: 'name',
 		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field',
 	});
 	expect(check('section-foo shipping home neme')).toStrictEqual({
@@ -128,7 +128,7 @@ test('unexpected-token', () => {
 			{ type: 'const', value: 'email' },
 			{ type: 'const', value: 'impp' },
 		],
-		candicate: undefined,
+		candidate: undefined,
 		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls:-the-autocomplete-attribute:attr-fe-autocomplete-tel',
 	});
 	expect(check('section-foo shipping home emall')).toStrictEqual({
@@ -151,7 +151,7 @@ test('unexpected-token', () => {
 			{ type: 'const', value: 'email' },
 			{ type: 'const', value: 'impp' },
 		],
-		candicate: 'email',
+		candidate: 'email',
 		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls:-the-autocomplete-attribute:attr-fe-autocomplete-tel',
 	});
 });
@@ -381,7 +381,7 @@ test('typo', () => {
 			{ type: 'common', value: 'autofill named group' },
 			{ type: 'common', value: 'autofill field name' },
 		],
-		candicate: 'section-foo',
+		candidate: 'section-foo',
 		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field',
 	});
 });

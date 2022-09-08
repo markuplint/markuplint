@@ -300,7 +300,7 @@ else
 	| lorem #[span ipsum]`);
 		const map = nodeListToDebugMaps(doc.nodeList);
 		// console.log(map);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:2](0,1)p: p',
 			'[2:4]>[2:10](5,11)#text: lorem␣',
@@ -313,7 +313,7 @@ else
 		const doc = parse(`div.
 	<span>text</span>`);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:4](0,3)div: div',
 			'[2:2]>[2:8](6,12)span: <span>',
@@ -328,7 +328,7 @@ else
 		text
 	</div>`);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: .root',
 			'[1:7]>[2:2](6,8)#text: ⏎→',
@@ -344,7 +344,7 @@ else
 		<img />
 	</div>`);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: .root',
 			'[1:7]>[2:2](6,8)#text: ⏎→',
@@ -360,7 +360,7 @@ else
 		const doc = parse(`script.
 	const $span = '<span>text</span>';`);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:7](0,6)script: script',
 			"[2:2]>[2:36](9,43)#text: const␣$span␣=␣'<span>text</span>';",
@@ -371,7 +371,7 @@ else
 		const doc = parse(`div.
 	<script> var a = "<aaaa>"; </script>`);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:4](0,3)div: div',
 			'[2:2]>[2:10](6,14)script: <script>',
@@ -388,7 +388,7 @@ else
 	<input invalid-attr/>
 	<input invalid-attr/>`);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:4](0,3)div: div',
 			'[1:5]>[2:2](4,6)#text: ⏎→',
@@ -415,7 +415,7 @@ else
 			'\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ndiv.\n\t<input invalid-attr/>\n\t<input invalid-attr invalid-attr2/>',
 		);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[21:1]>[21:4](20,23)div: div',
 			'[21:5]>[22:2](24,26)#text: ⏎→',

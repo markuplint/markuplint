@@ -23,9 +23,9 @@ export default createRule<MainValue, Options>({
 	/**
 	 * Step 1-1. Choose the severity from `error` or `warning`
 	 *
-	 * Deafult is `error`
+	 * Default is `error`
 	 */
-	defaultServerity: 'error',
+	defaultSeverity: 'error',
 
 	/**
 	 * Step 1-2. Set the default principal value

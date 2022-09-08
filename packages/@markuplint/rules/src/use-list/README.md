@@ -35,7 +35,7 @@ Prompt to use list element when a bullet character is at the start of a text nod
 Specify the characters of the bullet that you expect to interpret as a list. It expects an array of code points.
 
 - Type: `string[]`
-- Deafult Value: [Bullets](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/rules/src/use-list/index.ts#L11-L52)
+- Default Value: [Bullets](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/rules/src/use-list/index.ts#L11-L52)
 
 It executes after decoding character references to be a code point. For example, it decodes `"&bullet;"` to be `"\u2022"`. **Note: You must specify a code point instead of the character reference you need.** It supports the surrogate pair code points.
 

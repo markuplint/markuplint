@@ -1,6 +1,6 @@
 import type { MLDocument } from '../node/document';
 import type { MappedNode } from '../node/types';
-import type { MLASTAbstructNode, MLASTNode } from '@markuplint/ml-ast';
+import type { MLASTAbstractNode, MLASTNode } from '@markuplint/ml-ast';
 import type { RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLBlock } from '../node/block';
@@ -9,7 +9,7 @@ import { MLDocumentType } from '../node/document-type';
 import { MLElement } from '../node/element';
 import { MLText } from '../node/text';
 
-export function createNode<N extends MLASTAbstructNode, T extends RuleConfigValue, O = null>(
+export function createNode<N extends MLASTAbstractNode, T extends RuleConfigValue, O = null>(
 	astNode: N,
 	document: MLDocument<T, O>,
 ): MappedNode<N, T, O> {
@@ -31,5 +31,5 @@ export function createNode<N extends MLASTAbstructNode, T extends RuleConfigValu
 			return new MLText<T, O>(_astNode, document) as MappedNode<N, T, O>;
 		}
 	}
-	throw new TypeError(`Invalid AST node typs "${astNode.type}"`);
+	throw new TypeError(`Invalid AST node types "${astNode.type}"`);
 }

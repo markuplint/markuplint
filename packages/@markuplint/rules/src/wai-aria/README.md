@@ -41,7 +41,7 @@ flowchart TD
   ROLE -->|Yes| ROLE1{Is it overwriting the disallowed role?}
   ROLE -->|No| END
   ROLE1 -->|Yes| ROLE1_FAIL[Report] --> ROLE2
-  ROLE1 -->|No| ROLE2{"(OPTIONAL)\nIs it specifing the implicit role?"}
+  ROLE1 -->|No| ROLE2{"(OPTIONAL)\nIs it specifying the implicit role?"}
   ROLE2 -->|Yes| ROLE2_FAIL[Report] --> ROLE3{Does it have\nall required props\naccording to the overwritten role\nthat is no implicit?}
   ROLE2 -->|No| ROLE3
   ROLE3 -->|Yes| ROLE4{Is its structure valid?}

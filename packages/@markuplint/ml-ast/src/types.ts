@@ -23,7 +23,7 @@ export type MLASTNodeType =
 
 export type MLASTNode = MLASTDoctype | MLASTTag | MLASTComment | MLASTText | MLASTPreprocessorSpecificBlock | MLASTAttr;
 
-export interface MLASTAbstructNode extends MLToken {
+export interface MLASTAbstractNode extends MLToken {
 	type: MLASTNodeType;
 	nodeName: string;
 	parentNode: MLASTParentNode | null;
@@ -33,14 +33,14 @@ export interface MLASTAbstructNode extends MLToken {
 	isGhost: boolean;
 }
 
-export interface MLASTDoctype extends MLASTAbstructNode {
+export interface MLASTDoctype extends MLASTAbstractNode {
 	type: 'doctype';
 	name: string;
 	publicId: string;
 	systemId: string;
 }
 
-export interface MLASTElement extends MLASTAbstructNode {
+export interface MLASTElement extends MLASTAbstractNode {
 	type: 'starttag';
 	namespace: string;
 	attributes: MLASTAttr[];
@@ -54,7 +54,7 @@ export interface MLASTElement extends MLASTAbstructNode {
 	isCustomElement: boolean;
 }
 
-export interface MLASTElementCloseTag extends MLASTAbstructNode {
+export interface MLASTElementCloseTag extends MLASTAbstractNode {
 	type: 'endtag';
 	namespace: string;
 	attributes: MLASTAttr[];
@@ -65,7 +65,7 @@ export interface MLASTElementCloseTag extends MLASTAbstructNode {
 	isCustomElement: boolean;
 }
 
-export interface MLASTPreprocessorSpecificBlock extends MLASTAbstructNode {
+export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
 	type: 'psblock';
 	nodeName: string;
 	parentNode: MLASTParentNode | null;
@@ -79,17 +79,17 @@ export type MLASTTag = MLASTElement | MLASTElementCloseTag;
 
 export type MLASTParentNode = MLASTElement | MLASTPreprocessorSpecificBlock;
 
-export interface MLASTComment extends MLASTAbstructNode {
+export interface MLASTComment extends MLASTAbstractNode {
 	type: 'comment';
 }
 
-export interface MLASTText extends MLASTAbstructNode {
+export interface MLASTText extends MLASTAbstractNode {
 	type: 'text';
 }
 
 export type MLASTAttr = MLASTHTMLAttr | MLASTPreprocessorSpecificAttr;
 
-export interface MLASTHTMLAttr extends MLASTAbstructNode {
+export interface MLASTHTMLAttr extends MLASTAbstractNode {
 	type: 'html-attr';
 	spacesBeforeName: MLToken;
 	name: MLToken;
@@ -111,7 +111,7 @@ export interface MLASTHTMLAttr extends MLASTAbstructNode {
 	isGhost: false;
 }
 
-export interface MLASTPreprocessorSpecificAttr extends MLASTAbstructNode {
+export interface MLASTPreprocessorSpecificAttr extends MLASTAbstractNode {
 	type: 'ps-attr';
 	potentialName: string;
 	potentialValue: string;
@@ -122,7 +122,7 @@ export interface MLASTPreprocessorSpecificAttr extends MLASTAbstructNode {
 export interface MLASTDocument {
 	nodeList: MLASTNode[];
 	isFragment: boolean;
-	unkownParseError?: string;
+	unknownParseError?: string;
 }
 
 export interface MLMarkupLanguageParser {

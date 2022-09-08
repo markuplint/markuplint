@@ -93,7 +93,7 @@ describe('getComputedRole', () => {
 		expect(c('<div hidden><span tabindex="0" role="none"></span></div>', '1.2', 'span').role?.name).toBe('none');
 	});
 
-	test('Presentational Roles Conflict Resolution (2-1) Required Owend Elements', () => {
+	test('Presentational Roles Conflict Resolution (2-1) Required Owned Elements', () => {
 		expect(c('<table><tr><td>foo</td></tr></table>', '1.2', 'td').role?.name).toBe('cell');
 		expect(c('<table><tr><td role="none">foo</td></tr></table>', '1.2', 'td').role?.name).toBe('cell');
 		expect(c('<table><tbody role="none"><tr><td>foo</td></tr></tbody></table>', '1.2', 'tbody').role?.name).toBe(

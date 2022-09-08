@@ -54,7 +54,7 @@ export type PermittedARIAProperties =
 					  }
 				)[],
 			];
-			whithout?: [
+			without?: [
 				{
 					type: 'not-recommended' | 'should-not' | 'must-not';
 					name: string;

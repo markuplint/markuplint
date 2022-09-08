@@ -22,7 +22,7 @@ import attrTokenizer from './attr-tokenizer';
 import { pugParse } from './pug-parser';
 
 export const parse: Parse = (rawCode, _, __, ___, isIgnoringFrontMatter) => {
-	let unkownParseError: string | undefined;
+	let unknownParseError: string | undefined;
 	let nodeList: MLASTNode[];
 
 	if (isIgnoringFrontMatter) {
@@ -48,13 +48,13 @@ export const parse: Parse = (rawCode, _, __, ___, isIgnoringFrontMatter) => {
 				},
 			);
 		}
-		unkownParseError = err instanceof Error ? err.message : new Error(`${err}`).message;
+		unknownParseError = err instanceof Error ? err.message : new Error(`${err}`).message;
 	}
 
 	return {
 		nodeList,
 		isFragment: isDocumentFragment(rawCode),
-		unkownParseError,
+		unknownParseError: unknownParseError,
 	};
 };
 

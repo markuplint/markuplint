@@ -39,7 +39,7 @@ it('ordered requires with #flow', () => {
 	expect(c(models, '<a></a><b></b><c></c>').type).toBe('UNEXPECTED_EXTRA_NODE');
 });
 
-it('ordered requires and optinals', () => {
+it('ordered requires and optionals', () => {
 	const models: PermittedContentPattern[] = [
 		//
 		{ require: 'a' },
@@ -55,7 +55,7 @@ it('ordered requires and optinals', () => {
 	expect(c(models, '<a></a><c></c><b></b>').type).toBe('UNEXPECTED_EXTRA_NODE');
 });
 
-it('ordered requires and optinals with #flow', () => {
+it('ordered requires and optionals with #flow', () => {
 	const models: PermittedContentPattern[] = [
 		//
 		{ require: 'a' },

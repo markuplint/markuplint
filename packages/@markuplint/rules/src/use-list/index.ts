@@ -63,13 +63,13 @@ export default createRule<Bullets, Options>({
 			'+', // plus signs
 		],
 	},
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Text', textNode => {
 			const text = decodeCharRef(textNode.raw.trim());
 
 			if (!text) {
-				// emtpy
+				// empty
 				return;
 			}
 

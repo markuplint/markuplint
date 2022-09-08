@@ -35,7 +35,7 @@
 		"properties": {
 			"global": true,
 			"role": true,
-			"whithout": [
+			"without": [
 				{
 					"type": "not-recommended",
 					"name": "aria-disabled",

@@ -7,7 +7,7 @@ import { Token } from './token';
 
 type TokenCollectionOptions = Partial<
 	Omit<List, 'token'> & {
-		speificSeparator: string | string[];
+		specificSeparator: string | string[];
 	}
 >;
 
@@ -114,11 +114,11 @@ export class TokenCollection extends Array<Token> {
 			separators.push(',');
 		}
 
-		if (typeOptions?.speificSeparator) {
-			if (Array.isArray(typeOptions.speificSeparator)) {
-				separators.push(...typeOptions.speificSeparator);
+		if (typeOptions?.specificSeparator) {
+			if (Array.isArray(typeOptions.specificSeparator)) {
+				separators.push(...typeOptions.specificSeparator);
 			} else {
-				separators.push(typeOptions.speificSeparator);
+				separators.push(typeOptions.specificSeparator);
 			}
 		}
 
@@ -268,7 +268,7 @@ export class TokenCollection extends Array<Token> {
 					reason: 'missing-comma',
 					ref,
 					expects,
-					candicate: `,${takeTurnsError.token.value}`,
+					candidate: `,${takeTurnsError.token.value}`,
 				});
 			}
 		}

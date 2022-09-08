@@ -18,7 +18,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	#f: RuleSeed<T, O>['fix'];
 	#v: RuleSeed<T, O>['verify'];
 	readonly defaultOptions: O;
-	readonly defaultServerity: Severity;
+	readonly defaultSeverity: Severity;
 	readonly defaultValue: T;
 	readonly name: string;
 
@@ -40,7 +40,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 
 	constructor(o: RuleSeed<T, O> & { name: string }) {
 		this.name = o.name;
-		this.defaultServerity = o.defaultServerity || 'error';
+		this.defaultSeverity = o.defaultSeverity || 'error';
 		this.defaultValue = o.defaultValue ?? (true as T);
 		this.defaultOptions = o.defaultOptions ?? (null as unknown as O);
 		this.#v = o.verify;
@@ -61,7 +61,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		if (configSettings === undefined || typeof configSettings === 'boolean') {
 			return {
 				disabled: !configSettings,
-				severity: this.defaultServerity,
+				severity: this.defaultSeverity,
 				value: this.defaultValue,
 				option: this.defaultOptions,
 				reason: undefined,
@@ -70,7 +70,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		if (!Array.isArray(configSettings) && typeof configSettings === 'object' && configSettings !== null) {
 			return {
 				disabled: false,
-				severity: configSettings.severity || this.defaultServerity,
+				severity: configSettings.severity || this.defaultSeverity,
 				value: configSettings.value !== undefined ? configSettings.value : this.defaultValue,
 				option: Array.isArray(this.defaultOptions)
 					? configSettings.option
@@ -89,7 +89,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		}
 		return {
 			disabled: false,
-			severity: this.defaultServerity,
+			severity: this.defaultSeverity,
 			// @ts-ignore TODO: Wait for fix to bug of type guards in TypeScript
 			value: configSettings == null ? this.defaultValue : configSettings,
 			option: this.defaultOptions,

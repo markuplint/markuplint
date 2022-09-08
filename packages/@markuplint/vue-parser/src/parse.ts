@@ -126,7 +126,7 @@ function nodeize(
 				endLine,
 				startCol,
 				endCol,
-				nodeName: '#vue-expression-conatiner',
+				nodeName: '#vue-expression-container',
 				type: 'psblock',
 				parentNode,
 				prevNode,

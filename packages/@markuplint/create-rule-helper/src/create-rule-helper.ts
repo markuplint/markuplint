@@ -1,19 +1,19 @@
 import type { CreateRuleHelperParams, CreateRuleHelperResult } from './types';
 
-import { craeteRulePackage } from './create-rule-package';
-import { craeteRuleToCore } from './create-rule-to-core';
-import { craeteRuleToProject } from './create-rule-to-project';
+import { createRulePackage } from './create-rule-package';
+import { createRuleToCore } from './create-rule-to-core';
+import { createRuleToProject } from './create-rule-to-project';
 
 export async function createRuleHelper(params: CreateRuleHelperParams): Promise<CreateRuleHelperResult> {
 	switch (params.purpose) {
 		case 'ADD_TO_PROJECT': {
-			return await craeteRuleToProject(params);
+			return await createRuleToProject(params);
 		}
 		case 'PUBLISH_AS_PACKAGE': {
-			return await craeteRulePackage(params);
+			return await createRulePackage(params);
 		}
 		case 'CONTRIBUTE_TO_CORE': {
-			return await craeteRuleToCore(params);
+			return await createRuleToCore(params);
 		}
 	}
 }

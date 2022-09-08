@@ -123,7 +123,7 @@ it('001 + 002 + 003', async () => {
 			},
 			{
 				selector: 'a',
-				rules: { 'rule__enble-for-a-tag': true },
+				rules: { 'rule__enable-for-a-tag': true },
 			},
 		],
 		childNodeRules: [

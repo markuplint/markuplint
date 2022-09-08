@@ -3,7 +3,7 @@ import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import path from 'path';
 
-import { toRegxp } from './utils';
+import { toRegexp } from './utils';
 
 const caches = new Map<string, MLMLSpec | ExtendedSpec>();
 
@@ -52,7 +52,7 @@ export async function resolveSpecs(filePath: string, specConfig?: SpecConfig) {
 			}
 		} else {
 			for (const pattern of Object.keys(specConfig)) {
-				if (path.basename(filePath).match(toRegxp(pattern))) {
+				if (path.basename(filePath).match(toRegexp(pattern))) {
 					const specModName = specConfig[pattern];
 					const spec = await importSpecs<ExtendedSpec>(specModName);
 					extendedSpecs.push(spec);

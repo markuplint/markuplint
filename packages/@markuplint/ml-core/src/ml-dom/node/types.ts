@@ -9,7 +9,7 @@ import type { MLElement } from './element';
 import type { MLNode } from './node';
 import type { MLText } from './text';
 import type {
-	MLASTAbstructNode,
+	MLASTAbstractNode,
 	MLASTAttr,
 	MLASTComment,
 	MLASTDoctype,
@@ -29,7 +29,7 @@ export type MappedNode<N, T extends RuleConfigValue, O = null>
 	: N extends MLASTText ? MLText<T, O>
 	: N extends MLASTDoctype ? MLDocumentType<T, O>
 	: N extends MLASTPreprocessorSpecificBlock ? MLBlock<T, O>
-	: N extends MLASTAbstructNode ? MLNode<T, O, MLASTAbstructNode>
+	: N extends MLASTAbstractNode ? MLNode<T, O, MLASTAbstractNode>
 	: N extends MLASTAttr ? MLAttr<T, O>
 	: N extends MLASTToken ? MLToken
 	: never;

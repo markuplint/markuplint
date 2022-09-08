@@ -261,7 +261,7 @@ describe('restoreNode', () => {
 		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe('A<% attr %>B');
 	});
 
-	it('unexpect parsing', () => {
+	it('unexpected parsing', () => {
 		const code = '<div attr="<% attr %> "></div>';
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);

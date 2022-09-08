@@ -31,7 +31,7 @@ describe('Extended Selector', () => {
 
 	it('The address element', () => {
 		const contentModel =
-			':model(flow):not(address, :model(heading), :model(sectioning), header, foooter, :has(address, :model(heading), :model(sectioning), header, foooter))';
+			':model(flow):not(address, :model(heading), :model(sectioning), header, footer, :has(address, :model(heading), :model(sectioning), header, footer))';
 		expect(c(contentModel, '<a></a>')).toBeTruthy();
 		expect(c(contentModel, '<h1></h1>')).toBeFalsy();
 		expect(c(contentModel, '<address></address>')).toBeFalsy();

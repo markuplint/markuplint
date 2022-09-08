@@ -79,7 +79,8 @@ export default class Playground {
 
 		this.#rulesetString = ruleset || '';
 		this.#ruleset = convertRuleset(ruleset);
-		createLinter(this.#ruleset).then(linter => (this.#linter = linter));
+
+		void createLinter(this.#ruleset).then(linter => (this.#linter = linter));
 
 		const onChange = this._onChange.bind(this);
 
@@ -108,10 +109,10 @@ export default class Playground {
 				const code = model.getValue();
 				this.#linter.setCode(code);
 				const reports = await this.#linter.verify();
-				const diagnotics = await diagnose(reports);
+				const diagnostics = await diagnose(reports);
 				const encoded = encode(code);
 				location.hash = encoded;
-				editor.setModelMarkers(model, 'markuplint', diagnotics);
+				editor.setModelMarkers(model, 'markuplint', diagnostics);
 			}
 		}, 300);
 	}

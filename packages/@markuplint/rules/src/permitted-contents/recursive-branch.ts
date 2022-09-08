@@ -23,7 +23,7 @@ export function recursiveBranch(
 
 	const collection = new Collection(nodes);
 
-	let lastUmatched: SelectorResult | null = null;
+	let lastUnmatched: SelectorResult | null = null;
 	for (const query of model) {
 		const result = matchesSelector(query, collection.unmatched[0], specs, options, depth);
 		collection.addMatched(result.matched);
@@ -38,7 +38,7 @@ export function recursiveBranch(
 				hint: result.hint,
 			};
 		}
-		lastUmatched = {
+		lastUnmatched = {
 			type: result.type,
 			matched: collection.matched,
 			unmatched: collection.unmatched,
@@ -48,9 +48,9 @@ export function recursiveBranch(
 		};
 	}
 
-	if (!lastUmatched) {
+	if (!lastUnmatched) {
 		throw new Error('Unreachable code');
 	}
 
-	return lastUmatched;
+	return lastUnmatched;
 }

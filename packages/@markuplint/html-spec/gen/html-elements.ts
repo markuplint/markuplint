@@ -72,7 +72,7 @@ export async function getElements() {
 				categories: mdnData.categories,
 				contentModel: el.contentModel,
 				aria: el.aria,
-				omittion: mdnData.omittion,
+				omission: mdnData.omission,
 				...el,
 				globalAttrs: sortObjectByKey(el.globalAttrs || {}),
 				attributes: sortObjectByKey(

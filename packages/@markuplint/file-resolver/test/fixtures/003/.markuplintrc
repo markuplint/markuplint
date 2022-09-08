@@ -32,7 +32,7 @@
 		{
 			"selector": "a",
 			"rules": {
-				"rule__enble-for-a-tag": true
+				"rule__enable-for-a-tag": true
 			}
 		}
 	],

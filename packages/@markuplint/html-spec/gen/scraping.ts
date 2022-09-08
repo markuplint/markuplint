@@ -42,7 +42,7 @@ export function fetchObsoleteElements(obsoleteList: string[], specs: ExtendedEle
 					permittedRoles: true,
 					implicitRole: false,
 				},
-				omittion: false,
+				omission: false,
 				globalAttrs: {},
 				attributes: {},
 			};
@@ -152,7 +152,7 @@ export async function fetchHTMLElement(link: string) {
 			implicitRole: false,
 			permittedRoles: true,
 		},
-		omittion: false,
+		omission: false,
 		attributes,
 	};
 
