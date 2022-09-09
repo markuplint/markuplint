@@ -23,8 +23,8 @@ const defaultSample = `<!doctype html>
 		<p>lorem</p>
 	</DIV>
 
-	<p id="dupl">
-		<span id="dupl">duplicated</span>
+	<p id="duplicated">
+		<span id="duplicated">duplicated</span>
 	</p>
 
 	<p>
