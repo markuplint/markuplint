@@ -50,7 +50,7 @@ Warn that if the attribute specified cannot affect (in other words, mean-less) t
 ### Interface
 
 - Type: `boolean`
-- Deafult Value: `true`
+- Default Value: `true`
 
 ### Default severity
 

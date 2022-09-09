@@ -1,12 +1,12 @@
 import type { DocumentFragmentNodeType } from './types';
-import type { MLASTAbstructNode } from '@markuplint/ml-ast';
+import type { MLASTAbstractNode } from '@markuplint/ml-ast';
 import type { RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLParentNode } from './parent-node';
 import UnexpectedCallError from './unexpected-call-error';
 
 export class MLDocumentFragment<T extends RuleConfigValue, O = null>
-	extends MLParentNode<T, O, MLASTAbstructNode>
+	extends MLParentNode<T, O, MLASTAbstractNode>
 	implements DocumentFragment
 {
 	/**

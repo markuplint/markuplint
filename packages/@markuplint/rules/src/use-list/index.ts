@@ -18,7 +18,7 @@ export default createRule<Bullets, Options>({
 		'\u2043', // ⁃ HYPHEN BULLET (HTML &#8259; · &hybull;)
 		'\u204C', // ⁌ BLACK LEFTWARDS BULLET (HTML &#8268;)
 		'\u204D', // ⁍ BLACK RIGHTWARDS BULLET (HTML &#8269;)
-		'\u2219', // ∙ BULLET OPERATOR (HTML &#8729;) for use in mathematical notation primarily as a dot product instead of interpunct.
+		'\u2219', // ∙ BULLET OPERATOR (HTML &#8729;) for use in mathematical notation primarily as a dot product instead of interupt.
 		'\u25CB', // ○ WHITE CIRCLE (HTML &#9675; · &cir;)
 		'\u25CF', // ● BLACK CIRCLE (HTML &#9679;)
 		'\u25D8', // ◘ INVERSE BULLET (HTML &#9688;)
@@ -34,7 +34,7 @@ export default createRule<Bullets, Options>({
 		 * @see https://ja.wikipedia.org/wiki/中黒#符号位置
 		 */
 		'\u00B7', // MIDDLE DOT
-		'\u0387', // GREEK ANO TELEIA
+		'\u0387', // GREEK ANO TELIA
 		'\u2022', // BULLET
 		'\u2219', // BULLET OPERATOR
 		'\u22C5', // DOT OPERATOR
@@ -63,13 +63,13 @@ export default createRule<Bullets, Options>({
 			'+', // plus signs
 		],
 	},
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Text', textNode => {
 			const text = decodeCharRef(textNode.raw.trim());
 
 			if (!text) {
-				// emtpy
+				// empty
 				return;
 			}
 

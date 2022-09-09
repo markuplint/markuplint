@@ -27,7 +27,8 @@
 		"release:next": "lerna publish --dist-tag next --exact --force-publish",
 		"release:next:increment": "lerna publish --dist-tag next --exact",
 		"prerelease": "yarn build; yarn test",
-		"prepare": "husky install"
+		"prepare": "husky install",
+		"spellcheck": "cspell --no-progress --show-suggestions \"**\""
 	},
 	"lint-staged": {
 		"./{packages,website,playground}/**/*.{ts,tsx,json}": [
@@ -95,6 +96,7 @@
 		"@typescript-eslint/parser": "^5.23.0",
 		"browser-resolve": "^2.0.0",
 		"coveralls": "^3.1.1",
+		"cspell": "^6.8.1",
 		"eslint": "^8.15.0",
 		"eslint-import-resolver-typescript": "^2.7.1",
 		"eslint-plugin-eslint-comments": "^3.2.0",

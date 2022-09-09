@@ -29,10 +29,10 @@ const box = (lines: string[], { width = 40, padding = 1, center = false, noColor
 		const pad = width - 2 - 1 - length;
 		const pad2 = Math.floor(pad / 2);
 		const padD = pad % 2;
-		const padl = center ? pad2 : 0;
-		const padr = center ? pad2 + padD : pad;
+		const padL = center ? pad2 : 0;
+		const padR = center ? pad2 + padD : pad;
 		const text = noColor ? nc : line;
-		return `│ ${' '.repeat(padl)}${text}${' '.repeat(padr)}│`;
+		return `│ ${' '.repeat(padL)}${text}${' '.repeat(padR)}│`;
 	});
 	const result = [bt, pd, ...texts, pd, bb];
 	return result.join('\n');

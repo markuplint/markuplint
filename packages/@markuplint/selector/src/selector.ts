@@ -101,9 +101,9 @@ class StructuredSelector {
 		this.#selector.nodes.forEach(node => {
 			switch (node.type) {
 				case 'combinator': {
-					const combinatedTarget = new SelectorTarget(extended, depth);
-					combinatedTarget.from(this.#edge, node);
-					this.#edge = combinatedTarget;
+					const combinedTarget = new SelectorTarget(extended, depth);
+					combinedTarget.from(this.#edge, node);
+					this.#edge = combinedTarget;
 					break;
 				}
 				case 'root':
@@ -130,7 +130,7 @@ class StructuredSelector {
 
 class SelectorTarget {
 	#extended: ExtendedPseudoClass;
-	#combinatedFrom: { target: SelectorTarget; combinator: parser.Combinator } | null = null;
+	#combinedFrom: { target: SelectorTarget; combinator: parser.Combinator } | null = null;
 	#isAdded = false;
 
 	readonly depth: number;
@@ -181,14 +181,14 @@ class SelectorTarget {
 	}
 
 	from(target: SelectorTarget, combinator: parser.Combinator) {
-		this.#combinatedFrom = { target, combinator };
+		this.#combinedFrom = { target, combinator };
 	}
 
 	match(el: Node, scope: ParentNode | null, count: number): SelectorResult {
 		const result = this._match(el, scope, count);
 		if (selLog.enabled) {
 			const nodeName = el.nodeName;
-			const selector = this.#combinatedFrom?.target.toString() || this.toString();
+			const selector = this.#combinedFrom?.target.toString() || this.toString();
 			const combinator = result.combinator ? ` ${result.combinator}` : '';
 			selLog('The %s element by "%s" => %s (%d)', nodeName, `${selector}${combinator}`, result.matched, count);
 			if (selector === ':scope') {
@@ -200,17 +200,17 @@ class SelectorTarget {
 	}
 
 	_match(el: Node, scope: ParentNode | null, count: number): SelectorResult & { combinator?: string } {
-		const unitCheck = this._matchWithoutCombinateChecking(el, scope);
+		const unitCheck = this._matchWithoutCombineChecking(el, scope);
 		if (!unitCheck.matched) {
 			return unitCheck;
 		}
-		if (!this.#combinatedFrom) {
+		if (!this.#combinedFrom) {
 			return unitCheck;
 		}
 		if (!isNonDocumentTypeChildNode(el)) {
 			return unitCheck;
 		}
-		const { target, combinator } = this.#combinatedFrom;
+		const { target, combinator } = this.#combinedFrom;
 		switch (combinator.value) {
 			// Descendant combinator
 			case ' ': {
@@ -404,7 +404,7 @@ class SelectorTarget {
 				);
 			}
 			default: {
-				throw new Error(`Unsupported ${this.#combinatedFrom.combinator.value} combinator in selector`);
+				throw new Error(`Unsupported ${this.#combinedFrom.combinator.value} combinator in selector`);
 			}
 		}
 	}
@@ -419,7 +419,7 @@ class SelectorTarget {
 		].join('');
 	}
 
-	_matchWithoutCombinateChecking(el: Node, scope: ParentNode | null): SelectorResult {
+	_matchWithoutCombineChecking(el: Node, scope: ParentNode | null): SelectorResult {
 		const specificity: Specificity = [0, 0, 0];
 
 		if (!isElement(el)) {

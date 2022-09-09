@@ -37,7 +37,7 @@
 			"global": true,
 			"role": ["combobox", "menu"],
 			// Authors SHOULD NOT use the aria-multiselectable attribute on a select element.
-			"whithout": [
+			"without": [
 				{
 					"type": "should-not",
 					"name": "aria-multiselectable"
@@ -53,7 +53,7 @@
 					"global": true,
 					"role": "listbox",
 					// Authors SHOULD NOT use the aria-multiselectable attribute on a select element.
-					"whithout": [
+					"without": [
 						{
 							"type": "should-not",
 							"name": "aria-multiselectable"

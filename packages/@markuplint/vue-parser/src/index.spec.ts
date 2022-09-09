@@ -108,7 +108,7 @@ describe('parser', () => {
 			'[3:11]>[5:3](23,42)#text: ⏎→→→const␣i␣=␣0;⏎→→',
 			'[5:3]>[5:12](42,51)script: </script>',
 			'[5:12]>[7:3](51,72)#text: ⏎→→⏎→→',
-			'[7:3]>[7:23](72,92)#vue-expression-conatiner: {{␣CodeExpression␣}}',
+			'[7:3]>[7:23](72,92)#vue-expression-container: {{␣CodeExpression␣}}',
 			'[7:23]>[8:3](92,95)#text: ⏎→→',
 			'[8:3]>[8:8](95,100)div: <div>',
 			'[8:8]>[10:3](100,119)#text: ⏎→→→text&amp;div⏎→→',

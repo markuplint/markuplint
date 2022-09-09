@@ -6,7 +6,7 @@ category: a11y
 
 # Landmark roles
 
-- ~~Whether perceptible content exists on any landmark~~ (Work in prgress)
+- ~~Whether perceptible content exists on any landmark~~ (Work in progress)
 - Whether `banner`, `main`, `complementary` and `contentinfo` are top-level landmarks
 - Whether a specific landmark roll has unique label when used multiple times on a page
 

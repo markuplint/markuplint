@@ -1,5 +1,5 @@
 import type { MLElement } from './element';
-import type { MLASTAbstructNode } from '@markuplint/ml-ast';
+import type { MLASTAbstractNode } from '@markuplint/ml-ast';
 import type { RuleConfigValue } from '@markuplint/ml-config';
 
 import {
@@ -17,7 +17,7 @@ import UnexpectedCallError from './unexpected-call-error';
 export abstract class MLCharacterData<
 		T extends RuleConfigValue,
 		O = null,
-		A extends MLASTAbstructNode = MLASTAbstructNode,
+		A extends MLASTAbstractNode = MLASTAbstractNode,
 	>
 	extends MLNode<T, O, A>
 	implements CharacterData

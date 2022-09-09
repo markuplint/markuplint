@@ -42,7 +42,7 @@ export function fetchObsoleteElements(obsoleteList: string[], specs: ExtendedEle
 					permittedRoles: true,
 					implicitRole: false,
 				},
-				omittion: false,
+				omission: false,
 				globalAttrs: {},
 				attributes: {},
 			};
@@ -82,14 +82,14 @@ export async function fetchHTMLElement(link: string) {
 
 	const $bcTable = $article.find('.bc-table');
 	const $bcTableFirstRow = $bcTable.find('tbody tr:first-child th');
-	const isBcTableIsAvailabled = $bcTableFirstRow.find('code').text().trim() === name;
+	const isBcTableIsAvailable = $bcTableFirstRow.find('code').text().trim() === name;
 
 	let experimental: true | undefined;
 	let obsolete: true | undefined;
 	let deprecated: true | undefined;
 	let nonStandard: true | undefined;
 
-	if (isBcTableIsAvailabled) {
+	if (isBcTableIsAvailable) {
 		experimental = !!$bcTableFirstRow.find('.ic-experimental').length || undefined;
 		obsolete = !!$bcTableFirstRow.find('.ic-obsolete').length || undefined;
 		deprecated = !!$bcTableFirstRow.find('.ic-deprecated').length || undefined;
@@ -152,7 +152,7 @@ export async function fetchHTMLElement(link: string) {
 			implicitRole: false,
 			permittedRoles: true,
 		},
-		omittion: false,
+		omission: false,
 		attributes,
 	};
 

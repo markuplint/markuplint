@@ -61,7 +61,7 @@ If specified to `nodeRules` or `childNodeRules`, It searches the element from ch
 ### Interface
 
 - Type: `string[]`
-- Deafult Value: `[]`
+- Default Value: `[]`
 
 ### Options
 

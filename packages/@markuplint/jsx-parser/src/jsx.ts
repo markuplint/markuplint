@@ -435,7 +435,7 @@ function recursiveSearchJSXElements(tree: ((Node & { __parentId?: number | null 
 			}
 		}
 		if (node) {
-			throw new Error('Unsupprted node');
+			throw new Error('Unsupported node');
 		}
 	}
 	return jsxList;

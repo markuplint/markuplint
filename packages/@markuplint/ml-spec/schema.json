@@ -17,7 +17,7 @@
 			],
 			"type": "string"
 		},
-		"AttributeCtegory": {
+		"AttributeCategory": {
 			"enum": ["aria", "eventhandler", "form", "global", "particular", "xml"],
 			"type": "string"
 		},
@@ -85,7 +85,7 @@
 					"items": {
 						"properties": {
 							"category": {
-								"$ref": "#/definitions/AttributeCtegory"
+								"$ref": "#/definitions/AttributeCategory"
 							},
 							"deprecated": {
 								"enum": [true],
@@ -162,7 +162,7 @@
 										{
 											"properties": {
 												"category": {
-													"$ref": "#/definitions/AttributeCtegory"
+													"$ref": "#/definitions/AttributeCategory"
 												},
 												"deprecated": {
 													"enum": [true],
@@ -211,7 +211,7 @@
 						"type": "array"
 					},
 					"categories": {
-						"description": "Element cateogries",
+						"description": "Element categories",
 						"items": {
 							"anyOf": [
 								{
@@ -294,7 +294,7 @@
 						],
 						"description": "Obsolete or alternative elements"
 					},
-					"omittion": {
+					"omission": {
 						"anyOf": [
 							{
 								"properties": {
@@ -338,7 +338,7 @@
 								"type": "boolean"
 							}
 						],
-						"description": "Tag omittion"
+						"description": "Tag omission"
 					},
 					"permittedContent": {
 						"description": "Permitted content",

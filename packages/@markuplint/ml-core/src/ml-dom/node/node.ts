@@ -5,7 +5,7 @@ import type { MLDocument } from './document';
 import type { MLDocumentFragment } from './document-fragment';
 import type { MLElement } from './element';
 import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types';
-import type { MLASTAbstructNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
+import type { MLASTAbstractNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
 import type { AnyRule, RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLToken } from '../token/token';
@@ -15,7 +15,7 @@ import { toNodeList } from './node-list';
 import { nodeStore } from './node-store';
 import UnexpectedCallError from './unexpected-call-error';
 
-export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLASTAbstructNode = MLASTAbstructNode>
+export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLASTAbstractNode = MLASTAbstractNode>
 	extends MLToken<A>
 	implements Node
 {

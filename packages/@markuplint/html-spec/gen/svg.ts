@@ -111,7 +111,7 @@ export async function getSVGElementList() {
 // 		contentModel: {
 // 			contents: false,
 // 		},
-// 		omittion: false,
+// 		omission: false,
 // 		attributes,
 // 		implicitRole: {
 // 			role: false,

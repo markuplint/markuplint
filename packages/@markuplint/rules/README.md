@@ -49,7 +49,7 @@
 
 ## Install
 
-Generally, you **don't have to install** this package because markuplint dependents it defaultly.
+Generally, you **don't have to install** this package because markuplint dependents it by default.
 
 ```sh
 $ npm install -D @markuplint/rules

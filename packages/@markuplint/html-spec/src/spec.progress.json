@@ -33,7 +33,7 @@
 			"global": true,
 			"role": "progressbar",
 			// Authors SHOULD NOT use the aria-valuemax attribute on progress elements.
-			"whithout": [
+			"without": [
 				{
 					"type": "should-not",
 					"name": "aria-valuemax"

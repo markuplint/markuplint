@@ -25,7 +25,7 @@ Warn when it specifies the default value to the attribute.
 ### Interface
 
 - Type: `boolean`
-- Deafult Value: `true`
+- Default Value: `true`
 
 ### Default severity
 

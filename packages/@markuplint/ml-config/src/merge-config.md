@@ -1,6 +1,6 @@
 ## Merge Props
 
-| 0ptions                                                               | Type                   | Merging                      | Path Absolutize |
+| Options                                                               | Type                   | Merging                      | Path Absolutize |
 | --------------------------------------------------------------------- | ---------------------- | ---------------------------- | --------------- |
 | [plugins](https://markuplint.dev/configuration#plugins)               | Array                  | Add uniquely                 | ✓               |
 | [parser](https://markuplint.dev/configuration#parser)                 | Object                 | Merge                        | ✓               |
@@ -22,7 +22,7 @@
 
 ## †2 Merge Rule Details
 
-| 0ptions  | Type   | Mergeing                                       |
+| options  | Type   | Mergeing                                       |
 | -------- | ------ | ---------------------------------------------- |
 | value    | †1     | †1                                             |
 | severity | Enum   | Merge(Overwrite)                               |

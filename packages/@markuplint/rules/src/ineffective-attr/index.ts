@@ -1,7 +1,7 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 export default createRule({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
 			const attrSpec = getAttrSpecs(attr.ownerElement, document.specs);

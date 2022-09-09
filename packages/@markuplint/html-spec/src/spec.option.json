@@ -59,7 +59,7 @@
 			"global": true,
 			"role": "option",
 			// Authors SHOULD NOT use the aria-selected attribute on the option element.
-			"whithout": [
+			"without": [
 				{
 					"type": "should-not",
 					"name": "aria-selected"

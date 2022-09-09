@@ -47,7 +47,7 @@
 		"properties": {
 			"global": true,
 			// Authors SHOULD NOT use the aria-valuemax or aria-valuemin attributes on meter elements.
-			"whithout": [
+			"without": [
 				{
 					"type": "should-not",
 					"name": "aria-valuemax"

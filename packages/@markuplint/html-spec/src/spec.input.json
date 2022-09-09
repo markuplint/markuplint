@@ -331,7 +331,7 @@
 					// Otherwise, any global aria-* attributes and any aria-* attributes applicable to the allowed roles.
 					"global": true,
 					"role": true,
-					"whithout": [
+					"without": [
 						{
 							// Authors MUST NOT use the aria-checked attribute on input type=checkbox elements.
 							"type": "must-not",
@@ -353,7 +353,7 @@
 					// Otherwise, any global aria-* attributes and any aria-* attributes applicable to the allowed roles.
 					"global": true,
 					"role": true,
-					"whithout": [
+					"without": [
 						{
 							// Authors MUST NOT use the aria-checked attribute on input type=checkbox elements.
 							"type": "must-not",
@@ -443,7 +443,7 @@
 				"properties": {
 					"global": true,
 					"role": true,
-					"whithout": [
+					"without": [
 						{
 							// Authors MUST NOT use the aria-checked attribute on input type=radio elements.
 							"type": "must-not",
@@ -464,7 +464,7 @@
 					"global": true,
 					"role": "slider",
 					// Authors SHOULD NOT use the aria-valuemax or aria-valuemin attributes on input type=range.
-					"whithout": [
+					"without": [
 						{
 							"type": "should-not",
 							"name": "aria-valuemax"
@@ -515,7 +515,7 @@
 					"global": true,
 					"role": "combobox",
 					// Authors SHOULD NOT use the aria-haspopup attribute on the indicated inputs with a list attribute.
-					"whithout": [
+					"without": [
 						{
 							"type": "should-not",
 							"name": "aria-haspopup"
@@ -577,7 +577,7 @@
 						// Otherwise, any global aria-* attributes and any aria-* attributes applicable to the allowed roles.
 						"global": true,
 						"role": true,
-						"whithout": [
+						"without": [
 							{
 								"type": "should-not",
 								"name": "aria-checked", // The HTML checked attribute can be used instead of the aria-checked attribute for menuitemcheckbox, option or switch roles when used on type=checkbox.
@@ -598,7 +598,7 @@
 						// Otherwise, any global aria-* attributes and any aria-* attributes applicable to the allowed roles.
 						"global": true,
 						"role": true,
-						"whithout": [
+						"without": [
 							{
 								"type": "should-not",
 								"name": "aria-hecked"
@@ -683,7 +683,7 @@
 						"global": true,
 						"role": true,
 						// Authors SHOULD NOT use the aria-checked attribute on input type=radio elements.
-						"whithout": [
+						"without": [
 							{
 								"type": "should-not",
 								"name": "aria-checked",
@@ -703,7 +703,7 @@
 						"global": true,
 						"role": "slider",
 						// Authors SHOULD NOT use the aria-valuemax or aria-valuemin attributes on input type=range.
-						"whithout": [
+						"without": [
 							{
 								"type": "should-not",
 								"name": "aria-valuemax"
@@ -754,7 +754,7 @@
 						"global": true,
 						"role": "combobox",
 						// Authors SHOULD NOT use the aria-haspopup attribute on the indicated inputs with a list attribute.
-						"whithout": [
+						"without": [
 							{
 								"type": "should-not",
 								"name": "aria-haspopup"

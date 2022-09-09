@@ -15,5 +15,5 @@ export * from './specs/schema-to-spec';
 export * from './types';
 export * from './types/aria';
 export * from './types/attributes';
-export * from './types/permitted-structres';
+export * from './types/permitted-structures';
 export * from './utils/resolve-namespace';

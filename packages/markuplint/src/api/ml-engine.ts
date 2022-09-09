@@ -138,7 +138,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 			this.emit('config-errors', this.#file.path, fabric.configErrors);
 		}
 
-		return this.cretateCore(fabric);
+		return this.createCore(fabric);
 	}
 
 	private async provide(cache = true): Promise<MLFabric | null> {
@@ -217,10 +217,11 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		};
 	}
 
-	private async cretateCore(fabric: MLFabric) {
+	private async createCore(fabric: MLFabric) {
 		fileLog('Get source code');
 		const sourceCode = await this.#file.getCode();
 		fileLog('Source code path: %s', this.#file.path);
+		// cspell: disable-next-line
 		fileLog('Source code size: %dbyte', sourceCode.length);
 		this.emit('code', this.#file.path, sourceCode);
 

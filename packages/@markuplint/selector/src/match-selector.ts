@@ -1,4 +1,4 @@
-import type { Specificity, RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCompination } from './types';
+import type { Specificity, RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCombination } from './types';
 
 import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is';
 import { regexSelectorMatches } from './regex-selector-matches';
@@ -56,29 +56,29 @@ function regexSelect(el: Node, selector: RegexSelector): SelectorMatches {
 }
 
 class SelectorTarget {
-	_selector: RegexSelectorWithoutCompination;
-	_combinatedFrom: { target: SelectorTarget; combinator: RegexSelectorCombinator } | null = null;
+	_selector: RegexSelectorWithoutCombination;
+	_combinedFrom: { target: SelectorTarget; combinator: RegexSelectorCombinator } | null = null;
 
-	constructor(selector: RegexSelectorWithoutCompination) {
+	constructor(selector: RegexSelectorWithoutCombination) {
 		this._selector = selector;
 	}
 
 	from(target: SelectorTarget, combinator: RegexSelectorCombinator) {
-		this._combinatedFrom = { target, combinator };
+		this._combinedFrom = { target, combinator };
 	}
 
 	match(el: Node): SelectorMatches {
-		const unitCheck = this._matchWithoutCombinateChecking(el);
+		const unitCheck = this._matchWithoutCombineChecking(el);
 		if (!unitCheck.matched) {
 			return unitCheck;
 		}
-		if (!this._combinatedFrom) {
+		if (!this._combinedFrom) {
 			return unitCheck;
 		}
 		if (!isNonDocumentTypeChildNode(el)) {
 			return unitCheck;
 		}
-		const { target, combinator } = this._combinatedFrom;
+		const { target, combinator } = this._combinedFrom;
 		switch (combinator) {
 			// Descendant combinator
 			case ' ': {
@@ -153,17 +153,17 @@ class SelectorTarget {
 				return { matched: false };
 			}
 			default: {
-				throw new Error(`Unsupported ${this._combinatedFrom.combinator} combinator in selector`);
+				throw new Error(`Unsupported ${this._combinedFrom.combinator} combinator in selector`);
 			}
 		}
 	}
 
-	_matchWithoutCombinateChecking(el: Node) {
-		return uncombinatedRegexSelect(el, this._selector);
+	_matchWithoutCombineChecking(el: Node) {
+		return uncombinedRegexSelect(el, this._selector);
 	}
 }
 
-function uncombinatedRegexSelect(el: Node, selector: RegexSelectorWithoutCompination): SelectorMatches {
+function uncombinedRegexSelect(el: Node, selector: RegexSelectorWithoutCombination): SelectorMatches {
 	if (!isElement(el)) {
 		return {
 			matched: false,

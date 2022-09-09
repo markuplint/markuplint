@@ -1,10 +1,10 @@
 import type { ARIA } from './aria';
 import type { AttributeJSON, AttributeType, GlobalAttributes } from './attributes';
-import type { ContentModel, Category } from './permitted-structres';
+import type { ContentModel, Category } from './permitted-structures';
 import type { NamespaceURI } from '@markuplint/ml-ast';
 
 /**
- * markuplit Markup-language spec
+ * markuplint Markup-language spec
  */
 export interface MLMLSpec {
 	cites: Cites;
@@ -97,7 +97,7 @@ export type ElementSpec = {
 	nonStandard?: true;
 
 	/**
-	 * Element cateogries
+	 * Element categories
 	 */
 	categories: Category[];
 
@@ -107,9 +107,9 @@ export type ElementSpec = {
 	contentModel: ContentModel;
 
 	/**
-	 * Tag omittion
+	 * Tag omission
 	 */
-	omittion: ElementSpecOmittion;
+	omission: ElementSpecOmission;
 
 	/**
 	 * Global Attributes
@@ -122,7 +122,7 @@ export type ElementSpec = {
 	attributes: Record<string, Attribute>;
 
 	/**
-	 * WAI-ARIA role and properies
+	 * WAI-ARIA role and properties
 	 */
 	aria: ARIA;
 
@@ -137,9 +137,9 @@ export type ElementSpec = {
 	possibleToAddProperties?: true;
 };
 
-type ElementSpecOmittion = false | ElementSpecOmittionTags;
+type ElementSpecOmission = false | ElementSpecOmissionTags;
 
-type ElementSpecOmittionTags = {
+type ElementSpecOmissionTags = {
 	startTag: boolean | ElementCondition;
 	endTag: boolean | ElementCondition;
 };

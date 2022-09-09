@@ -5,7 +5,7 @@ import { mergeArray } from '../utils/merge-array';
 /**
  * Merging HTML-spec schema and extended spec schemas
  *
- * Ex: `@markuplint/html-spec` + `{ specs: ["@markuplint/vue-spec"] }` in cofigure files.
+ * Ex: `@markuplint/html-spec` + `{ specs: ["@markuplint/vue-spec"] }` in configure files.
  *
  * @param schemas `MLDocument.schemas`
  */

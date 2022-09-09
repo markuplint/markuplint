@@ -1,6 +1,6 @@
 export function regexSelectorMatches(reg: string, raw: string, ignoreCase: boolean) {
 	const res: Record<string, string> = {};
-	const pattern = toRegxp(reg);
+	const pattern = toRegexp(reg);
 	const regex = new RegExp(pattern instanceof RegExp ? pattern : `^${pattern.trim()}$`, ignoreCase ? 'i' : undefined);
 	const matched = regex.exec(raw);
 	if (!matched) {
@@ -13,7 +13,7 @@ export function regexSelectorMatches(reg: string, raw: string, ignoreCase: boole
 	};
 }
 
-function toRegxp(pattern: string) {
+function toRegexp(pattern: string) {
 	const matched = pattern.match(/^\/(.+)\/([ig]*)$/i);
 	if (matched) {
 		return new RegExp(matched[1], matched[2]);

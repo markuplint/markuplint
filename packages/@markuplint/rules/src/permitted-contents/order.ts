@@ -12,8 +12,6 @@ import { Collection } from './utils';
  *
  * @param contents
  * @param nodes
- * @param parent
- * @param additinalCondition
  * @param specs
  * @param options
  * @param depth

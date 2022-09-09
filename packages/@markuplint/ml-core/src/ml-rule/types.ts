@@ -4,7 +4,7 @@ import type { Translator } from '@markuplint/i18n';
 import type { Report, RuleConfigValue, Severity } from '@markuplint/ml-config';
 
 export type RuleSeed<T extends RuleConfigValue = boolean, O = null> = {
-	defaultServerity?: Severity;
+	defaultSeverity?: Severity;
 	defaultValue?: T;
 	defaultOptions?: O;
 	verify(context: ReturnType<MLRuleContext<T, O>['provide']>): void | Promise<void>;

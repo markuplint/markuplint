@@ -7,7 +7,7 @@
 		"regexSelector": {
 			"allOf": [
 				{
-					"$ref": "#/definitions/regexSelectorWithoutCompination"
+					"$ref": "#/definitions/regexSelectorWithoutCombination"
 				},
 				{
 					"type": "object",
@@ -32,7 +32,7 @@
 				}
 			]
 		},
-		"regexSelectorWithoutCompination": {
+		"regexSelectorWithoutCombination": {
 			"type": "object",
 			"properties": {
 				"nodeName": { "type": "string" },

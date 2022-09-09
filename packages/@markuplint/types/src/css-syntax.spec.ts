@@ -116,7 +116,7 @@ test('custom-type-checking', () => {
 	expect(cssSyntaxMatch('0', custom).matched).toBe(false);
 });
 
-test('case-sensivite', () => {
+test('case-sensitive', () => {
 	const custom: CustomCssSyntax = {
 		ref: 'n/a',
 		caseSensitive: true,

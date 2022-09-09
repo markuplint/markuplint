@@ -4,7 +4,7 @@ import type { ParserConfig, ParserOptions } from '@markuplint/ml-config';
 
 import path from 'path';
 
-import { toRegxp } from './utils';
+import { toRegexp } from './utils';
 
 const parsers = new Map<string, MLMarkupLanguageParser>();
 
@@ -19,7 +19,7 @@ export async function resolveParser(file: MLFile, parserConfig?: ParserConfig, p
 	let matched = false;
 	if (parserConfig) {
 		for (const pattern of Object.keys(parserConfig)) {
-			if (path.basename(file.path).match(toRegxp(pattern))) {
+			if (path.basename(file.path).match(toRegexp(pattern))) {
 				parserModName = parserConfig[pattern];
 				matched = true;
 				break;

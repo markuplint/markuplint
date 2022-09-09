@@ -23,7 +23,7 @@ describe('parse', () => {
 		expect(maps).toStrictEqual(['[1:1]>[1:6](0,5)div: <div>', '[1:6]>[1:12](5,11)div: </div>']);
 	});
 
-	it('Flagment', () => {
+	it('Fragment', () => {
 		const ast = parse('<></>');
 		const maps = nodeListToDebugMaps(ast.nodeList);
 		expect(maps).toStrictEqual(['[1:1]>[1:3](0,2)#jsx-fragment: <>', '[1:3]>[1:6](2,5)#jsx-fragment: </>']);

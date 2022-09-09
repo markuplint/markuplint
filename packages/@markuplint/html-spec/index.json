@@ -22432,7 +22432,7 @@
 				"properties": {
 					"global": true,
 					"role": true,
-					"whithout": [
+					"without": [
 						{
 							"type": "not-recommended",
 							"name": "aria-disabled",
@@ -22452,7 +22452,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -22533,7 +22533,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -22554,7 +22554,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -22576,7 +22576,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -22597,7 +22597,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -22680,7 +22680,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -22768,7 +22768,7 @@
 				"implicitRole": "article",
 				"permittedRoles": ["application", "document", "feed", "main", "none", "presentation", "region"]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -22793,7 +22793,7 @@
 				"implicitRole": "complementary",
 				"permittedRoles": ["feed", "none", "note", "presentation", "region", "search"]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -22841,7 +22841,7 @@
 					"role": "application"
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -22895,7 +22895,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -22917,7 +22917,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -22946,7 +22946,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -22978,7 +22978,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23004,7 +23004,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23029,7 +23029,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -23059,7 +23059,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -23076,7 +23076,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -23100,7 +23100,7 @@
 					"implicitRole": false
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23141,7 +23141,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23285,7 +23285,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23339,7 +23339,7 @@
 					]
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23416,7 +23416,7 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23461,7 +23461,7 @@
 					"implicitRole": false
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23487,7 +23487,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -23509,7 +23509,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23538,7 +23538,7 @@
 					"implicitRole": false
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23560,7 +23560,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23626,7 +23626,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23682,7 +23682,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23726,7 +23726,7 @@
 					"role": "listbox"
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23758,7 +23758,7 @@
 					"implicitRole": "definition"
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23792,7 +23792,7 @@
 					"implicitRole": false
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23831,7 +23831,7 @@
 					"role": "group"
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23860,7 +23860,7 @@
 				"implicitRole": "term",
 				"permittedRoles": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23889,7 +23889,7 @@
 					"role": "dialog"
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -23917,7 +23917,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -23974,7 +23974,7 @@
 					"permittedRoles": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24032,7 +24032,7 @@
 				"implicitRole": false,
 				"permittedRoles": ["group", "list", "none", "presentation"]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24060,7 +24060,7 @@
 					"implicitRole": "term"
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24089,7 +24089,7 @@
 					"implicitRole": false
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24110,7 +24110,7 @@
 				"implicitRole": false,
 				"permittedRoles": ["application", "document", "img", "none", "presentation"]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24153,7 +24153,7 @@
 				"implicitRole": "group",
 				"permittedRoles": ["radiogroup", "presentation", "none"]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24190,7 +24190,7 @@
 				"permittedRoles": ["group", "none", "presentation"],
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24242,7 +24242,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24263,7 +24263,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -24308,7 +24308,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24341,7 +24341,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24430,7 +24430,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -24469,7 +24469,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -24500,7 +24500,7 @@
 				},
 				"permittedRoles": ["tab", "presentation", "none"]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24528,7 +24528,7 @@
 				},
 				"permittedRoles": ["tab", "presentation", "none"]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24556,7 +24556,7 @@
 				},
 				"permittedRoles": ["tab", "presentation", "none"]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24584,7 +24584,7 @@
 				},
 				"permittedRoles": ["tab", "presentation", "none"]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24612,7 +24612,7 @@
 				},
 				"permittedRoles": ["tab", "presentation", "none"]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24640,7 +24640,7 @@
 				},
 				"permittedRoles": ["tab", "presentation", "none"]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24672,7 +24672,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24716,7 +24716,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24763,7 +24763,7 @@
 					"implicitRole": false
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24788,7 +24788,7 @@
 					"role": "separator"
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24838,7 +24838,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24876,7 +24876,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -24901,7 +24901,7 @@
 				"implicitRole": false,
 				"permittedRoles": ["application", "document", "img", "none", "presentation"]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -25073,7 +25073,7 @@
 					]
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -25189,7 +25189,7 @@
 						"properties": {
 							"global": true,
 							"role": true,
-							"whithout": [
+							"without": [
 								{
 									"type": "must-not",
 									"name": "aria-checked",
@@ -25207,7 +25207,7 @@
 						"properties": {
 							"global": true,
 							"role": true,
-							"whithout": [
+							"without": [
 								{
 									"type": "must-not",
 									"name": "aria-checked",
@@ -25295,7 +25295,7 @@
 						"properties": {
 							"global": true,
 							"role": true,
-							"whithout": [
+							"without": [
 								{
 									"type": "must-not",
 									"name": "aria-checked",
@@ -25313,7 +25313,7 @@
 						"properties": {
 							"global": true,
 							"role": "slider",
-							"whithout": [
+							"without": [
 								{
 									"type": "should-not",
 									"name": "aria-valuemax"
@@ -25363,7 +25363,7 @@
 						"properties": {
 							"global": true,
 							"role": "combobox",
-							"whithout": [
+							"without": [
 								{
 									"type": "should-not",
 									"name": "aria-haspopup"
@@ -25419,7 +25419,7 @@
 							"properties": {
 								"global": true,
 								"role": true,
-								"whithout": [
+								"without": [
 									{
 										"type": "should-not",
 										"name": "aria-checked",
@@ -25437,7 +25437,7 @@
 							"properties": {
 								"global": true,
 								"role": true,
-								"whithout": [
+								"without": [
 									{
 										"type": "should-not",
 										"name": "aria-hecked"
@@ -25528,7 +25528,7 @@
 							"properties": {
 								"global": true,
 								"role": true,
-								"whithout": [
+								"without": [
 									{
 										"type": "should-not",
 										"name": "aria-checked",
@@ -25546,7 +25546,7 @@
 							"properties": {
 								"global": true,
 								"role": "slider",
-								"whithout": [
+								"without": [
 									{
 										"type": "should-not",
 										"name": "aria-valuemax"
@@ -25596,7 +25596,7 @@
 							"properties": {
 								"global": true,
 								"role": "combobox",
-								"whithout": [
+								"without": [
 									{
 										"type": "should-not",
 										"name": "aria-haspopup"
@@ -25631,7 +25631,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -25988,7 +25988,7 @@
 					"implicitRole": false
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26016,7 +26016,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -26038,7 +26038,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26059,7 +26059,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -26100,7 +26100,7 @@
 				"permittedRoles": false,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26130,7 +26130,7 @@
 				"permittedRoles": false,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26166,7 +26166,7 @@
 					"treeitem"
 				]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26197,7 +26197,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26374,7 +26374,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -26399,7 +26399,7 @@
 					"role": "main"
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26425,7 +26425,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26455,7 +26455,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26476,7 +26476,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -26531,7 +26531,7 @@
 					"role": "math"
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true
 			},
@@ -26583,7 +26583,7 @@
 					]
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26604,7 +26604,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -26647,7 +26647,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26712,7 +26712,7 @@
 				"permittedRoles": false,
 				"properties": {
 					"global": true,
-					"whithout": [
+					"without": [
 						{
 							"type": "should-not",
 							"name": "aria-valuemax"
@@ -26724,7 +26724,7 @@
 					]
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26764,7 +26764,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -26788,7 +26788,7 @@
 					"permittedRoles": ["menu", "menubar", "tablist"]
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26809,7 +26809,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -26826,7 +26826,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -26843,7 +26843,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -26860,7 +26860,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -26882,7 +26882,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -26907,7 +26907,7 @@
 				"implicitRole": false,
 				"permittedRoles": ["application", "document", "img"]
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27016,7 +27016,7 @@
 					]
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27060,7 +27060,7 @@
 					"role": "group"
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27118,7 +27118,7 @@
 				"properties": {
 					"global": true,
 					"role": "option",
-					"whithout": [
+					"without": [
 						{
 							"type": "should-not",
 							"name": "aria-selected"
@@ -27126,7 +27126,7 @@
 					]
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27165,7 +27165,7 @@
 				"implicitRole": "status",
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27205,7 +27205,7 @@
 					"implicitRole": false
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27226,7 +27226,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -27287,7 +27287,7 @@
 					"properties": false
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27308,7 +27308,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -27329,7 +27329,7 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27364,7 +27364,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27405,7 +27405,7 @@
 				"properties": {
 					"global": true,
 					"role": "progressbar",
-					"whithout": [
+					"without": [
 						{
 							"type": "should-not",
 							"name": "aria-valuemax"
@@ -27413,7 +27413,7 @@
 					]
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27446,7 +27446,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27471,7 +27471,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -27492,7 +27492,7 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27518,7 +27518,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27539,7 +27539,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -27592,7 +27592,7 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27618,7 +27618,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27644,7 +27644,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27670,7 +27670,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27800,7 +27800,7 @@
 					]
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27827,7 +27827,7 @@
 				"properties": {
 					"global": true,
 					"role": ["combobox", "menu"],
-					"whithout": [
+					"without": [
 						{
 							"type": "should-not",
 							"name": "aria-multiselectable"
@@ -27841,7 +27841,7 @@
 						"properties": {
 							"global": true,
 							"role": "listbox",
-							"whithout": [
+							"without": [
 								{
 									"type": "should-not",
 									"name": "aria-multiselectable"
@@ -27851,7 +27851,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27906,7 +27906,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27936,7 +27936,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -27958,7 +27958,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28004,7 +28004,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -28042,7 +28042,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28063,7 +28063,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -28088,7 +28088,7 @@
 					"implicitRole": false
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28114,7 +28114,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28162,7 +28162,7 @@
 					"implicitRole": false
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28202,7 +28202,7 @@
 					"role": "button"
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28231,7 +28231,7 @@
 					"implicitRole": false
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28297,7 +28297,7 @@
 				"implicitRole": "table",
 				"permittedRoles": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28359,7 +28359,7 @@
 				"implicitRole": "rowgroup",
 				"permittedRoles": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28416,7 +28416,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28489,7 +28489,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28518,7 +28518,7 @@
 					"role": "textbox"
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28613,7 +28613,7 @@
 				"implicitRole": "rowgroup",
 				"permittedRoles": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28682,7 +28682,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28761,7 +28761,7 @@
 				"implicitRole": "rowgroup",
 				"permittedRoles": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28812,7 +28812,7 @@
 					"implicitRole": false
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28842,7 +28842,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28872,7 +28872,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28915,7 +28915,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -28957,7 +28957,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -28979,7 +28979,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -29034,7 +29034,7 @@
 					]
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -29069,7 +29069,7 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -29117,7 +29117,7 @@
 					"role": "application"
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -29212,7 +29212,7 @@
 					"permittedRoles": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -29233,7 +29233,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -29273,7 +29273,7 @@
 					}
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -29411,7 +29411,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -29454,7 +29454,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -29472,7 +29472,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -29495,7 +29495,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -29603,7 +29603,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -29643,7 +29643,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -29699,7 +29699,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -29758,7 +29758,7 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -29880,7 +29880,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGConditionalProcessingAttrs": ["requiredFeatures", "requiredExtensions", "systemLanguage"],
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
@@ -29979,7 +29979,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -30019,7 +30019,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -30114,7 +30114,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -30139,7 +30139,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -30184,7 +30184,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -30303,7 +30303,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -30420,7 +30420,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -30533,7 +30533,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -30627,7 +30627,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -30771,7 +30771,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -30930,7 +30930,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -31040,7 +31040,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
@@ -31173,7 +31173,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
 			},
@@ -31207,7 +31207,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -31317,7 +31317,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
@@ -31420,7 +31420,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
 				"#SVGTransferFunctionAttrs": [
@@ -31452,7 +31452,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
 				"#SVGTransferFunctionAttrs": [
@@ -31484,7 +31484,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
 				"#SVGTransferFunctionAttrs": [
@@ -31516,7 +31516,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
 				"#SVGTransferFunctionAttrs": [
@@ -31548,7 +31548,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -31661,7 +31661,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
@@ -31783,7 +31783,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
@@ -31877,7 +31877,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
 				"#SVGFilterPrimitiveAttrs": ["in"]
@@ -31901,7 +31901,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -32009,7 +32009,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -32114,7 +32114,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
 			},
@@ -32170,7 +32170,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -32284,7 +32284,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
 			},
@@ -32347,7 +32347,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -32441,7 +32441,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
@@ -32571,7 +32571,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height"],
@@ -32701,7 +32701,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -32719,7 +32719,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -32737,7 +32737,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -32755,7 +32755,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -32773,7 +32773,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -32791,7 +32791,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -32812,7 +32812,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -32948,7 +32948,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -33042,7 +33042,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -33060,7 +33060,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -33078,7 +33078,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -33110,7 +33110,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -33241,7 +33241,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -33372,7 +33372,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -33533,7 +33533,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -33715,7 +33715,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#SVGConditionalProcessingAttrs": ["requiredFeatures", "requiredExtensions", "systemLanguage"],
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
@@ -33831,7 +33831,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -33852,7 +33852,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -33874,7 +33874,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -33915,7 +33915,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -34041,7 +34041,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -34198,7 +34198,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -34317,7 +34317,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -34432,7 +34432,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -34595,7 +34595,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -34722,7 +34722,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -34767,7 +34767,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -34811,7 +34811,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -34922,7 +34922,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -34980,7 +34980,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -35136,7 +35136,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -35255,7 +35255,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -35338,7 +35338,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -35487,7 +35487,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -35635,7 +35635,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -35656,7 +35656,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -35690,7 +35690,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -35831,7 +35831,7 @@
 					"graphics-aam": true
 				}
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -35953,7 +35953,7 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omittion": false,
+			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#DocumentElementEventAttrs": true,
@@ -35994,7 +35994,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omittion": false,
+			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
