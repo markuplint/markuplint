@@ -3,6 +3,7 @@
 	"version": "0.2",
 	"allowCompoundWords": true,
 	"ignorePaths": [
+		"cspell.json",
 		"test/fixture/**",
 		"packages/@markuplint/html-spec/src/*.json",
 		"packages/@markuplint/html-spec/index.json"
@@ -105,5 +106,11 @@
 		"wmode",
 		"yearless",
 		"Yusuke"
+	],
+	"overrides": [
+		{
+			"filename": "packages/@markuplint/types/src/whatwg/check-autocomplete.spec.ts",
+			"words": ["neme", "emall"]
+		}
 	]
 }
