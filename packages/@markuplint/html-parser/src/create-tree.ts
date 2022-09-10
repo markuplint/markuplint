@@ -18,7 +18,14 @@ import type {
 	Location,
 } from 'parse5';
 
-import { getEndCol, getEndLine, isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
+import {
+	isPotentialCustomElementName,
+	detectElementType,
+	getEndCol,
+	getEndLine,
+	sliceFragment,
+	uuid,
+} from '@markuplint/parser-utils';
 import { parse, parseFragment } from 'parse5';
 
 import parseRawTag from './parse-raw-tag';
@@ -109,6 +116,7 @@ function nodeize(
 			nodeName: originNode.nodeName,
 			type: 'starttag',
 			namespace: getNamespace(originNode),
+			elementType: 'html',
 			attributes: [],
 			hasSpreadAttr: false,
 			pearNode: null,
@@ -280,6 +288,7 @@ function nodeize(
 				nodeName: tagName,
 				type: 'starttag',
 				namespace: getNamespace(originNode),
+				elementType: detectElementType(tagName),
 				attributes: tagTokens.attrs,
 				hasSpreadAttr: false,
 				parentNode,

@@ -161,7 +161,9 @@ export class MLCore {
 	}
 	private _parse() {
 		try {
-			this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, this.#ignoreFrontMatter);
+			this.#ast = this.#parser.parse(this.#sourceCode, 0, 0, 0, {
+				ignoreFrontMatter: this.#ignoreFrontMatter,
+			});
 		} catch (err) {
 			log('Caught the parse error: %O', err);
 			this.#ast = null;

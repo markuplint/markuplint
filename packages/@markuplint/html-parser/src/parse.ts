@@ -11,8 +11,8 @@ import {
 	optimizeStartsHeadTagOrBodyTagSetup,
 } from './optimize-starts-head-or-body';
 
-export const parse: Parse = (rawCode, offsetOffset = 0, offsetLine = 0, offsetColumn = 0, isIgnoringFrontMatter) => {
-	if (isIgnoringFrontMatter) {
+export const parse: Parse = (rawCode, offsetOffset = 0, offsetLine = 0, offsetColumn = 0, options) => {
+	if (options?.ignoreFrontMatter) {
 		rawCode = ignoreFrontMatter(rawCode);
 	}
 	const isFragment = isDocumentFragment(rawCode);

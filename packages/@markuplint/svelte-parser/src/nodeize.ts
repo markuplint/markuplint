@@ -7,10 +7,11 @@ import type {
 	MLASTPreprocessorSpecificBlock,
 	MLASTTag,
 	MLASTText,
+	ParserOptions,
 } from '@markuplint/ml-ast';
 
 import { getNamespace, parseRawTag } from '@markuplint/html-parser';
-import { isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { isPotentialCustomElementName, detectElementType, sliceFragment, uuid } from '@markuplint/parser-utils';
 
 import { attr } from './attr';
 import { traverse } from './traverse';
@@ -20,6 +21,7 @@ export function nodeize(
 	prevNode: MLASTNode | null,
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
+	options?: ParserOptions,
 ): MLASTNode | MLASTNode[] | null {
 	const nextNode = null;
 	const { startOffset, endOffset, startLine, endLine, startCol, endCol, raw } = sliceFragment(
@@ -133,6 +135,7 @@ export function nodeize(
 				nodeName: originNode.name,
 				type: 'starttag',
 				namespace,
+				elementType: detectElementType(originNode.name, options?.authoredElementName, /[A-Z]|\./),
 				attributes,
 				hasSpreadAttr,
 				parentNode,
@@ -152,16 +155,26 @@ export function nodeize(
 			}
 
 			if (originNode.children) {
-				startTag.childNodes = traverse(originNode.children, startTag, rawHtml);
+				startTag.childNodes = traverse(originNode.children, startTag, rawHtml, options);
 			}
 
 			return startTag;
 		}
 		case 'IfBlock': {
-			return solveCtrlBlock('if', originNode, raw, rawHtml, startOffset, parentNode, prevNode, nextNode);
+			return solveCtrlBlock('if', originNode, raw, rawHtml, startOffset, parentNode, prevNode, nextNode, options);
 		}
 		case 'EachBlock': {
-			return solveCtrlBlock('each', originNode, raw, rawHtml, startOffset, parentNode, prevNode, nextNode);
+			return solveCtrlBlock(
+				'each',
+				originNode,
+				raw,
+				rawHtml,
+				startOffset,
+				parentNode,
+				prevNode,
+				nextNode,
+				options,
+			);
 		}
 		case 'AwaitBlock': {
 			const pendingNode = originNode.pending;
@@ -178,7 +191,7 @@ export function nodeize(
 				isGhost: false,
 			};
 			if (pendingNode.children) {
-				pending.childNodes = traverse(pendingNode.children, pending, rawHtml);
+				pending.childNodes = traverse(pendingNode.children, pending, rawHtml, options);
 			}
 
 			let then: MLASTPreprocessorSpecificBlock | null = null;
@@ -201,7 +214,7 @@ export function nodeize(
 					isGhost: false,
 				};
 				if (thenNode.children) {
-					then.childNodes = traverse(thenNode.children, then, rawHtml);
+					then.childNodes = traverse(thenNode.children, then, rawHtml, options);
 				}
 			}
 
@@ -226,7 +239,7 @@ export function nodeize(
 					isGhost: false,
 				};
 				if (awaitCatchNode.children) {
-					awaitCatch.childNodes = traverse(awaitCatchNode.children, awaitCatch, rawHtml);
+					awaitCatch.childNodes = traverse(awaitCatchNode.children, awaitCatch, rawHtml, options);
 				}
 			}
 
@@ -305,6 +318,7 @@ function solveCtrlBlock(
 	parentNode: MLASTParentNode | null,
 	prevNode: MLASTNode | null,
 	nextNode: MLASTNode | null,
+	options?: ParserOptions,
 ) {
 	const children = originNode.children || [];
 	const reEndTag = new RegExp(`{/${ctrlName}}$`, 'i');
@@ -356,7 +370,7 @@ function solveCtrlBlock(
 		};
 
 		if (elseNode.children) {
-			elseTag.childNodes = traverse(elseNode.children, elseTag, rawHtml);
+			elseTag.childNodes = traverse(elseNode.children, elseTag, rawHtml, options);
 		}
 	}
 
@@ -373,7 +387,7 @@ function solveCtrlBlock(
 	};
 
 	if (originNode.children) {
-		tag.childNodes = traverse(originNode.children, tag, rawHtml);
+		tag.childNodes = traverse(originNode.children, tag, rawHtml, options);
 	}
 
 	const tags: MLASTPreprocessorSpecificBlock[] = [tag];

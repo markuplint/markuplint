@@ -7,17 +7,25 @@ import type {
 	MLASTPreprocessorSpecificBlock,
 	MLASTTag,
 	MLASTText,
+	ParserOptions,
 	NamespaceURI,
 	Parse,
 } from '@markuplint/ml-ast';
 
 import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
-import { getEndCol, getEndLine, isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
+import {
+	isPotentialCustomElementName,
+	detectElementType,
+	getEndCol,
+	getEndLine,
+	sliceFragment,
+	uuid,
+} from '@markuplint/parser-utils';
 
 import { AstroCompileError, astroParse } from './astro-parser';
 import { attrTokenizer } from './attr-tokenizer';
 
-export const parse: Parse = rawCode => {
+export const parse: Parse = (rawCode, _o, _l, _c, options) => {
 	const ast = astroParse(rawCode);
 
 	if (ast instanceof AstroCompileError) {
@@ -37,7 +45,7 @@ export const parse: Parse = rawCode => {
 
 	const htmlRawNodeList = traverse(ast.html, null, 'http://www.w3.org/1999/xhtml', rawCode);
 	if (ast.style) {
-		const styleNodes = parseStyle(ast.style, 'http://www.w3.org/1999/xhtml', rawCode, 0);
+		const styleNodes = parseStyle(ast.style, 'http://www.w3.org/1999/xhtml', rawCode, 0, options);
 		htmlRawNodeList.push(...styleNodes);
 	}
 
@@ -67,6 +75,7 @@ function traverse(
 	scopeNS: NamespaceURI,
 	rawHtml: string,
 	offset?: number,
+	options?: ParserOptions,
 ): MLASTNode[] {
 	const nodeList: MLASTNode[] = [];
 
@@ -76,7 +85,7 @@ function traverse(
 
 	let prevNode: MLASTNode | null = null;
 	for (const astNode of rootNode.children) {
-		const node = nodeize(astNode, prevNode, parentNode, scopeNS, rawHtml, offset);
+		const node = nodeize(astNode, prevNode, parentNode, scopeNS, rawHtml, offset, options);
 		if (!node) {
 			continue;
 		}
@@ -102,6 +111,7 @@ function nodeize(
 	scopeNS: NamespaceURI,
 	rawHtml: string,
 	offset = 0,
+	options?: ParserOptions,
 ): MLASTNode | MLASTNode[] | null {
 	const nextNode = null;
 	const startOffset = originNode.start + offset;
@@ -258,6 +268,7 @@ function nodeize(
 				prevNode,
 				nextNode,
 				offset,
+				options,
 			);
 		}
 		case 'Fragment': {
@@ -281,6 +292,7 @@ function parseElement(
 	prevNode: MLASTNode | null,
 	nextNode: MLASTNode | null,
 	offset: number,
+	options?: ParserOptions,
 ) {
 	const { raw } = sliceFragment(rawHtml, originNode.start + offset, originNode.end + offset);
 	let childrenStart: number;
@@ -347,6 +359,7 @@ function parseElement(
 		nodeName: tagName,
 		type: 'starttag',
 		namespace: scopeNS,
+		elementType: detectElementType(tagName, options?.authoredElementName, /^[A-Z]|\./),
 		attributes: originNode.attributes.map((attr: ASTAttribute) => attrTokenizer(attr, rawHtml, offset)),
 		hasSpreadAttr: false,
 		parentNode,
@@ -368,7 +381,13 @@ function parseElement(
 	return startTag;
 }
 
-function parseStyle(nodes: ASTStyleNode[], scopeNS: NamespaceURI, rawHtml: string, offset: number) {
+function parseStyle(
+	nodes: ASTStyleNode[],
+	scopeNS: NamespaceURI,
+	rawHtml: string,
+	offset: number,
+	options?: ParserOptions,
+) {
 	const result: MLASTElement[] = [];
 	for (const node of nodes) {
 		const { startLine, startCol, startOffset } = sliceFragment(rawHtml, node.start, node.end);
@@ -384,6 +403,7 @@ function parseStyle(nodes: ASTStyleNode[], scopeNS: NamespaceURI, rawHtml: strin
 			null,
 			null,
 			offset,
+			options,
 		);
 		result.push(styleEl);
 	}

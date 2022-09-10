@@ -10,6 +10,7 @@ import type {
 
 import { getNamespace, parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
 import {
+	detectElementType,
 	ignoreFrontMatter,
 	isPotentialCustomElementName,
 	ParserError,
@@ -21,11 +22,11 @@ import {
 import attrTokenizer from './attr-tokenizer';
 import { pugParse } from './pug-parser';
 
-export const parse: Parse = (rawCode, _, __, ___, isIgnoringFrontMatter) => {
+export const parse: Parse = (rawCode, _, __, ___, options) => {
 	let unknownParseError: string | undefined;
 	let nodeList: MLASTNode[];
 
-	if (isIgnoringFrontMatter) {
+	if (options?.ignoreFrontMatter) {
 		rawCode = ignoreFrontMatter(rawCode);
 	}
 
@@ -214,6 +215,7 @@ class Parser {
 					nodeName: originNode.name,
 					type: 'starttag',
 					namespace,
+					elementType: detectElementType(originNode.name),
 					attributes: originNode.attrs.map(attr => attrTokenizer(attr)),
 					hasSpreadAttr: false,
 					parentNode,

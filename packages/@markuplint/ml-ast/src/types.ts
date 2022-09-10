@@ -43,6 +43,7 @@ export interface MLASTDoctype extends MLASTAbstractNode {
 export interface MLASTElement extends MLASTAbstractNode {
 	type: 'starttag';
 	namespace: string;
+	elementType: ElementType;
 	attributes: MLASTAttr[];
 	hasSpreadAttr: boolean;
 	childNodes?: MLASTNode[];
@@ -140,7 +141,7 @@ export interface MLMarkupLanguageParser {
 		offsetOffset?: number,
 		offsetLine?: number,
 		offsetColumn?: number,
-		ignoreFrontMatter?: boolean,
+		options?: ParserOptions,
 	): MLASTDocument;
 	/**
 	 * @default "omittable"
