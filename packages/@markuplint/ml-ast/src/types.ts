@@ -54,6 +54,15 @@ export interface MLASTElement extends MLASTAbstractNode {
 	isCustomElement: boolean;
 }
 
+/**
+ * Element type
+ *
+ * - `html`: From native HTML Standard
+ * - `web-component`: As the Web Component according to HTML Standard
+ * - `authored`:  Authored element (JSX Element etc.) through the view framework or the template engine.
+ */
+export type ElementType = 'html' | 'web-component' | 'authored';
+
 export interface MLASTElementCloseTag extends MLASTAbstractNode {
 	type: 'endtag';
 	namespace: string;
@@ -138,6 +147,19 @@ export interface MLMarkupLanguageParser {
 	 */
 	endTag?: 'xml' | 'omittable' | 'never';
 }
+
+export type ParserOptions = {
+	ignoreFrontMatter?: boolean;
+	authoredElementName?: ParserAuthoredElementNameDistinguishing;
+};
+
+export type ParserAuthoredElementNameDistinguishing =
+	| string
+	| RegExp
+	| ParserAuthoredElementNameDistinguishingFunction
+	| (string | RegExp | ParserAuthoredElementNameDistinguishingFunction)[];
+
+export type ParserAuthoredElementNameDistinguishingFunction = (name: string) => boolean;
 
 export type Parse = MLMarkupLanguageParser['parse'];
 
