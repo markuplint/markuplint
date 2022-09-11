@@ -12,9 +12,9 @@ export function nodeListToDebugMaps(nodeList: Readonly<MLNode<any, any>[]>, with
 			r.push(tokenDebug(n));
 			if (n.is(n.ELEMENT_NODE)) {
 				r.push(`  namespaceURI: ${!!n.namespaceURI}`);
+				r.push(`  elementType: ${n.elementType}`);
 				r.push(`  isInFragmentDocument: ${!!n.isInFragmentDocument}`);
 				r.push(`  isForeignElement: ${!!n.isForeignElement}`);
-				r.push(`  isCustomElement: ${!!n.isCustomElement}`);
 				if (withAttr) {
 					r.push(
 						...attributesToDebugMaps(n.attributes)

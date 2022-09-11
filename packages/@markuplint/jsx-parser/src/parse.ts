@@ -7,7 +7,7 @@ import { ParserError, walk } from '@markuplint/parser-utils';
 import jsxParser from './jsx';
 import { traverse } from './traverse';
 
-export const parse: Parse = rawCode => {
+export const parse: Parse = (rawCode, options) => {
 	let ast: JSXNode[];
 	try {
 		ast = jsxParser(rawCode);
@@ -31,7 +31,7 @@ export const parse: Parse = rawCode => {
 		};
 	}
 
-	const list = traverse(ast, null, rawCode);
+	const list = traverse(ast, null, rawCode, options);
 	provideChildNodesToPSBlock(list);
 
 	const nodeList: MLASTNode[] = flattenNodes(list, rawCode, false);

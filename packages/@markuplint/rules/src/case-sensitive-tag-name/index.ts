@@ -7,7 +7,7 @@ export default createRule<Value>({
 	defaultValue: 'lower',
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			if (el.isForeignElement || el.isCustomElement) {
+			if (el.isForeignElement || el.elementType !== 'html') {
 				return;
 			}
 			const ms = el.rule.severity === 'error' ? 'must' : 'should';
@@ -43,7 +43,7 @@ export default createRule<Value>({
 	},
 	async fix({ document }) {
 		await document.walkOn('Element', el => {
-			if (el.isForeignElement || el.isCustomElement) {
+			if (el.isForeignElement || el.elementType !== 'html') {
 				return;
 			}
 			const deny = el.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;

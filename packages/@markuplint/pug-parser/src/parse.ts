@@ -9,23 +9,16 @@ import type {
 } from '@markuplint/ml-ast';
 
 import { getNamespace, parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
-import {
-	ignoreFrontMatter,
-	isPotentialCustomElementName,
-	ParserError,
-	tokenizer,
-	uuid,
-	walk,
-} from '@markuplint/parser-utils';
+import { detectElementType, ignoreFrontMatter, ParserError, tokenizer, uuid, walk } from '@markuplint/parser-utils';
 
 import attrTokenizer from './attr-tokenizer';
 import { pugParse } from './pug-parser';
 
-export const parse: Parse = (rawCode, _, __, ___, isIgnoringFrontMatter) => {
+export const parse: Parse = (rawCode, options) => {
 	let unknownParseError: string | undefined;
 	let nodeList: MLASTNode[];
 
-	if (isIgnoringFrontMatter) {
+	if (options?.ignoreFrontMatter) {
 		rawCode = ignoreFrontMatter(rawCode);
 	}
 
@@ -167,12 +160,11 @@ class Parser {
 						isGhost: false,
 					};
 				}
-				const htmlDoc = htmlParser(
-					originNode.raw,
-					originNode.offset,
-					originNode.line - 1,
-					originNode.column - 1,
-				);
+				const htmlDoc = htmlParser(originNode.raw, {
+					offsetOffset: originNode.offset,
+					offsetLine: originNode.line - 1,
+					offsetColumn: originNode.column - 1,
+				});
 				const nodes = htmlDoc.nodeList;
 				for (const node of nodes) {
 					if (!node.parentNode) {
@@ -214,6 +206,7 @@ class Parser {
 					nodeName: originNode.name,
 					type: 'starttag',
 					namespace,
+					elementType: detectElementType(originNode.name),
 					attributes: originNode.attrs.map(attr => attrTokenizer(attr)),
 					hasSpreadAttr: false,
 					parentNode,
@@ -226,7 +219,6 @@ class Parser {
 					isGhost: false,
 					tagOpenChar: '',
 					tagCloseChar: '',
-					isCustomElement: isPotentialCustomElementName(originNode.name),
 				};
 
 				if (originNode.block.nodes.length) {

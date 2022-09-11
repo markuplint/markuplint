@@ -75,6 +75,19 @@
 			"properties": {
 				"ignoreFrontMatter": {
 					"type": "boolean"
+				},
+				"authoredElementName": {
+					"oneOf": [
+						{
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						{
+							"type": "string"
+						}
+					]
 				}
 			}
 		},

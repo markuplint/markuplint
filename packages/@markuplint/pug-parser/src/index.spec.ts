@@ -545,10 +545,7 @@ html
 	body
 		h1 Title
 `,
-			0,
-			0,
-			0,
-			true,
+			{ ignoreFrontMatter: true },
 		);
 		const map = nodeListToDebugMaps(doc.nodeList);
 		// console.log(doc.nodeList);

@@ -2,7 +2,7 @@ import type { MLDocument } from './document';
 import type { MLNamedNodeMap } from './named-node-map';
 import type { MLText } from './text';
 import type { ElementNodeType } from './types';
-import type { MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
+import type { ElementType, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
 import type { RuleConfigValue } from '@markuplint/ml-config';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
@@ -41,10 +41,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	#localName: string;
 	readonly #tagOpenChar: string;
 
+	readonly elementType: ElementType;
 	readonly closeTag: MLToken | null;
 	readonly endSpace: MLToken | null;
 	readonly hasSpreadAttr: boolean;
-	readonly isCustomElement: boolean;
 	readonly isForeignElement: boolean;
 	readonly isOmitted: boolean;
 	readonly namespaceURI: NamespaceURI;
@@ -760,7 +760,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-localname%E2%91%A0
 	 */
 	get localName(): string {
-		if (this.isForeignElement || this.isCustomElement) {
+		if (this.isForeignElement || this.elementType !== 'html') {
 			return this.#localName;
 		}
 		return this.#localName.toLowerCase();
@@ -783,7 +783,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#ref-for-element%E2%91%A2%E2%93%AA
 	 */
 	get nodeName(): string {
-		if (this.isForeignElement || this.isCustomElement) {
+		if (this.isForeignElement || this.elementType !== 'html') {
 			return this._astToken.nodeName;
 		}
 		return this._astToken.nodeName.toUpperCase();
@@ -2086,9 +2086,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 		this.closeTag = astNode.pearNode ? new MLToken(astNode.pearNode) : null;
 		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
 		this.namespaceURI = ns.namespaceURI;
+		this.elementType = astNode.elementType;
 		this.#localName = ns.localName;
 		this.isForeignElement = this.namespaceURI !== HTML_NAMESPACE;
-		this.isCustomElement = astNode.isCustomElement;
 		this.#fixedNodeName = astNode.nodeName;
 
 		this.isOmitted = astNode.isGhost;

@@ -5,11 +5,11 @@ import type {
 	MLASTParentNode,
 	MLASTTag,
 	MLASTText,
-	NamespaceURI,
+	ParserOptions,
 } from '@markuplint/ml-ast';
 
 import { getNamespace, parseRawTag } from '@markuplint/html-parser';
-import { isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { detectElementType, sliceFragment, uuid } from '@markuplint/parser-utils';
 
 import { attr } from './attr';
 import { getAttr, getName } from './jsx';
@@ -20,6 +20,7 @@ export function nodeize(
 	prevNode: MLASTNode | null,
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
+	options?: ParserOptions,
 ): MLASTNode | MLASTNode[] | null {
 	const nextNode = null;
 	const parentNamespace =
@@ -98,7 +99,6 @@ export function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
-					isCustomElement: isJSXComponentName(nodeName, namespace),
 				};
 			}
 
@@ -120,6 +120,14 @@ export function nodeize(
 				nodeName,
 				type: 'starttag',
 				namespace,
+				elementType: detectElementType(
+					nodeName,
+					options?.authoredElementName,
+					/**
+					 * @see https://reactjs.org/docs/jsx-in-depth.html#user-defined-components-must-be-capitalized
+					 */
+					/^[A-Z]|\./,
+				),
 				attributes: attrs.map(a => attr(a, rawHtml)),
 				hasSpreadAttr,
 				parentNode,
@@ -133,7 +141,6 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				isCustomElement: isJSXComponentName(nodeName, namespace),
 				__parentId: originNode.__parentId || null,
 			};
 			if (endTag) {
@@ -141,7 +148,7 @@ export function nodeize(
 			}
 
 			if (originNode.children) {
-				startTag.childNodes = traverse(originNode.children, startTag, rawHtml);
+				startTag.childNodes = traverse(originNode.children, startTag, rawHtml, options);
 			}
 
 			return startTag;
@@ -184,7 +191,6 @@ export function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
-					isCustomElement: true,
 					__parentId: originNode.__parentId || null,
 				};
 			}
@@ -195,6 +201,7 @@ export function nodeize(
 				nodeName: '#jsx-fragment',
 				type: 'starttag',
 				namespace: parentNamespace,
+				elementType: 'authored',
 				attributes: [],
 				hasSpreadAttr: false,
 				parentNode,
@@ -206,7 +213,6 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				isCustomElement: true,
 				__parentId: originNode.__parentId || null,
 			};
 			if (endTag) {
@@ -214,7 +220,7 @@ export function nodeize(
 			}
 
 			if (originNode.children) {
-				startTag.childNodes = traverse(originNode.children, startTag, rawHtml);
+				startTag.childNodes = traverse(originNode.children, startTag, rawHtml, options);
 			}
 
 			return startTag;
@@ -245,14 +251,4 @@ export function nodeize(
 			};
 		}
 	}
-}
-
-/**
- * @see https://reactjs.org/docs/jsx-in-depth.html#user-defined-components-must-be-capitalized
- *
- */
-function isJSXComponentName(name: string, namespace: NamespaceURI) {
-	return (
-		(namespace === 'http://www.w3.org/1999/xhtml' && isPotentialCustomElementName(name)) || /^[A-Z]|\./.test(name)
-	);
 }

@@ -8,7 +8,7 @@ export default createRule<Value>({
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
 			const el = attr.ownerElement;
-			if (el.isForeignElement || el.isCustomElement) {
+			if (el.isForeignElement || el.elementType !== 'html') {
 				return;
 			}
 
@@ -52,7 +52,7 @@ export default createRule<Value>({
 		await document.walkOn('Attr', attr => {
 			const el = attr.ownerElement;
 
-			if (el.isForeignElement || el.isCustomElement) {
+			if (el.isForeignElement || el.elementType !== 'html') {
 				return;
 			}
 

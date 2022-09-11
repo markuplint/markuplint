@@ -1053,9 +1053,11 @@ describe('parser', () => {
 			<img src="path/to">
 		</span>
 			`,
-			15,
-			2,
-			2,
+			{
+				offsetOffset: 15,
+				offsetLine: 2,
+				offsetColumn: 2,
+			},
 		);
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
@@ -1102,18 +1104,18 @@ describe('parser', () => {
 	});
 
 	it('With frontmatter', () => {
-		const doc = parse('===\np: v\n===\n<html></html>', 0, 0, 0, true);
+		const doc = parse('===\np: v\n===\n<html></html>', { ignoreFrontMatter: true });
 		expect(doc.nodeList[0].nodeName).toBe('html');
 
-		const doc2 = parse('===\np: v\n===\n<html></html>', 0, 0, 0, false);
+		const doc2 = parse('===\np: v\n===\n<html></html>', { ignoreFrontMatter: false });
 		expect(doc2.nodeList[0].nodeName).toBe('html');
 		expect(doc2.nodeList[0].isGhost).toBe(true);
 
-		const doc3 = parse('===\np: v\n===\n<div></div>', 0, 0, 0, true);
+		const doc3 = parse('===\np: v\n===\n<div></div>', { ignoreFrontMatter: true });
 		expect(doc3.nodeList[0].nodeName).toBe('#text');
 		expect(doc3.nodeList[1].nodeName).toBe('div');
 
-		const doc4 = parse('===\np: v\n===\n<div></div>', 0, 0, 0, false);
+		const doc4 = parse('===\np: v\n===\n<div></div>', { ignoreFrontMatter: false });
 		expect(doc4.nodeList[0].nodeName).toBe('#text');
 		expect(doc4.nodeList[1].nodeName).toBe('div');
 	});

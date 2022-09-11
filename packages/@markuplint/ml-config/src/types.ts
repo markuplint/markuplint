@@ -1,3 +1,4 @@
+import type { ParserOptions } from '@markuplint/ml-ast';
 import type { RegexSelector } from '@markuplint/selector';
 
 export type { RegexSelector } from '@markuplint/selector';
@@ -24,10 +25,6 @@ export type PluginConfig = {
 export interface ParserConfig {
 	[extensionPattern: string]: string /* module name or path */;
 }
-
-export type ParserOptions = {
-	ignoreFrontMatter?: boolean;
-};
 
 export type SpecConfig = {
 	[extensionPattern: string]: string /* module name or path */;

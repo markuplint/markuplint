@@ -11,7 +11,7 @@ export default createRule<boolean, Options>({
 	defaultOptions: {},
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
-			if (attr.ownerElement.isCustomElement) {
+			if (attr.ownerElement.elementType !== 'html') {
 				return;
 			}
 

@@ -43,6 +43,7 @@ export interface MLASTDoctype extends MLASTAbstractNode {
 export interface MLASTElement extends MLASTAbstractNode {
 	type: 'starttag';
 	namespace: string;
+	elementType: ElementType;
 	attributes: MLASTAttr[];
 	hasSpreadAttr: boolean;
 	childNodes?: MLASTNode[];
@@ -51,8 +52,16 @@ export interface MLASTElement extends MLASTAbstractNode {
 	endSpace?: MLToken;
 	tagOpenChar: string;
 	tagCloseChar: string;
-	isCustomElement: boolean;
 }
+
+/**
+ * Element type
+ *
+ * - `html`: From native HTML Standard
+ * - `web-component`: As the Web Component according to HTML Standard
+ * - `authored`:  Authored element (JSX Element etc.) through the view framework or the template engine.
+ */
+export type ElementType = 'html' | 'web-component' | 'authored';
 
 export interface MLASTElementCloseTag extends MLASTAbstractNode {
 	type: 'endtag';
@@ -62,7 +71,6 @@ export interface MLASTElementCloseTag extends MLASTAbstractNode {
 	pearNode: MLASTTag | null;
 	tagOpenChar: string;
 	tagCloseChar: string;
-	isCustomElement: boolean;
 }
 
 export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
@@ -128,16 +136,30 @@ export interface MLASTDocument {
 export interface MLMarkupLanguageParser {
 	parse(
 		sourceCode: string,
-		offsetOffset?: number,
-		offsetLine?: number,
-		offsetColumn?: number,
-		ignoreFrontMatter?: boolean,
+		options?: ParserOptions & {
+			offsetOffset?: number;
+			offsetLine?: number;
+			offsetColumn?: number;
+		},
 	): MLASTDocument;
 	/**
 	 * @default "omittable"
 	 */
 	endTag?: 'xml' | 'omittable' | 'never';
 }
+
+export type ParserOptions = {
+	ignoreFrontMatter?: boolean;
+	authoredElementName?: ParserAuthoredElementNameDistinguishing;
+};
+
+export type ParserAuthoredElementNameDistinguishing =
+	| string
+	| RegExp
+	| ParserAuthoredElementNameDistinguishingFunction
+	| (string | RegExp | ParserAuthoredElementNameDistinguishingFunction)[];
+
+export type ParserAuthoredElementNameDistinguishingFunction = (name: string) => boolean;
 
 export type Parse = MLMarkupLanguageParser['parse'];
 

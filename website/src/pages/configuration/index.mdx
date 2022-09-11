@@ -180,7 +180,8 @@ interface Config {
 ```json
 {
   "parserOptions": {
-    "ignoreFrontMatter": true
+    "ignoreFrontMatter": true,
+    "authoredElementName": ["AuthoredElement"]
   }
 }
 ```
@@ -202,12 +203,35 @@ prop: value
 </html>
 ```
 
+#### `authoredElementName`
+
+- **Type**: `string` | `RegExp` | `Function` | `(string|RegExp|Function)[]`
+- **Default**: `void`
+
+If you use a view library, the parser detects a component as a native HTML element if you name it with only lower-case characters.
+Each parser has a default pattern, but you should specify the `authoredElementName` option if you need different naming patterns.
+
+```vue
+<template>
+  <custom><!-- It detects as a native HTML element if not specified. --></custom>
+</template>
+```
+
+```json
+{
+  "parserOptions": {
+    "authoredElementName": ["custom"]
+  }
+}
+```
+
 #### Interface
 
 ```ts
 interface Config {
   parserOptions?: {
     ignoreFrontMatter?: boolean;
+    authoredElementName?: string | RegExp | Function | (string | RegExp | Function)[];
   };
 }
 ```

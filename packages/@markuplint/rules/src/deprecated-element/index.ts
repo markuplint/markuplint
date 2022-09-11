@@ -8,7 +8,7 @@ export default createRule({
 					el.namespaceURI === 'http://www.w3.org/1999/xhtml' ||
 					el.namespaceURI === 'http://www.w3.org/2000/svg'
 				) ||
-				el.isCustomElement
+				el.elementType !== 'html'
 			) {
 				return;
 			}
