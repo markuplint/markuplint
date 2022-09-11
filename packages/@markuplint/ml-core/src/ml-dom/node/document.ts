@@ -85,6 +85,16 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
+	get adoptedStyleSheets(): CSSStyleSheet[] {
+		throw new UnexpectedCallError('Not supported "adoptedStyleSheets" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
 	 * @deprecated
 	 * @unsupported
 	 * @implements DOM API: `Document`

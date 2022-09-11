@@ -680,6 +680,18 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 * @see https://html.spec.whatwg.org/multipage/interaction.html#dom-inert
+	 */
+	get inert(): boolean {
+		throw new UnexpectedCallError('Not supported "inert" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 * @see https://w3c.github.io/DOM-Parsing/#dom-innerhtml-innerhtml
