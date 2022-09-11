@@ -12,23 +12,22 @@ import { MLNode } from './node';
 import UnexpectedCallError from './unexpected-call-error';
 
 export class MLAttr<T extends RuleConfigValue, O = null> extends MLNode<T, O, MLASTAttr> implements Attr {
-	readonly #localName: string;
-	readonly #namespaceURI: string;
-	readonly #potentialName: string;
-	readonly #potentialValue: string;
 	readonly candidate?: string;
 	readonly endQuote: MLToken | null = null;
 	readonly equal: MLToken | null = null;
 	readonly isDirective?: true;
 	readonly isDuplicatable: boolean;
 	readonly isDynamicValue?: true;
+	readonly #localName: string;
 	readonly nameNode: MLToken | null = null;
-
+	readonly #namespaceURI: string;
 	/**
 	 * @implements DOM API: `Attr`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-previoussibling%E2%91%A0
 	 */
 	readonly ownerElement: MLElement<T, O>;
+	readonly #potentialName: string;
+	readonly #potentialValue: string;
 	readonly spacesAfterEqual: MLToken | null = null;
 	readonly spacesBeforeEqual: MLToken | null = null;
 	readonly spacesBeforeName: MLToken | null = null;
@@ -153,18 +152,18 @@ export class MLAttr<T extends RuleConfigValue, O = null> extends MLNode<T, O, ML
 	}
 
 	/**
+	 * @implements `@markuplint/ml-core` API: `MLAttr`
+	 */
+	get tokenList(): MLDomTokenList | null {
+		return this.isDynamicValue ? null : new MLDomTokenList(this.value, [this]);
+	}
+
+	/**
 	 * @implements DOM API: `Attr`
 	 * @see https://dom.spec.whatwg.org/#dom-attr-value
 	 */
 	get value(): string {
 		return this.#potentialValue;
-	}
-
-	/**
-	 * @implements `@markuplint/ml-core` API: `MLAttr`
-	 */
-	get tokenList(): MLDomTokenList | null {
-		return this.isDynamicValue ? null : new MLDomTokenList(this.value, [this]);
 	}
 
 	/**

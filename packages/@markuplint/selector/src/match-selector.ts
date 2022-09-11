@@ -56,15 +56,15 @@ function regexSelect(el: Node, selector: RegexSelector): SelectorMatches {
 }
 
 class SelectorTarget {
-	_selector: RegexSelectorWithoutCombination;
-	_combinedFrom: { target: SelectorTarget; combinator: RegexSelectorCombinator } | null = null;
+	#combinedFrom: { target: SelectorTarget; combinator: RegexSelectorCombinator } | null = null;
+	#selector: RegexSelectorWithoutCombination;
 
 	constructor(selector: RegexSelectorWithoutCombination) {
-		this._selector = selector;
+		this.#selector = selector;
 	}
 
 	from(target: SelectorTarget, combinator: RegexSelectorCombinator) {
-		this._combinedFrom = { target, combinator };
+		this.#combinedFrom = { target, combinator };
 	}
 
 	match(el: Node): SelectorMatches {
@@ -72,13 +72,13 @@ class SelectorTarget {
 		if (!unitCheck.matched) {
 			return unitCheck;
 		}
-		if (!this._combinedFrom) {
+		if (!this.#combinedFrom) {
 			return unitCheck;
 		}
 		if (!isNonDocumentTypeChildNode(el)) {
 			return unitCheck;
 		}
-		const { target, combinator } = this._combinedFrom;
+		const { target, combinator } = this.#combinedFrom;
 		switch (combinator) {
 			// Descendant combinator
 			case ' ': {
@@ -153,13 +153,13 @@ class SelectorTarget {
 				return { matched: false };
 			}
 			default: {
-				throw new Error(`Unsupported ${this._combinedFrom.combinator} combinator in selector`);
+				throw new Error(`Unsupported ${this.#combinedFrom.combinator} combinator in selector`);
 			}
 		}
 	}
 
-	_matchWithoutCombineChecking(el: Node) {
-		return uncombinedRegexSelect(el, this._selector);
+	private _matchWithoutCombineChecking(el: Node) {
+		return uncombinedRegexSelect(el, this.#selector);
 	}
 }
 

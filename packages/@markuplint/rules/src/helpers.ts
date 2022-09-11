@@ -239,6 +239,10 @@ export class Collection<T> {
 		this.add(...items);
 	}
 
+	[Symbol.iterator](): Iterator<T> {
+		return this.#items.values();
+	}
+
 	add(...items: (T | null | undefined)[]) {
 		for (const item of items) {
 			if (item == null) {
@@ -250,10 +254,6 @@ export class Collection<T> {
 
 	toArray() {
 		return Object.freeze(Array.from(this.#items));
-	}
-
-	[Symbol.iterator](): Iterator<T> {
-		return this.#items.values();
 	}
 }
 

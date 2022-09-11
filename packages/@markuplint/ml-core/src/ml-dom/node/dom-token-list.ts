@@ -14,13 +14,13 @@ type Scope = {
 };
 
 export class MLDomTokenList extends Array<string> implements DOMTokenList {
-	#set: Set<string>;
 	#origin: string;
 	/**
 	 * In some cases, an author specifies multiple attributes or directives.
 	 * The reference is not always one.
 	 */
 	#ownerAttrs: MLAttr<any, any>[];
+	#set: Set<string>;
 
 	constructor(tokens: string, ownerAttrs: MLAttr<any, any>[]) {
 		const list = tokens
@@ -118,12 +118,12 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 		throw new UnexpectedCallError('Not supported "supports" method');
 	}
 
-	toggle(token: string, force?: boolean): boolean {
-		throw new UnexpectedCallError('Not supported "toggle" method');
-	}
-
 	toString(): string {
 		return this.value;
+	}
+
+	toggle(token: string, force?: boolean): boolean {
+		throw new UnexpectedCallError('Not supported "toggle" method');
 	}
 
 	private _pick(token: string, _offset = 0): (Scope & { _searchedIndex: number }) | null {

@@ -35,19 +35,17 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	/**
 	 *
 	 */
-	readonly #filename?: string;
-
-	#tokenList: ReadonlyArray<MLToken> | null = null;
-
-	/**
-	 *
-	 */
 	currentRule: MLRule<T, O> | null = null;
 
 	/**
 	 *
 	 */
 	readonly endTag: 'xml' | 'omittable' | 'never';
+
+	/**
+	 *
+	 */
+	readonly #filename?: string;
 
 	/**
 	 *
@@ -71,6 +69,8 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	 *
 	 */
 	readonly specs: Readonly<MLMLSpec>;
+
+	#tokenList: ReadonlyArray<MLToken> | null = null;
 
 	/**
 	 *
@@ -107,6 +107,16 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 		);
 
 		this._ruleMapping(ruleset);
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
+	get URL(): string {
+		throw new UnexpectedCallError('Not supported "URL" property');
 	}
 
 	/**
@@ -1703,16 +1713,6 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get URL(): string {
-		throw new UnexpectedCallError('Not supported "URL" property');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Document`
-	 */
 	get visibilityState(): DocumentVisibilityState {
 		throw new UnexpectedCallError('Not supported "visibilityState" property');
 	}
@@ -1876,8 +1876,8 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	createNodeIterator(root: Node, whatToShow?: number, filter?: NodeFilter | null): NodeIterator {
-		throw new UnexpectedCallError('Not supported "createNodeIterator" method');
+	createNSResolver(nodeResolver: Node): XPathNSResolver {
+		throw new UnexpectedCallError('Not supported "createNSResolver" method');
 	}
 
 	/**
@@ -1886,8 +1886,8 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	createNSResolver(nodeResolver: Node): XPathNSResolver {
-		throw new UnexpectedCallError('Not supported "createNSResolver" method');
+	createNodeIterator(root: Node, whatToShow?: number, filter?: NodeFilter | null): NodeIterator {
+		throw new UnexpectedCallError('Not supported "createNodeIterator" method');
 	}
 
 	/**

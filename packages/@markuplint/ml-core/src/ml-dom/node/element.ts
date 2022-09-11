@@ -34,25 +34,24 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	implements Element, HTMLOrSVGElement, HTMLElement
 {
 	readonly #attributes: MLAttr<T, O>[];
+	readonly closeTag: MLToken | null;
+	readonly elementType: ElementType;
+	readonly endSpace: MLToken | null;
 	#fixedNodeName: string;
 	#getChildElementsAndTextNodeWithoutWhitespacesCache: (MLElement<T, O> | MLText<T, O>)[] | null = null;
-	#normalizedAttrs: MLNamedNodeMap<T, O> | null = null;
-	#normalizedString: string | null = null;
-	#localName: string;
-	readonly #tagOpenChar: string;
-
-	readonly elementType: ElementType;
-	readonly closeTag: MLToken | null;
-	readonly endSpace: MLToken | null;
 	readonly hasSpreadAttr: boolean;
 	readonly isForeignElement: boolean;
 	readonly isOmitted: boolean;
+	#localName: string;
 	readonly namespaceURI: NamespaceURI;
+	#normalizedAttrs: MLNamedNodeMap<T, O> | null = null;
+	#normalizedString: string | null = null;
 	readonly ontouchcancel?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
 	readonly ontouchend?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
 	readonly ontouchmove?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
 	readonly ontouchstart?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
 	readonly selfClosingSolidus: MLToken | null;
+	readonly #tagOpenChar: string;
 
 	constructor(astNode: MLASTElement, document: MLDocument<T, O>) {
 		super(astNode, document);
@@ -2232,6 +2231,17 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	}
 
 	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 * @see https://dom.spec.whatwg.org/#dom-element-getattributenodens
+	 */
+	getAttributeNS(namespace: string | null, localName: string): string | null {
+		throw new UnexpectedCallError('Not supported "getAttributeNS" method');
+	}
+
+	/**
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-getattributenames%E2%91%A0
 	 */
@@ -2256,17 +2266,6 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 */
 	getAttributeNodeNS(namespace: string | null, localName: string): Attr | null {
 		throw new UnexpectedCallError('Not supported "getAttributeNodeNS" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Element`
-	 * @see https://dom.spec.whatwg.org/#dom-element-getattributenodens
-	 */
-	getAttributeNS(namespace: string | null, localName: string): string | null {
-		throw new UnexpectedCallError('Not supported "getAttributeNS" method');
 	}
 
 	/**
@@ -2556,10 +2555,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-D589198
+	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-removeattributens%E2%91%A0
 	 */
-	removeAttributeNode(attr: Attr): Attr {
-		throw new UnexpectedCallError('Not supported "removeAttributeNode" method');
+	removeAttributeNS(namespace: string | null, localName: string): void {
+		throw new UnexpectedCallError('Not supported "removeAttributeNS" method');
 	}
 
 	/**
@@ -2567,10 +2566,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-removeattributens%E2%91%A0
+	 * @see https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-D589198
 	 */
-	removeAttributeNS(namespace: string | null, localName: string): void {
-		throw new UnexpectedCallError('Not supported "removeAttributeNS" method');
+	removeAttributeNode(attr: Attr): Attr {
+		throw new UnexpectedCallError('Not supported "removeAttributeNode" method');
 	}
 
 	/**
@@ -2662,6 +2661,17 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
+	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-setattributens%E2%91%A0
+	 */
+	setAttributeNS(namespace: string | null, qualifiedName: string, value: string): void {
+		throw new UnexpectedCallError('Not supported "setAttributeNS" method');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#dom-element-setattributenode
 	 */
 	setAttributeNode(attr: Attr): Attr | null {
@@ -2684,32 +2694,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-setattributens%E2%91%A0
-	 */
-	setAttributeNS(namespace: string | null, qualifiedName: string, value: string): void {
-		throw new UnexpectedCallError('Not supported "setAttributeNS" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Element`
 	 * @see https://www.w3.org/TR/pointerevents2/#idl-def-element-setpointercapture-pointerid
 	 */
 	setPointerCapture(pointerId: number): void {
 		throw new UnexpectedCallError('Not supported "setPointerCapture" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Element`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-toggleattribute%E2%91%A0
-	 */
-	toggleAttribute(qualifiedName: string, force?: boolean): boolean {
-		throw new UnexpectedCallError('Not supported "toggleAttribute" method');
 	}
 
 	/**
@@ -2742,6 +2730,17 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 */
 	toString() {
 		return this.raw;
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-toggleattribute%E2%91%A0
+	 */
+	toggleAttribute(qualifiedName: string, force?: boolean): boolean {
+		throw new UnexpectedCallError('Not supported "toggleAttribute" method');
 	}
 
 	/**

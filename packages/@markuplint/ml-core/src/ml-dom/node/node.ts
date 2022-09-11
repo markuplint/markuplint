@@ -20,24 +20,6 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	implements Node
 {
 	/**
-	 * Cached `childNodes` property
-	 */
-	#childNodes: NodeListOf<MLChildNode<T, O>> | undefined;
-
-	/**
-	 * Owner `Document`
-	 *
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-ownerdocument
-	 */
-	readonly #ownerDocument: MLDocument<T, O>;
-
-	/**
-	 * Cached `prevToken` property
-	 */
-	#prevToken: MLNode<T, O> | null | undefined;
-
-	/**
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#interface-node
 	 */
@@ -146,13 +128,35 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 * @see https://dom.spec.whatwg.org/#interface-node
 	 */
 	readonly PROCESSING_INSTRUCTION_NODE = 7;
-	readonly rules: Record<string, AnyRule> = {};
 
 	/**
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#interface-node
 	 */
 	readonly TEXT_NODE = 3;
+
+	/**
+	 * Cached `childNodes` property
+	 */
+	#childNodes: NodeListOf<MLChildNode<T, O>> | undefined;
+
+	/**
+	 * Owner `Document`
+	 *
+	 * @implements DOM API: `Node`
+	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-ownerdocument
+	 */
+	readonly #ownerDocument: MLDocument<T, O>;
+
+	/**
+	 * Cached `prevToken` property
+	 */
+	#prevToken: MLNode<T, O> | null | undefined;
+
+	/**
+	 *
+	 */
+	readonly rules: Record<string, AnyRule> = {};
 
 	protected _astToken: A;
 
@@ -405,17 +409,6 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-previoussibling%E2%91%A0
-	 */
-	get previousSibling(): ChildNode | null {
-		throw new UnexpectedCallError('Not supported "previousSibling" property');
-	}
-
-	/**
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get prevNode(): MLNode<T, O> | null {
@@ -455,6 +448,17 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 		}
 		this.#prevToken = this.ownerMLDocument.nodeList[index - 1] || null;
 		return this.#prevToken || null;
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Node`
+	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-previoussibling%E2%91%A0
+	 */
+	get previousSibling(): ChildNode | null {
+		throw new UnexpectedCallError('Not supported "previousSibling" property');
 	}
 
 	/**

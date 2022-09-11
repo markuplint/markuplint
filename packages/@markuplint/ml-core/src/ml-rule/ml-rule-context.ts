@@ -6,9 +6,9 @@ import type { Report, RuleConfigValue } from '@markuplint/ml-config';
 import { translator } from '@markuplint/i18n';
 
 export class MLRuleContext<T extends RuleConfigValue, O = null> {
-	#reports: Report<T, O>[] = [];
 	readonly document: MLDocument<T, O>;
 	readonly locale: string;
+	#reports: Report<T, O>[] = [];
 	readonly translate: Translator;
 
 	constructor(document: MLDocument<T, O>, locale: LocaleSet) {

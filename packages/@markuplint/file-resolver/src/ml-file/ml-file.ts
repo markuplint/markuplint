@@ -7,17 +7,16 @@ import path from 'path';
 import minimatch from 'minimatch';
 
 export class MLFile {
-	#type: 'file-base' | 'code-base';
 	#basename: string;
-	#dirname: string;
 	#code: string | null;
-
+	#dirname: string;
 	/**
 	 * - `Stats`: Exists
 	 * - `null`: Not exists
 	 * - `undefined`: Doesn't read yet
 	 */
 	#stat: Stats | null | undefined = undefined;
+	#type: 'file-base' | 'code-base';
 
 	constructor(target: Target) {
 		if (typeof target === 'string') {
@@ -38,17 +37,6 @@ export class MLFile {
 		this.#type = 'code-base';
 	}
 
-	get path() {
-		return path.resolve(this.#dirname, this.#basename);
-	}
-
-	/**
-	 * Normalized `MLFile.path`
-	 */
-	get nPath() {
-		return pathNormalize(this.path);
-	}
-
 	get dirname() {
 		return this.#dirname;
 	}
@@ -60,20 +48,15 @@ export class MLFile {
 		return pathNormalize(this.dirname);
 	}
 
-	async isFile() {
-		if (this.#type === 'code-base') {
-			return true;
-		}
-		const stat = await this._stat();
-		return !!stat && stat.isFile();
+	/**
+	 * Normalized `MLFile.path`
+	 */
+	get nPath() {
+		return pathNormalize(this.path);
 	}
 
-	async isExist() {
-		if (this.#type === 'code-base') {
-			return true;
-		}
-		const stat = await this._stat();
-		return !!stat;
+	get path() {
+		return path.resolve(this.#dirname, this.#basename);
 	}
 
 	async dirExists() {
@@ -90,15 +73,31 @@ export class MLFile {
 		return '';
 	}
 
+	async isExist() {
+		if (this.#type === 'code-base') {
+			return true;
+		}
+		const stat = await this._stat();
+		return !!stat;
+	}
+
+	async isFile() {
+		if (this.#type === 'code-base') {
+			return true;
+		}
+		const stat = await this._stat();
+		return !!stat && stat.isFile();
+	}
+
+	matches(globPath: string) {
+		return minimatch(this.nPath, pathNormalize(globPath));
+	}
+
 	setCode(code: string) {
 		if (this.#type === 'file-base') {
 			throw new Error(`This file object is readonly (File-base: ${this.path})`);
 		}
 		this.#code = code;
-	}
-
-	matches(globPath: string) {
-		return minimatch(this.nPath, pathNormalize(globPath));
 	}
 
 	private async _fetch() {

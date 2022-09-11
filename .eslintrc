@@ -24,6 +24,15 @@
 		"no-console": [1],
 		"no-mixed-spaces-and-tabs": 0,
 		"require-await": 2,
+		// "padding-line-between-statements": [
+		// 	1,
+		// 	{
+		// 		"blankLine": "always",
+		// 		"prev": "block",
+		// 		"next": "*"
+		// 	}
+		// ],
+		"lines-between-class-members": [1, "always", { "exceptAfterSingleLine": true }],
 
 		"node/no-unsupported-features/es-syntax": 0,
 
@@ -38,6 +47,47 @@
 		"@typescript-eslint/consistent-type-imports": 1,
 		"@typescript-eslint/require-await": "error",
 		"@typescript-eslint/no-floating-promises": "error",
+		"@typescript-eslint/member-ordering": [
+			"warn",
+			{
+				"default": "never",
+				"classes": {
+					"memberTypes": [
+						"public-static-field",
+						"protected-static-field",
+						"private-static-field",
+						"public-static-method",
+						"protected-static-method",
+						"public-static-get",
+						"protected-static-get",
+						"private-static-get",
+						"public-instance-field",
+						"protected-instance-field",
+						"private-instance-field",
+						"public-abstract-field",
+						"protected-abstract-field",
+						"private-abstract-field",
+						"public-constructor",
+						"protected-constructor",
+						"private-constructor",
+						["public-abstract-get", "public-abstract-set"],
+						["protected-abstract-get", "protected-abstract-set"],
+						["private-abstract-get", "private-abstract-set"],
+						["public-instance-get", "public-instance-set"],
+						["protected-instance-get", "protected-instance-set"],
+						["private-instance-get", "private-instance-set"],
+						"public-abstract-method",
+						"protected-abstract-method",
+						"private-abstract-method",
+						"public-instance-method",
+						"protected-instance-method",
+						"private-instance-method",
+						"private-static-method"
+					],
+					"order": "alphabetically"
+				}
+			}
+		],
 
 		"eslint-comments/disable-enable-pair": "error",
 		"eslint-comments/no-duplicate-disable": "error",

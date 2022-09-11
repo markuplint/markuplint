@@ -51,8 +51,8 @@ class Ruleset {
 		return new Ruleset(selectors, extended, 0);
 	}
 
-	#selectorGroup: StructuredSelector[] = [];
 	readonly headCombinator: string | null;
+	#selectorGroup: StructuredSelector[] = [];
 
 	constructor(selectors: parser.Selector[], extended: ExtendedPseudoClass, depth: number) {
 		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector, depth, extended)));
@@ -82,9 +82,9 @@ class Ruleset {
 }
 
 class StructuredSelector {
-	#selector: parser.Selector;
 	#edge: SelectorTarget;
 	readonly headCombinator: string | null;
+	#selector: parser.Selector;
 
 	constructor(selector: parser.Selector, depth: number, extended: ExtendedPseudoClass) {
 		this.#selector = selector;
@@ -129,14 +129,13 @@ class StructuredSelector {
 }
 
 class SelectorTarget {
-	#extended: ExtendedPseudoClass;
-	#combinedFrom: { target: SelectorTarget; combinator: parser.Combinator } | null = null;
-	#isAdded = false;
-
-	readonly depth: number;
 	attr: parser.Attribute[] = [];
 	class: parser.ClassName[] = [];
+	#combinedFrom: { target: SelectorTarget; combinator: parser.Combinator } | null = null;
+	readonly depth: number;
+	#extended: ExtendedPseudoClass;
 	id: parser.Identifier[] = [];
+	#isAdded = false;
 	pseudo: parser.Pseudo[] = [];
 	tag: parser.Tag | parser.Universal | null = null;
 
@@ -209,7 +208,7 @@ class SelectorTarget {
 		].join('');
 	}
 
-	_match(el: Node, scope: ParentNode | null, count: number): SelectorResult & { combinator?: string } {
+	private _match(el: Node, scope: ParentNode | null, count: number): SelectorResult & { combinator?: string } {
 		const unitCheck = this._matchWithoutCombineChecking(el, scope);
 		if (!unitCheck.matched) {
 			return unitCheck;
@@ -419,7 +418,7 @@ class SelectorTarget {
 		}
 	}
 
-	_matchWithoutCombineChecking(el: Node, scope: ParentNode | null): SelectorResult {
+	private _matchWithoutCombineChecking(el: Node, scope: ParentNode | null): SelectorResult {
 		const specificity: Specificity = [0, 0, 0];
 
 		if (!isElement(el)) {

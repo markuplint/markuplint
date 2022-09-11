@@ -55,9 +55,9 @@ export function getIndent(node: MLNode<any, any>) {
 
 class MLDOMIndentation {
 	#fixed: string;
+	readonly line: number;
 	#node: MLText<any, any>;
 	#parent: MLNode<any, any>;
-	readonly line: number;
 
 	constructor(originTextNode: MLText<any, any>, raw: string, line: number, parentNode: MLNode<any, any>) {
 		this.line = line;

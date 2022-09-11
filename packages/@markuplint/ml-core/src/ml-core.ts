@@ -22,10 +22,9 @@ export class MLCore {
 	#ast: MLASTDocument | null = null;
 	#document!: Document<RuleConfigValue, unknown> | ParserError;
 	#filename: string;
-
-	#parserOptions: ParserOptions;
 	#locale: LocaleSet;
 	#parser: MLMarkupLanguageParser;
+	#parserOptions: ParserOptions;
 	#rules: MLRule<RuleConfigValue, unknown>[];
 	#ruleset: Ruleset;
 	#schemas: MLSchema;
