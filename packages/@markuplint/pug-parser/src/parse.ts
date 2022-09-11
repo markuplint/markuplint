@@ -59,44 +59,20 @@ class Parser {
 		// console.log(JSON.stringify(this.#ast, null, 2));
 	}
 
+	flattenNodes(nodeTree: MLASTNode[]) {
+		const nodeOrders: MLASTNode[] = [];
+		walk(nodeTree, node => {
+			nodeOrders.push(node);
+		});
+
+		removeDeprecatedNode(nodeOrders);
+
+		return nodeOrders;
+	}
+
 	getNodeList() {
 		const nodeTree = this.traverse(this.#ast.nodes, null);
 		return this.flattenNodes(nodeTree);
-	}
-
-	traverse(astNodes: ASTNode[], parentNode: MLASTParentNode | null = null): MLASTNode[] {
-		const nodeList: MLASTNode[] = [];
-
-		let prevNode: MLASTNode | null = null;
-		for (const astNode of astNodes) {
-			const nodes = this.nodeize(astNode, prevNode, parentNode);
-			if (!nodes || (Array.isArray(nodes) && nodes.length === 0)) {
-				continue;
-			}
-
-			let node: MLASTNode;
-			if (Array.isArray(nodes)) {
-				node = nodes[nodes.length - 1];
-			} else {
-				node = nodes;
-			}
-
-			if (prevNode) {
-				if (node.type !== 'endtag') {
-					prevNode.nextNode = node;
-				}
-				node.prevNode = prevNode;
-			}
-			prevNode = node;
-
-			if (Array.isArray(nodes)) {
-				nodeList.push(...nodes);
-			} else {
-				nodeList.push(nodes);
-			}
-		}
-
-		return nodeList;
 	}
 
 	nodeize(
@@ -255,14 +231,38 @@ class Parser {
 		}
 	}
 
-	flattenNodes(nodeTree: MLASTNode[]) {
-		const nodeOrders: MLASTNode[] = [];
-		walk(nodeTree, node => {
-			nodeOrders.push(node);
-		});
+	traverse(astNodes: ASTNode[], parentNode: MLASTParentNode | null = null): MLASTNode[] {
+		const nodeList: MLASTNode[] = [];
 
-		removeDeprecatedNode(nodeOrders);
+		let prevNode: MLASTNode | null = null;
+		for (const astNode of astNodes) {
+			const nodes = this.nodeize(astNode, prevNode, parentNode);
+			if (!nodes || (Array.isArray(nodes) && nodes.length === 0)) {
+				continue;
+			}
 
-		return nodeOrders;
+			let node: MLASTNode;
+			if (Array.isArray(nodes)) {
+				node = nodes[nodes.length - 1];
+			} else {
+				node = nodes;
+			}
+
+			if (prevNode) {
+				if (node.type !== 'endtag') {
+					prevNode.nextNode = node;
+				}
+				node.prevNode = prevNode;
+			}
+			prevNode = node;
+
+			if (Array.isArray(nodes)) {
+				nodeList.push(...nodes);
+			} else {
+				nodeList.push(nodes);
+			}
+		}
+
+		return nodeList;
 	}
 }

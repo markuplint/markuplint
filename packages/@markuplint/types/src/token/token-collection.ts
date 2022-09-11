@@ -14,12 +14,6 @@ type TokenCollectionOptions = Partial<
 export type TokenEachCheck = (head: Token | null, tail: TokenCollection) => Result | void;
 
 export class TokenCollection extends Array<Token> {
-	private static _new(tokens: Token[], old?: TokenCollection) {
-		const newCollection = new TokenCollection('', old);
-		newCollection.push(...tokens);
-		return newCollection;
-	}
-
 	static fromPatterns(
 		value: Token | string,
 		patterns: RegExp[],
@@ -79,13 +73,13 @@ export class TokenCollection extends Array<Token> {
 		return Array;
 	}
 
-	readonly disallowToSurroundBySpaces: NonNullable<List['disallowToSurroundBySpaces']>;
 	readonly allowEmpty: NonNullable<List['allowEmpty']>;
-	readonly ordered: NonNullable<List['ordered']>;
-	readonly unique: NonNullable<List['unique']>;
 	readonly caseInsensitive: NonNullable<List['caseInsensitive']>;
+	readonly disallowToSurroundBySpaces: NonNullable<List['disallowToSurroundBySpaces']>;
 	readonly number: List['number'];
+	readonly ordered: NonNullable<List['ordered']>;
 	readonly separator: NonNullable<List['separator']>;
+	readonly unique: NonNullable<List['unique']>;
 
 	constructor(value?: string, typeOptions?: TokenCollectionOptions);
 	constructor(value?: number); // for map method etc.
@@ -156,62 +150,6 @@ export class TokenCollection extends Array<Token> {
 	get value() {
 		const value = this.map(t => t.value).join('');
 		return value;
-	}
-
-	filter(callback: (value: Token, index: number, array: Token[]) => boolean) {
-		return TokenCollection._new(super.filter(callback), this);
-	}
-
-	headAndTail(): { head: Token | null; tail: TokenCollection } {
-		const copy = this.slice();
-		const head = copy.shift();
-		if (!head) {
-			return { head: head || null, tail: TokenCollection._new([], this) };
-		}
-		const tail = TokenCollection._new(copy, this);
-		return { head, tail };
-	}
-
-	getIdentTokens() {
-		return this.filter(token => token.type === Token.Ident);
-	}
-
-	compareTokens(callback: (prev: Token, current: Token) => Token | null | void) {
-		const _tokens = this.slice();
-		let prev = _tokens.shift();
-		while (prev) {
-			const current = _tokens.shift();
-			if (!current) {
-				return;
-			}
-			const result = callback(prev, current);
-			if (result) {
-				return result;
-			}
-			prev = current;
-		}
-		return null;
-	}
-
-	/**
-	 *
-	 * @param value The token value or the token type or its list
-	 */
-	has(value: string | RegExp | number | (string | RegExp | number)[]) {
-		return this.some(t => t.match(value));
-	}
-
-	/**
-	 *
-	 * @param value The token value or the token type or its list
-	 */
-	search(value: string | RegExp | number | (string | RegExp | number)[]) {
-		for (const token of this) {
-			if (token.includes(value)) {
-				return token;
-			}
-		}
-		return null;
 	}
 
 	check(options: { expects?: Expect[]; ref?: string; cache?: boolean } = {}) {
@@ -298,36 +236,40 @@ export class TokenCollection extends Array<Token> {
 		return matched();
 	}
 
-	getConsecutiveToken(tokenType: number) {
-		const resultToken = this.compareTokens((prev, current) => {
-			if (prev.type === tokenType && current.type === tokenType) {
-				return current;
-			}
-		});
-		return resultToken || null;
+	chunk(split: number) {
+		const chunks: TokenCollection[] = [];
+		const tokens = this.slice();
+		while (tokens.length) {
+			const chunkTokens = tokens.splice(0, split);
+			const chunk = TokenCollection._new(chunkTokens, this);
+			chunks.push(chunk);
+		}
+		return chunks;
 	}
 
-	takeTurns(tokenNumbers: ReadonlyArray<number>, lastTokenNumber?: number) {
-		const tokens = this.slice();
-		for (let i = 0; i < tokens.length; i++) {
-			const token = tokens[i];
-			const expectedTokenNumber = tokenNumbers[i % tokenNumbers.length];
-			if (token.type !== expectedTokenNumber) {
-				return {
-					unexpectedLastToken: false,
-					expectedTokenNumber,
-					token,
-				};
+	compareTokens(callback: (prev: Token, current: Token) => Token | null | void) {
+		const _tokens = this.slice();
+		let prev = _tokens.shift();
+		while (prev) {
+			const current = _tokens.shift();
+			if (!current) {
+				return;
 			}
-			if (lastTokenNumber != null && i === tokens.length - 1 && token.type !== lastTokenNumber) {
-				return {
-					unexpectedLastToken: true,
-					expectedTokenNumber,
-					token,
-				};
+			const result = callback(prev, current);
+			if (result) {
+				return result;
 			}
+			prev = current;
 		}
 		return null;
+	}
+
+	divide(position: number) {
+		const _a = this.slice(0, position);
+		const _b = this.slice(position);
+		const a = TokenCollection._new(_a, this);
+		const b = TokenCollection._new(_b, this);
+		return [a, b] as const;
 	}
 
 	eachCheck(...callbacks: TokenEachCheck[]): Result {
@@ -397,6 +339,19 @@ export class TokenCollection extends Array<Token> {
 		return matched();
 	}
 
+	filter(callback: (value: Token, index: number, array: Token[]) => boolean) {
+		return TokenCollection._new(super.filter(callback), this);
+	}
+
+	getConsecutiveToken(tokenType: number) {
+		const resultToken = this.compareTokens((prev, current) => {
+			if (prev.type === tokenType && current.type === tokenType) {
+				return current;
+			}
+		});
+		return resultToken || null;
+	}
+
 	getDuplicated() {
 		const aList = this.slice();
 		const bList = this.slice();
@@ -419,26 +374,71 @@ export class TokenCollection extends Array<Token> {
 		return null;
 	}
 
-	divide(position: number) {
-		const _a = this.slice(0, position);
-		const _b = this.slice(position);
-		const a = TokenCollection._new(_a, this);
-		const b = TokenCollection._new(_b, this);
-		return [a, b] as const;
+	getIdentTokens() {
+		return this.filter(token => token.type === Token.Ident);
 	}
 
-	chunk(split: number) {
-		const chunks: TokenCollection[] = [];
-		const tokens = this.slice();
-		while (tokens.length) {
-			const chunkTokens = tokens.splice(0, split);
-			const chunk = TokenCollection._new(chunkTokens, this);
-			chunks.push(chunk);
+	/**
+	 *
+	 * @param value The token value or the token type or its list
+	 */
+	has(value: string | RegExp | number | (string | RegExp | number)[]) {
+		return this.some(t => t.match(value));
+	}
+
+	headAndTail(): { head: Token | null; tail: TokenCollection } {
+		const copy = this.slice();
+		const head = copy.shift();
+		if (!head) {
+			return { head: head || null, tail: TokenCollection._new([], this) };
 		}
-		return chunks;
+		const tail = TokenCollection._new(copy, this);
+		return { head, tail };
+	}
+
+	/**
+	 *
+	 * @param value The token value or the token type or its list
+	 */
+	search(value: string | RegExp | number | (string | RegExp | number)[]) {
+		for (const token of this) {
+			if (token.includes(value)) {
+				return token;
+			}
+		}
+		return null;
+	}
+
+	takeTurns(tokenNumbers: ReadonlyArray<number>, lastTokenNumber?: number) {
+		const tokens = this.slice();
+		for (let i = 0; i < tokens.length; i++) {
+			const token = tokens[i];
+			const expectedTokenNumber = tokenNumbers[i % tokenNumbers.length];
+			if (token.type !== expectedTokenNumber) {
+				return {
+					unexpectedLastToken: false,
+					expectedTokenNumber,
+					token,
+				};
+			}
+			if (lastTokenNumber != null && i === tokens.length - 1 && token.type !== lastTokenNumber) {
+				return {
+					unexpectedLastToken: true,
+					expectedTokenNumber,
+					token,
+				};
+			}
+		}
+		return null;
 	}
 
 	toJSON() {
 		return this.map(t => t.toJSON());
+	}
+
+	private static _new(tokens: Token[], old?: TokenCollection) {
+		const newCollection = new TokenCollection('', old);
+		newCollection.push(...tokens);
+		return newCollection;
 	}
 }

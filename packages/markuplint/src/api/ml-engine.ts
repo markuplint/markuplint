@@ -20,16 +20,16 @@ type MLEngineOptions = {
 };
 
 export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
-	#file: MLFile;
-	#options?: APIOptions & MLEngineOptions;
-	#core: MLCore | null = null;
-	#watcher = new FSWatcher();
-	#configProvider: ConfigProvider;
-
 	static async toMLFile(target: Target) {
 		const files = await resolveFiles([target]);
 		return files[0];
 	}
+
+	#configProvider: ConfigProvider;
+	#core: MLCore | null = null;
+	#file: MLFile;
+	#options?: APIOptions & MLEngineOptions;
+	#watcher = new FSWatcher();
 
 	constructor(file: MLFile, options?: APIOptions & MLEngineOptions) {
 		super();
@@ -43,17 +43,9 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		}
 	}
 
-	watchMode(enable: boolean) {
-		this.#options = {
-			...this.#options,
-			watch: enable,
-		};
-
-		if (enable) {
-			this.#watcher.on('change', this.onChange.bind(this));
-		} else {
-			this.#watcher.removeAllListeners();
-		}
+	async close() {
+		this.removeAllListeners();
+		await this.#watcher.close();
 	}
 
 	async exec(): Promise<MLResultInfo | null> {
@@ -119,26 +111,64 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		core.setCode(code);
 	}
 
-	async close() {
-		this.removeAllListeners();
-		await this.#watcher.close();
+	watchMode(enable: boolean) {
+		this.#options = {
+			...this.#options,
+			watch: enable,
+		};
+
+		if (enable) {
+			this.#watcher.on('change', this.onChange.bind(this));
+		} else {
+			this.#watcher.removeAllListeners();
+		}
 	}
 
-	private async setup() {
-		if (this.#core) {
-			return this.#core;
+	private async createCore(fabric: MLFabric) {
+		fileLog('Get source code');
+		const sourceCode = await this.#file.getCode();
+		fileLog('Source code path: %s', this.#file.path);
+		// cspell: disable-next-line
+		fileLog('Source code size: %dbyte', sourceCode.length);
+		this.emit('code', this.#file.path, sourceCode);
+
+		const core = new MLCore({
+			sourceCode,
+			filename: this.#file.path,
+			debug: this.#options?.debug,
+			...fabric,
+		});
+
+		this.#core = core;
+		return core;
+	}
+
+	private async i18n() {
+		const i18nSettings = await i18n(this.#options?.locale);
+		this.emit('i18n', this.#file.path, i18nSettings);
+		return i18nSettings;
+	}
+
+	private async onChange(filePath: string) {
+		if (!this.#options?.watch) {
+			return;
 		}
-		const fabric = await this.provide();
+
+		this.emit('log', 'watch:onChange', filePath);
+
+		const fabric = await this.provide(false);
 
 		if (!fabric) {
-			return null;
+			return;
 		}
 
 		if (fabric.configErrors) {
 			this.emit('config-errors', this.#file.path, fabric.configErrors);
 		}
 
-		return this.createCore(fabric);
+		this.emit('log', 'update:core', this.#file.path);
+		this.#core?.update(fabric);
+		await this.exec();
 	}
 
 	private async provide(cache = true): Promise<MLFabric | null> {
@@ -217,25 +247,6 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		};
 	}
 
-	private async createCore(fabric: MLFabric) {
-		fileLog('Get source code');
-		const sourceCode = await this.#file.getCode();
-		fileLog('Source code path: %s', this.#file.path);
-		// cspell: disable-next-line
-		fileLog('Source code size: %dbyte', sourceCode.length);
-		this.emit('code', this.#file.path, sourceCode);
-
-		const core = new MLCore({
-			sourceCode,
-			filename: this.#file.path,
-			debug: this.#options?.debug,
-			...fabric,
-		});
-
-		this.#core = core;
-		return core;
-	}
-
 	private async resolveConfig(cache: boolean) {
 		const defaultConfigKey = this.#options?.defaultConfig && this.#configProvider.set(this.#options?.defaultConfig);
 		const configFilePathsFromTarget = this.#options?.noSearchConfig
@@ -266,18 +277,6 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		return parser;
 	}
 
-	private resolveRuleset(configSet: ConfigSet) {
-		const ruleset = convertRuleset(configSet.config);
-		this.emit('ruleset', this.#file.path, ruleset);
-		return ruleset;
-	}
-
-	private async resolveSchemas(configSet: ConfigSet) {
-		const { schemas } = await resolveSpecs(this.#file.path, configSet.config.specs);
-		this.emit('schemas', this.#file.path, schemas);
-		return schemas;
-	}
-
 	private async resolveRules(plugins: Plugin[], ruleset: Ruleset) {
 		const rules = await resolveRules(
 			plugins,
@@ -293,31 +292,32 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		return rules;
 	}
 
-	private async i18n() {
-		const i18nSettings = await i18n(this.#options?.locale);
-		this.emit('i18n', this.#file.path, i18nSettings);
-		return i18nSettings;
+	private resolveRuleset(configSet: ConfigSet) {
+		const ruleset = convertRuleset(configSet.config);
+		this.emit('ruleset', this.#file.path, ruleset);
+		return ruleset;
 	}
 
-	private async onChange(filePath: string) {
-		if (!this.#options?.watch) {
-			return;
+	private async resolveSchemas(configSet: ConfigSet) {
+		const { schemas } = await resolveSpecs(this.#file.path, configSet.config.specs);
+		this.emit('schemas', this.#file.path, schemas);
+		return schemas;
+	}
+
+	private async setup() {
+		if (this.#core) {
+			return this.#core;
 		}
-
-		this.emit('log', 'watch:onChange', filePath);
-
-		const fabric = await this.provide(false);
+		const fabric = await this.provide();
 
 		if (!fabric) {
-			return;
+			return null;
 		}
 
 		if (fabric.configErrors) {
 			this.emit('config-errors', this.#file.path, fabric.configErrors);
 		}
 
-		this.emit('log', 'update:core', this.#file.path);
-		this.#core?.update(fabric);
-		await this.exec();
+		return this.createCore(fabric);
 	}
 }

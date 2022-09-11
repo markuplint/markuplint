@@ -55,9 +55,16 @@ export function getIndent(node: MLNode<any, any>) {
 
 class MLDOMIndentation {
 	#fixed: string;
+	readonly line: number;
 	#node: MLText<any, any>;
 	#parent: MLNode<any, any>;
-	readonly line: number;
+
+	constructor(originTextNode: MLText<any, any>, raw: string, line: number, parentNode: MLNode<any, any>) {
+		this.line = line;
+		this.#node = originTextNode;
+		this.#parent = parentNode;
+		this.#fixed = raw;
+	}
 
 	get raw() {
 		if (!this.#parent.is(this.#parent.TEXT_NODE) && this.line !== this.#node.endLine) {
@@ -79,13 +86,6 @@ class MLDOMIndentation {
 			return 0;
 		}
 		return this.#fixed.length;
-	}
-
-	constructor(originTextNode: MLText<any, any>, raw: string, line: number, parentNode: MLNode<any, any>) {
-		this.line = line;
-		this.#node = originTextNode;
-		this.#parent = parentNode;
-		this.#fixed = raw;
 	}
 
 	fix(raw: string) {

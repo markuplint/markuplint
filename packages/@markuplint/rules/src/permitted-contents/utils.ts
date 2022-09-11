@@ -112,18 +112,14 @@ export function isTransparent(content: PermittedContentPattern): content is Perm
 }
 
 export class Collection {
-	#origin: readonly ChildNode[];
-	#nodes: ReadonlySet<ChildNode>;
-	#matched: Set<ChildNode> = new Set();
 	#locked: ReadonlySet<ChildNode> = new Set();
+	#matched: Set<ChildNode> = new Set();
+	#nodes: ReadonlySet<ChildNode>;
+	#origin: readonly ChildNode[];
 
 	constructor(origin: readonly ChildNode[]) {
 		this.#origin = origin.slice();
 		this.#nodes = new Set(this.#origin);
-	}
-
-	get nodes() {
-		return this.#origin.slice();
 	}
 
 	get matched() {
@@ -132,6 +128,10 @@ export class Collection {
 
 	get matchedCount() {
 		return this.#matched.size;
+	}
+
+	get nodes() {
+		return this.#origin.slice();
 	}
 
 	get unmatched() {
@@ -152,17 +152,17 @@ export class Collection {
 		return i < this.#matched.size;
 	}
 
-	max(max: number) {
-		const sliced = Array.from(this.#matched).slice(max);
-		sliced.forEach(n => this.#matched.delete(n));
-	}
-
 	back() {
 		this.#matched = new Set(this.#locked);
 	}
 
 	lock() {
 		this.#locked = new Set(this.#matched);
+	}
+
+	max(max: number) {
+		const sliced = Array.from(this.#matched).slice(max);
+		sliced.forEach(n => this.#matched.delete(n));
 	}
 
 	toString(highlightExtraNodes = false) {

@@ -22,18 +22,13 @@ export class MLCore {
 	#ast: MLASTDocument | null = null;
 	#document!: Document<RuleConfigValue, unknown> | ParserError;
 	#filename: string;
-
-	#parserOptions: ParserOptions;
 	#locale: LocaleSet;
 	#parser: MLMarkupLanguageParser;
+	#parserOptions: ParserOptions;
 	#rules: MLRule<RuleConfigValue, unknown>[];
 	#ruleset: Ruleset;
 	#schemas: MLSchema;
 	#sourceCode: string;
-
-	get document() {
-		return this.#document;
-	}
 
 	constructor({ parser, sourceCode, ruleset, rules, locale, schemas, parserOptions, filename, debug }: MLCoreParams) {
 		if (debug) {
@@ -55,6 +50,10 @@ export class MLCore {
 
 		this._parse();
 		this._createDocument();
+	}
+
+	get document() {
+		return this.#document;
 	}
 
 	setCode(sourceCode: string) {
@@ -163,6 +162,7 @@ export class MLCore {
 			}
 		}
 	}
+
 	private _parse() {
 		try {
 			this.#ast = this.#parser.parse(this.#sourceCode, this.#parserOptions);

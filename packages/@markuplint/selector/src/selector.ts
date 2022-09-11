@@ -51,8 +51,8 @@ class Ruleset {
 		return new Ruleset(selectors, extended, 0);
 	}
 
-	#selectorGroup: StructuredSelector[] = [];
 	readonly headCombinator: string | null;
+	#selectorGroup: StructuredSelector[] = [];
 
 	constructor(selectors: parser.Selector[], extended: ExtendedPseudoClass, depth: number) {
 		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector, depth, extended)));
@@ -82,13 +82,9 @@ class Ruleset {
 }
 
 class StructuredSelector {
-	#selector: parser.Selector;
 	#edge: SelectorTarget;
 	readonly headCombinator: string | null;
-
-	get selector() {
-		return this.#selector.nodes.join('');
-	}
+	#selector: parser.Selector;
 
 	constructor(selector: parser.Selector, depth: number, extended: ExtendedPseudoClass) {
 		this.#selector = selector;
@@ -123,20 +119,23 @@ class StructuredSelector {
 		});
 	}
 
+	get selector() {
+		return this.#selector.nodes.join('');
+	}
+
 	match(el: Node, scope: ParentNode | null): SelectorResult {
 		return this.#edge.match(el, scope, 0);
 	}
 }
 
 class SelectorTarget {
-	#extended: ExtendedPseudoClass;
-	#combinedFrom: { target: SelectorTarget; combinator: parser.Combinator } | null = null;
-	#isAdded = false;
-
-	readonly depth: number;
 	attr: parser.Attribute[] = [];
 	class: parser.ClassName[] = [];
+	#combinedFrom: { target: SelectorTarget; combinator: parser.Combinator } | null = null;
+	readonly depth: number;
+	#extended: ExtendedPseudoClass;
 	id: parser.Identifier[] = [];
+	#isAdded = false;
 	pseudo: parser.Pseudo[] = [];
 	tag: parser.Tag | parser.Universal | null = null;
 
@@ -199,7 +198,17 @@ class SelectorTarget {
 		return result;
 	}
 
-	_match(el: Node, scope: ParentNode | null, count: number): SelectorResult & { combinator?: string } {
+	toString() {
+		return [
+			this.tag?.toString() ?? '',
+			this.id.map(id => `#${id.value}`).join(''),
+			this.class.map(c => `.${c.value}`).join(''),
+			this.attr.map(attr => `[${attr.toString()}]`).join(''),
+			this.pseudo.map(pseudo => pseudo.value).join(''),
+		].join('');
+	}
+
+	private _match(el: Node, scope: ParentNode | null, count: number): SelectorResult & { combinator?: string } {
 		const unitCheck = this._matchWithoutCombineChecking(el, scope);
 		if (!unitCheck.matched) {
 			return unitCheck;
@@ -409,17 +418,7 @@ class SelectorTarget {
 		}
 	}
 
-	toString() {
-		return [
-			this.tag?.toString() ?? '',
-			this.id.map(id => `#${id.value}`).join(''),
-			this.class.map(c => `.${c.value}`).join(''),
-			this.attr.map(attr => `[${attr.toString()}]`).join(''),
-			this.pseudo.map(pseudo => pseudo.value).join(''),
-		].join('');
-	}
-
-	_matchWithoutCombineChecking(el: Node, scope: ParentNode | null): SelectorResult {
+	private _matchWithoutCombineChecking(el: Node, scope: ParentNode | null): SelectorResult {
 		const specificity: Specificity = [0, 0, 0];
 
 		if (!isElement(el)) {

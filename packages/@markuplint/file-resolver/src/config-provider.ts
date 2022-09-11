@@ -14,30 +14,10 @@ import { fileExists, nonNullableFilter, uuid } from './utils';
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
 
 export class ConfigProvider {
-	#store = new Map<string, Config>();
 	#cache = new Map<string, ConfigSet>();
 	#held = new Set<string>();
 	#recursiveLoadKeyAndDepth = new Map<string, number>();
-
-	set(config: Config, key?: string) {
-		key = key || uuid();
-		this.#store.set(key, config);
-		return key;
-	}
-
-	async search(targetFile: MLFile) {
-		if (!(await targetFile.dirExists())) {
-			return null;
-		}
-		const res = await search<Config>(targetFile.path, false);
-		if (!res) {
-			return null;
-		}
-		const { filePath, config } = res;
-		const pathResolvedConfig = this._pathResolve(config, filePath);
-		this.#store.set(filePath, pathResolvedConfig);
-		return filePath;
-	}
+	#store = new Map<string, Config>();
 
 	async resolve(targetFile: MLFile, names: Nullable<string>[], cache = true): Promise<ConfigSet> {
 		if (!cache) {
@@ -107,6 +87,52 @@ export class ConfigProvider {
 		return result;
 	}
 
+	async search(targetFile: MLFile) {
+		if (!(await targetFile.dirExists())) {
+			return null;
+		}
+		const res = await search<Config>(targetFile.path, false);
+		if (!res) {
+			return null;
+		}
+		const { filePath, config } = res;
+		const pathResolvedConfig = this._pathResolve(config, filePath);
+		this.#store.set(filePath, pathResolvedConfig);
+		return filePath;
+	}
+
+	set(config: Config, key?: string) {
+		key = key || uuid();
+		this.#store.set(key, config);
+		return key;
+	}
+
+	private async _load(filePath: string, cache: boolean) {
+		const entity = this.#store.get(filePath);
+		if (entity) {
+			return entity;
+		}
+
+		if (isPrefixedName(filePath)) {
+			this.#held.add(filePath);
+			return null;
+		}
+
+		if (!moduleExists(filePath) && !path.isAbsolute(filePath)) {
+			throw new TypeError(`${filePath} is not an absolute path`);
+		}
+
+		const config = await load(filePath, cache);
+		if (!config) {
+			return null;
+		}
+
+		const pathResolvedConfig = this._pathResolve(config, filePath);
+
+		this.#store.set(filePath, pathResolvedConfig);
+		return pathResolvedConfig;
+	}
+
 	private async _mergeConfigs(keys: string[], cache: boolean) {
 		const resolvedKeys = new Set<string>();
 		const errs: Error[] = [];
@@ -131,6 +157,19 @@ export class ConfigProvider {
 			config: resultConfig,
 			files: resolvedKeys,
 			errs,
+		};
+	}
+
+	private _pathResolve(config: Config, filePath: string): Config {
+		const dir = path.dirname(filePath);
+		return {
+			...config,
+			extends: pathResolve(dir, config.extends),
+			plugins: pathResolve(dir, config.plugins, ['name']),
+			parser: pathResolve(dir, config.parser),
+			specs: pathResolve(dir, config.specs),
+			excludeFiles: pathResolve(dir, config.excludeFiles),
+			overrides: pathResolve(dir, config.overrides, undefined, true),
 		};
 	}
 
@@ -176,45 +215,6 @@ export class ConfigProvider {
 
 		stack.add(key);
 		return { stack, errs };
-	}
-
-	private async _load(filePath: string, cache: boolean) {
-		const entity = this.#store.get(filePath);
-		if (entity) {
-			return entity;
-		}
-
-		if (isPrefixedName(filePath)) {
-			this.#held.add(filePath);
-			return null;
-		}
-
-		if (!moduleExists(filePath) && !path.isAbsolute(filePath)) {
-			throw new TypeError(`${filePath} is not an absolute path`);
-		}
-
-		const config = await load(filePath, cache);
-		if (!config) {
-			return null;
-		}
-
-		const pathResolvedConfig = this._pathResolve(config, filePath);
-
-		this.#store.set(filePath, pathResolvedConfig);
-		return pathResolvedConfig;
-	}
-
-	private _pathResolve(config: Config, filePath: string): Config {
-		const dir = path.dirname(filePath);
-		return {
-			...config,
-			extends: pathResolve(dir, config.extends),
-			plugins: pathResolve(dir, config.plugins, ['name']),
-			parser: pathResolve(dir, config.parser),
-			specs: pathResolve(dir, config.specs),
-			excludeFiles: pathResolve(dir, config.excludeFiles),
-			overrides: pathResolve(dir, config.overrides, undefined, true),
-		};
 	}
 }
 

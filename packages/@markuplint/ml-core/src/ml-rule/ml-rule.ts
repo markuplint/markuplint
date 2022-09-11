@@ -15,12 +15,21 @@ import type {
 import { MLRuleContext } from './ml-rule-context';
 
 export class MLRule<T extends RuleConfigValue, O = null> {
-	#f: RuleSeed<T, O>['fix'];
-	#v: RuleSeed<T, O>['verify'];
 	readonly defaultOptions: O;
 	readonly defaultSeverity: Severity;
 	readonly defaultValue: T;
+	#f: RuleSeed<T, O>['fix'];
 	readonly name: string;
+	#v: RuleSeed<T, O>['verify'];
+
+	constructor(o: RuleSeed<T, O> & { name: string }) {
+		this.name = o.name;
+		this.defaultSeverity = o.defaultSeverity || 'error';
+		this.defaultValue = o.defaultValue ?? (true as T);
+		this.defaultOptions = o.defaultOptions ?? (null as unknown as O);
+		this.#v = o.verify;
+		this.#f = o.fix;
+	}
 
 	/**
 	 * The following getter is unused internally,
@@ -36,15 +45,6 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	 */
 	protected get v(): RuleSeed<T, O>['verify'] {
 		return this.#v;
-	}
-
-	constructor(o: RuleSeed<T, O> & { name: string }) {
-		this.name = o.name;
-		this.defaultSeverity = o.defaultSeverity || 'error';
-		this.defaultValue = o.defaultValue ?? (true as T);
-		this.defaultOptions = o.defaultOptions ?? (null as unknown as O);
-		this.#v = o.verify;
-		this.#f = o.fix;
 	}
 
 	getRuleInfo(ruleSet: Ruleset, ruleName: string): GlobalRuleInfo<T, O> {

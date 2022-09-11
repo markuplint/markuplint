@@ -17,6 +17,7 @@ export class MLNamedNodeMap<T extends RuleConfigValue, O = null> extends Array<M
 	getNamedItemNS(namespace: string | null, localName: string): Attr | null {
 		throw new UnexpectedCallError('Not supported "getNamedItemNS" method');
 	}
+
 	item(index: number): MLAttr<T, O> | null {
 		return this[index];
 	}

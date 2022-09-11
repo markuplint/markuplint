@@ -14,6 +14,19 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 
 	protected readonly _astToken: A;
 
+	constructor(astToken: A) {
+		this._astToken = astToken;
+		this.#raw = astToken.raw;
+		this.#fixed = astToken.raw;
+		this.uuid = astToken.uuid;
+		this.#startLine = astToken.startLine;
+		this.#endLine = astToken.endLine;
+		this.#startCol = astToken.startCol;
+		this.#endCol = astToken.endCol;
+		this.#startOffset = astToken.startOffset;
+		this.#endOffset = astToken.endOffset;
+	}
+
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
@@ -68,18 +81,6 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	 */
 	get startOffset() {
 		return this.#startOffset;
-	}
-	constructor(astToken: A) {
-		this._astToken = astToken;
-		this.#raw = astToken.raw;
-		this.#fixed = astToken.raw;
-		this.uuid = astToken.uuid;
-		this.#startLine = astToken.startLine;
-		this.#endLine = astToken.endLine;
-		this.#startCol = astToken.startCol;
-		this.#endCol = astToken.endCol;
-		this.#startOffset = astToken.startOffset;
-		this.#endOffset = astToken.endOffset;
 	}
 
 	/**
