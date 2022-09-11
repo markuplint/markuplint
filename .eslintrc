@@ -24,14 +24,6 @@
 		"no-console": [1],
 		"no-mixed-spaces-and-tabs": 0,
 		"require-await": 2,
-		// "padding-line-between-statements": [
-		// 	1,
-		// 	{
-		// 		"blankLine": "always",
-		// 		"prev": "block",
-		// 		"next": "*"
-		// 	}
-		// ],
 		"lines-between-class-members": [1, "always", { "exceptAfterSingleLine": true }],
 
 		"node/no-unsupported-features/es-syntax": 0,
