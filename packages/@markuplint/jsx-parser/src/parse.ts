@@ -7,7 +7,7 @@ import { ParserError, walk } from '@markuplint/parser-utils';
 import jsxParser from './jsx';
 import { traverse } from './traverse';
 
-export const parse: Parse = (rawCode, _o, _l, _c, options) => {
+export const parse: Parse = (rawCode, options) => {
 	let ast: JSXNode[];
 	try {
 		ast = jsxParser(rawCode);

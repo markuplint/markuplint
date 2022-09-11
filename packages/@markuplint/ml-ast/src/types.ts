@@ -136,10 +136,11 @@ export interface MLASTDocument {
 export interface MLMarkupLanguageParser {
 	parse(
 		sourceCode: string,
-		offsetOffset?: number,
-		offsetLine?: number,
-		offsetColumn?: number,
-		options?: ParserOptions,
+		options?: ParserOptions & {
+			offsetOffset?: number;
+			offsetLine?: number;
+			offsetColumn?: number;
+		},
 	): MLASTDocument;
 	/**
 	 * @default "omittable"

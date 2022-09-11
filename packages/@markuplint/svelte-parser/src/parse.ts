@@ -7,7 +7,7 @@ import { ParserError, ignoreBlock, restoreNode } from '@markuplint/parser-utils'
 import svelteParse from './svelte-parser';
 import { traverse } from './traverse';
 
-export const parse: Parse = (rawCode, _o, _l, _c, options) => {
+export const parse: Parse = (rawCode, options) => {
 	const blocks = ignoreBlock(
 		rawCode,
 		[

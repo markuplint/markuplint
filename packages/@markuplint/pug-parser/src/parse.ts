@@ -14,7 +14,7 @@ import { detectElementType, ignoreFrontMatter, ParserError, tokenizer, uuid, wal
 import attrTokenizer from './attr-tokenizer';
 import { pugParse } from './pug-parser';
 
-export const parse: Parse = (rawCode, _, __, ___, options) => {
+export const parse: Parse = (rawCode, options) => {
 	let unknownParseError: string | undefined;
 	let nodeList: MLASTNode[];
 
@@ -160,12 +160,11 @@ class Parser {
 						isGhost: false,
 					};
 				}
-				const htmlDoc = htmlParser(
-					originNode.raw,
-					originNode.offset,
-					originNode.line - 1,
-					originNode.column - 1,
-				);
+				const htmlDoc = htmlParser(originNode.raw, {
+					offsetOffset: originNode.offset,
+					offsetLine: originNode.line - 1,
+					offsetColumn: originNode.column - 1,
+				});
 				const nodes = htmlDoc.nodeList;
 				for (const node of nodes) {
 					if (!node.parentNode) {

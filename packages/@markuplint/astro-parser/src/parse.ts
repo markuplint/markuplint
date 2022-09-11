@@ -18,7 +18,7 @@ import { detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@
 import { AstroCompileError, astroParse } from './astro-parser';
 import { attrTokenizer } from './attr-tokenizer';
 
-export const parse: Parse = (rawCode, _o, _l, _c, options) => {
+export const parse: Parse = (rawCode, options) => {
 	const ast = astroParse(rawCode);
 
 	if (ast instanceof AstroCompileError) {

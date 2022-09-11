@@ -15,7 +15,7 @@ import { getEndCol, getEndLine, uuid, ParserError, detectElementType } from '@ma
 import { attr } from './attr';
 import vueParse from './vue-parser';
 
-export const parse: Parse = (rawCode, _o, _l, _c, options) => {
+export const parse: Parse = (rawCode, options) => {
 	let ast: VueTokens;
 
 	try {
