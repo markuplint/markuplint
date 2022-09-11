@@ -18,14 +18,7 @@ import type {
 	Location,
 } from 'parse5';
 
-import {
-	isPotentialCustomElementName,
-	detectElementType,
-	getEndCol,
-	getEndLine,
-	sliceFragment,
-	uuid,
-} from '@markuplint/parser-utils';
+import { detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
 import { parse, parseFragment } from 'parse5';
 
 import parseRawTag from './parse-raw-tag';
@@ -127,7 +120,6 @@ function nodeize(
 			nextNode,
 			isFragment: false,
 			isGhost: true,
-			isCustomElement: false,
 		};
 		node.childNodes = createTreeRecursive(originNode, node, rawHtml, offsetOffset, offsetLine, offsetColumn);
 		return node;
@@ -215,7 +207,6 @@ function nodeize(
 				offsetColumn,
 			);
 			const tagName = tagTokens.tagName;
-			const isCustomElement = isPotentialCustomElementName(tagName);
 			let endTag: MLASTElementCloseTag | null = null;
 			let endTagLoc = 'endTag' in location ? location.endTag : null;
 
@@ -270,7 +261,6 @@ function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
-					isCustomElement,
 				};
 			}
 			const _endOffset = startOffset + startTagRaw.length;
@@ -301,7 +291,6 @@ function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				isCustomElement,
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;

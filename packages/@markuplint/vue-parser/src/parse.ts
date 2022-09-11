@@ -10,14 +10,7 @@ import type {
 } from '@markuplint/ml-ast';
 
 import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
-import {
-	getEndCol,
-	getEndLine,
-	uuid,
-	ParserError,
-	isPotentialCustomElementName,
-	detectElementType,
-} from '@markuplint/parser-utils';
+import { getEndCol, getEndLine, uuid, ParserError, detectElementType } from '@markuplint/parser-utils';
 
 import { attr } from './attr';
 import vueParse from './vue-parser';
@@ -193,7 +186,6 @@ function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
-					isCustomElement: isVueComponentName(endTagName),
 				};
 			}
 			const startTag: MLASTTag = {
@@ -239,7 +231,6 @@ function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				isCustomElement: isVueComponentName(tagName),
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
@@ -248,8 +239,4 @@ function nodeize(
 			return startTag;
 		}
 	}
-}
-
-function isVueComponentName(name: string) {
-	return isPotentialCustomElementName(name) || /^[A-Z]|\./.test(name);
 }

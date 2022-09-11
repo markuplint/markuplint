@@ -40,7 +40,7 @@ export default createRule<boolean, Option>({
 			const attrName = attr.nameNode;
 			const name = attr.name;
 
-			if (!attr.ownerElement.isCustomElement && attr.candidate) {
+			if (attr.ownerElement.elementType === 'html' && attr.candidate) {
 				const message =
 					t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed') +
 					t('. ') +
@@ -98,7 +98,7 @@ export default createRule<boolean, Option>({
 						message: t('{0} is disallowed', t('the "{0*}" {1}', name, 'attribute')),
 					};
 				}
-			} else if (!attr.ownerElement.isCustomElement && attrSpecs) {
+			} else if (attr.ownerElement.elementType === 'html' && attrSpecs) {
 				log('Checking %s[%s="%s"]', attr.nodeName, name, value);
 				invalid = isValidAttr(t, name, value, attr.isDynamicValue || false, attr.ownerElement, attrSpecs, log);
 			}

@@ -52,7 +52,6 @@ export interface MLASTElement extends MLASTAbstractNode {
 	endSpace?: MLToken;
 	tagOpenChar: string;
 	tagCloseChar: string;
-	isCustomElement: boolean;
 }
 
 /**
@@ -72,7 +71,6 @@ export interface MLASTElementCloseTag extends MLASTAbstractNode {
 	pearNode: MLASTTag | null;
 	tagOpenChar: string;
 	tagCloseChar: string;
-	isCustomElement: boolean;
 }
 
 export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {

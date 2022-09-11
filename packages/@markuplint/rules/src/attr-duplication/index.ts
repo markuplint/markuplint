@@ -10,7 +10,7 @@ export default createRule({
 					continue;
 				}
 				const attrName = attr.name;
-				const name = node.isCustomElement ? attrName : attrName.toLowerCase();
+				const name = node.elementType === 'html' ? attrName.toLowerCase() : attrName;
 				if (attrNameStack.includes(name)) {
 					const scope = attr.nameNode || attr;
 					report({

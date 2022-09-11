@@ -13,14 +13,7 @@ import type {
 } from '@markuplint/ml-ast';
 
 import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
-import {
-	isPotentialCustomElementName,
-	detectElementType,
-	getEndCol,
-	getEndLine,
-	sliceFragment,
-	uuid,
-} from '@markuplint/parser-utils';
+import { detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
 
 import { AstroCompileError, astroParse } from './astro-parser';
 import { attrTokenizer } from './attr-tokenizer';
@@ -343,7 +336,6 @@ function parseElement(
 			isGhost: false,
 			tagOpenChar: '</',
 			tagCloseChar: '>',
-			isCustomElement: isCustomComponentName(endTagName),
 		};
 	}
 
@@ -372,7 +364,6 @@ function parseElement(
 		isGhost: false,
 		tagOpenChar: '<',
 		tagCloseChar: '>',
-		isCustomElement: isCustomComponentName(tagName),
 	};
 	if (endTag) {
 		endTag.pearNode = startTag;
@@ -408,8 +399,4 @@ function parseStyle(
 		result.push(styleEl);
 	}
 	return result;
-}
-
-function isCustomComponentName(name: string) {
-	return isPotentialCustomElementName(name) || /[A-Z]|\./.test(name);
 }

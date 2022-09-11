@@ -5,12 +5,11 @@ import type {
 	MLASTParentNode,
 	MLASTTag,
 	MLASTText,
-	NamespaceURI,
 	ParserOptions,
 } from '@markuplint/ml-ast';
 
 import { getNamespace, parseRawTag } from '@markuplint/html-parser';
-import { isPotentialCustomElementName, detectElementType, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { detectElementType, sliceFragment, uuid } from '@markuplint/parser-utils';
 
 import { attr } from './attr';
 import { getAttr, getName } from './jsx';
@@ -100,7 +99,6 @@ export function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
-					isCustomElement: isJSXComponentName(nodeName, namespace),
 				};
 			}
 
@@ -143,7 +141,6 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				isCustomElement: isJSXComponentName(nodeName, namespace),
 				__parentId: originNode.__parentId || null,
 			};
 			if (endTag) {
@@ -194,7 +191,6 @@ export function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
-					isCustomElement: true,
 					__parentId: originNode.__parentId || null,
 				};
 			}
@@ -217,7 +213,6 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				isCustomElement: true,
 				__parentId: originNode.__parentId || null,
 			};
 			if (endTag) {
@@ -256,14 +251,4 @@ export function nodeize(
 			};
 		}
 	}
-}
-
-/**
- * @see https://reactjs.org/docs/jsx-in-depth.html#user-defined-components-must-be-capitalized
- *
- */
-function isJSXComponentName(name: string, namespace: NamespaceURI) {
-	return (
-		(namespace === 'http://www.w3.org/1999/xhtml' && isPotentialCustomElementName(name)) || /^[A-Z]|\./.test(name)
-	);
 }

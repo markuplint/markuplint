@@ -96,7 +96,7 @@ export function matchesSelector(
 	}
 
 	if (node.is(node.ELEMENT_NODE)) {
-		if (node.isCustomElement && hasCustom) {
+		if (node.elementType !== 'html' && hasCustom) {
 			nodeLog('%s.matches(%s) => CustomElement', node.raw, query);
 			return {
 				type: 'MATCHED',

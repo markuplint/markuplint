@@ -9,15 +9,7 @@ import type {
 } from '@markuplint/ml-ast';
 
 import { getNamespace, parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
-import {
-	detectElementType,
-	ignoreFrontMatter,
-	isPotentialCustomElementName,
-	ParserError,
-	tokenizer,
-	uuid,
-	walk,
-} from '@markuplint/parser-utils';
+import { detectElementType, ignoreFrontMatter, ParserError, tokenizer, uuid, walk } from '@markuplint/parser-utils';
 
 import attrTokenizer from './attr-tokenizer';
 import { pugParse } from './pug-parser';
@@ -228,7 +220,6 @@ class Parser {
 					isGhost: false,
 					tagOpenChar: '',
 					tagCloseChar: '',
-					isCustomElement: isPotentialCustomElementName(originNode.name),
 				};
 
 				if (originNode.block.nodes.length) {

@@ -11,7 +11,7 @@ import type {
 } from '@markuplint/ml-ast';
 
 import { getNamespace, parseRawTag } from '@markuplint/html-parser';
-import { isPotentialCustomElementName, detectElementType, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { detectElementType, sliceFragment, uuid } from '@markuplint/parser-utils';
 
 import { attr } from './attr';
 import { traverse } from './traverse';
@@ -112,7 +112,6 @@ export function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
-					isCustomElement: isSvelteComponentName(originNode.name),
 				};
 			}
 
@@ -148,7 +147,6 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				isCustomElement: isSvelteComponentName(originNode.name),
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
@@ -399,8 +397,4 @@ function solveCtrlBlock(
 	}
 
 	return tags;
-}
-
-function isSvelteComponentName(name: string) {
-	return isPotentialCustomElementName(name) || /[A-Z]|\./.test(name);
 }

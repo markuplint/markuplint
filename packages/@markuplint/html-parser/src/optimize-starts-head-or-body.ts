@@ -50,7 +50,6 @@ export function optimizeStartsHeadTagOrBodyTagResume(
 		node.raw = node.raw.replace(node.nodeName, realName);
 		node.nodeName = realName;
 		if (node.type === 'starttag') {
-			node.isCustomElement = false;
 			node.elementType = 'html';
 		}
 	});

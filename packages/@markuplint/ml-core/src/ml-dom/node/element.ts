@@ -45,7 +45,6 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	readonly closeTag: MLToken | null;
 	readonly endSpace: MLToken | null;
 	readonly hasSpreadAttr: boolean;
-	readonly isCustomElement: boolean;
 	readonly isForeignElement: boolean;
 	readonly isOmitted: boolean;
 	readonly namespaceURI: NamespaceURI;
@@ -2078,7 +2077,6 @@ export class MLElement<T extends RuleConfigValue, O = null>
 		this.elementType = astNode.elementType;
 		this.#localName = ns.localName;
 		this.isForeignElement = this.namespaceURI !== HTML_NAMESPACE;
-		this.isCustomElement = astNode.isCustomElement;
 		this.#fixedNodeName = astNode.nodeName;
 
 		this.isOmitted = astNode.isGhost;
