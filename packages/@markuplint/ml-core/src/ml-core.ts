@@ -2,7 +2,7 @@ import type { MLRule } from './ml-rule';
 import type Ruleset from './ruleset';
 import type { MLFabric, MLSchema } from './types';
 import type { LocaleSet } from '@markuplint/i18n';
-import type { MLASTDocument, MLMarkupLanguageParser } from '@markuplint/ml-ast';
+import type { MLASTDocument, MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
 import type { RuleConfigValue, Violation } from '@markuplint/ml-config';
 
 import { ParserError } from '@markuplint/parser-utils';
@@ -23,7 +23,7 @@ export class MLCore {
 	#document!: Document<RuleConfigValue, unknown> | ParserError;
 	#filename: string;
 
-	#ignoreFrontMatter: boolean;
+	#parserOptions: ParserOptions;
 	#locale: LocaleSet;
 	#parser: MLMarkupLanguageParser;
 	#rules: MLRule<RuleConfigValue, unknown>[];
@@ -42,7 +42,7 @@ export class MLCore {
 
 		this.#parser = parser;
 		this.#sourceCode = sourceCode;
-		this.#ignoreFrontMatter = !!parserOptions.ignoreFrontMatter;
+		this.#parserOptions = parserOptions;
 		this.#ruleset = {
 			rules: ruleset.rules ?? {},
 			nodeRules: ruleset.nodeRules ?? [],
@@ -73,7 +73,11 @@ export class MLCore {
 		this.#rules = rules ?? this.#rules;
 		this.#locale = locale ?? this.#locale;
 		this.#schemas = schemas ?? this.#schemas;
-		if (parserOptions && parserOptions.ignoreFrontMatter !== this.#ignoreFrontMatter) {
+		if (
+			parserOptions &&
+			(parserOptions.ignoreFrontMatter !== this.#parserOptions.ignoreFrontMatter ||
+				parserOptions.authoredElementName !== this.#parserOptions.authoredElementName)
+		) {
 			this._parse();
 		}
 		this._createDocument();
@@ -161,9 +165,7 @@ export class MLCore {
 	}
 	private _parse() {
 		try {
-			this.#ast = this.#parser.parse(this.#sourceCode, {
-				ignoreFrontMatter: this.#ignoreFrontMatter,
-			});
+			this.#ast = this.#parser.parse(this.#sourceCode, this.#parserOptions);
 		} catch (err) {
 			log('Caught the parse error: %O', err);
 			this.#ast = null;

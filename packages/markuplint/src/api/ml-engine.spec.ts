@@ -166,3 +166,29 @@ describe('Config Priority', () => {
 		expect(configSet?.config.rules?.['wai-aria']).toBe(undefined);
 	});
 });
+
+describe('Config Priority', () => {
+	it('config', async () => {
+		const file = await MLEngine.toMLFile('test/fixture/jsx/003.jsx');
+		const engine = new MLEngine(file, {
+			config: {
+				parserOptions: {
+					authoredElementName: ['authoredcomponent2', /^[A-Z]|\./],
+				},
+			},
+		});
+
+		const res = await engine.exec();
+
+		expect(res?.violations).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 5,
+				col: 5,
+				message: 'The "authoredcomponent" element is not allowed in the "div" element in this context',
+				raw: '<authoredcomponent>',
+			},
+		]);
+	});
+});
