@@ -1,7 +1,7 @@
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { LocaleSet } from '@markuplint/i18n';
-import type { MLMarkupLanguageParser } from '@markuplint/ml-ast';
-import type { Config, Violation, ParserOptions } from '@markuplint/ml-config';
+import type { MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
+import type { Config, Violation } from '@markuplint/ml-config';
 import type { AnyMLRule, MLSchema, Ruleset } from '@markuplint/ml-core';
 
 export type APIOptions = {

@@ -1,6 +1,6 @@
 import type { MLFile } from './ml-file';
-import type { MLMarkupLanguageParser } from '@markuplint/ml-ast';
-import type { ParserConfig, ParserOptions } from '@markuplint/ml-config';
+import type { MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
+import type { ParserConfig } from '@markuplint/ml-config';
 
 import path from 'path';
 
