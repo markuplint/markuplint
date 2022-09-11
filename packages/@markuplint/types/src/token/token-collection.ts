@@ -14,12 +14,6 @@ type TokenCollectionOptions = Partial<
 export type TokenEachCheck = (head: Token | null, tail: TokenCollection) => Result | void;
 
 export class TokenCollection extends Array<Token> {
-	private static _new(tokens: Token[], old?: TokenCollection) {
-		const newCollection = new TokenCollection('', old);
-		newCollection.push(...tokens);
-		return newCollection;
-	}
-
 	static fromPatterns(
 		value: Token | string,
 		patterns: RegExp[],
@@ -440,5 +434,11 @@ export class TokenCollection extends Array<Token> {
 
 	toJSON() {
 		return this.map(t => t.toJSON());
+	}
+
+	private static _new(tokens: Token[], old?: TokenCollection) {
+		const newCollection = new TokenCollection('', old);
+		newCollection.push(...tokens);
+		return newCollection;
 	}
 }

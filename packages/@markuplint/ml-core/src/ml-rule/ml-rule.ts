@@ -22,6 +22,15 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	readonly defaultValue: T;
 	readonly name: string;
 
+	constructor(o: RuleSeed<T, O> & { name: string }) {
+		this.name = o.name;
+		this.defaultSeverity = o.defaultSeverity || 'error';
+		this.defaultValue = o.defaultValue ?? (true as T);
+		this.defaultOptions = o.defaultOptions ?? (null as unknown as O);
+		this.#v = o.verify;
+		this.#f = o.fix;
+	}
+
 	/**
 	 * The following getter is unused internally,
 	 * only for extending from 3rd party library
@@ -36,15 +45,6 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	 */
 	protected get v(): RuleSeed<T, O>['verify'] {
 		return this.#v;
-	}
-
-	constructor(o: RuleSeed<T, O> & { name: string }) {
-		this.name = o.name;
-		this.defaultSeverity = o.defaultSeverity || 'error';
-		this.defaultValue = o.defaultValue ?? (true as T);
-		this.defaultOptions = o.defaultOptions ?? (null as unknown as O);
-		this.#v = o.verify;
-		this.#f = o.fix;
 	}
 
 	getRuleInfo(ruleSet: Ruleset, ruleName: string): GlobalRuleInfo<T, O> {

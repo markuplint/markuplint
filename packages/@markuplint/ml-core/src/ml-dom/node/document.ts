@@ -73,6 +73,43 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	readonly specs: Readonly<MLMLSpec>;
 
 	/**
+	 *
+	 * @param ast node list of markuplint AST
+	 * @param ruleset ruleset object
+	 */
+	constructor(
+		ast: MLASTDocument,
+		ruleset: Ruleset,
+		schemas: readonly [MLMLSpec, ...ExtendedSpec[]],
+		options?: {
+			filename?: string;
+			endTag?: 'xml' | 'omittable' | 'never';
+		},
+	) {
+		// @ts-ignore
+		super(ast, null);
+
+		this.isFragment = ast.isFragment;
+		this.specs = schemaToSpec(schemas);
+		this.endTag = options?.endTag ?? 'omittable';
+		this.#filename = options?.filename;
+
+		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
+		this.nodeList = Object.freeze(
+			ast.nodeList
+				.map(astNode => {
+					if (astNode.type === 'endtag') {
+						return;
+					}
+					return createNode<MLASTNode, T, O>(astNode, this);
+				})
+				.filter((n): n is MLNode<T, O> => !!n),
+		);
+
+		this._ruleMapping(ruleset);
+	}
+
+	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
 	 * @unsupported
@@ -1522,6 +1559,7 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	get onwheel(): ((this: GlobalEventHandlers, ev: WheelEvent) => any) | null {
 		throw new UnexpectedCallError('Not supported "onwheel" property');
 	}
+
 	get ownerDocument(): null {
 		return null;
 	}
@@ -1688,43 +1726,6 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	 */
 	get vlinkColor(): string {
 		throw new UnexpectedCallError('Not supported "vlinkColor" property');
-	}
-
-	/**
-	 *
-	 * @param ast node list of markuplint AST
-	 * @param ruleset ruleset object
-	 */
-	constructor(
-		ast: MLASTDocument,
-		ruleset: Ruleset,
-		schemas: readonly [MLMLSpec, ...ExtendedSpec[]],
-		options?: {
-			filename?: string;
-			endTag?: 'xml' | 'omittable' | 'never';
-		},
-	) {
-		// @ts-ignore
-		super(ast, null);
-
-		this.isFragment = ast.isFragment;
-		this.specs = schemaToSpec(schemas);
-		this.endTag = options?.endTag ?? 'omittable';
-		this.#filename = options?.filename;
-
-		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
-		this.nodeList = Object.freeze(
-			ast.nodeList
-				.map(astNode => {
-					if (astNode.type === 'endtag') {
-						return;
-					}
-					return createNode<MLASTNode, T, O>(astNode, this);
-				})
-				.filter((n): n is MLNode<T, O> => !!n),
-		);
-
-		this._ruleMapping(ruleset);
 	}
 
 	/**

@@ -20,16 +20,16 @@ type MLEngineOptions = {
 };
 
 export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
+	static async toMLFile(target: Target) {
+		const files = await resolveFiles([target]);
+		return files[0];
+	}
+
 	#file: MLFile;
 	#options?: APIOptions & MLEngineOptions;
 	#core: MLCore | null = null;
 	#watcher = new FSWatcher();
 	#configProvider: ConfigProvider;
-
-	static async toMLFile(target: Target) {
-		const files = await resolveFiles([target]);
-		return files[0];
-	}
 
 	constructor(file: MLFile, options?: APIOptions & MLEngineOptions) {
 		super();

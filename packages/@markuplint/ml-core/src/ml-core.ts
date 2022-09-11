@@ -31,10 +31,6 @@ export class MLCore {
 	#schemas: MLSchema;
 	#sourceCode: string;
 
-	get document() {
-		return this.#document;
-	}
-
 	constructor({ parser, sourceCode, ruleset, rules, locale, schemas, parserOptions, filename, debug }: MLCoreParams) {
 		if (debug) {
 			enableDebug();
@@ -55,6 +51,10 @@ export class MLCore {
 
 		this._parse();
 		this._createDocument();
+	}
+
+	get document() {
+		return this.#document;
 	}
 
 	setCode(sourceCode: string) {
@@ -163,6 +163,7 @@ export class MLCore {
 			}
 		}
 	}
+
 	private _parse() {
 		try {
 			this.#ast = this.#parser.parse(this.#sourceCode, this.#parserOptions);

@@ -86,10 +86,6 @@ class StructuredSelector {
 	#edge: SelectorTarget;
 	readonly headCombinator: string | null;
 
-	get selector() {
-		return this.#selector.nodes.join('');
-	}
-
 	constructor(selector: parser.Selector, depth: number, extended: ExtendedPseudoClass) {
 		this.#selector = selector;
 		this.#edge = new SelectorTarget(extended, depth);
@@ -121,6 +117,10 @@ class StructuredSelector {
 				}
 			}
 		});
+	}
+
+	get selector() {
+		return this.#selector.nodes.join('');
 	}
 
 	match(el: Node, scope: ParentNode | null): SelectorResult {
@@ -197,6 +197,16 @@ class SelectorTarget {
 		}
 		delete result.combinator;
 		return result;
+	}
+
+	toString() {
+		return [
+			this.tag?.toString() ?? '',
+			this.id.map(id => `#${id.value}`).join(''),
+			this.class.map(c => `.${c.value}`).join(''),
+			this.attr.map(attr => `[${attr.toString()}]`).join(''),
+			this.pseudo.map(pseudo => pseudo.value).join(''),
+		].join('');
 	}
 
 	_match(el: Node, scope: ParentNode | null, count: number): SelectorResult & { combinator?: string } {
@@ -407,16 +417,6 @@ class SelectorTarget {
 				throw new Error(`Unsupported ${this.#combinedFrom.combinator.value} combinator in selector`);
 			}
 		}
-	}
-
-	toString() {
-		return [
-			this.tag?.toString() ?? '',
-			this.id.map(id => `#${id.value}`).join(''),
-			this.class.map(c => `.${c.value}`).join(''),
-			this.attr.map(attr => `[${attr.toString()}]`).join(''),
-			this.pseudo.map(pseudo => pseudo.value).join(''),
-		].join('');
 	}
 
 	_matchWithoutCombineChecking(el: Node, scope: ParentNode | null): SelectorResult {

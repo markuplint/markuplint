@@ -54,6 +54,25 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	readonly ontouchstart?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
 	readonly selfClosingSolidus: MLToken | null;
 
+	constructor(astNode: MLASTElement, document: MLDocument<T, O>) {
+		super(astNode, document);
+		this.#attributes = astNode.attributes.map(attr => new MLAttr(attr, this));
+		this.hasSpreadAttr = astNode.hasSpreadAttr;
+		this.selfClosingSolidus = astNode.selfClosingSolidus ? new MLToken(astNode.selfClosingSolidus) : null;
+		this.endSpace = astNode.endSpace ? new MLToken(astNode.endSpace) : null;
+		this.closeTag = astNode.pearNode ? new MLToken(astNode.pearNode) : null;
+		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
+		this.namespaceURI = ns.namespaceURI;
+		this.elementType = astNode.elementType;
+		this.#localName = ns.localName;
+		this.isForeignElement = this.namespaceURI !== HTML_NAMESPACE;
+		this.#fixedNodeName = astNode.nodeName;
+
+		this.isOmitted = astNode.isGhost;
+
+		this.#tagOpenChar = astNode.tagOpenChar;
+	}
+
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
@@ -2075,25 +2094,6 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 */
 	get translate(): boolean {
 		throw new UnexpectedCallError('Not supported "translate" property');
-	}
-
-	constructor(astNode: MLASTElement, document: MLDocument<T, O>) {
-		super(astNode, document);
-		this.#attributes = astNode.attributes.map(attr => new MLAttr(attr, this));
-		this.hasSpreadAttr = astNode.hasSpreadAttr;
-		this.selfClosingSolidus = astNode.selfClosingSolidus ? new MLToken(astNode.selfClosingSolidus) : null;
-		this.endSpace = astNode.endSpace ? new MLToken(astNode.endSpace) : null;
-		this.closeTag = astNode.pearNode ? new MLToken(astNode.pearNode) : null;
-		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
-		this.namespaceURI = ns.namespaceURI;
-		this.elementType = astNode.elementType;
-		this.#localName = ns.localName;
-		this.isForeignElement = this.namespaceURI !== HTML_NAMESPACE;
-		this.#fixedNodeName = astNode.nodeName;
-
-		this.isOmitted = astNode.isGhost;
-
-		this.#tagOpenChar = astNode.tagOpenChar;
 	}
 
 	/**

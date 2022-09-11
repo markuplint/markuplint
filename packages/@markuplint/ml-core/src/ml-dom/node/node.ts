@@ -156,6 +156,13 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 
 	protected _astToken: A;
 
+	constructor(astNode: A, document: MLDocument<T, O>) {
+		super(astNode);
+		this._astToken = astNode;
+		this.#ownerDocument = document;
+		nodeStore.setNode(astNode, this);
+	}
+
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
@@ -308,6 +315,7 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	get ownerDocument(): any {
 		return this.#ownerDocument;
 	}
+
 	get ownerMLDocument(): MLDocument<T, O> {
 		return this.#ownerDocument;
 	}
@@ -523,13 +531,6 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 */
 	get textContent(): string | null {
 		return null;
-	}
-
-	constructor(astNode: A, document: MLDocument<T, O>) {
-		super(astNode);
-		this._astToken = astNode;
-		this.#ownerDocument = document;
-		nodeStore.setNode(astNode, this);
 	}
 
 	/**

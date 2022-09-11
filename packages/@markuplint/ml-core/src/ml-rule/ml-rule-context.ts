@@ -11,17 +11,17 @@ export class MLRuleContext<T extends RuleConfigValue, O = null> {
 	readonly locale: string;
 	readonly translate: Translator;
 
+	constructor(document: MLDocument<T, O>, locale: LocaleSet) {
+		this.document = document;
+		this.translate = translator(locale);
+		this.locale = locale.locale;
+	}
+
 	get reports() {
 		return this.#reports.map(report => ({
 			...report,
 			message: finish(report.message),
 		}));
-	}
-
-	constructor(document: MLDocument<T, O>, locale: LocaleSet) {
-		this.document = document;
-		this.translate = translator(locale);
-		this.locale = locale.locale;
 	}
 
 	provide() {

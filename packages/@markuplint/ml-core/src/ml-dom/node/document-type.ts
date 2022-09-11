@@ -16,6 +16,13 @@ export class MLDocumentType<T extends RuleConfigValue, O = null>
 	readonly publicId: string;
 	readonly systemId: string;
 
+	constructor(astNode: MLASTDoctype, document: MLDocument<T, O>) {
+		super(astNode, document);
+		this.name = astNode.name;
+		this.publicId = astNode.publicId;
+		this.systemId = astNode.systemId;
+	}
+
 	/**
 	 * Returns a string appropriate for the type of node as `DocumentType`
 	 *
@@ -30,13 +37,6 @@ export class MLDocumentType<T extends RuleConfigValue, O = null>
 	 */
 	get nodeType(): DocumentTypeNodeType {
 		return this.DOCUMENT_TYPE_NODE;
-	}
-
-	constructor(astNode: MLASTDoctype, document: MLDocument<T, O>) {
-		super(astNode, document);
-		this.name = astNode.name;
-		this.publicId = astNode.publicId;
-		this.systemId = astNode.systemId;
 	}
 
 	/**

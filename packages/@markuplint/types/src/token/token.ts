@@ -1,6 +1,23 @@
 import type { UnmatchedResult, UnmatchedResultOptions, UnmatchedResultReason } from '../types';
 
 export class Token {
+	/**
+	 * ASCII whitespace is
+	 * - U+0009 TAB
+	 * - U+000A LF
+	 * - U+000C FF
+	 * - U+000D CR
+	 * - U+0020 SPACE.
+	 *
+	 * @see https://infra.spec.whatwg.org/#ascii-whitespace
+	 */
+	static readonly whitespace: ReadonlyArray<string> = ['\u0009', '\u000A', '\u000C', '\u000D', '\u0020'];
+	/**
+	 * @see https://github.com/csstree/csstree/blob/master/lib/tokenizer/types.js
+	 */
+	static readonly Ident = 1;
+	static readonly WhiteSpace = 13;
+	static readonly Comma = 18;
 	static getType(value: string, separators?: string[]) {
 		if (Token.whitespace.includes(value[0])) {
 			return Token.WhiteSpace;
@@ -31,25 +48,6 @@ export class Token {
 			column: Token.getCol(token.#originalValue, shifted),
 		};
 	}
-
-	/**
-	 * ASCII whitespace is
-	 * - U+0009 TAB
-	 * - U+000A LF
-	 * - U+000C FF
-	 * - U+000D CR
-	 * - U+0020 SPACE.
-	 *
-	 * @see https://infra.spec.whatwg.org/#ascii-whitespace
-	 */
-	static readonly whitespace: ReadonlyArray<string> = ['\u0009', '\u000A', '\u000C', '\u000D', '\u0020'];
-
-	/**
-	 * @see https://github.com/csstree/csstree/blob/master/lib/tokenizer/types.js
-	 */
-	static readonly Ident = 1;
-	static readonly WhiteSpace = 13;
-	static readonly Comma = 18;
 
 	readonly type: number;
 	readonly value: string;

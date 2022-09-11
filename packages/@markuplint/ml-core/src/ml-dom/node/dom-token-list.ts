@@ -22,10 +22,6 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 	 */
 	#ownerAttrs: MLAttr<any, any>[];
 
-	get value() {
-		return this.join(' ');
-	}
-
 	constructor(tokens: string, ownerAttrs: MLAttr<any, any>[]) {
 		const list = tokens
 			.split(/\s+/)
@@ -35,6 +31,10 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 		this.#origin = tokens;
 		this.#ownerAttrs = ownerAttrs;
 		this.#set = new Set(list);
+	}
+
+	get value() {
+		return this.join(' ');
 	}
 
 	add(...tokens: string[]): void {

@@ -11,6 +11,12 @@ import { MLNode } from './node';
 export class MLBlock<T extends RuleConfigValue, O = null> extends MLNode<T, O, MLASTPreprocessorSpecificBlock> {
 	readonly isTransparent: boolean;
 
+	constructor(astNode: MLASTPreprocessorSpecificBlock, document: MLDocument<T, O>) {
+		super(astNode, document);
+		// TODO:
+		this.isTransparent = true;
+	}
+
 	/**
 	 * Returns a string appropriate for the type of node as `MLBlock`
 	 *
@@ -27,12 +33,6 @@ export class MLBlock<T extends RuleConfigValue, O = null> extends MLNode<T, O, M
 	 */
 	get nodeType(): MarkuplintPreprocessorBlockType {
 		return this.MARKUPLINT_PREPROCESSOR_BLOCK;
-	}
-
-	constructor(astNode: MLASTPreprocessorSpecificBlock, document: MLDocument<T, O>) {
-		super(astNode, document);
-		// TODO:
-		this.isTransparent = true;
 	}
 
 	/**
