@@ -1,18 +1,70 @@
 import type { MLElement } from '../node/element';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
-import { getAccname as _getAccname } from '@markuplint/ml-spec';
+import { getAccname as get, getComputedRole } from '@markuplint/ml-spec';
 
 import { log } from '../../debug';
 
 const accnameLog = log.extend('accname');
 
-export function getAccname(el: MLElement<any, any>) {
+export function getAccname(el: MLElement<any, any>, version: ARIAVersion): string {
+	let accname = safeGet(el);
+	if (accname) {
+		return accname;
+	}
+	accname = getAccnameFromPretender(el);
+	if (accname) {
+		return accname;
+	}
+	if (isHidden(el)) {
+		return '';
+	}
+	if (isFromContent(el, version)) {
+		return Array.from(el.childNodes)
+			.map(child => {
+				if (child.is(child.ELEMENT_NODE)) {
+					return getAccname(child, version);
+				}
+				if (child.is(child.TEXT_NODE)) {
+					return child.textContent || '';
+				}
+				return '';
+			})
+			.join('');
+	}
+	return '';
+}
+
+function safeGet(el: MLElement<any, any>) {
 	try {
-		const name = _getAccname(el);
+		const name = get(el);
 		return name;
 	} catch (err) {
 		accnameLog('Raw: %s', el.raw);
 		accnameLog('Error: %O', err);
 		return '';
 	}
+}
+
+function getAccnameFromPretender(el: MLElement<any, any>) {
+	if (el.pretenderContext?.type === 'pretender' && el.pretenderContext.aria?.name) {
+		if (typeof el.pretenderContext.aria.name === 'boolean') {
+			return 'some-name(Pretender Options)';
+		}
+		const attrName = el.pretenderContext.aria.name.fromAttr;
+		const attrValue = el.getAttribute(attrName);
+		if (attrValue) {
+			return attrValue;
+		}
+	}
+	return '';
+}
+
+function isHidden(el: MLElement<any, any>) {
+	return el.getAttribute('aria-hidden') === 'true' || el.hasAttribute('hidden');
+}
+
+function isFromContent(el: MLElement<any, any>, version: ARIAVersion) {
+	const role = getComputedRole(el.ownerMLDocument.specs, el, version);
+	return !!role.role?.accessibleNameFromContent;
 }

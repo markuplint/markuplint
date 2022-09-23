@@ -3,6 +3,7 @@ import type { Config, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import { parse } from '@markuplint/html-parser';
+import spec from '@markuplint/html-spec';
 
 import { convertRuleset } from '../convert-ruleset';
 import { Document } from '../ml-dom';
@@ -46,6 +47,5 @@ export function createTestElement(sourceCode: string, options?: CreateTestOption
  * for test suite
  */
 export function dummySchemas() {
-	// @ts-ignore
-	return [{}, {}] as [MLMLSpec, ...ExtendedSpec[]];
+	return [spec] as [MLMLSpec, ...ExtendedSpec[]];
 }

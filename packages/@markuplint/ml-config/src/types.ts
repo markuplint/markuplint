@@ -75,6 +75,28 @@ export type OriginalNode = {
 		 */
 		value?: string;
 	}[];
+
+	/**
+	 * ARIA properties
+	 */
+	aria?: PretenderARIA;
+};
+
+/**
+ * Pretender Node ARIA properties
+ */
+export type PretenderARIA = {
+	/**
+	 * Accessible name
+	 *
+	 * - If it is `true`, it assumes the element has any text on its accessible name.
+	 * - If it specifies `fromAttr` property, it assumes the accessible name refers to the value of the attribute.
+	 */
+	name?:
+		| boolean
+		| {
+				fromAttr: string;
+		  };
 };
 
 export type Rule<T extends RuleConfigValue, O = void> = RuleConfig<T, O> | T | boolean;

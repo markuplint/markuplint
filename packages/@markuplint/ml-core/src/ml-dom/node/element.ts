@@ -3,7 +3,8 @@ import type { MLNamedNodeMap } from './named-node-map';
 import type { MLText } from './text';
 import type { ElementNodeType, PretenderContext } from './types';
 import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
-import type { Pretender, RuleConfigValue } from '@markuplint/ml-config';
+import type { Pretender, PretenderARIA, RuleConfigValue } from '@markuplint/ml-config';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
 import { createSelector } from '@markuplint/selector';
@@ -2218,8 +2219,8 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
-	getAccessibleName(): string {
-		return getAccname(this);
+	getAccessibleName(version: ARIAVersion): string {
+		return getAccname(this, version);
 	}
 
 	/**
@@ -2554,6 +2555,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 		let nodeName: string;
 		let namespace = 'html';
 		const attributes = this._astToken.attributes;
+		let aria: PretenderARIA | undefined;
 		if (typeof pretenderConfig.as === 'string') {
 			nodeName = pretenderConfig.as;
 		} else {
@@ -2609,6 +2611,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 					}),
 				);
 			}
+			aria = pretenderConfig.as.aria;
 		}
 
 		const as = new MLElement<T, O>(
@@ -2633,6 +2636,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 		this.pretenderContext = {
 			type: 'pretender',
 			as,
+			aria,
 		};
 	}
 
