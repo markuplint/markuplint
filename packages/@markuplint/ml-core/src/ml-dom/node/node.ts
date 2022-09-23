@@ -760,4 +760,11 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	replaceChild<T extends Node>(node: Node, child: T): T {
 		throw new UnexpectedCallError('Not supported "removeChild" method');
 	}
+
+	/**
+	 * @implements `@markuplint/ml-core` API: `MLNode`
+	 */
+	resetChildren(childNodes?: NodeListOf<MLChildNode<T, O>>) {
+		this.#childNodes = childNodes ?? this.#childNodes;
+	}
 }

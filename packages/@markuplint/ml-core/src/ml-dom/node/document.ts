@@ -10,7 +10,7 @@ import type { MLNode } from './node';
 import type { MLText } from './text';
 import type { DocumentNodeType } from './types';
 import type { MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { Pretender, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
@@ -84,6 +84,7 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 		options?: {
 			filename?: string;
 			endTag?: 'xml' | 'omittable' | 'never';
+			pretenders?: Pretender[];
 		},
 	) {
 		// @ts-ignore
@@ -106,6 +107,7 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 				.filter((n): n is MLNode<T, O> => !!n),
 		);
 
+		this._pretending(options?.pretenders);
 		this._ruleMapping(ruleset);
 	}
 
@@ -2288,6 +2290,20 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	 */
 	writeln(...text: string[]): void {
 		throw new UnexpectedCallError('Not supported "writeln" method');
+	}
+
+	private _pretending(pretenders?: Pretender[]) {
+		if (docLog.enabled) {
+			docLog('Pretending: %O', pretenders);
+		}
+		if (!pretenders) {
+			return;
+		}
+		for (const node of this.nodeList) {
+			if (node.is(node.ELEMENT_NODE)) {
+				node.pretending(pretenders);
+			}
+		}
 	}
 
 	private _ruleMapping(ruleset: Ruleset) {

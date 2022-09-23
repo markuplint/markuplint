@@ -3,7 +3,7 @@ import type Ruleset from './ruleset';
 import type { MLFabric, MLSchema } from './types';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { MLASTDocument, MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
-import type { RuleConfigValue, Violation } from '@markuplint/ml-config';
+import type { Pretender, RuleConfigValue, Violation } from '@markuplint/ml-config';
 
 import { ParserError } from '@markuplint/parser-utils';
 
@@ -25,12 +25,24 @@ export class MLCore {
 	#locale: LocaleSet;
 	#parser: MLMarkupLanguageParser;
 	#parserOptions: ParserOptions;
+	#pretenders: Pretender[];
 	#rules: MLRule<RuleConfigValue, unknown>[];
 	#ruleset: Ruleset;
 	#schemas: MLSchema;
 	#sourceCode: string;
 
-	constructor({ parser, sourceCode, ruleset, rules, locale, schemas, parserOptions, filename, debug }: MLCoreParams) {
+	constructor({
+		parser,
+		sourceCode,
+		ruleset,
+		rules,
+		locale,
+		schemas,
+		parserOptions,
+		pretenders,
+		filename,
+		debug,
+	}: MLCoreParams) {
 		if (debug) {
 			enableDebug();
 		}
@@ -47,6 +59,7 @@ export class MLCore {
 		this.#schemas = schemas;
 		this.#filename = filename;
 		this.#rules = rules;
+		this.#pretenders = pretenders;
 
 		this._parse();
 		this._createDocument();
@@ -153,6 +166,7 @@ export class MLCore {
 			this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, {
 				filename: this.#filename,
 				endTag: this.#parser.endTag,
+				pretenders: this.#pretenders,
 			});
 		} catch (err) {
 			if (err instanceof ParserError) {

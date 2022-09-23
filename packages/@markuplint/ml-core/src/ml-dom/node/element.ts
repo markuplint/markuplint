@@ -1,9 +1,9 @@
 import type { MLDocument } from './document';
 import type { MLNamedNodeMap } from './named-node-map';
 import type { MLText } from './text';
-import type { ElementNodeType } from './types';
+import type { ElementNodeType, PretenderContext } from './types';
 import type { ElementType, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { Pretender, RuleConfigValue } from '@markuplint/ml-config';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
 import { createSelector } from '@markuplint/selector';
@@ -33,7 +33,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	extends MLParentNode<T, O, MLASTElement>
 	implements Element, HTMLOrSVGElement, HTMLElement
 {
-	readonly #attributes: MLAttr<T, O>[];
+	#attributes: MLAttr<T, O>[];
 	readonly closeTag: MLToken | null;
 	readonly elementType: ElementType;
 	readonly endSpace: MLToken | null;
@@ -50,6 +50,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	readonly ontouchend?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
 	readonly ontouchmove?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
 	readonly ontouchstart?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
+	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
 	readonly selfClosingSolidus: MLToken | null;
 	readonly #tagOpenChar: string;
 
@@ -778,6 +779,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-localname%E2%91%A0
 	 */
 	get localName(): string {
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.pretenderContext.as.localName;
+		}
 		if (this.isForeignElement || this.elementType !== 'html') {
 			return this.#localName;
 		}
@@ -801,6 +805,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#ref-for-element%E2%91%A2%E2%93%AA
 	 */
 	get nodeName(): string {
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.pretenderContext.as.nodeName;
+		}
 		if (this.isForeignElement || this.elementType !== 'html') {
 			return this._astToken.nodeName;
 		}
@@ -1926,6 +1933,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	}
 
 	get raw() {
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.originRaw;
+		}
+
 		let fixed = this.originRaw;
 		let gap = 0;
 		if (this.nodeName !== this.fixedNodeName) {
@@ -2064,6 +2075,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-tagname%E2%91%A0
 	 */
 	get tagName() {
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.pretenderContext.as.nodeName;
+		}
 		return this.nodeName;
 	}
 
@@ -2518,7 +2532,52 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-matches%E2%91%A0
 	 */
 	matches(selector: string): boolean {
-		return !!createSelector(selector, this.ownerMLDocument.specs).match(this);
+		return !!createSelector(selector, this.ownerMLDocument.specs).match(
+			// Prioritize the pretender
+			this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as : this,
+		);
+	}
+
+	/**
+	 * Pretenders Initialization
+	 */
+	pretending(pretenders: Pretender[]) {
+		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
+		if (!pretenderConfig) {
+			return;
+		}
+
+		let nodeName: string;
+		let namespace = 'html';
+		if (typeof pretenderConfig.as === 'string') {
+			nodeName = pretenderConfig.as;
+		} else {
+			nodeName = pretenderConfig.as.element;
+			namespace = pretenderConfig.as.namespace || namespace;
+		}
+
+		const as = new MLElement<T, O>(
+			{
+				...this._astToken,
+				uuid: this.uuid + '_pretender',
+				raw: `<${nodeName}>`,
+				nodeName,
+				namespace,
+				elementType: 'html',
+			},
+			this.ownerMLDocument,
+		);
+
+		as.resetChildren(this.childNodes);
+		as.pretenderContext = {
+			type: 'origin',
+			origin: this,
+		};
+
+		this.pretenderContext = {
+			type: 'pretender',
+			as,
+		};
 	}
 
 	/**

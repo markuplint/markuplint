@@ -239,6 +239,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		return {
 			parser,
 			parserOptions,
+			pretenders: configSet.config.pretenders ?? [],
 			ruleset,
 			schemas,
 			rules,

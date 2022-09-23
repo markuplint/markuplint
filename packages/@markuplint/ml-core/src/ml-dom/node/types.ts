@@ -68,3 +68,17 @@ export type NodeType =
 	| DocumentTypeNodeType
 	| DocumentFragmentNodeType
 	| MarkuplintPreprocessorBlockType;
+
+export type PretenderContext<N extends MLElement<T, O>, T extends RuleConfigValue, O = null> =
+	| PretenderContextPretender<N, T, O>
+	| PretenderContextPretended<N, T, O>;
+
+export type PretenderContextPretender<N extends MLElement<T, O>, T extends RuleConfigValue, O = null> = {
+	readonly type: 'pretender';
+	readonly as: N;
+};
+
+export type PretenderContextPretended<N extends MLElement<T, O>, T extends RuleConfigValue, O = null> = {
+	readonly type: 'origin';
+	readonly origin: N;
+};
