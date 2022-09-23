@@ -981,6 +981,37 @@ describe('Pretenders Option', () => {
 			},
 		]);
 	});
+
+	test('Attr', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<a href><MyComponent/></a>', {
+					...jsxRuleOn,
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: {
+								element: 'div',
+								attrs: [
+									{
+										name: 'tabindex',
+									},
+								],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message: 'The "a" element is a transparent model but also disallows the "div" element in this context',
+				raw: '<MyComponent/>',
+			},
+		]);
+	});
 });
 
 describe('Vue', () => {

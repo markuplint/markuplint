@@ -60,6 +60,21 @@ export type OriginalNode = {
 	 * If it is `undefined`, the namespace is HTML.
 	 */
 	namespace?: 'svg';
+
+	/**
+	 * Attributes
+	 */
+	attrs?: {
+		/**
+		 * Attribute name
+		 */
+		name: string;
+
+		/**
+		 * If it omits this property, the attribute is resolved as a boolean.
+		 */
+		value?: string;
+	}[];
 };
 
 export type Rule<T extends RuleConfigValue, O = void> = RuleConfig<T, O> | T | boolean;

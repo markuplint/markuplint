@@ -2,7 +2,7 @@ import type { MLDocument } from './document';
 import type { MLNamedNodeMap } from './named-node-map';
 import type { MLText } from './text';
 import type { ElementNodeType, PretenderContext } from './types';
-import type { ElementType, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
+import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
 import type { Pretender, RuleConfigValue } from '@markuplint/ml-config';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
@@ -513,8 +513,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 
 		const names = new Set<string>();
 		const attrs: MLAttr<T, O>[] = [];
+		const origin =
+			this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as.#attributes : this.#attributes;
 
-		for (const attr of this.#attributes) {
+		for (const attr of origin) {
 			if (names.has(attr.name)) {
 				/**
 				 * Skips a duplicated attribute
@@ -2300,7 +2302,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	getAttributeTokens() {
-		return Object.freeze(this.#attributes);
+		return Object.freeze(
+			this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as.#attributes : this.#attributes,
+		);
 	}
 
 	/**
@@ -2549,11 +2553,62 @@ export class MLElement<T extends RuleConfigValue, O = null>
 
 		let nodeName: string;
 		let namespace = 'html';
+		const attributes = this._astToken.attributes;
 		if (typeof pretenderConfig.as === 'string') {
 			nodeName = pretenderConfig.as;
 		} else {
 			nodeName = pretenderConfig.as.element;
 			namespace = pretenderConfig.as.namespace || namespace;
+			if (pretenderConfig.as.attrs) {
+				attributes.push(
+					...pretenderConfig.as.attrs.map(({ name, value }, i) => {
+						return {
+							...this._astToken,
+							uuid: `${this.uuid}_attr_${i}`,
+							type: 'html-attr',
+							nodeName: name,
+							spacesBeforeName: {
+								...this._astToken,
+								raw: '',
+							},
+							name: {
+								...this._astToken,
+								raw: name,
+							},
+							spacesBeforeEqual: {
+								...this._astToken,
+								raw: '',
+							},
+							equal: {
+								...this._astToken,
+								raw: '',
+							},
+							spacesAfterEqual: {
+								...this._astToken,
+								raw: '',
+							},
+							startQuote: {
+								...this._astToken,
+								raw: '',
+							},
+							value: {
+								...this._astToken,
+								raw: value ?? '',
+							},
+							endQuote: {
+								...this._astToken,
+								raw: '',
+							},
+							isDuplicatable: true,
+							parentNode: null,
+							nextNode: null,
+							prevNode: null,
+							isFragment: false,
+							isGhost: false,
+						} as MLASTAttr;
+					}),
+				);
+			}
 		}
 
 		const as = new MLElement<T, O>(
@@ -2564,6 +2619,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 				nodeName,
 				namespace,
 				elementType: 'html',
+				attributes,
 			},
 			this.ownerMLDocument,
 		);
