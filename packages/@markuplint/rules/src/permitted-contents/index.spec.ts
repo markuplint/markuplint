@@ -896,8 +896,16 @@ describe('React', () => {
 			},
 		]);
 	});
+});
 
-	test.only('Pretenders Option', async () => {
+describe('Pretenders Option', () => {
+	const jsxRuleOn = {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
+		},
+	};
+
+	test('Element', async () => {
 		expect(
 			(
 				await mlRuleTest(rule, '<ul><MyComponent/></ul>', {
@@ -948,6 +956,30 @@ describe('React', () => {
 				})
 			).violations.length,
 		).toBe(0);
+		expect(
+			(
+				await mlRuleTest(rule, '<span><MyComponent><div></div></MyComponent></span>', {
+					...jsxRuleOn,
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: {
+								element: 'a',
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 20,
+				raw: '<div>',
+				message:
+					'The "div" element is not allowed in the "span" element through the transparent model in this context',
+			},
+		]);
 	});
 });
 
