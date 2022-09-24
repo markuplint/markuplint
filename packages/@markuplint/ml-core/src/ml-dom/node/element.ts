@@ -45,7 +45,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	readonly isOmitted: boolean;
 	#localName: string;
 	readonly namespaceURI: NamespaceURI;
-	#normalizedAttrs: MLNamedNodeMap<T, O> | null = null;
+	#normalizedAttrs: Map<MLAttr<T, O>[], MLNamedNodeMap<T, O>> = new Map();
 	#normalizedString: string | null = null;
 	readonly ontouchcancel?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
 	readonly ontouchend?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
@@ -508,14 +508,15 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#dom-element-attributes
 	 */
 	get attributes(): MLNamedNodeMap<T, O> {
-		if (this.#normalizedAttrs) {
-			return this.#normalizedAttrs;
+		const origin =
+			this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as.#attributes : this.#attributes;
+
+		if (this.#normalizedAttrs.has(origin)) {
+			return this.#normalizedAttrs.get(origin)!;
 		}
 
 		const names = new Set<string>();
 		const attrs: MLAttr<T, O>[] = [];
-		const origin =
-			this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as.#attributes : this.#attributes;
 
 		for (const attr of origin) {
 			if (names.has(attr.name)) {
@@ -530,8 +531,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 			attrs.push(attr);
 		}
 
-		this.#normalizedAttrs = toNamedNodeMap(attrs);
-		return this.#normalizedAttrs;
+		const map = toNamedNodeMap(attrs);
+		this.#normalizedAttrs.set(origin, map);
+		return map;
 	}
 
 	/**
@@ -2288,6 +2290,18 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
+	getAttributePretended(attrName: string) {
+		for (const attr of Array.from(this.#attributes)) {
+			if (attr.name.toLowerCase() === attrName.toLowerCase()) {
+				return attr.value;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 */
 	getAttributeToken(attrName: string) {
 		const attrs: MLAttr<T, O>[] = [];
 		attrName = attrName.toLowerCase();
@@ -2554,16 +2568,24 @@ export class MLElement<T extends RuleConfigValue, O = null>
 
 		let nodeName: string;
 		let namespace = 'html';
-		const attributes = this._astToken.attributes;
+		const attributes: MLASTAttr[] = [];
 		let aria: PretenderARIA | undefined;
 		if (typeof pretenderConfig.as === 'string') {
 			nodeName = pretenderConfig.as;
 		} else {
 			nodeName = pretenderConfig.as.element;
 			namespace = pretenderConfig.as.namespace || namespace;
+			if (pretenderConfig.as.inheritAttrs) {
+				attributes.push(...this._astToken.attributes);
+			}
 			if (pretenderConfig.as.attrs) {
 				attributes.push(
 					...pretenderConfig.as.attrs.map(({ name, value }, i) => {
+						const _value = value
+							? typeof value === 'string'
+								? value
+								: this.getAttribute(value.fromAttr) || ''
+							: '';
 						return {
 							...this._astToken,
 							uuid: `${this.uuid}_attr_${i}`,
@@ -2595,7 +2617,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 							},
 							value: {
 								...this._astToken,
-								raw: value ?? '',
+								raw: _value,
 							},
 							endQuote: {
 								...this._astToken,

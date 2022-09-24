@@ -692,11 +692,109 @@ describe('Pretenders Option', () => {
 					parser: {
 						'.*': '@markuplint/jsx-parser',
 					},
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "list" role expects the "listitem" roles',
+				raw: '<ul>',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(rule, '<ul><Item role="listitem">item</Item></ul>', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
 					pretenders: [
 						{
 							selector: 'Item',
 							as: {
 								element: 'div',
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "list" role expects the "listitem" roles',
+				raw: '<ul>',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(rule, '<ul><Item role="listitem">item</Item></ul>', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					pretenders: [
+						{
+							selector: 'Item',
+							as: {
+								element: 'div',
+								inheritAttrs: true,
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+		expect(
+			(
+				await mlRuleTest(rule, '<ul><Item role="listitem">item</Item></ul>', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					pretenders: [
+						{
+							selector: 'Item',
+							as: {
+								element: 'div',
+								attrs: [
+									{
+										name: 'role',
+									},
+								],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "list" role expects the "listitem" roles',
+				raw: '<ul>',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(rule, '<ul><Item data-role="listitem">item</Item></ul>', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					pretenders: [
+						{
+							selector: 'Item',
+							as: {
+								element: 'div',
+								attrs: [
+									{
+										name: 'role',
+										value: {
+											fromAttr: 'data-role',
+										},
+									},
+								],
 							},
 						},
 					],

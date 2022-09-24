@@ -73,8 +73,17 @@ export type OriginalNode = {
 		/**
 		 * If it omits this property, the attribute is resolved as a boolean.
 		 */
-		value?: string;
+		value?:
+			| string
+			| {
+					fromAttr: string;
+			  };
 	}[];
+
+	/**
+	 * To have attributes the defined element has.
+	 */
+	inheritAttrs?: boolean;
 
 	/**
 	 * ARIA properties

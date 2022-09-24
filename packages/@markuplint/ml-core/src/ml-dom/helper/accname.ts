@@ -52,7 +52,7 @@ function getAccnameFromPretender(el: MLElement<any, any>) {
 			return 'some-name(Pretender Options)';
 		}
 		const attrName = el.pretenderContext.aria.name.fromAttr;
-		const attrValue = el.getAttribute(attrName);
+		const attrValue = el.getAttributePretended(attrName);
 		if (attrValue) {
 			return attrValue;
 		}
