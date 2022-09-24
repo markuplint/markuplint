@@ -100,3 +100,89 @@ describe('React', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+describe('Pretenders Option', () => {
+	it('Outer', async () => {
+		const { violations } = await mlRuleTest(rule, '<html><Head><title>Title</title></Head></html>', {
+			nodeRule: [
+				{
+					selector: 'head',
+					rule: ['meta[charset="UTF-8"]'],
+				},
+			],
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			pretenders: [
+				{
+					selector: 'Head',
+					as: 'head',
+				},
+			],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				raw: '<Head>',
+				message: 'Require the "meta[charset="UTF-8"]" element',
+			},
+		]);
+	});
+
+	it('Outer', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<html><head><title>Title</title><Charset /></head></html>', {
+					nodeRule: [
+						{
+							selector: 'head',
+							rule: ['meta[charset="UTF-8"]'],
+						},
+					],
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'Require the "meta[charset="UTF-8"]" element',
+				raw: '<head>',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(rule, '<html><head><title>Title</title><Charset /></head></html>', {
+					nodeRule: [
+						{
+							selector: 'head',
+							rule: ['meta[charset="UTF-8"]'],
+						},
+					],
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					pretenders: [
+						{
+							selector: 'Charset',
+							as: {
+								element: 'meta',
+								attrs: [
+									{
+										name: 'charset',
+										value: 'UTF-8',
+									},
+								],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+	});
+});
