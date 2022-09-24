@@ -510,6 +510,18 @@ describe('Required Owned Elements', () => {
 			},
 		]);
 	});
+
+	test('Invalid contents', async () => {
+		expect((await mlRuleTest(rule, '<ul><div></div></ul>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "list" role expects the "listitem" roles',
+				raw: '<ul>',
+			},
+		]);
+	});
 });
 
 describe('Presentational Children', () => {
@@ -614,6 +626,83 @@ describe('childNodeRules', () => {
 		});
 
 		expect(violations.length).toBe(0);
+	});
+});
+
+describe('Pretenders Option', () => {
+	test('list > listitem', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<ul><Item>item</Item></ul>', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "list" role expects the "listitem" roles',
+				raw: '<ul>',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(rule, '<ul><Item>item</Item></ul>', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					pretenders: [
+						{
+							selector: 'Item',
+							as: 'li',
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+		expect(
+			(
+				await mlRuleTest(rule, '<ul><Item>item</Item></ul>', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					pretenders: [
+						{
+							selector: 'Item',
+							as: {
+								element: 'div',
+								attrs: [
+									{
+										name: 'role',
+										value: 'listitem',
+									},
+								],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+		expect(
+			(
+				await mlRuleTest(rule, '<ul><Item role="listitem">item</Item></ul>', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					pretenders: [
+						{
+							selector: 'Item',
+							as: {
+								element: 'div',
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
 	});
 });
 
