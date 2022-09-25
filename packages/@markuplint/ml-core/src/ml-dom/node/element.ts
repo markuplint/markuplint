@@ -1,9 +1,10 @@
 import type { MLDocument } from './document';
 import type { MLNamedNodeMap } from './named-node-map';
 import type { MLText } from './text';
-import type { ElementNodeType } from './types';
-import type { ElementType, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { ElementNodeType, PretenderContext } from './types';
+import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
+import type { Pretender, PretenderARIA, RuleConfigValue } from '@markuplint/ml-config';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
 import { createSelector } from '@markuplint/selector';
@@ -33,7 +34,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	extends MLParentNode<T, O, MLASTElement>
 	implements Element, HTMLOrSVGElement, HTMLElement
 {
-	readonly #attributes: MLAttr<T, O>[];
+	#attributes: MLAttr<T, O>[];
 	readonly closeTag: MLToken | null;
 	readonly elementType: ElementType;
 	readonly endSpace: MLToken | null;
@@ -44,12 +45,13 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	readonly isOmitted: boolean;
 	#localName: string;
 	readonly namespaceURI: NamespaceURI;
-	#normalizedAttrs: MLNamedNodeMap<T, O> | null = null;
+	#normalizedAttrs: Map<MLAttr<T, O>[], MLNamedNodeMap<T, O>> = new Map();
 	#normalizedString: string | null = null;
 	readonly ontouchcancel?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
 	readonly ontouchend?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
 	readonly ontouchmove?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
 	readonly ontouchstart?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
+	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
 	readonly selfClosingSolidus: MLToken | null;
 	readonly #tagOpenChar: string;
 
@@ -506,14 +508,17 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#dom-element-attributes
 	 */
 	get attributes(): MLNamedNodeMap<T, O> {
-		if (this.#normalizedAttrs) {
-			return this.#normalizedAttrs;
+		const origin =
+			this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as.#attributes : this.#attributes;
+
+		if (this.#normalizedAttrs.has(origin)) {
+			return this.#normalizedAttrs.get(origin)!;
 		}
 
 		const names = new Set<string>();
 		const attrs: MLAttr<T, O>[] = [];
 
-		for (const attr of this.#attributes) {
+		for (const attr of origin) {
 			if (names.has(attr.name)) {
 				/**
 				 * Skips a duplicated attribute
@@ -526,8 +531,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 			attrs.push(attr);
 		}
 
-		this.#normalizedAttrs = toNamedNodeMap(attrs);
-		return this.#normalizedAttrs;
+		const map = toNamedNodeMap(attrs);
+		this.#normalizedAttrs.set(origin, map);
+		return map;
 	}
 
 	/**
@@ -778,6 +784,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-localname%E2%91%A0
 	 */
 	get localName(): string {
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.pretenderContext.as.localName;
+		}
 		if (this.isForeignElement || this.elementType !== 'html') {
 			return this.#localName;
 		}
@@ -801,6 +810,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#ref-for-element%E2%91%A2%E2%93%AA
 	 */
 	get nodeName(): string {
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.pretenderContext.as.nodeName;
+		}
 		if (this.isForeignElement || this.elementType !== 'html') {
 			return this._astToken.nodeName;
 		}
@@ -1926,6 +1938,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	}
 
 	get raw() {
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.originRaw;
+		}
+
 		let fixed = this.originRaw;
 		let gap = 0;
 		if (this.nodeName !== this.fixedNodeName) {
@@ -2064,6 +2080,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-tagname%E2%91%A0
 	 */
 	get tagName() {
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.pretenderContext.as.nodeName;
+		}
 		return this.nodeName;
 	}
 
@@ -2202,8 +2221,8 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
-	getAccessibleName(): string {
-		return getAccname(this);
+	getAccessibleName(version: ARIAVersion): string {
+		return getAccname(this, version);
 	}
 
 	/**
@@ -2271,6 +2290,18 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
+	getAttributePretended(attrName: string) {
+		for (const attr of Array.from(this.#attributes)) {
+			if (attr.name.toLowerCase() === attrName.toLowerCase()) {
+				return attr.value;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 */
 	getAttributeToken(attrName: string) {
 		const attrs: MLAttr<T, O>[] = [];
 		attrName = attrName.toLowerCase();
@@ -2286,7 +2317,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	getAttributeTokens() {
-		return Object.freeze(this.#attributes);
+		return Object.freeze(
+			this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as.#attributes : this.#attributes,
+		);
 	}
 
 	/**
@@ -2518,7 +2551,115 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-matches%E2%91%A0
 	 */
 	matches(selector: string): boolean {
-		return !!createSelector(selector, this.ownerMLDocument.specs).match(this);
+		return !!createSelector(selector, this.ownerMLDocument.specs).match(
+			// Prioritize the pretender
+			this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as : this,
+		);
+	}
+
+	/**
+	 * Pretenders Initialization
+	 */
+	pretending(pretenders: Pretender[]) {
+		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
+		if (!pretenderConfig) {
+			return;
+		}
+
+		let nodeName: string;
+		let namespace = 'html';
+		const attributes: MLASTAttr[] = [];
+		let aria: PretenderARIA | undefined;
+		if (typeof pretenderConfig.as === 'string') {
+			nodeName = pretenderConfig.as;
+		} else {
+			nodeName = pretenderConfig.as.element;
+			namespace = pretenderConfig.as.namespace || namespace;
+			if (pretenderConfig.as.inheritAttrs) {
+				attributes.push(...this._astToken.attributes);
+			}
+			if (pretenderConfig.as.attrs) {
+				attributes.push(
+					...pretenderConfig.as.attrs.map(({ name, value }, i) => {
+						const _value = value
+							? typeof value === 'string'
+								? value
+								: this.getAttribute(value.fromAttr) || ''
+							: '';
+						return {
+							...this._astToken,
+							uuid: `${this.uuid}_attr_${i}`,
+							type: 'html-attr',
+							nodeName: name,
+							spacesBeforeName: {
+								...this._astToken,
+								raw: '',
+							},
+							name: {
+								...this._astToken,
+								raw: name,
+							},
+							spacesBeforeEqual: {
+								...this._astToken,
+								raw: '',
+							},
+							equal: {
+								...this._astToken,
+								raw: '',
+							},
+							spacesAfterEqual: {
+								...this._astToken,
+								raw: '',
+							},
+							startQuote: {
+								...this._astToken,
+								raw: '',
+							},
+							value: {
+								...this._astToken,
+								raw: _value,
+							},
+							endQuote: {
+								...this._astToken,
+								raw: '',
+							},
+							isDuplicatable: true,
+							parentNode: null,
+							nextNode: null,
+							prevNode: null,
+							isFragment: false,
+							isGhost: false,
+						} as MLASTAttr;
+					}),
+				);
+			}
+			aria = pretenderConfig.as.aria;
+		}
+
+		const as = new MLElement<T, O>(
+			{
+				...this._astToken,
+				uuid: this.uuid + '_pretender',
+				raw: `<${nodeName}>`,
+				nodeName,
+				namespace,
+				elementType: 'html',
+				attributes,
+			},
+			this.ownerMLDocument,
+		);
+
+		as.resetChildren(this.childNodes);
+		as.pretenderContext = {
+			type: 'origin',
+			origin: this,
+		};
+
+		this.pretenderContext = {
+			type: 'pretender',
+			as,
+			aria,
+		};
 	}
 
 	/**

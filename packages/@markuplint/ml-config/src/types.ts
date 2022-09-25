@@ -11,6 +11,7 @@ export interface Config {
 	parserOptions?: ParserOptions;
 	specs?: SpecConfig;
 	excludeFiles?: string[];
+	pretenders?: Pretender[];
 	rules?: Rules;
 	nodeRules?: NodeRule[];
 	childNodeRules?: ChildNodeRule[];
@@ -28,6 +29,83 @@ export interface ParserConfig {
 
 export type SpecConfig = {
 	[extensionPattern: string]: string /* module name or path */;
+};
+
+export type Pretender = {
+	/**
+	 * Target node selectors
+	 */
+	selector: string;
+
+	/**
+	 * If it is a string, it is resolved as an element name.
+	 * An element has the same attributes as the pretended custom element
+	 * because attributes are just inherited.
+	 *
+	 * If it is an Object, It creates the element by that.
+	 */
+	as: string | OriginalNode;
+};
+
+export type OriginalNode = {
+	/**
+	 * Element name
+	 */
+	element: string;
+
+	/**
+	 * Namespace
+	 *
+	 * Supports `"svg"` and `undefined` only.
+	 * If it is `undefined`, the namespace is HTML.
+	 */
+	namespace?: 'svg';
+
+	/**
+	 * Attributes
+	 */
+	attrs?: {
+		/**
+		 * Attribute name
+		 */
+		name: string;
+
+		/**
+		 * If it omits this property, the attribute is resolved as a boolean.
+		 */
+		value?:
+			| string
+			| {
+					fromAttr: string;
+			  };
+	}[];
+
+	/**
+	 * To have attributes the defined element has.
+	 */
+	inheritAttrs?: boolean;
+
+	/**
+	 * ARIA properties
+	 */
+	aria?: PretenderARIA;
+};
+
+/**
+ * Pretender Node ARIA properties
+ */
+export type PretenderARIA = {
+	/**
+	 * Accessible name
+	 *
+	 * - If it is `true`, it assumes the element has any text on its accessible name.
+	 * - If it specifies `fromAttr` property, it assumes the accessible name refers to the value of the attribute.
+	 */
+	name?:
+		| boolean
+		| {
+				fromAttr: string;
+		  };
 };
 
 export type Rule<T extends RuleConfigValue, O = void> = RuleConfig<T, O> | T | boolean;

@@ -19,7 +19,7 @@ import type {
 	MLASTText,
 	MLToken as MLASTToken,
 } from '@markuplint/ml-ast/';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PretenderARIA, RuleConfigValue } from '@markuplint/ml-config';
 
 // prettier-ignore
 export type MappedNode<N, T extends RuleConfigValue, O = null>
@@ -68,3 +68,18 @@ export type NodeType =
 	| DocumentTypeNodeType
 	| DocumentFragmentNodeType
 	| MarkuplintPreprocessorBlockType;
+
+export type PretenderContext<N extends MLElement<T, O>, T extends RuleConfigValue, O = null> =
+	| PretenderContextPretender<N, T, O>
+	| PretenderContextPretended<N, T, O>;
+
+export type PretenderContextPretender<N extends MLElement<T, O>, T extends RuleConfigValue, O = null> = {
+	readonly type: 'pretender';
+	readonly as: N;
+	readonly aria?: PretenderARIA;
+};
+
+export type PretenderContextPretended<N extends MLElement<T, O>, T extends RuleConfigValue, O = null> = {
+	readonly type: 'origin';
+	readonly origin: N;
+};

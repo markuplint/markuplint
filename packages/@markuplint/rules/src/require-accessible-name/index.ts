@@ -14,6 +14,10 @@ export default createRule<boolean, Option>({
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
+			if (el.pretenderContext?.type === 'pretender') {
+				return;
+			}
+
 			if (accnameMayBeMutable(el, document)) {
 				return;
 			}
@@ -32,7 +36,7 @@ export default createRule<boolean, Option>({
 				return;
 			}
 
-			const hasAccessibleName = !!el.getAccessibleName().trim();
+			const hasAccessibleName = !!el.getAccessibleName(el.rule.option.ariaVersion).trim();
 
 			if (!hasAccessibleName) {
 				report({ scope: el, message: t('Require {0}', 'accessible name') });

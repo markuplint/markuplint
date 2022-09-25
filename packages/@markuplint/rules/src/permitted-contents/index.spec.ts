@@ -898,6 +898,122 @@ describe('React', () => {
 	});
 });
 
+describe('Pretenders Option', () => {
+	const jsxRuleOn = {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
+		},
+	};
+
+	test('Element', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<ul><MyComponent/></ul>', {
+					...jsxRuleOn,
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: 'li',
+						},
+					],
+				})
+			).violations.length,
+		).toBe(0);
+		expect(
+			(
+				await mlRuleTest(rule, '<ul><MyComponent/></ul>', {
+					...jsxRuleOn,
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: 'div',
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 5,
+				message: 'The "div" element is not allowed in the "ul" element in this context',
+				raw: '<MyComponent/>',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(rule, '<svg><MyComponent/></svg>', {
+					...jsxRuleOn,
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: {
+								element: 'rect',
+								namespace: 'svg',
+							},
+						},
+					],
+				})
+			).violations.length,
+		).toBe(0);
+		expect(
+			(
+				await mlRuleTest(rule, '<span><MyComponent><div></div></MyComponent></span>', {
+					...jsxRuleOn,
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: {
+								element: 'a',
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 20,
+				raw: '<div>',
+				message:
+					'The "div" element is not allowed in the "span" element through the transparent model in this context',
+			},
+		]);
+	});
+
+	test('Attr', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<a href><MyComponent/></a>', {
+					...jsxRuleOn,
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: {
+								element: 'div',
+								attrs: [
+									{
+										name: 'tabindex',
+									},
+								],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message: 'The "a" element is a transparent model but also disallows the "div" element in this context',
+				raw: '<MyComponent/>',
+			},
+		]);
+	});
+});
+
 describe('Vue', () => {
 	const vueRuleOn = {
 		parser: {

@@ -216,3 +216,157 @@ test('The accessible name may be mutable', async () => {
 		).violations,
 	).toStrictEqual([]);
 });
+
+test('Pretenders Option', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<button><MyComponent/></button>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				pretenders: [
+					{
+						selector: 'MyComponent',
+						as: {
+							element: 'img',
+						},
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require accessible name',
+			raw: '<button>',
+		},
+	]);
+	expect(
+		(
+			await mlRuleTest(rule, '<button><MyComponent/></button>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				pretenders: [
+					{
+						selector: 'MyComponent',
+						as: {
+							element: 'img',
+							attrs: [
+								{
+									name: 'alt',
+									value: 'some text',
+								},
+							],
+						},
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<button><MyComponent/></button>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				pretenders: [
+					{
+						selector: 'MyComponent',
+						as: {
+							element: 'img',
+							attrs: [
+								{
+									name: 'alt',
+									value: '',
+								},
+							],
+						},
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require accessible name',
+			raw: '<button>',
+		},
+	]);
+	expect(
+		(
+			await mlRuleTest(rule, '<button><MyComponent/></button>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				pretenders: [
+					{
+						selector: 'MyComponent',
+						as: {
+							element: 'img',
+							aria: {
+								name: true,
+							},
+						},
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<button><MyComponent label="accname"/></button>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				pretenders: [
+					{
+						selector: 'MyComponent',
+						as: {
+							element: 'img',
+							aria: {
+								name: {
+									fromAttr: 'label',
+								},
+							},
+						},
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<button><MyComponent label=""/></button>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				pretenders: [
+					{
+						selector: 'MyComponent',
+						as: {
+							element: 'img',
+							aria: {
+								name: {
+									fromAttr: 'label',
+								},
+							},
+						},
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require accessible name',
+			raw: '<button>',
+		},
+	]);
+});
