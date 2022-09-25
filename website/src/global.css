@@ -185,7 +185,7 @@ blockquote::after {
 pre {
   font-size: calc(14 / 16 * 1em);
   background: var(--base-color-back);
-  margin: 0 1em;
+  margin: 1em;
   padding: 1em;
   border-radius: 0.2em;
   line-height: 1.5;
