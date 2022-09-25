@@ -35,6 +35,7 @@ The priority applied names are:
   "rules": {},
   "nodeRules": [],
   "childNodeRules": [],
+  "pretenders": [],
   "overrides": {}
 }
 ```
@@ -47,6 +48,7 @@ The priority applied names are:
 - [`excludeFiles`](#properties/exclude-files)
 - [`rules`](#properties/rules)
 - [`nodeRules` &amp; `childNodeRules`](#properties/node-rules-&-child-node-rules)
+- [`pretenders`](#properties/pretenders)
 - [`overrides`](#properties/overrides)
 
 ### Specification about paths
@@ -707,6 +709,150 @@ The above is the same as CSS selector `el1 el2 > el3 + el4 ~ el5`.
 
 - [Check designed CSS class name](/configuration/regex-selector-sample#case-1:-check-designed-c-s-s-class-name)
 - [Check filenames of images](/configuration/regex-selector-sample#case-2:-check-filenames-of-images)
+
+### `pretenders`
+
+In **React**, **Vue**, and more, It cannot evaluate custom components as HTML elements. The `pretenders` option resolves that.
+
+It evaluates components as HTML elements on each rule if you specify a selector for a component and properties of an element that it provides.
+
+```json
+{
+  "pretenders": [
+    {
+      "selector": "List",
+      "as": "ul"
+    },
+    {
+      "selector": "Item",
+      "as": "li"
+    }
+  ]
+}
+```
+
+<!-- prettier-ignore-start -->
+```jsx
+<List>{/* Evaluate as <ul> */}
+  <Item />{/* Evaluate as <li> */}
+  <Item />{/* Evaluate as <li> */}
+  <Item />{/* Evaluate as <li> */}
+</List>
+```
+<!-- prettier-ignore-end -->
+
+```ts
+type Pretender = {
+  selector: string;
+  as: string | OriginalNode;
+};
+```
+
+#### `selector`
+
+It is required, and you should specify the selector with string.
+
+#### `as`
+
+It is required. You should specify an element name with strings or an element with properties.
+
+```ts
+type OriginalNode = {
+  element: string;
+  namespace?: 'svg';
+
+  inheritAttrs?: boolean;
+  attrs?: {
+    name: string;
+    value?:
+      | string
+      | {
+          fromAttr: string;
+        };
+  }[];
+
+  aria?: {
+    name?:
+      | boolean
+      | {
+          fromAttr: string;
+        };
+  };
+};
+```
+
+#### `as.inheritAttrs`
+
+If an element has attributes that the defined component has.
+
+```jsx
+const MyComponent = props => {
+  return (
+    <div {...props} role="region">
+      {props.children}
+    </div>
+  );
+};
+```
+
+```json
+{
+  "selector": "MyComponent",
+  "as": {
+    "element": "div",
+    "inheritAttrs": true,
+    "attrs": [
+      {
+        "name": "role",
+        "value": "region"
+      }
+    ]
+  }
+}
+```
+
+#### `as.aria.name`
+
+Specify the accessible name of an component.
+You set true if the component has the name clearly.
+If not, you set the property name that refs the name to `fromAttr`.
+
+```jsx
+const MyIcon = ({ label }) => {
+  return (
+    <svg role="img" aria-label={label}>
+      <rect />
+    </svg>
+  );
+};
+```
+
+```json
+{
+  "selector": "MyIcon",
+  "as": {
+    "element": "svg",
+    "attrs": [
+      {
+        "name": "role",
+        "value": "img"
+      }
+    ],
+    "aria": {
+      "name": {
+        "fromAttr": "label"
+      }
+    }
+  }
+}
+```
+
+```jsx
+{
+  /* The accessible name is "my icon name". */
+}
+<MyIcon label="my icon name" />;
+```
 
 ### `overrides`
 
