@@ -20,7 +20,7 @@
 		"@types/cli-color": "^2.0.2",
 		"@types/debug": "^4.1.7",
 		"@types/has-yarn": "^1.0.1",
-		"@types/meow": "6.0.0",
+		"@types/meow": "^6.0.0",
 		"@types/uuid": "^8.3.4",
 		"execa": "5"
 	},
@@ -36,7 +36,7 @@
 		"@markuplint/ml-spec": "3.0.0-alpha.0",
 		"@markuplint/rules": "3.0.0-alpha.0",
 		"chokidar": "^3.5.3",
-		"cli-color": "^2.0.2",
+		"cli-color": "^2.0.3",
 		"debug": "^4.3.4",
 		"detect-installed": "^2.0.4",
 		"eastasianwidth": "^0.2.0",
@@ -47,7 +47,7 @@
 		"os-locale": "5",
 		"strict-event-emitter": "^0.2.4",
 		"strip-ansi": "6",
-		"tslib": "^2.3.1",
-		"uuid": "^8.3.2"
+		"tslib": "^2.4.0",
+		"uuid": "8"
 	}
 }

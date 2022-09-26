@@ -16,12 +16,12 @@
 	},
 	"devDependencies": {
 		"@types/cheerio": "^0.22.31",
-		"@types/cli-progress": "^3.9.2",
+		"@types/cli-progress": "^3.11.0",
 		"@types/node-fetch": "2",
 		"ajv": "^8.11.0",
-		"cheerio": "^1.0.0-rc.10",
-		"cli-progress": "^3.10.0",
-		"fast-xml-parser": "^4.0.7",
+		"cheerio": "^1.0.0-rc.12",
+		"cli-progress": "^3.11.2",
+		"fast-xml-parser": "^4.0.10",
 		"node-fetch": "2",
 		"strip-json-comments": "3"
 	},

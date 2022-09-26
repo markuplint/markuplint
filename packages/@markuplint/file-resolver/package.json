@@ -26,9 +26,9 @@
 		"@markuplint/ml-core": "3.0.0-alpha.0",
 		"@markuplint/ml-spec": "3.0.0-alpha.0",
 		"cosmiconfig": "^7.0.1",
-		"glob": "^7.2.0",
+		"glob": "^8.0.3",
 		"jsonc": "^2.0.0",
-		"minimatch": "^5.0.1",
-		"tslib": "^2.3.1"
+		"minimatch": "^5.1.0",
+		"tslib": "^2.4.0"
 	}
 }

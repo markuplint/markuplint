@@ -14,7 +14,7 @@
 	},
 	"devDependencies": {
 		"glob": "^8.0.3",
-		"jsonc-parser": "^3.0.0",
+		"jsonc-parser": "^3.2.0",
 		"mustache": "^4.2.0"
 	}
 }

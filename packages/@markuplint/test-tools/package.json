@@ -16,6 +16,6 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"jsdom": "^19.0.0"
+		"jsdom": "19"
 	}
 }

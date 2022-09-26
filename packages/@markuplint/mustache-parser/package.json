@@ -19,6 +19,6 @@
 		"@markuplint/html-parser": "3.0.0-alpha.0",
 		"@markuplint/ml-ast": "3.0.0-alpha.0",
 		"@markuplint/parser-utils": "3.0.0-alpha.0",
-		"tslib": "^2.3.1"
+		"tslib": "^2.4.0"
 	}
 }

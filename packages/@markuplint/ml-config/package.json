@@ -17,7 +17,7 @@
 	},
 	"devDependencies": {
 		"@markuplint/ml-ast": "3.0.0-alpha.0",
-		"@types/mustache": "^4.1.2"
+		"@types/mustache": "^4.2.1"
 	},
 	"dependencies": {
 		"@markuplint/selector": "3.0.0-alpha.0",
