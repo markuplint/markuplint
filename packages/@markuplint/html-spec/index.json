@@ -22602,49 +22602,64 @@
 			"globalAttrs": {},
 			"attributes": {
 				"align": {
-					"description": "This attribute is used to position the applet on the page relative to content that might flow around it. The HTML 4.01 specification defines values of bottom, left, middle, right, and top, whereas Microsoft and Netscape also might support absbottom, absmiddle, baseline, center, and texttop."
+					"description": "This attribute is used to position the applet on the page relative to content that might flow around it. The HTML 4.01 specification defines values of bottom, left, middle, right, and top, whereas Microsoft and Netscape also might support absbottom, absmiddle, baseline, center, and texttop.",
+					"deprecated": true
 				},
 				"alt": {
-					"description": "This attribute causes a descriptive text alternate to be displayed on browsers that do not support Java. Page designers should also remember that content enclosed within the <applet> element may also be rendered as alternative text."
+					"description": "This attribute causes a descriptive text alternate to be displayed on browsers that do not support Java. Page designers should also remember that content enclosed within the <applet> element may also be rendered as alternative text.",
+					"deprecated": true
 				},
 				"archive": {
-					"description": "This attribute refers to an archived or compressed version of the applet and its associated class files, which might help reduce download time."
+					"description": "This attribute refers to an archived or compressed version of the applet and its associated class files, which might help reduce download time.",
+					"deprecated": true
 				},
 				"code": {
-					"description": "This attribute specifies the URL of the applet's class file to be loaded and executed. Applet filenames are identified by a .class filename extension. The URL specified by code might be relative to the codebase attribute."
+					"description": "This attribute specifies the URL of the applet's class file to be loaded and executed. Applet filenames are identified by a .class filename extension. The URL specified by code might be relative to the codebase attribute.",
+					"deprecated": true
 				},
 				"codebase": {
-					"description": "This attribute gives the absolute or relative URL of the directory where applets' .class files referenced by the code attribute are stored."
+					"description": "This attribute gives the absolute or relative URL of the directory where applets' .class files referenced by the code attribute are stored.",
+					"deprecated": true
 				},
 				"datafld": {
-					"description": "This attribute, supported by Internet Explorer 4 and higher, specifies the column name from the data source object that supplies the bound data. This attribute might be used to specify the various <param> elements passed to the Java applet."
+					"description": "This attribute, supported by Internet Explorer 4 and higher, specifies the column name from the data source object that supplies the bound data. This attribute might be used to specify the various <param> elements passed to the Java applet.",
+					"deprecated": true
 				},
 				"datasrc": {
-					"description": "Like datafld, this attribute is used for data binding under Internet Explorer 4. It indicates the id of the data source object that supplies the data that is bound to the <param> elements associated with the applet."
+					"description": "Like datafld, this attribute is used for data binding under Internet Explorer 4. It indicates the id of the data source object that supplies the data that is bound to the <param> elements associated with the applet.",
+					"deprecated": true
 				},
 				"height": {
-					"description": "This attribute specifies the height, in pixels, that the applet needs."
+					"description": "This attribute specifies the height, in pixels, that the applet needs.",
+					"deprecated": true
 				},
 				"hspace": {
-					"description": "This attribute specifies additional horizontal space, in pixels, to be reserved on either side of the applet."
+					"description": "This attribute specifies additional horizontal space, in pixels, to be reserved on either side of the applet.",
+					"deprecated": true
 				},
 				"mayscript": {
-					"description": "In the Netscape implementation, this attribute allows access to an applet by programs in a scripting language embedded in the document."
+					"description": "In the Netscape implementation, this attribute allows access to an applet by programs in a scripting language embedded in the document.",
+					"deprecated": true
 				},
 				"name": {
-					"description": "This attribute assigns a name to the applet so that it can be identified by other resources; particularly scripts."
+					"description": "This attribute assigns a name to the applet so that it can be identified by other resources; particularly scripts.",
+					"deprecated": true
 				},
 				"object": {
-					"description": "This attribute specifies the URL of a serialized representation of an applet."
+					"description": "This attribute specifies the URL of a serialized representation of an applet.",
+					"deprecated": true
 				},
 				"src": {
-					"description": "As defined for Internet Explorer 4 and higher, this attribute specifies a URL for an associated file for the applet. The meaning and use is unclear and not part of the HTML standard."
+					"description": "As defined for Internet Explorer 4 and higher, this attribute specifies a URL for an associated file for the applet. The meaning and use is unclear and not part of the HTML standard.",
+					"deprecated": true
 				},
 				"vspace": {
-					"description": "This attribute specifies additional vertical space, in pixels, to be reserved above and below the applet."
+					"description": "This attribute specifies additional vertical space, in pixels, to be reserved above and below the applet.",
+					"deprecated": true
 				},
 				"width": {
-					"description": "This attribute specifies in pixels the width that the applet needs."
+					"description": "This attribute specifies in pixels the width that the applet needs.",
+					"deprecated": true
 				}
 			}
 		},
@@ -22717,7 +22732,8 @@
 					"description": "The hyperlink target for the area. Its value is a valid URL. This attribute may be omitted; if so, the <area> element does not represent a hyperlink."
 				},
 				"hreflang": {
-					"description": "Indicates the language of the linked resource. Allowed values are defined by RFC 5646: Tags for Identifying Languages (also known as BCP 47). Use this attribute only if the href attribute is present."
+					"description": "Indicates the language of the linked resource. Allowed values are defined by RFC 5646: Tags for Identifying Languages (also known as BCP 47). Use this attribute only if the href attribute is present.",
+					"deprecated": true
 				},
 				"name": {
 					"description": "Define a names for the clickable area so that it can be scripted by older browsers.",
@@ -23758,6 +23774,7 @@
 			"attributes": {
 				"nowrap": {
 					"description": "If the value of this attribute is set to yes, the definition text will not wrap. The default value is no.",
+					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -23912,7 +23929,8 @@
 			"globalAttrs": {},
 			"attributes": {
 				"compact": {
-					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent and it doesn't work in all browsers."
+					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent and it doesn't work in all browsers.",
+					"deprecated": true
 				}
 			}
 		},
@@ -24258,13 +24276,16 @@
 			"globalAttrs": {},
 			"attributes": {
 				"color": {
-					"description": "This attribute sets the text color using either a named color or a color specified in the hexadecimal #RRGGBB format."
+					"description": "This attribute sets the text color using either a named color or a color specified in the hexadecimal #RRGGBB format.",
+					"deprecated": true
 				},
 				"face": {
-					"description": "This attribute contains a comma-separated list of one or more font names. The document text in the default style is rendered in the first font face that the client's browser supports. If no font listed is installed on the local system, the browser typically defaults to the proportional or fixed-width font for that system."
+					"description": "This attribute contains a comma-separated list of one or more font names. The document text in the default style is rendered in the first font face that the client's browser supports. If no font listed is installed on the local system, the browser typically defaults to the proportional or fixed-width font for that system.",
+					"deprecated": true
 				},
 				"size": {
-					"description": "This attribute specifies the font size as either a numeric or relative value. Numeric values range from 1 to 7 with 1 being the smallest and 3 the default. It can be defined using a relative value, like +2 or -3, which set it relative to the value of the size attribute of the <basefont> element, or relative to 3, the default value, if none does exist."
+					"description": "This attribute specifies the font size as either a numeric or relative value. Numeric values range from 1 to 7 with 1 being the smallest and 3 the default. It can be defined using a relative value, like +2 or -3, which sets it relative to 3, the default value.",
+					"deprecated": true
 				}
 			}
 		},
@@ -24425,25 +24446,32 @@
 			"globalAttrs": {},
 			"attributes": {
 				"frameborder": {
-					"description": "This attribute allows you to specify a frame's border."
+					"description": "This attribute allows you to specify a frame's border.",
+					"deprecated": true
 				},
 				"marginheight": {
-					"description": "This attribute defines the height of the margin between frames."
+					"description": "This attribute defines the height of the margin between frames.",
+					"deprecated": true
 				},
 				"marginwidth": {
-					"description": "This attribute defines the width of the margin between frames."
+					"description": "This attribute defines the width of the margin between frames.",
+					"deprecated": true
 				},
 				"name": {
-					"description": "This attribute is used for labeling frames. Without labeling, every link will open in the frame that it's in – the closest parent frame. See the target attribute for more information."
+					"description": "This attribute is used for labeling frames. Without labeling, every link will open in the frame that it's in – the closest parent frame. See the target attribute for more information.",
+					"deprecated": true
 				},
 				"noresize": {
-					"description": "This attribute prevents resizing of frames by users."
+					"description": "This attribute prevents resizing of frames by users.",
+					"deprecated": true
 				},
 				"scrolling": {
-					"description": "This attribute defines the existence of a scrollbar. If this attribute is not used, the browser adds a scrollbar when necessary. There are two choices: \"yes\" for forcing a scrollbar even when it is not necessary and \"no\" for forcing no scrollbar even when it is necessary."
+					"description": "This attribute defines the existence of a scrollbar. If this attribute is not used, the browser adds a scrollbar when necessary. There are two choices: \"yes\" for forcing a scrollbar even when it is not necessary and \"no\" for forcing no scrollbar even when it is necessary.",
+					"deprecated": true
 				},
 				"src": {
-					"description": "This attribute specifies the document that will be displayed by the frame."
+					"description": "This attribute specifies the document that will be displayed by the frame.",
+					"deprecated": true
 				}
 			}
 		},
@@ -24464,10 +24492,12 @@
 			"globalAttrs": {},
 			"attributes": {
 				"cols": {
-					"description": "This attribute specifies the number and size of horizontal spaces in a frameset."
+					"description": "This attribute specifies the number and size of horizontal spaces in a frameset.",
+					"deprecated": true
 				},
 				"rows": {
-					"description": "This attribute specifies the number and size of vertical spaces in a frameset."
+					"description": "This attribute specifies the number and size of vertical spaces in a frameset.",
+					"deprecated": true
 				}
 			}
 		},
@@ -24672,7 +24702,8 @@
 			"attributes": {
 				"profile": {
 					"description": "The URIs of one or more metadata profiles, separated by white space.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -24788,23 +24819,28 @@
 			"attributes": {
 				"align": {
 					"description": "Sets the alignment of the rule on the page. If no value is specified, the default value is left.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"color": {
 					"description": "Sets the color of the rule through color name or hexadecimal value.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"noshade": {
 					"description": "Sets the rule to have no shading.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"size": {
 					"description": "Sets the height, in pixels, of the rule.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"width": {
 					"description": "Sets the length of the rule on the page through a pixel or percentage value.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -24838,7 +24874,8 @@
 			"attributes": {
 				"manifest": {
 					"description": "Specifies the URI of a resource manifest indicating resources that should be cached locally.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"version": {
 					"description": "Specifies the version of the HTML Document Type Definition that governs the current document. This attribute is not needed, because it is redundant with the version information in the document type declaration.",
@@ -24912,14 +24949,16 @@
 					"type": "Boolean"
 				},
 				"allowpaymentrequest": {
-					"description": "Set to true if a cross-origin <iframe> should be allowed to invoke the Payment Request API. Note: This attribute is considered a legacy attribute and redefined as allow=\"payment\"."
+					"description": "Set to true if a cross-origin <iframe> should be allowed to invoke the Payment Request API. Note: This attribute is considered a legacy attribute and redefined as allow=\"payment\".",
+					"experimental": true
 				},
 				"csp": {
 					"description": "A Content Security Policy enforced for the embedded resource. See HTMLIFrameElement.csp for details.",
 					"experimental": true
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching the iframe document. Allowed values: high Signals a high-priority fetch relative to other iframe documents. low Signals a low-priority fetch relative to other iframe documents. auto Default: Signals automatic determination of fetch priority relative to other iframe documents."
+					"description": "Provides a hint of the relative priority to use when fetching the iframe document. Allowed values: high Signals a high-priority fetch relative to other iframe documents. low Signals a low-priority fetch relative to other iframe documents. auto Default: Signals automatic determination of fetch priority relative to other iframe documents.",
+					"experimental": true
 				},
 				"frameborder": {
 					"description": "The value 1 (the default) draws a border around this frame. The value 0 removes the border around this frame, but you should instead use the CSS property border to control <iframe> borders.",
@@ -26166,7 +26205,8 @@
 			"attributes": {
 				"type": {
 					"description": "This character attribute indicates the numbering type: a: lowercase letters A: uppercase letters i: lowercase Roman numerals I: uppercase Roman numerals 1: numbers This type overrides the one used by its parent <ol> element, if any. Note: This attribute has been deprecated; use the CSS list-style-type property instead.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"value": {
 					"type": "Int",
@@ -26254,7 +26294,8 @@
 					"type": "Boolean"
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching a preloaded resource. Allowed values: high Signals a high-priority fetch relative to other resources of the same type. low Signals a low-priority fetch relative to other resources of the same type. auto Default: Signals automatic determination of fetch priority relative to other resources of the same type."
+					"description": "Provides a hint of the relative priority to use when fetching a preloaded resource. Allowed values: high Signals a high-priority fetch relative to other resources of the same type. low Signals a low-priority fetch relative to other resources of the same type. auto Default: Signals automatic determination of fetch priority relative to other resources of the same type.",
+					"experimental": true
 				},
 				"href": {
 					"description": "This attribute specifies the URL of the linked resource. A URL can be absolute or relative."
@@ -26283,6 +26324,7 @@
 				},
 				"methods": {
 					"description": "The value of this attribute provides information about the functions that might be performed on an object. The values generally are given by the HTTP protocol when it is used, but it might (for similar reasons as for the title attribute) be useful to include advisory information in advance in the link. For example, the browser might choose a different rendering of a link as a function of the methods specified; something that is searchable might get a different icon, or an outside link might render with an indication of leaving the current site. This attribute is not well understood nor supported, even by the defining browser, Internet Explorer 4.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"prefetch": {
@@ -26342,7 +26384,7 @@
 				},
 				"target": {
 					"description": "Defines the frame or window name that has the defined linking relationship or that will show the rendering of any linked resource.",
-					"nonStandard": true
+					"deprecated": true
 				},
 				"title": {
 					"description": "The title attribute has special semantics on the <link> element. When used on a <link rel=\"stylesheet\"> it defines a default or an alternate stylesheet."
@@ -26471,37 +26513,48 @@
 			"globalAttrs": {},
 			"attributes": {
 				"behavior": {
-					"description": "Sets how the text is scrolled within the marquee. Possible values are scroll, slide and alternate. If no value is specified, the default value is scroll."
+					"description": "Sets how the text is scrolled within the marquee. Possible values are scroll, slide and alternate. If no value is specified, the default value is scroll.",
+					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Sets the background color through color name or hexadecimal value."
+					"description": "Sets the background color through color name or hexadecimal value.",
+					"deprecated": true
 				},
 				"direction": {
-					"description": "Sets the direction of the scrolling within the marquee. Possible values are left, right, up and down. If no value is specified, the default value is left."
+					"description": "Sets the direction of the scrolling within the marquee. Possible values are left, right, up and down. If no value is specified, the default value is left.",
+					"deprecated": true
 				},
 				"height": {
-					"description": "Sets the height in pixels or percentage value."
+					"description": "Sets the height in pixels or percentage value.",
+					"deprecated": true
 				},
 				"hspace": {
-					"description": "Sets the horizontal margin"
+					"description": "Sets the horizontal margin",
+					"deprecated": true
 				},
 				"loop": {
-					"description": "Sets the number of times the marquee will scroll. If no value is specified, the default value is −1, which means the marquee will scroll continuously."
+					"description": "Sets the number of times the marquee will scroll. If no value is specified, the default value is −1, which means the marquee will scroll continuously.",
+					"deprecated": true
 				},
 				"scrollamount": {
-					"description": "Sets the amount of scrolling at each interval in pixels. The default value is 6."
+					"description": "Sets the amount of scrolling at each interval in pixels. The default value is 6.",
+					"deprecated": true
 				},
 				"scrolldelay": {
-					"description": "Sets the interval between each scroll movement in milliseconds. The default value is 85. Note that any value smaller than 60 is ignored and the value 60 is used instead, unlesstruespeedis specified."
+					"description": "Sets the interval between each scroll movement in milliseconds. The default value is 85. Note that any value smaller than 60 is ignored and the value 60 is used instead unless truespeed is specified.",
+					"deprecated": true
 				},
 				"truespeed": {
-					"description": "By default,scrolldelayvalues lower than 60 are ignored. Iftruespeedis present, those values are not ignored."
+					"description": "By default, scrolldelay values lower than 60 are ignored. If truespeed is present, those values are not ignored.",
+					"deprecated": true
 				},
 				"vspace": {
-					"description": "Sets the vertical margin in pixels or percentage value."
+					"description": "Sets the vertical margin in pixels or percentage value.",
+					"deprecated": true
 				},
 				"width": {
-					"description": "Sets the width in pixels or percentage value."
+					"description": "Sets the width in pixels or percentage value.",
+					"deprecated": true
 				}
 			}
 		},
@@ -26599,28 +26652,42 @@
 			"globalAttrs": {},
 			"attributes": {
 				"checked": {
-					"description": "Boolean attribute which indicates whether the command is selected. May only be used when the type attribute is checkbox or radio."
+					"description": "Boolean attribute which indicates whether the command is selected. May only be used when the type attribute is checkbox or radio.",
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"command": {
-					"description": "Specifies the ID of a separate element, indicating a command to be invoked indirectly. May not be used within a menu item that also includes the attributes checked, disabled, icon, label, radiogroup or type."
+					"description": "Specifies the ID of a separate element, indicating a command to be invoked indirectly. May not be used within a menu item that also includes the attributes checked, disabled, icon, label, radiogroup or type.",
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"default": {
-					"description": "This Boolean attribute indicates use of the same command as the menu's subject element (such as a button or input)."
+					"description": "This Boolean attribute indicates use of the same command as the menu's subject element (such as a button or input).",
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"disabled": {
-					"description": "Boolean attribute which indicates that the command is not available in the current state. Note that disabled is distinct from hidden; the disabled attribute is appropriate in any context where a change in circumstances might render the command relevant."
+					"description": "Boolean attribute which indicates that the command is not available in the current state. Note that disabled is distinct from hidden; the disabled attribute is appropriate in any context where a change in circumstances might render the command relevant.",
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"icon": {
-					"description": "Image URL, used to provide a picture to represent the command."
+					"description": "Image URL, used to provide a picture to represent the command.",
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"label": {
 					"description": "The name of the command as shown to the user. Required when a command attribute is not present."
 				},
 				"radiogroup": {
-					"description": "This attribute specifies the name of a group of commands to be toggled as radio buttons when selected. May only be used where the type attribute is radio."
+					"description": "This attribute specifies the name of a group of commands to be toggled as radio buttons when selected. May only be used where the type attribute is radio.",
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"type": {
-					"description": "This attribute indicates the kind of command, and can be one of three values. command: A regular command with an associated action. This is the missing value default. checkbox: Represents a command that can be toggled between two different states. radio: Represent one selection from a group of commands that can be toggled as radio buttons."
+					"description": "This attribute indicates the kind of command, and can be one of three values. command: A regular command with an associated action. This is the missing value default. checkbox: Represents a command that can be toggled between two different states. radio: Represent one selection from a group of commands that can be toggled as radio buttons.",
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -27369,10 +27436,12 @@
 				},
 				"width": {
 					"description": "Contains the preferred count of characters that a line should have. Though technically still implemented, this attribute has no visual effect; to achieve such an effect, use CSS width instead.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"wrap": {
 					"description": "Is a hint indicating how the overflow must happen. In modern browser this hint is ignored and no visual effect results in its present; to achieve such an effect, use CSS white-space instead.",
+					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -27692,14 +27761,16 @@
 					"ineffective": ["[type='module' i]", ":not([src])", "[async]"]
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Signals a high-priority fetch relative to other external scripts. low Signals a low-priority fetch relative to other external scripts. auto Default: Signals automatic determination of fetch priority relative to other external scripts."
+					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Signals a high-priority fetch relative to other external scripts. low Signals a low-priority fetch relative to other external scripts. auto Default: Signals automatic determination of fetch priority relative to other external scripts.",
+					"experimental": true
 				},
 				"integrity": {
 					"condition": "[src]"
 				},
 				"language": {
 					"description": "Like the type attribute, this attribute identifies the scripting language in use. Unlike the type attribute, however, this attribute's possible values were never standardized. The type attribute should be used instead.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"nomodule": {
 					"type": "Boolean",
@@ -28694,8 +28765,7 @@
 				},
 				"bgcolor": {
 					"description": "This attribute defines the background color of each cell in a column. It consists of a 6-digit hexadecimal code as defined in sRGB and is prefixed by '#'. This attribute may be used with one of sixteen predefined color strings: black = \"#000000\" green = \"#008000\" silver = \"#C0C0C0\" lime = \"#00FF00\" gray = \"#808080\" olive = \"#808000\" white = \"#FFFFFF\" yellow = \"#FFFF00\" maroon = \"#800000\" navy = \"#000080\" red = \"#FF0000\" blue = \"#0000FF\" purple = \"#800080\" teal = \"#008080\" fuchsia = \"#FF00FF\" aqua = \"#00FFFF\" Note: Do not use this attribute, as it is non-standard and only implemented in some versions of Microsoft Internet Explorer: The <th> element should be styled using CSS. To create a similar effect use the background-color property in CSS instead.",
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				},
 				"char": {
 					"description": "The content in the cell element is aligned to a character. Typical values include a period (.) to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: Do not use this attribute as it is obsolete in the latest standard. To achieve the same effect, you can specify the character as the first value of the text-align property.",
@@ -28765,8 +28835,7 @@
 				},
 				"bgcolor": {
 					"description": "This attribute defines the background color of each column cell. It accepts a 6-digit hexadecimal color or a named color. Alpha transparency is not supported. Note: Do not use this attribute, as it is non-standard. The thead element should be styled using the CSS background-color property, which can be applied to any element, including the thead, <tr>, <td> and <th> elements.",
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				},
 				"char": {
 					"description": "This attribute is used to set the character to align the cells in a column on. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard.",
@@ -29034,11 +29103,13 @@
 			"attributes": {
 				"compact": {
 					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent, and it doesn't work in all browsers. Warning: Do not use this attribute, as it has been deprecated: use CSS instead. To give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"type": {
 					"description": "This attribute sets the bullet style for the list. The values defined under HTML3.2 and the transitional version of HTML 4.0/4.01 are: circle disc square A fourth bullet type has been defined in the WebTV interface, but not all browsers support it: triangle. If not present and if no CSS list-style-type property applies to the element, the user agent selects a bullet type depending on the nesting level of the list. Warning: Do not use this attribute, as it has been deprecated; use the CSS list-style-type property instead.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -29406,28 +29477,35 @@
 			"globalAttrs": {},
 			"attributes": {
 				"dx": {
-					"description": "This attribute indicates a shift along the x-axis on the position of the element. Value type: <list-of-coordinates> ; Default value: Relative x-coordinate of ancestor <text> or <tspan>; Animatable: yes"
+					"description": "This attribute indicates a shift along the x-axis on the position of the element. Value type: <list-of-coordinates> ; Default value: Relative x-coordinate of ancestor <text> or <tspan>; Animatable: yes",
+					"deprecated": true
 				},
 				"dy": {
-					"description": "This attribute indicates a shift along the x-axis on the position of the element. Value type: <list-of-coordinates> ; Default value: Relative y-coordinate of ancestor <text> or <tspan>; Animatable: yes"
+					"description": "This attribute indicates a shift along the x-axis on the position of the element. Value type: <list-of-coordinates> ; Default value: Relative y-coordinate of ancestor <text> or <tspan>; Animatable: yes",
+					"deprecated": true
 				},
 				"format": {
-					"description": "The format of the given font. Value type: <string> ; Default value: none; Animatable: no"
+					"description": "The format of the given font. Value type: <string> ; Default value: none; Animatable: no",
+					"deprecated": true
 				},
 				"glyphRef": {
-					"description": "The glyph identifier, the format of which is dependent on the format defined by the format attribute of the given font. Value type: <string> ; Default value: none; Animatable: no"
+					"description": "The glyph identifier, the format of which is dependent on the format defined by the format attribute of the given font. Value type: <string> ; Default value: none; Animatable: no",
+					"deprecated": true
 				},
 				"rotate": {
-					"description": "This attribute defines the supplemental rotation that will be applied to the element. Value type: <list-of-numbers> ; Default value: none; Animatable: yes (non-additive)"
+					"description": "This attribute defines the supplemental rotation that will be applied to the element. Value type: <list-of-numbers> ; Default value: none; Animatable: yes (non-additive)",
+					"deprecated": true
 				},
 				"x": {
-					"description": "This attribute defines the corresponding absolute x-coordinates for rendering the element. Value type: <list-of-coordinates> ; Default value: Absolute x-coordinate of ancestor <text> or <tspan>; Animatable: yes"
+					"description": "This attribute defines the corresponding absolute x-coordinates for rendering the element. Value type: <list-of-coordinates> ; Default value: Absolute x-coordinate of ancestor <text> or <tspan>; Animatable: yes",
+					"deprecated": true
 				},
 				"xlink:href": {
 					"description": "An <iri> reference either to a <glyph> element in an SVG document or to an <altGlyphDef> element. If the reference is to a <glyph> element and that glyph is available, then that glyph is rendered instead of the character(s) that are inside of the <altGlyph> element. If the reference is to an <altGlyphDef> element, then if an appropriate set of alternate glyphs is located from processing the <altGlyphDef> element, then those alternate glyphs are rendered instead of the character(s) that are inside of the <altGlyph> element. Value type: <iri> ; Default value: none; Animatable: no"
 				},
 				"y": {
-					"description": "This attribute defines the corresponding absolute y-coordinates for rendering the element. Value type: <list-of-coordinates> ; Default value: Absolute y-coordinate of ancestor <text> or <tspan>; Animatable: yes"
+					"description": "This attribute defines the corresponding absolute y-coordinates for rendering the element. Value type: <list-of-coordinates> ; Default value: Absolute y-coordinate of ancestor <text> or <tspan>; Animatable: yes",
+					"deprecated": true
 				}
 			}
 		},
