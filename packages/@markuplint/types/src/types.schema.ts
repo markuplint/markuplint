@@ -1037,6 +1037,9 @@ export interface List {
  * [Enumerated attributes](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#enumerated-attribute)
  */
 export interface Enum {
+	/**
+	 * @minItems 1
+	 */
 	enum: [string, ...string[]];
 	disallowToSurroundBySpaces?: boolean;
 	caseInsensitive?: boolean;

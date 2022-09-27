@@ -79,6 +79,10 @@ export interface PermittedContentZeroOrMore {
 	_TODO_?: string;
 }
 export interface PermittedContentChoice {
+	/**
+	 * @minItems 2
+	 * @maxItems 5
+	 */
 	choice:
 		| [PermittedContentPattern[], PermittedContentPattern[]]
 		| [PermittedContentPattern[], PermittedContentPattern[], PermittedContentPattern[]]

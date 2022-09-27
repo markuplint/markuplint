@@ -38,6 +38,9 @@ export type PermittedARIAProperties =
 			 * Set true if the spec says "and any aria-* attributes applicable to the allowed roles."
 			 */
 			role?: true | string | [string, ...string[]];
+			/**
+			 * @minItems 1
+			 */
 			only?: [
 				(
 					| string
@@ -54,6 +57,9 @@ export type PermittedARIAProperties =
 					  }
 				)[],
 			];
+			/**
+			 * @minItems 1
+			 */
 			without?: [
 				{
 					type: 'not-recommended' | 'should-not' | 'must-not';

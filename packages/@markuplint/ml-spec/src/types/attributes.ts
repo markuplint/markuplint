@@ -1013,111 +1013,9 @@ export type AttributeType =
 			  )
 			| 'Boolean'
 	  )
-	| {
-			token:
-				| (
-						| 'Any'
-						| 'NoEmptyAny'
-						| 'OneLineAny'
-						| 'Zero'
-						| 'Number'
-						| 'Int'
-						| 'Uint'
-						| 'XMLName'
-						| 'DOMID'
-						| 'FunctionBody'
-						| 'Pattern'
-						| 'DateTime'
-						| 'TabIndex'
-						| 'BCP47'
-						| 'URL'
-						| 'AbsoluteURL'
-						| 'HashName'
-						| 'OneCodePointChar'
-						| 'CustomElementName'
-						| 'BrowsingContextName'
-						| 'BrowsingContextNameOrKeyword'
-						| 'HTTPSchemaURL'
-						| 'MIMEType'
-						| 'ItemProp'
-						| 'Srcset'
-						| 'SourceSizeList'
-						| 'IconSize'
-						| 'AutoComplete'
-						| 'Accept'
-						| 'SerializedPermissionsPolicy'
-						| '<css-declaration-list>'
-						| '<class-list>'
-						| '<svg-font-size>'
-						| '<svg-font-size-adjust>'
-						| "<'color-profile'>"
-						| "<'color-rendering'>"
-						| "<'enable-background'>"
-						| '<list-of-svg-feature-string>'
-						| '<animatable-value>'
-						| '<begin-value-list>'
-						| '<end-value-list>'
-						| '<list-of-value>'
-						| '<clock-value>'
-						| '<color-matrix>'
-						| '<dasharray>'
-						| '<key-points>'
-						| '<key-splines>'
-						| '<key-times>'
-						| '<system-language>'
-						| '<origin>'
-						| '<svg-path>'
-						| '<points>'
-						| '<preserve-aspect-ratio>'
-						| '<view-box>'
-						| '<rotate>'
-						| '<text-coordinate>'
-						| '<list-of-lengths>'
-						| '<list-of-numbers>'
-						| '<list-of-percentages>'
-						| '<number-optional-number>'
-				  )
-				| {
-						enum: [string, ...string[]];
-						disallowToSurroundBySpaces?: boolean;
-						caseInsensitive?: boolean;
-						invalidValueDefault?: string;
-						missingValueDefault?: string;
-						sameStates?: {
-							[k: string]: unknown;
-						};
-				  };
-			disallowToSurroundBySpaces?: boolean;
-			allowEmpty?: boolean;
-			ordered?: boolean;
-			unique?: boolean;
-			caseInsensitive?: boolean;
-			number?:
-				| ('zeroOrMore' | 'oneOrMore')
-				| {
-						min: number;
-						max: number;
-				  };
-			separator: 'space' | 'comma';
-	  }
-	| {
-			enum: [string, ...string[]];
-			disallowToSurroundBySpaces?: boolean;
-			caseInsensitive?: boolean;
-			invalidValueDefault?: string;
-			missingValueDefault?: string;
-			sameStates?: {
-				[k: string]: unknown;
-			};
-	  }
-	| {
-			type: 'float' | 'integer';
-			gt?: number;
-			gte?: number;
-			lt?: number;
-			lte?: number;
-			clampable?: boolean;
-	  };
+	| List
+	| Enum
+	| Number;
 export type AttributeCondition = string | [string, string, ...string[]];
 
 export interface AttributesSchema {
@@ -1208,6 +1106,9 @@ export interface GlobalAttributes {
 				| 'onwheel'
 		  )[];
 	'#DocumentElementEventAttrs'?: boolean | ('oncopy' | 'oncut' | 'onpaste')[];
+	/**
+	 * @minItems 0
+	 */
 	'#HTMLLinkAndFetchingAttrs'?: (
 		| 'crossorigin'
 		| 'download'
@@ -1223,6 +1124,9 @@ export interface GlobalAttributes {
 		| 'type'
 		| 'fetchpriority'
 	)[];
+	/**
+	 * @minItems 0
+	 */
 	'#HTMLEmbededAndMediaContentAttrs'?: (
 		| 'autoplay'
 		| 'controls'
@@ -1235,6 +1139,9 @@ export interface GlobalAttributes {
 		| 'srcset'
 		| 'width'
 	)[];
+	/**
+	 * @minItems 0
+	 */
 	'#HTMLFormControlElementAttrs'?: (
 		| 'autocomplete'
 		| 'dirname'
@@ -1251,12 +1158,30 @@ export interface GlobalAttributes {
 		| 'readonly'
 		| 'required'
 	)[];
+	/**
+	 * @minItems 0
+	 */
 	'#HTMLTableCellElementAttrs'?: ('colspan' | 'headers' | 'rowspan')[];
 	'#ARIAAttrs'?: boolean;
+	/**
+	 * @minItems 0
+	 */
 	'#SVGAnimationAdditionAttrs'?: ('additive' | 'accumulate')[];
+	/**
+	 * @minItems 0
+	 */
 	'#SVGAnimationAttributeTargetAttrs'?: ('attributeName' | 'attributeType')[];
+	/**
+	 * @minItems 0
+	 */
 	'#SVGAnimationEventAttrs'?: ('onbegin' | 'onend' | 'onrepeat')[];
+	/**
+	 * @minItems 0
+	 */
 	'#SVGAnimationTargetElementAttrs'?: ('href' | 'xlink:href')[];
+	/**
+	 * @minItems 0
+	 */
 	'#SVGAnimationTimingAttrs'?: (
 		| 'begin'
 		| 'dur'
@@ -1268,6 +1193,9 @@ export interface GlobalAttributes {
 		| 'repeatDur'
 		| 'fill'
 	)[];
+	/**
+	 * @minItems 0
+	 */
 	'#SVGAnimationValueAttrs'?: (
 		| 'calcMode'
 		| 'values'
@@ -1281,7 +1209,13 @@ export interface GlobalAttributes {
 		| 'autoReverse'
 		| 'speed'
 	)[];
+	/**
+	 * @minItems 0
+	 */
 	'#SVGConditionalProcessingAttrs'?: ('requiredExtensions' | 'systemLanguage' | 'requiredFeatures')[];
+	/**
+	 * @minItems 0
+	 */
 	'#SVGCoreAttrs'?: (
 		| 'id'
 		| 'tabindex'
@@ -1294,7 +1228,13 @@ export interface GlobalAttributes {
 		| 'xml:lang'
 		| 'xml:base'
 	)[];
+	/**
+	 * @minItems 0
+	 */
 	'#SVGFilterPrimitiveAttrs'?: ('x' | 'y' | 'width' | 'height' | 'result' | 'in')[];
+	/**
+	 * @minItems 0
+	 */
 	'#SVGPresentationAttrs'?: (
 		| 'cx'
 		| 'cy'
@@ -1378,6 +1318,9 @@ export interface GlobalAttributes {
 		| 'enable-background'
 		| 'kerning'
 	)[];
+	/**
+	 * @minItems 0
+	 */
 	'#SVGTransferFunctionAttrs'?: (
 		| 'type'
 		| 'tableValues'
@@ -1387,6 +1330,9 @@ export interface GlobalAttributes {
 		| 'exponent'
 		| 'offset'
 	)[];
+	/**
+	 * @minItems 0
+	 */
 	'#XLinkAttrs'?: (
 		| 'xlink:href'
 		| 'xlink:title'
@@ -1415,4 +1361,113 @@ export interface AttributeJSON {
 	ineffective?: AttributeCondition;
 	animatable?: boolean;
 	experimental?: boolean;
+}
+/**
+ * - [Space-separated tokens](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#space-separated-tokens)
+ * - [Comma-separated tokens](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#comma-separated-tokens)
+ */
+export interface List {
+	token:
+		| (
+				| 'Any'
+				| 'NoEmptyAny'
+				| 'OneLineAny'
+				| 'Zero'
+				| 'Number'
+				| 'Int'
+				| 'Uint'
+				| 'XMLName'
+				| 'DOMID'
+				| 'FunctionBody'
+				| 'Pattern'
+				| 'DateTime'
+				| 'TabIndex'
+				| 'BCP47'
+				| 'URL'
+				| 'AbsoluteURL'
+				| 'HashName'
+				| 'OneCodePointChar'
+				| 'CustomElementName'
+				| 'BrowsingContextName'
+				| 'BrowsingContextNameOrKeyword'
+				| 'HTTPSchemaURL'
+				| 'MIMEType'
+				| 'ItemProp'
+				| 'Srcset'
+				| 'SourceSizeList'
+				| 'IconSize'
+				| 'AutoComplete'
+				| 'Accept'
+				| 'SerializedPermissionsPolicy'
+				| '<css-declaration-list>'
+				| '<class-list>'
+				| '<svg-font-size>'
+				| '<svg-font-size-adjust>'
+				| "<'color-profile'>"
+				| "<'color-rendering'>"
+				| "<'enable-background'>"
+				| '<list-of-svg-feature-string>'
+				| '<animatable-value>'
+				| '<begin-value-list>'
+				| '<end-value-list>'
+				| '<list-of-value>'
+				| '<clock-value>'
+				| '<color-matrix>'
+				| '<dasharray>'
+				| '<key-points>'
+				| '<key-splines>'
+				| '<key-times>'
+				| '<system-language>'
+				| '<origin>'
+				| '<svg-path>'
+				| '<points>'
+				| '<preserve-aspect-ratio>'
+				| '<view-box>'
+				| '<rotate>'
+				| '<text-coordinate>'
+				| '<list-of-lengths>'
+				| '<list-of-numbers>'
+				| '<list-of-percentages>'
+				| '<number-optional-number>'
+		  )
+		| Enum;
+	disallowToSurroundBySpaces?: boolean;
+	allowEmpty?: boolean;
+	ordered?: boolean;
+	unique?: boolean;
+	caseInsensitive?: boolean;
+	number?:
+		| ('zeroOrMore' | 'oneOrMore')
+		| {
+				min: number;
+				max: number;
+		  };
+	separator: 'space' | 'comma';
+}
+/**
+ * [Enumerated attributes](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#enumerated-attribute)
+ */
+export interface Enum {
+	/**
+	 * @minItems 1
+	 */
+	enum: [string, ...string[]];
+	disallowToSurroundBySpaces?: boolean;
+	caseInsensitive?: boolean;
+	invalidValueDefault?: string;
+	missingValueDefault?: string;
+	sameStates?: {
+		[k: string]: unknown;
+	};
+}
+/**
+ * [Numbers](https://html.spec.whatwg.org/dev/common-microsyntaxes.html#numbers)
+ */
+export interface Number {
+	type: 'float' | 'integer';
+	gt?: number;
+	gte?: number;
+	lt?: number;
+	lte?: number;
+	clampable?: boolean;
 }
