@@ -26312,8 +26312,7 @@
 					"experimental": true
 				},
 				"referrerpolicy": {
-					"description": "A string indicating which referrer to use when fetching the resource: no-referrer means that the Referer header will not be sent. no-referrer-when-downgrade means that no Referer header will be sent when navigating to an origin without TLS (HTTPS). This is a user agent's default behavior, if no policy is otherwise specified. origin means that the referrer will be the origin of the page, which is roughly the scheme, the host, and the port. origin-when-cross-origin means that navigating to other origins will be limited to the scheme, the host, and the port, while navigating on the same origin will include the referrer's path. unsafe-url means that the referrer will include the origin and the path (but not the fragment, password, or username). This case is unsafe because it can leak origins and paths from TLS-protected resources to insecure origins.",
-					"experimental": true
+					"description": "A string indicating which referrer to use when fetching the resource: no-referrer means that the Referer header will not be sent. no-referrer-when-downgrade means that no Referer header will be sent when navigating to an origin without TLS (HTTPS). This is a user agent's default behavior, if no policy is otherwise specified. origin means that the referrer will be the origin of the page, which is roughly the scheme, the host, and the port. origin-when-cross-origin means that navigating to other origins will be limited to the scheme, the host, and the port, while navigating on the same origin will include the referrer's path. unsafe-url means that the referrer will include the origin and the path (but not the fragment, password, or username). This case is unsafe because it can leak origins and paths from TLS-protected resources to insecure origins."
 				},
 				"rel": {
 					"type": [
@@ -29406,8 +29405,7 @@
 			},
 			"attributes": {
 				"download": {
-					"description": "Instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. Value type: <string> ; Default value: none; Animatable: no",
-					"experimental": true
+					"description": "Instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. Value type: <string> ; Default value: none; Animatable: no"
 				},
 				"href": {
 					"description": "The URL or URL fragment the hyperlink points to. Value type: <URL> ; Default value: none; Animatable: yes"
@@ -29420,12 +29418,10 @@
 					"experimental": true
 				},
 				"referrerpolicy": {
-					"description": "Which referrer to send when fetching the URL. Value type: no-referrer|no-referrer-when-downgrade|same-origin|origin|strict-origin|origin-when-cross-origin|strict-origin-when-cross-origin|unsafe-url ; Default value: none; Animatable: no",
-					"experimental": true
+					"description": "Which referrer to send when fetching the URL. Value type: no-referrer|no-referrer-when-downgrade|same-origin|origin|strict-origin|origin-when-cross-origin|strict-origin-when-cross-origin|unsafe-url ; Default value: none; Animatable: no"
 				},
 				"rel": {
-					"description": "The relationship of the target object to the link object. Value type: <list-of-Link-Types> ; Default value: none; Animatable: yes",
-					"experimental": true
+					"description": "The relationship of the target object to the link object. Value type: <list-of-Link-Types> ; Default value: none; Animatable: yes"
 				},
 				"target": {
 					"description": "Where to display the linked URL. Value type: _self|_parent|_top|_blank|<name> ; Default value: _self; Animatable: yes"
