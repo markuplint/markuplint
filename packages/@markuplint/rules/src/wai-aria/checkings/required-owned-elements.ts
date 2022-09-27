@@ -1,8 +1,13 @@
 import type { Options } from '../types';
-import type { ElementChecker } from '@markuplint/ml-core';
+import type { Element, ElementChecker, Block } from '@markuplint/ml-core';
 import type { ARIARole } from '@markuplint/ml-spec';
 
 import { getComputedRole, isRequiredOwnedElement } from '@markuplint/ml-spec';
+
+type OwnedElement =
+	| [node: Element<boolean, Options>, type: 'REQUIRED' | 'OTHER']
+	| [node: Block<boolean, Options>, type: 'PB']
+	| [node: null, type: 'NO_ELEMENT'];
 
 /**
  * Required Owned Elements
@@ -40,17 +45,18 @@ export const checkingRequiredOwnedElements: ElementChecker<
 
 		// TODO: Needs to resolve `aria-own`
 
-		if (!el.children.length) {
+		if (el.isEmpty()) {
 			return {
 				scope: el,
 				message: t(
 					'{0}. Or, {1}',
-					t('Require {0} to content', t('the {0*} {1}', t(role.requiredOwnedElements), 'role')),
+					t('require {0}', t('the "{0*}" {1}', t(role.requiredOwnedElements), 'role')),
 					t('require {0}', 'aria-busy="true"'),
 				),
 			};
 		}
-		const children: ('REQUIRED' | 'PB' | 'OTHER' | 'NO_ELEMENT')[] = Array.from(el.childNodes).map(child => {
+
+		const children: OwnedElement[] = Array.from(el.childNodes).map<OwnedElement>(child => {
 			if (child.is(child.ELEMENT_NODE)) {
 				const computedChild = getComputedRole(child.ownerMLDocument.specs, child, child.rule.option.version);
 				if (
@@ -63,32 +69,35 @@ export const checkingRequiredOwnedElements: ElementChecker<
 						),
 					)
 				) {
-					return 'REQUIRED';
+					return [child, 'REQUIRED'];
 				}
-				return 'OTHER';
-			} else if (child.MARKUPLINT_PREPROCESSOR_BLOCK) {
-				return 'PB';
+				return [child, 'OTHER'];
+			} else if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
+				return [child, 'PB'];
 			}
-			return 'NO_ELEMENT';
+			return [null, 'NO_ELEMENT'];
 		});
-		if (children.includes('PB')) {
-			return {
-				scope: el,
-				message: t(
-					'{0} expects {1}',
-					t('the "{0*}" {1}', role.name, 'role'),
-					t(role.requiredContextRole.map(ownedRole => t('the "{0*}" {1}', ownedRole, 'role'))),
-				),
-			};
+
+		/**
+		 * > Any element that will be owned by the element with this role.
+		 * > For example, an element with the role list
+		 * > **will own at least one element** with the role listitem.
+		 */
+		if (children.some(([, type]) => type === 'REQUIRED')) {
+			return;
 		}
-		if (!children.includes('REQUIRED')) {
-			return {
-				scope: el,
-				message: t(
-					'{0} expects {1}',
-					t('the "{0*}" {1}', role.name, 'role'),
-					t('the {0*} {1}', t(role.requiredOwnedElements), 'roles'),
-				),
-			};
+
+		if (children.some(([, type]) => type === 'PB')) {
+			// TODO: https://github.com/markuplint/markuplint/issues/490
+			return;
 		}
+
+		return {
+			scope: el,
+			message: t(
+				'{0} expects {1}',
+				t('the "{0*}" {1}', role.name, 'role'),
+				t('the "{0*}" {1}', t(role.requiredOwnedElements), 'roles'),
+			),
+		};
 	};

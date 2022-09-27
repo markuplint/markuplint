@@ -2547,6 +2547,18 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	}
 
 	/**
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 */
+	isEmpty() {
+		for (const childNode of Array.from(this.childNodes)) {
+			if (!(childNode.is(childNode.TEXT_NODE) && childNode.textContent?.trim() === '')) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-matches%E2%91%A0
 	 */

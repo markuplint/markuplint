@@ -485,6 +485,16 @@ describe('Required Owned Elements', () => {
 			},
 		]);
 
+		expect((await mlRuleTest(rule, '<ul>   </ul>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require the "listitem" role to content. Or, require aria-busy="true"',
+				raw: '<ul>',
+			},
+		]);
+
 		expect((await mlRuleTest(rule, '<ul aria-busy="true"></ul>')).violations).toStrictEqual([]);
 	});
 
@@ -521,6 +531,26 @@ describe('Required Owned Elements', () => {
 				raw: '<ul>',
 			},
 		]);
+	});
+
+	test('Valid contents', async () => {
+		const jsx = {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+		};
+		expect((await mlRuleTest(rule, '<ul><li /></ul>', jsx)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<ul>\n<li /></ul>', jsx)).violations).toStrictEqual([]);
+	});
+
+	test('Preprocessor Block', async () => {
+		const jsx = {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+		};
+		expect((await mlRuleTest(rule, '<ul aria-busy="true">{foo}</ul>', jsx)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<ul>{foo}</ul>', jsx)).violations).toStrictEqual([]);
 	});
 });
 
