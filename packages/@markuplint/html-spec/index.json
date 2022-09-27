@@ -22519,7 +22519,7 @@
 		{
 			"name": "abbr",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr",
-			"description": "The <abbr> HTML element represents an abbreviation or acronym; the optional title attribute can provide an expansion or description for the abbreviation. If present, title must contain this full description and nothing else.",
+			"description": "The <abbr> HTML element represents an abbreviation or acronym.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
 				"contents": [
