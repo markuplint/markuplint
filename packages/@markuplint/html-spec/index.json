@@ -25128,22 +25128,12 @@
 					"description": "The width of a border around the image. Use the border CSS property instead.",
 					"deprecated": true
 				},
-				"crossorigin": {
-					"description": "Indicates if the fetching of the image must be done using a CORS request. Image data from a CORS-enabled image returned from a CORS request can be reused in the <canvas> element without being marked \"tainted\". If the crossorigin attribute is not specified, then a non-CORS request is sent (without the Origin request header), and the browser marks the image as tainted and restricts access to its image data, preventing its usage in <canvas> elements. If the crossorigin attribute is specified, then a CORS request is sent (with the Origin request header); but if the server does not opt into allowing cross-origin access to the image data by the origin site (by not sending any Access-Control-Allow-Origin response header, or by not including the site's origin in any Access-Control-Allow-Origin response header it does send), then the browser blocks the image from loading, and logs a CORS error to the devtools console. Allowed values: anonymous A CORS request is sent with credentials omitted (that is, no cookies, X.509 certificates, or Authorization request header). use-credentials The CORS request is sent with any credentials included (that is, cookies, X.509 certificates, and the Authorization request header). If the server does not opt into sharing credentials with the origin site (by sending back the Access-Control-Allow-Credentials: true response header), then the browser marks the image as tainted and restricts access to its image data. If the attribute has an invalid value, browsers handle it as if the anonymous value was used. See CORS settings attributes for additional information."
-				},
 				"decoding": {
 					"type": {
 						"enum": ["sync", "async", "auto"],
 						"invalidValueDefault": "auto",
 						"missingValueDefault": "auto"
 					}
-				},
-				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching the image. Allowed values: high Signals a high-priority fetch relative to other images. low Signals a low-priority fetch relative to other images. auto Default: Signals automatic determination of fetch priority relative to other images.",
-					"experimental": true
-				},
-				"height": {
-					"description": "The intrinsic height of the image, in pixels. Must be an integer without a unit."
 				},
 				"hspace": {
 					"description": "The number of pixels of white space on the left and right of the image. Use the margin CSS property instead.",
@@ -25153,9 +25143,6 @@
 					"type": "Boolean",
 					"condition": "a[href] img"
 				},
-				"loading": {
-					"description": "Indicates how the browser should load the image: eager: Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy: Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. The intent is to avoid the network and storage bandwidth needed to handle the image until it's reasonably certain that it will be needed. This generally improves the performance of the content in most typical use cases. Note: Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when."
-				},
 				"longdesc": {
 					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG's HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
 					"deprecated": true
@@ -25164,18 +25151,9 @@
 					"description": "A name for the element. Use the id attribute instead.",
 					"deprecated": true
 				},
-				"referrerpolicy": {
-					"description": "A string indicating which referrer to use when fetching the resource: no-referrer: The Referer header will not be sent. no-referrer-when-downgrade: The Referer header will not be sent to origins without TLS (HTTPS). origin: The sent referrer will be limited to the origin of the referring page: its scheme, host, and port. origin-when-cross-origin: The referrer sent to other origins will be limited to the scheme, the host, and the port. Navigations on the same origin will still include the path. same-origin: A referrer will be sent for same origin, but cross-origin requests will contain no referrer information. strict-origin: Only send the origin of the document as the referrer when the protocol security level stays the same (HTTPS→HTTPS), but don't send it to a less secure destination (HTTPS→HTTP). strict-origin-when-cross-origin (default): Send a full URL when performing a same-origin request, only send the origin when the protocol security level stays the same (HTTPS→HTTPS), and send no header to a less secure destination (HTTPS→HTTP). unsafe-url: The referrer will include the origin and the path (but not the fragment, password, or username). This value is unsafe, because it leaks origins and paths from TLS-protected resources to insecure origins."
-				},
-				"sizes": {
-					"description": "One or more strings separated by commas, indicating a set of source sizes. Each source size consists of: A media condition. This must be omitted for the last item in the list. A source size value. Media Conditions describe properties of the viewport, not of the image. For example, (max-height: 500px) 1000px proposes to use a source of 1000px width, if the viewport is not higher than 500px. Source size values specify the intended display size of the image. User agents use the current source size to select one of the sources supplied by the srcset attribute, when those sources are described using width (w) descriptors. The selected source size affects the intrinsic size of the image (the image's display size if no CSS styling is applied). If the srcset attribute is absent, or contains no values with a width descriptor, then the sizes attribute has no effect."
-				},
 				"src": {
 					"type": "URL",
 					"required": true
-				},
-				"srcset": {
-					"description": "One or more strings separated by commas, indicating possible image sources for the user agent to use. Each string is composed of: A URL to an image Optionally, whitespace followed by one of: A width descriptor (a positive integer directly followed by w). The width descriptor is divided by the source size given in the sizes attribute to calculate the effective pixel density. A pixel density descriptor (a positive floating point number directly followed by x). If no descriptor is specified, the source is assigned the default descriptor of 1x. It is incorrect to mix width descriptors and pixel density descriptors in the same srcset attribute. Duplicate descriptors (for instance, two sources in the same srcset which are both described with 2x) are also invalid. The user agent selects any of the available sources at its discretion. This provides them with significant leeway to tailor their selection based on things like user preferences or bandwidth conditions. See our Responsive images tutorial for an example."
 				},
 				"usemap": {
 					"type": "HashName",
@@ -25184,9 +25162,6 @@
 				"vspace": {
 					"description": "The number of pixels of white space above and below the image. Use the margin CSS property instead.",
 					"deprecated": true
-				},
-				"width": {
-					"description": "The intrinsic width of the image in pixels. Must be an integer without a unit."
 				}
 			}
 		},
