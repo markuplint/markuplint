@@ -22724,7 +22724,7 @@
 					"deprecated": true
 				},
 				"nohref": {
-					"description": "Indicates that no hyperlink exists for the associated area. Note: Since HTML5, omitting the href attribute is sufficient.",
+					"description": "Indicates that no hyperlink exists for the associated area. Note: The nohref attribute is not necessary, as omitting the href attribute is sufficient.",
 					"deprecated": true
 				},
 				"ping": {
@@ -24340,7 +24340,7 @@
 			},
 			"attributes": {
 				"accept": {
-					"description": "Comma-separated content types the server accepts. Note: This attribute was removed in HTML5 and should not be used. Instead, use the accept attribute on <input type=file> elements.",
+					"description": "Comma-separated content types the server accepts. Note: This attribute has been deprecated and should not be used. Instead, use the accept attribute on <input type=file> elements.",
 					"deprecated": true
 				},
 				"accept-charset": {
@@ -24718,7 +24718,7 @@
 		{
 			"name": "hgroup",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup",
-			"description": "The <hgroup> HTML element represents a multi-level heading for a section of a document. It groups a set of <h1>–<h6> elements.",
+			"description": "The <hgroup> HTML element represents a heading and related content. It groups a single <h1>–<h6> element with one or more <p>.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -26508,7 +26508,7 @@
 		{
 			"name": "math",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/math",
-			"description": "The top-level element in MathML is <math>. Every valid MathML instance must be wrapped in <math> tags. In addition you must not nest a second <math> element in another, but you can have an arbitrary number of other child elements in it.",
+			"description": "The <math> element is the top-level MathML element, used to write a single mathematical formula. It can be placed in HTML content where flow content is permitted.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -26530,7 +26530,7 @@
 		{
 			"name": "menu",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu",
-			"description": "The <menu> HTML element is a semantic alternative to <ul>. It represents an unordered list of items (represented by <li> elements), each of which represents a link or other command that the user can activate.",
+			"description": "The <menu> HTML element is described in the HTML specification as a semantic alternative to <ul>, but treated by browsers (and exposed through the accessibility tree) as no different than <ul>. It represents an unordered list of items (which are represented by <li> elements).",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -26932,7 +26932,7 @@
 					"requiredEither": ["type"]
 				},
 				"declare": {
-					"description": "The presence of this Boolean attribute makes this element a declaration only. The object must be instantiated by a subsequent <object> element. In HTML5, repeat the <object> element completely each time that the resource is reused.",
+					"description": "The presence of this Boolean attribute makes this element a declaration only. The object must be instantiated by a subsequent <object> element. Repeat the <object> element completely each time the resource is reused.",
 					"deprecated": true
 				},
 				"form": {
@@ -28760,16 +28760,16 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Warning: Do not use this attribute as it is obsolete (not supported) in the latest standard. To achieve the same effect as the left, center, right or justify values, use the CSS text-align property on it. To achieve the same effect as the char value, in CSS3, you can use the value of the char as the value of the text-align property.",
+					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Warning: Do not use this attribute as it is obsolete (not supported) in the latest standard. To align values, use the CSS text-align property instead.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "This attribute defines the background color of each cell of the column. It is one of the 6-digit hexadecimal code as defined in sRGB, prefixed by a '#'. One of the sixteen predefined color strings may be used: black = \"#000000\" green = \"#008000\" silver = \"#C0C0C0\" lime = \"#00FF00\" gray = \"#808080\" olive = \"#808000\" white = \"#FFFFFF\" yellow = \"#FFFF00\" maroon = \"#800000\" navy = \"#000080\" red = \"#FF0000\" blue = \"#0000FF\" purple = \"#800080\" teal = \"#008080\" fuchsia = \"#FF00FF\" aqua = \"#00FFFF\" Note: Do not use this attribute, as it is non-standard and only implemented in some versions of Microsoft Internet Explorer: the <thead> element should be styled using CSS. To give a similar effect to the bgcolor attribute, use the CSS property background-color, on the relevant <td> or <th> elements.",
+					"description": "This attribute defines the background color of each column cell. It accepts a 6-digit hexadecimal color or a named color. Alpha transparency is not supported. Note: Do not use this attribute, as it is non-standard. The thead element should be styled using the CSS background-color property, which can be applied to any element, including the thead, <tr>, <td> and <th> elements.",
 					"deprecated": true,
 					"nonStandard": true
 				},
 				"char": {
-					"description": "This attribute is used to set the character to align the cells in a column on. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard. To achieve the same effect as the char, in CSS3, you can use the character set using the char attribute as the value of the text-align property.",
+					"description": "This attribute is used to set the character to align the cells in a column on. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard.",
 					"deprecated": true
 				},
 				"charoff": {
