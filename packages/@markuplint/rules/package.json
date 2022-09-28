@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/rules",
-	"version": "3.0.0-alpha.1",
+	"version": "3.0.0-alpha.2",
 	"description": "Rules for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -17,10 +17,10 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-spec": "3.0.0-alpha.1",
-		"@markuplint/ml-core": "3.0.0-alpha.1",
-		"@markuplint/ml-spec": "3.0.0-alpha.1",
-		"@markuplint/types": "3.0.0-alpha.1",
+		"@markuplint/html-spec": "3.0.0-alpha.2",
+		"@markuplint/ml-core": "3.0.0-alpha.2",
+		"@markuplint/ml-spec": "3.0.0-alpha.2",
+		"@markuplint/types": "3.0.0-alpha.2",
 		"@ungap/structured-clone": "^1.0.1",
 		"debug": "^4.3.4",
 		"html-entities": "^2.3.3",
