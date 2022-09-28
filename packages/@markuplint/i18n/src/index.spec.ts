@@ -71,6 +71,7 @@ test('Nesting', () => {
 test('Upper/Lowser Case', () => {
 	const t = translator();
 	expect(t("It doesn't need {0}", t('the {0}', 'attribute'))).toBe("It doesn't need the attribute");
+	expect(t('"{0*}" ID', 'foo')).toBe('"foo" ID');
 });
 
 test('Tagged template version (@experimental)', () => {

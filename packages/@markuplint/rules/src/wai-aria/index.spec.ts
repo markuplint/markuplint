@@ -466,7 +466,7 @@ describe('Required Owned Elements', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "listitem" role to content. Or, require aria-busy="true"',
+				message: 'Require the "listitem" role. Or, require aria-busy="true"',
 				raw: '<div role="list">',
 			},
 		]);
@@ -480,7 +480,7 @@ describe('Required Owned Elements', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "listitem" role to content. Or, require aria-busy="true"',
+				message: 'Require the "listitem" role. Or, require aria-busy="true"',
 				raw: '<ul>',
 			},
 		]);
@@ -490,7 +490,7 @@ describe('Required Owned Elements', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "listitem" role to content. Or, require aria-busy="true"',
+				message: 'Require the "listitem" role. Or, require aria-busy="true"',
 				raw: '<ul>',
 			},
 		]);
@@ -508,14 +508,14 @@ describe('Required Owned Elements', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'The "table" role expects the "row", "rowgroup > row" roles',
+				message: 'The "table" role expects the roles: "row", "rowgroup > row"',
 				raw: '<table>',
 			},
 			{
 				severity: 'error',
 				line: 1,
 				col: 8,
-				message: 'Require the "row" role to content. Or, require aria-busy="true"',
+				message: 'Require the "row" role. Or, require aria-busy="true"',
 				raw: '<tbody>',
 			},
 		]);
@@ -527,7 +527,7 @@ describe('Required Owned Elements', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'The "list" role expects the "listitem" roles',
+				message: 'The "list" role expects the "listitem" role',
 				raw: '<ul>',
 			},
 		]);
@@ -674,7 +674,7 @@ describe('Pretenders Option', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'The "list" role expects the "listitem" roles',
+				message: 'The "list" role expects the "listitem" role',
 				raw: '<ul>',
 			},
 		]);
@@ -729,7 +729,7 @@ describe('Pretenders Option', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'The "list" role expects the "listitem" roles',
+				message: 'The "list" role expects the "listitem" role',
 				raw: '<ul>',
 			},
 		]);
@@ -754,7 +754,7 @@ describe('Pretenders Option', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'The "list" role expects the "listitem" roles',
+				message: 'The "list" role expects the "listitem" role',
 				raw: '<ul>',
 			},
 		]);
@@ -802,7 +802,7 @@ describe('Pretenders Option', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'The "list" role expects the "listitem" roles',
+				message: 'The "list" role expects the "listitem" role',
 				raw: '<ul>',
 			},
 		]);

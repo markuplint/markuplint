@@ -50,7 +50,12 @@ export const checkingRequiredOwnedElements: ElementChecker<
 				scope: el,
 				message: t(
 					'{0}. Or, {1}',
-					t('require {0}', t('the "{0*}" {1}', t(role.requiredOwnedElements), 'role')),
+					t(
+						'require {0}',
+						role.requiredOwnedElements.length === 1
+							? t('the "{0*}" {1}', role.requiredOwnedElements[0], 'role')
+							: t('the {0}', 'roles') + `: ${t(role.requiredOwnedElements)}`,
+					),
 					t('require {0}', 'aria-busy="true"'),
 				),
 			};
@@ -97,7 +102,9 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			message: t(
 				'{0} expects {1}',
 				t('the "{0*}" {1}', role.name, 'role'),
-				t('the "{0*}" {1}', t(role.requiredOwnedElements), 'roles'),
+				role.requiredOwnedElements.length === 1
+					? t('the "{0*}" {1}', role.requiredOwnedElements[0], 'role')
+					: t('the {0}', 'roles') + `: ${t(role.requiredOwnedElements)}`,
 			),
 		};
 	};
