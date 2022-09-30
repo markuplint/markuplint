@@ -11,6 +11,7 @@ const log = ruleLog.extend('invalid-attr');
 type Option = {
 	attrs?: Record<string, Rule>;
 	ignoreAttrNamePrefix?: string | string[];
+	allowToAddPropertiesForPretender?: boolean;
 };
 
 type Rule =
@@ -31,6 +32,9 @@ export default createRule<boolean, Option>({
 	defaultOptions: {},
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
+			// Default
+			const allowToAddPropertiesForPretender = attr.rule.option.allowToAddPropertiesForPretender ?? true;
+
 			if (attr.isDirective) {
 				return;
 			}
@@ -121,6 +125,10 @@ export default createRule<boolean, Option>({
 						break;
 					}
 					case 'non-existent': {
+						if (allowToAddPropertiesForPretender && attr.ownerElement.pretenderContext?.type === 'origin') {
+							return;
+						}
+
 						const spec = getSpec(attr.ownerElement, document.specs.specs);
 						if (spec?.possibleToAddProperties) {
 							return;

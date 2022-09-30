@@ -144,6 +144,14 @@ Type: `string | string[]`
 
 In some parser, detect an attribute as a directive so ignored. (Ex: Ignore directive that starts `v-` string in the [vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/vue-parser).)
 
+#### `allowToAddPropertiesForPretender`
+
+Allow adding properties for a component that pretends to be an HTML native element. The default is `true`.
+It warns of finding a non-existence attribute if it is set `false` and you use the `pretenders` option.
+
+Type: `boolean`
+Default: `true`
+
 ### Default severity
 
 `error`

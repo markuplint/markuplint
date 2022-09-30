@@ -3,7 +3,7 @@ import type { MLNamedNodeMap } from './named-node-map';
 import type { MLText } from './text';
 import type { ElementNodeType, PretenderContext } from './types';
 import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
-import type { Pretender, PretenderARIA, RuleConfigValue } from '@markuplint/ml-config';
+import type { Pretender, PretenderARIA, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
@@ -1965,6 +1965,17 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 */
 	get rawName() {
 		return this._astToken.nodeName;
+	}
+
+	/**
+	 * @implements `@markuplint/ml-core` API: `MLNode`
+	 */
+	get rule(): RuleInfo<T, O> {
+		if (this.pretenderContext?.type === 'origin') {
+			return this.pretenderContext.origin.rule;
+		}
+
+		return super.rule;
 	}
 
 	/**

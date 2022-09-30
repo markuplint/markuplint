@@ -783,6 +783,69 @@ test('React: a custom rule and a mutable attribute', async () => {
 	]);
 });
 
+test('Pretenders', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<Image objectFit alt />', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<Image objectFit alt />', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				pretenders: [
+					{
+						selector: 'Image',
+						as: {
+							element: 'img',
+							inheritAttrs: true,
+						},
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<Image objectFit alt />', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rule: {
+					option: {
+						allowToAddPropertiesForPretender: false,
+					},
+				},
+				pretenders: [
+					{
+						selector: 'Image',
+						as: {
+							element: 'img',
+							inheritAttrs: true,
+						},
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 8,
+			message: 'The "objectFit" attribute is disallowed',
+			raw: 'objectFit',
+		},
+	]);
+});
+
 test('regexSelector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,

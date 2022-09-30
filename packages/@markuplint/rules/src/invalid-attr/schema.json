@@ -75,6 +75,9 @@
 							}
 						}
 					]
+				},
+				"allowToAddPropertiesForPretender": {
+					"type": "boolean"
 				}
 			}
 		}
