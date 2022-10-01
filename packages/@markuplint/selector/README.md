@@ -74,10 +74,11 @@ Supported selectors and operators:
 
 The below is selectors that are extended by markuplint:
 
-| Selector Type          | Code Example      |
-| ---------------------- | ----------------- |
-| ARIA pseudo-class      | `:aria(has name)` |
-| ARIA Role pseudo-class | `:role(heading)`  |
+| Selector Type              | Code Example          |
+| -------------------------- | --------------------- |
+| ARIA pseudo-class          | `:aria(has name)`     |
+| ARIA Role pseudo-class     | `:role(heading)`      |
+| Content Model pseudo-class | `:model(interactive)` |
 
 ### ARIA pseudo-class
 
@@ -100,6 +101,15 @@ The below is selectors that are extended by markuplint:
 For example, `:role(button)` matches `<button>` and `<div role="button">`.
 
 You can specify the version of WAI-ARIA by separating the pipe like `:role(form|1.1)`.
+
+### Content Model pseudo-class
+
+```
+:model(interactive)
+:model(palpable)
+```
+
+For example, `:role(interactive)` matches `<a>`(with `href` attr), `<button>`, and so on.
 
 ## Regex Selector
 
