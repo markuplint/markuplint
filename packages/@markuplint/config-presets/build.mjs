@@ -100,7 +100,6 @@ function cleanComment(text) {
 	const t1 = text.trim();
 	const t2 = t1.replace(/^\/\*\*(?:[\n\s]*\*[\n\s]*)?|^\*\/|^\*|^\*[\s\n]*|[\s\n]*\*\/$/g, '');
 	const t3 = t2.trim();
-	console.log({ t1, t2 });
 	return t3;
 }
 
