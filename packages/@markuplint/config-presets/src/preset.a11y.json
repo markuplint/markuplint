@@ -148,6 +148,25 @@
 					}
 				}
 			}
+		},
+		{
+			"selector": ":where(summary)",
+			"rules": {
+				/**
+				 * `<summary>` no contains interactive contents
+				 *
+				 * There is a case where an assistive technology can't access contents, or contents don't propagate a mouse event to `<summary>`.
+				 *
+				 * > The link is not discoverable at all to JAWS when navigating with its virtual cursor.
+				 * > If navigating to the summary element via the Tab key,
+				 * > JAWS announces "example text, button" as the name and role of the element.
+				 * > If hitting Tab key again, JAWS again announces "example text,
+				 * > button" even though keyboard focus is on the link.
+				 *
+				 * @see https://github.com/whatwg/html/issues/2272#issuecomment-1242415594
+				 */
+				"disallowed-element": [":model(interactive)"]
+			}
 		}
 	]
 }
