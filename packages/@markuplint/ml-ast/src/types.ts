@@ -145,8 +145,17 @@ export interface MLMarkupLanguageParser {
 	/**
 	 * @default "omittable"
 	 */
-	endTag?: 'xml' | 'omittable' | 'never';
+	endTag?: EndTagType;
 }
+
+/**
+ * The end tag omittable type.
+ *
+ * - `"xml"`: Must need an end tag or must self-close
+ * - `"omittable"`: May omit
+ * - `"never"`: Never need
+ */
+export type EndTagType = 'xml' | 'omittable' | 'never';
 
 export type ParserOptions = {
 	ignoreFrontMatter?: boolean;

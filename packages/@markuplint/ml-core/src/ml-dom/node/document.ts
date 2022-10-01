@@ -9,7 +9,7 @@ import type { MLElement } from './element';
 import type { MLNode } from './node';
 import type { MLText } from './text';
 import type { DocumentNodeType } from './types';
-import type { MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
+import type { EndTagType, MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
 import type { Pretender, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
@@ -38,9 +38,11 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	currentRule: MLRule<T, O> | null = null;
 
 	/**
+	 * This is defined by the parser.
 	 *
+	 * @default "omittable"
 	 */
-	readonly endTag: 'xml' | 'omittable' | 'never';
+	readonly endTag: EndTagType;
 
 	/**
 	 *
