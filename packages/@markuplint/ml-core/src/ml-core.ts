@@ -166,6 +166,7 @@ export class MLCore {
 			this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, {
 				filename: this.#filename,
 				endTag: this.#parser.endTag,
+				booleanish: this.#parser.booleanish,
 				pretenders: this.#pretenders,
 			});
 		} catch (err) {

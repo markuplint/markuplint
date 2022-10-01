@@ -142,11 +142,33 @@ export interface MLMarkupLanguageParser {
 			offsetColumn?: number;
 		},
 	): MLASTDocument;
+
 	/**
 	 * @default "omittable"
 	 */
-	endTag?: 'xml' | 'omittable' | 'never';
+	endTag?: EndTagType;
+
+	/**
+	 * Detect value as a true if its attribute is booleanish value and omitted.
+	 *
+	 * Ex:
+	 * ```jsx
+	 * <Component aria-hidden />
+	 * ```
+	 *
+	 * In the above, the `aria-hidden` is `true`.
+	 */
+	booleanish?: boolean;
 }
+
+/**
+ * The end tag omittable type.
+ *
+ * - `"xml"`: Must need an end tag or must self-close
+ * - `"omittable"`: May omit
+ * - `"never"`: Never need
+ */
+export type EndTagType = 'xml' | 'omittable' | 'never';
 
 export type ParserOptions = {
 	ignoreFrontMatter?: boolean;

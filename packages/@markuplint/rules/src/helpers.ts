@@ -1,9 +1,8 @@
 import type { Log } from './debug';
 import type { Translator } from '@markuplint/i18n';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
-import type { ARIAVersion, Attribute, MLMLSpec } from '@markuplint/ml-spec';
+import type { Attribute } from '@markuplint/ml-spec';
 
-import { ariaSpecs } from '@markuplint/ml-core';
 // @ts-ignore
 import structuredClone from '@ungap/structured-clone';
 import { decode as decodeHtmlEntities } from 'html-entities';
@@ -120,81 +119,6 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 	}
 
 	return normalized;
-}
-
-/**
- *
- * @see https://www.w3.org/TR/wai-aria-1.2/#propcharacteristic_value
- *
- * @param type
- * @param value
- * @param tokenEnum
- */
-export function checkAriaValue(type: string, value: string, tokenEnum: string[]) {
-	switch (type) {
-		case 'token': {
-			return tokenEnum.includes(value);
-		}
-		case 'token list': {
-			const list = value.split(/\s+/g).map(s => s.trim());
-			return list.every(token => tokenEnum.includes(token));
-		}
-		case 'string':
-		case 'ID reference':
-		case 'ID reference list': {
-			return true;
-		}
-		case 'true/false': {
-			return ['true', 'false'].includes(value);
-		}
-		case 'tristate': {
-			return ['mixed', 'true', 'false', 'undefined'].includes(value);
-		}
-		case 'true/false/undefined': {
-			return ['true', 'false', 'undefined'].includes(value);
-		}
-		case 'integer': {
-			return parseInt(value).toString() === value;
-		}
-		case 'number': {
-			return parseFloat(value).toString() === value;
-		}
-	}
-	// For skipping checking
-	return true;
-}
-
-export function checkAria(
-	specs: Readonly<MLMLSpec>,
-	attrName: string,
-	currentValue: string,
-	version: ARIAVersion,
-	role?: string,
-) {
-	const ariaAttrs = ariaSpecs(specs, version).props;
-	const aria = ariaAttrs.find(a => a.name === attrName);
-	if (!aria) {
-		return {
-			currentValue,
-			// For skipping checking
-			isValid: true,
-		};
-	}
-	let valueType = aria.value;
-	if (role && aria.conditionalValue) {
-		for (const cond of aria.conditionalValue) {
-			if (cond.role.includes(role)) {
-				valueType = cond.value;
-				break;
-			}
-		}
-	}
-	const isValid = checkAriaValue(valueType, currentValue, aria.enum);
-	return {
-		...aria,
-		currentValue,
-		isValid,
-	};
 }
 
 export function accnameMayBeMutable(el: Element<any, any>, document: Document<any, any>) {

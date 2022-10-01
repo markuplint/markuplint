@@ -834,6 +834,46 @@ describe('Pretenders Option', () => {
 	});
 });
 
+test('Booleanish', async () => {
+	expect((await mlRuleTest(rule, '<div aria-hidden></div>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "" is disallowed on the "aria-hidden" ARIA state',
+			raw: 'aria-hidden',
+		},
+	]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<div aria-hidden></div>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<div aria-hidden="invalid"></div>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "invalid" is disallowed on the "aria-hidden" ARIA state',
+			raw: 'aria-hidden="invalid"',
+		},
+	]);
+});
+
 describe('Issues', () => {
 	// https://github.com/markuplint/markuplint/issues/397
 	// And https://github.com/markuplint/markuplint/issues/397#issuecomment-1148349418
