@@ -36,3 +36,55 @@ it('specifies to node rule', async () => {
 		},
 	]);
 });
+
+it('Recommend', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<details><summary><label id="foo">foo</label></summary><input id="foo"/></details>',
+				{
+					nodeRule: [
+						{
+							selector: 'summary',
+							rule: ['label'],
+						},
+					],
+				},
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 19,
+			raw: '<label id="foo">',
+			message: 'The "label" element is disallowed',
+		},
+	]);
+
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<details><summary><label id="foo">foo</label></summary><input id="foo"/></details>',
+				{
+					nodeRule: [
+						{
+							selector: 'summary',
+							rule: [':model(interactive)'],
+						},
+					],
+				},
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 19,
+			raw: '<label id="foo">',
+			message: 'The ":model(interactive)" element is disallowed',
+		},
+	]);
+});

@@ -549,6 +549,15 @@ Support syntax and operators:
 | Column combinator                                | <code>div \|\| span</code>                                                                | ❌      |
 | Multiple selectors                               | `div, span`                                                                               | ✅      |
 
+##### Extended selectors
+
+| Syntax                | Description                                                                                                                               |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `:closest(selectors)` | Concept: [`Element.closest`](https://dom.spec.whatwg.org/#ref-for-dom-element-closest%E2%91%A0) method                                    |
+| `:aria(has name)`     | [ARIA pseudo-class](https://github.com/markuplint/markuplint/tree/v3/packages/%40markuplint/selector#aria-pseudo-class)                   |
+| `:role(heading)`      | [ARIA Role pseudo-class](https://github.com/markuplint/markuplint/tree/v3/packages/%40markuplint/selector#aria-pseudo-class)              |
+| `:model(interactive)` | [Content Model pseudo-class](https://github.com/markuplint/markuplint/tree/v3/packages/%40markuplint/selector#content-model-pseudo-class) |
+
 #### `regexSelector`
 
 You can select elements by using `regexSelector` instead of the `selector` property.
