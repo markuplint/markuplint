@@ -99,8 +99,9 @@ const renderMd = mustache.render(md, {
 function cleanComment(text) {
 	const t1 = text.trim();
 	const t2 = t1.replace(/^\/\*\*(?:[\n\s]*\*[\n\s]*)?|^\*\/|^\*|^\*[\s\n]*|[\s\n]*\*\/$/g, '');
-	const t3 = t2.trim();
-	return t3;
+	const t3 = t2.replace(/\s*\n\s*(?:\*\s*)?/g, ' ');
+	const t4 = t3.trim();
+	return t4;
 }
 
 await writeFile('README.md', renderMd, { encoding: 'utf-8' });
