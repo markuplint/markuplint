@@ -22,13 +22,13 @@
 		"implicitRole": false,
 		"permittedRoles": true,
 		"conditions": {
-			"table:is(:not([role]), [role=table]) > :is(thead, tfoot, tbody) > tr > td": {
+			"table:is(:not([role]), [role=table]) > :is(thead, tfoot, tbody) > tr > td, table:is(:not([role]), [role=table]) > tr > td": {
 				"implicitRole": "cell"
 			},
-			"table:is([role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td": {
+			"table:is([role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td, table:is([role=grid], [role=treegrid]) > tr > td": {
 				"implicitRole": "gridcell"
 			},
-			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td": {
+			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > td, table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > tr > td": {
 				// No role if the ancestor table element has role=table, grid, or treegrid; otherwise any role.
 				"permittedRoles": false
 			}
