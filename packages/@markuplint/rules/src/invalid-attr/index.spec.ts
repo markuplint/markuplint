@@ -899,3 +899,28 @@ test('regexSelector', async () => {
 		},
 	]);
 });
+
+test('Booleanish', async () => {
+	expect((await mlRuleTest(rule, '<div contenteditable></div>')).violations).toStrictEqual([]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<div contentEditable></div>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([]);
+
+	// No warning because checking by the wai-aria rule
+	expect(
+		(
+			await mlRuleTest(rule, '<div aria-hidden></div>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([]);
+});
