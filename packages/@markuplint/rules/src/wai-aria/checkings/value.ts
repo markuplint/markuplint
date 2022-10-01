@@ -1,8 +1,6 @@
 import type { Options } from '../types';
 import type { AttrChecker } from '@markuplint/ml-core';
-import type { ARIAProperty, ARIARole, ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
-
-import { ariaSpecs } from '@markuplint/ml-spec';
+import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 
 export const checkingValue: AttrChecker<
 	boolean,
@@ -18,13 +16,8 @@ export const checkingValue: AttrChecker<
 			return;
 		}
 		const propSpec = propSpecs.find(p => p.name === attr.name);
-		const result = checkAria(
-			attr.ownerMLDocument.specs,
-			attr.name,
-			attr.value,
-			attr.rule.option.version,
-			role?.name,
-		);
+
+		const result = checkAria(propSpec, attr.value, role?.name);
 		if (result.isValid) {
 			return;
 		}
@@ -40,34 +33,27 @@ export const checkingValue: AttrChecker<
 		};
 	};
 
-function checkAria(
-	specs: Readonly<MLMLSpec>,
-	attrName: string,
-	currentValue: string,
-	version: ARIAVersion,
-	role?: string,
-) {
-	const ariaAttrs = ariaSpecs(specs, version).props;
-	const aria = ariaAttrs.find(a => a.name === attrName);
-	if (!aria) {
+function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, role?: string) {
+	if (!propSpec) {
 		return {
 			currentValue,
 			// For skipping checking
 			isValid: true,
 		};
 	}
-	let valueType = aria.value;
-	if (role && aria.conditionalValue) {
-		for (const cond of aria.conditionalValue) {
+
+	let valueType = propSpec.value;
+	if (role && propSpec.conditionalValue) {
+		for (const cond of propSpec.conditionalValue) {
 			if (cond.role.includes(role)) {
 				valueType = cond.value;
 				break;
 			}
 		}
 	}
-	const isValid = checkAriaValue(valueType, currentValue, aria.enum);
+	const isValid = checkAriaValue(valueType, currentValue, propSpec.enum);
 	return {
-		...aria,
+		...propSpec,
 		currentValue,
 		isValid,
 	};
