@@ -38,16 +38,11 @@ for (const file of files) {
 			onComment(offset, length) {
 				const comment = code.substring(offset, offset + length);
 				const line = comment.split('\n');
-				const text = line
-					.map(line =>
-						line
-							.trim()
-							.replace(/^\/\*\*|^\*\/|^\*\s*/g, '')
-							.trim(),
-					)
-					.filter(s => s);
-				const heading = text.shift();
-				const desc = text.filter(t => !/^@see\s/i.test(t));
+				const [heading = '', desc = ''] = comment
+					.split(/\n\s*\*\s*\n/g)
+					.map(section => cleanComment(section))
+					.filter(s => !/^@see\s/.test(s));
+				const text = line.map(line => cleanComment(line)).filter(s => s);
 				const url = (text.find(t => /^@see\s/i.test(t)) || '').replace(/^@see\s/i, '');
 
 				if (!heading) {
@@ -89,11 +84,24 @@ const renderMd = mustache.render(md, {
 				const has = configs.some(config => context.config?.includes(config));
 				return has ? '✅' : '❌';
 			});
-			line.push(`${title}|${context.desc.join(' ')}|${checks.join('|')}|`);
+			line.push(`${title}|${context.desc || ' '}|${checks.join('|')}|`);
 		});
 
 		return line.join('\n');
 	},
 });
+
+/**
+ *
+ * @param {string} text
+ * @returns
+ */
+function cleanComment(text) {
+	const t1 = text.trim();
+	const t2 = t1.replace(/^\/\*\*(?:[\n\s]*\*[\n\s]*)?|^\*\/|^\*|^\*[\s\n]*|[\s\n]*\*\/$/g, '');
+	const t3 = t2.trim();
+	console.log({ t1, t2 });
+	return t3;
+}
 
 await writeFile('README.md', renderMd, { encoding: 'utf-8' });
