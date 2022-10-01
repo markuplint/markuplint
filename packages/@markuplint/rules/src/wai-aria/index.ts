@@ -89,7 +89,7 @@ export default createRule<boolean, Options>({
 				}
 
 				if (el.rule.option.checkingValue) {
-					report(checkingValue({ attr, role: computed.role, propSpecs }));
+					report(checkingValue({ attr, role: computed.role, propSpecs, booleanish: document.booleanish }));
 				}
 
 				if (el.rule.option.disallowDefaultValue) {

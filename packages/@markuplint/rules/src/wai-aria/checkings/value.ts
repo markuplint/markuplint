@@ -8,16 +8,17 @@ export const checkingValue: AttrChecker<
 	{
 		role?: ARIARole | null;
 		propSpecs: ARIAProperty[];
+		booleanish?: boolean;
 	}
 > =
-	({ attr, role, propSpecs }) =>
+	({ attr, role, propSpecs, booleanish }) =>
 	t => {
 		if (attr.isDynamicValue) {
 			return;
 		}
 		const propSpec = propSpecs.find(p => p.name === attr.name);
 
-		const result = checkAria(propSpec, attr.value, role?.name);
+		const result = checkAria(propSpec, attr.value, role?.name, booleanish);
 		if (result.isValid) {
 			return;
 		}
@@ -33,7 +34,7 @@ export const checkingValue: AttrChecker<
 		};
 	};
 
-function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, role?: string) {
+function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, role?: string, booleanish?: boolean) {
 	if (!propSpec) {
 		return {
 			currentValue,
@@ -51,7 +52,7 @@ function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, rol
 			}
 		}
 	}
-	const isValid = checkAriaValue(valueType, currentValue, propSpec.enum);
+	const isValid = checkAriaValue(valueType, currentValue, propSpec.enum, booleanish);
 	return {
 		...propSpec,
 		currentValue,
@@ -63,7 +64,7 @@ function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, rol
  *
  * @see https://www.w3.org/TR/wai-aria-1.2/#propcharacteristic_value
  */
-export function checkAriaValue(type: string, value: string, tokenEnum: string[]) {
+export function checkAriaValue(type: string, value: string, tokenEnum: string[], booleanish?: boolean) {
 	switch (type) {
 		case 'token': {
 			return tokenEnum.includes(value);
@@ -78,12 +79,21 @@ export function checkAriaValue(type: string, value: string, tokenEnum: string[])
 			return true;
 		}
 		case 'true/false': {
+			if (booleanish && value === '') {
+				return true;
+			}
 			return ['true', 'false'].includes(value);
 		}
 		case 'tristate': {
+			if (booleanish && value === '') {
+				return true;
+			}
 			return ['mixed', 'true', 'false', 'undefined'].includes(value);
 		}
 		case 'true/false/undefined': {
+			if (booleanish && value === '') {
+				return true;
+			}
 			return ['true', 'false', 'undefined'].includes(value);
 		}
 		case 'integer': {

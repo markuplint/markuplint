@@ -33,6 +33,20 @@ const ruleLog = docLog.extend('rule');
 
 export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNode<T, O> implements Document {
 	/**
+	 * Detect value as a true if its attribute is booleanish value and omitted.
+	 *
+	 * Ex:
+	 * ```jsx
+	 * <Component aria-hidden />
+	 * ```
+	 *
+	 * In the above, the `aria-hidden` is `true`.
+	 *
+	 * @default false
+	 */
+	readonly booleanish: boolean;
+
+	/**
 	 *
 	 */
 	currentRule: MLRule<T, O> | null = null;
@@ -86,6 +100,7 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 		options?: {
 			filename?: string;
 			endTag?: 'xml' | 'omittable' | 'never';
+			booleanish?: boolean;
 			pretenders?: Pretender[];
 		},
 	) {
@@ -94,6 +109,7 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 
 		this.isFragment = ast.isFragment;
 		this.specs = schemaToSpec(schemas);
+		this.booleanish = options?.booleanish || false;
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
 
