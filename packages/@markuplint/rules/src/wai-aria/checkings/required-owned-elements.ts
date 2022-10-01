@@ -97,6 +97,23 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			return;
 		}
 
+		/**
+		 * Has mutable children
+		 *
+		 * Ex:
+		 *
+		 * ```jsx
+		 * <table>
+		 *   <tbody>
+		 *     {list.map((item) => <tr><td>{item}</td></tr>)}
+		 *   </tbody>
+		 * </table>
+		 * ```
+		 */
+		if (el.hasMutableChildren(true)) {
+			return;
+		}
+
 		return {
 			scope: el,
 			message: t(

@@ -38,27 +38,27 @@
 		// role=columnheader, rowheader or cell if the ancestor table element is exposed as a role=table.
 		// role=columnheader, rowheader or gridcell if the ancestor table element is exposed as a role=grid or treegrid.
 		"conditions": {
-			"table:is(:not([role]), [role=table]) > :is(thead, tfoot, tbody) > tr > th": {
+			"table:is(:not([role]), [role=table]) > :is(thead, tfoot, tbody) > tr > th, table:is(:not([role]), [role=table]) > tr > th": {
 				"implicitRole": "cell"
 			},
-			"table:is([role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th": {
+			"table:is([role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th, table:is([role=grid], [role=treegrid]) > tr > th": {
 				"implicitRole": "gridcell"
 			},
 			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > thead > tr > th:not([scope])": {
 				"implicitRole": "columnheader"
 			},
-			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(tfoot, tbody) > tr > th:not([scope])": {
+			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(tfoot, tbody) > tr > th:not([scope]), table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > tr > th:not([scope])": {
 				"implicitRole": "rowheader"
 			},
 			// https://www.w3.org/TR/wai-aria-1.1/#columnheader Base Concept: HTML th[scope="col"]
-			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=col]": {
+			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=col], table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > tr > th[scope=col]": {
 				"implicitRole": "columnheader"
 			},
 			// https://www.w3.org/TR/wai-aria-1.1/#rowheader Base Concept: HTML th[scope="row"]
-			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=row]": {
+			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=row], table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > tr > th[scope=row]": {
 				"implicitRole": "rowheader"
 			},
-			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th": {
+			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th, table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > tr > th": {
 				"permittedRoles": false
 			}
 		}

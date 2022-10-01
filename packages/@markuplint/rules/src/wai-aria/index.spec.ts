@@ -552,6 +552,29 @@ describe('Required Owned Elements', () => {
 		expect((await mlRuleTest(rule, '<ul aria-busy="true">{foo}</ul>', jsx)).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<ul>{foo}</ul>', jsx)).violations).toStrictEqual([]);
 	});
+
+	test('Owned element has Preprocessor Block', async () => {
+		expect(
+			(await mlRuleTest(rule, '<table><tbody><tr><td>foo</td></tr></tbody></table>')).violations,
+		).toStrictEqual([]);
+
+		expect(
+			(
+				await mlRuleTest(rule, '<table><tbody>{list.map((item) => <tr><td>{item}</td></tr>)}</tbody></table>', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+				})
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('Omit <tbody>', async () => {
+		expect((await mlRuleTest(rule, '<table><tr><td>foo</td></tr></table>')).violations).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<table><tbody><tr><td>foo</td></tr></tbody></table>')).violations,
+		).toStrictEqual([]);
+	});
 });
 
 describe('Presentational Children', () => {
