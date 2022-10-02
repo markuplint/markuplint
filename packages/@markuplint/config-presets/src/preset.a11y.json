@@ -54,6 +54,12 @@
 		},
 
 		/**
+		 * `<label>` should have control
+		 *
+		 */
+		"label-has-control": true,
+
+		/**
 		 * Use **landmark**
 		 *
 		 * @see https://www.w3.org/TR/wai-aria-practices/examples/landmarks/
