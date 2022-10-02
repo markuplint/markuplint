@@ -48,6 +48,9 @@
 				"invalid-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/invalid-attr/schema.json"
 				},
+				"label-has-control": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/label-has-control/schema.json"
+				},
 				"landmark-roles": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/landmark-roles/schema.json"
 				},

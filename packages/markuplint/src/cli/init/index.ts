@@ -104,6 +104,10 @@ const defaultRules: Record<
 		category: 'validation',
 		default: true,
 	},
+	'label-has-control': {
+		category: 'a11y',
+		default: false,
+	},
 	'landmark-roles': {
 		category: 'a11y',
 		default: true,

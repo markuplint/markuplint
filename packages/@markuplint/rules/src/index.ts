@@ -12,6 +12,7 @@ import EndTag from './end-tag';
 import IdDuplication from './id-duplication';
 import IneffectiveAttr from './ineffective-attr';
 import InvalidAttr from './invalid-attr';
+import LabelHasControl from './label-has-control';
 import LandmarkRoles from './landmark-roles';
 import NoBooleanAttrValue from './no-boolean-attr-value';
 import NoDefaultValue from './no-default-value';
@@ -41,6 +42,7 @@ export default {
 	'id-duplication': IdDuplication,
 	'ineffective-attr': IneffectiveAttr,
 	'invalid-attr': InvalidAttr,
+	'label-has-control': LabelHasControl,
 	'landmark-roles': LandmarkRoles,
 	'no-boolean-attr-value': NoBooleanAttrValue,
 	'no-default-value': NoDefaultValue,
