@@ -88,7 +88,7 @@ export type ElementSpec = {
 	nonStandard?: true;
 
 	/**
-	 * Element cateogries
+	 * Element categories
 	 */
 	categories: ContentModel[];
 
@@ -122,9 +122,9 @@ export type ElementSpec = {
 	};
 
 	/**
-	 * Tag omittion
+	 * Tag omission
 	 */
-	omittion: ElementSpecOmittion;
+	omission: ElementSpecOmission;
 
 	/**
 	 * Global Attributes
@@ -158,9 +158,9 @@ type ImplicitRole = string | false;
  */
 export type PermittedRoles = string[] | boolean;
 
-type ElementSpecOmittion = false | ElementSpecOmittionTags;
+type ElementSpecOmission = false | ElementSpecOmissionTags;
 
-type ElementSpecOmittionTags = {
+type ElementSpecOmissionTags = {
 	startTag: boolean | ElementCondition;
 	endTag: boolean | ElementCondition;
 };

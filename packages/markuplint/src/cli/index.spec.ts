@@ -41,7 +41,7 @@ describe('STDOUT Test', () => {
 		expect(stdout).toBe('');
 	});
 
-	it('verify and feilure', async () => {
+	it('verify and failure', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
 		const { stdout, stderr, exitCode } = await execa(entryFilePath, ['--no-color', targetFilePath], {
 			reject: false,

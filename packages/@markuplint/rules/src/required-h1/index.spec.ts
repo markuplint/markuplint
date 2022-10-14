@@ -53,7 +53,7 @@ test('h1', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('enable to opetion "in-document-fragment"', async () => {
+test('enable to option "in-document-fragment"', async () => {
 	const { violations } = await mlRuleTest(rule, '<div><h2>text</h2></div>', {
 		rule: {
 			severity: 'error',

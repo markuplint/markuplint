@@ -14,7 +14,7 @@ $ yarn add -D @markuplint/astro-parser
 
 ## Usage
 
-Add `parser` option into your [confugration file](https://markuplint.dev/configuration#parser).
+Add `parser` option into your [configuration file](https://markuplint.dev/configuration#parser).
 
 ```json
 {

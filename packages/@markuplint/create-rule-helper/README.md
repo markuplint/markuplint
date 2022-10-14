@@ -11,3 +11,7 @@ $ npm install @markuplint/create-rule-helper
 
 $ yarn add @markuplint/create-rule-helper
 ```
+
+## Usage
+
+Run `markuplint --create-rule` and it will guide you through the process of creating a new rule.

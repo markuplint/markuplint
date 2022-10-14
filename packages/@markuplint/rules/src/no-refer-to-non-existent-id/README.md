@@ -25,7 +25,7 @@ Checking for whether **ID** or **the list of ID** specified to `for`, `form`, `a
 ### Interface
 
 - Type: `boolean`
-- Deafult Value: `true`
+- Default Value: `true`
 
 ### Default severity
 

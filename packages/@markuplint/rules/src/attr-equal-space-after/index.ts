@@ -6,7 +6,7 @@ const alwaysMsg = 'Always insert {0} after {1} of {2}';
 const neverMsg = 'Never insert {0} after {1} of {2}';
 
 export default createRule<Value>({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	defaultValue: 'never',
 	async verify(context) {
 		await context.document.walkOn('Element', node => {

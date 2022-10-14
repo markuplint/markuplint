@@ -33,7 +33,7 @@ const caches = new Map<string, MLMLSpec | ExtendedSpec>();
  * }
  * ```
  *
- * @param filePath The lintee file path
+ * @param filePath The linted file path
  * @param specConfig The `spec` property part of the config
  * @returns
  */

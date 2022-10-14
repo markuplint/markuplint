@@ -7,7 +7,7 @@ import { Token } from './token';
 
 type TokenCollectionOptions = Partial<
 	Omit<List, 'token'> & {
-		speificSeparator: string | string[];
+		specificSeparator: string | string[];
 	}
 >;
 
@@ -23,7 +23,7 @@ export class TokenCollection extends Array<Token> {
 	static fromPatterns(
 		value: Token | string,
 		patterns: RegExp[],
-		typeOptions?: Omit<TokenCollectionOptions, 'speificSeparator'> & { repeat?: boolean },
+		typeOptions?: Omit<TokenCollectionOptions, 'specificSeparator'> & { repeat?: boolean },
 	) {
 		const origin = typeof value === 'string' ? value : value.origin;
 		let strings = typeof value === 'string' ? value : value.value;
@@ -114,11 +114,11 @@ export class TokenCollection extends Array<Token> {
 			separators.push(',');
 		}
 
-		if (typeOptions?.speificSeparator) {
-			if (Array.isArray(typeOptions.speificSeparator)) {
-				separators.push(...typeOptions.speificSeparator);
+		if (typeOptions?.specificSeparator) {
+			if (Array.isArray(typeOptions.specificSeparator)) {
+				separators.push(...typeOptions.specificSeparator);
 			} else {
-				separators.push(typeOptions.speificSeparator);
+				separators.push(typeOptions.specificSeparator);
 			}
 		}
 
@@ -257,7 +257,7 @@ export class TokenCollection extends Array<Token> {
 						expects,
 					});
 				} else if (takeTurnsError.token.type === takeTurnsError.expectedTokenNumber) {
-					// Consecutive cammas
+					// Consecutive commas
 					return takeTurnsError.token.unmatched({
 						reason: 'unexpected-comma',
 						ref,

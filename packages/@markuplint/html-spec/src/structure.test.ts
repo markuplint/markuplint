@@ -37,9 +37,9 @@ describe('schema', () => {
 		],
 	];
 
-	for (const [testName, schamaPath, targetDir] of map) {
+	for (const [testName, schemaPath, targetDir] of map) {
 		test(testName, async () => {
-			const schema = await $RefParser.bundle(schamaPath);
+			const schema = await $RefParser.bundle(schemaPath);
 			const validator = new Validator();
 			const attributes = glob(path.resolve(targetDir, '*.json')).map(attr => path.resolve(targetDir, attr));
 			attributes.forEach(jsonPath => {
@@ -54,7 +54,7 @@ describe('schema', () => {
 					}
 				} catch (e) {
 					// eslint-disable-next-line no-console
-					console.log({ target: jsonPath, schema: schamaPath });
+					console.log({ target: jsonPath, schema: schemaPath });
 					throw e;
 				}
 			});

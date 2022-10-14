@@ -28,7 +28,7 @@ const selectors: { [role in Roles]: string[] } = {
 const topLevelRoles: TopLevelRoles[] = ['banner', 'main', 'complementary', 'contentinfo'];
 
 export default createRule<boolean, Options>({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	defaultOptions: {
 		ignoreRoles: [],
 		labelEachArea: true,

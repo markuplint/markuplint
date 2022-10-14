@@ -8,7 +8,7 @@ export type Value = 'lower' | 'upper';
 export type Value_v1 = 'no-upper' | 'no-lower';
 
 export default createRule<Value | Value_v1>({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	defaultValue: 'lower',
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', node => {

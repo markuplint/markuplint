@@ -14,7 +14,7 @@ $ yarn add -D @markuplint/react-spec
 
 ## Usage
 
-Add `specs` option into your [confugration file](https://markuplint.dev/configuration#parser).
+Add `specs` option into your [configuration file](https://markuplint.dev/configuration#parser).
 
 ```json
 {

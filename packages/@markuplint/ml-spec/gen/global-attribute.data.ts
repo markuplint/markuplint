@@ -366,7 +366,7 @@ export const globalAttrs: Record<
 			// Deprecated
 			'xlink:href',
 			'xlink:title',
-			// Obosoleted
+			// Obsolete
 			'xlink:actuate',
 			'xlink:arcrole',
 			'xlink:role',

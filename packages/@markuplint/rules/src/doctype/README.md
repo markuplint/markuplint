@@ -54,7 +54,7 @@ Type: `"always"`
 
 ### Options
 
-#### `denyObsolateType`
+#### `denyObsoleteType`
 
 Type: `boolean`
 

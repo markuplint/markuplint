@@ -115,7 +115,7 @@ export interface MLASTPreprocessorSpecificAttr extends MLToken {
 export interface MLASTDocument {
 	nodeList: MLASTNode[];
 	isFragment: boolean;
-	unkownParseError?: string;
+	unknownParseError?: string;
 }
 
 export interface MLMarkupLanguageParser {

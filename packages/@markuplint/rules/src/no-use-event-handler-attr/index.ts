@@ -7,7 +7,7 @@ type Options = {
 };
 
 export default createRule<boolean, Options>({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	defaultOptions: {},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {

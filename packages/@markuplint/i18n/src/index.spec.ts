@@ -98,7 +98,7 @@ test('ja', () => {
 	);
 	expect(t('{0} is {1:c}', t('the "{0}" {1}', 'foo', 'element'), 'non-standard')).toBe('要素「foo」は非標準です');
 	expect(t('Require {0}', 'doctype')).toBe('文書型が必要です');
-	expect(t('Never {0} {1}', 'declarate', 'obsolete doctype')).toBe('廃止された文書型を宣言しないでください');
+	expect(t('Never {0} {1}', 'declare', 'obsolete doctype')).toBe('廃止された文書型を宣言しないでください');
 	expect(
 		t('{0} is {1:c}', t('{0} of {1}', t('the {0}', 'value'), t('the "{0}" {1}', 'id', 'attribute')), 'duplicated'),
 	).toBe('属性「id」の値が重複しています');

@@ -15,7 +15,7 @@ export function pugParse(pug: string) {
 	return ast;
 }
 
-function getOffsetsFromlines(pug: string): number[] {
+function getOffsetsFromLines(pug: string): number[] {
 	const lines = pug.split(/\n/g);
 	let chars = 0;
 	const result = lines.map(line => {
@@ -53,7 +53,7 @@ function optimizeAST(originalAST: PugAST<PugASTNode>, tokens: PugLexToken[], pug
 	for (const node of originalAST.nodes) {
 		const line = node.line;
 		const column = node.column;
-		const offsets = getOffsetsFromlines(pug);
+		const offsets = getOffsetsFromLines(pug);
 		const lineOffset = Math.max(offsets[line - 2], 0) || 0;
 		const offset = lineOffset + column - 1;
 
@@ -645,37 +645,37 @@ export type ASTNode =
 	| ASTCaseWhenNode;
 
 export type ASTTagNode = Omit<PugASTTagNode<ASTAttr, ASTBlock>, 'attributeBlocks' | 'selfClosing' | 'isInline'> &
-	AddtionalASTData;
+	AdditionalASTData;
 
-export type ASTTextNode = Omit<PugASTTextNode, 'val'> & AddtionalASTData;
+export type ASTTextNode = Omit<PugASTTextNode, 'val'> & AdditionalASTData;
 
-export type ASTCodeNode = PugASTCodeNode & AddtionalASTData;
+export type ASTCodeNode = PugASTCodeNode & AdditionalASTData;
 
-export type ASTComment = PugASTCommentNode & AddtionalASTData;
+export type ASTComment = PugASTCommentNode & AdditionalASTData;
 
-export type ASTDoctype = PugASTDoctypeNode & AddtionalASTData;
+export type ASTDoctype = PugASTDoctypeNode & AdditionalASTData;
 
-export type ASTIncludeNode = PugASTIncludeNode<ASTBlock> & AddtionalASTData;
+export type ASTIncludeNode = PugASTIncludeNode<ASTBlock> & AdditionalASTData;
 
-export type ASTMixinNode = Omit<PugASTMixinNode<ASTAttr, ASTBlock>, 'attributeBlocks'> & AddtionalASTData;
+export type ASTMixinNode = Omit<PugASTMixinNode<ASTAttr, ASTBlock>, 'attributeBlocks'> & AdditionalASTData;
 
-export type ASTMixinSlotNode = PugASTMixinSlotNode & AddtionalASTData;
+export type ASTMixinSlotNode = PugASTMixinSlotNode & AdditionalASTData;
 
-export type ASTFilterNode = PugASTFilterNode<ASTAttr, ASTBlock> & AddtionalASTData;
+export type ASTFilterNode = PugASTFilterNode<ASTAttr, ASTBlock> & AdditionalASTData;
 
-export type ASTEachNode = PugASTEachNode<ASTBlock> & AddtionalASTData;
+export type ASTEachNode = PugASTEachNode<ASTBlock> & AdditionalASTData;
 
 export type ASTConditionalNode = Omit<PugASTConditionalNode<ASTBlock>, 'consequent' | 'alternate'> & {
 	block: ASTBlock;
-} & AddtionalASTData;
+} & AdditionalASTData;
 
-export type ASTCaseNode = PugASTCaseNode<ASTBlock> & AddtionalASTData;
+export type ASTCaseNode = PugASTCaseNode<ASTBlock> & AdditionalASTData;
 
-export type ASTCaseWhenNode = PugASTCaseWhenNode<ASTBlock> & AddtionalASTData;
+export type ASTCaseWhenNode = PugASTCaseWhenNode<ASTBlock> & AdditionalASTData;
 
-export type ASTAttr = PugASTAttr & AddtionalASTData;
+export type ASTAttr = PugASTAttr & AdditionalASTData;
 
-type AddtionalASTData = {
+type AdditionalASTData = {
 	raw: string;
 	offset: number;
 	endOffset: number;

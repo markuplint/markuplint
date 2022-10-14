@@ -10,7 +10,7 @@ const quoteList: QuoteMap = {
 };
 
 export default createRule<Type>({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	defaultValue: 'double',
 	async verify(context) {
 		await context.document.walkOn('Element', node => {

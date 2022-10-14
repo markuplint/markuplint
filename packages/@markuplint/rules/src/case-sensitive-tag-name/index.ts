@@ -3,7 +3,7 @@ import { createRule } from '@markuplint/ml-core';
 export type Value = 'lower' | 'upper';
 
 export default createRule<Value>({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	defaultValue: 'lower',
 	async verify({ document, report, t }) {
 		await document.walk(node => {

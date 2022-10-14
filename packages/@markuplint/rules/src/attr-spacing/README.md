@@ -2,7 +2,7 @@
 title: Spaces between attributes
 id: attr-spacing
 fixable: true
-cateogry: style
+category: style
 ---
 
 # Spaces between attributes

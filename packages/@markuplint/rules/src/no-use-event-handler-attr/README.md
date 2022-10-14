@@ -1,7 +1,7 @@
 ---
 title: No use event handler attribute
 id: no-use-event-handler-attr
-category: maintenability
+category: maintainability
 ---
 
 # No use event handler attribute
@@ -29,7 +29,7 @@ Warn when specifying the event handler attribute.
 ### Interface
 
 - Type: `boolean`
-- Deafult Value: `true`
+- Default Value: `true`
 
 ### Options
 

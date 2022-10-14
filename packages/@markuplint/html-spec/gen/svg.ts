@@ -39,7 +39,7 @@ export async function getSVG() {
 				summary: '',
 				role: false,
 			},
-			omittion: false,
+			omission: false,
 			globalAttrs: {},
 			attributes: {},
 			deprecated: true,
@@ -168,7 +168,7 @@ async function getSVGElement({ name, url }: { name: string; url: string | null }
 			summary: 'WIP',
 			roles: [],
 		},
-		omittion: false,
+		omission: false,
 		globalAttrs: global || {},
 		attributes,
 	};

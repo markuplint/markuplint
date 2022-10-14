@@ -10,7 +10,7 @@ import { installScaffold } from './install-scaffold';
 
 const asyncGlob = util.promisify(glob);
 
-export async function craeteRulePackage({
+export async function createRulePackage({
 	name,
 	lang,
 	needTest,

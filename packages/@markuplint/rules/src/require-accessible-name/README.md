@@ -34,7 +34,7 @@ Warn if the element has no accessible name. It is according to its ARIA role whe
 ### Interface
 
 - Type: `boolean`
-- Deafult Value: `true`
+- Default Value: `true`
 
 ### Default severity
 

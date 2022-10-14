@@ -1,6 +1,6 @@
 import type MLDOMAbstractElement from '../tokens/abstract-element';
 import type { Specificity } from './selector';
-import type { RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCompination } from '@markuplint/ml-config';
+import type { RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCombination } from '@markuplint/ml-config';
 
 import { regexSelectorMatches } from '@markuplint/ml-config';
 
@@ -64,10 +64,10 @@ function regexSelect(el: TargetElement, selector: RegexSelector): SelectorMatche
 }
 
 class SelectorTarget {
-	_selector: RegexSelectorWithoutCompination;
+	_selector: RegexSelectorWithoutCombination;
 	_combinatedFrom: { target: SelectorTarget; combinator: RegexSelectorCombinator } | null = null;
 
-	constructor(selector: RegexSelectorWithoutCompination) {
+	constructor(selector: RegexSelectorWithoutCombination) {
 		this._selector = {
 			nodeName: selector.nodeName,
 			attrName: selector.attrName,
@@ -172,7 +172,7 @@ class SelectorTarget {
 	}
 }
 
-function uncombinatedRegexSelect(el: TargetElement, selector: RegexSelectorWithoutCompination): SelectorMatches {
+function uncombinatedRegexSelect(el: TargetElement, selector: RegexSelectorWithoutCombination): SelectorMatches {
 	let matched = true;
 	let data: Record<string, string> = {};
 	let tagSelector = '';

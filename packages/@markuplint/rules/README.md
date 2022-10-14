@@ -33,7 +33,7 @@
 
 - [`class-naming`](./src/class-naming)
 
-### Maintenability
+### Maintainability
 
 - [`no-hard-code-id`](./src/no-hard-code-id)
 - [`no-use-event-handler-attr`](./src/no-use-event-handler-attr)

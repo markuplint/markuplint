@@ -2,13 +2,13 @@ import { createRule } from '@markuplint/ml-core';
 
 type Value = 'always';
 type Option = {
-	denyObsolateType: boolean;
+	denyObsoleteType: boolean;
 };
 
 export default createRule<Value, Option>({
 	defaultValue: 'always',
 	defaultOptions: {
-		denyObsolateType: true,
+		denyObsoleteType: true,
 	},
 	verify(context) {
 		if (context.document.isFragment) {
@@ -30,7 +30,7 @@ export default createRule<Value, Option>({
 		if ((doctype.name.toLowerCase() === 'html' && doctype.publicId) || doctype.systemId) {
 			context.report({
 				scope: doctype,
-				message: context.translate('Never {0} {1}', 'declarate', 'obsolete doctype'),
+				message: context.translate('Never {0} {1}', 'declare', 'obsolete doctype'),
 			});
 		}
 	},

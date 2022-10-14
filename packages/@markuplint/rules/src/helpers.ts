@@ -343,8 +343,8 @@ export function accnameMayBeMutable(el: Element<any, any>, document: Document<an
 		return true;
 	}
 
-	const ownedLable = getOwnedLabel(el, document);
-	if (ownedLable && (ownedLable.hasMutableAttributes() || ownedLable.hasMutableChildren(true))) {
+	const ownedLabel = getOwnedLabel(el, document);
+	if (ownedLabel && (ownedLabel.hasMutableAttributes() || ownedLabel.hasMutableChildren(true))) {
 		return true;
 	}
 
@@ -360,16 +360,16 @@ export function getOwnedLabel<V extends RuleConfigValue, O>(
 		return null;
 	}
 
-	let ownedLable = el.closest('label');
+	let ownedLabel = el.closest('label');
 
-	if (!ownedLable) {
+	if (!ownedLabel) {
 		const id = el.getAttribute('id');
 		if (id) {
-			ownedLable = docuemnt.querySelector(`label[for="${id}"]`);
+			ownedLabel = docuemnt.querySelector(`label[for="${id}"]`);
 		}
 	}
 
-	return ownedLable;
+	return ownedLabel;
 }
 
 export function decodeCharRef(characterReference: string) {

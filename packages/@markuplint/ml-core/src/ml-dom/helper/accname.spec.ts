@@ -26,7 +26,7 @@ test('Get accessible name', () => {
 	expect(getAccname(c('<div>text</div>'))).toBe('');
 	expect(getAccname(c('<div aria-label="label">text</div>'))).toBe('label');
 	expect(getAccname(c('<span aria-label="label">text</span>'))).toBe('label');
-	expect(getAccname(c('<img alt="alterative-text" />'))).toBe('alterative-text');
+	expect(getAccname(c('<img alt="alternative-text" />'))).toBe('alternative-text');
 	expect(getAccname(c('<img title="title" />'))).toBe('title');
 	expect(
 		getAccname(c('<div><label for="a">label</label><input id="a" /></div>').children[1] as MLDOMElement<any, any>),
@@ -44,7 +44,7 @@ test('Invisible element', () => {
 /**
  * @see https://www.w3.org/TR/accname-1.1/#ex-1-example-1-element1-id-el1-aria-labelledby-el3-element2-id-el2-aria-labelledby-el1-element3-id-el3-hello-element3
  */
-test('accname-1.1 Expample 1', () => {
+test('accname-1.1 Example 1', () => {
 	const complex = c(`<div>
 <input id="el1" aria-labelledby="el3" />
 <input id="el2" aria-labelledby="el1" />
@@ -58,7 +58,7 @@ test('accname-1.1 Expample 1', () => {
 /**
  * https://www.w3.org/TR/accname-1.1/#ex-2-example-2-h1-files-h1-ul-li-a-id-file_row1-href-files-documentation-pdf-documentation-pdf-a-span-role-button-tabindex-0-id-del_row1-aria-label-delete-aria-labelledby-del_row1-file_row1-span-li-li-a-id-file_row2-href-files-holidayletter-pdf-holidayletter-pdf-a-span-role-button-tabindex-0-id-del_row2-aria-label-delete-aria-labelledby-del_row2-file_row2-span-li-ul
  */
-test('accname-1.1 Expample 2', () => {
+test('accname-1.1 Example 2', () => {
 	const complex = c(`<ul>
 	<li>
 		<a id="file_row1" href="./files/Documentation.pdf">Documentation.pdf</a>
@@ -77,7 +77,7 @@ test('accname-1.1 Expample 2', () => {
 /**
  * https://www.w3.org/TR/accname-1.1/#ex-3-example-3-div-role-checkbox-aria-checked-false-flash-the-screen-span-role-textbox-aria-multiline-false-5-span-times-div
  */
-test('accname-1.1 Expample 3', () => {
+test('accname-1.1 Example 3', () => {
 	const complex = c(
 		'<div role="checkbox" aria-checked="false">Flash the screen <span role="textbox" aria-multiline="false"> 5 </span> times</div>',
 	);

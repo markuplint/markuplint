@@ -58,7 +58,7 @@ export const checkGlobalDateAndTimeString: CustomSyntaxChecker = () =>
 
 				const secondTokens = TokenCollection.fromPatterns(second, [/:?/, /[0-9]*/, /\.?/, /[0-9]*/]);
 
-				log('Scond Part: "%s" => %O', secondTokens.value, secondTokens);
+				log('Second Part: "%s" => %O', secondTokens.value, secondTokens);
 
 				const res = secondTokens.eachCheck(
 					datetimeTokenCheck.coron,

@@ -7,7 +7,7 @@ export interface IndentationOptions {
 }
 
 export default createRule<Value, IndentationOptions>({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	defaultValue: 2,
 	defaultOptions: {
 		alignment: true,

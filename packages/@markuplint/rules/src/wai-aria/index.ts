@@ -74,8 +74,8 @@ export default createRule<boolean, Options>({
 
 				// Set the implicit role explicitly
 				if (node.rule.option.disallowSetImplicitRole) {
-					const implictRole = getImplicitRole(document.specs, node);
-					if (implictRole && implictRole === value) {
+					const implicitRole = getImplicitRole(document.specs, node);
+					if (implicitRole && implicitRole === value) {
 						// the implicit role
 						report({
 							scope: node,
@@ -180,7 +180,7 @@ export default createRule<boolean, Options>({
 						}
 					}
 
-					// Checing required props
+					// Checking required props
 					if (!computedRole.isImplicit) {
 						const requiredProps = role.statesAndProps.filter(s => s.required).map(s => s.name);
 						for (const requiredProp of requiredProps) {

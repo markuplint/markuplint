@@ -18,7 +18,7 @@ const voidElements = [
 ];
 
 export default createRule<boolean>({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		if (document.endTag === 'never') {
 			return;

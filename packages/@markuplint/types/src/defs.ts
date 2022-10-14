@@ -446,7 +446,7 @@ export const types: Defs = {
 			if (value === 'any') {
 				return matched();
 			}
-			const tokens = new TokenCollection(value, { speificSeparator: 'x' });
+			const tokens = new TokenCollection(value, { specificSeparator: 'x' });
 			const [width, sep, height, ...tail] = tokens;
 			if (!width) {
 				return unmatched(value, 'unexpected-token');

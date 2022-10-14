@@ -1,7 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
 export default createRule({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		if (!document.isFragment) {
 			return;
