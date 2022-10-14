@@ -1,3 +1,4 @@
+export { default as MLDOMAbstractElement } from './abstract-element';
 export { default as MLDOMAttribute } from './attribute';
 export { default as MLDOMComment } from './comment';
 export { default as MLDOMToken } from './token';

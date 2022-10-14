@@ -1,3 +1,7 @@
+---
+title: インデント (indentation)
+---
+
 # インデント (`indentation`)
 
 インデントが統一されていないと警告します。

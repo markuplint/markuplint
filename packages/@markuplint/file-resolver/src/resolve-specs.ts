@@ -77,6 +77,7 @@ async function importSpecs<T>(specModName: string) {
 		}
 	}
 	const spec: T = (await import(specModName)).default;
+	// @ts-ignore
 	caches.set(specModName, spec);
 	return spec;
 }

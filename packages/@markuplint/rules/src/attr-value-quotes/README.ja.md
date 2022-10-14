@@ -1,3 +1,7 @@
+---
+title: 属性値の引用符 (attr-value-quotes)
+---
+
 # 属性値の引用符 (`attr-value-quotes`)
 
 属性値が引用符で囲われていない場合に警告をします。
