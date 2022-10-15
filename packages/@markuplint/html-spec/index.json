@@ -30179,7 +30179,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"require": [":model(SVGOtherXMLNamespace)", "#text"]
+						"require": [":model(SVGDescriptive)", ":model(SVGNeverRendered)", "#text"]
 					}
 				]
 			},
@@ -33896,7 +33896,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": [":model(SVGOtherXMLNamespace)", "#text"]
+						"zeroOrMore": [":model(SVGDescriptive)", ":model(SVGNeverRendered)", "#text"]
 					}
 				]
 			},
@@ -34787,7 +34787,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": [":model(SVGOtherXMLNamespace)", "#text"]
+						"zeroOrMore": [":model(SVGNeverRendered)", ":model(SVGStructurallyExternal)", "#text"]
 					}
 				]
 			},
@@ -35700,7 +35700,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": [":model(SVGOtherXMLNamespace)", "#text"]
+						"zeroOrMore": [":model(SVGDescriptive)", ":model(SVGNeverRendered)", "#text"]
 					}
 				]
 			},

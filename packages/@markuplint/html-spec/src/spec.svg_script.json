@@ -4,7 +4,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": [":model(SVGOtherXMLNamespace)", "#text"]
+				"zeroOrMore": [":model(SVGNeverRendered)", ":model(SVGStructurallyExternal)", "#text"]
 			}
 		]
 	},
