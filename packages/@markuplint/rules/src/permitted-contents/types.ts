@@ -1,9 +1,9 @@
-import type { Element as _Element } from '@markuplint/ml-core';
+import type { Element as _Element, ChildNode as _ChildNode } from '@markuplint/ml-core';
 import type { ContentModel, MLMLSpec } from '@markuplint/ml-spec';
 
 export type Element = _Element<TagRule[], Options>;
 
-export type ChildNode = Element['childNodes'][0];
+export type ChildNode = _ChildNode<TagRule[], Options>;
 
 export type Specs = {
 	cites: MLMLSpec['cites'];
