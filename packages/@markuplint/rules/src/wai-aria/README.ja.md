@@ -1,3 +1,7 @@
+---
+title: WAI-ARIA (wai-aria)
+---
+
 # WAI-ARIA (`wai-aria`)
 
 [**WAI-ARIA**](https://momdo.github.io/wai-aria-1.2/) および [**ARIA in HTML**](https://momdo.github.io/html-aria/) の仕様のとおり `role` 属性または `aria-*` 属性が設定されていない場合に警告します。

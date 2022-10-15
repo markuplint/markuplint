@@ -1,3 +1,7 @@
+---
+title: 文字参照 (character-reference)
+---
+
 # 文字参照 (`character-reference`)
 
 テキストノードや属性の値において、許可されていない不正な文字を文字参照でエスケープしていない場合に警告する。

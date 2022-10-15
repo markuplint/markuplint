@@ -1,3 +1,7 @@
+---
+title: 許可するコンテンツ (permitted-contents)
+---
+
 # 許可するコンテンツ (`permitted-contents`)
 
 許可されていない要素もしくはテキストノードを子要素にもつ場合に警告します。

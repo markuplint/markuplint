@@ -1,3 +1,5 @@
+import type { AnyRuleSeed } from '@markuplint/ml-core';
+
 import AttrDuplication from './attr-duplication';
 import AttrValueQuotes from './attr-value-quotes';
 import CaseSensitiveAttrName from './case-sensitive-attr-name';
@@ -56,4 +58,4 @@ export default {
 	'required-h1': RequiredH1,
 	'use-list': UseList,
 	'wai-aria': WaiAria,
-};
+} as Record<string, AnyRuleSeed>;

@@ -1,3 +1,7 @@
+---
+title: アクセシブルな名前必須(require-accessible-name)
+---
+
 # アクセシブルな名前必須(`require-accessible-name`)
 
 要素にアクセシブルな名前がなければ警告します。名前が必要かどうかは ARIA ロールによって異なります。
