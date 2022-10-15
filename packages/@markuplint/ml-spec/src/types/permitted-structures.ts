@@ -43,8 +43,7 @@ export type Category =
 	| '#SVGStructural'
 	| '#SVGStructurallyExternal'
 	| '#SVGTextContent'
-	| '#SVGTextContentChild'
-	| '#SVGOtherXMLNamespace';
+	| '#SVGTextContentChild';
 
 export interface ContentModelsSchema {
 	__contentModel?: ContentModel;

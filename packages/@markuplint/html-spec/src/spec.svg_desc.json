@@ -4,7 +4,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"require": [":model(SVGOtherXMLNamespace)", "#text"]
+				"require": [":model(SVGDescriptive)", ":model(SVGNeverRendered)", "#text"]
 			}
 		]
 	},

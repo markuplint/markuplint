@@ -80,8 +80,7 @@
 				"#SVGStructural",
 				"#SVGStructurallyExternal",
 				"#SVGTextContent",
-				"#SVGTextContentChild",
-				"#SVGOtherXMLNamespace"
+				"#SVGTextContentChild"
 			]
 		},
 		"Model": {
