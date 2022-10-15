@@ -7,7 +7,7 @@ test('Get accessible name', () => {
 	expect(getAccname(c('<div>text</div>'))).toBe('');
 	expect(getAccname(c('<div aria-label="label">text</div>'))).toBe('label');
 	expect(getAccname(c('<span aria-label="label">text</span>'))).toBe('label');
-	expect(getAccname(c('<img alt="alterative-text" />'))).toBe('alterative-text');
+	expect(getAccname(c('<img alt="alternative-text" />'))).toBe('alternative-text');
 	expect(getAccname(c('<img title="title" />'))).toBe('title');
 	expect(getAccname(c('<div><label for="a">label</label><input id="a" /></div>').children[1])).toBe('label');
 });

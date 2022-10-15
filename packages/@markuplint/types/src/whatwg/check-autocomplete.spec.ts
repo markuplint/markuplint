@@ -369,9 +369,9 @@ test('duplicated part', () => {
 });
 
 test('typo', () => {
-	expect(check('secsion-foo name')).toStrictEqual({
+	expect(check('section-foo name')).toStrictEqual({
 		matched: false,
-		raw: 'secsion-foo',
+		raw: 'section-foo',
 		offset: 0,
 		length: 11,
 		line: 1,

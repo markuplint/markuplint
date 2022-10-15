@@ -7,29 +7,29 @@ export function detectElementType(
 	option?: ParserAuthoredElementNameDistinguishing,
 	defaultPattern?: ParserAuthoredElementNameDistinguishing,
 ): ElementType {
-	if (distinguishAutoredName(name, option, defaultPattern)) {
+	if (distinguishAuthoredName(name, option, defaultPattern)) {
 		return 'authored';
 	}
 	return isPotentialCustomElementName(name) ? 'web-component' : 'html';
 }
 
-function distinguishAutoredName(
+function distinguishAuthoredName(
 	name: string,
 	pattern?: ParserAuthoredElementNameDistinguishing,
 	defaultPattern?: ParserAuthoredElementNameDistinguishing,
 ) {
 	if (pattern) {
-		return _distinguishAutoredName(name, pattern);
+		return _distinguishAuthoredName(name, pattern);
 	}
 
 	if (defaultPattern) {
-		return _distinguishAutoredName(name, defaultPattern);
+		return _distinguishAuthoredName(name, defaultPattern);
 	}
 
 	return false;
 }
 
-function _distinguishAutoredName(name: string, patterns: ParserAuthoredElementNameDistinguishing) {
+function _distinguishAuthoredName(name: string, patterns: ParserAuthoredElementNameDistinguishing) {
 	const patternList = Array.isArray(patterns) ? patterns : [patterns];
 
 	return patternList.some(pattern => {

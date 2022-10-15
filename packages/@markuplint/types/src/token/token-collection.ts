@@ -195,7 +195,7 @@ export class TokenCollection extends Array<Token> {
 						expects,
 					});
 				} else if (takeTurnsError.token.type === takeTurnsError.expectedTokenNumber) {
-					// Consecutive cammas
+					// Consecutive commas
 					return takeTurnsError.token.unmatched({
 						reason: 'unexpected-comma',
 						ref,

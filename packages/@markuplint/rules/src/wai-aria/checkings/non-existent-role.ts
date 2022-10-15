@@ -3,7 +3,7 @@ import type { AttrChecker } from '@markuplint/ml-core';
 
 import { ariaSpecs } from '@markuplint/ml-spec';
 
-export const checkingNonExistantRole: AttrChecker<boolean, Options> =
+export const checkingNonExistentRole: AttrChecker<boolean, Options> =
 	({ attr }) =>
 	t => {
 		const { roles, graphicsRoles } = ariaSpecs(attr.ownerMLDocument.specs, attr.rule.option.version);

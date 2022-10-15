@@ -22,7 +22,7 @@
 
 ## †2 Merge Rule Details
 
-| options  | Type   | Mergeing                                       |
+| options  | Type   | Merging                                        |
 | -------- | ------ | ---------------------------------------------- |
 | value    | †1     | †1                                             |
 | severity | Enum   | Merge(Overwrite)                               |
