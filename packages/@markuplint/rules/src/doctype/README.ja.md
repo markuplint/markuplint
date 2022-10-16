@@ -51,7 +51,7 @@ DOCTYPE 宣言が書かれていないと警告します。また、古い廃止
 
 ### オプション
 
-#### `denyObsolateType`
+#### `denyObsoleteType`
 
 型: `boolean`
 

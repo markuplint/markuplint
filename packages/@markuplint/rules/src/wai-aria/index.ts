@@ -12,7 +12,7 @@ import { checkingImplicitProps } from './checkings/implicit-props';
 import { checkingImplicitRole } from './checkings/implicit-role';
 import { checkingInteractionInHidden } from './checkings/interaction-in-hidden';
 import { checkingNoGlobalProp } from './checkings/no-global-prop';
-import { checkingNonExistantRole } from './checkings/non-existant-role';
+import { checkingNonExistentRole } from './checkings/non-existent-role';
 import { checkingPermittedRoles } from './checkings/permitted-roles';
 import { checkingPresentationalChildren } from './checkings/presentational-children';
 import { checkingRequiredOwnedElements } from './checkings/required-owned-elements';
@@ -58,7 +58,7 @@ export default createRule<boolean, Options>({
 			const { props: propSpecs } = ariaSpecs(document.specs, el.rule.option.version);
 
 			if (roleAttr) {
-				if (report(checkingNonExistantRole({ attr: roleAttr }))) {
+				if (report(checkingNonExistentRole({ attr: roleAttr }))) {
 					return;
 				}
 

@@ -65,7 +65,7 @@
 				"date time": { "type": "string" },
 				"date": { "type": "string" },
 				"datetime": { "type": "string" },
-				"declarate": { "type": "string" },
+				"declare": { "type": "string" },
 				"default value": { "type": "string" },
 				"deprecated": { "type": "string" },
 				"descendant": { "type": "string" },

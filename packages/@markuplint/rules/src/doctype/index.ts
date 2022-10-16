@@ -30,7 +30,7 @@ export default createRule<Value, Option>({
 		if ((doctype.name.toLowerCase() === 'html' && doctype.publicId) || doctype.systemId) {
 			report({
 				scope: doctype,
-				message: t('Never {0} {1}', 'declarate', 'obsolete doctype'),
+				message: t('Never {0} {1}', 'declare', 'obsolete doctype'),
 			});
 		}
 	},

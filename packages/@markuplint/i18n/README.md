@@ -131,7 +131,7 @@ console.log(list);
 
 It converts the character-separated list specified in each locale.
 
-| Locale | Separater            | Before Char                | After Char                  |
+| Locale | Separator            | Before Char                | After Char                  |
 | ------ | -------------------- | -------------------------- | --------------------------- |
 | **en** | `, ` (comma + space) | `"` (double quote)         | `"` (double quote)          |
 | **ja** | none (empty string)  | `「` (left corner bracket) | `」` (right corner bracket) |

@@ -45,8 +45,8 @@ No merge cells| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [`<summary>` no contains interactive contents](https://github.com/whatwg/html/issues/2272#issuecomment-1242415594)|There is a case where an assistive technology can't access contents, or contents don't propagate a mouse event to `<summary>`.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [No duplicate attr](https://html.spec.whatwg.org/multipage/parsing.html#parse-error-duplicate-attribute)|The parser ignores all such duplicate occurrences of the attribute.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 Use **character reference**| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
-No use depreacted attr|You should not use deprecated attributes from the viewpoint of compatibility.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
-No use depreacted element|You should not use deprecated elements from the viewpoint of compatibility.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
+No use deprecated attr|You should not use deprecated attributes from the viewpoint of compatibility.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
+No use deprecated element|You should not use deprecated elements from the viewpoint of compatibility.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 [Require `doctype`](https://html.spec.whatwg.org/multipage/syntax.html#syntax-doctype)|It has the effect of avoiding quirks mode.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 No use ineffective attr| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 Allow only **permitted contents**| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|

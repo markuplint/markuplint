@@ -45,6 +45,6 @@ test('obsolete doctypes', async () => {
 		raw: '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">',
 		line: 2,
 		col: 3,
-		message: 'Never declarate obsolete doctype',
+		message: 'Never declare obsolete doctype',
 	});
 });

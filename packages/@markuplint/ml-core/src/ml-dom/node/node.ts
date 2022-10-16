@@ -389,7 +389,7 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-parentnode%E2%91%A0
 	 */
 	get parentNode(): MLDocument<any, any> | MLDocumentFragment<any, any> | MLElement<T, O> | null {
-		const parentNode = this.syntaxicalParentNode;
+		const parentNode = this.syntacticalParentNode;
 		if (!parentNode) {
 			return null;
 		}
@@ -475,7 +475,7 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	}
 
 	/**
-	 * Returns a syntaxical parent node
+	 * Returns a syntactical parent node
 	 *
 	 * ## HTML:
 	 *
@@ -512,7 +512,7 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
-	get syntaxicalParentNode():
+	get syntacticalParentNode():
 		| MLDocument<any, any>
 		| MLDocumentFragment<any, any>
 		| MLElement<T, O>
