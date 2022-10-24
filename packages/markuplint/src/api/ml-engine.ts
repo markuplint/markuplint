@@ -1,7 +1,7 @@
 import type { MLResultInfo } from '../types';
 import type { APIOptions, MLEngineEventMap, MLFabric } from './types';
 import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
-import type { Ruleset, Plugin } from '@markuplint/ml-core';
+import type { Ruleset, Plugin, Document, RuleConfigValue } from '@markuplint/ml-core';
 
 import { ConfigProvider, resolveFiles, resolveParser, resolveRules, resolveSpecs } from '@markuplint/file-resolver';
 import { MLCore, convertRuleset } from '@markuplint/ml-core';
@@ -41,6 +41,13 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		if (this.#options?.debug) {
 			verbosely();
 		}
+	}
+
+	get document(): Document<RuleConfigValue, unknown> | null {
+		if (this.#core?.document instanceof Error) {
+			return null;
+		}
+		return this.#core?.document ?? null;
 	}
 
 	async close() {
