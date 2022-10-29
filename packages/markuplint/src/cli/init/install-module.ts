@@ -58,7 +58,7 @@ export async function installModule(module: string[], dev = false): Promise<Inst
 	});
 }
 
-async function isInstalled(module: string) {
+function isInstalled(module: string) {
 	return new Promise<boolean>((resolve, reject) => {
 		try {
 			detectInstalled(module, {

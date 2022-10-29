@@ -8,7 +8,7 @@ import { mergeConfig } from '@markuplint/ml-config';
 import { configs } from '@markuplint/ml-core';
 
 import { load as loadConfig, search } from './cosmiconfig';
-import { resolvePlugins } from './resolve-plugins';
+import { cacheClear, resolvePlugins } from './resolve-plugins';
 import { fileExists, nonNullableFilter, uuid } from './utils';
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
@@ -18,11 +18,6 @@ export class ConfigProvider {
 	#cache = new Map<string, ConfigSet>();
 	#held = new Set<string>();
 	#recursiveLoadKeyAndDepth = new Map<string, number>();
-	#watch: boolean;
-
-	constructor(watch: boolean) {
-		this.#watch = true;
-	}
 
 	set(config: Config, key?: string) {
 		key = key || uuid();
@@ -34,7 +29,7 @@ export class ConfigProvider {
 		if (!(await targetFile.dirExists())) {
 			return null;
 		}
-		const res = await search<Config>(targetFile.path, this.#watch);
+		const res = await search<Config>(targetFile.path, false);
 		if (!res) {
 			return null;
 		}
@@ -44,14 +39,20 @@ export class ConfigProvider {
 		return filePath;
 	}
 
-	async resolve(names: Nullable<string>[], remerge = false): Promise<ConfigSet> {
+	async resolve(targetFile: MLFile, names: Nullable<string>[], cache = true): Promise<ConfigSet> {
+		if (!cache) {
+			this.#store.clear();
+			this.#cache.clear();
+			cacheClear();
+		}
+
 		const keys = names.filter(nonNullableFilter);
 		const key = keys.join(KEY_SEPARATOR);
 		const currentConfig = this.#cache.get(key);
-		if (!remerge && currentConfig) {
+		if (currentConfig) {
 			return currentConfig;
 		}
-		let configSet = await this._mergeConfigs(keys);
+		let configSet = await this._mergeConfigs(keys, cache);
 
 		const plugins = await resolvePlugins(configSet.config.plugins);
 
@@ -79,9 +80,22 @@ export class ConfigProvider {
 				}
 			});
 
-			configSet = await this._mergeConfigs([...keys, ...extendHelds]);
+			configSet = await this._mergeConfigs([...keys, ...extendHelds], cache);
 
 			this.#held.clear();
+		}
+
+		// Resolves `overrides`
+		if (configSet.config.overrides) {
+			const overrides = configSet.config.overrides;
+			const globs = Object.keys(overrides);
+			for (const glob of globs) {
+				const isMatched = targetFile.matches(glob);
+				if (isMatched) {
+					// Note: Original config disappears
+					configSet.config = overrides[glob];
+				}
+			}
 		}
 
 		const result = {
@@ -93,12 +107,12 @@ export class ConfigProvider {
 		return result;
 	}
 
-	private async _mergeConfigs(keys: string[]) {
+	private async _mergeConfigs(keys: string[], cache: boolean) {
 		const resolvedKeys = new Set<string>();
 		const errs: Error[] = [];
 		for (const key of keys) {
 			this.#recursiveLoadKeyAndDepth.clear();
-			const keySet = await this._recursiveLoad(key);
+			const keySet = await this._recursiveLoad(key, cache);
 			for (const k of keySet.stack) {
 				resolvedKeys.add(k);
 			}
@@ -122,6 +136,7 @@ export class ConfigProvider {
 
 	private async _recursiveLoad(
 		key: string,
+		cache: boolean,
 		depth = 1,
 	): Promise<{ stack: Set<string>; errs: CircularReferenceError[] | null }> {
 		const stack = new Set<string>();
@@ -139,7 +154,7 @@ export class ConfigProvider {
 
 		let config = this.#store.get(key) || null;
 		if (!config) {
-			config = await this._load(key);
+			config = await this._load(key, cache);
 		}
 
 		if (!config) {
@@ -149,7 +164,7 @@ export class ConfigProvider {
 		const depKeys = config.extends ? (Array.isArray(config.extends) ? config.extends : [config.extends]) : null;
 		if (depKeys) {
 			for (const depKey of depKeys) {
-				const keys = await this._recursiveLoad(depKey, depth + 1);
+				const keys = await this._recursiveLoad(depKey, cache, depth + 1);
 				for (const key of keys.stack) {
 					stack.add(key);
 				}
@@ -163,7 +178,7 @@ export class ConfigProvider {
 		return { stack, errs };
 	}
 
-	private async _load(filePath: string) {
+	private async _load(filePath: string, cache: boolean) {
 		const entity = this.#store.get(filePath);
 		if (entity) {
 			return entity;
@@ -178,7 +193,7 @@ export class ConfigProvider {
 			throw new TypeError(`${filePath} is not an absolute path`);
 		}
 
-		const config = await load(filePath, this.#watch);
+		const config = await load(filePath, cache);
 		if (!config) {
 			return null;
 		}
@@ -198,17 +213,18 @@ export class ConfigProvider {
 			parser: pathResolve(dir, config.parser),
 			specs: pathResolve(dir, config.specs),
 			excludeFiles: pathResolve(dir, config.excludeFiles),
+			overrides: pathResolve(dir, config.overrides, undefined, true),
 		};
 	}
 }
 
-async function load(filePath: string, watch: boolean) {
+async function load(filePath: string, cache: boolean) {
 	if (!fileExists(filePath) && moduleExists(filePath)) {
 		const mod = await import(filePath);
 		const config: Config | null = mod?.default || null;
 		return config;
 	}
-	const res = await loadConfig<Config>(filePath, watch);
+	const res = await loadConfig<Config>(filePath, !cache);
 	if (!res) {
 		return null;
 	}
@@ -219,6 +235,7 @@ function pathResolve<T extends string | (string | Record<string, unknown>)[] | R
 	dir: string,
 	filePath?: T,
 	resolveProps?: string[],
+	resolveKey = false,
 ): T {
 	if (filePath == null) {
 		// @ts-ignore
@@ -234,16 +251,20 @@ function pathResolve<T extends string | (string | Record<string, unknown>)[] | R
 	}
 	const res: Record<string, unknown> = {};
 	for (const [key, fp] of Object.entries(filePath)) {
+		let _key = key;
+		if (resolveKey) {
+			_key = resolve(dir, key);
+		}
 		if (typeof fp === 'string') {
 			if (!resolveProps) {
-				res[key] = resolve(dir, fp);
+				res[_key] = resolve(dir, fp);
 			} else if (resolveProps.includes(key)) {
-				res[key] = resolve(dir, fp);
+				res[_key] = resolve(dir, fp);
 			} else {
-				res[key] = fp;
+				res[_key] = fp;
 			}
 		} else {
-			res[key] = fp;
+			res[_key] = fp;
 		}
 	}
 	// @ts-ignore

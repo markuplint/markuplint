@@ -16,6 +16,7 @@
 		"schema": "lerna run schema",
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
 		"all": "yarn lint; yarn clean; yarn gen; yarn build; yarn schema; yarn test:clear; yarn test;",
+		"check:build": "find . -type f -name \"*.d.ts\" -print | xargs grep \"packages/@markuplint\"",
 		"cli": "./packages/markuplint/bin/markuplint",
 		"site:dev": "cd website; yarn; yarn site:dev",
 		"site:lint": "prettier --write './website/**/*{ts,tsx,mdx}' './website/*{json,rc,js}'; eslint --fix './website/**/*.{ts,tsx}' './website/*.{js,ts}'; yarn cli './website/**/*.tsx'",
@@ -91,11 +92,11 @@
 	],
 	"devDependencies": {
 		"@types/jest": "^27.4.1",
-		"@typescript-eslint/eslint-plugin": "^5.18.0",
-		"@typescript-eslint/parser": "^5.18.0",
+		"@typescript-eslint/eslint-plugin": "^5.23.0",
+		"@typescript-eslint/parser": "^5.23.0",
 		"browser-resolve": "^2.0.0",
 		"coveralls": "^3.1.1",
-		"eslint": "^8.12.0",
+		"eslint": "^8.15.0",
 		"eslint-import-resolver-typescript": "^2.7.1",
 		"eslint-plugin-eslint-comments": "^3.2.0",
 		"eslint-plugin-import": "^2.26.0",
@@ -110,6 +111,6 @@
 		"ts-jest": "^27.1.4",
 		"ts-node": "^10.7.0",
 		"typedoc": "^0.22.14",
-		"typescript": "^4.6.3"
+		"typescript": "^4.8.4"
 	}
 }

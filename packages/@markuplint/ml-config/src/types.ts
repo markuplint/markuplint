@@ -9,6 +9,7 @@ export interface Config {
 	rules?: Rules;
 	nodeRules?: NodeRule[];
 	childNodeRules?: ChildNodeRule[];
+	overrides?: Record<string, Omit<Config, '$schema' | 'extends' | 'overrides'>>;
 }
 
 export type PluginConfig = {

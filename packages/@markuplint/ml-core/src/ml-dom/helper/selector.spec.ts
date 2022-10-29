@@ -3,12 +3,12 @@ import { createTestElement } from '../../test';
 import { createSelector } from './selector';
 
 describe('selector matching', () => {
-	it('Multiple selector', async () => {
+	it('Multiple selector', () => {
 		const el = createTestElement('<div></div>');
 		expect(createSelector('div, span').match(el)).toBeTruthy();
 	});
 
-	it('type / id / class', async () => {
+	it('type / id / class', () => {
 		const el = createTestElement('<div id="hoge" class="foo bar"></div>');
 		expect(createSelector('*').match(el)).toBeTruthy();
 		expect(createSelector('div').match(el)).toBeTruthy();
@@ -22,7 +22,7 @@ describe('selector matching', () => {
 		expect(createSelector('.any').match(el)).toBe(false);
 	});
 
-	it('attributes', async () => {
+	it('attributes', () => {
 		const el = createTestElement('<div a="ABC" b="1 2 3" c="あいうえお" d="en-US" e="" f></div>');
 
 		expect(createSelector('[a]').match(el)).toBeTruthy();
@@ -61,7 +61,7 @@ describe('selector matching', () => {
 		expect(createSelector('[f="f"]').match(el)).toBe(false);
 	});
 
-	it(':not', async () => {
+	it(':not', () => {
 		const el = createTestElement('<div id="hoge" class="foo bar"></div>');
 		expect(createSelector('*:not(a)').match(el)).toBeTruthy();
 		expect(createSelector('*:not(div)').match(el)).toBe(false);
@@ -70,13 +70,13 @@ describe('selector matching', () => {
 		expect(createSelector(':not(#hoge)').match(el)).toBe(false);
 	});
 
-	it(':is', async () => {
+	it(':is', () => {
 		const el = createTestElement('<div id="hoge" class="foo bar"></div>');
 		expect(createSelector(':is(a, div)').match(el)).toBeTruthy();
 		expect(createSelector(':is(a, span)').match(el)).toBe(false);
 	});
 
-	it(':has', async () => {
+	it(':has', () => {
 		const el = createTestElement('<header><div></div></header>');
 		expect(createSelector(':has(div, span)').match(el)).toBeTruthy();
 		expect(
@@ -86,19 +86,19 @@ describe('selector matching', () => {
 		).toBe(false);
 	});
 
-	it(':scope', async () => {
+	it(':scope', () => {
 		const el = createTestElement('<div></div>');
 		expect(createSelector(':scope').match(el)).toBeTruthy();
 	});
 
-	it(':root', async () => {
+	it(':root', () => {
 		const el = createTestElement('<html><div id="hoge" class="foo bar"></div></html>');
 		expect(createSelector(':root').match(el)).toBeTruthy();
 		const el2 = createTestElement('<div id="hoge" class="foo bar"></div>');
 		expect(createSelector(':root').match(el2)).toBe(false);
 	});
 
-	it('Descendant combinator', async () => {
+	it('Descendant combinator', () => {
 		const el = createTestElement('<div><span><a></a></span></div>');
 		const a = el.children[0].children[0];
 		expect(a.nodeName).toBe('a');
@@ -108,7 +108,7 @@ describe('selector matching', () => {
 		expect(createSelector('header a').match(a)).toBe(false);
 	});
 
-	it('Child combinator', async () => {
+	it('Child combinator', () => {
 		const el = createTestElement('<div><span><a></a></span></div>');
 		const a = el.children[0].children[0];
 		expect(createSelector('div > div').match(el)).toBe(false);
@@ -119,7 +119,7 @@ describe('selector matching', () => {
 		expect(createSelector('header > a').match(a)).toBe(false);
 	});
 
-	it('Next-sibling combinator', async () => {
+	it('Next-sibling combinator', () => {
 		const el = createTestElement(`<ul>
 			<li class="i1"><a class="a1">1</a></li>
 			<li class="i2"><a class="a2">2</a></li>
@@ -139,7 +139,7 @@ describe('selector matching', () => {
 		expect(createSelector('.i4 + li').match(el.children[4])).toBeTruthy();
 	});
 
-	it('Subsequent-sibling combinator', async () => {
+	it('Subsequent-sibling combinator', () => {
 		const el = createTestElement(`<ul>
 			<li class="i1"><a class="a1">1</a></li>
 			<li class="i2"><a class="a2">2</a></li>
@@ -154,7 +154,7 @@ describe('selector matching', () => {
 		expect(createSelector('.i2 ~ li').match(el.children[4])).toBeTruthy();
 	});
 
-	it(':closest', async () => {
+	it(':closest', () => {
 		const el = createTestElement('<table><tr><td></td></tr></table>');
 		const td = el.children[0].children[0].children[0];
 		expect(createSelector('td').match(td)).toBeTruthy();
@@ -166,7 +166,7 @@ describe('selector matching', () => {
 });
 
 describe('specificity', () => {
-	it(':not', async () => {
+	it(':not', () => {
 		const el = createTestElement('<div></div>');
 		expect(createSelector('div').match(el)).toStrictEqual([0, 0, 1]);
 		expect(createSelector(':not(span)').match(el)).toStrictEqual([0, 0, 1]);
@@ -174,7 +174,7 @@ describe('specificity', () => {
 		expect(createSelector(':not(span, #foo)').match(el)).toStrictEqual([1, 0, 0]);
 	});
 
-	it(':is', async () => {
+	it(':is', () => {
 		const el = createTestElement('<div></div>');
 		expect(createSelector('div').match(el)).toStrictEqual([0, 0, 1]);
 		expect(createSelector(':is(div)').match(el)).toStrictEqual([0, 0, 1]);
@@ -184,7 +184,7 @@ describe('specificity', () => {
 		expect(createSelector(':is(div, #foo.bar)').match(el)).toStrictEqual([1, 1, 0]);
 	});
 
-	it(':where', async () => {
+	it(':where', () => {
 		const el = createTestElement('<div></div>');
 		expect(createSelector('div').match(el)).toStrictEqual([0, 0, 1]);
 		expect(createSelector(':where(div)').match(el)).toStrictEqual([0, 0, 0]);
@@ -196,7 +196,7 @@ describe('specificity', () => {
 });
 
 describe('pug', () => {
-	it('has PSBlock', async () => {
+	it('has PSBlock', () => {
 		const el = createTestElement(
 			`
 div#hoge.foo.bar
@@ -218,9 +218,13 @@ div#hoge.foo.bar
 		expect(createSelector('.foo').match(el)).toBeTruthy();
 		expect(createSelector('.foo.bar').match(el)).toBeTruthy();
 		expect(createSelector('.any').match(el)).toBe(false);
+		// @ts-ignore
 		expect(createSelector('*').match(a)).toBeTruthy();
+		// @ts-ignore
 		expect(createSelector('a').match(a)).toBeTruthy();
+		// @ts-ignore
 		expect(createSelector('div a').match(a)).toBeTruthy();
+		// @ts-ignore
 		expect(createSelector('div > a').match(a)).toBeTruthy();
 	});
 });

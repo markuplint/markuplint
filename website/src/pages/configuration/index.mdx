@@ -34,7 +34,8 @@ The priority applied names are:
   "excludeFiles": [],
   "rules": {},
   "nodeRules": [],
-  "childNodeRules": []
+  "childNodeRules": [],
+  "overrides": {}
 }
 ```
 
@@ -46,6 +47,7 @@ The priority applied names are:
 - [`excludeFiles`](#properties/exclude-files)
 - [`rules`](#properties/rules)
 - [`nodeRules` &amp; `childNodeRules`](#properties/node-rules-&-child-node-rules)
+- [`overrides`](#properties/overrides)
 
 ### Specification about paths
 
@@ -681,3 +683,33 @@ The above is the same as CSS selector `el1 el2 > el3 + el4 ~ el5`.
 
 - [Check designed CSS class name](/configuration/regex-selector-sample#case-1:-check-designed-c-s-s-class-name)
 - [Check filenames of images](/configuration/regex-selector-sample#case-2:-check-filenames-of-images)
+
+### `overrides`
+
+You can override configurations to specific files if you specify the `overrides` option.
+It resolves **glob format paths** specified to a key.
+
+```json
+{
+  "rules": {
+    "any-rule": true
+  },
+  "overrides": {
+    "./path/to/**/*": {
+      "rules": {
+        "any-rule": false
+      }
+    }
+  }
+}
+```
+
+You can override options below:
+
+- [`plugins`](#properties/plugins)
+- [`parser`](#properties/parser)
+- [`parserOptions`](#properties/parser-options)
+- [`specs`](#properties/specs)
+- [`excludeFiles`](#properties/exclude-files)
+- [`rules`](#properties/rules)
+- [`nodeRules` &amp; `childNodeRules`](#properties/node-rules-&-child-node-rules)

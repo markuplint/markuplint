@@ -1,3 +1,7 @@
+---
+title: 非推奨属性 (deprecated-attr)
+---
+
 # 非推奨属性 (`deprecated-attr`)
 
 非推奨（**deprecated**）もしくは廃止（**obsolete**）属性があると警告します。

@@ -2,15 +2,32 @@ import type { SvelteNode } from './svelte-parser';
 import type { MLASTNode, Parse } from '@markuplint/ml-ast';
 
 import { flattenNodes } from '@markuplint/html-parser';
-import { ParserError } from '@markuplint/parser-utils';
+import { ParserError, ignoreBlock, restoreNode } from '@markuplint/parser-utils';
 
 import svelteParse from './svelte-parser';
 import { traverse } from './traverse';
 
 export const parse: Parse = rawCode => {
+	const blocks = ignoreBlock(
+		rawCode,
+		[
+			{
+				type: 'Script',
+				start: /<script/,
+				end: /<\/script>/,
+			},
+			{
+				type: 'Style',
+				start: /<style/,
+				end: /<\/style>/,
+			},
+		],
+		'-',
+	);
+
 	let ast: SvelteNode[];
 	try {
-		ast = svelteParse(rawCode);
+		ast = svelteParse(blocks.replaced);
 	} catch (err) {
 		if (err instanceof Error && 'start' in err && 'end' in err && 'frame' in err) {
 			// @ts-ignore
@@ -34,7 +51,10 @@ export const parse: Parse = rawCode => {
 		};
 	}
 
-	const nodeList: MLASTNode[] = flattenNodes(traverse(ast, null, rawCode), rawCode);
+	const nodeList: MLASTNode[] = restoreNode(
+		flattenNodes(traverse(ast, null, blocks.replaced), blocks.replaced),
+		blocks,
+	);
 
 	return {
 		nodeList,

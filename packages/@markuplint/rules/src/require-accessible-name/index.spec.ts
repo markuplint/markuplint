@@ -153,6 +153,41 @@ test('The accessible name may be mutable', async () => {
 test('The accessible name may be mutable', async () => {
 	expect(
 		(
+			await mlRuleTest(rule, '<template><button>{{label}}</button></template>', {
+				parser: {
+					'.*': '@markuplint/vue-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('has comment', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<button>label<!-- comment --></button>', {
+				rule: true,
+			})
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('The accessible name may be mutable (Svelte)', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<button>{label}</button>', {
+				parser: {
+					'.*': '@markuplint/svelte-parser',
+				},
+				rule: true,
+			})
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('The accessible name may be mutable', async () => {
+	expect(
+		(
 			await mlRuleTest(rule, '<button><img alt={alt} /></button>', {
 				parser: {
 					'.*': '@markuplint/jsx-parser',

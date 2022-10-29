@@ -1,3 +1,5 @@
+import type { AnyRuleSeed } from '@markuplint/ml-core';
+
 import AttrDuplication from './attr-duplication';
 import AttrEqualSpaceAfter from './attr-equal-space-after';
 import AttrEqualSpaceBefore from './attr-equal-space-before';
@@ -62,4 +64,4 @@ export default {
 	'required-h1': RequiredH1,
 	'use-list': UseList,
 	'wai-aria': WaiAria,
-};
+} as Record<string, AnyRuleSeed>;

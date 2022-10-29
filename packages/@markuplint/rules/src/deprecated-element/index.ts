@@ -4,7 +4,7 @@ import { getSpecByTagName } from '@markuplint/ml-spec';
 
 export default createRule({
 	async verify({ document, report, t }) {
-		await document.walkOn('Element', async el => {
+		await document.walkOn('Element', el => {
 			const ns = el.ns;
 			if (!(ns === 'html' || ns === 'svg') || el.isCustomElement) {
 				return;

@@ -28,8 +28,10 @@ describe('parser', () => {
 	<span></span>`);
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
+			'[1:1]>[1:28](0,27)#ps:Script: <script>let␣i␣=␣1;</script>',
+			'[1:28]>[3:1](27,29)#text: ⏎⏎',
 			'[3:1]>[3:20](29,48)div: <div␣data-attr={i}>',
-			'[3:20]>[3:23](48,51)#comment: {i}',
+			'[3:20]>[3:23](48,51)#ps:MustacheTag: {i}',
 			'[3:23]>[3:29](51,57)div: </div>',
 			'[3:29]>[4:2](57,59)#text: ⏎→',
 			'[4:2]>[4:8](59,65)span: <span>',
@@ -51,15 +53,29 @@ describe('parser', () => {
 			'[2:1]>[2:6](1,6)div: <div>',
 			'[2:6]>[2:7](6,7)#text: 1',
 			'[2:7]>[2:13](7,13)div: </div>',
-			'[2:13]>[4:1](13,42)#text: ⏎⏎',
+			'[2:13]>[3:1](13,14)#text: ⏎',
+			'[3:1]>[3:28](14,41)#ps:Script: <script>let␣i␣=␣1;</script>',
+			'[3:28]>[4:1](41,42)#text: ⏎',
 			'[4:1]>[4:6](42,47)div: <div>',
 			'[4:6]>[4:7](47,48)#text: 2',
 			'[4:7]>[4:13](48,54)div: </div>',
-			'[4:13]>[6:1](54,93)#text: ⏎⏎',
+			'[4:13]>[5:1](54,55)#text: ⏎',
+			'[5:1]>[5:38](55,92)#ps:Style: <style>div␣{␣display:␣none;␣}</style>',
+			'[5:38]>[6:1](92,93)#text: ⏎',
 			'[6:1]>[6:6](93,98)div: <div>',
 			'[6:6]>[6:7](98,99)#text: 3',
 			'[6:7]>[6:13](99,105)div: </div>',
 			'[6:13]>[7:1](105,106)#text: ⏎',
+		]);
+	});
+
+	test('variable', () => {
+		const r = parse('<div>{varibale}</div>');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:6](0,5)div: <div>',
+			'[1:6]>[1:16](5,15)#ps:MustacheTag: {varibale}',
+			'[1:16]>[1:22](15,21)div: </div>',
 		]);
 	});
 
@@ -131,6 +147,21 @@ describe('parser', () => {
 			'[1:30]>[1:37](29,36)ElseBlock: {:else}',
 			'[1:37]>[1:40](36,39)#text: ...',
 			'[1:40]>[1:47](39,46)EachBlock: {/each}',
+		]);
+	});
+
+	test('deep each statement', () => {
+		const r = parse('<ul>{#each a as b}<li>{#each c as d}{/each}</li>{/each}</ul>');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:5](0,4)ul: <ul>',
+			'[1:5]>[1:19](4,18)EachBlock: {#each␣a␣as␣b}',
+			'[1:19]>[1:23](18,22)li: <li>',
+			'[1:23]>[1:37](22,36)EachBlock: {#each␣c␣as␣d}',
+			'[1:37]>[1:44](36,43)EachBlock: {/each}',
+			'[1:44]>[1:49](43,48)li: </li>',
+			'[1:49]>[1:56](48,55)EachBlock: {/each}',
+			'[1:56]>[1:61](55,60)ul: </ul>',
 		]);
 	});
 
@@ -367,5 +398,82 @@ describe('parser', () => {
 		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
 		expect(doc.nodeList[2].nodeName).toBe('text');
 		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+	});
+});
+
+describe('Issues', () => {
+	test('#444', () => {
+		parse(`<script lang="ts">
+  let count: number = 0
+  const increment = () => {
+    count += 1
+  }
+</script>
+
+<button on:click={increment}>
+  Clicks: {count}
+</button>`);
+		// No Error is success
+	});
+
+	test('#503', () => {
+		const r = parse(`<nav>
+	<ul>
+		<li>
+			<p>test</p>
+			<ul>
+				<li>
+					<p>test</p>
+					<ul>
+						<li>test</li>
+					</ul>
+				</li>
+				<li>test</li>
+			</ul>
+		</li>
+	</ul>
+</nav>`);
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:6](0,5)nav: <nav>',
+			'[1:6]>[2:2](5,7)#text: ⏎→',
+			'[2:2]>[2:6](7,11)ul: <ul>',
+			'[2:6]>[3:3](11,14)#text: ⏎→→',
+			'[3:3]>[3:7](14,18)li: <li>',
+			'[3:7]>[4:4](18,22)#text: ⏎→→→',
+			'[4:4]>[4:7](22,25)p: <p>',
+			'[4:7]>[4:11](25,29)#text: test',
+			'[4:11]>[4:15](29,33)p: </p>',
+			'[4:15]>[5:4](33,37)#text: ⏎→→→',
+			'[5:4]>[5:8](37,41)ul: <ul>',
+			'[5:8]>[6:5](41,46)#text: ⏎→→→→',
+			'[6:5]>[6:9](46,50)li: <li>',
+			'[6:9]>[7:6](50,56)#text: ⏎→→→→→',
+			'[7:6]>[7:9](56,59)p: <p>',
+			'[7:9]>[7:13](59,63)#text: test',
+			'[7:13]>[7:17](63,67)p: </p>',
+			'[7:17]>[8:6](67,73)#text: ⏎→→→→→',
+			'[8:6]>[8:10](73,77)ul: <ul>',
+			'[8:10]>[9:7](77,84)#text: ⏎→→→→→→',
+			'[9:7]>[9:11](84,88)li: <li>',
+			'[9:11]>[9:15](88,92)#text: test',
+			'[9:15]>[9:20](92,97)li: </li>',
+			'[9:20]>[10:6](97,103)#text: ⏎→→→→→',
+			'[10:6]>[10:11](103,108)ul: </ul>',
+			'[10:11]>[11:5](108,113)#text: ⏎→→→→',
+			'[11:5]>[11:10](113,118)li: </li>',
+			'[11:10]>[12:5](118,123)#text: ⏎→→→→',
+			'[12:5]>[12:9](123,127)li: <li>',
+			'[12:9]>[12:13](127,131)#text: test',
+			'[12:13]>[12:18](131,136)li: </li>',
+			'[12:18]>[13:4](136,140)#text: ⏎→→→',
+			'[13:4]>[13:9](140,145)ul: </ul>',
+			'[13:9]>[14:3](145,148)#text: ⏎→→',
+			'[14:3]>[14:8](148,153)li: </li>',
+			'[14:8]>[15:2](153,155)#text: ⏎→',
+			'[15:2]>[15:7](155,160)ul: </ul>',
+			'[15:7]>[16:1](160,161)#text: ⏎',
+			'[16:1]>[16:7](161,167)nav: </nav>',
+		]);
 	});
 });

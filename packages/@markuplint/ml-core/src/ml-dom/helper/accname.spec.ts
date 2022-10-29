@@ -83,3 +83,8 @@ test('accname-1.1 Expample 3', () => {
 	);
 	expect(getAccname(complex)).toBe('Flash the screen 5 times');
 });
+
+test('with comment', () => {
+	expect(getAccname(c('<button>label</button>'))).toBe('label');
+	expect(getAccname(c('<button>label<!-- comment --></button>'))).toBe('label');
+});

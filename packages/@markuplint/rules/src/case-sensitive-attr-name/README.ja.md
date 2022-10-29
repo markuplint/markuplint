@@ -1,3 +1,7 @@
+---
+title: 属性名の大文字小文字 (case-sensitive-attr-name)
+---
+
 # 属性名の大文字小文字 (`case-sensitive-attr-name`)
 
 **属性名**が大文字小文字のどちらかに統一されていないと警告します。HTML は大文字小文字を区別しませんが、外来要素（SVG や MathML）はその限りではないのでこのルールの対象外です。

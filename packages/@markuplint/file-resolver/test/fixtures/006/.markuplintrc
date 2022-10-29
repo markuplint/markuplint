@@ -1,0 +1,12 @@
+{
+	"rules": {
+		"foo": true
+	},
+	"overrides": {
+		"./*.html": {
+			"rules": {
+				"foo": false
+			}
+		}
+	}
+}

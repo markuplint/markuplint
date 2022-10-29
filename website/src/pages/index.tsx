@@ -1,10 +1,13 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import BasicMeta from '../components/meta/BasicMeta';
 
 export default function Index() {
+  const { locale } = useRouter();
+
   return (
     <>
       <BasicMeta
@@ -16,10 +19,19 @@ export default function Index() {
         <div className="hero">
           <h1>markuplint</h1>
           <h2>Peace of mind in your markup</h2>
-          <Link href="/getting-started">
-            <a href="/getting-started">Get Started</a>
+          <Link href="/getting-started" passHref>
+            <a>Get Started</a>
           </Link>
         </div>
+        {locale === 'ja' && (
+          <div className="notice">
+            <p>
+              日本語版サイトは作成途中です。
+              <br />
+              現在は個別のルールのページのみ日本語化されています。
+            </p>
+          </div>
+        )}
         <div className="body">
           <section>
             <h2>Conformance checking</h2>
@@ -56,8 +68,8 @@ export default function Index() {
             <h2>Supporting Template Engine</h2>
             <p>
               You can use it for other markup languages with plugins. Currently, There are plugins for Pug, JSX(React),
-              Vue, Svelte, Astro, PHP, eRuby, EJS, Mustache/Handlebars, Nunjucks, and Liquid. And it provides the API
-              that creates the plugin for any markup language.
+              Vue, Svelte, Astro, PHP, Smarty, eRuby, EJS, Mustache/Handlebars, Nunjucks, and Liquid. And it provides
+              the API that creates the plugin for any markup language.
             </p>
           </section>
         </div>
@@ -128,6 +140,13 @@ export default function Index() {
             display: inline-block;
             position: relative;
             z-index: 1;
+          }
+
+          .notice {
+            padding: 8px 16px;
+            background-color: var(--base-color-back);
+            font-size: 1.2rem;
+            font-weight: 700;
           }
 
           .body {

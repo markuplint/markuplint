@@ -23,6 +23,7 @@
 		"sort-imports": 0,
 		"no-console": [1],
 		"no-mixed-spaces-and-tabs": 0,
+		"require-await": 2,
 
 		"node/no-unsupported-features/es-syntax": 0,
 

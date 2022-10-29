@@ -1,6 +1,6 @@
 import attrTokenizer from './attr-tokenizer';
 
-it('void attribute', async () => {
+it('void attribute', () => {
 	expect(attrTokenizer(' abc', 1, 1, 0)).toMatchObject({
 		raw: ' abc',
 		startLine: 1,
@@ -84,7 +84,7 @@ it('void attribute', async () => {
 	});
 });
 
-test('normal', async () => {
+test('normal', () => {
 	expect(attrTokenizer(' abc="123"', 1, 1, 0)).toMatchObject({
 		startLine: 1,
 		endLine: 1,
@@ -168,7 +168,7 @@ test('normal', async () => {
 	});
 });
 
-test('after line break', async () => {
+test('after line break', () => {
 	expect(attrTokenizer('\n abc="123"', 1, 1, 0)).toMatchObject({
 		startLine: 1,
 		endLine: 2,
@@ -252,7 +252,7 @@ test('after line break', async () => {
 	});
 });
 
-test('after line break', async () => {
+test('after line break', () => {
 	expect(attrTokenizer('\n abc="123"', 1, 3, 0)).toMatchObject({
 		spacesBeforeName: {
 			raw: '\n ',
@@ -509,7 +509,7 @@ test('line break', () => {
 	});
 });
 
-it('includes gt sign', async () => {
+it('includes gt sign', () => {
 	expect(attrTokenizer('abc="d>e"', 1, 1, 0)).toMatchObject({
 		raw: 'abc="d>e"',
 		startLine: 1,

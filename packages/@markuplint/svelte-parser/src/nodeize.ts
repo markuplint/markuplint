@@ -61,8 +61,8 @@ export function nodeize(
 				endLine,
 				startCol,
 				endCol,
-				nodeName: '#comment',
-				type: 'comment',
+				nodeName: '#ps:MustacheTag',
+				type: 'psblock',
 				parentNode,
 				prevNode,
 				nextNode,
@@ -85,7 +85,7 @@ export function nodeize(
 					throw new Error('Parse error');
 				}
 				const endTagRaw = endTagRawMatched[0];
-				const endTagStartOffset = startOffset + raw.indexOf(endTagRaw);
+				const endTagStartOffset = startOffset + raw.lastIndexOf(endTagRaw);
 				const endTagEndOffset = endTagStartOffset + endTagRaw.length;
 				const endTagLocation = sliceFragment(rawHtml, endTagStartOffset, endTagEndOffset);
 				const namespace = getNamespace(originNode.name, parentNamespace);
@@ -312,14 +312,11 @@ function solveCtrlBlock(
 	const startTagLocation = sliceFragment(rawHtml, startOffset, startTagEndOffset);
 
 	let endTag: MLASTPreprocessorSpecificBlock | null = null;
-	if (reEndTag.test(raw)) {
-		const endTagRawMatched = raw.match(reEndTag);
-		if (!endTagRawMatched) {
-			throw new Error('Parse error');
-		}
+	const endTagRawMatched = raw.match(reEndTag);
+	if (endTagRawMatched) {
 		const endTagRaw = endTagRawMatched[0];
-		const endTagStartOffset = startOffset + raw.indexOf(endTagRaw);
-		const endTagEndOffset = endTagStartOffset + endTagRaw.length;
+		const endTagStartOffset = originNode.end - endTagRaw.length;
+		const endTagEndOffset = originNode.end;
 		const endTagLocation = sliceFragment(rawHtml, endTagStartOffset, endTagEndOffset);
 		endTag = {
 			uuid: uuid(),

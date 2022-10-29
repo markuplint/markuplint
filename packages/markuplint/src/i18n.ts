@@ -11,7 +11,7 @@ async function getLocale() {
 	return cachedLocale;
 }
 
-export async function i18n(locale?: string) {
+export async function i18n(locale?: string): Promise<LocaleSet> {
 	locale = locale || (await getLocale()) || 'en';
 	const langCode = locale.split('-')[0];
 	const localeSet: LocaleSet | null = langCode

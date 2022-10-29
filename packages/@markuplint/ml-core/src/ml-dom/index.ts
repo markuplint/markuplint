@@ -1,6 +1,7 @@
 export { default as Document } from './document';
 export { AnonymousNode, NodeType } from './types';
 export {
+	type MLDOMAbstractElement as AbstractElement,
 	MLDOMAttribute as Attribute,
 	MLDOMComment as Comment,
 	MLDOMDoctype as Doctype,
