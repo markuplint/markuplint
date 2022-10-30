@@ -23,6 +23,11 @@ const config = {
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'ja'],
+    localeConfigs: {
+      ja: {
+        label: '日本語（ベータ）',
+      },
+    },
   },
 
   presets: [
