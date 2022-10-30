@@ -21,4 +21,6 @@ yarn-error.log*
 
 # Managed in packages/@markuplint/rules
 docs/rules/*.mdx
+!docs/rules/.gitkeep
 i18n/ja/docusaurus-plugin-content-docs/current/rules/*.mdx
+!i18n/ja/docusaurus-plugin-content-docs/current/rules/.gitkeep
