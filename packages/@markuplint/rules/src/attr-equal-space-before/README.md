@@ -7,7 +7,7 @@ category: style
 
 # Spaces before the "equal" of attribute
 
-Warns that there is spaces **before** `=` of attribute, or that there is not spaces. You can also set not to allow line breaks. The rule of the space **after** `=` is set by [`attr-equal-space-after`](../markuplint-rule-attr-equal-space-after).
+Warns that there is spaces **before** `=` of attribute, or that there is not spaces. You can also set not to allow line breaks. The rule of the space **after** `=` is set by [`attr-equal-space-after`](../attr-equal-space-after).
 
 **🔧 Fixable**
 

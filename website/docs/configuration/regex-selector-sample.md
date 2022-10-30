@@ -2,7 +2,7 @@
 title: Usecase of regexSelector
 ---
 
-## Case 1: Check designed CSS class name
+## Case 1: Check designed CSS class name {#case-1}
 
 Case you follow designed CSS class name like the BEM.
 
@@ -71,7 +71,7 @@ Use [`class-naming`](/rules/class-naming) rule.
 }
 ```
 
-## Case 2: Check filenames of images
+## Case 2: Check filenames of images {#case-2}
 
 Case you want to match filenames of the img element and the source elements.
 

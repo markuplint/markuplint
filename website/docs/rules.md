@@ -4,46 +4,46 @@ title: Rules
 
 ## Conformance checking
 
-- [`attr-duplication`](/docs/rules/attr-duplication)
-- [`character-reference`](/docs/rules/character-reference)
-- [`deprecated-attr`](/docs/rules/deprecated-attr)
-- [`deprecated-element`](/docs/rules/deprecated-element)
-- [`disallowed-element`](/docs/rules/disallowed-element)
-- [`doctype`](/docs/rules/doctype)
-- [`id-duplication`](/docs/rules/id-duplication)
-- [`ineffective-attr`](/docs/rules/ineffective-attr)
-- [`invalid-attr`](/docs/rules/invalid-attr)
-- [`permitted-contents`](/docs/rules/permitted-contents)
-- [`required-attr`](/docs/rules/required-attr)
-- [`required-element`](/docs/rules/required-element)
+- [`attr-duplication`](rules/attr-duplication.md)
+- [`character-reference`](rules/character-reference.md)
+- [`deprecated-attr`](rules/deprecated-attr.md)
+- [`deprecated-element`](rules/deprecated-element.md)
+- [`disallowed-element`](rules/disallowed-element.md)
+- [`doctype`](rules/doctype.md)
+- [`id-duplication`](rules/id-duplication.md)
+- [`ineffective-attr`](rules/ineffective-attr.md)
+- [`invalid-attr`](rules/invalid-attr.md)
+- [`permitted-contents`](rules/permitted-contents.md)
+- [`required-attr`](rules/required-attr.md)
+- [`required-element`](rules/required-element.md)
 
 ## Accessibility
 
-- [`landmark-roles`](/docs/rules/landmark-roles)
-- [`no-refer-to-non-existent-id`](/docs/rules/no-refer-to-non-existent-id)
-- [`require-accessible-name`](/docs/rules/require-accessible-name)
-- [`required-h1`](/docs/rules/required-h1)
-- [`use-list`](/docs/rules/use-list)
-- [`wai-aria`](/docs/rules/wai-aria)
+- [`landmark-roles`](rules/landmark-roles.md)
+- [`no-refer-to-non-existent-id`](rules/no-refer-to-non-existent-id.md)
+- [`require-accessible-name`](rules/require-accessible-name.md)
+- [`required-h1`](rules/required-h1.md)
+- [`use-list`](rules/use-list.md)
+- [`wai-aria`](rules/wai-aria.md)
 
 ## Naming Convention
 
-- [`class-naming`](/docs/rules/class-naming)
+- [`class-naming`](rules/class-naming.md)
 
 ## Maintenability
 
-- [`no-hard-code-id`](/docs/rules/no-hard-code-id)
-- [`no-use-event-handler-attr`](/docs/rules/no-use-event-handler-attr)
+- [`no-hard-code-id`](rules/no-hard-code-id.md)
+- [`no-use-event-handler-attr`](rules/no-use-event-handler-attr.md)
 
 ## Style
 
-- [`attr-equal-space-after`](/docs/rules/attr-equal-space-after)
-- [`attr-equal-space-before`](/docs/rules/attr-equal-space-before)
-- [`attr-spacing`](/docs/rules/attr-spacing)
-- [`attr-value-quotes`](/docs/rules/attr-value-quotes)
-- [`case-sensitive-attr-name`](/docs/rules/case-sensitive-attr-name)
-- [`case-sensitive-tag-name`](/docs/rules/case-sensitive-tag-name)
-- [`end-tag`](/docs/rules/end-tag)
-- [`indentation`](/docs/rules/indentation)
-- [`no-boolean-attr-value`](/docs/rules/no-boolean-attr-value)
-- [`no-default-value`](/docs/rules/no-default-value)
+- [`attr-equal-space-after`](rules/attr-equal-space-after.md)
+- [`attr-equal-space-before`](rules/attr-equal-space-before.md)
+- [`attr-spacing`](rules/attr-spacing.md)
+- [`attr-value-quotes`](rules/attr-value-quotes.md)
+- [`case-sensitive-attr-name`](rules/case-sensitive-attr-name.md)
+- [`case-sensitive-tag-name`](rules/case-sensitive-tag-name.md)
+- [`end-tag`](rules/end-tag.md)
+- [`indentation`](rules/indentation.md)
+- [`no-boolean-attr-value`](rules/no-boolean-attr-value.md)
+- [`no-default-value`](rules/no-default-value.md)

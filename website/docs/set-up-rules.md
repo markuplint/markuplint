@@ -92,4 +92,4 @@ If you want the part of structures only to apply some rule then set the tag name
 
 ## Rules
 
-The detail of Each rule is said from the [Rules page](/rules).
+The detail of Each rule is said from the [Rules page](rules.md).

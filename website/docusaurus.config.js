@@ -10,6 +10,7 @@ const config = {
   tagline: 'Peace of mind in your markup',
   url: 'https://markuplint.dev',
   baseUrl: '/',
+  trailingSlash: true,
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.svg',
@@ -30,6 +31,8 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
+          routeBasePath: '/',
+          path: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: ({ docPath, locale }) => {
             const [maybeDir, maybeRule] = docPath.split('/');

@@ -49,7 +49,7 @@ The priority applied names are:
 - [`nodeRules` &amp; `childNodeRules`](#properties/node-rules-&-child-node-rules)
 - [`overrides`](#properties/overrides)
 
-### Specification about paths
+### Specification about paths {#properties/specification-about-paths}
 
 [`extends`](#properties/extends),
 [`plugins`](#properties/plugins),
@@ -63,7 +63,7 @@ If it fails, such as the package doesn't exist, or the strings are not a package
 These paths are resolved to absolute paths internally.
 A relative path becomes an absolute path on the base of the config file path being had it.
 
-### `extends`
+### `extends` {#properties/extends}
 
 If you specify other config file [paths](#properties/specification-about-paths), it merges the current setting with them.
 
@@ -106,7 +106,7 @@ interface Config {
 }
 ```
 
-### `plugins`
+### `plugins` {#properties/plugins}
 
 You can load any plugins.
 Specify a package name or a [path](#properties/specification-about-paths).
@@ -148,7 +148,7 @@ interface Config {
 }
 ```
 
-### `parser`
+### `parser` {#properties/parser}
 
 Specify a regex to the key, and the parser file [path](#properties/specification-about-paths) or a package name to the value.
 The regex should be specify it matches the target lintee file (ex., the extension part).
@@ -175,7 +175,7 @@ interface Config {
 }
 ```
 
-### `parserOptions`
+### `parserOptions` {#properties/parser-options}
 
 ```json
 {
@@ -212,7 +212,7 @@ interface Config {
 }
 ```
 
-### `specs`
+### `specs` {#properties/specs}
 
 Specify a regex to the key, and the spec file [path](#properties/specification-about-paths) or a package name to the value.
 The regex should be specify it matches the target lintee file (ex., the extension part).
@@ -255,7 +255,7 @@ interface Config {
 }
 ```
 
-### `excludeFiles`
+### `excludeFiles` {#properties/exclude-files}
 
 It can exclude files if you need them.
 The values require the relative path from the configuration file or the absolute path.
@@ -275,7 +275,7 @@ interface Config {
 }
 ```
 
-### `rules`
+### `rules` {#properties/rules}
 
 And add some rules to this property.
 
@@ -372,7 +372,7 @@ type Rule<T, O> =
     };
 ```
 
-### `nodeRules` &amp; `childNodeRules`
+### `nodeRules` &amp; `childNodeRules` {#properties/node-rules-&-child-node-rules}
 
 #### `nodeRules`
 
@@ -681,10 +681,10 @@ The above is the same as CSS selector `el1 el2 > el3 + el4 ~ el5`.
 
 ##### Usecase of `regexSelector`
 
-- [Check designed CSS class name](/configuration/regex-selector-sample#case-1:-check-designed-c-s-s-class-name)
-- [Check filenames of images](/configuration/regex-selector-sample#case-2:-check-filenames-of-images)
+- [Check designed CSS class name](regex-selector-sample#case-1)
+- [Check filenames of images](regex-selector-sample#case-2)
 
-### `overrides`
+### `overrides` {#properties/overrides}
 
 You can override configurations to specific files if you specify the `overrides` option.
 It resolves **glob format paths** specified to a key.

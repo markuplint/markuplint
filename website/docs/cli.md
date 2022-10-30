@@ -43,7 +43,7 @@ Use add the `--version` option. (Short option: `-v`)
 
 ### Initialization
 
-Create a [configuration](./configuration) file and install dependencies.
+Create a [configuration](configuration/index.md) file and install dependencies.
 
 Use add the `--init` option.
 
