@@ -21,8 +21,8 @@ async function copy() {
       const locale = md.endsWith('.ja.md') ? 'ja' : 'en';
       const dist =
         locale === 'en'
-          ? path.resolve(__dirname, './docs/rules', `${dirname}.mdx`)
-          : path.resolve(__dirname, `./i18n/${locale}/docusaurus-plugin-content-docs/current/rules`, `${dirname}.mdx`);
+          ? path.resolve(__dirname, './docs/rules', `${dirname}.md`)
+          : path.resolve(__dirname, `./i18n/${locale}/docusaurus-plugin-content-docs/current/rules`, `${dirname}.md`);
       const content = await readFile(md, { encoding: 'utf-8' });
       const rewrote = content.replace(/\(https:\/\/markuplint\.dev\//g, '(/');
       await writeFile(dist, rewrote, { encoding: 'utf-8' });
