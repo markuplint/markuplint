@@ -2,7 +2,6 @@ import React from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import { useAllPluginInstancesData, usePluginData } from '@docusaurus/useGlobalData';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 
@@ -26,12 +25,6 @@ function HomepageHeader() {
 }
 
 export default function Home(): JSX.Element {
-  const all = useDocusaurusContext();
-  const test = useAllPluginInstancesData('plugin-content-docs');
-  const test2 = usePluginData('plugin-content-docs');
-  // console.log("usePluginData");
-  console.log(all);
-  // console.log(test2);
   return (
     <Layout
       title="markuplint - A Linter for All Markup Languages."
