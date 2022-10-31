@@ -15,6 +15,7 @@ export function nameCompare(a: HasName | string, b: HasName | string) {
 }
 
 export function sortObjectByKey<T>(o: T): T {
+	// @ts-ignore
 	const keys = Object.keys(o);
 	keys.sort(nameCompare);
 	// @ts-ignore
