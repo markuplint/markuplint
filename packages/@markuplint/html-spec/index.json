@@ -10789,7 +10789,7 @@
 			"description": "The <area> HTML element defines an area inside an image map that has predefined clickable areas. An image map allows geometric areas on an image to be associated with hypertext link.",
 			"categories": ["#flow", "#phrasing"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "aera",
 				"contents": false,
 				"ancestor": "map"
@@ -11071,7 +11071,7 @@
 			"description": "The <base> HTML element specifies the base URL to use for all relative URLs in a document. There can be only one <base> element in a document.",
 			"categories": ["#metadata"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "base",
 				"contents": false
 			},
@@ -11470,7 +11470,7 @@
 			"description": "The <br> HTML element produces a line break in text (carriage-return). It is useful for writing a poem or an address, where the division of lines is significant.",
 			"categories": ["#flow", "#phrasing"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "br",
 				"contents": false
 			},
@@ -11761,7 +11761,7 @@
 			"description": "The <col> HTML element defines a column within a table and is used for defining common semantics on all common cells. It is generally found within a <colgroup> element.",
 			"categories": [],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "col",
 				"contents": false
 			},
@@ -12388,7 +12388,7 @@
 			"description": "The <embed> HTML element embeds external content at the specified point in the document. This content is provided by an external application or other source of interactive content such as a browser plug-in.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "embed",
 				"contents": false
 			},
@@ -13109,7 +13109,7 @@
 			"description": "The <hr> HTML element represents a thematic break between paragraph-level elements: for example, a change of scene in a story, or a shift of topic within a section.",
 			"categories": ["#flow"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "hr",
 				"contents": false
 			},
@@ -13387,7 +13387,7 @@
 			"description": "The <img> HTML element embeds an image into the document.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "img",
 				"contents": false
 			},
@@ -13528,7 +13528,7 @@
 			"description": "The <input> HTML element is used to create interactive controls for web-based forms in order to accept data from the user; a wide variety of types of input data and control widgets are available, depending on the device and user agent. The <input> element is one of the most powerful and complex in all of HTML due to the sheer number of combinations of input types and attributes.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "input",
 				"contents": false
 			},
@@ -14237,7 +14237,7 @@
 			"deprecated": true,
 			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "keygen",
 				"contents": true
 			},
@@ -14400,7 +14400,7 @@
 			"description": "The <link> HTML element specifies relationships between the current document and an external resource. This element is most commonly used to link to stylesheets, but is also used to establish site icons (both \"favicon\" style icons and icons for the home screen and apps on mobile devices) among other things.",
 			"categories": ["#metadata", "#flow", "#phrasing"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "link",
 				"contents": false
 			},
@@ -14833,7 +14833,7 @@
 			"deprecated": true,
 			"categories": [],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "menuitem",
 				"contents": true
 			},
@@ -14880,7 +14880,7 @@
 			"description": "The <meta> HTML element represents metadata that cannot be represented by other HTML meta-related elements, like <base>, <link>, <script>, <style> or <title>.",
 			"categories": ["#metadata", "#flow", "#phrasing"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "meta",
 				"contents": false
 			},
@@ -15555,7 +15555,7 @@
 			"deprecated": true,
 			"categories": [],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "param",
 				"contents": true
 			},
@@ -16381,10 +16381,10 @@
 		{
 			"name": "source",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source",
-			"description": "The <source> HTML element specifies multiple media resources for the <picture>, the <audio> element, or the <video> element. It is an empty element, meaning that it has no content and does not have a closing tag. It is commonly used to offer the same media content in multiple file formats in order to provide compatibility with a broad range of browsers given their differing support for image file formats and media file formats.",
+			"description": "The <source> HTML element specifies multiple media resources for the <picture>, the <audio> element, or the <video> element. It is a void element, meaning that it has no content and does not have a closing tag. It is commonly used to offer the same media content in multiple file formats in order to provide compatibility with a broad range of browsers given their differing support for image file formats and media file formats.",
 			"categories": [],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "source",
 				"contents": false
 			},
@@ -17463,7 +17463,7 @@
 			"description": "The <track> HTML element is used as a child of the media elements, <audio> and <video>. It lets you specify timed text tracks (or time-based data), for example to automatically handle subtitles. The tracks are formatted in WebVTT format (.vtt files) — Web Video Text Tracks.",
 			"categories": [],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "track",
 				"contents": false
 			},
