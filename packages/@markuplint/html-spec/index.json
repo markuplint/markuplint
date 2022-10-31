@@ -13,7 +13,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/basefont",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bgsound",
@@ -11098,9 +11097,9 @@
 		},
 		{
 			"name": "basefont",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/basefont",
-			"description": "The <basefont> HTML element is deprecated. It sets a default font face, size, and color for the other elements which are descended from its parent element. With this set, the font's size can then be varied relative to the base size using the <font> element.",
-			"deprecated": true,
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"description": "Element is entirely obsolete, and must not be used by authors.",
+			"obsolete": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
@@ -11109,7 +11108,7 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": true
+				"roles": false
 			},
 			"implicitRole": {
 				"summary": "",
@@ -11117,17 +11116,7 @@
 			},
 			"omittion": false,
 			"globalAttrs": {},
-			"attributes": {
-				"color": {
-					"description": "This attribute sets the text color using either a named color or a color specified in the hexadecimal #RRGGBB format."
-				},
-				"face": {
-					"description": "This attribute contains a list of one or more font names. The document text in the default style is rendered in the first font face that the client's browser supports. If no font listed is installed on the local system, the browser typically defaults to the proportional or fixed-width font for that system."
-				},
-				"size": {
-					"description": "This attribute specifies the font size as either a numeric or relative value. Numeric values range from 1 to 7 with 1 being the smallest and 3 the default."
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "bdi",
