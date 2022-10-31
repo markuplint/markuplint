@@ -13310,14 +13310,16 @@
 					"type": "Boolean"
 				},
 				"allowpaymentrequest": {
-					"description": "Set to true if a cross-origin <iframe> should be allowed to invoke the Payment Request API. Note: This attribute is considered a legacy attribute and redefined as allow=\"payment\"."
+					"description": "Set to true if a cross-origin <iframe> should be allowed to invoke the Payment Request API. Note: This attribute is considered a legacy attribute and redefined as allow=\"payment\".",
+					"experimental": true
 				},
 				"csp": {
 					"description": "A Content Security Policy enforced for the embedded resource. See HTMLIFrameElement.csp for details.",
 					"experimental": true
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching the iframe document. Allowed values: high Signals a high-priority fetch relative to other iframe documents. low Signals a low-priority fetch relative to other iframe documents. auto Default: Signals automatic determination of fetch priority relative to other iframe documents."
+					"description": "Provides a hint of the relative priority to use when fetching the iframe document. Allowed values: high Signals a high-priority fetch relative to other iframe documents. low Signals a low-priority fetch relative to other iframe documents. auto Default: Signals automatic determination of fetch priority relative to other iframe documents.",
+					"experimental": true
 				},
 				"frameborder": {
 					"description": "The value 1 (the default) draws a border around this frame. The value 0 removes the border around this frame, but you should instead use the CSS property border to control <iframe> borders.",
@@ -14526,7 +14528,8 @@
 					"type": "Boolean"
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching a preloaded resource. Allowed values: high Signals a high-priority fetch relative to other resources of the same type. low Signals a low-priority fetch relative to other resources of the same type. auto Default: Signals automatic determination of fetch priority relative to other resources of the same type."
+					"description": "Provides a hint of the relative priority to use when fetching a preloaded resource. Allowed values: high Signals a high-priority fetch relative to other resources of the same type. low Signals a low-priority fetch relative to other resources of the same type. auto Default: Signals automatic determination of fetch priority relative to other resources of the same type.",
+					"experimental": true
 				},
 				"href": {
 					"description": "This attribute specifies the URL of the linked resource. A URL can be absolute or relative."
@@ -15722,6 +15725,7 @@
 			"name": "portal",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/portal",
 			"description": "The <portal> HTML element enables the embedding of another HTML page into the current one for the purposes of allowing smoother navigation into new pages.",
+			"experimental": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
@@ -16181,7 +16185,8 @@
 					"_TODO_": "The defer attribute affects the element that has the async attribute if it doesn't support the async"
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Signals a high-priority fetch relative to other external scripts. low Signals a low-priority fetch relative to other external scripts. auto Default: Signals automatic determination of fetch priority relative to other external scripts."
+					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Signals a high-priority fetch relative to other external scripts. low Signals a low-priority fetch relative to other external scripts. auto Default: Signals automatic determination of fetch priority relative to other external scripts.",
+					"experimental": true
 				},
 				"integrity": {
 					"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-script-integrity",
@@ -24785,7 +24790,8 @@
 					"ref": "https://svgwg.org/svg2-draft/text.html#TextPathElementPathAttribute",
 					"description": "The path on which the text should be rendered. Value type: <path_data> ; Default value: none; Animatable: yes",
 					"type": "<svg-path>",
-					"animatable": true
+					"animatable": true,
+					"experimental": true
 				},
 				"href": {
 					"ref": "https://svgwg.org/svg2-draft/text.html#TextPathElementHrefAttribute",
@@ -24827,7 +24833,8 @@
 						"disallowToSurroundBySpaces": false
 					},
 					"defaultValue": "left",
-					"animatable": true
+					"animatable": true,
+					"experimental": true
 				}
 			}
 		},
