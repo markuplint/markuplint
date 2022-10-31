@@ -10621,7 +10621,7 @@
 					"deprecated": true
 				},
 				"target": {
-					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: the current browsing context. (Default) _blank: usually a new tab, but users can configure browsers to open a new window instead. _parent: the parent browsing context of the current one. If no parent, behaves as _self. _top: the topmost browsing context (the \"highest\" context that's an ancestor of the current one). If no ancestors, behaves as _self. Note: Setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener. See browser compatibility for support status."
+					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: the current browsing context. (Default) _blank: usually a new tab, but users can configure browsers to open a new window instead. _parent: the parent browsing context of the current one. If no parent, behaves as _self. _top: the topmost browsing context (the \"highest\" context that's an ancestor of the current one). If no ancestors, behaves as _self. Note: Setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener."
 				},
 				"type": {
 					"description": "Hints at the linked URL's format with a MIME type. No built-in functionality."
@@ -10631,7 +10631,7 @@
 		{
 			"name": "abbr",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr",
-			"description": "The <abbr> HTML element represents an abbreviation or acronym; the optional title attribute can provide an expansion or description for the abbreviation. If present, title must contain this full description and nothing else.",
+			"description": "The <abbr> HTML element represents an abbreviation or acronym.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"permittedStructures": {
 				"summary": "Phrasing content",
@@ -10856,7 +10856,7 @@
 					"deprecated": true
 				},
 				"nohref": {
-					"description": "Indicates that no hyperlink exists for the associated area. Note: Since HTML5, omitting the href attribute is sufficient.",
+					"description": "Indicates that no hyperlink exists for the associated area. Note: The nohref attribute is not necessary, as omitting the href attribute is sufficient.",
 					"deprecated": true
 				},
 				"ping": {
@@ -11009,10 +11009,10 @@
 					"description": "If this attribute is present, the browser will offer controls to allow the user to control audio playback, including volume, seeking, and pause/resume playback."
 				},
 				"crossorigin": {
-					"description": "This enumerated attribute indicates whether to use CORS to fetch the related audio file. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the image will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the image will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted used in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
+					"description": "This enumerated attribute indicates whether to use CORS to fetch the related audio file. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the resource will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the resource will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted use in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
 				},
 				"disableremoteplayback": {
-					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc). See this proposed specification for more information. Note: In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
+					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). See this proposed specification for more information. Note: In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
 					"experimental": true
 				},
 				"loop": {
@@ -11559,7 +11559,7 @@
 					"description": "The URL that processes the information submitted by the button. Overrides the action attribute of the button's form owner. Does nothing if there is no form owner."
 				},
 				"formenctype": {
-					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), specifies how to encode the form data that is submitted. Possible values: application/x-www-form-urlencoded: The default if the attribute is not used. multipart/form-data: Use to submit <input> elements with their type attributes set to file. text/plain: Specified as a debugging aid; shouldn't be used for real form submission. If this attribute is specified, it overrides the enctype attribute of the button's form owner."
+					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), specifies how to encode the form data that is submitted. Possible values: application/x-www-form-urlencoded: The default if the attribute is not used. multipart/form-data: Used to submit <input> elements with their type attributes set to file. text/plain: Specified as a debugging aid; shouldn't be used for real form submission. If this attribute is specified, it overrides the enctype attribute of the button's form owner."
 				},
 				"formmethod": {
 					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), this attribute specifies the HTTP method used to submit the form. Possible values: post: The data from the form are included in the body of the HTTP request when sent to the server. Use when the form contains information that shouldn't be public, like login credentials. get: The form data are appended to the form's action URL, with a ? as a separator, and the resulting URL is sent to the server. Use this method when the form has no side effects, like search forms. If specified, this attribute overrides the method attribute of the button's form owner."
@@ -11803,7 +11803,7 @@
 					"defaultValue": "1"
 				},
 				"valign": {
-					"description": "This attribute specifies the vertical alignment of the text within each cell of the column. Possible values for this attribute are: baseline, which will put the text as close to the bottom of the cell as it is possible, but align it on the baseline of the characters instead of the bottom of them. If characters are all of the size, this has the same effect as bottom. bottom, which will put the text as close to the bottom of the cell as it is possible; middle, which will center the text in the cell; and top, which will put the text as close to the top of the cell as it is possible. Note: Do not try to set the vertical-align property on a selector giving a <col> element. Because <td> elements are not descendant of the <col> element, they won't inherit it. If the table doesn't use a colspan attribute, use the td:nth-child(an+b) CSS selector where a is the total number of the columns in the table and b is the ordinal position of the column in the table. Only after this selector the vertical-align property can be used. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
+					"description": "This attribute specifies the vertical alignment of the text within each cell of the column. Possible values for this attribute are: baseline, which will put the text as close to the bottom of the cell as it is possible, but align it on the baseline of the characters instead of the bottom of them. If characters are all of the size, this has the same effect as bottom. bottom, which will put the text as close to the bottom of the cell as it is possible; middle, which will center the text in the cell; and top, which will put the text as close to the top of the cell as it is possible. Note: Do not try to set the vertical-align property on a selector giving a <col> element. Because <td> elements are not descendant of the <col> element, they won't inherit it. If the table doesn't use a colspan attribute, use the td:nth-child(an+b) CSS selector where 'a' is the total number of the columns in the table and 'b' is the ordinal position of the column in the table. Only after this selector the vertical-align property can be used. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
 					"deprecated": true
 				},
 				"width": {
@@ -11818,7 +11818,7 @@
 			"description": "The <colgroup> HTML element defines a group of columns within a table.",
 			"categories": [],
 			"permittedStructures": {
-				"summary": "If the span attribute is present: none, it is an empty element.If the attribute is not present: zero or more <col> element",
+				"summary": "If the span attribute is present: none.If the attribute is not present: zero or more <col> element",
 				"tag": "colgroup",
 				"conditional": [
 					{
@@ -12656,7 +12656,7 @@
 			},
 			"attributes": {
 				"accept": {
-					"description": "Comma-separated content types the server accepts. Note: This attribute was removed in HTML5 and should not be used. Instead, use the accept attribute on <input type=file> elements.",
+					"description": "Comma-separated content types the server accepts. Note: This attribute has been deprecated and should not be used. Instead, use the accept attribute on <input type=file> elements.",
 					"deprecated": true
 				},
 				"accept-charset": {
@@ -13499,7 +13499,7 @@
 					"required": true
 				},
 				"srcset": {
-					"description": "One or more strings separated by commas, indicating possible image sources for the user agent to use. Each string is composed of: A URL to an image Optionally, whitespace followed by one of: A width descriptor (a positive integer directly followed by w). The width descriptor is divided by the source size given in the sizes attribute to calculate the effective pixel density. A pixel density descriptor (a positive floating point number directly followed by x). If no descriptor is specified, the source is assigned the default descriptor of 1x. It is incorrect to mix width descriptors and pixel density descriptors in the same srcset attribute. Duplicate descriptors (for instance, two sources in the same srcset which are both described with 2x) are also invalid. The user agent selects any of the available sources at its discretion. This provides them with significant leeway to tailor their selection based on things like user preferences or bandwidth conditions. See our Responsive images tutorial for an example."
+					"description": "One or more strings separated by commas, indicating possible image sources for the user agent to use. Each string is composed of: A URL to an image Optionally, whitespace followed by one of: A width descriptor (a positive integer directly followed by w). The width descriptor is divided by the source size given in the sizes attribute to calculate the effective pixel density. A pixel density descriptor (a positive floating point number directly followed by x). If no descriptor is specified, the source is assigned the default descriptor of 1x. It is incorrect to mix width descriptors and pixel density descriptors in the same srcset attribute. Duplicate descriptors (for instance, two sources in the same srcset which are both described with 2x) are also invalid. If the srcset attribute uses width descriptors, the sizes attribute must also be present, or the srcset itself will be ignored. The user agent selects any of the available sources at its discretion. This provides them with significant leeway to tailor their selection based on things like user preferences or bandwidth conditions. See our Responsive images tutorial for an example."
 				},
 				"usemap": {
 					"ref": "https://html.spec.whatwg.org/multipage/image-maps.html#attr-hyperlink-usemap",
@@ -13796,7 +13796,7 @@
 					}
 				},
 				"autocorrect": {
-					"description": "(Safari only). A string which indicates whether or not to activate automatic correction while the user is editing this field. Permitted values are: on Enable automatic correction of typos, as well as processing of text substitutions if any are configured. off Disable automatic correction and text substitutions.",
+					"description": "(Safari only). A string which indicates whether to activate automatic correction while the user is editing this field. Permitted values are: on Enable automatic correction of typos, as well as processing of text substitutions if any are configured. off Disable automatic correction and text substitutions.",
 					"nonStandard": true
 				},
 				"autofocus": {
@@ -14522,7 +14522,7 @@
 					"requiredEither": ["rel"]
 				},
 				"media": {
-					"description": "This attribute specifies the media that the linked resource applies to. Its value must be a media type / media query. This attribute is mainly useful when linking to external stylesheets — it allows the user agent to pick the best adapted one for the device it runs on. Note: In HTML 4, this can only be a simple white-space-separated list of media description literals, i.e., media types and groups, where defined and allowed as values for this attribute, such as print, screen, aural, braille. HTML5 extended this to any kind of media queries, which are a superset of the allowed values of HTML 4. Browsers not supporting CSS3 Media Queries won't necessarily recognize the adequate link; do not forget to set fallback links, the restricted set of media queries defined in HTML 4."
+					"description": "This attribute specifies the media that the linked resource applies to. Its value must be a media type / media query. This attribute is mainly useful when linking to external stylesheets — it allows the user agent to pick the best adapted one for the device it runs on. Note: In HTML 4, this can only be a simple white-space-separated list of media description literals, i.e., media types and groups, where defined and allowed as values for this attribute, such as print, screen, aural, braille. HTML5 extended this to any kind of media queries, which are a superset of the allowed values of HTML 4. Browsers not supporting CSS Media Queries won't necessarily recognize the adequate link; do not forget to set fallback links, the restricted set of media queries defined in HTML 4."
 				},
 				"methods": {
 					"description": "The value of this attribute provides information about the functions that might be performed on an object. The values generally are given by the HTTP protocol when it is used, but it might (for similar reasons as for the title attribute) be useful to include advisory information in advance in the link. For example, the browser might choose a different rendering of a link as a function of the methods specified; something that is searchable might get a different icon, or an outside link might render with an indication of leaving the current site. This attribute is not well understood nor supported, even by the defining browser, Internet Explorer 4.",
@@ -14570,7 +14570,7 @@
 					"requiredEither": ["itemprop"]
 				},
 				"rev": {
-					"description": "The value of this attribute shows the relationship of the current document to the linked document, as defined by the href attribute. The attribute thus defines the reverse relationship compared to the value of the rel attribute. Link type values for the attribute are similar to the possible values for rel. Note: Instead of rev, you should use the rel attribute with the opposite link type value. For example, to establish the reverse link for made, specify author. Also this attribute doesn't stand for \"revision\" and must not be used with a version number, even though many sites misuse it in this way.",
+					"description": "The value of this attribute shows the relationship of the current document to the linked document, as defined by the href attribute. The attribute thus defines the reverse relationship compared to the value of the rel attribute. Link type values for the attribute are similar to the possible values for rel. Note: Instead of rev, you should use the rel attribute with the opposite link type value. For example, to establish the reverse link for made, specify author. Also, this attribute doesn't stand for \"revision\" and must not be used with a version number, even though many sites misuse it in this way.",
 					"obsolete": true,
 					"deprecated": true
 				},
@@ -14693,7 +14693,7 @@
 		{
 			"name": "mark",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark",
-			"description": "The <mark> HTML element represents text which is marked or highlighted for reference or notation purposes, due to the marked passage's relevance or importance in the enclosing context.",
+			"description": "The <mark> HTML element represents text which is marked or highlighted for reference or notation purposes due to the marked passage's relevance in the enclosing context.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"permittedStructures": {
 				"summary": "Phrasing content.",
@@ -15260,7 +15260,7 @@
 					"requiredEither": ["type"]
 				},
 				"declare": {
-					"description": "The presence of this Boolean attribute makes this element a declaration only. The object must be instantiated by a subsequent <object> element. In HTML5, repeat the <object> element completely each time that the resource is reused.",
+					"description": "The presence of this Boolean attribute makes this element a declaration only. The object must be instantiated by a subsequent <object> element. Repeat the <object> element completely each time the resource is reused.",
 					"deprecated": true
 				},
 				"form": {
@@ -16447,7 +16447,7 @@
 		{
 			"name": "spacer",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/spacer",
-			"description": "The <spacer> HTML element is an obsolete HTML element which allowed insertion of empty spaces on pages. It was devised by Netscape to accomplish the same effect as a single-pixel layout image, which was something web designers used to use to add white spaces to web pages without actually using an image. However, <spacer> no longer supported by any major browser and the same effects can now be achieved using simple CSS.",
+			"description": "The <spacer> HTML element is an obsolete HTML element which allowed insertion of empty spaces on pages. It was devised by Netscape to accomplish the same effect as a single-pixel layout image, which was something web designers used to use to add white spaces to web pages without actually using an image. However, <spacer> is no longer supported by any major browser and the same effects can now be achieved using simple CSS.",
 			"deprecated": true,
 			"categories": [],
 			"permittedStructures": {
@@ -16937,7 +16937,7 @@
 					"deprecated": true
 				},
 				"align": {
-					"description": "This enumerated attribute specifies how the cell content's horizontal alignment will be handled. Possible values are: left: The content is aligned to the left of the cell. center: The content is centered in the cell. right: The content is aligned to the right of the cell. justify (with text only): The content is stretched out inside the cell so that it covers its entire width. char (with text only): The content is aligned to a character inside the <th> element with minimal offset. This character is defined by the char and charoff attributes Unimplemented (see bug 2212). The default value when this attribute is not specified is left. Note: To achieve the same effect as the left, center, right or justify values, apply the CSS text-align property to the element. To achieve the same effect as the char value, give the text-align property the same value you would use for the char. Unimplemented in CSS3.",
+					"description": "This enumerated attribute specifies how the cell content's horizontal alignment will be handled. Possible values are: left: The content is aligned to the left of the cell. center: The content is centered in the cell. right: The content is aligned to the right of the cell. justify (with text only): The content is stretched out inside the cell so that it covers its entire width. char (with text only): The content is aligned to a character inside the <th> element with minimal offset. This character is defined by the char and charoff attributes Unimplemented (see bug 2212). The default value when this attribute is not specified is left. Note: To achieve the same effect as the left, center, right or justify values, apply the CSS text-align property to the element. To achieve the same effect as the char value, give the text-align property the same value you would use for the char. Unimplemented in CSS.",
 					"deprecated": true
 				},
 				"axis": {
@@ -17150,7 +17150,7 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Note: To achieve the same effect as the left, center, right or justify values, use the CSS text-align property on it. To achieve the same effect as the char value, in CSS3, you can use the value of the char as the value of the text-align property Unimplemented.",
+					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Note: To achieve the same effect as the left, center, right or justify values, use the CSS text-align property on it. To achieve the same effect as the char value, in CSS, you can use the value of the char as the value of the text-align property Unimplemented.",
 					"deprecated": true
 				},
 				"bgcolor": {
@@ -17306,16 +17306,15 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Warning: Do not use this attribute as it is obsolete (not supported) in the latest standard. To achieve the same effect as the left, center, right or justify values, use the CSS text-align property on it. To achieve the same effect as the char value, in CSS3, you can use the value of the char as the value of the text-align property.",
+					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Warning: Do not use this attribute as it is obsolete (not supported) in the latest standard. To align values, use the CSS text-align property instead.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "This attribute defines the background color of each cell of the column. It is one of the 6-digit hexadecimal code as defined in sRGB, prefixed by a '#'. One of the sixteen predefined color strings may be used: black = \"#000000\" green = \"#008000\" silver = \"#C0C0C0\" lime = \"#00FF00\" gray = \"#808080\" olive = \"#808000\" white = \"#FFFFFF\" yellow = \"#FFFF00\" maroon = \"#800000\" navy = \"#000080\" red = \"#FF0000\" blue = \"#0000FF\" purple = \"#800080\" teal = \"#008080\" fuchsia = \"#FF00FF\" aqua = \"#00FFFF\" Note: Do not use this attribute, as it is non-standard and only implemented in some versions of Microsoft Internet Explorer: the <thead> element should be styled using CSS. To give a similar effect to the bgcolor attribute, use the CSS property background-color, on the relevant <td> or <th> elements.",
-					"deprecated": true,
-					"nonStandard": true
+					"description": "This attribute defines the background color of each column cell. It accepts a 6-digit hexadecimal color or a named color. Alpha transparency is not supported. Note: Do not use this attribute, as it is non-standard. The thead element should be styled using the CSS background-color property, which can be applied to any element, including the thead, <tr>, <td> and <th> elements.",
+					"deprecated": true
 				},
 				"char": {
-					"description": "This attribute is used to set the character to align the cells in a column on. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard. To achieve the same effect as the char, in CSS3, you can use the character set using the char attribute as the value of the text-align property.",
+					"description": "This attribute is used to set the character to align the cells in a column on. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard.",
 					"deprecated": true
 				},
 				"charoff": {
@@ -17440,7 +17439,7 @@
 					"deprecated": true
 				},
 				"char": {
-					"description": "A string which sets the character to align the cells in each of the row's columns on (each row's centering that uses the same character gets aligned with others using the same character . Typical values for this include a period (\".\") or comma (\",\") when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: This attribute is not only obsolete, but was rarely implemented anyway. To achieve the same effect as the char attribute, set the CSS text-align property to the same string you would specify for the char property, such as text-align: \".\".",
+					"description": "A string which sets the character to align the cells in each of the row's columns on (each row's centering that uses the same character gets aligned with others using the same character. Typical values for this include a period (\".\") or comma (\",\") when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: This attribute is not only obsolete, but was rarely implemented anyway. To achieve the same effect as the char attribute, set the CSS text-align property to the same string you would specify for the char property, such as text-align: \".\".",
 					"deprecated": true
 				},
 				"charoff": {
@@ -17731,14 +17730,14 @@
 					}
 				},
 				"crossorigin": {
-					"description": "This enumerated attribute indicates whether to use CORS to fetch the related video. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the image will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the image will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted used in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
+					"description": "This enumerated attribute indicates whether to use CORS to fetch the related video. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the resource will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the resource will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted use in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
 				},
 				"disablepictureinpicture": {
 					"description": "Prevents the browser from suggesting a Picture-in-Picture context menu or to request Picture-in-Picture automatically in some cases.",
 					"experimental": true
 				},
 				"disableremoteplayback": {
-					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc). In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
+					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
 					"experimental": true
 				},
 				"height": {
@@ -23119,7 +23118,7 @@
 				},
 				"patternUnits": {
 					"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementPatternUnitsAttribute",
-					"description": "This attribute defines the coordinate system for attributes x, y, width , and height. Value type: userSpaceOnUse|objectBoundingBox; Default value: objectBoundingBox; Animatable: yes",
+					"description": "This attribute defines the coordinate system for attributes x, y, width, and height. Value type: userSpaceOnUse|objectBoundingBox; Default value: objectBoundingBox; Animatable: yes",
 					"type": {
 						"enum": ["userSpaceOnUse", "objectBoundingBox"],
 						"disallowToSurroundBySpaces": false
@@ -23153,7 +23152,7 @@
 					"description": "This attribute determines the x coordinate shift of the pattern tile. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
 				},
 				"xlink:href": {
-					"description": "This attribute reference a template pattern that provides default values for the <pattern> attributes. Value type: <URL>; Default value: none; Animatable: yes Note: For browsers implementing href, if both href and xlink:href are set, xlink:href will be ignored and only href will be used."
+					"description": "This attribute references a template pattern that provides default values for the <pattern> attributes. Value type: <URL>; Default value: none; Animatable: yes Note: For browsers implementing href, if both href and xlink:href are set, xlink:href will be ignored and only href will be used."
 				},
 				"y": {
 					"description": "This attribute determines the y coordinate shift of the pattern tile. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
