@@ -13084,10 +13084,10 @@
 		{
 			"name": "hgroup",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup",
-			"description": "The <hgroup> HTML element represents a multi-level heading for a section of a document. It groups a set of <h1>–<h6> elements.",
+			"description": "The <hgroup> HTML element represents a heading and related content. It groups a single <h1>–<h6> element with one or more <p>.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"permittedStructures": {
-				"summary": "One or more <h1>, <h2>, <h3>, <h4>, <h5>, and/or <h6>.",
+				"summary": "Zero or more <p> elements, followed by one <h1>, <h2>, <h3>, <h4>, <h5>, or <h6> element, followed by zero or more <p> elements.",
 				"tag": "hgroup",
 				"contents": [
 					{
