@@ -1,6 +1,7 @@
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { createRule, getRoleSpec, getComputedRole } from '@markuplint/ml-core';
+import { isExposed } from '@markuplint/ml-spec';
 
 import { accnameMayBeMutable } from '../helpers';
 
@@ -19,6 +20,10 @@ export default createRule<boolean, Option>({
 			}
 
 			if (accnameMayBeMutable(el, document)) {
+				return;
+			}
+
+			if (!isExposed(el, document.specs, el.rule.option.ariaVersion)) {
 				return;
 			}
 
