@@ -27874,7 +27874,7 @@
 					"type": [
 						"MIMEType",
 						{
-							"enum": ["module"],
+							"enum": ["module", "importmap"],
 							"caseInsensitive": true
 						}
 					]
