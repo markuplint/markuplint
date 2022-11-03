@@ -34,22 +34,8 @@ const config = {
           routeBasePath: '/',
           path: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: ({ docPath, locale }) => {
-            const [maybeDir, maybeRule] = docPath.split('/');
-            if (maybeDir === 'rules') {
-              const ruleName = maybeRule.replace(/\.mdx?/, '');
-              return `https://github.com/markuplint/markuplint/tree/dev/packages/@markuplint/rules/src/${ruleName}/README${
-                locale !== 'en' ? `.${locale}` : ''
-              }.md`;
-            } else {
-              if (locale === 'en') {
-                return `https://github.com/markuplint/markuplint/tree/dev/website/docs/${docPath}`;
-              } else {
-                return `https://github.com/markuplint/markuplint/tree/dev/website/i18n/ja/docusaurus-plugin-content-docs/current/${docPath}`;
-              }
-            }
-          },
-          // editLocalizedFiles: true,
+          editUrl: 'https://github.com/markuplint/markuplint/edit/dev/website',
+          editLocalizedFiles: true,
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
