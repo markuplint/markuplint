@@ -31,7 +31,17 @@ const sidebars = {
       ],
     },
   ],
-  configuration: ['configuration/index', 'configuration/regex-selector-sample'],
+  configuration: [
+    {
+      type: 'category',
+      label: 'Configuration',
+      link: {
+        type: 'doc',
+        id: 'configuration/index',
+      },
+      items: ['configuration/regex-selector-sample'],
+    },
+  ],
 };
 
 module.exports = sidebars;
