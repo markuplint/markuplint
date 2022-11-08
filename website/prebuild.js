@@ -27,7 +27,7 @@ async function copy() {
         await readFile(path.resolve(projectRoot, pathFromRoot), { encoding: 'utf-8' }),
       );
       // NOTE: `glob` returns `/` separated paths, even on Windows.
-      frontMatter.custom_edit_url = `https://github.com/markuplint/markuplint/edit/dev/${pathFromRoot}`;
+      frontMatter.custom_edit_url = `https://github.com/markuplint/markuplint/edit/main/${pathFromRoot}`;
       const rewrote = matter.stringify(content.replace(/\(https:\/\/markuplint\.dev\//g, '(/'), frontMatter);
       await writeFile(dist, rewrote, { encoding: 'utf-8' });
     }),

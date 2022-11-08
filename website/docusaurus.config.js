@@ -34,7 +34,7 @@ const config = {
           routeBasePath: '/',
           path: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/markuplint/markuplint/edit/dev/website',
+          editUrl: 'https://github.com/markuplint/markuplint/edit/main/website',
           editLocalizedFiles: true,
         },
         theme: {
