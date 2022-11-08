@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "site:start": "yarn site:prebuild; docusaurus start",
-    "site:start:ja": "yarn site:prebuild; docusaurus start --locale ja",
     "site:build": "yarn site:prebuild; docusaurus build",
     "site:prebuild": "node prebuild.js; npx prettier --write './src/**/*{ts,tsx,json,rc,md,mdx,css,scss}';"
   },
