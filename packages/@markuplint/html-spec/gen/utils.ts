@@ -14,7 +14,8 @@ export function nameCompare(a: HasName | string, b: HasName | string) {
 	return 0;
 }
 
-export function sortObjectByKey<T extends Record<string, any>>(o: T): T {
+export function sortObjectByKey<T>(o: T): T {
+	// @ts-ignore
 	const keys = Object.keys(o);
 	keys.sort(nameCompare);
 	// @ts-ignore

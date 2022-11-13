@@ -165,11 +165,12 @@ function nodeize(
 			// console.log(originNode, originNode.expression);
 			let stub = raw;
 			const blocks: MLASTPreprocessorSpecificBlock[] = [];
+			const [, codeStart, , codeEnd] = raw.match(/(^{\s*)((?:.|\s)*)(}$)/m) || [];
 			const chunks = (originNode.expression.codeChunks as string[]).map((chunk, i) => {
 				if (i === 0) {
-					return `{${chunk}`;
+					return `${codeStart}${chunk}`;
 				} else if (i === originNode.expression.codeChunks.length - 1) {
-					return `${chunk}}`;
+					return `${chunk}${codeEnd}`;
 				}
 				return chunk;
 			});
@@ -178,7 +179,7 @@ function nodeize(
 				if (i === -1) {
 					throw new Error(`Invalid chunk: "${chunk}" from ${raw}`);
 				}
-				const prevBlock = blocks[blocks.length - 1];
+				const prevBlock: MLASTPreprocessorSpecificBlock | undefined = blocks[blocks.length - 1];
 				const prevBlockEndOffset = prevBlock ? prevBlock.endOffset : originNode.start;
 				const loc = sliceFragment(rawHtml, prevBlockEndOffset + i, prevBlockEndOffset + i + chunk.length);
 				blocks.push({
