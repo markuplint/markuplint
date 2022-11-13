@@ -9,6 +9,12 @@ export default createRule<boolean, null>({
 				return;
 			}
 
+			// **SHORT TERM SOLUTION**
+			// In v3.x, it will be resolved by https://github.com/markuplint/markuplint/pull/540
+			if (el.getAttribute('aria-hidden') === 'true') {
+				return;
+			}
+
 			const role = getComputedRole(document.specs, el);
 			if (!role) {
 				return;

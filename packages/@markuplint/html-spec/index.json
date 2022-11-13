@@ -13,7 +13,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/basefont",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bgsound",
@@ -10622,7 +10621,7 @@
 					"deprecated": true
 				},
 				"target": {
-					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: the current browsing context. (Default) _blank: usually a new tab, but users can configure browsers to open a new window instead. _parent: the parent browsing context of the current one. If no parent, behaves as _self. _top: the topmost browsing context (the \"highest\" context that's an ancestor of the current one). If no ancestors, behaves as _self. Note: Setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener. See browser compatibility for support status."
+					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: the current browsing context. (Default) _blank: usually a new tab, but users can configure browsers to open a new window instead. _parent: the parent browsing context of the current one. If no parent, behaves as _self. _top: the topmost browsing context (the \"highest\" context that's an ancestor of the current one). If no ancestors, behaves as _self. Note: Setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener."
 				},
 				"type": {
 					"description": "Hints at the linked URL's format with a MIME type. No built-in functionality."
@@ -10632,7 +10631,7 @@
 		{
 			"name": "abbr",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr",
-			"description": "The <abbr> HTML element represents an abbreviation or acronym; the optional title attribute can provide an expansion or description for the abbreviation. If present, title must contain this full description and nothing else.",
+			"description": "The <abbr> HTML element represents an abbreviation or acronym.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"permittedStructures": {
 				"summary": "Phrasing content",
@@ -10738,49 +10737,64 @@
 			"globalAttrs": {},
 			"attributes": {
 				"align": {
-					"description": "This attribute is used to position the applet on the page relative to content that might flow around it. The HTML 4.01 specification defines values of bottom, left, middle, right, and top, whereas Microsoft and Netscape also might support absbottom, absmiddle, baseline, center, and texttop."
+					"description": "This attribute is used to position the applet on the page relative to content that might flow around it. The HTML 4.01 specification defines values of bottom, left, middle, right, and top, whereas Microsoft and Netscape also might support absbottom, absmiddle, baseline, center, and texttop.",
+					"deprecated": true
 				},
 				"alt": {
-					"description": "This attribute causes a descriptive text alternate to be displayed on browsers that do not support Java. Page designers should also remember that content enclosed within the <applet> element may also be rendered as alternative text."
+					"description": "This attribute causes a descriptive text alternate to be displayed on browsers that do not support Java. Page designers should also remember that content enclosed within the <applet> element may also be rendered as alternative text.",
+					"deprecated": true
 				},
 				"archive": {
-					"description": "This attribute refers to an archived or compressed version of the applet and its associated class files, which might help reduce download time."
+					"description": "This attribute refers to an archived or compressed version of the applet and its associated class files, which might help reduce download time.",
+					"deprecated": true
 				},
 				"code": {
-					"description": "This attribute specifies the URL of the applet's class file to be loaded and executed. Applet filenames are identified by a .class filename extension. The URL specified by code might be relative to the codebase attribute."
+					"description": "This attribute specifies the URL of the applet's class file to be loaded and executed. Applet filenames are identified by a .class filename extension. The URL specified by code might be relative to the codebase attribute.",
+					"deprecated": true
 				},
 				"codebase": {
-					"description": "This attribute gives the absolute or relative URL of the directory where applets' .class files referenced by the code attribute are stored."
+					"description": "This attribute gives the absolute or relative URL of the directory where applets' .class files referenced by the code attribute are stored.",
+					"deprecated": true
 				},
 				"datafld": {
-					"description": "This attribute, supported by Internet Explorer 4 and higher, specifies the column name from the data source object that supplies the bound data. This attribute might be used to specify the various <param> elements passed to the Java applet."
+					"description": "This attribute, supported by Internet Explorer 4 and higher, specifies the column name from the data source object that supplies the bound data. This attribute might be used to specify the various <param> elements passed to the Java applet.",
+					"deprecated": true
 				},
 				"datasrc": {
-					"description": "Like datafld, this attribute is used for data binding under Internet Explorer 4. It indicates the id of the data source object that supplies the data that is bound to the <param> elements associated with the applet."
+					"description": "Like datafld, this attribute is used for data binding under Internet Explorer 4. It indicates the id of the data source object that supplies the data that is bound to the <param> elements associated with the applet.",
+					"deprecated": true
 				},
 				"height": {
-					"description": "This attribute specifies the height, in pixels, that the applet needs."
+					"description": "This attribute specifies the height, in pixels, that the applet needs.",
+					"deprecated": true
 				},
 				"hspace": {
-					"description": "This attribute specifies additional horizontal space, in pixels, to be reserved on either side of the applet."
+					"description": "This attribute specifies additional horizontal space, in pixels, to be reserved on either side of the applet.",
+					"deprecated": true
 				},
 				"mayscript": {
-					"description": "In the Netscape implementation, this attribute allows access to an applet by programs in a scripting language embedded in the document."
+					"description": "In the Netscape implementation, this attribute allows access to an applet by programs in a scripting language embedded in the document.",
+					"deprecated": true
 				},
 				"name": {
-					"description": "This attribute assigns a name to the applet so that it can be identified by other resources; particularly scripts."
+					"description": "This attribute assigns a name to the applet so that it can be identified by other resources; particularly scripts.",
+					"deprecated": true
 				},
 				"object": {
-					"description": "This attribute specifies the URL of a serialized representation of an applet."
+					"description": "This attribute specifies the URL of a serialized representation of an applet.",
+					"deprecated": true
 				},
 				"src": {
-					"description": "As defined for Internet Explorer 4 and higher, this attribute specifies a URL for an associated file for the applet. The meaning and use is unclear and not part of the HTML standard."
+					"description": "As defined for Internet Explorer 4 and higher, this attribute specifies a URL for an associated file for the applet. The meaning and use is unclear and not part of the HTML standard.",
+					"deprecated": true
 				},
 				"vspace": {
-					"description": "This attribute specifies additional vertical space, in pixels, to be reserved above and below the applet."
+					"description": "This attribute specifies additional vertical space, in pixels, to be reserved above and below the applet.",
+					"deprecated": true
 				},
 				"width": {
-					"description": "This attribute specifies in pixels the width that the applet needs."
+					"description": "This attribute specifies in pixels the width that the applet needs.",
+					"deprecated": true
 				}
 			}
 		},
@@ -10790,7 +10804,7 @@
 			"description": "The <area> HTML element defines an area inside an image map that has predefined clickable areas. An image map allows geometric areas on an image to be associated with hypertext link.",
 			"categories": ["#flow", "#phrasing"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "aera",
 				"contents": false,
 				"ancestor": "map"
@@ -10850,14 +10864,15 @@
 					"description": "The hyperlink target for the area. Its value is a valid URL. This attribute may be omitted; if so, the <area> element does not represent a hyperlink."
 				},
 				"hreflang": {
-					"description": "Indicates the language of the linked resource. Allowed values are defined by RFC 5646: Tags for Identifying Languages (also known as BCP 47). Use this attribute only if the href attribute is present."
+					"description": "Indicates the language of the linked resource. Allowed values are defined by RFC 5646: Tags for Identifying Languages (also known as BCP 47). Use this attribute only if the href attribute is present.",
+					"deprecated": true
 				},
 				"name": {
 					"description": "Define a names for the clickable area so that it can be scripted by older browsers.",
 					"deprecated": true
 				},
 				"nohref": {
-					"description": "Indicates that no hyperlink exists for the associated area. Note: Since HTML5, omitting the href attribute is sufficient.",
+					"description": "Indicates that no hyperlink exists for the associated area. Note: The nohref attribute is not necessary, as omitting the href attribute is sufficient.",
 					"deprecated": true
 				},
 				"ping": {
@@ -11009,11 +11024,16 @@
 				"controls": {
 					"description": "If this attribute is present, the browser will offer controls to allow the user to control audio playback, including volume, seeking, and pause/resume playback."
 				},
+				"controlslist": {
+					"description": "The controlslist attribute, when specified, helps the browser select what controls to show for the audio element whenever the browser shows its own set of controls (that is, when the controls attribute is specified). The allowed values are nodownload, nofullscreen and noremoteplayback.",
+					"experimental": true,
+					"nonStandard": true
+				},
 				"crossorigin": {
-					"description": "This enumerated attribute indicates whether to use CORS to fetch the related audio file. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the image will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the image will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted used in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
+					"description": "This enumerated attribute indicates whether to use CORS to fetch the related audio file. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the resource will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the resource will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted use in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
 				},
 				"disableremoteplayback": {
-					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc). See this proposed specification for more information. Note: In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
+					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). See this proposed specification for more information. Note: In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
 					"experimental": true
 				},
 				"loop": {
@@ -11067,7 +11087,7 @@
 			"description": "The <base> HTML element specifies the base URL to use for all relative URLs in a document. There can be only one <base> element in a document.",
 			"categories": ["#metadata"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "base",
 				"contents": false
 			},
@@ -11098,9 +11118,9 @@
 		},
 		{
 			"name": "basefont",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/basefont",
-			"description": "The <basefont> HTML element is deprecated. It sets a default font face, size, and color for the other elements which are descended from its parent element. With this set, the font's size can then be varied relative to the base size using the <font> element.",
-			"deprecated": true,
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"description": "Element is entirely obsolete, and must not be used by authors.",
+			"obsolete": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
@@ -11109,7 +11129,7 @@
 			},
 			"permittedRoles": {
 				"summary": "",
-				"roles": true
+				"roles": false
 			},
 			"implicitRole": {
 				"summary": "",
@@ -11117,17 +11137,7 @@
 			},
 			"omittion": false,
 			"globalAttrs": {},
-			"attributes": {
-				"color": {
-					"description": "This attribute sets the text color using either a named color or a color specified in the hexadecimal #RRGGBB format."
-				},
-				"face": {
-					"description": "This attribute contains a list of one or more font names. The document text in the default style is rendered in the first font face that the client's browser supports. If no font listed is installed on the local system, the browser typically defaults to the proportional or fixed-width font for that system."
-				},
-				"size": {
-					"description": "This attribute specifies the font size as either a numeric or relative value. Numeric values range from 1 to 7 with 1 being the smallest and 3 the default."
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "bdi",
@@ -11476,7 +11486,7 @@
 			"description": "The <br> HTML element produces a line break in text (carriage-return). It is useful for writing a poem or an address, where the division of lines is significant.",
 			"categories": ["#flow", "#phrasing"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "br",
 				"contents": false
 			},
@@ -11570,7 +11580,7 @@
 					"description": "The URL that processes the information submitted by the button. Overrides the action attribute of the button's form owner. Does nothing if there is no form owner."
 				},
 				"formenctype": {
-					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), specifies how to encode the form data that is submitted. Possible values: application/x-www-form-urlencoded: The default if the attribute is not used. multipart/form-data: Use to submit <input> elements with their type attributes set to file. text/plain: Specified as a debugging aid; shouldn't be used for real form submission. If this attribute is specified, it overrides the enctype attribute of the button's form owner."
+					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), specifies how to encode the form data that is submitted. Possible values: application/x-www-form-urlencoded: The default if the attribute is not used. multipart/form-data: Used to submit <input> elements with their type attributes set to file. text/plain: Specified as a debugging aid; shouldn't be used for real form submission. If this attribute is specified, it overrides the enctype attribute of the button's form owner."
 				},
 				"formmethod": {
 					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), this attribute specifies the HTTP method used to submit the form. Possible values: post: The data from the form are included in the body of the HTTP request when sent to the server. Use when the form contains information that shouldn't be public, like login credentials. get: The form data are appended to the form's action URL, with a ? as a separator, and the resulting URL is sent to the server. Use this method when the form has no side effects, like search forms. If specified, this attribute overrides the method attribute of the button's form owner."
@@ -11767,7 +11777,7 @@
 			"description": "The <col> HTML element defines a column within a table and is used for defining common semantics on all common cells. It is generally found within a <colgroup> element.",
 			"categories": [],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "col",
 				"contents": false
 			},
@@ -11814,7 +11824,7 @@
 					"defaultValue": "1"
 				},
 				"valign": {
-					"description": "This attribute specifies the vertical alignment of the text within each cell of the column. Possible values for this attribute are: baseline, which will put the text as close to the bottom of the cell as it is possible, but align it on the baseline of the characters instead of the bottom of them. If characters are all of the size, this has the same effect as bottom. bottom, which will put the text as close to the bottom of the cell as it is possible; middle, which will center the text in the cell; and top, which will put the text as close to the top of the cell as it is possible. Note: Do not try to set the vertical-align property on a selector giving a <col> element. Because <td> elements are not descendant of the <col> element, they won't inherit it. If the table doesn't use a colspan attribute, use the td:nth-child(an+b) CSS selector where a is the total number of the columns in the table and b is the ordinal position of the column in the table. Only after this selector the vertical-align property can be used. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
+					"description": "This attribute specifies the vertical alignment of the text within each cell of the column. Possible values for this attribute are: baseline, which will put the text as close to the bottom of the cell as it is possible, but align it on the baseline of the characters instead of the bottom of them. If characters are all of the size, this has the same effect as bottom. bottom, which will put the text as close to the bottom of the cell as it is possible; middle, which will center the text in the cell; and top, which will put the text as close to the top of the cell as it is possible. Note: Do not try to set the vertical-align property on a selector giving a <col> element. Because <td> elements are not descendant of the <col> element, they won't inherit it. If the table doesn't use a colspan attribute, use the td:nth-child(an+b) CSS selector where 'a' is the total number of the columns in the table and 'b' is the ordinal position of the column in the table. Only after this selector the vertical-align property can be used. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
 					"deprecated": true
 				},
 				"width": {
@@ -11829,7 +11839,7 @@
 			"description": "The <colgroup> HTML element defines a group of columns within a table.",
 			"categories": [],
 			"permittedStructures": {
-				"summary": "If the span attribute is present: none, it is an empty element.If the attribute is not present: zero or more <col> element",
+				"summary": "If the span attribute is present: none.If the attribute is not present: zero or more <col> element",
 				"tag": "colgroup",
 				"conditional": [
 					{
@@ -12030,6 +12040,7 @@
 			"attributes": {
 				"nowrap": {
 					"description": "If the value of this attribute is set to yes, the definition text will not wrap. The default value is no.",
+					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -12208,7 +12219,8 @@
 			"globalAttrs": {},
 			"attributes": {
 				"compact": {
-					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent and it doesn't work in all browsers."
+					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent and it doesn't work in all browsers.",
+					"deprecated": true
 				}
 			}
 		},
@@ -12394,7 +12406,7 @@
 			"description": "The <embed> HTML element embeds external content at the specified point in the document. This content is provided by an external application or other source of interactive content such as a browser plug-in.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "embed",
 				"contents": false
 			},
@@ -12581,13 +12593,16 @@
 			"globalAttrs": {},
 			"attributes": {
 				"color": {
-					"description": "This attribute sets the text color using either a named color or a color specified in the hexadecimal #RRGGBB format."
+					"description": "This attribute sets the text color using either a named color or a color specified in the hexadecimal #RRGGBB format.",
+					"deprecated": true
 				},
 				"face": {
-					"description": "This attribute contains a comma-separated list of one or more font names. The document text in the default style is rendered in the first font face that the client's browser supports. If no font listed is installed on the local system, the browser typically defaults to the proportional or fixed-width font for that system."
+					"description": "This attribute contains a comma-separated list of one or more font names. The document text in the default style is rendered in the first font face that the client's browser supports. If no font listed is installed on the local system, the browser typically defaults to the proportional or fixed-width font for that system.",
+					"deprecated": true
 				},
 				"size": {
-					"description": "This attribute specifies the font size as either a numeric or relative value. Numeric values range from 1 to 7 with 1 being the smallest and 3 the default. It can be defined using a relative value, like +2 or -3, which set it relative to the value of the size attribute of the <basefont> element, or relative to 3, the default value, if none does exist."
+					"description": "This attribute specifies the font size as either a numeric or relative value. Numeric values range from 1 to 7 with 1 being the smallest and 3 the default. It can be defined using a relative value, like +2 or -3, which sets it relative to 3, the default value.",
+					"deprecated": true
 				}
 			}
 		},
@@ -12667,7 +12682,7 @@
 			},
 			"attributes": {
 				"accept": {
-					"description": "Comma-separated content types the server accepts. Note: This attribute was removed in HTML5 and should not be used. Instead, use the accept attribute on <input type=file> elements.",
+					"description": "Comma-separated content types the server accepts. Note: This attribute has been deprecated and should not be used. Instead, use the accept attribute on <input type=file> elements.",
 					"deprecated": true
 				},
 				"accept-charset": {
@@ -12767,25 +12782,32 @@
 			"globalAttrs": {},
 			"attributes": {
 				"frameborder": {
-					"description": "This attribute allows you to specify a frame's border."
+					"description": "This attribute allows you to specify a frame's border.",
+					"deprecated": true
 				},
 				"marginheight": {
-					"description": "This attribute defines the height of the margin between frames."
+					"description": "This attribute defines the height of the margin between frames.",
+					"deprecated": true
 				},
 				"marginwidth": {
-					"description": "This attribute defines the width of the margin between frames."
+					"description": "This attribute defines the width of the margin between frames.",
+					"deprecated": true
 				},
 				"name": {
-					"description": "This attribute is used for labeling frames. Without labeling, every link will open in the frame that it's in – the closest parent frame. See the target attribute for more information."
+					"description": "This attribute is used for labeling frames. Without labeling, every link will open in the frame that it's in – the closest parent frame. See the target attribute for more information.",
+					"deprecated": true
 				},
 				"noresize": {
-					"description": "This attribute prevents resizing of frames by users."
+					"description": "This attribute prevents resizing of frames by users.",
+					"deprecated": true
 				},
 				"scrolling": {
-					"description": "This attribute defines the existence of a scrollbar. If this attribute is not used, the browser adds a scrollbar when necessary. There are two choices: \"yes\" for forcing a scrollbar even when it is not necessary and \"no\" for forcing no scrollbar even when it is necessary."
+					"description": "This attribute defines the existence of a scrollbar. If this attribute is not used, the browser adds a scrollbar when necessary. There are two choices: \"yes\" for forcing a scrollbar even when it is not necessary and \"no\" for forcing no scrollbar even when it is necessary.",
+					"deprecated": true
 				},
 				"src": {
-					"description": "This attribute specifies the document that will be displayed by the frame."
+					"description": "This attribute specifies the document that will be displayed by the frame.",
+					"deprecated": true
 				}
 			}
 		},
@@ -12812,10 +12834,12 @@
 			"globalAttrs": {},
 			"attributes": {
 				"cols": {
-					"description": "This attribute specifies the number and size of horizontal spaces in a frameset."
+					"description": "This attribute specifies the number and size of horizontal spaces in a frameset.",
+					"deprecated": true
 				},
 				"rows": {
-					"description": "This attribute specifies the number and size of vertical spaces in a frameset."
+					"description": "This attribute specifies the number and size of vertical spaces in a frameset.",
+					"deprecated": true
 				}
 			}
 		},
@@ -13014,7 +13038,8 @@
 			"attributes": {
 				"profile": {
 					"description": "The URIs of one or more metadata profiles, separated by white space.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -13059,10 +13084,10 @@
 		{
 			"name": "hgroup",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup",
-			"description": "The <hgroup> HTML element represents a multi-level heading for a section of a document. It groups a set of <h1>–<h6> elements.",
+			"description": "The <hgroup> HTML element represents a heading and related content. It groups a single <h1>–<h6> element with one or more <p>.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"permittedStructures": {
-				"summary": "One or more <h1>, <h2>, <h3>, <h4>, <h5>, and/or <h6>.",
+				"summary": "Zero or more <p> elements, followed by one <h1>, <h2>, <h3>, <h4>, <h5>, or <h6> element, followed by zero or more <p> elements.",
 				"tag": "hgroup",
 				"contents": [
 					{
@@ -13115,7 +13140,7 @@
 			"description": "The <hr> HTML element represents a thematic break between paragraph-level elements: for example, a change of scene in a story, or a shift of topic within a section.",
 			"categories": ["#flow"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "hr",
 				"contents": false
 			},
@@ -13137,23 +13162,28 @@
 			"attributes": {
 				"align": {
 					"description": "Sets the alignment of the rule on the page. If no value is specified, the default value is left.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"color": {
 					"description": "Sets the color of the rule through color name or hexadecimal value.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"noshade": {
 					"description": "Sets the rule to have no shading.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"size": {
 					"description": "Sets the height, in pixels, of the rule.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"width": {
 					"description": "Sets the length of the rule on the page through a pixel or percentage value.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -13192,7 +13222,8 @@
 			"attributes": {
 				"manifest": {
 					"description": "Specifies the URI of a resource manifest indicating resources that should be cached locally.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"version": {
 					"description": "Specifies the version of the HTML Document Type Definition that governs the current document. This attribute is not needed, because it is redundant with the version information in the document type declaration.",
@@ -13279,14 +13310,16 @@
 					"type": "Boolean"
 				},
 				"allowpaymentrequest": {
-					"description": "Set to true if a cross-origin <iframe> should be allowed to invoke the Payment Request API. Note: This attribute is considered a legacy attribute and redefined as allow=\"payment\"."
+					"description": "Set to true if a cross-origin <iframe> should be allowed to invoke the Payment Request API. Note: This attribute is considered a legacy attribute and redefined as allow=\"payment\".",
+					"experimental": true
 				},
 				"csp": {
 					"description": "A Content Security Policy enforced for the embedded resource. See HTMLIFrameElement.csp for details.",
 					"experimental": true
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching the iframe document. Allowed values: high Signals a high-priority fetch relative to other iframe documents. low Signals a low-priority fetch relative to other iframe documents. auto Default: Signals automatic determination of fetch priority relative to other iframe documents."
+					"description": "Provides a hint of the relative priority to use when fetching the iframe document. Allowed values: high Signals a high-priority fetch relative to other iframe documents. low Signals a low-priority fetch relative to other iframe documents. auto Default: Signals automatic determination of fetch priority relative to other iframe documents.",
+					"experimental": true
 				},
 				"frameborder": {
 					"description": "The value 1 (the default) draws a border around this frame. The value 0 removes the border around this frame, but you should instead use the CSS property border to control <iframe> borders.",
@@ -13393,7 +13426,7 @@
 			"description": "The <img> HTML element embeds an image into the document.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "img",
 				"contents": false
 			},
@@ -13510,7 +13543,7 @@
 					"required": true
 				},
 				"srcset": {
-					"description": "One or more strings separated by commas, indicating possible image sources for the user agent to use. Each string is composed of: A URL to an image Optionally, whitespace followed by one of: A width descriptor (a positive integer directly followed by w). The width descriptor is divided by the source size given in the sizes attribute to calculate the effective pixel density. A pixel density descriptor (a positive floating point number directly followed by x). If no descriptor is specified, the source is assigned the default descriptor of 1x. It is incorrect to mix width descriptors and pixel density descriptors in the same srcset attribute. Duplicate descriptors (for instance, two sources in the same srcset which are both described with 2x) are also invalid. The user agent selects any of the available sources at its discretion. This provides them with significant leeway to tailor their selection based on things like user preferences or bandwidth conditions. See our Responsive images tutorial for an example."
+					"description": "One or more strings separated by commas, indicating possible image sources for the user agent to use. Each string is composed of: A URL to an image Optionally, whitespace followed by one of: A width descriptor (a positive integer directly followed by w). The width descriptor is divided by the source size given in the sizes attribute to calculate the effective pixel density. A pixel density descriptor (a positive floating point number directly followed by x). If no descriptor is specified, the source is assigned the default descriptor of 1x. It is incorrect to mix width descriptors and pixel density descriptors in the same srcset attribute. Duplicate descriptors (for instance, two sources in the same srcset which are both described with 2x) are also invalid. If the srcset attribute uses width descriptors, the sizes attribute must also be present, or the srcset itself will be ignored. The user agent selects any of the available sources at its discretion. This provides them with significant leeway to tailor their selection based on things like user preferences or bandwidth conditions. See our Responsive images tutorial for an example."
 				},
 				"usemap": {
 					"ref": "https://html.spec.whatwg.org/multipage/image-maps.html#attr-hyperlink-usemap",
@@ -13534,7 +13567,7 @@
 			"description": "The <input> HTML element is used to create interactive controls for web-based forms in order to accept data from the user; a wide variety of types of input data and control widgets are available, depending on the device and user agent. The <input> element is one of the most powerful and complex in all of HTML due to the sheer number of combinations of input types and attributes.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "input",
 				"contents": false
 			},
@@ -13807,7 +13840,7 @@
 					}
 				},
 				"autocorrect": {
-					"description": "(Safari only). A string which indicates whether or not to activate automatic correction while the user is editing this field. Permitted values are: on Enable automatic correction of typos, as well as processing of text substitutions if any are configured. off Disable automatic correction and text substitutions.",
+					"description": "(Safari only). A string which indicates whether to activate automatic correction while the user is editing this field. Permitted values are: on Enable automatic correction of typos, as well as processing of text substitutions if any are configured. off Disable automatic correction and text substitutions.",
 					"nonStandard": true
 				},
 				"autofocus": {
@@ -14243,7 +14276,7 @@
 			"deprecated": true,
 			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "keygen",
 				"contents": true
 			},
@@ -14389,7 +14422,8 @@
 			"attributes": {
 				"type": {
 					"description": "This character attribute indicates the numbering type: a: lowercase letters A: uppercase letters i: lowercase Roman numerals I: uppercase Roman numerals 1: numbers This type overrides the one used by its parent <ol> element, if any. Note: This attribute has been deprecated; use the CSS list-style-type property instead.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"value": {
 					"ref": "https://html.spec.whatwg.org/multipage/grouping-content.html#attr-li-value",
@@ -14406,7 +14440,7 @@
 			"description": "The <link> HTML element specifies relationships between the current document and an external resource. This element is most commonly used to link to stylesheets, but is also used to establish site icons (both \"favicon\" style icons and icons for the home screen and apps on mobile devices) among other things.",
 			"categories": ["#metadata", "#flow", "#phrasing"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "link",
 				"contents": false
 			},
@@ -14494,7 +14528,8 @@
 					"type": "Boolean"
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching a preloaded resource. Allowed values: high Signals a high-priority fetch relative to other resources of the same type. low Signals a low-priority fetch relative to other resources of the same type. auto Default: Signals automatic determination of fetch priority relative to other resources of the same type."
+					"description": "Provides a hint of the relative priority to use when fetching a preloaded resource. Allowed values: high Signals a high-priority fetch relative to other resources of the same type. low Signals a low-priority fetch relative to other resources of the same type. auto Default: Signals automatic determination of fetch priority relative to other resources of the same type.",
+					"experimental": true
 				},
 				"href": {
 					"description": "This attribute specifies the URL of the linked resource. A URL can be absolute or relative."
@@ -14533,10 +14568,11 @@
 					"requiredEither": ["rel"]
 				},
 				"media": {
-					"description": "This attribute specifies the media that the linked resource applies to. Its value must be a media type / media query. This attribute is mainly useful when linking to external stylesheets — it allows the user agent to pick the best adapted one for the device it runs on. Note: In HTML 4, this can only be a simple white-space-separated list of media description literals, i.e., media types and groups, where defined and allowed as values for this attribute, such as print, screen, aural, braille. HTML5 extended this to any kind of media queries, which are a superset of the allowed values of HTML 4. Browsers not supporting CSS3 Media Queries won't necessarily recognize the adequate link; do not forget to set fallback links, the restricted set of media queries defined in HTML 4."
+					"description": "This attribute specifies the media that the linked resource applies to. Its value must be a media type / media query. This attribute is mainly useful when linking to external stylesheets — it allows the user agent to pick the best adapted one for the device it runs on. Note: In HTML 4, this can only be a simple white-space-separated list of media description literals, i.e., media types and groups, where defined and allowed as values for this attribute, such as print, screen, aural, braille. HTML5 extended this to any kind of media queries, which are a superset of the allowed values of HTML 4. Browsers not supporting CSS Media Queries won't necessarily recognize the adequate link; do not forget to set fallback links, the restricted set of media queries defined in HTML 4."
 				},
 				"methods": {
 					"description": "The value of this attribute provides information about the functions that might be performed on an object. The values generally are given by the HTTP protocol when it is used, but it might (for similar reasons as for the title attribute) be useful to include advisory information in advance in the link. For example, the browser might choose a different rendering of a link as a function of the methods specified; something that is searchable might get a different icon, or an outside link might render with an indication of leaving the current site. This attribute is not well understood nor supported, even by the defining browser, Internet Explorer 4.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"prefetch": {
@@ -14544,8 +14580,7 @@
 					"experimental": true
 				},
 				"referrerpolicy": {
-					"description": "A string indicating which referrer to use when fetching the resource: no-referrer means that the Referer header will not be sent. no-referrer-when-downgrade means that no Referer header will be sent when navigating to an origin without TLS (HTTPS). This is a user agent's default behavior, if no policy is otherwise specified. origin means that the referrer will be the origin of the page, which is roughly the scheme, the host, and the port. origin-when-cross-origin means that navigating to other origins will be limited to the scheme, the host, and the port, while navigating on the same origin will include the referrer's path. unsafe-url means that the referrer will include the origin and the path (but not the fragment, password, or username). This case is unsafe because it can leak origins and paths from TLS-protected resources to insecure origins.",
-					"experimental": true
+					"description": "A string indicating which referrer to use when fetching the resource: no-referrer means that the Referer header will not be sent. no-referrer-when-downgrade means that no Referer header will be sent when navigating to an origin without TLS (HTTPS). This is a user agent's default behavior, if no policy is otherwise specified. origin means that the referrer will be the origin of the page, which is roughly the scheme, the host, and the port. origin-when-cross-origin means that navigating to other origins will be limited to the scheme, the host, and the port, while navigating on the same origin will include the referrer's path. unsafe-url means that the referrer will include the origin and the path (but not the fragment, password, or username). This case is unsafe because it can leak origins and paths from TLS-protected resources to insecure origins."
 				},
 				"rel": {
 					"ref": "https://html.spec.whatwg.org/multipage/semantics.html#attr-link-rel",
@@ -14581,7 +14616,7 @@
 					"requiredEither": ["itemprop"]
 				},
 				"rev": {
-					"description": "The value of this attribute shows the relationship of the current document to the linked document, as defined by the href attribute. The attribute thus defines the reverse relationship compared to the value of the rel attribute. Link type values for the attribute are similar to the possible values for rel. Note: Instead of rev, you should use the rel attribute with the opposite link type value. For example, to establish the reverse link for made, specify author. Also this attribute doesn't stand for \"revision\" and must not be used with a version number, even though many sites misuse it in this way.",
+					"description": "The value of this attribute shows the relationship of the current document to the linked document, as defined by the href attribute. The attribute thus defines the reverse relationship compared to the value of the rel attribute. Link type values for the attribute are similar to the possible values for rel. Note: Instead of rev, you should use the rel attribute with the opposite link type value. For example, to establish the reverse link for made, specify author. Also, this attribute doesn't stand for \"revision\" and must not be used with a version number, even though many sites misuse it in this way.",
 					"obsolete": true,
 					"deprecated": true
 				},
@@ -14600,7 +14635,7 @@
 				},
 				"target": {
 					"description": "Defines the frame or window name that has the defined linking relationship or that will show the rendering of any linked resource.",
-					"nonStandard": true
+					"deprecated": true
 				},
 				"title": {
 					"description": "The title attribute has special semantics on the <link> element. When used on a <link rel=\"stylesheet\"> it defines a default or an alternate stylesheet."
@@ -14704,7 +14739,7 @@
 		{
 			"name": "mark",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark",
-			"description": "The <mark> HTML element represents text which is marked or highlighted for reference or notation purposes, due to the marked passage's relevance or importance in the enclosing context.",
+			"description": "The <mark> HTML element represents text which is marked or highlighted for reference or notation purposes due to the marked passage's relevance in the enclosing context.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"permittedStructures": {
 				"summary": "Phrasing content.",
@@ -14755,37 +14790,48 @@
 			"globalAttrs": {},
 			"attributes": {
 				"behavior": {
-					"description": "Sets how the text is scrolled within the marquee. Possible values are scroll, slide and alternate. If no value is specified, the default value is scroll."
+					"description": "Sets how the text is scrolled within the marquee. Possible values are scroll, slide and alternate. If no value is specified, the default value is scroll.",
+					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Sets the background color through color name or hexadecimal value."
+					"description": "Sets the background color through color name or hexadecimal value.",
+					"deprecated": true
 				},
 				"direction": {
-					"description": "Sets the direction of the scrolling within the marquee. Possible values are left, right, up and down. If no value is specified, the default value is left."
+					"description": "Sets the direction of the scrolling within the marquee. Possible values are left, right, up and down. If no value is specified, the default value is left.",
+					"deprecated": true
 				},
 				"height": {
-					"description": "Sets the height in pixels or percentage value."
+					"description": "Sets the height in pixels or percentage value.",
+					"deprecated": true
 				},
 				"hspace": {
-					"description": "Sets the horizontal margin"
+					"description": "Sets the horizontal margin",
+					"deprecated": true
 				},
 				"loop": {
-					"description": "Sets the number of times the marquee will scroll. If no value is specified, the default value is −1, which means the marquee will scroll continuously."
+					"description": "Sets the number of times the marquee will scroll. If no value is specified, the default value is −1, which means the marquee will scroll continuously.",
+					"deprecated": true
 				},
 				"scrollamount": {
-					"description": "Sets the amount of scrolling at each interval in pixels. The default value is 6."
+					"description": "Sets the amount of scrolling at each interval in pixels. The default value is 6.",
+					"deprecated": true
 				},
 				"scrolldelay": {
-					"description": "Sets the interval between each scroll movement in milliseconds. The default value is 85. Note that any value smaller than 60 is ignored and the value 60 is used instead, unlesstruespeedis specified."
+					"description": "Sets the interval between each scroll movement in milliseconds. The default value is 85. Note that any value smaller than 60 is ignored and the value 60 is used instead unless truespeed is specified.",
+					"deprecated": true
 				},
 				"truespeed": {
-					"description": "By default,scrolldelayvalues lower than 60 are ignored. Iftruespeedis present, those values are not ignored."
+					"description": "By default, scrolldelay values lower than 60 are ignored. If truespeed is present, those values are not ignored.",
+					"deprecated": true
 				},
 				"vspace": {
-					"description": "Sets the vertical margin in pixels or percentage value."
+					"description": "Sets the vertical margin in pixels or percentage value.",
+					"deprecated": true
 				},
 				"width": {
-					"description": "Sets the width in pixels or percentage value."
+					"description": "Sets the width in pixels or percentage value.",
+					"deprecated": true
 				}
 			}
 		},
@@ -14839,7 +14885,7 @@
 			"deprecated": true,
 			"categories": [],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "menuitem",
 				"contents": true
 			},
@@ -14855,28 +14901,42 @@
 			"globalAttrs": {},
 			"attributes": {
 				"checked": {
-					"description": "Boolean attribute which indicates whether the command is selected. May only be used when the type attribute is checkbox or radio."
+					"description": "Boolean attribute which indicates whether the command is selected. May only be used when the type attribute is checkbox or radio.",
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"command": {
-					"description": "Specifies the ID of a separate element, indicating a command to be invoked indirectly. May not be used within a menu item that also includes the attributes checked, disabled, icon, label, radiogroup or type."
+					"description": "Specifies the ID of a separate element, indicating a command to be invoked indirectly. May not be used within a menu item that also includes the attributes checked, disabled, icon, label, radiogroup or type.",
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"default": {
-					"description": "This Boolean attribute indicates use of the same command as the menu's subject element (such as a button or input)."
+					"description": "This Boolean attribute indicates use of the same command as the menu's subject element (such as a button or input).",
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"disabled": {
-					"description": "Boolean attribute which indicates that the command is not available in the current state. Note that disabled is distinct from hidden; the disabled attribute is appropriate in any context where a change in circumstances might render the command relevant."
+					"description": "Boolean attribute which indicates that the command is not available in the current state. Note that disabled is distinct from hidden; the disabled attribute is appropriate in any context where a change in circumstances might render the command relevant.",
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"icon": {
-					"description": "Image URL, used to provide a picture to represent the command."
+					"description": "Image URL, used to provide a picture to represent the command.",
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"label": {
 					"description": "The name of the command as shown to the user. Required when a command attribute is not present."
 				},
 				"radiogroup": {
-					"description": "This attribute specifies the name of a group of commands to be toggled as radio buttons when selected. May only be used where the type attribute is radio."
+					"description": "This attribute specifies the name of a group of commands to be toggled as radio buttons when selected. May only be used where the type attribute is radio.",
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"type": {
-					"description": "This attribute indicates the kind of command, and can be one of three values. command: A regular command with an associated action. This is the missing value default. checkbox: Represents a command that can be toggled between two different states. radio: Represent one selection from a group of commands that can be toggled as radio buttons."
+					"description": "This attribute indicates the kind of command, and can be one of three values. command: A regular command with an associated action. This is the missing value default. checkbox: Represents a command that can be toggled between two different states. radio: Represent one selection from a group of commands that can be toggled as radio buttons.",
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -14886,7 +14946,7 @@
 			"description": "The <meta> HTML element represents metadata that cannot be represented by other HTML meta-related elements, like <base>, <link>, <script>, <style> or <title>.",
 			"categories": ["#metadata", "#flow", "#phrasing"],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "meta",
 				"contents": false
 			},
@@ -15271,7 +15331,7 @@
 					"requiredEither": ["type"]
 				},
 				"declare": {
-					"description": "The presence of this Boolean attribute makes this element a declaration only. The object must be instantiated by a subsequent <object> element. In HTML5, repeat the <object> element completely each time that the resource is reused.",
+					"description": "The presence of this Boolean attribute makes this element a declaration only. The object must be instantiated by a subsequent <object> element. Repeat the <object> element completely each time the resource is reused.",
 					"deprecated": true
 				},
 				"form": {
@@ -15561,7 +15621,7 @@
 			"deprecated": true,
 			"categories": [],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "param",
 				"contents": true
 			},
@@ -15664,6 +15724,7 @@
 			"name": "portal",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/portal",
 			"description": "The <portal> HTML element enables the embedding of another HTML page into the current one for the purposes of allowing smoother navigation into new pages.",
+			"experimental": true,
 			"categories": [],
 			"permittedStructures": {
 				"summary": "",
@@ -15739,10 +15800,12 @@
 				},
 				"width": {
 					"description": "Contains the preferred count of characters that a line should have. Though technically still implemented, this attribute has no visual effect; to achieve such an effect, use CSS width instead.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"wrap": {
 					"description": "Is a hint indicating how the overflow must happen. In modern browser this hint is ignored and no visual effect results in its present; to achieve such an effect, use CSS white-space instead.",
+					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -16121,7 +16184,8 @@
 					"_TODO_": "The defer attribute affects the element that has the async attribute if it doesn't support the async"
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Signals a high-priority fetch relative to other external scripts. low Signals a low-priority fetch relative to other external scripts. auto Default: Signals automatic determination of fetch priority relative to other external scripts."
+					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Signals a high-priority fetch relative to other external scripts. low Signals a low-priority fetch relative to other external scripts. auto Default: Signals automatic determination of fetch priority relative to other external scripts.",
+					"experimental": true
 				},
 				"integrity": {
 					"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-script-integrity",
@@ -16131,7 +16195,8 @@
 				},
 				"language": {
 					"description": "Like the type attribute, this attribute identifies the scripting language in use. Unlike the type attribute, however, this attribute's possible values were never standardized. The type attribute should be used instead.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"nomodule": {
 					"ref": "https://html.spec.whatwg.org/multipage/scripting.html#attr-script-nomodule",
@@ -16155,7 +16220,7 @@
 					"type": [
 						"MIMEType",
 						{
-							"enum": ["module"],
+							"enum": ["module", "importmap"],
 							"caseInsensitive": true
 						}
 					],
@@ -16387,10 +16452,10 @@
 		{
 			"name": "source",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source",
-			"description": "The <source> HTML element specifies multiple media resources for the <picture>, the <audio> element, or the <video> element. It is an empty element, meaning that it has no content and does not have a closing tag. It is commonly used to offer the same media content in multiple file formats in order to provide compatibility with a broad range of browsers given their differing support for image file formats and media file formats.",
+			"description": "The <source> HTML element specifies multiple media resources for the <picture>, the <audio> element, or the <video> element. It is a void element, meaning that it has no content and does not have a closing tag. It is commonly used to offer the same media content in multiple file formats in order to provide compatibility with a broad range of browsers given their differing support for image file formats and media file formats.",
 			"categories": [],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "source",
 				"contents": false
 			},
@@ -16458,7 +16523,7 @@
 		{
 			"name": "spacer",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/spacer",
-			"description": "The <spacer> HTML element is an obsolete HTML element which allowed insertion of empty spaces on pages. It was devised by Netscape to accomplish the same effect as a single-pixel layout image, which was something web designers used to use to add white spaces to web pages without actually using an image. However, <spacer> no longer supported by any major browser and the same effects can now be achieved using simple CSS.",
+			"description": "The <spacer> HTML element is an obsolete HTML element which allowed insertion of empty spaces on pages. It was devised by Netscape to accomplish the same effect as a single-pixel layout image, which was something web designers used to use to add white spaces to web pages without actually using an image. However, <spacer> is no longer supported by any major browser and the same effects can now be achieved using simple CSS.",
 			"deprecated": true,
 			"categories": [],
 			"permittedStructures": {
@@ -16948,7 +17013,7 @@
 					"deprecated": true
 				},
 				"align": {
-					"description": "This enumerated attribute specifies how the cell content's horizontal alignment will be handled. Possible values are: left: The content is aligned to the left of the cell. center: The content is centered in the cell. right: The content is aligned to the right of the cell. justify (with text only): The content is stretched out inside the cell so that it covers its entire width. char (with text only): The content is aligned to a character inside the <th> element with minimal offset. This character is defined by the char and charoff attributes Unimplemented (see bug 2212). The default value when this attribute is not specified is left. Note: To achieve the same effect as the left, center, right or justify values, apply the CSS text-align property to the element. To achieve the same effect as the char value, give the text-align property the same value you would use for the char. Unimplemented in CSS3.",
+					"description": "This enumerated attribute specifies how the cell content's horizontal alignment will be handled. Possible values are: left: The content is aligned to the left of the cell. center: The content is centered in the cell. right: The content is aligned to the right of the cell. justify (with text only): The content is stretched out inside the cell so that it covers its entire width. char (with text only): The content is aligned to a character inside the <th> element with minimal offset. This character is defined by the char and charoff attributes Unimplemented (see bug 2212). The default value when this attribute is not specified is left. Note: To achieve the same effect as the left, center, right or justify values, apply the CSS text-align property to the element. To achieve the same effect as the char value, give the text-align property the same value you would use for the char. Unimplemented in CSS.",
 					"deprecated": true
 				},
 				"axis": {
@@ -17161,7 +17226,7 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Note: To achieve the same effect as the left, center, right or justify values, use the CSS text-align property on it. To achieve the same effect as the char value, in CSS3, you can use the value of the char as the value of the text-align property Unimplemented.",
+					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Note: To achieve the same effect as the left, center, right or justify values, use the CSS text-align property on it. To achieve the same effect as the char value, in CSS, you can use the value of the char as the value of the text-align property Unimplemented.",
 					"deprecated": true
 				},
 				"bgcolor": {
@@ -17244,8 +17309,7 @@
 				},
 				"bgcolor": {
 					"description": "This attribute defines the background color of each cell in a column. It consists of a 6-digit hexadecimal code as defined in sRGB and is prefixed by '#'. This attribute may be used with one of sixteen predefined color strings: black = \"#000000\" green = \"#008000\" silver = \"#C0C0C0\" lime = \"#00FF00\" gray = \"#808080\" olive = \"#808000\" white = \"#FFFFFF\" yellow = \"#FFFF00\" maroon = \"#800000\" navy = \"#000080\" red = \"#FF0000\" blue = \"#0000FF\" purple = \"#800080\" teal = \"#008080\" fuchsia = \"#FF00FF\" aqua = \"#00FFFF\" Note: Do not use this attribute, as it is non-standard and only implemented in some versions of Microsoft Internet Explorer: The <th> element should be styled using CSS. To create a similar effect use the background-color property in CSS instead.",
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				},
 				"char": {
 					"description": "The content in the cell element is aligned to a character. Typical values include a period (.) to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: Do not use this attribute as it is obsolete in the latest standard. To achieve the same effect, you can specify the character as the first value of the text-align property.",
@@ -17317,16 +17381,15 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Warning: Do not use this attribute as it is obsolete (not supported) in the latest standard. To achieve the same effect as the left, center, right or justify values, use the CSS text-align property on it. To achieve the same effect as the char value, in CSS3, you can use the value of the char as the value of the text-align property.",
+					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Warning: Do not use this attribute as it is obsolete (not supported) in the latest standard. To align values, use the CSS text-align property instead.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "This attribute defines the background color of each cell of the column. It is one of the 6-digit hexadecimal code as defined in sRGB, prefixed by a '#'. One of the sixteen predefined color strings may be used: black = \"#000000\" green = \"#008000\" silver = \"#C0C0C0\" lime = \"#00FF00\" gray = \"#808080\" olive = \"#808000\" white = \"#FFFFFF\" yellow = \"#FFFF00\" maroon = \"#800000\" navy = \"#000080\" red = \"#FF0000\" blue = \"#0000FF\" purple = \"#800080\" teal = \"#008080\" fuchsia = \"#FF00FF\" aqua = \"#00FFFF\" Note: Do not use this attribute, as it is non-standard and only implemented in some versions of Microsoft Internet Explorer: the <thead> element should be styled using CSS. To give a similar effect to the bgcolor attribute, use the CSS property background-color, on the relevant <td> or <th> elements.",
-					"deprecated": true,
-					"nonStandard": true
+					"description": "This attribute defines the background color of each column cell. It accepts a 6-digit hexadecimal color or a named color. Alpha transparency is not supported. Note: Do not use this attribute, as it is non-standard. The thead element should be styled using the CSS background-color property, which can be applied to any element, including the thead, <tr>, <td> and <th> elements.",
+					"deprecated": true
 				},
 				"char": {
-					"description": "This attribute is used to set the character to align the cells in a column on. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard. To achieve the same effect as the char, in CSS3, you can use the character set using the char attribute as the value of the text-align property.",
+					"description": "This attribute is used to set the character to align the cells in a column on. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard.",
 					"deprecated": true
 				},
 				"charoff": {
@@ -17451,7 +17514,7 @@
 					"deprecated": true
 				},
 				"char": {
-					"description": "A string which sets the character to align the cells in each of the row's columns on (each row's centering that uses the same character gets aligned with others using the same character . Typical values for this include a period (\".\") or comma (\",\") when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: This attribute is not only obsolete, but was rarely implemented anyway. To achieve the same effect as the char attribute, set the CSS text-align property to the same string you would specify for the char property, such as text-align: \".\".",
+					"description": "A string which sets the character to align the cells in each of the row's columns on (each row's centering that uses the same character gets aligned with others using the same character. Typical values for this include a period (\".\") or comma (\",\") when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: This attribute is not only obsolete, but was rarely implemented anyway. To achieve the same effect as the char attribute, set the CSS text-align property to the same string you would specify for the char property, such as text-align: \".\".",
 					"deprecated": true
 				},
 				"charoff": {
@@ -17470,7 +17533,7 @@
 			"description": "The <track> HTML element is used as a child of the media elements, <audio> and <video>. It lets you specify timed text tracks (or time-based data), for example to automatically handle subtitles. The tracks are formatted in WebVTT format (.vtt files) — Web Video Text Tracks.",
 			"categories": [],
 			"permittedStructures": {
-				"summary": "None, it is an empty element.",
+				"summary": "None; it is a void element.",
 				"tag": "track",
 				"contents": false
 			},
@@ -17616,11 +17679,13 @@
 			"attributes": {
 				"compact": {
 					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent, and it doesn't work in all browsers. Warning: Do not use this attribute, as it has been deprecated: use CSS instead. To give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"type": {
 					"description": "This attribute sets the bullet style for the list. The values defined under HTML3.2 and the transitional version of HTML 4.0/4.01 are: circle disc square A fourth bullet type has been defined in the WebTV interface, but not all browsers support it: triangle. If not present and if no CSS list-style-type property applies to the element, the user agent selects a bullet type depending on the nesting level of the list. Warning: Do not use this attribute, as it has been deprecated; use the CSS list-style-type property instead.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -17742,14 +17807,14 @@
 					}
 				},
 				"crossorigin": {
-					"description": "This enumerated attribute indicates whether to use CORS to fetch the related video. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the image will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the image will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted used in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
+					"description": "This enumerated attribute indicates whether to use CORS to fetch the related video. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the resource will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the resource will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted use in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
 				},
 				"disablepictureinpicture": {
 					"description": "Prevents the browser from suggesting a Picture-in-Picture context menu or to request Picture-in-Picture automatically in some cases.",
 					"experimental": true
 				},
 				"disableremoteplayback": {
-					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc). In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
+					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
 					"experimental": true
 				},
 				"height": {
@@ -17960,8 +18025,7 @@
 			},
 			"attributes": {
 				"download": {
-					"description": "Instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. Value type: <string> ; Default value: none; Animatable: no",
-					"experimental": true
+					"description": "Instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. Value type: <string> ; Default value: none; Animatable: no"
 				},
 				"href": {
 					"description": "The URL or URL fragment the hyperlink points to. Value type: <URL> ; Default value: none; Animatable: yes"
@@ -17974,12 +18038,10 @@
 					"experimental": true
 				},
 				"referrerpolicy": {
-					"description": "Which referrer to send when fetching the URL. Value type: no-referrer|no-referrer-when-downgrade|same-origin|origin|strict-origin|origin-when-cross-origin|strict-origin-when-cross-origin|unsafe-url ; Default value: none; Animatable: no",
-					"experimental": true
+					"description": "Which referrer to send when fetching the URL. Value type: no-referrer|no-referrer-when-downgrade|same-origin|origin|strict-origin|origin-when-cross-origin|strict-origin-when-cross-origin|unsafe-url ; Default value: none; Animatable: no"
 				},
 				"rel": {
-					"description": "The relationship of the target object to the link object. Value type: <list-of-Link-Types> ; Default value: none; Animatable: yes",
-					"experimental": true
+					"description": "The relationship of the target object to the link object. Value type: <list-of-Link-Types> ; Default value: none; Animatable: yes"
 				},
 				"target": {
 					"description": "Where to display the linked URL. Value type: _self|_parent|_top|_blank|<name> ; Default value: _self; Animatable: yes"
@@ -23130,7 +23192,7 @@
 				},
 				"patternUnits": {
 					"ref": "https://svgwg.org/svg2-draft/pservers.html#PatternElementPatternUnitsAttribute",
-					"description": "This attribute defines the coordinate system for attributes x, y, width , and height. Value type: userSpaceOnUse|objectBoundingBox; Default value: objectBoundingBox; Animatable: yes",
+					"description": "This attribute defines the coordinate system for attributes x, y, width, and height. Value type: userSpaceOnUse|objectBoundingBox; Default value: objectBoundingBox; Animatable: yes",
 					"type": {
 						"enum": ["userSpaceOnUse", "objectBoundingBox"],
 						"disallowToSurroundBySpaces": false
@@ -23164,7 +23226,7 @@
 					"description": "This attribute determines the x coordinate shift of the pattern tile. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
 				},
 				"xlink:href": {
-					"description": "This attribute reference a template pattern that provides default values for the <pattern> attributes. Value type: <URL>; Default value: none; Animatable: yes Note: For browsers implementing href, if both href and xlink:href are set, xlink:href will be ignored and only href will be used."
+					"description": "This attribute references a template pattern that provides default values for the <pattern> attributes. Value type: <URL>; Default value: none; Animatable: yes Note: For browsers implementing href, if both href and xlink:href are set, xlink:href will be ignored and only href will be used."
 				},
 				"y": {
 					"description": "This attribute determines the y coordinate shift of the pattern tile. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
@@ -24724,7 +24786,8 @@
 					"ref": "https://svgwg.org/svg2-draft/text.html#TextPathElementPathAttribute",
 					"description": "The path on which the text should be rendered. Value type: <path_data> ; Default value: none; Animatable: yes",
 					"type": "<svg-path>",
-					"animatable": true
+					"animatable": true,
+					"experimental": true
 				},
 				"href": {
 					"ref": "https://svgwg.org/svg2-draft/text.html#TextPathElementHrefAttribute",
@@ -24766,7 +24829,8 @@
 						"disallowToSurroundBySpaces": false
 					},
 					"defaultValue": "left",
-					"animatable": true
+					"animatable": true,
+					"experimental": true
 				}
 			}
 		},
