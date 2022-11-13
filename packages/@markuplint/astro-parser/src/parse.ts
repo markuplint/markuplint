@@ -175,7 +175,7 @@ function nodeize(
 				if (i === -1) {
 					throw new Error(`Invalid chunk: "${chunk}" from ${raw}`);
 				}
-				const prevBlock = blocks[blocks.length - 1];
+				const prevBlock: MLASTPreprocessorSpecificBlock | undefined = blocks[blocks.length - 1];
 				const prevBlockEndOffset = prevBlock ? prevBlock.endOffset : originNode.start;
 				const loc = sliceFragment(rawHtml, prevBlockEndOffset + i, prevBlockEndOffset + i + chunk.length);
 				blocks.push({
