@@ -7,14 +7,37 @@ import { isPresentational } from '../specs/is-presentational';
 import { getComputedRole } from './get-computed-role';
 
 /**
- * Exposeable content models
+ * Exposable content models and elements
  *
  * **WARNING**:
  * This implementation is through the author's interpretation.
  * Want a issue request.
  * https://github.com/markuplint/markuplint/issues/new
+ *
+ * @see exposableModels https://html.spec.whatwg.org/multipage/dom.html#content-models
+ * @see exposableElementsThatAreNoBelongingAModel https://html.spec.whatwg.org/multipage/indices.html#elements-3
  */
-const exposeableModels: Category[] = ['#palpable', '#SVGRenderable'];
+const exposableModels: Category[] = ['#palpable', '#SVGRenderable'];
+const exposableElementsThatAreNoBelongingAModel: string[] = [
+	'body',
+	'dd',
+	'dt',
+	'figcaption',
+	'html',
+	'legend',
+	'li',
+	'optgroup',
+	'option',
+	'rp',
+	'rt',
+	'summary',
+	'tbody',
+	'td',
+	'tfoot',
+	'th',
+	'thead',
+	'tr',
+];
 
 /**
  * Detect including/excluding from the Accessibility Tree
@@ -33,9 +56,13 @@ export function isExposed(el: Element, specs: Readonly<MLMLSpec>, version: ARIAV
 
 	// According to HTML and SVG Specs with **the author's interpretation**
 	{
-		const exposable = exposeableModels.some(model => {
-			const modelSelector = specs.def['#contentModels'][model]?.join(',');
-			return modelSelector && el.matches(modelSelector);
+		const exposableConditions = exposableModels
+			.map(model => {
+				return specs.def['#contentModels'][model]?.join(',') || '';
+			})
+			.concat(exposableElementsThatAreNoBelongingAModel.join(','));
+		const exposable = exposableConditions.some(condition => {
+			return el.matches(condition);
 		});
 		if (!exposable) {
 			return false;

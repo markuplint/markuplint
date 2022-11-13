@@ -29,6 +29,8 @@ describe('isExposed', () => {
 		expect(x('<div style="display: none;"><span></span></div>', 'span')).toBe(false);
 		expect(x('<div hidden><span></span></div>', 'span')).toBe(false);
 		expect(x('<div hidden="until-found"><span></span></div>', 'span')).toBe(false);
+		expect(x('<html><body>content</body></html>', 'body')).toBe(true);
+		expect(x('<ul><li></li></ul>', 'li')).toBe(true);
 	});
 
 	test('Children Presentational: True', () => {
