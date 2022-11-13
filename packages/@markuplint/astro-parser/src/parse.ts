@@ -162,11 +162,12 @@ function nodeize(
 			// console.log(originNode, originNode.expression);
 			let stub = raw;
 			const blocks: MLASTPreprocessorSpecificBlock[] = [];
+			const [, codeStart, , codeEnd] = raw.match(/(^{\s*)((?:.|\s)*)(}$)/m) || [];
 			const chunks = (originNode.expression.codeChunks as string[]).map((chunk, i) => {
 				if (i === 0) {
-					return `{${chunk}`;
+					return `${codeStart}${chunk}`;
 				} else if (i === originNode.expression.codeChunks.length - 1) {
-					return `${chunk}}`;
+					return `${chunk}${codeEnd}`;
 				}
 				return chunk;
 			});
