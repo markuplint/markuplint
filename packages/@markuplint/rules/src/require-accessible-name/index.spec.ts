@@ -370,3 +370,21 @@ test('Pretenders Option', async () => {
 		},
 	]);
 });
+
+describe('Issues', () => {
+	// https://github.com/markuplint/markuplint/issues/536
+	test('#536', async () => {
+		expect(
+			(await mlRuleTest(rule, '<h2 id="h">Heading</h2><div role="region" aria-labelledby="h">...</div>'))
+				.violations,
+		).toStrictEqual([]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<h2 id="h">Heading</h2><div role="region" aria-labelledby="h" aria-hidden="true">...</div>',
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+});
