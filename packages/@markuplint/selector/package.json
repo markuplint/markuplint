@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/selector",
-	"version": "3.0.0-alpha.4",
+	"version": "3.0.0-alpha.5",
 	"description": "W3C Selector and Regex selector",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -22,7 +22,7 @@
 		"tslib": "^2.4.0"
 	},
 	"devDependencies": {
-		"@markuplint/ml-spec": "3.0.0-alpha.4",
+		"@markuplint/ml-spec": "3.0.0-alpha.5",
 		"@types/debug": "^4.1.7",
 		"@types/jsdom": "16",
 		"jsdom": "19"

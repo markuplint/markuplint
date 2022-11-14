@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-core",
-	"version": "3.0.0-alpha.4",
+	"version": "3.0.0-alpha.5",
 	"description": "The core module of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -17,19 +17,19 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/config-presets": "3.0.0-alpha.4",
-		"@markuplint/i18n": "3.0.0-alpha.4",
-		"@markuplint/ml-ast": "3.0.0-alpha.4",
-		"@markuplint/ml-config": "3.0.0-alpha.4",
-		"@markuplint/ml-spec": "3.0.0-alpha.4",
-		"@markuplint/parser-utils": "3.0.0-alpha.4",
-		"@markuplint/selector": "3.0.0-alpha.4",
+		"@markuplint/config-presets": "3.0.0-alpha.5",
+		"@markuplint/i18n": "3.0.0-alpha.5",
+		"@markuplint/ml-ast": "3.0.0-alpha.5",
+		"@markuplint/ml-config": "3.0.0-alpha.5",
+		"@markuplint/ml-spec": "3.0.0-alpha.5",
+		"@markuplint/parser-utils": "3.0.0-alpha.5",
+		"@markuplint/selector": "3.0.0-alpha.5",
 		"debug": "^4.3.4",
 		"postcss-selector-parser": "^6.0.10",
 		"tslib": "^2.4.0"
 	},
 	"devDependencies": {
-		"@markuplint/html-parser": "3.0.0-alpha.4",
+		"@markuplint/html-parser": "3.0.0-alpha.5",
 		"@types/debug": "^4.1.7"
 	}
 }
