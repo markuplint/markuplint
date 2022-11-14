@@ -2240,6 +2240,18 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
 	 */
+	searchNodeByLocation(line: number, col: number) {
+		for (const node of this.nodeList) {
+			if (node.startLine <= line && line <= node.endLine && node.startCol <= col && col <= node.endCol) {
+				return node;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @implements `@markuplint/ml-core` API: `MLDocument`
+	 */
 	setRule(rule: MLRule<T, O> | null) {
 		this.currentRule = rule;
 	}
