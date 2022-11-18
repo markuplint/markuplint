@@ -50,13 +50,6 @@ export class ConfigProvider {
 						}
 						break;
 					}
-					case 'markuplint:': {
-						const config = await getPreset(namespace);
-						if (config) {
-							this.set(config, held);
-						}
-						break;
-					}
 				}
 			}
 
@@ -113,7 +106,16 @@ export class ConfigProvider {
 			return entity;
 		}
 
-		if (isPrefixedName(filePath)) {
+		if (isPreset(filePath)) {
+			const [, name] = filePath.match(/^markuplint:(.+)$/i) || [];
+			const config = await getPreset(name);
+			const pathResolvedConfig = this._pathResolve(config, filePath);
+
+			this.#store.set(filePath, pathResolvedConfig);
+			return pathResolvedConfig;
+		}
+
+		if (isPlugin(filePath)) {
 			this.#held.add(filePath);
 			return null;
 		}
@@ -272,10 +274,7 @@ function pathResolve<T extends string | (string | Record<string, unknown>)[] | R
 }
 
 function resolve(dir: string, pathOrModName: string) {
-	if (isPrefixedName(pathOrModName)) {
-		return pathOrModName;
-	}
-	if (moduleExists(pathOrModName)) {
+	if (moduleExists(pathOrModName) || isPreset(pathOrModName) || isPlugin(pathOrModName)) {
 		return pathOrModName;
 	}
 	return path.resolve(dir, pathOrModName);
@@ -299,8 +298,12 @@ function moduleExists(name: string) {
 	return true;
 }
 
-function isPrefixedName(name: string) {
-	return /^(?:markuplint|plugin):/.test(name);
+function isPreset(name: string) {
+	return /^markuplint:/i.test(name);
+}
+
+function isPlugin(name: string) {
+	return /^plugin:/i.test(name);
 }
 
 class CircularReferenceError extends ReferenceError {
