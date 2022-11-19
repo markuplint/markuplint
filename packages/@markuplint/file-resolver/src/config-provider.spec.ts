@@ -188,3 +188,11 @@ test('Overrides', async () => {
 		},
 	});
 });
+
+test('Config Presets', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '007', '.markuplintrc');
+	const file = getFile(path.resolve(testDir, '007', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	expect(configSet.config.rules?.['wai-aria']).toBe(true);
+});

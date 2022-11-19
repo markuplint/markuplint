@@ -1,6 +1,6 @@
 {
 	"extends": [
-		"markuplint:code-style",
+		"markuplint:code-styles",
 		"markuplint:html-standard",
 		"markuplint:a11y",
 		"markuplint:performance",
