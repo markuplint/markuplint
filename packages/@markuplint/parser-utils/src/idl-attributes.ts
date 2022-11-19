@@ -1,5 +1,7 @@
 /**
  * IDL attributes VS Content attributes
+ *
+ * @see https://github.com/facebook/react/blob/main/packages/react-dom-bindings/src/shared/possibleStandardNames.js
  */
 const idlContentMap = {
 	// HTML
@@ -64,6 +66,8 @@ const idlContentMap = {
 	httpEquiv: 'httpequiv',
 	icon: 'icon',
 	id: 'id',
+	imageSizes: 'imagesizes',
+	imageSrcSet: 'imagesrcset',
 	inputMode: 'inputmode',
 	integrity: 'integrity',
 	is: 'is',
@@ -142,17 +146,19 @@ const idlContentMap = {
 	wmode: 'wmode',
 	wrap: 'wrap',
 
-	// SVG
+	// SVG and RDFa
 	accentHeight: 'accent-height',
 	accumulate: 'accumulate',
 	additive: 'additive',
 	alignmentBaseline: 'alignment-baseline',
+	allowReorder: 'allowreorder',
 	alphabetic: 'alphabetic',
 	amplitude: 'amplitude',
 	arabicForm: 'arabic-form',
 	ascent: 'ascent',
 	attributeName: 'attributeName',
 	attributeType: 'attributeType',
+	autoReverse: 'autoreverse',
 	azimuth: 'azimuth',
 	baseFrequency: 'baseFrequency',
 	baselineShift: 'baseline-shift',
@@ -229,6 +235,7 @@ const idlContentMap = {
 	imageRendering: 'image-rendering',
 	in: 'in',
 	in2: 'in2',
+	inlist: 'inlist',
 	intercept: 'intercept',
 	k: 'k',
 	k1: 'k1',
@@ -279,10 +286,13 @@ const idlContentMap = {
 	pointsAtX: 'pointsAtX',
 	pointsAtY: 'pointsAtY',
 	pointsAtZ: 'pointsAtZ',
+	prefix: 'prefix',
 	preserveAlpha: 'preserveAlpha',
 	preserveAspectRatio: 'preserveAspectRatio',
 	primitiveUnits: 'primitiveUnits',
+	property: 'property',
 	r: 'r',
+	radius: 'radius',
 	refX: 'refX',
 	refY: 'refY',
 	renderingIntent: 'rendering-intent',
@@ -292,10 +302,12 @@ const idlContentMap = {
 	requiredFeatures: 'requiredFeatures',
 	restart: 'restart',
 	result: 'result',
+	results: 'results',
 	rotate: 'rotate',
 	rx: 'rx',
 	ry: 'ry',
 	scale: 'scale',
+	security: 'security',
 	seed: 'seed',
 	shapeRendering: 'shape-rendering',
 	slope: 'slope',
@@ -342,6 +354,7 @@ const idlContentMap = {
 	unicodeBidi: 'unicode-bidi',
 	unicodeRange: 'unicode-range',
 	unitsPerEm: 'units-per-em',
+	unselectable: 'unselectable',
 	vAlphabetic: 'v-alphabetic',
 	values: 'values',
 	vectorEffect: 'vector-effect',
@@ -355,6 +368,7 @@ const idlContentMap = {
 	viewTarget: 'viewTarget',
 	visibility: 'visibility',
 	vMathematical: 'v-mathematical',
+	vocab: 'vocab',
 	widths: 'widths',
 	wordSpacing: 'word-spacing',
 	writingMode: 'writing-mode',
@@ -372,6 +386,7 @@ const idlContentMap = {
 	xlinkType: 'xlink:type',
 	xmlBase: 'xml:base',
 	xmlLang: 'xml:lang',
+	xmlns: 'xmlns',
 	xmlnsXlink: 'xmlns:xlink',
 	xmlSpace: 'xml:space',
 	y: 'y',
