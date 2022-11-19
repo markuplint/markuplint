@@ -924,3 +924,22 @@ test('Booleanish', async () => {
 		).violations,
 	).toStrictEqual([]);
 });
+
+describe('Issues', () => {
+	test('#553', async () => {
+		expect(
+			(await mlRuleTest(rule, '<link rel="preload" imagesrcset="path/to" as="image" imagesizes="100vw" />', {}))
+				.violations,
+		).toStrictEqual([]);
+
+		expect(
+			(
+				await mlRuleTest(rule, '<link rel="preload" imageSrcSet={url} as="image" imageSizes="100vw" />', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+				})
+			).violations,
+		).toStrictEqual([]);
+	});
+});
