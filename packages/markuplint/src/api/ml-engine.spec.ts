@@ -30,7 +30,7 @@ describe('Event notification', () => {
 	});
 });
 
-describe('Watcher', () => {
+describe.skip('Watcher', () => {
 	it('updates config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/002.html');
 		const engine = new MLEngine(file, {
