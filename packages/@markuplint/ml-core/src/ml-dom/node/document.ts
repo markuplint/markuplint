@@ -629,8 +629,30 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
+	get onbeforeinput(): ((this: GlobalEventHandlers, ev: InputEvent) => any) | null {
+		throw new UnexpectedCallError('Not supported "onbeforeinput" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
 	get onblur(): ((this: GlobalEventHandlers, ev: FocusEvent) => any) | null {
 		throw new UnexpectedCallError('Not supported "onblur" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
+	get oncancel(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+		throw new UnexpectedCallError('Not supported "oncanplay" property');
 	}
 
 	/**

@@ -169,6 +169,17 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
+	get ariaColIndexText(): string | null {
+		throw new UnexpectedCallError('Not supported "ariaColIndexText" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
 	get ariaColSpan(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaColSpan" property');
 	}
@@ -226,6 +237,17 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 */
 	get ariaHidden(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaHidden" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get ariaInvalid(): string | null {
+		throw new UnexpectedCallError('Not supported "ariaInvalid" property');
 	}
 
 	/**
@@ -402,6 +424,17 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 */
 	get ariaRowIndex(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaRowIndex" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get ariaRowIndexText(): string | null {
+		throw new UnexpectedCallError('Not supported "ariaRowIndexText" property');
 	}
 
 	/**
@@ -965,8 +998,30 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
+	get onbeforeinput(): ((this: GlobalEventHandlers, ev: InputEvent) => any) | null {
+		throw new UnexpectedCallError('Not supported "onbeforeinput" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
 	get onblur(): ((this: GlobalEventHandlers, ev: FocusEvent) => any) | null {
 		throw new UnexpectedCallError('Not supported "onblur" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get oncancel(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+		throw new UnexpectedCallError('Not supported "oncanplay" property');
 	}
 
 	/**
@@ -1965,6 +2020,17 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 */
 	get rawName() {
 		return this._astToken.nodeName;
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 * @see https://w3c.github.io/aria/#ARIAMixin
+	 */
+	get role(): string {
+		throw new UnexpectedCallError('Not supported "role" property');
 	}
 
 	/**
