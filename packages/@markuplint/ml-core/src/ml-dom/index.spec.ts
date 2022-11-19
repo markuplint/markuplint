@@ -121,6 +121,24 @@ describe('AST', () => {
 		expect(doc.toString()).toBe(raw);
 	});
 
+	test('IDL attribute in JSX', () => {
+		expect(
+			createTestElement('<label></label>', {
+				parser: require('@markuplint/jsx-parser'),
+			}).getAttributeNode('for')?.localName,
+		).toBeUndefined();
+		expect(
+			createTestElement('<label htmlFor></label>', {
+				parser: require('@markuplint/jsx-parser'),
+			}).getAttributeNode('for')?.localName,
+		).toBe('for');
+		expect(
+			createTestElement('<label htmlFor></label>', {
+				parser: require('@markuplint/jsx-parser'),
+			}).getAttributeNode('htmlFor')?.localName,
+		).toBeUndefined();
+	});
+
 	test('rule', () => {
 		const document = createTestDocument<'foo', any>('<div><span>text</span></div>', {
 			config: {
@@ -198,6 +216,20 @@ div#hoge.foo.bar
 		expect(a.matches('a')).toBeTruthy();
 		expect(a.matches('div a')).toBeTruthy();
 		expect(a.matches('div > a')).toBeTruthy();
+	});
+
+	test('Attribute potential name', () => {
+		expect(
+			createTestElement('<div tabIndex className><label htmlFor></label></div>', {
+				parser: require('@markuplint/jsx-parser'),
+			}).matches('[tabindex][class]:has(>label[for])'),
+		).toBeTruthy();
+
+		expect(
+			createTestElement('<svg><image clipPath /></svg>', {
+				parser: require('@markuplint/jsx-parser'),
+			}).matches('svg:has(>image[clip-path])'),
+		).toBeTruthy();
 	});
 });
 
