@@ -986,4 +986,27 @@ describe('Issues', () => {
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#566', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<hgroup>
+						<h1></h1>
+						<h2></h2>
+					</hgroup>`,
+					ruleOn,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The content of the "hgroup" element is invalid according to the HTML specification',
+				raw: '<hgroup>',
+			},
+		]);
+	});
 });
