@@ -1,21 +1,5 @@
 import { createRule } from '@markuplint/ml-core';
-
-const voidElements = [
-	'area',
-	'base',
-	'br',
-	'col',
-	'embed',
-	'hr',
-	'img',
-	'input',
-	'link',
-	'meta',
-	'param',
-	'source',
-	'track',
-	'wbr',
-];
+import { isVoidElement } from '@markuplint/ml-spec';
 
 export default createRule<boolean>({
 	defaultSeverity: 'warning',
@@ -27,7 +11,7 @@ export default createRule<boolean>({
 			if (el.isOmitted) {
 				return;
 			}
-			if (voidElements.some(vE => vE === el.localName)) {
+			if (isVoidElement(el)) {
 				return;
 			}
 			if (el.closeTag != null) {
