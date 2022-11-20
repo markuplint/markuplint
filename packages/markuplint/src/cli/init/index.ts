@@ -120,6 +120,10 @@ const defaultRules: Record<
 		category: 'style',
 		default: true,
 	},
+	'no-empty-palpable-content': {
+		category: 'validation',
+		default: false,
+	},
 	'no-hard-code-id': {
 		category: 'style',
 		default: true,

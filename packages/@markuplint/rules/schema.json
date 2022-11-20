@@ -60,6 +60,9 @@
 				"no-default-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-default-value/schema.json"
 				},
+				"no-empty-palpable-content": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-empty-palpable-content/schema.json"
+				},
 				"no-hard-code-id": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-hard-code-id/schema.json"
 				},

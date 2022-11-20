@@ -18,6 +18,7 @@ import LabelHasControl from './label-has-control';
 import LandmarkRoles from './landmark-roles';
 import NoBooleanAttrValue from './no-boolean-attr-value';
 import NoDefaultValue from './no-default-value';
+import NoEmptyPalpableContent from './no-empty-palpable-content';
 import NoHardCodeId from './no-hard-code-id';
 import NoReferToNonExistentId from './no-refer-to-non-existent-id';
 import NoUseEventHandlerAttr from './no-use-event-handler-attr';
@@ -48,6 +49,7 @@ export default {
 	'landmark-roles': LandmarkRoles,
 	'no-boolean-attr-value': NoBooleanAttrValue,
 	'no-default-value': NoDefaultValue,
+	'no-empty-palpable-content': NoEmptyPalpableContent,
 	'no-hard-code-id': NoHardCodeId,
 	'no-refer-to-non-existent-id': NoReferToNonExistentId,
 	'no-use-event-handler-attr': NoUseEventHandlerAttr,
