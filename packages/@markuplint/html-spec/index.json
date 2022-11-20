@@ -13091,29 +13091,25 @@
 				"tag": "hgroup",
 				"contents": [
 					{
-						"oneOrMore": [
-							{
-								"zeroOrMore": "#script-supporting"
-							},
-							{
-								"zeroOrMore": "p"
-							},
-							{
-								"zeroOrMore": "#script-supporting"
-							},
-							{
-								"require": ["h1", "h2", "h3", "h4", "h5", "h6"]
-							},
-							{
-								"zeroOrMore": "#script-supporting"
-							},
-							{
-								"zeroOrMore": "p"
-							},
-							{
-								"zeroOrMore": "#script-supporting"
-							}
-						]
+						"zeroOrMore": "#script-supporting"
+					},
+					{
+						"zeroOrMore": "p"
+					},
+					{
+						"zeroOrMore": "#script-supporting"
+					},
+					{
+						"require": ["h1", "h2", "h3", "h4", "h5", "h6"]
+					},
+					{
+						"zeroOrMore": "#script-supporting"
+					},
+					{
+						"zeroOrMore": "p"
+					},
+					{
+						"zeroOrMore": "#script-supporting"
 					}
 				]
 			},
