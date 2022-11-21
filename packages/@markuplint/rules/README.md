@@ -9,7 +9,6 @@
 ### Conformance checking
 
 - [`attr-duplication`](./src/attr-duplication)
-- [`character-reference`](./src/character-reference)
 - [`deprecated-attr`](./src/deprecated-attr)
 - [`deprecated-element`](./src/deprecated-element)
 - [`disallowed-element`](./src/disallowed-element)
@@ -43,6 +42,7 @@
 - [`attr-value-quotes`](./src/attr-value-quotes)
 - [`case-sensitive-attr-name`](./src/case-sensitive-attr-name)
 - [`case-sensitive-tag-name`](./src/case-sensitive-tag-name)
+- [`character-reference`](./src/character-reference)
 - [`end-tag`](./src/end-tag)
 - [`no-boolean-attr-value`](./src/no-boolean-attr-value)
 - [`no-default-value`](./src/no-default-value)

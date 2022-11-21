@@ -535,6 +535,7 @@ export const types: Defs = {
 		},
 	},
 
+	// DO NOT USE: Issue #564
 	'<class-list>': {
 		ref: 'https://www.w3.org/TR/SVG/styling.html#ClassAttribute',
 		syntax: {

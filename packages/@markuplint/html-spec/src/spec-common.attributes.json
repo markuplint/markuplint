@@ -159,7 +159,7 @@
 		},
 		// https://html.spec.whatwg.org/multipage/dom.html#classes
 		"class": {
-			"type": "<class-list>"
+			"type": "Any"
 		},
 		// https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute
 		"id": {
@@ -986,7 +986,7 @@
 		},
 		// https://svgwg.org/svg2-draft/styling.html#ClassAttribute
 		"class": {
-			"type": "<class-list>"
+			"type": "Any"
 		},
 		// https://svgwg.org/svg2-draft/styling.html#StyleAttribute
 		"style": {

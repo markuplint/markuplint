@@ -363,7 +363,7 @@
 					}
 				},
 				"class": {
-					"type": "<class-list>"
+					"type": "Any"
 				},
 				"id": {
 					"type": "DOMID"
@@ -1027,7 +1027,7 @@
 					"type": "BCP47"
 				},
 				"class": {
-					"type": "<class-list>"
+					"type": "Any"
 				},
 				"style": {
 					"type": "<css-declaration-list>"

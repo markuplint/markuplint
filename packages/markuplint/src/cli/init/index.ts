@@ -64,7 +64,7 @@ const defaultRules: Record<
 		default: true,
 	},
 	'character-reference': {
-		category: 'validation',
+		category: 'style',
 		default: true,
 	},
 	'class-naming': {

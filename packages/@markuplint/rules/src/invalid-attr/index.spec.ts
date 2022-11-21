@@ -942,4 +942,9 @@ describe('Issues', () => {
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#564', async () => {
+		expect((await mlRuleTest(rule, '<div class="md:flex"></div>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<svg><rect class="md:flex"/></svg>')).violations).toStrictEqual([]);
+	});
 });
