@@ -11,6 +11,8 @@ Warns when unauthorized illegal characters are not escaped with character refere
 > In certain cases described in other sections, text may be mixed with **character references**. These can be used to escape characters that couldn't otherwise legally be included in text.
 > [cite: https://html.spec.whatwg.org/#syntax-charref]
 
+Note: This rule doesn't evaluate the characters strictly. Take care that it prompts you to change even if a character doesn't need to escape in a valid location.
+
 ## Rule Details
 
 👎 Examples of **incorrect** code for this rule
