@@ -1,7 +1,7 @@
 ---
 title: Character reference
 id: character-reference
-category: validation
+category: style
 ---
 
 # Character reference
