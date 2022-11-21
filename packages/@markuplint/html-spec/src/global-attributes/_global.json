@@ -161,7 +161,7 @@
 		},
 		"class": {
 			"ref": "https://html.spec.whatwg.org/multipage/dom.html#classes",
-			"type": "<class-list>"
+			"type": "Any"
 		},
 		"id": {
 			"ref": "https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute",
@@ -1002,7 +1002,7 @@
 		},
 		"class": {
 			"ref": "https://svgwg.org/svg2-draft/styling.html#ClassAttribute",
-			"type": "<class-list>"
+			"type": "Any"
 		},
 		"style": {
 			"ref": "https://svgwg.org/svg2-draft/styling.html#StyleAttribute",
