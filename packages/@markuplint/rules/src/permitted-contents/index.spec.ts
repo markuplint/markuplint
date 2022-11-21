@@ -456,9 +456,9 @@ describe('verify', () => {
 		const { violations: violations2 } = await mlRuleTest(
 			rule,
 			`<hgroup>
-				<p>Sub2</p>
 				<h1>Heading</h1>
-				<p>Sub</p>
+				<h2>Sub</h2>
+				<h2>Sub2</h2>
 			</hgroup>`,
 		);
 		expect(violations2).toStrictEqual([
@@ -475,11 +475,11 @@ describe('verify', () => {
 			rule,
 			`<hgroup>
 				<template></template>
-				<p>Sub2</p>
-				<template></template>
 				<h1>Heading</h1>
 				<template></template>
-				<p>Sub</p>
+				<h2>Sub</h2>
+				<template></template>
+				<h2>Sub2</h2>
 				<template></template>
 			</hgroup>`,
 		);
@@ -1162,10 +1162,10 @@ describe('Issues', () => {
 		).toStrictEqual([
 			{
 				severity: 'error',
-				line: 1,
-				col: 1,
-				message: 'The content of the "hgroup" element is invalid according to the HTML specification',
-				raw: '<hgroup>',
+				line: 3,
+				col: 7,
+				message: 'The "h2" element is not allowed in the "hgroup" element in this context',
+				raw: '<h2>',
 			},
 		]);
 	});
