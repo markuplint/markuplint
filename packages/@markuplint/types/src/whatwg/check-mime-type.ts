@@ -39,7 +39,7 @@ export const checkMIMEType: CustomSyntaxChecker<{
 		return new Token(extraToken, mimeType.essence.length, value).unmatched({
 			reason: 'extra-token',
 			expects: expects(withoutParameters),
-			candicate: mimeType.essence,
+			candidate: mimeType.essence,
 		});
 	}
 	return unmatched(value, 'syntax-error', { expects: expects(withoutParameters) });

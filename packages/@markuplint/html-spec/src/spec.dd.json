@@ -1,0 +1,30 @@
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-dd-element
+// https://www.w3.org/TR/html-aria/#el-dd
+// https://w3c.github.io/html-aria/#el-dd
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(flow)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": {
+			"global": true,
+			"role": "definition"
+		},
+		"1.1": {
+			"implicitRole": "definition"
+		}
+	}
+}

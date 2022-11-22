@@ -47,7 +47,7 @@ it('001 + 002', async () => {
 		},
 		nodeRules: [
 			{
-				tagName: 'div',
+				selector: 'div',
 				rules: { 'rule__disable-for-div-tag': false },
 			},
 		],
@@ -114,16 +114,16 @@ it('001 + 002 + 003', async () => {
 		},
 		nodeRules: [
 			{
-				tagName: 'div',
+				selector: 'div',
 				rules: { 'rule__disable-for-div-tag': false },
 			},
 			{
-				tagName: 'div',
+				selector: 'div',
 				rules: { 'rule__disable-for-div-tag': true },
 			},
 			{
-				tagName: 'a',
-				rules: { 'rule__enble-for-a-tag': true },
+				selector: 'a',
+				rules: { 'rule__enable-for-a-tag': true },
 			},
 		],
 		childNodeRules: [
@@ -187,4 +187,12 @@ test('Overrides', async () => {
 			foo: false,
 		},
 	});
+});
+
+test('Config Presets', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '007', '.markuplintrc');
+	const file = getFile(path.resolve(testDir, '007', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	expect(configSet.config.rules?.['wai-aria']).toBe(true);
 });

@@ -14,7 +14,7 @@ $ yarn add -D @markuplint/jsx-parser
 
 ## Usage
 
-Add `parser` option into your [confugration file](https://markuplint.dev/configuration#parser).
+Add `parser` option into your [configuration file](https://markuplint.dev/configuration#parser).
 
 ```json
 {
@@ -23,7 +23,3 @@ Add `parser` option into your [confugration file](https://markuplint.dev/configu
   }
 }
 ```
-
-### Unsupported rule
-
-- [`indentation`](https://markuplint.dev/rules/indentation)

@@ -1,53 +1,12 @@
 {
+	"extends": ["markuplint:recommended"],
 	"excludeFiles": ["./008.html"],
 	"rules": {
-		"attr-duplication": true,
-		"attr-equal-space-after": true,
-		"attr-equal-space-before": true,
-		"attr-spacing": true,
-		"attr-value-quotes": { "reason": "For consistency" },
-		"case-sensitive-attr-name": true,
-		"case-sensitive-tag-name": true,
-		"character-reference": true,
-		"class-naming": "/[a-z]+/",
-		"deprecated-attr": true,
-		"deprecated-element": true,
-		"doctype": true,
-		"id-duplication": true,
-		"indentation": "tab",
-		"ineffective-attr": true,
-		"invalid-attr": true,
-		"landmark-roles": true,
-		"no-boolean-attr-value": true,
-		"permitted-contents": true,
-		"require-accessible-name": true,
-		"required-attr": true,
-		"required-h1": true,
-		"wai-aria": true
+		"attr-value-quotes": { "reason": "For consistency" }
 	},
 	"nodeRules": [
 		{
-			"tagName": "head",
-			"rules": {
-				"indentation": {
-					"option": {
-						"indent-nested-nodes": "never"
-					}
-				}
-			}
-		},
-		{
-			"tagName": "body",
-			"rules": {
-				"indentation": {
-					"option": {
-						"indent-nested-nodes": "never"
-					}
-				}
-			}
-		},
-		{
-			"tagName": "meta",
+			"selector": "meta",
 			"rules": {
 				"attr-value-quotes": {
 					"reason": "Another reason"

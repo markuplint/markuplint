@@ -1,8 +1,0 @@
-{
-	"tag": "h2",
-	"contents": [
-		{
-			"zeroOrMore": "#phrasing"
-		}
-	]
-}

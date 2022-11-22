@@ -84,7 +84,7 @@ Specify the target element (tag) name. Case is not significant.
 
 Specify the target elements as an array. The order of this array means **allowed content order**. (Content not included in this array will be **not allowed content**)
 
-It is defined using one of the six keywords `require`, `optional`, `oneOrMore`, `zeroOrMore`, `choice` and `interleave`.
+It is defined using one of the five keywords `require`, `optional`, `oneOrMore`, `zeroOrMore`, and `choice`.
 
 Of these, `require`, `optional`, `oneOrMore` and `zeroOrMore` mean the number of elements. Specify the tag name (or `# text` for text nodes) using the keyword as a key. Each keyword cannot be simultaneously specified.
 
@@ -129,12 +129,11 @@ Depending on the combination, the following two specifications have the same mea
 
 ---
 
-The two keywords `choice` and`interleave` have the following meanings for the specified array:
+The `choice` keyword has the following meanings for the specified array:
 
-| Keyword      | Meanings             |
-| ------------ | -------------------- |
-| `choice`     | Any one              |
-| `interleave` | Not matter the order |
+| Keyword  | Meanings |
+| -------- | -------- |
+| `choice` | Any one  |
 
 ```json
 {
@@ -145,9 +144,6 @@ The two keywords `choice` and`interleave` have the following meanings for the sp
         "contents": [
           {
             "choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
-          },
-          {
-            "interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
           }
         ]
       }

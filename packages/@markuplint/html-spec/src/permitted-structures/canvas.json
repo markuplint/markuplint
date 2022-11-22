@@ -1,5 +1,0 @@
-{
-	"tag": "canvas",
-	"summary": "WIP: Transparent, but with no interactive content descendants except for a elements, img elements with usemap attributes, button elements, input elements whose type attribute are in the Checkbox or Radio Button states, input elements that are buttons, select elements with a multiple attribute or a display size greater than 1, and elements that would not be interactive content except for having the tabindex attribute specified.",
-	"contents": true
-}

@@ -3,8 +3,8 @@
 type HasName = { name: string };
 
 export function nameCompare(a: HasName | string, b: HasName | string) {
-	const nameA = typeof a === 'string' ? a : a.name.toUpperCase();
-	const nameB = typeof b === 'string' ? b : b.name.toUpperCase();
+	const nameA = typeof a === 'string' ? a : a.name?.toUpperCase() || String(a);
+	const nameB = typeof b === 'string' ? b : b.name?.toUpperCase() || String(b);
 	if (nameA < nameB) {
 		return -1;
 	}
@@ -15,6 +15,7 @@ export function nameCompare(a: HasName | string, b: HasName | string) {
 }
 
 export function sortObjectByKey<T>(o: T): T {
+	// @ts-ignore
 	const keys = Object.keys(o);
 	keys.sort(nameCompare);
 	// @ts-ignore
@@ -61,4 +62,17 @@ export function mergeAttributes<T>(fromDocs: T, fromJSON: T): T {
 export function keys<T, K = keyof T>(object: T): K[] {
 	// @ts-ignore
 	return Object.keys(object) as K[];
+}
+
+export function getName(origin: string) {
+	const [, ns, localName] = origin.match(/^(?:(svg)_)?([a-z0-9_]+)/i) || [];
+	const name = localName ?? origin;
+	const ml = ns === 'svg' ? 'SVG' : 'HTML';
+	const namespace: 'http://www.w3.org/2000/svg' | undefined = ns === 'svg' ? 'http://www.w3.org/2000/svg' : undefined;
+
+	return {
+		localName: name,
+		namespace,
+		ml,
+	};
 }

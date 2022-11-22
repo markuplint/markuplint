@@ -45,7 +45,7 @@ export function attrCheck(
 		}
 	}
 
-	// Existance
+	// Existence
 	if (!spec) {
 		log('The "%s" attribute DOES\'NT EXIST in the spec', name);
 		return {

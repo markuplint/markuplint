@@ -17,15 +17,19 @@ export function translator(localeSet?: LocaleSet): Translator {
 				.join(`${format.quoteEnd}${format.separator}${format.quoteStart}`)}${format.quoteEnd}`;
 		}
 
+		const input = messageTmpl;
+
 		if (keywords.length === 0) {
 			return translateKeyword(messageTmpl, '', localeSet);
 		}
 
 		const noTranslateIndex = Array.from(messageTmpl.matchAll(/(?<=\{)[0-9]+(?=\*\})/g)).map(m => m[0]);
-		const key = messageTmpl.replace(/(?<=\{[0-9]+)\*(?=\})/g, '');
+		const key = removeNoTranslateMark(messageTmpl).toLowerCase();
 
 		const sentence = localeSet?.sentences?.[key];
 		messageTmpl = sentence ?? key;
+		messageTmpl =
+			removeNoTranslateMark(input.toLowerCase()) === messageTmpl ? removeNoTranslateMark(input) : messageTmpl;
 
 		message = messageTmpl.replace(/\{([0-9]+)(?::([c]))?\}/g, ($0, number, flag) => {
 			const num = parseInt(number);
@@ -103,4 +107,8 @@ function toLocaleString(value: number, locale: string) {
 		}
 	}
 	return value.toString(10);
+}
+
+function removeNoTranslateMark(message: string) {
+	return message.replace(/(?<=\{[0-9]+)\*(?=\})/g, '');
 }

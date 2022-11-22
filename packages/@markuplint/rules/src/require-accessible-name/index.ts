@@ -1,24 +1,47 @@
-import { createRule } from '@markuplint/ml-core';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
-import { accnameMayBeMutable, getComputedRole, getRoleSpec } from '../helpers';
+import { createRule, getRoleSpec, getComputedRole } from '@markuplint/ml-core';
+import { isExposed } from '@markuplint/ml-spec';
 
-export default createRule<boolean, null>({
+import { accnameMayBeMutable } from '../helpers';
+
+type Option = {
+	ariaVersion: ARIAVersion;
+};
+
+export default createRule<boolean, Option>({
+	defaultOptions: {
+		ariaVersion: '1.2',
+	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
+			if (el.pretenderContext?.type === 'pretender') {
+				return;
+			}
+
 			if (accnameMayBeMutable(el, document)) {
 				return;
 			}
 
-			const role = getComputedRole(document.specs, el);
-			if (!role) {
+			if (!isExposed(el, document.specs, el.rule.option.ariaVersion)) {
 				return;
 			}
-			const roleSpec = getRoleSpec(document.specs, role.name);
+
+			const computed = getComputedRole(document.specs, el, el.rule.option.ariaVersion);
+			if (!computed.role) {
+				return;
+			}
+			const roleSpec = getRoleSpec(
+				document.specs,
+				computed.role.name,
+				el.namespaceURI,
+				el.rule.option.ariaVersion,
+			);
 			if (!roleSpec || !roleSpec.accessibleNameRequired) {
 				return;
 			}
 
-			const hasAccessibleName = !!el.getAccessibleName().trim();
+			const hasAccessibleName = !!el.getAccessibleName(el.rule.option.ariaVersion).trim();
 
 			if (!hasAccessibleName) {
 				report({ scope: el, message: t('Require {0}', 'accessible name') });

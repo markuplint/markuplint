@@ -47,7 +47,7 @@ title: 効果のない属性の禁止 (ineffective-attr)
 ### 設定値
 
 - Type: `boolean`
-- Deafult Value: `true`
+- Default Value: `true`
 
 ### デフォルトの警告の厳しさ
 

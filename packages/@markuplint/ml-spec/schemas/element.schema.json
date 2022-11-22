@@ -1,0 +1,11 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+	"required": ["contentModel", "globalAttrs", "attributes", "aria"],
+	"properties": {
+		"contentModel": { "$ref": "./content-models.schema.json#/definitions/ContentModel" },
+		"globalAttrs": { "$ref": "./attributes.schema.json#/definitions/GlobalAttributes" },
+		"attributes": { "$ref": "./attributes.schema.json#/definitions/Attributes" },
+		"aria": { "$ref": "./aria.schema.json#/definitions/ARIA" }
+	}
+}

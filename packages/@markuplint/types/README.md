@@ -61,7 +61,7 @@ check('2020-02-30', 'DateTime');
 | `BrowsingContextNameOrKeyword` | `a[target]` and more                | [WHATWG](https://html.spec.whatwg.org/multipage/browsers.html#valid-browsing-context-name-or-keyword)              | ✅        |
 | `HTTPSchemaURL`                | `a[ping]` (as list) and more        | [WHATWG](https://html.spec.whatwg.org/multipage/links.html#ping)                                                   | ✅        |
 | `MIMEType`                     | `embed[type]` and more              | [WHATWG](https://mimesniff.spec.whatwg.org/#valid-mime-type)                                                       | ✅        |
-| `ItemProp`                     | The `itemprop` attibute (as list)   | [WHATWG](https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute)                      | ✅        |
+| `ItemProp`                     | The `itemprop` attribute (as list)  | [WHATWG](https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute)                      | ✅        |
 | `Srcset`                       | `img[srcset]` and more              | [WHATWG](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)                                     | ✅        |
 | `SourceSizeList`               | `img[sizes]` and more               | [WHATWG](https://html.spec.whatwg.org/multipage/images.html#sizes-attributes)                                      | ✅        |
 | `IconSize`                     | `link[sizes]` (as list)             | [WHATWG](https://html.spec.whatwg.org/multipage/semantics.html#attr-link-sizes)                                    | ✅        |

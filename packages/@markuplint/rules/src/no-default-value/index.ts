@@ -3,42 +3,36 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 import { toNormalizedValue } from '../helpers';
 
 export default createRule({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
-		await document.walkOn('Element', el => {
-			const attrSpec = getAttrSpecs(el.nameWithNS, document.specs);
+		await document.walkOn('Attr', attr => {
+			const attrSpec = getAttrSpecs(attr.ownerElement, document.specs);
 
 			if (!attrSpec) {
 				return;
 			}
 
-			for (const attr of el.attributes) {
-				if (attr.attrType !== 'html-attr') {
-					continue;
-				}
+			const spec = attrSpec.find(s => s.name === attr.name);
 
-				const spec = attrSpec.find(s => s.name === attr.getName().potential);
+			if (!spec) {
+				return;
+			}
 
-				if (!spec) {
-					continue;
-				}
+			if (!spec.defaultValue) {
+				return;
+			}
 
-				if (!spec.defaultValue) {
-					continue;
-				}
+			const normalizedValue = toNormalizedValue(attr.value, spec);
+			const defaultValue = toNormalizedValue(spec.defaultValue, spec);
 
-				const normalizedValue = toNormalizedValue(attr.getValue().potential, spec);
-				const defaultValue = toNormalizedValue(spec.defaultValue, spec);
-
-				if (defaultValue === normalizedValue) {
-					report({
-						scope: el,
-						line: attr.valueNode.startLine,
-						col: attr.valueNode.startCol,
-						raw: attr.valueNode.raw,
-						message: t('It is {0}', t('the {0}', 'default value')),
-					});
-				}
+			if (defaultValue === normalizedValue) {
+				report({
+					scope: attr,
+					line: attr.valueNode?.startLine,
+					col: attr.valueNode?.startCol,
+					raw: attr.valueNode?.raw,
+					message: t('It is {0}', t('the {0}', 'default value')),
+				});
 			}
 		});
 	},

@@ -9,7 +9,6 @@
 ### Conformance checking
 
 - [`attr-duplication`](./src/attr-duplication)
-- [`character-reference`](./src/character-reference)
 - [`deprecated-attr`](./src/deprecated-attr)
 - [`deprecated-element`](./src/deprecated-element)
 - [`disallowed-element`](./src/disallowed-element)
@@ -33,27 +32,24 @@
 
 - [`class-naming`](./src/class-naming)
 
-### Maintenability
+### Maintainability
 
 - [`no-hard-code-id`](./src/no-hard-code-id)
 - [`no-use-event-handler-attr`](./src/no-use-event-handler-attr)
 
 ### Style
 
-- [`attr-equal-space-after`](./src/attr-equal-space-after)
-- [`attr-equal-space-before`](./src/attr-equal-space-before)
-- [`attr-spacing`](./src/attr-spacing)
 - [`attr-value-quotes`](./src/attr-value-quotes)
 - [`case-sensitive-attr-name`](./src/case-sensitive-attr-name)
 - [`case-sensitive-tag-name`](./src/case-sensitive-tag-name)
+- [`character-reference`](./src/character-reference)
 - [`end-tag`](./src/end-tag)
-- [`indentation`](./src/indentation)
 - [`no-boolean-attr-value`](./src/no-boolean-attr-value)
 - [`no-default-value`](./src/no-default-value)
 
 ## Install
 
-Generally, you **don't have to install** this package because markuplint dependents it defaultly.
+Generally, you **don't have to install** this package because markuplint dependents it by default.
 
 ```sh
 $ npm install -D @markuplint/rules

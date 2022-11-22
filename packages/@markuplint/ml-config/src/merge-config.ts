@@ -1,4 +1,4 @@
-import type { Config, Nullable, AnyRule, RuleConfigValue, Rules, SpecConfig, SpecConfig_v1 } from './types';
+import type { Config, Nullable, AnyRule, RuleConfigValue, Rules } from './types';
 
 import deepmerge from 'deepmerge';
 import { isPlainObject } from 'is-plain-object';
@@ -10,11 +10,7 @@ export function mergeConfig(a: Config, b: Config): Config {
 		plugins: concatArray(a.plugins, b.plugins, true, 'name'),
 		parser: mergeObject(a.parser, b.parser),
 		parserOptions: mergeObject(a.parserOptions, b.parserOptions),
-		specs:
-			// v3
-			// mergeObject(a.specs, b.specs),
-			// v2
-			mergeSpecs(a.specs, b.specs),
+		specs: mergeObject(a.specs, b.specs),
 		excludeFiles: concatArray(a.excludeFiles, b.excludeFiles, true),
 		rules: mergeRules(
 			// TODO: Deep merge
@@ -191,57 +187,4 @@ function deleteUndefProp(obj: any) {
 			delete obj[key];
 		}
 	}
-}
-
-/**
- * @deprecated
- * @param a
- * @param b
- * @returns
- */
-function mergeSpecs(
-	a: Nullable<SpecConfig | SpecConfig_v1>,
-	b: Nullable<SpecConfig | SpecConfig_v1>,
-): SpecConfig | undefined {
-	return mergeObject(convertSpec_v1_to_v2(a), convertSpec_v1_to_v2(b));
-}
-
-/**
- * @deprecated
- * @param spec
- * @returns
- */
-function convertSpec_v1_to_v2(spec: Nullable<SpecConfig | SpecConfig_v1>): SpecConfig | undefined {
-	if (spec == null) {
-		return;
-	}
-	if (typeof spec === 'string') {
-		return { '/.+/': spec };
-	}
-	if (Array.isArray(spec)) {
-		if (spec.length === 0) {
-			return {};
-		} else if (spec.length === 1) {
-			return { '/.+/': spec[0] };
-		}
-		const res: SpecConfig = {};
-		for (const item of spec) {
-			switch (item) {
-				case '@markuplint/vue-spec': {
-					res['/\\.vue$/i'] = item;
-					break;
-				}
-				case '@markuplint/react-spec': {
-					res['/\\.[jt]sx?$/i'] = item;
-					break;
-				}
-				default: {
-					res['/.+/'] = item;
-				}
-			}
-		}
-		deleteUndefProp(res);
-		return res;
-	}
-	return spec;
 }

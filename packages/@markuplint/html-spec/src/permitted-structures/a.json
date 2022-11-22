@@ -1,9 +1,0 @@
-{
-	"tag": "a",
-	"contents": [
-		{
-			"zeroOrMore": "#transparent",
-			"notAllowedDescendants": ["#interactive"]
-		}
-	]
-}

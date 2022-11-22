@@ -3,12 +3,12 @@
  *
  * @param value
  */
-export function isUint(value: string, opions?: { gt?: number }) {
+export function isUint(value: string, options?: { gt?: number }) {
 	const matched = /^[0-9]+$/.test(value);
-	if (matched && opions) {
+	if (matched && options) {
 		const n = parseInt(value, 10);
-		if (opions.gt != null) {
-			return isFinite(n) && opions.gt < n;
+		if (options.gt != null) {
+			return isFinite(n) && options.gt < n;
 		}
 	}
 	return matched;

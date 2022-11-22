@@ -108,7 +108,7 @@ describe('parser', () => {
 			'[3:11]>[5:3](23,42)#text: ⏎→→→const␣i␣=␣0;⏎→→',
 			'[5:3]>[5:12](42,51)script: </script>',
 			'[5:12]>[7:3](51,72)#text: ⏎→→⏎→→',
-			'[7:3]>[7:23](72,92)#vue-expression-conatiner: {{␣CodeExpression␣}}',
+			'[7:3]>[7:23](72,92)#vue-expression-container: {{␣CodeExpression␣}}',
 			'[7:23]>[8:3](92,95)#text: ⏎→→',
 			'[8:3]>[8:8](95,100)div: <div>',
 			'[8:8]>[10:3](100,119)#text: ⏎→→→text&amp;div⏎→→',
@@ -338,15 +338,15 @@ describe('parser', () => {
 			'<template><div v-if="bool" data-attr v-bind:data-attr2="variable" @click.once="event" v-on:click.foobar="event"></div></template>',
 		);
 		// @ts-ignore
-		expect(doc.nodeList[0].attributes[0].raw).toBe(' v-if="bool"');
+		expect(doc.nodeList[0].attributes[0].raw).toBe('v-if="bool"');
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[0].isDirective).toBeTruthy();
 		// @ts-ignore
-		expect(doc.nodeList[0].attributes[1].raw).toBe(' data-attr');
+		expect(doc.nodeList[0].attributes[1].raw).toBe('data-attr');
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[1].isDirective).toBeUndefined();
 		// @ts-ignore
-		expect(doc.nodeList[0].attributes[2].raw).toBe(' v-bind:data-attr2="variable"');
+		expect(doc.nodeList[0].attributes[2].raw).toBe('v-bind:data-attr2="variable"');
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[2].potentialName).toBe('data-attr2');
 		// @ts-ignore
@@ -365,23 +365,27 @@ describe('parser', () => {
 		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
 	});
 
-	it('isCustomElement', () => {
-		expect((parse('<template><div/></template>').nodeList[0] as MLASTElement).isCustomElement).toBe(false);
-		expect((parse('<template><Div/></template>').nodeList[0] as MLASTElement).isCustomElement).toBe(true);
-		expect((parse('<template><x-div/></template>').nodeList[0] as MLASTElement).isCustomElement).toBe(true);
-		expect((parse('<template><foo/></template>').nodeList[0] as MLASTElement).isCustomElement).toBe(false);
-		expect((parse('<template><Foo/></template>').nodeList[0] as MLASTElement).isCustomElement).toBe(true);
-		expect((parse('<template><div><Foo/></div></template>').nodeList[1] as MLASTElement).isCustomElement).toBe(
-			true,
+	it('elementType', () => {
+		expect((parse('<template><div/></template>').nodeList[0] as MLASTElement).elementType).toBe('html');
+		expect((parse('<template><Div/></template>').nodeList[0] as MLASTElement).elementType).toBe('authored');
+		expect((parse('<template><x-div/></template>').nodeList[0] as MLASTElement).elementType).toBe('web-component');
+		expect((parse('<template><foo/></template>').nodeList[0] as MLASTElement).elementType).toBe('html');
+		expect((parse('<template><Foo/></template>').nodeList[0] as MLASTElement).elementType).toBe('authored');
+		expect((parse('<template><div><Foo/></div></template>').nodeList[1] as MLASTElement).elementType).toBe(
+			'authored',
 		);
-		expect(
-			(parse('<template><div><Component/></div></template>').nodeList[1] as MLASTElement).isCustomElement,
-		).toBe(true);
-		expect(
-			(parse('<template><svg><Component/></svg></template>').nodeList[1] as MLASTElement).isCustomElement,
-		).toBe(true);
-		expect((parse('<template><svg><feBlend/></svg></template>').nodeList[1] as MLASTElement).isCustomElement).toBe(
-			false,
+		expect((parse('<template><div><Component/></div></template>').nodeList[1] as MLASTElement).elementType).toBe(
+			'authored',
 		);
+		expect((parse('<template><svg><Component/></svg></template>').nodeList[1] as MLASTElement).elementType).toBe(
+			'authored',
+		);
+		expect((parse('<template><svg><feBlend/></svg></template>').nodeList[1] as MLASTElement).elementType).toBe(
+			'html',
+		);
+		expect((parse('<template><component/></template>').nodeList[0] as MLASTElement).elementType).toBe('authored');
+		expect((parse('<template><slot/></template>').nodeList[0] as MLASTElement).elementType).toBe('authored');
+		expect((parse('<template><Transition/></template>').nodeList[0] as MLASTElement).elementType).toBe('authored');
+		expect((parse('<template><transition/></template>').nodeList[0] as MLASTElement).elementType).toBe('html');
 	});
 });

@@ -1,8 +1,0 @@
-{
-	"tag": "legend",
-	"contents": [
-		{
-			"zeroOrMore": ["#phrasing", "#heading"]
-		}
-	]
-}

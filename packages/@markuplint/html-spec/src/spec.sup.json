@@ -1,0 +1,27 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-sub-and-sup-elements
+// https://www.w3.org/TR/html-aria/#el-sup
+// https://w3c.github.io/html-aria/#el-sup
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(phrasing)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "superscript",
+		"permittedRoles": true,
+		"namingProhibited": true,
+		"1.1": {
+			"implicitRole": false
+		}
+	}
+}

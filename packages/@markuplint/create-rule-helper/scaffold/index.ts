@@ -23,9 +23,9 @@ export default createRule<MainValue, Options>({
 	/**
 	 * Step 1-1. Choose the severity from `error` or `warning`
 	 *
-	 * Deafult is `error`
+	 * Default is `error`
 	 */
-	defaultServerity: 'error',
+	defaultSeverity: 'error',
 
 	/**
 	 * Step 1-2. Set the default principal value
@@ -51,20 +51,13 @@ export default createRule<MainValue, Options>({
 	 */
 	async verify({ document, report, t }) {
 		/**
-		 * Example: Use `walk` method to traverse the node tree
+		 * Example: Use `walkOn` method to traverse the node tree
 		 */
-		await document.walk(node => {
-			/**
-			 * Example: Compare the type of the node to filter it
-			 */
-			if (node.type !== 'Comment') {
-				return;
-			}
-
+		await document.walkOn('Comment', comment => {
 			/**
 			 * Example: Access the property of the node to get needed data
 			 */
-			const commentText = node.raw.trim();
+			const commentText = comment.raw.trim();
 
 			/**
 			 * Example: Compare data according to your design to report the violation
@@ -83,7 +76,7 @@ export default createRule<MainValue, Options>({
 					 * the location (line number and column number)
 					 * to the linter engine.
 					 */
-					scope: node,
+					scope: comment,
 
 					/**
 					 * Example: The message that is output to a user.

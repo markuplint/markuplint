@@ -37,7 +37,7 @@ export async function command(files: Target[], options: CLIOptions, apiOptions?:
 
 	let hasError = false;
 
-	const jsonOuput: (Violation & { filePath: string })[] = [];
+	const jsonOutput: (Violation & { filePath: string })[] = [];
 
 	for (const file of fileList) {
 		const engine = new MLEngine(file, {
@@ -63,7 +63,7 @@ export async function command(files: Target[], options: CLIOptions, apiOptions?:
 			process.stdout.write(`markuplint: Fix "${result.filePath}"\n`);
 		} else {
 			if (format === 'json') {
-				jsonOuput.push(
+				jsonOutput.push(
 					...result.violations.map(v => ({
 						...v,
 						filePath: result.filePath,
@@ -78,7 +78,7 @@ export async function command(files: Target[], options: CLIOptions, apiOptions?:
 	}
 
 	if (format === 'json') {
-		process.stdout.write(JSON.stringify(jsonOuput, null, 2) + '\n');
+		process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
 		return false;
 	}
 

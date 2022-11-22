@@ -1,0 +1,118 @@
+// https://svgwg.org/svg2-draft/shapes.html#RectElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-59
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [
+					":model(SVGAnimation)",
+					":model(SVGDescriptive)",
+					":model(SVGPaintServer)",
+					"svg|clipPath",
+					"svg|marker",
+					"svg|mask",
+					"svg|script",
+					"svg|style"
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": [
+			"x",
+			"y",
+			"width",
+			"height",
+			"rx",
+			"ry",
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"isolation",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"mask-type",
+			"opacity",
+			"overflow",
+			"paint-order",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-overflow",
+			"text-rendering",
+			"transform",
+			"transform-origin",
+			"unicode-bidi",
+			"vector-effect",
+			"visibility",
+			"white-space",
+			"word-spacing",
+			"writing-mode"
+		]
+	},
+	"attributes": {
+		// https://svgwg.org/svg2-draft/paths.html#PathLengthAttribute
+		"pathLength": {
+			"type": "<number>",
+			"animatable": true
+		}
+	},
+	"aria": {
+		"implicitRole": "graphics-symbol",
+		"permittedRoles": {
+			"core-aam": true,
+			"graphics-aam": true
+		}
+	}
+}

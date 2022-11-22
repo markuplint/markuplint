@@ -97,7 +97,7 @@ describe('basic test', () => {
 
 	it('is reported from 007.html', async () => {
 		const { violations } = await mlTestFile('test/fixture/007.html');
-		expect(violations.length).toEqual(55);
+		expect(violations.length).toEqual(59);
 	});
 
 	it('is ignoring 008.html', async () => {
@@ -126,7 +126,7 @@ describe('async and sync rules', () => {
 		defaultValue: null,
 		defaultOptions: null,
 		async verify(context) {
-			await context.document.walk(async node => {});
+			await context.document.walkOn('Element', el => {});
 			context.report(asyncReport);
 		},
 	});
@@ -136,7 +136,8 @@ describe('async and sync rules', () => {
 		defaultValue: null,
 		defaultOptions: null,
 		verify(context) {
-			context.document.walk(node => {});
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
+			context.document.walkOn('Element', el => {});
 			context.report(syncReport);
 		},
 	});

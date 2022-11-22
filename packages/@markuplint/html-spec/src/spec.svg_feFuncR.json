@@ -1,0 +1,20 @@
+// https://drafts.fxtf.org/filter-effects/#elementdef-fefuncr
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-26
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
+		"#SVGTransferFunctionAttrs": ["type", "tableValues", "slope", "intercept", "amplitude", "exponent", "offset"]
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false
+	}
+}

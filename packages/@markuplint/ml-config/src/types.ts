@@ -1,11 +1,17 @@
+import type { ParserOptions } from '@markuplint/ml-ast';
+import type { RegexSelector } from '@markuplint/selector';
+
+export type { RegexSelector } from '@markuplint/selector';
+
 export interface Config {
 	$schema?: string;
 	extends?: string | string[];
 	plugins?: (PluginConfig | string)[];
 	parser?: ParserConfig;
 	parserOptions?: ParserOptions;
-	specs?: SpecConfig | SpecConfig_v1;
+	specs?: SpecConfig;
 	excludeFiles?: string[];
+	pretenders?: Pretender[];
 	rules?: Rules;
 	nodeRules?: NodeRule[];
 	childNodeRules?: ChildNodeRule[];
@@ -21,18 +27,86 @@ export interface ParserConfig {
 	[extensionPattern: string]: string /* module name or path */;
 }
 
-export type ParserOptions = {
-	ignoreFrontMatter?: boolean;
-};
-
 export type SpecConfig = {
 	[extensionPattern: string]: string /* module name or path */;
 };
 
+export type Pretender = {
+	/**
+	 * Target node selectors
+	 */
+	selector: string;
+
+	/**
+	 * If it is a string, it is resolved as an element name.
+	 * An element has the same attributes as the pretended custom element
+	 * because attributes are just inherited.
+	 *
+	 * If it is an Object, It creates the element by that.
+	 */
+	as: string | OriginalNode;
+};
+
+export type OriginalNode = {
+	/**
+	 * Element name
+	 */
+	element: string;
+
+	/**
+	 * Namespace
+	 *
+	 * Supports `"svg"` and `undefined` only.
+	 * If it is `undefined`, the namespace is HTML.
+	 */
+	namespace?: 'svg';
+
+	/**
+	 * Attributes
+	 */
+	attrs?: {
+		/**
+		 * Attribute name
+		 */
+		name: string;
+
+		/**
+		 * If it omits this property, the attribute is resolved as a boolean.
+		 */
+		value?:
+			| string
+			| {
+					fromAttr: string;
+			  };
+	}[];
+
+	/**
+	 * To have attributes the defined element has.
+	 */
+	inheritAttrs?: boolean;
+
+	/**
+	 * ARIA properties
+	 */
+	aria?: PretenderARIA;
+};
+
 /**
- * @deprecated
+ * Pretender Node ARIA properties
  */
-export type SpecConfig_v1 = string | string[];
+export type PretenderARIA = {
+	/**
+	 * Accessible name
+	 *
+	 * - If it is `true`, it assumes the element has any text on its accessible name.
+	 * - If it specifies `fromAttr` property, it assumes the accessible name refers to the value of the attribute.
+	 */
+	name?:
+		| boolean
+		| {
+				fromAttr: string;
+		  };
+};
 
 export type Rule<T extends RuleConfigValue, O = void> = RuleConfig<T, O> | T | boolean;
 
@@ -53,10 +127,6 @@ export type Severity = 'error' | 'warning' | 'info';
 export type RuleConfigValue = string | number | boolean | any[] | null;
 
 export interface NodeRule {
-	/**
-	 * @deprecated
-	 */
-	tagName?: string;
 	selector?: string;
 	regexSelector?: RegexSelector;
 	categories?: string[];
@@ -66,29 +136,11 @@ export interface NodeRule {
 }
 
 export interface ChildNodeRule {
-	/**
-	 * @deprecated
-	 */
-	tagName?: string;
 	selector?: string;
 	regexSelector?: RegexSelector;
 	inheritance?: boolean;
 	rules?: Rules;
 }
-
-export type RegexSelector = RegexSelectorWithoutCompination & {
-	combination?: {
-		combinator: RegexSelectorCombinator;
-	} & RegexSelector;
-};
-
-export type RegexSelectorCombinator = ' ' | '>' | '+' | '~' | ':has(+)' | ':has(~)';
-
-export type RegexSelectorWithoutCompination = {
-	nodeName?: string;
-	attrName?: string;
-	attrValue?: string;
-};
 
 export type Report<T extends RuleConfigValue, O = null> = Report1<T, O> | Report2 | (Report1<T, O> & Report2);
 

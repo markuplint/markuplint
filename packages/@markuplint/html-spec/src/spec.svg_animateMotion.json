@@ -1,0 +1,73 @@
+// https://svgwg.org/specs/animations/#AnimateMotionElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-2
+{
+	"contentModel": {
+		"contents": [
+			{
+				"choice": [
+					[
+						{
+							"oneOrMore": [":model(SVGDescriptive)", "svg|script"]
+						},
+						{
+							"optional": "svg|mpath"
+						}
+					],
+					[
+						{
+							"optional": "svg|mpath"
+						},
+						{
+							"oneOrMore": [":model(SVGDescriptive)", "svg|script"]
+						}
+					]
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#SVGAnimationAdditionAttrs": ["additive", "accumulate"],
+		"#SVGAnimationEventAttrs": ["onbegin", "onend", "onrepeat"],
+		"#SVGAnimationTargetElementAttrs": ["href"],
+		"#SVGAnimationTimingAttrs": [
+			"begin",
+			"dur",
+			"end",
+			"min",
+			"max",
+			"restart",
+			"repeatCount",
+			"repeatDur",
+			"fill"
+		],
+		"#SVGAnimationValueAttrs": ["calcMode", "values", "keyTimes", "keySplines", "from", "to", "by"],
+		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+	},
+	"attributes": {
+		// https://svgwg.org/specs/animations/#AnimateMotionElementPathAttribute
+		"path": {
+			"type": "<svg-path>"
+		},
+		// https://svgwg.org/specs/animations/#KeyPointsAttribute
+		"keyPoints": {
+			"type": "<key-points>"
+		},
+		// https://svgwg.org/specs/animations/#RotateAttribute
+		"rotate": {
+			"type": "<rotate>"
+		},
+		// https://svgwg.org/specs/animations/#OriginAttribute
+		"origin": {
+			"type": "<origin>",
+			"defaultValue": "default"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": false
+	}
+}

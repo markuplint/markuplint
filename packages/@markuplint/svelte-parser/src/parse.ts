@@ -7,7 +7,7 @@ import { ParserError, ignoreBlock, restoreNode } from '@markuplint/parser-utils'
 import svelteParse from './svelte-parser';
 import { traverse } from './traverse';
 
-export const parse: Parse = rawCode => {
+export const parse: Parse = (rawCode, options) => {
 	const blocks = ignoreBlock(
 		rawCode,
 		[
@@ -52,7 +52,7 @@ export const parse: Parse = rawCode => {
 	}
 
 	const nodeList: MLASTNode[] = restoreNode(
-		flattenNodes(traverse(ast, null, blocks.replaced), blocks.replaced),
+		flattenNodes(traverse(ast, null, blocks.replaced, options), blocks.replaced),
 		blocks,
 	);
 

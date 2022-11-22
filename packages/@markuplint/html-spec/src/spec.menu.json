@@ -1,0 +1,53 @@
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element
+// https://www.w3.org/TR/html-aria/#el-menu
+// https://w3c.github.io/html-aria/#el-menu
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": ["li", ":model(script-supporting)"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "list",
+		"permittedRoles": [
+			"group",
+			"listbox",
+			"menu",
+			"menubar",
+			"none",
+			"presentation",
+			"radiogroup",
+			"tablist",
+			"toolbar",
+			"tree",
+			{
+				"name": "directory",
+				"deprecated": true
+			}
+		],
+		"1.1": {
+			"permittedRoles": [
+				"directory",
+				"group",
+				"listbox",
+				"menu",
+				"menubar",
+				"none",
+				"presentation",
+				"radiogroup",
+				"tablist",
+				"toolbar",
+				"tree"
+			]
+		}
+	}
+}

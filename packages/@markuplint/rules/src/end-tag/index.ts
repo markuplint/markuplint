@@ -1,30 +1,17 @@
 import { createRule } from '@markuplint/ml-core';
-
-const voidElements = [
-	'area',
-	'base',
-	'br',
-	'col',
-	'embed',
-	'hr',
-	'img',
-	'input',
-	'link',
-	'meta',
-	'param',
-	'source',
-	'track',
-	'wbr',
-];
+import { isVoidElement } from '@markuplint/ml-spec';
 
 export default createRule<boolean>({
-	defaultServerity: 'warning',
+	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		if (document.endTag === 'never') {
 			return;
 		}
 		await document.walkOn('Element', el => {
-			if (voidElements.some(vE => vE === el.nodeName.toLowerCase())) {
+			if (el.isOmitted) {
+				return;
+			}
+			if (isVoidElement(el)) {
 				return;
 			}
 			if (el.closeTag != null) {

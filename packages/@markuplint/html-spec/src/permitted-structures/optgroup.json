@@ -1,8 +1,0 @@
-{
-	"tag": "optgroup",
-	"contents": [
-		{
-			"zeroOrMore": "option"
-		}
-	]
-}

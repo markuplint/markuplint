@@ -1,63 +1,83 @@
+import { readFile } from 'fs/promises';
 import path from 'path';
 
-import $RefParser from '@apidevtools/json-schema-ref-parser';
-import { getAttrSpecs } from '@markuplint/ml-spec';
+import { resolveNamespace } from '@markuplint/ml-spec';
+import { getAttrSpecs } from '@markuplint/ml-spec/lib/specs/get-attr-specs';
+import Ajv, { type ValidateFunction } from 'ajv';
 import { sync as glob } from 'glob';
-import { Validator } from 'jsonschema';
+import strip from 'strip-json-comments';
 
 import htmlSpec, { specs } from '../index';
 
+const schemas = {
+	element: {
+		$id: '@markuplint/ml-spec/schemas/element.schema.json',
+		...require('../../ml-spec/schemas/element.schema.json'),
+	},
+	aria: {
+		$id: '@markuplint/ml-spec/schemas/aria.schema.json',
+		...require('../../ml-spec/schemas/aria.schema.json'),
+	},
+	contentModels: {
+		$id: '@markuplint/ml-spec/schemas/content-models.schema.json',
+		...require('../../ml-spec/schemas/content-models.schema.json'),
+	},
+	globalAttributes: {
+		$id: '@markuplint/ml-spec/schemas/global-attributes.schema.json',
+		...require('../../ml-spec/schemas/global-attributes.schema.json'),
+	},
+	attributes: {
+		$id: '@markuplint/ml-spec/schemas/attributes.schema.json',
+		...require('../../ml-spec/schemas/attributes.schema.json'),
+	},
+	types: {
+		$id: '@markuplint/types/types.schema.json',
+		...require('../../types/types.schema.json'),
+	},
+};
+
 test('structure', () => {
 	specs.forEach(el => {
-		getAttrSpecs(el.name, htmlSpec);
+		const { localName, namespaceURI } = resolveNamespace(el.name);
+		getAttrSpecs(localName, namespaceURI, htmlSpec);
 	});
 });
 
 describe('schema', () => {
-	const map = [
+	const map: [name: string, validator: ValidateFunction, targetFiles: string][] = [
 		[
-			'permitted-structures',
-			path.resolve(__dirname, '../../ml-spec/schemas/permitted-structures.schema.json'),
-			path.resolve(__dirname, 'permitted-structures'),
+			'spec.*.json',
+			new Ajv({
+				schemas: [
+					schemas.element,
+					schemas.aria,
+					schemas.contentModels,
+					schemas.globalAttributes,
+					schemas.attributes,
+					schemas.types,
+				],
+			}).getSchema(schemas.element.$id)!,
+			path.resolve(__dirname, 'spec.*.json'),
 		],
-		// [
-		// 	'attributes',
-		// 	path.resolve(__dirname, '../../ml-spec/schemas/attributes.schema.json'),
-		// 	path.resolve(__dirname, 'attributes'),
-		// ],
 		[
-			'global-attributes',
-			path.resolve(__dirname, '../../ml-spec/schemas/global-attributes.schema.json'),
-			path.resolve(__dirname, 'global-attributes'),
-		],
-		[
-			'aria-in-html',
-			path.resolve(__dirname, '../../ml-spec/schemas/wai-aria.schema.json'),
-			path.resolve(__dirname, 'aria-in-html'),
+			'spec-common.attributes.json',
+			new Ajv({
+				schemas: [schemas.globalAttributes, schemas.attributes, schemas.types],
+			}).getSchema(schemas.globalAttributes.$id)!,
+			path.resolve(__dirname, 'spec-common.attributes.json'),
 		],
 	];
 
-	for (const [testName, schamaPath, targetDir] of map) {
+	for (const [testName, validator, targetFiles] of map) {
 		test(testName, async () => {
-			const schema = await $RefParser.bundle(schamaPath);
-			const validator = new Validator();
-			const attributes = glob(path.resolve(targetDir, '*.json')).map(attr => path.resolve(targetDir, attr));
-			attributes.forEach(jsonPath => {
-				// eslint-disable-next-line @typescript-eslint/no-var-requires
-				const json = require(jsonPath);
-				try {
-					const res = validator.validate(json, schema as any);
-					if (!res.valid) {
-						// eslint-disable-next-line no-console
-						console.warn(res);
-						throw new SyntaxError(`Invalid JSON: ${jsonPath}`);
-					}
-				} catch (e) {
-					// eslint-disable-next-line no-console
-					console.log({ target: jsonPath, schema: schamaPath });
-					throw e;
+			const files = glob(targetFiles);
+			for (const jsonPath of files) {
+				const json = JSON.parse(strip(await readFile(jsonPath, { encoding: 'utf-8' })));
+				const isValid = validator(json);
+				if (!isValid) {
+					throw new Error(`${path.basename(jsonPath)} is invalid (${validator.schemaEnv.baseId})`);
 				}
-			});
+			}
 			expect(testName).toBe(testName);
 		});
 	}

@@ -2,7 +2,7 @@
 title: Attribute quotes
 id: attr-value-quotes
 fixable: true
-cateogry: style
+category: style
 ---
 
 # Attribute quotes

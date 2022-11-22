@@ -6,7 +6,7 @@ title: Usecase of regexSelector
 
 Case you follow designed CSS class name like the BEM.
 
-- The block name must be first charactor is upper-alphabet and subsequent is lower-alphabet or numbers.
+- The block name must be first character is upper-alphabet and subsequent is lower-alphabet or numbers.
 - The element name must be lower-alphabet or numbers after owned block name and two underscore.
 - **The element must not be child of no-owned block and/or element.**
 

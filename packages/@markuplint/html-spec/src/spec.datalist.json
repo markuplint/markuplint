@@ -1,0 +1,38 @@
+// https://html.spec.whatwg.org/multipage/form-elements.html#the-datalist-element
+// https://www.w3.org/TR/html-aria/#el-datalist
+// https://w3c.github.io/html-aria/#el-datalist
+{
+	"contentModel": {
+		"contents": [
+			{
+				"choice": [
+					[
+						{
+							"oneOrMore": ":model(phrasing)"
+						}
+					],
+					[
+						{
+							"zeroOrMore": ["option", ":model(script-supporting)"]
+						}
+					]
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "listbox",
+		"permittedRoles": false,
+		"properties": {
+			"global": true,
+			"role": "listbox"
+		}
+	}
+}

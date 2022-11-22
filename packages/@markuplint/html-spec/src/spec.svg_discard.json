@@ -1,0 +1,31 @@
+// https://svgwg.org/specs/animations/#DiscardElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-11
+{
+	"contentModel": {
+		"contents": [
+			{
+				"require": [":model(SVGDescriptive)", "svg|script"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#ARIAAttrs": true,
+		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+	},
+	"attributes": {
+		// https://svgwg.org/specs/animations/#DiscardElementBeginAttribute
+		"begin": {
+			"type": "<begin-value-list>",
+			"defaultValue": "0s"
+		},
+		// https://svgwg.org/specs/animations/#DiscardElementHrefAttribute
+		"href": {
+			"type": "URL"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false
+	}
+}

@@ -1,0 +1,25 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-wbr-element
+// https://www.w3.org/TR/html-aria/#el-wbr
+// https://w3c.github.io/html-aria/#el-wbr
+{
+	"contentModel": {
+		"contents": false
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["none", "presentation"],
+		"properties": {
+			"only": ["aria-hidden"]
+		},
+		"1.1": {
+			"permittedRoles": true
+		}
+	}
+}

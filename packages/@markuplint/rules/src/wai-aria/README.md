@@ -26,6 +26,41 @@ Warn if:
 
 There are settings about **ARIA in HTML** on [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/aria-in-html). And you can disable them because that is draft yet.
 
+## Flowchart
+
+```mermaid
+flowchart TD
+  START[Start] --> EL[Check the element] --> GLOBAL{Does it have\nthe role attribute\nor\nits name starting with `aria-*`?}
+  GLOBAL -->|Yes| GLOBAL2{Is it allowed ARIA attributes?}
+  GLOBAL -->|No| END
+  GLOBAL2 -->|Yes| ARIA_EL[The element can provide ARIA]
+  GLOBAL2 -->|No| GLOBAL2_FAIL[Report] --> END
+  ARIA_EL --> FOREACH[Each `aria-*` attribute]
+  ARIA_EL --> ROLE{Does it have the role attribute?}
+  FOREACH --> PROP1{Is it the allowed prop?\nOr\nIs it the no prohibited prop?}
+  ROLE -->|Yes| ROLE1{Is it overwriting the disallowed role?}
+  ROLE -->|No| END
+  ROLE1 -->|Yes| ROLE1_FAIL[Report] --> ROLE2
+  ROLE1 -->|No| ROLE2{"(OPTIONAL)\nIs it specifying the implicit role?"}
+  ROLE2 -->|Yes| ROLE2_FAIL[Report] --> ROLE3{Does it have\nall required props\naccording to the overwritten role\nthat is no implicit?}
+  ROLE2 -->|No| ROLE3
+  ROLE3 -->|Yes| ROLE4{Is its structure valid?}
+  ROLE3 -->|No| ROLE3_FAIL[Report] --> ROLE4
+  ROLE4 -->|Yes| END
+  ROLE4 -->|No| ROLE4_FAIL[Report] --> END
+  PROP1 -->|Yes| PROP2{"(OPTIONAL)\nIs it the deprecated prop?"}
+  PROP1 -->|No| PROP1_FAIL[Report] --> PROP2
+  PROP2 -->|Yes| PROP2_FAIL[Report] --> PROP3
+  PROP2 -->|No| PROP3{"(OPTIONAL)\nIs it the implicit prop?"}
+  PROP3 -->|Yes| PROP3_FAIL[Report] --> PROP4
+  PROP3 -->|No| PROP4{"(OPTIONAL)\nIs it no invalid value?"}
+  PROP4 -->|Yes| FOREACH_END
+  PROP4 -->|No| PROP4_FAIL[Report] --> FOREACH_END
+  FOREACH_END[loop] --> FOREACH
+  style FOREACH_END stroke-dasharray: 5 5
+  FOREACH_END --> END[End]
+```
+
 ## Rule Details
 
 👎 Examples of **incorrect** code for this rule
@@ -103,6 +138,15 @@ Disallow set the default value of the property/state explicitly.
 - Type: `boolean`
 - Optional
 - Default: `false`
+
+##### `version`
+
+Choose the version of WAI-ARIA to evaluate.
+
+- Type: `"1.1" | "1.2"`
+- Optional
+- Default: `1.2`
+
 - ### Default severity
 
 `error`

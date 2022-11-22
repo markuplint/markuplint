@@ -36,8 +36,8 @@ export default function parseRawTag(
 	const tagWithAttrs = matches[1];
 
 	// eslint-disable-next-line no-control-regex
-	const tagNameSplited = tagWithAttrs.split(/[\u0000\u0009\u000A\u000C\u0020/>]/);
-	const tagName = tagNameSplited[0] || tagNameSplited[1];
+	const tagNameSplitted = tagWithAttrs.split(/[\u0000\u0009\u000A\u000C\u0020/>]/);
+	const tagName = tagNameSplitted[0] || tagNameSplitted[1];
 	if (!tagName || (!reTagName.test(tagName) && !isPotentialCustomElementName(tagName))) {
 		throw new SyntaxError(`Invalid tag name: "${tagName}" in <${tagWithAttrs}>`);
 	}

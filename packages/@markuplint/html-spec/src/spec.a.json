@@ -1,0 +1,58 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element
+// https://www.w3.org/TR/html-aria/#el-a
+// https://w3c.github.io/html-aria/#el-a
+// https://www.w3.org/TR/html-aam-1.0/#:~:text=Collapse%20all-,a%20(represents%20a%20hyperlink),-a%20(no%20href
+{
+	"contentModel": {
+		"contents": [
+			{
+				"transparent": ":not(:model(interactive), a, [tabindex], :has(:model(interactive), a, [tabindex]))"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["href", "target", "download", "ping", "rel", "hreflang", "type", "referrerpolicy"]
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "link",
+		"permittedRoles": [
+			"button",
+			"checkbox",
+			"menuitem",
+			"menuitemcheckbox",
+			"menuitemradio",
+			"option",
+			"radio",
+			"switch",
+			"tab",
+			"treeitem"
+		],
+		"properties": {
+			"global": true,
+			"role": true,
+			"without": [
+				{
+					"type": "not-recommended",
+					"name": "aria-disabled",
+					"value": "true",
+					"alt": {
+						"method": "remove-attr",
+						"target": "href"
+					}
+				}
+			]
+		},
+		"conditions": {
+			":not([href])": {
+				"implicitRole": false,
+				"permittedRoles": true,
+				"namingProhibited": true
+			}
+		}
+	}
+}

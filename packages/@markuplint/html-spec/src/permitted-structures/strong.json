@@ -1,8 +1,0 @@
-{
-	"tag": "strong",
-	"contents": [
-		{
-			"zeroOrMore": "#flow"
-		}
-	]
-}

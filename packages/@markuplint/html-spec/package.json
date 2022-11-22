@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/html-spec",
-	"version": "2.8.0",
+	"version": "3.0.0-alpha.5",
 	"description": "A specification of HTML Living Standard for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -15,17 +15,17 @@
 		"gen": "ts-node gen/index.ts; prettier --write index.json"
 	},
 	"devDependencies": {
-		"@apidevtools/json-schema-ref-parser": "^9.0.9",
 		"@types/cheerio": "^0.22.31",
-		"@types/cli-progress": "^3.9.2",
+		"@types/cli-progress": "^3.11.0",
 		"@types/node-fetch": "2",
-		"cheerio": "^1.0.0-rc.10",
-		"cli-progress": "^3.10.0",
-		"fast-xml-parser": "^4.0.7",
-		"jsonschema": "^1.4.0",
-		"node-fetch": "2"
+		"ajv": "^8.11.0",
+		"cheerio": "^1.0.0-rc.12",
+		"cli-progress": "^3.11.2",
+		"fast-xml-parser": "^4.0.10",
+		"node-fetch": "2",
+		"strip-json-comments": "3"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "2.1.1"
+		"@markuplint/ml-spec": "3.0.0-alpha.5"
 	}
 }

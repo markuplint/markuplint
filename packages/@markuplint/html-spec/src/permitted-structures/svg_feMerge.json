@@ -1,8 +1,0 @@
-{
-	"tag": "feMerge",
-	"contents": [
-		{
-			"zeroOrMore": ["#SVGDescriptive", "svg:feMergeNode", "svg:script"]
-		}
-	]
-}

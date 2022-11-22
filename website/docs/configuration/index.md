@@ -35,6 +35,7 @@ The priority applied names are:
   "rules": {},
   "nodeRules": [],
   "childNodeRules": [],
+  "pretenders": [],
   "overrides": {}
 }
 ```
@@ -47,6 +48,7 @@ The priority applied names are:
 - [`excludeFiles`](#properties/exclude-files)
 - [`rules`](#properties/rules)
 - [`nodeRules` &amp; `childNodeRules`](#properties/node-rules-&-child-node-rules)
+- [`pretenders`](#properties/pretenders)
 - [`overrides`](#properties/overrides)
 
 ### Specification about paths {#properties/specification-about-paths}
@@ -180,7 +182,8 @@ interface Config {
 ```json
 {
   "parserOptions": {
-    "ignoreFrontMatter": true
+    "ignoreFrontMatter": true,
+    "authoredElementName": ["AuthoredElement"]
   }
 }
 ```
@@ -202,12 +205,35 @@ prop: value
 </html>
 ```
 
+#### `authoredElementName`
+
+- **Type**: `string` | `RegExp` | `Function` | `(string|RegExp|Function)[]`
+- **Default**: `void`
+
+If you use a view library, the parser detects a component as a native HTML element if you name it with only lower-case characters.
+Each parser has a default pattern, but you should specify the `authoredElementName` option if you need different naming patterns.
+
+```html
+<template>
+  <custom><!-- It detects as a native HTML element if not specified. --></custom>
+</template>
+```
+
+```json
+{
+  "parserOptions": {
+    "authoredElementName": ["custom"]
+  }
+}
+```
+
 #### Interface
 
 ```ts
 interface Config {
   parserOptions?: {
     ignoreFrontMatter?: boolean;
+    authoredElementName?: string | RegExp | Function | (string | RegExp | Function)[];
   };
 }
 ```
@@ -231,7 +257,7 @@ But this is the format for version `1.x`, so it's **deprecated**.
 
 ```json
 {
-  // Depraceted
+  // Deprecated
   "specs": ["@markuplint/vue-spec", "./path/to/custom-specs/any-lang"]
 }
 ```
@@ -245,11 +271,11 @@ interface Config {
         [regex: string]: string;
       }
     /**
-     * @Depraceted
+     * @Deprecated
      */
     | string[]
     /**
-     * @Depraceted
+     * @Deprecated
      */
     | string;
 }
@@ -523,6 +549,15 @@ Support syntax and operators:
 | Column combinator                                | <code>div \|\| span</code>                                                                | ❌      |
 | Multiple selectors                               | `div, span`                                                                               | ✅      |
 
+##### Extended selectors
+
+| Syntax                | Description                                                                                                                               |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `:closest(selectors)` | Concept: [`Element.closest`](https://dom.spec.whatwg.org/#ref-for-dom-element-closest%E2%91%A0) method                                    |
+| `:aria(has name)`     | [ARIA pseudo-class](https://github.com/markuplint/markuplint/tree/v3/packages/%40markuplint/selector#aria-pseudo-class)                   |
+| `:role(heading)`      | [ARIA Role pseudo-class](https://github.com/markuplint/markuplint/tree/v3/packages/%40markuplint/selector#aria-pseudo-class)              |
+| `:model(interactive)` | [Content Model pseudo-class](https://github.com/markuplint/markuplint/tree/v3/packages/%40markuplint/selector#content-model-pseudo-class) |
+
 #### `regexSelector`
 
 You can select elements by using `regexSelector` instead of the `selector` property.
@@ -530,7 +565,7 @@ You can select elements by using `regexSelector` instead of the `selector` prope
 The `regexSelector` property has `nodeName`, `attrName`, and `attrValue` properties
 that are optional regular expression.
 So each of these enables to omit.
-It is AND condition if combinate.
+It is AND condition if combine.
 
 ```json
 {
@@ -683,6 +718,150 @@ The above is the same as CSS selector `el1 el2 > el3 + el4 ~ el5`.
 
 - [Check designed CSS class name](regex-selector-sample#case-1)
 - [Check filenames of images](regex-selector-sample#case-2)
+
+### `pretenders`
+
+In **React**, **Vue**, and more, It cannot evaluate custom components as HTML elements. The `pretenders` option resolves that.
+
+It evaluates components as HTML elements on each rule if you specify a selector for a component and properties of an element that it provides.
+
+```json
+{
+  "pretenders": [
+    {
+      "selector": "List",
+      "as": "ul"
+    },
+    {
+      "selector": "Item",
+      "as": "li"
+    }
+  ]
+}
+```
+
+<!-- prettier-ignore-start -->
+```jsx
+<List>{/* Evaluate as <ul> */}
+  <Item />{/* Evaluate as <li> */}
+  <Item />{/* Evaluate as <li> */}
+  <Item />{/* Evaluate as <li> */}
+</List>
+```
+<!-- prettier-ignore-end -->
+
+```ts
+type Pretender = {
+  selector: string;
+  as: string | OriginalNode;
+};
+```
+
+#### `selector`
+
+It is required, and you should specify the selector with string.
+
+#### `as`
+
+It is required. You should specify an element name with strings or an element with properties.
+
+```ts
+type OriginalNode = {
+  element: string;
+  namespace?: 'svg';
+
+  inheritAttrs?: boolean;
+  attrs?: {
+    name: string;
+    value?:
+      | string
+      | {
+          fromAttr: string;
+        };
+  }[];
+
+  aria?: {
+    name?:
+      | boolean
+      | {
+          fromAttr: string;
+        };
+  };
+};
+```
+
+#### `as.inheritAttrs`
+
+If an element has attributes that the defined component has.
+
+```jsx
+const MyComponent = props => {
+  return (
+    <div {...props} role="region">
+      {props.children}
+    </div>
+  );
+};
+```
+
+```json
+{
+  "selector": "MyComponent",
+  "as": {
+    "element": "div",
+    "inheritAttrs": true,
+    "attrs": [
+      {
+        "name": "role",
+        "value": "region"
+      }
+    ]
+  }
+}
+```
+
+#### `as.aria.name`
+
+Specify the accessible name of an component.
+You set true if the component has the name clearly.
+If not, you set the property name that refs the name to `fromAttr`.
+
+```jsx
+const MyIcon = ({ label }) => {
+  return (
+    <svg role="img" aria-label={label}>
+      <rect />
+    </svg>
+  );
+};
+```
+
+```json
+{
+  "selector": "MyIcon",
+  "as": {
+    "element": "svg",
+    "attrs": [
+      {
+        "name": "role",
+        "value": "img"
+      }
+    ],
+    "aria": {
+      "name": {
+        "fromAttr": "label"
+      }
+    }
+  }
+}
+```
+
+```jsx
+{
+  /* The accessible name is "my icon name". */
+}
+<MyIcon label="my icon name" />;
+```
 
 ### `overrides` {#properties/overrides}
 

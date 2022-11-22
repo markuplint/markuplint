@@ -1,6 +1,6 @@
 {
 	"name": "markuplint",
-	"version": "2.10.1",
+	"version": "3.0.0-alpha.5",
 	"description": "A Linter for All Markup Languages.",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
@@ -20,23 +20,23 @@
 		"@types/cli-color": "^2.0.2",
 		"@types/debug": "^4.1.7",
 		"@types/has-yarn": "^1.0.1",
-		"@types/meow": "6.0.0",
+		"@types/meow": "^6.0.0",
 		"@types/uuid": "^8.3.4",
 		"execa": "5"
 	},
 	"dependencies": {
-		"@markuplint/create-rule-helper": "2.3.3",
-		"@markuplint/file-resolver": "2.5.3",
-		"@markuplint/html-parser": "2.2.2",
-		"@markuplint/html-spec": "2.8.0",
-		"@markuplint/i18n": "2.1.1",
-		"@markuplint/ml-ast": "2.0.1-dev.20220307.0",
-		"@markuplint/ml-config": "2.1.0",
-		"@markuplint/ml-core": "2.3.3",
-		"@markuplint/ml-spec": "2.1.1",
-		"@markuplint/rules": "2.4.3",
+		"@markuplint/create-rule-helper": "3.0.0-alpha.5",
+		"@markuplint/file-resolver": "3.0.0-alpha.5",
+		"@markuplint/html-parser": "3.0.0-alpha.5",
+		"@markuplint/html-spec": "3.0.0-alpha.5",
+		"@markuplint/i18n": "3.0.0-alpha.5",
+		"@markuplint/ml-ast": "3.0.0-alpha.5",
+		"@markuplint/ml-config": "3.0.0-alpha.5",
+		"@markuplint/ml-core": "3.0.0-alpha.5",
+		"@markuplint/ml-spec": "3.0.0-alpha.5",
+		"@markuplint/rules": "3.0.0-alpha.5",
 		"chokidar": "^3.5.3",
-		"cli-color": "^2.0.2",
+		"cli-color": "^2.0.3",
 		"debug": "^4.3.4",
 		"detect-installed": "^2.0.4",
 		"eastasianwidth": "^0.2.0",
@@ -47,7 +47,7 @@
 		"os-locale": "5",
 		"strict-event-emitter": "^0.2.4",
 		"strip-ansi": "6",
-		"tslib": "^2.3.1",
-		"uuid": "^8.3.2"
+		"tslib": "^2.4.0",
+		"uuid": "8"
 	}
 }

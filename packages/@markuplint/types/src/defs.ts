@@ -1,7 +1,7 @@
 import type { Defs, CssSyntaxTokenizer } from './types';
 
 import { checkMultiTypes } from './check-multi-types';
-import { getCandicate } from './get-candicate';
+import { getCandidate } from './get-candidate';
 import { matched, matches, unmatched } from './match-result';
 import { splitUnit, isFloat, isUint, isInt } from './primitive';
 import { isBCP47 } from './rfc/is-bcp-47';
@@ -295,8 +295,8 @@ export const types: Defs = {
 				return matched();
 			}
 			if (value[0] === '_') {
-				const candicate = getCandicate(value, keywords);
-				return unmatched(value, 'unexpected-token', { candicate });
+				const candidate = getCandidate(value, keywords);
+				return unmatched(value, 'unexpected-token', { candidate });
 			}
 			return matches(isBrowserContextName())(value);
 		},
@@ -446,7 +446,7 @@ export const types: Defs = {
 			if (value === 'any') {
 				return matched();
 			}
-			const tokens = new TokenCollection(value, { speificSeparator: 'x' });
+			const tokens = new TokenCollection(value, { specificSeparator: 'x' });
 			const [width, sep, height, ...tail] = tokens;
 			if (!width) {
 				return unmatched(value, 'unexpected-token');
@@ -535,6 +535,7 @@ export const types: Defs = {
 		},
 	},
 
+	// DO NOT USE: Issue #564
 	'<class-list>': {
 		ref: 'https://www.w3.org/TR/SVG/styling.html#ClassAttribute',
 		syntax: {

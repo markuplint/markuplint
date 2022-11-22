@@ -1,7 +1,7 @@
 ---
 title: Disallow hard-code the id attribute
 id: no-hard-code-id
-category: maintenability
+category: maintainability
 ---
 
 # Disallow hard-code the id attribute
@@ -30,7 +30,7 @@ const Component = ({ id }) => <div id={id}></div>;
 ### Interface
 
 - Type: `boolean`
-- Deafult Value: `true`
+- Default Value: `true`
 
 ### Default severity
 

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/svelte-parser",
-	"version": "2.2.4",
+	"version": "3.0.0-alpha.5",
 	"description": "Svelte parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -16,10 +16,10 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "2.2.2",
-		"@markuplint/ml-ast": "2.0.1-dev.20220307.0",
-		"@markuplint/parser-utils": "2.2.1",
-		"svelte": "^3.46.6",
-		"tslib": "^2.3.1"
+		"@markuplint/html-parser": "3.0.0-alpha.5",
+		"@markuplint/ml-ast": "3.0.0-alpha.5",
+		"@markuplint/parser-utils": "3.0.0-alpha.5",
+		"svelte": "^3.50.1",
+		"tslib": "^2.4.0"
 	}
 }

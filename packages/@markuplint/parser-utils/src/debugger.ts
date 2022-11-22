@@ -1,4 +1,4 @@
-import type { MLASTAttr, MLASTNode } from '@markuplint/ml-ast';
+import type { MLASTAttr, MLASTNode, MLToken } from '@markuplint/ml-ast';
 
 export function nodeListToDebugMaps(nodeList: MLASTNode[], withAttr = false) {
 	return nodeList
@@ -47,23 +47,10 @@ export function attributesToDebugMaps(attributes: MLASTAttr[]) {
 	});
 }
 
-function tokenDebug<
-	N extends {
-		startOffset: number;
-		endOffset: number;
-		startLine: number;
-		endLine: number;
-		startCol: number;
-		endCol: number;
-		nodeName?: string;
-		name?: string;
-		potentialName?: string;
-		type?: string;
-		raw: string;
-	},
->(n: N, type = '') {
+function tokenDebug<N extends MLToken>(n: N, type = '') {
 	return `[${n.startLine}:${n.startCol}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${
-		n.nodeName || n.potentialName || n.name || n.type || type
+		// @ts-ignore
+		n.potentialName || n.nodeName || n.name || n.type || type
 	}: ${visibleWhiteSpace(n.raw)}`;
 }
 

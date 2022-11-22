@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/types",
-	"version": "2.2.0",
+	"version": "3.0.0-alpha.5",
 	"description": "Types of attributes and properties and more",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -25,8 +25,8 @@
 	},
 	"devDependencies": {
 		"@types/bcp-47": "1",
-		"@types/css-tree": "^1.0.7",
+		"@types/css-tree": "1",
 		"@types/debug": "^4.1.7",
-		"@types/whatwg-mimetype": "^2.1.1"
+		"@types/whatwg-mimetype": "2"
 	}
 }

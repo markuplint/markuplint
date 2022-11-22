@@ -1,0 +1,30 @@
+// https://html.spec.whatwg.org/multipage/image-maps.html#attr-map-name
+// https://www.w3.org/TR/html-aria/#el-map
+// https://w3c.github.io/html-aria/#el-map
+{
+	"contentModel": {
+		"contents": [
+			{
+				"transparent": "*"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/image-maps.html#attr-map-name
+		"name": {
+			// TODO: "The value must not include whitespace"
+			"type": "NoEmptyAny"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": false
+	}
+}

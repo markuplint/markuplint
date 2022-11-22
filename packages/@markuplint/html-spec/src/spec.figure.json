@@ -1,0 +1,52 @@
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-figure-element
+// https://www.w3.org/TR/html-aria/#el-figure
+// https://w3c.github.io/html-aria/#el-figure
+{
+	"contentModel": {
+		"contents": [
+			{
+				"choice": [
+					[
+						{
+							"require": "figcaption"
+						},
+						{
+							"oneOrMore": ":model(flow)"
+						}
+					],
+					[
+						{
+							"oneOrMore": ":model(flow)"
+						},
+						{
+							"require": "figcaption"
+						}
+					],
+					[
+						{
+							"oneOrMore": ":model(flow)"
+						}
+					]
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "figure",
+		// If the figure has no figcaption descendant: Any role
+		"permittedRoles": true,
+		"conditions": {
+			":has(figcaption)": {
+				// If the figure has a figcaption descendant: No role.
+				"permittedRoles": false
+			}
+		}
+	}
+}

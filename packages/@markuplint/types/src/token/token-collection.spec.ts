@@ -42,7 +42,7 @@ test('parse', () => {
 	]);
 });
 
-test('parse camma separator', () => {
+test('parse comma separator', () => {
 	expect(new TokenCollection('a,, ,b,cde', { separator: 'comma' }).toJSON()).toStrictEqual([
 		{
 			offset: 0,
@@ -87,7 +87,7 @@ test('parse camma separator', () => {
 	]);
 });
 
-test('A camma is an ident if the comma is not a separator', () => {
+test('A comma is an ident if the comma is not a separator', () => {
 	expect(new TokenCollection('a ,cde , f').toJSON()).toStrictEqual([
 		{
 			offset: 0,

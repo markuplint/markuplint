@@ -1,0 +1,77 @@
+// https://svgwg.org/svg2-draft/struct.html#SymbolElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-68
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [
+					":model(SVGAnimation)",
+					":model(SVGDescriptive)",
+					":model(SVGPaintServer)",
+					":model(SVGShape)",
+					":model(SVGStructural)",
+					"svg|a",
+					"svg|clipPath",
+					"svg|filter",
+					"svg|foreignObject",
+					"svg|image",
+					"svg|marker",
+					"svg|mask",
+					"svg|script",
+					"svg|style",
+					"svg|switch",
+					"svg|text",
+					"svg|view"
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": ["x", "y", "width", "height"]
+	},
+	"attributes": {
+		// https://svgwg.org/svg2-draft/coords.html#PreserveAspectRatioAttribute
+		"preserveAspectRatio": {
+			"type": "<preserve-aspect-ratio>",
+			"defaultValue": "xMidYMid meet"
+		},
+		// https://svgwg.org/svg2-draft/coords.html#ViewBoxAttribute
+		"viewBox": {
+			"type": "<view-box>"
+		},
+		// https://svgwg.org/svg2-draft/struct.html#SymbolElementRefXAttribute
+		"refX": {
+			"type": [
+				"<svg-length>",
+				"<percentage>",
+				"<number>",
+				{
+					"enum": ["left", "center", "right"]
+				}
+			]
+		},
+		// https://svgwg.org/svg2-draft/struct.html#SymbolElementRefYAttribute
+		"refY": {
+			"type": [
+				"<svg-length>",
+				"<percentage>",
+				"<number>",
+				{
+					"enum": ["top", "center", "bottom"]
+				}
+			]
+		}
+	},
+	"aria": {
+		"implicitRole": "graphics-object",
+		"permittedRoles": {
+			"core-aam": true,
+			"graphics-aam": true
+		}
+	}
+}

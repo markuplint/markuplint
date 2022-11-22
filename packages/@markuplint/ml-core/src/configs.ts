@@ -1,11 +1,11 @@
 import type { Config } from '@markuplint/ml-config';
 
-export const configs: Record<string, Config> = {
-	recommended: require('../markuplint-recommended.json'),
+export async function getPreset(name: string): Promise<Config> {
+	const json = await import(`@markuplint/config-presets/preset.${name}.json`).catch(() => new Error());
 
-	// For test
-	___test: {
-		// @ts-ignore
-		___configs: 'test',
-	},
-};
+	if (json instanceof Error) {
+		throw new ReferenceError(`Preset markuplint:${name} is not found`);
+	}
+
+	return json.default as Config;
+}

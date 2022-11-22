@@ -1,0 +1,26 @@
+// https://html.spec.whatwg.org/multipage/sections.html#the-nav-element
+// https://www.w3.org/TR/html-aria/#el-nav
+// https://w3c.github.io/html-aria/#el-nav
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(flow)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "navigation",
+		"permittedRoles": ["menu", "menubar", "none", "presentation", "tablist"],
+		"1.1": {
+			"permittedRoles": ["menu", "menubar", "tablist"]
+		}
+	}
+}

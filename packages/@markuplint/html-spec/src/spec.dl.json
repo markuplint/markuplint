@@ -1,0 +1,56 @@
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element
+// https://www.w3.org/TR/html-aria/#el-dl
+// https://w3c.github.io/html-aria/#el-dl
+{
+	"contentModel": {
+		"contents": [
+			{
+				"choice": [
+					[
+						{
+							"oneOrMore": [
+								{
+									"zeroOrMore": ":model(script-supporting)"
+								},
+								{
+									"oneOrMore": "dt"
+								},
+								{
+									"zeroOrMore": ":model(script-supporting)"
+								},
+								{
+									"oneOrMore": "dd"
+								},
+								{
+									"zeroOrMore": ":model(script-supporting)"
+								}
+							]
+						}
+					],
+					[
+						{
+							"zeroOrMore": ":model(script-supporting)"
+						},
+						{
+							"oneOrMore": "div"
+						},
+						{
+							"zeroOrMore": ":model(script-supporting)"
+						}
+					]
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["group", "list", "none", "presentation"]
+	}
+}

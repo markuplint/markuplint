@@ -7,3 +7,4 @@ export * from './ignore-block';
 export * from './ignore-front-matter';
 export * from './debugger';
 export * from './parser-error';
+export * from './detect-element-type';

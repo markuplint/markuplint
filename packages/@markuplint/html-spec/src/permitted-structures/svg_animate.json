@@ -1,8 +1,0 @@
-{
-	"tag": "animate",
-	"contents": [
-		{
-			"zeroOrMore": ["#SVGDescriptive", "svg:script"]
-		}
-	]
-}

@@ -1,0 +1,37 @@
+// https://html.spec.whatwg.org/multipage/sections.html#the-footer-element
+// https://www.w3.org/TR/html-aria/#el-footer
+// https://w3c.github.io/html-aria/#el-footer
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(flow):not(header, footer, :has(header, footer))"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "contentinfo",
+		"permittedRoles": ["group", "presentation", "none"],
+		"conditions": {
+			":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])": {
+				"implicitRole": "generic",
+				"namingProhibited": true
+			}
+		},
+		"1.1": {
+			"implicitRole": "contentinfo",
+			"conditions": {
+				":has(article, aside, main, nav, section, [role=article], [role=complementary], [role=main], [role=navigation], [role=region])": {
+					"implicitRole": false
+				}
+			}
+		}
+	}
+}

@@ -5,19 +5,22 @@ export default createRule({
 		const message = t('{0} is {1:c}', t('the {0}', 'attribute name'), 'duplicated');
 		await document.walkOn('Element', node => {
 			const attrNameStack: string[] = [];
-			for (const attr of node.attributes) {
+			for (const attr of node.getAttributeTokens()) {
 				if (attr.isDuplicatable) {
 					continue;
 				}
-				const attrName = attr.getName();
-				const name = node.isCustomElement ? attrName.potential : attrName.potential.toLowerCase();
+				const attrName = attr.name;
+				const name = node.elementType === 'html' ? attrName.toLowerCase() : attrName;
 				if (attrNameStack.includes(name)) {
+					const scope = attr.nameNode || attr;
 					report({
-						scope: node,
+						scope: {
+							rule: node.rule,
+							startLine: scope.startLine,
+							startCol: scope.startCol,
+							raw: scope.raw,
+						},
 						message,
-						line: attrName.line,
-						col: attrName.col,
-						raw: attrName.raw,
 					});
 				} else {
 					attrNameStack.push(name);

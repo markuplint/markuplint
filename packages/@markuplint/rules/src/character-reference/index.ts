@@ -1,3 +1,5 @@
+import type { Report, RuleConfigValue } from '@markuplint/ml-config';
+
 import { createRule, getLocationFromChars } from '@markuplint/ml-core';
 
 const defaultChars = ['"', '&', '<', '>'];
@@ -5,7 +7,7 @@ const ignoreParentElement = ['script', 'style'];
 
 export default createRule({
 	async verify({ document, report, t }) {
-		const targetNodes: Parameters<typeof report>[0][] = [];
+		const targetNodes: Report<RuleConfigValue>[] = [];
 
 		await document.walkOn('Text', node => {
 			if (node.parentNode && ignoreParentElement.includes(node.parentNode.nodeName.toLowerCase())) {
@@ -28,26 +30,22 @@ export default createRule({
 			const ms = severity === 'error' ? 'must' : 'should';
 			const message = t(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			for (const attr of node.attributes) {
-				if (
-					attr.attrType === 'ps-attr' ||
-					(attr.attrType === 'html-attr' && attr.isDynamicValue) ||
-					(attr.attrType === 'html-attr' && attr.isDirective)
-				) {
+				if (attr.isDynamicValue || attr.isDirective) {
 					continue;
 				}
-				const value = attr.getValue();
+				const valueNode = attr.valueNode;
 				targetNodes.push({
 					scope: node,
-					line: value.line,
-					col: value.col,
-					raw: value.raw,
+					line: valueNode?.startLine,
+					col: valueNode?.startCol,
+					raw: valueNode?.raw,
 					message,
 				});
 			}
 		});
 
 		for (const targetNode of targetNodes) {
-			if (!('scope' in targetNode && 'line' in targetNode)) {
+			if (!('scope' in targetNode && 'line' in targetNode && targetNode.line != null)) {
 				continue;
 			}
 			const escapedText = targetNode.raw.replace(/&(?:[a-z]+|#[0-9]+|x[0-9]);/gi, $0 => '*'.repeat($0.length));

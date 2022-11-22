@@ -1,0 +1,19 @@
+{
+	"extends": [
+		"markuplint:code-styles",
+		"markuplint:html-standard",
+		"markuplint:a11y",
+		"markuplint:performance",
+		"markuplint:security",
+		"markuplint:rdfa"
+	],
+	"rules": {
+		/**
+		 * No hard coding **ID**
+		 *
+		 * The component that hard-coded ID cannot mount to an app duplicated because the IDs must be unique in a document.
+		 * Recommend to specify dynamic IDs to avoid doing that.
+		 */
+		"no-hard-code-id": true
+	}
+}

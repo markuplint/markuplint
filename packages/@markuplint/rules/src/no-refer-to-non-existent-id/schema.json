@@ -3,6 +3,16 @@
 	"definitions": {
 		"value": {
 			"type": "boolean"
+		},
+		"option": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"ariaVersion": {
+					"type": "string",
+					"enum": ["1.1", "1.2"]
+				}
+			}
 		}
 	},
 	"oneOf": [
@@ -14,6 +24,7 @@
 			"additionalProperties": false,
 			"properties": {
 				"value": { "$ref": "#/definitions/value" },
+				"option": { "$ref": "#/definitions/option" },
 				"severity": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
 				},

@@ -21,9 +21,6 @@ This file is _loaded automatically_ when CLI executes or open a target file thro
 {
   "rules": {
     "attr-duplication": true,
-    "attr-equal-space-after": true,
-    "attr-equal-space-before": true,
-    "attr-spacing": true,
     "attr-value-quotes": true,
     "case-sensitive-attr-name": true,
     "case-sensitive-tag-name": true,
@@ -35,9 +32,9 @@ This file is _loaded automatically_ when CLI executes or open a target file thro
     "doctype": true,
     "end-tag": true,
     "id-duplication": true,
-    "indentation": true,
     "ineffective-attr": true,
     "invalid-attr": true,
+    "label-has-control": true,
     "landmark-roles": true,
     "no-boolean-attr-value": true,
     "no-default-value": true,
@@ -66,7 +63,7 @@ If you want the part of structures only to apply some rule then set the tag name
 {
   "nodeRules": [
     {
-      "tagName": "main",
+      "selector": "main",
       "rules": {
         "class-naming": "/[a-z]+(__[a-z]+)?/"
       }

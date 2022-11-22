@@ -50,7 +50,7 @@ test('Zero comma (disallowToSurroundBySpaces)', () => {
 test('Location of the token', () => {
 	const type = { token: 'Accept', separator: 'comma' } as const;
 	expect(checkList('x/y;a=b', type)).toStrictEqual({
-		candicate: 'x/y',
+		candidate: 'x/y',
 		column: 4,
 		expects: [{ type: 'format', value: 'MIME Type with no parameters' }],
 		length: 4,
@@ -63,7 +63,7 @@ test('Location of the token', () => {
 		ref: 'https://html.spec.whatwg.org/multipage/input.html#attr-input-accept',
 	});
 	expect(checkList('x/y,x/y;a=b', type)).toStrictEqual({
-		candicate: 'x/y',
+		candidate: 'x/y',
 		column: 8,
 		expects: [{ type: 'format', value: 'MIME Type with no parameters' }],
 		length: 4,
@@ -76,7 +76,7 @@ test('Location of the token', () => {
 		ref: 'https://html.spec.whatwg.org/multipage/input.html#attr-input-accept',
 	});
 	expect(checkList('x/y\n,\nx/y;a=b', type)).toStrictEqual({
-		candicate: 'x/y',
+		candidate: 'x/y',
 		column: 4,
 		expects: [{ type: 'format', value: 'MIME Type with no parameters' }],
 		length: 4,
@@ -120,7 +120,7 @@ test('Missing comma', () => {
 	const type = { token: 'Accept', separator: 'comma' } as const;
 	expect(checkList('a/b,x/y a/z', type)).toStrictEqual({
 		column: 9,
-		candicate: ',a/z',
+		candidate: ',a/z',
 		expects: undefined,
 		length: 3,
 		line: 1,

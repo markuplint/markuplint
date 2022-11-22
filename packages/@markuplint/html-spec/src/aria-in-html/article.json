@@ -1,8 +1,0 @@
-{
-	"permittedRoles": {
-		"roles": ["application", "document", "feed", "main", "none", "presentation", "region"]
-	},
-	"implicitRole": {
-		"role": "article"
-	}
-}

@@ -7,9 +7,7 @@ const spec: ExtendedSpec = {
 				key: {
 					type: 'NoEmptyAny',
 					description: 'A special attribute for list rendering',
-					condition: {
-						self: '[v-for]',
-					},
+					condition: '[v-for]',
 				},
 				ref: {
 					type: 'NoEmptyAny',

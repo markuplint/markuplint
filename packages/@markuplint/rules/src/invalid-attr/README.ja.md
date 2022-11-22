@@ -142,6 +142,14 @@ HTML の仕様には存在しない、View ライブラリやテンプレート�
 
 パーサーによってはディレクティブを判定して除外します。（例えば [vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/vue-parser) では `v-` の文字列で始まるディレクティブは除外します。）
 
+#### `allowToAddPropertiesForPretender`
+
+HTML 要素に偽装しているコンポーネントのプロパティを追加できるようにします。デフォルトは真です。
+`pretenders` オプションを使用している場合に`false`に設定されていると、存在しない属性が見つかると警告してしまいます。
+
+Type: `boolean`
+Default: `true`
+
 ### デフォルトの警告の厳しさ
 
 `error`

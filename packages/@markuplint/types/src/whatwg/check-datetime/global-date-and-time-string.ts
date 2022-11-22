@@ -49,7 +49,7 @@ export const checkGlobalDateAndTimeString: CustomSyntaxChecker = () =>
 			datetimeTokenCheck.date,
 			datetimeTokenCheck.localDateTimeSeparator,
 			datetimeTokenCheck.hour,
-			datetimeTokenCheck.coron,
+			datetimeTokenCheck.colon,
 			datetimeTokenCheck.minute,
 			second => {
 				if (!second || !second.value) {
@@ -58,10 +58,10 @@ export const checkGlobalDateAndTimeString: CustomSyntaxChecker = () =>
 
 				const secondTokens = TokenCollection.fromPatterns(second, [/:?/, /[0-9]*/, /\.?/, /[0-9]*/]);
 
-				log('Scond Part: "%s" => %O', secondTokens.value, secondTokens);
+				log('Second Part: "%s" => %O', secondTokens.value, secondTokens);
 
 				const res = secondTokens.eachCheck(
-					datetimeTokenCheck.coron,
+					datetimeTokenCheck.colon,
 					datetimeTokenCheck.second,
 					datetimeTokenCheck.decimalPointOrEnd,
 					datetimeTokenCheck.secondFractionalPart,

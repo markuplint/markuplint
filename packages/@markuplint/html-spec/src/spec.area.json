@@ -1,0 +1,64 @@
+// https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element
+// https://www.w3.org/TR/html-aria/#el-area
+// https://w3c.github.io/html-aria/#el-area
+// https://www.w3.org/TR/html-aam-1.0/#:~:text=Comments-,area%20(represents%20a%20hyperlink),-area%20(no%20href
+{
+	"contentModel": {
+		"contents": false,
+		"descendantOf": "map"
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["href", "target", "download", "ping", "rel", "hreflang", "type", "referrerpolicy"]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/image-maps.html#attr-area-alt
+		"alt": {
+			"type": "Any",
+			"required": true,
+			"condition": "[href]"
+		},
+		// https://html.spec.whatwg.org/multipage/image-maps.html#attr-area-coords
+		"coords": {
+			"type": {
+				"token": "Number",
+				"disallowToSurroundBySpaces": true,
+				"separator": "comma"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/image-maps.html#attr-area-shape
+		"shape": {
+			"type": {
+				"enum": ["rect", "circle", "poly", "default"],
+				"missingValueDefault": "rect",
+				"invalidValueDefault": "rect"
+			}
+		}
+	},
+	"aria": {
+		"implicitRole": "link",
+		"permittedRoles": false,
+		"properties": {
+			"global": true,
+			"role": "link"
+		},
+		"conditions": {
+			":not([href])": {
+				"implicitRole": false,
+				"permittedRoles": ["button", "link"],
+				"namingProhibited": true
+			}
+		},
+		"1.1": {
+			"conditions": {
+				":not([href])": {
+					"implicitRole": false,
+					"permittedRoles": false
+				}
+			}
+		}
+	}
+}

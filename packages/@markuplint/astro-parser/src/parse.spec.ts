@@ -175,3 +175,20 @@ it('namespace', () => {
 	expect(doc2.nodeList[2].nodeName).toBe('div');
 	expect((doc2.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
 });
+
+describe('Issue', () => {
+	test('#549', () => {
+		const ast = parse(`<ul>{
+	list.map(() => <li></li>)
+}</ul>`);
+		const map = nodeListToDebugMaps(ast.nodeList);
+		expect(map).toEqual([
+			'[1:1]>[1:5](0,4)ul: <ul>',
+			'[1:5]>[2:17](4,22)MustacheTag: {⏎→list.map(()␣=>␣',
+			'[2:17]>[2:21](22,26)li: <li>',
+			'[2:21]>[2:26](26,31)li: </li>',
+			'[2:26]>[3:2](31,34)MustacheTag: )⏎}',
+			'[3:2]>[3:7](34,39)ul: </ul>',
+		]);
+	});
+});

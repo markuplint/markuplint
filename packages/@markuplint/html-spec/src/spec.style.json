@@ -1,0 +1,35 @@
+// https://html.spec.whatwg.org/multipage/semantics.html#the-style-element
+// https://www.w3.org/TR/html-aria/#el-style
+// https://w3c.github.io/html-aria/#el-style
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#text"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-style-media
+		"media": {
+			"type": "<media-query-list>"
+		},
+		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking
+		"blocking": {
+			"type": {
+				"enum": ["render"]
+			}
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": false
+	}
+}

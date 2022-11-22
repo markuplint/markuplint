@@ -1,8 +1,0 @@
-{
-	"tag": "ol",
-	"contents": [
-		{
-			"zeroOrMore": ["li", "#script-supporting"]
-		}
-	]
-}

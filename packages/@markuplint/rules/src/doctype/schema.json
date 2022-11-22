@@ -9,7 +9,7 @@
 			"type": "object",
 			"additionalProperties": false,
 			"properties": {
-				"denyObsolateType": {
+				"denyObsoleteType": {
 					"type": "boolean"
 				}
 			}

@@ -1,0 +1,109 @@
+// https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element
+// https://www.w3.org/TR/html-aria/#el-img
+// https://w3c.github.io/html-aria/#el-img
+{
+	"contentModel": {
+		"contents": false
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "srcset", "sizes", "width"],
+		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "loading", "fetchpriority"]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-alt
+		"alt": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-src
+		"src": {
+			"type": "URL",
+			"required": true
+		},
+		// https://html.spec.whatwg.org/multipage/image-maps.html#attr-hyperlink-usemap
+		"usemap": {
+			"type": "HashName",
+			"condition": ":is(:not(a):not(button)) img"
+		},
+		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-ismap
+		"ismap": {
+			"type": "Boolean",
+			"condition": "a[href] img"
+		},
+		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-decoding
+		"decoding": {
+			"type": {
+				"enum": ["sync", "async", "auto"],
+				"invalidValueDefault": "auto",
+				"missingValueDefault": "auto"
+			}
+		}
+	},
+	"aria": {
+		"implicitRole": "img",
+		"permittedRoles": [
+			"button",
+			"checkbox",
+			"link",
+			"menuitem",
+			"menuitemcheckbox",
+			"menuitemradio",
+			"option",
+			"progressbar",
+			"radio",
+			"scrollbar",
+			"separator",
+			"slider",
+			"switch",
+			"tab",
+			"treeitem"
+		],
+		"conditions": {
+			"[alt=\"\"]": {
+				"implicitRole": "presentation",
+				"permittedRoles": false,
+				"properties": {
+					"only": [
+						{
+							"name": "aria-hidden",
+							"value": "true"
+						}
+					]
+				}
+			},
+			":not([alt]):aria(has no name)": {
+				"implicitRole": "img",
+				"permittedRoles": false,
+				"properties": {
+					"only": [
+						{
+							"name": "aria-hidden",
+							"value": "true"
+						}
+					]
+				}
+			}
+		},
+		"1.1": {
+			"permittedRoles": [
+				"button",
+				"checkbox",
+				"link",
+				"menuitem",
+				"menuitemcheckbox",
+				"menuitemradio",
+				"option",
+				"progressbar",
+				"scrollbar",
+				"separator",
+				"slider",
+				"switch",
+				"tab",
+				"treeitem"
+			]
+		}
+	}
+}

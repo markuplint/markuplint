@@ -1,0 +1,199 @@
+{
+	"definitions": {
+		"ContentModel": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["contents"],
+			"properties": {
+				"contents": {
+					"oneOf": [
+						{
+							"type": "array",
+							"items": { "$ref": "#/definitions/PermittedContentPattern" }
+						},
+						{ "type": "boolean" }
+					]
+				},
+				"descendantOf": { "type": "string" },
+				"conditional": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["condition", "contents"],
+						"properties": {
+							"condition": {
+								"type": "string"
+							},
+							"contents": {
+								"oneOf": [
+									{
+										"type": "array",
+										"items": { "$ref": "#/definitions/PermittedContentPattern" }
+									},
+									{ "type": "boolean" }
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"ContentType": {
+			"oneOf": [
+				{
+					"description": "Element",
+					"type": "string",
+					"pattern": "^[^#]+$"
+				},
+				{ "$ref": "#/definitions/Category" }
+			]
+		},
+		"Category": {
+			"type": "string",
+			"enum": [
+				"#text",
+				"#phrasing",
+				"#flow",
+				"#interactive",
+				"#heading",
+				"#sectioning",
+				"#metadata",
+				"#embedded",
+				"#palpable",
+				"#script-supporting",
+				"#SVGAnimation",
+				"#SVGBasicShapes",
+				"#SVGContainer",
+				"#SVGDescriptive",
+				"#SVGFilterPrimitive",
+				"#SVGFont",
+				"#SVGGradient",
+				"#SVGGraphics",
+				"#SVGGraphicsReferencing",
+				"#SVGLightSource",
+				"#SVGNeverRendered",
+				"#SVGNone",
+				"#SVGPaintServer",
+				"#SVGRenderable",
+				"#SVGShape",
+				"#SVGStructural",
+				"#SVGStructurallyExternal",
+				"#SVGTextContent",
+				"#SVGTextContentChild"
+			]
+		},
+		"Model": {
+			"oneOf": [
+				{ "$ref": "#/definitions/ContentType" },
+				{
+					"type": "array",
+					"items": { "$ref": "#/definitions/ContentType" },
+					"uniqueItems": true
+				}
+			]
+		},
+		"PermittedContentPattern": {
+			"type": "object",
+			"oneOf": [
+				{ "$ref": "#/definitions/PermittedContentRequire" },
+				{ "$ref": "#/definitions/PermittedContentOptional" },
+				{ "$ref": "#/definitions/PermittedContentOneOrMore" },
+				{ "$ref": "#/definitions/PermittedContentZeroOrMore" },
+				{ "$ref": "#/definitions/PermittedContentChoice" },
+				{ "$ref": "#/definitions/PermittedContentTransparent" }
+			]
+		},
+		"PermittedContentRequire": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["require"],
+			"properties": {
+				"require": { "$ref": "#/definitions/Model" },
+				"max": { "type": "number" },
+				"min": { "type": "number" },
+				"_TODO_": { "type": "string" }
+			}
+		},
+		"PermittedContentOptional": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["optional"],
+			"properties": {
+				"optional": { "$ref": "#/definitions/Model" },
+				"max": { "type": "number" },
+				"_TODO_": { "type": "string" }
+			}
+		},
+		"PermittedContentOneOrMore": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["oneOrMore"],
+			"properties": {
+				"oneOrMore": {
+					"oneOf": [
+						{ "$ref": "#/definitions/Model" },
+						{
+							"type": "array",
+							"items": { "$ref": "#/definitions/PermittedContentPattern" }
+						}
+					]
+				},
+				"max": { "type": "number" },
+				"_TODO_": { "type": "string" }
+			}
+		},
+		"PermittedContentZeroOrMore": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["zeroOrMore"],
+			"properties": {
+				"zeroOrMore": {
+					"oneOf": [
+						{ "$ref": "#/definitions/Model" },
+						{
+							"type": "array",
+							"items": { "$ref": "#/definitions/PermittedContentPattern" }
+						}
+					]
+				},
+				"max": { "type": "number" },
+				"_TODO_": { "type": "string" }
+			}
+		},
+		"PermittedContentChoice": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["choice"],
+			"properties": {
+				"choice": {
+					"type": "array",
+					"items": {
+						"type": "array",
+						"items": { "$ref": "#/definitions/PermittedContentPattern" }
+					},
+					"minItems": 2,
+					"maxItems": 5
+				},
+				"_TODO_": { "type": "string" }
+			}
+		},
+		"PermittedContentTransparent": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["transparent"],
+			"properties": {
+				"transparent": {
+					"type": "string"
+				}
+			}
+		}
+	},
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"__contentModel": {
+			"$ref": "#/definitions/ContentModel"
+		}
+	}
+}
