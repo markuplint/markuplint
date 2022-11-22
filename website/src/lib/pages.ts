@@ -22,11 +22,10 @@ export function getAllPostIds() {
   });
 }
 
-export async function getPostData(paths: string[], locale: string, defaultLocale: string) {
-  const candidatedLocaleFile = path.resolve(pagesDirectory, `${paths.join(path.sep)}.${locale}.{md,mdx}`);
+export async function getPostData(paths: string[]) {
   const candidatedFile = path.resolve(pagesDirectory, `${paths.join(path.sep)}.{md,mdx}`);
   const candidatedDir = path.resolve(pagesDirectory, ...paths, 'index.{md,mdx}');
-  const fullPath = sync(candidatedLocaleFile)[0] || sync(candidatedFile)[0] || sync(candidatedDir)[0];
+  const fullPath = sync(candidatedFile)[0] || sync(candidatedDir)[0];
   if (!fullPath) {
     throw new Error('404');
   }

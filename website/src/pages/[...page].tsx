@@ -36,9 +36,9 @@ export async function getStaticPaths() {
   };
 }
 
-export async function getStaticProps({ params, locale, defaultLocale }) {
+export async function getStaticProps({ params }) {
   const filePath: string[] = params.page;
-  const data = await getPostData(filePath, locale, defaultLocale);
+  const data = await getPostData(filePath);
   return {
     props: data,
   };
