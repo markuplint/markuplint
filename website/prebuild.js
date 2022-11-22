@@ -5,6 +5,7 @@ const util = require('util');
 
 const glob = require('glob');
 const matter = require('gray-matter');
+const { editUrlBase } = require('./config');
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 const asyncGlob = util.promisify(glob);
@@ -27,7 +28,7 @@ async function copy() {
         await readFile(path.resolve(projectRoot, pathFromRoot), { encoding: 'utf-8' }),
       );
       // NOTE: `glob` returns `/` separated paths, even on Windows.
-      frontMatter.custom_edit_url = `https://github.com/markuplint/markuplint/edit/main/${pathFromRoot}`;
+      frontMatter.custom_edit_url = `${editUrlBase}/${pathFromRoot}`;
       const rewrote = matter.stringify(content.replace(/\(https:\/\/markuplint\.dev\//g, '(/'), frontMatter);
       await writeFile(dist, rewrote, { encoding: 'utf-8' });
     }),

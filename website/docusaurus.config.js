@@ -3,6 +3,7 @@
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const { editUrlBase } = require('./config');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -34,7 +35,7 @@ const config = {
           routeBasePath: '/',
           path: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/markuplint/markuplint/edit/main/website',
+          editUrl: `${editUrlBase}/website`,
           editLocalizedFiles: true,
         },
         theme: {
