@@ -32,6 +32,7 @@
 		"bday",
 		"checkings",
 		"clampable",
+		"clsx",
 		"conao3",
 		"delim",
 		"didnt",
@@ -55,6 +56,7 @@
 		"Hirao",
 		"hoge",
 		"impp",
+		"Infima",
 		"inlist",
 		"ipsam",
 		"ＪＱＵＥＲＹ",
@@ -112,7 +114,10 @@
 	"overrides": [
 		{
 			"filename": "packages/@markuplint/types/src/whatwg/check-autocomplete.spec.ts",
-			"words": ["neme", "emall"]
+			"words": [
+				"neme",
+				"emall"
+			]
 		}
 	]
 }
