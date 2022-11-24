@@ -1,6 +1,6 @@
 ---
 title: Tag name case-sensitive
-id: case-sensitive-attr-name
+id: case-sensitive-tag-name
 fixable: true
 category: style
 ---

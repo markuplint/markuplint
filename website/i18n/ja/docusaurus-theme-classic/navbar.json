@@ -1,0 +1,17 @@
+{
+  "item.label.Getting Started": {
+    "message": "markuplintを始める"
+  },
+  "item.label.Rules": {
+    "message": "ルール"
+  },
+  "item.label.Configuration": {
+    "message": "設定"
+  },
+  "item.label.API": {
+    "message": "API"
+  },
+  "item.label.Playground": {
+    "message": "試してみる"
+  }
+}
