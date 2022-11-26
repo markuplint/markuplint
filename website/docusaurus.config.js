@@ -119,6 +119,13 @@ const config = {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
+      algolia: {
+        appId: 'SIO9QLVJBB', // cspell:disable-line
+        apiKey: '9c005a1976113e7cb45e7dd417d8eb0f',
+        indexName: 'markuplint',
+        // See: https://discourse.algolia.com/t/algolia-searchbar-is-not-working-with-docusaurus-v2/14659
+        contextualSearch: false,
+      },
     }),
 };
 
