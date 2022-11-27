@@ -2,6 +2,7 @@
 title: Permitted contents
 id: permitted-contents
 category: validation
+severity: error
 ---
 
 # Permitted contents
@@ -11,8 +12,6 @@ Warn if a child element has a not allowed element or text node.
 This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/html-spec/index.json).
 
 It is possible to make the structure robust by setting element relationships on template engines such as custom elements and Vue.
-
-## Rule Details
 
 👎 Examples of **incorrect** code for this rule
 
@@ -48,11 +47,11 @@ It is possible to make the structure robust by setting element relationships on 
 ```
 <!-- prettier-ignore-end -->
 
-### Setting value
+---
 
-- Type: `Array`
-- Optional
-- Default value: `[]`
+## Details
+
+### Setting value
 
 Specify the target element for which you want to set a rule as an array. In the following example, rules are specified for each of the custom elements `x-container` and `x-item`.
 
@@ -152,9 +151,7 @@ The `choice` keyword has the following meanings for the specified array:
 }
 ```
 
-### Options
-
-#### `ignoreHasMutableChildren`
+### Setting `ignoreHasMutableChildren` option
 
 - Type: `boolean`
 - Default: `true`
@@ -169,7 +166,3 @@ html
 	body
 		p lorem...
 ```
-
-### Default severity
-
-`error`

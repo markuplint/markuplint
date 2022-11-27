@@ -2,6 +2,7 @@
 title: Disallowed elements
 id: disallowed-element
 category: validation
+severity: error
 ---
 
 # Disallowed elements
@@ -12,13 +13,10 @@ This is a generic rule for searching the disallowed element.
 
 Use [`permitted-contents`](../permitted-contents) rule if you expect to check conformance according to HTML Standard.
 
-## Rule Details
-
-When specified `{ "disallowed-element": ["hgroup"] }`:
-
 👎 Examples of **incorrect** code for this rule
 
 ```html
+<!-- "disallowed-element": ["hgroup"] -->
 <div>
   <hgroup><h1>Heading</h1></hgroup>
 </div>
@@ -27,10 +25,15 @@ When specified `{ "disallowed-element": ["hgroup"] }`:
 👍 Examples of **correct** code for this rule
 
 ```html
+<!-- "disallowed-element": ["hgroup"] -->
 <div>
   <h1>Heading</h1>
 </div>
 ```
+
+---
+
+## Configuration Example
 
 If specified to `rules`, It searches the element from a document.
 
@@ -56,12 +59,3 @@ If specified to `nodeRules` or `childNodeRules`, It searches the element from ch
   ]
 }
 ```
-
-### Interface
-
-- Type: `string[]`
-- Default Value: `[]`
-
-### Default severity
-
-`error`

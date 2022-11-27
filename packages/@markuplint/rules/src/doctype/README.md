@@ -3,13 +3,12 @@ title: DOCTYPE declaration
 id: doctype
 fixable: false
 category: validation
+severity: error
 ---
 
 # DOCTYPE declaration
 
 Warns when doesn't declare DOCTYPE. Also warns when declared obsolete type.
-
-## Rule Details
 
 👎 Examples of **incorrect** code for this rule
 
@@ -43,26 +42,3 @@ Warns when doesn't declare DOCTYPE. Also warns when declared obsolete type.
 </html>
 ```
 <!-- prettier-ignore-end -->
-
-### Setting value
-
-Type: `"always"`
-
-| value      | default | description                                                           |
-| ---------- | ------- | --------------------------------------------------------------------- |
-| `"always"` | ✓       | Warns when doesn't declare DOCTYPE. Ignore when document is fragment. |
-
-### Options
-
-#### `denyObsoleteType`
-
-Type: `boolean`
-
-| value   | default | description                                   |
-| ------- | ------- | --------------------------------------------- |
-| `true`  | ✓       | Warns that the type is not `<!doctype html>`. |
-| `false` |         | Allow any type.                               |
-
-### Default severity
-
-`error`
