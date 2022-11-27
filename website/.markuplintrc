@@ -1,4 +1,5 @@
 {
+  "excludeFiles": ["./node_modules/**/*"],
   "parser": {
     ".tsx$": "@markuplint/jsx-parser"
   },

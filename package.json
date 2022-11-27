@@ -19,7 +19,7 @@
 		"check:build": "find . -type f -name \"*.d.ts\" -print | xargs grep \"packages/@markuplint\"",
 		"cli": "./packages/markuplint/bin/markuplint",
 		"site:dev": "cd website; yarn; yarn site:start",
-		"site:lint": "prettier --write './website/**/*{ts,tsx,mdx}' './website/*{json,rc,js}'; eslint --fix './website/**/*.{ts,tsx}' './website/*.{js,ts}'; yarn cli './website/**/*.tsx'",
+		"site:lint": "cd website; yarn; yarn site:lint",
 		"site:build": "cd website; yarn; yarn site:build",
 		"pg:dev": "cd playground; yarn pg:dev",
 		"pg:build": "cd playground; yarn pg:build",
