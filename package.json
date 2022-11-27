@@ -18,7 +18,7 @@
 		"all": "yarn lint; yarn clean; yarn gen; yarn build; yarn schema; yarn test:clear; yarn test;",
 		"check:build": "find . -type f -name \"*.d.ts\" -print | xargs grep \"packages/@markuplint\"",
 		"cli": "./packages/markuplint/bin/markuplint",
-		"site:dev": "cd website; yarn; yarn site:dev",
+		"site:dev": "cd website; yarn; yarn site:start",
 		"site:lint": "prettier --write './website/**/*{ts,tsx,mdx}' './website/*{json,rc,js}'; eslint --fix './website/**/*.{ts,tsx}' './website/*.{js,ts}'; yarn cli './website/**/*.tsx'",
 		"site:build": "cd website; yarn; yarn site:build",
 		"pg:dev": "cd playground; yarn pg:dev",
