@@ -16,7 +16,8 @@
 						"minLength": 1
 					}
 				}
-			]
+			],
+			"description": "Sets a string that represents a regular expression or its array. Regular expressions are interpreted as regular expressions by enclosing them in `/`. It is possible to add a flag like `/.*/ ig` (regular expressions can only be interpreted by JavaScript)"
 		}
 	},
 	"oneOf": [

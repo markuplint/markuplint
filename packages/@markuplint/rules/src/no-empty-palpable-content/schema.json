@@ -9,10 +9,14 @@
 			"additionalProperties": false,
 			"properties": {
 				"extendsExposableElements": {
-					"type": "boolean"
+					"type": "boolean",
+					"default": "true",
+					"description": "Include elements that are not palpable content, but are exposed to the accessibility tree. The palpable content model doesn't include some elements that are `li`, `dt`, `dd`, `th`, `td`, and more. This option exists to that detect those elements that are empty."
 				},
 				"ignoreIfAriaBusy": {
-					"type": "boolean"
+					"type": "boolean",
+					"default": "true",
+					"description": "Avoid evaluating it if the element has `aria-busy=true`."
 				}
 			}
 		}

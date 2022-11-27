@@ -9,10 +9,14 @@
 			"additionalProperties": false,
 			"properties": {
 				"expected-once": {
-					"type": "boolean"
+					"type": "boolean",
+					"default": "true",
+					"description": "Warn if there is a duplicate `h1` tag in the document."
 				},
 				"in-document-fragment": {
-					"type": "boolean"
+					"type": "boolean",
+					"default": "false",
+					"description": "Set it to `true` if you want this rule to apply within document fragment rather than the entire document."
 				}
 			}
 		}

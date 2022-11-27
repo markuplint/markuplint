@@ -3,7 +3,12 @@
 	"definitions": {
 		"value": {
 			"type": "string",
-			"enum": ["double", "single"]
+			"enum": ["double", "single"],
+			"default": "double",
+			"_description": {
+				"double": "Warns if the attribute value is not quoted on double quotation mark.",
+				"single": "Warns if the attribute value is not quoted on single quotation mark."
+			}
 		}
 	},
 	"oneOf": [

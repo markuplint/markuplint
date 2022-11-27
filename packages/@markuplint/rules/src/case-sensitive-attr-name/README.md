@@ -3,6 +3,7 @@ title: Attribute name case-sensitive
 id: case-sensitive-attr-name
 fixable: true
 category: style
+severity: warning
 ---
 
 # Attribute name case-sensitive
@@ -10,11 +11,8 @@ category: style
 Warns that the attribute name is not in one of uppercase or lowercase letters. Unlike HTML, foreign elements (SVG or MathML) are case sensitive, so they are not subject to this rule.
 
 > Attributes have a name and a value. Attribute names must consist of one or more characters other than controls, U+0020 SPACE, U+0022 ("), U+0027 ('), U+003E (>), U+002F (/), U+003D (=), and noncharacters. In the HTML syntax, attribute names, even those for foreign elements, may be written with any mix of ASCII lower and ASCII upper alphas.
-> [cite: https://html.spec.whatwg.org/#attributes-2]
 
-**🔧 Fixable**
-
-## Rule Details
+Cite: https://html.spec.whatwg.org/#attributes-2
 
 👎 Examples of **incorrect** code for this rule
 
@@ -28,18 +26,3 @@ Warns that the attribute name is not in one of uppercase or lowercase letters. U
 ```html
 <div data-attr></div>
 ```
-
-### Setting value
-
-Type: `"lower" | "upper" | "no-upper" | "no-lower"`
-
-`"no-upper"` and `"no-lower"` are deprecated.
-
-| value                    | default | description                                        |
-| ------------------------ | ------- | -------------------------------------------------- |
-| `"lower"` (`"no-upper"`) | ✓       | Warns that the attribute name is not in lowercase. |
-| `"upper"` (`"no-lower"`) |         | Warns that the attribute name is not in uppercase. |
-
-### Default severity
-
-`warning`

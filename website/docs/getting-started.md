@@ -10,7 +10,7 @@ $ npx markuplint target.html
 
 ## The required spec
 
-- Node.js v12.4.0 or later
+- Node.js v14.6.0 or later
 
 ## Using in your project
 

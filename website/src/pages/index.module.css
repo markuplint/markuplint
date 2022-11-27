@@ -5,6 +5,7 @@
   overflow: hidden;
   background-image: url('/img/hero.jpg');
   background-size: cover;
+  color: #fff;
 }
 
 @media (min-resolution: 2dppx) {

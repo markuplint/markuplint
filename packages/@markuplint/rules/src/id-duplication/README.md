@@ -2,6 +2,7 @@
 title: The "id" attribute value duplication
 id: id-duplication
 category: validation
+severity: error
 ---
 
 # The "id" attribute value duplication
@@ -9,9 +10,8 @@ category: validation
 Warns that **id** attribute value were duplicated in one document.
 
 > When specified on HTML elements, the **id** attribute value must be unique amongst all the IDs in the element's tree and must contain at least one character. The value must not contain any ASCII whitespace.
-> [cite: https://html.spec.whatwg.org/#global-attributes]
 
-## Rule Details
+Cite: https://html.spec.whatwg.org/#global-attributes
 
 👎 Examples of **incorrect** code for this rule
 
@@ -42,11 +42,3 @@ Warns that **id** attribute value were duplicated in one document.
   </body>
 </html>
 ```
-
-### Setting value
-
-none
-
-### Default severity
-
-`error`

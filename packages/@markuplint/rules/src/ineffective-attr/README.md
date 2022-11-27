@@ -3,13 +3,12 @@ title: Disallow the ineffective attribute
 id: ineffective-attr
 fixable: true
 category: style
+severity: warning
 ---
 
 # Disallow the ineffective attribute
 
 Warn that if the attribute specified cannot affect (in other words, mean-less) the element.
-
-## Rule Details
 
 👎 Examples of **incorrect** code for this rule
 
@@ -46,12 +45,3 @@ Warn that if the attribute specified cannot affect (in other words, mean-less) t
   const code = 'It is inline';
 </script>
 ```
-
-### Interface
-
-- Type: `boolean`
-- Default Value: `true`
-
-### Default severity
-
-`warning`

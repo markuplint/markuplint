@@ -2,13 +2,12 @@
 title: No use event handler attribute
 id: no-use-event-handler-attr
 category: maintainability
+severity: warning
 ---
 
 # No use event handler attribute
 
 Warn when specifying the event handler attribute.
-
-## Rule Details
 
 👎 Examples of **incorrect** code for this rule
 
@@ -25,19 +24,3 @@ Warn when specifying the event handler attribute.
   document.getElementById('foo').addEventListener('click', () => doSomething());
 </script>
 ```
-
-### Interface
-
-- Type: `boolean`
-- Default Value: `true`
-
-### Options
-
-#### `ignore`
-
-Specify the event handler to ignore as string or string array.
-It accepts even in a regex format.
-
-### Default severity
-
-`warning`

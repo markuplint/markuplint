@@ -2,6 +2,7 @@
 title: Level-one heading in document required
 id: required-h1
 category: a11y
+severity: error
 ---
 
 # Level-one heading in document required
@@ -9,8 +10,6 @@ category: a11y
 Warn if there is no h1 element in the document.
 
 This rule is based on [Techniques H42](https://www.w3.org/WAI/WCAG21/Techniques/html/H42) for [Success Criterion 1.3.1](https://www.w3.org/TR/WCAG21/#info-and-relationships) in WCAG, [Practices for skipping heading level](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#Accessibility_concerns) and [Web Accessibility Tutorials - Headings](https://www.w3.org/WAI/tutorials/page-structure/headings/).
-
-## Rule Details
 
 👎 Examples of **incorrect** code for this rule
 
@@ -42,52 +41,3 @@ This rule is based on [Techniques H42](https://www.w3.org/WAI/WCAG21/Techniques/
   </body>
 </html>
 ```
-
-### Setting value
-
-```json
-{
-  "rules": {
-    "required-h1": true
-  }
-}
-```
-
-```json
-{
-  "rules": {
-    "required-h1": {
-      "option": {
-        "expected-once": true,
-        "in-document-fragment": true
-      }
-    }
-  }
-}
-```
-
-- Type: `boolean`
-- Optional
-- Default value: `true`
-
-### Options
-
-### `expected-once`
-
-Warn if there is a duplicate `h1` tag in the document.
-
-- Type: `boolean`
-- Optional
-- Default value: `true`
-
-### `in-document-fragment`
-
-Set it to `true` if you want this rule to apply within document fragment rather than the entire document.
-
-- Type: `boolean`
-- Optional
-- Default value: `false`
-
-### Default severity
-
-`error`

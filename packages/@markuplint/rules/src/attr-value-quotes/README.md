@@ -3,15 +3,12 @@ title: Attribute quotes
 id: attr-value-quotes
 fixable: true
 category: style
+severity: warning
 ---
 
 # Attribute quotes
 
 Warns if the attribute value is not **quoted**.
-
-**🔧 Fixable**
-
-## Rule Details
 
 👎 Examples of **incorrect** code for this rule
 
@@ -22,10 +19,9 @@ Warns if the attribute value is not **quoted**.
 ```
 <!-- prettier-ignore-end -->
 
-`{ attr-value-quotes: ['warning', 'single'] }`
-
 <!-- prettier-ignore-start -->
 ```html
+<!-- "attr-value-quotes": "single" -->
 <div data-attr=value></div>
 <div data-attr="value"></div>
 ```
@@ -39,23 +35,9 @@ Warns if the attribute value is not **quoted**.
 ```
 <!-- prettier-ignore-end -->
 
-`{ attr-value-quotes: ['warning', 'single'] }`
-
 <!-- prettier-ignore-start -->
 ```html
+<!-- "attr-value-quotes": "single" -->
 <div data-attr='value'></div>
 ```
 <!-- prettier-ignore-end -->
-
-### Setting value
-
-Type: `"double" | "single"`
-
-| value      | default | description                                                          |
-| ---------- | ------- | -------------------------------------------------------------------- |
-| `"double"` | ✓       | Warns if the attribute value is not quoted on double quotation mark. |
-| `"single"` |         | Warns if the attribute value is not quoted on single quotation mark. |
-
-### Default severity
-
-`warning`

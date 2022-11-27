@@ -22,7 +22,7 @@ Peace of mind in your markup - A Linter for All Markup Languages.
 $ npx markuplint target.html
 ```
 
-Supported for _Node.js_ `v12.4.0` or later.
+Supported for _Node.js_ `v14.6.0` or later.
 
 ## Usage
 
