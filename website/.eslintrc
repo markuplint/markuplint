@@ -31,5 +31,13 @@
   "globals": {
     "React": true,
     "JSX": true
-  }
+  },
+  "overrides": [
+    {
+      "files": ["./*.mjs"],
+      "rules": {
+        "import/no-named-as-default-member": 0
+      }
+    }
+  ]
 }
