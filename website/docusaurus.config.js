@@ -61,7 +61,9 @@ const config = {
         logo: {
           alt: 'markuplint',
           src: 'img/logo-horizontal.svg',
-          srcDark: 'img/logo-horizontal-dark.svg',
+          srcDark: 'img/logo-horizontal.svg#d',
+          width: 171,
+          height: 32,
         },
         items: [
           {
