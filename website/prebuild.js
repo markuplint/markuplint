@@ -5,6 +5,7 @@ const util = require('util');
 
 const glob = require('glob');
 const matter = require('gray-matter');
+
 const { editUrlBase } = require('./config');
 /* eslint-enable @typescript-eslint/no-var-requires */
 
@@ -36,6 +37,7 @@ async function copy() {
 }
 
 // Main
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {
   await copy();
 })();

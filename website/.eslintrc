@@ -24,7 +24,7 @@
     "import/no-unresolved": [
       2,
       {
-        "ignore": ["^@docusaurus/", "^@site/", "^@theme/"]
+        "ignore": ["^@docusaurus/", "^@site/", "^@theme/", "^@theme-original/"]
       }
     ]
   },
