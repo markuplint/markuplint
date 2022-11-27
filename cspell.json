@@ -74,6 +74,7 @@
 		"MLHTML",
 		"MLML",
 		"nocheck",
+		"nocjsp",
 		"nodeize",
 		"Nodeized",
 		"omittedtag",
@@ -114,10 +115,7 @@
 	"overrides": [
 		{
 			"filename": "packages/@markuplint/types/src/whatwg/check-autocomplete.spec.ts",
-			"words": [
-				"neme",
-				"emall"
-			]
+			"words": ["neme", "emall"]
 		}
 	]
 }
