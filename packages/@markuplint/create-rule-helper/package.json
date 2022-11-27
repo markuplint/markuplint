@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/create-rule-helper",
-	"version": "3.0.0-alpha.5",
+	"version": "3.0.0-alpha.6",
 	"description": "Create rule helper",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -17,7 +17,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/ml-core": "3.0.0-alpha.5",
+		"@markuplint/ml-core": "3.0.0-alpha.6",
 		"glob": "^8.0.3",
 		"mustache": "^4.2.0",
 		"prettier": "^2.7.1",
