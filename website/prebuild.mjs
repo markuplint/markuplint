@@ -1,10 +1,12 @@
 import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
 import { resolve, basename, dirname } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import matter from 'gray-matter';
 
 const { editUrlBase } = (await import('./config.js')).default;
-const __dirname = dirname(new URL(import.meta.url).pathname);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const projectRoot = resolve(__dirname, '../');
 
@@ -12,7 +14,7 @@ const RULES_DIR = 'packages/@markuplint/rules/src';
 const rulesAbsDir = resolve(projectRoot, RULES_DIR);
 
 async function getRulePaths() {
-  const rulesDirFileList = await readdir(rulesAbsDir);
+  const rulesDirFileList = await readdir(pathToFileURL(rulesAbsDir));
   const dirs = (
     await Promise.all(
       rulesDirFileList.map(async name => {
@@ -158,7 +160,7 @@ async function createRuleDocs() {
   };
 
   for (const path of paths) {
-    const { default: schema } = await import(resolve(path, 'schema.json'), { assert: { type: 'json' } });
+    const { default: schema } = await import(pathToFileURL(resolve(path, 'schema.json')), { assert: { type: 'json' } });
     const { value, option } = schema.definitions;
 
     const { name, contents, category } = await createRuleDoc(path, value, option);
