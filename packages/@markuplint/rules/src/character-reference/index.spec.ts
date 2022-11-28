@@ -55,3 +55,24 @@ test('in EJS', async () => {
 	});
 	expect(violations.length).toBe(0);
 });
+
+describe('Issue', () => {
+	test('#577', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<title>Document</title>\n</head>\n<body>\nsample\n</body>\n',
+				)
+			).violations.length,
+		).toBe(0);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<meta charset="UTF-8">\r\n<title>Document</title>\r\n</head>\r\n<body>\r\nsample\r\n</body>\r\n',
+				)
+			).violations.length,
+		).toBe(0);
+	});
+});

@@ -324,6 +324,39 @@ describe('parser', () => {
 		]);
 	});
 
+	it('Without </html>', () => {
+		const doc = parse(`<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset="UTF-8">
+		<title>Document</title>
+	</head>
+	<body>
+		sample
+	</body>
+`);
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:16](0,15)#doctype: <!DOCTYPE␣html>',
+			'[1:16]>[2:2](15,17)#text: ⏎→',
+			'[2:2]>[2:8](17,23)html: <html>',
+			'[2:8]>[3:3](23,26)#text: ⏎→→',
+			'[3:3]>[3:9](26,32)head: <head>',
+			'[3:9]>[4:4](32,36)#text: ⏎→→→',
+			'[4:4]>[4:26](36,58)meta: <meta␣charset="UTF-8">',
+			'[4:26]>[5:3](58,61)#text: ⏎→→',
+			'[5:3]>[5:10](61,68)title: <title>',
+			'[5:10]>[5:18](68,76)#text: Document',
+			'[5:18]>[5:26](76,84)title: </title>',
+			'[5:26]>[6:2](84,86)#text: ⏎→',
+			'[6:2]>[6:9](86,93)head: </head>',
+			'[6:9]>[7:2](93,95)#text: ⏎→',
+			'[7:2]>[7:8](95,101)body: <body>',
+			'[7:8]>[9:2](101,112)#text: ⏎→→sample⏎→',
+			'[9:2]>[9:9](112,119)body: </body>',
+			'[9:9]>[10:1](119,120)#text: ⏎',
+		]);
+	});
+
 	it('standard code', () => {
 		const doc = parse(`
 	<!DOCTYPE html>
