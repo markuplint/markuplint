@@ -64,7 +64,7 @@ export function attrTokenizer(attr: ASTAttribute, rawHtml: string, codeOffset: n
 	const startQuote = createTokenFromRawCode(squotChar, spacesAfterEqual.endOffset, rawHtml);
 	const endQuote = createTokenFromRawCode(squotChar === '{' ? '}' : squotChar, value.endOffset, rawHtml);
 
-	return {
+	const result: MLASTHTMLAttr = {
 		type: 'html-attr',
 		uuid: uuid(),
 		raw: attrToken.raw,
@@ -91,4 +91,25 @@ export function attrTokenizer(attr: ASTAttribute, rawHtml: string, codeOffset: n
 		isFragment: false,
 		isGhost: false,
 	};
+
+	/**
+	 * Detects Template Directive
+	 *
+	 * @see https://docs.astro.build/en/reference/directives-reference/
+	 */
+	const [, directive] = name.raw.match(/^([^:]+):([^:]+)$/) || [];
+	if (directive) {
+		const lowerCaseDirectiveName = directive.toLowerCase();
+		switch (lowerCaseDirectiveName) {
+			case 'class': {
+				result.potentialName = lowerCaseDirectiveName;
+				break;
+			}
+			default: {
+				result.isDirective = true;
+			}
+		}
+	}
+
+	return result;
 }
