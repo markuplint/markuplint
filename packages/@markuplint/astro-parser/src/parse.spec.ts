@@ -191,4 +191,25 @@ describe('Issue', () => {
 			'[3:2]>[3:7](34,39)ul: </ul>',
 		]);
 	});
+
+	test('#575', () => {
+		const ast = parse('<div class:list={["class-name"]}></div>');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:34](0,33)div: <div␣class:list={["class-name"]}>',
+			'[1:6]>[1:33](5,32)class: class:list={["class-name"]}',
+			'  [1:5]>[1:6](4,5)bN: ␣',
+			'  [1:6]>[1:16](5,15)name: class:list',
+			'  [1:16]>[1:16](15,15)bE: ',
+			'  [1:16]>[1:17](15,16)equal: =',
+			'  [1:17]>[1:17](16,16)aE: ',
+			'  [1:17]>[1:18](16,17)sQ: {',
+			'  [1:18]>[1:32](17,31)value: ["class-name"]',
+			'  [1:32]>[1:33](31,32)eQ: }',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'  potentialName: class',
+			'[1:34]>[1:40](33,39)div: </div>',
+		]);
+	});
 });

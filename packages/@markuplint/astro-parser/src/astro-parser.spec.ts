@@ -60,3 +60,26 @@ it('Void Element', () => {
 	}
 	expect(ast.html?.children?.length).toBe(3);
 });
+
+it('Attr and Template Directive', () => {
+	const ast = astroParse('<div a x:y></div>');
+	if (ast instanceof AstroCompileError) {
+		throw ast;
+	}
+	expect(ast.html?.children?.[0].attributes).toStrictEqual([
+		{
+			type: 'Attribute',
+			name: 'a',
+			start: 5,
+			end: 6,
+			value: true,
+		},
+		{
+			type: 'Attribute',
+			name: 'x:y',
+			start: 7,
+			end: 10,
+			value: true,
+		},
+	]);
+});
