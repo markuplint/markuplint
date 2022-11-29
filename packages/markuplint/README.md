@@ -11,11 +11,11 @@
 
 ## Features
 
-- Conformance checking that according to HTML Living Standard, WAI-ARIA, and ARIA in HTML.
-- Supports SVG and CSS Values.
-- Supports React, Vue, Svelte, Pug, PHP, and more.
-- Possible to specify the rule to each element if you use the selector.
-- Possible to create a custom rule.
+- Conformance checking according to _HTML Standard_, _WAI-ARIA_, _ARIA in HTML_, etc.
+- Supports _CSS_ and _SVG_ values.
+- Supports _React_, _Vue_, _Svelte_, _Pug_, _PHP_, and more.
+- Possible to specify the rule for each element if you use _CSS Selector_.
+- Potential to create a custom rule.
 
 ![Screenshot: Violation Report CLI output](https://raw.githubusercontent.com/markuplint/markuplint/main/packages/markuplint/media/screenshot01.png)
 
@@ -40,7 +40,7 @@ $ yarn run markuplint --init
 ```
 
 Answer questions interactively.
-By doing this, needed modules are installed includes `markuplint`.
+By doing this, needed modules are installed, including `markuplint`.
 
 Add a command to the `scripts` option on `package.json`:
 
@@ -94,12 +94,15 @@ Examples
 	$ cat verifyee.html | markuplint
 ```
 
-## Guideline
+## Documentation
 
 - [Getting Started](https://markuplint.dev/getting-started)
 - [Rules](https://markuplint.dev/rules)
 - [Configuration](https://markuplint.dev/configuration)
 - [API](https://markuplint.dev/api-docs)
+
+## Playground
+
 - [Playground](https://playground.markuplint.dev/)
 
 ## Editor Extensions
@@ -112,7 +115,7 @@ Examples
 
 ## Sponsors
 
-[:heart: Sponsor](https://github.com/sponsors/markuplint)
+Need [Sponsors❤️‍🔥](https://github.com/sponsors/markuplint)
 
 ### Personal Supporters
 
