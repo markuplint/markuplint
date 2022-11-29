@@ -1,4 +1,4 @@
-# ![markuplint](https://cdn.jsdelivr.net/gh/YusukeHirao/markuplint/media/logo-v.svg)
+# ![markuplint](https://cdn.jsdelivr.net/gh/markuplint/markuplint@main/media/logo-v.svg)
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Gitter](https://badges.gitter.im/markuplint/community.svg)](https://gitter.im/markuplint/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
