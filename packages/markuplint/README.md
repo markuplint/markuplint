@@ -127,5 +127,5 @@ This linter is inspired by:
 
 - [HTMLHint](http://htmlhint.com/)
 - [ESLint](https://eslint.org/)
-- [stylelint](https://stylelint.io/)
+- [Stylelint](https://stylelint.io/)
 - [textlint](https://textlint.github.io/)
