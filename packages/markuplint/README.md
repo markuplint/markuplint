@@ -1,4 +1,4 @@
-# ![markuplint](https://cdn.rawgit.com/YusukeHirao/markuplint/HEAD/media/logo-v.svg)
+# ![markuplint](https://cdn.jsdelivr.net/gh/YusukeHirao/markuplint/media/logo-v.svg)
 
 [![npm version](https://badge.fury.io/js/markuplint.svg)](https://badge.fury.io/js/markuplint)
 [![Test](https://github.com/markuplint/markuplint/workflows/Test/badge.svg?branch=main)](https://github.com/markuplint/markuplint/actions?query=workflow%3ATest)
@@ -101,9 +101,7 @@ Examples
 
 ## Editor Extensions
 
-| Editor                                                                                                                                                                                                                                                          | Installation Page                                                                                       | Author                                         |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| <a href="https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint"><img src="https://raw.githubusercontent.com/markuplint/markuplint/main/media/vscode.png" width="75" height="82" alt="Visual Studio Code: markuplint extension"></a> | [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint) | [@YusukeHirao](https://github.com/YusukeHirao) |
+- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint)
 
 ## License
 
