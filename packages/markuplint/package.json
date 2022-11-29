@@ -1,6 +1,6 @@
 {
 	"name": "markuplint",
-	"version": "2.11.2",
+	"version": "2.11.3",
 	"description": "A Linter for All Markup Languages.",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
@@ -34,7 +34,7 @@
 		"@markuplint/ml-config": "2.1.0",
 		"@markuplint/ml-core": "2.3.6",
 		"@markuplint/ml-spec": "2.1.2",
-		"@markuplint/rules": "2.4.7",
+		"@markuplint/rules": "2.4.8",
 		"chokidar": "^3.5.3",
 		"cli-color": "^2.0.2",
 		"debug": "^4.3.4",
