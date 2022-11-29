@@ -1,4 +1,4 @@
-# ![markuplint](https://cdn.jsdelivr.net/gh/YusukeHirao/markuplint/media/logo-v.svg)
+# ![markuplint](https://cdn.jsdelivr.net/gh/markuplint/markuplint@main/media/logo-v.svg)
 
 [![npm version](https://img.shields.io/npm/v/markuplint.svg)](https://www.npmjs.com/package/markuplint)
 [![Downloads](https://img.shields.io/npm/dm/markuplint.svg)](https://www.npmjs.com/package/markuplint)
