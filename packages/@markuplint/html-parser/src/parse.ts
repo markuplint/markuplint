@@ -11,8 +11,8 @@ import {
 	optimizeStartsHeadTagOrBodyTagSetup,
 } from './optimize-starts-head-or-body';
 
-export const parse: Parse = (rawCode, offsetOffset = 0, offsetLine = 0, offsetColumn = 0, isIgnoringFrontMatter) => {
-	if (isIgnoringFrontMatter) {
+export const parse: Parse = (rawCode, options) => {
+	if (options?.ignoreFrontMatter) {
 		rawCode = ignoreFrontMatter(rawCode);
 	}
 	const isFragment = isDocumentFragment(rawCode);
@@ -22,7 +22,13 @@ export const parse: Parse = (rawCode, offsetOffset = 0, offsetLine = 0, offsetCo
 		rawCode = data.code;
 	}
 
-	const nodeTree = createTree(rawCode, isFragment, offsetOffset, offsetLine, offsetColumn);
+	const nodeTree = createTree(
+		rawCode,
+		isFragment,
+		options?.offsetOffset ?? 0,
+		options?.offsetLine ?? 0,
+		options?.offsetColumn ?? 0,
+	);
 	const nodeList = flattenNodes(nodeTree, rawCode);
 
 	if (data) {

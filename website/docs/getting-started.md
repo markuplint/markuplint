@@ -1,0 +1,50 @@
+---
+title: Getting started
+---
+
+## Instant using
+
+```
+$ npx markuplint target.html
+```
+
+## The required spec
+
+- Node.js v14.6.0 or later
+
+## Using in your project
+
+Create a [configuration](./configuration) file and install dependencies.
+
+```
+$ npx markuplint --init
+# or
+$ yarn run markuplint --init
+```
+
+Answer questions interactively.
+By doing this, needed modules are installed includes `markuplint`.
+
+Add a command to the `scripts` option on `package.json`:
+
+```json
+{
+  "scripts": {
+    "html:lint": "markuplint **/*.html"
+  }
+}
+```
+
+If you want to change the target path, you can change it for your project.
+
+Execute the script:
+
+```
+$ npm run html:lint
+# or
+$ yarn html:lint
+```
+
+## Using with Visual Studio Code
+
+You can install it from [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint). Or search &ldquo;markuplint&rdquo; on the VS Code extension.

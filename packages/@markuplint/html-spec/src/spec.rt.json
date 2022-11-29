@@ -1,0 +1,24 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-rt-element
+// https://www.w3.org/TR/html-aria/#el-rt
+// https://w3c.github.io/html-aria/#el-rt
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(phrasing)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true,
+		"namingProhibited": true
+	}
+}

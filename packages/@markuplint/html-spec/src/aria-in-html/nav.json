@@ -1,8 +1,0 @@
-{
-	"permittedRoles": {
-		"roles": ["group", "menu", "menubar", "none", "presentation", "tablist"]
-	},
-	"implicitRole": {
-		"role": "navigation"
-	}
-}

@@ -24,9 +24,9 @@ export default async function (files: string[], options: CLIOptions, selectors: 
 					name,
 					...createRule({
 						verify({ document }) {
-							const nodes = document.matchNodes(selectors);
+							const nodes = document.querySelectorAll(selectors);
 							locations.push(
-								...nodes.map(node => {
+								...Array.from(nodes).map(node => {
 									return {
 										file: document.filename || '_NO_FILE_',
 										line: node.startLine,

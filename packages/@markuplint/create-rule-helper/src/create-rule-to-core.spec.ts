@@ -3,7 +3,7 @@ import path from 'path';
 
 import { promises as fse } from 'fs-extra'; // for v12
 
-import { craeteRuleToCore, getRulesDir } from './create-rule-to-core';
+import { createRuleToCore, getRulesDir } from './create-rule-to-core';
 
 const rm =
 	'rm' in fs && fs.rm && typeof fs.rm === 'function'
@@ -42,20 +42,20 @@ afterAll(async () => {
 });
 
 test('error', async () => {
-	await expect(craeteRuleToCore({ name: 'wai-aria', lang: 'JAVASCRIPT', needTest: true })).rejects.toThrow(
+	await expect(createRuleToCore({ name: 'wai-aria', lang: 'JAVASCRIPT', needTest: true })).rejects.toThrow(
 		'A new rule "wai-aria" already exists',
 	);
 });
 
 test('TS', async () => {
-	await craeteRuleToCore({ name: testDirName1, lang: 'TYPESCRIPT', needTest: true });
+	await createRuleToCore({ name: testDirName1, lang: 'TYPESCRIPT', needTest: true });
 	const testDir = await getTestDir(testDirName1);
 	const fileList = await fs.readdir(testDir, { encoding: 'utf-8' });
 	expect(fileList.sort()).toEqual(['README.md', 'index.spec.ts', 'index.ts', 'schema.json']);
 });
 
 test('JS', async () => {
-	await craeteRuleToCore({ name: testDirName2, lang: 'JAVASCRIPT', needTest: false });
+	await createRuleToCore({ name: testDirName2, lang: 'JAVASCRIPT', needTest: false });
 	const testDir = await getTestDir(testDirName2);
 	const fileList = await fs.readdir(testDir, { encoding: 'utf-8' });
 	expect(fileList.sort()).toEqual(['README.md', 'index.js', 'schema.json']);

@@ -1,9 +1,0 @@
-{
-	"tag": "header",
-	"contents": [
-		{
-			"zeroOrMore": "#flow",
-			"notAllowedDescendants": ["header", "footer"]
-		}
-	]
-}

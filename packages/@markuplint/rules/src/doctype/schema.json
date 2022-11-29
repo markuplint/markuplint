@@ -3,14 +3,20 @@
 	"definitions": {
 		"value": {
 			"type": "string",
-			"enum": ["always"]
+			"enum": ["always"],
+			"default": "always",
+			"_description": {
+				"always": "Warns when doesn't declare DOCTYPE. Ignore when document is fragment."
+			}
 		},
 		"option": {
 			"type": "object",
 			"additionalProperties": false,
 			"properties": {
-				"denyObsolateType": {
-					"type": "boolean"
+				"denyObsoleteType": {
+					"type": "boolean",
+					"default": "true",
+					"description": "Warns that the type is not `<!doctype html>`."
 				}
 			}
 		}

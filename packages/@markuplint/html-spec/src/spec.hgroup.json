@@ -1,0 +1,45 @@
+// https://html.spec.whatwg.org/multipage/sections.html#the-hgroup-element
+// https://www.w3.org/TR/html-aria/#el-hgroup
+// https://w3c.github.io/html-aria/#el-hgroup
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": ":model(script-supporting)"
+			},
+			{
+				"zeroOrMore": "p"
+			},
+			{
+				"zeroOrMore": ":model(script-supporting)"
+			},
+			{
+				"require": ["h1", "h2", "h3", "h4", "h5", "h6"]
+			},
+			{
+				"zeroOrMore": ":model(script-supporting)"
+			},
+			{
+				"zeroOrMore": "p"
+			},
+			{
+				"zeroOrMore": ":model(script-supporting)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "generic",
+		"permittedRoles": true,
+		"namingProhibited": true,
+		"1.1": {
+			"implicitRole": false
+		}
+	}
+}

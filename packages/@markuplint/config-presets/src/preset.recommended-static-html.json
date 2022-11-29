@@ -1,0 +1,19 @@
+{
+	"extends": [
+		"markuplint:code-styles",
+		"markuplint:html-standard",
+		"markuplint:a11y",
+		"markuplint:performance",
+		"markuplint:security",
+		"markuplint:rdfa"
+	],
+	"rules": {
+		/**
+		 * No omit **end-tag**
+		 *
+		 * Recommend to write an end-tag always because it is too difficult
+		 * for a human decide an element is end-tag omittable.
+		 */
+		"end-tag": true
+	}
+}

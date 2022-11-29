@@ -1,0 +1,26 @@
+// https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements
+// https://www.w3.org/TR/html-aria/#el-h1
+// https://w3c.github.io/html-aria/#el-h1-h6
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(phrasing)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "heading",
+		"implicitProperties": {
+			"aria-level": "3"
+		},
+		"permittedRoles": ["tab", "presentation", "none"]
+	}
+}

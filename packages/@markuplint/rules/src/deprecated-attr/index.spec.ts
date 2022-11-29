@@ -3,7 +3,7 @@ import { mlRuleTest } from 'markuplint';
 import rule from './';
 
 test('deprecated attribute', async () => {
-	const { violations } = await mlRuleTest(rule, '<img align="top">', { rule: true });
+	const { violations } = await mlRuleTest(rule, '<img align="top">');
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -16,7 +16,7 @@ test('deprecated attribute', async () => {
 });
 
 test('deprecated global attribute', async () => {
-	const { violations } = await mlRuleTest(rule, '<img xml:lang="en-US">', { rule: true });
+	const { violations } = await mlRuleTest(rule, '<img xml:lang="en-US">');
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -35,7 +35,6 @@ test('svg', async () => {
           <a xlink:href="https://developer.mozilla.org/">
           <text x="10" y="25">MDN Web Docs</text></a>
         </svg>`,
-		{ rule: true },
 	);
 	expect(violations).toStrictEqual([
 		{

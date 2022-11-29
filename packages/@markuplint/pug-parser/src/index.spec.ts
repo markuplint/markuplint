@@ -300,7 +300,7 @@ else
 	| lorem #[span ipsum]`);
 		const map = nodeListToDebugMaps(doc.nodeList);
 		// console.log(map);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:2](0,1)p: p',
 			'[2:4]>[2:10](5,11)#text: lorem␣',
@@ -313,7 +313,7 @@ else
 		const doc = parse(`div.
 	<span>text</span>`);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:4](0,3)div: div',
 			'[2:2]>[2:8](6,12)span: <span>',
@@ -328,7 +328,7 @@ else
 		text
 	</div>`);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: .root',
 			'[1:7]>[2:2](6,8)#text: ⏎→',
@@ -344,7 +344,7 @@ else
 		<img />
 	</div>`);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: .root',
 			'[1:7]>[2:2](6,8)#text: ⏎→',
@@ -360,7 +360,7 @@ else
 		const doc = parse(`script.
 	const $span = '<span>text</span>';`);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:7](0,6)script: script',
 			"[2:2]>[2:36](9,43)#text: const␣$span␣=␣'<span>text</span>';",
@@ -371,7 +371,7 @@ else
 		const doc = parse(`div.
 	<script> var a = "<aaaa>"; </script>`);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:4](0,3)div: div',
 			'[2:2]>[2:10](6,14)script: <script>',
@@ -388,7 +388,7 @@ else
 	<input invalid-attr/>
 	<input invalid-attr/>`);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:4](0,3)div: div',
 			'[1:5]>[2:2](4,6)#text: ⏎→',
@@ -402,12 +402,12 @@ else
 		expect(input1.startLine).toBe(2);
 		expect(input1.startCol).toBe(2);
 		expect(input1.attributes[0].startLine).toBe(2);
-		expect(input1.attributes[0].startCol).toBe(8);
+		expect(input1.attributes[0].startCol).toBe(9);
 		expect(input2.startOffset).toBe(29);
 		expect(input2.startLine).toBe(3);
 		expect(input2.startCol).toBe(2);
 		expect(input2.attributes[0].startLine).toBe(3);
-		expect(input2.attributes[0].startCol).toBe(8);
+		expect(input2.attributes[0].startCol).toBe(9);
 	});
 
 	it('block-in-tag attr2', () => {
@@ -415,7 +415,7 @@ else
 			'\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ndiv.\n\t<input invalid-attr/>\n\t<input invalid-attr invalid-attr2/>',
 		);
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[21:1]>[21:4](20,23)div: div',
 			'[21:5]>[22:2](24,26)#text: ⏎→',
@@ -429,15 +429,15 @@ else
 		const attr2 = input2.attributes[0] as MLASTHTMLAttr;
 		const attr3 = input2.attributes[1] as MLASTHTMLAttr;
 		expect(attr1.startLine).toBe(22);
-		expect(attr1.startCol).toBe(8);
+		expect(attr1.startCol).toBe(9);
 		expect(attr1.name.startLine).toBe(22);
 		expect(attr1.name.startCol).toBe(9);
 		expect(attr2.startLine).toBe(23);
-		expect(attr2.startCol).toBe(8);
+		expect(attr2.startCol).toBe(9);
 		expect(attr2.name.startLine).toBe(23);
 		expect(attr2.name.startCol).toBe(9);
 		expect(attr3.startLine).toBe(23);
-		expect(attr3.startCol).toBe(21);
+		expect(attr3.startCol).toBe(22);
 		expect(attr3.name.startLine).toBe(23);
 		expect(attr3.name.startCol).toBe(22);
 	});
@@ -498,8 +498,8 @@ else
 		if (attr.type !== 'html-attr') {
 			return;
 		}
-		expect(attr.raw).toEqual(' data-attr="value"');
-		expect(attr.startCol).toEqual(7);
+		expect(attr.raw).toEqual('data-attr="value"');
+		expect(attr.startCol).toEqual(8);
 		expect(attr.name.raw).toEqual('data-attr');
 		expect(attr.name.startCol).toEqual(8);
 		expect(attr.equal.raw).toEqual('=');
@@ -545,10 +545,7 @@ html
 	body
 		h1 Title
 `,
-			0,
-			0,
-			0,
-			true,
+			{ ignoreFrontMatter: true },
 		);
 		const map = nodeListToDebugMaps(doc.nodeList);
 		// console.log(doc.nodeList);

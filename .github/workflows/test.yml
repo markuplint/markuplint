@@ -11,6 +11,7 @@ on:
             - main
             - dev
             - next
+            - v3
 
 jobs:
     test:
@@ -19,9 +20,9 @@ jobs:
             fail-fast: false
             matrix:
                 os: [ubuntu-latest, macos-latest, windows-2019]
-                node: [12]
+                node: [14]
                 include:
-                    - node: 17
+                    - node: 18
                       os: ubuntu-latest
                       experimental: true
         steps:
@@ -57,3 +58,6 @@ jobs:
 
             - name: Test
               run: yarn test:coverage
+
+            - name: Spell Check
+              run: yarn spellcheck

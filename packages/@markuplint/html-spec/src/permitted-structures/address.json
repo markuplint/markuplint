@@ -1,9 +1,0 @@
-{
-	"tag": "address",
-	"contents": [
-		{
-			"zeroOrMore": "#flow",
-			"notAllowedDescendants": ["address", "#heading", "#sectioning", "header", "footer"]
-		}
-	]
-}

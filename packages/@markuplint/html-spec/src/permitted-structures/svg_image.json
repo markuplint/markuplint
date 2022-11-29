@@ -1,8 +1,0 @@
-{
-	"tag": "image",
-	"contents": [
-		{
-			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "svg:clipPath", "svg:mask", "svg:script", "svg:style"]
-		}
-	]
-}

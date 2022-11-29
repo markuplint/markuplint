@@ -2,29 +2,6 @@ import type { AnyRule, RuleConfigValue } from './types';
 
 import mustache from 'mustache';
 
-export function toRegxp(pattern: string) {
-	const matched = pattern.match(/^\/(.+)\/([ig]*)$/i);
-	if (matched) {
-		return new RegExp(matched[1], matched[2]);
-	}
-	return pattern;
-}
-
-export function regexSelectorMatches(reg: string, raw: string) {
-	const res: Record<string, string> = {};
-	const pattern = toRegxp(reg);
-	const regex = pattern instanceof RegExp ? pattern : new RegExp(`^${pattern.trim()}$`);
-	const matched = regex.exec(raw);
-	if (!matched) {
-		return null;
-	}
-	matched.forEach((val, i) => (res[`$${i}`] = val));
-	return {
-		...res,
-		...matched.groups,
-	};
-}
-
 type PlainData =
 	| string
 	| number

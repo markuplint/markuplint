@@ -1,9 +1,6 @@
 import type { AnyRuleSeed } from '@markuplint/ml-core';
 
 import AttrDuplication from './attr-duplication';
-import AttrEqualSpaceAfter from './attr-equal-space-after';
-import AttrEqualSpaceBefore from './attr-equal-space-before';
-import AttrSpacing from './attr-spacing';
 import AttrValueQuotes from './attr-value-quotes';
 import CaseSensitiveAttrName from './case-sensitive-attr-name';
 import CaseSensitiveTagName from './case-sensitive-tag-name';
@@ -15,12 +12,13 @@ import DisallowedElement from './disallowed-element';
 import Doctype from './doctype';
 import EndTag from './end-tag';
 import IdDuplication from './id-duplication';
-import Indentation from './indentation';
 import IneffectiveAttr from './ineffective-attr';
 import InvalidAttr from './invalid-attr';
+import LabelHasControl from './label-has-control';
 import LandmarkRoles from './landmark-roles';
 import NoBooleanAttrValue from './no-boolean-attr-value';
 import NoDefaultValue from './no-default-value';
+import NoEmptyPalpableContent from './no-empty-palpable-content';
 import NoHardCodeId from './no-hard-code-id';
 import NoReferToNonExistentId from './no-refer-to-non-existent-id';
 import NoUseEventHandlerAttr from './no-use-event-handler-attr';
@@ -34,9 +32,6 @@ import WaiAria from './wai-aria';
 
 export default {
 	'attr-duplication': AttrDuplication,
-	'attr-equal-space-after': AttrEqualSpaceAfter,
-	'attr-equal-space-before': AttrEqualSpaceBefore,
-	'attr-spacing': AttrSpacing,
 	'attr-value-quotes': AttrValueQuotes,
 	'case-sensitive-attr-name': CaseSensitiveAttrName,
 	'case-sensitive-tag-name': CaseSensitiveTagName,
@@ -48,12 +43,13 @@ export default {
 	doctype: Doctype,
 	'end-tag': EndTag,
 	'id-duplication': IdDuplication,
-	indentation: Indentation,
 	'ineffective-attr': IneffectiveAttr,
 	'invalid-attr': InvalidAttr,
+	'label-has-control': LabelHasControl,
 	'landmark-roles': LandmarkRoles,
 	'no-boolean-attr-value': NoBooleanAttrValue,
 	'no-default-value': NoDefaultValue,
+	'no-empty-palpable-content': NoEmptyPalpableContent,
 	'no-hard-code-id': NoHardCodeId,
 	'no-refer-to-non-existent-id': NoReferToNonExistentId,
 	'no-use-event-handler-attr': NoUseEventHandlerAttr,

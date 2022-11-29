@@ -47,18 +47,6 @@ const defaultRules: Record<
 		category: 'validation',
 		default: true,
 	},
-	'attr-equal-space-after': {
-		category: 'style',
-		default: true,
-	},
-	'attr-equal-space-before': {
-		category: 'style',
-		default: true,
-	},
-	'attr-spacing': {
-		category: 'style',
-		default: true,
-	},
 	'attr-value-quotes': {
 		category: 'style',
 		default: true,
@@ -108,11 +96,6 @@ const defaultRules: Record<
 		category: 'validation',
 		default: true,
 	},
-	indentation: {
-		category: 'style',
-		default: false,
-		recommendedValue: 2,
-	},
 	'ineffective-attr': {
 		category: 'validation',
 		default: true,
@@ -120,6 +103,10 @@ const defaultRules: Record<
 	'invalid-attr': {
 		category: 'validation',
 		default: true,
+	},
+	'label-has-control': {
+		category: 'a11y',
+		default: false,
 	},
 	'landmark-roles': {
 		category: 'a11y',
@@ -132,6 +119,10 @@ const defaultRules: Record<
 	'no-default-value': {
 		category: 'style',
 		default: true,
+	},
+	'no-empty-palpable-content': {
+		category: 'validation',
+		default: false,
 	},
 	'no-hard-code-id': {
 		category: 'style',

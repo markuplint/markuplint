@@ -1,8 +1,8 @@
 # @markuplint/astro-parser
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Fastro-parser.svg)](https://www.npmjs.com/package/@markuplint/astro-parser)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=main)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
+
+Use **markuplint** with [**Astro**](https://astro.build/).
 
 ## Install
 
@@ -14,7 +14,7 @@ $ yarn add -D @markuplint/astro-parser
 
 ## Usage
 
-Add `parser` option into your [confugration file](https://markuplint.dev/configuration#parser).
+Add `parser` option to your [configuration](https://markuplint.dev/configuration/#properties/parser).
 
 ```json
 {

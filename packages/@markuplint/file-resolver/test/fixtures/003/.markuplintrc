@@ -24,15 +24,15 @@
 	},
 	"nodeRules": [
 		{
-			"tagName": "div",
+			"selector": "div",
 			"rules": {
 				"rule__disable-for-div-tag": true
 			}
 		},
 		{
-			"tagName": "a",
+			"selector": "a",
 			"rules": {
-				"rule__enble-for-a-tag": true
+				"rule__enable-for-a-tag": true
 			}
 		}
 	],

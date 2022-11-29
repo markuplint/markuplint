@@ -11,7 +11,6 @@ test('is test 1', async () => {
 			<p>ipsam</p>
 		</div>
 		`,
-		{ rule: true },
 	);
 
 	expect(violations).toStrictEqual([
@@ -44,7 +43,6 @@ test('is test 2', async () => {
 			<p>ipsam</p>
 		</div>
 		`,
-		{ rule: true },
 	);
 
 	expect(violations).toStrictEqual([
@@ -66,14 +64,13 @@ test('is test 2', async () => {
 });
 
 test('is test 3', async () => {
-	const { violations } = await mlRuleTest(rule, '<img src="/" SRC="/" >', { rule: true }, false, 'ja');
+	const { violations } = await mlRuleTest(rule, '<img src="/" SRC="/" >', undefined, false, 'ja');
 
 	expect(violations.map(_ => _.message)).toStrictEqual(['属性名が重複しています']);
 });
 
 test('nodeRules disable', async () => {
 	const { violations } = await mlRuleTest(rule, '<div><span attr attr></span></div>', {
-		rule: true,
 		nodeRule: [
 			{
 				selector: 'span',
@@ -87,7 +84,6 @@ test('nodeRules disable', async () => {
 
 test('Vue', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div attr v-bind:attr /></template>', {
-		rule: true,
 		parser: {
 			'.*': '@markuplint/vue-parser',
 		},
@@ -109,7 +105,6 @@ test('Vue (exception)', async () => {
 		rule,
 		'<template><div class="foo" v-bind:class="bar" style="a: b;" :style="{c: d}" /></template>',
 		{
-			rule: true,
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
@@ -121,7 +116,6 @@ test('Vue (exception)', async () => {
 
 test('React', async () => {
 	const { violations } = await mlRuleTest(rule, '<div tabindex tabIndex />', {
-		rule: true,
 		parser: {
 			'.*': '@markuplint/vue-parser',
 		},
@@ -132,7 +126,6 @@ test('React', async () => {
 
 test('Pug', async () => {
 	const { violations } = await mlRuleTest(rule, '.hoge(class="hoge2")&attributes({class: "hoge3"})', {
-		rule: true,
 		parser: {
 			'.*': '@markuplint/pug-parser',
 		},
@@ -146,7 +139,6 @@ test('Svelte', async () => {
 		rule,
 		'<div class:selected="{isSelected}" class:focused="{isFocused}"></div>',
 		{
-			rule: true,
 			parser: {
 				'.*': '@markuplint/svelte-parser',
 			},

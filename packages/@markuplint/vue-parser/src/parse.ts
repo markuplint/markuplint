@@ -1,13 +1,21 @@
 import type { ASTNode, VueTokens } from './vue-parser';
-import type { MLASTElementCloseTag, MLASTNode, MLASTParentNode, MLASTTag, MLASTText, Parse } from '@markuplint/ml-ast';
+import type {
+	MLASTElementCloseTag,
+	MLASTNode,
+	MLASTParentNode,
+	MLASTTag,
+	MLASTText,
+	ParserOptions,
+	Parse,
+} from '@markuplint/ml-ast';
 
 import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
-import { getEndCol, getEndLine, isPotentialCustomElementName, uuid, ParserError } from '@markuplint/parser-utils';
+import { getEndCol, getEndLine, uuid, ParserError, detectElementType } from '@markuplint/parser-utils';
 
 import { attr } from './attr';
 import vueParse from './vue-parser';
 
-export const parse: Parse = rawCode => {
+export const parse: Parse = (rawCode, options) => {
 	let ast: VueTokens;
 
 	try {
@@ -34,7 +42,7 @@ export const parse: Parse = rawCode => {
 	}
 
 	const nodeList: MLASTNode[] = ast.templateBody
-		? flattenNodes(traverse(ast.templateBody, null, rawCode), rawCode)
+		? flattenNodes(traverse(ast.templateBody, null, rawCode, options), rawCode)
 		: [];
 
 	// Remove `</template>`
@@ -55,7 +63,12 @@ export const parse: Parse = rawCode => {
 	};
 };
 
-function traverse(rootNode: ASTNode, parentNode: MLASTParentNode | null = null, rawHtml: string): MLASTNode[] {
+function traverse(
+	rootNode: ASTNode,
+	parentNode: MLASTParentNode | null = null,
+	rawHtml: string,
+	options?: ParserOptions,
+): MLASTNode[] {
 	const nodeList: MLASTNode[] = [];
 
 	if (rootNode.type !== 'VElement') {
@@ -64,7 +77,7 @@ function traverse(rootNode: ASTNode, parentNode: MLASTParentNode | null = null, 
 
 	let prevNode: MLASTNode | null = null;
 	for (const vNode of rootNode.children) {
-		const node = nodeize(vNode, prevNode, parentNode, rawHtml);
+		const node = nodeize(vNode, prevNode, parentNode, rawHtml, options);
 		if (!node) {
 			continue;
 		}
@@ -85,6 +98,7 @@ function nodeize(
 	prevNode: MLASTNode | null,
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
+	options?: ParserOptions,
 ): MLASTNode | null {
 	const nextNode = null;
 	const startOffset = originNode.range[0];
@@ -126,7 +140,7 @@ function nodeize(
 				endLine,
 				startCol,
 				endCol,
-				nodeName: '#vue-expression-conatiner',
+				nodeName: '#vue-expression-container',
 				type: 'psblock',
 				parentNode,
 				prevNode,
@@ -172,7 +186,6 @@ function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
-					isCustomElement: isVueComponentName(endTagName),
 				};
 			}
 			const startTag: MLASTTag = {
@@ -187,6 +200,25 @@ function nodeize(
 				nodeName: tagName,
 				type: 'starttag',
 				namespace: originNode.namespace,
+				elementType: detectElementType(
+					tagName,
+					options?.authoredElementName,
+					/**
+					 * @see https://vuejs.org/api/built-in-components.html
+					 * @see https://vuejs.org/api/built-in-special-elements.html
+					 */
+					[
+						'component',
+						'slot',
+						'Transition',
+						'TransitionGroup',
+						'KeepAlive',
+						'Teleport',
+						'Suspense',
+						// Backward compatibility
+						/^[A-Z]/,
+					],
+				),
 				attributes: tagTokens.attrs.map(attr),
 				hasSpreadAttr: false,
 				parentNode,
@@ -199,17 +231,12 @@ function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				isCustomElement: isVueComponentName(tagName),
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
 			}
-			startTag.childNodes = traverse(originNode, startTag, rawHtml);
+			startTag.childNodes = traverse(originNode, startTag, rawHtml, options);
 			return startTag;
 		}
 	}
-}
-
-function isVueComponentName(name: string) {
-	return isPotentialCustomElementName(name) || /^[A-Z]|\./.test(name);
 }

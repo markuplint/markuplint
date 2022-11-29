@@ -1,8 +1,8 @@
 # @markuplint/nunjucks-parser
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Fnunjucks-parser.svg)](https://www.npmjs.com/package/@markuplint/nunjucks-parser)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=main)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
+
+Use **markuplint** with [**Nunjucks**](https://mozilla.github.io/nunjucks/).
 
 ## Install
 
@@ -14,7 +14,7 @@ $ yarn add -D @markuplint/nunjucks-parser
 
 ## Usage
 
-Add `parser` option into your [confugration file](https://markuplint.dev/configuration#parser).
+Add `parser` option to your [configuration](https://markuplint.dev/configuration/#properties/parser).
 
 ```json
 {
@@ -24,11 +24,11 @@ Add `parser` option into your [confugration file](https://markuplint.dev/configu
 }
 ```
 
-### Note
+## :warning: Unsupported syntaxes
 
-Unsupported the syntax that is complex on the attribute value.
+It's not able to support syntaxes if one's attribute is complex.
 
-✅ Available code:
+✅ Available codes
 
 ```html
 <div attr="{{ value }}"></div>
@@ -44,9 +44,9 @@ Unsupported the syntax that is complex on the attribute value.
 <div attr="{{ value }}-{{ value2 }}-{{ value3 }}"></div>
 ```
 
-❌ Unavailable code:
+❌ Unavailable codes
 
-Didn't nest by quotations.
+If it doesn't nest by quotations.
 
 <!-- prettier-ignore-start -->
 ```html
@@ -54,7 +54,7 @@ Didn't nest by quotations.
 ```
 <!-- prettier-ignore-end -->
 
-Mixed the tags and spaces.
+If it mixes the tags and spaces.
 
 ```html
 <div attr=" {{ value }} "></div>

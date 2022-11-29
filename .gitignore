@@ -80,3 +80,6 @@ apidoc
 
 # create-rule-helper test files
 packages/@markuplint/rules/src/__*
+
+# IDEs
+.idea

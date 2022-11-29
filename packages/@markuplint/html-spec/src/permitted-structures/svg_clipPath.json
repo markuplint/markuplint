@@ -1,8 +1,0 @@
-{
-	"tag": "clipPath",
-	"contents": [
-		{
-			"zeroOrMore": ["#SVGAnimation", "#SVGDescriptive", "#SVGShape", "svg:text", "svg:use", "svg:script"]
-		}
-	]
-}

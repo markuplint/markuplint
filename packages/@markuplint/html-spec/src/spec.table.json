@@ -1,0 +1,64 @@
+// https://html.spec.whatwg.org/multipage/tables.html#the-table-element
+// https://www.w3.org/TR/html-aria/#el-table
+// https://w3c.github.io/html-aria/#el-table
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": ":model(script-supporting)"
+			},
+			{
+				"optional": "caption"
+			},
+			{
+				"zeroOrMore": ":model(script-supporting)"
+			},
+			{
+				"zeroOrMore": "colgroup"
+			},
+			{
+				"zeroOrMore": ":model(script-supporting)"
+			},
+			{
+				"optional": "thead"
+			},
+			{
+				"zeroOrMore": ":model(script-supporting)"
+			},
+			{
+				"choice": [
+					[
+						{
+							"zeroOrMore": "tbody"
+						}
+					],
+					[
+						{
+							"oneOrMore": "tr"
+						}
+					]
+				]
+			},
+			{
+				"zeroOrMore": ":model(script-supporting)"
+			},
+			{
+				"optional": "tfoot"
+			},
+			{
+				"zeroOrMore": ":model(script-supporting)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "table",
+		"permittedRoles": true
+	}
+}

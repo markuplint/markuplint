@@ -1,0 +1,78 @@
+// https://html.spec.whatwg.org/multipage/media.html#the-video-element
+// https://www.w3.org/TR/html-aria/#el-video
+// https://w3c.github.io/html-aria/#el-video
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "source"
+			},
+			{
+				"zeroOrMore": "track"
+			},
+			{
+				"transparent": ":not(audio, video, :has(audio, video))"
+			}
+		],
+		"conditional": [
+			{
+				"condition": "[src]",
+				"contents": [
+					{
+						"zeroOrMore": "track"
+					},
+					{
+						"transparent": ":not(audio, video, :has(audio, video))"
+					}
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["crossorigin"],
+		"#HTMLEmbededAndMediaContentAttrs": [
+			"src",
+			"preload",
+			"autoplay",
+			"loop",
+			"muted",
+			"controls",
+			"height",
+			"width"
+		]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/media.html#attr-video-poster
+		"poster": {
+			"type": "URL"
+		},
+		// https://html.spec.whatwg.org/multipage/media.html#attr-video-playsinline
+		"playsinline": {
+			"type": "Boolean"
+		},
+		// https://wicg.github.io/controls-list/html-output/multipage/embedded-content.html#attr-media-controlslist
+		"controlslist": {
+			"type": {
+				"token": {
+					"enum": ["nodownload", "nofullscreen", "noremoteplayback"]
+				},
+				"ordered": false,
+				"caseInsensitive": true,
+				"unique": true,
+				"separator": "space"
+			}
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["application"],
+		"properties": {
+			"global": true,
+			"role": "application"
+		}
+	}
+}

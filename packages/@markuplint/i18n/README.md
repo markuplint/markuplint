@@ -1,16 +1,22 @@
 # @markuplint/i18n
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Fi18n.svg)](https://www.npmjs.com/package/@markuplint/i18n)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=main)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
 
 ## Install
+
+[`markuplint`](https://www.npmjs.com/package/markuplint) package includes this package.
+
+<details>
+<summary>If you are installing purposely, how below:</summary>
 
 ```sh
 $ npm install @markuplint/i18n
 
 $ yarn add @markuplint/i18n
+
 ```
+
+</details>
 
 ## API
 
@@ -71,7 +77,7 @@ There is a placeholder that the number is surrounded by `{}` on template strings
 
 #### Tagged templates syntax
 
-⚠️ It is experimental.
+:warning: It is experimental.
 
 ```ts
 import { taggedTemplateTranslator } from '@markuplint/i18n';
@@ -131,9 +137,9 @@ console.log(list);
 
 It converts the character-separated list specified in each locale.
 
-| Locale | Separater            | Before Char                | After Char                  |
+| Locale | Separator            | Before Char                | After Char                  |
 | ------ | -------------------- | -------------------------- | --------------------------- |
-| **en** | `, ` (camma + space) | `"` (double quote)         | `"` (double quote)          |
+| **en** | `, ` (comma + space) | `"` (double quote)         | `"` (double quote)          |
 | **ja** | none (empty string)  | `「` (left corner bracket) | `」` (right corner bracket) |
 
 ### Avoid translation

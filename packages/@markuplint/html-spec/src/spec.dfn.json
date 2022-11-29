@@ -1,0 +1,23 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-dfn-element
+// https://www.w3.org/TR/html-aria/#el-dfn
+// https://w3c.github.io/html-aria/#el-dfn
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(phrasing):not(dfn, :has(dfn))"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "term",
+		"permittedRoles": true
+	}
+}

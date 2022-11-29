@@ -1,5 +1,5 @@
 import type { SvelteNode } from './svelte-parser';
-import type { MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
+import type { MLASTNode, MLASTParentNode, ParserOptions } from '@markuplint/ml-ast';
 
 import { nodeize } from './nodeize';
 
@@ -7,12 +7,13 @@ export function traverse(
 	astNodes: SvelteNode[],
 	parentNode: MLASTParentNode | null = null,
 	rawHtml: string,
+	options?: ParserOptions,
 ): MLASTNode[] {
 	const nodeList: MLASTNode[] = [];
 
 	let prevNode: MLASTNode | null = null;
 	for (const astNode of astNodes) {
-		const nodes = nodeize(astNode, prevNode, parentNode, rawHtml);
+		const nodes = nodeize(astNode, prevNode, parentNode, rawHtml, options);
 		if (!nodes) {
 			continue;
 		}

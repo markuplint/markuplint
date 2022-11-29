@@ -9,7 +9,7 @@ import { searchCoreRepository } from './search-core-repository';
 
 const rulesRelDir = ['packages', '@markuplint', 'rules', 'src'];
 
-export async function craeteRuleToCore({
+export async function createRuleToCore({
 	name,
 	lang,
 	needTest,

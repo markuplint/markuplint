@@ -1,0 +1,24 @@
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-figcaption-element
+// https://www.w3.org/TR/html-aria/#el-figcaption
+// https://w3c.github.io/html-aria/#el-figcaption
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(flow)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["group", "none", "presentation"],
+		"namingProhibited": true
+	}
+}

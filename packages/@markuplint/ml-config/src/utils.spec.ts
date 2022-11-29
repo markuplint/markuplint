@@ -1,19 +1,4 @@
-import { exchangeValueOnRule, provideValue, regexSelectorMatches } from './utils';
-
-it('regexSelectorMatches', () => {
-	expect(regexSelectorMatches('/^data-([a-z]+)/', 'data-hoge')).toStrictEqual({
-		$0: 'data-hoge',
-		$1: 'hoge',
-	});
-
-	expect(regexSelectorMatches('/^data-(?<dataName>[a-z]+)/', 'data-hoge')).toStrictEqual({
-		$0: 'data-hoge',
-		$1: 'hoge',
-		dataName: 'hoge',
-	});
-
-	expect(regexSelectorMatches('/^data-(?<dataName>[a-z]+)/', 'noop')).toBeNull();
-});
+import { exchangeValueOnRule, provideValue } from './utils';
 
 it('provideValue', () => {
 	expect(

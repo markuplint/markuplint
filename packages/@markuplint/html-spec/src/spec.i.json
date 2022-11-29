@@ -1,0 +1,24 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-i-element
+// https://www.w3.org/TR/html-aria/#el-i
+// https://w3c.github.io/html-aria/#el-i
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(phrasing)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true,
+		"namingProhibited": true
+	}
+}

@@ -3,7 +3,7 @@ import { mlRuleTest } from 'markuplint';
 import rule from './';
 
 test('character-reference', async () => {
-	const { violations } = await mlRuleTest(rule, '<div id="a"> > < & " \' &amp;</div>', { rule: true });
+	const { violations } = await mlRuleTest(rule, '<div id="a"> > < & " \' &amp;</div>');
 	expect(violations.length).toBe(4);
 	expect(violations[0]).toStrictEqual({
 		severity: 'error',
@@ -21,7 +21,7 @@ test('character-reference', async () => {
 });
 
 test('character-reference', async () => {
-	const { violations } = await mlRuleTest(rule, '<img src="path/to?a=b&c=d">', { rule: true });
+	const { violations } = await mlRuleTest(rule, '<img src="path/to?a=b&c=d">');
 	expect(violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -34,15 +34,12 @@ test('character-reference', async () => {
 });
 
 test('character-reference', async () => {
-	const { violations } = await mlRuleTest(rule, '<script>if (i < 0) console.log("<markuplint>");</script>', {
-		rule: true,
-	});
+	const { violations } = await mlRuleTest(rule, '<script>if (i < 0) console.log("<markuplint>");</script>');
 	expect(violations.length).toBe(0);
 });
 
 test('in Vue', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div v-if="a < b"></div></template>', {
-		rule: true,
 		parser: {
 			'.*': '@markuplint/vue-parser',
 		},
@@ -52,7 +49,6 @@ test('in Vue', async () => {
 
 test('in EJS', async () => {
 	const { violations } = await mlRuleTest(rule, '<title><%- "title" _%></title>', {
-		rule: true,
 		parser: {
 			'.*': '@markuplint/ejs-parser',
 		},

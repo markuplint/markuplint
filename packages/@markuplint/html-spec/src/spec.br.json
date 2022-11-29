@@ -1,0 +1,32 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-br-element
+// https://www.w3.org/TR/html-aria/#el-br
+// https://w3c.github.io/html-aria/#el-br
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(flow)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["none", "presentation"],
+		"properties": {
+			"only": ["aria-hidden"]
+		},
+		"1.1": {
+			"properties": {
+				"global": true,
+				"role": true
+			}
+		}
+	}
+}

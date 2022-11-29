@@ -1,68 +1,82 @@
-import type MLDOMAttribute from '../tokens/attribute';
-import type MLDOMPreprocessorSpecificAttribute from '../tokens/preprocessor-specific-attribute';
-import type { AnonymousNode } from '@markuplint/ml-core';
+import type { MLAttr } from '../node/attr';
+import type { MLNode } from '../node/node';
 
-export function nodeListToDebugMaps(nodeList: Readonly<AnonymousNode<any, any>[]>, withAttr = false) {
+export function nodeListToDebugMaps(nodeList: Readonly<MLNode<any, any>[]>, withAttr = false): string[] {
 	return nodeList
 		.map(n => {
 			const r: string[] = [];
-			if (n.type !== 'OmittedElement') {
-				r.push(tokenDebug(n));
-				if (n.type === 'Element') {
-					r.push(`  namespaceURI: ${!!n.namespaceURI}`);
-					r.push(`  isInFragmentDocument: ${!!n.isInFragmentDocument}`);
-					r.push(`  isForeignElement: ${!!n.isForeignElement}`);
-					r.push(`  isCustomElement: ${!!n.isCustomElement}`);
-				}
-				if (withAttr && 'attributes' in n) {
+			if (n.is(n.ELEMENT_NODE) && n.isOmitted) {
+				r.push(`[N/A]>[N/A](N/A)${n.nodeName}: ${visibleWhiteSpace(n.raw)}`);
+				return r;
+			}
+			r.push(tokenDebug(n));
+			if (n.is(n.ELEMENT_NODE)) {
+				r.push(`  namespaceURI: ${!!n.namespaceURI}`);
+				r.push(`  elementType: ${n.elementType}`);
+				r.push(`  isInFragmentDocument: ${!!n.isInFragmentDocument}`);
+				r.push(`  isForeignElement: ${!!n.isForeignElement}`);
+				if (withAttr) {
 					r.push(
 						...attributesToDebugMaps(n.attributes)
 							.flat()
 							.map(l => `  ${l}`),
 					);
 				}
-			} else {
-				r.push(`[N/A]>[N/A](N/A)${n.nodeName}: ${visibleWhiteSpace(n.raw)}`);
 			}
 			return r;
 		})
 		.flat();
 }
 
-function attributesToDebugMaps(attributes: (MLDOMAttribute | MLDOMPreprocessorSpecificAttribute)[]) {
-	return attributes.map(n => {
-		const r = [
-			tokenDebug({
-				name: n.potentialName,
-				startOffset: n.startOffset,
-				endOffset: n.endOffset,
-				startLine: n.startLine,
-				endLine: n.endLine,
-				startCol: n.startCol,
-				endCol: n.endCol,
-				raw: n.raw,
-			}),
-		];
-		if (n.attrType === 'html-attr') {
-			r.push(`  ${tokenDebug(n.spacesBeforeName, 'bN')}`);
-			r.push(`  ${tokenDebug(n.name, 'name')}`);
-			r.push(`  ${tokenDebug(n.spacesBeforeEqual, 'bE')}`);
-			r.push(`  ${tokenDebug(n.equal, 'equal')}`);
-			r.push(`  ${tokenDebug(n.spacesAfterEqual, 'aE')}`);
-			r.push(`  ${tokenDebug(n.startQuote, 'sQ')}`);
-			r.push(`  ${tokenDebug(n.valueNode, 'value')}`);
-			r.push(`  ${tokenDebug(n.endQuote, 'eQ')}`);
-			r.push(`  isDirective: ${!!n.isDirective}`);
-			r.push(`  isDynamicValue: ${!!n.isDynamicValue}`);
-		}
-		if (n.potentialName != null) {
-			r.push(`  potentialName: ${visibleWhiteSpace(n.potentialName)}`);
-		}
-		if (n.attrType === 'html-attr' && n.candidate) {
-			r.push(`  candidate: ${visibleWhiteSpace(n.candidate)}`);
-		}
-		return r;
-	});
+function attributesToDebugMaps(attributes: ReadonlyArray<MLAttr<any, any>>): string[] {
+	return attributes
+		.map(n => {
+			const r = [
+				tokenDebug({
+					name: n.name,
+					startOffset: n.startOffset,
+					endOffset: n.endOffset,
+					startLine: n.startLine,
+					endLine: n.endLine,
+					startCol: n.startCol,
+					endCol: n.endCol,
+					raw: n.raw,
+				}),
+			];
+			if (n.spacesBeforeName) {
+				r.push(`  ${tokenDebug(n.spacesBeforeName, 'bN')}`);
+			}
+			if (n.nameNode) {
+				r.push(`  ${tokenDebug(n.nameNode, 'name')}`);
+			}
+			if (n.spacesBeforeEqual) {
+				r.push(`  ${tokenDebug(n.spacesBeforeEqual, 'bE')}`);
+			}
+			if (n.equal) {
+				r.push(`  ${tokenDebug(n.equal, 'equal')}`);
+			}
+			if (n.spacesAfterEqual) {
+				r.push(`  ${tokenDebug(n.spacesAfterEqual, 'aE')}`);
+			}
+			if (n.startQuote) {
+				r.push(`  ${tokenDebug(n.startQuote, 'sQ')}`);
+			}
+			if (n.valueNode) {
+				r.push(`  ${tokenDebug(n.valueNode, 'value')}`);
+			}
+			if (n.endQuote) {
+				r.push(`  ${tokenDebug(n.endQuote, 'eQ')}`);
+			}
+			if (n.spacesBeforeName) {
+				r.push(`  isDirective: ${!!n.isDirective}`);
+				r.push(`  isDynamicValue: ${!!n.isDynamicValue}`);
+			}
+			if (n.candidate) {
+				r.push(`  candidate: ${visibleWhiteSpace(n.candidate)}`);
+			}
+			return r;
+		})
+		.flat();
 }
 
 function tokenDebug<

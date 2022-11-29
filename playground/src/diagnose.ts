@@ -34,10 +34,10 @@ export const createLinter = async (ruleset: Ruleset) => {
 	return linter;
 };
 
-export const diagnose = async (reports: Violation[]) => {
-	const diagnotics: editor.IMarkerData[] = [];
+export const diagnose = (reports: Violation[]) => {
+	const diagnostics: editor.IMarkerData[] = [];
 	for (const report of reports) {
-		diagnotics.push({
+		diagnostics.push({
 			severity: report.severity === 'warning' ? 4 : 8,
 			startLineNumber: report.line,
 			startColumn: report.col,
@@ -47,5 +47,5 @@ export const diagnose = async (reports: Violation[]) => {
 		});
 	}
 
-	return diagnotics;
+	return diagnostics;
 };

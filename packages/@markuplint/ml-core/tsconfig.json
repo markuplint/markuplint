@@ -23,6 +23,9 @@
 		},
 		{
 			"path": "../parser-utils"
+		},
+		{
+			"path": "../selector"
 		}
 	],
 	"include": ["./src/**/*"],

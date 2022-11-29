@@ -66,12 +66,12 @@
 				"sameStates": {
 					"type": "object",
 					"additionalProperties": true,
-					"items": {
-						"type": "array",
-						"minItems": 1,
-						"uniqueItems": true,
-						"items": {
-							"type": "string"
+					"patternProperties": {
+						".*": {
+							"type": "array",
+							"minItems": 1,
+							"uniqueItems": true,
+							"items": { "type": "string" }
 						}
 					}
 				}

@@ -1,0 +1,26 @@
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-dt-element
+// https://www.w3.org/TR/html-aria/#el-dt
+// https://w3c.github.io/html-aria/#el-dt
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(flow):not(header, footer, :model(sectioning), :model(heading), :has(header, footer, :model(sectioning), :model(heading)))"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["listitem"],
+		"1.1": {
+			"implicitRole": "term"
+		}
+	}
+}

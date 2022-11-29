@@ -1,0 +1,67 @@
+// https://drafts.fxtf.org/filter-effects/#feSpotLightElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-35
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
+	},
+	"attributes": {
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-x
+		"x": {
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-y
+		"y": {
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-z
+		"z": {
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-pointsatx
+		"pointsAtX": {
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-pointsaty
+		"pointsAtY": {
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-pointsatz
+		"pointsAtZ": {
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-specularexponent
+		"specularExponent": {
+			"type": "<number>",
+			"defaultValue": "1",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fespotlight-limitingconeangle
+		"limitingConeAngle": {
+			"type": "<number>",
+			"animatable": true
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false
+	}
+}

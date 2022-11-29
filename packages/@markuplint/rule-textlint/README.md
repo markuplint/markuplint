@@ -1,10 +1,8 @@
 # @markuplint/rule-textlint
 
-The rule [`textlint`](https://github.com/textlint/textlint) for HTML, Vue and so on markup languages.
-
 [![npm version](https://badge.fury.io/js/%40markuplint%2Frule-textlint.svg)](https://www.npmjs.com/package/@markuplint/rule-textlint)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=main)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
+
+The rule plugin that adapts [**textlint**](https://github.com/textlint/textlint) in **markuplint**
 
 ## Install
 
@@ -24,8 +22,7 @@ $ yarn add -D textlint-rule-prh
 
 #### Load `.textlintrc.*` config automatically
 
-```json
-// `.markuplintrc`
+```json .markuplintrc
 {
   "rules": {
     "textlint": true
@@ -33,8 +30,7 @@ $ yarn add -D textlint-rule-prh
 }
 ```
 
-```json
-// `.textlintrc`
+```json .textlintrc
 {
   // `html` plugin will be used automatically by `markuplint`
   // but make sure to enable it manually
@@ -50,8 +46,7 @@ $ yarn add -D textlint-rule-prh
 
 #### Use independent textlint config
 
-```js
-// `markuplint.config.js`
+```js markuplint.config.js
 const path = require('path');
 
 module.exports = {

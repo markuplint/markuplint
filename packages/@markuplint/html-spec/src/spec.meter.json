@@ -1,0 +1,62 @@
+// https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element
+// https://www.w3.org/TR/html-aria/#el-meter
+// https://w3c.github.io/html-aria/#el-meter
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(phrasing):not(meter, :has(meter))"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-meter-value
+		"value": {
+			"type": "Number"
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-meter-min
+		"min": {
+			"type": "Number"
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-meter-max
+		"max": {
+			"type": "Number"
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-meter-low
+		"low": {
+			"type": "Number"
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-meter-high
+		"high": {
+			"type": "Number"
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-meter-optimum
+		"optimum": {
+			"type": "Number"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": {
+			"global": true,
+			// Authors SHOULD NOT use the aria-valuemax or aria-valuemin attributes on meter elements.
+			"without": [
+				{
+					"type": "should-not",
+					"name": "aria-valuemax"
+				},
+				{
+					"type": "should-not",
+					"name": "aria-valuemin"
+				}
+			]
+		}
+	}
+}

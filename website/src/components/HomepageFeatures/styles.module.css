@@ -1,0 +1,19 @@
+.features {
+  padding: 4rem 0;
+  width: 100%;
+}
+
+.center {
+  justify-content: center;
+}
+
+.symbol {
+  text-align: center;
+  font-size: 5em;
+  line-height: 1;
+  margin-block: 0 0.2em;
+}
+
+.maxWidth {
+  max-width: 40em;
+}

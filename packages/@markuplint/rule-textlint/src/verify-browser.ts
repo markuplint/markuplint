@@ -10,7 +10,7 @@ export const textlintVerify: (
 	...args: Parameters<RuleSeed<boolean, Option>['verify']>
 ) => Promise<TextlintResult | undefined> = async context => {
 	const html = context.document.toString();
-	const option = context.globalRule.option;
+	const option = context.document.rule.option;
 
 	if (typeof option === 'object') {
 		return await lintText(html, option);

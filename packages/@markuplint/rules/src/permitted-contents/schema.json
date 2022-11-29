@@ -74,7 +74,9 @@
 			"additionalProperties": false,
 			"properties": {
 				"ignoreHasMutableChildren": {
-					"type": "boolean"
+					"type": "boolean",
+					"default": "true",
+					"description": "Ignore if it has mutable child elements in a preprocessor language"
 				}
 			}
 		}

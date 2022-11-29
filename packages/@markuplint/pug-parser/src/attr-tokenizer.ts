@@ -25,6 +25,12 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 			potentialValue: value,
 			valueType: 'string',
 			isDuplicatable: attr.raw[0] === '.',
+			nodeName: '#pug-special-attr',
+			parentNode: null,
+			nextNode: null,
+			prevNode: null,
+			isFragment: false,
+			isGhost: false,
 		};
 	}
 
@@ -44,13 +50,13 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 		quoteChars = '';
 		valueChars = '';
 	} else {
-		const wihtoutName = attr.raw.slice(attr.name.length);
-		const valueOffset = wihtoutName.indexOf(attr.val);
-		const equalAndBeforeSpaceAfterSpace = wihtoutName.slice(0, valueOffset);
-		const [, before, equel, after] = equalAndBeforeSpaceAfterSpace.match(/^(\s*)(=)(\s*)$/) || ['', '', '', ''];
+		const withoutName = attr.raw.slice(attr.name.length);
+		const valueOffset = withoutName.indexOf(attr.val);
+		const equalAndBeforeSpaceAfterSpace = withoutName.slice(0, valueOffset);
+		const [, before, equal, after] = equalAndBeforeSpaceAfterSpace.match(/^(\s*)(=)(\s*)$/) || ['', '', '', ''];
 		const [, quote, coreValue] = attr.val.match(/(['"`]?)([^\1]+)(\1)/) || ['', '', ''];
 		spacesBeforeEqualChars = before;
-		equalChars = equel;
+		equalChars = equal;
 		spacesAfterEqualChars = after;
 		quoteChars = quote;
 		valueChars = coreValue;
@@ -138,5 +144,11 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 		endQuote,
 		isDynamicValue,
 		isDuplicatable,
+		nodeName: name.raw,
+		parentNode: null,
+		nextNode: null,
+		prevNode: null,
+		isFragment: false,
+		isGhost: false,
 	};
 }

@@ -11,15 +11,11 @@ export default createRule({
 		await document.walkOn('Element', node => {
 			const idAttrs = node.getAttributeToken('id');
 			for (const idAttr of idAttrs) {
-				if (
-					idAttr.attrType === 'ps-attr' ||
-					(idAttr.attrType === 'html-attr' && idAttr.isDynamicValue) ||
-					(idAttr.attrType === 'html-attr' && idAttr.isDirective)
-				) {
+				if (idAttr.isDynamicValue || idAttr.isDirective) {
 					continue;
 				}
-				const id = idAttr.getValue();
-				if (idStack.includes(id.raw)) {
+				const id = idAttr.value;
+				if (idStack.includes(id)) {
 					report({
 						scope: node,
 						message,
@@ -28,7 +24,7 @@ export default createRule({
 						raw: idAttr.raw,
 					});
 				}
-				idStack.push(id.raw);
+				idStack.push(id);
 			}
 		});
 	},

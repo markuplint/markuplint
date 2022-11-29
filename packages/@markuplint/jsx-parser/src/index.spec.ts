@@ -23,7 +23,7 @@ describe('parse', () => {
 		expect(maps).toStrictEqual(['[1:1]>[1:6](0,5)div: <div>', '[1:6]>[1:12](5,11)div: </div>']);
 	});
 
-	it('Flagment', () => {
+	it('Fragment', () => {
 		const ast = parse('<></>');
 		const maps = nodeListToDebugMaps(ast.nodeList);
 		expect(maps).toStrictEqual(['[1:1]>[1:3](0,2)#jsx-fragment: <>', '[1:3]>[1:6](2,5)#jsx-fragment: </>']);
@@ -308,7 +308,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		]);
 		expect(attrMaps).toStrictEqual([
 			[
-				'[1:11]>[1:27](10,26)class: ␣className="foo"',
+				'[1:12]>[1:27](11,26)class: className="foo"',
 				'  [1:11]>[1:12](10,11)bN: ␣',
 				'  [1:12]>[1:21](11,20)name: className',
 				'  [1:21]>[1:21](20,20)bE: ',
@@ -322,7 +322,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  potentialName: class',
 			],
 			[
-				'[1:27]>[1:41](26,40)tabindex: ␣tabIndex="-1"',
+				'[1:28]>[1:41](27,40)tabindex: tabIndex="-1"',
 				'  [1:27]>[1:28](26,27)bN: ␣',
 				'  [1:28]>[1:36](27,35)name: tabIndex',
 				'  [1:36]>[1:36](35,35)bE: ',
@@ -336,7 +336,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  potentialName: tabindex',
 			],
 			[
-				'[1:41]>[1:55](40,54)tabindex: ␣tabindex="-1"',
+				'[1:42]>[1:55](41,54)tabindex: tabindex="-1"',
 				'  [1:41]>[1:42](40,41)bN: ␣',
 				'  [1:42]>[1:50](41,49)name: tabindex',
 				'  [1:50]>[1:50](49,49)bE: ',
@@ -351,7 +351,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  candidate: tabIndex',
 			],
 			[
-				'[1:55]>[1:76](54,75)aria-label: ␣aria-label="accname"',
+				'[1:56]>[1:76](55,75)aria-label: aria-label="accname"',
 				'  [1:55]>[1:56](54,55)bN: ␣',
 				'  [1:56]>[1:66](55,65)name: aria-label',
 				'  [1:66]>[1:66](65,65)bE: ',
@@ -385,7 +385,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		const attrMaps = attributesToDebugMaps(ast.nodeList[0].attributes);
 		expect(attrMaps).toStrictEqual([
 			[
-				'[1:3]>[1:11](2,10)href: ␣href=""',
+				'[1:4]>[1:11](3,10)href: href=""',
 				'  [1:3]>[1:4](2,3)bN: ␣',
 				'  [1:4]>[1:8](3,7)name: href',
 				'  [1:8]>[1:8](7,7)bE: ',
@@ -448,18 +448,19 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
 		expect(doc.nodeList[2].nodeName).toBe('feBlend');
 		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
-		expect((doc.nodeList[2] as MLASTElement).isCustomElement).toBeFalsy();
+		expect((doc.nodeList[2] as MLASTElement).elementType).toBe('html');
 	});
 
 	it('isCustomElement', () => {
-		expect((parse('<div/>').nodeList[0] as MLASTElement).isCustomElement).toBe(false);
-		expect((parse('<Div/>').nodeList[0] as MLASTElement).isCustomElement).toBe(true);
-		expect((parse('<x-div/>').nodeList[0] as MLASTElement).isCustomElement).toBe(true);
-		expect((parse('<foo/>').nodeList[0] as MLASTElement).isCustomElement).toBe(false);
-		expect((parse('<Foo/>').nodeList[0] as MLASTElement).isCustomElement).toBe(true);
-		expect((parse('<div><Foo/></div>').nodeList[1] as MLASTElement).isCustomElement).toBe(true);
-		expect((parse('<div><Component/></div>').nodeList[1] as MLASTElement).isCustomElement).toBe(true);
-		expect((parse('<svg><Component/></svg>').nodeList[1] as MLASTElement).isCustomElement).toBe(true);
-		expect((parse('<svg><feBlend/></svg>').nodeList[1] as MLASTElement).isCustomElement).toBe(false);
+		expect((parse('<div/>').nodeList[0] as MLASTElement).elementType).toBe('html');
+		expect((parse('<Div/>').nodeList[0] as MLASTElement).elementType).toBe('authored');
+		expect((parse('<x-div/>').nodeList[0] as MLASTElement).elementType).toBe('web-component');
+		expect((parse('<foo/>').nodeList[0] as MLASTElement).elementType).toBe('html');
+		expect((parse('<Foo/>').nodeList[0] as MLASTElement).elementType).toBe('authored');
+		expect((parse('<named.foo/>').nodeList[0] as MLASTElement).elementType).toBe('authored');
+		expect((parse('<div><Foo/></div>').nodeList[1] as MLASTElement).elementType).toBe('authored');
+		expect((parse('<div><Component/></div>').nodeList[1] as MLASTElement).elementType).toBe('authored');
+		expect((parse('<svg><Component/></svg>').nodeList[1] as MLASTElement).elementType).toBe('authored');
+		expect((parse('<svg><feBlend/></svg>').nodeList[1] as MLASTElement).elementType).toBe('html');
 	});
 });

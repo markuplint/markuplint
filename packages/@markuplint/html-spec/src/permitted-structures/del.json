@@ -1,8 +1,0 @@
-{
-	"tag": "del",
-	"contents": [
-		{
-			"zeroOrMore": "#transparent"
-		}
-	]
-}

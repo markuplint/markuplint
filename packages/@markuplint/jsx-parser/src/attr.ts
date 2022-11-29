@@ -57,6 +57,12 @@ export function attr(attr: JSXAttribute, rawHTML: string): MLASTAttr {
 			endQuote,
 			isDynamicValue: true,
 			isDuplicatable: false,
+			nodeName: name.raw,
+			parentNode: null,
+			nextNode: null,
+			prevNode: null,
+			isFragment: false,
+			isGhost: false,
 		};
 	}
 

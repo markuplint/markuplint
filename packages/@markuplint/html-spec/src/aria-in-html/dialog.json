@@ -1,8 +1,0 @@
-{
-	"permittedRoles": {
-		"roles": ["alertdialog"]
-	},
-	"implicitRole": {
-		"role": "dialog"
-	}
-}

@@ -20,7 +20,7 @@ export type UnmatchedResultOptions = {
 	partName?: string;
 	expects?: Expect[];
 	extra?: Expect;
-	candicate?: string;
+	candidate?: string;
 };
 
 export type UnmatchedResultReason =
@@ -64,7 +64,7 @@ export type MatchedResult = {
 };
 
 export type Expect = {
-	type: 'const' | 'format' | 'syntax' | 'regxp' | 'common';
+	type: 'const' | 'format' | 'syntax' | 'regexp' | 'common';
 	value: string;
 };
 

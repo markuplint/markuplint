@@ -17,3 +17,11 @@ export function uuid() {
 export function fileExists(filePath: string) {
 	return fs.existsSync(filePath);
 }
+
+export function toRegexp(pattern: string) {
+	const matched = pattern.match(/^\/(.+)\/([ig]*)$/i);
+	if (matched) {
+		return new RegExp(matched[1], matched[2]);
+	}
+	return pattern;
+}

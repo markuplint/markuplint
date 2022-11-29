@@ -1,0 +1,55 @@
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-div-element
+// https://www.w3.org/TR/html-aria/#el-div
+// https://w3c.github.io/html-aria/#el-div
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(flow)"
+			}
+		],
+		"conditional": [
+			{
+				"condition": "dl > div",
+				"contents": [
+					{
+						"zeroOrMore": ":model(script-supporting)"
+					},
+					{
+						"oneOrMore": "dt"
+					},
+					{
+						"zeroOrMore": ":model(script-supporting)"
+					},
+					{
+						"oneOrMore": "dd"
+					},
+					{
+						"zeroOrMore": ":model(script-supporting)"
+					}
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "generic",
+		"permittedRoles": true,
+		"namingProhibited": true,
+		"conditions": {
+			"dl > div": {
+				"permittedRoles": ["presentation", "none"]
+			}
+		},
+		"1.1": {
+			"implicitRole": false,
+			"permittedRoles": true
+		}
+	}
+}

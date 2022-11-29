@@ -1,8 +1,8 @@
 # @markuplint/vue-parser
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Fvue-parser.svg)](https://www.npmjs.com/package/@markuplint/vue-parser)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=main)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
+
+Use **markuplint** with [**Vue**](https://vuejs.org/).
 
 ## Install
 
@@ -14,7 +14,7 @@ $ yarn add -D @markuplint/vue-parser
 
 ## Usage
 
-Add `parser` option into your [confugration file](https://markuplint.dev/configuration#parser).
+Add `parser` option to your [configuration](https://markuplint.dev/configuration/#properties/parser).
 
 ```json
 {
@@ -24,4 +24,4 @@ Add `parser` option into your [confugration file](https://markuplint.dev/configu
 }
 ```
 
-`parserOptions` option is work in progress. current setting is `{ "sourceType": "module" }` that hard coded.
+`parserOptions` option work in progress. In the current, the setting is `{ "sourceType": "module" }` that hard coded.
