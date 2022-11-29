@@ -1,8 +1,0 @@
-{
-	"tag": "bdi",
-	"contents": [
-		{
-			"zeroOrMore": "#phrasing"
-		}
-	]
-}

@@ -9,15 +9,6 @@
 				"attr-duplication": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-duplication/schema.json"
 				},
-				"attr-equal-space-after": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-equal-space-after/schema.json"
-				},
-				"attr-equal-space-before": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-equal-space-before/schema.json"
-				},
-				"attr-spacing": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-spacing/schema.json"
-				},
 				"attr-value-quotes": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-value-quotes/schema.json"
 				},
@@ -51,14 +42,14 @@
 				"end-tag": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/end-tag/schema.json"
 				},
-				"indentation": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/indentation/schema.json"
-				},
 				"ineffective-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/ineffective-attr/schema.json"
 				},
 				"invalid-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/invalid-attr/schema.json"
+				},
+				"label-has-control": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/label-has-control/schema.json"
 				},
 				"landmark-roles": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/landmark-roles/schema.json"
@@ -68,6 +59,9 @@
 				},
 				"no-default-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-default-value/schema.json"
+				},
+				"no-empty-palpable-content": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-empty-palpable-content/schema.json"
 				},
 				"no-hard-code-id": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-hard-code-id/schema.json"

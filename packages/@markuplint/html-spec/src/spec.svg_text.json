@@ -1,0 +1,153 @@
+// https://svgwg.org/svg2-draft/text.html#TextElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-69
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [
+					"#text",
+					":model(SVGAnimation)",
+					":model(SVGDescriptive)",
+					":model(SVGPaintServer)",
+					":model(SVGTextContentChild)",
+					"svg|a",
+					"svg|clipPath",
+					"svg|marker",
+					"svg|mask",
+					"svg|script",
+					"svg|style"
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": [
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"isolation",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"mask-type",
+			"opacity",
+			"overflow",
+			"paint-order",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-overflow",
+			"text-rendering",
+			"transform",
+			"transform-origin",
+			"unicode-bidi",
+			"vector-effect",
+			"visibility",
+			"white-space",
+			"word-spacing",
+			"writing-mode"
+		]
+	},
+	"attributes": {
+		// https://svgwg.org/svg2-draft/text.html#TextElementLengthAdjustAttribute
+		"lengthAdjust": {
+			"type": {
+				"enum": ["spacing", "spacingAndGlyphs"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "spacing",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/text.html#TextElementXAttribute
+		"x": {
+			"type": "<text-coordinate>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/text.html#TextElementYAttribute
+		"y": {
+			"type": "<text-coordinate>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/text.html#TextElementDXAttribute
+		"dx": {
+			"type": "<text-coordinate>",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/text.html#TextElementDYAttribute
+		"dy": {
+			"type": "<text-coordinate>",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/text.html#TextElementRotateAttribute
+		"rotate": {
+			"type": "<list-of-numbers>",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/text.html#TextElementTextLengthAttribute
+		"textLength": {
+			"type": ["<svg-length>", "<percentage>"],
+			"animatable": true
+		}
+	},
+	"aria": {
+		// The platform mappings given above are similar to those recommended for the HTML p element in the HTML Accessibility API Mappings specification [HTML-AAM].
+		// There is currently no WAI-ARIA role available that defines a distinct text block. However, such roles (denoting paragraphs or distinct text regions) exist in many platform accessibility APIs and are therefore used instead of a generic group role.
+		"implicitRole": "group",
+		"permittedRoles": {
+			"core-aam": true,
+			"graphics-aam": true
+		}
+	}
+}

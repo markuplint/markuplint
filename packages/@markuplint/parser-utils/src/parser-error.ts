@@ -1,9 +1,10 @@
 export class ParserError extends Error {
-	name = 'ParserError';
-	readonly line: number;
 	readonly col: number;
-	readonly raw: string;
+	readonly line: number;
+	name = 'ParserError';
 	readonly nodeName: string | null;
+	readonly raw: string;
+
 	constructor(
 		message: string,
 		{

@@ -1,0 +1,29 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-data-element
+// https://www.w3.org/TR/html-aria/#el-data
+// https://w3c.github.io/html-aria/#el-data
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(phrasing)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/text-level-semantics.html#attr-data-value
+		"value": {
+			"type": "Any"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true,
+		"namingProhibited": true
+	}
+}

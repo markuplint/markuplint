@@ -2,6 +2,7 @@
 title: Permitted contents
 id: permitted-contents
 category: validation
+severity: error
 ---
 
 # Permitted contents
@@ -11,8 +12,6 @@ Warn if a child element has a not allowed element or text node.
 This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/html-spec/index.json).
 
 It is possible to make the structure robust by setting element relationships on template engines such as custom elements and Vue.
-
-## Rule Details
 
 👎 Examples of **incorrect** code for this rule
 
@@ -48,11 +47,11 @@ It is possible to make the structure robust by setting element relationships on 
 ```
 <!-- prettier-ignore-end -->
 
-### Setting value
+---
 
-- Type: `Array`
-- Optional
-- Default value: `[]`
+## Details
+
+### Setting value
 
 Specify the target element for which you want to set a rule as an array. In the following example, rules are specified for each of the custom elements `x-container` and `x-item`.
 
@@ -84,7 +83,7 @@ Specify the target element (tag) name. Case is not significant.
 
 Specify the target elements as an array. The order of this array means **allowed content order**. (Content not included in this array will be **not allowed content**)
 
-It is defined using one of the six keywords `require`, `optional`, `oneOrMore`, `zeroOrMore`, `choice` and `interleave`.
+It is defined using one of the five keywords `require`, `optional`, `oneOrMore`, `zeroOrMore`, and `choice`.
 
 Of these, `require`, `optional`, `oneOrMore` and `zeroOrMore` mean the number of elements. Specify the tag name (or `# text` for text nodes) using the keyword as a key. Each keyword cannot be simultaneously specified.
 
@@ -129,12 +128,11 @@ Depending on the combination, the following two specifications have the same mea
 
 ---
 
-The two keywords `choice` and`interleave` have the following meanings for the specified array:
+The `choice` keyword has the following meanings for the specified array:
 
-| Keyword      | Meanings             |
-| ------------ | -------------------- |
-| `choice`     | Any one              |
-| `interleave` | Not matter the order |
+| Keyword  | Meanings |
+| -------- | -------- |
+| `choice` | Any one  |
 
 ```json
 {
@@ -145,9 +143,6 @@ The two keywords `choice` and`interleave` have the following meanings for the sp
         "contents": [
           {
             "choice": [{ "oneOrMore": "x-item" }, { "oneOrMore": "y-item" }]
-          },
-          {
-            "interleave": [{ "oneOrMore": "z-item" }, { "oneOrMore": "#text" }]
           }
         ]
       }
@@ -156,9 +151,7 @@ The two keywords `choice` and`interleave` have the following meanings for the sp
 }
 ```
 
-### Options
-
-#### `ignoreHasMutableChildren`
+### Setting `ignoreHasMutableChildren` option
 
 - Type: `boolean`
 - Default: `true`
@@ -173,7 +166,3 @@ html
 	body
 		p lorem...
 ```
-
-### Default severity
-
-`error`

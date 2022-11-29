@@ -1,22 +1,7 @@
 {
 	"definitions": {
 		"AttributeName": { "type": "string", "pattern": "^(?:(xml|xlink):)?[a-z][a-zA-Z0-9-]*$" },
-		"AttributeCondition": {
-			"oneOf": [
-				{
-					"type": "object",
-					"additionalProperties": false,
-					"required": ["ancestor"],
-					"properties": { "ancestor": { "$ref": "#/definitions/Selectors" } }
-				},
-				{
-					"type": "object",
-					"additionalProperties": false,
-					"required": ["self"],
-					"properties": { "self": { "$ref": "#/definitions/Selectors" } }
-				}
-			]
-		},
+		"AttributeCondition": { "$ref": "#/definitions/Selectors" },
 		"Selectors": {
 			"oneOf": [{ "type": "string" }, { "type": "array", "minItems": 2, "items": { "type": "string" } }]
 		},
@@ -24,11 +9,8 @@
 		"AttributeJSON": {
 			"type": "object",
 			"additionalProperties": false,
-			"required": ["ref"],
-			"minProperties": 2,
+			"minProperties": 1,
 			"properties": {
-				"_TODO_": { "type": "string" },
-				"ref": { "type": "string", "format": "uri" },
 				"type": {
 					"oneOf": [
 						{ "$ref": "#/definitions/AttributeType" },
@@ -213,10 +195,9 @@
 	},
 	"type": "object",
 	"additionalProperties": false,
-	"required": ["tag", "ref", "attributes"],
+	"required": ["tag", "attributes"],
 	"properties": {
 		"tag": { "type": "string" },
-		"ref": { "type": "string", "format": "uri" },
 		"global": { "$ref": "#/definitions/GlobalAttributes" },
 		"attributes": { "$ref": "#/definitions/Attributes" }
 	}

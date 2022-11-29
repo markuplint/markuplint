@@ -1,0 +1,30 @@
+// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element
+// https://www.w3.org/TR/html-aria/#el-embed
+// https://w3c.github.io/html-aria/#el-embed
+{
+	"contentModel": {
+		"contents": false
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["height", "width"]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-embed-src
+		"src": {
+			"type": "URL",
+			"required": "[itemprop]"
+		},
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-embed-type
+		"type": {
+			"type": "MIMEType"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["application", "document", "img", "none", "presentation"]
+	}
+}

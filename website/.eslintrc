@@ -13,13 +13,31 @@
   "settings": {
     "react": {
       "version": "detect"
+    },
+    "import/resolver": {
+      "typescript": []
     }
   },
   "rules": {
     "react/display-name": 0,
-    "react/prop-types": 0
+    "react/prop-types": 0,
+    "import/no-unresolved": [
+      2,
+      {
+        "ignore": ["^@docusaurus/", "^@site/", "^@theme/", "^@theme-original/"]
+      }
+    ]
   },
   "globals": {
-    "React": true
-  }
+    "React": true,
+    "JSX": true
+  },
+  "overrides": [
+    {
+      "files": ["./*.mjs"],
+      "rules": {
+        "import/no-named-as-default-member": 0
+      }
+    }
+  ]
 }

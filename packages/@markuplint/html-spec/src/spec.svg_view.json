@@ -1,0 +1,45 @@
+// https://svgwg.org/svg2-draft/linking.html#ViewElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-76
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [":model(SVGAnimation)", ":model(SVGDescriptive)", "svg|script", "svg|style"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+	},
+	"attributes": {
+		// https://svgwg.org/svg2-draft/coords.html#ViewBoxAttribute
+		"viewBox": {
+			"type": "<view-box>"
+		},
+		// https://svgwg.org/svg2-draft/coords.html#PreserveAspectRatioAttribute
+		"preserveAspectRatio": {
+			"type": "<preserve-aspect-ratio>"
+		},
+		// https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/zoomAndPan
+		"zoomAndPan": {
+			"type": {
+				"enum": ["disable", "magnify"]
+			},
+			"defaultValue": "magnify",
+			"deprecated": true
+		},
+		// https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewTarget
+		"viewTarget": {
+			"type": "Any",
+			"deprecated": true
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false
+	}
+}

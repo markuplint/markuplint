@@ -1,0 +1,52 @@
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source
+// https://www.w3.org/TR/html-aria/#el-source
+// https://w3c.github.io/html-aria/#el-source
+{
+	"contentModel": {
+		"contents": false
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["height", "srcset", "sizes", "width"]
+	},
+	"attributes": {
+		"type": {
+			// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-type
+			"type": "MIMEType"
+		},
+		"src": {
+			// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-src
+			"type": "URL",
+			"required": ":is(video, audio) > source"
+		},
+		"srcset": {
+			// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-srcset
+			"condition": "picture > source"
+		},
+		"sizes": {
+			// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-sizes
+			"condition": "picture > source"
+		},
+		"media": {
+			// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-media
+			"type": "<media-query-list>",
+			"condition": "picture > source"
+		},
+		"width": {
+			// https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-width
+			"condition": "picture > source"
+		},
+		"height": {
+			// https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-height
+			"condition": "picture > source"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": false
+	}
+}

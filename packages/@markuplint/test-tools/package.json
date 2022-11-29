@@ -1,0 +1,21 @@
+{
+	"name": "@markuplint/test-tools",
+	"version": "3.0.0-alpha.6",
+	"description": "A private package for testing in this repository",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"private": true,
+	"main": "./lib/index.js",
+	"types": "./lib/index.d.ts",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsc",
+		"clean": "tsc --build --clean"
+	},
+	"dependencies": {
+		"jsdom": "19"
+	}
+}

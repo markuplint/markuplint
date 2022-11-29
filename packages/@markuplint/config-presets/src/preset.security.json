@@ -1,0 +1,23 @@
+{
+	"nodeRules": [
+		{
+			/**
+			 * Require `noreferrer` with `target=_blank`
+			 *
+			 * Require `rel=noreferrer` with an element that has `target=_blank` to prevent leaking referrer information and to block operating referrer documents.
+			 */
+			"selector": ":where(a[target=_blank], area[target=_blank])",
+			"rules": {
+				"required-attr": {
+					"value": [
+						{
+							"name": "rel",
+							"value": "/(?<![^\\s]+)noreferrer(?![^\\s]+)/"
+						}
+					],
+					"reason": "The \"rel\" attribute should be required with \"noreferrer\" if the \"a\" element has the \"target=_blank\""
+				}
+			}
+		}
+	]
+}

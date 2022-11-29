@@ -1,8 +1,0 @@
-{
-	"tag": "td",
-	"contents": [
-		{
-			"zeroOrMore": "#flow"
-		}
-	]
-}

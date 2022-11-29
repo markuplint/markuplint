@@ -1,0 +1,26 @@
+// https://svgwg.org/specs/animations/#MPathElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-53
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true
+	},
+	"attributes": {
+		// https://svgwg.org/specs/animations/#MPathElementHrefAttribute
+		"href": {
+			"type": "URL"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false
+	}
+}

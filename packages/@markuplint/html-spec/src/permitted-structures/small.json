@@ -1,8 +1,0 @@
-{
-	"tag": "small",
-	"contents": [
-		{
-			"zeroOrMore": "#phrasing"
-		}
-	]
-}

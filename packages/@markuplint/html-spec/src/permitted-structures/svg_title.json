@@ -1,8 +1,0 @@
-{
-	"tag": "title",
-	"contents": [
-		{
-			"zeroOrMore": ["#SVGOtherXMLNamespace", "#text"]
-		}
-	]
-}

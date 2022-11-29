@@ -1,8 +1,9 @@
 # @markuplint/vue-spec
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Fvue-spec.svg)](https://www.npmjs.com/package/@markuplint/vue-spec)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=main)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
+
+Use **markuplint** with [**Vue**](https://vuejs.org/).
+Add Vue specific elements and attributes to the schema.
 
 ## Install
 
@@ -14,7 +15,7 @@ $ yarn add -D @markuplint/vue-spec
 
 ## Usage
 
-Add `specs` option into your [confugration file](https://markuplint.dev/configuration#parser).
+Add `specs` option to your [configuration](https://markuplint.dev/configuration/#properties/specs).
 
 ```json
 {

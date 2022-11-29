@@ -1,0 +1,20 @@
+// https://html.spec.whatwg.org/multipage/scripting.html#the-template-element
+// https://www.w3.org/TR/html-aria/#el-template
+// https://w3c.github.io/html-aria/#el-template
+{
+	"contentModel": {
+		"contents": true
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": false
+	}
+}

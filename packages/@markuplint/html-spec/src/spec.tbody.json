@@ -1,0 +1,23 @@
+// https://html.spec.whatwg.org/multipage/tables.html#the-tbody-element
+// https://www.w3.org/TR/html-aria/#el-tbody
+// https://w3c.github.io/html-aria/#el-tbody
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "tr"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "rowgroup",
+		"permittedRoles": true
+	}
+}

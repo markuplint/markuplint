@@ -1,8 +1,0 @@
-{
-	"tag": "nav",
-	"contents": [
-		{
-			"zeroOrMore": "#flow"
-		}
-	]
-}

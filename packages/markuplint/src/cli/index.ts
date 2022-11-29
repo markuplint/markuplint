@@ -8,6 +8,7 @@ import { createRule } from './create-rule';
 import { initialize } from './init';
 import search from './search';
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {
 	if (cli.flags.v) {
 		cli.showVersion(); // And exit successfully.

@@ -21,7 +21,7 @@ test('excrescence-token', () => {
 		ref: null,
 	});
 	expect(check('x/y;')).toStrictEqual({
-		candicate: 'x/y',
+		candidate: 'x/y',
 		column: 4,
 		expects: [{ type: 'format', value: 'MIME Type' }],
 		length: 1,
@@ -33,7 +33,7 @@ test('excrescence-token', () => {
 		ref: null,
 	});
 	expect(checkNoParam('x/y;')).toStrictEqual({
-		candicate: 'x/y',
+		candidate: 'x/y',
 		column: 4,
 		expects: [{ type: 'format', value: 'MIME Type with no parameters' }],
 		length: 1,
@@ -45,7 +45,7 @@ test('excrescence-token', () => {
 		ref: null,
 	});
 	expect(checkNoParam('x/y;a=b;c=D;E="F"')).toStrictEqual({
-		candicate: 'x/y',
+		candidate: 'x/y',
 		column: 4,
 		expects: [{ type: 'format', value: 'MIME Type with no parameters' }],
 		length: 14,

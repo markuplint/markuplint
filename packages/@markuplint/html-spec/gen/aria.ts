@@ -1,49 +1,49 @@
 /* global cheerio */
 
 import type {
-	ARIAAttribute,
+	ARIAProperty,
 	ARIAAttributeValue,
-	ARIARoleOwnedPropOrState,
-	ARIRRoleAttribute,
+	ARIARoleOwnedProperties,
+	ARIAVersion,
+	ARIARoleInSchema,
 	EquivalentHtmlAttr,
 } from '@markuplint/ml-spec';
 
 import fetch from './fetch';
 import { arrayUnique, nameCompare } from './utils';
 
-async function getAriaInHtml() {
-	const $ = await fetch('https://www.w3.org/TR/html-aria/');
-	const implicitProps: { name: string; value: string | null; htmlAttrName: string }[] = [];
-	const $implicitProps = $(
-		'#requirements-for-use-of-aria-attributes-in-place-of-equivalent-html-attributes table tbody tr',
-	).toArray();
-	for (const $implicitProp of $implicitProps) {
-		const htmlAttrName = $($implicitProp).find('th:nth-of-type(1) a').eq(0).text();
-		if (htmlAttrName === 'contenteditable') {
-			// FIXME:
-			// Cannot design yet because the contenteditable attribute is evaluated with ancestors.
-			continue;
-		}
-		const implicitProp = $($implicitProp).find('td:nth-of-type(1) code').eq(0).text();
-		const [name, _value] = implicitProp.split('=');
-		const value = _value.replace(/"|'/g, '').trim();
-		const data = {
-			name,
-			value: value === '...' ? null : value,
-			htmlAttrName,
-		};
-		implicitProps.push(data);
-	}
+export async function getAria() {
+	const roles12 = await getRoles('1.2');
+	const roles11 = await getRoles('1.1');
+
 	return {
-		implicitProps,
+		'1.2': {
+			roles: roles12,
+			props: await getProps('1.2', roles12),
+			graphicsRoles: await getRoles('1.2', true),
+		},
+		'1.1': {
+			roles: roles11,
+			props: await getProps('1.1', roles11),
+			graphicsRoles: await getRoles('1.1', true),
+		},
 	};
 }
 
-export async function getAria() {
-	const $ = await fetch('https://www.w3.org/TR/wai-aria-1.2/');
+async function getRoles(version: ARIAVersion, graphicsAria = false) {
+	const $ = await fetch(
+		(() => {
+			if (!graphicsAria) {
+				return `https://www.w3.org/TR/wai-aria-${version}/`;
+			}
+			return version === '1.1'
+				? 'https://www.w3.org/TR/graphics-aria-1.0/'
+				: 'https://w3c.github.io/graphics-aria/';
+		})(),
+	);
 	const $roleList = $('#role_definitions section.role');
-	const roles: ARIRRoleAttribute[] = [];
-	const getAttr = (li: cheerio.Element): ARIARoleOwnedPropOrState => {
+	const roles: ARIARoleInSchema[] = [];
+	const getAttr = (li: cheerio.Element): ARIARoleOwnedProperties => {
 		const $li = $(li);
 		const text = $li.text();
 		const isDeprecated = /deprecated/i.test(text) || undefined;
@@ -60,8 +60,6 @@ export async function getAria() {
 		};
 	};
 
-	const { implicitProps } = await getAriaInHtml();
-
 	$roleList.each((_, el) => {
 		const $el = $(el);
 		const name = $el.find('.role-name').attr('title')?.trim() || '';
@@ -70,53 +68,74 @@ export async function getAria() {
 			.toArray()
 			.map(p => $(p).text().trim().replace(/\s+/g, ' ').replace(/\t+/g, ''))
 			.join('\n\n');
-		const $feaures = $el.find('.role-features tr');
-		const generalization = $feaures
+		const $features = $el.find('.role-features tr');
+		const generalization = $features
 			.find('.role-parent a')
 			.toArray()
 			.map(a => $(a).text().trim());
-		const isAbstract = $feaures.find('.role-abstract').text().trim().toLowerCase() === 'true' || undefined;
-		let $ownedRequiredProps = $feaures.find('.role-required-properties li').toArray();
+		const isAbstract = $features.find('.role-abstract').text().trim().toLowerCase() === 'true' || undefined;
+		let $ownedRequiredProps = $features.find('.role-required-properties li').toArray();
 		if (!$ownedRequiredProps.length) {
-			$ownedRequiredProps = $feaures.find('.role-required-properties').toArray();
+			$ownedRequiredProps = $features.find('.role-required-properties').toArray();
 		}
-		const ownedRequiredProps = $ownedRequiredProps.map(getAttr);
-		ownedRequiredProps.forEach(p => (p.required = true));
-		const ownedInheritedProps = $feaures.find('.role-inherited li').toArray().map(getAttr);
-		const ownedProps = $feaures.find('.role-properties li, .role-properties > a').toArray().map(getAttr);
-		const requiredContextRole = $feaures
-			.find('.role-scope li')
+		const ownedRequiredProps = $ownedRequiredProps.map(getAttr).map(p => ({ ...p, required: true as const }));
+		const ownedInheritedProps = $features
+			.find('.role-inherited li')
+			.toArray()
+			.map(getAttr)
+			.map(p => ({ ...p, inherited: true as const }));
+		const ownedProps = $features.find('.role-properties li, .role-properties > a').toArray().map(getAttr);
+		const requiredContextRole = $$($features, ['.role-scope li', '.role-scope a'])
 			.toArray()
 			.map(el => $(el).text().trim());
-		const accessibleNameRequired = !!$feaures.find('.role-namerequired').text().match(/true/i);
-		const accessibleNameFromContent = !!$feaures
+		const requiredOwnedElements = $$($features, ['.role-mustcontain li', '.role-mustcontain a'])
+			.toArray()
+			.map(el =>
+				$(el)
+					.text()
+					.trim()
+					.replace(/\s+(owning|→)\s+/gi, ' > '),
+			);
+		const accessibleNameRequired = !!$features.find('.role-namerequired').text().match(/true/i);
+		const accessibleNameFromAuthor = !!$features
+			.find('.role-namefrom')
+			.text()
+			.match(/author/i);
+		const accessibleNameFromContent = !!$features
 			.find('.role-namefrom')
 			.text()
 			.match(/content/i);
-		const accessibleNameProhibited = !!$feaures
-			.find('.role-childpresentational')
+		const accessibleNameProhibited = !!$features
+			.find('.role-namefrom')
 			.text()
 			.match(/prohibited/i);
-		const $childrenPresentational = $feaures.find('.role-namerequired').text();
+		const $childrenPresentational = $features.find('.role-childpresentational').text();
 		const childrenPresentational = $childrenPresentational.match(/true/i)
 			? true
 			: $childrenPresentational.match(/false/i)
 			? false
 			: undefined;
-		const ownedAttribute = arrayUnique(
+		const ownedProperties = arrayUnique(
 			[...ownedRequiredProps, ...ownedInheritedProps, ...ownedProps].sort(nameCompare),
 		);
+		const prohibitedProperties = $features
+			.find('.role-disallowed li code')
+			.toArray()
+			.map(el => $(el).text().trim());
 		roles.push({
 			name,
 			description,
 			isAbstract,
 			generalization,
 			requiredContextRole,
+			requiredOwnedElements,
 			accessibleNameRequired,
+			accessibleNameFromAuthor,
 			accessibleNameFromContent,
 			accessibleNameProhibited,
-			ownedAttribute,
 			childrenPresentational,
+			ownedProperties,
+			prohibitedProperties,
 		});
 	});
 
@@ -133,12 +152,20 @@ export async function getAria() {
 
 	roles.sort(nameCompare);
 
+	return roles;
+}
+
+async function getProps(version: ARIAVersion, roles: ARIARoleInSchema[]) {
+	const $ = await fetch(`https://www.w3.org/TR/wai-aria-${version}/`);
+
 	const ariaNameList: Set<string> = new Set();
 	for (const role of roles) {
-		role.ownedAttribute.forEach(attr => {
-			ariaNameList.add(attr.name);
+		role.ownedProperties?.forEach(prop => {
+			ariaNameList.add(prop.name);
 		});
 	}
+
+	const { implicitProps } = await getAriaInHtml();
 
 	const globalStatesAndProperties = $('#global_states li a')
 		.toArray()
@@ -146,7 +173,7 @@ export async function getAria() {
 		.filter((s): s is string => !!s);
 	const arias = Array.from(ariaNameList)
 		.sort()
-		.map((name): ARIAAttribute => {
+		.map((name): ARIAProperty => {
 			const $section = $(`#${name}`);
 			const className = $section.attr('class');
 			const type = className && /property/i.test(className) ? 'property' : 'state';
@@ -194,7 +221,7 @@ export async function getAria() {
 				}));
 			}
 
-			const aria: ARIAAttribute = {
+			const aria: ARIAProperty = {
 				name,
 				type,
 				deprecated,
@@ -231,8 +258,46 @@ export async function getAria() {
 			return aria;
 		});
 
+	arias.sort(nameCompare);
+
+	return arias;
+}
+
+async function getAriaInHtml() {
+	const $ = await fetch('https://www.w3.org/TR/html-aria/');
+	const implicitProps: { name: string; value: string | null; htmlAttrName: string }[] = [];
+	const $implicitProps = $(
+		'#requirements-for-use-of-aria-attributes-in-place-of-equivalent-html-attributes table tbody tr',
+	).toArray();
+	for (const $implicitProp of $implicitProps) {
+		const htmlAttrName = $($implicitProp).find('th:nth-of-type(1) a').eq(0).text();
+		if (htmlAttrName === 'contenteditable') {
+			// FIXME:
+			// Cannot design yet because the contenteditable attribute is evaluated with ancestors.
+			continue;
+		}
+		const implicitProp = $($implicitProp).find('td:nth-of-type(1) code').eq(0).text();
+		const [name, _value] = implicitProp.split('=');
+		const value = _value.replace(/"|'/g, '').trim();
+		const data = {
+			name,
+			value: value === '...' ? null : value,
+			htmlAttrName,
+		};
+		implicitProps.push(data);
+	}
 	return {
-		roles,
-		arias,
+		implicitProps,
 	};
+}
+
+function $$($el: cheerio.Cheerio, selectors: string[]) {
+	let $found = $el;
+	for (const selector of selectors) {
+		$found = $el.find(selector);
+		if ($found.length) {
+			return $found;
+		}
+	}
+	return $found;
 }

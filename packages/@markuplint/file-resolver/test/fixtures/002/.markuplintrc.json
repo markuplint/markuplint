@@ -32,7 +32,7 @@
 	},
 	"nodeRules": [
 		{
-			"tagName": "div",
+			"selector": "div",
 			"rules": {
 				"rule__disable-for-div-tag": false
 			}

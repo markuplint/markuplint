@@ -1,0 +1,29 @@
+// https://html.spec.whatwg.org/multipage/tables.html#the-tr-element
+// https://www.w3.org/TR/html-aria/#el-tr
+// https://w3c.github.io/html-aria/#el-tr
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": ["th", "td", ":model(script-supporting)"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "row",
+		// No role if the ancestor table element has role=table, grid, or treegrid; otherwise any role.
+		"permittedRoles": true,
+		"conditions": {
+			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr": {
+				"permittedRoles": false
+			}
+		}
+	}
+}

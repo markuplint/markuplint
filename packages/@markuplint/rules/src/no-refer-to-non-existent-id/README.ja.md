@@ -25,6 +25,16 @@ title: 存在しない ID への参照を禁止(no-refer-to-non-existent-id)
 - 型: `boolean`
 - デフォルト値: `true`
 
+### オプション
+
+##### `ariaVersion`
+
+評価する WAI-ARIA のバージョンを指定します。
+
+- 型: `"1.1" | "1.2"`
+- 省略可
+- 初期値: `1.2`
+
 ### デフォルトの警告の厳しさ
 
 `error`

@@ -1,9 +1,10 @@
 import type { Log } from './debug';
 import type { Translator } from '@markuplint/i18n';
-import type { MLASTElement, MLASTOmittedElement } from '@markuplint/ml-ast';
-import type { Element, RuleConfigValue, Document, AbstractElement } from '@markuplint/ml-core';
-import type { ARIRRoleAttribute, Attribute, MLMLSpec, PermittedRoles } from '@markuplint/ml-spec';
+import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
+import type { Attribute } from '@markuplint/ml-spec';
 
+// @ts-ignore
+import structuredClone from '@ungap/structured-clone';
 import { decode as decodeHtmlEntities } from 'html-entities';
 
 import { attrCheck } from './attr-check';
@@ -13,27 +14,9 @@ export function attrMatches<T extends RuleConfigValue, R>(node: Element<T, R>, c
 		return true;
 	}
 
-	let matched = false;
-	if ('self' in condition && condition.self) {
-		const condSelector = Array.isArray(condition.self) ? condition.self.join(',') : condition.self;
-		matched = node.matches(condSelector);
-	}
-	if ('ancestor' in condition && condition.ancestor) {
-		let _node = node.parentNode;
-		while (_node) {
-			if (_node.type === 'Element') {
-				const condSelector = Array.isArray(condition.ancestor)
-					? condition.ancestor.join(',')
-					: condition.ancestor;
-				if (_node.matches(condSelector)) {
-					matched = true;
-					break;
-				}
-			}
-			_node = _node.parentNode;
-		}
-	}
-	return matched;
+	const condSelector = Array.isArray(condition) ? condition.join(',') : condition;
+
+	return node.matches(condSelector);
 }
 
 export function match(needle: string, pattern: string) {
@@ -81,11 +64,6 @@ export const rePCENChar = [
 	'[\uFDF0-\uFFFD]',
 	'[\uD800-\uDBFF][\uDC00-\uDFFF]',
 ].join('|');
-
-export function htmlSpec(specs: Readonly<MLMLSpec>, nameWithNS: string) {
-	const spec = specs.specs.find(spec => spec.name === nameWithNS);
-	return spec || null;
-}
 
 export function isValidAttr(
 	t: Translator,
@@ -143,208 +121,13 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 	return normalized;
 }
 
-export function ariaSpec(specs: Readonly<MLMLSpec>) {
-	const roles = specs.def['#roles'];
-	const ariaAttrs = specs.def['#ariaAttrs'];
-	return {
-		roles,
-		ariaAttrs,
-	};
-}
-
-export function getRoleSpec(specs: Readonly<MLMLSpec>, roleName: string) {
-	const role = getRoleByName(specs, roleName);
-	if (!role) {
-		return null;
-	}
-	const superClassRoles = recursiveTraverseSuperClassRoles(specs, roleName);
-	return {
-		name: role.name,
-		isAbstract: !!role.isAbstract,
-		accessibleNameRequired: role.accessibleNameRequired,
-		statesAndProps: role.ownedAttribute,
-		superClassRoles,
-	};
-}
-
-function getRoleByName(specs: Readonly<MLMLSpec>, roleName: string) {
-	const roles = specs.def['#roles'];
-	const role = roles.find(r => r.name === roleName);
-	return role;
-}
-
-function getSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string) {
-	const role = getRoleByName(specs, roleName);
-	return (
-		role?.generalization
-			.map(roleName => getRoleByName(specs, roleName))
-			.filter((role): role is ARIRRoleAttribute => !!role) || null
-	);
-}
-
-function recursiveTraverseSuperClassRoles(specs: Readonly<MLMLSpec>, roleName: string) {
-	const roles: ARIRRoleAttribute[] = [];
-	const superClassRoles = getSuperClassRoles(specs, roleName);
-	if (superClassRoles) {
-		roles.push(...superClassRoles);
-		for (const superClassRole of superClassRoles) {
-			const ancestorRoles = recursiveTraverseSuperClassRoles(specs, superClassRole.name);
-			roles.push(...ancestorRoles);
-		}
-	}
-	return roles;
-}
-
-/**
- * Getting permitted ARIA roles.
- *
- * - If an array, it is role list.
- * - If `true`, this mean is "Any".
- * - If `false`, this mean is "No".
- */
-export function getPermittedRoles(specs: Readonly<MLMLSpec>, el: Element<any, any>) {
-	const implicitRole = getImplicitRole(specs, el);
-	const spec = htmlSpec(specs, el.nodeName)?.permittedRoles;
-	if (!spec) {
-		return true;
-	}
-	if (spec.conditions) {
-		for (const { condition, roles } of spec.conditions) {
-			if (el.matches(condition)) {
-				return mergeRoleList(implicitRole, roles);
-			}
-		}
-	}
-	if (implicitRole && Array.isArray(spec.roles)) {
-		return [implicitRole, ...spec.roles];
-	}
-	if (implicitRole && spec.roles === false) {
-		return [implicitRole];
-	}
-	return mergeRoleList(implicitRole, spec.roles);
-}
-
-function mergeRoleList(implicitRole: string | false, permittedRoles: PermittedRoles) {
-	if (implicitRole && Array.isArray(permittedRoles)) {
-		return [implicitRole, ...permittedRoles];
-	}
-	if (implicitRole && permittedRoles === false) {
-		return [implicitRole];
-	}
-	return permittedRoles;
-}
-
-export function getImplicitRole(specs: Readonly<MLMLSpec>, el: Element<any, any>) {
-	const implicitRole = htmlSpec(specs, el.nodeName)?.implicitRole;
-	if (!implicitRole) {
-		return false;
-	}
-	if (implicitRole.conditions) {
-		for (const { condition, role } of implicitRole.conditions) {
-			if (el.matches(condition)) {
-				return role;
-			}
-		}
-	}
-	return implicitRole.role;
-}
-
-export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element<any, any>) {
-	const roleAttrTokens = el.getAttributeToken('role');
-	const roleAttr = roleAttrTokens[0];
-	if (roleAttr) {
-		const roleName = roleAttr.getValue().potential.trim().toLowerCase();
-		return {
-			name: roleName,
-			isImplicit: false,
-		};
-	}
-	const implicitRole = getImplicitRole(specs, el);
-	if (implicitRole) {
-		return {
-			name: implicitRole,
-			isImplicit: true,
-		};
-	}
-	return null;
-}
-
-/**
- *
- * @see https://www.w3.org/TR/wai-aria-1.2/#propcharacteristic_value
- *
- * @param type
- * @param value
- * @param tokenEnum
- */
-export function checkAriaValue(type: string, value: string, tokenEnum: string[]) {
-	switch (type) {
-		case 'token': {
-			return tokenEnum.includes(value);
-		}
-		case 'token list': {
-			const list = value.split(/\s+/g).map(s => s.trim());
-			return list.every(token => tokenEnum.includes(token));
-		}
-		case 'string':
-		case 'ID reference':
-		case 'ID reference list': {
-			return true;
-		}
-		case 'true/false': {
-			return ['true', 'false'].includes(value);
-		}
-		case 'tristate': {
-			return ['mixed', 'true', 'false', 'undefined'].includes(value);
-		}
-		case 'true/false/undefined': {
-			return ['true', 'false', 'undefined'].includes(value);
-		}
-		case 'integer': {
-			return parseInt(value).toString() === value;
-		}
-		case 'number': {
-			return parseFloat(value).toString() === value;
-		}
-	}
-	// For skipping checking
-	return true;
-}
-
-export function checkAria(specs: Readonly<MLMLSpec>, attrName: string, currentValue: string, role?: string) {
-	const ariaAttrs = specs.def['#ariaAttrs'];
-	const aria = ariaAttrs.find(a => a.name === attrName);
-	if (!aria) {
-		return {
-			currentValue,
-			// For skipping checking
-			isValid: true,
-		};
-	}
-	let valueType = aria.value;
-	if (role && aria.conditionalValue) {
-		for (const cond of aria.conditionalValue) {
-			if (cond.role.includes(role)) {
-				valueType = cond.value;
-				break;
-			}
-		}
-	}
-	const isValid = checkAriaValue(valueType, currentValue, aria.enum);
-	return {
-		...aria,
-		currentValue,
-		isValid,
-	};
-}
-
 export function accnameMayBeMutable(el: Element<any, any>, document: Document<any, any>) {
 	if (el.hasMutableAttributes() || el.hasMutableChildren(true)) {
 		return true;
 	}
 
-	const ownedLable = getOwnedLabel(el, document);
-	if (ownedLable && (ownedLable.hasMutableAttributes() || ownedLable.hasMutableChildren(true))) {
+	const ownedLabel = getOwnedLabel(el, document);
+	if (ownedLabel && (ownedLabel.hasMutableAttributes() || ownedLabel.hasMutableChildren(true))) {
 		return true;
 	}
 
@@ -352,26 +135,53 @@ export function accnameMayBeMutable(el: Element<any, any>, document: Document<an
 }
 
 const labelable = ['button', 'input:not([type=hidden])', 'meter', 'output', 'progress', 'select', 'textarea'];
-export function getOwnedLabel<V extends RuleConfigValue, O>(
-	el: Element<V, O>,
-	docuemnt: Document<V, O>,
-): AbstractElement<V, O, MLASTElement | MLASTOmittedElement> | null {
+export function getOwnedLabel<V extends RuleConfigValue, O>(el: Element<V, O>, document: Document<V, O>) {
 	if (!labelable.some(cond => el.matches(cond))) {
 		return null;
 	}
 
-	let ownedLable = el.closest('label');
+	let ownedLabel = el.closest('label');
 
-	if (!ownedLable) {
+	if (!ownedLabel) {
 		const id = el.getAttribute('id');
 		if (id) {
-			ownedLable = docuemnt.querySelector(`label[for="${id}"]`);
+			ownedLabel = document.querySelector(`label[for="${id}"]`);
 		}
 	}
 
-	return ownedLable;
+	return ownedLabel;
 }
 
 export function decodeCharRef(characterReference: string) {
 	return decodeHtmlEntities(characterReference);
+}
+
+export class Collection<T> {
+	#items = new Set<T>();
+
+	constructor(...items: (T | null | undefined)[]) {
+		this.add(...items);
+	}
+
+	[Symbol.iterator](): Iterator<T> {
+		return this.#items.values();
+	}
+
+	add(...items: (T | null | undefined)[]) {
+		for (const item of items) {
+			if (item == null) {
+				continue;
+			}
+			this.#items.add(item);
+		}
+	}
+
+	toArray() {
+		return Object.freeze(Array.from(this.#items));
+	}
+}
+
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+export function deepCopy<T>(value: T): Writeable<T> {
+	return structuredClone(value);
 }

@@ -1,8 +1,0 @@
-{
-	"tag": "ul",
-	"contents": [
-		{
-			"zeroOrMore": ["li", "#script-supporting"]
-		}
-	]
-}

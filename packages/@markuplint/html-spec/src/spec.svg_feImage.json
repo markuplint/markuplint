@@ -1,0 +1,123 @@
+// https://drafts.fxtf.org/filter-effects/#feImageElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-28
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|animateTransform", "svg|script", "svg|set"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+		"#SVGPresentationAttrs": [
+			"alignment-baseline",
+			"baseline-shift",
+			"clip",
+			"clip-path",
+			"clip-rule",
+			"color",
+			"color-interpolation",
+			"color-interpolation-filters",
+			"color-rendering",
+			"cursor",
+			"direction",
+			"display",
+			"dominant-baseline",
+			"enable-background",
+			"fill",
+			"fill-opacity",
+			"fill-rule",
+			"filter",
+			"flood-color",
+			"flood-opacity",
+			"font",
+			"font-family",
+			"font-size",
+			"font-size-adjust",
+			"font-stretch",
+			"font-style",
+			"font-variant",
+			"font-weight",
+			"glyph-orientation-horizontal",
+			"glyph-orientation-vertical",
+			"image-rendering",
+			"isolation",
+			"kerning",
+			"letter-spacing",
+			"lighting-color",
+			"marker",
+			"marker-end",
+			"marker-mid",
+			"marker-start",
+			"mask",
+			"mask-type",
+			"opacity",
+			"overflow",
+			"paint-order",
+			"pointer-events",
+			"shape-rendering",
+			"stop-color",
+			"stop-opacity",
+			"stroke",
+			"stroke-dasharray",
+			"stroke-dashoffset",
+			"stroke-linecap",
+			"stroke-linejoin",
+			"stroke-miterlimit",
+			"stroke-opacity",
+			"stroke-width",
+			"text-anchor",
+			"text-decoration",
+			"text-overflow",
+			"text-rendering",
+			"transform",
+			"transform-origin",
+			"unicode-bidi",
+			"vector-effect",
+			"visibility",
+			"white-space",
+			"word-spacing",
+			"writing-mode"
+		],
+		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"]
+	},
+	"attributes": {
+		// https://www.w3.org/TR/2011/REC-SVG11-20110816/struct.html#ExternalResourcesRequiredAttribute
+		"externalResourcesRequired": {
+			"type": {
+				"enum": ["true", "false"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "true"
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feimage-preserveaspectratio
+		"preserveAspectRatio": {
+			"type": "<preserve-aspect-ratio>",
+			"defaultValue": "xMidYMid meet",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feimage-xlinkhref
+		"xlink:href": {
+			"type": "URL",
+			"animatable": true,
+			"deprecated": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feimage-href
+		"href": {
+			"type": "URL",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feimage-crossorigin
+		"crossorigin": {
+			"type": {
+				"enum": ["anonymous", "use-credentials"],
+				"disallowToSurroundBySpaces": false
+			}
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false
+	}
+}

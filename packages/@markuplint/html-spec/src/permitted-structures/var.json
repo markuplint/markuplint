@@ -1,8 +1,0 @@
-{
-	"tag": "var",
-	"contents": [
-		{
-			"zeroOrMore": "#phrasing"
-		}
-	]
-}

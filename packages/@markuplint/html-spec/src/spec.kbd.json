@@ -1,0 +1,24 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-kbd-element
+// https://www.w3.org/TR/html-aria/#el-kbd
+// https://w3c.github.io/html-aria/#el-kbd
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(phrasing)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true,
+		"namingProhibited": true
+	}
+}

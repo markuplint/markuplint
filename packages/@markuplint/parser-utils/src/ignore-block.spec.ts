@@ -170,7 +170,7 @@ describe('restoreNode', () => {
 		// TODO: Remove the masks from Element.raw and Attribute.raw
 		expect(nodeMap).toStrictEqual([
 			'[1:1]>[1:24](0,23)div: <div␣attr="">',
-			'[1:5]>[1:23](4,22)attr: ␣attr=""',
+			'[1:6]>[1:23](5,22)attr: attr=""',
 			'  [1:5]>[1:6](4,5)bN: ␣',
 			'  [1:6]>[1:10](5,9)name: attr',
 			'  [1:10]>[1:10](9,9)bE: ',
@@ -261,7 +261,7 @@ describe('restoreNode', () => {
 		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe('A<% attr %>B');
 	});
 
-	it('unexpect parsing', () => {
+	it('unexpected parsing', () => {
 		const code = '<div attr="<% attr %> "></div>';
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);

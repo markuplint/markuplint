@@ -1,0 +1,47 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean"
+		},
+		"option": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"extendsExposableElements": {
+					"type": "boolean",
+					"default": "true",
+					"description": "Include elements that are not palpable content, but are exposed to the accessibility tree. The palpable content model doesn't include some elements that are `li`, `dt`, `dd`, `th`, `td`, and more. This option exists to that detect those elements that are empty."
+				},
+				"ignoreIfAriaBusy": {
+					"type": "boolean",
+					"default": "true",
+					"description": "Avoid evaluating it if the element has `aria-busy=true`."
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"type": "boolean",
+			"enum": [false]
+		},
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"option": { "$ref": "#/definitions/option" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}

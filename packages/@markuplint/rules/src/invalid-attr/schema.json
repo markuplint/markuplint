@@ -59,7 +59,8 @@
 								}
 							}
 						]
-					}
+					},
+					"description": "Setting custom rule. Set either `enum`, `pattern`, `type` or `disallowed`."
 				},
 				"ignoreAttrNamePrefix": {
 					"oneOf": [
@@ -74,7 +75,13 @@
 								"type": "string"
 							}
 						}
-					]
+					],
+					"description": "Set prefixes to exclude special attributes or directives for the library and template engine that do not exist in the HTML specifications."
+				},
+				"allowToAddPropertiesForPretender": {
+					"type": "boolean",
+					"default": "true",
+					"description": "Allow adding properties for a component that pretends to be an HTML native element. The default is `true`. It warns of finding a non-existence attribute if it is set `false` and you use the `pretenders` option."
 				}
 			}
 		}

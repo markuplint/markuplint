@@ -6,7 +6,7 @@ import { CreateRuleHelperError } from './create-rule-helper-error';
 import { fsExists } from './fs-exists';
 import { installScaffold } from './install-scaffold';
 
-export async function craeteRuleToProject({
+export async function createRuleToProject({
 	name,
 	lang,
 	needTest,

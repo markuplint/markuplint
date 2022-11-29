@@ -1,0 +1,73 @@
+// https://html.spec.whatwg.org/multipage/scripting.html#the-script-element
+// https://www.w3.org/TR/html-aria/#el-script
+// https://w3c.github.io/html-aria/#el-script
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "#text"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "integrity", "fetchpriority"]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-src
+		"src": {
+			"type": "URL"
+		},
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-type
+		"type": {
+			// When used to include data blocks the data must be embedded inline,
+			// the format of the data must be given using the type attribute,
+			// and the contents of the script element must conform to the requirements defined for the format used.
+			// The src, async, nomodule, defer, crossorigin, integrity,
+			// and referrerpolicy attributes must not be specified.
+			"type": [
+				"MIMEType",
+				{
+					"enum": ["module", "importmap"],
+					"caseInsensitive": true
+				}
+			]
+		},
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-nomodule
+		"nomodule": {
+			"type": "Boolean",
+			"condition": ":not([type='module' i])"
+		},
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-async
+		"async": {
+			"type": "Boolean",
+			"condition": ["[src]", "[type='module' i]"],
+			"ineffective": ":not([src]):not([type='module' i])"
+		},
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-defer
+		"defer": {
+			"type": "Boolean",
+			"condition": "[src]",
+			// The `defer` attribute affects the element that has the async attribute if it doesn't support the async
+			"ineffective": ["[type='module' i]", ":not([src])", "[async]"]
+		},
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-integrity
+		"integrity": {
+			"condition": "[src]"
+		},
+		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking
+		"blocking": {
+			"type": {
+				"enum": ["render"]
+			}
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": false
+	}
+}

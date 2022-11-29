@@ -1,0 +1,36 @@
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog
+// https://www.w3.org/TR/html-aria/#el-dialog
+// https://w3c.github.io/html-aria/#el-dialog
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(flow)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/interactive-elements.html#the-dialog-element:attr-tabindex
+		"tabindex": {
+			"noUse": true
+		},
+		// https://html.spec.whatwg.org/multipage/interactive-elements.html#attr-dialog-open
+		"open": {
+			"type": "Boolean"
+		}
+	},
+	"aria": {
+		"implicitRole": "dialog",
+		"permittedRoles": ["alertdialog"],
+		"properties": {
+			"global": true,
+			"role": "dialog"
+		}
+	}
+}

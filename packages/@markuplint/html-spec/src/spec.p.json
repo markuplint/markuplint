@@ -1,0 +1,27 @@
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-p-element
+// https://www.w3.org/TR/html-aria/#el-p
+// https://w3c.github.io/html-aria/#el-p
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(phrasing)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "paragraph",
+		"permittedRoles": true,
+		"namingProhibited": true,
+		"1.1": {
+			"implicitRole": false
+		}
+	}
+}

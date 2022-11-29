@@ -1,8 +1,0 @@
-{
-	"tag": "dialog",
-	"contents": [
-		{
-			"zeroOrMore": "#flow"
-		}
-	]
-}

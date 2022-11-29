@@ -1,0 +1,116 @@
+{
+	"rules": {
+		/**
+		 * No duplicate attr
+		 *
+		 * The parser ignores all such duplicate occurrences of the attribute.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/parsing.html#parse-error-duplicate-attribute
+		 */
+		"attr-duplication": true,
+
+		/**
+		 * Use **character reference**
+		 *
+		 */
+		"character-reference": true,
+
+		/**
+		 * No use deprecated attr
+		 *
+		 * You should not use deprecated attributes from the viewpoint of compatibility.
+		 */
+		"deprecated-attr": true,
+
+		/**
+		 * No use deprecated element
+		 *
+		 * You should not use deprecated elements from the viewpoint of compatibility.
+		 */
+		"deprecated-element": true,
+
+		/**
+		 * Require `doctype`
+		 *
+		 * It has the effect of avoiding quirks mode.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/syntax.html#syntax-doctype
+		 */
+		"doctype": true,
+
+		/**
+		 * Must not duplicate **ID**
+		 *
+		 */
+		"id-duplication": true,
+
+		/**
+		 * No use ineffective attr
+		 *
+		 */
+		"ineffective-attr": true,
+
+		/**
+		 * No refer to no existent **ID**
+		 */
+		"no-refer-to-non-existent-id": true,
+
+		/**
+		 * Allow only **permitted contents**
+		 *
+		 */
+		"permitted-contents": true,
+
+		/**
+		 * Specify required attr
+		 *
+		 */
+		"required-attr": true
+	},
+	"nodeRules": [
+		{
+			/**
+			 * Specify `charset=UTF-8`
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/semantics.html#charset
+			 */
+			"selector": ":where(head)",
+			"rules": {
+				"required-element": ["meta[charset=\"UTF-8\" i]"]
+			}
+		},
+		{
+			/**
+			 * No use `<small>` as **subheadings**
+			 *
+			 * Should not use it in `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, and `<h6>`.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element
+			 */
+			"selector": "h1, h2, h3, h4, h5, h6",
+			"rules": {
+				"disallowed-element": {
+					"value": ["small"],
+					"reason": "The small element must not be used for subheadings. https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element"
+				}
+			}
+		},
+		{
+			/**
+			 * No use `<caption>` within `<figure>`
+			 *
+			 * When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/tables.html#the-caption-element
+			 */
+			"selector": ":where(figcaption ~ table, table:has(~ figcaption))",
+			"rules": {
+				"disallowed-element": {
+					"value": ["caption"],
+					"reason": "When a table element is the only content in a figure element other than the figcaption, the caption element should be omitted in favor of the figcaption. (https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)"
+				},
+				"require-accessible-name": false
+			}
+		}
+	]
+}

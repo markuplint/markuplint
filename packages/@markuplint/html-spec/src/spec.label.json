@@ -1,0 +1,29 @@
+// https://html.spec.whatwg.org/multipage/forms.html#the-label-element
+// https://www.w3.org/TR/html-aria/#el-label
+// https://w3c.github.io/html-aria/#el-label
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(phrasing):not(label, :has(label))"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/forms.html#attr-label-for
+		"for": {
+			"type": "DOMID"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"namingProhibited": true
+	}
+}

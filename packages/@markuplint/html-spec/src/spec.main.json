@@ -1,0 +1,27 @@
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element
+// https://www.w3.org/TR/html-aria/#el-main
+// https://w3c.github.io/html-aria/#el-main
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(flow)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "main",
+		"permittedRoles": false,
+		"properties": {
+			"global": true,
+			"role": "main"
+		}
+	}
+}

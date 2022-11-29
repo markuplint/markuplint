@@ -97,28 +97,7 @@ fs.writeFileSync(
 				pattern: '^(?:(xml|xlink):)?[a-z][a-zA-Z0-9-]*$',
 			},
 			AttributeCondition: {
-				oneOf: [
-					{
-						type: 'object',
-						additionalProperties: false,
-						required: ['ancestor'],
-						properties: {
-							ancestor: {
-								$ref: '#/definitions/Selectors',
-							},
-						},
-					},
-					{
-						type: 'object',
-						additionalProperties: false,
-						required: ['self'],
-						properties: {
-							self: {
-								$ref: '#/definitions/Selectors',
-							},
-						},
-					},
-				],
+				$ref: '#/definitions/Selectors',
 			},
 			Selectors: {
 				oneOf: [
@@ -140,11 +119,8 @@ fs.writeFileSync(
 			AttributeJSON: {
 				type: 'object',
 				additionalProperties: false,
-				required: ['ref'],
-				minProperties: 2,
+				minProperties: 1,
 				properties: {
-					_TODO_: { type: 'string' },
-					ref: { type: 'string', format: 'uri' },
 					type: {
 						oneOf: [
 							{
@@ -221,10 +197,9 @@ fs.writeFileSync(
 		},
 		type: 'object',
 		additionalProperties: false,
-		required: ['tag', 'ref', 'attributes'],
+		required: ['tag', 'attributes'],
 		properties: {
 			tag: { type: 'string' },
-			ref: { type: 'string', format: 'uri' },
 			global: {
 				$ref: '#/definitions/GlobalAttributes',
 			},

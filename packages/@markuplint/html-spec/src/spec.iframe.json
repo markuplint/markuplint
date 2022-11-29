@@ -1,0 +1,74 @@
+// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element
+// https://www.w3.org/TR/html-aria/#el-iframe
+// https://w3c.github.io/html-aria/#el-iframe
+{
+	"contentModel": {
+		"contents": [
+			{
+				"transparent": "*"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "width"],
+		"#HTMLLinkAndFetchingAttrs": ["referrerpolicy", "loading", "fetchpriority"]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-src
+		"src": {
+			"required": "[itemprop]",
+			"ineffective": "[srcdoc]"
+		},
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-srcdoc
+		"srcdoc": {
+			// The type is HTML syntax, but it does not evaluate as HTML.
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-name
+		"name": {
+			"type": "BrowsingContextName"
+		},
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-sandbox
+		"sandbox": {
+			"type": {
+				"token": {
+					"enum": [
+						"allow-forms",
+						"allow-modals",
+						"allow-orientation-lock",
+						"allow-pointer-lock",
+						"allow-popups",
+						"allow-popups-to-escape-sandbox",
+						"allow-presentation",
+						"allow-same-origin",
+						"allow-scripts",
+						"allow-top-navigation",
+						"allow-top-navigation-by-user-activation",
+						"allow-downloads",
+						"allow-custom-protocols-navigation"
+					]
+				},
+				"caseInsensitive": true,
+				"ordered": true,
+				"unique": true,
+				"separator": "space"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-allow
+		"allow": {
+			"type": "SerializedPermissionsPolicy"
+		},
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-allowfullscreen
+		"allowfullscreen": {
+			"type": "Boolean"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["application", "document", "img", "none", "presentation"]
+	}
+}

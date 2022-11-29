@@ -1,0 +1,39 @@
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background-image: url('/img/hero.jpg');
+  background-size: cover;
+  color: #fff;
+}
+
+@media (min-resolution: 2dppx) {
+  .heroBanner {
+    background-image: url('/img/hero@2x.jpg');
+  }
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+}
+
+.heroTitle {
+  font-size: 4rem;
+}
+
+.heroSubtitle {
+  font-size: 1.5rem;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h2 {
+  margin-bottom: 2rem;
+}

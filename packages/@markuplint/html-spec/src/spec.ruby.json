@@ -1,0 +1,55 @@
+// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-ruby-element
+// https://www.w3.org/TR/html-aria/#el-ruby
+// https://w3c.github.io/html-aria/#el-ruby
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": [
+					{
+						"require": ":model(phrasing):not(ruby, :has(ruby))"
+					},
+					{
+						"choice": [
+							[
+								{
+									"oneOrMore": "rt"
+								}
+							],
+							[
+								{
+									"oneOrMore": [
+										{
+											"require": "rp"
+										},
+										{
+											"oneOrMore": [
+												{
+													"require": "rt"
+												},
+												{
+													"require": "rp"
+												}
+											]
+										}
+									]
+								}
+							]
+						]
+					}
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

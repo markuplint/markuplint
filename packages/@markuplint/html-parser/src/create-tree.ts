@@ -2,7 +2,7 @@ import type {
 	MLASTDoctype,
 	MLASTElementCloseTag,
 	MLASTNode,
-	MLASTOmittedElement,
+	MLASTElement,
 	MLASTParentNode,
 	MLASTTag,
 	MLASTText,
@@ -18,7 +18,7 @@ import type {
 	Location,
 } from 'parse5';
 
-import { getEndCol, getEndLine, isPotentialCustomElementName, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
 import { parse, parseFragment } from 'parse5';
 
 import parseRawTag from './parse-raw-tag';
@@ -97,7 +97,7 @@ function nodeize(
 		const endLine = prevToken ? prevToken.endLine : 0;
 		const startCol = prevToken ? prevToken.endCol : 0;
 		const endCol = prevToken ? prevToken.endCol : 0;
-		const node: MLASTOmittedElement = {
+		const node: MLASTElement = {
 			uuid: uuid(),
 			raw: '',
 			startOffset: startOffset + offsetOffset,
@@ -107,14 +107,19 @@ function nodeize(
 			startCol: startCol + (startLine === 1 ? offsetColumn : 0),
 			endCol: endCol + (endLine === 1 ? offsetColumn : 0),
 			nodeName: originNode.nodeName,
-			type: 'omittedtag',
+			type: 'starttag',
 			namespace: getNamespace(originNode),
+			elementType: 'html',
+			attributes: [],
+			hasSpreadAttr: false,
+			pearNode: null,
+			tagCloseChar: '',
+			tagOpenChar: '',
 			parentNode,
 			prevNode,
 			nextNode,
 			isFragment: false,
 			isGhost: true,
-			isCustomElement: false,
 		};
 		node.childNodes = createTreeRecursive(originNode, node, rawHtml, offsetOffset, offsetLine, offsetColumn);
 		return node;
@@ -202,7 +207,6 @@ function nodeize(
 				offsetColumn,
 			);
 			const tagName = tagTokens.tagName;
-			const isCustomElement = isPotentialCustomElementName(tagName);
 			let endTag: MLASTElementCloseTag | null = null;
 			let endTagLoc = 'endTag' in location ? location.endTag : null;
 
@@ -257,7 +261,6 @@ function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
-					isCustomElement,
 				};
 			}
 			const _endOffset = startOffset + startTagRaw.length;
@@ -275,6 +278,7 @@ function nodeize(
 				nodeName: tagName,
 				type: 'starttag',
 				namespace: getNamespace(originNode),
+				elementType: detectElementType(tagName),
 				attributes: tagTokens.attrs,
 				hasSpreadAttr: false,
 				parentNode,
@@ -287,7 +291,6 @@ function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				isCustomElement,
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;

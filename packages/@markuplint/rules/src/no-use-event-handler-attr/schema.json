@@ -19,7 +19,8 @@
 								"type": "string"
 							}
 						}
-					]
+					],
+					"description": "Specify the event handler to ignore as string or string array. It accepts even in a regex format."
 				}
 			}
 		}

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-spec",
-	"version": "2.1.1",
+	"version": "3.0.0-alpha.6",
 	"description": "Types and schema that specs of the Markup languages for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -16,15 +16,19 @@
 		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean",
 		"schema:gen": "ts-node ./gen/gen.ts; prettier --write './schemas/*.json';",
-		"schema:structures": "json2ts ./schemas/permitted-structures.schema.json > ./src/permitted-structres.ts; prettier --write ./src/permitted-structres.ts; eslint --fix --config ../../../.eslintrc ./src/permitted-structres.ts",
-		"schema:attributes": "json2ts ./schemas/attributes.schema.json --cwd ./schemas > ./src/attributes.ts; prettier --write ./src/attributes.ts; eslint --fix --config ../../../.eslintrc ./src/attributes.ts",
-		"schema": "yarn schema:gen; yarn schema:structures; yarn schema:attributes; tsc;"
+		"schema:content-models": "json2ts ./schemas/content-models.schema.json > ./src/types/permitted-structres.ts; prettier --write ./src/types/permitted-structres.ts; eslint --fix --config ../../../.eslintrc ./src/types/permitted-structres.ts",
+		"schema:attributes": "json2ts ./schemas/attributes.schema.json --cwd ./schemas > ./src/types/attributes.ts; prettier --write ./src/types/attributes.ts; eslint --fix --config ../../../.eslintrc ./src/types/attributes.ts",
+		"schema:aria": "json2ts ./schemas/aria.schema.json --cwd ./schemas > ./src/types/aria.ts; prettier --write ./src/types/aria.ts; eslint --fix --config ../../../.eslintrc ./src/types/aria.ts",
+		"schema": "run-s schema:*"
 	},
 	"dependencies": {
-		"tslib": "^2.3.1"
+		"@markuplint/ml-ast": "3.0.0-alpha.6",
+		"dom-accessibility-api": "^0.5.14",
+		"tslib": "^2.4.0"
 	},
 	"devDependencies": {
-		"@markuplint/types": "2.2.0",
-		"json-schema-to-typescript": "^10.1.5"
+		"@markuplint/test-tools": "3.0.0-alpha.6",
+		"@markuplint/types": "3.0.0-alpha.6",
+		"json-schema-to-typescript": "^11.0.2"
 	}
 }

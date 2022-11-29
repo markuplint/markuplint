@@ -1,0 +1,24 @@
+// https://html.spec.whatwg.org/multipage/sections.html#the-article-element
+// https://www.w3.org/TR/html-aria/#el-article
+// https://w3c.github.io/html-aria/#el-article
+// https://www.w3.org/TR/html-aam-1.0/#:~:text=Comments-,article,-aside%20(scoped%20to
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(flow)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "article",
+		"permittedRoles": ["application", "document", "feed", "main", "none", "presentation", "region"]
+	}
+}

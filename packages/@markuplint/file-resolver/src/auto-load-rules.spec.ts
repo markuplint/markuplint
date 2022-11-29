@@ -14,7 +14,7 @@ test('built-in-rules', async () => {
 	expect(r.rules).toEqual([
 		{
 			name: 'textlint',
-			defaultServerity: 'warning',
+			defaultSeverity: 'warning',
 			defaultValue: true,
 			defaultOptions: true,
 		},

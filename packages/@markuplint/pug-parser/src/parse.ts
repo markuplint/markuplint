@@ -9,23 +9,16 @@ import type {
 } from '@markuplint/ml-ast';
 
 import { getNamespace, parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
-import {
-	ignoreFrontMatter,
-	isPotentialCustomElementName,
-	ParserError,
-	tokenizer,
-	uuid,
-	walk,
-} from '@markuplint/parser-utils';
+import { detectElementType, ignoreFrontMatter, ParserError, tokenizer, uuid, walk } from '@markuplint/parser-utils';
 
 import attrTokenizer from './attr-tokenizer';
 import { pugParse } from './pug-parser';
 
-export const parse: Parse = (rawCode, _, __, ___, isIgnoringFrontMatter) => {
-	let unkownParseError: string | undefined;
+export const parse: Parse = (rawCode, options) => {
+	let unknownParseError: string | undefined;
 	let nodeList: MLASTNode[];
 
-	if (isIgnoringFrontMatter) {
+	if (options?.ignoreFrontMatter) {
 		rawCode = ignoreFrontMatter(rawCode);
 	}
 
@@ -48,13 +41,13 @@ export const parse: Parse = (rawCode, _, __, ___, isIgnoringFrontMatter) => {
 				},
 			);
 		}
-		unkownParseError = err instanceof Error ? err.message : new Error(`${err}`).message;
+		unknownParseError = err instanceof Error ? err.message : new Error(`${err}`).message;
 	}
 
 	return {
 		nodeList,
 		isFragment: isDocumentFragment(rawCode),
-		unkownParseError,
+		unknownParseError: unknownParseError,
 	};
 };
 
@@ -66,44 +59,20 @@ class Parser {
 		// console.log(JSON.stringify(this.#ast, null, 2));
 	}
 
+	flattenNodes(nodeTree: MLASTNode[]) {
+		const nodeOrders: MLASTNode[] = [];
+		walk(nodeTree, node => {
+			nodeOrders.push(node);
+		});
+
+		removeDeprecatedNode(nodeOrders);
+
+		return nodeOrders;
+	}
+
 	getNodeList() {
 		const nodeTree = this.traverse(this.#ast.nodes, null);
 		return this.flattenNodes(nodeTree);
-	}
-
-	traverse(astNodes: ASTNode[], parentNode: MLASTParentNode | null = null): MLASTNode[] {
-		const nodeList: MLASTNode[] = [];
-
-		let prevNode: MLASTNode | null = null;
-		for (const astNode of astNodes) {
-			const nodes = this.nodeize(astNode, prevNode, parentNode);
-			if (!nodes || (Array.isArray(nodes) && nodes.length === 0)) {
-				continue;
-			}
-
-			let node: MLASTNode;
-			if (Array.isArray(nodes)) {
-				node = nodes[nodes.length - 1];
-			} else {
-				node = nodes;
-			}
-
-			if (prevNode) {
-				if (node.type !== 'endtag') {
-					prevNode.nextNode = node;
-				}
-				node.prevNode = prevNode;
-			}
-			prevNode = node;
-
-			if (Array.isArray(nodes)) {
-				nodeList.push(...nodes);
-			} else {
-				nodeList.push(nodes);
-			}
-		}
-
-		return nodeList;
 	}
 
 	nodeize(
@@ -167,12 +136,11 @@ class Parser {
 						isGhost: false,
 					};
 				}
-				const htmlDoc = htmlParser(
-					originNode.raw,
-					originNode.offset,
-					originNode.line - 1,
-					originNode.column - 1,
-				);
+				const htmlDoc = htmlParser(originNode.raw, {
+					offsetOffset: originNode.offset,
+					offsetLine: originNode.line - 1,
+					offsetColumn: originNode.column - 1,
+				});
 				const nodes = htmlDoc.nodeList;
 				for (const node of nodes) {
 					if (!node.parentNode) {
@@ -214,6 +182,7 @@ class Parser {
 					nodeName: originNode.name,
 					type: 'starttag',
 					namespace,
+					elementType: detectElementType(originNode.name),
 					attributes: originNode.attrs.map(attr => attrTokenizer(attr)),
 					hasSpreadAttr: false,
 					parentNode,
@@ -226,7 +195,6 @@ class Parser {
 					isGhost: false,
 					tagOpenChar: '',
 					tagCloseChar: '',
-					isCustomElement: isPotentialCustomElementName(originNode.name),
 				};
 
 				if (originNode.block.nodes.length) {
@@ -263,14 +231,38 @@ class Parser {
 		}
 	}
 
-	flattenNodes(nodeTree: MLASTNode[]) {
-		const nodeOrders: MLASTNode[] = [];
-		walk(nodeTree, node => {
-			nodeOrders.push(node);
-		});
+	traverse(astNodes: ASTNode[], parentNode: MLASTParentNode | null = null): MLASTNode[] {
+		const nodeList: MLASTNode[] = [];
 
-		removeDeprecatedNode(nodeOrders);
+		let prevNode: MLASTNode | null = null;
+		for (const astNode of astNodes) {
+			const nodes = this.nodeize(astNode, prevNode, parentNode);
+			if (!nodes || (Array.isArray(nodes) && nodes.length === 0)) {
+				continue;
+			}
 
-		return nodeOrders;
+			let node: MLASTNode;
+			if (Array.isArray(nodes)) {
+				node = nodes[nodes.length - 1];
+			} else {
+				node = nodes;
+			}
+
+			if (prevNode) {
+				if (node.type !== 'endtag') {
+					prevNode.nextNode = node;
+				}
+				node.prevNode = prevNode;
+			}
+			prevNode = node;
+
+			if (Array.isArray(nodes)) {
+				nodeList.push(...nodes);
+			} else {
+				nodeList.push(nodes);
+			}
+		}
+
+		return nodeList;
 	}
 }

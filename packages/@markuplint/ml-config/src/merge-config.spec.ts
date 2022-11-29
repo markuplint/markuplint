@@ -81,24 +81,6 @@ it('test', () => {
 
 it('test', () => {
 	expect(
-		mergeConfig(
-			{
-				specs: '@markuplint/vue-spec',
-			},
-			{
-				specs: { '/\\.[jt]sx?$/i': '@markuplint/react-spec' },
-			},
-		),
-	).toStrictEqual({
-		specs: {
-			'/.+/': '@markuplint/vue-spec',
-			'/\\.[jt]sx?$/i': '@markuplint/react-spec',
-		},
-	});
-});
-
-it('test', () => {
-	expect(
 		mergeRule(
 			{
 				value: true,

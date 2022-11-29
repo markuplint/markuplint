@@ -2,121 +2,85 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 export type Value = 'lower' | 'upper';
 
-/**
- * @deprecated
- */
-export type Value_v1 = 'no-upper' | 'no-lower';
-
-export default createRule<Value | Value_v1>({
-	defaultServerity: 'warning',
+export default createRule<Value>({
+	defaultSeverity: 'warning',
 	defaultValue: 'lower',
 	async verify({ document, report, t }) {
-		await document.walkOn('Element', node => {
-			if (node.isForeignElement || node.isCustomElement) {
+		await document.walkOn('Attr', attr => {
+			const el = attr.ownerElement;
+			if (el.isForeignElement || el.elementType !== 'html') {
 				return;
 			}
 
-			let value: Value;
-			// Convert deprecated value
-			switch (node.rule.value) {
-				case 'no-lower':
-					value = 'upper';
-					break;
-				case 'no-upper':
-					value = 'lower';
-					break;
-				default:
-					value = node.rule.value;
-			}
+			const value = attr.rule.value;
 
-			const ms = node.rule.severity === 'error' ? 'must' : 'should';
+			const ms = attr.rule.severity === 'error' ? 'must' : 'should';
 			const deny = value === 'lower' ? /[A-Z]/ : /[a-z]/;
 			const cases = value === 'lower' ? 'lower' : 'upper';
 			const message = t(`{0} ${ms} be {1}`, t('{0} of {1}', 'attribute names', 'HTML elements'), `${cases}case`);
-			const attrSpecs = getAttrSpecs(node.nameWithNS, document.specs);
+			const attrSpecs = getAttrSpecs(el, document.specs);
 
-			for (const attr of node.attributes) {
-				if (attr.attrType === 'ps-attr') {
-					continue;
-				}
+			/**
+			 * Ignore when it has the potential name,
+			 * it Interprets `tabIndex` to `tabindex` in JSX for example.
+			 */
+			if (attr.nameNode?.raw !== attr.name) {
+				return;
+			}
 
-				/**
-				 * Ignore when it has the potential name,
-				 * it Interprets `tabIndex` to `tabindex` in JSX for example.
-				 */
-				if (attr.name.raw !== attr.potentialName) {
-					continue;
-				}
-				const name = attr.getName();
+			const name = attr.name;
 
-				if (attrSpecs) {
-					const spec = attrSpecs.find(spec => spec.name === name.raw);
-					if (spec && spec.caseSensitive) {
-						continue;
-					}
+			if (attrSpecs) {
+				const spec = attrSpecs.find(spec => spec.name === name);
+				if (spec && spec.caseSensitive) {
+					return;
 				}
+			}
 
-				if (deny.test(name.raw)) {
-					report({
-						scope: node,
-						message,
-						line: name.line,
-						col: name.col,
-						raw: name.raw,
-					});
-				}
+			if (deny.test(name)) {
+				report({
+					scope: attr,
+					line: attr.nameNode?.startLine,
+					col: attr.nameNode?.startCol,
+					raw: attr.nameNode?.raw,
+					message,
+				});
 			}
 		});
 	},
 	async fix({ document }) {
-		await document.walkOn('Element', node => {
-			if (node.isForeignElement || node.isCustomElement) {
+		await document.walkOn('Attr', attr => {
+			const el = attr.ownerElement;
+
+			if (el.isForeignElement || el.elementType !== 'html') {
 				return;
 			}
 
-			const attrSpecs = getAttrSpecs(node.nameWithNS, document.specs);
+			const attrSpecs = getAttrSpecs(el, document.specs);
 
-			let value: Value;
-			// Convert deprecated value
-			switch (node.rule.value) {
-				case 'no-lower':
-					value = 'upper';
-					break;
-				case 'no-upper':
-					value = 'lower';
-					break;
-				default:
-					value = node.rule.value;
+			const value = attr.rule.value;
+
+			/**
+			 * Ignore when it has the potential name,
+			 * it Interprets `tabIndex` to `tabindex` in JSX for example.
+			 */
+			if (attr.nameNode?.raw !== attr.name) {
+				return;
 			}
 
-			if (node.attributes) {
-				for (const attr of node.attributes) {
-					if (attr.attrType === 'ps-attr') {
-						continue;
-					}
+			const name = attr.name;
 
-					/**
-					 * Ignore when it has the potential name,
-					 * it Interprets `tabIndex` to `tabindex` in JSX for example.
-					 */
-					if (attr.name.raw !== attr.potentialName) {
-						continue;
-					}
-					const name = attr.getName();
-
-					if (attrSpecs) {
-						const spec = attrSpecs.find(spec => spec.name === name.raw);
-						if (spec && spec.caseSensitive) {
-							continue;
-						}
-					}
-
-					if (value === 'lower') {
-						attr.name.fix(attr.name.raw.toLowerCase());
-					} else {
-						attr.name.fix(attr.name.raw.toUpperCase());
-					}
+			if (attrSpecs) {
+				const spec = attrSpecs.find(spec => spec.name === name);
+				if (spec && spec.caseSensitive) {
+					return;
 				}
+			}
+
+			if (value === 'lower') {
+				attr.nameNode.fix(name.toLowerCase());
+			} else {
+				attr.nameNode.fix(name.toUpperCase());
 			}
 		});
 	},

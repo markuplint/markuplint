@@ -2,6 +2,7 @@
 title: WAI-ARIA
 id: wai-aria
 category: a11y
+severity: error
 ---
 
 # WAI-ARIA
@@ -26,8 +27,6 @@ Warn if:
 
 There are settings about **ARIA in HTML** on [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/aria-in-html). And you can disable them because that is draft yet.
 
-## Rule Details
-
 👎 Examples of **incorrect** code for this rule
 
 ```html
@@ -50,62 +49,7 @@ There are settings about **ARIA in HTML** on [`@markuplint/html-spec`](https://g
 </div>
 ```
 
-### Setting value
-
-Type: `boolean`
-
-### Options
-
-#### `checkingValue`
-
-Warn if use an invalid value of the property/state. You can temporarily disable this option if the WAI-ARIA spec update rather than markuplint add new value to the allowed list ahead. Don't recommend disabling basically.
-
-- Type: `boolean`
-- Optional
-- Default: `true`
-
-#### `checkingDeprecatedProps`
-
-Warn if use deprecated property/state. You can temporarily disable this not to evaluate WAI-ARIA old version. Don't recommend disabling basically.
-
-- Type: `boolean`
-- Optional
-- Default: `true`
-
-##### `permittedAriaRoles`
-
-Warn if use the not permitted role according to ARIA in HTML. This is based on the spec ARIA in HTML and is not strictly the spec WAI-ARIA, so it is an option.
-
-- Type: `boolean`
-- Optional
-- Default: `true`
-
-##### `disallowSetImplicitRole`
-
-Disallow set the implicit role explicitly. This is based on the spec ARIA in HTML and is not strictly the spec WAI-ARIA, so it is an option.
-
-- Type: `boolean`
-- Optional
-- Default: `true`
-
-##### `disallowSetImplicitProps`
-
-Disallow set the implicit property/state explicitly. This is based on the spec ARIA in HTML and is not strictly the spec WAI-ARIA, so it is an option.
-
-- Type: `boolean`
-- Optional
-- Default: `true`
-
-##### `disallowDefaultValue`
-
-Disallow set the default value of the property/state explicitly.
-
-- Type: `boolean`
-- Optional
-- Default: `false`
-- ### Default severity
-
-`error`
+---
 
 ## Configuration Example
 

@@ -1,8 +1,0 @@
-{
-	"tag": "cite",
-	"contents": [
-		{
-			"zeroOrMore": "#phrasing"
-		}
-	]
-}

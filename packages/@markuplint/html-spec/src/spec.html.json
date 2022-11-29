@@ -1,0 +1,27 @@
+// https://html.spec.whatwg.org/multipage/semantics.html#the-html-element
+// https://www.w3.org/TR/html-aria/#el-html
+// https://w3c.github.io/html-aria/#el-html
+{
+	"contentModel": {
+		"contents": [
+			{
+				"require": "head"
+			},
+			{
+				"require": "body"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "document",
+		"permittedRoles": false,
+		"properties": false
+	}
+}

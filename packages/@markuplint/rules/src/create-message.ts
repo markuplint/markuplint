@@ -41,13 +41,13 @@ export function __createMessageValueExpected(
 	t: Translator,
 	baseTarget: string,
 	expected: string | null,
-	matches: Pick<UnmatchedResult, 'partName' | 'reason' | 'raw' | 'candicate' | 'ref' | 'extra'>,
+	matches: Pick<UnmatchedResult, 'partName' | 'reason' | 'raw' | 'candidate' | 'ref' | 'extra'>,
 ) {
 	let target = baseTarget;
 	let reasonPart: string | undefined;
 	let expectPart: string | undefined;
 	let unnecessaryPart: string | undefined;
-	let candicatePart: string | undefined;
+	let candidatePart: string | undefined;
 	let expectOrNeed: 'expects' | 'needs' = 'expects';
 
 	if (matches.partName) {
@@ -202,11 +202,11 @@ export function __createMessageValueExpected(
 		}
 	}
 
-	if (matches.candicate) {
-		candicatePart = t('Did you mean "{0*}"?', matches.candicate);
+	if (matches.candidate) {
+		candidatePart = t('Did you mean "{0*}"?', matches.candidate);
 	}
 
-	let message = [reasonPart, unnecessaryPart, expectPart, candicatePart].filter(s => s).join(t('. '));
+	let message = [reasonPart, unnecessaryPart, expectPart, candidatePart].filter(s => s).join(t('. '));
 
 	if (matches.ref) {
 		message += ` (${matches.ref})`;
@@ -256,7 +256,7 @@ function expectValueToWord(t: Translator, expect: Expect, type: Exclude<Attribut
 			return expect.value ? `%${expect.value}%` : '';
 		case 'format':
 			return t('the {0} format', expect.value);
-		case 'regxp':
+		case 'regexp':
 			return t('{0} ({1})', 'regular expression', expect.value);
 		case 'syntax':
 			if (isKeyword(type) && type[0] === '<') {

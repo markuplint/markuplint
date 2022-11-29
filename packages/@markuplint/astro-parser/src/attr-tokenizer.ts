@@ -84,6 +84,12 @@ export function attrTokenizer(attr: ASTAttribute, rawHtml: string, codeOffset: n
 		endQuote,
 		isDuplicatable: false,
 		isDynamicValue,
+		nodeName: name.raw,
+		parentNode: null,
+		nextNode: null,
+		prevNode: null,
+		isFragment: false,
+		isGhost: false,
 	};
 
 	/**

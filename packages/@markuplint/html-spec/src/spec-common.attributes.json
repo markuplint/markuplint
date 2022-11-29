@@ -1,0 +1,1650 @@
+{
+	"#HTMLGlobalAttrs": {
+		// https://html.spec.whatwg.org/multipage/interaction.html#the-accesskey-attribute
+		"accesskey": {
+			"type": {
+				"token": "OneCodePointChar",
+				"ordered": true,
+				"unique": true,
+				"number": "zeroOrMore",
+				"separator": "space"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/interaction.html#attr-autocapitalize
+		"autocapitalize": {
+			"type": {
+				"enum": ["off", "on", "none", "sentences", "words", "characters"],
+				"disallowToSurroundBySpaces": true,
+				"invalidValueDefault": "sentences",
+				"missingValueDefault": "default",
+				"sameStates": {
+					"none": ["off"],
+					"sentences": ["on"]
+				}
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/interaction.html#attr-fe-autofocus
+		"autofocus": {
+			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/interaction.html#attr-contenteditable
+		"contenteditable": {
+			"type": {
+				"enum": ["", "true", "false"],
+				"disallowToSurroundBySpaces": true,
+				"invalidValueDefault": "inherit",
+				"missingValueDefault": "inherit",
+				"sameStates": {
+					"true": [""]
+				}
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#attr-dir
+		"dir": {
+			"type": {
+				"enum": ["ltr", "rtl", "auto"]
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/dnd.html#attr-draggable
+		"draggable": {
+			"type": {
+				"enum": ["true", "false"],
+				"invalidValueDefault": "auto",
+				"missingValueDefault": "auto"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/interaction.html#attr-enterkeyhint
+		"enterkeyhint": {
+			"type": {
+				"enum": ["enter", "done", "go", "next", "previous", "search", "send"]
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/interaction.html#attr-hidden
+		"hidden": {
+			"type": {
+				"enum": ["", "hidden", "until-found"]
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/interaction.html#the-inert-attribute
+		"inert": {
+			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/interaction.html#attr-inputmode
+		"inputmode": {
+			"type": {
+				"enum": ["none", "text", "tel", "url", "email", "numeric", "decimal", "search"]
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/custom-elements.html#attr-is
+		"is": {
+			"type": "CustomElementName"
+		},
+		// https://html.spec.whatwg.org/multipage/microdata.html#attr-itemid
+		"itemid": {
+			"type": "URL"
+		},
+		// https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute
+		"itemprop": {
+			"type": {
+				"token": "ItemProp",
+				"ordered": false,
+				"unique": true,
+				"separator": "space"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/microdata.html#attr-itemref
+		"itemref": {
+			"type": {
+				"token": "DOMID",
+				"separator": "space"
+			},
+			"condition": "[itemscope]"
+		},
+		// https://html.spec.whatwg.org/multipage/microdata.html#attr-itemscope
+		"itemscope": {
+			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/microdata.html#attr-itemtype
+		"itemtype": {
+			"type": {
+				"token": "AbsoluteURL",
+				"ordered": false,
+				"unique": true,
+				"separator": "space"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#attr-lang
+		"lang": {
+			"type": "BCP47"
+		},
+		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#attr-nonce
+		"nonce": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/interaction.html#attr-spellcheck
+		"spellcheck": {
+			"type": {
+				"enum": ["", "true", "false"],
+				"disallowToSurroundBySpaces": true,
+				"invalidValueDefault": "default",
+				"missingValueDefault": "default",
+				"sameStates": {
+					"true": [""]
+				}
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#attr-style
+		"style": {
+			"type": "<css-declaration-list>"
+		},
+		// https://html.spec.whatwg.org/multipage/interaction.html#attr-tabindex
+		"tabindex": {
+			"type": "TabIndex"
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#attr-title
+		"title": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#attr-translate
+		"translate": {
+			"type": {
+				"enum": ["", "yes", "no"],
+				"disallowToSurroundBySpaces": true,
+				"invalidValueDefault": "inherit",
+				"missingValueDefault": "inherit",
+				"sameStates": {
+					"yes": [""]
+				}
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#classes
+		"class": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute
+		"id": {
+			"type": "DOMID"
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#attr-slot
+		"slot": {
+			"type": "NoEmptyAny"
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#global-attributes:html-documents
+		"xmlns": {
+			"type": "URL",
+			"ineffective": "*"
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes
+		"xml:lang": {
+			"type": "BCP47",
+			"deprecated": true
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#global-attributes:attr-xml-space
+		"xml:space": {
+			"type": {
+				"enum": ["default", "preserve"]
+			},
+			"defaultValue": "default",
+			"deprecated": true
+		}
+	},
+	"#GlobalEventAttrs": {
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onabort
+		"onabort": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onabort
+		"onauxclick": {
+			"type": "FunctionBody"
+		},
+		// https://w3c.github.io/uievents/#beforeinput
+		"onbeforeinput": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onbeforematch
+		"onbeforematch": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onabort
+		"onblur": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncancel
+		"oncancel": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncanplay
+		"oncanplay": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncanplaythrough
+		"oncanplaythrough": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onchange
+		"onchange": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onclick
+		"onclick": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onclose
+		"onclose": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncontextlost
+		"oncontextlost": {
+			"type": "FunctionBody"
+		},
+		// https://w3c.github.io/uievents/#compositionstart
+		"oncompositionstart": {
+			"type": "FunctionBody"
+		},
+		// https://w3c.github.io/uievents/#compositionupdate
+		"oncompositionupdate": {
+			"type": "FunctionBody"
+		},
+		// https://w3c.github.io/uievents/#compositionend
+		"oncompositionend": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncontextmenu
+		"oncontextmenu": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncontextrestored
+		"oncontextrestored": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncuechange
+		"oncuechange": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-ondblclick
+		"ondblclick": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-ondrag
+		"ondrag": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-ondragend
+		"ondragend": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-ondragenter
+		"ondragenter": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-ondragleave
+		"ondragleave": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-ondragover
+		"ondragover": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-ondragstart
+		"ondragstart": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-ondrop
+		"ondrop": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-ondurationchange
+		"ondurationchange": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onemptied
+		"onemptied": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onended
+		"onended": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onerror
+		"onerror": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onfocus
+		"onfocus": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onformdata
+		"onformdata": {
+			"type": "FunctionBody"
+		},
+		// https://w3c.github.io/uievents/#focusin
+		"onfocusin": {
+			"type": "FunctionBody"
+		},
+		// https://w3c.github.io/uievents/#focusout
+		"onfocusout": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oninput
+		"oninput": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oninvalid
+		"oninvalid": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onkeydown
+		"onkeydown": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onkeypress
+		"onkeypress": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onkeyup
+		"onkeyup": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onload
+		"onload": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onloadeddata
+		"onloadeddata": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onloadedmetadata
+		"onloadedmetadata": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onloadstart
+		"onloadstart": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onmousedown
+		"onmousedown": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onmouseenter
+		"onmouseenter": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onmouseleave
+		"onmouseleave": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onmousemove
+		"onmousemove": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onmouseout
+		"onmouseout": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onmouseover
+		"onmouseover": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onmouseup
+		"onmouseup": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onpause
+		"onpause": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onplay
+		"onplay": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onplaying
+		"onplaying": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onprogress
+		"onprogress": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onratechange
+		"onratechange": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onreset
+		"onreset": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onresize
+		"onresize": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onscroll
+		"onscroll": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onsecuritypolicyviolation
+		"onsecuritypolicyviolation": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onseeked
+		"onseeked": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onseeking
+		"onseeking": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onselect
+		"onselect": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onslotchange
+		"onslotchange": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onstalled
+		"onstalled": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onsubmit
+		"onsubmit": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onsuspend
+		"onsuspend": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-ontimeupdate
+		"ontimeupdate": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-ontoggle
+		"ontoggle": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onvolumechange
+		"onvolumechange": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onwaiting
+		"onwaiting": {
+			"type": "FunctionBody"
+		},
+		// https://w3c.github.io/uievents/#unload
+		"onunload": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onwheel
+		"onwheel": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onwebkitanimationend
+		"onwebkitanimationend": {
+			"type": "FunctionBody",
+			"deprecated": true
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onwebkitanimationiteration
+		"onwebkitanimationiteration": {
+			"type": "FunctionBody",
+			"deprecated": true
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onwebkitanimationstart
+		"onwebkitanimationstart": {
+			"type": "FunctionBody",
+			"deprecated": true
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onwebkittransitionend
+		"onwebkittransitionend": {
+			"type": "FunctionBody",
+			"deprecated": true
+		}
+	},
+	"#DocumentElementEventAttrs": {
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncopy
+		"oncopy": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncut
+		"oncut": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onpaste
+		"onpaste": {
+			"type": "FunctionBody"
+		}
+	},
+	"#HTMLLinkAndFetchingAttrs": {
+		// https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-href
+		"href": {
+			"type": "URL"
+		},
+		// https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-target
+		"target": {
+			"type": "BrowsingContextNameOrKeyword",
+			"condition": "[href]"
+		},
+		// https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-download
+		"download": {
+			"type": "Any",
+			"condition": "[href]"
+		},
+		// https://html.spec.whatwg.org/multipage/links.html#ping
+		"ping": {
+			"type": {
+				"token": "HTTPSchemaURL",
+				"separator": "space"
+			},
+			"condition": "[href]"
+		},
+		// https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-rel
+		"rel": {
+			"type": {
+				"token": {
+					"enum": [
+						"alternate",
+						"author",
+						"bookmark",
+						"external",
+						"help",
+						"license",
+						"next",
+						"nofollow",
+						"noopener",
+						"noreferrer",
+						"opener",
+						"prev",
+						"search",
+						"tag"
+					]
+				},
+				"unique": true,
+				"separator": "space"
+			},
+			"condition": "[href]"
+		},
+		// https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-hreflang
+		"hreflang": {
+			"type": "BCP47",
+			"condition": "[href]"
+		},
+		// https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-type
+		"type": {
+			"type": "MIMEType",
+			"condition": "[href]"
+		},
+		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#referrer-policy-attribute
+		"referrerpolicy": {
+			"type": {
+				"enum": [
+					"",
+					"no-referrer",
+					"no-referrer-when-downgrade",
+					"same-origin",
+					"origin",
+					"strict-origin",
+					"origin-when-cross-origin",
+					"strict-origin-when-cross-origin",
+					"unsafe-url"
+				]
+			},
+			"condition": "[href]",
+			"defaultValue": "strict-origin-when-cross-origin"
+		},
+		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#lazy-loading-attribute
+		"loading": {
+			"type": {
+				"enum": ["lazy", "eager"],
+				"invalidValueDefault": "eager",
+				"missingValueDefault": "eager"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-integrity
+		"integrity": {
+			// The type is hash-source (https://w3c.github.io/webappsec-subresource-integrity/#integrity-metadata-description)
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-media
+		"media": {
+			"type": "<media-query-list>"
+		},
+		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#cors-settings-attribute
+		"crossorigin": {
+			"type": {
+				"enum": ["", "anonymous", "use-credentials"],
+				"invalidValueDefault": "anonymous",
+				"missingValueDefault": "No CORS",
+				"sameStates": {
+					"anonymous": [""]
+				}
+			}
+		},
+		// https://wicg.github.io/priority-hints/#solution
+		"fetchpriority": {
+			"type": {
+				"enum": ["high", "low", "auto"],
+				"invalidValueDefault": "auto",
+				"missingValueDefault": "auto"
+			},
+			"experimental": true
+		}
+	},
+	"#HTMLEmbededAndMediaContentAttrs": {
+		// https://html.spec.whatwg.org/multipage/media.html#attr-media-src
+		"src": {
+			"type": "URL"
+		},
+		// https://html.spec.whatwg.org/multipage/media.html#attr-media-preload
+		"preload": {
+			"type": {
+				"enum": ["none", "metadata", "auto"],
+				"invalidValueDefault": "implementation-defined",
+				"missingValueDefault": "implementation-defined"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/media.html#attr-media-autoplay
+		"autoplay": {
+			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/media.html#attr-media-loop
+		"loop": {
+			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/media.html#attr-media-controls
+		"muted": {
+			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/media.html#attr-media-muted
+		"controls": {
+			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-height
+		"height": {
+			"type": "Uint"
+		},
+		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-srcset
+		"srcset": {
+			"type": "Srcset"
+		},
+		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-sizes
+		"sizes": {
+			"type": "SourceSizeList"
+		},
+		// https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-width
+		"width": {
+			"type": "Uint"
+		}
+	},
+	"#HTMLFormControlElementAttrs": {
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete
+		"autocomplete": {
+			"type": "AutoComplete"
+		},
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-dirname
+		"dirname": {
+			"type": "NoEmptyAny"
+		},
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-disabled
+		"disabled": {
+			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form
+		"form": {
+			"type": "DOMID"
+		},
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formaction
+		"formaction": {
+			"type": "URL"
+		},
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formenctype
+		"formenctype": {
+			"type": {
+				"enum": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"],
+				"invalidValueDefault": "application/x-www-form-urlencoded"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formmethod
+		"formmethod": {
+			"type": {
+				"enum": ["post", "get", "dialog"],
+				"invalidValueDefault": "get"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formnovalidate
+		"formnovalidate": {
+			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formtarget
+		"formtarget": {
+			"type": "BrowsingContextNameOrKeyword"
+		},
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-name
+		"name": {
+			"type": "NoEmptyAny"
+		},
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-maxlength
+		"maxlength": {
+			"type": "Uint"
+		},
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-minlength
+		"minlength": {
+			"type": "Uint"
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-readonly
+		"readonly": {
+			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-required
+		"required": {
+			"type": "Boolean"
+		}
+	},
+	"#HTMLTableCellElementAttrs": {
+		// https://html.spec.whatwg.org/multipage/tables.html#attr-tdth-colspan
+		"colspan": {
+			"type": {
+				"type": "integer",
+				"gt": 0,
+				"lte": 1000
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/tables.html#attr-tdth-rowspan
+		"rowspan": {
+			"type": {
+				"type": "integer",
+				"gt": 0,
+				"lte": 65534
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/tables.html#attr-tdth-headers
+		"headers": {
+			"type": {
+				"token": "DOMID",
+				"ordered": false,
+				"unique": true,
+				"separator": "space"
+			}
+		}
+	},
+	"#ARIAAttrs": {
+		// https://html.spec.whatwg.org/multipage/infrastructure.html#attr-aria-role
+		"role": {
+			"type": {
+				"token": "NoEmptyAny",
+				"separator": "space"
+			}
+		}
+	},
+	"#SVGAnimationAdditionAttrs": {
+		// https://svgwg.org/specs/animations/#AdditiveAttribute
+		"additive": {
+			"type": {
+				"enum": ["replace", "sum"]
+			},
+			"defaultValue": "replace"
+		},
+		// https://svgwg.org/specs/animations/#AccumulateAttribute
+		"accumulate": {
+			"type": {
+				"enum": ["none", "sum"]
+			},
+			"defaultValue": "none"
+		}
+	},
+	"#SVGAnimationAttributeTargetAttrs": {
+		// https://svgwg.org/specs/animations/#AttributeNameAttribute
+		"attributeName": {
+			"type": "XMLName"
+		},
+		// https://www.w3.org/TR/2001/REC-smil-animation-20010904/#AttributeTypeAttribute
+		"attributeType": {
+			"type": {
+				"enum": ["CSS", "XML", "auto"]
+			},
+			"defaultValue": "auto",
+			"noUse": true
+		}
+	},
+	"#SVGAnimationEventAttrs": {
+		// https://svgwg.org/svg2-draft/interact.html#OnBeginEventAttribute
+		"onbegin": {
+			"type": "FunctionBody"
+		},
+		// https://svgwg.org/svg2-draft/interact.html#OnEndEventAttribute
+		"onend": {
+			"type": "FunctionBody"
+		},
+		// https://svgwg.org/svg2-draft/interact.html#OnRepeatEventAttribute
+		"onrepeat": {
+			"type": "FunctionBody"
+		}
+	},
+	"#SVGAnimationTargetElementAttrs": {
+		// https://svgwg.org/specs/animations/#HrefAttribute
+		"href": {
+			"type": "URL"
+		},
+		// https://svgwg.org/svg2-draft/linking.html#XLinkHrefAttribute
+		"xlink:href": {
+			"type": "URL",
+			"deprecated": true
+		}
+	},
+	"#SVGAnimationTimingAttrs": {
+		// https://svgwg.org/specs/animations/#BeginAttribute
+		"begin": {
+			"type": "<begin-value-list>",
+			"defaultValue": "0s"
+		},
+		// https://svgwg.org/specs/animations/#DurAttribute
+		"dur": {
+			"type": [
+				"<clock-value>",
+				{
+					"enum": ["media", "indefinite"]
+				}
+			],
+			"defaultValue": "indefinite"
+		},
+		// https://svgwg.org/specs/animations/#EndAttribute
+		"end": {
+			"type": "<end-value-list>"
+		},
+		// https://svgwg.org/specs/animations/#MinAttribute
+		"min": {
+			"type": "<clock-value>",
+			"defaultValue": "0s"
+		},
+		// https://svgwg.org/specs/animations/#MaxAttribute
+		"max": {
+			"type": "<clock-value>"
+		},
+		// https://svgwg.org/specs/animations/#RestartAttribute
+		"restart": {
+			"type": {
+				"enum": ["always", "whenNotActive", "never"]
+			},
+			"defaultValue": "always"
+		},
+		// https://svgwg.org/specs/animations/#RepeatCountAttribute
+		"repeatCount": {
+			"type": [
+				"<number>",
+				{
+					"enum": ["indefinite"]
+				}
+			]
+		},
+		// https://svgwg.org/specs/animations/#RepeatDurAttribute
+		"repeatDur": {
+			"type": [
+				"<clock-value>",
+				{
+					"enum": ["indefinite"]
+				}
+			]
+		},
+		// https://svgwg.org/specs/animations/#FillAttribute
+		"fill": {
+			"type": {
+				"enum": ["freeze", "remove"]
+			},
+			"defaultValue": "remove"
+		}
+	},
+	"#SVGAnimationValueAttrs": {
+		// https://svgwg.org/specs/animations/#CalcModeAttribute
+		"calcMode": {
+			"type": {
+				"enum": ["discrete", "linear", "paced", "spline"]
+			},
+			"defaultValue": "linear"
+		},
+		// https://svgwg.org/specs/animations/#ValuesAttribute
+		"values": {
+			"type": "<list-of-value>"
+		},
+		// https://svgwg.org/specs/animations/#KeyTimesAttribute
+		"keyTimes": {
+			"type": "<key-times>"
+		},
+		// https://svgwg.org/specs/animations/#KeySplinesAttribute
+		"keySplines": {
+			"type": "<key-splines>"
+		},
+		// https://svgwg.org/specs/animations/#FromAttribute
+		"from": {
+			"type": "<animatable-value>"
+		},
+		// https://svgwg.org/specs/animations/#ToAttribute
+		"to": {
+			"type": "<animatable-value>"
+		},
+		// https://svgwg.org/specs/animations/#ByAttribute
+		"by": {
+			"type": "<animatable-value>"
+		},
+		// https://www.w3.org/TR/REC-smil/smil-timemanip.html#adef-accelerate
+		"accelerate": {
+			"type": "<number-zero-one>",
+			"defaultValue": "0"
+		},
+		// https://www.w3.org/TR/REC-smil/smil-timemanip.html#adef-decelerate
+		"decelerate": {
+			"type": "<number-zero-one>",
+			"defaultValue": "0"
+		},
+		// https://www.w3.org/TR/REC-smil/smil-timemanip.html#TimeManip-autoReverseSyntax
+		"autoReverse": {
+			"type": {
+				"enum": ["true", "false"]
+			},
+			"defaultValue": "false"
+		},
+		// https://www.w3.org/TR/REC-smil/smil-timemanip.html#adef-speed
+		"speed": {
+			"type": "<number>"
+		}
+	},
+	"#SVGConditionalProcessingAttrs": {
+		// https://svgwg.org/svg2-draft/struct.html#RequiredExtensionsAttribute
+		"requiredExtensions": {
+			"type": {
+				"token": "URL",
+				"unique": true,
+				"separator": "space"
+			}
+		},
+		// https://svgwg.org/svg2-draft/struct.html#SystemLanguageAttribute
+		"systemLanguage": {
+			"type": {
+				"token": "BCP47",
+				"unique": true,
+				"separator": "comma"
+			}
+		},
+		// https://www.w3.org/TR/SVG11/struct.html#RequiredFeaturesAttribute
+		"requiredFeatures": {
+			"type": "<list-of-svg-feature-string>",
+			"deprecated": true
+		}
+	},
+	"#SVGCoreAttrs": {
+		// https://svgwg.org/svg2-draft/struct.html#IDAttribute
+		"id": {
+			"type": "DOMID"
+		},
+		// https://svgwg.org/svg2-draft/struct.html#SVGElementTabindexAttribute
+		"tabindex": {
+			"type": "TabIndex"
+		},
+		// https://svgwg.org/svg2-draft/struct.html#SVGElementAutofocusAttribute
+		"autofocus": {
+			"type": "Boolean"
+		},
+		// https://svgwg.org/svg2-draft/struct.html#LangAttribute
+		"lang": {
+			"type": "BCP47"
+		},
+		// https://svgwg.org/svg2-draft/styling.html#ClassAttribute
+		"class": {
+			"type": "Any"
+		},
+		// https://svgwg.org/svg2-draft/styling.html#StyleAttribute
+		"style": {
+			"type": "<css-declaration-list>"
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#global-attributes:html-documents
+		"xmlns": {
+			"type": "URL",
+			"ineffective": ":not(:root)"
+		},
+		// https://svgwg.org/svg2-draft/struct.html#XMLSpaceAttribute
+		"xml:space": {
+			"type": {
+				"enum": ["default", "preserve"]
+			},
+			"defaultValue": "default",
+			"deprecated": true
+		},
+		// https://svgwg.org/svg2-draft/struct.html#LangSpaceAttrs
+		"xml:lang": {
+			"type": "BCP47",
+			"deprecated": true
+		},
+		// https://www.w3.org/TR/SVG11/struct.html#XMLBaseAttribute
+		"xml:base": {
+			"type": "URL",
+			"deprecated": true
+		}
+	},
+	"#SVGFilterPrimitiveAttrs": {
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-x
+		"x": {
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0%",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-y
+		"y": {
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0%",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-width
+		"width": {
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "100%",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-height
+		"height": {
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "100%",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-result
+		"result": {
+			"type": "<custom-ident>"
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-in
+		"in": {
+			"type": [
+				{
+					"enum": [
+						"SourceGraphic",
+						"SourceAlpha",
+						"BackgroundImage",
+						"BackgroundAlpha",
+						"FillPaint",
+						"StrokePaint"
+					],
+					"disallowToSurroundBySpaces": false
+				},
+				"<custom-ident>"
+			],
+			"animatable": true
+		}
+	},
+	"#SVGPresentationAttrs": {
+		// https://svgwg.org/svg2-draft/geometry.html#CxProperty
+		"cx": {
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/geometry.html#CyProperty
+		"cy": {
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/geometry.html#Sizing
+		"height": {
+			"type": ["<svg-length>", "<'height'>"],
+			"defaultValue": "auto",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/geometry.html#Sizing
+		"width": {
+			"type": ["<svg-length>", "<'width'>"],
+			"defaultValue": "auto",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/geometry.html#XProperty
+		"x": {
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/geometry.html#YProperty
+		"y": {
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/geometry.html#RProperty
+		"r": {
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/geometry.html#RxProperty
+		"rx": {
+			"type": [
+				"<svg-length>",
+				"<percentage>",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/geometry.html#RyProperty
+		"ry": {
+			"type": [
+				"<svg-length>",
+				"<percentage>",
+				{
+					"enum": ["auto"]
+				}
+			],
+			"defaultValue": "auto",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/paths.html#DProperty
+		"d": {
+			"type": "<svg-path>",
+			"defaultValue": "none"
+		},
+		// https://drafts.csswg.org/css-transforms/#transform-property
+		"transform": {
+			"type": "<'transform'>",
+			"defaultValue": "none",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-transforms/#transform-origin-property
+		"transform-origin": {
+			"type": "<'transform-origin'>",
+			"defaultValue": "50%, 50%",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/pservers.html#PatternElementPatternTransformAttribute
+		"patternTransform": {
+			"type": "<transform-list>",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/pservers.html#LinearGradientElementGradientTransformAttribute
+		"gradientTransform": {
+			"type": "<transform-list>",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-inline-3/#propdef-alignment-baseline
+		"alignment-baseline": {
+			"type": "<'alignment-baseline'>",
+			"defaultValue": "auto",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-inline-3/#propdef-baseline-shift
+		"baseline-shift": {
+			"type": "<'baseline-shift'>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/css-masking/#propdef-clip-path
+		"clip-path": {
+			"type": "<'clip-path'>",
+			"defaultValue": "none",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/css-masking/#propdef-clip-rule
+		"clip-rule": {
+			"type": "<'clip-rule'>",
+			"defaultValue": "nonzero",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-color-4/#propdef-color
+		"color": {
+			"type": "<color>",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#ColorInterpolationProperty
+		"color-interpolation": {
+			"type": {
+				"enum": ["auto", "sRGB", "linearRGB"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "sRGB",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects-1/#propdef-color-interpolation-filters
+		"color-interpolation-filters": {
+			"type": {
+				"enum": ["auto", "sRGB", "linearRGB"],
+				"disallowToSurroundBySpaces": false
+			},
+			"defaultValue": "linearRGB",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-ui-4/#propdef-cursor
+		"cursor": {
+			"type": "<'cursor'>",
+			"defaultValue": "auto",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-writing-modes-3/#propdef-direction
+		"direction": {
+			"type": "<'direction'>",
+			"defaultValue": "ltr"
+		},
+		// https://drafts.csswg.org/css-display-3/#propdef-display
+		"display": {
+			"type": "<'display'>",
+			"defaultValue": "inline"
+		},
+		// https://drafts.csswg.org/css-inline-3/#propdef-dominant-baseline
+		"dominant-baseline": {
+			"type": "<'dominant-baseline'>",
+			"defaultValue": "auto",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#FillProperty
+		"fill": {
+			"type": "<'fill'>",
+			"defaultValue": "black",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#FillOpacityProperty
+		"fill-opacity": {
+			"type": "<'fill-opacity'>",
+			"defaultValue": "1",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#FillRuleProperty
+		"fill-rule": {
+			"type": "<'fill-rule'>",
+			"defaultValue": "nonzero",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects-1/#propdef-filter
+		"filter": {
+			"type": "<'filter'>",
+			"defaultValue": "none",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects-1/#propdef-flood-color
+		"flood-color": {
+			"type": "<color>",
+			"defaultValue": "black",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects-1/#propdef-flood-opacity
+		"flood-opacity": {
+			"type": "<alpha-value>",
+			"defaultValue": "1",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-fonts-4/#propdef-font
+		"font": {
+			"type": "<'font'>",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-fonts-4/#propdef-font-family
+		"font-family": {
+			"type": "<'font-family'>",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-fonts-5/#descdef-font-face-font-size
+		"font-size": {
+			"type": "<svg-font-size>",
+			"defaultValue": "medium",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-fonts-5/#propdef-font-size-adjust
+		"font-size-adjust": {
+			"type": "<svg-font-size-adjust>",
+			"defaultValue": "none",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-fonts-4/#propdef-font-stretch
+		"font-stretch": {
+			"type": "<'font-stretch'>",
+			"defaultValue": "normal",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-fonts-4/#propdef-font-style
+		"font-style": {
+			"type": "<'font-style'>",
+			"defaultValue": "normal",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-fonts-4/#propdef-font-variant
+		"font-variant": {
+			"type": "<'font-variant'>",
+			"defaultValue": "normal",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-fonts-4/#propdef-font-weight
+		"font-weight": {
+			"type": "<'font-weight'>",
+			"defaultValue": "normal",
+			"animatable": true
+		},
+		// https://www.w3.org/TR/SVG11/text.html#GlyphOrientationHorizontalProperty
+		"glyph-orientation-horizontal": {
+			"type": "<'glyph-orientation-horizontal'>",
+			"defaultValue": "0deg",
+			"deprecated": true
+		},
+		// https://drafts.csswg.org/css-writing-modes-4/#propdef-glyph-orientation-vertical
+		"glyph-orientation-vertical": {
+			"type": "<'glyph-orientation-vertical'>",
+			"deprecated": true
+		},
+		// https://drafts.csswg.org/css-images-3/#propdef-image-rendering
+		"image-rendering": {
+			"type": "<'image-rendering'>",
+			"defaultValue": "auto",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/compositing-2/#propdef-isolation
+		"isolation": {
+			"type": "<'isolation'>",
+			"defaultValue": "auto"
+		},
+		// https://drafts.csswg.org/css-text-3/#propdef-letter-spacing
+		"letter-spacing": {
+			"type": "<'letter-spacing'>",
+			"defaultValue": "normal",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects-1/#propdef-lighting-color
+		"lighting-color": {
+			"type": "<color>",
+			"defaultValue": "white",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#MarkerProperty
+		"marker": {
+			"type": "<'marker'>",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#MarkerEndProperty
+		"marker-end": {
+			"type": "<'marker-end'>",
+			"defaultValue": "none",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#MarkerMidProperty
+		"marker-mid": {
+			"type": "<'marker-mid'>",
+			"defaultValue": "none",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#MarkerStartProperty
+		"marker-start": {
+			"type": "<'marker-start'>",
+			"defaultValue": "none",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/css-masking/#propdef-mask
+		"mask": {
+			"type": "<'mask'>",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/css-masking-1/#propdef-mask-type
+		"mask-type": {
+			"type": "<'mask-type'>",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-color-4/#propdef-opacity
+		"opacity": {
+			"type": "<alpha-value>",
+			"defaultValue": "1",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-overflow-3/#propdef-overflow
+		"overflow": {
+			"type": "<'overflow'>",
+			"defaultValue": "visible",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#PaintOrderProperty
+		"paint-order": {
+			"type": "<'paint-order'>",
+			"defaultValue": "normal",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-ui-4/#propdef-pointer-events
+		"pointer-events": {
+			"type": "<'pointer-events'>",
+			"defaultValue": "auto",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#ShapeRenderingProperty
+		"shape-rendering": {
+			"type": "<'shape-rendering'>",
+			"defaultValue": "auto",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/pservers.html#StopColorProperty
+		"stop-color": {
+			"type": "<'color'>",
+			"defaultValue": "black",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/pservers.html#StopOpacityProperty
+		"stop-opacity": {
+			"type": "<'opacity'>",
+			"defaultValue": "1",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#StrokeProperty
+		"stroke": {
+			"type": "<'stroke'>",
+			"defaultValue": "none",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#StrokeDasharrayProperty
+		"stroke-dasharray": {
+			"type": "<'stroke-dasharray'>",
+			"defaultValue": "none",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#StrokeDashoffsetProperty
+		"stroke-dashoffset": {
+			"type": "<'stroke-dashoffset'>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#StrokeLinecapProperty
+		"stroke-linecap": {
+			"type": "<'stroke-linecap'>",
+			"defaultValue": "butt",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#StrokeLinejoinProperty
+		"stroke-linejoin": {
+			"type": "<'stroke-linejoin'>",
+			"defaultValue": "miter",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#StrokeMiterlimitProperty
+		"stroke-miterlimit": {
+			"type": "<'stroke-miterlimit'>",
+			"defaultValue": "4",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#StrokeOpacityProperty
+		"stroke-opacity": {
+			"type": "<'stroke-opacity'>",
+			"defaultValue": "1",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#StrokeWidthProperty
+		"stroke-width": {
+			"type": "<'stroke-width'>",
+			"defaultValue": "1px",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/text.html#TextAnchorProperty
+		"text-anchor": {
+			"type": "<'text-anchor'>",
+			"defaultValue": "start",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-text-decor-4/#propdef-text-decoration
+		"text-decoration": {
+			"type": "<'text-decoration'>",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/text.html#TextOverflowProperty
+		"text-overflow": {
+			"type": "<'text-overflow'>",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/painting.html#TextRenderingProperty
+		"text-rendering": {
+			"type": "<'text-rendering'>",
+			"defaultValue": "auto",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-writing-modes-3/#propdef-unicode-bidi
+		"unicode-bidi": {
+			"type": "<'unicode-bidi'>",
+			"defaultValue": "normal"
+		},
+		// https://svgwg.org/svg2-draft/coords.html#VectorEffectProperty
+		"vector-effect": {
+			"type": {
+				"enum": ["none", "non-scaling-stroke", "non-scaling-size", "non-rotation", "fixed-position"]
+			},
+			"defaultValue": "none",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-display-3/#propdef-visibility
+		"visibility": {
+			"type": "<'visibility'>",
+			"defaultValue": "visible",
+			"animatable": true
+		},
+		// https://www.w3.org/TR/css-text-3/#white-space-property
+		"white-space": {
+			"type": "<'white-space'>",
+			"defaultValue": "normal",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-text-3/#propdef-word-spacing
+		"word-spacing": {
+			"type": "<'word-spacing'>",
+			"defaultValue": "normal",
+			"animatable": true
+		},
+		// https://drafts.csswg.org/css-writing-modes-4/#propdef-writing-mode
+		"writing-mode": {
+			"type": "<'writing-mode'>",
+			"defaultValue": "horizontal-tb"
+		},
+		// https://drafts.fxtf.org/css-masking/#propdef-clip
+		"clip": {
+			"type": "<'clip'>",
+			"defaultValue": "auto",
+			"animatable": true,
+			"deprecated": true
+		},
+		// https://www.w3.org/TR/SVG11/color.html#ColorProfileProperty
+		"color-profile": {
+			"type": "<'color-profile'>",
+			"defaultValue": "auto",
+			"animatable": true,
+			"deprecated": true
+		},
+		// https://www.w3.org/TR/SVG11/painting.html#ColorRenderingProperty
+		"color-rendering": {
+			"type": "<'color-rendering'>",
+			"defaultValue": "auto",
+			"animatable": true,
+			"deprecated": true
+		},
+		// https://www.w3.org/TR/SVG11/filters.html#EnableBackgroundProperty
+		"enable-background": {
+			"type": "<'enable-background'>",
+			"defaultValue": "accumulate",
+			"deprecated": true
+		},
+		// https://www.w3.org/TR/SVG11/text.html#KerningProperty
+		"kerning": {
+			"type": "<'kerning'>",
+			"defaultValue": "auto",
+			"animatable": true,
+			"deprecated": true
+		}
+	},
+	"#SVGTransferFunctionAttrs": {
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-type
+		"type": {
+			"type": {
+				"enum": ["identity", "table", "discrete", "linear", "gamma"]
+			},
+			"defaultValue": "identity",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-tablevalues
+		"tableValues": {
+			"type": "<list-of-numbers>",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-slope
+		"slope": {
+			"type": "<number>",
+			"defaultValue": "1",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-intercept
+		"intercept": {
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-amplitude
+		"amplitude": {
+			"type": "<number>",
+			"defaultValue": "1",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-exponent
+		"exponent": {
+			"type": "<number>",
+			"defaultValue": "1",
+			"animatable": true
+		},
+		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-offset
+		"offset": {
+			"type": "<number>",
+			"defaultValue": "0",
+			"animatable": true
+		}
+	},
+	"#XLinkAttrs": {
+		// https://www.w3.org/TR/xlink11/#link-locators
+		"xlink:href": {
+			"type": "URL",
+			"deprecated": true
+		},
+		// https://www.w3.org/TR/xlink11/#link-semantics
+		"xlink:title": {
+			"type": "Any",
+			"deprecated": true
+		},
+		// https://www.w3.org/TR/xlink11/#link-types
+		"xlink:type": {
+			"type": {
+				"enum": ["simple"]
+			},
+			"defaultValue": "simple",
+			"deprecated": true
+		},
+		// https://www.w3.org/TR/xlink11/#link-semantics
+		"xlink:role": {
+			"type": "Any",
+			"deprecated": true
+		},
+		// https://www.w3.org/TR/xlink11/#link-semantics
+		"xlink:arcrole": {
+			"type": "URL",
+			"deprecated": true
+		},
+		// https://www.w3.org/TR/xlink11/#link-behaviors
+		"xlink:show": {
+			"type": {
+				"enum": ["new", "replace", "embed", "other", "none"]
+			},
+			"defaultValue": "replace",
+			"deprecated": true
+		},
+		// https://www.w3.org/TR/xlink11/#link-behaviors
+		"xlink:actuate": {
+			"type": "Any",
+			"deprecated": true
+		}
+	}
+}

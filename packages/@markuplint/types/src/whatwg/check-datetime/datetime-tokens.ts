@@ -13,9 +13,9 @@ export const datetimeTokenCheck: Record<
 	| 'secondFractionalPart'
 	| 'week'
 	| 'hyphen'
-	| 'coron'
+	| 'colon'
 	| 'extra'
-	| 'coronOrEnd'
+	| 'colonOrEnd'
 	| 'decimalPointOrEnd'
 	| 'localDateTimeSeparator'
 	| 'normalizedlocalDateTimeSeparator'
@@ -391,19 +391,19 @@ export const datetimeTokenCheck: Record<
 	/**
 	 * > A U+003A COLON character (:)
 	 */
-	coron(coron) {
-		log('Parsing Datetime coron: "%s"', coron?.value);
+	colon(colon) {
+		log('Parsing Datetime colon: "%s"', colon?.value);
 
-		if (!coron || !coron.value) {
+		if (!colon || !colon.value) {
 			return unmatched('', 'missing-token', {
-				expects: [{ type: 'common', value: 'coron' }],
+				expects: [{ type: 'common', value: 'colon' }],
 				partName: 'time',
 			});
 		}
-		if (!coron.match(':')) {
-			return coron.unmatched({
+		if (!colon.match(':')) {
+			return colon.unmatched({
 				reason: 'unexpected-token',
-				expects: [{ type: 'common', value: 'coron' }],
+				expects: [{ type: 'common', value: 'colon' }],
 				partName: 'time',
 			});
 		}
@@ -414,15 +414,15 @@ export const datetimeTokenCheck: Record<
 	 * or
 	 * End of token
 	 */
-	coronOrEnd(coron) {
-		if (!coron || !coron.value) {
+	colonOrEnd(colon) {
+		if (!colon || !colon.value) {
 			return matched();
 		}
 
-		if (!coron.match(':')) {
-			return coron.unmatched({
+		if (!colon.match(':')) {
+			return colon.unmatched({
 				reason: 'unexpected-token',
-				expects: [{ type: 'common', value: 'coron' }],
+				expects: [{ type: 'common', value: 'colon' }],
 				partName: 'time',
 			});
 		}
@@ -498,8 +498,8 @@ export const datetimeTokenCheck: Record<
 	 * > a U+002D HYPHEN-MINUS character (-),
 	 * > representing the sign of the time-zone offset
 	 */
-	plusOrMinusSign(coron) {
-		if (!coron) {
+	plusOrMinusSign(colon) {
+		if (!colon) {
 			return unmatched('', 'missing-token', {
 				expects: [
 					{ type: 'const', value: '+' },
@@ -508,8 +508,8 @@ export const datetimeTokenCheck: Record<
 				partName: 'time-zone',
 			});
 		}
-		if (!coron.match(['+', '-'])) {
-			return coron.unmatched({
+		if (!colon.match(['+', '-'])) {
+			return colon.unmatched({
 				reason: 'unexpected-token',
 				expects: [
 					{ type: 'const', value: '+' },

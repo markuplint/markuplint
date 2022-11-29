@@ -1,9 +1,9 @@
-import type { SpecConfig, SpecConfig_v1 } from '@markuplint/ml-config';
+import type { SpecConfig } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import path from 'path';
 
-import { toRegxp } from '@markuplint/ml-config';
+import { toRegexp } from './utils';
 
 const caches = new Map<string, MLMLSpec | ExtendedSpec>();
 
@@ -37,7 +37,7 @@ const caches = new Map<string, MLMLSpec | ExtendedSpec>();
  * @param specConfig The `spec` property part of the config
  * @returns
  */
-export async function resolveSpecs(filePath: string, specConfig?: SpecConfig | SpecConfig_v1) {
+export async function resolveSpecs(filePath: string, specConfig?: SpecConfig) {
 	const htmlSpec = await importSpecs<MLMLSpec>('@markuplint/html-spec');
 	const extendedSpecs: ExtendedSpec[] = [];
 
@@ -52,7 +52,7 @@ export async function resolveSpecs(filePath: string, specConfig?: SpecConfig | S
 			}
 		} else {
 			for (const pattern of Object.keys(specConfig)) {
-				if (path.basename(filePath).match(toRegxp(pattern))) {
+				if (path.basename(filePath).match(toRegexp(pattern))) {
 					const specModName = specConfig[pattern];
 					const spec = await importSpecs<ExtendedSpec>(specModName);
 					extendedSpecs.push(spec);
@@ -76,6 +76,7 @@ async function importSpecs<T>(specModName: string) {
 			return spec;
 		}
 	}
+
 	const spec: T = (await import(specModName)).default;
 	// @ts-ignore
 	caches.set(specModName, spec);

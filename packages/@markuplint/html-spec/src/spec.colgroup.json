@@ -1,0 +1,41 @@
+// https://html.spec.whatwg.org/multipage/tables.html#the-colgroup-element
+// https://www.w3.org/TR/html-aria/#el-colgroup
+// https://w3c.github.io/html-aria/#el-colgroup
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "col"
+			}
+		],
+		"conditional": [
+			{
+				"condition": "[span]",
+				"contents": false
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#DocumentElementEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/tables.html#attr-colgroup-span
+		"span": {
+			"type": {
+				"type": "integer",
+				"gt": 0,
+				"lte": 1000,
+				"clampable": true
+			},
+			"defaultValue": "1"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": false
+	}
+}

@@ -2,7 +2,7 @@ import { mlRuleTest } from 'markuplint';
 
 import rule from './';
 
-it('is hard-coeded', async () => {
+it('is hard-coded', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="foo"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -25,7 +25,7 @@ it("does't have id", async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-it('is hard-coeded', async () => {
+it('is hard-coded', async () => {
 	const { violations } = await mlRuleTest(rule, 'div#foo', {
 		parser: {
 			'/.*/': '@markuplint/pug-parser',
@@ -42,7 +42,7 @@ it('is hard-coeded', async () => {
 	]);
 });
 
-it('is hard-coeded', async () => {
+it('is hard-coded', async () => {
 	const { violations } = await mlRuleTest(rule, 'div(id="foo")', {
 		parser: {
 			'/.*/': '@markuplint/pug-parser',
@@ -59,7 +59,7 @@ it('is hard-coeded', async () => {
 	]);
 });
 
-it('is hard-coeded', async () => {
+it('is hard-coded', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="foo"></div>', {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
@@ -76,7 +76,7 @@ it('is hard-coeded', async () => {
 	]);
 });
 
-it('is no hard-coeded', async () => {
+it('is no hard-coded', async () => {
 	const { violations } = await mlRuleTest(rule, 'div(id=foo)', {
 		parser: {
 			'/.*/': '@markuplint/pug-parser',
@@ -85,7 +85,7 @@ it('is no hard-coeded', async () => {
 	expect(violations.length).toBe(0);
 });
 
-it('is no hard-coeded', async () => {
+it('is no hard-coded', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id={foo}></div>', {
 		parser: {
 			'/.*/': '@markuplint/jsx-parser',

@@ -30,9 +30,9 @@ export async function mlRuleTest<T extends RuleConfigValue, O = null>(
 	rule: RuleSeed<T, O>,
 	sourceCode: string,
 	config: Omit<Config, 'rules' | 'nodeRules' | 'childNodeRules'> & {
-		rule?: Rule<T, O>;
-		nodeRule?: NodeRule<T, O>[];
-		childNodeRule?: ChildNodeRule<T, O>[];
+		rule?: Rule<T, Partial<O>>;
+		nodeRule?: NodeRule<T, Partial<O>>[];
+		childNodeRule?: ChildNodeRule<T, Partial<O>>[];
 	} = { rule: true },
 	fix = false,
 	locale = 'en',
@@ -117,7 +117,6 @@ export async function mlTestFile(target: Target, config?: Config, rules?: AnyMLR
 }
 
 export interface NodeRule<T extends RuleConfigValue, O = void> {
-	tagName?: string;
 	selector?: string;
 	regexSelector?: RegexSelector;
 	categories?: string[];
@@ -127,7 +126,6 @@ export interface NodeRule<T extends RuleConfigValue, O = void> {
 }
 
 export interface ChildNodeRule<T extends RuleConfigValue, O = void> {
-	tagName?: string;
 	selector?: string;
 	regexSelector?: RegexSelector;
 	inheritance?: boolean;

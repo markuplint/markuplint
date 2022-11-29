@@ -1053,9 +1053,11 @@ describe('parser', () => {
 			<img src="path/to">
 		</span>
 			`,
-			15,
-			2,
-			2,
+			{
+				offsetOffset: 15,
+				offsetLine: 2,
+				offsetColumn: 2,
+			},
 		);
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
@@ -1068,7 +1070,7 @@ describe('parser', () => {
 		]);
 
 		// @ts-ignore
-		expect(doc.nodeList[2].attributes[0].startOffset).toBe(29);
+		expect(doc.nodeList[2].attributes[0].startOffset).toBe(30);
 		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].endOffset).toBe(43);
 		// @ts-ignore
@@ -1076,7 +1078,7 @@ describe('parser', () => {
 		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].endLine).toBe(4);
 		// @ts-ignore
-		expect(doc.nodeList[2].attributes[0].startCol).toBe(8);
+		expect(doc.nodeList[2].attributes[0].startCol).toBe(9);
 		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].endCol).toBe(22);
 	});
@@ -1093,7 +1095,7 @@ describe('parser', () => {
 	it('code in script', () => {
 		const doc = parse("<script>const $span = '<span>text</span>';</script>");
 		const map = nodeListToDebugMaps(doc.nodeList);
-		expect(doc.unkownParseError).toBeUndefined();
+		expect(doc.unknownParseError).toBeUndefined();
 		expect(map).toStrictEqual([
 			'[1:1]>[1:9](0,8)script: <script>',
 			"[1:9]>[1:43](8,42)#text: const␣$span␣=␣'<span>text</span>';",
@@ -1102,18 +1104,18 @@ describe('parser', () => {
 	});
 
 	it('With frontmatter', () => {
-		const doc = parse('===\np: v\n===\n<html></html>', 0, 0, 0, true);
+		const doc = parse('===\np: v\n===\n<html></html>', { ignoreFrontMatter: true });
 		expect(doc.nodeList[0].nodeName).toBe('html');
 
-		const doc2 = parse('===\np: v\n===\n<html></html>', 0, 0, 0, false);
+		const doc2 = parse('===\np: v\n===\n<html></html>', { ignoreFrontMatter: false });
 		expect(doc2.nodeList[0].nodeName).toBe('html');
 		expect(doc2.nodeList[0].isGhost).toBe(true);
 
-		const doc3 = parse('===\np: v\n===\n<div></div>', 0, 0, 0, true);
+		const doc3 = parse('===\np: v\n===\n<div></div>', { ignoreFrontMatter: true });
 		expect(doc3.nodeList[0].nodeName).toBe('#text');
 		expect(doc3.nodeList[1].nodeName).toBe('div');
 
-		const doc4 = parse('===\np: v\n===\n<div></div>', 0, 0, 0, false);
+		const doc4 = parse('===\np: v\n===\n<div></div>', { ignoreFrontMatter: false });
 		expect(doc4.nodeList[0].nodeName).toBe('#text');
 		expect(doc4.nodeList[1].nodeName).toBe('div');
 	});
@@ -1124,7 +1126,7 @@ describe('parser', () => {
 		const attrMaps = attributesToDebugMaps(ast.nodeList[0].attributes);
 		expect(attrMaps).toStrictEqual([
 			[
-				'[1:3]>[1:11](2,10)href: ␣href=""',
+				'[1:4]>[1:11](3,10)href: href=""',
 				'  [1:3]>[1:4](2,3)bN: ␣',
 				'  [1:4]>[1:8](3,7)name: href',
 				'  [1:8]>[1:8](7,7)bE: ',

@@ -1,18 +1,14 @@
 # @markuplint/types
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Ftypes.svg)](https://www.npmjs.com/package/@markuplint/types)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=main)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
 
-## Install
+**Type declaration and value checker**
 
-```sh
-$ npm install @markuplint/types
+## Type declaration
 
-$ yarn add @markuplint/types
-```
+- [types.schema.json](./types.schema.json)
 
-## Usage
+## API
 
 ```ts
 import { check } from '@markuplint/types';
@@ -61,7 +57,7 @@ check('2020-02-30', 'DateTime');
 | `BrowsingContextNameOrKeyword` | `a[target]` and more                | [WHATWG](https://html.spec.whatwg.org/multipage/browsers.html#valid-browsing-context-name-or-keyword)              | ✅        |
 | `HTTPSchemaURL`                | `a[ping]` (as list) and more        | [WHATWG](https://html.spec.whatwg.org/multipage/links.html#ping)                                                   | ✅        |
 | `MIMEType`                     | `embed[type]` and more              | [WHATWG](https://mimesniff.spec.whatwg.org/#valid-mime-type)                                                       | ✅        |
-| `ItemProp`                     | The `itemprop` attibute (as list)   | [WHATWG](https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute)                      | ✅        |
+| `ItemProp`                     | The `itemprop` attribute (as list)  | [WHATWG](https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute)                      | ✅        |
 | `Srcset`                       | `img[srcset]` and more              | [WHATWG](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)                                     | ✅        |
 | `SourceSizeList`               | `img[sizes]` and more               | [WHATWG](https://html.spec.whatwg.org/multipage/images.html#sizes-attributes)                                      | ✅        |
 | `IconSize`                     | `link[sizes]` (as list)             | [WHATWG](https://html.spec.whatwg.org/multipage/semantics.html#attr-link-sizes)                                    | ✅        |
@@ -100,3 +96,11 @@ check('2020-02-30', 'DateTime');
 | `<number-optional-number>`     | Some attributes for SVG             |                                                                                                                    | ✅        |
 
 In addition, you can use types **[CSSTree](https://github.com/csstree/csstree)** defined.
+
+## Install
+
+```sh
+$ npm install @markuplint/types
+
+$ yarn add @markuplint/types
+```

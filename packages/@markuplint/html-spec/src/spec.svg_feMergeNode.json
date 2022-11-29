@@ -1,0 +1,20 @@
+// https://drafts.fxtf.org/filter-effects/#feMergeNodeElement
+// https://www.w3.org/TR/svg-aam-1.0/#details-id-30
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [":model(SVGDescriptive)", "svg|animate", "svg|script", "svg|set"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
+		"#SVGFilterPrimitiveAttrs": ["in"]
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false
+	}
+}

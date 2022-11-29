@@ -1,0 +1,894 @@
+---
+title: Configuration
+---
+
+## Configuration file
+
+The configuration file is the rules and/or options that load on markuplint executes.
+That is usually automatic loading, but you also can load the config expected explicitly using CLI or API.
+
+The automatic loading is recursively searching up from a directory that the target exists.
+In other words, It is applying that configure files that the closest each the target.
+
+### Format and Filename
+
+You can get even if the filename is not `.markuplintrc`.
+
+The priority applied names are:
+
+- `markuplint` property in `package.json`
+- `markuplintrc.json`, `markuplintrc.yaml`, `markuplintrc.yml`, `markuplintrc.js`, or `markuplintrc.cjs`
+- `markuplint.config.js` or `markuplint.config.cjs`
+
+`.markuplintrc`'s format is JSON and also YAML.
+
+## Properties
+
+```json
+{
+  "extends": [],
+  "plugins": {},
+  "parser": {},
+  "parserOptions": {},
+  "specs": [],
+  "excludeFiles": [],
+  "rules": {},
+  "nodeRules": [],
+  "childNodeRules": [],
+  "pretenders": [],
+  "overrides": {}
+}
+```
+
+- [`extends`](#properties/extends)
+- [`plugins`](#properties/plugins)
+- [`parser`](#properties/parser)
+- [`parserOptions`](#properties/parser-options)
+- [`specs`](#properties/specs)
+- [`excludeFiles`](#properties/exclude-files)
+- [`rules`](#properties/rules)
+- [`nodeRules` &amp; `childNodeRules`](#properties/node-rules-&-child-node-rules)
+- [`pretenders`](#properties/pretenders)
+- [`overrides`](#properties/overrides)
+
+### Specification about paths {#properties/specification-about-paths}
+
+[`extends`](#properties/extends),
+[`plugins`](#properties/plugins),
+[`specs`](#properties/specs),
+[`specs`](#properties/specs),
+and [`excludeFiles`](#properties/exclude-files) can specify paths.
+In `extends`, `plugins`, `parser,` and `specs` four, it can specify a package name instead of a path.
+
+First, it tries to import it as a package.
+If it fails, such as the package doesn't exist, or the strings are not a package, **it resolves strings as just a path**.
+These paths are resolved to absolute paths internally.
+A relative path becomes an absolute path on the base of the config file path being had it.
+
+### `extends` {#properties/extends}
+
+If you specify other config file [paths](#properties/specification-about-paths), it merges the current setting with them.
+
+```json
+{
+  "extends": [
+    // As a local file
+    "../../.markuplintrc",
+    // As a package
+    "third-party-config"
+  ]
+}
+```
+
+The name added the prefix `markuplint:` loads the config provided from markuplint core.
+There is only one kind of configs is `markuplint:recommended` that it can provide currently.
+
+```json
+{
+  "extends": ["markuplint:recommended"]
+}
+```
+
+The name added the prefix `plugin:` loads the config provided from any plugins.
+The before the slash is a namespace determined by the plugin.
+The after the slash is the unique config name on the plugin.
+
+```json
+{
+  "extends": ["plugin:third-party-plugin-name/config-name"],
+  "plugins": ["third-party-plugin"]
+}
+```
+
+#### Interface
+
+```ts
+interface Config {
+  extends?: string[];
+}
+```
+
+### `plugins` {#properties/plugins}
+
+You can load any plugins.
+Specify a package name or a [path](#properties/specification-about-paths).
+Can specify settings if the plugin has it.
+
+```json
+{
+  "plugins": [
+    "third-party-plugin",
+    "@third-party/markuplint-plugin",
+    {
+      "name": "third-party-plugin2",
+      "settings": {
+        "foo": "bar"
+      }
+    },
+    "./path/to/local-plugin.js",
+    {
+      "name": "./path/to/local-plugin.js2",
+      "settings": {
+        "foo": "bar"
+      }
+    }
+  ]
+}
+```
+
+#### Interface
+
+```ts
+interface Config {
+  plugins?: (
+    | string
+    | {
+        name: string;
+        settings?: Record<string, unknown>;
+      }
+  )[];
+}
+```
+
+### `parser` {#properties/parser}
+
+Specify a regex to the key, and the parser file [path](#properties/specification-about-paths) or a package name to the value.
+The regex should be specify it matches the target lintee file (ex., the extension part).
+
+```json
+{
+  "parser": {
+    "\\.pug$": "@markuplint/pug-parser",
+    "\\.[jt]sx?$": "@markuplint/jsx-parser",
+    "\\.vue$": "@markuplint/vue-parser",
+    "\\.svelte$": "@markuplint/svelte-parser",
+    "\\.ext$": "./path/to/custom-parser/any-lang.js"
+  }
+}
+```
+
+#### Interface
+
+```ts
+interface Config {
+  parser?: {
+    [regex: string]: string;
+  };
+}
+```
+
+### `parserOptions` {#properties/parser-options}
+
+```json
+{
+  "parserOptions": {
+    "ignoreFrontMatter": true,
+    "authoredElementName": ["AuthoredElement"]
+  }
+}
+```
+
+#### `ignoreFrontMatter`
+
+- **Type**: `boolean`
+- **Default**: `false`
+
+When set `true` the parser ignores the [Front Matter](https://jekyllrb.com/docs/front-matter/) format part of the source code.
+
+```html
+---
+prop: value
+---
+
+<html>
+  ...
+</html>
+```
+
+#### `authoredElementName`
+
+- **Type**: `string` | `RegExp` | `Function` | `(string|RegExp|Function)[]`
+- **Default**: `void`
+
+If you use a view library, the parser detects a component as a native HTML element if you name it with only lower-case characters.
+Each parser has a default pattern, but you should specify the `authoredElementName` option if you need different naming patterns.
+
+```html
+<template>
+  <custom><!-- It detects as a native HTML element if not specified. --></custom>
+</template>
+```
+
+```json
+{
+  "parserOptions": {
+    "authoredElementName": ["custom"]
+  }
+}
+```
+
+#### Interface
+
+```ts
+interface Config {
+  parserOptions?: {
+    ignoreFrontMatter?: boolean;
+    authoredElementName?: string | RegExp | Function | (string | RegExp | Function)[];
+  };
+}
+```
+
+### `specs` {#properties/specs}
+
+Specify a regex to the key, and the spec file [path](#properties/specification-about-paths) or a package name to the value.
+The regex should be specify it matches the target lintee file (ex., the extension part).
+
+```json
+{
+  "specs": {
+    "\\.vue$": "@markuplint/vue-spec",
+    "\\.ext$": "./path/to/custom-specs/any-lang.js"
+  }
+}
+```
+
+Or, You can add those to this array.
+But this is the format for version `1.x`, so it's **deprecated**.
+
+```json
+{
+  // Deprecated
+  "specs": ["@markuplint/vue-spec", "./path/to/custom-specs/any-lang"]
+}
+```
+
+#### Interface
+
+```ts
+interface Config {
+  specs?:
+    | {
+        [regex: string]: string;
+      }
+    /**
+     * @Deprecated
+     */
+    | string[]
+    /**
+     * @Deprecated
+     */
+    | string;
+}
+```
+
+### `excludeFiles` {#properties/exclude-files}
+
+It can exclude files if you need them.
+The values require the relative path from the configuration file or the absolute path.
+Paths can be glob format.
+
+```json
+{
+  "excludeFiles": ["./ignore.html", "./ignore/**/*.html"]
+}
+```
+
+#### Interface
+
+```ts
+interface Config {
+  excludeFiles?: string[];
+}
+```
+
+### `rules` {#properties/rules}
+
+And add some rules to this property.
+
+```json
+{
+  "rules": {
+    "rule-name": "value" // Add to here or more
+  }
+}
+```
+
+Specify a value for each rule.
+Those are any strings, any number, and an array.
+The rule becomes disabled if specify `false`.
+It evaluates as the default value if specify `true`.
+Otherwise, you can specify details by structure:
+
+```json
+{
+  "rules": {
+    "rule-name": {
+      // Type: string | number | boolean | Array
+      "value": "any-value",
+
+      // Optional, "error" or "warning"
+      "severity": "error",
+
+      // Optional
+      "option": {
+        "any-option": "any-optional-value"
+      }
+    }
+  }
+}
+```
+
+The details of each rule are said from the [Rules page](/rules).
+
+For example, setting of the rule of [`invalid-attr`](/rules/invalid-attr):
+
+```json
+{
+  "rule": {
+    "invalid-attr": {
+      "value": true,
+      "severity": "warning",
+      "option": {
+        "attrs": {
+          "x-attr": {
+            "enum": ["value1", "value2", "value3"]
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+#### About the rule name
+
+There are cases in which a rule name includes a slash.
+In that case, it indicates the rule is from a plugin.
+The before the slash is a namespace determined by the plugin.
+The after the slash is the unique rule name on the plugin.
+
+```json
+{
+  "plugins": ["third-party-plugin", "./path/to/local-plugin.js"],
+  "rules": {
+    "core-rule-name": true,
+    "third-party-plugin/rule-name": true,
+    "named-plugin-imported-form-local/rule-name": true
+  }
+}
+```
+
+#### Interface
+
+```ts
+interface Config {
+  rules?: {
+    [ruleName: string]: Rule<T, O>;
+  };
+}
+
+type Rule<T, O> =
+  | boolean
+  | T
+  | {
+      severity?: 'error' | 'warning' | 'info';
+      value?: T;
+      option?: O;
+      reason?: string;
+    };
+```
+
+### `nodeRules` &amp; `childNodeRules` {#properties/node-rules-&-child-node-rules}
+
+#### `nodeRules`
+
+If you want only any specific element to apply some rule, you can specify by this property.
+Be careful to the value is an array.
+You can specify the `rules` property of this property like the [`rules`](#properties/rules) property of the root.
+
+```json
+{
+  "nodeRules": [
+    {
+      "selector": "main",
+      "rules": {
+        "class-naming": "/[a-z]+(__[a-z]+)?/"
+      }
+    }
+  ]
+}
+```
+
+#### `childNodeRules`
+
+If you want any specific element's descendants to apply some rule, you can specify by this property.
+If specifies true to the `inheritance` property, _affects all descendant nodes_ of the target element,
+if not, _affects only child nodes_.
+Be careful; **This value is an array**.
+You can specify the `rules` property of this property like the [`rules`](#properties/rules) property of the root.
+
+```json
+{
+  "rules": {
+    "character-reference": true
+  },
+  "childNodeRules": [
+    {
+      "selector": ".ignoreClass",
+      "inheritance": true,
+      "rules": {
+        "character-reference": false
+      }
+    }
+  ]
+}
+```
+
+##### Interface
+
+```ts
+interface Config {
+  nodeRules?: (
+    | {
+        selector: string;
+        rules: {
+          [ruleName: string]: Rule<T, O>;
+        };
+      }
+    | {
+        regexSelector: RegexSelector;
+        rules: {
+          [ruleName: string]: Rule<T, O>;
+        };
+      }
+  )[];
+
+  childNodeRules?: (
+    | {
+        selector: string;
+        inheritance?: boolean;
+        rules: {
+          [ruleName: string]: Rule<T, O>;
+        };
+      }
+    | {
+        regexSelector: RegexSelector;
+        inheritance?: boolean;
+        rules: {
+          [ruleName: string]: Rule<T, O>;
+        };
+      }
+  )[];
+}
+
+type RegexSelector = {
+  nodeName?: string;
+  attrName?: string;
+  attrValue?: string;
+  combination?: RegexSelector & {
+    combinator: ' ' | '>' | '+' | '~' | ':has(+)' | ':has(~)';
+  };
+};
+```
+
+#### `selector`
+
+Support syntax and operators:
+
+| Selector Type                                    | Code Example                                                                              | Support |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------- | ------- |
+| Universal selector                               | `*`                                                                                       | ✅      |
+| Type selector                                    | `div`                                                                                     | ✅      |
+| ID selector                                      | `#id`                                                                                     | ✅      |
+| Class selector                                   | `.class`                                                                                  | ✅      |
+| Attribute selector                               | `[data-attr]`                                                                             | ✅      |
+| Attribute selector, Exact match                  | `[data-attr=value]`                                                                       | ✅      |
+| Attribute selector, Include whitespace separated | `[data-attr~=value]`                                                                      | ✅      |
+| Attribute selector, Subcode match                | <code>[data-attr\|=value]</code>                                                          | ✅      |
+| Attribute selector, Partial match                | `[data-attr*=value]`                                                                      | ✅      |
+| Attribute selector, Forward match                | `[data-attr^=value]`                                                                      | ✅      |
+| Attribute selector, Backward match               | `[data-attr$=value]`                                                                      | ✅      |
+| Negation pseudo-class                            | `:not(div)`                                                                               | ✅      |
+| Matches-Any pseudo-class                         | `:is(div)`                                                                                | ✅      |
+| Specificity-adjustment pseudo-class              | `:where(div)`                                                                             | ✅      |
+| Relational pseudo-class                          | `:has(div)` `:has(> div)`                                                                 | ✅      |
+| Directionality pseudo-class                      | `:dir(ltr)`                                                                               | ❌      |
+| Language pseudo-class                            | `:lang(en)`                                                                               | ❌      |
+| Hyperlink pseudo-class                           | `:any-link`                                                                               | ❌      |
+| Link History pseudo-class                        | `:link` `:visited`                                                                        | ❌      |
+| Local link pseudo-class                          | `:local-link`                                                                             | ❌      |
+| Target pseudo-class                              | `:target`                                                                                 | ❌      |
+| Target container pseudo-class                    | `:target-within`                                                                          | ❌      |
+| Reference element pseudo-class                   | `:scope`                                                                                  | ✅      |
+| Current-element pseudo-class                     | `:current` `:current(div)`                                                                | ❌      |
+| Past pseudo-class                                | `:past`                                                                                   | ❌      |
+| Future pseudo-class                              | `:future`                                                                                 | ❌      |
+| Interactive pseudo-class                         | `:active` `:hover` `:focus` `:focus-within` `:focus-visible`                              | ❌      |
+| Enable and disable pseudo-class                  | `:enable` `:disable`                                                                      | ❌      |
+| Mutability pseudo-class                          | `:read-write` `:read-only`                                                                | ❌      |
+| Placeholder-shown pseudo-class                   | `:placeholder-shown`                                                                      | ❌      |
+| Default-option pseudo-class                      | `:default`                                                                                | ❌      |
+| Selected-option pseudo-class                     | `:checked`                                                                                | ❌      |
+| Indeterminate value pseudo-class                 | `:indeterminate`                                                                          | ❌      |
+| Validity pseudo-class                            | `:valid` `:invalid`                                                                       | ❌      |
+| Range pseudo-class                               | `:in-range` `:out-of-range`                                                               | ❌      |
+| Optionality pseudo-class                         | `:required` `:optional`                                                                   | ❌      |
+| Empty-Value pseudo-class                         | `:blank`                                                                                  | ❌      |
+| User-interaction pseudo-class                    | `:user-invalid`                                                                           | ❌      |
+| Root pseudo-class                                | `:root`                                                                                   | ✅      |
+| Empty pseudo-class                               | `:empty`                                                                                  | ❌      |
+| Nth-child pseudo-class                           | `:nth-child(2)` `:nth-last-child(2)` `:first-child` `:last-child` `:only-child`           | ❌      |
+| Nth-child pseudo-class (`of El` Syntax)          | `:nth-child(2 of div)` `:nth-last-child(2 of div)`                                        | ❌      |
+| Nth-of-type pseudo-class                         | `:nth-of-type(2)` `:nth-last-of-type(2)` `:first-of-type` `:last-of-type` `:only-of-type` | ❌      |
+| Nth-col pseudo-class                             | `:nth-col(2)` `:nth-last-col(2)`                                                          | ❌      |
+| Pseudo elements                                  | `::before` `::after`                                                                      | ❌      |
+| Descendant combinator                            | `div span`                                                                                | ✅      |
+| Child combinator                                 | `div > span`                                                                              | ✅      |
+| Next-sibling combinator                          | `div + span`                                                                              | ✅      |
+| Subsequent-sibling combinator                    | `div ~ span`                                                                              | ✅      |
+| Column combinator                                | <code>div \|\| span</code>                                                                | ❌      |
+| Multiple selectors                               | `div, span`                                                                               | ✅      |
+
+##### Extended selectors
+
+| Syntax                | Description                                                                                                                               |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `:closest(selectors)` | Concept: [`Element.closest`](https://dom.spec.whatwg.org/#ref-for-dom-element-closest%E2%91%A0) method                                    |
+| `:aria(has name)`     | [ARIA pseudo-class](https://github.com/markuplint/markuplint/tree/v3/packages/%40markuplint/selector#aria-pseudo-class)                   |
+| `:role(heading)`      | [ARIA Role pseudo-class](https://github.com/markuplint/markuplint/tree/v3/packages/%40markuplint/selector#aria-pseudo-class)              |
+| `:model(interactive)` | [Content Model pseudo-class](https://github.com/markuplint/markuplint/tree/v3/packages/%40markuplint/selector#content-model-pseudo-class) |
+
+#### `regexSelector`
+
+You can select elements by using `regexSelector` instead of the `selector` property.
+
+The `regexSelector` property has `nodeName`, `attrName`, and `attrValue` properties
+that are optional regular expression.
+So each of these enables to omit.
+It is AND condition if combine.
+
+```json
+{
+  "childNodeRules": [
+    {
+      "regexSelector": {
+        "nodeName": "/^[a-z]+$/",
+        "attrName": "/^[a-z]+$/",
+        "attrValue": "/^[a-z]+$/"
+      },
+      "rules": {
+        "any-rule": "any-value"
+      }
+    }
+  ]
+}
+```
+
+You can use the capture of the regular expression.
+It evaluates the [Mustache](https://mustache.github.io/) format in a value of the rules.
+It expands the capturing incremental number prepended $ mark as a variable.
+
+```json
+{
+  "childNodeRules": [
+    {
+      "regexSelector": {
+        "attrName": "/^data-([a-z]+)$/"
+      },
+      "rules": {
+        "any-rule": "It is {{ $1 }} data attribute",
+        "any-rule2": {
+          "value": "It is {{ $1 }} data attribute",
+          "severity": "error"
+        }
+      }
+    }
+  ]
+}
+```
+
+Of course, you can use the named capture group.
+It expands the name as a variable.
+
+```json
+{
+  "childNodeRules": [
+    {
+      "regexSelector": {
+        "attrName": "/^data-(?<dataName>[a-z]+)$/"
+      },
+      "rules": {
+        "any-rule": "It is {{ dataName }} data attribute"
+      }
+    }
+  ]
+}
+```
+
+Note: Recommend using named capture.
+The numbered capture may conflict and be overwritten.
+
+```json
+{
+  "childNodeRules": [
+    {
+      "regexSelector": {
+        "attrName": "/^data-([a-z]+)$/", // It will be `$1`.
+        "attrValue": "^(.+)$" // It will be `$1` too. `$1` is overwritten.
+      },
+      "rules": {
+        "any-rule": "It is {{ $1 }} data attribute, and value is {{ $1 }}"
+      }
+    },
+    {
+      "regexSelector": {
+        "attrName": "/^data-(?<dataName>[a-z]+)$/", // It will be `dataName`.
+        "attrValue": "^(?<dataValue>.+)$" // It will be `dataValue`.
+      },
+      "rules": {
+        "any-rule": "It is {{ dataName }} data attribute, and value is {{ dataValue }}"
+      }
+    }
+  ]
+}
+```
+
+You can select the element in complex conditions if you use the `combination` prop.
+
+```json
+{
+  "childNodeRules": [
+    {
+      "regexSelector": {
+        "attrName": "img",
+        "combination": {
+          "combinator": ":has(~)",
+          "nodeName": "source"
+        }
+      }
+    }
+  ]
+}
+```
+
+The regexSelector above is the same as CSS selector `img:has(~ source)`.
+
+The `combinator` prop supports below:
+
+- `" "`: Descendant combinator
+- `">"`: Child combinator
+- `"+"`: Next-sibling combinator
+- `":has(+)"`: Prev-sibling combinator
+- `"~"`: Subsequent-sibling combinator
+- `":has(~)"`: Preceding-sibling
+
+You can define nodes unlimitedly deeply.
+
+```json
+{
+  "childNodeRules": [
+    {
+      "regexSelector": {
+        "attrName": "el1",
+        "combination": {
+          "combinator": " ",
+          "attrName": "el2",
+          "combination": {
+            "combinator": ">",
+            "attrName": "el3",
+            "combination": {
+              "combinator": "+",
+              "attrName": "el4",
+              "combination": {
+                "combinator": "~",
+                "attrName": "el5"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+The above is the same as CSS selector `el1 el2 > el3 + el4 ~ el5`.
+
+##### Usecase of `regexSelector`
+
+- [Check designed CSS class name](regex-selector-sample#case-1)
+- [Check filenames of images](regex-selector-sample#case-2)
+
+### `pretenders`
+
+In **React**, **Vue**, and more, It cannot evaluate custom components as HTML elements. The `pretenders` option resolves that.
+
+It evaluates components as HTML elements on each rule if you specify a selector for a component and properties of an element that it provides.
+
+```json
+{
+  "pretenders": [
+    {
+      "selector": "List",
+      "as": "ul"
+    },
+    {
+      "selector": "Item",
+      "as": "li"
+    }
+  ]
+}
+```
+
+<!-- prettier-ignore-start -->
+```jsx
+<List>{/* Evaluate as <ul> */}
+  <Item />{/* Evaluate as <li> */}
+  <Item />{/* Evaluate as <li> */}
+  <Item />{/* Evaluate as <li> */}
+</List>
+```
+<!-- prettier-ignore-end -->
+
+```ts
+type Pretender = {
+  selector: string;
+  as: string | OriginalNode;
+};
+```
+
+#### `selector`
+
+It is required, and you should specify the selector with string.
+
+#### `as`
+
+It is required. You should specify an element name with strings or an element with properties.
+
+```ts
+type OriginalNode = {
+  element: string;
+  namespace?: 'svg';
+
+  inheritAttrs?: boolean;
+  attrs?: {
+    name: string;
+    value?:
+      | string
+      | {
+          fromAttr: string;
+        };
+  }[];
+
+  aria?: {
+    name?:
+      | boolean
+      | {
+          fromAttr: string;
+        };
+  };
+};
+```
+
+#### `as.inheritAttrs`
+
+If an element has attributes that the defined component has.
+
+```jsx
+const MyComponent = props => {
+  return (
+    <div {...props} role="region">
+      {props.children}
+    </div>
+  );
+};
+```
+
+```json
+{
+  "selector": "MyComponent",
+  "as": {
+    "element": "div",
+    "inheritAttrs": true,
+    "attrs": [
+      {
+        "name": "role",
+        "value": "region"
+      }
+    ]
+  }
+}
+```
+
+#### `as.aria.name`
+
+Specify the accessible name of an component.
+You set true if the component has the name clearly.
+If not, you set the property name that refs the name to `fromAttr`.
+
+```jsx
+const MyIcon = ({ label }) => {
+  return (
+    <svg role="img" aria-label={label}>
+      <rect />
+    </svg>
+  );
+};
+```
+
+```json
+{
+  "selector": "MyIcon",
+  "as": {
+    "element": "svg",
+    "attrs": [
+      {
+        "name": "role",
+        "value": "img"
+      }
+    ],
+    "aria": {
+      "name": {
+        "fromAttr": "label"
+      }
+    }
+  }
+}
+```
+
+```jsx
+{
+  /* The accessible name is "my icon name". */
+}
+<MyIcon label="my icon name" />;
+```
+
+### `overrides` {#properties/overrides}
+
+You can override configurations to specific files if you specify the `overrides` option.
+It resolves **glob format paths** specified to a key.
+
+```json
+{
+  "rules": {
+    "any-rule": true
+  },
+  "overrides": {
+    "./path/to/**/*": {
+      "rules": {
+        "any-rule": false
+      }
+    }
+  }
+}
+```
+
+You can override options below:
+
+- [`plugins`](#properties/plugins)
+- [`parser`](#properties/parser)
+- [`parserOptions`](#properties/parser-options)
+- [`specs`](#properties/specs)
+- [`excludeFiles`](#properties/exclude-files)
+- [`rules`](#properties/rules)
+- [`nodeRules` &amp; `childNodeRules`](#properties/node-rules-&-child-node-rules)

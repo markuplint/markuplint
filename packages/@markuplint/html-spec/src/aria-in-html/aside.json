@@ -1,8 +1,0 @@
-{
-	"permittedRoles": {
-		"roles": ["feed", "none", "note", "presentation", "region", "search"]
-	},
-	"implicitRole": {
-		"role": "complementary"
-	}
-}

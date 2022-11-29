@@ -110,6 +110,12 @@ export default function directiveTokenizer(
 		endQuote,
 		isDirective: true,
 		isDuplicatable: false,
+		nodeName: name.raw,
+		parentNode: null,
+		nextNode: null,
+		prevNode: null,
+		isFragment: false,
+		isGhost: false,
 	};
 
 	return result;

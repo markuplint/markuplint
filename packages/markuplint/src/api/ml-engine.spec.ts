@@ -17,11 +17,20 @@ describe('Event notification', () => {
 		});
 		await engine.exec();
 		const files = await configPromise;
-		expect(files).toStrictEqual([path.resolve('test/fixture/.markuplintrc')]);
+		expect(files).toStrictEqual([
+			'markuplint:code-styles',
+			'markuplint:html-standard',
+			'markuplint:a11y',
+			'markuplint:performance',
+			'markuplint:security',
+			'markuplint:rdfa',
+			'markuplint:recommended',
+			path.resolve('test/fixture/.markuplintrc'),
+		]);
 	});
 });
 
-describe('Watcher', () => {
+describe.skip('Watcher', () => {
 	it('updates config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/002.html');
 		const engine = new MLEngine(file, {
@@ -37,7 +46,7 @@ describe('Watcher', () => {
 		// Get config file
 		const files = await configPromise;
 		engine.removeAllListeners();
-		const targetFile = files[0];
+		const targetFile = files[files.length - 1];
 		const targetFileOriginData = await fs.readFile(targetFile, { encoding: 'utf-8' });
 		const config: Config = JSON.parse(targetFileOriginData);
 		const result2ndPromise = new Promise<Violation[]>(resolve => {
@@ -57,7 +66,7 @@ describe('Watcher', () => {
 		await fs.writeFile(targetFile, targetFileOriginData, { encoding: 'utf-8' });
 		await engine.close();
 		expect(result1st?.violations.length).toBe(7);
-		expect(result2nd.length).toBe(5);
+		expect(result2nd.length).toBe(6);
 		return Promise.resolve();
 	});
 });
@@ -164,5 +173,31 @@ describe('Config Priority', () => {
 		expect(configSet?.config.rules?.__hoge).toBe(true);
 		// @ts-ignore
 		expect(configSet?.config.rules?.['wai-aria']).toBe(undefined);
+	});
+});
+
+describe('Config Priority', () => {
+	it('config', async () => {
+		const file = await MLEngine.toMLFile('test/fixture/jsx/003.jsx');
+		const engine = new MLEngine(file, {
+			config: {
+				parserOptions: {
+					authoredElementName: ['authoredcomponent2', /^[A-Z]|\./],
+				},
+			},
+		});
+
+		const res = await engine.exec();
+
+		expect(res?.violations).toStrictEqual([
+			{
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				line: 5,
+				col: 5,
+				message: 'The "authoredcomponent" element is not allowed in the "div" element in this context',
+				raw: '<authoredcomponent>',
+			},
+		]);
 	});
 });

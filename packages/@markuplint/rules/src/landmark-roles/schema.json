@@ -15,10 +15,14 @@
 					"items": {
 						"type": "string",
 						"enum": ["banner", "main", "complementary", "contentinfo", "form", "navigation", "region"]
-					}
+					},
+					"default": "[]",
+					"description": "Excludes the specified landmark roll from the warning."
 				},
 				"labelEachArea": {
-					"type": "boolean"
+					"type": "boolean",
+					"default": "true",
+					"description": "Warn if there is a unique label if a particular landmark role is used multiple times on the page."
 				}
 			}
 		}

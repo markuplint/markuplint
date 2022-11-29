@@ -70,11 +70,11 @@ describe('parser', () => {
 	});
 
 	test('variable', () => {
-		const r = parse('<div>{varibale}</div>');
+		const r = parse('<div>{variable}</div>');
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: <div>',
-			'[1:6]>[1:16](5,15)#ps:MustacheTag: {varibale}',
+			'[1:6]>[1:16](5,15)#ps:MustacheTag: {variable}',
 			'[1:16]>[1:22](15,21)div: </div>',
 		]);
 	});
