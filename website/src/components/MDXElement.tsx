@@ -1,7 +1,6 @@
 import type { MDXProvider } from '@mdx-js/react';
 import type { PropsWithChildren } from 'react';
 
-import Link from 'next/link';
 import innerText from 'react-innertext';
 
 let h2: string;
@@ -70,16 +69,11 @@ const MDXElement: React.ComponentProps<typeof MDXProvider>['components'] = {
     );
   },
   a: (props: PropsWithChildren<React.AnchorHTMLAttributes<HTMLAnchorElement>>) => {
-    const { href, ...restProps } = props;
-    const isExternal = href && /^https?:\/\//.test(href);
-    return isExternal ? (
-      <a {...props} target="_blank" referrerPolicy="no-referrer">
+    const isExternal = props.href && /^https?:\/\//.test(props.href);
+    return (
+      <a {...props} target={isExternal ? '_blank' : undefined} referrerPolicy={isExternal ? 'no-referrer' : undefined}>
         {props.children}
       </a>
-    ) : (
-      <Link href={href} passHref>
-        <a {...restProps}>{props.children}</a>
-      </Link>
     );
   },
   img: (props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement>>) => {

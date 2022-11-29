@@ -155,3 +155,13 @@ test('Svelte', async () => {
 
 	expect(violations.length).toBe(0);
 });
+
+test('Astro', async () => {
+	const { violations } = await mlRuleTest(rule, '<div class:list="a" class="b"></div>', {
+		parser: {
+			'.*': '@markuplint/astro-parser',
+		},
+	});
+
+	expect(violations.length).toBe(1);
+});
