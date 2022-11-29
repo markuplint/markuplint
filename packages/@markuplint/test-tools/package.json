@@ -1,7 +1,7 @@
 {
 	"name": "@markuplint/test-tools",
 	"version": "3.0.0-alpha.6",
-	"description": "Test tools for markuplint",
+	"description": "A private package for testing in this repository",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",

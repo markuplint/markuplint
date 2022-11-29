@@ -1,18 +1,8 @@
 # @markuplint/selector
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Fselector.svg)](https://www.npmjs.com/package/@markuplint/selector)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=main)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
 
-## Install
-
-```sh
-$ npm install @markuplint/selector
-
-$ yarn add @markuplint/selector
-```
-
-## [W3C Selectors](https://www.w3.org/TR/selectors-4/) matcher
+**Extended [W3C Selectors](https://www.w3.org/TR/selectors-4/) matcher**
 
 Supported selectors and operators:
 
@@ -120,3 +110,18 @@ For example, `:role(interactive)` matches `<a>`(with `href` attr), `<button>`, a
   "attrValue": "/^[a-z]+$/"
 }
 ```
+
+## Install
+
+[`markuplint`](https://www.npmjs.com/package/markuplint) package includes this package.
+
+<details>
+<summary>If you are installing purposely, how below:</summary>
+
+```sh
+$ npm install @markuplint/selector
+
+$ yarn add @markuplint/selector
+```
+
+</details>

@@ -1,18 +1,21 @@
-# ![markuplint](https://cdn.rawgit.com/YusukeHirao/markuplint/HEAD/media/logo-v.svg)
+# ![markuplint](https://cdn.jsdelivr.net/gh/YusukeHirao/markuplint/media/logo-v.svg)
 
-[![npm version](https://badge.fury.io/js/markuplint.svg)](https://badge.fury.io/js/markuplint)
+[![npm version](https://img.shields.io/npm/v/markuplint.svg)](https://www.npmjs.com/package/markuplint)
+[![Downloads](https://img.shields.io/npm/dm/markuplint.svg)](https://www.npmjs.com/package/markuplint)
 [![Test](https://github.com/markuplint/markuplint/workflows/Test/badge.svg?branch=main)](https://github.com/markuplint/markuplint/actions?query=workflow%3ATest)
 [![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
+[![GitHub Stars](https://img.shields.io/github/stars/markuplint.svg)](https://github.com/markuplint/markuplint)
+[![Follow us on Twitter](https://img.shields.io/twitter/follow/markuplint?label=Follow)](https://twitter.com/intent/user?screen_name=markuplint)
 
-Peace of mind in your markup - A Linter for All Markup Languages.
+**Peace of mind in your markup** - A linter for all markup developers.
 
 ## Features
 
-- Conformance checking that according to HTML Living Standard, WAI-ARIA, and ARIA in HTML.
-- Supports SVG and CSS Values.
-- Supports React, Vue, Svelte, Pug, PHP, and more.
-- Possible to specify the rule to each element if you use the selector.
-- Possible to create a custom rule.
+- Conformance checking according to _HTML Standard_, _WAI-ARIA_, _ARIA in HTML_, etc.
+- Supports _CSS_ and _SVG_ values.
+- Supports _React_, _Vue_, _Svelte_, _Pug_, _PHP_, and more.
+- Possible to specify the rule for each element if you use _CSS Selector_.
+- Potential to create a custom rule.
 
 ![Screenshot: Violation Report CLI output](https://raw.githubusercontent.com/markuplint/markuplint/main/packages/markuplint/media/screenshot01.png)
 
@@ -37,7 +40,7 @@ $ yarn run markuplint --init
 ```
 
 Answer questions interactively.
-By doing this, needed modules are installed includes `markuplint`.
+By doing this, needed modules are installed, including `markuplint`.
 
 Add a command to the `scripts` option on `package.json`:
 
@@ -91,31 +94,31 @@ Examples
 	$ cat verifyee.html | markuplint
 ```
 
-## Guideline
+## Documentation
 
 - [Getting Started](https://markuplint.dev/getting-started)
 - [Rules](https://markuplint.dev/rules)
 - [Configuration](https://markuplint.dev/configuration)
 - [API](https://markuplint.dev/api-docs)
+
+## Playground
+
 - [Playground](https://playground.markuplint.dev/)
 
 ## Editor Extensions
 
-| Editor                                                                                                                                                                                                                                                          | Installation Page                                                                                       | Author                                         |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| <a href="https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint"><img src="https://raw.githubusercontent.com/markuplint/markuplint/main/media/vscode.png" width="75" height="82" alt="Visual Studio Code: markuplint extension"></a> | [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint) | [@YusukeHirao](https://github.com/YusukeHirao) |
+- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint)
 
 ## License
 
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmarkuplint%2Fmarkuplint.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmarkuplint%2Fmarkuplint?ref=badge_large)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmarkuplint%2Fmarkuplint.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmarkuplint%2Fmarkuplint?ref=badge_large)
 
 ## Sponsors
 
-[:heart: Sponsor](https://github.com/sponsors/markuplint)
+Need [Sponsors❤️‍🔥](https://github.com/sponsors/markuplint)
 
 ### Personal Supporters
 
-[<img width="36" src="https://avatars.githubusercontent.com/u/6581173?v=4" alt="mikimhk"/>](https://github.com/mikimhk)
 [<img width="36" src="https://avatars.githubusercontent.com/u/91733847?v=4" alt="Tokitake" />](https://github.com/Tokitake)
 
 ## Thanks
@@ -124,5 +127,5 @@ This linter is inspired by:
 
 - [HTMLHint](http://htmlhint.com/)
 - [ESLint](https://eslint.org/)
-- [stylelint](https://stylelint.io/)
+- [Stylelint](https://stylelint.io/)
 - [textlint](https://textlint.github.io/)
