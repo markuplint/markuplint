@@ -1,8 +1,6 @@
 # @markuplint/config-presets
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Fconfig-presets.svg)](https://www.npmjs.com/package/@markuplint/config-presets)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=main)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
 
 ## Usage
 
@@ -22,7 +20,7 @@ You can choose some presets appropriately for your preference.
 }
 ```
 
-## Presets
+## Ruleset Mapping
 
 Ruleset|Description|`recommended`|`recommended-vue`|`recommended-svelte`|`recommended-static-html`|`recommended-react`|`a11y`|`code-styles`|`html-standard`|`performance`|`rdfa`|`security`|
 ---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -66,12 +64,15 @@ Require `noreferrer` with `target=_blank`|Require `rel=noreferrer` with an eleme
 
 ## Install
 
-`markuplint` package includes this package.
+[`markuplint`](https://www.npmjs.com/package/markuplint) package includes this package.
 
-If you are installing purposely, how below:
+<details>
+<summary>If you are installing purposely, how below:</summary>
 
 ```sh
 $ npm install @markuplint/config-presets
 
 $ yarn add @markuplint/config-presets
 ```
+
+</details>

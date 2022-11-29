@@ -1,18 +1,14 @@
 # @markuplint/types
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Ftypes.svg)](https://www.npmjs.com/package/@markuplint/types)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=main)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
 
-## Install
+**Type declaration and value checker**
 
-```sh
-$ npm install @markuplint/types
+## Type declaration
 
-$ yarn add @markuplint/types
-```
+- [types.schema.json](./types.schema.json)
 
-## Usage
+## API
 
 ```ts
 import { check } from '@markuplint/types';
@@ -100,3 +96,11 @@ check('2020-02-30', 'DateTime');
 | `<number-optional-number>`     | Some attributes for SVG             |                                                                                                                    | ✅        |
 
 In addition, you can use types **[CSSTree](https://github.com/csstree/csstree)** defined.
+
+## Install
+
+```sh
+$ npm install @markuplint/types
+
+$ yarn add @markuplint/types
+```

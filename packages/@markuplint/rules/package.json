@@ -1,7 +1,7 @@
 {
 	"name": "@markuplint/rules",
 	"version": "3.0.0-alpha.6",
-	"description": "Rules for markuplint",
+	"description": "Built-in rules of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
