@@ -6,7 +6,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
 [![Gitter](https://badges.gitter.im/markuplint/community.svg)](https://gitter.im/markuplint/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-Peace of mind in your markup - A Linter for All Markup Languages.
+**Peace of mind in your markup** - A linter for all markup developers.
 
 ## Usage
 

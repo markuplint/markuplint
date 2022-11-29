@@ -27,8 +27,8 @@ function HomepageHeader() {
 export default function Home(): JSX.Element {
   return (
     <Layout
-      title="markuplint - A Linter for All Markup Languages."
-      description="Peace of mind in your markup. A Linter for All Markup Languages."
+      title="markuplint - A linter for all markup developers."
+      description="Peace of mind in your markup. A linter for all markup developers."
     >
       <HomepageHeader />
       <main>

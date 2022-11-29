@@ -4,7 +4,7 @@
 [![Test](https://github.com/markuplint/markuplint/workflows/Test/badge.svg?branch=main)](https://github.com/markuplint/markuplint/actions?query=workflow%3ATest)
 [![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
 
-Peace of mind in your markup - A Linter for All Markup Languages.
+**Peace of mind in your markup** - A linter for all markup developers.
 
 ## Features
 
