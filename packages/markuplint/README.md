@@ -1,8 +1,11 @@
 # ![markuplint](https://cdn.jsdelivr.net/gh/YusukeHirao/markuplint/media/logo-v.svg)
 
-[![npm version](https://badge.fury.io/js/markuplint.svg)](https://badge.fury.io/js/markuplint)
+[![npm version](https://img.shields.io/npm/v/markuplint.svg)](https://www.npmjs.com/package/markuplint)
+[![Downloads](https://img.shields.io/npm/dm/markuplint.svg)](https://www.npmjs.com/package/markuplint)
 [![Test](https://github.com/markuplint/markuplint/workflows/Test/badge.svg?branch=main)](https://github.com/markuplint/markuplint/actions?query=workflow%3ATest)
 [![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
+[![GitHub Stars](https://img.shields.io/github/stars/markuplint.svg)](https://github.com/markuplint/markuplint)
+[![Follow us on Twitter](https://img.shields.io/twitter/follow/markuplint?label=Follow)](https://twitter.com/intent/user?screen_name=markuplint)
 
 **Peace of mind in your markup** - A linter for all markup developers.
 
