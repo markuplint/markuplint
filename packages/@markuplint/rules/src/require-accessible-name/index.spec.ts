@@ -387,4 +387,54 @@ describe('Issues', () => {
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	// https://github.com/markuplint/markuplint/issues/592
+	test('#592', async () => {
+		expect(
+			(await mlRuleTest(rule, '<svg aria-label="i-have-name"><path /><rect><path /></rect></svg>')).violations,
+		).toStrictEqual([
+			{
+				col: 31,
+				line: 1,
+				message: 'Require accessible name',
+				raw: '<path />',
+				severity: 'error',
+			},
+			{
+				col: 39,
+				line: 1,
+				message: 'Require accessible name',
+				raw: '<rect>',
+				severity: 'error',
+			},
+		]);
+		expect(
+			(await mlRuleTest(rule, '<svg role="img" aria-label="i-have-name"><path /><rect><path /></rect></svg>'))
+				.violations,
+		).toStrictEqual([]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<svg aria-label="i-have-name"><path aria-label="i-have-name" /><rect><path /></rect></svg>',
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				col: 64,
+				line: 1,
+				message: 'Require accessible name',
+				raw: '<rect>',
+				severity: 'error',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<svg aria-label="i-have-name"><path aria-label="i-have-name" /><rect aria-label="i-have-name"><path /></rect></svg>',
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
 });
