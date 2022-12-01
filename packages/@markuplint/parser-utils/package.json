@@ -16,12 +16,15 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/uuid": "^8.3.4"
+		"@types/uuid": "8"
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "3.0.0-rc.0",
 		"@markuplint/types": "3.0.0-rc.0",
-		"tslib": "^2.4.0",
+		"tslib": "^2.4.1",
 		"uuid": "8"
+	},
+	"peerDependencies": {
+		"@markuplint/ml-core": "3.x"
 	}
 }
