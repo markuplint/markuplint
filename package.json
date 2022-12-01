@@ -11,7 +11,7 @@
 		"test:clear": "jest --clearCache",
 		"test:unit": "jest",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
-		"lint": "prettier --write './packages/**/*{ts,tsx,json,rc,md}'; eslint --fix './packages/**/*.ts';",
+		"lint": "prettier --write './packages/**/*{ts,tsx,json,rc,md}'; eslint --fix './packages/**/*.ts'; yarn spellcheck;",
 		"ga": "actionlint .github/workflows/*.yml",
 		"schema": "lerna run schema",
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
@@ -43,6 +43,9 @@
 		],
 		".github/workflows/*.yml": [
 			"actionlint"
+		],
+		"**": [
+			"cspell --no-progress --show-suggestions"
 		]
 	},
 	"jest": {
