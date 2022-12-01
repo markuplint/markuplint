@@ -1,5 +1,5 @@
 import { createRule } from '@markuplint/ml-core';
-import { isPalpableElement, isVoidElement } from '@markuplint/ml-spec';
+import { isNothingContentModel, isPalpableElement } from '@markuplint/ml-spec';
 
 type Options = {
 	extendsExposableElements?: boolean;
@@ -23,7 +23,7 @@ export default createRule<boolean, Options>({
 				return;
 			}
 
-			if (isVoidElement(el)) {
+			if (isNothingContentModel(el)) {
 				return;
 			}
 
