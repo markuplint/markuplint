@@ -17,8 +17,8 @@
 	},
 	"devDependencies": {
 		"@types/cosmiconfig": "^6.0.0",
-		"@types/glob": "^7.2.0",
-		"@types/node": "^17.0.16"
+		"@types/glob": "^8.0.0",
+		"@types/node": "latest"
 	},
 	"dependencies": {
 		"@markuplint/html-parser": "3.0.0-rc.0",
@@ -26,10 +26,10 @@
 		"@markuplint/ml-config": "3.0.0-rc.0",
 		"@markuplint/ml-core": "3.0.0-rc.0",
 		"@markuplint/ml-spec": "3.0.0-rc.0",
-		"cosmiconfig": "^7.0.1",
+		"cosmiconfig": "^8.0.0",
 		"glob": "^8.0.3",
 		"jsonc": "^2.0.0",
-		"minimatch": "^5.1.0",
-		"tslib": "^2.4.0"
+		"minimatch": "^5.1.1",
+		"tslib": "^2.4.1"
 	}
 }
