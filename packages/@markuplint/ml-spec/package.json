@@ -24,7 +24,7 @@
 	"dependencies": {
 		"@markuplint/ml-ast": "3.0.0-rc.0",
 		"dom-accessibility-api": "^0.5.14",
-		"tslib": "^2.4.0"
+		"tslib": "^2.4.1"
 	},
 	"devDependencies": {
 		"@markuplint/test-tools": "3.0.0-rc.0",

@@ -11,7 +11,7 @@
 		"test:clear": "jest --clearCache",
 		"test:unit": "jest",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
-		"lint": "prettier --write './packages/**/*{ts,tsx,json,rc,md}'; eslint --fix './packages/**/*.ts';",
+		"lint": "prettier --write './packages/**/*{ts,tsx,json,rc,md}'; eslint --fix './packages/**/*.ts'; yarn spellcheck;",
 		"ga": "actionlint .github/workflows/*.yml",
 		"schema": "lerna run schema",
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
@@ -43,6 +43,9 @@
 		],
 		".github/workflows/*.yml": [
 			"actionlint"
+		],
+		"**": [
+			"cspell --no-progress --show-suggestions"
 		]
 	},
 	"jest": {
@@ -93,25 +96,25 @@
 	],
 	"devDependencies": {
 		"@types/jest": "^29.2.3",
-		"@typescript-eslint/eslint-plugin": "^5.43.0",
-		"@typescript-eslint/parser": "^5.43.0",
+		"@typescript-eslint/eslint-plugin": "^5.45.0",
+		"@typescript-eslint/parser": "^5.45.0",
 		"browser-resolve": "^2.0.0",
 		"coveralls": "^3.1.1",
-		"cspell": "^6.14.3",
+		"cspell": "^6.15.1",
 		"eslint": "^8.28.0",
 		"eslint-import-resolver-typescript": "^3.5.2",
 		"eslint-plugin-eslint-comments": "^3.2.0",
 		"eslint-plugin-import": "^2.26.0",
-		"eslint-plugin-jsdoc": "^39.6.2",
+		"eslint-plugin-jsdoc": "^39.6.4",
 		"eslint-plugin-node": "^11.1.0",
 		"eslint-plugin-sort-class-members": "^1.15.2",
 		"heapdump": "^0.3.15",
 		"husky": "^8.0.2",
 		"jest": "^29.3.1",
 		"lerna": "^5.5.2",
-		"lint-staged": "^13.0.3",
+		"lint-staged": "^13.0.4",
 		"npm-run-all": "^4.1.5",
-		"prettier": "^2.7.1",
+		"prettier": "^2.8.0",
 		"prettier-plugin-md-nocjsp": "^1.4.0",
 		"ts-jest": "^29.0.3",
 		"ts-node": "^10.9.1",
