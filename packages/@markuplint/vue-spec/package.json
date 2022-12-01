@@ -15,7 +15,10 @@
 		"build": "tsc",
 		"clean": "tsc --build --clean"
 	},
-	"dependencies": {
+	"devDependencies": {
 		"@markuplint/ml-spec": "3.0.0-rc.0"
+	},
+	"peerDependencies": {
+		"@markuplint/ml-core": "3.x"
 	}
 }

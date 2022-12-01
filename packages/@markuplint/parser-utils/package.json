@@ -23,5 +23,8 @@
 		"@markuplint/types": "3.0.0-rc.0",
 		"tslib": "^2.4.0",
 		"uuid": "8"
+	},
+	"peerDependencies": {
+		"@markuplint/ml-core": "3.x"
 	}
 }
