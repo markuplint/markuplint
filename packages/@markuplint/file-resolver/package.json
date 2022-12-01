@@ -21,6 +21,7 @@
 		"@types/node": "^17.0.16"
 	},
 	"dependencies": {
+		"@markuplint/html-parser": "3.0.0-rc.0",
 		"@markuplint/ml-ast": "3.0.0-rc.0",
 		"@markuplint/ml-config": "3.0.0-rc.0",
 		"@markuplint/ml-core": "3.0.0-rc.0",
