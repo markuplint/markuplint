@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/php-parser",
-	"version": "3.0.0-rc.0",
+	"version": "3.0.0-rc.1",
 	"description": "PHP parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -16,8 +16,8 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "3.0.0-rc.0",
-		"@markuplint/ml-ast": "3.0.0-rc.0",
-		"@markuplint/parser-utils": "3.0.0-rc.0"
+		"@markuplint/html-parser": "3.0.0-rc.1",
+		"@markuplint/ml-ast": "3.0.0-rc.1",
+		"@markuplint/parser-utils": "3.0.0-rc.1"
 	}
 }
