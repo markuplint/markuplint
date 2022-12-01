@@ -96,3 +96,9 @@ test('Ignore aria-busy', async () => {
 		},
 	]);
 });
+
+describe('Issues', () => {
+	test('#593', async () => {
+		expect((await mlRuleTest(rule, '<iframe></iframe>')).violations).toStrictEqual([]);
+	});
+});
