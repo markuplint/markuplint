@@ -25000,11 +25000,7 @@
 			"description": "The <iframe> HTML element represents a nested browsing context, embedding another HTML page into the current one.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"contentModel": {
-				"contents": [
-					{
-						"transparent": "*"
-					}
-				]
+				"contents": false
 			},
 			"aria": {
 				"implicitRole": false,
@@ -27015,7 +27011,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": ":model(flow)"
+						"transparent": ":not(noscript)"
 					}
 				]
 			},

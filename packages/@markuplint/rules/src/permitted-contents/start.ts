@@ -24,7 +24,7 @@ export function start(
 		if (el.childNodes.length) {
 			return [
 				{
-					type: 'VOID_ELEMENT',
+					type: 'NOTHING',
 					scope: el,
 					query: ':not(*)',
 					hint: {},
