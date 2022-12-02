@@ -27015,7 +27015,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": ":model(flow)"
+						"transparent": ":not(noscript)"
 					}
 				]
 			},
