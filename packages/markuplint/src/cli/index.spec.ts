@@ -6,6 +6,8 @@ import { cli } from './bootstrap';
 
 const entryFilePath = path.resolve(__dirname, '../../bin/markuplint');
 
+const escape = (path: string) => path.replaceAll('\\', '\\\\'); // For Windows
+
 describe('STDOUT Test', () => {
 	it('empty', async () => {
 		const resultPromise = execa(entryFilePath, []);
@@ -30,20 +32,20 @@ describe('STDOUT Test', () => {
 
 	it('verify', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/001.html');
-		const { stdout, exitCode } = await execa(entryFilePath, ['--no-color', targetFilePath]);
+		const { stdout, exitCode } = await execa(entryFilePath, ['--no-color', escape(targetFilePath)]);
 		expect(stdout).toBe(`<markuplint> passed ${targetFilePath}`);
 		expect(exitCode).toBe(0);
 	});
 
 	it('verify --problem-only', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/001.html');
-		const { stdout } = await execa(entryFilePath, ['--problem-only', targetFilePath]);
+		const { stdout } = await execa(entryFilePath, ['--problem-only', escape(targetFilePath)]);
 		expect(stdout).toBe('');
 	});
 
 	it('verify and failure', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
-		const { stdout, stderr, exitCode } = await execa(entryFilePath, ['--no-color', targetFilePath], {
+		const { stdout, stderr, exitCode } = await execa(entryFilePath, ['--no-color', escape(targetFilePath)], {
 			reject: false,
 		});
 		expect(stdout).toBe('');
@@ -53,7 +55,7 @@ describe('STDOUT Test', () => {
 
 	it('format', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/001.html');
-		const { stdout } = await execa(entryFilePath, ['--format', 'JSON', targetFilePath]);
+		const { stdout } = await execa(entryFilePath, ['--format', 'JSON', escape(targetFilePath)]);
 		expect(stdout).toBe('[]');
 	});
 });
