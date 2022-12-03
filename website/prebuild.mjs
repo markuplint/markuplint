@@ -116,7 +116,6 @@ async function createRuleDoc(path, value, option) {
 
   const { data: frontMatter, content } = matter(doc);
 
-  // NOTE: `glob` returns `/` separated paths, even on Windows.
   frontMatter.custom_edit_url = `${editUrlBase}/${RULES_DIR}/${name}/README.md`;
   let rewrote = matter.stringify(content.replace(/\(https:\/\/markuplint\.dev\//g, '(/'), frontMatter);
 
