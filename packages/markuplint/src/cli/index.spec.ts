@@ -6,7 +6,7 @@ import { cli } from './bootstrap';
 
 const entryFilePath = path.resolve(__dirname, '../../bin/markuplint');
 
-const escape = (path: string) => path.replaceAll('\\', '\\\\'); // For Windows
+const escape = (path: string) => path.replace(/\\/g, '\\\\'); // For Windows
 
 describe('STDOUT Test', () => {
 	it('empty', async () => {
