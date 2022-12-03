@@ -816,6 +816,86 @@ describe('verify', () => {
 			},
 		]);
 	});
+
+	test('special content models', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<script>
+						<style></style>
+						<div></div>
+						<li></li>
+						<script></script>
+					</script>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<style>
+						<style></style>
+						<div></div>
+						<li></li>
+						<style></style>
+					</style>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<noscript>
+						<style></style>
+						<div></div>
+						<li></li>
+						<noscript></noscript>
+					</noscript>`,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 2,
+				col: 7,
+				message:
+					'The "style" element is not allowed in the "noscript" element through the transparent model in this context',
+				raw: '<style>',
+			},
+			{
+				severity: 'error',
+				line: 5,
+				col: 7,
+				message:
+					'The "noscript" element is a transparent model but also disallows the "noscript" element in this context',
+				raw: '<noscript>',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<iframe>
+						<style></style>
+						<div></div>
+						<li></li>
+						<iframe></iframe>
+					</iframe>`,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The element disallows contents',
+				raw: '<iframe>',
+			},
+		]);
+	});
 });
 
 describe('React', () => {

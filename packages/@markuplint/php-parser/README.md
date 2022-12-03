@@ -1,8 +1,8 @@
 # @markuplint/php-parser
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Fphp-parser.svg)](https://www.npmjs.com/package/@markuplint/php-parser)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=main)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
+
+Use **markuplint** with [**PHP**](https://www.php.net/).
 
 ## Install
 
@@ -14,7 +14,7 @@ $ yarn add -D @markuplint/php-parser
 
 ## Usage
 
-Add `parser` option into your [configuration file](https://markuplint.dev/configuration#parser).
+Add `parser` option to your [configuration](https://markuplint.dev/configuration/#properties/parser).
 
 ```json
 {
@@ -24,11 +24,11 @@ Add `parser` option into your [configuration file](https://markuplint.dev/config
 }
 ```
 
-### Note
+## :warning: Unsupported syntaxes
 
-Unsupported the syntax that is complex on the attribute value.
+It's not able to support syntaxes if one's attribute is complex.
 
-✅ Available code:
+✅ Available codes
 
 ```html
 <div attr="<?php echo value; ?>"></div>
@@ -44,9 +44,9 @@ Unsupported the syntax that is complex on the attribute value.
 <div attr="<?php echo value; ?>-<?php echo value2; ?>-<?php echo value3; ?>"></div>
 ```
 
-❌ Unavailable code:
+❌ Unavailable codes
 
-Didn't nest by quotations.
+If it doesn't nest by quotations.
 
 <!-- prettier-ignore-start -->
 ```html
@@ -54,7 +54,7 @@ Didn't nest by quotations.
 ```
 <!-- prettier-ignore-end -->
 
-Mixed the tags and spaces.
+If it mixes the tags and spaces.
 
 ```html
 <div attr=" <?php echo value; ?> "></div>

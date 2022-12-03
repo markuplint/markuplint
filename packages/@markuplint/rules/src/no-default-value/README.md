@@ -2,13 +2,12 @@
 title: Disallow to specify the default value
 id: no-default-value
 category: style
+severity: warning
 ---
 
 # Disallow to specify the default value
 
 Warn when it specifies the default value to the attribute.
-
-## Rule Details
 
 👎 Examples of **incorrect** code for this rule
 
@@ -21,12 +20,3 @@ Warn when it specifies the default value to the attribute.
 ```html
 <canvas></canvas>
 ```
-
-### Interface
-
-- Type: `boolean`
-- Default Value: `true`
-
-### Default severity
-
-`warning`

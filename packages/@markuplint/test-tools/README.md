@@ -1,6 +1,6 @@
 # @markuplint/test-tools
 
-This is a private package.
+A private package for testing in this repository
 
 ## API
 

@@ -1,7 +1,7 @@
 {
 	"name": "@markuplint/types",
-	"version": "3.0.0-alpha.5",
-	"description": "Types of attributes and properties and more",
+	"version": "3.0.0-rc.0",
+	"description": "Type declaration and value checker",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",

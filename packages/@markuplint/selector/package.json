@@ -1,7 +1,7 @@
 {
 	"name": "@markuplint/selector",
-	"version": "3.0.0-alpha.5",
-	"description": "W3C Selector and Regex selector",
+	"version": "3.0.0-rc.0",
+	"description": "Extended W3C Selectors matcher",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
@@ -18,11 +18,11 @@
 	},
 	"dependencies": {
 		"debug": "^4.3.4",
-		"postcss-selector-parser": "^6.0.10",
-		"tslib": "^2.4.0"
+		"postcss-selector-parser": "^6.0.11",
+		"tslib": "^2.4.1"
 	},
 	"devDependencies": {
-		"@markuplint/ml-spec": "3.0.0-alpha.5",
+		"@markuplint/ml-spec": "3.0.0-rc.0",
 		"@types/debug": "^4.1.7",
 		"@types/jsdom": "16",
 		"jsdom": "19"

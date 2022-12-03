@@ -1,8 +1,8 @@
-import React from 'react';
-import MDXContent from '@theme-original/MDXContent';
 import { useDoc } from '@docusaurus/theme-common/internal';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import MDXContent from '@theme-original/MDXContent';
 import Admonition from '@theme/Admonition';
+import React from 'react';
 
 export default function MDXContentWrapper(props) {
   const {

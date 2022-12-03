@@ -2,6 +2,7 @@
 title: 'Label has control'
 id: 'label-has-control'
 category: 'a11y'
+severity: warning
 ---
 
 # Label has control
@@ -9,8 +10,6 @@ category: 'a11y'
 Warns if the label element has no control. This rule is used for finding unassociated labels that don't have original purposes.
 
 And warns if there are controls after the first because only it can be associated with the label element.
-
-## Rule Details
 
 👎 Examples of **incorrect** code for this rule
 
@@ -29,7 +28,3 @@ And warns if there are controls after the first because only it can be associate
 
 <h1><span>New</span> Release Note</h1>
 ```
-
-## Default severity
-
-`warning`

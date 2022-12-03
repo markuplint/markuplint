@@ -9,23 +9,40 @@
 			"additionalProperties": false,
 			"properties": {
 				"checkingValue": {
-					"type": "boolean"
+					"type": "boolean",
+					"default": "true",
+					"description": "Warn if use an invalid value of the property/state. You can temporarily disable this option if the WAI-ARIA spec update rather than markuplint add new value to the allowed list ahead. Don't recommend disabling basically."
 				},
 				"checkingDeprecatedProps": {
-					"type": "boolean"
+					"type": "boolean",
+					"default": "true",
+					"description": "Warn if use deprecated property/state. You can temporarily disable this not to evaluate WAI-ARIA old version. Don't recommend disabling basically."
 				},
 				"permittedAriaRoles": {
-					"type": "boolean"
+					"type": "boolean",
+					"default": "true",
+					"description": "Warn if use the not permitted role according to ARIA in HTML. This is based on the spec ARIA in HTML and is not strictly the spec WAI-ARIA, so it is an option."
 				},
 				"disallowSetImplicitRole": {
-					"type": "boolean"
+					"type": "boolean",
+					"default": "true",
+					"description": "Disallow set the implicit role explicitly. This is based on the spec ARIA in HTML and is not strictly the spec WAI-ARIA, so it is an option."
 				},
 				"disallowSetImplicitProps": {
-					"type": "boolean"
+					"type": "boolean",
+					"default": "true",
+					"description": "Disallow set the implicit property/state explicitly. This is based on the spec ARIA in HTML and is not strictly the spec WAI-ARIA, so it is an option."
+				},
+				"disallowDefaultValue": {
+					"type": "boolean",
+					"default": "true",
+					"description": "Disallow set the default value of the property/state explicitly."
 				},
 				"version": {
 					"type": "string",
-					"enum": ["1.1", "1.2"]
+					"enum": ["1.1", "1.2"],
+					"default": "1.2",
+					"description": "Choose the version of WAI-ARIA to evaluate."
 				}
 			}
 		}

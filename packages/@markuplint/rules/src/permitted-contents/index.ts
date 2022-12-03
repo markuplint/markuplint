@@ -95,10 +95,10 @@ export default createRule<TagRule[], Options>({
 						});
 						break;
 					}
-					case 'VOID_ELEMENT': {
+					case 'NOTHING': {
 						report({
 							scope: el,
-							message: t('{0} is {1}', t('the {0}', 'element'), t('a {0}', 'void element')),
+							message: t('{0} disallows {1}', t('the {0}', 'element'), 'contents'),
 						});
 						break;
 					}

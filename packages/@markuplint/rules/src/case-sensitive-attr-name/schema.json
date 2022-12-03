@@ -3,7 +3,12 @@
 	"definitions": {
 		"value": {
 			"type": "string",
-			"enum": ["lower", "upper"]
+			"default": "lower",
+			"enum": ["lower", "upper"],
+			"_description": {
+				"lower": "Warns that the attribute name is not in lowercase.",
+				"upper": "Warns that the attribute name is not in uppercase."
+			}
 		}
 	},
 	"oneOf": [

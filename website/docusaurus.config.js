@@ -1,9 +1,12 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require('prism-react-renderer/themes/github');
+/* eslint-disable @typescript-eslint/no-var-requires */
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const lightCodeTheme = require('prism-react-renderer/themes/github');
+
 const { editUrlBase } = require('./config');
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -61,7 +64,9 @@ const config = {
         logo: {
           alt: 'markuplint',
           src: 'img/logo-horizontal.svg',
-          srcDark: 'img/logo-horizontal-dark.svg',
+          srcDark: 'img/logo-horizontal.svg#d',
+          width: 171,
+          height: 32,
         },
         items: [
           {

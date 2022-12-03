@@ -6,7 +6,8 @@
   "scripts": {
     "site:start": "yarn site:prebuild; docusaurus start",
     "site:build": "yarn site:prebuild; docusaurus build",
-    "site:prebuild": "node prebuild.js; npx prettier --write './src/**/*{ts,tsx,json,rc,md,mdx,css,scss}';"
+    "site:prebuild": "node prebuild.mjs; npx prettier --write './src/**/*{ts,tsx,json,rc,md,mdx,css,scss}';",
+    "site:lint": "prettier --write './**/*{js,ts,tsx,mdx}' './*{json,rc,js}' '!./build/**/*' '!./.docusaurus/**/*'; eslint --fix './**/*.{js,ts,tsx}' './*.{js,ts}' '!./build/**/*' '!./.docusaurus/**/*'; cd ../; yarn cli './website/**/*.tsx'"
   },
   "author": "Yusuke Hirao",
   "license": "MIT",
@@ -23,6 +24,8 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "2.2.0",
     "@tsconfig/docusaurus": "^1.0.5",
+    "eslint-plugin-react": "^7.31.11",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "typescript": "^4.7.4"
   },
   "engines": {

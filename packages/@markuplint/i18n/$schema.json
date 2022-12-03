@@ -171,6 +171,7 @@
 				"{0} chars": { "type": "string" },
 				"{0} contradicts {1}": { "type": "string" },
 				"{0} digits": { "type": "string" },
+				"{0} disallows {1}": { "type": "string" },
 				"{0} does not exist": { "type": "string" },
 				"{0} expects {1:c}": { "type": "string" },
 				"{0} expects {1}": { "type": "string" },

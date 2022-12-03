@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/html-spec",
-	"version": "3.0.0-alpha.5",
+	"version": "3.0.0-rc.0",
 	"description": "A specification of HTML Living Standard for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -18,14 +18,14 @@
 		"@types/cheerio": "^0.22.31",
 		"@types/cli-progress": "^3.11.0",
 		"@types/node-fetch": "2",
-		"ajv": "^8.11.0",
+		"ajv": "^8.11.2",
 		"cheerio": "^1.0.0-rc.12",
 		"cli-progress": "^3.11.2",
-		"fast-xml-parser": "^4.0.10",
+		"fast-xml-parser": "^4.0.12",
 		"node-fetch": "2",
 		"strip-json-comments": "3"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "3.0.0-alpha.5"
+		"@markuplint/ml-spec": "3.0.0-rc.0"
 	}
 }
