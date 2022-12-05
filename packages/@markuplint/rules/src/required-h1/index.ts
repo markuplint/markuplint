@@ -19,7 +19,7 @@ export default createRule<boolean, Options>({
 			return;
 		}
 
-		if (!document.rule.option['in-document-fragment'] && document.isFragment) {
+		if (!document.rule.options['in-document-fragment'] && document.isFragment) {
 			return;
 		}
 
@@ -36,7 +36,7 @@ export default createRule<boolean, Options>({
 				col: 1,
 				raw: document.nodeList[0].raw.slice(0, 1),
 			});
-		} else if (document.rule.option['expected-once'] && h1Stack.length > 1) {
+		} else if (document.rule.options['expected-once'] && h1Stack.length > 1) {
 			const message = t('{0} is {1:c}', t('the "{0*}" {1}', 'h1', 'element'), 'duplicated');
 			report({
 				message,

@@ -15,10 +15,10 @@ export default createRule<boolean, Options>({
 				return;
 			}
 
-			const ignoreList = Array.isArray(attr.rule.option.ignore)
-				? attr.rule.option.ignore
-				: attr.rule.option.ignore
-				? [attr.rule.option.ignore]
+			const ignoreList = Array.isArray(attr.rule.options.ignore)
+				? attr.rule.options.ignore
+				: attr.rule.options.ignore
+				? [attr.rule.options.ignore]
 				: [];
 
 			const name = attr.name;

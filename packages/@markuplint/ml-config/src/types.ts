@@ -118,7 +118,7 @@ export interface Rules {
 export type RuleConfig<T extends RuleConfigValue, O = void> = {
 	severity?: Severity;
 	value?: T;
-	option?: O;
+	options?: O;
 	reason?: string;
 };
 
@@ -177,7 +177,7 @@ export interface RuleInfo<T extends RuleConfigValue, O = null> {
 	disabled: boolean;
 	severity: Severity;
 	value: T;
-	option: O;
+	options: O;
 	reason?: string;
 }
 

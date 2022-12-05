@@ -56,12 +56,12 @@ export function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
 	}
 	const severity = b.severity || (!isRuleConfigValue(a) ? a.severity : undefined);
 	const value = b.value || (isRuleConfigValue(a) ? a : a.value);
-	const option = mergeObject(!isRuleConfigValue(a) ? a.option : undefined, b.option);
+	const options = mergeObject(!isRuleConfigValue(a) ? a.options : undefined, b.options);
 	const reason = b.reason || (!isRuleConfigValue(a) ? a.reason : undefined);
 	const res = {
 		severity,
 		value,
-		option,
+		options,
 		reason,
 	};
 	deleteUndefProp(res);

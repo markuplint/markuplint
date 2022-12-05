@@ -93,7 +93,7 @@ export default createRule<boolean, Options>({
 					continue;
 				}
 
-				if (el.rule.option.ignoreRoles?.includes(role)) {
+				if (el.rule.options.ignoreRoles?.includes(role)) {
 					continue;
 				}
 
@@ -118,7 +118,7 @@ export default createRule<boolean, Options>({
 					continue;
 				}
 
-				if (!el.rule.option.labelEachArea) {
+				if (!el.rule.options.labelEachArea) {
 					continue;
 				}
 

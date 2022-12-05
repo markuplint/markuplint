@@ -6,7 +6,7 @@ import { ariaSpecs } from '@markuplint/ml-spec';
 export const checkingAbstractRole: AttrChecker<boolean, Options> =
 	({ attr }) =>
 	t => {
-		const { roles } = ariaSpecs(attr.ownerMLDocument.specs, attr.rule.option.version);
+		const { roles } = ariaSpecs(attr.ownerMLDocument.specs, attr.rule.options.version);
 		const tokens = attr.tokenList?.allTokens();
 		if (!tokens) {
 			return;

@@ -17,13 +17,13 @@ export const textlintVerify: (
 	...args: Parameters<RuleSeed<boolean, Option>['verify']>
 ) => Promise<TextlintResult | undefined> = async ({ document }) => {
 	const html = document.toString();
-	const option = document.rule.option;
+	const options = document.rule.options;
 
-	if (typeof option === 'object') {
-		return await lintText(html, option);
+	if (typeof options === 'object') {
+		return await lintText(html, options);
 	}
 
-	if (option === true) {
+	if (options === true) {
 		const dirname = document.filename && path.dirname(document.filename);
 		const cacheKey = dirname || '';
 

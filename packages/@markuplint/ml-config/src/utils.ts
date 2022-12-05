@@ -43,10 +43,10 @@ export function exchangeValueOnRule(rule: AnyRule, data: Record<string, string>)
 				value: exchangeValue(rule.value, data),
 			};
 		}
-		if (rule.option) {
+		if (rule.options) {
 			rule = {
 				...rule,
-				option: exchangeOption(rule.option as PlainData, data),
+				options: exchangeOption(rule.options as PlainData, data),
 			};
 		}
 		if (rule.reason != null) {

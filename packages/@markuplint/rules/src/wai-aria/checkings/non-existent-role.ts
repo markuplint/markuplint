@@ -6,7 +6,7 @@ import { ariaSpecs } from '@markuplint/ml-spec';
 export const checkingNonExistentRole: AttrChecker<boolean, Options> =
 	({ attr }) =>
 	t => {
-		const { roles, graphicsRoles } = ariaSpecs(attr.ownerMLDocument.specs, attr.rule.option.version);
+		const { roles, graphicsRoles } = ariaSpecs(attr.ownerMLDocument.specs, attr.rule.options.version);
 		const tokens = attr.tokenList?.allTokens();
 		if (!tokens) {
 			return;
