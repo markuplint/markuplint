@@ -108,11 +108,11 @@ it('needs no accessible name', async () => {
 
 it("does'nt have accessible name", async () => {
 	const { violations: v1 } = await mlRuleTest(rule, '<form>text</form>', {
-		rule: { option: { ariaVersion: '1.1' } },
+		rule: { options: { ariaVersion: '1.1' } },
 	});
 	expect(v1.length).toBe(0);
 	const { violations: v2 } = await mlRuleTest(rule, '<form>text</form>', {
-		rule: { option: { ariaVersion: '1.2' } },
+		rule: { options: { ariaVersion: '1.2' } },
 	});
 	expect(v2.length).toBe(1);
 });

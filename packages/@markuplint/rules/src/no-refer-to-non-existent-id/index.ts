@@ -83,7 +83,7 @@ export default createRule({
 				}
 			}
 
-			const { props } = ariaSpecs(document.specs, attr.rule.option.ariaVersion);
+			const { props } = ariaSpecs(document.specs, attr.rule.options.ariaVersion);
 
 			const aria = props.find(prop => prop.name === name);
 			if (aria) {

@@ -23,11 +23,11 @@ export default createRule<boolean, Option>({
 				return;
 			}
 
-			if (!isExposed(el, document.specs, el.rule.option.ariaVersion)) {
+			if (!isExposed(el, document.specs, el.rule.options.ariaVersion)) {
 				return;
 			}
 
-			const computed = getComputedRole(document.specs, el, el.rule.option.ariaVersion);
+			const computed = getComputedRole(document.specs, el, el.rule.options.ariaVersion);
 			if (!computed.role) {
 				return;
 			}
@@ -35,13 +35,13 @@ export default createRule<boolean, Option>({
 				document.specs,
 				computed.role.name,
 				el.namespaceURI,
-				el.rule.option.ariaVersion,
+				el.rule.options.ariaVersion,
 			);
 			if (!roleSpec || !roleSpec.accessibleNameRequired) {
 				return;
 			}
 
-			const hasAccessibleName = !!el.getAccessibleName(el.rule.option.ariaVersion).trim();
+			const hasAccessibleName = !!el.getAccessibleName(el.rule.options.ariaVersion).trim();
 
 			if (!hasAccessibleName) {
 				report({ scope: el, message: t('Require {0}', 'accessible name') });

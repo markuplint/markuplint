@@ -30,7 +30,7 @@ export default createRule<string[], Options>({
 			if (el.rule.value === document.rule.value) {
 				return;
 			}
-			if (el.rule.option.ignoreHasMutableContents && el.hasMutableChildren()) {
+			if (el.rule.options.ignoreHasMutableContents && el.hasMutableChildren()) {
 				return;
 			}
 			for (const query of el.rule.value) {

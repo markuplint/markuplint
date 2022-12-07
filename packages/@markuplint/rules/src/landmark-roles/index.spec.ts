@@ -103,7 +103,7 @@ test('Top level landmarks: ignoreRoles option', async () => {
 `,
 		{
 			rule: {
-				option: {
+				options: {
 					ignoreRoles: ['complementary'],
 				},
 			},
@@ -132,7 +132,7 @@ test('Duplicated area: has-label', async () => {
 `,
 		{
 			rule: {
-				option: {
+				options: {
 					ignoreRoles: ['complementary'],
 				},
 			},
@@ -161,7 +161,7 @@ test('Duplicated area: no-label', async () => {
 `,
 		{
 			rule: {
-				option: {
+				options: {
 					ignoreRoles: ['complementary'],
 				},
 			},

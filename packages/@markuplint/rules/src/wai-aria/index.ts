@@ -54,8 +54,8 @@ export default createRule<boolean, Options>({
 				return;
 			}
 
-			const computed = getComputedRole(document.specs, el, el.rule.option.version);
-			const { props: propSpecs } = ariaSpecs(document.specs, el.rule.option.version);
+			const computed = getComputedRole(document.specs, el, el.rule.options.version);
+			const { props: propSpecs } = ariaSpecs(document.specs, el.rule.options.version);
 
 			if (roleAttr) {
 				if (report(checkingNonExistentRole({ attr: roleAttr }))) {
@@ -67,11 +67,11 @@ export default createRule<boolean, Options>({
 				}
 				report(checkingRequiredProp({ el, role: computed.role, propSpecs }));
 
-				if (el.rule.option.disallowSetImplicitRole) {
+				if (el.rule.options.disallowSetImplicitRole) {
 					report(checkingImplicitRole({ attr: roleAttr }));
 				}
 
-				if (el.rule.option.permittedAriaRoles) {
+				if (el.rule.options.permittedAriaRoles) {
 					report(checkingPermittedRoles({ attr: roleAttr }));
 				}
 			}
@@ -79,20 +79,20 @@ export default createRule<boolean, Options>({
 			for (const attr of propAttrs) {
 				report(checkingDisallowedProp({ attr, role: computed.role, propSpecs }));
 
-				if (el.rule.option.checkingDeprecatedProps) {
+				if (el.rule.options.checkingDeprecatedProps) {
 					report(checkingDeprecatedProps({ attr, role: computed.role, propSpecs }));
 				}
 
-				if (el.rule.option.disallowSetImplicitProps) {
+				if (el.rule.options.disallowSetImplicitProps) {
 					const attrSpecs = getAttrSpecs(el, document.specs);
 					report(checkingImplicitProps({ attr, propSpecs, attrSpecs }));
 				}
 
-				if (el.rule.option.checkingValue) {
+				if (el.rule.options.checkingValue) {
 					report(checkingValue({ attr, role: computed.role, propSpecs, booleanish: document.booleanish }));
 				}
 
-				if (el.rule.option.disallowDefaultValue) {
+				if (el.rule.options.disallowDefaultValue) {
 					report(checkingDefaultValue({ attr, propSpecs }));
 				}
 
@@ -101,15 +101,15 @@ export default createRule<boolean, Options>({
 				}
 			}
 
-			if (el.rule.option.checkingRequiredOwnedElements) {
+			if (el.rule.options.checkingRequiredOwnedElements) {
 				report(checkingRequiredOwnedElements({ el, role: computed.role }));
 			}
 
-			if (el.rule.option.checkingPresentationalChildren) {
+			if (el.rule.options.checkingPresentationalChildren) {
 				report(checkingPresentationalChildren({ el }));
 			}
 
-			if (el.rule.option.checkingInteractionInHidden) {
+			if (el.rule.options.checkingInteractionInHidden) {
 				report(checkingInteractionInHidden({ el }));
 			}
 		});

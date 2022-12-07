@@ -80,7 +80,7 @@ test('Ignore aria-busy', async () => {
 		(
 			await mlRuleTest(rule, '<div aria-busy="true">\n\t\n\n</div>', {
 				rule: {
-					option: {
+					options: {
 						ignoreIfAriaBusy: false,
 					},
 				},

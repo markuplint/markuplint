@@ -7,7 +7,7 @@ export const checkingPermittedRoles: AttrChecker<boolean, Options> =
 	({ attr }) =>
 	t => {
 		const el = attr.ownerElement;
-		const permittedRoles = getPermittedRoles(el, el.rule.option.version, attr.ownerMLDocument.specs);
+		const permittedRoles = getPermittedRoles(el, el.rule.options.version, attr.ownerMLDocument.specs);
 		if (permittedRoles.length === 0) {
 			return {
 				scope: attr,

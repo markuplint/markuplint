@@ -9,7 +9,7 @@
 			"selector": ":where(meta[property])",
 			"rules": {
 				"invalid-attr": {
-					"option": {
+					"options": {
 						"attrs": {
 							"property": {
 								"type": "NoEmptyAny"

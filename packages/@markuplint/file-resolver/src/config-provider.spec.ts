@@ -38,7 +38,7 @@ it('001 + 002', async () => {
 			},
 			'rule__custom-setting-with-detail-option': {
 				value: 'VALUE',
-				option: { OPTIONAL_PROP: 'OPTIONAL_VALUE' },
+				options: { OPTIONAL_PROP: 'OPTIONAL_VALUE' },
 			},
 			'rule__custom-setting2': {
 				severity: 'error',
@@ -101,7 +101,7 @@ it('001 + 002 + 003', async () => {
 			},
 			'rule__custom-setting-with-detail-option': {
 				value: 'VALUE',
-				option: { OPTIONAL_PROP: 'CHANGED_OPTIONAL_VALUE' },
+				options: { OPTIONAL_PROP: 'CHANGED_OPTIONAL_VALUE' },
 			},
 			'rule__custom-setting2': false,
 			additional_rule: {

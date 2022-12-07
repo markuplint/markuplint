@@ -63,7 +63,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 				disabled: !configSettings,
 				severity: this.defaultSeverity,
 				value: this.defaultValue,
-				option: this.defaultOptions,
+				options: this.defaultOptions,
 				reason: undefined,
 			};
 		}
@@ -72,8 +72,8 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 				disabled: false,
 				severity: configSettings.severity || this.defaultSeverity,
 				value: configSettings.value !== undefined ? configSettings.value : this.defaultValue,
-				option: Array.isArray(this.defaultOptions)
-					? configSettings.option
+				options: Array.isArray(this.defaultOptions)
+					? configSettings.options
 						? // prettier-ignore
 						  // @ts-ignore for "as" casting
 						  this.defaultOptions.concat(configSettings.option) as O
@@ -81,18 +81,17 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 					: this.defaultOptions !== null &&
 					  typeof this.defaultOptions === 'object' &&
 					  // for example `configSettings.option === true`
-					  (configSettings.option == null || typeof configSettings.option === 'object')
-					? { ...this.defaultOptions, ...(configSettings.option || {}) }
-					: configSettings.option || this.defaultOptions,
+					  (configSettings.options == null || typeof configSettings.options === 'object')
+					? { ...this.defaultOptions, ...(configSettings.options || {}) }
+					: configSettings.options || this.defaultOptions,
 				reason: configSettings.reason,
 			};
 		}
 		return {
 			disabled: false,
 			severity: this.defaultSeverity,
-			// @ts-ignore TODO: Wait for fix to bug of type guards in TypeScript
 			value: configSettings == null ? this.defaultValue : configSettings,
-			option: this.defaultOptions,
+			options: this.defaultOptions,
 			reason: undefined,
 		};
 	}

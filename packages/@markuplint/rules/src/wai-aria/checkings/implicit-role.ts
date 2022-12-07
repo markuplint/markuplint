@@ -8,7 +8,7 @@ export const checkingImplicitRole: AttrChecker<boolean, Options> =
 	t => {
 		const implicitRole = getImplicitRoleName(
 			attr.ownerElement,
-			attr.rule.option.version,
+			attr.rule.options.version,
 			attr.ownerMLDocument.specs,
 		);
 		const tokens = attr.tokenList?.allTokens();

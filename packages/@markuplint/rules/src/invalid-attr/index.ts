@@ -33,7 +33,7 @@ export default createRule<boolean, Option>({
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
 			// Default
-			const allowToAddPropertiesForPretender = attr.rule.option.allowToAddPropertiesForPretender ?? true;
+			const allowToAddPropertiesForPretender = attr.rule.options.allowToAddPropertiesForPretender ?? true;
 
 			if (attr.isDirective) {
 				return;
@@ -62,17 +62,17 @@ export default createRule<boolean, Option>({
 			const valueNode = attr.valueNode;
 			const value = attr.value;
 
-			if (attr.rule.option.ignoreAttrNamePrefix) {
-				const ignoreAttrNamePrefixes = Array.isArray(attr.rule.option.ignoreAttrNamePrefix)
-					? attr.rule.option.ignoreAttrNamePrefix
-					: [attr.rule.option.ignoreAttrNamePrefix];
+			if (attr.rule.options.ignoreAttrNamePrefix) {
+				const ignoreAttrNamePrefixes = Array.isArray(attr.rule.options.ignoreAttrNamePrefix)
+					? attr.rule.options.ignoreAttrNamePrefix
+					: [attr.rule.options.ignoreAttrNamePrefix];
 				if (ignoreAttrNamePrefixes.some(prefix => name.indexOf(prefix) === 0)) {
 					return;
 				}
 			}
 
 			let invalid: ReturnType<typeof attrCheck> = false;
-			const customRule = attr.rule.option.attrs ? attr.rule.option.attrs[name] : null;
+			const customRule = attr.rule.options.attrs ? attr.rule.options.attrs[name] : null;
 
 			if (customRule) {
 				if ('enum' in customRule) {
