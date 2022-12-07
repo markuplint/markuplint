@@ -44,7 +44,7 @@ describe('verify', () => {
 				rule: {
 					severity: 'error',
 					value: 'double',
-					option: null,
+					options: null,
 				},
 			},
 		);
@@ -79,7 +79,7 @@ describe('verify', () => {
 				rule: {
 					severity: 'error',
 					value: 'single',
-					option: null,
+					options: null,
 				},
 			},
 		);

@@ -250,7 +250,7 @@ describe('Rule', () => {
 						rules: {
 							ruleA: {
 								value: 'fileName is {{ fileName }}',
-								option: {
+								options: {
 									propA: 'fileName is {{ fileName }}',
 									propB: ['fileName is {{ fileName }}'],
 									propC: {
@@ -277,7 +277,7 @@ describe('Rule', () => {
 			reason: undefined,
 			severity: 'error',
 			value: 'fileName is name',
-			option: {
+			options: {
 				propA: 'fileName is name',
 				propB: ['fileName is name'],
 				propC: {
@@ -389,7 +389,7 @@ describe('Rule', () => {
 			reason: '456',
 			severity: 'info',
 			value: 'foo',
-			option: null,
+			options: null,
 		};
 		expect(document.nodeList[0].rule).toStrictEqual(resultA);
 		expect(document.nodeList[1].rule).not.toStrictEqual(resultA);
@@ -401,7 +401,7 @@ describe('Rule', () => {
 			reason: '456',
 			severity: 'info',
 			value: 'bar',
-			option: null,
+			options: null,
 		};
 		expect(document.nodeList[0].rule).toStrictEqual(resultB);
 		expect(document.nodeList[1].rule).toStrictEqual(resultB);
@@ -413,7 +413,7 @@ describe('Rule', () => {
 			reason: undefined,
 			severity: 'error',
 			value: 'buz',
-			option: null,
+			options: null,
 		};
 		expect(document.nodeList[0].rule).toStrictEqual(resultC);
 		expect(document.nodeList[1].rule).not.toStrictEqual(resultC);
@@ -425,7 +425,7 @@ describe('Rule', () => {
 			reason: undefined,
 			severity: 'error',
 			value: 'fuz',
-			option: null,
+			options: null,
 		};
 		expect(document.nodeList[0].rule).toStrictEqual(resultD);
 		expect(document.nodeList[1].rule).not.toStrictEqual(resultC);
@@ -437,7 +437,7 @@ describe('Rule', () => {
 			reason: undefined,
 			severity: 'error',
 			value: 'piyo',
-			option: null,
+			options: null,
 		};
 		expect(document.nodeList[0].rule).toStrictEqual(resultE);
 		expect(document.nodeList[1].rule).not.toStrictEqual(resultE);
@@ -486,28 +486,28 @@ describe('Rule', () => {
 			reason: undefined,
 			severity: 'error',
 			value: 'global',
-			option: null,
+			options: null,
 		});
 		expect(document.nodeList[1].rule).toStrictEqual({
 			disabled: false,
 			reason: undefined,
 			severity: 'error',
 			value: 'Card',
-			option: null,
+			options: null,
 		});
 		expect(document.nodeList[2].rule).toStrictEqual({
 			disabled: false,
 			reason: undefined,
 			severity: 'error',
 			value: 'Card',
-			option: null,
+			options: null,
 		});
 		expect(document.nodeList[4].rule).toStrictEqual({
 			disabled: false,
 			reason: undefined,
 			severity: 'error',
 			value: 'Card',
-			option: null,
+			options: null,
 		});
 	});
 
@@ -555,28 +555,28 @@ describe('Rule', () => {
 			reason: undefined,
 			severity: 'error',
 			value: 'global',
-			option: null,
+			options: null,
 		});
 		expect(document.nodeList[2].rule).toStrictEqual({
 			disabled: false,
 			reason: undefined,
 			severity: 'error',
 			value: 'Card',
-			option: null,
+			options: null,
 		});
 		expect(document.nodeList[4].rule).toStrictEqual({
 			disabled: false,
 			reason: undefined,
 			severity: 'error',
 			value: 'Card',
-			option: null,
+			options: null,
 		});
 		expect(document.nodeList[7].rule).toStrictEqual({
 			disabled: false,
 			reason: undefined,
 			severity: 'error',
 			value: 'Card',
-			option: null,
+			options: null,
 		});
 	});
 
