@@ -1,7 +1,8 @@
-import type { Config, Nullable, AnyRule, RuleConfigValue, Rules } from './types';
+import type { Config, Nullable, AnyRule, AnyRuleV2, Rules } from './types';
 
 import deepmerge from 'deepmerge';
-import { isPlainObject } from 'is-plain-object';
+
+import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils';
 
 export function mergeConfig(a: Config, b: Config): Config {
 	const config: Config = {
@@ -27,37 +28,42 @@ export function mergeConfig(a: Config, b: Config): Config {
 	return config;
 }
 
-export function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
+export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRuleV2): AnyRule {
+	const oA = optimizeRule(a);
+	const oB = optimizeRule(b);
+
 	// Particular behavior:
-	//
 	// If the right-side value is false, return false.
 	// In short; The `false` makes the rule to be disabled absolutely.
-	if (b === false || (!isRuleConfigValue(b) && b.value === false)) {
+	if (oB === false || (!isRuleConfigValue(oB) && oB?.value === false)) {
 		return false;
 	}
 
-	if (a === undefined) {
-		return b;
+	if (oA === undefined) {
+		return oB ?? {};
 	}
-	if (isRuleConfigValue(b)) {
-		if (isRuleConfigValue(a)) {
-			if (Array.isArray(a) && Array.isArray(b)) {
-				return [...a, ...b];
+
+	if (oB === undefined) {
+		return oA;
+	}
+
+	if (isRuleConfigValue(oB)) {
+		if (isRuleConfigValue(oA)) {
+			if (Array.isArray(oA) && Array.isArray(oB)) {
+				return [...oA, ...oB];
 			}
-			return b;
+			return oB;
 		}
-		const value = Array.isArray(a.value) && Array.isArray(b) ? [...a.value, b] : b;
-		const res = {
-			...a,
-			value,
-		};
+		const value = Array.isArray(oA.value) && Array.isArray(b) ? [...oA.value, oB] : oB;
+		const res = cleanOptions({ ...oA, value });
 		deleteUndefProp(res);
 		return res;
 	}
-	const severity = b.severity || (!isRuleConfigValue(a) ? a.severity : undefined);
-	const value = b.value || (isRuleConfigValue(a) ? a : a.value);
-	const options = mergeObject(!isRuleConfigValue(a) ? a.options : undefined, b.options);
-	const reason = b.reason || (!isRuleConfigValue(a) ? a.reason : undefined);
+
+	const severity = oB.severity ?? (!isRuleConfigValue(oA) ? oA.severity : undefined);
+	const value = oB.value ?? (isRuleConfigValue(oA) ? oA : oA.value);
+	const options = mergeObject(!isRuleConfigValue(oA) ? oA.options : undefined, oB.options);
+	const reason = oB.reason ?? (!isRuleConfigValue(oA) ? oA.reason : undefined);
 	const res = {
 		severity,
 		value,
@@ -146,14 +152,14 @@ function getName(item: any, comparePropName: string) {
 	return null;
 }
 
-function mergeRules(a: Nullable<Rules>, b: Nullable<Rules>): Rules | undefined {
+function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
 	if (a == null) {
-		return b || undefined;
+		return b && optimizeRules(b);
 	}
 	if (b == null) {
-		return a || undefined;
+		return a && optimizeRules(a);
 	}
-	const res = { ...a };
+	const res: Rules = optimizeRules(a);
 	for (const [key, rule] of Object.entries(b)) {
 		const merged = mergeRule(res[key], rule);
 		if (merged != null) {
@@ -164,27 +170,23 @@ function mergeRules(a: Nullable<Rules>, b: Nullable<Rules>): Rules | undefined {
 	return res;
 }
 
-function isRuleConfigValue(v: any): v is RuleConfigValue {
-	switch (typeof v) {
-		case 'string':
-		case 'number':
-		case 'boolean': {
-			return true;
+function optimizeRules(rules: Rules) {
+	const res: Rules = {};
+	for (const [key, rule] of Object.entries(rules)) {
+		const _rule = optimizeRule(rule);
+		if (_rule != null) {
+			res[key] = _rule;
 		}
 	}
-	if (v === null) {
-		return true;
-	}
-	return Array.isArray(v);
+	return res;
 }
 
-function deleteUndefProp(obj: any) {
-	if (!isPlainObject(obj)) {
+function optimizeRule(rule: Nullable<AnyRule | AnyRuleV2>): AnyRule | undefined {
+	if (rule === undefined) {
 		return;
 	}
-	for (const key in obj) {
-		if (obj[key] === undefined) {
-			delete obj[key];
-		}
+	if (isRuleConfigValue(rule)) {
+		return rule;
 	}
+	return cleanOptions(rule);
 }

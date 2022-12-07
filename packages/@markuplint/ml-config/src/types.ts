@@ -110,7 +110,18 @@ export type PretenderARIA = {
 
 export type Rule<T extends RuleConfigValue, O = void> = RuleConfig<T, O> | T | boolean;
 
+/**
+ * @deprecated
+ */
+export type RuleV2<T extends RuleConfigValue, O = void> = RuleConfigV2<T, O> | T | boolean;
+
 export type AnyRule = Rule<RuleConfigValue, unknown>;
+
+/**
+ * @deprecated
+ */
+export type AnyRuleV2 = RuleV2<RuleConfigValue, unknown>;
+
 export interface Rules {
 	[ruleName: string]: AnyRule;
 }
@@ -120,6 +131,23 @@ export type RuleConfig<T extends RuleConfigValue, O = void> = {
 	value?: T;
 	options?: O;
 	reason?: string;
+};
+
+/**
+ * @deprecated
+ */
+export type RuleConfigV2<T extends RuleConfigValue, O = void> = {
+	severity?: Severity;
+	value?: T;
+	reason?: string;
+
+	/**
+	 * Old property
+	 *
+	 * @deprecated
+	 * @see {this.options}
+	 */
+	option?: O;
 };
 
 export type Severity = 'error' | 'warning' | 'info';

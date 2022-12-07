@@ -1,5 +1,6 @@
-import type { AnyRule, RuleConfigValue } from './types';
+import type { AnyRule, AnyRuleV2, RuleConfig, RuleConfigV2, RuleConfigValue } from './types';
 
+import { isPlainObject } from 'is-plain-object';
 import mustache from 'mustache';
 
 type PlainData =
@@ -35,30 +36,91 @@ export function provideValue(template: string, data: Record<string, string>) {
 	return result;
 }
 
-export function exchangeValueOnRule(rule: AnyRule, data: Record<string, string>): AnyRule | undefined {
-	if (rule != null && typeof rule === 'object' && !Array.isArray(rule)) {
-		if (rule.value != null) {
-			rule = {
-				...rule,
-				value: exchangeValue(rule.value, data),
-			};
-		}
-		if (rule.options) {
-			rule = {
-				...rule,
-				options: exchangeOption(rule.options as PlainData, data),
-			};
-		}
-		if (rule.reason != null) {
-			const exchangedValue = exchangeValue(rule.reason, data);
-			rule = {
-				...rule,
-				reason: exchangedValue ? `${exchangedValue}` : undefined,
-			};
-		}
-		return rule;
+export function exchangeValueOnRule(rule: AnyRule | AnyRuleV2, data: Record<string, string>): AnyRule | undefined {
+	if (isRuleConfigValue(rule)) {
+		return exchangeValue(rule, data);
 	}
-	return exchangeValue(rule, data);
+	let result = cleanOptions(rule);
+	if (result.value != null) {
+		result = {
+			...result,
+			value: exchangeValue(result.value, data),
+		};
+	}
+	const options = extractOptions(result);
+	if (options) {
+		result = {
+			...result,
+			options: exchangeOption(options as PlainData, data),
+		};
+	}
+	if (result.reason != null) {
+		const exchangedValue = exchangeValue(result.reason, data);
+		result = {
+			...result,
+			reason: exchangedValue ? `${exchangedValue}` : undefined,
+		};
+	}
+	deleteUndefProp(result);
+	return result;
+}
+
+export function cleanOptions(
+	rule: RuleConfig<RuleConfigValue, unknown> | RuleConfigV2<RuleConfigValue, unknown>,
+): RuleConfig<RuleConfigValue, unknown> {
+	const res = {
+		severity: rule.severity,
+		value: rule.value,
+		options: extractOptions(rule),
+		reason: rule.reason,
+	};
+	deleteUndefProp(res);
+	return res;
+}
+
+export function isRuleConfigValue(v: any): v is RuleConfigValue {
+	switch (typeof v) {
+		case 'string':
+		case 'number':
+		case 'boolean': {
+			return true;
+		}
+	}
+	if (v === null) {
+		return true;
+	}
+	return Array.isArray(v);
+}
+
+/**
+ *
+ * @param obj
+ * @returns
+ */
+export function deleteUndefProp(obj: any) {
+	if (!isPlainObject(obj)) {
+		return;
+	}
+	for (const key in obj) {
+		if (obj[key] === undefined) {
+			delete obj[key];
+		}
+	}
+}
+
+/**
+ * Return options from `options` or `option`
+ *
+ * @param rule
+ * @returns
+ */
+function extractOptions(rule: RuleConfig<RuleConfigValue, unknown> | RuleConfigV2<RuleConfigValue, unknown>): unknown {
+	if ('options' in rule && rule.options) {
+		return rule.options;
+	}
+	if ('option' in rule && rule.option) {
+		return rule.option;
+	}
 }
 
 function exchangeValue(rule: RuleConfigValue, data: Record<string, string>): RuleConfigValue | undefined {

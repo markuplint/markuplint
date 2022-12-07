@@ -114,6 +114,25 @@ it('test', () => {
 	expect(
 		mergeRule(
 			{
+				options: {
+					optional: 'OPTIONAL_VALUE',
+				},
+			},
+			{
+				options: {
+					optional: 'CHANGED_OPTIONAL_VALUE',
+				},
+			},
+		),
+	).toStrictEqual({
+		options: {
+			optional: 'CHANGED_OPTIONAL_VALUE',
+		},
+	});
+
+	expect(
+		mergeRule(
+			{
 				option: {
 					optional: 'OPTIONAL_VALUE',
 				},
@@ -125,7 +144,7 @@ it('test', () => {
 			},
 		),
 	).toStrictEqual({
-		option: {
+		options: {
 			optional: 'CHANGED_OPTIONAL_VALUE',
 		},
 	});
@@ -168,6 +187,45 @@ it('test', () => {
 			b: {
 				rules: {
 					rule1: true,
+				},
+			},
+		},
+	});
+});
+
+it('test', () => {
+	expect(
+		mergeConfig(
+			{
+				rules: {
+					a: {
+						// @ts-ignore
+						option: {
+							ruleA: true,
+						},
+					},
+				},
+			},
+			{
+				rules: {
+					b: {
+						options: {
+							ruleB: true,
+						},
+					},
+				},
+			},
+		),
+	).toStrictEqual({
+		rules: {
+			a: {
+				options: {
+					ruleA: true,
+				},
+			},
+			b: {
+				options: {
+					ruleB: true,
 				},
 			},
 		},
