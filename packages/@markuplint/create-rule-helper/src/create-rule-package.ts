@@ -1,7 +1,7 @@
 import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types';
 
-import path from 'path';
-import util from 'util';
+import path from 'node:path';
+import util from 'node:util';
 
 import glob from 'glob';
 

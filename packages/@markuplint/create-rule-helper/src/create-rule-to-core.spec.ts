@@ -1,16 +1,7 @@
-import { promises as fs } from 'fs';
-import path from 'path';
-
-import { promises as fse } from 'fs-extra'; // for v12
+import { rm, readdir } from 'node:fs/promises';
+import path from 'node:path';
 
 import { createRuleToCore, getRulesDir } from './create-rule-to-core';
-
-const rm =
-	'rm' in fs && fs.rm && typeof fs.rm === 'function'
-		? // for v14 or later
-		  fs.rm || fse.rm
-		: // for v12
-		  fse.rmdir;
 
 const testDirName1 = '__foo';
 const testDirName2 = '__bar';
@@ -50,13 +41,13 @@ test('error', async () => {
 test('TS', async () => {
 	await createRuleToCore({ name: testDirName1, lang: 'TYPESCRIPT', needTest: true });
 	const testDir = await getTestDir(testDirName1);
-	const fileList = await fs.readdir(testDir, { encoding: 'utf-8' });
+	const fileList = await readdir(testDir, { encoding: 'utf-8' });
 	expect(fileList.sort()).toEqual(['README.md', 'index.spec.ts', 'index.ts', 'schema.json']);
 });
 
 test('JS', async () => {
 	await createRuleToCore({ name: testDirName2, lang: 'JAVASCRIPT', needTest: false });
 	const testDir = await getTestDir(testDirName2);
-	const fileList = await fs.readdir(testDir, { encoding: 'utf-8' });
+	const fileList = await readdir(testDir, { encoding: 'utf-8' });
 	expect(fileList.sort()).toEqual(['README.md', 'index.js', 'schema.json']);
 });

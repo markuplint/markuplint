@@ -1,7 +1,7 @@
 import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types';
 
-import { promises as fs } from 'fs';
-import path from 'path';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 import { fsExists } from './fs-exists';
 import { transfer } from './transfer';
