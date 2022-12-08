@@ -33,6 +33,13 @@ export async function installScaffold(
 		: null;
 	const schemaJson = params.schemaJson ? await transfer(scaffoldSchemaFile, dest, { name: params.name }) : null;
 
+	if (!readme) {
+		throw new ReferenceError(`File is not found: ${scaffoldReadmeFile}`);
+	}
+	if (!main) {
+		throw new ReferenceError(`File is not found: ${scaffoldMainFile}`);
+	}
+
 	const packageJson = params.packageJson ? path.resolve(dest, 'package.json') : null;
 	const dependencies: string[] = [];
 	const devDependencies: string[] = [];

@@ -15,6 +15,10 @@ export async function transfer(
 		transpile: boolean;
 	},
 ) {
+	if (!(await fsExists(filePath))) {
+		return null;
+	}
+
 	const extname = path.extname(filePath);
 	const name = path.basename(filePath, extname);
 	const contents = await fs.readFile(filePath, { encoding: 'utf-8' });
