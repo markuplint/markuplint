@@ -23,6 +23,8 @@ export async function installScaffold(
 	const scaffoldReadmeFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'README.md');
 	const scaffoldMainFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'index.ts');
 	const scaffoldTestFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'index.spec.ts');
+	const scaffoldRulesFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'rules.ts');
+	const scaffoldRulesTestFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'rules.spec.ts');
 	const scaffoldSchemaFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'schema.json');
 
 	const transpile = params.lang === 'JAVASCRIPT';
@@ -30,6 +32,15 @@ export async function installScaffold(
 	const main = await transfer(scaffoldMainFile, path.resolve(dest, sourceDir), { name: params.name }, { transpile });
 	const test = params.needTest
 		? await transfer(scaffoldTestFile, path.resolve(dest, sourceDir), { name: params.name }, { transpile })
+		: null;
+	const rules = await transfer(
+		scaffoldRulesFile,
+		path.resolve(dest, sourceDir),
+		{ name: params.name },
+		{ transpile },
+	);
+	const rulesTest = params.needTest
+		? await transfer(scaffoldRulesTestFile, path.resolve(dest, sourceDir), { name: params.name }, { transpile })
 		: null;
 	const schemaJson = params.schemaJson ? await transfer(scaffoldSchemaFile, dest, { name: params.name }) : null;
 
@@ -136,6 +147,8 @@ export async function installScaffold(
 		readme,
 		main,
 		test,
+		rules,
+		rulesTest,
 		packageJson,
 		tsConfig,
 		schemaJson,

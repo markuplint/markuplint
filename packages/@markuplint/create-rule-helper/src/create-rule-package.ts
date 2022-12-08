@@ -23,5 +23,5 @@ export async function createRulePackage({
 		throw new CreateRuleHelperError('The directory is not empty');
 	}
 
-	return await installScaffold('', process.cwd(), 'src', { name, lang, needTest, packageJson: true });
+	return await installScaffold('plugin', process.cwd(), 'src', { name, lang, needTest, packageJson: true });
 }

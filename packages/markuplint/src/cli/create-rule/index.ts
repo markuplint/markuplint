@@ -1,6 +1,6 @@
 import type { CreateRulePurpose, CreateRuleLanguage } from '@markuplint/create-rule-helper';
 
-import { createRuleHelper } from '@markuplint/create-rule-helper';
+import { isMarkuplintRepo, createRuleHelper } from '@markuplint/create-rule-helper';
 import c from 'cli-color';
 
 import { write, head } from '../../util';
@@ -11,13 +11,18 @@ export async function createRule() {
 	write(head('Create a rule'));
 	write.break();
 
+	const firstChoices: { name: string; value: CreateRulePurpose }[] = [
+		{ name: 'Add the rule to this project', value: 'ADD_TO_PROJECT' },
+		{ name: 'Create the rule and publish it as a package', value: 'PUBLISH_AS_PACKAGE' },
+	];
+
+	if (await isMarkuplintRepo()) {
+		firstChoices.push({ name: 'Contribute the new rule to markuplint core rules', value: 'CONTRIBUTE_TO_CORE' });
+	}
+
 	const purpose = await select<CreateRulePurpose>({
 		message: 'What purpose do you create the rule for?',
-		choices: [
-			{ name: 'Add the rule to this project', value: 'ADD_TO_PROJECT' },
-			{ name: 'Create the rule and publish it as a package', value: 'PUBLISH_AS_PACKAGE' },
-			{ name: 'Contribute the new rule to markuplint core rules', value: 'CONTRIBUTE_TO_CORE' },
-		],
+		choices: firstChoices,
 	});
 
 	const name = await input('What is the name?', /^[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*$/i);
@@ -43,13 +48,19 @@ export async function createRule() {
 	if (result.test) {
 		output(name, '🖍 ', 'index.spec', result.test);
 	}
+	if (result.rules) {
+		output(name, '🛡 ', 'rules', result.rules);
+	}
+	if (result.rulesTest) {
+		output(name, '🖍 ', 'rules.spec', result.rulesTest);
+	}
 	if (result.schemaJson) {
 		output(name, '⚙️ ', 'schema.json', result.schemaJson);
 	}
 	if (result.packageJson) {
-		output(name, '🎁 ', 'package.json', result.packageJson);
+		output(name, '🎁', 'package.json', result.packageJson);
 		if (result.tsConfig) {
-			output(name, '💎 ', 'tsconfig.json', result.tsConfig);
+			output(name, '💎', 'tsconfig.json', result.tsConfig);
 		}
 
 		await installModule(result.dependencies);
