@@ -12,6 +12,8 @@ export type CreateRuleHelperResult = CreateRuleCreatorParams & {
 	readme: string;
 	main: string;
 	test: string | null;
+	rules: string | null;
+	rulesTest: string | null;
 	packageJson: string | null;
 	schemaJson: string | null;
 	tsConfig: string | null;

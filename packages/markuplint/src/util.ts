@@ -14,7 +14,13 @@ export function uuid() {
 	return v4();
 }
 
-const logo = `<${c.xterm(39)('✔')}>`;
+/**
+ * Brand color (xTerm color)
+ *
+ * @see http://www.calmar.ws/vim/256-xterm-24bit-rgb-color-chart.html
+ */
+const PRIMARY_COLOR = 33;
+const logo = `/${c.xterm(PRIMARY_COLOR)('✔')}\\`;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const version = require('../package.json').version;
 const eaw: { characterLength: (char: string) => number } = eastasianwidth;
@@ -38,7 +44,7 @@ const box = (lines: string[], { width = 40, padding = 1, center = false, noColor
 	return result.join('\n');
 };
 
-export const markuplint = `markup${c.xterm(39)('lint')}`;
+export const markuplint = `markup${c.xterm(PRIMARY_COLOR)('lint')}`;
 
 export function write(message: string) {
 	process.stdout.write(message + '\n');
