@@ -37,6 +37,9 @@ export async function installModule(module: string[], dev = false): Promise<Inst
 	if (dev) {
 		opt.push('-D');
 	}
+	if (!hasYarn()) {
+		opt.push('--legacy-peer-deps');
+	}
 
 	opt.push(...uninstallMods);
 
