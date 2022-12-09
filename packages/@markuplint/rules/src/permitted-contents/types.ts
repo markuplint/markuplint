@@ -38,11 +38,7 @@ export type Result<T extends string = MatchedReason> = {
 
 export type MatchedReason = 'MATCHED' | 'MATCHED_ZERO';
 
-export type UnmatchedReason =
-	| 'VOID_ELEMENT'
-	| 'UNEXPECTED_EXTRA_NODE'
-	| 'TRANSPARENT_MODEL_DISALLOWS'
-	| MissingNodeReason;
+export type UnmatchedReason = 'NOTHING' | 'UNEXPECTED_EXTRA_NODE' | 'TRANSPARENT_MODEL_DISALLOWS' | MissingNodeReason;
 
 export type MissingNodeReason = 'MISSING_NODE_REQUIRED' | 'MISSING_NODE_ONE_OR_MORE';
 

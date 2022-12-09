@@ -18,7 +18,7 @@ it('disallows onclick', async () => {
 it('allows onclick because ignores it', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="e => e"></div>', {
 		rule: {
-			option: {
+			options: {
 				ignore: 'onclick',
 			},
 		},
@@ -29,7 +29,7 @@ it('allows onclick because ignores it', async () => {
 it('✔ onclick, ✘ onmouseleave', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="e => e" onmouseleave="e => e"></div>', {
 		rule: {
-			option: {
+			options: {
 				ignore: 'onclick',
 			},
 		},
@@ -48,7 +48,7 @@ it('✔ onclick, ✘ onmouseleave', async () => {
 it('ignore by regex', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="e => e"></div>', {
 		rule: {
-			option: {
+			options: {
 				ignore: '/^onc/',
 			},
 		},

@@ -3,11 +3,7 @@
 // https://w3c.github.io/html-aria/#el-iframe
 {
 	"contentModel": {
-		"contents": [
-			{
-				"transparent": "*"
-			}
-		]
+		"contents": false
 	},
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,

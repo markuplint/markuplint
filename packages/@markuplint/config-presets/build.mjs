@@ -14,7 +14,7 @@ const srcDir = path.resolve(dirname, 'src');
 const currents = await asyncGlob('preset.*.json,!preset.___json');
 await Promise.all(currents.map(current => rm(current)));
 
-const files = await asyncGlob(path.resolve(srcDir, '*.json'));
+const files = await asyncGlob('*.json', { cwd: srcDir });
 const md = await readFile(path.resolve(srcDir, 'README.md'), { encoding: 'utf-8' });
 
 const presets = [];
@@ -23,7 +23,7 @@ const extended = {};
 
 for (const file of files) {
 	const filename = path.basename(file);
-	const code = await readFile(path.resolve(dirname, 'src', filename), { encoding: 'utf-8' });
+	const code = await readFile(path.resolve(srcDir, filename), { encoding: 'utf-8' });
 	const json = JSON.parse(stripComments(code));
 	const compressed = JSON.stringify(json);
 	await writeFile(path.resolve(dirname, filename), compressed, { encoding: 'utf-8' });

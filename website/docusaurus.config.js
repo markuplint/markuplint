@@ -5,14 +5,14 @@
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 
-const { editUrlBase } = require('./config');
+const { url, editUrlBase, algoliaIndexName } = require('./config');
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'markuplint',
   tagline: 'Peace of mind in your markup',
-  url: 'https://markuplint.dev',
+  url: url,
   baseUrl: '/',
   trailingSlash: true,
   onBrokenLinks: 'throw',
@@ -123,6 +123,11 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
+      },
+      algolia: {
+        appId: 'SIO9QLVJBB', // cspell:disable-line
+        apiKey: '9c005a1976113e7cb45e7dd417d8eb0f',
+        indexName: algoliaIndexName,
       },
     }),
 };

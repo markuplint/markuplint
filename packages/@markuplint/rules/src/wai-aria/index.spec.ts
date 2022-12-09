@@ -87,7 +87,7 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 	test('[aria-checked=true]', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-checked="true"></div>', {
 			rule: {
-				option: { version: '1.1' },
+				options: { version: '1.1' },
 			},
 		});
 
@@ -148,7 +148,7 @@ describe('Use an invalid value of the property/state', () => {
 	test('disabled', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-current="foo"></div>', {
 			rule: {
-				option: {
+				options: {
 					checkingValue: false,
 				},
 			},
@@ -191,7 +191,7 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 	test('disabled', async () => {
 		const { violations } = await mlRuleTest(rule, '<script role="link"></script>', {
 			rule: {
-				option: {
+				options: {
 					permittedAriaRoles: false,
 				},
 			},
@@ -271,7 +271,7 @@ describe('Set the implicit role explicitly', () => {
 	test('disabled', async () => {
 		const { violations } = await mlRuleTest(rule, '<a href="path/to" role="link"></a>', {
 			rule: {
-				option: {
+				options: {
 					disallowSetImplicitRole: false,
 				},
 			},
@@ -285,7 +285,7 @@ describe('Set the default value of the property/state explicitly', () => {
 	test('aria-live="off"', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-live="off"></div>', {
 			rule: {
-				option: {
+				options: {
 					disallowDefaultValue: true,
 				},
 			},
@@ -335,7 +335,7 @@ describe('Set the deprecated property/state', () => {
 	test('disable', async () => {
 		const { violations } = await mlRuleTest(rule, '<article aria-disabled="true"></article>', {
 			rule: {
-				option: {
+				options: {
 					checkingDeprecatedProps: false,
 				},
 			},
@@ -449,7 +449,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	test('disable', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="true" />', {
 			rule: {
-				option: {
+				options: {
 					disallowSetImplicitProps: false,
 				},
 			},
@@ -578,7 +578,7 @@ describe('Required Owned Elements', () => {
 });
 
 describe('Presentational Children', () => {
-	const enable = { rule: { option: { checkingPresentationalChildren: true } } };
+	const enable = { rule: { options: { checkingPresentationalChildren: true } } };
 	test('The role attribute in the button', async () => {
 		expect(
 			(await mlRuleTest(rule, '<button><div role="none">foo</div></button>', enable)).violations,
@@ -617,7 +617,7 @@ describe('Presentational Children', () => {
 });
 
 describe('Including Elements in the Accessibility Tree', () => {
-	const enable = { rule: { option: { checkingInteractionInHidden: true } } };
+	const enable = { rule: { options: { checkingInteractionInHidden: true } } };
 	test('Parent has aria-hidden', async () => {
 		expect(
 			(await mlRuleTest(rule, '<div aria-hidden="true"><button>foo</button></div>', enable)).violations,
@@ -670,7 +670,7 @@ describe('childNodeRules', () => {
 				{
 					selector: 'img[src$=.svg]',
 					rule: {
-						option: {
+						options: {
 							disallowSetImplicitRole: false,
 						},
 					},

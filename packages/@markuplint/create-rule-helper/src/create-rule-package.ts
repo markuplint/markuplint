@@ -1,7 +1,7 @@
 import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types';
 
-import path from 'path';
-import util from 'util';
+import path from 'node:path';
+import util from 'node:util';
 
 import glob from 'glob';
 
@@ -23,5 +23,5 @@ export async function createRulePackage({
 		throw new CreateRuleHelperError('The directory is not empty');
 	}
 
-	return await installScaffold('', process.cwd(), 'src', { name, lang, needTest, packageJson: true });
+	return await installScaffold('plugin', process.cwd(), 'src', { name, lang, needTest, packageJson: true });
 }

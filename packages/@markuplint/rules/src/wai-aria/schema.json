@@ -4,7 +4,7 @@
 		"value": {
 			"type": "boolean"
 		},
-		"option": {
+		"options": {
 			"type": "object",
 			"additionalProperties": false,
 			"properties": {
@@ -56,7 +56,7 @@
 			"additionalProperties": false,
 			"properties": {
 				"value": { "$ref": "#/definitions/value" },
-				"option": { "$ref": "#/definitions/option" },
+				"options": { "$ref": "#/definitions/options" },
 				"severity": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
 				},

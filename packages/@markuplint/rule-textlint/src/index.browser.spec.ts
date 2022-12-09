@@ -12,7 +12,7 @@ test('is test 1', async () => {
 		{
 			rules: {
 				textlint: {
-					option: {
+					options: {
 						rules: [
 							{
 								ruleId: 'prh',
@@ -81,7 +81,7 @@ test('is test 3', async () => {
 		{
 			rules: {
 				textlint: {
-					option: true,
+					options: true,
 				},
 			},
 		},

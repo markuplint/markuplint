@@ -17,7 +17,7 @@ export default createRule<boolean, Options>({
 			if (
 				!isPalpableElement(el, el.ownerMLDocument.specs, {
 					extendsSvg: false,
-					extendsExposableElements: el.rule.option.extendsExposableElements,
+					extendsExposableElements: el.rule.options.extendsExposableElements,
 				})
 			) {
 				return;
@@ -27,7 +27,7 @@ export default createRule<boolean, Options>({
 				return;
 			}
 
-			if (el.rule.option.ignoreIfAriaBusy && el.getAttribute('aria-busy') === 'true') {
+			if (el.rule.options.ignoreIfAriaBusy && el.getAttribute('aria-busy') === 'true') {
 				return;
 			}
 

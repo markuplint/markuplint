@@ -63,14 +63,14 @@ export const checkingRequiredOwnedElements: ElementChecker<
 
 		const children: OwnedElement[] = Array.from(el.childNodes).map<OwnedElement>(child => {
 			if (child.is(child.ELEMENT_NODE)) {
-				const computedChild = getComputedRole(child.ownerMLDocument.specs, child, child.rule.option.version);
+				const computedChild = getComputedRole(child.ownerMLDocument.specs, child, child.rule.options.version);
 				if (
 					role.requiredOwnedElements.some(ownedRole =>
 						isRequiredOwnedElement(
 							computedChild,
 							ownedRole,
 							child.ownerMLDocument.specs,
-							child.rule.option.version,
+							child.rule.options.version,
 						),
 					)
 				) {

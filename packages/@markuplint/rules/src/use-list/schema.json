@@ -9,7 +9,7 @@
 			},
 			"description": "Specify the characters of the bullet that you expect to interpret as a list. It expects an array of code points. Default value is [Bullets](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/rules/src/use-list/index.ts#L11-L52).\n\nIt executes after decoding character references to be a code point. For example, it decodes `\"&bullet;\"` to be `\"\u2022\"`. **Note: You must specify a code point instead of the character reference you need.** It supports the surrogate pair code points."
 		},
-		"option": {
+		"options": {
 			"type": "object",
 			"additionalProperties": false,
 			"properties": {
@@ -38,7 +38,7 @@
 			"additionalProperties": false,
 			"properties": {
 				"value": { "$ref": "#/definitions/value" },
-				"option": { "$ref": "#/definitions/option" },
+				"options": { "$ref": "#/definitions/options" },
 				"severity": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
 				},

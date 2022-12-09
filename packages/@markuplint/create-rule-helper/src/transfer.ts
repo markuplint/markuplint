@@ -1,5 +1,5 @@
-import { promises as fs } from 'fs';
-import path from 'path';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 import { render } from 'mustache';
 import { format } from 'prettier';
@@ -15,6 +15,10 @@ export async function transfer(
 		transpile: boolean;
 	},
 ) {
+	if (!(await fsExists(filePath))) {
+		return null;
+	}
+
 	const extname = path.extname(filePath);
 	const name = path.basename(filePath, extname);
 	const contents = await fs.readFile(filePath, { encoding: 'utf-8' });

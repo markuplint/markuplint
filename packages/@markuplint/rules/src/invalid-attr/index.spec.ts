@@ -110,7 +110,7 @@ test('ancestor condition', async () => {
 test('custom rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>', {
 		rule: {
-			option: {
+			options: {
 				attrs: {
 					'x-attr': {
 						pattern: '/[a-z]+/',
@@ -134,7 +134,7 @@ test('custom rule', async () => {
 test('custom rule: type', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>', {
 		rule: {
-			option: {
+			options: {
 				attrs: {
 					'x-attr': {
 						type: 'Int',
@@ -167,7 +167,7 @@ test('custom element and custom rule', async () => {
 			{
 				selector: 'custom-element',
 				rule: {
-					option: {
+					options: {
 						attrs: {
 							'any-attr': {
 								type: 'Int',
@@ -213,7 +213,7 @@ test('prefix attribute', async () => {
 test('ignore prefix attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<div v-bind:title="title" :class="classes" @click="click"></div>', {
 		rule: {
-			option: {
+			options: {
 				ignoreAttrNamePrefix: ['v-bind:', ':', '@'],
 			},
 		},
@@ -266,7 +266,7 @@ test('Overwrite type', async () => {
 		'<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>',
 		{
 			rule: {
-				option: {
+				options: {
 					attrs: {
 						datetime: {
 							enum: ['overwrite-type'],
@@ -305,7 +305,7 @@ test('Overwrite type', async () => {
 test('custom rule: disallowed', async () => {
 	const { violations } = await mlRuleTest(rule, '<a onclick="fn()"></>', {
 		rule: {
-			option: {
+			options: {
 				attrs: {
 					onclick: {
 						disallowed: true,
@@ -760,7 +760,7 @@ test('React: a custom rule and a mutable attribute', async () => {
 			{
 				selector: 'a',
 				rule: {
-					option: {
+					options: {
 						attrs: {
 							href: {
 								enum: ['https://markuplint.dev'],
@@ -820,7 +820,7 @@ test('Pretenders', async () => {
 					'.*': '@markuplint/jsx-parser',
 				},
 				rule: {
-					option: {
+					options: {
 						allowToAddPropertiesForPretender: false,
 					},
 				},
@@ -870,7 +870,7 @@ test('regexSelector', async () => {
 						},
 					},
 					rule: {
-						option: {
+						options: {
 							attrs: {
 								srcset: {
 									enum: ['{{FileName}}@2x.{{Exp}} 2x', '{{FileName}}@3x.{{Exp}} 3x'],

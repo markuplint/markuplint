@@ -17,11 +17,11 @@ export default createRule<TagRule[], Options>({
 				return;
 			}
 
-			if (el.rule.option.ignoreHasMutableChildren && el.hasMutableChildren()) {
+			if (el.rule.options.ignoreHasMutableChildren && el.hasMutableChildren()) {
 				return;
 			}
 
-			const results = contentModel(el, el.rule.value, el.rule.option);
+			const results = contentModel(el, el.rule.value, el.rule.options);
 			for (const { type, scope, query, hint } of results) {
 				let message = '';
 
@@ -95,10 +95,10 @@ export default createRule<TagRule[], Options>({
 						});
 						break;
 					}
-					case 'VOID_ELEMENT': {
+					case 'NOTHING': {
 						report({
 							scope: el,
-							message: t('{0} is {1}', t('the {0}', 'element'), t('a {0}', 'void element')),
+							message: t('{0} disallows {1}', t('the {0}', 'element'), 'contents'),
 						});
 						break;
 					}

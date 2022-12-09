@@ -20,7 +20,7 @@ describe('verify', () => {
 			rule: {
 				severity: 'error',
 				value: 'upper',
-				option: null,
+				options: null,
 			},
 		});
 		expect(violations[0].severity).toBe('error');
@@ -32,7 +32,7 @@ describe('verify', () => {
 			rule: {
 				severity: 'error',
 				value: 'upper',
-				option: null,
+				options: null,
 			},
 		});
 		expect(violations[0].severity).toBe('error');

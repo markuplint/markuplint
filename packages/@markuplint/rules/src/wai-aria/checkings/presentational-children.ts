@@ -59,7 +59,7 @@ export const checkingPresentationalChildren: ElementChecker<boolean, Options> =
 function getAncestorHasPresentationalChildren(el: Element<boolean, Options>): ComputedRole | null {
 	let current: Element<boolean, Options> | null = el.parentElement;
 	while (current) {
-		const computed = getComputedRole(el.ownerMLDocument.specs, current, el.rule.option.version);
+		const computed = getComputedRole(el.ownerMLDocument.specs, current, el.rule.options.version);
 		if (computed.role?.childrenPresentational) {
 			return computed;
 		}

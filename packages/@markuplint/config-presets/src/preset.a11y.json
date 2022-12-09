@@ -21,7 +21,7 @@
 		"id-duplication": true,
 
 		"invalid-attr": {
-			"option": {
+			"options": {
 				"attrs": {
 					/**
 					 * Disallow `autofocus` attr
@@ -142,7 +142,7 @@
 			"selector": ":where(th, td)",
 			"rules": {
 				"invalid-attr": {
-					"option": {
+					"options": {
 						"attrs": {
 							"colspan": {
 								"disallowed": true

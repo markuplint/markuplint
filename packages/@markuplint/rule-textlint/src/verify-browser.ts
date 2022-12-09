@@ -10,13 +10,13 @@ export const textlintVerify: (
 	...args: Parameters<RuleSeed<boolean, Option>['verify']>
 ) => Promise<TextlintResult | undefined> = async context => {
 	const html = context.document.toString();
-	const option = context.document.rule.option;
+	const options = context.document.rule.options;
 
-	if (typeof option === 'object') {
-		return await lintText(html, option);
+	if (typeof options === 'object') {
+		return await lintText(html, options);
 	}
 
-	if (option === true) {
+	if (options === true) {
 		// eslint-disable-next-line no-console
 		console.error(
 			'`config.option` with `true` value is only available on Node.js, please use plain `TextlintKernelOptions` instead',
