@@ -45,22 +45,6 @@ export const checkingRequiredOwnedElements: ElementChecker<
 
 		// TODO: Needs to resolve `aria-own`
 
-		if (el.isEmpty()) {
-			return {
-				scope: el,
-				message: t(
-					'{0}. Or, {1}',
-					t(
-						'require {0}',
-						role.requiredOwnedElements.length === 1
-							? t('the "{0*}" {1}', role.requiredOwnedElements[0], 'role')
-							: t('the {0}', 'roles') + `: ${t(role.requiredOwnedElements)}`,
-					),
-					t('require {0}', 'aria-busy="true"'),
-				),
-			};
-		}
-
 		const children: OwnedElement[] = Array.from(el.childNodes).map<OwnedElement>(child => {
 			if (child.is(child.ELEMENT_NODE)) {
 				const computedChild = getComputedRole(child.ownerMLDocument.specs, child, child.rule.options.version);
@@ -114,6 +98,22 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			return;
 		}
 
+		if (mayBeBeforeCreated(el)) {
+			return {
+				scope: el,
+				message: t(
+					'{0}. Or, {1}',
+					t(
+						'require {0}',
+						role.requiredOwnedElements.length === 1
+							? t('the "{0*}" {1}', role.requiredOwnedElements[0], 'role')
+							: t('the {0}', 'roles') + `: ${t(role.requiredOwnedElements)}`,
+					),
+					t('require {0}', 'aria-busy="true"'),
+				),
+			};
+		}
+
 		return {
 			scope: el,
 			message: t(
@@ -125,3 +125,13 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			),
 		};
 	};
+
+function mayBeBeforeCreated(el: Element<boolean, Options>) {
+	if (el.isEmpty()) {
+		return true;
+	}
+
+	return Array.from(el.children).every(child => {
+		return ['script', 'template'].includes(child.localName);
+	});
+}
