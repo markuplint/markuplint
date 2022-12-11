@@ -925,4 +925,139 @@ describe('Issues', () => {
 			expect(violations).toStrictEqual([]);
 		}
 	});
+
+	test('#606', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<ul>
+						<template>
+							<li></li>
+						</template>
+					</ul>`,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require the "listitem" role. Or, require aria-busy="true"',
+				raw: '<ul>',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<ul aria-busy="true">
+						<template>
+							<li></li>
+						</template>
+					</ul>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<ul>
+						<!-- -->
+					</ul>`,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require the "listitem" role. Or, require aria-busy="true"',
+				raw: '<ul>',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<ul aria-busy="true">
+						<!-- -->
+					</ul>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<table>
+						<caption>
+							text
+						</caption>
+						<tbody>
+							<template>
+								<tr>
+									<td></td>
+								</tr>
+							</template>
+						</tbody>
+					</table>`,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "table" role expects the roles: "row", "rowgroup > row"',
+				raw: '<table>',
+			},
+			{
+				severity: 'error',
+				line: 5,
+				col: 7,
+				message: 'Require the "row" role. Or, require aria-busy="true"',
+				raw: '<tbody>',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<table>
+						<caption>
+							text
+						</caption>
+						<tbody>
+							<tr>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<table>
+						<caption>
+							text
+						</caption>
+						<tbody aria-busy="true">
+							<template>
+								<tr>
+									<td></td>
+								</tr>
+							</template>
+						</tbody>
+					</table>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
 });
