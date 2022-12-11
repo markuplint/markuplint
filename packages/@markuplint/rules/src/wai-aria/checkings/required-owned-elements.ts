@@ -5,7 +5,7 @@ import type { ARIARole } from '@markuplint/ml-spec';
 import { getComputedRole, isRequiredOwnedElement } from '@markuplint/ml-spec';
 
 type OwnedElement =
-	| [node: Element<boolean, Options>, type: 'REQUIRED' | 'OTHER']
+	| [node: Element<boolean, Options>, type: 'REQUIRED' | 'BUSY' | 'OTHER']
 	| [node: Block<boolean, Options>, type: 'PB']
 	| [node: null, type: 'NO_ELEMENT'];
 
@@ -47,6 +47,9 @@ export const checkingRequiredOwnedElements: ElementChecker<
 
 		const children: OwnedElement[] = Array.from(el.childNodes).map<OwnedElement>(child => {
 			if (child.is(child.ELEMENT_NODE)) {
+				if (child.matches('[aria-busy="true" i]')) {
+					return [child, 'BUSY'];
+				}
 				const computedChild = getComputedRole(child.ownerMLDocument.specs, child, child.rule.options.version);
 				if (
 					role.requiredOwnedElements.some(ownedRole =>
@@ -66,6 +69,10 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			}
 			return [null, 'NO_ELEMENT'];
 		});
+
+		if (children.some(([, type]) => type === 'BUSY')) {
+			return;
+		}
 
 		/**
 		 * > Any element that will be owned by the element with this role.
