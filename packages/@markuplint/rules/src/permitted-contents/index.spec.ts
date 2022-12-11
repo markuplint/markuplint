@@ -1249,4 +1249,29 @@ describe('Issues', () => {
 			},
 		]);
 	});
+
+	test('#606', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<dl>
+					<template>
+						<dt></dt>
+						<dd></dd>
+					</template>
+				</dl>`,
+				)
+			).violations,
+		).toStrictEqual([
+			// https://github.com/markuplint/markuplint/issues/606#issuecomment-1345446732
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require one or more elements. (Need "dt")',
+				raw: '<dl>',
+			},
+		]);
+	});
 });

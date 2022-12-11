@@ -5,7 +5,7 @@ import type { ARIARole } from '@markuplint/ml-spec';
 import { getComputedRole, isRequiredOwnedElement } from '@markuplint/ml-spec';
 
 type OwnedElement =
-	| [node: Element<boolean, Options>, type: 'REQUIRED' | 'OTHER']
+	| [node: Element<boolean, Options>, type: 'REQUIRED' | 'BUSY' | 'OTHER']
 	| [node: Block<boolean, Options>, type: 'PB']
 	| [node: null, type: 'NO_ELEMENT'];
 
@@ -45,24 +45,11 @@ export const checkingRequiredOwnedElements: ElementChecker<
 
 		// TODO: Needs to resolve `aria-own`
 
-		if (el.isEmpty()) {
-			return {
-				scope: el,
-				message: t(
-					'{0}. Or, {1}',
-					t(
-						'require {0}',
-						role.requiredOwnedElements.length === 1
-							? t('the "{0*}" {1}', role.requiredOwnedElements[0], 'role')
-							: t('the {0}', 'roles') + `: ${t(role.requiredOwnedElements)}`,
-					),
-					t('require {0}', 'aria-busy="true"'),
-				),
-			};
-		}
-
 		const children: OwnedElement[] = Array.from(el.childNodes).map<OwnedElement>(child => {
 			if (child.is(child.ELEMENT_NODE)) {
+				if (child.matches('[aria-busy="true" i]')) {
+					return [child, 'BUSY'];
+				}
 				const computedChild = getComputedRole(child.ownerMLDocument.specs, child, child.rule.options.version);
 				if (
 					role.requiredOwnedElements.some(ownedRole =>
@@ -82,6 +69,10 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			}
 			return [null, 'NO_ELEMENT'];
 		});
+
+		if (children.some(([, type]) => type === 'BUSY')) {
+			return;
+		}
 
 		/**
 		 * > Any element that will be owned by the element with this role.
@@ -114,6 +105,22 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			return;
 		}
 
+		if (mayBeBeforeCreated(el)) {
+			return {
+				scope: el,
+				message: t(
+					'{0}. Or, {1}',
+					t(
+						'require {0}',
+						role.requiredOwnedElements.length === 1
+							? t('the "{0*}" {1}', role.requiredOwnedElements[0], 'role')
+							: t('the {0}', 'roles') + `: ${t(role.requiredOwnedElements)}`,
+					),
+					t('require {0}', 'aria-busy="true"'),
+				),
+			};
+		}
+
 		return {
 			scope: el,
 			message: t(
@@ -125,3 +132,13 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			),
 		};
 	};
+
+function mayBeBeforeCreated(el: Element<boolean, Options>) {
+	if (el.isEmpty()) {
+		return true;
+	}
+
+	return Array.from(el.children).every(child => {
+		return ['script', 'template'].includes(child.localName);
+	});
+}
