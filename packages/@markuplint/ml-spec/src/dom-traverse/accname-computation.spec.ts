@@ -35,7 +35,7 @@ test('accname-1.1 Example 1', () => {
 });
 
 /**
- * https://www.w3.org/TR/accname-1.1/#ex-2-example-2-h1-files-h1-ul-li-a-id-file_row1-href-files-documentation-pdf-documentation-pdf-a-span-role-button-tabindex-0-id-del_row1-aria-label-delete-aria-labelledby-del_row1-file_row1-span-li-li-a-id-file_row2-href-files-holidayletter-pdf-holidayletter-pdf-a-span-role-button-tabindex-0-id-del_row2-aria-label-delete-aria-labelledby-del_row2-file_row2-span-li-ul
+ * @see https://www.w3.org/TR/accname-1.1/#ex-2-example-2-h1-files-h1-ul-li-a-id-file_row1-href-files-documentation-pdf-documentation-pdf-a-span-role-button-tabindex-0-id-del_row1-aria-label-delete-aria-labelledby-del_row1-file_row1-span-li-li-a-id-file_row2-href-files-holidayletter-pdf-holidayletter-pdf-a-span-role-button-tabindex-0-id-del_row2-aria-label-delete-aria-labelledby-del_row2-file_row2-span-li-ul
  */
 test('accname-1.1 Example 2', () => {
 	const complex = c(`<ul>
@@ -54,7 +54,7 @@ test('accname-1.1 Example 2', () => {
 });
 
 /**
- * https://www.w3.org/TR/accname-1.1/#ex-3-example-3-div-role-checkbox-aria-checked-false-flash-the-screen-span-role-textbox-aria-multiline-false-5-span-times-div
+ * @see https://www.w3.org/TR/accname-1.1/#ex-3-example-3-div-role-checkbox-aria-checked-false-flash-the-screen-span-role-textbox-aria-multiline-false-5-span-times-div
  */
 test('accname-1.1 Example 3', () => {
 	const complex = c(
