@@ -158,3 +158,11 @@ describe('Tags', () => {
 		expect(parse('<%% any %>').nodeList[0].nodeName).toBe('#text');
 	});
 });
+
+describe('Issues', () => {
+	test('#607', () => {
+		const ast = parse('<% %><div></div>');
+		expect(ast.nodeList.length).toBe(3);
+		expect(ast.nodeList[1].prevNode?.uuid).toBe(ast.nodeList[0].uuid);
+	});
+});
