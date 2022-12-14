@@ -37,6 +37,7 @@
 			"properties": {
 				"value": { "$ref": "#/definitions/value" },
 				"options": { "$ref": "#/definitions/options" },
+				"option": { "$ref": "#/definitions/options", "deprecated": true },
 				"severity": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
 				},
