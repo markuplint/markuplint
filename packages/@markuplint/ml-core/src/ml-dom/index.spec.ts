@@ -612,3 +612,15 @@ describe('Rule', () => {
 		expect(pugRules).toStrictEqual(['x-a:global', 'x-b:a', 'x-c:b']);
 	});
 });
+
+describe('Issues', () => {
+	test('#607', () => {
+		const dom = createTestDocument('<% %><div></div>', {
+			config: {
+				nodeRules: [{ selector: '* ~ div', rules: {} }],
+			},
+			parser: require('@markuplint/ejs-parser'),
+		});
+		expect(dom.nodeList[0].nodeName).toBe('#ml-block');
+	});
+});

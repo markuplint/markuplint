@@ -118,6 +118,12 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 							startCol,
 							endCol,
 						};
+						if (node.prevNode?.nextNode) {
+							node.prevNode.nextNode = textNode;
+						}
+						if (node.nextNode?.prevNode) {
+							node.nextNode.prevNode = textNode;
+						}
 						insertList.push(textNode);
 					}
 					if (body) {
@@ -144,6 +150,12 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 							startCol,
 							endCol,
 						};
+						if (node.prevNode?.nextNode) {
+							node.prevNode.nextNode = bodyNode;
+						}
+						if (node.nextNode?.prevNode) {
+							node.nextNode.prevNode = bodyNode;
+						}
 						insertList.push(bodyNode);
 					}
 					text = below;

@@ -269,3 +269,14 @@ describe('restoreNode', () => {
 		expect(restoredAst).toStrictEqual([]);
 	});
 });
+
+describe('Issues', () => {
+	test('#607', () => {
+		const code = '<div><% %><img/></div>';
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		expect(restoredAst[2].parentNode?.uuid).toBe(restoredAst[0].uuid);
+		expect(restoredAst[2].prevNode?.uuid).toBe(restoredAst[1].uuid);
+	});
+});
