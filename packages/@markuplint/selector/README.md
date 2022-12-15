@@ -118,7 +118,7 @@ For example, `:role(interactive)` matches `<a>`(with `href` attr), `<button>`, a
 <details>
 <summary>If you are installing purposely, how below:</summary>
 
-```sh
+```shell
 $ npm install @markuplint/selector
 
 $ yarn add @markuplint/selector

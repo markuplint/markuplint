@@ -6,7 +6,7 @@ Use **markuplint** with [**Nunjucks**](https://mozilla.github.io/nunjucks/).
 
 ## Install
 
-```sh
+```shell
 $ npm install -D @markuplint/nunjucks-parser
 
 $ yarn add -D @markuplint/nunjucks-parser

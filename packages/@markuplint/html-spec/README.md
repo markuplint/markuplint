@@ -9,7 +9,7 @@
 <details>
 <summary>If you are installing purposely, how below:</summary>
 
-```sh
+```shell
 $ npm install @markuplint/html-spec
 
 $ yarn add @markuplint/html-spec

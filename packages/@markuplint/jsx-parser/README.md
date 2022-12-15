@@ -7,7 +7,7 @@ Possible to use it in [**React**](https://reactjs.org/), [**SolidJS**](https://w
 
 ## Install
 
-```sh
+```shell
 $ npm install -D @markuplint/jsx-parser
 
 $ yarn add -D @markuplint/jsx-parser

@@ -6,7 +6,7 @@ Use **markuplint** with [**ERB**](https://docs.ruby-lang.org/en/master/ERB.html)
 
 ## Install
 
-```sh
+```shell
 $ npm install -D @markuplint/erb-parser
 
 $ yarn add -D @markuplint/erb-parser

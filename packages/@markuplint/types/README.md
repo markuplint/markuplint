@@ -99,7 +99,7 @@ In addition, you can use types **[CSSTree](https://github.com/csstree/csstree)**
 
 ## Install
 
-```sh
+```shell
 $ npm install @markuplint/types
 
 $ yarn add @markuplint/types

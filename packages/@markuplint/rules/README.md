@@ -15,7 +15,7 @@
 <details>
 <summary>If you are installing purposely, how below:</summary>
 
-```sh
+```shell
 $ npm install -D @markuplint/rules
 
 $ yarn add -D @markuplint/rules

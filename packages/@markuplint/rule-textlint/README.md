@@ -6,7 +6,7 @@ The rule plugin that adapts [**textlint**](https://github.com/textlint/textlint)
 
 ## Install
 
-```sh
+```shell
 $ npm install -D @markuplint/rule-textlint
 
 $ yarn add -D @markuplint/rule-textlint
@@ -16,7 +16,7 @@ $ yarn add -D @markuplint/rule-textlint
 
 ### Example
 
-```sh
+```shell
 $ yarn add -D textlint-rule-prh
 ```
 

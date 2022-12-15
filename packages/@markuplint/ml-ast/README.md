@@ -9,7 +9,7 @@
 <details>
 <summary>If you are installing purposely, how below:</summary>
 
-```sh
+```shell
 $ npm install @markuplint/ml-ast
 
 $ yarn add @markuplint/ml-ast

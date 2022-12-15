@@ -6,7 +6,7 @@ Use **markuplint** with [**Pug**](https://pugjs.org/).
 
 ## Install
 
-```sh
+```shell
 $ npm install -D @markuplint/pug-parser
 
 $ yarn add -D @markuplint/pug-parser
