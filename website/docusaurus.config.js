@@ -2,6 +2,7 @@
 // Note: type annotations allow type checking and IDEs autocompletion
 
 /* eslint-disable @typescript-eslint/no-var-requires */
+const npm2yarn = require('@docusaurus/remark-plugin-npm2yarn');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 
@@ -14,7 +15,7 @@ const config = {
   tagline: 'Peace of mind in your markup',
   url: 'https://markuplint.dev',
   baseUrl: '/',
-  trailingSlash: true,
+  trailingSlash: false,
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.svg',
@@ -40,6 +41,7 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: `${editUrlBase}/website`,
           editLocalizedFiles: true,
+          remarkPlugins: [[npm2yarn, { sync: true }]],
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -71,13 +73,13 @@ const config = {
         items: [
           {
             type: 'doc',
-            docId: 'getting-started',
+            docId: 'guides/index',
             position: 'left',
-            label: 'Getting Started',
+            label: 'Guides',
           },
           {
             type: 'doc',
-            docId: 'rules',
+            docId: 'rules/index',
             position: 'left',
             label: 'Rules',
           },
@@ -89,9 +91,15 @@ const config = {
           },
           {
             type: 'doc',
-            docId: 'api-docs',
+            docId: 'api/index',
             position: 'left',
             label: 'API',
+          },
+          {
+            type: 'doc',
+            docId: 'community/index',
+            position: 'left',
+            label: 'Community',
           },
           {
             href: 'https://playground.markuplint.dev/',
@@ -125,6 +133,36 @@ const config = {
         darkTheme: darkCodeTheme,
       },
     }),
+
+  plugins: [
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          {
+            to: '/guides/',
+            from: '/getting-started',
+          },
+          {
+            to: '/guides/applying-rules/',
+            from: '/set-up-rules',
+          },
+          {
+            to: '/guides/besides-html/',
+            from: '/setting-for-other-languages',
+          },
+          {
+            to: '/guides/cli/',
+            from: '/cli',
+          },
+          {
+            to: '/api/',
+            from: '/api-docs',
+          },
+        ],
+      },
+    ],
+  ],
 };
 
 module.exports = config;

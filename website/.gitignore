@@ -20,7 +20,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # Managed in packages/@markuplint/rules
-docs/rules.md
 docs/rules/*.md
 !docs/rules/.gitkeep
 i18n/ja/docusaurus-plugin-content-docs/current/rules/*.md

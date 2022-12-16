@@ -195,7 +195,7 @@ async function createRuleDocs() {
     ...index.style.map(ruleListItem),
   ].join('\n');
 
-  await writeFile(resolve(__dirname, './docs/rules.md'), indexDoc, { encoding: 'utf-8' });
+  await writeFile(resolve(__dirname, './docs/rules/index.md'), indexDoc, { encoding: 'utf-8' });
 }
 
 await createRuleDocs();
