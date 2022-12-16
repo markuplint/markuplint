@@ -1,8 +1,6 @@
 ---
-title: ランドマークロール (landmark-roles)
+description: ランドマークロール
 ---
-
-# ランドマークロール (`landmark-roles`)
 
 - ~~知覚可能コンテンツがいずれかのランドマーク上に存在するかどうか~~ (実装中)
 - `banner`、`main`、`complementary`および`contentinfo`がトップレベルのランドマークかどうか
@@ -14,7 +12,7 @@ W3C の[ARIA Landmarks Example](https://www.w3.org/TR/wai-aria-practices/example
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <!DOCTYPE html>
@@ -33,7 +31,7 @@ W3C の[ARIA Landmarks Example](https://www.w3.org/TR/wai-aria-practices/example
 </html>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <!DOCTYPE html>

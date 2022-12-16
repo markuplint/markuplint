@@ -1,12 +1,12 @@
 ---
-title: Tag name case-sensitive
 id: case-sensitive-tag-name
+description: Tag name case-sensitive
 fixable: true
 category: style
 severity: warning
 ---
 
-# Tag name case-sensitive
+# `case-sensitive-tag-name`
 
 Warns that the tag name is not in one of uppercase or lowercase letters. Unlike HTML, foreign elements (SVG or MathML) are case sensitive, so they are not subject to this rule.
 
@@ -16,7 +16,7 @@ Cite: https://html.spec.whatwg.org/#syntax-tag-name
 
 Also, Markuplint's HTML parser does not distinguish case of custom element tag names, but this rule works like HTML standard element. But originally you can not define a name that contains uppercase alphabets in custom elements. We recommend that you consider when setting rules.
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 <!-- prettier-ignore-start -->
 ```html
@@ -25,7 +25,7 @@ Also, Markuplint's HTML parser does not distinguish case of custom element tag n
 ```
 <!-- prettier-ignore-end -->
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 <!-- prettier-ignore-start -->
 ```html

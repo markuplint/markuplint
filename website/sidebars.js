@@ -36,8 +36,8 @@ const sidebars = {
   rules: [
     {
       type: 'category',
-      collapsible: true,
-      collapsed: true,
+      collapsible: false,
+      collapsed: false,
       label: 'Rules',
       link: {
         type: 'doc',

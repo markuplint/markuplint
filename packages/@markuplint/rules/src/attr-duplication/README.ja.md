@@ -1,8 +1,6 @@
 ---
-title: 属性の重複 (attr-duplication)
+description: 属性の重複
 ---
-
-# 属性の重複 (`attr-duplication`)
 
 **属性**がひとつの要素の中で重複していたら警告します。大文字小文字を区別しません。
 
@@ -14,13 +12,13 @@ title: 属性の重複 (attr-duplication)
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <div data-attr="value" data-Attr="db"></div>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <div data-attr="value" data-Attr2="db"></div>

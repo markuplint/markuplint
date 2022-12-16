@@ -1,15 +1,15 @@
 ---
-title: 'Use list element'
-id: 'use-list'
-category: 'a11y'
+description: Use list element
+id: use-list
+category: a11y
 severity: warning
 ---
 
-# Use list element
+# `use-list`
 
 Prompt to use list element when a bullet character is at the start of a text node.
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <div>
@@ -19,7 +19,7 @@ Prompt to use list element when a bullet character is at the start of a text nod
 </div>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <ul>

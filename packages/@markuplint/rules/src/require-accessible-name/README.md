@@ -1,15 +1,15 @@
 ---
-title: 'Require accessible name'
-id: 'require-accessible-name'
-category: 'a11y'
+description: Require accessible name
+id: require-accessible-name
+category: a11y
 severity: error
 ---
 
-# Require accessible name
+# `require-accessible-name`
 
 Warn if the element has no accessible name. It is according to its ARIA role whether name required.
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <button>
@@ -19,7 +19,7 @@ Warn if the element has no accessible name. It is according to its ARIA role whe
 </button>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <button>

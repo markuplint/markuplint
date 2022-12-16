@@ -1,17 +1,17 @@
 ---
-title: Level-one heading in document required
+description: Level-one heading in document required
 id: required-h1
 category: a11y
 severity: error
 ---
 
-# Level-one heading in document required
+# `required-h1`
 
 Warn if there is no h1 element in the document.
 
 This rule is based on [Techniques H42](https://www.w3.org/WAI/WCAG21/Techniques/html/H42) for [Success Criterion 1.3.1](https://www.w3.org/TR/WCAG21/#info-and-relationships) in WCAG, [Practices for skipping heading level](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#Accessibility_concerns) and [Web Accessibility Tutorials - Headings](https://www.w3.org/WAI/tutorials/page-structure/headings/).
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <html>
@@ -26,7 +26,7 @@ This rule is based on [Techniques H42](https://www.w3.org/WAI/WCAG21/Techniques/
 </html>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <html>

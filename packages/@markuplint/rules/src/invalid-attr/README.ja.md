@@ -1,8 +1,6 @@
 ---
-title: 無効な属性 (invalid-attr)
+description: 無効な属性
 ---
-
-# 無効な属性 (`invalid-attr`)
 
 属性が仕様上（あるいは独自に指定したルール上）、存在しない属性であったり、無効な型の値だった場合に警告をします。
 
@@ -10,7 +8,7 @@ title: 無効な属性 (invalid-attr)
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <div unexist-attr>
@@ -19,7 +17,7 @@ title: 無効な属性 (invalid-attr)
 </div>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <div>

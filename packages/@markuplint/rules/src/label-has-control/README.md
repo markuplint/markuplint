@@ -1,17 +1,17 @@
 ---
-title: 'Label has control'
-id: 'label-has-control'
-category: 'a11y'
+description: Label has control
+id: label-has-control
+category: a11y
 severity: warning
 ---
 
-# Label has control
+# `label-has-control`
 
 Warns if the label element has no control. This rule is used for finding unassociated labels that don't have original purposes.
 
 And warns if there are controls after the first because only it can be associated with the label element.
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <label>foo</label><input type="text" />
@@ -19,7 +19,7 @@ And warns if there are controls after the first because only it can be associate
 <h1><label>New</label> Release Note</h1>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <label for="bar">foo</label><input type="text" id="bar" />

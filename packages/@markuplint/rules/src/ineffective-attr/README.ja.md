@@ -1,14 +1,12 @@
 ---
-title: 効果のない属性の禁止 (ineffective-attr)
+description: 効果のない属性の禁止
 ---
-
-# 効果のない属性の禁止 (`ineffective-attr`)
 
 指定された属性が要素に影響を与えることができない（つまり無意味である）場合は警告します。
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <script type="module" src="/path/to/script.js" defer></script>
@@ -26,7 +24,7 @@ title: 効果のない属性の禁止 (ineffective-attr)
 </script>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <script type="module" src="/path/to/script.js"></script>

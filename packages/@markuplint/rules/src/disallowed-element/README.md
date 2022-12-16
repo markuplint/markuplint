@@ -1,19 +1,20 @@
 ---
-title: Disallowed elements
+description: Disallowed elements
 id: disallowed-element
 category: validation
 severity: error
 ---
 
-# Disallowed elements
+# `disallowed-element`
 
+description: Disallowed elements
 Warns if specified elements appear on a document or an element. Use the selector to specify.
 
 This is a generic rule for searching the disallowed element.
 
 Use [`permitted-contents`](../permitted-contents) rule if you expect to check conformance according to HTML Standard.
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <!-- "disallowed-element": ["hgroup"] -->
@@ -22,7 +23,7 @@ Use [`permitted-contents`](../permitted-contents) rule if you expect to check co
 </div>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <!-- "disallowed-element": ["hgroup"] -->

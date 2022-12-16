@@ -1,8 +1,6 @@
 ---
-title: 属性名の大文字小文字 (case-sensitive-attr-name)
+description: 属性名の大文字小文字
 ---
-
-# 属性名の大文字小文字 (`case-sensitive-attr-name`)
 
 **属性名**が大文字小文字のどちらかに統一されていないと警告します。HTML は大文字小文字を区別しませんが、外来要素（SVG や MathML）はその限りではないのでこのルールの対象外です。
 
@@ -16,14 +14,14 @@ title: 属性名の大文字小文字 (case-sensitive-attr-name)
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <div DATA-ATTR></div>
 <div Data-Attr></div>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <div data-attr></div>

@@ -1,14 +1,12 @@
 ---
-title: クラス命名規則 (class-naming)
+description: クラス命名規則
 ---
-
-# クラス命名規則 (`class-naming`)
 
 指定された規則に則ったクラス名でなければ警告します。
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 `{ "class-naming": "/[a-z]+(?:__[a-z]+(?:--[a-z]+))?/" }`
 
@@ -16,7 +14,7 @@ title: クラス命名規則 (class-naming)
 <div class="Block"></div>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 `{ "class-naming": "/[a-z]+(?:__[a-z]+(?:--[a-z]+))?/" }`
 

@@ -142,7 +142,8 @@ async function createRuleDoc(path, value, option) {
   );
 
   return {
-    name,
+    id: frontMatter.id,
+    description: frontMatter.description,
     contents: rewrote,
     category: frontMatter.category,
   };
@@ -163,20 +164,24 @@ async function createRuleDocs() {
     const { default: schema } = await import(pathToFileURL(resolve(path, 'schema.json')), { assert: { type: 'json' } });
     const { value, option } = schema.definitions;
 
-    const { name, contents, category } = await createRuleDoc(path, value, option);
+    const { id, description, contents, category } = await createRuleDoc(path, value, option);
 
     // TODO: Japanese Page
     // const jaDist = resolve(__dirname, `./i18n/${locale}/docusaurus-plugin-content-docs/current/rules`, `${ruleName}.md`);
 
     if (index[category]) {
-      index[category].push(name);
+      index[category].push({ id, description });
     }
 
-    const dist = resolve(__dirname, './docs/rules', `${name}.md`);
+    const dist = resolve(__dirname, './docs/rules', `${id}.md`);
     await writeFile(dist, contents, { encoding: 'utf-8' });
   }
 
-  const ruleListItem = rule => `- [\`${rule}\`](/rules/${rule})`;
+  const ruleListItem = rule => `[\`${rule.id}\`](/rules/${rule.id})|${rule.description}`;
+
+  const table = list => {
+    return ['Rule ID|Description', '---|---', ...list.map(ruleListItem)];
+  };
 
   const indexDoc = [
     '---',
@@ -184,15 +189,15 @@ async function createRuleDocs() {
     '---',
     //
     '## Conformance checking',
-    ...index.validation.map(ruleListItem),
+    ...table(index.validation),
     '## Accessibility',
-    ...index.a11y.map(ruleListItem),
+    ...table(index.a11y),
     '## Naming Convention',
-    ...index['naming-convention'].map(ruleListItem),
+    ...table(index['naming-convention']),
     '## Maintainability',
-    ...index.maintainability.map(ruleListItem),
+    ...table(index.maintainability),
     '## Style',
-    ...index.style.map(ruleListItem),
+    ...table(index.style),
   ].join('\n');
 
   await writeFile(resolve(__dirname, './docs/rules/index.md'), indexDoc, { encoding: 'utf-8' });

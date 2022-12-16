@@ -1,16 +1,16 @@
 ---
-title: Attribute quotes
 id: attr-value-quotes
+description: Attribute quotes
 fixable: true
 category: style
 severity: warning
 ---
 
-# Attribute quotes
+# `attr-value-quotes`
 
 Warns if the attribute value is not **quoted**.
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 <!-- prettier-ignore-start -->
 ```html
@@ -27,7 +27,7 @@ Warns if the attribute value is not **quoted**.
 ```
 <!-- prettier-ignore-end -->
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 <!-- prettier-ignore-start -->
 ```html
