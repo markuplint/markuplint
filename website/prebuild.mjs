@@ -186,6 +186,7 @@ async function createRuleDocs() {
   const indexDoc = [
     '---',
     'title: Rules',
+    'sidebar_class_name: hidden',
     '---',
     //
     '## Conformance checking',
