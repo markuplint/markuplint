@@ -1,5 +1,6 @@
 <script>
 	import MlPlayground from './ml-playground.svelte';
+	const version = require('markuplint/package.json').version;
 
 	const ruleset = JSON.stringify({
 		rules: {
@@ -42,8 +43,25 @@
 		height: 500px;
 		margin: 0 0 2em;
 	}
+
+	.credit {
+		display: flex;
+		justify-content: flex-end;
+		font-size: 0.8em;
+		opacity: 0.8;
+	}
+
+	.credit p {
+		margin: 0;
+		padding: 0;
+	}
 </style>
 
 <div class="container">
 	<MlPlayground {ruleset} />
+
+	<div class="credit">
+		<p>Version: {version}</p>
+	</div>
 </div>
+
