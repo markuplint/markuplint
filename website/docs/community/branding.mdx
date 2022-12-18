@@ -1,0 +1,68 @@
+import LogoContainer from '../../src/components/LogoContainer';
+import Grid from '../../src/components/Grid';
+import Color from '../../src/components/Color';
+
+# Branding
+
+## Name
+
+The spelling of **Markuplint** must be all characters are lowercase, or **M** is uppercase, then after are lowercase. And **L** must not be uppercase. And it must not separate **Markup** and **Lint**. It uses the former in command and more. Recommend and usually the latter.
+
+:::note
+The initial was lowercase until `v2.x` but changed to uppercase since `v3.0`.
+:::
+
+### Abbreviation
+
+The abbreviated name is **ML**. Use `ml-` as a prefix.
+
+## Colors
+
+<Grid>
+  <Color name="ML Blue" r={21} g={114} b={235} />
+  <Color name="ML Ink" r={51} g={51} b={51} />
+</Grid>
+
+## Logo
+
+### Horizontal
+
+<Grid vertical>
+  <LogoContainer src="/img/logo-horizontal.svg" caption="Standard (Symbol and wordmark)" mode="light" />
+  <LogoContainer src="/img/logo-horizontal.svg#d" caption="Standard (Symbol and wordmark) on Dark" mode="dark" />
+  <LogoContainer src="/img/logo-horizontal.svg#sl" caption="Monochrome (Symbol and wordmark)" mode="light" />
+  <LogoContainer src="/img/logo-horizontal.svg#sd" caption="Monochrome (Symbol and wordmark) on Dark" mode="dark" />
+</Grid>
+
+### Vertical
+
+<Grid colWidth="20em">
+  <LogoContainer src="/img/logo-vertical.svg" caption="Standard (Symbol and wordmark)" mode="light" />
+  <LogoContainer src="/img/logo-vertical.svg#d" caption="Standard on Dark (Symbol and wordmark)" mode="dark" />
+  <LogoContainer src="/img/logo-vertical.svg#sl" caption="Monochrome (Symbol and wordmark)" mode="light" />
+  <LogoContainer src="/img/logo-vertical.svg#sd" caption="Monochrome on Dark (Symbol and wordmark)" mode="dark" />
+</Grid>
+
+### Without wordmark
+
+<Grid colWidth="20em">
+  <LogoContainer src="/img/logo-symbol.svg" caption="Standard (Without wordmark)" mode="light" />
+  <LogoContainer src="/img/logo-symbol.svg#d" caption="Standard (Without wordmark) on Dark" mode="dark" />
+  <LogoContainer src="/img/logo-symbol.svg#sl" caption="Monochrome (Without wordmark)" mode="light" />
+  <LogoContainer src="/img/logo-symbol.svg#sd" caption="Monochrome (Without wordmark) on Dark" mode="dark" />
+</Grid>
+
+### Outline symbol
+
+<Grid colWidth="15em">
+  <LogoContainer src="/img/logo-outline-light.svg" caption="Light stroke" mode="light" />
+  <LogoContainer src="/img/logo-outline-medium.svg" caption="Medium stroke" mode="light" />
+  <LogoContainer src="/img/logo-outline-bold.svg" caption="Bold stroke" mode="light" />
+</Grid>
+
+### Prohibited matters
+
+- Using color variations besides the above.
+- Using combinations of shapes besides the above.
+- Using while shorting vertical and horizontal padding less than 15% between the logo and something.
+- Using while shrinking, stretching, rotating, and inverting.

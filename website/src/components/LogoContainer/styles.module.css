@@ -1,0 +1,26 @@
+.logoContainer {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 0.5em;
+  border: 1px solid var(--ifm-toc-border-color);
+}
+
+.logo {
+  padding: 15%;
+}
+
+.logoContainer > figcaption {
+  padding: 0.4em 1em;
+  border-top: 1px solid var(--ifm-toc-border-color);
+  text-align: center;
+  font-weight: bold;
+}
+
+.logo[data-mode='light'] {
+  background-color: white;
+}
+
+.logo[data-mode='dark'] {
+  background-color: black;
+}

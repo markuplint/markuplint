@@ -24,3 +24,6 @@ docs/rules/*.md
 !docs/rules/.gitkeep
 i18n/ja/docusaurus-plugin-content-docs/current/rules/*.md
 !i18n/ja/docusaurus-plugin-content-docs/current/rules/.gitkeep
+
+# Copied
+docs/community/contributing.md

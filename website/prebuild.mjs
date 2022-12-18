@@ -1,4 +1,4 @@
-import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
+import { readFile, writeFile, readdir, stat, copyFile } from 'node:fs/promises';
 import { resolve, basename, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -205,3 +205,5 @@ async function createRuleDocs() {
 }
 
 await createRuleDocs();
+
+await copyFile(resolve('..', 'CONTRIBUTING.md'), resolve('docs', 'community', 'contributing.md'));
