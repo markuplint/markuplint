@@ -58,7 +58,7 @@ const config = {
         { property: 'og:type', content: 'website' },
         {
           property: 'og:image',
-          content: 'https://repository-images.githubusercontent.com/104835801/27437480-da03-11e9-8504-c8407b7d9a13',
+          content: '/img/og-img-general.png',
         },
         { name: 'twitter:site', content: '@markuplint' },
       ],
