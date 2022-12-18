@@ -1,11 +1,11 @@
 ---
-title: Character reference
 id: character-reference
+description: Character reference
 category: style
 severity: error
 ---
 
-# Character reference
+# `character-reference`
 
 Warns when unauthorized illegal characters are not escaped with character reference in the text node or attribute value.
 
@@ -19,7 +19,7 @@ This rule doesn't evaluate the characters strictly. Take care that it prompts yo
 
 :::
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 <!-- prettier-ignore-start -->
 ```html
@@ -28,7 +28,7 @@ This rule doesn't evaluate the characters strictly. Take care that it prompts yo
 ```
 <!-- prettier-ignore-end -->
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 <!-- prettier-ignore-start -->
 ```html

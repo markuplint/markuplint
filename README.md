@@ -50,7 +50,8 @@ Need [Sponsors❤️‍🔥](https://github.com/sponsors/markuplint)
 
 ### Personal Supporters
 
-[<img width="36" src="https://avatars.githubusercontent.com/u/91733847?v=4" alt="Tokitake" />](https://github.com/Tokitake)
+[<img width="36" src="https://avatars.githubusercontent.com/u/91733847" alt="Tokitake" />](https://github.com/Tokitake)
+[<img width="36" src="https://avatars.githubusercontent.com/u/1996642" alt="yamanoku" />](https://github.com/yamanoku)
 
 ## Thanks
 

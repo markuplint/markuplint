@@ -1,14 +1,12 @@
 ---
-title: DOCTYPE 宣言 (doctype)
+description: DOCTYPE 宣言
 ---
-
-# DOCTYPE 宣言 (`doctype`)
 
 DOCTYPE 宣言が書かれていないと警告します。また、古い廃止された DOCTYPE を宣言をしていた場合にも警告します。
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 <!-- prettier-ignore-start -->
 ```html
@@ -24,7 +22,7 @@ DOCTYPE 宣言が書かれていないと警告します。また、古い廃止
 ```
 <!-- prettier-ignore-end -->
 
-👍 正しいコード例
+✅ 正しいコード例
 
 <!-- prettier-ignore-start -->
 ```html

@@ -1,11 +1,11 @@
 ---
-title: Landmark roles
+description: Landmark roles
 id: landmark-roles
 category: a11y
 severity: warning
 ---
 
-# Landmark roles
+# `landmark-roles`
 
 - ~~Whether perceptible content exists on any landmark~~ (Work in progress)
 - Whether `banner`, `main`, `complementary` and `contentinfo` are top-level landmarks
@@ -15,7 +15,7 @@ Check the above and warn if it is not satisfied.
 
 It is based on W3C [ARIA Landmarks Example](https://www.w3.org/TR/wai-aria-practices/examples/landmarks/).
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <!DOCTYPE html>
@@ -34,7 +34,7 @@ It is based on W3C [ARIA Landmarks Example](https://www.w3.org/TR/wai-aria-pract
 </html>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <!DOCTYPE html>

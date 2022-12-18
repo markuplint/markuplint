@@ -1,8 +1,6 @@
 ---
-title: 許可するコンテンツ (permitted-contents)
+description: 許可するコンテンツ
 ---
-
-# 許可するコンテンツ (`permitted-contents`)
 
 許可されていない要素もしくはテキストノードを子要素にもつ場合に警告します。
 
@@ -12,7 +10,7 @@ title: 許可するコンテンツ (permitted-contents)
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 <!-- prettier-ignore-start -->
 ```html
@@ -29,7 +27,7 @@ title: 許可するコンテンツ (permitted-contents)
 ```
 <!-- prettier-ignore-end -->
 
-👍 正しいコード例
+✅ 正しいコード例
 
 <!-- prettier-ignore-start -->
 ```html

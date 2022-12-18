@@ -1,8 +1,6 @@
 ---
-title: 非推奨要素 (deprecated-element)
+description: 非推奨要素
 ---
-
-# 非推奨要素 (`deprecated-element`)
 
 非推奨（**deprecated**）もしくは廃止（**obsolete**）または非標準（**non-standard**）な要素があると警告します。
 
@@ -10,13 +8,13 @@ title: 非推奨要素 (deprecated-element)
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <font color="red">lorem</font>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <span class="red">lorem</span>

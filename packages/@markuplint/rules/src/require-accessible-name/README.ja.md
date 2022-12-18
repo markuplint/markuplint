@@ -1,14 +1,12 @@
 ---
-title: アクセシブルな名前必須(require-accessible-name)
+description: アクセシブルな名前必須
 ---
-
-# アクセシブルな名前必須(`require-accessible-name`)
 
 要素にアクセシブルな名前がなければ警告します。名前が必要かどうかは ARIA ロールによって異なります。
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <button>
@@ -18,7 +16,7 @@ title: アクセシブルな名前必須(require-accessible-name)
 </button>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <button>

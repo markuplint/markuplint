@@ -1,21 +1,21 @@
 ---
-title: No use event handler attribute
+description: No use event handler attribute
 id: no-use-event-handler-attr
 category: maintainability
 severity: warning
 ---
 
-# No use event handler attribute
+# `no-use-event-handler-attr`
 
 Warn when specifying the event handler attribute.
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <div onclick="() => doSomething()">Click</div>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <div id="foo">Click</div>

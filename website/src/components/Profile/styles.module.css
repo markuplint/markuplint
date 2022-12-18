@@ -1,0 +1,45 @@
+.profile {
+  background-color: var(--ifm-breadcrumb-item-background-active);
+  padding: 1em 2em;
+  border-radius: 0.5em;
+  display: block;
+  color: inherit;
+}
+
+.profile figure {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile figcaption {
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+}
+
+.profile p {
+  text-align: center;
+  margin: 0 0 0.5em;
+  padding: 0;
+}
+
+.sns {
+  display: flex;
+  gap: 0.5em;
+}
+
+.sns a {
+  flex: 1 0 auto;
+  display: flex;
+  justify-content: center;
+  background-color: var(--ifm-breadcrumb-item-background-active);
+  padding: 0.4em 2em;
+  border-radius: 0.5em;
+}
+
+.sns a:is(:hover, :focus)::before {
+  background-color: var(--ifm-link-hover-color);
+}

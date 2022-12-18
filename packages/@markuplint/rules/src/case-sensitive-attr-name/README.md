@@ -1,12 +1,12 @@
 ---
-title: Attribute name case-sensitive
 id: case-sensitive-attr-name
+description: Attribute name case-sensitive
 fixable: true
 category: style
 severity: warning
 ---
 
-# Attribute name case-sensitive
+# `case-sensitive-attr-name`
 
 Warns that the attribute name is not in one of uppercase or lowercase letters. Unlike HTML, foreign elements (SVG or MathML) are case sensitive, so they are not subject to this rule.
 
@@ -14,14 +14,14 @@ Warns that the attribute name is not in one of uppercase or lowercase letters. U
 
 Cite: https://html.spec.whatwg.org/#attributes-2
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <div DATA-ATTR></div>
 <div Data-Attr></div>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <div data-attr></div>

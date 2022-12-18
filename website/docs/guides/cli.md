@@ -1,6 +1,4 @@
----
-title: Command Line Interface
----
+# Command line interface
 
 ## Usage
 
@@ -33,40 +31,25 @@ And returns `1` if the result has problems one or more.
 
 ## Particular run
 
-### Show help
+### `--help`
 
-Use add the `--help` option. (Short option: `-h`)
+Show help. (Short option: `-h`)
 
-### Show version
+### `--version`
 
-Use add the `--version` option. (Short option: `-v`)
+Show installed version. (Short option: `-v`)
 
-### Initialization
+### `--init`
 
-Create a [configuration](configuration/index.md) file and install dependencies.
+Initialization; Create a [configuration](configuration/index.md) file and install dependencies.
 
-Use add the `--init` option.
-
-```
+```shell
 $ npx markuplint --init
-# or
-$ yarn run markuplint --init
 ```
 
 Answer questions interactively.
-By doing this, needed modules are installed includes `markuplint`.
+Then it installs modules needed.
 
-### Creating a custom rule
+### `--create-rule`
 
-It adds the scaffold of a custom rule to any project.
-
-Use add the `--create-rule` option.
-
-```
-$ npx markuplint --create-rule
-# or
-$ yarn run markuplint --create-rule
-```
-
-After answering a few questions from the prompt,
-It generates scaffold files for the specified project.
+See [Creating custom rule](./custom-rule).

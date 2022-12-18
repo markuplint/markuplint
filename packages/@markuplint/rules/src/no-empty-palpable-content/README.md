@@ -1,11 +1,11 @@
 ---
-title: 'Disallow empty palpable content'
-id: 'no-empty-palpable-content'
-category: 'validation'
+description: Disallow empty palpable content
+id: no-empty-palpable-content
+category: validation
 severity: warning
 ---
 
-# Disallow empty palpable content
+# `no-empty-palpable-content`
 
 Warn if there is an empty palpable content element.
 
@@ -15,7 +15,7 @@ HTML Standard says:
 
 Cite: https://html.spec.whatwg.org/multipage/dom.html#palpable-content
 
-👎 Examples of **incorrect** code
+❌ Examples of **incorrect** code
 
 <!-- prettier-ignore-start -->
 ```html
@@ -27,7 +27,7 @@ Cite: https://html.spec.whatwg.org/multipage/dom.html#palpable-content
 ```
 <!-- prettier-ignore-end -->
 
-👍 Examples of **correct** code
+✅ Examples of **correct** code
 
 ```html
 <div>text contet</div>

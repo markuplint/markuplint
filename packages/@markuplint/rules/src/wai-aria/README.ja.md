@@ -1,8 +1,6 @@
 ---
-title: WAI-ARIA (wai-aria)
+description: WAI-ARIA
 ---
-
-# WAI-ARIA (`wai-aria`)
 
 [**WAI-ARIA**](https://momdo.github.io/wai-aria-1.2/) および [**ARIA in HTML**](https://momdo.github.io/html-aria/) の仕様のとおり `role` 属性または `aria-*` 属性が設定されていない場合に警告します。
 
@@ -26,7 +24,7 @@ title: WAI-ARIA (wai-aria)
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <div role="landmark" aria-busy="busy">
@@ -37,7 +35,7 @@ title: WAI-ARIA (wai-aria)
 </div>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <div role="banner" aria-busy="true">

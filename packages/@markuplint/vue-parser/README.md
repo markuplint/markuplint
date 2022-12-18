@@ -6,7 +6,7 @@ Use **markuplint** with [**Vue**](https://vuejs.org/).
 
 ## Install
 
-```sh
+```shell
 $ npm install -D @markuplint/vue-parser
 
 $ yarn add -D @markuplint/vue-parser

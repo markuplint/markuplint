@@ -16,7 +16,7 @@ export function getExplicitRole(specs: MLMLSpec, el: Element, version: ARIAVersi
 	/**
 	 * Resolve from values and **Handling Author Errors**
 	 *
-	 * @see https://w3c.github.io/aria/#document-handling_author-errors_roles
+	 * @see https://w3c.github.io/aria/#document-handling_author-errors
 	 */
 	for (const roleName of roleNames) {
 		const spec = getRoleSpec(specs, roleName, namespaceURI, version);

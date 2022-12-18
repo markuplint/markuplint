@@ -13,8 +13,8 @@ import type {
 import type { SelectorMatchedResult } from '@markuplint/selector';
 
 import { createSelector } from '@markuplint/selector';
-import { bgGreen, green, bgRed, bgBlue, blue, bgMagenta, cyan } from 'ansi-colors';
 
+import { bgGreen, green, bgRed, bgBlue, blue, bgMagenta, cyan } from './debug';
 import { transparentMode } from './represent-transparent-nodes';
 
 const getChildNodesWithoutWhitespacesCaches = new Map<Element, ChildNode[]>();

@@ -6,7 +6,7 @@ You can contribute to:
 
 - [Report any issues or bugs](https://github.com/markuplint/markuplint/issues).
 - Update [schemas](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src) according to the updated specs of W3C/WHATWG.
-- [Request or propose something new function](https://github.com/markuplint/markuplint/labels/proposal%20features).
+- [Request or propose something new function](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Features%3A+Proposal&template=feature.md&title=Supporting+for).
 - Improve APIs and CLIs.
 - Review to design for linting according to the specs.
 - Improve the documentation and [the website](https://markuplint.dev/).

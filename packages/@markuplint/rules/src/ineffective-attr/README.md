@@ -1,16 +1,16 @@
 ---
-title: Disallow the ineffective attribute
+description: Disallow the ineffective attribute
 id: ineffective-attr
 fixable: true
 category: style
 severity: warning
 ---
 
-# Disallow the ineffective attribute
+# `ineffective-attr`
 
 Warn that if the attribute specified cannot affect (in other words, mean-less) the element.
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <script type="module" src="/path/to/script.js" defer></script>
@@ -28,7 +28,7 @@ Warn that if the attribute specified cannot affect (in other words, mean-less) t
 </script>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <script type="module" src="/path/to/script.js"></script>

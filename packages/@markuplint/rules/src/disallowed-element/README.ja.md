@@ -1,8 +1,6 @@
 ---
-title: 禁止要素(disallowed-element)
+description: 禁止要素
 ---
-
-# 禁止要素(`disallowed-element`)
 
 指定された要素がドキュメントまたは要素が存在している場合に警告します。 セレクターを使用して指定します。
 
@@ -14,7 +12,7 @@ HTML 標準に準拠しているかどうかは[`permitted-contents`](../permitt
 
 `{ "disallowed-element": ["hgroup"] }` を指定した場合:
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <div>
@@ -22,7 +20,7 @@ HTML 標準に準拠しているかどうかは[`permitted-contents`](../permitt
 </div>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <div>

@@ -6,7 +6,7 @@ Use **markuplint** with [**EJS**](https://ejs.co/).
 
 ## Install
 
-```sh
+```shell
 $ npm install -D @markuplint/ejs-parser
 
 $ yarn add -D @markuplint/ejs-parser

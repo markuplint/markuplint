@@ -1,11 +1,11 @@
 ---
-title: WAI-ARIA
+description: WAI-ARIA
 id: wai-aria
 category: a11y
 severity: error
 ---
 
-# WAI-ARIA
+# `wai-aria`
 
 Warn if the `role` attribute and/or `aria-*` attributes don't set in accordance with specs that are WAI-ARIA and/or "ARIA in HTML".
 
@@ -27,7 +27,7 @@ Warn if:
 
 There are settings about **ARIA in HTML** on [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/aria-in-html). And you can disable them because that is draft yet.
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <div role="landmark" aria-busy="busy">
@@ -38,7 +38,7 @@ There are settings about **ARIA in HTML** on [`@markuplint/html-spec`](https://g
 </div>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <div role="banner" aria-busy="true">

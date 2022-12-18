@@ -16,6 +16,9 @@
 		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean"
 	},
+	"browser": {
+		"./lib/configs.js": "./lib/configs.browser.js"
+	},
 	"dependencies": {
 		"@markuplint/config-presets": "3.0.0-rc.3",
 		"@markuplint/i18n": "3.0.0-rc.3",

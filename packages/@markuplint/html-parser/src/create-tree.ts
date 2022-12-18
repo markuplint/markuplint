@@ -7,6 +7,7 @@ import type {
 	MLASTTag,
 	MLASTText,
 } from '@markuplint/ml-ast';
+import type { ElementLocation, Location } from 'parse5/dist/common/token';
 import type {
 	CommentNode,
 	Document,
@@ -14,9 +15,7 @@ import type {
 	Element,
 	Node,
 	TextNode,
-	ElementLocation,
-	Location,
-} from 'parse5';
+} from 'parse5/dist/tree-adapters/default';
 
 import { detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
 import { parse, parseFragment } from 'parse5';

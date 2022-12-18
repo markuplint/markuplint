@@ -6,7 +6,7 @@ Use **markuplint** with [**Liquid**](https://liquidjs.com/).
 
 ## Install
 
-```sh
+```shell
 $ npm install -D @markuplint/liquid-parser
 
 $ yarn add -D @markuplint/liquid-parser

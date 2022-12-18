@@ -1,20 +1,18 @@
 ---
-title: イベントハンドラ属性の使用禁止(no-use-event-handler-attr)
+description: イベントハンドラ属性の使用禁止
 ---
-
-# イベントハンドラ属性の使用禁止(`no-use-event-handler-attr`)
 
 イベントハンドラ属性を指定すると警告します。
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <div onclick="() => doSomething()">Click</div>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <div id="foo">Click</div>

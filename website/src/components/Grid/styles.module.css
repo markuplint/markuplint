@@ -1,0 +1,16 @@
+.vertical,
+.grid {
+  display: grid;
+  gap: 2em;
+}
+
+.flex {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 2em;
+}
+
+.flex > * {
+  flex: 0 0 auto;
+}
