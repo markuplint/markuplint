@@ -36,7 +36,10 @@ export default function DocPage(props: Props): JSX.Element {
   );
 }
 
-function getCurrentPageTitle(path: string, sidebarItems: PropSidebar) {
+function getCurrentPageTitle(path: string, sidebarItems?: PropSidebar) {
+  if (!sidebarItems) {
+    return null;
+  }
   for (const item of sidebarItems) {
     if ('href' in item) {
       if (t(item.href) === t(path)) {
