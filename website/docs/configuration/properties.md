@@ -22,9 +22,9 @@ The configuration has the following properties:
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
 | [**`extends`**](#extends)               | [Using Presets](/guides/presets)                                                                                   | [Interface](#extends/interface)        |
 | [**`plugins`**](#plugins)               | [Applying custom rules](/guides/applying-rules#applying-custom-rules), [Creating custom rule](/guides/custom-rule) | [Interface](#plugins/interface)        |
-| [**`parser`**](#parser)                 | [Using to besides HTML](/docs/guides/besides-html)                                                                 | [Interface](#parser/interface)         |
+| [**`parser`**](#parser)                 | [Using to besides HTML](/guides/besides-html)                                                                 | [Interface](#parser/interface)         |
 | [**`parserOptions`**](#parseroptions)   | -                                                                                                                  | [Interface](#parseroptions/interface)  |
-| [**`specs`**](#specs)                   | [Using to besides HTML](/docs/guides/besides-html)                                                                 | [Interface](#specs/interface)          |
+| [**`specs`**](#specs)                   | [Using to besides HTML](/guides/besides-html)                                                                 | [Interface](#specs/interface)          |
 | [**`excludeFiles`**](#excludefiles)     | [Ignoring file](/guides/ignoring-code#ignoring-file)                                                               | [Interface](#excludefiles/interface)   |
 | [**`rules`**](#rules)                   | [Applying rules](/guides/applying-rules)                                                                           | [Interface](#rules/interface)          |
 | [**`nodeRules`**](#noderules)           | [Applying to some](/guides/applying-rules#applying-to-some)                                                        | [Interface](#noderules/interface)      |

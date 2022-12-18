@@ -140,6 +140,9 @@ async function createRuleDoc(path, value, option) {
     ].join('\n'),
   );
 
+  // Replace Paths
+  rewrote = rewrote.replaceAll('](../', '](./');
+
   return {
     id: frontMatter.id,
     description: frontMatter.description,
