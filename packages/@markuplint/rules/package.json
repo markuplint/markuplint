@@ -16,6 +16,9 @@
 		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean"
 	},
+	"browser": {
+		"./lib/permitted-contents/debug.js": "./lib/permitted-contents/debug.browser.js"
+	},
 	"dependencies": {
 		"@markuplint/html-spec": "3.0.0-rc.0",
 		"@markuplint/ml-core": "3.0.0-rc.0",
