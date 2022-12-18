@@ -1,11 +1,11 @@
 ---
-title: The "id" attribute value duplication
+description: The "id" attribute value duplication
 id: id-duplication
 category: validation
 severity: error
 ---
 
-# The "id" attribute value duplication
+# `id-duplication`
 
 Warns that **id** attribute value were duplicated in one document.
 
@@ -13,7 +13,7 @@ Warns that **id** attribute value were duplicated in one document.
 
 Cite: https://html.spec.whatwg.org/#global-attributes
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <html>
@@ -28,7 +28,7 @@ Cite: https://html.spec.whatwg.org/#global-attributes
 </html>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <html>

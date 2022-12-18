@@ -1,11 +1,11 @@
 ---
-title: Required elements
+description: Required elements
 id: required-element
 category: validation
 severity: error
 ---
 
-# Required elements
+# `required-element`
 
 Warns if specified elements didn't appear on a document or an element. Use the selector to specify.
 
@@ -17,7 +17,7 @@ Use the [`required-h1`](../required-h1/) rule if you expect to require the h1 el
 
 :::
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <!-- "required-element": ["meta[charset=\"UTF-8\"]"] -->
@@ -26,7 +26,7 @@ Use the [`required-h1`](../required-h1/) rule if you expect to require the h1 el
 </head>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <!-- "required-element": ["meta[charset=\"UTF-8\"]"] -->

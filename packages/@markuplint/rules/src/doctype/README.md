@@ -1,16 +1,16 @@
 ---
-title: DOCTYPE declaration
+description: DOCTYPE declaration
 id: doctype
 fixable: false
 category: validation
 severity: error
 ---
 
-# DOCTYPE declaration
+# `doctype`
 
 Warns when doesn't declare DOCTYPE. Also warns when declared obsolete type.
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 <!-- prettier-ignore-start -->
 ```html
@@ -26,7 +26,7 @@ Warns when doesn't declare DOCTYPE. Also warns when declared obsolete type.
 ```
 <!-- prettier-ignore-end -->
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 <!-- prettier-ignore-start -->
 ```html

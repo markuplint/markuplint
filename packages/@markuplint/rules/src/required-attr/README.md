@@ -1,10 +1,10 @@
 ---
-title: Required attributes
+description: Required attributes
 id: required-attr
 category: validation
 ---
 
-# Required attributes
+# `required-attr`
 
 Warns if specified attributes or required attribute on specs are not appeared on an element.
 

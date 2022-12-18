@@ -31,7 +31,7 @@ You can choose some presets appropriately for your preference.
 <details>
 <summary>If you are installing purposely, how below:</summary>
 
-```sh
+```shell
 $ npm install @markuplint/config-presets
 
 $ yarn add @markuplint/config-presets

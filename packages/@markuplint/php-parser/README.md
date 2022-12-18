@@ -6,7 +6,7 @@ Use **markuplint** with [**PHP**](https://www.php.net/).
 
 ## Install
 
-```sh
+```shell
 $ npm install -D @markuplint/php-parser
 
 $ yarn add -D @markuplint/php-parser

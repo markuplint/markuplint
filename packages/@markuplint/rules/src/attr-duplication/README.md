@@ -1,10 +1,11 @@
 ---
 id: attr-duplication
+description: Attributes duplication
 category: validation
 severity: error
 ---
 
-# Attributes duplication
+# `attr-duplication`
 
 Warns that **attributes** were duplicated in one element. Capital letters and lower-case letters are not distinguished.
 
@@ -12,13 +13,13 @@ Warns that **attributes** were duplicated in one element. Capital letters and lo
 
 Cite: https://html.spec.whatwg.org/#attributes-2
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <div data-attr="value" data-Attr="db"></div>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <div data-attr="value" data-Attr2="db"></div>

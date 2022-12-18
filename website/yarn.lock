@@ -1327,6 +1327,21 @@
     react-helmet-async "*"
     react-loadable "npm:@docusaurus/react-loadable@5.5.2"
 
+"@docusaurus/plugin-client-redirects@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@docusaurus/plugin-client-redirects/-/plugin-client-redirects-2.2.0.tgz#f6228e5b2852520e22e0f4b89f870431aa975a90"
+  integrity sha512-psBoWi+cbc2I+VPkKJlcZ12tRN3xiv22tnZfNKyMo18iSY8gr4B6Q0G2KZXGPgNGJ/6gq7ATfgDK6p9h9XRxMQ==
+  dependencies:
+    "@docusaurus/core" "2.2.0"
+    "@docusaurus/logger" "2.2.0"
+    "@docusaurus/utils" "2.2.0"
+    "@docusaurus/utils-common" "2.2.0"
+    "@docusaurus/utils-validation" "2.2.0"
+    eta "^1.12.3"
+    fs-extra "^10.1.0"
+    lodash "^4.17.21"
+    tslib "^2.4.0"
+
 "@docusaurus/plugin-content-blog@2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@docusaurus/plugin-content-blog/-/plugin-content-blog-2.2.0.tgz#dc55982e76771f4e678ac10e26d10e1da2011dc1"
@@ -1457,6 +1472,15 @@
   dependencies:
     "@types/react" "*"
     prop-types "^15.6.2"
+
+"@docusaurus/remark-plugin-npm2yarn@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@docusaurus/remark-plugin-npm2yarn/-/remark-plugin-npm2yarn-2.2.0.tgz#12d433eda8986c475277dd7fb8624b10c8a976ea"
+  integrity sha512-CFiwzk+0QrlBjkcx4cNV8LQZHgo15aQ3piO0Iao0vGXLc7eupGigDLuE7q3Phc10ELweO+P2gRQTjlBqIQTC+Q==
+  dependencies:
+    npm-to-yarn "^1.0.1"
+    tslib "^2.4.0"
+    unist-util-visit "^2.0.3"
 
 "@docusaurus/theme-classic@2.2.0":
   version "2.2.0"
@@ -5440,6 +5464,11 @@ npm-run-path@^4.0.1:
   integrity sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==
   dependencies:
     path-key "^3.0.0"
+
+npm-to-yarn@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/npm-to-yarn/-/npm-to-yarn-1.0.1.tgz#6cdb95114c4ff0be50a7a2381d4d16131a5f52df"
+  integrity sha512-bp8T8oNMfLW+N/fE0itFfSu7RReytwhqNd9skbkfHfzGYC+5CCdzS2HnaXz6JiG4AlK2eA0qlT6NJN1SoFvcWQ==
 
 nprogress@^0.2.0:
   version "0.2.0"

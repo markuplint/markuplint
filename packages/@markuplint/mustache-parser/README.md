@@ -6,7 +6,7 @@ Use **markuplint** with [**Mustache**](https://mustache.github.io/) or [**Handle
 
 ## Install
 
-```sh
+```shell
 $ npm install -D @markuplint/mustache-parser
 
 $ yarn add -D @markuplint/mustache-parser

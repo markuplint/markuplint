@@ -69,7 +69,7 @@ Require `noreferrer` with `target=_blank`|Require `rel=noreferrer` with an eleme
 <details>
 <summary>If you are installing purposely, how below:</summary>
 
-```sh
+```shell
 $ npm install @markuplint/config-presets
 
 $ yarn add @markuplint/config-presets

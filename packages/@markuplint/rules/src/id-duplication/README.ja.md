@@ -1,8 +1,6 @@
 ---
-title: id の重複 (id-duplication)
+description: id の重複
 ---
-
-# id の重複 (`id-duplication`)
 
 **id 属性**の値がドキュメント内で重複していたら警告します。
 
@@ -14,7 +12,7 @@ title: id の重複 (id-duplication)
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <html>
@@ -29,7 +27,7 @@ title: id の重複 (id-duplication)
 </html>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <html>

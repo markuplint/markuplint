@@ -1,8 +1,6 @@
 ---
-title: 必須要素(required-element)
+description: 必須要素
 ---
-
-# 必須要素(`required-element`)
 
 指定された要素がドキュメントまたは要素に表示されなかった場合に警告します。 セレクターを使用して指定します。
 
@@ -14,7 +12,7 @@ h1 要素が必要な場合は [`required-h1`](../required-h1/)ルールを使�
 
 `{ "required-element": ["meta[charset=\"UTF-8\"]"] }` を指定した場合:
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <head>
@@ -22,7 +20,7 @@ h1 要素が必要な場合は [`required-h1`](../required-h1/)ルールを使�
 </head>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <head>

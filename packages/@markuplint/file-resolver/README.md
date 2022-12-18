@@ -9,7 +9,7 @@
 <details>
 <summary>If you are installing purposely, how below:</summary>
 
-```sh
+```shell
 $ npm install @markuplint/file-resolver
 
 $ yarn add @markuplint/file-resolver

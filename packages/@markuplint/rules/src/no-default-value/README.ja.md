@@ -1,20 +1,18 @@
 ---
-title: デフォルト値の指定の禁止(no-default-value)
+description: デフォルト値の指定の禁止
 ---
-
-# デフォルト値の指定の禁止(`no-default-value`)
 
 属性にデフォルト値を指定したときに警告します。
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <canvas width="300" height="150"></canvas>
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <canvas></canvas>

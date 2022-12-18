@@ -6,7 +6,7 @@ Use **markuplint** with [**Astro**](https://astro.build/).
 
 ## Install
 
-```sh
+```shell
 $ npm install -D @markuplint/astro-parser
 
 $ yarn add -D @markuplint/astro-parser

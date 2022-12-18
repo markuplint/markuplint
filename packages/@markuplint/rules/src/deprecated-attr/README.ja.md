@@ -1,8 +1,6 @@
 ---
-title: 非推奨属性 (deprecated-attr)
+description: 非推奨属性
 ---
-
-# 非推奨属性 (`deprecated-attr`)
 
 非推奨（**deprecated**）もしくは廃止（**obsolete**）属性があると警告します。
 
@@ -10,13 +8,13 @@ title: 非推奨属性 (deprecated-attr)
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 ```html
 <img src="path/to" alt="any picture" align="top" />
 ```
 
-👍 正しいコード例
+✅ 正しいコード例
 
 ```html
 <img src="path/to" alt="any picture" style="vertical-align: center" />

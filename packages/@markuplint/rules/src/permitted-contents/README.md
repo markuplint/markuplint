@@ -1,11 +1,11 @@
 ---
-title: Permitted contents
+description: Permitted contents
 id: permitted-contents
 category: validation
 severity: error
 ---
 
-# Permitted contents
+# `permitted-contents`
 
 Warn if a child element has a not allowed element or text node.
 
@@ -13,7 +13,7 @@ This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN
 
 It is possible to make the structure robust by setting element relationships on template engines such as custom elements and Vue.
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 <!-- prettier-ignore-start -->
 ```html
@@ -30,7 +30,7 @@ It is possible to make the structure robust by setting element relationships on 
 ```
 <!-- prettier-ignore-end -->
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 <!-- prettier-ignore-start -->
 ```html

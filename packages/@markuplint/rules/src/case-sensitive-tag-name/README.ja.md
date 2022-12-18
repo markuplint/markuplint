@@ -1,8 +1,6 @@
 ---
-title: タグ名の大文字小文字 (case-sensitive-tag-name)
+description: タグ名の大文字小文字
 ---
-
-# タグ名の大文字小文字 (`case-sensitive-tag-name`)
 
 **タグ名**が大文字小文字のどちらかに統一されていないと警告します。HTML は大文字小文字を区別しませんが、外来要素（SVG や MathML）はその限りではないのでこのルールの対象外です。
 
@@ -18,7 +16,7 @@ title: タグ名の大文字小文字 (case-sensitive-tag-name)
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 <!-- prettier-ignore-start -->
 ```html
@@ -27,7 +25,7 @@ title: タグ名の大文字小文字 (case-sensitive-tag-name)
 ```
 <!-- prettier-ignore-end -->
 
-👍 正しいコード例
+✅ 正しいコード例
 
 <!-- prettier-ignore-start -->
 ```html

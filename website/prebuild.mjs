@@ -1,4 +1,4 @@
-import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
+import { readFile, writeFile, readdir, stat, copyFile } from 'node:fs/promises';
 import { resolve, basename, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -141,7 +141,8 @@ async function createRuleDoc(path, value, option) {
   );
 
   return {
-    name,
+    id: frontMatter.id,
+    description: frontMatter.description,
     contents: rewrote,
     category: frontMatter.category,
   };
@@ -162,39 +163,83 @@ async function createRuleDocs() {
     const { default: schema } = await import(pathToFileURL(resolve(path, 'schema.json')), { assert: { type: 'json' } });
     const { value, option } = schema.definitions;
 
-    const { name, contents, category } = await createRuleDoc(path, value, option);
+    const { id, description, contents, category } = await createRuleDoc(path, value, option);
 
     // TODO: Japanese Page
     // const jaDist = resolve(__dirname, `./i18n/${locale}/docusaurus-plugin-content-docs/current/rules`, `${ruleName}.md`);
 
     if (index[category]) {
-      index[category].push(name);
+      index[category].push({ id, description });
     }
 
-    const dist = resolve(__dirname, './docs/rules', `${name}.md`);
+    const dist = resolve(__dirname, './docs/rules', `${id}.md`);
     await writeFile(dist, contents, { encoding: 'utf-8' });
   }
 
-  const ruleListItem = rule => `- [\`${rule}\`](/rules/${rule})`;
+  const ruleListItem = rule =>
+    !rule.href
+      ? `[\`${rule.id}\`](/rules/${rule.id})|${rule.description}`
+      : `[\`${rule.id}\`](${rule.href})|${rule.description}`;
+
+  const table = list => {
+    return ['Rule ID|Description', '---|---', ...list.map(ruleListItem)];
+  };
+  const removedTable = (list, drop) => {
+    return [
+      'Rule ID|Description|Drop',
+      '---|---|---',
+      ...list.map(ruleListItem).map(line => `${line}|Since \`${drop}\``),
+    ];
+  };
 
   const indexDoc = [
     '---',
     'title: Rules',
+    'sidebar_class_name: hidden',
     '---',
     //
     '## Conformance checking',
-    ...index.validation.map(ruleListItem),
+    ...table(index.validation),
     '## Accessibility',
-    ...index.a11y.map(ruleListItem),
+    ...table(index.a11y),
     '## Naming Convention',
-    ...index['naming-convention'].map(ruleListItem),
+    ...table(index['naming-convention']),
     '## Maintainability',
-    ...index.maintainability.map(ruleListItem),
+    ...table(index.maintainability),
     '## Style',
-    ...index.style.map(ruleListItem),
+    ...table(index.style),
+    '---',
+    '## Removed rules',
+    ...removedTable(
+      [
+        {
+          id: 'attr-equal-space-after',
+          href: 'https://v1.markuplint.dev/rules/attr-equal-space-after',
+          description: 'Spaces after the equal of attribute',
+        },
+        {
+          id: 'attr-equal-space-before',
+          href: 'https://v1.markuplint.dev/rules/attr-equal-space-before',
+          description: 'Spaces before the equal of attribute',
+        },
+        {
+          id: 'attr-spacing',
+          href: 'https://v1.markuplint.dev/rules/attr-spacing',
+          description: 'Spaces between attributes',
+        },
+        {
+          id: 'indentation',
+          href: 'https://v1.markuplint.dev/rules/indentation',
+          description: 'Indentation',
+        },
+      ],
+      'v3.0',
+    ),
   ].join('\n');
 
-  await writeFile(resolve(__dirname, './docs/rules.md'), indexDoc, { encoding: 'utf-8' });
+  await writeFile(resolve(__dirname, './docs/rules/index.md'), indexDoc, { encoding: 'utf-8' });
 }
 
 await createRuleDocs();
+
+await copyFile(resolve('..', 'CONTRIBUTING.md'), resolve('docs', 'community', 'contributing.md'));

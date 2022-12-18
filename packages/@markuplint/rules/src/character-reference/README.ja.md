@@ -1,8 +1,6 @@
 ---
-title: 文字参照 (character-reference)
+description: 文字参照
 ---
-
-# 文字参照 (`character-reference`)
 
 テキストノードや属性の値において、許可されていない不正な文字を文字参照でエスケープしていない場合に警告する。
 
@@ -16,7 +14,7 @@ title: 文字参照 (character-reference)
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 <!-- prettier-ignore-start -->
 ```html
@@ -25,7 +23,7 @@ title: 文字参照 (character-reference)
 ```
 <!-- prettier-ignore-end -->
 
-👍 正しいコード例
+✅ 正しいコード例
 
 <!-- prettier-ignore-start -->
 ```html

@@ -13,7 +13,7 @@
 <details>
 <summary>If you are installing purposely, how below:</summary>
 
-```sh
+```shell
 $ npm install @markuplint/ml-core
 
 $ yarn add @markuplint/ml-core

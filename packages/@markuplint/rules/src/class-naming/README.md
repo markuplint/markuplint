@@ -1,22 +1,22 @@
 ---
-title: Class naming convention
 id: class-naming
+description: Class naming convention
 category: naming-convention
 severity: warning
 ---
 
-# Class naming convention
+# `class-naming`
 
 Warn if the class name does not conform to the specified rules.
 
-👎 Examples of **incorrect** code for this rule
+❌ Examples of **incorrect** code for this rule
 
 ```html
 <!-- "class-naming": "/[a-z]+(?:__[a-z]+(?:--[a-z]+))?/" -->
 <div class="Block"></div>
 ```
 
-👍 Examples of **correct** code for this rule
+✅ Examples of **correct** code for this rule
 
 ```html
 <!-- "class-naming": "/[a-z]+(?:__[a-z]+(?:--[a-z]+))?/" -->

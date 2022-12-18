@@ -1,0 +1,49 @@
+.color > p:first-child {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 0;
+}
+
+.color figure {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: stretch;
+}
+
+.pallet {
+  width: 5em;
+  height: auto;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 0.5em;
+}
+
+.color figcaption {
+  margin: 0;
+  padding: 1em;
+}
+
+.color dl {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+.color dl > div {
+  display: contents;
+}
+
+.color dt {
+  margin: 0;
+  padding: 0;
+}
+
+.color dd {
+  margin: 0;
+  padding: 0;
+}
+
+.color dd::before {
+  content: ': ';
+}

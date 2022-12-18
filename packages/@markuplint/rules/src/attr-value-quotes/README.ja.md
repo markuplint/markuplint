@@ -1,8 +1,6 @@
 ---
-title: 属性値の引用符 (attr-value-quotes)
+description: 属性値の引用符
 ---
-
-# 属性値の引用符 (`attr-value-quotes`)
 
 属性値が引用符で囲われていない場合に警告をします。
 
@@ -10,7 +8,7 @@ title: 属性値の引用符 (attr-value-quotes)
 
 ## ルールの詳細
 
-👎 間違ったコード例
+❌ 間違ったコード例
 
 <!-- prettier-ignore-start -->
 ```html
@@ -28,7 +26,7 @@ title: 属性値の引用符 (attr-value-quotes)
 ```
 <!-- prettier-ignore-end -->
 
-👍 正しいコード例
+✅ 正しいコード例
 
 <!-- prettier-ignore-start -->
 ```html
