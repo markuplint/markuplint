@@ -12,7 +12,9 @@ export default createRule<Value>({
 			if (!el.rule.value) {
 				return;
 			}
-			const classPatterns = Array.isArray(el.rule.value) ? el.rule.value : [el.rule.value];
+			const classPatterns = (Array.isArray(el.rule.value) ? el.rule.value : [el.rule.value]).filter(
+				className => className && typeof className === 'string',
+			);
 			const attrs = el.getAttributeToken('class');
 			for (const attr of attrs) {
 				if (attr.isDynamicValue) {
