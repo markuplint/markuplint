@@ -56,12 +56,9 @@ const config = {
       metadata: [
         { name: 'theme-color', content: '#fff' },
         { property: 'og:type', content: 'website' },
-        {
-          property: 'og:image',
-          content: 'https://repository-images.githubusercontent.com/104835801/27437480-da03-11e9-8504-c8407b7d9a13',
-        },
         { name: 'twitter:site', content: '@markuplint' },
       ],
+      image: '/img/og-img-general.png',
       navbar: {
         logo: {
           alt: 'markuplint',
