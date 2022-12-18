@@ -7,8 +7,8 @@
   "rules": {
     "attr-duplication": true,
     "attr-value-quotes": true,
-    "case-sensitive-attr-name": true,
-    "case-sensitive-tag-name": true,
+    "case-sensitive-attr-name": false,
+    "case-sensitive-tag-name": false,
     "character-reference": true,
     "class-naming": false,
     "deprecated-attr": true,
@@ -30,7 +30,7 @@
       "selector": "meta[property]",
       "rules": {
         "invalid-attr": {
-          "option": {
+          "options": {
             "attrs": {
               "property": {
                 "type": "Any"
@@ -48,7 +48,7 @@
       "selector": "style",
       "rules": {
         "invalid-attr": {
-          "option": {
+          "options": {
             "attrs": {
               "jsx": {
                 "type": "Boolean"
