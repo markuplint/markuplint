@@ -177,10 +177,20 @@ async function createRuleDocs() {
     await writeFile(dist, contents, { encoding: 'utf-8' });
   }
 
-  const ruleListItem = rule => `[\`${rule.id}\`](/rules/${rule.id})|${rule.description}`;
+  const ruleListItem = rule =>
+    !rule.href
+      ? `[\`${rule.id}\`](/rules/${rule.id})|${rule.description}`
+      : `[\`${rule.id}\`](${rule.href})|${rule.description}`;
 
   const table = list => {
     return ['Rule ID|Description', '---|---', ...list.map(ruleListItem)];
+  };
+  const removedTable = (list, drop) => {
+    return [
+      'Rule ID|Description|Drop',
+      '---|---|---',
+      ...list.map(ruleListItem).map(line => `${line}|Since \`${drop}\``),
+    ];
   };
 
   const indexDoc = [
@@ -199,6 +209,33 @@ async function createRuleDocs() {
     ...table(index.maintainability),
     '## Style',
     ...table(index.style),
+    '---',
+    '## Removed rules',
+    ...removedTable(
+      [
+        {
+          id: 'attr-equal-space-after',
+          href: 'https://v1.markuplint.dev/rules/attr-equal-space-after',
+          description: 'Spaces after the equal of attribute',
+        },
+        {
+          id: 'attr-equal-space-before',
+          href: 'https://v1.markuplint.dev/rules/attr-equal-space-before',
+          description: 'Spaces before the equal of attribute',
+        },
+        {
+          id: 'attr-spacing',
+          href: 'https://v1.markuplint.dev/rules/attr-spacing',
+          description: 'Spaces between attributes',
+        },
+        {
+          id: 'indentation',
+          href: 'https://v1.markuplint.dev/rules/indentation',
+          description: 'Indentation',
+        },
+      ],
+      'v3.0',
+    ),
   ].join('\n');
 
   await writeFile(resolve(__dirname, './docs/rules/index.md'), indexDoc, { encoding: 'utf-8' });
