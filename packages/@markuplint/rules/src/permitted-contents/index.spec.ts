@@ -859,14 +859,6 @@ describe('verify', () => {
 		).toStrictEqual([
 			{
 				severity: 'error',
-				line: 2,
-				col: 7,
-				message:
-					'The "style" element is not allowed in the "noscript" element through the transparent model in this context',
-				raw: '<style>',
-			},
-			{
-				severity: 'error',
 				line: 5,
 				col: 7,
 				message:
