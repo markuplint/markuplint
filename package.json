@@ -54,6 +54,7 @@
 			"ts",
 			"tsx",
 			"js",
+			"cjs",
 			"jsx",
 			"json",
 			"node"
@@ -85,6 +86,11 @@
 				],
 				"transform": {
 					"^.+\\.tsx?$": "ts-jest"
+				},
+				"moduleNameMapper": {
+					"css-tree/lexer/error": "<rootDir>/packages/@markuplint/types/node_modules/css-tree/cjs/lexer/error.cjs",
+					"css-tree/lexer/match": "<rootDir>/packages/@markuplint/types/node_modules/css-tree/cjs/lexer/match.cjs",
+					"css-tree/lexer/prepare-tokens": "<rootDir>/packages/@markuplint/types/node_modules/css-tree/cjs/lexer/prepare-tokens.cjs"
 				}
 			}
 		]
