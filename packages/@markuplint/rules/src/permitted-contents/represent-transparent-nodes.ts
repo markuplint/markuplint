@@ -23,9 +23,6 @@ export function representTransparentNodes(
 	if (parent) {
 		const { errors: parentErrors } = representTransparentNodes([parent], specs, options);
 		errors.push(...parentErrors);
-		// if (!Array.isArray(parentRes)) {
-		// 	return parentRes;
-		// }
 	}
 
 	for (const node of nodes) {

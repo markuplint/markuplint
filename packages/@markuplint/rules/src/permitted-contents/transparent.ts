@@ -1,8 +1,6 @@
 import type { ChildNode, Options, Result, Specs } from './types';
 
-import { countPattern } from './count-pattern';
 import { cmLog } from './debug';
-import { Collection } from './utils';
 
 const transparentLog = cmLog.extend('transparent');
 
@@ -21,16 +19,12 @@ export function transparent(nodes: ChildNode[], specs: Specs, options: Options, 
 
 	transparentLog('Transparent model element is component root');
 
-	const collection = new Collection(nodes);
-	const result = countPattern({ zeroOrMore: ':model(flow)' }, collection.unmatched, specs, options, depth);
-	collection.addMatched(result.matched);
-
 	return {
-		type: result.type,
-		matched: collection.matched,
-		unmatched: collection.unmatched,
-		zeroMatch: result.zeroMatch,
-		query: result.query,
-		hint: result.hint,
+		type: 'MATCHED',
+		matched: nodes.slice(),
+		unmatched: [],
+		zeroMatch: false,
+		query: 'transparent',
+		hint: {},
 	};
 }
