@@ -92,7 +92,8 @@
 		},
 		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feturbulence-numoctaves
 		"numOctaves": {
-			"type": "<positive-integer>",
+			// TODO: Negative values are unsupported
+			"type": "<integer>",
 			"defaultValue": "1",
 			"animatable": true
 		},

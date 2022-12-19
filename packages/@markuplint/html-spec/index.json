@@ -32669,7 +32669,7 @@
 					"animatable": true
 				},
 				"numOctaves": {
-					"type": "<positive-integer>",
+					"type": "<integer>",
 					"defaultValue": "1",
 					"animatable": true
 				},
