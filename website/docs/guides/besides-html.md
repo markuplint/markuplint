@@ -96,9 +96,9 @@ If it mixes the tags and spaces.
 
 ## Applying plugins
 
-Specify a plugin to apply to the `parser` option on the [configuration file](../configuration/).
-And If it has spec add to the `specs` option.
-Set a regular expression that can identify the target file name to the `parser` option key.
+Specify a plugin to apply to the `parser` property on the [configuration file](/configuration/).
+And If it has spec add to the `specs` property.
+Set a regular expression that can identify the target file name to the `parser` property key.
 
 ```json title="Use React"
 {
