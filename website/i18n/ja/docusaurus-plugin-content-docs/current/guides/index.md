@@ -1,0 +1,52 @@
+# ガイド
+
+## はじめる
+
+### 気軽につかう
+
+```shell
+npx markuplint target.html
+```
+
+:::info
+
+[設定ファイル](/configuration)がない場合は[推奨プリセット](/guides/presets)が適用されます。
+
+:::
+
+### 必須スペック
+
+- **Node.js** v14.6.0以上
+
+### プロジェクトでつかう
+
+[設定ファイル](/configuration)をつくり、依存モジュールをインストールします。
+
+```shell
+npx markuplint --init
+```
+
+コマンド上で対話式の質問に答えます。
+これにより`markuplint`を含む必要なモジュールがインストールされます。
+
+`package.json`の`scripts`プロパティにコマンドを追記します。
+
+```json title="package.json"
+{
+  "scripts": {
+    "html:lint": "markuplint **/*.html"
+  }
+}
+```
+
+ターゲットパスを変更したい場合は、定義プロジェクトに合わせて変更してください。
+
+以下のようにスクリプトを実行します。
+
+```shell npm2yarn
+npm run html:lint
+```
+
+## Visual Studio Codeでつかう
+
+[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint)からインストール可能です。もしくは&ldquo;markuplint&rdquo;とVS Code拡張機能から検索してください。
