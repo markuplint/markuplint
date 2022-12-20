@@ -26,7 +26,7 @@
 		"apidoc": "typedoc --ignoreCompilerErrors --exclude '**/*+(index|.spec|.e2e|.d).ts,node_modules/**/*' --mode file --out apidoc --media packages/markuplint/media --readme ./packages/markuplint/README.md ./packages/markuplint/",
 		"release": "lerna publish --exact",
 		"release:next": "lerna publish --dist-tag next --exact --force-publish",
-		"release:next:increment": "lerna publish --dist-tag next --exact",
+		"release:canary": "lerna publish --dist-tag dev --exact --canary",
 		"prerelease": "yarn build; yarn test",
 		"prepare": "husky install",
 		"spellcheck": "cspell --no-progress --show-suggestions \"**\""
