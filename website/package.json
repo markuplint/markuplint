@@ -7,7 +7,7 @@
     "site:start": "yarn site:prebuild; docusaurus start",
     "site:build": "yarn site:prebuild; docusaurus build",
     "site:prebuild": "node prebuild.mjs; npx prettier --write './src/**/*{ts,tsx,json,rc,md,mdx,css,scss}';",
-    "site:lint": "prettier --write './**/*{js,ts,tsx,mdx}' './*{json,rc,js}' '!./build/**/*' '!./.docusaurus/**/*'; eslint --fix './**/*.{js,ts,tsx}' './*.{js,ts}'; cd ../; yarn cli './website/**/*.tsx'"
+    "site:lint": "prettier --write './**/*{js,ts,tsx,mdx}' './*{json,rc,js}' '!./build/**/*' '!./.docusaurus/**/*'; eslint --fix './**/*.{js,ts,tsx}' './*.{js,ts}'; textlint --fix './website/i18n/ja'; cd ../; yarn cli './website/**/*.tsx'"
   },
   "author": "Yusuke Hirao",
   "license": "MIT",
