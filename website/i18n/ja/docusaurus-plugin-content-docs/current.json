@@ -1,4 +1,7 @@
 {
+  "sidebar.guide.category.Guides": {
+    "message": "ガイド"
+  },
   "sidebar.rules.category.Rules": {
     "message": "ルール"
   }

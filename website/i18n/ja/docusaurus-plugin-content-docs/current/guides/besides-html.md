@@ -1,16 +1,16 @@
-# Using to besides HTML
+# HTML以外につかう
 
-You can also apply it to syntaxes **besides HTML** if using plugins together.
+プラグインをつかうことで、**HTML以外**の構文にも適用できます。
 
-## Installing plugins
+## プラグインのインストール
 
-Install the **parser plugin** through npm or Yarn:
+npmもしくはYarnで**パーサプラグイン**をインストールします。
 
 ```shell npm2yarn
 npm install -D @markuplint/pug-parser
 ```
 
-If a syntax has its own specification you should install the **spec plugin** with the parser plugin:
+構文に独自の仕様がある場合は、パーサプラグインと一緒に**スペックプラグイン**をインストールする必要があります。
 
 ```shell npm2yarn
 npm install -D @markuplint/jsx-parser @markuplint/react-spec
@@ -20,9 +20,9 @@ npm install -D @markuplint/jsx-parser @markuplint/react-spec
 npm install -D @markuplint/vue-parser @markuplint/vue-spec
 ```
 
-### Supported syntaxes
+### サポートしている構文
 
-| Template or syntax                                                                         | Parser                        | Spec                     |
+| テンプレートエンジンまたは構文                                                             | パーサ                        | スペック                 |
 | ------------------------------------------------------------------------------------------ | ----------------------------- | ------------------------ |
 | [**JSX**](https://reactjs.org/docs/introducing-jsx.html)                                   | `@markuplint/jsx-parser`      | `@markuplint/react-spec` |
 | [**Vue**](https://vuejs.org/)                                                              | `@markuplint/vue-parser`      | `@markuplint/vue-spec`   |
@@ -38,13 +38,14 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 | [**Liquid**](https://liquidjs.com/)                                                        | `@markuplint/liquid-parser`   | -                        |
 
 :::note
-There is `@markuplint/html-parser` package but the core package includes it.
-You don't need to install and to specify it to the configuration.
+
+`@markuplint/html-parser`というパッケージが存在しますが、コアパッケージに含まれており、インストールや設定ファイルへの指定は必要ありません。
+
 :::
 
-:::caution Unsupported syntaxes
+:::caution **未対応の構文**
 
-It's not able to support syntaxes if one's attribute is complex.
+以下のテンプレートエンジンまたは構文は、複雑な属性記述に対応できていません。
 
 - [PHP](https://www.php.net/)
 - [Smarty](https://www.smarty.net/)
@@ -54,7 +55,7 @@ It's not able to support syntaxes if one's attribute is complex.
 - [Nunjucks](https://mozilla.github.io/nunjucks/)
 - [Liquid](https://liquidjs.com/)
 
-### ✅ Available code
+### ✅ 有効なコード
 
 ```html
 <div attr="{{ value }}"></div>
@@ -70,9 +71,9 @@ It's not able to support syntaxes if one's attribute is complex.
 <div attr="{{ value }}-{{ value2 }}-{{ value3 }}"></div>
 ```
 
-### ❌ Unavailable code
+### ❌ 未対応のコード
 
-If it doesn't nest by quotations.
+クォーテーションで囲われていないコード。
 
 <!-- prettier-ignore-start -->
 ```html
@@ -80,7 +81,7 @@ If it doesn't nest by quotations.
 ```
 <!-- prettier-ignore-end -->
 
-If it mixes the tags and spaces.
+タグとスペースが混在しているコード。
 
 ```html
 <div attr=" {{ value }} "></div>
@@ -90,17 +91,15 @@ If it mixes the tags and spaces.
 <div attr="{{ value }} {{ value2 }}"></div>
 ```
 
-**PULL REQUEST WANTED**: This problem is recognized by developers and created as an issue [#240](https://github.com/markuplint/markuplint/issues/240).
+**プルリクエスト募集中**: この問題は、開発者は認識しており、Issue [#240](https://github.com/markuplint/markuplint/issues/240)として作られています。
 
 :::
 
-## Applying plugins
+## プラグインの適用
 
-Specify a plugin to apply to the `parser` property on the [configuration file](/configuration/).
-And If it has spec add to the `specs` property.
-Set a regular expression that can identify the target file name to the `parser` property key.
+[設定ファイル](/configuration/)の`parser`プロパティに適用するプラグインを指定します。また、スペックが存在する場合は`specs`プロパティにも追加します。`parser`プロパティのキーに対象ファイル名を特定できる正規表現を設定します。
 
-```json title="Use React"
+```json title="Reactでつかう"
 {
   "parser": {
     ".jsx$": "@markuplint/jsx-parser"
@@ -111,7 +110,7 @@ Set a regular expression that can identify the target file name to the `parser` 
 }
 ```
 
-```json title="Use Vue"
+```json title="Vueでつかう"
 {
   "parser": {
     ".vue$": "@markuplint/vue-parser"
@@ -122,11 +121,11 @@ Set a regular expression that can identify the target file name to the `parser` 
 }
 ```
 
-See explained configuring [`parser`](/configuration/properties#parser) and [`specs`](/configuration/properties#specs) if you want details.
+詳しくは、 [`parser`](/configuration/properties#parser)と[`specs`](/configuration/properties#specs)の説明をご覧ください。
 
-### Why need the spec plugins?
+### なぜスペックプラグインが必要なのですか
 
-For example, the `key` attribute doesn't exist in native HTML elements. But you often need to specify it when you use **React** or **Vue**. So you should specify `@markuplint/react-spec` or `@markuplint/vue-spec`.
+例えば、ネイティブのHTML要素には`key`属性は存在しませんが、**React**や**Vue**を使うときにはその固有の属性をつかうことがとても多いです。そこで、`@markuplint/react-spec`や`@markuplint/vue-spec`を指定する必要があります。
 
 ```js
 const Component = ({ list }) => {
@@ -148,25 +147,25 @@ const Component = ({ list }) => {
 </template>
 ```
 
-Besides, **spec plugins** include specific attributes and directives each owned.
+これ以外にも**スペックプラグイン**は、それぞれが持つ固有の属性やディレクティブを含んでいます。
 
-## Pretenders
+## プリテンダー（偽装機能）
 
-In **React**, **Vue**, and more, It cannot evaluate custom components as HTML elements.
+**React**や**Vue**などでは、カスタムコンポーネントをHTML要素として評価ができません。
 
 <!-- prettier-ignore-start -->
 ```jsx
-<List>{/* No evaluate as native HTML Element */}
-  <Item />{/* No evaluate as native HTML Element */}
-  <Item />{/* No evaluate as native HTML Element */}
-  <Item />{/* No evaluate as native HTML Element */}
+<List>{/* ネイティブのHTML要素として評価できない */}
+  <Item />{/* ネイティブのHTML要素として評価できない */}
+  <Item />{/* ネイティブのHTML要素として評価できない */}
+  <Item />{/* ネイティブのHTML要素として評価できない */}
 </List>
 ```
 <!-- prettier-ignore-end -->
 
-The **Pretenders** feature resolves that.
+**プリテンダー**機能はそれを解決します。
 
-It evaluates components as rendered HTML elements on each rule if you specify a [selector](./selectors) for a component and properties of an element that it exposes.
+コンポーネントとマッチする[セレクタ](./selectors)と、コンポーネントが公開する要素のプロパティを指定すると、各ルールでコンポーネントをレンダリングされたHTML要素として評価します。
 
 ```json
 {
@@ -185,12 +184,12 @@ It evaluates components as rendered HTML elements on each rule if you specify a 
 
 <!-- prettier-ignore-start -->
 ```jsx
-<List>{/* Evaluate as <ul> */}
-  <Item />{/* Evaluate as <li> */}
-  <Item />{/* Evaluate as <li> */}
-  <Item />{/* Evaluate as <li> */}
+<List>{/* <ul>として評価 */}
+  <Item />{/* <li>として評価 */}
+  <Item />{/* <li>として評価 */}
+  <Item />{/* <li>として評価 */}
 </List>
 ```
 <!-- prettier-ignore-end -->
 
-See the details of [`pretenders`](/configuration/properties#pretenders) property on the configuration if you want.
+必要であれば、設定の[`pretenders`](/configuration/properties#pretenders)プロパティの詳細を参照してください。

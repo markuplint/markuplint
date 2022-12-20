@@ -1,6 +1,6 @@
 {
-  "item.label.Getting Started": {
-    "message": "markuplintを始める"
+  "item.label.Guides": {
+    "message": "ガイド"
   },
   "item.label.Rules": {
     "message": "ルール"
@@ -10,6 +10,9 @@
   },
   "item.label.API": {
     "message": "API"
+  },
+  "item.label.Community": {
+    "message": "コニュニティ"
   },
   "item.label.Playground": {
     "message": "試してみる"

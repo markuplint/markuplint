@@ -1,10 +1,10 @@
-# Using Presets
+# プリセットをつかう
 
-There are some presets. It recommends specifying these because rules need to enable each.
+いくつかのプリセットがあります。ルールはそれぞれを有効にする必要があるため、これらを指定することをオススメします。
 
-## Applying presets
+## プリセットの適用
 
-Specify the `extends` property of the [configuration](/configuration/) like below:
+[設定](/configuration/)の`extends`プロパティを以下のように指定します。
 
 ```json
 {
@@ -12,7 +12,7 @@ Specify the `extends` property of the [configuration](/configuration/) like belo
 }
 ```
 
-You can choose some **base presets** appropriately for your preference.
+好みに合わせて、いくつかの**基本プリセット**を選択できます。
 
 ```json
 {
@@ -20,7 +20,7 @@ You can choose some **base presets** appropriately for your preference.
 }
 ```
 
-### Base presets {#base-presets}
+### 基本プリセット {#base-presets}
 
 - `markuplint:a11y`
 - `markuplint:html-standard`
@@ -28,9 +28,9 @@ You can choose some **base presets** appropriately for your preference.
 - `markuplint:rdfa`
 - `markuplint:security`
 
-See [rulesets](#rulesets-of-base-presets) what each preset include those.
+各プリセットに含まれる[ルールセット](#rulesets-of-base-presets)を参照してください。
 
-### Recommended presets
+### 推奨プリセット
 
 - `markuplint:recommended`
 - `markuplint:recommended-static-html`
@@ -38,11 +38,11 @@ See [rulesets](#rulesets-of-base-presets) what each preset include those.
 - `markuplint:recommended-vue`
 - `markuplint:recommended-svelte`
 
-These **recommended presets** include **all [base presets](#base-presets)**. And each has [specific rulesets](#syntax-specific-presets) except `markuplint:recommended` .
+これらの**推奨プリセット**には、**すべての[基本プリセット](#base-presets)**が含まれています。また、`markuplint:recommended`以外はそれぞれ[固有のルールセット](#syntax-specific-presets)を持っています。
 
-## Rulesets of base presets {#rulesets-of-base-presets}
+## 基本プリセットのルールセット {#rulesets-of-base-presets}
 
-| Ruleset                                                                                                                                 | Description                                                                                                                                          | `a11y` | `html-standard` | `performance` | `rdfa` | `security` |
+| ルールセット                                                                                                                            | 解説                                                                                                                                                 | `a11y` | `html-standard` | `performance` | `rdfa` | `security` |
 | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | --------------- | ------------- | ------ | ---------- |
 | [Disallow `<hgroup>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup)                                                 | The hgroup element should not be used because no assistive technology supports it.                                                                   | ✅     | ❌              | ❌            | ❌     | ❌         |
 | [Must not duplicate **ID**](https://www.w3.org/WAI/WCAG21/Techniques/html/H93.html)                                                     | Be able to avoid problems in assistive technologies from the viewpoint of machine readability.                                                       | ✅     | ✅              | ❌            | ❌     | ❌         |
@@ -80,9 +80,9 @@ These **recommended presets** include **all [base presets](#base-presets)**. And
 | Allow `property` attr with `<meta>`                                                                                                     | Be able to use **Open-Graph** etc.                                                                                                                   | ❌     | ❌              | ❌            | ✅     | ❌         |
 | Require `noreferrer` with `target=_blank`                                                                                               | Require `rel=noreferrer` with an element that has `target=_blank` to prevent leaking referrer information and to block operating referrer documents. | ❌     | ❌              | ❌            | ❌     | ✅         |
 
-## Ruleset of syntax specific presets {#syntax-specific-presets}
+## 構文固有のルールセット {#syntax-specific-presets}
 
-| Ruleset               | Description                                                                                                                                                            | `recommended-static-html` | `recommended-react` | `recommended-vue` | `recommended-svelte` |
+| ルールセット          | 解説                                                                                                                                                                   | `recommended-static-html` | `recommended-react` | `recommended-vue` | `recommended-svelte` |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------- | ----------------- | -------------------- |
 | No hard coding **ID** | The component that hard-coded ID cannot mount to an app duplicated because the IDs must be unique in a document. Recommend to specify dynamic IDs to avoid doing that. | ❌                        | ✅                  | ✅                | ✅                   |
 | No omit **end-tag**   | Recommend to write an end-tag always because it is too difficult for a human decide an element is end-tag omittable.                                                   | ✅                        | ❌                  | ❌                | ❌                   |

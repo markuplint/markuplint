@@ -1,6 +1,6 @@
 # Understanding Selectors
 
-It should set `selector` to [apply to some](applying-rules#applying-to-some). The selector syntax supports the same as **CSS Selectors**, Markuplint specific extended syntaxes, and more. So you can select elements quite flexibly.
+It should set **selector** to [apply to some](applying-rules#applying-to-some). The selector syntax supports the same as **CSS Selectors**, Markuplint specific extended syntaxes, and more. So you can select elements quite flexibly.
 
 ## CSS Selectors
 
