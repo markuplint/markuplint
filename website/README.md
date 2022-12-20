@@ -1,6 +1,6 @@
-# markuplint website
+# Markuplint website
 
-The source of markuplint website (<https://markuplint.dev/>).
+The source of Markuplint website (<https://markuplint.dev/>).
 
 ## Development
 
