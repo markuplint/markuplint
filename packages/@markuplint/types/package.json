@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/types",
-	"version": "3.0.0-rc.4",
+	"version": "3.0.0-rc.5",
 	"description": "Type declaration and value checker",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -22,8 +22,8 @@
 		"css-tree": "^2.3.1",
 		"debug": "^4.3.4",
 		"leven": "3",
-		"whatwg-mimetype": "2",
-		"patch-package": "^6.5.0"
+		"patch-package": "^6.5.0",
+		"whatwg-mimetype": "2"
 	},
 	"devDependencies": {
 		"@types/bcp-47": "1",
