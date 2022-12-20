@@ -1,5 +1,3 @@
-.vscode
-docs
 src
-tsconfig.json
-yarn.lock
+tsconfig*
+prh.yml

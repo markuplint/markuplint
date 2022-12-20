@@ -1,5 +1,3 @@
-.vscode
-yarn.lock
 build.mjs
 preset.___test.json
 src

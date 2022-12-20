@@ -1,5 +1,4 @@
-.vscode
-docs
+media
+test
 src
-tsconfig.json
-yarn.lock
+tsconfig*

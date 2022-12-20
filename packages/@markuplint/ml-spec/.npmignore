@@ -1,3 +1,4 @@
-.vscode
 gen
-tsconfig.json
+schemas
+src
+tsconfig*
