@@ -21,7 +21,7 @@
 		"@types/debug": "^4.1.7",
 		"@types/has-yarn": "^1.0.1",
 		"@types/meow": "^6.0.0",
-		"@types/uuid": "8",
+		"@types/uuid": "^9.0.0",
 		"execa": "5"
 	},
 	"dependencies": {
@@ -48,6 +48,6 @@
 		"strict-event-emitter": "^0.2.8",
 		"strip-ansi": "6",
 		"tslib": "^2.4.1",
-		"uuid": "8"
+		"uuid": "^9.0.0"
 	}
 }

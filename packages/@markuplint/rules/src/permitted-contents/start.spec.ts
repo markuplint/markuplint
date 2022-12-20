@@ -47,7 +47,7 @@ it('transparent: <a> with <svg>', () => {
 });
 
 it('conditional transparent: <audio>', () => {
-	expect(c('<audio src="path/to"><source /></audio>')[0].type).toBe('UNEXPECTED_EXTRA_NODE');
+	expect(c('<audio src="path/to"><source /></audio>')[0].type).toBe('MATCHED');
 	expect(c('<div><audio src="path/to"><source /></audio></div>', 'audio')[0].type).toBe('MATCHED');
 	expect(c('<div><audio src="path/to"><source /></audio></div>')[0].type).toBe('UNEXPECTED_EXTRA_NODE');
 });

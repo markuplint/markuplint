@@ -859,14 +859,6 @@ describe('verify', () => {
 		).toStrictEqual([
 			{
 				severity: 'error',
-				line: 2,
-				col: 7,
-				message:
-					'The "style" element is not allowed in the "noscript" element through the transparent model in this context',
-				raw: '<style>',
-			},
-			{
-				severity: 'error',
 				line: 5,
 				col: 7,
 				message:
@@ -1273,5 +1265,91 @@ describe('Issues', () => {
 				raw: '<dl>',
 			},
 		]);
+	});
+
+	test('#617', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<head>
+				<title>Title</title>
+				<noscript>
+					<style>
+						.selector {}
+					</style>
+				</noscript></head>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<noscript>
+					<style>
+						.selector {}
+					</style>
+				</noscript>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<div><noscript>
+					<style>
+						.selector {}
+					</style>
+				</noscript></div>`,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 2,
+				col: 6,
+				message:
+					'The "style" element is not allowed in the "div" element through the transparent model in this context',
+				raw: '<style>',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<span><noscript>
+					<div>
+					</div>
+				</noscript></span>`,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 2,
+				col: 6,
+				message:
+					'The "div" element is not allowed in the "span" element through the transparent model in this context',
+				raw: '<div>',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`mixin meta(title)
+	meta(charset="UTF-8")
+	meta(name="viewport" content="width=device-width")
+	title= title
+	noscript
+		style`,
+					{
+						parser: require('@markuplint/pug-parser'),
+					},
+				)
+			).violations,
+		).toStrictEqual([]);
 	});
 });

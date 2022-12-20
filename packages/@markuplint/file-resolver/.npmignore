@@ -1,5 +1,4 @@
-.vscode
-docs
+__mocks__
+test
 src
-tsconfig.json
-yarn.lock
+tsconfig*

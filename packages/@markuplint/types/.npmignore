@@ -1,1 +1,3 @@
-tsconfig.json
+gen
+src
+tsconfig*
