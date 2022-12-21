@@ -26,7 +26,7 @@ Specify the `extends` field if you want to apply configuration files are upper l
 
 ### Format and Filename
 
-You can get even if the filename is not `.markuplintrc`.
+You can apply even if the filename is not `.markuplintrc`.
 
 The priority applied names are:
 

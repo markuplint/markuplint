@@ -20,7 +20,7 @@ Suppose defining the following rule:
   <!-- ❌ Incorrect: Invalid format -->
   <source srcset="logo-3x.png 3x" />
 
-  <!-- ❌ Incorrect Different name -->
+  <!-- ❌ Incorrect: Different name -->
   <source srcset="symbol@2x.png 2x" />
 
   <!-- It is the basis -->
@@ -28,9 +28,9 @@ Suppose defining the following rule:
 </picture>
 ```
 
-## Configuration sample
+## Configuration
 
-Use [`invalid-attr`](/rules/invalid-attr) rule.
+Use [`invalid-attr`](/rules/invalid-attr) rule with [`regexSelector`](/configuration/properties#regexselector).
 
 ```json
 {
@@ -42,7 +42,10 @@ Use [`invalid-attr`](/rules/invalid-attr) rule.
       "regexSelector": {
         "nodeName": "img",
         "attrName": "src",
-        "attrValue": "/^(?<FileName>.+)\\.(?<Exp>png|jpg|webp|gif)$/",
+        "attrValue":
+          // Capture a file name and its extension from img elements while...
+          "/^(?<FileName>.+)\\.(?<Exp>png|jpg|webp|gif)$/",
+        // Use together combinator to select preceding-sibling source elements
         "combination": {
           "combinator": ":has(~)",
           "nodeName": "source"
@@ -53,6 +56,7 @@ Use [`invalid-attr`](/rules/invalid-attr) rule.
           "option": {
             "attrs": {
               "srcset": {
+                // Expand a file name and its extension by Mustache format
                 "enum": ["{{FileName}}@2x.{{Exp}} 2x", "{{FileName}}@3x.{{Exp}} 3x"]
               }
             }
@@ -63,5 +67,3 @@ Use [`invalid-attr`](/rules/invalid-attr) rule.
   ]
 }
 ```
-
-It **captures the file name** from the `src` attribute while **use it to the rule**.
