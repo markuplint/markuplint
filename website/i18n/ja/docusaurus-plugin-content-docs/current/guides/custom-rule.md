@@ -14,11 +14,11 @@ npx markuplint --create-rule
   Create the rule and publish it as a package
 ```
 
-<!-- textlint-disable -->
+<!-- textlint-disable ja-technical-writing/sentence-length -->
 
 最初の質問で、「ルールをこのプロジェクトに追加する（"**Add the rule to this project**"）」か、「ルールを作成してパッケージとして公開する（"**Create the rule and publish it as a package**"）」のどちらかを回答してください。
 
-<!-- textlint-enable -->
+<!-- textlint-enable ja-technical-writing/sentence-length -->
 
 ## プロジェクトへ追加する
 
