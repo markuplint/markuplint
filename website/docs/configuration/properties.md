@@ -93,7 +93,7 @@ interface Config {
 ### `plugins`
 
 You can load any plugins.
-Specify a package name or a [path](#properties/specification-about-paths).
+Specify a package name or a [path](#resolving-specified-paths).
 Can specify `settings` if the plugin has it.
 
 ```json
