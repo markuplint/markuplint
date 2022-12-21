@@ -60,8 +60,8 @@
 | 疑似要素                           | `::before` `::after`                                                                      | ❌       |
 | 子孫結合子                         | `div span`                                                                                | ✅       |
 | 子結合子                           | `div > span`                                                                              | ✅       |
-| 隣接兄弟結合子                     | `div + span`                                                                              | ✅       |
-| 一般兄弟結合子                     | `div ~ span`                                                                              | ✅       |
+| 後方隣接兄弟結合子                 | `div + span`                                                                              | ✅       |
+| 後方兄弟結合子                     | `div ~ span`                                                                              | ✅       |
 | 列結合子                           | <code>div \|\| span</code>                                                                | ❌       |
 | セレクタリスト                     | `div, span`                                                                               | ✅       |
 
@@ -77,7 +77,7 @@
 
 <!-- textlint-enable ja-technical-writing/max-kanji-continuous-len -->
 
-```json title=":has selector with Subsequent-sibling combinator"
+```json title=":hasセレクタと一般兄弟結合子"
 {
   "nodeRules": [
     {
