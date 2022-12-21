@@ -4,5 +4,11 @@
   },
   "sidebar.rules.category.Rules": {
     "message": "ルール"
+  },
+  "sidebar.configuration.category.Configuration": {
+    "message": "設定"
+  },
+  "sidebar.configuration.category.Usecases": {
+    "message": "ユースケース"
   }
 }
