@@ -27,7 +27,7 @@
 }
 ```
 
-### ルールを上書きして無効化
+### ルールを上書きして無効化 {#overriding-to-disable-rules}
 
 設定の[`overrides`](/configuration/properties#overrides)プロパティを使います。
 

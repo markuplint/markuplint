@@ -14,11 +14,11 @@ npx markuplint --create-rule
   Create the rule and publish it as a package
 ```
 
-<!-- textlint-disable -->
+<!-- textlint-disable ja-technical-writing/sentence-length -->
 
 最初の質問で、「ルールをこのプロジェクトに追加する（"**Add the rule to this project**"）」か、「ルールを作成してパッケージとして公開する（"**Create the rule and publish it as a package**"）」のどちらかを回答してください。
 
-<!-- textlint-enable -->
+<!-- textlint-enable ja-technical-writing/sentence-length -->
 
 ## プロジェクトへ追加する
 
@@ -126,9 +126,7 @@ createRule({
 });
 ```
 
-There are two methods to pass a violation to the `report` function. One is passing a **node**, as mentioned above. And the other is passing the number of a **line** and a **column**, and a **string in range**.
-
-`report`関数に違反情報を渡すには、2つの方法があります。ひとつは、前述したようにノードを渡す方法。そしてもうひとつは、行と列の番号と、範囲内の文字列を渡す方法です。
+`report`関数に違反情報を渡すには、2つの方法があります。ひとつは、前述したように**ノード**を渡す方法。そしてもうひとつは、**行**と**列**の番号と、**範囲内の文字列**を渡す方法です。
 
 ```ts
 report({
@@ -145,8 +143,6 @@ report({
 ```
 
 ## メッセージの多言語化
-
-The `translate` function (There is an alias as `t`) translates a message.
 
 `translate`関数（`t`という別名があります）は、メッセージを翻訳します。
 
@@ -177,8 +173,6 @@ Missing the "title" element
 必要に応じて、[`@markuplint/i18n`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/i18n#api) APIの詳細をご覧ください。
 
 :::info
-
-There is **only Japanese** besides English in the [dictionaries](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/i18n/locales) currently. We expect [your contribution](/community/contributing) to translating the other languages.
 
 現在、[辞書データ](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/i18n/locales)には英語の他に**日本語しか**ありません。他の言語の翻訳への[貢献](/community/contributing)も期待しています。
 
