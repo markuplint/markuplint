@@ -48,7 +48,6 @@ Markuplintは実行時、[設定ファイル](/configuration)を自動で探し�
   "childNodeRules": [
     {
       // 「ignoreClass」クラスをもつ要素の子要素のみに適用
-      // Only apply to child nodes of elements has ".ignoreClass" class
       "selector": ".ignoreClass",
       "rules": {
         "character-reference": false
