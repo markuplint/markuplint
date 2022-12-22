@@ -10,5 +10,11 @@
   },
   "sidebar.configuration.category.Usecases": {
     "message": "ユースケース"
+  },
+  "sidebar.community.category.Community": {
+    "message": "コミュニティ"
+  },
+  "sidebar.community.link.Store": {
+    "message": "ストア"
   }
 }

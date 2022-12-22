@@ -2,7 +2,7 @@
 
 ## デフォルトの挙動
 
-Markuplintは実行時、[設定ファイル](/configuration)を自動で探します。設定ファイルが見つかった場合、[推奨プリセット](./presets)のルールを適用します。見つかった場合はその設定に従います。
+Markuplintは実行時、[設定ファイル](/configuration)を自動で探します。設定ファイルが見つからなかった場合、[推奨プリセット](./presets)のルールを適用します。見つかった場合はその設定に従います。
 
 ## ルールの設定
 
@@ -48,7 +48,6 @@ Markuplintは実行時、[設定ファイル](/configuration)を自動で探し�
   "childNodeRules": [
     {
       // 「ignoreClass」クラスをもつ要素の子要素のみに適用
-      // Only apply to child nodes of elements has ".ignoreClass" class
       "selector": ".ignoreClass",
       "rules": {
         "character-reference": false
