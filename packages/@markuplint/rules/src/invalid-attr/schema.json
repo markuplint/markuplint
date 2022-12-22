@@ -60,7 +60,8 @@
 							}
 						]
 					},
-					"description": "Setting custom rule. Set either `enum`, `pattern`, `type` or `disallowed`."
+					"description": "Setting custom rule. Set either `enum`, `pattern`, `type` or `disallowed`.",
+					"description:ja": "`enum` `pattern` `type` `disallowed` のいずれかで設定します。"
 				},
 				"ignoreAttrNamePrefix": {
 					"oneOf": [
@@ -76,12 +77,14 @@
 							}
 						}
 					],
-					"description": "Set prefixes to exclude special attributes or directives for the library and template engine that do not exist in the HTML specifications."
+					"description": "Set prefixes to exclude special attributes or directives for the library and template engine that do not exist in the HTML specifications.",
+					"description:ja": "HTMLの仕様には存在しない、Viewライブラリやテンプレートエンジン固有の属性およびディレクティブを除外するために、プレフィックスを設定します。"
 				},
 				"allowToAddPropertiesForPretender": {
 					"type": "boolean",
 					"default": "true",
-					"description": "Allow adding properties for a component that pretends to be an HTML native element. The default is `true`. It warns of finding a non-existence attribute if it is set `false` and you use the `pretenders` option."
+					"description": "Allow adding properties for a component that pretends to be an HTML native element. The default is `true`. It warns of finding a non-existence attribute if it is set `false` and you use the `pretenders` option.",
+					"description:ja": "HTML要素に偽装しているコンポーネントのプロパティを追加できるようにします。デフォルトは真です。`pretenders`オプションを使用している場合に`false`に設定されていると、存在しない属性が見つかると警告してしまいます。"
 				}
 			}
 		}

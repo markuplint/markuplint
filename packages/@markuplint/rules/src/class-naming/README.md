@@ -1,6 +1,6 @@
 ---
 id: class-naming
-description: Class naming convention
+description: Warn if the class name does not conform to the specified rules.
 category: naming-convention
 severity: warning
 ---
@@ -80,19 +80,19 @@ The BEM-like CSS structure:
 
 <section class="Card">
   <div class="Card__header">
-    <!-- 👎 It is "Card" scope, Don't use the element owned "Heading" -->
+    <!-- ❌ It is "Card" scope, Don't use the element owned "Heading" -->
     <h3 class="Heading__lv3">Title</h3>
   </div>
   <div class="Card__body">
     <div class="Card__body-el">...</div>
-    <!-- 👎 It is "Card" scope, Don't use the element owned "List" -->
+    <!-- ❌ It is "Card" scope, Don't use the element owned "List" -->
     <ul class="List__group">
       <li>...</li>
       <li>...</li>
       <li>...</li>
     </ul>
     <div class="List">
-      <!-- 👎 It is not "Card" scope instead of "List" scope here -->
+      <!-- ❌ It is not "Card" scope instead of "List" scope here -->
       <ul class="Card__list">
         <li>...</li>
         <li>...</li>

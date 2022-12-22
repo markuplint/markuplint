@@ -1,6 +1,6 @@
 ---
 id: character-reference
-description: Character reference
+description: Warns when unauthorized illegal characters are not escaped with character reference in the text node or attribute value.
 category: style
 severity: error
 ---
@@ -11,7 +11,7 @@ Warns when unauthorized illegal characters are not escaped with character refere
 
 > In certain cases described in other sections, text may be mixed with **character references**. These can be used to escape characters that couldn't otherwise legally be included in text.
 
-Cite: https://html.spec.whatwg.org/#syntax-charref
+Cite: [HTML Living Standard 13.1.4 Character references](https://html.spec.whatwg.org/multipage/syntax.html#syntax-charref:~:text=In%20certain%20cases%20described%20in%20other%20sections%2C%20text%20may%20be%20mixed%20with%20character%20references.%20These%20can%20be%20used%20to%20escape%20characters%20that%20couldn%27t%20otherwise%20legally%20be%20included%20in%20text.)
 
 :::note
 

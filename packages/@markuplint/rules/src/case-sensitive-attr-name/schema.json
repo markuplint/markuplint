@@ -8,6 +8,10 @@
 			"_description": {
 				"lower": "Warns that the attribute name is not in lowercase.",
 				"upper": "Warns that the attribute name is not in uppercase."
+			},
+			"_description:ja": {
+				"lower": "属性名が小文字に統一されていないと警告します（外来要素は対象外）。",
+				"upper": "属性名が小文字に統一されていないと警告します（外来要素は対象外）。"
 			}
 		}
 	},

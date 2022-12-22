@@ -6,7 +6,10 @@
 			"enum": ["always"],
 			"default": "always",
 			"_description": {
-				"always": "Warns when doesn't declare DOCTYPE. Ignore when document is fragment."
+				"always": "Warns when doesn't declare Doctype. Ignore when document is fragment."
+			},
+			"_description:ja": {
+				"always": "Doctype宣言が書かれていないと警告します（要素の断片は対象外）。"
 			}
 		},
 		"options": {
@@ -16,7 +19,8 @@
 				"denyObsoleteType": {
 					"type": "boolean",
 					"default": "true",
-					"description": "Warns that the type is not `<!doctype html>`."
+					"description": "Warns that the type is not `<!doctype html>`.",
+					"description:ja": "`<!doctype html>`以外のDoctypeだと警告します。"
 				}
 			}
 		}

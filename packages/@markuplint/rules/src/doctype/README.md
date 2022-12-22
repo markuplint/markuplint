@@ -1,5 +1,5 @@
 ---
-description: DOCTYPE declaration
+description: Doctype declaration
 id: doctype
 fixable: false
 category: validation
@@ -8,7 +8,7 @@ severity: error
 
 # `doctype`
 
-Warns when doesn't declare DOCTYPE. Also warns when declared obsolete type.
+Warns when doesn't declare Doctype. Also warns when declared obsolete type.
 
 ❌ Examples of **incorrect** code for this rule
 

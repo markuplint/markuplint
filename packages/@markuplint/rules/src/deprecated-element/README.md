@@ -1,6 +1,6 @@
 ---
 id: deprecated-element
-description: Deprecated elements
+description: Warns when there is an element defined as deprecated or obsolete or non-standard.
 category: validation
 severity: error
 ---

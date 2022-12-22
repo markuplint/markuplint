@@ -1,13 +1,13 @@
 ---
-description: WAI-ARIA
 id: wai-aria
+description: Warn if the role attribute and aria-* attributes don't set in accordance with specs that are WAI-ARIA and ARIA in HTML.
 category: a11y
 severity: error
 ---
 
 # `wai-aria`
 
-Warn if the `role` attribute and/or `aria-*` attributes don't set in accordance with specs that are WAI-ARIA and/or "ARIA in HTML".
+Warn if the `role` attribute and `aria-*` attributes don't set in accordance with specs that are **WAI-ARIA** and **ARIA in HTML**.
 
 Warn if:
 
@@ -69,7 +69,7 @@ Below is an example of disabling `disallowSetImplicitRole` when the `img` elemen
       "rules": {
         // Allows the implicit role:
         "wai-aria": {
-          "option": {
+          "options": {
             "disallowSetImplicitRole": false
           }
         },
@@ -77,7 +77,7 @@ Below is an example of disabling `disallowSetImplicitRole` when the `img` elemen
         "required-attr": "role",
         // Allow only img value for the role attribute:
         "invalid-attr": {
-          "option": {
+          "options": {
             "attrs": {
               "role": {
                 "enum": ["img"]

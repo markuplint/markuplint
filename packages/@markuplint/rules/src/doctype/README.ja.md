@@ -1,10 +1,12 @@
 ---
-description: DOCTYPE 宣言
+description: Doctype宣言が書かれていないと警告します。
 ---
 
-DOCTYPE 宣言が書かれていないと警告します。また、古い廃止された DOCTYPE を宣言をしていた場合にも警告します。
+# `doctype`
 
-## ルールの詳細
+Doctype宣言が書かれていないと警告します。また、古い廃止されたDoctypeを宣言をしていた場合にも警告します。
+
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
@@ -39,25 +41,4 @@ DOCTYPE 宣言が書かれていないと警告します。また、古い廃止
 ```
 <!-- prettier-ignore-end -->
 
-### 設定値
-
-型: `"always"`
-
-| 設定値     | デフォルト | 解説                                                             |
-| ---------- | ---------- | ---------------------------------------------------------------- |
-| `"always"` | ✓          | DOCTYPE 宣言が書かれていないと警告します（要素の断片は対象外）。 |
-
-### オプション
-
-#### `denyObsoleteType`
-
-型: `boolean`
-
-| 設定値  | デフォルト | 解説                                              |
-| ------- | ---------- | ------------------------------------------------- |
-| `true`  | ✓          | `<!doctype html>` 以外の DOCTYPE だと警告します。 |
-| `false` |            | DOCTYPE の種類を問いません。                      |
-
-### デフォルトの警告の厳しさ
-
-`error`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

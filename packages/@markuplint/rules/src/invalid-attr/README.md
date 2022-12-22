@@ -1,6 +1,6 @@
 ---
-description: Invalid Attribute
 id: invalid-attr
+description: Warn if an attribute is a non-existent attribute or an invalid type value due to the specifications (or the custom rule).
 category: style
 severity: error
 ---
@@ -56,7 +56,7 @@ Type: `string[]`
 ```json
 {
   "invalid-attr": {
-    "option": {
+    "options": {
       "attrs": {
         "x-attr": {
           "enum": ["value1", "value2", "value3"]
@@ -76,7 +76,7 @@ Type: `string`
 ```json
 {
   "invalid-attr": {
-    "option": {
+    "options": {
       "attrs": {
         "x-attr": {
           "pattern": "/[a-z]+/"
@@ -96,7 +96,7 @@ Type: `string`
 ```json
 {
   "invalid-attr": {
-    "option": {
+    "options": {
       "attrs": {
         "x-attr": {
           "type": "Boolean"
@@ -116,7 +116,7 @@ Type: `boolean`
 ```json
 {
   "invalid-attr": {
-    "option": {
+    "options": {
       "attrs": {
         "x-attr": {
           "disallowed": true
@@ -132,7 +132,7 @@ Type: `boolean`
 ```json
 {
   "invalid-attr": {
-    "option": {
+    "options": {
       "ignoreAttrNamePrefix": [
         // If Angular
         "app",
@@ -157,7 +157,7 @@ _[The Open Graph protocol](https://ogp.me/)_ and _[RDFa](https://rdfa.info/)_ ar
     "selector": "meta[property]",
     "rules": {
       "invalid-attr": {
-        "option": {
+        "options": {
           "attrs": {
             "property": {
               "type": "Any"
@@ -179,7 +179,7 @@ _[The Open Graph protocol](https://ogp.me/)_ and _[RDFa](https://rdfa.info/)_ ar
 {
   "rules": {
     "invalid-attr": {
-      "option": {
+      "options": {
         "attrs": {
           "vocab": {
             "type": "URL"

@@ -1,12 +1,14 @@
 ---
-description: 無効な属性
+description: 属性が仕様上（あるいは独自に指定したルール上）、存在しない属性であったり、無効な型の値だった場合に警告をします。
 ---
+
+# `invalid-attr`
 
 属性が仕様上（あるいは独自に指定したルール上）、存在しない属性であったり、無効な型の値だった場合に警告をします。
 
 [HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/attributes)に設定値を持っています。
 
-## ルールの詳細
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
@@ -26,19 +28,25 @@ description: 無効な属性
 </div>
 ```
 
-### 設定値
+:::note
 
-型: `boolean`
+このルールは条件によっては**スプレッド属性**をもつ要素は評価しません。例えば、`href`属性を持たない`a`要素は`target`属性が許可されていませんが、スプレッド属性に`href`が含まれているかMarkuplintは知ることができないため評価できません。
 
-### オプション
+```jsx
+const Component = (props) => {
+	return <a target="_blank" {...props}>;
+}
+```
 
-#### `attrs`
+:::
 
-独自ルールを指定します。
+---
 
-`enum` `pattern` `type` `disallowed` のいずれかで設定します。
+## 詳細
 
-##### `enum`
+### `attrs`オプションの設定
+
+#### `enum`
 
 列挙した文字列にマッチする値のみ許可します。
 
@@ -47,7 +55,7 @@ description: 無効な属性
 ```json
 {
   "invalid-attr": {
-    "option": {
+    "options": {
       "attrs": {
         "x-attr": {
           "enum": ["value1", "value2", "value3"]
@@ -58,7 +66,7 @@ description: 無効な属性
 }
 ```
 
-##### `pattern`
+#### `pattern`
 
 パターンにマッチする値のみ許可します。 `/` で囲むことで **正規表現** として機能します。
 
@@ -67,7 +75,7 @@ description: 無効な属性
 ```json
 {
   "invalid-attr": {
-    "option": {
+    "options": {
       "attrs": {
         "x-attr": {
           "pattern": "/[a-z]+/"
@@ -78,16 +86,16 @@ description: 無効な属性
 }
 ```
 
-##### `type`
+#### `type`
 
-指定した[型](https://markuplint.dev/types)にマッチする値のみ許可します。
+指定した[型](https://markuplint.dev/api/types)にマッチする値のみ許可します。
 
 型: `string`
 
 ```json
 {
   "invalid-attr": {
-    "option": {
+    "options": {
       "attrs": {
         "x-attr": {
           "type": "Boolean"
@@ -98,7 +106,7 @@ description: 無効な属性
 }
 ```
 
-##### `disallowed`
+#### `disallowed`
 
 指定した属性を禁止します。
 
@@ -107,7 +115,7 @@ description: 無効な属性
 ```json
 {
   "invalid-attr": {
-    "option": {
+    "options": {
       "attrs": {
         "x-attr": {
           "disallowed": true
@@ -118,16 +126,12 @@ description: 無効な属性
 }
 ```
 
-#### `ignoreAttrNamePrefix`
-
-HTML の仕様には存在しない、View ライブラリやテンプレートエンジン固有の属性およびディレクティブを除外するために、プレフィックスを設定します。
-
-型: `string | string[]`
+### `ignoreAttrNamePrefix`オプションの設定
 
 ```json
 {
   "invalid-attr": {
-    "option": {
+    "options": {
       "ignoreAttrNamePrefix": [
         // Angularの場合
         "app",
@@ -138,35 +142,13 @@ HTML の仕様には存在しない、View ライブラリやテンプレート�
 }
 ```
 
-パーサーによってはディレクティブを判定して除外します。（例えば [vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/vue-parser) では `v-` の文字列で始まるディレクティブは除外します。）
+パーサーによってはディレクティブを判定して除外します。（例えば [vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/vue-parser) では`v-`の文字列で始まるディレクティブは除外します）
 
-#### `allowToAddPropertiesForPretender`
+## 設定例
 
-HTML 要素に偽装しているコンポーネントのプロパティを追加できるようにします。デフォルトは真です。
-`pretenders` オプションを使用している場合に`false`に設定されていると、存在しない属性が見つかると警告してしまいます。
+*[Open Graph プロトコル](https://ogp.me/)*および*[RDFa](https://rdfa.info/)*は*HTML 標準*とは異なる仕様です。そのため、必要な場合は次のように手動で指定する必要があります。
 
-Type: `boolean`
-Default: `true`
-
-### デフォルトの警告の厳しさ
-
-`error`
-
-## 注意
-
-このルールは条件によっては**スプレッド属性**をもつ要素は評価しません。例えば、`href`属性を持たない`a`要素は`target`属性が許可されていませんが、スプレッド属性に`href`が含まれているかどうか markuplint が知ることができないため、評価をすることができません。
-
-```jsx
-const Component = (props) => {
-	return <a target="_blank" {...props}>;
-}
-```
-
-## 参考
-
-_[Open Graph プロトコル](https://ogp.me/)_ および _[RDFa](https://rdfa.info/)_ は、_HTML 標準_ とは異なる仕様です。そのため、必要な場合は次のように手動で指定する必要があります。
-
-### Open Graph プロトコル
+### Open Graphプロトコル
 
 ```json
 {
@@ -174,7 +156,7 @@ _[Open Graph プロトコル](https://ogp.me/)_ および _[RDFa](https://rdfa.i
     "selector": "meta[property]",
     "rules": {
       "invalid-attr": {
-        "option": {
+        "options": {
           "attrs": {
             "property": {
               "type": "Any"
@@ -196,7 +178,7 @@ _[Open Graph プロトコル](https://ogp.me/)_ および _[RDFa](https://rdfa.i
 {
   "rules": {
     "invalid-attr": {
-      "option": {
+      "options": {
         "attrs": {
           "vocab": {
             "type": "URL"
@@ -220,4 +202,6 @@ _[Open Graph プロトコル](https://ogp.me/)_ および _[RDFa](https://rdfa.i
 }
 ```
 
-構造化データを利用する場合 _RDFa_ ではなく _[Microdata](https://developer.mozilla.org/en-US/docs/Web/HTML/Microdata)_ を利用することを進めます。
+構造化データを利用する場合*RDFa*ではなく*[Microdata](https://developer.mozilla.org/en-US/docs/Web/HTML/Microdata)*を利用することを進めます。
+
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

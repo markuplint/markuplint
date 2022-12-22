@@ -1,6 +1,6 @@
 ---
-description: End tag
 id: end-tag
+description: Warn if there is not an end tag.
 category: style
 severity: warning
 ---
@@ -9,7 +9,11 @@ severity: warning
 
 Warn if there is not an end tag. It doesn't warn if a tag has self-closing solidus and doesn't need the end tag, or the tag is a void element.
 
-Note: Currently, this rule doesn't evaluate whether omit possible the end tag.
+:::note
+
+Currently, this rule doesn't evaluate whether omit possible the end tag.
+
+:::
 
 ❌ Examples of **incorrect** code for this rule
 

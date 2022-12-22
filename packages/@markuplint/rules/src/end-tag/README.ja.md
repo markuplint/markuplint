@@ -1,12 +1,18 @@
 ---
-description: 終了タグ
+description: 終了タグがない場合は警告します。
 ---
+
+# `end-tag`
 
 終了タグがない場合は警告します。タグが自己完結型であり終了タグを必要としない場合や、タグが空要素である場合は警告をしません。
 
-注意：現在、このルールは終了タグが省略可能かどうかを評価しません。
+:::note
 
-## ルールの詳細
+現在、このルールは終了タグが省略可能かどうかを評価しません。
+
+:::
+
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
@@ -24,10 +30,4 @@ description: 終了タグ
 </div>
 ```
 
-### 設定値
-
-なし
-
-### デフォルトの警告の厳しさ
-
-`warning`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->
