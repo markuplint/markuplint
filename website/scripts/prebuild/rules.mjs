@@ -1,37 +1,24 @@
-import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
-import { resolve, basename } from 'node:path';
+import { readFile, readdir, stat } from 'node:fs/promises';
+import { resolve, basename, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import matter from 'gray-matter';
 
-import { dropFiles } from './utils.mjs';
+import { rewriteRuleContent } from './rule-content.mjs';
+import { dropFiles, getEditUrlBase, glob, output, projectRoot } from './utils.mjs';
 
-/** @typedef {Record<"validation"|"a11y"|"naming-convention"|"maintainability"|"style", string[]>} RuleIndex */
+/** @typedef {Record<"validation"|"a11y"|"naming-convention"|"maintainability"|"style", string[]>} RuleIndexContents */
+/** @typedef {{ lang: string, contents: RuleIndexContents }} RuleIndex */
 
 const RULES_DIR = 'packages/@markuplint/rules/src';
 
 /**
+ * Get directories of rules
  *
- * @param {string} projectRoot
- * @returns {string}
- */
-const getRulesAbsDir = projectRoot => resolve(projectRoot, RULES_DIR);
-
-/**
- *
- * @param {string} projectRoot
- * @returns {Promise<string>}
- */
-const getEditUrlBase = async projectRoot =>
-  (await import(resolve(projectRoot, 'website', 'config.js'))).default.editUrlBase;
-
-/**
- *
- * @param {string} projectRoot
  * @returns {Promise<string[]>}
  */
-async function getRulePaths(projectRoot) {
-  const rulesAbsDir = getRulesAbsDir(projectRoot);
+async function getRulePaths() {
+  const rulesAbsDir = resolve(projectRoot, RULES_DIR);
   const rulesDirFileList = await readdir(pathToFileURL(rulesAbsDir));
   const dirs = (
     await Promise.all(
@@ -49,132 +36,66 @@ async function getRulePaths(projectRoot) {
   return dirs;
 }
 
-function type(value, escape = false) {
-  const verticalBar = escape ? '&#x7C;' : '|';
+async function getDocFile(filePath, value, option) {
+  const editUrlBase = await getEditUrlBase();
+  const name = basename(filePath);
+  const doc = await readFile(filePath, { encoding: 'utf-8' });
+  const { data: frontMatter, content } = matter(doc);
+  frontMatter.custom_edit_url = `${editUrlBase}/${RULES_DIR}/${name}`;
 
-  if (value.oneOf) {
-    return value.oneOf.map(v => type(v, escape)).join(verticalBar);
-  }
+  const fileName = basename(filePath, extname(filePath));
+  const lang = (/^README(?:\.([a-z]+))?$/.exec(fileName) || [])[1];
 
-  if (value.type === 'array') {
-    return type(value.items, escape) + '[]';
-  }
+  let rewrote = rewriteRuleContent(content, name, value, option, frontMatter.severity);
 
-  if (value.type === 'string' && value.enum) {
-    return value.enum.map(e => `"${e}"`).join(verticalBar);
-  }
+  // eslint-disable-next-line import/no-named-as-default-member
+  rewrote = matter.stringify(rewrote, frontMatter);
 
-  if (value.type === 'object' && value._type) {
-    return value._type;
-  }
-
-  return value.type;
-}
-
-function valueDoc(value) {
-  if (value.enum && value._description) {
-    const table = [
-      //
-      'Value|Default|Description',
-      '---|---|---',
-    ];
-
-    table.push(
-      ...value.enum.map(e => {
-        const desc = value._description[e];
-        return `\`"${e}"\`|${value.default === e ? '✓' : ''}|${desc}`;
-      }),
-    );
-
-    return table;
-  }
-
-  if (value.description) {
-    return [value.description];
-  }
-
-  return [];
-}
-
-function optionDoc(name, option) {
-  if (!option) {
-    return [];
-  }
-
-  const props = Object.entries(option.properties).map(([k, v]) => {
-    return `"${k}"?: ${type(v)}`;
-  });
-
-  const table = Object.entries(option.properties).map(([k, v]) => {
-    return `\`${k}\`|<code>${type(v, true)}</code>|\`${v.default}\`|${v.description}`;
-  });
-
-  return [
-    //
-    '### Options',
-    '```ts',
-    '{',
-    `  "${name}": {`,
-    '    "option": {',
-    ...props.map(prop => `      ${prop}`),
-    '    }',
-    '  }',
-    '}',
-    '```',
-    'Property|Type|Default Value|Description',
-    '---|---|---|---',
-    ...table,
-  ];
+  return JSON.parse(
+    JSON.stringify({
+      lang,
+      id: frontMatter.id,
+      description: frontMatter.description,
+      contents: rewrote,
+      category: frontMatter.category,
+    }),
+  );
 }
 
 /**
  *
  * @param {string} path
- * @param {string} editUrlBase
  * @returns
  */
-async function createRuleDoc(path, editUrlBase) {
+async function createRuleDoc(path) {
   const { default: schema } = await import(pathToFileURL(resolve(path, 'schema.json')), { assert: { type: 'json' } });
   const { value, option } = schema.definitions;
-  const name = basename(path);
-  const docPath = resolve(path, 'README.md');
-  const doc = await readFile(docPath, { encoding: 'utf-8' });
 
-  const { data: frontMatter, content } = matter(doc);
-
-  frontMatter.custom_edit_url = `${editUrlBase}/${RULES_DIR}/${name}/README.md`;
-  // eslint-disable-next-line import/no-named-as-default-member
-  let rewrote = matter.stringify(content.replace(/\(https:\/\/markuplint\.dev\//g, '(/'), frontMatter);
-
-  const separator = /\n\n---\n\n/m;
-  const target = rewrote.search(separator) === -1 ? /$/ : separator;
-
-  rewrote = rewrote.replace(
-    target,
-    [
-      '\n\n',
-      '## Interface',
-      '```ts',
-      '{',
-      `  "${name}": ${type(value)}`,
-      '}',
-      '```',
-      ...valueDoc(value),
-      ...optionDoc(name, option),
-      '## Default Severity',
-      `\`${frontMatter.severity}\``,
-      '\n',
-    ].join('\n'),
+  const docFile = resolve(path, 'README.md');
+  const doc = await getDocFile(docFile, value, option);
+  const i18nDocFiles = await glob(resolve(path, 'README.*.md'));
+  const i18nDocs = await Promise.all(
+    i18nDocFiles.map(async docPath => ({
+      ...doc,
+      ...(await getDocFile(docPath, value, option)),
+    })),
   );
 
-  // Replace Paths
-  rewrote = rewrote.replaceAll('](../', '](./');
+  return [doc, ...i18nDocs];
+}
 
+/**
+ * Create empty index
+ *
+ * @returns {RuleIndexContents}
+ */
+function createIndexContents() {
   return {
-    id: frontMatter.id,
-    description: frontMatter.description,
-    contents: rewrote,
-    category: frontMatter.category,
+    validation: [],
+    a11y: [],
+    'naming-convention': [],
+    maintainability: [],
+    style: [],
   };
 }
 
@@ -183,45 +104,56 @@ async function createRuleDoc(path, editUrlBase) {
  *
  * @param {string} paths
  * @param {string} ruleDocsDistDir
- * @param {string} editUrlBase
- * @return {Promise<RuleIndex>}
+ * @param {string} ruleDocsI18nDistDir
+ * @return {Promise<RuleIndex[]>}
  */
-async function createEachRule(paths, ruleDocsDistDir, editUrlBase) {
+async function createEachRule(paths, ruleDocsDistDir, ruleDocsI18nDistDir) {
   /**
-   * @type RuleIndex
+   * @type RuleIndex[]
    */
-  const index = {
-    validation: [],
-    a11y: [],
-    'naming-convention': [],
-    maintainability: [],
-    style: [],
-  };
+  const indexes = [];
 
   for (const path of paths) {
-    const { id, description, contents, category } = await createRuleDoc(path, editUrlBase);
+    const docs = await createRuleDoc(path);
 
-    // TODO: Japanese Page
-    // const jaDist = resolve(__dirname, `./i18n/${locale}/docusaurus-plugin-content-docs/current/rules`, `${ruleName}.md`);
+    for (const doc of docs) {
+      /**
+       * @type RuleIndex
+       */
+      const index = indexes.find(idx => idx.lang === doc.lang) ?? {
+        lang: doc.lang,
+        contents: createIndexContents(),
+      };
 
-    if (index[category]) {
-      index[category].push({ id, description });
+      index.contents[doc.category].push({
+        id: doc.id,
+        description: doc.description,
+      });
+
+      if (!indexes.find(idx => idx.lang === doc.lang)) {
+        indexes.push(index);
+      }
+
+      const dist = !doc.lang
+        ? // lang: en
+          resolve(ruleDocsDistDir, `${doc.id}.md`)
+        : // lang: except en
+          resolve(ruleDocsI18nDistDir.replace('<lang>', doc.lang), `${doc.id}.md`);
+
+      await output(dist, doc.contents);
     }
-
-    const dist = resolve(ruleDocsDistDir, `${id}.md`);
-    await writeFile(dist, contents, { encoding: 'utf-8' });
   }
 
-  return index;
+  return indexes;
 }
 
 /**
  * Create rule index page
  *
  * @param {RuleIndex} index
- * @param {string} websiteDir
+ * @param {string} ruleDocsDistDir
  */
-async function crateRuleIndexDoc(index, websiteDir) {
+async function crateRuleIndexDoc(index, ruleDocsDistDir) {
   const ruleListItem = rule =>
     !rule.href
       ? `[\`${rule.id}\`](/rules/${rule.id})|${rule.description}`
@@ -284,7 +216,7 @@ async function crateRuleIndexDoc(index, websiteDir) {
     ),
   ].join('\n');
 
-  await writeFile(resolve(websiteDir, './docs/rules/index.md'), indexDoc, { encoding: 'utf-8' });
+  await output(resolve(ruleDocsDistDir, 'index.md'), indexDoc);
 }
 
 /**
@@ -292,14 +224,27 @@ async function crateRuleIndexDoc(index, websiteDir) {
  *
  * @param {string} projectRoot
  */
-export async function createRuleDocs(projectRoot) {
+export async function createRuleDocs() {
   const websiteDir = resolve(projectRoot, 'website');
   const ruleDocsDistDir = resolve(websiteDir, 'docs', 'rules');
-  const paths = await getRulePaths(projectRoot);
-  const editUrlBase = await getEditUrlBase(projectRoot);
+  const ruleDocsI18nDistDir = resolve(
+    websiteDir,
+    'i18n',
+    '<lang>',
+    'docusaurus-plugin-content-docs',
+    'current',
+    'rules',
+  );
+  const paths = await getRulePaths();
 
   await dropFiles(ruleDocsDistDir);
 
-  const index = await createEachRule(paths, ruleDocsDistDir, editUrlBase);
-  await crateRuleIndexDoc(index, websiteDir);
+  const indexes = await createEachRule(paths, ruleDocsDistDir, ruleDocsI18nDistDir);
+
+  for (const index of indexes) {
+    await crateRuleIndexDoc(
+      index.contents,
+      index.lang ? ruleDocsI18nDistDir.replace('<lang>', index.lang) : ruleDocsDistDir,
+    );
+  }
 }
