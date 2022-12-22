@@ -238,6 +238,7 @@ export async function createRuleDocs() {
   const paths = await getRulePaths();
 
   await dropFiles(ruleDocsDistDir);
+  await dropFiles(ruleDocsI18nDistDir, '<lang>');
 
   const indexes = await createEachRule(paths, ruleDocsDistDir, ruleDocsI18nDistDir);
 

@@ -1,5 +1,6 @@
-import { rm, readdir, writeFile } from 'node:fs/promises';
-import { resolve, dirname } from 'node:path';
+import { statSync } from 'node:fs';
+import { rm, writeFile, readdir } from 'node:fs/promises';
+import { resolve, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import syncGlob from 'glob';
@@ -22,16 +23,50 @@ export async function getEditUrlBase() {
  * Remove files that are included by the directory
  *
  * @param {string} dirPath
+ * @param {string} placeholder
  */
-export async function dropFiles(dirPath) {
+export async function dropFiles(dirPath, placeholder) {
   const ignoreFileName = ['.gitkeep'];
-  const files = await readdir(dirPath);
+
+  /**
+   * @type {string[]}
+   */
+  const dirList = [];
+
+  if (placeholder) {
+    const [above, below] = dirPath.split(`/${placeholder}/`);
+    const contents = await readdir(above);
+
+    const dirs = contents
+      .filter(content => statSync(resolve(above, content)).isDirectory())
+      .map(dir => resolve(above, dir, below));
+    dirList.push(...dirs);
+  } else {
+    dirList.push(dirPath);
+  }
+
+  const contents = (
+    await Promise.all(
+      dirList.map(async dir => {
+        const files = await readdir(dir);
+        return files.map(file => resolve(dir, file));
+      }),
+    )
+  ).flat();
+
   await Promise.all(
-    files.map(async file => {
-      if (ignoreFileName.includes(file)) {
+    contents.map(async content => {
+      if (ignoreFileName.includes(basename(content))) {
         return;
       }
-      const dropFile = resolve(dirPath, file);
+
+      const s = statSync(content);
+      if (!s.isFile()) {
+        return;
+      }
+
+      const dropFile = resolve(dirPath, content);
+
       await rm(dropFile);
       console.log(`✔ ${dropFile}`);
     }),
