@@ -1,0 +1,70 @@
+import LogoContainer from '@site/src/components/LogoContainer';
+import Grid from '@site/src/components/Grid';
+import Color from '@site/src/components/Color';
+
+# ブランド
+
+## 名前
+
+**Markuplint**のスペルは、すべての文字が小文字であるか、大文字の**M**以降に小文字が続きます。**L**は大文字になりません。また、**Markup**と**Lint**をスペースなどでわけません。コマンドなどでは前者を使用し、通常は後者を使用することを推奨しています。
+
+:::note
+
+`v2.x`まではイニシャルも含めてすべて小文字でしたが、`v3.0`からイニシャルが大文字に変更されました。
+
+:::
+
+### 略称
+
+略称は**ML**です。接頭辞として使う場合は`ml-`を使用します。
+
+## カラー
+
+<Grid>
+  <Color name="ML Blue" r={21} g={114} b={235} />
+  <Color name="ML Ink" r={51} g={51} b={51} />
+</Grid>
+
+## ロゴ
+
+### 横向き
+
+<Grid vertical>
+  <LogoContainer src="/img/logo-horizontal.svg" caption="通常版（シンボル + ロゴタイプ）" mode="light" />
+  <LogoContainer src="/img/logo-horizontal.svg#d" caption="通常版（シンボル + ロゴタイプ） / ダークモード" mode="dark" />
+  <LogoContainer src="/img/logo-horizontal.svg#sl" caption="モノクロ版（シンボル + ロゴタイプ）" mode="light" />
+  <LogoContainer src="/img/logo-horizontal.svg#sd" caption="モノクロ版（シンボル + ロゴタイプ） / ダークモード" mode="dark" />
+</Grid>
+
+### 縦向き
+
+<Grid colWidth="20em">
+  <LogoContainer src="/img/logo-vertical.svg" caption="通常版（シンボル + ロゴタイプ）" mode="light" />
+  <LogoContainer src="/img/logo-vertical.svg#d" caption="通常版（シンボル + ロゴタイプ） / ダークモード" mode="dark" />
+  <LogoContainer src="/img/logo-vertical.svg#sl" caption="モノクロ版（シンボル + ロゴタイプ）" mode="light" />
+  <LogoContainer src="/img/logo-vertical.svg#sd" caption="モノクロ版（シンボル + ロゴタイプ） / ダークモード" mode="dark" />
+</Grid>
+
+### シンボルのみ
+
+<Grid colWidth="20em">
+  <LogoContainer src="/img/logo-symbol.svg" caption="通常版（シンボルのみ）" mode="light" />
+  <LogoContainer src="/img/logo-symbol.svg#d" caption="通常版（シンボルのみ） / ダークモード" mode="dark" />
+  <LogoContainer src="/img/logo-symbol.svg#sl" caption="モノクロ版（シンボルのみ）" mode="light" />
+  <LogoContainer src="/img/logo-symbol.svg#sd" caption="モノクロ版（シンボルのみ） / ダークモード" mode="dark" />
+</Grid>
+
+### アウトライン版
+
+<Grid colWidth="15em">
+  <LogoContainer src="/img/logo-outline-light.svg" caption="細線" mode="light" />
+  <LogoContainer src="/img/logo-outline-medium.svg" caption="中太線" mode="light" />
+  <LogoContainer src="/img/logo-outline-bold.svg" caption="太線" mode="light" />
+</Grid>
+
+### 禁止事項
+
+- 上記以外のカラーバリエーションを使用すること
+- 上記以外の形状の組み合わせること
+- ロゴとその他の要素の空間をロゴの15%未満に近づけて使用すること
+- 縮小、伸縮、回転または反転させて使用すること
