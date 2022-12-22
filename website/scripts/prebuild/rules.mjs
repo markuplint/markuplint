@@ -1,19 +1,37 @@
-import { readFile, writeFile, readdir, stat, copyFile } from 'node:fs/promises';
-import { resolve, basename, dirname } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
+import { resolve, basename } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import matter from 'gray-matter';
 
-const { editUrlBase } = (await import('./config.js')).default;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { dropFiles } from './utils.mjs';
 
-const projectRoot = resolve(__dirname, '../');
+/** @typedef {Record<"validation"|"a11y"|"naming-convention"|"maintainability"|"style", string[]>} RuleIndex */
 
 const RULES_DIR = 'packages/@markuplint/rules/src';
-const rulesAbsDir = resolve(projectRoot, RULES_DIR);
 
-async function getRulePaths() {
+/**
+ *
+ * @param {string} projectRoot
+ * @returns {string}
+ */
+const getRulesAbsDir = projectRoot => resolve(projectRoot, RULES_DIR);
+
+/**
+ *
+ * @param {string} projectRoot
+ * @returns {Promise<string>}
+ */
+const getEditUrlBase = async projectRoot =>
+  (await import(resolve(projectRoot, 'website', 'config.js'))).default.editUrlBase;
+
+/**
+ *
+ * @param {string} projectRoot
+ * @returns {Promise<string[]>}
+ */
+async function getRulePaths(projectRoot) {
+  const rulesAbsDir = getRulesAbsDir(projectRoot);
   const rulesDirFileList = await readdir(pathToFileURL(rulesAbsDir));
   const dirs = (
     await Promise.all(
@@ -109,7 +127,15 @@ function optionDoc(name, option) {
   ];
 }
 
-async function createRuleDoc(path, value, option) {
+/**
+ *
+ * @param {string} path
+ * @param {string} editUrlBase
+ * @returns
+ */
+async function createRuleDoc(path, editUrlBase) {
+  const { default: schema } = await import(pathToFileURL(resolve(path, 'schema.json')), { assert: { type: 'json' } });
+  const { value, option } = schema.definitions;
   const name = basename(path);
   const docPath = resolve(path, 'README.md');
   const doc = await readFile(docPath, { encoding: 'utf-8' });
@@ -117,6 +143,7 @@ async function createRuleDoc(path, value, option) {
   const { data: frontMatter, content } = matter(doc);
 
   frontMatter.custom_edit_url = `${editUrlBase}/${RULES_DIR}/${name}/README.md`;
+  // eslint-disable-next-line import/no-named-as-default-member
   let rewrote = matter.stringify(content.replace(/\(https:\/\/markuplint\.dev\//g, '(/'), frontMatter);
 
   const separator = /\n\n---\n\n/m;
@@ -151,9 +178,18 @@ async function createRuleDoc(path, value, option) {
   };
 }
 
-async function createRuleDocs() {
-  const paths = await getRulePaths();
-
+/**
+ * Create rule page
+ *
+ * @param {string} paths
+ * @param {string} ruleDocsDistDir
+ * @param {string} editUrlBase
+ * @return {Promise<RuleIndex>}
+ */
+async function createEachRule(paths, ruleDocsDistDir, editUrlBase) {
+  /**
+   * @type RuleIndex
+   */
   const index = {
     validation: [],
     a11y: [],
@@ -163,10 +199,7 @@ async function createRuleDocs() {
   };
 
   for (const path of paths) {
-    const { default: schema } = await import(pathToFileURL(resolve(path, 'schema.json')), { assert: { type: 'json' } });
-    const { value, option } = schema.definitions;
-
-    const { id, description, contents, category } = await createRuleDoc(path, value, option);
+    const { id, description, contents, category } = await createRuleDoc(path, editUrlBase);
 
     // TODO: Japanese Page
     // const jaDist = resolve(__dirname, `./i18n/${locale}/docusaurus-plugin-content-docs/current/rules`, `${ruleName}.md`);
@@ -175,10 +208,20 @@ async function createRuleDocs() {
       index[category].push({ id, description });
     }
 
-    const dist = resolve(__dirname, './docs/rules', `${id}.md`);
+    const dist = resolve(ruleDocsDistDir, `${id}.md`);
     await writeFile(dist, contents, { encoding: 'utf-8' });
   }
 
+  return index;
+}
+
+/**
+ * Create rule index page
+ *
+ * @param {RuleIndex} index
+ * @param {string} websiteDir
+ */
+async function crateRuleIndexDoc(index, websiteDir) {
   const ruleListItem = rule =>
     !rule.href
       ? `[\`${rule.id}\`](/rules/${rule.id})|${rule.description}`
@@ -187,6 +230,7 @@ async function createRuleDocs() {
   const table = list => {
     return ['Rule ID|Description', '---|---', ...list.map(ruleListItem)];
   };
+
   const removedTable = (list, drop) => {
     return [
       'Rule ID|Description|Drop',
@@ -240,9 +284,22 @@ async function createRuleDocs() {
     ),
   ].join('\n');
 
-  await writeFile(resolve(__dirname, './docs/rules/index.md'), indexDoc, { encoding: 'utf-8' });
+  await writeFile(resolve(websiteDir, './docs/rules/index.md'), indexDoc, { encoding: 'utf-8' });
 }
 
-await createRuleDocs();
+/**
+ * Create rule pages
+ *
+ * @param {string} projectRoot
+ */
+export async function createRuleDocs(projectRoot) {
+  const websiteDir = resolve(projectRoot, 'website');
+  const ruleDocsDistDir = resolve(websiteDir, 'docs', 'rules');
+  const paths = await getRulePaths(projectRoot);
+  const editUrlBase = await getEditUrlBase(projectRoot);
 
-await copyFile(resolve('..', 'CONTRIBUTING.md'), resolve('docs', 'community', 'contributing.md'));
+  await dropFiles(ruleDocsDistDir);
+
+  const index = await createEachRule(paths, ruleDocsDistDir, editUrlBase);
+  await crateRuleIndexDoc(index, websiteDir);
+}
