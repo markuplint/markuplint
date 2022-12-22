@@ -5,10 +5,11 @@ import { pathToFileURL } from 'node:url';
 import matter from 'gray-matter';
 
 import { rewriteRuleContent } from './rule-content.mjs';
-import { dropFiles, getEditUrlBase, glob, output, projectRoot } from './utils.mjs';
+import { dropFiles, getEditUrlBase, glob, importJSON, output, projectRoot } from './utils.mjs';
 
 /** @typedef {Record<"validation"|"a11y"|"naming-convention"|"maintainability"|"style", string[]>} RuleIndexContents */
 /** @typedef {{ lang: string, contents: RuleIndexContents }} RuleIndex */
+/** @typedef {{ lang: string,id: string, description: string, category: string, severity: string, contents: string }} DocData */
 
 const RULES_DIR = 'packages/@markuplint/rules/src';
 
@@ -36,7 +37,15 @@ async function getRulePaths() {
   return dirs;
 }
 
-async function getDocFile(filePath, value, option) {
+/**
+ *
+ * @param {string} filePath
+ * @param {Value} value
+ * @param {Options} options
+ * @param {Partial<DocData>} [inherit]
+ * @returns {Promise<Partial<DocData>>}
+ */
+async function getDocFile(filePath, value, options, inherit) {
   const editUrlBase = await getEditUrlBase();
   const name = basename(filePath);
   const doc = await readFile(filePath, { encoding: 'utf-8' });
@@ -46,20 +55,27 @@ async function getDocFile(filePath, value, option) {
   const fileName = basename(filePath, extname(filePath));
   const lang = (/^README(?:\.([a-z]+))?$/.exec(fileName) || [])[1];
 
-  let rewrote = rewriteRuleContent(content, name, value, option, frontMatter.severity);
+  const id = frontMatter.id ?? inherit?.id;
+  const severity = frontMatter.severity ?? inherit?.severity;
+
+  let rewrote = rewriteRuleContent(content, id, value, options, severity, lang);
 
   // eslint-disable-next-line import/no-named-as-default-member
   rewrote = matter.stringify(rewrote, frontMatter);
 
-  return JSON.parse(
-    JSON.stringify({
-      lang,
-      id: frontMatter.id,
-      description: frontMatter.description,
-      contents: rewrote,
-      category: frontMatter.category,
-    }),
-  );
+  return {
+    ...inherit,
+    ...JSON.parse(
+      JSON.stringify({
+        lang,
+        id: frontMatter.id,
+        description: frontMatter.description,
+        category: frontMatter.category,
+        severity: frontMatter.severity,
+        contents: rewrote,
+      }),
+    ),
+  };
 }
 
 /**
@@ -68,18 +84,12 @@ async function getDocFile(filePath, value, option) {
  * @returns
  */
 async function createRuleDoc(path) {
-  const { default: schema } = await import(pathToFileURL(resolve(path, 'schema.json')), { assert: { type: 'json' } });
-  const { value, option } = schema.definitions;
-
+  const schema = await importJSON(resolve(path, 'schema.json'));
+  const { value, options } = schema.definitions;
   const docFile = resolve(path, 'README.md');
-  const doc = await getDocFile(docFile, value, option);
+  const doc = await getDocFile(docFile, value, options);
   const i18nDocFiles = await glob(resolve(path, 'README.*.md'));
-  const i18nDocs = await Promise.all(
-    i18nDocFiles.map(async docPath => ({
-      ...doc,
-      ...(await getDocFile(docPath, value, option)),
-    })),
-  );
+  const i18nDocs = await Promise.all(i18nDocFiles.map(docPath => getDocFile(docPath, value, options, doc)));
 
   return [doc, ...i18nDocs];
 }

@@ -5,9 +5,10 @@
  * @param {string} value
  * @param {Object} options
  * @param {string} severity
+ * @param {string} [lang]
  * @returns {string} Rewrote content
  */
-export function rewriteRuleContent(content, name, value, options, severity) {
+export function rewriteRuleContent(content, name, value, options, severity, lang) {
   // Replace internal page URL
   content = content.replace(/\(https:\/\/markuplint\.dev\//g, '(/');
 
@@ -24,8 +25,8 @@ export function rewriteRuleContent(content, name, value, options, severity) {
       `  "${name}": ${type(value)}`,
       '}',
       '```',
-      ...valueDoc(value),
-      ...optionDoc(name, options),
+      ...valueDoc(value, lang),
+      ...optionDoc(name, options, lang),
       '## Default Severity',
       `\`${severity}\``,
       '\n',
@@ -39,7 +40,7 @@ export function rewriteRuleContent(content, name, value, options, severity) {
 }
 
 function type(value, escape = false) {
-  const verticalBar = escape ? '&#x7C;' : '|';
+  const verticalBar = escape ? '&#x7C;<wbr />' : '|';
 
   if (value.oneOf) {
     return value.oneOf.map(v => type(v, escape)).join(verticalBar);
@@ -60,7 +61,13 @@ function type(value, escape = false) {
   return value.type;
 }
 
-function valueDoc(value) {
+/**
+ *
+ * @param {Value} value
+ * @param {string} [lang]
+ * @returns
+ */
+function valueDoc(value, lang) {
   if (value.enum && value._description) {
     const table = [
       //
@@ -70,7 +77,7 @@ function valueDoc(value) {
 
     table.push(
       ...value.enum.map(e => {
-        const desc = value._description[e];
+        const desc = value[`_description:${lang}`]?.[e] ?? value._description[e];
         return `\`"${e}"\`|${value.default === e ? '✓' : ''}|${desc}`;
       }),
     );
@@ -78,24 +85,27 @@ function valueDoc(value) {
     return table;
   }
 
-  if (value.description) {
-    return [value.description];
+  const desc = value[`description:${lang}`] ?? value.description;
+
+  if (desc) {
+    return [desc];
   }
 
   return [];
 }
 
-function optionDoc(name, option) {
-  if (!option) {
+function optionDoc(name, options, lang) {
+  if (!options) {
     return [];
   }
 
-  const props = Object.entries(option.properties).map(([k, v]) => {
+  const props = Object.entries(options.properties).map(([k, v]) => {
     return `"${k}"?: ${type(v)}`;
   });
 
-  const table = Object.entries(option.properties).map(([k, v]) => {
-    return `\`${k}\`|<code>${type(v, true)}</code>|\`${v.default}\`|${v.description}`;
+  const table = Object.entries(options.properties).map(([k, v]) => {
+    const desc = v[`description:${lang}`] ?? v.description;
+    return `\`${k}\`|<code>${type(v, true)}</code>|\`${v.default}\`|${desc}`;
   });
 
   return [
@@ -104,7 +114,7 @@ function optionDoc(name, option) {
     '```ts',
     '{',
     `  "${name}": {`,
-    '    "option": {',
+    '    "options": {',
     ...props.map(prop => `      ${prop}`),
     '    }',
     '  }',

@@ -1,7 +1,7 @@
 import { statSync } from 'node:fs';
 import { rm, writeFile, readdir } from 'node:fs/promises';
 import { resolve, dirname, basename } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import syncGlob from 'glob';
 
@@ -71,6 +71,17 @@ export async function dropFiles(dirPath, placeholder) {
       console.log(`✔ ${dropFile}`);
     }),
   );
+}
+
+/**
+ * Import JSON
+ *
+ * @param {string} filePath
+ * @returns {Promise<Object>}
+ */
+export async function importJSON(filePath) {
+  const { default: data } = await import(pathToFileURL(filePath), { assert: { type: 'json' } });
+  return data;
 }
 
 /**
