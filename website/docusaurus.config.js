@@ -25,7 +25,7 @@ const config = {
     locales: ['en', 'ja'],
     localeConfigs: {
       ja: {
-        label: '日本語（ベータ）',
+        label: '日本語',
       },
     },
   },
