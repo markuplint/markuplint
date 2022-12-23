@@ -1,20 +1,23 @@
 ---
-description: 禁止要素
+description: 指定された要素がドキュメントまたは要素に存在している場合に警告します。
 ---
 
-指定された要素がドキュメントまたは要素が存在している場合に警告します。 セレクターを使用して指定します。
+# `disallowed-element`
+
+指定された要素がドキュメントまたは要素に存在している場合に警告します。セレクターを使用して指定します。
 
 これは不要な要素を検索するための汎用的なルールです。
 
-HTML 標準に準拠しているかどうかは[`permitted-contents`](../permitted-contents)ルールを使用してください。
+HTML標準に準拠しているかどうかは[`permitted-contents`](../permitted-contents)ルールを使用してください。
 
-## ルールの詳細
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 `{ "disallowed-element": ["hgroup"] }` を指定した場合:
 
 ❌ 間違ったコード例
 
 ```html
+<!-- "disallowed-element": ["hgroup"] -->
 <div>
   <hgroup><h1>Heading</h1></hgroup>
 </div>
@@ -23,10 +26,17 @@ HTML 標準に準拠しているかどうかは[`permitted-contents`](../permitt
 ✅ 正しいコード例
 
 ```html
+<!-- "disallowed-element": ["hgroup"] -->
 <div>
   <h1>Heading</h1>
 </div>
 ```
+
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->
+
+---
+
+## 設定例
 
 `rules`に指定すると、ドキュメント全体から要素を検索します。
 
@@ -52,12 +62,3 @@ HTML 標準に準拠しているかどうかは[`permitted-contents`](../permitt
   ]
 }
 ```
-
-### 設定値
-
-- 型: `string[]`
-- デフォルト値: `[]`
-
-### デフォルトの警告の厳しさ
-
-`error`

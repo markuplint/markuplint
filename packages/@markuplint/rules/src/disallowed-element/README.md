@@ -1,13 +1,12 @@
 ---
-description: Disallowed elements
 id: disallowed-element
+description: Warns if specified elements appear on a document or an element.
 category: validation
 severity: error
 ---
 
 # `disallowed-element`
 
-description: Disallowed elements
 Warns if specified elements appear on a document or an element. Use the selector to specify.
 
 This is a generic rule for searching the disallowed element.

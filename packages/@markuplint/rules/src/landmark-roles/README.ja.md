@@ -1,16 +1,18 @@
 ---
-description: ランドマークロール
+description: banner、main、complementaryおよびcontentinfoがトップレベルのランドマークか。特定のランドマークロールがページで複数回使用される場合、一意のラベルがあるか。
 ---
 
-- ~~知覚可能コンテンツがいずれかのランドマーク上に存在するかどうか~~ (実装中)
-- `banner`、`main`、`complementary`および`contentinfo`がトップレベルのランドマークかどうか
-- 特定のランドマークロールがページで複数回使用される場合、一意のラベルがあるかどうか
+# `landmark-roles`
+
+- `banner`、`main`、`complementary`および`contentinfo`がトップレベルのランドマークか
+- 特定のランドマークロールがページで複数回使用される場合、一意のラベルがあるか
+- ~~知覚可能コンテンツがいずれかのランドマーク上に存在するか~~（実装中）
 
 以上を確認して満たされていない場合は警告します。
 
-W3C の[ARIA Landmarks Example](https://www.w3.org/TR/wai-aria-practices/examples/landmarks/)を参考としています。
+W3Cの[Landmark Regions](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/)を参考にしています。
 
-## ルールの詳細
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
@@ -50,28 +52,4 @@ W3C の[ARIA Landmarks Example](https://www.w3.org/TR/wai-aria-practices/example
 </html>
 ```
 
-### 設定値
-
-- 型: `boolean`
-- 省略可
-- 初期値: `true`
-
-### オプション
-
-#### `ignoreRoles`
-
-- 型: `('banner' | 'main' | 'complementary' | 'contentinfo' | 'form' | 'navigation' | 'region')[]`
-- 初期値: `[]`
-
-指定したランドマークロールを警告の対象から除外します。
-
-#### `labelEachArea`
-
-- 型: `boolean`
-- 初期値: `true`
-
-特定のランドマークロールがページで複数回使用される場合、一意のラベルがあるかどうか警告します。
-
-### デフォルトの警告の厳しさ
-
-`warning`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

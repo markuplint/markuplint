@@ -2,9 +2,11 @@
 description: id 属性値のハードコーディング禁止
 ---
 
-コードが HTML の断片の場合、id 属性値をハードコーディングすると警告します。
+# `no-hard-code-id`
 
-## ルールの詳細
+コードがHTMLの断片の場合、id属性値をハードコーディングすると警告します。
+
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
@@ -23,11 +25,4 @@ const id = uid();
 const Component = ({ id }) => <div id={id}></div>;
 ```
 
-### 設定値
-
-- 型: `boolean`
-- デフォルト値: `true`
-
-### デフォルトの警告の厳しさ
-
-`warning`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

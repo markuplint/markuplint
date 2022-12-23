@@ -17,12 +17,14 @@
 						"enum": ["banner", "main", "complementary", "contentinfo", "form", "navigation", "region"]
 					},
 					"default": "[]",
-					"description": "Excludes the specified landmark roll from the warning."
+					"description": "Excludes the specified landmark roll from the warning.",
+					"description:ja": "指定したランドマークロールを警告の対象から除外します。"
 				},
 				"labelEachArea": {
 					"type": "boolean",
 					"default": "true",
-					"description": "Warn if there is a unique label if a particular landmark role is used multiple times on the page."
+					"description": "Warn if there is a unique label if a particular landmark role is used multiple times on the page.",
+					"description:ja": "特定のランドマークロールがページで複数回使用される場合、一意のラベルがあるか警告します。"
 				}
 			}
 		}

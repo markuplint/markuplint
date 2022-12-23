@@ -17,7 +17,8 @@
 					}
 				}
 			],
-			"description": "Sets a string that represents a regular expression or its array. Regular expressions are interpreted as regular expressions by enclosing them in `/`. It is possible to add a flag like `/.*/ ig` (regular expressions can only be interpreted by JavaScript)"
+			"description": "Sets a string that represents a regular expression or its array. Regular expressions are interpreted as regular expressions by enclosing them in `/`. It is possible to add a flag like `/.*/ ig` (regular expressions can only be interpreted by JavaScript).",
+			"description:ja": "正規表現を表す文字列かその配列を設定します。正規表現は `/` で囲むことで正規表現として解釈されます。 `/.*/ig` のようにフラグをつけることも可能です（正規表現はJavaScriptで解釈できるもに限ります）。"
 		}
 	},
 	"oneOf": [

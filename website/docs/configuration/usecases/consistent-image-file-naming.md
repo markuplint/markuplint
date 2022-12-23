@@ -53,7 +53,7 @@ Use [`invalid-attr`](/rules/invalid-attr) rule with [`regexSelector`](/configura
       },
       "rules": {
         "invalid-attr": {
-          "option": {
+          "options": {
             "attrs": {
               "srcset": {
                 // Expand a file name and its extension by Mustache format

@@ -1,10 +1,12 @@
 ---
-description: イベントハンドラ属性の使用禁止
+description: イベントハンドラ属性を指定すると警告します。
 ---
+
+# `no-use-event-handler-attr`
 
 イベントハンドラ属性を指定すると警告します。
 
-## ルールの詳細
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
@@ -22,17 +24,4 @@ description: イベントハンドラ属性の使用禁止
 </script>
 ```
 
-### 設定値
-
-- 型: `boolean`
-- デフォルト値: `true`
-
-### オプション
-
-#### `ignore`
-
-除外するイベントハンドラを文字列か文字列の配列で指定します。正規表現形式も受け付けます。
-
-### デフォルトの警告の厳しさ
-
-`warning`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

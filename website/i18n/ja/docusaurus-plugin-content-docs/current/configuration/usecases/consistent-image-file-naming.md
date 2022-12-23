@@ -53,7 +53,7 @@ img要素とsource要素のファイル名を一致させたい場合。
       },
       "rules": {
         "invalid-attr": {
-          "option": {
+          "options": {
             "attrs": {
               "srcset": {
                 // ファイル名と拡張子をMustache形式で展開します

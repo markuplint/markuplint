@@ -1,8 +1,12 @@
 ---
-description: 存在しない ID への参照を禁止
+description: for、form、aria-*などに指定されたIDまたはIDのリストが、同じドキュメント内に存在するIDを参照しているかどうかを確認します。
 ---
 
-`for`、`form`、`aria-*` などに指定された **ID** または **ID のリスト** が、同じドキュメント内に存在する ID を参照しているかどうかを確認します。
+# `no-refer-to-non-existent-id`
+
+`for`、`form`、`aria-*` などに指定された**ID**または**IDのリスト** が、同じドキュメント内に存在するIDを参照しているかどうかを確認します。
+
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ## ルールの詳細
 
@@ -18,21 +22,4 @@ description: 存在しない ID への参照を禁止
 <label for="foo">Text Field</label><input id="foo" type="text" />
 ```
 
-### 設定値
-
-- 型: `boolean`
-- デフォルト値: `true`
-
-### オプション
-
-##### `ariaVersion`
-
-評価する WAI-ARIA のバージョンを指定します。
-
-- 型: `"1.1" | "1.2"`
-- 省略可
-- 初期値: `1.2`
-
-### デフォルトの警告の厳しさ
-
-`error`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

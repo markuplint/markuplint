@@ -1,10 +1,12 @@
 ---
-description: 効果のない属性の禁止
+description: 指定された属性が要素に影響を与えることができない（つまり無意味である）場合は警告します。
 ---
+
+# `ineffective-attr`
 
 指定された属性が要素に影響を与えることができない（つまり無意味である）場合は警告します。
 
-## ルールの詳細
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
@@ -42,11 +44,4 @@ description: 効果のない属性の禁止
 </script>
 ```
 
-### 設定値
-
-- Type: `boolean`
-- Default Value: `true`
-
-### デフォルトの警告の厳しさ
-
-`warning`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

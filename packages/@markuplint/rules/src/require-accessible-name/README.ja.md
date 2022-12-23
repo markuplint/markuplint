@@ -1,10 +1,12 @@
 ---
-description: アクセシブルな名前必須
+description: 要素にアクセシブルな名前がなければ警告します。
 ---
 
-要素にアクセシブルな名前がなければ警告します。名前が必要かどうかは ARIA ロールによって異なります。
+# `require-accessible-name`
 
-## ルールの詳細
+要素にアクセシブルな名前がなければ警告します。名前が必要かどうかはARIAロールによって異なります。
+
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
@@ -27,21 +29,4 @@ description: アクセシブルな名前必須
 </button>
 ```
 
-### 設定値
-
-- 型: `boolean`
-- デフォルト値: `true`
-
-### オプション
-
-##### `ariaVersion`
-
-評価する WAI-ARIA のバージョンを指定します。
-
-- 型: `"1.1" | "1.2"`
-- 省略可
-- 初期値: `1.2`
-
-### デフォルトの警告の厳しさ
-
-`error`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

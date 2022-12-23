@@ -1,35 +1,105 @@
 ---
-description: クラス命名規則
+description: 指定された規則に則ったクラス名でなければ警告します。
 ---
+
+# `class-naming`
 
 指定された規則に則ったクラス名でなければ警告します。
 
-## ルールの詳細
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
-`{ "class-naming": "/[a-z]+(?:__[a-z]+(?:--[a-z]+))?/" }`
-
 ```html
+<!-- "class-naming": "/[a-z]+(?:__[a-z]+(?:--[a-z]+))?/" -->
 <div class="Block"></div>
 ```
 
 ✅ 正しいコード例
 
-`{ "class-naming": "/[a-z]+(?:__[a-z]+(?:--[a-z]+))?/" }`
-
 ```html
+<!-- "class-naming": "/[a-z]+(?:__[a-z]+(?:--[a-z]+))?/" -->
 <div class="block"></div>
 ```
 
-### 設定値
+---
 
-- 型: `string | string[]`
-- 必須
-- 初期値: なし
+## 設定例
 
-正規表現を表す文字列かその配列を設定します。正規表現は `/` で囲むことで正規表現として解釈されます。 `/.*/ig` のようにフラグをつけることも可能です（正規表現は JavaScript で解釈できるもに限ります）
+BEM系のCSS設計:
 
-### デフォルトの警告の厳しさ
+```json
+{
+  "rules": {
+    // Enable class-naming rule to childNodeRules.
+    "class-naming": "/.+/"
+  },
+  "childNodeRules": [
+    {
+      "regexSelector": {
+        // Filter attributes to the class attribute.
+        "attrName": "class",
+        // Set the pattern of the class
+        // and capture its own block name.
+        // Enable capturing in either the number and group name.
+        // In the bellow, it is captured as `BlockName`.
+        "attrValue": "/^(?<BlockName>[A-Z][a-z0-9]+)(?:__[a-z][a-z0-9-]+)?$/"
+      },
+      "rules": {
+        "class-naming": {
+          "value": [
+            // Allow the element that is owned by the block.
+            // `{{BlockName}}` will be expand from the captured group.
+            "/^{{BlockName}}__[a-z][a-z0-9-]+$/",
+            // Allow another block.
+            "/^([A-Z][a-z0-9]+)$/"
+          ]
+        }
+      }
+    }
+  ]
+}
+```
 
-`warning`
+```html
+<section class="Card">
+  <div class="Card__header">
+    <div class="Heading"><h3 class="Heading__lv3">Title</h3></div>
+  </div>
+  <div class="Card__body">
+    <div class="List">
+      <ul class="List__group">
+        <li>...</li>
+        <li>...</li>
+        <li>...</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="Card">
+  <div class="Card__header">
+    <!-- ❌ It is "Card" scope, Don't use the element owned "Heading" -->
+    <h3 class="Heading__lv3">Title</h3>
+  </div>
+  <div class="Card__body">
+    <div class="Card__body-el">...</div>
+    <!-- ❌ It is "Card" scope, Don't use the element owned "List" -->
+    <ul class="List__group">
+      <li>...</li>
+      <li>...</li>
+      <li>...</li>
+    </ul>
+    <div class="List">
+      <!-- ❌ It is not "Card" scope instead of "List" scope here -->
+      <ul class="Card__list">
+        <li>...</li>
+        <li>...</li>
+        <li>...</li>
+      </ul>
+    </div>
+  </div>
+</section>
+```
+
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

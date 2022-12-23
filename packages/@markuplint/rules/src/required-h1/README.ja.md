@@ -1,12 +1,18 @@
 ---
-description: ドキュメント内の h1 必須
+description: ドキュメント内にh1要素がなければ警告します。
 ---
 
-ドキュメント内に h1 要素がなければ警告します。
+# `required-h1`
 
-このルールは、WCAG2.0 の[達成基準 1.3.1](https://waic.jp/docs/WCAG20/Overview.html#content-structure-separation-programmatic)のための[達成方法 H42](https://waic.jp/docs/WCAG-TECHS/H42.html)と、[見出しレベルのスキップに関するプラクティス](https://developer.mozilla.org/ja/docs/Web/HTML/Element/Heading_Elements#Accessibility_concerns)、および[Web Accessibility Tutorials - Headings (英語ページ)](https://www.w3.org/WAI/tutorials/page-structure/headings/)に基づいて設けられています。
+ドキュメント内にh1要素がなければ警告します。
 
-## ルールの詳細
+<!-- textlint-disable ja-technical-writing/sentence-length -->
+
+このルールは、WCAG 2.0の[達成基準 1.3.1](https://waic.jp/docs/WCAG20/Overview.html#content-structure-separation-programmatic)のための[達成方法 H42](https://waic.jp/docs/WCAG-TECHS/H42.html)と、[見出しレベルのスキップに関するプラクティス](https://developer.mozilla.org/ja/docs/Web/HTML/Element/Heading_Elements#%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B7%E3%83%93%E3%83%AA%E3%83%86%E3%82%A3%E3%81%AE%E8%80%83%E6%85%AE)、および[Web Accessibility Tutorials - Headings (英語ページ)](https://www.w3.org/WAI/tutorials/page-structure/headings/)に基づいて設けられています。
+
+<!-- textlint-enable ja-technical-writing/sentence-length -->
+
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
@@ -39,51 +45,4 @@ description: ドキュメント内の h1 必須
 </html>
 ```
 
-### 設定値
-
-```json
-{
-  "rules": {
-    "required-h1": true
-  }
-}
-```
-
-```json
-{
-  "rules": {
-    "required-h1": {
-      "option": {
-        "expected-once": true,
-        "in-document-fragment": true
-      }
-    }
-  }
-}
-```
-
-- 型: `boolean`
-- 省略可
-- 初期値: `true`
-
-## オプション
-
-### `expected-once`
-
-ドキュメント内で `h1`タグに重複があると警告します。
-
-- 型: `boolean`
-- 省略可
-- 初期値: `true`
-
-### `in-document-fragment`
-
-ドキュメント全体ではなく、コードの断片内でこのルールを適用させたい場合に `true` にしてください。
-
-- 型: `boolean`
-- 省略可
-- 初期値: `false`
-
-### デフォルトの警告の厳しさ
-
-`error`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

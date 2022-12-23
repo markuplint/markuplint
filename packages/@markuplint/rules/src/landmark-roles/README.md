@@ -1,19 +1,19 @@
 ---
-description: Landmark roles
 id: landmark-roles
+description: Whether banner, main, complementary and contentinfo are top-level landmarks. Whether a specific landmark roll has unique label when used multiple times on a page
 category: a11y
 severity: warning
 ---
 
 # `landmark-roles`
 
-- ~~Whether perceptible content exists on any landmark~~ (Work in progress)
 - Whether `banner`, `main`, `complementary` and `contentinfo` are top-level landmarks
 - Whether a specific landmark roll has unique label when used multiple times on a page
+- ~~Whether perceptible content exists on any landmark~~ (Work in progress)
 
 Check the above and warn if it is not satisfied.
 
-It is based on W3C [ARIA Landmarks Example](https://www.w3.org/TR/wai-aria-practices/examples/landmarks/).
+It is based on W3C [Landmark Regions](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/).
 
 ❌ Examples of **incorrect** code for this rule
 

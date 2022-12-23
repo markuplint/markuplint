@@ -1,6 +1,6 @@
 ---
 id: case-sensitive-tag-name
-description: Tag name case-sensitive
+description: Warns that the tag name is not in one of uppercase or lowercase letters.
 fixable: true
 category: style
 severity: warning
@@ -12,7 +12,7 @@ Warns that the tag name is not in one of uppercase or lowercase letters. Unlike 
 
 > Tags contain a **tag name**, giving the element's name. HTML elements all have names that only use ASCII alphanumerics. In the HTML syntax, tag names, even those for foreign elements, may be written with any mix of lower- and uppercase letters that, when converted to all-lowercase, matches the element's tag name; tag names are case-insensitive.
 
-Cite: https://html.spec.whatwg.org/#syntax-tag-name
+Cite: [HTML Living Standard 13.1.2 Elements](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-name:~:text=Tags%20contain%20a,are%20case%2Dinsensitive.)
 
 Also, Markuplint's HTML parser does not distinguish case of custom element tag names, but this rule works like HTML standard element. But originally you can not define a name that contains uppercase alphabets in custom elements. We recommend that you consider when setting rules.
 

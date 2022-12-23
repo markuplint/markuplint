@@ -7,7 +7,8 @@
 				"type": "string",
 				"minItems": 1
 			},
-			"description": "Specify the characters of the bullet that you expect to interpret as a list. It expects an array of code points. Default value is [Bullets](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/rules/src/use-list/index.ts#L11-L52).\n\nIt executes after decoding character references to be a code point. For example, it decodes `\"&bullet;\"` to be `\"\u2022\"`. **Note: You must specify a code point instead of the character reference you need.** It supports the surrogate pair code points."
+			"description": "Specify the characters of the bullet that you expect to interpret as a list. It expects an array of code points. Default value is [Bullets](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/rules/src/use-list/index.ts#L11-L52).\n\nIt executes after decoding character references to be a code point. For example, it decodes `\"&bullet;\"` to be `\"\u2022\"`. **Note: You must specify a code point instead of the character reference you need.** It supports the surrogate pair code points.",
+			"description:ja": "リストとして解釈されることを期待するビュレット文字などを指定します。コードポイントで構成される配列を指定します。デフォルト値は[Bullets](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/rules/src/use-list/index.ts#L11-L52)です。HTML中の文字参照はコードポイントにデコードされた後、評価されます。たとえば、`\"＆bullet;\"`は`\"\u2022\"`にデコードされます。 **注: 設定側では、期待する文字参照は代わりにコードポイントを指定する必要があります。** コードポイントはサロゲートペアをサポートしています。"
 		},
 		"options": {
 			"type": "object",
@@ -20,7 +21,8 @@
 						"minItems": 1
 					},
 					"default": "[\"-\", \"*\", \"+\"]",
-					"description": "Bullets that require space to detect as a list item."
+					"description": "Bullets that require space to detect as a list item.",
+					"description:ja": "リストとして検出するためにスペースを必要とする文字。"
 				}
 			}
 		}

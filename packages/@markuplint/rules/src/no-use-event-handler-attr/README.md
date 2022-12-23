@@ -1,6 +1,6 @@
 ---
-description: No use event handler attribute
 id: no-use-event-handler-attr
+description: Warn when specifying the event handler attribute.
 category: maintainability
 severity: warning
 ---
