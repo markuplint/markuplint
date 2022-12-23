@@ -1,13 +1,13 @@
 import { createPlugin } from '@markuplint/ml-core';
 
-import { foo } from './rules';
+import { __ruleName__ } from './rules/__ruleName__';
 
 export default createPlugin({
-	name: '{{ name }}',
+	name: '__pluginName__',
 	create(settings) {
 		return {
 			rules: {
-				foo: foo(settings),
+				__ruleName__: __ruleName__(settings),
 			},
 		};
 	},

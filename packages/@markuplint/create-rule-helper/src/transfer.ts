@@ -1,66 +1,124 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import type { File } from './types';
 
-import { render } from 'mustache';
+import { statSync } from 'node:fs';
+import fs from 'node:fs/promises';
+import { resolve, extname, basename, relative, dirname } from 'node:path';
+
 import { format } from 'prettier';
 import { transpile, ScriptTarget } from 'typescript';
 
 import { fsExists } from './fs-exists';
+import glob from './glob';
 
-export async function transfer(
-	filePath: string,
-	destDir: string,
-	replacer: Record<string, string>,
-	options?: {
-		transpile: boolean;
-	},
-) {
-	if (!(await fsExists(filePath))) {
+type TransferOptions = {
+	transpile?: boolean;
+	test?: boolean;
+	replacer?: Record<string, string | void>;
+};
+
+export async function transfer(baseDir: string, destDir: string, options?: TransferOptions) {
+	const files = await scan(baseDir, destDir);
+	const results: File[] = [];
+	for (const file of files) {
+		const result = await transferFile(file, options);
+		if (result) {
+			results.push(result);
+		}
+	}
+	return results;
+}
+
+async function transferFile(file: File, options?: TransferOptions) {
+	if (!(await fsExists(file.filePath))) {
 		return null;
 	}
 
-	const extname = path.extname(filePath);
-	const name = path.basename(filePath, extname);
-	const contents = await fs.readFile(filePath, { encoding: 'utf-8' });
-	let fileName = `${name}${extname}`;
+	if (file.test && !options?.test) {
+		return null;
+	}
 
-	// Mustache
-	let converted = render(contents, replacer);
+	let contents = await fs.readFile(file.filePath, { encoding: 'utf-8' });
+
+	if (options?.replacer) {
+		Object.entries(options?.replacer).forEach(([before, after]) => {
+			if (!after) {
+				return;
+			}
+			contents = contents.replace(new RegExp(`__${before}__`, 'g'), after);
+		});
+	}
 
 	// TypeScript transpiles to JS
-	if (options?.transpile) {
-		fileName = `${name}.js`;
-		converted = transpile(
-			converted,
+	if (file.ext === '.ts' && options?.transpile) {
+		file.ext = '.js';
+		contents = transpile(
+			contents,
 			{
 				target: ScriptTarget.ESNext,
 			},
-			filePath,
+			file.filePath,
 		);
 
 		// Insert new line before comments and the export keyword
-		converted = converted.replace(/(\n)(\s+\/\*\*|export)/g, '$1\n$2');
+		contents = contents.replace(/(\n)(\s+\/\*\*|export)/g, '$1\n$2');
 	}
+
+	const candidateName = options?.replacer?.[file.name.replace(/_/g, '')];
+	if (candidateName) {
+		file.name = candidateName;
+		file.fileName = candidateName + (file.test ? '.spec' : '');
+	}
+
+	const dest = resolve(file.destDir, file.fileName + file.ext);
 
 	// Prettier
 	const parser =
-		extname === '.md'
+		file.ext === '.md'
 			? 'markdown'
-			: extname === '.json'
+			: file.ext === '.json'
 			? 'json'
-			: extname === '.ts'
+			: file.ext === '.ts'
 			? options?.transpile
 				? 'babel'
 				: 'typescript'
 			: undefined;
-	converted = format(converted, { parser });
+	contents = format(contents, { parser, filepath: dest });
 
-	if (!(await fsExists(destDir))) {
-		await fs.mkdir(destDir, { recursive: true });
+	if (!(await fsExists(file.destDir))) {
+		await fs.mkdir(file.destDir, { recursive: true });
 	}
 
-	const dest = path.resolve(destDir, fileName);
-	await fs.writeFile(dest, converted, { encoding: 'utf-8' });
+	await fs.writeFile(dest, contents, { encoding: 'utf-8' });
 
-	return dest;
+	return file;
+}
+
+async function scan(baseDir: string, destDir: string) {
+	const fileList = await glob(resolve(baseDir, '**', '*'));
+
+	const destList = fileList
+		.map(filePath => {
+			const stat = statSync(filePath);
+			if (!stat.isFile()) {
+				return null;
+			}
+			const relPath = relative(baseDir, filePath);
+			const destPath = resolve(destDir, relPath);
+			const ext = extname(destPath);
+			const fileName = basename(destPath, ext);
+			const test = extname(fileName) === '.spec';
+			const name = basename(fileName, '.spec');
+			const destFileDir = dirname(destPath);
+			return {
+				ext,
+				fileName,
+				name,
+				test,
+				destDir: destFileDir,
+				filePath,
+			};
+		})
+		.filter((f): f is File => !!f);
+
+	return destList;
 }

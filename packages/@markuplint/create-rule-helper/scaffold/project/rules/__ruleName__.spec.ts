@@ -1,13 +1,13 @@
 import { mlRuleTest } from 'markuplint';
 
-import { foo } from './rules';
+import { __ruleName__ } from './__ruleName__';
 
 /**
  * Example: Write tests
  */
 it('is test', async () => {
 	const { violations } = await mlRuleTest(
-		foo({
+		__ruleName__({
 			/* Plugin settings */
 		}),
 		/**
