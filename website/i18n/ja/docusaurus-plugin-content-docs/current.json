@@ -11,6 +11,9 @@
   "sidebar.configuration.category.Usecases": {
     "message": "ユースケース"
   },
+  "sidebar.api.link.API document": {
+    "message": "APIドキュメント"
+  },
   "sidebar.community.category.Community": {
     "message": "コミュニティ"
   },
