@@ -6,7 +6,7 @@ For example, determine the type to `attrs.[any-attr-name].type` option on the `i
 ```json
 {
   "invalid-attr": {
-    "option": {
+    "options": {
       "attrs": {
         "any-attr-name": {
           "type": "Boolean"
