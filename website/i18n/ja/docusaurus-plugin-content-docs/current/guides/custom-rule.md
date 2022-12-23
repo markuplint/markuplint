@@ -61,14 +61,14 @@ npx markuplint --create-rule
 ```ts title="./[dir-name]/index.ts"
 import { createPlugin } from '@markuplint/ml-core';
 
-import { rule1 } from './rules/rule1';
+import { ruleName } from './rules/ruleName';
 
 export default createPlugin({
   name: '[dir-name]', // 👈 必要であれば変更してください。
-  create(settings) {
+  create(setting) {
     return {
       rules: {
-        rule1: rule1(settings),
+        ruleName: ruleName(setting),
       },
     };
   },
