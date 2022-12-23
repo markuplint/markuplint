@@ -9,24 +9,25 @@ import DocPageOrigin from '@docusaurus/theme-classic/lib/theme/DocPage';
 import { PageMetadata } from '@docusaurus/theme-common';
 // @ts-ignore
 import { useDocRouteMetadata } from '@docusaurus/theme-common/internal';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { getOgImgUrl } from '@site/src/utils/getOgImgUrl';
 import NotFound from '@theme/NotFound';
 import React from 'react';
 
 export default function DocPage(props: Props): JSX.Element {
+  const { i18n } = useDocusaurusContext();
   const location = useLocation();
   const path = location.pathname;
-  const paths = location.pathname.split('/').filter(_ => _);
   const currentDocRouteMetadata: ReturnType<typeof UseDocRouteMetadata> = useDocRouteMetadata(props);
   if (!currentDocRouteMetadata) {
     return <NotFound />;
   }
 
   const { sidebarItems } = currentDocRouteMetadata;
-  const category = !paths[0] ? '' : paths[0] === 'api' ? 'API' : paths[0].replace(/^[a-z]/, $0 => $0.toUpperCase());
+  const category = getCategory(location.pathname, i18n.currentLocale);
 
   const title = getCurrentPageTitle(path, sidebarItems);
-  const image = category ? getOgImgUrl(category, title) : undefined;
+  const image = category ? getOgImgUrl(category, title, i18n.currentLocale) : undefined;
 
   return (
     <>
@@ -34,6 +35,17 @@ export default function DocPage(props: Props): JSX.Element {
       <PageMetadata image={image} />
     </>
   );
+}
+
+function getCategory(pathname: string, lang = 'default') {
+  const paths = pathname.split('/').filter(_ => _);
+  const depth = lang === 'default' ? 0 : 1;
+  const category = !paths[depth]
+    ? ''
+    : paths[depth] === 'api'
+    ? 'API'
+    : paths[depth]?.replace(/^[a-z]/, $0 => $0.toUpperCase());
+  return category;
 }
 
 function getCurrentPageTitle(path: string, sidebarItems?: PropSidebar) {
