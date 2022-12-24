@@ -1,5 +1,5 @@
 import { rm } from 'node:fs/promises';
-import { resolve, relative } from 'node:path';
+import { resolve, relative, sep } from 'node:path';
 
 import glob from './glob';
 import { transfer } from './transfer';
@@ -33,7 +33,7 @@ test('', async () => {
 		},
 	});
 	const fileList = await glob(resolve(TEST_SANDBOX, '**', '*'));
-	expect(fileList.sort().map(file => relative(TEST_SANDBOX, file))).toEqual([
+	expect(fileList.sort().map(file => relative(TEST_SANDBOX, file).split(sep).join('/'))).toEqual([
 		'core',
 		'core/README.ja.md',
 		'core/README.md',
