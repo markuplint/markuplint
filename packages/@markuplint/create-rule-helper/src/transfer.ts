@@ -44,9 +44,20 @@ async function transferFile(file: File, options?: TransferOptions) {
 			if (!after) {
 				return;
 			}
+			// Hyphenation to camel-case for variables
+			// `rule-name` => `ruleName`
+			contents = contents.replace(
+				new RegExp(`__${before}__c`, 'g'),
+				// Camelize
+				after.replace(/-+([a-z])/gi, (_, $1) => $1.toUpperCase()).replace(/^[a-z]/, $0 => $0.toLowerCase()),
+			);
 			contents = contents.replace(new RegExp(`__${before}__`, 'g'), after);
 		});
 	}
+
+	// Remove prettier ignore comment
+	contents = contents.replace(/\n\s*\/\/ prettier-ignore/, '');
+	contents = contents.replace(/\n\s*<!-- prettier-ignore(?:-(?:start|end))? -->/, '');
 
 	// TypeScript transpiles to JS
 	if (file.ext === '.ts' && options?.transpile) {

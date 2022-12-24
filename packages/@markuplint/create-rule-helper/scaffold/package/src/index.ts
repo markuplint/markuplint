@@ -1,13 +1,14 @@
 import { createPlugin } from '@markuplint/ml-core';
 
-import { __ruleName__ } from './rules/__ruleName__';
+import { __ruleName__c } from './rules/__ruleName__';
 
 export default createPlugin({
 	name: '__pluginName__',
 	create(settings) {
 		return {
 			rules: {
-				__ruleName__: __ruleName__(settings),
+				// prettier-ignore
+				'__ruleName__': __ruleName__c(settings),
 			},
 		};
 	},
