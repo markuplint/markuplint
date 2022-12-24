@@ -48,7 +48,7 @@ describe('isExposed', () => {
 		expect(x('<script>"";</script>')).toBe(false);
 	});
 
-	test.only('Unknown element', () => {
+	test('Unknown element', () => {
 		expect(x('<unknown></unknown>')).toBe(true);
 		expect(x('<font></font>')).toBe(true);
 		expect(x('<x-component></x-component>')).toBe(true);
