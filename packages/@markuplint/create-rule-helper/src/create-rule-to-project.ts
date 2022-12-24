@@ -1,21 +1,27 @@
 import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types';
 
-import path from 'path';
+import { resolve } from 'node:path';
 
 import { CreateRuleHelperError } from './create-rule-helper-error';
 import { fsExists } from './fs-exists';
 import { installScaffold } from './install-scaffold';
 
 export async function createRuleToProject({
-	name,
+	pluginName,
+	ruleName,
 	lang,
 	needTest,
 }: CreateRuleCreatorParams): Promise<CreateRuleHelperResult> {
-	const newRuleDir = path.resolve(process.cwd(), name);
+	const pluginDir = resolve(process.cwd(), pluginName);
 
-	if (await fsExists(newRuleDir)) {
-		throw new CreateRuleHelperError(`The directory exists: ${newRuleDir}`);
+	if (await fsExists(pluginDir)) {
+		throw new CreateRuleHelperError(`The directory exists: ${pluginDir}`);
 	}
 
-	return await installScaffold('', newRuleDir, '', { name, lang, needTest });
+	return await installScaffold('project', pluginDir, {
+		pluginName,
+		ruleName,
+		lang,
+		needTest,
+	});
 }

@@ -1,18 +1,16 @@
 import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types';
 
 import fs from 'node:fs/promises';
-import path from 'node:path';
+import { resolve } from 'node:path';
 
 import { fsExists } from './fs-exists';
 import { transfer } from './transfer';
 
 export async function installScaffold(
-	scaffoldDir: string,
+	scaffoldType: 'core' | 'project' | 'package',
 	dest: string,
-	sourceDir: string,
 	params: CreateRuleCreatorParams & {
 		packageJson?: boolean;
-		schemaJson?: boolean;
 	},
 ): Promise<CreateRuleHelperResult> {
 	const exists = await fsExists(dest);
@@ -20,47 +18,29 @@ export async function installScaffold(
 		await fs.mkdir(dest);
 	}
 
-	const scaffoldReadmeFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'README.md');
-	const scaffoldMainFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'index.ts');
-	const scaffoldTestFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'index.spec.ts');
-	const scaffoldRulesFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'rules.ts');
-	const scaffoldRulesTestFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'rules.spec.ts');
-	const scaffoldSchemaFile = path.resolve(__dirname, '..', 'scaffold', scaffoldDir, 'schema.json');
+	const scaffoldDir = resolve(__dirname, '..', 'scaffold', scaffoldType);
 
-	const transpile = params.lang === 'JAVASCRIPT';
-	const readme = await transfer(scaffoldReadmeFile, dest, { name: params.name });
-	const main = await transfer(scaffoldMainFile, path.resolve(dest, sourceDir), { name: params.name }, { transpile });
-	const test = params.needTest
-		? await transfer(scaffoldTestFile, path.resolve(dest, sourceDir), { name: params.name }, { transpile })
-		: null;
-	const rules = await transfer(
-		scaffoldRulesFile,
-		path.resolve(dest, sourceDir),
-		{ name: params.name },
-		{ transpile },
-	);
-	const rulesTest = params.needTest
-		? await transfer(scaffoldRulesTestFile, path.resolve(dest, sourceDir), { name: params.name }, { transpile })
-		: null;
-	const schemaJson = params.schemaJson ? await transfer(scaffoldSchemaFile, dest, { name: params.name }) : null;
+	const transferred = await transfer(scaffoldDir, dest, {
+		transpile: params.lang === 'JAVASCRIPT',
+		test: params.needTest,
+		replacer: {
+			pluginName: params.pluginName,
+			ruleName: params.ruleName,
+			description: params.core?.description,
+			category: params.core?.category,
+			severity: params.core?.severity,
+		},
+	});
 
-	if (!readme) {
-		throw new ReferenceError(`File is not found: ${scaffoldReadmeFile}`);
-	}
-	if (!main) {
-		throw new ReferenceError(`File is not found: ${scaffoldMainFile}`);
-	}
-
-	const packageJson = params.packageJson ? path.resolve(dest, 'package.json') : null;
+	const packageJson = params.packageJson ? resolve(dest, 'package.json') : null;
 	const dependencies: string[] = [];
 	const devDependencies: string[] = [];
 
-	const tsConfig = params.packageJson && params.lang === 'TYPESCRIPT' ? path.resolve(dest, 'tsconfig.json') : null;
-	const ext = params.lang === 'JAVASCRIPT' ? 'js' : 'ts';
-
 	if (packageJson) {
+		const ext = params.lang === 'JAVASCRIPT' ? 'js' : 'ts';
+
 		const packageContent: any = {
-			name: params.name,
+			name: params.ruleName,
 			scripts: {},
 			jest: {
 				moduleFileExtensions: ['js', ...(params.lang === 'TYPESCRIPT' ? ['ts'] : [])],
@@ -94,13 +74,13 @@ export async function installScaffold(
 			packageContent.scripts.build = 'tsc';
 		}
 
-		dependencies.push('@markuplint/ml-core@next');
-		devDependencies.push('markuplint@next');
+		dependencies.push('@markuplint/ml-core');
+		devDependencies.push('markuplint');
 
 		if (params.needTest) {
 			packageContent.scripts.test = 'jest';
-
 			devDependencies.push('jest');
+
 			if (params.lang === 'TYPESCRIPT') {
 				devDependencies.push('@types/jest');
 				devDependencies.push('ts-jest');
@@ -110,48 +90,25 @@ export async function installScaffold(
 				devDependencies.push('@babel/preset-env');
 			}
 		}
+
 		if (params.lang === 'TYPESCRIPT') {
 			devDependencies.push('typescript');
 		}
 
 		await fs.writeFile(packageJson, JSON.stringify(packageContent, null, 2), { encoding: 'utf-8' });
-	}
 
-	if (tsConfig) {
-		const config = {
-			compilerOptions: {
-				module: 'commonjs',
-				target: 'es2019',
-				strict: true,
-				strictNullChecks: true,
-				strictPropertyInitialization: true,
-				allowSyntheticDefaultImports: true,
-				experimentalDecorators: true,
-				esModuleInterop: true,
-				noImplicitAny: true,
-				declaration: true,
-				lib: ['dom', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'esnext'],
-				skipLibCheck: true,
-				outDir: './lib',
-				rootDir: './src',
-			},
-			include: ['./src/**/*'],
-			exclude: ['node_modules', 'lib', './src/**/*.spec.ts'],
-		};
-
-		await fs.writeFile(tsConfig, JSON.stringify(config, null, 2), { encoding: 'utf-8' });
+		transferred.push({
+			ext: '.json',
+			name: 'package',
+			fileName: 'package',
+			test: false,
+			destDir: dest,
+			filePath: packageJson,
+		});
 	}
 
 	return {
-		...params,
-		readme,
-		main,
-		test,
-		rules,
-		rulesTest,
-		packageJson,
-		tsConfig,
-		schemaJson,
+		files: transferred,
 		dependencies,
 		devDependencies,
 	};

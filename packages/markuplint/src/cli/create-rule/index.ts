@@ -1,4 +1,10 @@
-import type { CreateRulePurpose, CreateRuleLanguage } from '@markuplint/create-rule-helper';
+import type {
+	CreateRulePurpose,
+	CreateRuleLanguage,
+	CreateRuleCreatorCoreParams,
+} from '@markuplint/create-rule-helper';
+
+import { resolve } from 'node:path';
 
 import { isMarkuplintRepo, createRuleHelper } from '@markuplint/create-rule-helper';
 import c from 'cli-color';
@@ -6,6 +12,14 @@ import c from 'cli-color';
 import { write, head } from '../../util';
 import { installModule } from '../init/install-module';
 import { input, select, confirm } from '../prompt';
+
+const icons: Record<string, string> = {
+	README: '📝',
+	index: '📜',
+	schema: '⚙️ ',
+	package: '🎁',
+	tsconfig: '💎',
+};
 
 export async function createRule() {
 	write(head('Create a rule'));
@@ -25,7 +39,36 @@ export async function createRule() {
 		choices: firstChoices,
 	});
 
-	const name = await input('What is the name?', /^[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*$/i);
+	const dirQuestion = purpose === 'ADD_TO_PROJECT' ? 'What is the directory name?' : 'What is the plugin name?';
+
+	const pluginName =
+		purpose === 'CONTRIBUTE_TO_CORE' ? '' : await input(dirQuestion, /^[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*$/i);
+
+	const ruleName = await input('What is the rule name?', /^[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*$/i);
+
+	const core: CreateRuleCreatorCoreParams | undefined =
+		purpose === 'CONTRIBUTE_TO_CORE'
+			? {
+					description: await input('Description:'),
+					category: await select({
+						message: 'Category:',
+						choices: [
+							{ name: 'Conformance checking', value: 'validation' },
+							{ name: 'Accessibility', value: 'a11y' },
+							{ name: 'Naming Convention', value: 'naming-convention' },
+							{ name: 'Maintainability', value: 'maintainability' },
+							{ name: 'Style', value: 'style' },
+						],
+					}),
+					severity: await select({
+						message: 'Severity:',
+						choices: [
+							{ name: 'error', value: 'error' },
+							{ name: 'warning', value: 'warning' },
+						],
+					}),
+			  }
+			: undefined;
 
 	const lang =
 		purpose === 'CONTRIBUTE_TO_CORE'
@@ -41,29 +84,22 @@ export async function createRule() {
 	const needTest =
 		purpose === 'CONTRIBUTE_TO_CORE' ? true : await confirm('Do you need the test?', { initial: true });
 
-	const result = await createRuleHelper({ purpose, name, lang, needTest });
+	const result = await createRuleHelper({ purpose, pluginName, ruleName, lang, needTest, core });
 
-	output(name, '📝', 'README.md', result.readme);
-	output(name, '📜', 'index', result.main);
-	if (result.test) {
-		output(name, '🖍 ', 'index.spec', result.test);
+	for (const file of result.files) {
+		output(
+			pluginName || 'core',
+			file.test ? '🖍 ' : icons[file.name] ?? '🛡 ',
+			file.fileName,
+			resolve(file.destDir, file.fileName + file.ext),
+		);
 	}
-	if (result.rules) {
-		output(name, '🛡 ', 'rules', result.rules);
-	}
-	if (result.rulesTest) {
-		output(name, '🖍 ', 'rules.spec', result.rulesTest);
-	}
-	if (result.schemaJson) {
-		output(name, '⚙️ ', 'schema.json', result.schemaJson);
-	}
-	if (result.packageJson) {
-		output(name, '🎁', 'package.json', result.packageJson);
-		if (result.tsConfig) {
-			output(name, '💎', 'tsconfig.json', result.tsConfig);
-		}
 
+	if (result.dependencies.length) {
 		await installModule(result.dependencies);
+	}
+
+	if (result.devDependencies.length) {
 		await installModule(result.devDependencies, true);
 	}
 }

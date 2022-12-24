@@ -56,14 +56,14 @@ You can change it if you want.
 ```ts title="./[dir-name]/index.ts"
 import { createPlugin } from '@markuplint/ml-core';
 
-import { rule1 } from './rules/rule1';
+import { ruleName } from './rules/ruleName';
 
 export default createPlugin({
   name: '[dir-name]', // 👈 Change here if you want
-  create(settings) {
+  create(setting) {
     return {
       rules: {
-        rule1: rule1(settings),
+        ruleName: ruleName(setting),
       },
     };
   },

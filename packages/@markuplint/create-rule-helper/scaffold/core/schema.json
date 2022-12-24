@@ -2,14 +2,19 @@
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"definitions": {
 		"value": {
-			"type": "boolean"
+			"type": "boolean",
+			"description": "__VALUE_DESCRIPTION__",
+			"description:ja": "__VALUE_DESCRIPTION_IN_JAPANESE__"
 		},
 		"options": {
 			"type": "object",
 			"additionalProperties": false,
 			"properties": {
-				"__ANY_PROP__": {
-					"type": "boolean"
+				"__OPTIONS_PROP_NAME__": {
+					"type": "boolean",
+					"default": "true",
+					"description": "__OPTIONS_PROP_DESCRIPTION__",
+					"description:ja": "__OPTIONS_PROP_DESCRIPTION_IN_JAPANESE__"
 				}
 			}
 		}
