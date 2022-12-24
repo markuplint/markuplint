@@ -13,6 +13,7 @@ import { i18n } from '../i18n';
 
 const log = coreLog.extend('ml-engine');
 const fileLog = log.extend('file');
+const configLog = log.extend('config');
 
 type MLEngineOptions = {
 	debug?: boolean;
@@ -257,15 +258,31 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 
 	private async resolveConfig(cache: boolean) {
 		const defaultConfigKey = this.#options?.defaultConfig && this.#configProvider.set(this.#options?.defaultConfig);
+		configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
+		this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
+
 		const configFilePathsFromTarget = this.#options?.noSearchConfig
 			? defaultConfigKey ?? null
 			: (await this.#configProvider.search(this.#file)) || defaultConfigKey;
-		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget || 'null');
+		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
+		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
+
 		const configKey = this.#options?.config && this.#configProvider.set(this.#options.config);
-		this.emit('log', 'configKey', configKey || 'null');
+		configLog('option.config: %s', configKey ?? 'N/A');
+		this.emit('log', 'option.config', configFilePathsFromTarget ?? 'N/A');
+
+		let defaultRecommended: string | null = null;
+		if (!defaultConfigKey && !configFilePathsFromTarget && !configKey) {
+			// No configured
+			// Default: set recommended
+			defaultRecommended = this.#configProvider.set({ extends: ['markuplint:recommended'] });
+		}
+		configLog('defaultRecommended: %s', defaultRecommended ?? 'N/A');
+		this.emit('log', 'defaultRecommended', defaultRecommended ?? 'N/A');
+
 		const configSet = await this.#configProvider.resolve(
 			this.#file,
-			[configFilePathsFromTarget, this.#options?.configFile, configKey],
+			[configFilePathsFromTarget, this.#options?.configFile, configKey, defaultRecommended],
 			cache,
 		);
 		this.emit('config', this.#file.path, configSet);
