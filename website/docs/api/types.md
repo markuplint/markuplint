@@ -6,7 +6,7 @@ For example, determine the type to `attrs.[any-attr-name].type` option on the `i
 ```json
 {
   "invalid-attr": {
-    "option": {
+    "options": {
       "attrs": {
         "any-attr-name": {
           "type": "Boolean"
@@ -85,7 +85,7 @@ For example, determine the type to `attrs.[any-attr-name].type` option on the `i
 | `<list-of-percentages>`        | Some attributes for SVG                        |                                                                                                                    | ✅        |
 | `<number-optional-number>`     | Some attributes for SVG                        |                                                                                                                    | ✅        |
 
-In addition, you can use types **[CSSTree](https://github.com/csstree/csstree)** defined.
+In addition, you can use types **[CSSTree](https://github.com/csstree/csstree)**(however, it is `v1.x`, and upgrade to `v2` in [considering](https://github.com/markuplint/markuplint/issues/631)) defined.
 
 :::caution
 You must specify an identifier as a string in its **entirety**.

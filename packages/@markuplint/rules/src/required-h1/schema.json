@@ -11,12 +11,14 @@
 				"expected-once": {
 					"type": "boolean",
 					"default": "true",
-					"description": "Warn if there is a duplicate `h1` tag in the document."
+					"description": "Warn if there is a duplicate `h1` tag in the document.",
+					"description:ja": "ドキュメント内で `h1`タグに重複があると警告します。"
 				},
 				"in-document-fragment": {
 					"type": "boolean",
 					"default": "false",
-					"description": "Set it to `true` if you want this rule to apply within document fragment rather than the entire document."
+					"description": "Set it to `true` if you want this rule to apply within document fragment rather than the entire document.",
+					"description:ja": "ドキュメント全体ではなく、コードの断片内でこのルールを適用させたい場合、`true`にしてください。"
 				}
 			}
 		}

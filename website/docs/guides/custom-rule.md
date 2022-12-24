@@ -1,6 +1,6 @@
 # Creating custom rule
 
-You can create a custom rule while referring to the [**API document**](../api), but it recommends you use the below command:
+You can create a custom rule while referring to the [**API document**](/api/), but it recommends you use the below command:
 
 ```shell
 npx markuplint --create-rule
@@ -56,14 +56,14 @@ You can change it if you want.
 ```ts title="./[dir-name]/index.ts"
 import { createPlugin } from '@markuplint/ml-core';
 
-import { rule1 } from './rules/rule1';
+import { ruleName } from './rules/ruleName';
 
 export default createPlugin({
   name: '[dir-name]', // 👈 Change here if you want
-  create(settings) {
+  create(setting) {
     return {
       rules: {
-        rule1: rule1(settings),
+        ruleName: ruleName(setting),
       },
     };
   },
@@ -94,7 +94,7 @@ Eventually, there are the below files created:
 
 ## How to basic evaluate
 
-Extract the target nodes that are from the `document` object. Then pass it to the `report` function to evaluate. The `document` object has the `walkOn` method and more, which is the **Markuplint-specific method**, and it also has native **DOM APIs** (the `querySelector` method, etc.) so that you can use both for different purposes in accordance to the use.
+Extract the target nodes that are from the `document` object. And evaluate it then pass it to the `report` function. The `document` object has the `walkOn` method and more, which is the **Markuplint-specific method**, and it also has native **DOM APIs** (the `querySelector` method, etc.) so that you can use both for different purposes in accordance to the use.
 
 ```ts
 createRule({
@@ -121,7 +121,7 @@ createRule({
 });
 ```
 
-There are two methods to pass an issue to the `report` function. One is passing a **node**, as mentioned above. And the other is passing the number of a **line** and a **column**, and a **string in range**.
+There are two methods to pass a violation to the `report` function. One is passing a **node**, as mentioned above. And the other is passing the number of a **line** and a **column**, and a **string in range**.
 
 ```ts
 report({
@@ -139,7 +139,7 @@ report({
 
 ## Messages <abbr title="internationalization">i18n</abbr>
 
-The `translate` function (There is an alias as `t`) can translate a message.
+The `translate` function (There is an alias as `t`) translates a message.
 
 ```ts
 createRule({
@@ -168,5 +168,7 @@ Missing the "title" element
 Please see the details of [`@markuplint/i18n`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/i18n#api) API if needed.
 
 :::info
-There is **only Japanese** besides English in the [dictionaries](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/i18n/locales) currently. We expect [your contribution](https://github.com/markuplint/markuplint/blob/main/CONTRIBUTING.md) to translating the other languages.
+
+There is **only Japanese** besides English in the [dictionaries](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/i18n/locales) currently. We expect [your contribution](/community/contributing) to translating the other languages.
+
 :::

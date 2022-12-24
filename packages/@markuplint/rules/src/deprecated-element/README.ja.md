@@ -1,12 +1,14 @@
 ---
-description: 非推奨要素
+description: 非推奨もしくは廃止または非標準な要素があると警告します。
 ---
+
+# `deprecated-element`
 
 非推奨（**deprecated**）もしくは廃止（**obsolete**）または非標準（**non-standard**）な要素があると警告します。
 
 [HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/html-spec/index.json)に設定値を持っています。
 
-## ルールの詳細
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
@@ -20,10 +22,4 @@ description: 非推奨要素
 <span class="red">lorem</span>
 ```
 
-### 設定値
-
-なし
-
-### デフォルトの警告の厳しさ
-
-`error`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

@@ -1,20 +1,25 @@
 ---
-description: 必須要素
+description: 指定された要素がドキュメントまたは要素に表示されなかった場合、警告します。
 ---
 
-指定された要素がドキュメントまたは要素に表示されなかった場合に警告します。 セレクターを使用して指定します。
+# `required-element`
+
+指定された要素がドキュメントまたは要素に表示されなかった場合、警告します。セレクターを使用して指定します。
 
 これは必要な要素を検索するための汎用的なルールです。
 
-h1 要素が必要な場合は [`required-h1`](../required-h1/)ルールを使用してください。ランドマーク要素が必要な場合は[`landmark-roles`](../landmark-roles/)ルールを使用してください。HTML 標準に準拠しているかどうかは[`permitted-contents`](../permitted-contents)ルールを使用してください。
+:::info
 
-## ルールの詳細
+h1要素が必要な場合は[`required-h1`](../required-h1/)ルールを使用してください。ランドマーク要素が必要な場合は[`landmark-roles`](../landmark-roles/)ルールを使用してください。HTML標準に準拠しているかどうかは[`permitted-contents`](../permitted-contents)ルールを使用してください。
 
-`{ "required-element": ["meta[charset=\"UTF-8\"]"] }` を指定した場合:
+:::
+
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
 ```html
+<!-- "required-element": ["meta[charset=\"UTF-8\"]"] -->
 <head>
   <title>Page title</title>
 </head>
@@ -23,11 +28,16 @@ h1 要素が必要な場合は [`required-h1`](../required-h1/)ルールを使�
 ✅ 正しいコード例
 
 ```html
+<!-- "required-element": ["meta[charset=\"UTF-8\"]"] -->
 <head>
   <meta charset="UTF-8" />
   <title>Page title</title>
 </head>
 ```
+
+---
+
+## 設定例
 
 `rules`に指定すると、ドキュメント全体から要素を検索します。
 
@@ -54,20 +64,4 @@ h1 要素が必要な場合は [`required-h1`](../required-h1/)ルールを使�
 }
 ```
 
-### 設定値
-
-- 型: `string[]`
-- デフォルト値: `[]`
-
-### オプション
-
-#### `ignoreHasMutableContents`
-
-- 型: `boolean`
-- 初期値: `true`
-
-_Pug_ のようなプリプロセッサ言語や _Vue_ のようなコンポーネントライブラリにおけるミュータブルな子要素を含む場合、無視します。（_Pug_ も _Vue_ もそれぞれ [@markuplint/pug-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/pug-parser) や [@markuplint/vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/vue-parser) が必要です。）
-
-### デフォルトの警告の厳しさ
-
-`error`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

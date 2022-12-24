@@ -56,7 +56,7 @@ None
 
 ##### Return
 
-- `Promise`&lt;`Object` | `null`&gt;
+- `Promise<Object|null>`
 
 | Property     | Type       | Description                                                                                |
 | ------------ | ---------- | ------------------------------------------------------------------------------------------ |

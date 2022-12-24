@@ -8,7 +8,7 @@
 	"arrowParens": "avoid",
 	"overrides": [
 		{
-			"files": "*.md",
+			"files": "*.{md,mdx}",
 			"options": {
 				"tabWidth": 2,
 				"useTabs": false,

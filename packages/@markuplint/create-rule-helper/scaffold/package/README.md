@@ -1,6 +1,29 @@
-# The `{{name}}` rule
+# The `__pluginName__` rule
 
 TODO: Write a description
+
+## Install
+
+```shell
+npm install --save-dev {{ name }}
+```
+
+## Applying rules
+
+```json
+{
+  "plugins": ["__pluginName__"],
+  "rules": {
+    "__pluginName__/__ruleName__": {
+      "value": "__MAIN_VALUE__",
+      "options": {
+        "foo": "__OPTIONAL_VALUE__",
+        "bar": [123, 456, 789]
+      }
+    }
+  }
+}
+```
 
 ## Rule Details
 

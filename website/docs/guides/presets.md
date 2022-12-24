@@ -2,9 +2,9 @@
 
 There are some presets. It recommends specifying these because rules need to enable each.
 
-## Apply presets
+## Applying presets
 
-Specify the `extends` property of the [configuration](../configuration/) like below:
+Specify the `extends` property of the [configuration](/configuration/) like below:
 
 ```json
 {
@@ -80,7 +80,7 @@ These **recommended presets** include **all [base presets](#base-presets)**. And
 | Allow `property` attr with `<meta>`                                                                                                     | Be able to use **Open-Graph** etc.                                                                                                                   | ❌     | ❌              | ❌            | ✅     | ❌         |
 | Require `noreferrer` with `target=_blank`                                                                                               | Require `rel=noreferrer` with an element that has `target=_blank` to prevent leaking referrer information and to block operating referrer documents. | ❌     | ❌              | ❌            | ❌     | ✅         |
 
-## Syntax specific presets {#syntax-specific-presets}
+## Ruleset of syntax specific presets {#syntax-specific-presets}
 
 | Ruleset               | Description                                                                                                                                                            | `recommended-static-html` | `recommended-react` | `recommended-vue` | `recommended-svelte` |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------- | ----------------- | -------------------- |

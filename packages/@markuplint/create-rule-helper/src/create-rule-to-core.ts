@@ -10,23 +10,29 @@ import { searchCoreRepository } from './search-core-repository';
 const rulesRelDir = ['packages', '@markuplint', 'rules', 'src'];
 
 export async function createRuleToCore({
-	name,
+	ruleName,
 	lang,
 	needTest,
+	core,
 }: CreateRuleCreatorParams): Promise<CreateRuleHelperResult> {
+	if (!core) {
+		throw new CreateRuleHelperError('Core options are not defined');
+	}
+
 	const rulesDir = await getRulesDir();
-	const newRuleDir = path.resolve(rulesDir, name);
+	const newRuleDir = path.resolve(rulesDir, ruleName);
 
 	const exists = await fsExists(newRuleDir);
 	if (exists) {
-		throw new CreateRuleHelperError(`A new rule "${name}" already exists`);
+		throw new CreateRuleHelperError(`A new rule "${ruleName}" already exists`);
 	}
 
-	return await installScaffold('core', newRuleDir, '', {
-		name,
+	return await installScaffold('core', newRuleDir, {
+		pluginName: '',
+		ruleName,
 		lang,
 		needTest,
-		schemaJson: true,
+		core,
 	});
 }
 

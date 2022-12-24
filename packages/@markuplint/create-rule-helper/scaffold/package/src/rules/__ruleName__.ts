@@ -21,7 +21,7 @@ type Options = {
 	bar?: number[];
 };
 
-export const foo = (settings: CreatePluginSettings) =>
+export const __ruleName__c = (settings: CreatePluginSettings) =>
 	createRule<MainValue, Options>({
 		/**
 		 * Step 1-1. Choose the severity from `error` or `warning`

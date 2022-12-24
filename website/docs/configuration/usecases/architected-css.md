@@ -32,11 +32,11 @@ Suppose defining the following rule:
 <!-- ❌ Incorrect -->
 <section class="Card">
   <div class="Card__header">
-    <!-- ❌ Element in Element belong Another Block -->
+    <!-- ❌ An element is nested in the element belonging to another block -->
     <h3 class="Heading__lv3">Title</h3>
   </div>
   <div class="Card__body">
-    <!-- ❌ Element in Element belong Another Block -->
+    <!-- ❌ An element is nested in the element belonging to another block -->
     <ul class="List__group">
       <li>...</li>
       <li>...</li>
@@ -46,9 +46,9 @@ Suppose defining the following rule:
 </section>
 ```
 
-## Configuration sample
+## Configuration
 
-Use [`class-naming`](/rules/class-naming) rule.
+Use [`class-naming`](/rules/class-naming) rule with [`regexSelector`](/configuration/properties#regexselector).
 
 ```json
 {
@@ -59,16 +59,20 @@ Use [`class-naming`](/rules/class-naming) rule.
     {
       "regexSelector": {
         "attrName": "class",
-        "attrValue": "/^(?<BlockName>[A-Z][a-z0-9]+)(?:__[a-z][a-z0-9-]+)?$/"
+        "attrValue":
+          // Capture a block name
+          "/^(?<BlockName>[A-Z][a-z0-9]+)(?:__[a-z][a-z0-9-]+)?$/"
       },
       "rules": {
         "class-naming": {
-          "value": ["/^{{BlockName}}__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/"]
+          "value": [
+            // Expand a block name by Mustache format
+            "/^{{BlockName}}__[a-z][a-z0-9-]+$/",
+            "/^([A-Z][a-z0-9]+)$/"
+          ]
         }
       }
     }
   ]
 }
 ```
-
-It **captures the block-name** from the class name of the element while **use it to the rule**.

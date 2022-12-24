@@ -1,7 +1,8 @@
 ---
-description: Required attributes
 id: required-attr
+description: Warns if specified attributes or required attribute on specs are not appeared on an element.
 category: validation
+severity: error
 ---
 
 # `required-attr`

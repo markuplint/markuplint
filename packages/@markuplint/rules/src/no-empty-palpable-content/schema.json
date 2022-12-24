@@ -11,12 +11,14 @@
 				"extendsExposableElements": {
 					"type": "boolean",
 					"default": "true",
-					"description": "Include elements that are not palpable content, but are exposed to the accessibility tree. The palpable content model doesn't include some elements that are `li`, `dt`, `dd`, `th`, `td`, and more. This option exists to that detect those elements that are empty."
+					"description": "Include elements that are not palpable content, but are exposed to the accessibility tree. The palpable content model doesn't include some elements that are `li`, `dt`, `dd`, `th`, `td`, and more. This option exists to that detect those elements that are empty.",
+					"description:ja": "アクセシビリティツリーに公開されているパルパブルコンテンツではない要素を含めます。パルパブルコンテンツモデルには、`li`、`dt`、`dd`、`th`、`td`などの一部の要素が含まれません。このオプションは、それらの要素が空であることを検出するために存在します。"
 				},
 				"ignoreIfAriaBusy": {
 					"type": "boolean",
 					"default": "true",
-					"description": "Avoid evaluating it if the element has `aria-busy=true`."
+					"description": "Avoid evaluating it if the element has `aria-busy=true`.",
+					"description:ja": "要素に`aria-busy=true`がある場合は無視されます。"
 				}
 			}
 		}

@@ -1,44 +1,50 @@
 ---
-description: 必須属性
+description: 設定された属性もしくは仕様上必須となっている属性が要素上に存在しない場合、警告をします。
 ---
 
-設定された属性もしくは仕様上必須となっている属性が要素上に存在しない場合に警告をします。
+# `required-attr`
+
+設定された属性もしくは仕様上必須となっている属性が要素上に存在しない場合、警告をします。
 
 [HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/attributes)に設定値を持っています。
 
-## ルールの詳細
-
 `<img>` 要素の `src` 属性は[HTML Living Standard](https://momdo.github.io/html/)では必須となります。
+
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
 ```html
 <img />
-```
 
-✅ 正しいコード例
-
-```html
-<img src="/path/to/image.png" />
-```
-
-### 独自指定の例
-
-`{ "required-attr": "alt" }` として `alt` 属性を必須とします。
-
-❌ 間違ったコード例
-
-```html
+<!-- "required-attr": "alt" -->
 <img src="/path/to/image.png" />
 ```
 
 ✅ 正しいコード例
 
 ```html
+<img src="/path/to/image.png" />
+
+<!-- "required-attr": "alt" -->
 <img src="/path/to/image.png" alt="alternative text" />
 ```
 
-### 設定値
+:::note
+
+このルールは**スプレッド属性**をもつ要素は評価しません。次のコードは`img`要素が`src`を持つか評価しません。スプレッド属性に`src`が含まれているかMarkuplintは知ることができないからです。
+
+```jsx
+const Component = (props) => {
+	return <img {...props}>;
+}
+```
+
+:::
+
+---
+
+## 設定例
 
 ```json
 {
@@ -70,19 +76,6 @@ description: 必須属性
 }
 ```
 
-型: `string | (string | Attr)[]`
-
-### インターフェイス
-
-```ts
-type Attr = {
-  name: string;
-  value: string | string[];
-};
-```
-
-## 設定例
-
 通常は要素の種類ごとに必須属性を設定することになるので、`required-attr` ルールは `nodeRules` オプション内に設定すると良いでしょう。
 
 以下は `<img>` 要素上で `alt` 属性を必須とする設定例です。
@@ -103,12 +96,4 @@ type Attr = {
 }
 ```
 
-## 注意
-
-このルールは**スプレッド属性**をもつ要素は評価しません。次のコードは`img`要素が`src`を持つかどうか評価しません。スプレッド属性に`src`が含まれているかどうか markuplint は知ることができないからです。
-
-```jsx
-const Component = (props) => {
-	return <img {...props}>;
-}
-```
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

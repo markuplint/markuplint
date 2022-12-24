@@ -8,6 +8,10 @@
 			"_description": {
 				"lower": "Warns that the tag name is not in lowercase.",
 				"upper": "Warns that the tag name is not in uppercase."
+			},
+			"_description:ja": {
+				"lower": "タグ名が小文字に統一されていないと警告します（外来要素は対象外）。",
+				"upper": "タグ名が小文字に統一されていないと警告します（外来要素は対象外）。"
 			}
 		}
 	},

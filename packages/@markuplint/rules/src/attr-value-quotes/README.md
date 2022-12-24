@@ -1,6 +1,6 @@
 ---
 id: attr-value-quotes
-description: Attribute quotes
+description: Warns if the attribute value is not quoted.
 fixable: true
 category: style
 severity: warning

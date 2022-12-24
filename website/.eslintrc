@@ -39,5 +39,6 @@
         "import/no-named-as-default-member": 0
       }
     }
-  ]
+  ],
+  "ignorePatterns": ["./build/**/*", "./.docusaurus/**/*"]
 }

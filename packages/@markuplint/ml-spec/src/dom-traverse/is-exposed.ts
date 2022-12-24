@@ -1,8 +1,10 @@
 import type { ARIAVersion, MLMLSpec } from '../types';
 
 import { ariaSpecs } from '../specs/aria-specs';
+import { getSpecByTagName } from '../specs/get-spec-by-tag-name';
 import { isPalpableElement } from '../specs/is-palpable-elements';
 import { isPresentational } from '../specs/is-presentational';
+import { resolveNamespace } from '../utils/resolve-namespace';
 
 import { getComputedRole } from './get-computed-role';
 
@@ -19,6 +21,13 @@ export function isExposed(el: Element, specs: Readonly<MLMLSpec>, version: ARIAV
 	// According to WAI-ARIA
 	if (isExcluding(el, specs, version)) {
 		return false;
+	}
+
+	// Return true if the element is unknown, deprecated, or obsolete.
+	const { localName, namespace } = resolveNamespace(el.localName, el.namespaceURI);
+	const spec = getSpecByTagName(specs.specs, localName, namespace);
+	if (!spec || spec.deprecated || spec.obsolete) {
+		return true;
 	}
 
 	// According to HTML and SVG Specs with **the author's interpretation**

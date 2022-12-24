@@ -20,7 +20,8 @@
 							}
 						}
 					],
-					"description": "Specify the event handler to ignore as string or string array. It accepts even in a regex format."
+					"description": "Specify the event handler to ignore as string or string array. It accepts even in a regex format.",
+					"description:ja": "除外するイベントハンドラを文字列か文字列の配列で指定します。正規表現形式も受け付けます。"
 				}
 			}
 		}

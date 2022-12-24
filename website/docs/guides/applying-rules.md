@@ -68,7 +68,7 @@ If you want the part of structures only to apply rules then set with [**selector
 
 ## Build-in rules
 
-The detail of each **built-in rule** is said from the [Rules page](rules/index.md).
+The detail of each **built-in rule** is said from the [Rules page](/rules/).
 
 ## Applying custom rules
 

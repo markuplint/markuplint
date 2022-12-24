@@ -1,10 +1,12 @@
 ---
-description: デフォルト値の指定の禁止
+description: 属性にデフォルト値を指定したときに警告します。
 ---
+
+# `no-default-value`
 
 属性にデフォルト値を指定したときに警告します。
 
-## ルールの詳細
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
@@ -18,11 +20,4 @@ description: デフォルト値の指定の禁止
 <canvas></canvas>
 ```
 
-### 設定値
-
-- 型: `boolean`
-- デフォルト値: `true`
-
-### デフォルトの警告の厳しさ
-
-`warning`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

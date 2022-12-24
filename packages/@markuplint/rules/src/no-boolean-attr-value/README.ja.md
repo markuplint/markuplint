@@ -1,10 +1,12 @@
 ---
-description: 論理属性への値の指定禁止
+description: 論理属性に値を指定すると警告します。
 ---
+
+# `no-boolean-attr-value`
 
 論理属性に値を指定すると警告します。
 
-## ルールの詳細
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
@@ -18,11 +20,4 @@ description: 論理属性への値の指定禁止
 <input type="text" required />
 ```
 
-### 設定値
-
-- 型: `boolean`
-- デフォルト値: `true`
-
-### デフォルトの警告の厳しさ
-
-`warning`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

@@ -1,12 +1,14 @@
 ---
-description: コントロールを持つラベル
+description: label要素にコントロールがない場合に警告します。
 ---
+
+# `label-has-control`
 
 `label`要素に**コントロールがない**場合に警告します。このルールは、本来の目的を持たない関連付けられていないラベルを見つけるために使用します。
 
 また、`label`要素に関連付けられるのは**最初の**コントロールのみであるため、そのの後にコントロールがある場合は警告します。
 
-## ルールの詳細
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
 
@@ -26,6 +28,4 @@ description: コントロールを持つラベル
 <h1><span>New</span> Release Note</h1>
 ```
 
-## 設定例
-
-`warning`
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

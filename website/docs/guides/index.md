@@ -9,16 +9,18 @@ npx markuplint target.html
 ```
 
 :::info
+
 It applies [recommended preset](/guides/presets) if it doesn't find a [configuration file](/configuration).
+
 :::
 
 ### The required spec
 
-- Node.js v14.6.0 or later
+- **Node.js** v14.6.0 or later
 
 ### Using in your project
 
-Create a [configuration](/configuration) file and install dependencies.
+Create a [configuration file](/configuration) and install dependencies.
 
 ```shell
 npx markuplint --init

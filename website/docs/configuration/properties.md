@@ -1,4 +1,4 @@
-# Configuration properties
+# Configuring properties
 
 The configuration has the following properties:
 
@@ -22,9 +22,9 @@ The configuration has the following properties:
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
 | [**`extends`**](#extends)               | [Using Presets](/guides/presets)                                                                                   | [Interface](#extends/interface)        |
 | [**`plugins`**](#plugins)               | [Applying custom rules](/guides/applying-rules#applying-custom-rules), [Creating custom rule](/guides/custom-rule) | [Interface](#plugins/interface)        |
-| [**`parser`**](#parser)                 | [Using to besides HTML](/guides/besides-html)                                                                 | [Interface](#parser/interface)         |
+| [**`parser`**](#parser)                 | [Using to besides HTML](/guides/besides-html)                                                                      | [Interface](#parser/interface)         |
 | [**`parserOptions`**](#parseroptions)   | -                                                                                                                  | [Interface](#parseroptions/interface)  |
-| [**`specs`**](#specs)                   | [Using to besides HTML](/guides/besides-html)                                                                 | [Interface](#specs/interface)          |
+| [**`specs`**](#specs)                   | [Using to besides HTML](/guides/besides-html)                                                                      | [Interface](#specs/interface)          |
 | [**`excludeFiles`**](#excludefiles)     | [Ignoring file](/guides/ignoring-code#ignoring-file)                                                               | [Interface](#excludefiles/interface)   |
 | [**`rules`**](#rules)                   | [Applying rules](/guides/applying-rules)                                                                           | [Interface](#rules/interface)          |
 | [**`nodeRules`**](#noderules)           | [Applying to some](/guides/applying-rules#applying-to-some)                                                        | [Interface](#noderules/interface)      |
@@ -39,12 +39,11 @@ The configuration has the following properties:
 [`specs`](#specs),
 [`specs`](#specs),
 and [`excludeFiles`](#exclude-files) can specify paths.
-In `extends`, `plugins`, `parser`, and `specs` four, it can specify a package name instead of a path.
+In `extends`, `plugins`, `parser`, and `specs` four, it can specify a npm package instead of a path.
 
 First, it tries to import it as a package.
 If it fails, such as the package doesn't exist, or the strings are not a package, **it resolves strings as just a path**.
-These paths are resolved to absolute paths internally.
-A relative path becomes an absolute path on the base of the config file path being had it.
+If it is a relative path, the basis becomes the directory that has the configuration file.
 
 ## Details each property
 
@@ -55,9 +54,9 @@ If you specify other config file [paths](#resolving-specified-paths), it merges 
 ```json
 {
   "extends": [
-    // As a local file
+    // load as a local file
     "../../.markuplintrc",
-    // As a package
+    // load as a package
     "third-party-config"
   ]
 }
@@ -93,7 +92,7 @@ interface Config {
 ### `plugins`
 
 You can load any plugins.
-Specify a package name or a [path](#properties/specification-about-paths).
+Specify a package name or a [path](#resolving-specified-paths).
 Can specify `settings` if the plugin has it.
 
 ```json
@@ -188,7 +187,7 @@ prop: value
 
 If you use **React**, **Vue**, or more, Markuplint's parser detects a component as a native HTML element if you name it with only lower-case characters.
 In most cases, components should start naming upper case, but each syntax parser plugin may has a specific pattern (Ex. Vue: [Built-in Special Elements](https://vuejs.org/api/built-in-special-elements.html)).
-If you need different naming patterns, You can specify the `authoredElementName` option. Default is `undefined`.
+If you need different naming patterns, You can specify the `authoredElementName` option to resolve. Default is `undefined`.
 
 ```json
 {
@@ -283,16 +282,14 @@ interface Config {
 
 ### `rules`
 
-It add [rules](/guides/applying-rules) to this property.
-The value for each rule are either strings, number, and an array.
+Configure to enable or specify details to [rules](/guides/applying-rules). The value for each rule is either string, number, and array.
 
-The rule becomes **disabled** if specify `false`.
-It evaluates as the **default value** each rule has if specify `true`.
+The rule becomes **disabled** if specified as `false`. It applies as the **default value** each rule has if specified as `true`.
 
 ```json
 {
   "rules": {
-    "rule-name": "value" // Add the rule name and value to here
+    "rule-name": "value" // Specify the rule name and value to here
   }
 }
 ```
@@ -319,7 +316,7 @@ It's optional. It evaluates as the **default value** each rule has if omit it.
 
 #### `severity`
 
-It accepts `"error"` or `"warning"`. It's optional. It evaluates as the **default severity** each rule has if omit it.
+It accepts `"error"` or `"warning"`. It's optional. It applies as the **default severity** each rule has if omit it.
 
 #### `options`
 
@@ -375,9 +372,7 @@ type Rule<T, O> =
 If you want only any specific element to [apply some rule](/guides/applying-rules#applying-to-some), you can specify by this property.
 Be careful to the value is an array.
 
-It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).
-
-And it also requires `rules` field. It specifies the same value of the [`rules`](#rules) property.
+It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).　And it also requires `rules` field. It specifies the same value of the [`rules`](#rules) property.
 
 ```json
 {
@@ -407,6 +402,8 @@ It accepts a **regular expression** to matche the target. It's required if no us
 The field has `nodeName`, `attrName`, and `attrValue` fields that accept regular expression optionally.
 So each of these enables to omit. It is AND condition if combine.
 
+The regular expression format must be nested by solidus. Otherwise, it is applied as just a string.
+
 ```json
 {
   "nodeRules": [
@@ -426,9 +423,7 @@ So each of these enables to omit. It is AND condition if combine.
 
 :::tip
 
-It has a **powerful feature** that captures a string through regular expressions and provides it for the value of [`rules`](#rules) property.
-It evaluates the [Mustache](https://mustache.github.io/) format in a value of [`rules`](#rules).
-It expands the capturing incremental number prepended `$` mark as a variable.
+It has a **powerful feature** that captures a string through regular expressions and expands it for the value of the [`rules`](#rules) property. It expands the capturing incremental number prepended `$` mark as a variable. It should specify the value in the [Mustache](https://mustache.github.io/) format.
 
 ```json
 {
@@ -479,7 +474,7 @@ The numbered capture may conflict and be overwritten.
     {
       "regexSelector": {
         "attrName": "/^data-([a-z]+)$/", // It will be `$1`.
-        "attrValue": "^(.+)$" // It will be `$1` too. `$1` is overwritten.
+        "attrValue": "/^(.+)$/" // It will be `$1` too. `$1` is overwritten.
       },
       "rules": {
         "any-rule": "It is {{ $1 }} data attribute, and value is {{ $1 }}"
@@ -488,7 +483,7 @@ The numbered capture may conflict and be overwritten.
     {
       "regexSelector": {
         "attrName": "/^data-(?<dataName>[a-z]+)$/", // It will be `dataName`.
-        "attrValue": "^(?<dataValue>.+)$" // It will be `dataValue`.
+        "attrValue": "/^(?<dataValue>.+)$/" // It will be `dataValue`.
       },
       "rules": {
         "any-rule": "It is {{ dataName }} data attribute, and value is {{ dataValue }}"
@@ -499,7 +494,7 @@ The numbered capture may conflict and be overwritten.
 ```
 
 :::
-You can select the element in complex conditions if you use the `combination` prop.
+You can select the element in complex conditions if you use the `combination` field.
 
 ```json
 {
@@ -519,14 +514,14 @@ You can select the element in complex conditions if you use the `combination` pr
 
 The above is the same as CSS selector `img:has(~ source)`.
 
-The `combinator` prop supports below:
+`combinator` field supports below:
 
 - `" "`: Descendant combinator
 - `">"`: Child combinator
 - `"+"`: Next-sibling combinator
 - `":has(+)"`: Prev-sibling combinator
 - `"~"`: Subsequent-sibling combinator
-- `":has(~)"`: Preceding-sibling
+- `":has(~)"`: Preceding-sibling combinator
 
 You can define nodes unlimitedly deeply.
 
@@ -535,19 +530,19 @@ You can define nodes unlimitedly deeply.
   "nodeRules": [
     {
       "regexSelector": {
-        "attrName": "el1",
+        "nodeName": "el1",
         "combination": {
           "combinator": " ",
-          "attrName": "el2",
+          "nodeName": "el2",
           "combination": {
             "combinator": ">",
-            "attrName": "el3",
+            "nodeName": "el3",
             "combination": {
               "combinator": "+",
-              "attrName": "el4",
+              "nodeName": "el4",
               "combination": {
                 "combinator": "~",
-                "attrName": "el5"
+                "nodeName": "el5"
               }
             }
           }
@@ -597,12 +592,14 @@ If specifies true to the [`inheritance`](#inheritance) field, **affects all desc
 if not, **affects only child nodes**. Be careful to the value is an array.
 
 :::note
-This property is the same as [`nodeRules`](#noderules) property except for having [`inheritance`](#inheritance) field and the behavior.
+
+This property accepts fields of the same as [`nodeRules`](#noderules) property except for having [`inheritance`](#inheritance) field.
+
 :::
 
 #### `inheritance`
 
-It accepts boolean. It's optional.
+It accepts boolean. It's optional and the default value is `false`.
 
 #### Interface {#childnoderules/interface}
 
@@ -702,7 +699,7 @@ const MyComponent = props => {
 
 ```jsx
 <div>
-  {/* Evaluate as rendered div element has aria-live  */}
+  {/* Evaluate as rendered div element has aria-live="polite"  */}
   <MyComponent aria-live="polite">Lorem Ipsam</MyComponent>
 </div>;
 ```
@@ -752,7 +749,7 @@ It accepts an attribute name. It's required.
 
 #### `as.attrs[].value`
 
-It accepts a value. It's optional.
+It accepts an attribute value. It's optional.
 
 #### `as.aria`
 
@@ -762,7 +759,7 @@ It accepts Object as **ARIA Properties**. It has only `name` field currently. It
 
 It accepts boolean or Object as the **accessbile name**.
 Specify `true` if the component has the name **clearly**.
-Otherwise, you set the property name that refs the name to `fromAttr`.
+Otherwise, you set the attribute name that refs the name to `fromAttr`.
 
 ```jsx
 const MyIcon = ({ label }) => {
@@ -836,7 +833,7 @@ type OriginalNode = {
 ### `overrides`
 
 You can override configurations to specific files if you specify the `overrides` option.
-It resolves **glob format paths** specified to a key.
+It applies to **glob format paths** specified to a key.
 
 ```json
 {

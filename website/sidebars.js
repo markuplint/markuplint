@@ -54,8 +54,8 @@ const sidebars = {
   configuration: [
     {
       type: 'category',
-      collapsible: true,
-      collapsed: true,
+      collapsible: false,
+      collapsed: false,
       label: 'Configuration',
       link: {
         type: 'doc',

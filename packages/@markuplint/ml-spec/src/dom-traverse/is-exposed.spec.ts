@@ -47,4 +47,10 @@ describe('isExposed', () => {
 		expect(x('<style>a{}</style>')).toBe(false);
 		expect(x('<script>"";</script>')).toBe(false);
 	});
+
+	test('Unknown element', () => {
+		expect(x('<unknown></unknown>')).toBe(true);
+		expect(x('<font></font>')).toBe(true);
+		expect(x('<x-component></x-component>')).toBe(true);
+	});
 });

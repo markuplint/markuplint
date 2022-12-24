@@ -14,7 +14,8 @@
 				"ignoreHasMutableContents": {
 					"type": "boolean",
 					"default": "true",
-					"description": "Ignore if it has mutable child elements in a preprocessor language like _Pug_ or a component library like _Vue_. (If use _Pug_ or _Vue_ need each [@markuplint/pug-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/pug-parser) and [@markuplint/vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/vue-parser))"
+					"description": "Ignore if it has mutable child elements in a preprocessor language like _Pug_ or a component library like _Vue_. (If use _Pug_ or _Vue_ need each [@markuplint/pug-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/pug-parser) and [@markuplint/vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/vue-parser))",
+					"description:ja": "*Pug*のようなプリプロセッサ言語や*Vue*のようなコンポーネントライブラリにおけるミュータブルな子要素を含む場合、無視します。（*Pug*も、*Vue*も、それぞれ[@markuplint/pug-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/pug-parser)や[@markuplint/vue-parser](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/vue-parser)が必要です）"
 				}
 			}
 		}

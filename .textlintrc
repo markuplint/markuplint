@@ -1,0 +1,13 @@
+{
+	"rules": {
+		"preset-ja-spacing": true,
+		"preset-ja-technical-writing": true,
+		"preset-japanese": true,
+		"preset-jtf-style": {
+			"4.2.7.コロン(：)": false
+		}
+	},
+	"filters": {
+		"comments": true
+	}
+}

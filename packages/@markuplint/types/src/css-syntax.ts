@@ -3,11 +3,11 @@ import type { CustomCssSyntax, CssSyntaxTokenizer, CSSSyntaxToken, GetNextToken,
 // @ts-ignore
 import csstree from 'css-tree';
 // @ts-ignore
-import { SyntaxMatchError } from 'css-tree/lexer/error';
+import { SyntaxMatchError } from 'css-tree/lib/lexer/error.js';
 // @ts-ignore
-import { matchAsTree } from 'css-tree/lexer/match';
+import { matchAsTree } from 'css-tree/lib/lexer/match.js';
 // @ts-ignore
-import prepareTokens from 'css-tree/lexer/prepare-tokens';
+import prepareTokens from 'css-tree/lib/lexer/prepare-tokens.js';
 
 import { log } from './debug';
 import { tokenizers } from './defs';

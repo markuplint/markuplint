@@ -1,5 +1,23 @@
 {
+  "sidebar.guide.category.Guides": {
+    "message": "ガイド"
+  },
   "sidebar.rules.category.Rules": {
     "message": "ルール"
+  },
+  "sidebar.configuration.category.Configuration": {
+    "message": "設定"
+  },
+  "sidebar.configuration.category.Usecases": {
+    "message": "ユースケース"
+  },
+  "sidebar.api.link.API document": {
+    "message": "APIドキュメント"
+  },
+  "sidebar.community.category.Community": {
+    "message": "コミュニティ"
+  },
+  "sidebar.community.link.Store": {
+    "message": "ストア"
   }
 }

@@ -3,20 +3,21 @@ export type CreateRuleHelperParams = CreateRuleCreatorParams & {
 };
 
 export type CreateRuleCreatorParams = {
-	name: string;
+	pluginName: string;
+	ruleName: string;
 	lang: CreateRuleLanguage;
 	needTest: boolean;
+	core?: CreateRuleCreatorCoreParams;
 };
 
-export type CreateRuleHelperResult = CreateRuleCreatorParams & {
-	readme: string;
-	main: string;
-	test: string | null;
-	rules: string | null;
-	rulesTest: string | null;
-	packageJson: string | null;
-	schemaJson: string | null;
-	tsConfig: string | null;
+export type CreateRuleCreatorCoreParams = {
+	description: string;
+	category: string;
+	severity: string;
+};
+
+export type CreateRuleHelperResult = {
+	files: File[];
 	dependencies: string[];
 	devDependencies: string[];
 };
@@ -24,3 +25,12 @@ export type CreateRuleHelperResult = CreateRuleCreatorParams & {
 export type CreateRuleLanguage = 'JAVASCRIPT' | 'TYPESCRIPT';
 
 export type CreateRulePurpose = 'ADD_TO_PROJECT' | 'PUBLISH_AS_PACKAGE' | 'CONTRIBUTE_TO_CORE';
+
+export type File = {
+	ext: string;
+	name: string;
+	fileName: string;
+	test: boolean;
+	destDir: string;
+	filePath: string;
+};

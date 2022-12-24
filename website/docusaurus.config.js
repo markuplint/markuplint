@@ -11,7 +11,7 @@ const { url, editUrlBase, algoliaIndexName } = require('./config');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'markuplint',
+  title: 'Markuplint',
   tagline: 'Peace of mind in your markup',
   url: url,
   baseUrl: '/',
@@ -25,7 +25,7 @@ const config = {
     locales: ['en', 'ja'],
     localeConfigs: {
       ja: {
-        label: '日本語（ベータ）',
+        label: '日本語',
       },
     },
   },
@@ -61,7 +61,7 @@ const config = {
       image: '/img/og-img-general.png',
       navbar: {
         logo: {
-          alt: 'markuplint',
+          alt: 'Markuplint',
           src: 'img/logo-horizontal.svg',
           srcDark: 'img/logo-horizontal.svg#sd',
           width: 171,
@@ -123,7 +123,7 @@ const config = {
       },
       footer: {
         style: 'dark',
-        copyright: `© ${new Date().getFullYear()} markuplint.`,
+        copyright: `© ${new Date().getFullYear()} Markuplint.`,
       },
       prism: {
         theme: lightCodeTheme,
