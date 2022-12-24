@@ -12,22 +12,20 @@
 		"access": "public"
 	},
 	"scripts": {
-		"postinstall": "patch-package",
 		"build": "tsc",
 		"clean": "tsc --build --clean",
 		"schema": "ts-node './gen/types.ts'; json2ts './types.schema.json' > './src/types.schema.ts'; prettier './src/types.schema.ts' './types.schema.json' --write; eslint './src/types.schema.ts' --fix; tsc;"
 	},
 	"dependencies": {
 		"bcp-47": "1",
-		"css-tree": "^2.3.1",
+		"css-tree": "1",
 		"debug": "^4.3.4",
 		"leven": "3",
-		"whatwg-mimetype": "2",
-		"patch-package": "^6.5.0"
+		"whatwg-mimetype": "2"
 	},
 	"devDependencies": {
 		"@types/bcp-47": "1",
-		"@types/css-tree": "^2.0.0",
+		"@types/css-tree": "1",
 		"@types/debug": "^4.1.7",
 		"@types/whatwg-mimetype": "2"
 	}

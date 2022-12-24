@@ -108,14 +108,12 @@ export type CssSyntax =
 	| "<'-webkit-text-stroke-width'>"
 	| "<'-webkit-touch-callout'>"
 	| "<'-webkit-user-modify'>"
-	| "<'accent-color'>"
 	| "<'align-content'>"
 	| "<'align-items'>"
 	| "<'align-self'>"
 	| "<'align-tracks'>"
 	| "<'all'>"
 	| "<'animation'>"
-	| "<'animation-composition'>"
 	| "<'animation-delay'>"
 	| "<'animation-direction'>"
 	| "<'animation-duration'>"
@@ -124,7 +122,6 @@ export type CssSyntax =
 	| "<'animation-name'>"
 	| "<'animation-play-state'>"
 	| "<'animation-timing-function'>"
-	| "<'animation-timeline'>"
 	| "<'appearance'>"
 	| "<'aspect-ratio'>"
 	| "<'azimuth'>"
@@ -221,15 +218,12 @@ export type CssSyntax =
 	| "<'break-before'>"
 	| "<'break-inside'>"
 	| "<'caption-side'>"
-	| "<'caret'>"
 	| "<'caret-color'>"
-	| "<'caret-shape'>"
 	| "<'clear'>"
 	| "<'clip'>"
 	| "<'clip-path'>"
 	| "<'color'>"
-	| "<'print-color-adjust'>"
-	| "<'color-scheme'>"
+	| "<'color-adjust'>"
 	| "<'column-count'>"
 	| "<'column-fill'>"
 	| "<'column-gap'>"
@@ -241,13 +235,7 @@ export type CssSyntax =
 	| "<'column-width'>"
 	| "<'columns'>"
 	| "<'contain'>"
-	| "<'contain-intrinsic-size'>"
-	| "<'contain-intrinsic-block-size'>"
-	| "<'contain-intrinsic-height'>"
-	| "<'contain-intrinsic-inline-size'>"
-	| "<'contain-intrinsic-width'>"
 	| "<'content'>"
-	| "<'content-visibility'>"
 	| "<'counter-increment'>"
 	| "<'counter-reset'>"
 	| "<'counter-set'>"
@@ -285,7 +273,6 @@ export type CssSyntax =
 	| "<'font-variant-numeric'>"
 	| "<'font-variant-position'>"
 	| "<'font-weight'>"
-	| "<'forced-color-adjust'>"
 	| "<'gap'>"
 	| "<'grid'>"
 	| "<'grid-area'>"
@@ -307,7 +294,6 @@ export type CssSyntax =
 	| "<'grid-template-rows'>"
 	| "<'hanging-punctuation'>"
 	| "<'height'>"
-	| "<'hyphenate-character'>"
 	| "<'hyphens'>"
 	| "<'image-orientation'>"
 	| "<'image-rendering'>"
@@ -316,7 +302,6 @@ export type CssSyntax =
 	| "<'initial-letter'>"
 	| "<'initial-letter-align'>"
 	| "<'inline-size'>"
-	| "<'input-security'>"
 	| "<'inset'>"
 	| "<'inset-block'>"
 	| "<'inset-block-end'>"
@@ -369,8 +354,6 @@ export type CssSyntax =
 	| "<'mask-size'>"
 	| "<'mask-type'>"
 	| "<'masonry-auto-flow'>"
-	| "<'math-depth'>"
-	| "<'math-shift'>"
 	| "<'math-style'>"
 	| "<'max-block-size'>"
 	| "<'max-height'>"
@@ -402,7 +385,6 @@ export type CssSyntax =
 	| "<'overflow-anchor'>"
 	| "<'overflow-block'>"
 	| "<'overflow-clip-box'>"
-	| "<'overflow-clip-margin'>"
 	| "<'overflow-inline'>"
 	| "<'overflow-wrap'>"
 	| "<'overflow-x'>"
@@ -478,9 +460,6 @@ export type CssSyntax =
 	| "<'scroll-snap-type'>"
 	| "<'scroll-snap-type-x'>"
 	| "<'scroll-snap-type-y'>"
-	| "<'scroll-timeline'>"
-	| "<'scroll-timeline-axis'>"
-	| "<'scroll-timeline-name'>"
 	| "<'shape-image-threshold'>"
 	| "<'shape-margin'>"
 	| "<'shape-outside'>"
@@ -612,18 +591,13 @@ export type CssSyntax =
 	| "<'voice-rate'>"
 	| "<'voice-stress'>"
 	| "<'voice-volume'>"
-	| '<abs()>'
 	| '<absolute-size>'
-	| '<acos()>'
 	| '<alpha-value>'
 	| '<angle-percentage>'
 	| '<angular-color-hint>'
 	| '<angular-color-stop>'
 	| '<angular-color-stop-list>'
 	| '<animateable-feature>'
-	| '<asin()>'
-	| '<atan()>'
-	| '<atan2()>'
 	| '<attachment>'
 	| '<attr()>'
 	| '<attr-matcher>'
@@ -631,7 +605,6 @@ export type CssSyntax =
 	| '<attribute-selector>'
 	| '<auto-repeat>'
 	| '<auto-track-list>'
-	| '<axis>'
 	| '<baseline-position>'
 	| '<basic-shape>'
 	| '<bg-image>'
@@ -646,7 +619,6 @@ export type CssSyntax =
 	| '<calc-sum>'
 	| '<calc-product>'
 	| '<calc-value>'
-	| '<calc-constant>'
 	| '<cf-final-image>'
 	| '<cf-mixing-image>'
 	| '<circle()>'
@@ -674,10 +646,7 @@ export type CssSyntax =
 	| '<content-position>'
 	| '<content-replacement>'
 	| '<contrast()>'
-	| '<cos()>'
-	| '<counter>'
 	| '<counter()>'
-	| '<counter-name>'
 	| '<counter-style>'
 	| '<counter-style-name>'
 	| '<counters()>'
@@ -698,7 +667,6 @@ export type CssSyntax =
 	| '<ellipse()>'
 	| '<ending-shape>'
 	| '<env()>'
-	| '<exp()>'
 	| '<explicit-track-list>'
 	| '<family-name>'
 	| '<feature-tag-value>'
@@ -712,6 +680,7 @@ export type CssSyntax =
 	| '<filter-function>'
 	| '<filter-function-list>'
 	| '<final-bg-layer>'
+	| '<fit-content()>'
 	| '<fixed-breadth>'
 	| '<fixed-repeat>'
 	| '<fixed-size>'
@@ -731,8 +700,6 @@ export type CssSyntax =
 	| '<hsla()>'
 	| '<hue>'
 	| '<hue-rotate()>'
-	| '<hwb()>'
-	| '<hypot()>'
 	| '<id-selector>'
 	| '<image>'
 	| '<image()>'
@@ -747,10 +714,6 @@ export type CssSyntax =
 	| '<keyframe-block>'
 	| '<keyframe-block-list>'
 	| '<keyframe-selector>'
-	| '<lab()>'
-	| '<layer()>'
-	| '<layer-name>'
-	| '<lch()>'
 	| '<leader()>'
 	| '<leader-type>'
 	| '<length-percentage>'
@@ -761,7 +724,6 @@ export type CssSyntax =
 	| '<linear-color-hint>'
 	| '<linear-color-stop>'
 	| '<linear-gradient()>'
-	| '<log()>'
 	| '<mask-layer>'
 	| '<mask-position>'
 	| '<mask-reference>'
@@ -787,8 +749,6 @@ export type CssSyntax =
 	| '<mf-value>'
 	| '<min()>'
 	| '<minmax()>'
-	| '<mod()>'
-	| '<name-repeat>'
 	| '<named-color>'
 	| '<namespace-prefix>'
 	| '<ns-prefix>'
@@ -805,28 +765,22 @@ export type CssSyntax =
 	| '<page-margin-box-type>'
 	| '<page-selector-list>'
 	| '<page-selector>'
-	| '<page-size>'
 	| '<path()>'
 	| '<paint()>'
 	| '<perspective()>'
 	| '<polygon()>'
 	| '<position>'
-	| '<pow()>'
 	| '<pseudo-class-selector>'
 	| '<pseudo-element-selector>'
 	| '<pseudo-page>'
 	| '<quote>'
 	| '<radial-gradient()>'
-	| '<ratio>'
 	| '<relative-selector>'
 	| '<relative-selector-list>'
 	| '<relative-size>'
-	| '<rem()>'
 	| '<repeat-style>'
-	| '<repeating-conic-gradient()>'
 	| '<repeating-linear-gradient()>'
 	| '<repeating-radial-gradient()>'
-	| '<reversed-counter-name>'
 	| '<rgb()>'
 	| '<rgba()>'
 	| '<rotate()>'
@@ -834,18 +788,14 @@ export type CssSyntax =
 	| '<rotateX()>'
 	| '<rotateY()>'
 	| '<rotateZ()>'
-	| '<round()>'
-	| '<rounding-strategy>'
 	| '<saturate()>'
 	| '<scale()>'
 	| '<scale3d()>'
 	| '<scaleX()>'
 	| '<scaleY()>'
 	| '<scaleZ()>'
-	| '<scroller>'
 	| '<self-position>'
 	| '<shape-radius>'
-	| '<sign()>'
 	| '<skew()>'
 	| '<skewX()>'
 	| '<skewY()>'
@@ -855,17 +805,14 @@ export type CssSyntax =
 	| '<shape>'
 	| '<shape-box>'
 	| '<side-or-corner>'
-	| '<sin()>'
 	| '<single-animation>'
 	| '<single-animation-direction>'
 	| '<single-animation-fill-mode>'
 	| '<single-animation-iteration-count>'
 	| '<single-animation-play-state>'
-	| '<single-animation-timeline>'
 	| '<single-transition>'
 	| '<single-transition-property>'
 	| '<size>'
-	| '<sqrt()>'
 	| '<step-position>'
 	| '<step-timing-function>'
 	| '<subclass-selector>'
@@ -875,14 +822,12 @@ export type CssSyntax =
 	| '<supports-decl>'
 	| '<supports-selector-fn>'
 	| '<symbol>'
-	| '<tan()>'
 	| '<target>'
 	| '<target-counter()>'
 	| '<target-counters()>'
 	| '<target-text()>'
 	| '<time-percentage>'
-	| '<timeline-name>'
-	| '<easing-function>'
+	| '<timing-function>'
 	| '<track-breadth>'
 	| '<track-list>'
 	| '<track-repeat>'
@@ -898,7 +843,6 @@ export type CssSyntax =
 	| '<type-selector>'
 	| '<var()>'
 	| '<viewport-length>'
-	| '<visual-box>'
 	| '<wq-name>'
 	| '<-legacy-gradient>'
 	| '<-legacy-linear-gradient>'
@@ -929,20 +873,23 @@ export type CssSyntax =
 	| '<age>'
 	| '<attr-name>'
 	| '<attr-fallback>'
-	| '<bg-clip>'
+	| '<border-radius>'
 	| '<bottom>'
 	| '<generic-voice>'
 	| '<gender>'
 	| '<left>'
 	| '<mask-image>'
+	| '<name-repeat>'
 	| '<paint>'
+	| '<page-size>'
+	| '<ratio>'
 	| '<right>'
-	| '<scroll-timeline-axis>'
-	| '<scroll-timeline-name>'
-	| '<single-animation-composition>'
 	| '<svg-length>'
 	| '<svg-writing-mode>'
 	| '<top>'
+	| '<track-group>'
+	| '<track-list-v0>'
+	| '<track-minmax>'
 	| '<x>'
 	| '<y>'
 	| '<declaration>'
@@ -951,6 +898,7 @@ export type CssSyntax =
 	| '<url-modifier>'
 	| '<number-zero-one>'
 	| '<number-one-or-greater>'
+	| '<positive-integer>'
 	| '<-non-standard-display>'
 	| '<ident-token>'
 	| '<function-token>'
@@ -978,10 +926,6 @@ export type CssSyntax =
 	| '<}-token>'
 	| '<string>'
 	| '<ident>'
-	| '<percentage>'
-	| '<zero>'
-	| '<number>'
-	| '<integer>'
 	| '<custom-ident>'
 	| '<custom-property-name>'
 	| '<hex-color>'
@@ -998,6 +942,11 @@ export type CssSyntax =
 	| '<resolution>'
 	| '<semitones>'
 	| '<time>'
+	| '<percentage>'
+	| '<zero>'
+	| '<number>'
+	| '<integer>'
+	| '<-ms-legacy-expression>'
 	| '<bcp-47>';
 export type ExtendedType =
 	| 'Any'
