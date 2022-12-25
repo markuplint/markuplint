@@ -37,9 +37,10 @@ export default function DocPage(props: Props): JSX.Element {
   );
 }
 
-function getCategory(pathname: string, lang = 'default') {
+function getCategory(pathname: string, lang = 'en') {
   const paths = pathname.split('/').filter(_ => _);
-  const depth = lang === 'default' ? 0 : 1;
+  const depth = lang === 'en' ? 0 : 1;
+
   const category = !paths[depth]
     ? ''
     : paths[depth] === 'api'

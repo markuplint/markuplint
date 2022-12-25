@@ -5,7 +5,7 @@ import ImgixClient from '@imgix/js-core';
 const client = new ImgixClient({ domain: 'markuplint.imgix.net' });
 
 const fonts: Record<string, [label: string, title: string]> = {
-  default: ['DIN Alternate,Bold', 'PT Sans,Bold'],
+  en: ['DIN Alternate,Bold', 'PT Sans,Bold'],
   ja: ['DIN Alternate,Bold', 'Hiragino Sans W5'],
 };
 
@@ -28,12 +28,12 @@ const TEXTBOX_HEIGHT = 560;
  * @param title
  * @returns
  */
-export function getOgImgUrl(labelText: string, title: string, lang = 'default') {
+export function getOgImgUrl(labelText: string, title: string, lang = 'en') {
   const text = client.buildURL('~text', {
     txt: title,
     'txt-align': 'left,middle',
     'txt-color': '333333',
-    'txt-font': fonts[lang]?.[1] ?? fonts.default[1],
+    'txt-font': fonts[lang]?.[1] ?? fonts.en[1],
     'txt-size': 150,
     'txt-clip': 'ellipsis',
     w: TEXTBOX_WIDTH,
@@ -44,7 +44,7 @@ export function getOgImgUrl(labelText: string, title: string, lang = 'default') 
     txt: labelText,
     'txt-align': 'center,middle',
     'txt-color': '000000',
-    'txt-font': fonts[lang]?.[0] ?? fonts.default[0],
+    'txt-font': fonts[lang]?.[0] ?? fonts.en[0],
     'txt-size': 80,
     'txt-fit': 'max',
     w: labelText.length * 40 + 50,
