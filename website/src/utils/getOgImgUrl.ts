@@ -25,10 +25,12 @@ const TEXTBOX_HEIGHT = 560;
 /**
  * Base image demention: 2400 x 1260
  *
+ * @param labelText English text
  * @param title
+ * @param lang
  * @returns
  */
-export function getOgImgUrl(labelText: string, title: string, lang = 'en') {
+export function getOgImgUrl(labelText: string | undefined, title: string, lang = 'en') {
   const text = client.buildURL('~text', {
     txt: title,
     'txt-align': 'left,middle',
@@ -40,26 +42,32 @@ export function getOgImgUrl(labelText: string, title: string, lang = 'en') {
     h: TEXTBOX_HEIGHT,
     // bg: 'FF0000',
   });
-  const label = client.buildURL('~text', {
-    txt: labelText,
-    'txt-align': 'center,middle',
-    'txt-color': '000000',
-    'txt-font': fonts[lang]?.[0] ?? fonts.en[0],
-    'txt-size': 80,
-    'txt-fit': 'max',
-    w: labelText.length * 40 + 50,
-    bg: 'F4F4F4',
-    mask: 'corner',
-    'corner-radius': '20,20,20,20',
-  });
+  const label = labelText
+    ? client.buildURL('~text', {
+        txt: labelText,
+        'txt-align': 'center,middle',
+        'txt-color': '000000',
+        'txt-font': fonts[lang]?.[0] ?? fonts.en[0],
+        'txt-size': 80,
+        'txt-fit': 'max',
+        w: labelText.length * 40 + 50,
+        bg: 'F4F4F4',
+        mask: 'corner',
+        'corner-radius': '20,20,20,20',
+      })
+    : undefined;
   const url = client.buildURL('og-img-base.png', {
     mark: text,
     'mark-x': PAD_LEFT,
     'mark-y': PAD_TOP + 40,
-    blend: label,
-    'blend-mode': 'normal',
-    'blend-x': PAD_LEFT,
-    'blend-y': PAD_TOP - 20,
+    ...(label
+      ? {
+          blend: label,
+          'blend-mode': 'normal',
+          'blend-x': PAD_LEFT,
+          'blend-y': PAD_TOP - 20,
+        }
+      : {}),
     w: IMAGE_WIDTH,
     h: IMAGE_HEIGHT,
   });
