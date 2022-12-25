@@ -30,6 +30,7 @@ const sidebars = {
         'guides/custom-rule',
         'guides/ignoring-code',
         'guides/cli',
+        'guides/faq',
       ],
     },
   ],

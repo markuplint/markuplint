@@ -34,7 +34,7 @@ Add a command to the `scripts` option on `package.json`:
 ```json title="package.json"
 {
   "scripts": {
-    "html:lint": "markuplint **/*.html"
+    "html:lint": "markuplint \"**/*.html\""
   }
 }
 ```
