@@ -9,6 +9,14 @@ const fonts: Record<string, [label: string, title: string]> = {
   ja: ['DIN Alternate,Bold', 'Hiragino Sans W5'],
 };
 
+const getTextWidth = (text: string): number => {
+  let count = 0;
+  for (let i = 0; i < text.length; i++) {
+    text[i].match(/[ -~]/) ? (count += 1) : (count += 2);
+  }
+  return count;
+};
+
 /**
  * Figma data
  *
@@ -50,7 +58,7 @@ export function getOgImgUrl(labelText: string | undefined, title: string, lang =
         'txt-font': fonts[lang]?.[0] ?? fonts.en[0],
         'txt-size': 80,
         'txt-fit': 'max',
-        w: labelText.length * 40 + 50,
+        w: getTextWidth(labelText) * 40 + 50,
         bg: 'F4F4F4',
         mask: 'corner',
         'corner-radius': '20,20,20,20',
