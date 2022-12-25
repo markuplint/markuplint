@@ -5,7 +5,7 @@ const npm2yarn = require('@docusaurus/remark-plugin-npm2yarn');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 
-const { url, editUrlBase, algoliaIndexName } = require('./config');
+const { isNextVersion, url, editUrlBase, algoliaIndexName } = require('./config');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -123,6 +123,16 @@ const config = {
         style: 'dark',
         copyright: `© ${new Date().getFullYear()} Markuplint.`,
       },
+      announcementBar: isNextVersion
+        ? {
+            id: 'announcement-bar--next-version',
+            content:
+              'THIS WEBSITE EXPOSES INFORMATION OF THE <strong>DEVELOPMENT VERSION</strong>. The current is <a href="https://markuplint.dev">https://markuplint.dev</a> if you want.',
+            backgroundColor: 'var(--ifm-color-warning-contrast-background)',
+            textColor: 'var(--ifm-color-warning-contrast-foreground)',
+            isCloseable: false,
+          }
+        : undefined,
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
