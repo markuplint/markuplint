@@ -27,3 +27,6 @@ i18n/ja/docusaurus-plugin-content-docs/current/rules/*.md
 
 # Copied
 docs/community/contributing.md
+
+# Env
+.env
