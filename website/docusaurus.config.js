@@ -1,13 +1,11 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-/* eslint-disable @typescript-eslint/no-var-requires */
 const npm2yarn = require('@docusaurus/remark-plugin-npm2yarn');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 
 const { url, editUrlBase, algoliaIndexName } = require('./config');
-/* eslint-enable @typescript-eslint/no-var-requires */
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
