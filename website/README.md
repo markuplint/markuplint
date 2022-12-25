@@ -21,3 +21,11 @@ To start a development server of another language website, specify the `--locale
 ```shell
 yarn run site:start --locale ja
 ```
+
+## `.env`
+
+It supports `.env` file.
+
+Supported variables are the following:
+
+- `NEXT_VERSION`: It gives that the website is the next version. The setting of **Environment variables** at [next.markuplint.dev](https://next.markuplint.dev) on **Netlify** requires this.
