@@ -34,7 +34,7 @@ npx markuplint --init
 ```json title="package.json"
 {
   "scripts": {
-    "html:lint": "markuplint **/*.html"
+    "html:lint": "markuplint \"**/*.html\""
   }
 }
 ```
