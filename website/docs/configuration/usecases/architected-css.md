@@ -48,7 +48,7 @@ Suppose defining the following rule:
 
 ## Configuration
 
-Use [`class-naming`](/rules/class-naming) rule with [`regexSelector`](/configuration/properties#regexselector).
+Use [`class-naming`](/docs/rules/class-naming) rule with [`regexSelector`](/docs/configuration/properties#regexselector).
 
 ```json
 {

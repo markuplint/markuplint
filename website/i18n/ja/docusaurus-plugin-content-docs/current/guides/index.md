@@ -10,7 +10,7 @@ npx markuplint target.html
 
 :::info
 
-[設定ファイル](/configuration)がない場合は[推奨プリセット](/guides/presets)が適用されます。
+[設定ファイル](/docs/configuration)がない場合は[推奨プリセット](/docs/guides/presets)が適用されます。
 
 :::
 
@@ -20,7 +20,7 @@ npx markuplint target.html
 
 ### プロジェクトでつかう
 
-[設定ファイル](/configuration)をつくり、依存モジュールをインストールします。
+[設定ファイル](/docs/configuration)をつくり、依存モジュールをインストールします。
 
 ```shell
 npx markuplint --init

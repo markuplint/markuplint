@@ -13,11 +13,5 @@
   },
   "sidebar.api.link.API document": {
     "message": "APIドキュメント"
-  },
-  "sidebar.community.category.Community": {
-    "message": "コミュニティ"
-  },
-  "sidebar.community.link.Store": {
-    "message": "ストア"
   }
 }

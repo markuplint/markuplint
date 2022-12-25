@@ -103,25 +103,6 @@ const sidebars = {
       ],
     },
   ],
-  community: [
-    {
-      type: 'category',
-      label: 'Community',
-      link: {
-        type: 'doc',
-        id: 'community/index',
-      },
-      items: [
-        'community/contributing',
-        'community/branding',
-        {
-          type: 'link',
-          label: 'Store',
-          href: 'https://suzuri.jp/markuplint',
-        },
-      ],
-    },
-  ],
 };
 
 module.exports = sidebars;

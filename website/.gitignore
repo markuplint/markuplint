@@ -26,7 +26,7 @@ i18n/ja/docusaurus-plugin-content-docs/current/rules/*.md
 !i18n/ja/docusaurus-plugin-content-docs/current/rules/.gitkeep
 
 # Copied
-docs/community/contributing.md
+community/contributing.md
 
 # Env
 .env

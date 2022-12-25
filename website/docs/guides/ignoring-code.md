@@ -2,13 +2,13 @@
 
 ## Ignoring file
 
-Use [`excludeFiles`](/configuration/properties#excludefiles) property on the configuration.
+Use [`excludeFiles`](/docs/configuration/properties#excludefiles) property on the configuration.
 
 ## Disable rules
 
 ### Disable by selector
 
-Use [`nodeRules`](/configuration/properties#noderules) or [`childNodeRules`](/configuration/properties#childnoderules) property on the configuration.
+Use [`nodeRules`](/docs/configuration/properties#noderules) or [`childNodeRules`](/docs/configuration/properties#childnoderules) property on the configuration.
 See [Applying to some](./applying-rules/#applying-to-some).
 
 ```json
@@ -29,7 +29,7 @@ See [Applying to some](./applying-rules/#applying-to-some).
 
 ### Overriding to disable rules
 
-Use [`overrides`](/configuration/properties#overrides) property on the configuration.
+Use [`overrides`](/docs/configuration/properties#overrides) property on the configuration.
 
 ```json
 {

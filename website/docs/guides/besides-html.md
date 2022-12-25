@@ -96,7 +96,7 @@ If it mixes the tags and spaces.
 
 ## Applying plugins
 
-Specify a plugin to apply to the `parser` property on the [configuration file](/configuration/).
+Specify a plugin to apply to the `parser` property on the [configuration file](/docs/configuration).
 And If it has spec add to the `specs` property.
 Set a regular expression that can identify the target file name to the `parser` property key.
 
@@ -122,7 +122,7 @@ Set a regular expression that can identify the target file name to the `parser` 
 }
 ```
 
-See explained configuring [`parser`](/configuration/properties#parser) and [`specs`](/configuration/properties#specs) if you want details.
+See explained configuring [`parser`](/docs/configuration/properties#parser) and [`specs`](/docs/configuration/properties#specs) if you want details.
 
 ### Why need the spec plugins?
 
@@ -193,4 +193,4 @@ It evaluates components as rendered HTML elements on each rule if you specify a 
 ```
 <!-- prettier-ignore-end -->
 
-See the details of [`pretenders`](/configuration/properties#pretenders) property on the configuration if you want.
+See the details of [`pretenders`](/docs/configuration/properties#pretenders) property on the configuration if you want.

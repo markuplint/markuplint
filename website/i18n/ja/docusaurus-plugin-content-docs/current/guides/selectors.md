@@ -240,7 +240,7 @@ WAI-ARIAのバージョンは`:role(form|1.1)`のようにパイプで区切っ�
 }
 ```
 
-より複雑な要素を選択できます。詳しくは[`regexSelector`](/configuration/properties#regexselector)の設定方法を参照してください。
+より複雑な要素を選択できます。詳しくは[`regexSelector`](/docs/configuration/properties#regexselector)の設定方法を参照してください。
 
 :::caution
 

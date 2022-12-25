@@ -89,7 +89,7 @@ Type: `string`
 
 #### `type`
 
-Only values that match the specified [type](https://markuplint.dev/api/types) are allowed.
+Only values that match the specified [type](https://markuplint.dev/docs/api/types) are allowed.
 
 Type: `string`
 
