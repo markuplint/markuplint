@@ -2,10 +2,10 @@
 
 ## Usage
 
-```
+```shell
 $ markuplint target.html
 $ markuplint target.html target2.html
-$ markuplint **/*.html
+$ markuplint "**/*.html"
 ```
 
 The CLI takes target HTML files as variadic arguments.

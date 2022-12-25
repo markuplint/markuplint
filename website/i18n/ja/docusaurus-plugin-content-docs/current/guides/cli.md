@@ -2,10 +2,10 @@
 
 ## 使い方
 
-```
+```shell
 $ markuplint target.html
 $ markuplint target.html target2.html
-$ markuplint **/*.html
+$ markuplint "**/*.html"
 ```
 
 CLIはターゲットとなるHTMLファイルを可変長引数として受け取ります。また、glob形式も受け付けます。
