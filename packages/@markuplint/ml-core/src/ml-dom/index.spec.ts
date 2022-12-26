@@ -623,4 +623,18 @@ describe('Issues', () => {
 		});
 		expect(dom.nodeList[0].nodeName).toBe('#ml-block');
 	});
+
+	test('#641', () => {
+		const dom = createTestDocument('<p>{array.map(_ => <></>)}</p>', {
+			parser: require('@markuplint/jsx-parser'),
+		});
+		expect(dom.nodeList[0].raw).toBe('<p>');
+		expect(dom.nodeList[1].raw).toBe('{array.map(_ => <></>)}');
+		expect(dom.nodeList[2].raw).toBe('<>');
+		expect(dom.nodeList[3]).toBeUndefined();
+		expect(dom.nodeList[0].childNodes[0].raw).toBe('{array.map(_ => <></>)}');
+		expect(dom.nodeList[0].childNodes[0].childNodes[0].raw).toBe('<>');
+		const elements = dom.querySelectorAll('*');
+		expect(elements.length).toBe(2);
+	});
 });
