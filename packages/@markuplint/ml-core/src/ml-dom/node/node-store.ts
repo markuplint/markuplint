@@ -5,6 +5,11 @@ import type { RuleConfigValue } from '@markuplint/ml-config';
 
 import { ParserError } from '@markuplint/parser-utils';
 
+import { log } from '../../debug';
+
+const nodeStoreLog = log.extend('node-store');
+const nodeStoreError = nodeStoreLog.extend('error');
+
 class NodeStore {
 	#store = new Map<string, MLNode<any, any, any>>();
 
@@ -12,6 +17,8 @@ class NodeStore {
 		// console.log(`Get: ${astNode.uuid} -> ${astNode.raw.trim()}(${astNode.type})`);
 		const node = this.#store.get(astNode.uuid);
 		if (!node) {
+			nodeStoreError('Ref ID: %s (%s: "%s")', astNode.uuid, astNode.nodeName, astNode.raw);
+			nodeStoreError('Map: %O', this.#store);
 			throw new ParserError('Broke mapping nodes.', {
 				line: astNode.startLine,
 				col: astNode.startCol,
@@ -23,6 +30,12 @@ class NodeStore {
 	}
 
 	setNode<A extends MLASTAbstractNode, T extends RuleConfigValue, O = null>(astNode: A, node: MLNode<T, O, A>) {
+		if (!astNode.uuid) {
+			nodeStoreError('UUID is invalid: %s (%s: "%s")', astNode.uuid, astNode.nodeName, astNode.raw);
+			nodeStoreError('Invalid node: %O', node);
+		}
+
+		nodeStoreLog('Mapped: %s (%s: "%s")', astNode.uuid, astNode.nodeName, astNode.raw);
 		this.#store.set(astNode.uuid, node);
 	}
 }
