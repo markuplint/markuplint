@@ -18,7 +18,7 @@ export default function Hero(props: Props) {
         <h1 className={styles.heroTitle}>{siteConfig.title}</h1>
         <p className={styles.heroSubtitle}>{props.tagLine ?? siteConfig.tagline}</p>
         <div className={styles.buttons}>
-          <Link className="button button--secondary button--lg" to="/guides/">
+          <Link className="button button--secondary button--lg" to="/docs/guides/">
             {props.getStarted}
           </Link>
         </div>

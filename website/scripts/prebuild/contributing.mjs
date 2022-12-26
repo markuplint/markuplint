@@ -9,6 +9,6 @@ import { projectRoot } from './utils.mjs';
 export async function copyContributing() {
   await copyFile(
     resolve(projectRoot, 'CONTRIBUTING.md'),
-    resolve(projectRoot, 'website', 'docs', 'community', 'contributing.md'),
+    resolve(projectRoot, 'website', 'community', 'contributing.md'),
   );
 }

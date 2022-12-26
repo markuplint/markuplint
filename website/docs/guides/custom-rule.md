@@ -1,6 +1,6 @@
 # Creating custom rule
 
-You can create a custom rule while referring to the [**API document**](/api/), but it recommends you use the below command:
+You can create a custom rule while referring to the [**API document**](/docs/api/), but it recommends you use the below command:
 
 ```shell
 npx markuplint --create-rule

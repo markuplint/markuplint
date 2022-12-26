@@ -230,7 +230,7 @@ Specify it to match the **node name**, **attribute name**, or **attribute value*
 }
 ```
 
-You can select elements more complexly. See explained configuring [`regexSelector`](/configuration/properties#regexselector) if you want details.
+You can select elements more complexly. See explained configuring [`regexSelector`](/docs/configuration/properties#regexselector) if you want details.
 
 :::caution
 Cannot specify `regexSelector` together with `selector`. It prioritizes `selector` over `regexSelector`.

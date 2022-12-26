@@ -4,7 +4,7 @@
 
 ## プリセットの適用
 
-[設定](/configuration/)の`extends`プロパティを以下のように指定します。
+[設定](/docs/configuration)の`extends`プロパティを以下のように指定します。
 
 ```json
 {

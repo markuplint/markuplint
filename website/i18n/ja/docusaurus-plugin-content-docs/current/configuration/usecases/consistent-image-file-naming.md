@@ -30,7 +30,7 @@ img要素とsource要素のファイル名を一致させたい場合。
 
 ## 設定
 
-[`invalid-attr`](/rules/invalid-attr)ルールと[`regexSelector`](/configuration/properties#regexselector)を使います。
+[`invalid-attr`](/docs/rules/invalid-attr)ルールと[`regexSelector`](/docs/configuration/properties#regexselector)を使います。
 
 ```json
 {

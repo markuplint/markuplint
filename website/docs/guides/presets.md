@@ -4,7 +4,7 @@ There are some presets. It recommends specifying these because rules need to ena
 
 ## Applying presets
 
-Specify the `extends` property of the [configuration](/configuration/) like below:
+Specify the `extends` property of the [configuration](/docs/configuration) like below:
 
 ```json
 {

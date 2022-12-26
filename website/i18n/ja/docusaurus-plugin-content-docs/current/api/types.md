@@ -1,7 +1,7 @@
 # タイプAPI
 
 **タイプAPI**は、属性などのルールに指定できる型情報を定義していたり、評価するAPIを提供しています。
-例えば、[`invalid-attr`](/rules/invalid-attr)ルールの`attrs.[any-attr-name].type`オプションで使用されています。
+例えば、[`invalid-attr`](/docs/rules/invalid-attr)ルールの`attrs.[any-attr-name].type`オプションで使用されています。
 
 ```json
 {

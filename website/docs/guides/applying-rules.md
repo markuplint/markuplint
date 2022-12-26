@@ -2,11 +2,11 @@
 
 ## Default behavior
 
-Markuplint searches a [configuration file](/configuration) automatically when evaluating. It applies rules that included by [recommended preset](./presets) if it doesn't find a configuration file. If it found, apply according to it.
+Markuplint searches a [configuration file](/docs/configuration) automatically when evaluating. It applies rules that included by [recommended preset](./presets) if it doesn't find a configuration file. If it found, apply according to it.
 
 ## Setting rules
 
-It need a [configuration file](/configuration). You ready it then you add [rules](/rules) needed to the `rules` property.
+It need a [configuration file](/docs/configuration). You ready it then you add [rules](/docs/rules) needed to the `rules` property.
 
 ```json
 {
@@ -21,7 +21,7 @@ It need a [configuration file](/configuration). You ready it then you add [rules
 }
 ```
 
-It's to be enabled if specified besides `false` as the value. So it's to be disabled when specified `false` as it. The details of the value is said by [`rule`](/configuration/properties#rules) property.
+It's to be enabled if specified besides `false` as the value. So it's to be disabled when specified `false` as it. The details of the value is said by [`rule`](/docs/configuration/properties#rules) property.
 
 ## Applying to some
 
@@ -68,7 +68,7 @@ If you want the part of structures only to apply rules then set with [**selector
 
 ## Build-in rules
 
-The detail of each **built-in rule** is said from the [Rules page](/rules/).
+The detail of each **built-in rule** is said from the [Rules page](/docs/rules/).
 
 ## Applying custom rules
 

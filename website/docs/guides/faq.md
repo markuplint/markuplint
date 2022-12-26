@@ -4,7 +4,7 @@
 
 I appreciate your use. First, you must be having trouble with the current markup, and you will want to resolve that.
 
-**What you can do immediately is [disable the rule](/guides/ignoring-code#disable-by-selector)**. If it is a partial problem, I would recommend disabling it partially while using selectors. That way, other areas where the bug is not occurring will remain enabled, and Markuplint itself can continue to be used.
+**What you can do immediately is [disable the rule](/docs/guides/ignoring-code#disable-by-selector)**. If it is a partial problem, I would recommend disabling it partially while using selectors. That way, other areas where the bug is not occurring will remain enabled, and Markuplint itself can continue to be used.
 
 We don't care if you report the bug after that. It's best to you to [create an issue](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix). Otherwise, it's ok you send a DM to [the author's Twitter account](https://twitter.com/cloud10designs) or send a tweet with "Markuplint" in it, and we will pick it up. Please help us fix bugs and improve features.
 
@@ -13,7 +13,7 @@ We don't care if you report the bug after that. It's best to you to [create an i
 The possibility of a bug is very high, but we want something you should check before doing so.
 
 - Using newline codes is CRLF [#31](https://github.com/markuplint/markuplint/issues/31)
-- Using a [syntax that is not yet supported](/guides/besides-html#supported-syntaxes) [#240](https://github.com/markuplint/markuplint/issues/240)
+- Using a [syntax that is not yet supported](/docs/guides/besides-html#supported-syntaxes) [#240](https://github.com/markuplint/markuplint/issues/240)
 
 These are known problems, but we are having difficulty dealing with them now. We are sorry, but we ask that you partially disable the rules.
 
@@ -51,19 +51,19 @@ Also, we may say that is nonsense, but **Knowledge of HTML is essential** when y
 
 ## Warned at OGP
 
-The Open Graph protocol is a different specification from HTML and is not supported by the standard. Please refer to [a possible configuration to support the protocol](/rules/invalid-attr#the-open-graph-protocol).
+The Open Graph protocol is a different specification from HTML and is not supported by the standard. Please refer to [a possible configuration to support the protocol](/docs/rules/invalid-attr#the-open-graph-protocol).
 
 ## Warned by `invalid-attr` rule
 
-[`invalid-attr`](/rules/invalid-attr) rule warns when an attribute is specified for an element that does not exist in the HTML specification, which may be encountered frequently when using non-HTML syntax or frameworks. You can eliminate the warning by adding the attributes you want to allow. `invalid-attr` has [`attrs`](/rules/invalid-attr#setting-attrs-option) option to add the attribute you want to allow.
+[`invalid-attr`](/docs/rules/invalid-attr) rule warns when an attribute is specified for an element that does not exist in the HTML specification, which may be encountered frequently when using non-HTML syntax or frameworks. You can eliminate the warning by adding the attributes you want to allow. `invalid-attr` has [`attrs`](/docs/rules/invalid-attr#setting-attrs-option) option to add the attribute you want to allow.
 
-For React and Vue, spec plugins have been introduced to prevent warnings on specific attributes in each syntax. (FYI: [Why need the spec plugins?](/guides/besides-html#why-need-the-spec-plugins))
+For React and Vue, spec plugins have been introduced to prevent warnings on specific attributes in each syntax. (FYI: [Why need the spec plugins?](/docs/guides/besides-html#why-need-the-spec-plugins))
 
 If you want a spec plugin that helps syntax or framework ([Next.js](https://nextjs.org/), [Nuxt](https://nuxtjs.org/), etc.), please request it from us.
 
 ## Warned by `character-reference` rule
 
-[`character-reference`](/rules/character-reference) does not strictly evaluate characters. Even if a character is in a valid place and does not need to be escaped, you will be prompted to change it. This may cause inconvenience for some syntax and template engines. In that case, you may be able to disable the rule itself, or please [report the situation as an Issue](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix).
+[`character-reference`](/docs/rules/character-reference) does not strictly evaluate characters. Even if a character is in a valid place and does not need to be escaped, you will be prompted to change it. This may cause inconvenience for some syntax and template engines. In that case, you may be able to disable the rule itself, or please [report the situation as an Issue](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix).
 
 ## The glob format does not work as expected in the CLI
 
@@ -81,7 +81,7 @@ markuplint "**/*.html"
 
 ## Can I use it with React?
 
-Of course, it can be used with React (JSX) and Vue, Svelte, Astro, Pug, PHP, etc. To use these, you need to use the official plug-ins provided by Markuplint. For more information, please refer to [Using to besides HTML](/guides/besides-html).
+Of course, it can be used with React (JSX) and Vue, Svelte, Astro, Pug, PHP, etc. To use these, you need to use the official plug-ins provided by Markuplint. For more information, please refer to [Using to besides HTML](/docs/guides/besides-html).
 
 ## Does it seem that Angular is not supported?
 
@@ -101,4 +101,4 @@ markuplint "**/*.html" --format JSON
 
 ## Can it be used for E2E testing?
 
-Yes, of course. Markuplint is designed for each component checking but can also be used to check the rendered HTML. Markuplint uses a different **HTML parser** than the browser, so HTML must be passed as a string. For E2E testing, you can check either the HTML string returned by the server or the DOM tree exposed by the browser by converting it to a string and passing it to [Markuplint API](/api).
+Yes, of course. Markuplint is designed for each component checking but can also be used to check the rendered HTML. Markuplint uses a different **HTML parser** than the browser, so HTML must be passed as a string. For E2E testing, you can check either the HTML string returned by the server or the DOM tree exposed by the browser by converting it to a string and passing it to [Markuplint API](/docs/api).

@@ -1,6 +1,6 @@
 import { statSync } from 'node:fs';
 import { rm, writeFile, readdir } from 'node:fs/promises';
-import { resolve, dirname, basename } from 'node:path';
+import { resolve, dirname, basename, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import syncGlob from 'glob';
@@ -16,7 +16,7 @@ export const projectRoot = resolve(__dirname, '..', '..', '..');
  * @returns {Promise<string>}
  */
 export async function getEditUrlBase() {
-  return (await import(resolve(projectRoot, 'website', 'config.js'))).default.editUrlBase;
+  return (await import(pathToFileURL(resolve(projectRoot, 'website', 'config.js')))).default.editUrlBase;
 }
 
 /**
@@ -34,7 +34,7 @@ export async function dropFiles(dirPath, placeholder) {
   const dirList = [];
 
   if (placeholder) {
-    const [above, below] = dirPath.split(`/${placeholder}/`);
+    const [above, below] = dirPath.split(`${sep}${placeholder}${sep}`);
     const contents = await readdir(above);
 
     const dirs = contents
