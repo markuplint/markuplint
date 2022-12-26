@@ -34,7 +34,6 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          routeBasePath: '/',
           path: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: `${editUrlBase}/website`,
@@ -91,8 +90,7 @@ const config = {
             label: 'API',
           },
           {
-            type: 'doc',
-            docId: 'community/index',
+            to: '/community',
             position: 'left',
             label: 'Community',
           },
@@ -146,31 +144,52 @@ const config = {
 
   plugins: [
     [
+      'content-docs',
+      /** @type {import('@docusaurus/plugin-content-docs').Options} */
+      ({
+        id: 'community',
+        path: 'community',
+        routeBasePath: 'community',
+        editUrl: `${editUrlBase}/website`,
+        sidebarPath: require.resolve('./sidebarsCommunity.js'),
+      }),
+    ],
+    [
       '@docusaurus/plugin-client-redirects',
-      {
+      /** @type {import('@docusaurus/plugin-client-redirects').Options} */
+      ({
         redirects: [
           {
-            to: '/guides/',
             from: '/getting-started',
+            to: '/docs/guides',
           },
           {
-            to: '/guides/applying-rules/',
             from: '/set-up-rules',
+            to: '/docs/guides/applying-rules',
           },
           {
-            to: '/guides/besides-html/',
             from: '/setting-for-other-languages',
+            to: '/docs/guides/besides-html',
           },
           {
-            to: '/guides/cli/',
             from: '/cli',
+            to: '/docs/guides/cli',
           },
           {
-            to: '/api/',
             from: '/api-docs',
+            to: '/docs/api',
           },
         ],
-      },
+        createRedirects(existingPath) {
+          const docsDirs = ['/docs/guides', '/docs/rules', '/docs/configuration', '/docs/api'];
+          for (const dir of docsDirs) {
+            if (existingPath.includes(dir)) {
+              return [existingPath.replace('/docs', '')];
+            }
+          }
+          return undefined;
+        },
+      }),
     ],
   ],
 };

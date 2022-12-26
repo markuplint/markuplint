@@ -166,7 +166,7 @@ async function createEachRule(paths, ruleDocsDistDir, ruleDocsI18nDistDir) {
 async function crateRuleIndexDoc(index, ruleDocsDistDir) {
   const ruleListItem = rule =>
     !rule.href
-      ? `[\`${rule.id}\`](/rules/${rule.id})|${rule.description}`
+      ? `[\`${rule.id}\`](/docs/rules/${rule.id})|${rule.description}`
       : `[\`${rule.id}\`](${rule.href})|${rule.description}`;
 
   const table = list => {

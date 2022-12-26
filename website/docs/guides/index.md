@@ -10,7 +10,7 @@ npx markuplint target.html
 
 :::info
 
-It applies [recommended preset](/guides/presets) if it doesn't find a [configuration file](/configuration).
+It applies [recommended preset](/docs/guides/presets) if it doesn't find a [configuration file](/docs/configuration).
 
 :::
 
@@ -20,7 +20,7 @@ It applies [recommended preset](/guides/presets) if it doesn't find a [configura
 
 ### Using in your project
 
-Create a [configuration file](/configuration) and install dependencies.
+Create a [configuration file](/docs/configuration) and install dependencies.
 
 ```shell
 npx markuplint --init

@@ -48,7 +48,7 @@ BEMのように定義されたCSSクラス名に従っている場合。
 
 ## 設定
 
-[`class-naming`](/rules/class-naming)ルールと[`regexSelector`](/configuration/properties#regexselector)を使います。
+[`class-naming`](/docs/rules/class-naming)ルールと[`regexSelector`](/docs/configuration/properties#regexselector)を使います。
 
 ```json
 {

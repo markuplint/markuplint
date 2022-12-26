@@ -30,7 +30,7 @@ Suppose defining the following rule:
 
 ## Configuration
 
-Use [`invalid-attr`](/rules/invalid-attr) rule with [`regexSelector`](/configuration/properties#regexselector).
+Use [`invalid-attr`](/docs/rules/invalid-attr) rule with [`regexSelector`](/docs/configuration/properties#regexselector).
 
 ```json
 {

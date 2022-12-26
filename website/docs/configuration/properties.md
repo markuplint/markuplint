@@ -18,19 +18,19 @@ The configuration has the following properties:
 }
 ```
 
-| Property                                | First guide                                                                                                        | Interface                              |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
-| [**`extends`**](#extends)               | [Using Presets](/guides/presets)                                                                                   | [Interface](#extends/interface)        |
-| [**`plugins`**](#plugins)               | [Applying custom rules](/guides/applying-rules#applying-custom-rules), [Creating custom rule](/guides/custom-rule) | [Interface](#plugins/interface)        |
-| [**`parser`**](#parser)                 | [Using to besides HTML](/guides/besides-html)                                                                      | [Interface](#parser/interface)         |
-| [**`parserOptions`**](#parseroptions)   | -                                                                                                                  | [Interface](#parseroptions/interface)  |
-| [**`specs`**](#specs)                   | [Using to besides HTML](/guides/besides-html)                                                                      | [Interface](#specs/interface)          |
-| [**`excludeFiles`**](#excludefiles)     | [Ignoring file](/guides/ignoring-code#ignoring-file)                                                               | [Interface](#excludefiles/interface)   |
-| [**`rules`**](#rules)                   | [Applying rules](/guides/applying-rules)                                                                           | [Interface](#rules/interface)          |
-| [**`nodeRules`**](#noderules)           | [Applying to some](/guides/applying-rules#applying-to-some)                                                        | [Interface](#noderules/interface)      |
-| [**`childNodeRules`**](#childnoderules) | [Applying to some](/guides/applying-rules#applying-to-some)                                                        | [Interface](#childnoderules/interface) |
-| [**`pretenders`**](#pretenders)         | [Pretenders](/guides/besides-html#pretenders)                                                                      | [Interface](#pretenders/interface)     |
-| [**`overrides`**](#overrides)           | [Overriding to disable rules](/guides/ignoring-code#overriding-to-disable-rules)                                   | [Interface](#overrides/interface)      |
+| Property                                | First guide                                                                                                                  | Interface                              |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| [**`extends`**](#extends)               | [Using Presets](/docs/guides/presets)                                                                                        | [Interface](#extends/interface)        |
+| [**`plugins`**](#plugins)               | [Applying custom rules](/docs/guides/applying-rules#applying-custom-rules), [Creating custom rule](/docs/guides/custom-rule) | [Interface](#plugins/interface)        |
+| [**`parser`**](#parser)                 | [Using to besides HTML](/docs/guides/besides-html)                                                                           | [Interface](#parser/interface)         |
+| [**`parserOptions`**](#parseroptions)   | -                                                                                                                            | [Interface](#parseroptions/interface)  |
+| [**`specs`**](#specs)                   | [Using to besides HTML](/docs/guides/besides-html)                                                                           | [Interface](#specs/interface)          |
+| [**`excludeFiles`**](#excludefiles)     | [Ignoring file](/docs/guides/ignoring-code#ignoring-file)                                                                    | [Interface](#excludefiles/interface)   |
+| [**`rules`**](#rules)                   | [Applying rules](/docs/guides/applying-rules)                                                                                | [Interface](#rules/interface)          |
+| [**`nodeRules`**](#noderules)           | [Applying to some](/docs/guides/applying-rules#applying-to-some)                                                             | [Interface](#noderules/interface)      |
+| [**`childNodeRules`**](#childnoderules) | [Applying to some](/docs/guides/applying-rules#applying-to-some)                                                             | [Interface](#childnoderules/interface) |
+| [**`pretenders`**](#pretenders)         | [Pretenders](/docs/guides/besides-html#pretenders)                                                                           | [Interface](#pretenders/interface)     |
+| [**`overrides`**](#overrides)           | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                                        | [Interface](#overrides/interface)      |
 
 ## Resolving specified paths
 
@@ -62,7 +62,7 @@ If you specify other config file [paths](#resolving-specified-paths), it merges 
 }
 ```
 
-The name added the prefix `markuplint:` loads a [**preset**](/guides/presets) provided from Markuplint.
+The name added the prefix `markuplint:` loads a [**preset**](/docs/guides/presets) provided from Markuplint.
 
 ```json
 {
@@ -133,7 +133,7 @@ interface Config {
 
 ### `parser`
 
-Specify a regex to the key, and the [**parser**](/guides/besides-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
+Specify a regex to the key, and the [**parser**](/docs/guides/besides-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
 The regex should be specify it matches the target file (ex., the extension part).
 
 ```json
@@ -217,7 +217,7 @@ interface Config {
 
 ### `specs`
 
-Specify a regex to the key, and the [**spec**](/guides/besides-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
+Specify a regex to the key, and the [**spec**](/docs/guides/besides-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
 The regex should be specify it matches the target file (ex., the extension part).
 
 ```json
@@ -282,7 +282,7 @@ interface Config {
 
 ### `rules`
 
-Configure to enable or specify details to [rules](/guides/applying-rules). The value for each rule is either string, number, and array.
+Configure to enable or specify details to [rules](/docs/guides/applying-rules). The value for each rule is either string, number, and array.
 
 The rule becomes **disabled** if specified as `false`. It applies as the **default value** each rule has if specified as `true`.
 
@@ -369,7 +369,7 @@ type Rule<T, O> =
 
 ### `nodeRules`
 
-If you want only any specific element to [apply some rule](/guides/applying-rules#applying-to-some), you can specify by this property.
+If you want only any specific element to [apply some rule](/docs/guides/applying-rules#applying-to-some), you can specify by this property.
 Be careful to the value is an array.
 
 It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).　And it also requires `rules` field. It specifies the same value of the [`rules`](#rules) property.
@@ -393,7 +393,7 @@ It accepts the same value of the [`rules`](#rules) property. It's required.
 
 #### `selector`
 
-It accepts [**Selector**](/guides/selectors) to matche the target. It's required if no use [`regexSelector`](#regexselector).
+It accepts [**Selector**](/docs/guides/selectors) to matche the target. It's required if no use [`regexSelector`](#regexselector).
 
 #### `regexSelector`
 
@@ -626,11 +626,11 @@ interface Config {
 
 ### `pretenders`
 
-The [**Pretenders**](/guides/besides-html#pretenders) feature is what a custom component pretends as a native HTML element. It helps that some rules evaluate it as an element that is the result rendered. Be careful to the value is an array.
+The [**Pretenders**](/docs/guides/besides-html#pretenders) feature is what a custom component pretends as a native HTML element. It helps that some rules evaluate it as an element that is the result rendered. Be careful to the value is an array.
 
 #### `selector`
 
-It accepts [**Selector**](/guides/selectors) to matche the target component. It's required.
+It accepts [**Selector**](/docs/guides/selectors) to matche the target component. It's required.
 
 #### `as`
 

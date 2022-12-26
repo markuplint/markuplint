@@ -88,7 +88,7 @@ const Component = (props) => {
 
 #### `type`
 
-指定した[型](https://markuplint.dev/api/types)にマッチする値のみ許可します。
+指定した[型](https://markuplint.dev/docs/api/types)にマッチする値のみ許可します。
 
 型: `string`
 

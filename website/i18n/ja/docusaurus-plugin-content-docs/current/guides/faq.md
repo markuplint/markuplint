@@ -6,7 +6,7 @@
 
 ご利用ありがとうございます。まずは直近のマークアップでお困りのはずで、そこを解決したいでしょう。
 
-**すぐにできることは、その[ルールを無効にすること](/guides/ignoring-code#disable-by-selector)です。**部分的な問題であれば、セレクタを使いながら部分的に無効化することをおすすめします。そうすることで、他のバグが発生していない箇所は有効のままMarkuplint自体は利用を継続できます。
+**すぐにできることは、その[ルールを無効にすること](/docs/guides/ignoring-code#disable-by-selector)です。**部分的な問題であれば、セレクタを使いながら部分的に無効化することをおすすめします。そうすることで、他のバグが発生していない箇所は有効のままMarkuplint自体は利用を継続できます。
 
 バグ報告はそのあとでも結構です。[Issueを作ってもらう](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix)のが確実ですが（日本語で構いません）、[作者のTwitter](https://twitter.com/cloud10designs)にDMを送ったり、「Markuplint」を含んでツイートしてもらえば拾いに行きます。ぜひバグの修正と機能改善にご協力ください。
 
@@ -15,7 +15,7 @@
 バグの可能性が大いに高いですが、その前に確認していただきたいことがあります。
 
 - 改行コードがCRLFになっている [#31](https://github.com/markuplint/markuplint/issues/31)
-- [サポートが間に合っていない構文](/guides/besides-html#supported-syntaxes)を使っている [#240](https://github.com/markuplint/markuplint/issues/240)
+- [サポートが間に合っていない構文](/docs/guides/besides-html#supported-syntaxes)を使っている [#240](https://github.com/markuplint/markuplint/issues/240)
 
 これらは既知の問題ですが、現在のところ対応が難航しています。申し訳ありませんが、部分的にルールの無効化をしてください。
 
@@ -43,8 +43,8 @@
 
 できることのいくつかは共通するものがありますが、Markuplintとの大きな差としては次のことが挙げられます。
 
-- [要素の親子関係（構造）の適合性チェック](/rules/permitted-contents)ができること
-- 強力な[セレクタ](/guides/selectors)機能によって細かくルールを制御できること
+- [要素の親子関係（構造）の適合性チェック](/docs/rules/permitted-contents)ができること
+- 強力な[セレクタ](/docs/guides/selectors)機能によって細かくルールを制御できること
 - HTMLやJSX以外の構文を多くサポートしていること
 
 もちろん[**HTMLHint**](https://htmlhint.com/)、[**eslint-plugin-jsx-a11y**](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)、それぞれにしかできないこともあり、どれも導入して併用できますので、適宜プロジェクトにあった利用をしていただけると嬉しいです。
@@ -65,7 +65,7 @@ Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応
 
 ## `invalid-attr`ルールで怒られます
 
-[`invalid-attr`](/rules/invalid-attr)はHTMLの仕様に存在しない属性が要素に指定されていると警告します。HTML以外の構文や、フレームワークを利用していると頻繁に遭遇するかもしれません。`invalid-attr`には[`attrs`](/ja/rules/invalid-attr#attrs%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E8%A8%AD%E5%AE%9A)オプションがあり、そこに許可したい属性を追加することで警告をなくすことができます。
+[`invalid-attr`](/docs/rules/invalid-attr)はHTMLの仕様に存在しない属性が要素に指定されていると警告します。HTML以外の構文や、フレームワークを利用していると頻繁に遭遇するかもしれません。`invalid-attr`には[`attrs`](/ja/rules/invalid-attr#attrs%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E8%A8%AD%E5%AE%9A)オプションがあり、そこに許可したい属性を追加することで警告をなくすことができます。
 
 また、ReactとVueに関してはスペックプラグインを導入することにより、各構文で独自に使用される属性には警告がでないように定義されています。（参考: [なぜスペックプラグインが必要なのですか](/ja/guides/besides-html#%E3%81%AA%E3%81%9C%E3%82%B9%E3%83%9A%E3%83%83%E3%82%AF%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3%E3%81%8C%E5%BF%85%E8%A6%81%E3%81%AA%E3%81%AE%E3%81%A7%E3%81%99%E3%81%8B)）
 
@@ -75,7 +75,7 @@ Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応
 
 <!-- textlint-disable ja-technical-writing/ja-no-weak-phrase -->
 
-[`character-reference`](/rules/character-reference)は文字を厳密に評価しません。文字が有効な場所にありエスケープする必要がない場合でも、変更を促されてしまいます。いくつかの構文やテンプレートエンジンでは不都合が起こるかもしれません。その場合、このルール自体を無効化するか、もしくは[Issueで状況を報告](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix)していただければ対処できるかもしれません。
+[`character-reference`](/docs/rules/character-reference)は文字を厳密に評価しません。文字が有効な場所にありエスケープする必要がない場合でも、変更を促されてしまいます。いくつかの構文やテンプレートエンジンでは不都合が起こるかもしれません。その場合、このルール自体を無効化するか、もしくは[Issueで状況を報告](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix)していただければ対処できるかもしれません。
 
 <!-- textlint-enable ja-technical-writing/ja-no-weak-phrase -->
 
@@ -93,7 +93,7 @@ markuplint "**/*.html"
 
 ## Reactで使えますか？
 
-もちろん使えます。React（JSX）の他に、Vue、Svelte、Astro、Pug、PHPなどに対応しています。利用にはMarkuplintが公式に提供しているプラグインを併用する必要があります。詳しくは[HTML以外につかう](/guides/besides-html)を御覧ください。
+もちろん使えます。React（JSX）の他に、Vue、Svelte、Astro、Pug、PHPなどに対応しています。利用にはMarkuplintが公式に提供しているプラグインを併用する必要があります。詳しくは[HTML以外につかう](/docs/guides/besides-html)を御覧ください。
 
 ## Angularに対応していないようですが？
 
@@ -113,6 +113,6 @@ markuplint "**/*.html" --format JSON
 
 ## E2Eテストに利用できますか？
 
-もちろん利用できます。Markuplintはコンポーネント単位のチェックができるように設計されていますが、レンダリングされたHTMLまるごとのチェックも可能です。Markuplintはブラウザとは異なる**HTMLパーサ**を利用するのでHTMLを文字列で渡す必要があります。E2Eテストでの活用方法としては、サーバが返却したHTML文字列か、ブラウザが公開したDOMツリーを文字列に変換し、[MarkuplintのAPI](/api)に渡すことでチェックできるでしょう。
+もちろん利用できます。Markuplintはコンポーネント単位のチェックができるように設計されていますが、レンダリングされたHTMLまるごとのチェックも可能です。Markuplintはブラウザとは異なる**HTMLパーサ**を利用するのでHTMLを文字列で渡す必要があります。E2Eテストでの活用方法としては、サーバが返却したHTML文字列か、ブラウザが公開したDOMツリーを文字列に変換し、[MarkuplintのAPI](/docs/api)に渡すことでチェックできるでしょう。
 
 <!-- textlint-enable ja-technical-writing/no-exclamation-question-mark -->

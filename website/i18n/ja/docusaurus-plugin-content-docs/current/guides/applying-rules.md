@@ -2,11 +2,11 @@
 
 ## デフォルトの挙動
 
-Markuplintは実行時、[設定ファイル](/configuration)を自動で探します。設定ファイルが見つからなかった場合、[推奨プリセット](./presets)のルールを適用します。見つかった場合はその設定に従います。
+Markuplintは実行時、[設定ファイル](/docs/configuration)を自動で探します。設定ファイルが見つからなかった場合、[推奨プリセット](./presets)のルールを適用します。見つかった場合はその設定に従います。
 
 ## ルールの設定
 
-[設定ファイル](/configuration)が必要になります。用意できたら`rules`プロパティに必要な[ルール](/rules)を追加します。
+[設定ファイル](/docs/configuration)が必要になります。用意できたら`rules`プロパティに必要な[ルール](/docs/rules)を追加します。
 
 ```json
 {
@@ -21,7 +21,7 @@ Markuplintは実行時、[設定ファイル](/configuration)を自動で探し�
 }
 ```
 
-`false`以外を値に指定すると、ルールが有効化されます。つまり、`false`を指定した場合は無効化されます。値の詳細は[`rules`](/configuration/properties#rules)プロパティにをご覧ください。
+`false`以外を値に指定すると、ルールが有効化されます。つまり、`false`を指定した場合は無効化されます。値の詳細は[`rules`](/docs/configuration/properties#rules)プロパティにをご覧ください。
 
 ## 部分的な適用 {#applying-to-some}
 
@@ -67,7 +67,7 @@ Markuplintは実行時、[設定ファイル](/configuration)を自動で探し�
 
 ## 組み込みルール
 
-各**組込みルール**の詳細は、[「ルール」ページ](/rules/)よりご確認ください。
+各**組込みルール**の詳細は、[「ルール」ページ](/docs/rules/)よりご確認ください。
 
 ## カスタムルールの適用 {#applying-custom-rules}
 

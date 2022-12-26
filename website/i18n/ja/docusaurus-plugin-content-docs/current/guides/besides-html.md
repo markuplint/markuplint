@@ -97,7 +97,7 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 
 ## プラグインの適用
 
-[設定ファイル](/configuration/)の`parser`プロパティに適用するプラグインを指定します。また、スペックが存在する場合は`specs`プロパティにも追加します。`parser`プロパティのキーに対象ファイル名を特定できる正規表現を設定します。
+[設定ファイル](/docs/configuration)の`parser`プロパティに適用するプラグインを指定します。また、スペックが存在する場合は`specs`プロパティにも追加します。`parser`プロパティのキーに対象ファイル名を特定できる正規表現を設定します。
 
 ```json title="Reactでつかう"
 {
@@ -121,7 +121,7 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 }
 ```
 
-詳しくは、 [`parser`](/configuration/properties#parser)と[`specs`](/configuration/properties#specs)の説明をご覧ください。
+詳しくは、 [`parser`](/docs/configuration/properties#parser)と[`specs`](/docs/configuration/properties#specs)の説明をご覧ください。
 
 ### なぜスペックプラグインが必要なのですか
 
@@ -192,4 +192,4 @@ const Component = ({ list }) => {
 ```
 <!-- prettier-ignore-end -->
 
-必要であれば、設定の[`pretenders`](/configuration/properties#pretenders)プロパティの詳細を参照してください。
+必要であれば、設定の[`pretenders`](/docs/configuration/properties#pretenders)プロパティの詳細を参照してください。
