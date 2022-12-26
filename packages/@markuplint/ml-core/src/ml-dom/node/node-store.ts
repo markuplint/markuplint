@@ -30,6 +30,10 @@ class NodeStore {
 	}
 
 	setNode<A extends MLASTAbstractNode, T extends RuleConfigValue, O = null>(astNode: A, node: MLNode<T, O, A>) {
+		if (node.is(node.DOCUMENT_NODE)) {
+			return;
+		}
+
 		if (!astNode.uuid) {
 			nodeStoreError('UUID is invalid: %s (%s: "%s")', astNode.uuid, astNode.nodeName, astNode.raw);
 			nodeStoreError('Invalid node: %O', node);
