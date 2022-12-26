@@ -6,7 +6,7 @@ const client = new ImgixClient({ domain: 'markuplint.imgix.net' });
 
 const fonts: Record<string, [label: string, title: string]> = {
   en: ['DIN Alternate,Bold', 'PT Sans,Bold'],
-  ja: ['DIN Alternate,Bold', 'Hiragino Sans W5'],
+  ja: ['Hiragino Sans W5', 'Hiragino Sans W5'],
 };
 
 const getTextWidth = (text: string): number => {
