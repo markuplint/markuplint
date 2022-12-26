@@ -51,6 +51,10 @@ function provideChildNodesToPSBlock(list: MLASTNode[]) {
 		const nParentId = psBlockNode.__parentId;
 
 		walk(list, candidate => {
+			if (candidate.type === 'endtag') {
+				return;
+			}
+
 			if (psBlockNode.uuid === candidate.uuid) {
 				return;
 			}
