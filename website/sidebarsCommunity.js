@@ -4,21 +4,21 @@
 const sidebars = {
   community: [
     {
-      type: 'doc',
-      id: 'index',
-    },
-    {
-      type: 'doc',
-      id: 'contributing',
-    },
-    {
-      type: 'doc',
-      id: 'branding',
-    },
-    {
-      type: 'link',
-      label: 'Store',
-      href: 'https://suzuri.jp/markuplint',
+      type: 'category',
+      label: 'Community',
+      link: {
+        type: 'doc',
+        id: 'index',
+      },
+      items: [
+        'contributing',
+        'branding',
+        {
+          type: 'link',
+          label: 'Store',
+          href: 'https://suzuri.jp/markuplint',
+        },
+      ],
     },
   ],
 };
