@@ -1,10 +1,10 @@
 ---
-description: Doctype宣言が書かれていないと警告します。
+description: DOCTYPEが含まれていないと警告します。
 ---
 
 # `doctype`
 
-Doctype宣言が書かれていないと警告します。また、古い廃止されたDoctypeを宣言をしていた場合にも警告します。
+DOCTYPEが含まれていないと警告します。また、古い廃止されたDOCTYPEを記述していた場合にも警告します。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
