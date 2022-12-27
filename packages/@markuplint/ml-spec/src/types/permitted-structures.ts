@@ -57,13 +57,13 @@ export interface ContentModel {
 	}[];
 }
 export interface PermittedContentRequire {
-	require: Model;
+	require: Model | PermittedContentPattern[];
 	max?: number;
 	min?: number;
 	_TODO_?: string;
 }
 export interface PermittedContentOptional {
-	optional: Model;
+	optional: Model | PermittedContentPattern[];
 	max?: number;
 	_TODO_?: string;
 }
@@ -78,6 +78,10 @@ export interface PermittedContentZeroOrMore {
 	_TODO_?: string;
 }
 export interface PermittedContentChoice {
+	/**
+	 * @minItems 2
+	 * @maxItems 5
+	 */
 	choice:
 		| [PermittedContentPattern[], PermittedContentPattern[]]
 		| [PermittedContentPattern[], PermittedContentPattern[], PermittedContentPattern[]]
