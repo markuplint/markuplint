@@ -1,16 +1,14 @@
-import type { ChildNode, MissingNodeReason, Options, Result, Specs } from './types';
+import type { ChildNode, Options, Result, Specs } from './types';
 import type {
-	PermittedContentPattern,
 	PermittedContentOneOrMore,
 	PermittedContentOptional,
 	PermittedContentRequire,
 	PermittedContentZeroOrMore,
-	Model,
 } from '@markuplint/ml-spec';
 
 import { cmLog } from './debug';
 import { recursiveBranch } from './recursive-branch';
-import { Collection, isOneOrMore, isOptional, isRequire, isZeroOrMore } from './utils';
+import { Collection, normalizeModel } from './utils';
 
 /**
  * Check count
@@ -36,39 +34,9 @@ export function countPattern(
 	const ptLog = cmLog.extend(`countPattern#${depth}`);
 	const collection = new Collection(elements);
 
-	let min: number;
-	let max: number;
-	let model: Model | PermittedContentPattern[];
-	let type: MissingNodeReason | undefined;
-	let _type: 'require' | 'optional' | 'one or more' | 'zero or more';
+	const { model, min, max, repeat, missingType } = normalizeModel(pattern);
 
-	if (isRequire(pattern)) {
-		min = pattern.min ?? 1;
-		max = Math.max(pattern.max ?? 1, min);
-		model = pattern.require;
-		type = 'MISSING_NODE_REQUIRED';
-		_type = 'require';
-	} else if (isOptional(pattern)) {
-		min = 0;
-		max = Math.max(pattern.max ?? 1, 1);
-		model = pattern.optional;
-		_type = 'optional';
-	} else if (isOneOrMore(pattern)) {
-		min = 1;
-		max = Math.max(pattern.max ?? Infinity, 1);
-		model = pattern.oneOrMore;
-		type = 'MISSING_NODE_ONE_OR_MORE';
-		_type = 'one or more';
-	} else if (isZeroOrMore(pattern)) {
-		min = 0;
-		max = Math.max(pattern.max ?? Infinity, 1);
-		model = pattern.zeroOrMore;
-		_type = 'zero or more';
-	} else {
-		throw new Error('Unreachable code');
-	}
-
-	ptLog('%s: %o', _type, model);
+	ptLog('%s: %o', repeat, model);
 
 	let prevResult: Result | null = null;
 
@@ -137,9 +105,9 @@ export function countPattern(
 				result.type === 'MISSING_NODE_ONE_OR_MORE' ||
 				result.type === 'TRANSPARENT_MODEL_DISALLOWS'
 					? result.type
-					: type ?? 'MISSING_NODE_REQUIRED';
+					: missingType ?? 'MISSING_NODE_REQUIRED';
 
-			ptLog('%s(in %s): %s', resultType, type, result.query);
+			ptLog('%s(in %s): %s', resultType, missingType, result.query);
 
 			return {
 				type: resultType,

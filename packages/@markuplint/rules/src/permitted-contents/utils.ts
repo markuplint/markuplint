@@ -1,4 +1,4 @@
-import type { ChildNode, Element, Specs } from './types';
+import type { ChildNode, Element, MissingNodeReason, RepeatSign, Specs } from './types';
 import type {
 	PermittedContentPattern,
 	PermittedContentChoice,
@@ -111,6 +111,61 @@ export function isTransparent(content: PermittedContentPattern): content is Perm
 	return 'transparent' in content;
 }
 
+export function normalizeModel(
+	pattern:
+		| PermittedContentRequire
+		| PermittedContentOptional
+		| PermittedContentOneOrMore
+		| PermittedContentZeroOrMore,
+) {
+	let model: Model | PermittedContentPattern[];
+	let min: number;
+	let max: number;
+	let repeat: RepeatSign;
+	let missingType: MissingNodeReason | undefined;
+
+	if (isRequire(pattern)) {
+		model = pattern.require;
+		min = pattern.min ?? 1;
+		max = Math.max(pattern.max ?? 1, min);
+		missingType = 'MISSING_NODE_REQUIRED';
+	} else if (isOptional(pattern)) {
+		model = pattern.optional;
+		min = 0;
+		max = Math.max(pattern.max ?? 1, 1);
+	} else if (isOneOrMore(pattern)) {
+		model = pattern.oneOrMore;
+		min = 1;
+		max = Math.max(pattern.max ?? Infinity, 1);
+		missingType = 'MISSING_NODE_ONE_OR_MORE';
+	} else if (isZeroOrMore(pattern)) {
+		model = pattern.zeroOrMore;
+		min = 0;
+		max = Math.max(pattern.max ?? Infinity, 1);
+	} else {
+		throw new Error('Unreachable code');
+	}
+
+	if (min === 0 && max === 1) {
+		repeat = '?';
+	} else if (min === 0 && !Number.isFinite(max)) {
+		repeat = '*';
+	} else if (min === 1 && max === 1) {
+		repeat = '';
+	} else if (min === 1 && !Number.isFinite(max)) {
+		repeat = '+';
+	} else {
+		repeat = `{${min},${max}}`;
+	}
+
+	return {
+		model,
+		min,
+		max,
+		repeat,
+		missingType,
+	};
+}
 export class Collection {
 	#locked: ReadonlySet<ChildNode> = new Set();
 	#matched: Set<ChildNode> = new Set();

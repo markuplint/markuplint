@@ -42,6 +42,8 @@ export type UnmatchedReason = 'NOTHING' | 'UNEXPECTED_EXTRA_NODE' | 'TRANSPARENT
 
 export type MissingNodeReason = 'MISSING_NODE_REQUIRED' | 'MISSING_NODE_ONE_OR_MORE';
 
+export type RepeatSign = '' | '?' | '+' | '*' | `{${number},${number}}`;
+
 export type TransparentModel = {
 	el: Element;
 	additionalCondition: string;
