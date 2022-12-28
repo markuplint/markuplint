@@ -24423,16 +24423,13 @@
 				]
 			},
 			"aria": {
-				"implicitRole": "form",
-				"permittedRoles": ["search", "none", "presentation"],
-				"1.1": {
-					"implicitRole": false,
-					"conditions": {
-						":aria(has name)": {
-							"implicitRole": "form"
-						}
+				"implicitRole": false,
+				"conditions": {
+					":aria(has name)": {
+						"implicitRole": "form"
 					}
-				}
+				},
+				"permittedRoles": ["search", "none", "presentation"]
 			},
 			"omission": false,
 			"globalAttrs": {
