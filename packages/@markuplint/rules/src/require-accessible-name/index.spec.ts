@@ -114,7 +114,7 @@ it("does'nt have accessible name", async () => {
 	const { violations: v2 } = await mlRuleTest(rule, '<form>text</form>', {
 		rule: { options: { ariaVersion: '1.2' } },
 	});
-	expect(v2.length).toBe(1);
+	expect(v2.length).toBe(0);
 });
 
 test('The accessible name may be mutable', async () => {
