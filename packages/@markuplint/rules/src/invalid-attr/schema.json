@@ -84,7 +84,7 @@
 					"type": "boolean",
 					"default": "true",
 					"description": "Allow adding properties for a component that pretends to be an HTML native element. The default is `true`. It warns of finding a non-existence attribute if it is set `false` and you use the `pretenders` option.",
-					"description:ja": "HTML要素に偽装しているコンポーネントのプロパティを追加できるようにします。デフォルトは真です。`pretenders`オプションを使用している場合に`false`に設定されていると、存在しない属性が見つかると警告してしまいます。"
+					"description:ja": "HTML要素に偽装しているコンポーネントのプロパティを追加できるようにします。デフォルトは`true`です。`pretenders`オプションを使用している場合に`false`に設定されていると、存在しない属性が見つかると警告します。"
 				}
 			}
 		}
