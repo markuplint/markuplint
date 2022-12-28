@@ -4,33 +4,48 @@
 {
 	"contentModel": {
 		"contents": [
+			// The content model of ruby elements consists of one or more of the following sequences:
+			//
+			// 1. One or the other of the following:
+			//   - Phrasing content, but with no ruby elements and with no ruby element descendants
+			//   - A single ruby element that itself has no ruby element descendants
+			// 2. One or the other of the following:
+			//   - One or more rt elements
+			//   - An rp element followed by one or more rt elements, each of which is itself followed by an rp element
 			{
+				// The content model of ruby elements consists of one or more of the following sequences:
 				"oneOrMore": [
 					{
-						"require": ":model(phrasing):not(ruby, :has(ruby))"
+						// 1. One or the other of the following:
+						"oneOrMore": [
+							// - Phrasing content, but with no ruby elements and with no ruby element descendants
+							":model(phrasing):not(ruby, :has(ruby))",
+							// - A single ruby element that itself has no ruby element descendants
+							"ruby:not(:has(ruby))"
+						]
 					},
 					{
+						// 2. One or the other of the following:
 						"choice": [
 							[
 								{
+									// - One or more rt elements
 									"oneOrMore": "rt"
 								}
 							],
 							[
 								{
+									// - An rp element
+									"require": "rp"
+								},
+								{
+									// followed by one or more rt elements, each of which is itself followed by an rp element
 									"oneOrMore": [
 										{
-											"require": "rp"
+											"require": "rt"
 										},
 										{
-											"oneOrMore": [
-												{
-													"require": "rt"
-												},
-												{
-													"require": "rp"
-												}
-											]
+											"require": "rp"
 										}
 									]
 								}
