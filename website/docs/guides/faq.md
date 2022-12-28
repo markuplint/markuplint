@@ -65,6 +65,54 @@ If you want a spec plugin that helps syntax or framework ([Next.js](https://next
 
 [`character-reference`](/docs/rules/character-reference) does not strictly evaluate characters. Even if a character is in a valid place and does not need to be escaped, you will be prompted to change it. This may cause inconvenience for some syntax and template engines. In that case, you may be able to disable the rule itself, or please [report the situation as an Issue](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix).
 
+## Warned by `require-accessible-name` rule
+
+You can solve [accessible names](https://www.w3.org/TR/wai-aria-1.2/#dfn-accessible-name) using `aria-label`, but you _SHOULD NOT_ use it as your first solution. The [accessible name computation](https://www.w3.org/TR/accname-1.1/) is complex, and there are different places to get them for other elements, so please refer to the following table.
+
+| Element    | Name form             | Using `aria-label`          |
+| ---------- | --------------------- | --------------------------- |
+| `a`        | Content               | Permit（_NOT RECOMMENDED_） |
+| `img`      | The `alt` attribute   | Permit（_NOT RECOMMENDED_） |
+| `h1`〜`h6` | Content               | Permit（_NOT RECOMMENDED_） |
+| `button`   | Content               | Permit（_NOT RECOMMENDED_） |
+| `table`    | The `caption` element | Permit（_NOT RECOMMENDED_） |
+| `input`    | The `label` element   | Permit（_NOT RECOMMENDED_） |
+| `select`   | The `label` element   | Permit（_NOT RECOMMENDED_） |
+| `textarea` | The `label` element   | Permit（_NOT RECOMMENDED_） |
+| `svg`      | None                  | Permit                      |
+
+Also, most graphic elements related to SVG require accessible names.
+
+```html
+<svg>
+  <!-- The svg element requires an accessible name -->
+  <rect />
+  <!-- The rect element requires an accessible name -->
+  <path />
+  <!-- The path element requires an accessible name -->
+</svg>
+```
+
+Following the requirements, you should give all elements appropriate accessible names.
+
+```html
+<svg aria-label="Whole name of the figure">
+  <rect aria-label="Name of a rectangle that is part of a figure" />
+  <path aria-label="Name of a path that is part of a figure" />
+</svg>
+```
+
+However, in most cases, this is not a practical solution. Therefore, there is a solution that combines the accessible names into one by treating the `svg` element as a single image by attaching the `img` role to the `svg` element and taking advantage of the [Presentational Children](https://www.w3.org/TR/wai-aria-1.2/#childrenArePresentational) nature.
+
+```html
+<svg role="img" aria-label="Name of the figure">
+  <rect />
+  <!-- The rect do not require an accessible name -->
+  <path />
+  <!-- The path do not require an accessible name -->
+</svg>
+```
+
 ## The glob format does not work as expected in the CLI
 
 Some shells behave differently with glob formats; if you want to pass a glob format to Markuplint's CLI, you should undoubtedly enclose it in quotation marks.
