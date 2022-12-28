@@ -296,6 +296,35 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		]);
 	});
 
+	it('Code 11', () => {
+		const ast = parse('<p>{array.map(_ => <></>)}</p>');
+		const maps = nodeListToDebugMaps(ast.nodeList);
+		expect(maps).toStrictEqual([
+			'[1:1]>[1:4](0,3)p: <p>',
+			'[1:4]>[1:27](3,26)JSXExpressionContainer: {array.map(_␣=>␣<></>)}',
+			'[1:20]>[1:22](19,21)#jsx-fragment: <>',
+			'[1:22]>[1:25](21,24)#jsx-fragment: </>',
+			'[1:27]>[1:31](26,30)p: </p>',
+		]);
+
+		expect(ast.nodeList[2].raw).toBe('<>');
+		// @ts-ignore
+		expect(ast.nodeList[0].childNodes[0].childNodes[0].raw).toBe('<>');
+		// @ts-ignore
+		expect(ast.nodeList[0].childNodes[0].childNodes[0].uuid).toBe(ast.nodeList[2].uuid);
+
+		expect(ast.nodeList[3].raw).toBe('</>');
+		// @ts-ignore
+		expect(ast.nodeList[0].childNodes[0].childNodes[0].pearNode.raw).toBe('</>');
+		// @ts-ignore
+		expect(ast.nodeList[0].childNodes[0].childNodes[0].pearNode.uuid).toBe(ast.nodeList[3].uuid);
+
+		// @ts-ignore
+		expect(ast.nodeList[2].uuid).toBe(ast.nodeList[3].pearNode.uuid);
+		// @ts-ignore
+		expect(ast.nodeList[2].pearNode.uuid).toBe(ast.nodeList[3].uuid);
+	});
+
 	it('Attribute', () => {
 		const ast = parse(
 			'<Component className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" theProp={variable} />',
