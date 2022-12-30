@@ -27691,7 +27691,7 @@
 					{
 						"oneOrMore": [
 							{
-								"require": ":model(phrasing):not(ruby, :has(ruby))"
+								"oneOrMore": [":model(phrasing):not(ruby, :has(ruby))", "ruby:not(:has(ruby))"]
 							},
 							{
 								"choice": [
@@ -27702,19 +27702,15 @@
 									],
 									[
 										{
+											"require": "rp"
+										},
+										{
 											"oneOrMore": [
 												{
-													"require": "rp"
+													"require": "rt"
 												},
 												{
-													"oneOrMore": [
-														{
-															"require": "rt"
-														},
-														{
-															"require": "rp"
-														}
-													]
+													"require": "rp"
 												}
 											]
 										}

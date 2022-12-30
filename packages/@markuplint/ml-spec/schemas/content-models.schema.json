@@ -109,7 +109,15 @@
 			"additionalProperties": false,
 			"required": ["require"],
 			"properties": {
-				"require": { "$ref": "#/definitions/Model" },
+				"require": {
+					"oneOf": [
+						{ "$ref": "#/definitions/Model" },
+						{
+							"type": "array",
+							"items": { "$ref": "#/definitions/PermittedContentPattern" }
+						}
+					]
+				},
 				"max": { "type": "number" },
 				"min": { "type": "number" },
 				"_TODO_": { "type": "string" }
@@ -120,7 +128,15 @@
 			"additionalProperties": false,
 			"required": ["optional"],
 			"properties": {
-				"optional": { "$ref": "#/definitions/Model" },
+				"optional": {
+					"oneOf": [
+						{ "$ref": "#/definitions/Model" },
+						{
+							"type": "array",
+							"items": { "$ref": "#/definitions/PermittedContentPattern" }
+						}
+					]
+				},
 				"max": { "type": "number" },
 				"_TODO_": { "type": "string" }
 			}

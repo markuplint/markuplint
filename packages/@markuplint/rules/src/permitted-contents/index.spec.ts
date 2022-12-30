@@ -1352,4 +1352,20 @@ describe('Issues', () => {
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#637', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<ruby>漢<rp>（</rp><rt>かん</rt><rp>）</rp>字<rp>（</rp><rt>じ</rt><rp>）</rp></ruby>',
+				)
+			).violations,
+		).toStrictEqual([]);
+
+		expect(
+			(await mlRuleTest(rule, '<ruby>A<rp></rp><rt></rt><rp></rp>B<rp></rp><rt></rt><rp></rp></ruby>'))
+				.violations,
+		).toStrictEqual([]);
+	});
 });

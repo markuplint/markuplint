@@ -1,16 +1,14 @@
-import type { ChildNode, MissingNodeReason, Options, Result, Specs } from './types';
+import type { ChildNode, Options, Result, Specs } from './types';
 import type {
-	PermittedContentPattern,
 	PermittedContentOneOrMore,
 	PermittedContentOptional,
 	PermittedContentRequire,
 	PermittedContentZeroOrMore,
-	Model,
 } from '@markuplint/ml-spec';
 
 import { cmLog } from './debug';
 import { recursiveBranch } from './recursive-branch';
-import { Collection, isOneOrMore, isOptional, isRequire, isZeroOrMore } from './utils';
+import { Collection, mergeHints, modelLog, normalizeModel } from './utils';
 
 /**
  * Check count
@@ -36,74 +34,64 @@ export function countPattern(
 	const ptLog = cmLog.extend(`countPattern#${depth}`);
 	const collection = new Collection(elements);
 
-	let min: number;
-	let max: number;
-	let model: Model | PermittedContentPattern[];
-	let type: MissingNodeReason | undefined;
-	let _type: 'require' | 'optional' | 'one or more' | 'zero or more';
+	const { model, min, max, repeat, missingType } = normalizeModel(pattern);
 
-	if (isRequire(pattern)) {
-		min = pattern.min ?? 1;
-		max = Math.max(pattern.max ?? 1, min);
-		model = pattern.require;
-		type = 'MISSING_NODE_REQUIRED';
-		_type = 'require';
-	} else if (isOptional(pattern)) {
-		min = 0;
-		max = Math.max(pattern.max ?? 1, 1);
-		model = pattern.optional;
-		_type = 'optional';
-	} else if (isOneOrMore(pattern)) {
-		min = 1;
-		max = Math.max(pattern.max ?? Infinity, 1);
-		model = pattern.oneOrMore;
-		type = 'MISSING_NODE_ONE_OR_MORE';
-		_type = 'one or more';
-	} else if (isZeroOrMore(pattern)) {
-		min = 0;
-		max = Math.max(pattern.max ?? Infinity, 1);
-		model = pattern.zeroOrMore;
-		_type = 'zero or more';
-	} else {
-		throw new Error('Unreachable code');
-	}
-
-	ptLog('%s: %o', _type, model);
+	ptLog('Model:\n  RegEx: %s\n  Schema: %o', modelLog(model, repeat), pattern);
 
 	let prevResult: Result | null = null;
+	let barelyResult: Result | null = null;
+	let loopCount = 0;
 
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
-		ptLog('%s', collection);
+		loopCount++;
+		ptLog('Check#%s: %s', loopCount, collection);
 		const result = recursiveBranch(model, collection.unmatched, specs, options, depth);
 		const added = collection.addMatched(result.matched);
+		const { matchedCount } = collection;
 
 		if (result.type === 'UNMATCHED_SELECTOR_BUT_MAY_EMPTY') {
-			ptLog('MATCHED_ZERO: %s', result.query);
-			return {
-				type: 'MATCHED_ZERO',
-				matched: collection.matched,
-				unmatched: collection.unmatched,
-				zeroMatch: true,
-				query: result.query,
-				hint: result.hint,
-			};
+			ptLog(
+				'MATCHED_ZERO:\n  model: %s\n  max: %s\n  collection: %s\n  matched element: %s',
+				modelLog(model, repeat),
+				max,
+				collection,
+				matchedCount,
+			);
+
+			return compereResult(
+				{
+					type: 'MATCHED_ZERO',
+					matched: collection.matched,
+					unmatched: collection.unmatched,
+					zeroMatch: true,
+					query: result.query,
+					hint: result.hint,
+				},
+				barelyResult,
+			);
 		}
 
 		if (max < collection.matchedCount) {
 			collection.max(max);
-			ptLog('UNEXPECTED_EXTRA_NODE (max: %s): %s', max, result.query);
-			return {
-				type: 'UNEXPECTED_EXTRA_NODE',
-				matched: collection.matched,
-				unmatched: collection.unmatched,
-				zeroMatch: result.zeroMatch,
-				query: result.query,
-				hint: {
-					...result.hint,
-					max,
+			ptLog(
+				'UNEXPECTED_EXTRA_NODE:\n  model: %s\n  max: %s\n  collection: %s\n  matched element: %s',
+				modelLog(model, repeat),
+				max,
+				collection,
+				matchedCount,
+			);
+			return compereResult(
+				{
+					type: 'UNEXPECTED_EXTRA_NODE',
+					matched: collection.matched,
+					unmatched: collection.unmatched,
+					zeroMatch: result.zeroMatch,
+					query: result.query,
+					hint: mergeHints(result.hint, { max }),
 				},
-			};
+				barelyResult,
+			);
 		}
 
 		if (prevResult) {
@@ -112,8 +100,27 @@ export function countPattern(
 				result.type === 'MISSING_NODE_REQUIRED' ||
 				result.type === 'TRANSPARENT_MODEL_DISALLOWS'
 			) {
-				ptLog('%s(continued): %s', result.type, collection);
-				return {
+				ptLog('%s(continued): %s; Needs', result.type, collection, result.query);
+				return compereResult(
+					{
+						type: result.type,
+						matched: collection.matched,
+						unmatched: collection.unmatched,
+						zeroMatch: result.zeroMatch,
+						query: result.query,
+						hint: result.hint,
+					},
+					barelyResult,
+				);
+			}
+
+			ptLog('%s(continued): %s', prevResult.type, collection);
+			return compereResult(prevResult, barelyResult);
+		}
+
+		if (added && collection.unmatched.length > 0) {
+			if (result.type !== 'MISSING_NODE' && result.type !== 'UNMATCHED_SELECTORS') {
+				barelyResult = {
 					type: result.type,
 					matched: collection.matched,
 					unmatched: collection.unmatched,
@@ -122,12 +129,7 @@ export function countPattern(
 					hint: result.hint,
 				};
 			}
-
-			ptLog('%s(continued): %s', prevResult.type, collection);
-			return prevResult;
-		}
-
-		if (added && collection.unmatched.length > 0) {
+			ptLog('continue⤴️');
 			continue;
 		}
 
@@ -137,18 +139,26 @@ export function countPattern(
 				result.type === 'MISSING_NODE_ONE_OR_MORE' ||
 				result.type === 'TRANSPARENT_MODEL_DISALLOWS'
 					? result.type
-					: type ?? 'MISSING_NODE_REQUIRED';
+					: missingType ?? 'MISSING_NODE_REQUIRED';
 
-			ptLog('%s(in %s): %s', resultType, type, result.query);
+			ptLog('%s(in %s); Needs %s', resultType, missingType, result.query);
 
-			return {
-				type: resultType,
-				matched: collection.matched,
-				unmatched: collection.unmatched,
-				zeroMatch: result.zeroMatch,
-				query: result.query,
-				hint: result.hint,
-			};
+			return compereResult(
+				{
+					type: resultType,
+					matched: collection.matched,
+					unmatched: collection.unmatched,
+					zeroMatch: result.zeroMatch,
+					query: result.query,
+					hint: mergeHints(result.hint, {
+						missing: {
+							barelyMatchedElements: collection.matched.length,
+							need: result.query,
+						},
+					}),
+				},
+				barelyResult,
+			);
 		}
 
 		const resultType = collection.matched.length === 0 ? 'MATCHED_ZERO' : 'MATCHED';
@@ -160,32 +170,66 @@ export function countPattern(
 			unmatched: collection.unmatched,
 			zeroMatch,
 			query: result.query,
-			hint: result.hint,
+			hint: mergeHints(result.hint, {
+				missing: {
+					barelyMatchedElements: collection.matched.length,
+					need: result.query,
+				},
+			}),
 		};
 
 		if (!prevResult && collection.unmatched.length) {
-			ptLog('continue checking');
 			prevResult = matchedResult;
+			ptLog('continue⤴️ (add prev)');
 			continue;
 		}
 
-		ptLog('%s: %s', resultType, collection);
+		ptLog(
+			'%s:\n  model: %s\n  max: %s\n  collection: %s\n  matched element: %s',
+			resultType,
+			modelLog(model, repeat),
+			max,
+			collection,
+			matchedCount,
+		);
 
 		if (
 			result.type === 'MISSING_NODE_REQUIRED' ||
 			result.type === 'MISSING_NODE_ONE_OR_MORE' ||
 			result.type === 'TRANSPARENT_MODEL_DISALLOWS'
 		) {
-			return {
-				type: result.type,
-				matched: collection.matched,
-				unmatched: collection.unmatched,
-				zeroMatch: result.zeroMatch,
-				query: result.query,
-				hint: result.hint,
-			};
+			return compereResult(
+				{
+					type: result.type,
+					matched: collection.matched,
+					unmatched: collection.unmatched,
+					zeroMatch: result.zeroMatch,
+					query: result.query,
+					hint: result.hint,
+				},
+				barelyResult,
+			);
 		}
 
-		return matchedResult;
+		return compereResult(matchedResult, barelyResult);
 	}
+}
+
+const cLog = cmLog.extend('countCompereResult');
+function compereResult(a: Result, b: Result | null): Result {
+	cLog('current: %s %O\nbarely: %s %O', a.type, a.hint, b?.type, b?.hint);
+
+	if (b == null) {
+		return a;
+	}
+
+	if (a.type === 'MATCHED' || a.type === 'MATCHED_ZERO' || a.type === 'UNEXPECTED_EXTRA_NODE') {
+		return a;
+	}
+
+	const result = [a, b].sort(
+		(a, b) => (b.hint.missing?.barelyMatchedElements ?? 0) - (a.hint.missing?.barelyMatchedElements ?? 0),
+	)[0];
+
+	return result;
 }

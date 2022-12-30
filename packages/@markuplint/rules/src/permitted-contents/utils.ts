@@ -1,4 +1,4 @@
-import type { ChildNode, Element, Specs } from './types';
+import type { ChildNode, Element, Hints, MissingNodeReason, RepeatSign, Specs } from './types';
 import type {
 	PermittedContentPattern,
 	PermittedContentChoice,
@@ -111,6 +111,83 @@ export function isTransparent(content: PermittedContentPattern): content is Perm
 	return 'transparent' in content;
 }
 
+export function normalizeModel(
+	pattern:
+		| PermittedContentRequire
+		| PermittedContentOptional
+		| PermittedContentOneOrMore
+		| PermittedContentZeroOrMore,
+) {
+	let model: Model | PermittedContentPattern[];
+	let min: number;
+	let max: number;
+	let repeat: RepeatSign;
+	let missingType: MissingNodeReason | undefined;
+
+	if (isRequire(pattern)) {
+		model = pattern.require;
+		min = pattern.min ?? 1;
+		max = Math.max(pattern.max ?? 1, min);
+		missingType = 'MISSING_NODE_REQUIRED';
+	} else if (isOptional(pattern)) {
+		model = pattern.optional;
+		min = 0;
+		max = Math.max(pattern.max ?? 1, 1);
+	} else if (isOneOrMore(pattern)) {
+		model = pattern.oneOrMore;
+		min = 1;
+		max = Math.max(pattern.max ?? Infinity, 1);
+		missingType = 'MISSING_NODE_ONE_OR_MORE';
+	} else if (isZeroOrMore(pattern)) {
+		model = pattern.zeroOrMore;
+		min = 0;
+		max = Math.max(pattern.max ?? Infinity, 1);
+	} else {
+		throw new Error('Unreachable code');
+	}
+
+	if (min === 0 && max === 1) {
+		repeat = '?';
+	} else if (min === 0 && !Number.isFinite(max)) {
+		repeat = '*';
+	} else if (min === 1 && max === 1) {
+		repeat = '';
+	} else if (min === 1 && !Number.isFinite(max)) {
+		repeat = '+';
+	} else {
+		repeat = `{${min},${max}}`;
+	}
+
+	return {
+		model,
+		min,
+		max,
+		repeat,
+		missingType,
+	};
+}
+
+export function mergeHints(a: Hints, b: Hints) {
+	const missing = [a.missing, b.missing].sort(
+		(a, b) => (b?.barelyMatchedElements ?? 0) - (a?.barelyMatchedElements ?? 0),
+	)[0];
+	return cleanObject({
+		...a,
+		...b,
+		missing: missing && cleanObject(missing),
+	});
+}
+
+export function cleanObject<T extends Object>(object: T): Partial<T> {
+	const newObject: Partial<T> = {};
+	Object.entries(object).forEach(([key, value]) => {
+		if (value !== undefined) {
+			newObject[key as keyof T] = value;
+		}
+	});
+	return newObject;
+}
+
 export class Collection {
 	#locked: ReadonlySet<ChildNode> = new Set();
 	#matched: Set<ChildNode> = new Set();
@@ -204,3 +281,37 @@ export class Collection {
 }
 
 export class UnsupportedError extends Error {}
+
+export function modelLog(model: Model | PermittedContentPattern[], repeat: RepeatSign): string {
+	if (!isModel(model)) {
+		return orderLog(model, repeat);
+	}
+	if (typeof model === 'string') {
+		return `<${model}>${repeat}`;
+	}
+	return `(<${model.join('>|<')}>)${repeat}`;
+}
+
+function orderLog(order: PermittedContentPattern[], repeat: RepeatSign) {
+	return order.length === 1
+		? markRepeat(patternLog(order[0]), repeat)
+		: markRepeat(order.map(pattern => patternLog(pattern)).join(''), repeat);
+}
+
+function patternLog(pattern: PermittedContentPattern): string {
+	if (isTransparent(pattern)) {
+		// 適当
+		return `:transparent(${modelLog(pattern.transparent, '')})`;
+	}
+
+	if (isChoice(pattern)) {
+		return `(${pattern.choice.map(candidate => orderLog(candidate, '')).join('|')})`;
+	}
+
+	const { model, repeat } = normalizeModel(pattern);
+	return modelLog(model, repeat);
+}
+
+function markRepeat(pattern: string, repeat: RepeatSign) {
+	return repeat ? `(${pattern})${repeat}` : pattern;
+}
