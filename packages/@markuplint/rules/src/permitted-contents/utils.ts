@@ -166,6 +166,16 @@ export function normalizeModel(
 		missingType,
 	};
 }
+export function cleanObject<T extends Object>(object: T): Partial<T> {
+	const newObject: Partial<T> = {};
+	Object.entries(object).forEach(([key, value]) => {
+		if (value !== undefined) {
+			newObject[key as keyof T] = value;
+		}
+	});
+	return newObject;
+}
+
 export class Collection {
 	#locked: ReadonlySet<ChildNode> = new Set();
 	#matched: Set<ChildNode> = new Set();

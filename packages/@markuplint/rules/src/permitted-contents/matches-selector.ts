@@ -4,7 +4,7 @@ import type { Category } from '@markuplint/ml-spec';
 import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
 
 import { cmLog } from './debug';
-import { matches } from './utils';
+import { cleanObject, matches } from './utils';
 
 export type SelectorResult = Result<'UNMATCHED_SELECTOR_BUT_MAY_EMPTY' | 'MISSING_NODE' | 'UNMATCHED_SELECTORS'>;
 
@@ -129,9 +129,9 @@ export function matchesSelector(
 				unmatched: [node],
 				zeroMatch: true,
 				query,
-				hint: {
+				hint: cleanObject({
 					not: result.not,
-				},
+				}),
 			};
 		}
 
@@ -141,9 +141,9 @@ export function matchesSelector(
 			unmatched: [node],
 			zeroMatch: false,
 			query,
-			hint: {
+			hint: cleanObject({
 				not: result.not,
-			},
+			}),
 		};
 	}
 
