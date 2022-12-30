@@ -259,3 +259,37 @@ export class Collection {
 }
 
 export class UnsupportedError extends Error {}
+
+export function modelLog(model: Model | PermittedContentPattern[], repeat: RepeatSign): string {
+	if (!isModel(model)) {
+		return orderLog(model, repeat);
+	}
+	if (typeof model === 'string') {
+		return `<${model}>${repeat}`;
+	}
+	return `(<${model.join('>|<')}>)${repeat}`;
+}
+
+function orderLog(order: PermittedContentPattern[], repeat: RepeatSign) {
+	return order.length === 1
+		? markRepeat(patternLog(order[0]), repeat)
+		: markRepeat(order.map(pattern => patternLog(pattern)).join(''), repeat);
+}
+
+function patternLog(pattern: PermittedContentPattern): string {
+	if (isTransparent(pattern)) {
+		// 適当
+		return `:transparent(${modelLog(pattern.transparent, '')})`;
+	}
+
+	if (isChoice(pattern)) {
+		return `(${pattern.choice.map(candidate => orderLog(candidate, '')).join('|')})`;
+	}
+
+	const { model, repeat } = normalizeModel(pattern);
+	return modelLog(model, repeat);
+}
+
+function markRepeat(pattern: string, repeat: RepeatSign) {
+	return repeat ? `(${pattern})${repeat}` : pattern;
+}

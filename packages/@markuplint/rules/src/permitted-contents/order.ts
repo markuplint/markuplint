@@ -5,7 +5,7 @@ import { deepCopy } from '../helpers';
 
 import { complexBranch } from './complex-branch';
 import { cmLog } from './debug';
-import { Collection } from './utils';
+import { Collection, modelLog } from './utils';
 
 /**
  * Check ordered array
@@ -30,6 +30,7 @@ export function order(
 	const patterns = deepCopy(contents);
 	const collection = new Collection(nodes);
 
+	orderLog('Model:\n  RegEx: %s\n  Schema: %o', modelLog(patterns, ''), patterns);
 	orderLog('Starts: %s', collection);
 
 	let result: Result | undefined = undefined;
@@ -41,26 +42,25 @@ export function order(
 	while (patterns.length) {
 		result = complexBranch(patterns[0], collection.unmatched, specs, options, depth);
 		collection.addMatched(result.matched);
-		orderLog('stack: %s', collection);
 
 		if (result.type !== 'UNEXPECTED_EXTRA_NODE' && result.type !== 'MATCHED' && result.type !== 'MATCHED_ZERO') {
 			unmatchedResults.push(result);
 
 			if (backtrackMode) {
 				collection.back();
-				btLog('🔙');
+				btLog('🔙◀BACK');
 				backtrackMode = false;
 				afterBacktrack = true;
 				continue;
 			}
-
-			orderLog('conformed (%s): %s', result.type, collection.toString(true));
 
 			const barelyMatchedResult = unmatchedResults.sort((a, b) => b.matched.length - a.matched.length)[0];
 
 			if (!barelyMatchedResult) {
 				throw new Error('Unreachable code');
 			}
+
+			orderLog('Result (%s): %s', result.type, collection.toString(true));
 
 			return {
 				type: barelyMatchedResult.type,
@@ -87,7 +87,7 @@ export function order(
 	}
 
 	if (collection.unmatched.length) {
-		orderLog('Conformed (UNEXPECTED_EXTRA_NODE): %s', collection.toString(true));
+		orderLog('Result (UNEXPECTED_EXTRA_NODE): %s', collection.toString(true));
 		return {
 			type: 'UNEXPECTED_EXTRA_NODE',
 			matched: collection.matched,
@@ -98,9 +98,12 @@ export function order(
 		};
 	}
 
-	orderLog('Conformed: %s', collection);
+	const resultType = collection.matched.length ? 'MATCHED' : 'MATCHED_ZERO';
+
+	orderLog('Result (%s): %s', resultType, collection.toString(true));
+
 	return {
-		type: collection.matched.length ? 'MATCHED' : 'MATCHED_ZERO',
+		type: resultType,
 		matched: collection.matched,
 		unmatched: collection.unmatched,
 		zeroMatch: false,

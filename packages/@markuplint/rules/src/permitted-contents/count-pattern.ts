@@ -8,7 +8,7 @@ import type {
 
 import { cmLog } from './debug';
 import { recursiveBranch } from './recursive-branch';
-import { Collection, normalizeModel } from './utils';
+import { Collection, modelLog, normalizeModel } from './utils';
 
 /**
  * Check count
@@ -36,18 +36,28 @@ export function countPattern(
 
 	const { model, min, max, repeat, missingType } = normalizeModel(pattern);
 
-	ptLog('%s: %o', repeat, model);
+	ptLog('Model:\n  RegEx: %s\n  Schema: %o', modelLog(model, repeat), pattern);
 
 	let prevResult: Result | null = null;
+	let loopCount = 0;
 
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
-		ptLog('%s', collection);
+		loopCount++;
+		ptLog('Check#%s: %s', loopCount, collection);
 		const result = recursiveBranch(model, collection.unmatched, specs, options, depth);
 		const added = collection.addMatched(result.matched);
+		const { matchedCount } = collection;
 
 		if (result.type === 'UNMATCHED_SELECTOR_BUT_MAY_EMPTY') {
-			ptLog('MATCHED_ZERO: %s', result.query);
+			ptLog(
+				'MATCHED_ZERO:\n  model: %s\n  max: %s\n  collection: %s\n  matched element: %s',
+				modelLog(model, repeat),
+				max,
+				collection,
+				matchedCount,
+			);
+
 			return {
 				type: 'MATCHED_ZERO',
 				matched: collection.matched,
@@ -60,7 +70,14 @@ export function countPattern(
 
 		if (max < collection.matchedCount) {
 			collection.max(max);
-			ptLog('UNEXPECTED_EXTRA_NODE (max: %s): %s', max, result.query);
+			ptLog(
+				'UNEXPECTED_EXTRA_NODE:\n  model: %s\n  max: %s\n  collection: %s\n  matched element: %s',
+				modelLog(model, repeat),
+				max,
+				collection,
+				matchedCount,
+			);
+
 			return {
 				type: 'UNEXPECTED_EXTRA_NODE',
 				matched: collection.matched,
@@ -80,7 +97,7 @@ export function countPattern(
 				result.type === 'MISSING_NODE_REQUIRED' ||
 				result.type === 'TRANSPARENT_MODEL_DISALLOWS'
 			) {
-				ptLog('%s(continued): %s', result.type, collection);
+				ptLog('%s(continued): %s; Needs', result.type, collection, result.query);
 				return {
 					type: result.type,
 					matched: collection.matched,
@@ -96,6 +113,7 @@ export function countPattern(
 		}
 
 		if (added && collection.unmatched.length > 0) {
+			ptLog('continue⤴️');
 			continue;
 		}
 
@@ -107,7 +125,7 @@ export function countPattern(
 					? result.type
 					: missingType ?? 'MISSING_NODE_REQUIRED';
 
-			ptLog('%s(in %s): %s', resultType, missingType, result.query);
+			ptLog('%s(in %s); Needs %s', resultType, missingType, result.query);
 
 			return {
 				type: resultType,
@@ -132,12 +150,19 @@ export function countPattern(
 		};
 
 		if (!prevResult && collection.unmatched.length) {
-			ptLog('continue checking');
 			prevResult = matchedResult;
+			ptLog('continue⤴️ (add prev)');
 			continue;
 		}
 
-		ptLog('%s: %s', resultType, collection);
+		ptLog(
+			'%s:\n  model: %s\n  max: %s\n  collection: %s\n  matched element: %s',
+			resultType,
+			modelLog(model, repeat),
+			max,
+			collection,
+			matchedCount,
+		);
 
 		if (
 			result.type === 'MISSING_NODE_REQUIRED' ||
