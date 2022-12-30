@@ -310,6 +310,9 @@ it('part of the ruby element', () => {
 	expect(c(models, '<rp></rp>').type).toBe('MISSING_NODE_REQUIRED');
 	expect(c(models, '<rp></rp>').query).toBe('rt');
 	expect(c(models, '<rp></rp><rt></rt><rp></rp>').type).toBe('MATCHED');
+	expect(c(models, '<rp></rp><rt></rt><rp></rp><rt></rt>').type).toBe('MISSING_NODE_REQUIRED');
+	expect(c(models, '<rp></rp><rt></rt><rp></rp><rt></rt>').query).toBe('rp');
+	expect(c(models, '<rp></rp><rt></rt><rp></rp><rt></rt><rp></rp>').type).toBe('MATCHED');
 });
 
 it('part of the ruby element', () => {
@@ -329,6 +332,9 @@ it('part of the ruby element', () => {
 	expect(c(models, '<rt></rt>').type).toBe('MISSING_NODE_REQUIRED');
 	expect(c(models, '<rt></rt>').query).toBe('rp');
 	expect(c(models, '<rt></rt><rp></rp>').type).toBe('MATCHED');
+	expect(c(models, '<rt></rt><rp></rp><rt></rt>').type).toBe('MISSING_NODE_REQUIRED');
+	expect(c(models, '<rt></rt><rp></rp><rt></rt>').query).toBe('rp');
+	expect(c(models, '<rt></rt><rp></rp><rt></rt><rp></rp>').type).toBe('MATCHED');
 });
 
 it('part of the ruby element', () => {
