@@ -29,10 +29,16 @@ export type Result<T extends string = MatchedReason> = {
 	unmatched: ChildNode[];
 	zeroMatch: boolean;
 	query: string;
-	hint: {
-		max?: number;
-		not?: ChildNode;
-		transparent?: Element;
+	hint: Hints;
+};
+
+export type Hints = {
+	max?: number;
+	not?: ChildNode;
+	transparent?: Element;
+	missing?: {
+		barelyMatchedElements?: number;
+		need?: string;
 	};
 };
 

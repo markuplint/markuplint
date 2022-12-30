@@ -1,4 +1,4 @@
-import type { ChildNode, Element, MissingNodeReason, RepeatSign, Specs } from './types';
+import type { ChildNode, Element, Hints, MissingNodeReason, RepeatSign, Specs } from './types';
 import type {
 	PermittedContentPattern,
 	PermittedContentChoice,
@@ -166,6 +166,18 @@ export function normalizeModel(
 		missingType,
 	};
 }
+
+export function mergeHints(a: Hints, b: Hints) {
+	const missing = [a.missing, b.missing].sort(
+		(a, b) => (b?.barelyMatchedElements ?? 0) - (a?.barelyMatchedElements ?? 0),
+	)[0];
+	return cleanObject({
+		...a,
+		...b,
+		missing: missing && cleanObject(missing),
+	});
+}
+
 export function cleanObject<T extends Object>(object: T): Partial<T> {
 	const newObject: Partial<T> = {};
 	Object.entries(object).forEach(([key, value]) => {

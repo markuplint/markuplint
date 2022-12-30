@@ -8,7 +8,7 @@ import type {
 
 import { cmLog } from './debug';
 import { recursiveBranch } from './recursive-branch';
-import { Collection, modelLog, normalizeModel } from './utils';
+import { Collection, mergeHints, modelLog, normalizeModel } from './utils';
 
 /**
  * Check count
@@ -39,6 +39,7 @@ export function countPattern(
 	ptLog('Model:\n  RegEx: %s\n  Schema: %o', modelLog(model, repeat), pattern);
 
 	let prevResult: Result | null = null;
+	let barelyResult: Result | null = null;
 	let loopCount = 0;
 
 	// eslint-disable-next-line no-constant-condition
@@ -58,14 +59,17 @@ export function countPattern(
 				matchedCount,
 			);
 
-			return {
-				type: 'MATCHED_ZERO',
-				matched: collection.matched,
-				unmatched: collection.unmatched,
-				zeroMatch: true,
-				query: result.query,
-				hint: result.hint,
-			};
+			return compereResult(
+				{
+					type: 'MATCHED_ZERO',
+					matched: collection.matched,
+					unmatched: collection.unmatched,
+					zeroMatch: true,
+					query: result.query,
+					hint: result.hint,
+				},
+				barelyResult,
+			);
 		}
 
 		if (max < collection.matchedCount) {
@@ -77,18 +81,17 @@ export function countPattern(
 				collection,
 				matchedCount,
 			);
-
-			return {
-				type: 'UNEXPECTED_EXTRA_NODE',
-				matched: collection.matched,
-				unmatched: collection.unmatched,
-				zeroMatch: result.zeroMatch,
-				query: result.query,
-				hint: {
-					...result.hint,
-					max,
+			return compereResult(
+				{
+					type: 'UNEXPECTED_EXTRA_NODE',
+					matched: collection.matched,
+					unmatched: collection.unmatched,
+					zeroMatch: result.zeroMatch,
+					query: result.query,
+					hint: mergeHints(result.hint, { max }),
 				},
-			};
+				barelyResult,
+			);
 		}
 
 		if (prevResult) {
@@ -98,7 +101,26 @@ export function countPattern(
 				result.type === 'TRANSPARENT_MODEL_DISALLOWS'
 			) {
 				ptLog('%s(continued): %s; Needs', result.type, collection, result.query);
-				return {
+				return compereResult(
+					{
+						type: result.type,
+						matched: collection.matched,
+						unmatched: collection.unmatched,
+						zeroMatch: result.zeroMatch,
+						query: result.query,
+						hint: result.hint,
+					},
+					barelyResult,
+				);
+			}
+
+			ptLog('%s(continued): %s', prevResult.type, collection);
+			return compereResult(prevResult, barelyResult);
+		}
+
+		if (added && collection.unmatched.length > 0) {
+			if (result.type !== 'MISSING_NODE' && result.type !== 'UNMATCHED_SELECTORS') {
+				barelyResult = {
 					type: result.type,
 					matched: collection.matched,
 					unmatched: collection.unmatched,
@@ -107,12 +129,6 @@ export function countPattern(
 					hint: result.hint,
 				};
 			}
-
-			ptLog('%s(continued): %s', prevResult.type, collection);
-			return prevResult;
-		}
-
-		if (added && collection.unmatched.length > 0) {
 			ptLog('continue⤴️');
 			continue;
 		}
@@ -127,14 +143,22 @@ export function countPattern(
 
 			ptLog('%s(in %s); Needs %s', resultType, missingType, result.query);
 
-			return {
-				type: resultType,
-				matched: collection.matched,
-				unmatched: collection.unmatched,
-				zeroMatch: result.zeroMatch,
-				query: result.query,
-				hint: result.hint,
-			};
+			return compereResult(
+				{
+					type: resultType,
+					matched: collection.matched,
+					unmatched: collection.unmatched,
+					zeroMatch: result.zeroMatch,
+					query: result.query,
+					hint: mergeHints(result.hint, {
+						missing: {
+							barelyMatchedElements: collection.matched.length,
+							need: result.query,
+						},
+					}),
+				},
+				barelyResult,
+			);
 		}
 
 		const resultType = collection.matched.length === 0 ? 'MATCHED_ZERO' : 'MATCHED';
@@ -146,7 +170,12 @@ export function countPattern(
 			unmatched: collection.unmatched,
 			zeroMatch,
 			query: result.query,
-			hint: result.hint,
+			hint: mergeHints(result.hint, {
+				missing: {
+					barelyMatchedElements: collection.matched.length,
+					need: result.query,
+				},
+			}),
 		};
 
 		if (!prevResult && collection.unmatched.length) {
@@ -169,16 +198,38 @@ export function countPattern(
 			result.type === 'MISSING_NODE_ONE_OR_MORE' ||
 			result.type === 'TRANSPARENT_MODEL_DISALLOWS'
 		) {
-			return {
-				type: result.type,
-				matched: collection.matched,
-				unmatched: collection.unmatched,
-				zeroMatch: result.zeroMatch,
-				query: result.query,
-				hint: result.hint,
-			};
+			return compereResult(
+				{
+					type: result.type,
+					matched: collection.matched,
+					unmatched: collection.unmatched,
+					zeroMatch: result.zeroMatch,
+					query: result.query,
+					hint: result.hint,
+				},
+				barelyResult,
+			);
 		}
 
-		return matchedResult;
+		return compereResult(matchedResult, barelyResult);
 	}
+}
+
+const cLog = cmLog.extend('countCompereResult');
+function compereResult(a: Result, b: Result | null): Result {
+	cLog('current: %s %O\nbarely: %s %O', a.type, a.hint, b?.type, b?.hint);
+
+	if (b == null) {
+		return a;
+	}
+
+	if (a.type === 'MATCHED' || a.type === 'MATCHED_ZERO' || a.type === 'UNEXPECTED_EXTRA_NODE') {
+		return a;
+	}
+
+	const result = [a, b].sort(
+		(a, b) => (b.hint.missing?.barelyMatchedElements ?? 0) - (a.hint.missing?.barelyMatchedElements ?? 0),
+	)[0];
+
+	return result;
 }

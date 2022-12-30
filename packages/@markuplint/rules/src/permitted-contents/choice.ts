@@ -45,7 +45,16 @@ export function choice(
 		i++;
 	}
 
-	const barelyMatchedResult = unmatchedResults.sort((a, b) => b.matched.length - a.matched.length)[0];
+	const barelyMatchedResult = unmatchedResults.sort((a, b) => {
+		const computed1 = b.matched.length - a.matched.length;
+		if (computed1 !== 0) {
+			return computed1;
+		}
+		const _a = a.hint.missing?.barelyMatchedElements ?? 0;
+		const _b = b.hint.missing?.barelyMatchedElements ?? 0;
+		const computed2 = _b - _a;
+		return computed2;
+	})[0];
 
 	if (!barelyMatchedResult) {
 		throw new Error('Unreachable code');

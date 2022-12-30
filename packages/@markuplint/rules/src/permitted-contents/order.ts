@@ -5,7 +5,7 @@ import { deepCopy } from '../helpers';
 
 import { complexBranch } from './complex-branch';
 import { cmLog } from './debug';
-import { Collection, modelLog } from './utils';
+import { Collection, mergeHints, modelLog } from './utils';
 
 /**
  * Check ordered array
@@ -60,7 +60,14 @@ export function order(
 				throw new Error('Unreachable code');
 			}
 
-			orderLog('Result (%s): %s', result.type, collection.toString(true));
+			orderLog(
+				'Result (%s): %s%s',
+				result.type,
+				collection.toString(true),
+				barelyMatchedResult.hint.missing?.barelyMatchedElements
+					? `; But ${barelyMatchedResult.hint.missing.barelyMatchedElements} elements hit out of pattern`
+					: '',
+			);
 
 			return {
 				type: barelyMatchedResult.type,
@@ -68,7 +75,12 @@ export function order(
 				unmatched: collection.unmatched,
 				zeroMatch: barelyMatchedResult.zeroMatch,
 				query: barelyMatchedResult.query,
-				hint: barelyMatchedResult.hint,
+				hint: mergeHints(barelyMatchedResult.hint, {
+					missing: {
+						barelyMatchedElements: collection.matched.length,
+						need: barelyMatchedResult.query,
+					},
+				}),
 			};
 		}
 
