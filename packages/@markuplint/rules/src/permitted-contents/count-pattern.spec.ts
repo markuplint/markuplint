@@ -207,37 +207,62 @@ it('the dl element', () => {
 });
 
 it('part of the ruby element', () => {
-	expect(c({ require: ':model(phrasing):not(ruby, :has(ruby))' }, '<span></span>').type).toBe('MATCHED');
+	const models: PermittedContentPattern = {
+		// 1. One or the other of the following:
+		oneOrMore: [
+			// - Phrasing content, but with no ruby elements and with no ruby element descendants
+			':model(phrasing):not(ruby, :has(ruby))',
+			// - A single ruby element that itself has no ruby element descendants
+			'ruby:not(:has(ruby))',
+		],
+	};
+	expect(c(models, '<span></span>').type).toBe('MATCHED');
+	expect(c(models, 'text').type).toBe('MATCHED');
+	expect(c(models, 'text<span></span>').type).toBe('MATCHED');
+	expect(c(models, 'text<span>text in span</span>').type).toBe('MATCHED');
+	expect(c(models, '<ruby></ruby>').type).toBe('MATCHED');
+	expect(c(models, '<ruby></ruby><span></span>').type).toBe('MATCHED');
+	expect(c(models, '<span><ruby></ruby></span>').type).toBe('MISSING_NODE_ONE_OR_MORE');
+	expect(c(models, '<span><ruby></ruby></span>').query).toBe('ruby:not(:has(ruby))');
+	expect(c(models, '<ruby><ruby></ruby></ruby>').type).toBe('MISSING_NODE_ONE_OR_MORE');
+	expect(c(models, '<ruby><ruby></ruby></ruby>').query).toBe('ruby:not(:has(ruby))');
 });
 
 it('part of the ruby element', () => {
 	const models: PermittedContentPattern = {
+		// The content model of ruby elements consists of one or more of the following sequences:
 		oneOrMore: [
 			{
-				require: ':model(phrasing):not(ruby, :has(ruby))',
+				// 1. One or the other of the following:
+				oneOrMore: [
+					// - Phrasing content, but with no ruby elements and with no ruby element descendants
+					':model(phrasing):not(ruby, :has(ruby))',
+					// - A single ruby element that itself has no ruby element descendants
+					'ruby:not(:has(rt, rp))',
+				],
 			},
 			{
+				// 2. One or the other of the following:
 				choice: [
 					[
 						{
+							// - One or more rt elements
 							oneOrMore: 'rt',
 						},
 					],
 					[
 						{
+							// - An rp element
+							require: 'rp',
+						},
+						{
+							// followed by one or more rt elements, each of which is itself followed by an rp element
 							oneOrMore: [
 								{
-									require: 'rp',
+									require: 'rt',
 								},
 								{
-									oneOrMore: [
-										{
-											require: 'rt',
-										},
-										{
-											require: 'rp',
-										},
-									],
+									require: 'rp',
 								},
 							],
 						},
@@ -252,36 +277,20 @@ it('part of the ruby element', () => {
 	expect(c(models, '<span></span><rp></rp><rt></rt><rp></rp>').type).toBe('MATCHED');
 	expect(c(models, '<span></span><rp></rp><rt></rt>').type).toBe('MISSING_NODE_REQUIRED');
 	expect(c(models, '<span></span><rp></rp><rt></rt>').query).toBe('rp');
+	expect(c(models, '<span></span><rp></rp><rt></rt><rp></rp>').type).toBe('MATCHED');
+	expect(c(models, '<span></span><rp></rp><rt></rt><rp></rp><span></span><span></span>').type).toBe(
+		'UNEXPECTED_EXTRA_NODE',
+	);
+	expect(c(models, '<span></span><rp></rp><rt></rt><rp></rp><span></span><span></span>').query).toBe('rp');
+	expect(c(models, '<span></span><rt></rt><span></span><rt></rt>').type).toBe('MATCHED');
+	expect(c(models, 'text<rt></rt>text2<rt></rt>').type).toBe('MATCHED');
+	expect(c(models, 'text<rt></rt><rt></rt>text2<rt></rt><rt></rt>').type).toBe('MATCHED');
+	expect(c(models, 'text<rp></rp><rt></rt><rp></rp>text2<rt></rt>').type).toBe('MATCHED');
 });
 
 it('part of the ruby element', () => {
 	const models: PermittedContentPattern = {
-		oneOrMore: [
-			{
-				require: 'rp',
-			},
-			{
-				oneOrMore: [
-					{
-						require: 'rt',
-					},
-					{
-						require: 'rp',
-					},
-				],
-			},
-		],
-	};
-
-	expect(c(models, '<rt></rt>').type).toBe('MISSING_NODE_REQUIRED');
-	expect(c(models, '<rt></rt>').query).toBe('rp');
-	expect(c(models, '<rp></rp><rt></rt><rp></rp>').type).toBe('MATCHED');
-	expect(c(models, '<rp></rp><rt></rt>').type).toBe('MISSING_NODE_REQUIRED');
-	expect(c(models, '<rp></rp><rt></rt>').query).toBe('rp');
-});
-
-it('part of the ruby element', () => {
-	const models: PermittedContentPattern = {
+		// followed by one or more rt elements, each of which is itself followed by an rp element
 		oneOrMore: [
 			{
 				require: 'rt',
@@ -295,4 +304,7 @@ it('part of the ruby element', () => {
 	expect(c(models, '<rt></rt>').type).toBe('MISSING_NODE_REQUIRED');
 	expect(c(models, '<rt></rt>').query).toBe('rp');
 	expect(c(models, '<rt></rt><rp></rp>').type).toBe('MATCHED');
+	expect(c(models, '<rt></rt><rp></rp><rt></rt>').type).toBe('MISSING_NODE_REQUIRED');
+	expect(c(models, '<rt></rt><rp></rp><rt></rt>').query).toBe('rp');
+	expect(c(models, '<rt></rt><rp></rp><rt></rt><rp></rp>').type).toBe('MATCHED');
 });

@@ -29,10 +29,16 @@ export type Result<T extends string = MatchedReason> = {
 	unmatched: ChildNode[];
 	zeroMatch: boolean;
 	query: string;
-	hint: {
-		max?: number;
-		not?: ChildNode;
-		transparent?: Element;
+	hint: Hints;
+};
+
+export type Hints = {
+	max?: number;
+	not?: ChildNode;
+	transparent?: Element;
+	missing?: {
+		barelyMatchedElements?: number;
+		need?: string;
 	};
 };
 
@@ -41,6 +47,8 @@ export type MatchedReason = 'MATCHED' | 'MATCHED_ZERO';
 export type UnmatchedReason = 'NOTHING' | 'UNEXPECTED_EXTRA_NODE' | 'TRANSPARENT_MODEL_DISALLOWS' | MissingNodeReason;
 
 export type MissingNodeReason = 'MISSING_NODE_REQUIRED' | 'MISSING_NODE_ONE_OR_MORE';
+
+export type RepeatSign = '' | '?' | '+' | '*' | `{${number},${number}}`;
 
 export type TransparentModel = {
 	el: Element;

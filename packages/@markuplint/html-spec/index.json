@@ -24423,16 +24423,13 @@
 				]
 			},
 			"aria": {
-				"implicitRole": "form",
-				"permittedRoles": ["search", "none", "presentation"],
-				"1.1": {
-					"implicitRole": false,
-					"conditions": {
-						":aria(has name)": {
-							"implicitRole": "form"
-						}
+				"implicitRole": false,
+				"conditions": {
+					":aria(has name)": {
+						"implicitRole": "form"
 					}
-				}
+				},
+				"permittedRoles": ["search", "none", "presentation"]
 			},
 			"omission": false,
 			"globalAttrs": {
@@ -27694,7 +27691,7 @@
 					{
 						"oneOrMore": [
 							{
-								"require": ":model(phrasing):not(ruby, :has(ruby))"
+								"oneOrMore": [":model(phrasing):not(ruby, :has(ruby))", "ruby:not(:has(ruby))"]
 							},
 							{
 								"choice": [
@@ -27705,19 +27702,15 @@
 									],
 									[
 										{
+											"require": "rp"
+										},
+										{
 											"oneOrMore": [
 												{
-													"require": "rp"
+													"require": "rt"
 												},
 												{
-													"oneOrMore": [
-														{
-															"require": "rt"
-														},
-														{
-															"require": "rp"
-														}
-													]
+													"require": "rp"
 												}
 											]
 										}

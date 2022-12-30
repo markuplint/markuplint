@@ -136,27 +136,27 @@ test('the dl element', () => {
 
 it('part of the ruby element', () => {
 	const models: PermittedContentChoice = {
+		// 2. One or the other of the following:
 		choice: [
 			[
 				{
+					// - One or more rt elements
 					oneOrMore: 'rt',
 				},
 			],
 			[
 				{
+					// - An rp element
+					require: 'rp',
+				},
+				{
+					// followed by one or more rt elements, each of which is itself followed by an rp element
 					oneOrMore: [
 						{
-							require: 'rp',
+							require: 'rt',
 						},
 						{
-							oneOrMore: [
-								{
-									require: 'rt',
-								},
-								{
-									require: 'rp',
-								},
-							],
+							require: 'rp',
 						},
 					],
 				},
@@ -167,8 +167,10 @@ it('part of the ruby element', () => {
 	expect(c(models, '<rt></rt>').type).toBe('MATCHED');
 	expect(c(models, '<rp></rp>').type).toBe('MISSING_NODE_REQUIRED');
 	expect(c(models, '<rp></rp>').query).toBe('rt');
+	expect(c(models, '<rt></rt><rt></rt>').type).toBe('MATCHED');
 	expect(c(models, '<rp></rp><rt></rt><rp></rp>').type).toBe('MATCHED');
 	expect(c(models, '<rp></rp><rt></rt>').type).toBe('MISSING_NODE_REQUIRED');
 	expect(c(models, '<rp></rp><rt></rt>').query).toBe('rp');
 	expect(c(models, '<rt></rt><rp></rp>').type).toBe('UNEXPECTED_EXTRA_NODE');
+	expect(c(models, '<rt></rt><rp></rp>').query).toBe('rt');
 });
