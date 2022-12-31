@@ -5,6 +5,7 @@ export * from './decision';
 export * from './detect-element-type';
 export * from './flatten-nodes';
 export * from './get-location';
+export * from './get-space-before';
 export * from './idl-attributes';
 export * from './ignore-block';
 export * from './ignore-front-matter';
