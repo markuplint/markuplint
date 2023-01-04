@@ -48,6 +48,22 @@ describe('isExposed', () => {
 		expect(x('<script>"";</script>')).toBe(false);
 	});
 
+	test('Recent element', () => {
+		expect(x('<canvas></canvas>')).toBe(true);
+		expect(x('<dialog></dialog>')).toBe(true);
+		expect(x('<details></details>')).toBe(true);
+		expect(x('<summary></summary>')).toBe(true);
+		expect(x('<meter></meter>')).toBe(true);
+		expect(x('<progress></progress>')).toBe(true);
+		expect(x('<picture></picture>')).toBe(true);
+		expect(x('<ruby></ruby>')).toBe(true);
+		expect(x('<pt></pt>')).toBe(true);
+		expect(x('<rp></rp>')).toBe(true);
+		expect(x('<time></time>')).toBe(true);
+		expect(x('<slot></slot>')).toBe(true);
+		expect(x('<portal></portal>')).toBe(true);
+	});
+
 	test('Unknown element', () => {
 		expect(x('<unknown></unknown>')).toBe(true);
 		expect(x('<font></font>')).toBe(true);
