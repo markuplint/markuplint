@@ -395,6 +395,24 @@ const idlContentMap = {
 	yChannelSelector: 'yChannelSelector',
 	z: 'z',
 	zoomAndPan: 'zoomAndPan',
+
+	/**
+	 * PerformanceElementTiming API
+	 *
+	 * @experimental
+	 * @see https://wicg.github.io/element-timing/#sec-modifications-DOM
+	 * @see https://wicg.github.io/element-timing/#sec-elements-exposed
+	 */
+	elementTiming: 'elementtiming',
+
+	/**
+	 * IFrame credentialless
+	 *
+	 * @experimental
+	 * @warning No specification found
+	 * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLIFrameElement/credentialless
+	 */
+	credentialless: 'credentialless',
 };
 
 const list = Object.entries(idlContentMap);

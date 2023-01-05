@@ -186,6 +186,11 @@
 			},
 			"defaultValue": "default",
 			"deprecated": true
+		},
+		// https://wicg.github.io/element-timing/#sec-elements-exposed
+		"elementtiming": {
+			"type": "NoEmptyAny",
+			"experimental": true
 		}
 	},
 	"#GlobalEventAttrs": {
