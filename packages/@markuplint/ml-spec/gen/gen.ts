@@ -36,8 +36,7 @@ Object.keys(globalAttrs).forEach(key => {
 			};
 			break;
 		}
-		case '#GlobalEventAttrs':
-		case '#DocumentElementEventAttrs': {
+		case '#GlobalEventAttrs': {
 			select[key] = {
 				oneOf: [
 					{

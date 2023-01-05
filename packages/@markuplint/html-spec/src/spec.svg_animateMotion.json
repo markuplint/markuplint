@@ -27,7 +27,6 @@
 	},
 	"globalAttrs": {
 		"#GlobalEventAttrs": true,
-		"#DocumentElementEventAttrs": true,
 		"#SVGAnimationAdditionAttrs": ["additive", "accumulate"],
 		"#SVGAnimationEventAttrs": ["onbegin", "onend", "onrepeat"],
 		"#SVGAnimationTargetElementAttrs": ["href"],

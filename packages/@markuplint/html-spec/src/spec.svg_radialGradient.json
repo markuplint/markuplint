@@ -18,7 +18,6 @@
 	},
 	"globalAttrs": {
 		"#GlobalEventAttrs": true,
-		"#DocumentElementEventAttrs": true,
 		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
 		"#SVGPresentationAttrs": [
 			"alignment-baseline",

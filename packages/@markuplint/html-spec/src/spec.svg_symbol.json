@@ -29,7 +29,6 @@
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,
 		"#GlobalEventAttrs": true,
-		"#DocumentElementEventAttrs": true,
 		"#ARIAAttrs": true,
 		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
 		"#SVGPresentationAttrs": ["x", "y", "width", "height"]
