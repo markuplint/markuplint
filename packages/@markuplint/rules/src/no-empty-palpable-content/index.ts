@@ -14,6 +14,15 @@ export default createRule<boolean, Options>({
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
+			/**
+			 * Exception
+			 *
+			 * - The `textarea` element is possibly empty because a user inputs it.
+			 */
+			if (el.localName === 'textarea') {
+				return;
+			}
+
 			if (
 				!isPalpableElement(el, el.ownerMLDocument.specs, {
 					extendsSvg: false,
