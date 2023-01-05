@@ -437,4 +437,10 @@ describe('Issues', () => {
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	// https://github.com/markuplint/markuplint/issues/658
+	test('#658', async () => {
+		expect((await mlRuleTest(rule, '<dialog></dialog>')).violations.length).toBe(1);
+		expect((await mlRuleTest(rule, '<div role="dialog"></div>')).violations.length).toBe(1);
+	});
 });
