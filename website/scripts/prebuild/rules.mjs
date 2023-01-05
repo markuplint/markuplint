@@ -42,10 +42,11 @@ async function getRulePaths() {
  * @param {string} filePath
  * @param {Value} value
  * @param {Options} options
+ * @param {"error" | "warning"} severity
  * @param {Partial<DocData>} [inherit]
  * @returns {Promise<Partial<DocData>>}
  */
-async function getDocFile(filePath, value, options, inherit) {
+async function getDocFile(filePath, value, options, severity, inherit) {
   const editUrlBase = await getEditUrlBase();
   const name = basename(filePath);
   const doc = await readFile(filePath, { encoding: 'utf-8' });
@@ -56,9 +57,8 @@ async function getDocFile(filePath, value, options, inherit) {
   const lang = (/^README(?:\.([a-z]+))?$/.exec(fileName) || [])[1];
 
   const id = frontMatter.id ?? inherit?.id;
-  const severity = frontMatter.severity ?? inherit?.severity;
 
-  let rewrote = rewriteRuleContent(content, id, value, options, severity, lang);
+  let rewrote = rewriteRuleContent(content, id, value, options, severity ?? inherit?.severity, lang);
 
   // eslint-disable-next-line import/no-named-as-default-member
   rewrote = matter.stringify(rewrote, frontMatter);
@@ -70,8 +70,6 @@ async function getDocFile(filePath, value, options, inherit) {
         lang,
         id: frontMatter.id,
         description: frontMatter.description,
-        category: frontMatter.category,
-        severity: frontMatter.severity,
         contents: rewrote,
       }),
     ),
@@ -86,10 +84,14 @@ async function getDocFile(filePath, value, options, inherit) {
 async function createRuleDoc(path) {
   const schema = await importJSON(resolve(path, 'schema.json'));
   const { value, options } = schema.definitions;
+  const category = schema._category ?? 'N/A';
+  const severity = schema.oneOf.find(val => val.properties)?.properties?.severity?.default ?? 'N/A';
   const docFile = resolve(path, 'README.md');
-  const doc = await getDocFile(docFile, value, options);
+  const doc = await getDocFile(docFile, value, options, severity);
+  doc.category = category;
+  doc.severity = severity;
   const i18nDocFiles = await glob(resolve(path, 'README.*.md'));
-  const i18nDocs = await Promise.all(i18nDocFiles.map(docPath => getDocFile(docPath, value, options, doc)));
+  const i18nDocs = await Promise.all(i18nDocFiles.map(docPath => getDocFile(docPath, value, options, severity, doc)));
 
   return [doc, ...i18nDocs];
 }
