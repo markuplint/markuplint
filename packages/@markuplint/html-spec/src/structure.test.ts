@@ -39,7 +39,11 @@ const schemas = {
 test('structure', () => {
 	specs.forEach(el => {
 		const { localName, namespaceURI } = resolveNamespace(el.name);
-		getAttrSpecs(localName, namespaceURI, htmlSpec);
+		try {
+			getAttrSpecs(localName, namespaceURI, htmlSpec);
+		} catch (e: unknown) {
+			throw el;
+		}
 	});
 });
 

@@ -31,7 +31,6 @@
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,
 		"#GlobalEventAttrs": true,
-		"#DocumentElementEventAttrs": true,
 		"#ARIAAttrs": true,
 		"#HTMLLinkAndFetchingAttrs": ["crossorigin"],
 		"#HTMLEmbededAndMediaContentAttrs": ["src", "preload", "autoplay", "loop", "muted", "controls"]

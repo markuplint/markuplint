@@ -10,7 +10,6 @@
 	},
 	"globalAttrs": {
 		"#GlobalEventAttrs": true,
-		"#DocumentElementEventAttrs": true,
 		"#SVGAnimationEventAttrs": ["onbegin", "onend", "onrepeat"],
 		"#SVGAnimationTargetElementAttrs": ["href"],
 		"#SVGAnimationAttributeTargetAttrs": ["attributeName"],

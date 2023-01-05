@@ -24,7 +24,6 @@
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,
 		"#GlobalEventAttrs": true,
-		"#DocumentElementEventAttrs": true,
 		"#ARIAAttrs": true
 	},
 	"attributes": {},

@@ -10,7 +10,6 @@
 	},
 	"globalAttrs": {
 		"#GlobalEventAttrs": true,
-		"#DocumentElementEventAttrs": true,
 		"#SVGAnimationAdditionAttrs": ["additive", "accumulate"],
 		"#SVGAnimationAttributeTargetAttrs": ["attributeName"],
 		"#SVGAnimationEventAttrs": ["onbegin", "onend", "onrepeat"],
