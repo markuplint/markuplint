@@ -385,6 +385,10 @@
 					},
 					"defaultValue": "default",
 					"deprecated": true
+				},
+				"elementtiming": {
+					"type": "NoEmptyAny",
+					"experimental": true
 				}
 			},
 			"#GlobalEventAttrs": {
@@ -25154,6 +25158,9 @@
 						"invalidValueDefault": "auto",
 						"missingValueDefault": "auto"
 					}
+				},
+				"elementtiming": {
+					"description": "Marks the image for observation by the PerformanceElementTiming API. The value given becomes an identifier for the observed image element. See also the elementtiming attribute page."
 				},
 				"fetchpriority": {
 					"description": "Provides a hint of the relative priority to use when fetching the image. Allowed values: high Signals a high-priority fetch relative to other images. low Signals a low-priority fetch relative to other images. auto Default: Signals automatic determination of fetch priority relative to other images.",

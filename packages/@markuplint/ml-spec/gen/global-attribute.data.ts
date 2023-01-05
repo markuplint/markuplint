@@ -38,6 +38,11 @@ export const globalAttrs: Record<
 			'xmlns',
 			'xml:lang',
 			'xml:space',
+
+			/**
+			 * Experimental
+			 */
+			'elementtiming', // @see https://wicg.github.io/element-timing/#sec-elements-exposed https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/elementtiming
 		],
 	},
 	'#GlobalEventAttrs': {

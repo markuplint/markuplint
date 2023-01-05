@@ -395,6 +395,15 @@ const idlContentMap = {
 	yChannelSelector: 'yChannelSelector',
 	z: 'z',
 	zoomAndPan: 'zoomAndPan',
+
+	/**
+	 * PerformanceElementTiming API
+	 *
+	 * @experimental
+	 * @see https://wicg.github.io/element-timing/#sec-modifications-DOM
+	 * @see https://wicg.github.io/element-timing/#sec-elements-exposed
+	 */
+	elementTiming: 'elementtiming',
 };
 
 const list = Object.entries(idlContentMap);

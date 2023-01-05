@@ -55,7 +55,8 @@
 				"slot",
 				"xmlns",
 				"xml:lang",
-				"xml:space"
+				"xml:space",
+				"elementtiming"
 			]
 		},
 		"GlobalEventAttrs": {
@@ -389,7 +390,8 @@
 				"slot",
 				"xmlns",
 				"xml:lang",
-				"xml:space"
+				"xml:space",
+				"elementtiming"
 			],
 			"propertyNames": { "$ref": "#/definitions/HTMLGlobalAttrs" },
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }
