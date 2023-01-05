@@ -1,8 +1,6 @@
 ---
 id: no-empty-palpable-content
 description: Warn if there is an empty palpable content element.
-category: validation
-severity: warning
 ---
 
 # `no-empty-palpable-content`

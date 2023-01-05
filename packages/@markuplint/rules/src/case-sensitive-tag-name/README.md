@@ -1,9 +1,6 @@
 ---
 id: case-sensitive-tag-name
 description: Warns that the tag name is not in one of uppercase or lowercase letters.
-fixable: true
-category: style
-severity: warning
 ---
 
 # `case-sensitive-tag-name`
