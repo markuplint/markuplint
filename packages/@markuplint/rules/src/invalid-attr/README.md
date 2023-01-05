@@ -153,23 +153,25 @@ _[The Open Graph protocol](https://ogp.me/)_ and _[RDFa](https://rdfa.info/)_ ar
 
 ```json
 {
-  "nodeRules": {
-    "selector": "meta[property]",
-    "rules": {
-      "invalid-attr": {
-        "options": {
-          "attrs": {
-            "property": {
-              "type": "Any"
-            },
-            "content": {
-              "type": "Any"
+  "nodeRules": [
+    {
+      "selector": "meta[property]",
+      "rules": {
+        "invalid-attr": {
+          "options": {
+            "attrs": {
+              "property": {
+                "type": "Any"
+              },
+              "content": {
+                "type": "Any"
+              }
             }
           }
         }
       }
     }
-  }
+  ]
 }
 ```
 
