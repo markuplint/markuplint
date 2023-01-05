@@ -55,10 +55,10 @@ export const globalAttrs: Record<
 			'onchange',
 			'onclick',
 			'onclose',
-			'oncontextlost',
+			'oncompositionend', // UI Events
 			'oncompositionstart', // UI Events
 			'oncompositionupdate', // UI Events
-			'oncompositionend', // UI Events
+			'oncontextlost',
 			'oncontextmenu',
 			'oncontextrestored',
 			'oncuechange',
@@ -75,9 +75,9 @@ export const globalAttrs: Record<
 			'onended',
 			'onerror',
 			'onfocus',
-			'onformdata',
 			'onfocusin', // UI Events
 			'onfocusout', // UI Events
+			'onformdata',
 			'oninput',
 			'oninvalid',
 			'onkeydown',
@@ -112,13 +112,13 @@ export const globalAttrs: Record<
 			'onsuspend',
 			'ontimeupdate',
 			'ontoggle',
+			'onunload', // UI Events
 			'onvolumechange',
 			'onwaiting',
 			'onwebkitanimationend',
 			'onwebkitanimationiteration',
 			'onwebkitanimationstart',
 			'onwebkittransitionend',
-			'onunload', // UI Events
 			'onwheel',
 		],
 	},
