@@ -439,7 +439,13 @@
 				"oncontextrestored": {
 					"type": "FunctionBody"
 				},
+				"oncopy": {
+					"type": "FunctionBody"
+				},
 				"oncuechange": {
+					"type": "FunctionBody"
+				},
+				"oncut": {
 					"type": "FunctionBody"
 				},
 				"ondblclick": {
@@ -538,6 +544,9 @@
 				"onmouseup": {
 					"type": "FunctionBody"
 				},
+				"onpaste": {
+					"type": "FunctionBody"
+				},
 				"onpause": {
 					"type": "FunctionBody"
 				},
@@ -619,17 +628,6 @@
 				"onwebkittransitionend": {
 					"type": "FunctionBody",
 					"deprecated": true
-				}
-			},
-			"#DocumentElementEventAttrs": {
-				"oncopy": {
-					"type": "FunctionBody"
-				},
-				"oncut": {
-					"type": "FunctionBody"
-				},
-				"onpaste": {
-					"type": "FunctionBody"
 				}
 			},
 			"#HTMLLinkAndFetchingAttrs": {

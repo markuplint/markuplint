@@ -1045,7 +1045,9 @@ export interface GlobalAttributes {
 				| 'oncontextlost'
 				| 'oncontextmenu'
 				| 'oncontextrestored'
+				| 'oncopy'
 				| 'oncuechange'
+				| 'oncut'
 				| 'ondblclick'
 				| 'ondrag'
 				| 'ondragend'
@@ -1078,6 +1080,7 @@ export interface GlobalAttributes {
 				| 'onmouseout'
 				| 'onmouseover'
 				| 'onmouseup'
+				| 'onpaste'
 				| 'onpause'
 				| 'onplay'
 				| 'onplaying'
@@ -1105,7 +1108,6 @@ export interface GlobalAttributes {
 				| 'onwebkittransitionend'
 				| 'onwheel'
 		  )[];
-	'#DocumentElementEventAttrs'?: boolean | ('oncopy' | 'oncut' | 'onpaste')[];
 	/**
 	 * @minItems 0
 	 */

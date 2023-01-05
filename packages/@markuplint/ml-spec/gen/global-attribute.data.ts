@@ -61,7 +61,9 @@ export const globalAttrs: Record<
 			'oncontextlost',
 			'oncontextmenu',
 			'oncontextrestored',
+			'oncopy',
 			'oncuechange',
+			'oncut',
 			'ondblclick',
 			'ondrag',
 			'ondragend',
@@ -94,6 +96,7 @@ export const globalAttrs: Record<
 			'onmouseout',
 			'onmouseover',
 			'onmouseup',
+			'onpaste',
 			'onpause',
 			'onplay',
 			'onplaying',
@@ -121,11 +124,6 @@ export const globalAttrs: Record<
 			'onwebkittransitionend',
 			'onwheel',
 		],
-	},
-	'#DocumentElementEventAttrs': {
-		description:
-			'[DocumentAndElementEventHandlers]( https://html.spec.whatwg.org/multipage/webappapis.html#documentandelementeventhandlers )',
-		attrs: ['oncopy', 'oncut', 'onpaste'],
 	},
 	'#HTMLLinkAndFetchingAttrs': {
 		description: 'Link and fetching',
