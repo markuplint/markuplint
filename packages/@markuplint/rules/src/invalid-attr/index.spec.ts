@@ -335,6 +335,19 @@ test('Foreign element', async () => {
 	expect(violations.length).toBe(0);
 });
 
+test('noUse flag', async () => {
+	const { violations } = await mlRuleTest(rule, '<dialog tabindex="-1"></dialog>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The "tabindex" attribute is disallowed',
+			raw: 'tabindex="-1"',
+		},
+	]);
+});
+
 test('svg', async () => {
 	expect(
 		(
