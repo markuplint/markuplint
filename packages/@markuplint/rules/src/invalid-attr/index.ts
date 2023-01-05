@@ -109,6 +109,13 @@ export default createRule<boolean, Option>({
 
 			if (invalid) {
 				switch (invalid.invalidType) {
+					case 'disallowed-attr': {
+						report({
+							scope: attr,
+							message: invalid.message,
+						});
+						break;
+					}
 					case 'invalid-value': {
 						if (attr.isDynamicValue) {
 							break;
