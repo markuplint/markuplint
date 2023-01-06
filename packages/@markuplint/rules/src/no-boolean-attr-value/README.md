@@ -1,9 +1,6 @@
 ---
 id: no-boolean-attr-value
 description: Warn when it specified any value to the boolean attribute.
-fixable: true
-category: style
-severity: warning
 ---
 
 # `no-boolean-attr-value`

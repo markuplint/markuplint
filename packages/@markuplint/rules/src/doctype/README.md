@@ -1,9 +1,6 @@
 ---
 description: Warns when doesn't including DOCTYPE.
 id: doctype
-fixable: false
-category: validation
-severity: error
 ---
 
 # `doctype`

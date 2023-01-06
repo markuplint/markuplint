@@ -1,9 +1,6 @@
 ---
 id: ineffective-attr
 description: Warn that if the attribute specified cannot affect (in other words, mean-less) the element.
-fixable: true
-category: style
-severity: warning
 ---
 
 # `ineffective-attr`

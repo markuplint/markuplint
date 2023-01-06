@@ -1,8 +1,6 @@
 ---
 id: require-accessible-name
 description: Warn if the element has no accessible name.
-category: a11y
-severity: error
 ---
 
 # `require-accessible-name`

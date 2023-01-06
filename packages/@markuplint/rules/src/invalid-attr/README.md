@@ -1,8 +1,6 @@
 ---
 id: invalid-attr
 description: Warn if an attribute is a non-existent attribute or an invalid type value due to the specifications (or the custom rule).
-category: style
-severity: error
 ---
 
 # `invalid-attr`

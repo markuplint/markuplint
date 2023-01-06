@@ -1,8 +1,6 @@
 ---
 id: no-hard-code-id
 description: Warn it hard-coded the value of the id attribute when the element is a fragment.
-category: maintainability
-severity: warning
 ---
 
 # `no-hard-code-id`

@@ -1,8 +1,6 @@
 ---
 id: no-refer-to-non-existent-id
 description: Checking for whether ID or the list of ID specified to for, form, aria-* and, more are referencing to it that existed in the same document.
-category: a11y
-severity: error
 ---
 
 # `no-refer-to-non-existent-id`

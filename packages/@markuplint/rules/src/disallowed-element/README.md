@@ -1,8 +1,6 @@
 ---
 id: disallowed-element
 description: Warns if specified elements appear on a document or an element.
-category: validation
-severity: error
 ---
 
 # `disallowed-element`

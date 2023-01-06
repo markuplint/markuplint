@@ -1,8 +1,6 @@
 ---
 id: end-tag
 description: Warn if there is not an end tag.
-category: style
-severity: warning
 ---
 
 # `end-tag`

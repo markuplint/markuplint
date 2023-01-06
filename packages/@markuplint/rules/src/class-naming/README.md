@@ -1,8 +1,6 @@
 ---
 id: class-naming
 description: Warn if the class name does not conform to the specified rules.
-category: naming-convention
-severity: warning
 ---
 
 # `class-naming`
