@@ -8,8 +8,7 @@
 	},
 	"oneOf": [
 		{
-			"type": "boolean",
-			"enum": [false]
+			"type": "boolean"
 		},
 		{
 			"$ref": "#/definitions/value"

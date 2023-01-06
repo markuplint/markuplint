@@ -26,6 +26,9 @@
 	},
 	"oneOf": [
 		{
+			"type": "boolean"
+		},
+		{
 			"$ref": "#/definitions/value"
 		},
 		{
