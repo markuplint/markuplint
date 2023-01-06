@@ -1,3 +1,5 @@
+import type { Langs } from './types';
+
 import { spawnSync } from 'child_process';
 
 import c from 'cli-color';
@@ -9,6 +11,19 @@ export type InstallModuleResult = {
 	success: boolean;
 	alreadyExists: boolean;
 };
+
+export function selectModules(selectedLangs: Langs[]) {
+	const modules = ['markuplint', ...selectedLangs.map(lang => `@markuplint/${lang}-parser`)];
+
+	if (selectedLangs.includes('vue')) {
+		modules.push('@markuplint/vue-spec');
+	}
+	if (selectedLangs.includes('jsx')) {
+		modules.push('@markuplint/react-spec');
+	}
+
+	return modules;
+}
 
 export async function installModule(module: string[], dev = false): Promise<InstallModuleResult> {
 	module = module.map(m => m.trim());
