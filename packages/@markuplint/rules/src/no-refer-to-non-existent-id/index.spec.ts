@@ -106,6 +106,12 @@ test('fragment', async () => {
 		},
 	]);
 
+	expect((await mlRuleTest(rule, '<a href="#"></a>')).violations).toStrictEqual([]);
+
+	expect((await mlRuleTest(rule, '<a href="#top"></a>')).violations).toStrictEqual([]);
+
+	expect((await mlRuleTest(rule, '<a href="#TOP"></a>')).violations).toStrictEqual([]);
+
 	expect(
 		(
 			await mlRuleTest(rule, '<><a href="#foo" /><div id="foo" /></>', {

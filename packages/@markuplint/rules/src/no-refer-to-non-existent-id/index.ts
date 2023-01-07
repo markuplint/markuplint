@@ -155,11 +155,18 @@ export default createRule({
 
 			const rawFragment = href.value.match(/^#(.+)/)?.[1];
 
-			if (!rawFragment) {
+			if (rawFragment == null) {
 				return;
 			}
 
 			const decodedFragment = decode(rawFragment);
+
+			// > 2. If fragment is the empty string, then return the special value top of the document.
+			// >
+			// > 9. If decodedFragment is an ASCII case-insensitive match for the string top, then return the top of the document.
+			if (decodedFragment === '' || /^top$/i.test(decodedFragment)) {
+				return;
+			}
 
 			if (
 				!idList.has(decodedFragment) &&
