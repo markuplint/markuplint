@@ -62,6 +62,12 @@
 		"permitted-contents": true,
 
 		/**
+		 * Require **placeholder label option**
+		 *
+		 */
+		"placeholder-label-option": true,
+
+		/**
 		 * Specify required attr
 		 *
 		 */
