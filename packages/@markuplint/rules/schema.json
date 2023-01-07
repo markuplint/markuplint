@@ -75,6 +75,9 @@
 				"permitted-contents": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/permitted-contents/schema.json"
 				},
+				"placeholder-label-option": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/placeholder-label-option/schema.json"
+				},
 				"require-accessible-name": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-accessible-name/schema.json"
 				},
