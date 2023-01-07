@@ -113,6 +113,10 @@ test('fragment', async () => {
 	expect((await mlRuleTest(rule, '<a href="#TOP"></a>')).violations).toStrictEqual([]);
 
 	expect(
+		(await mlRuleTest(rule, `<a href="#${encodeURI('あいうえお')}"></a><div id="あいうえお"></div>`)).violations,
+	).toStrictEqual([]);
+
+	expect(
 		(
 			await mlRuleTest(rule, '<><a href="#foo" /><div id="foo" /></>', {
 				parser: {
