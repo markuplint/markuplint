@@ -47,7 +47,14 @@ function type(value, escape = false) {
   }
 
   if (value.type === 'array') {
-    return type(value.items, escape) + '[]';
+    const needWrap = !!value.items.enum;
+    return (
+      (needWrap ? '(' : '') +
+      // Recursive
+      type(value.items, escape) +
+      (needWrap ? ')' : '') +
+      '[]'
+    );
   }
 
   if (value.type === 'string' && value.enum) {
@@ -59,6 +66,20 @@ function type(value, escape = false) {
   }
 
   return value.type;
+}
+
+function code(value, escape = false) {
+  const arraySeparator = escape ? ',<wbr />' : ',';
+
+  if (Array.isArray(value)) {
+    return '[' + value.map(item => code(item, escape)).join(arraySeparator) + ']';
+  }
+
+  if (typeof value === 'string') {
+    return `"${value}"`;
+  }
+
+  return value;
 }
 
 /**
@@ -105,7 +126,7 @@ function optionDoc(name, options, lang) {
 
   const table = Object.entries(options.properties).map(([k, v]) => {
     const desc = v[`description:${lang}`] ?? v.description;
-    return `\`${k}\`|<code>${type(v, true)}</code>|\`${v.default}\`|${desc}`;
+    return `\`${k}\`|<code>${type(v, true)}</code>|<code>${code(v.default, true)}</code>|${desc}`;
   });
 
   return [

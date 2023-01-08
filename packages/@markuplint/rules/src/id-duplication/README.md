@@ -1,8 +1,6 @@
 ---
 description: Warns that id attribute value were duplicated in one document.
 id: id-duplication
-category: validation
-severity: error
 ---
 
 # `id-duplication`

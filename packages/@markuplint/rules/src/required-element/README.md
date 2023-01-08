@@ -1,8 +1,6 @@
 ---
-description: Required elements
 id: required-element
-category: validation
-severity: error
+description: Required elements
 ---
 
 # `required-element`

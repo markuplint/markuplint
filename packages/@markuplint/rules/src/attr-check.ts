@@ -7,7 +7,7 @@ import { createMessageValueExpected } from './create-message';
 import { log } from './debug';
 
 type Invalid = {
-	invalidType: 'non-existent' | 'invalid-value';
+	invalidType: 'non-existent' | 'invalid-value' | 'disallowed-attr';
 	message: string;
 	loc?: Loc;
 };
@@ -63,6 +63,13 @@ export function attrCheck(
 				t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed') +
 				t('. ') +
 				t('Did you mean "{0*}"?', spec.name),
+		};
+	}
+
+	if (spec.noUse) {
+		return {
+			invalidType: 'disallowed-attr',
+			message: t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed'),
 		};
 	}
 

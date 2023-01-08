@@ -1,0 +1,51 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"_category": "validation",
+	"definitions": {
+		"value": {
+			"type": "boolean"
+		},
+		"options": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"langs": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"enum": ["en", "ja", "fr", "nl", "ru", "de", "pt", "zh"],
+						"uniqueItems": true,
+						"minItems": 1
+					},
+					"default": ["en", "ja", "fr", "nl", "ru", "de", "pt", "zh"],
+					"description": "Specify languages that are parsing the content, and its order. They are parsable depending on [Chrono](https://github.com/wanasit/chrono).",
+					"description:ja": "コンテンツを解析する言語、またその優先順位を指定します。解析可能かどうかは[Chrono](https://github.com/wanasit/chrono)次第です。"
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"type": "boolean"
+		},
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"options": { "$ref": "#/definitions/options" },
+				"option": { "$ref": "#/definitions/options", "deprecated": true },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "error"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}

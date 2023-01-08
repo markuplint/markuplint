@@ -1,8 +1,6 @@
 ---
 id: __ruleName__
 description: __description__
-category: __category__
-severity: __severity__
 ---
 
 # `__ruleName__`

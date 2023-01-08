@@ -41,7 +41,6 @@
 				"enum": [
 					"#HTMLGlobalAttrs",
 					"#GlobalEventAttrs",
-					"#DocumentElementEventAttrs",
 					"#HTMLLinkAndFetchingAttrs",
 					"#HTMLEmbededAndMediaContentAttrs",
 					"#HTMLFormControlElementAttrs",
@@ -71,19 +70,6 @@
 							"minItems": 0,
 							"uniqueItems": true,
 							"items": { "$ref": "./global-attributes.schema.json#/definitions/GlobalEventAttrs" }
-						}
-					]
-				},
-				"#DocumentElementEventAttrs": {
-					"oneOf": [
-						{ "type": "boolean" },
-						{
-							"type": "array",
-							"minItems": 0,
-							"uniqueItems": true,
-							"items": {
-								"$ref": "./global-attributes.schema.json#/definitions/DocumentElementEventAttrs"
-							}
 						}
 					]
 				},

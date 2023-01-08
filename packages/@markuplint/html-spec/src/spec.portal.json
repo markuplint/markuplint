@@ -10,7 +10,6 @@
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,
 		"#GlobalEventAttrs": true,
-		"#DocumentElementEventAttrs": true,
 		"#ARIAAttrs": true,
 		// https://wicg.github.io/portals/#dom-htmlportalelement-referrerpolicy
 		"#HTMLLinkAndFetchingAttrs": ["referrerpolicy"],

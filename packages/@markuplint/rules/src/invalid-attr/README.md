@@ -1,8 +1,6 @@
 ---
 id: invalid-attr
 description: Warn if an attribute is a non-existent attribute or an invalid type value due to the specifications (or the custom rule).
-category: style
-severity: error
 ---
 
 # `invalid-attr`
@@ -153,23 +151,25 @@ _[The Open Graph protocol](https://ogp.me/)_ and _[RDFa](https://rdfa.info/)_ ar
 
 ```json
 {
-  "nodeRules": {
-    "selector": "meta[property]",
-    "rules": {
-      "invalid-attr": {
-        "options": {
-          "attrs": {
-            "property": {
-              "type": "Any"
-            },
-            "content": {
-              "type": "Any"
+  "nodeRules": [
+    {
+      "selector": "meta[property]",
+      "rules": {
+        "invalid-attr": {
+          "options": {
+            "attrs": {
+              "property": {
+                "type": "Any"
+              },
+              "content": {
+                "type": "Any"
+              }
             }
           }
         }
       }
     }
-  }
+  ]
 }
 ```
 

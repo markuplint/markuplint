@@ -1,8 +1,6 @@
 ---
 id: permitted-contents
 description: Warn if a child element has a not allowed element or text node.
-category: validation
-severity: error
 ---
 
 # `permitted-contents`

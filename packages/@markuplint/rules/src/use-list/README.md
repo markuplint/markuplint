@@ -1,8 +1,6 @@
 ---
 id: use-list
 description: Prompt to use list element when a bullet character is at the start of a text node.
-category: a11y
-severity: warning
 ---
 
 # `use-list`

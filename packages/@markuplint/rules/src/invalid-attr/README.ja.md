@@ -152,23 +152,25 @@ const Component = (props) => {
 
 ```json
 {
-  "nodeRules": {
-    "selector": "meta[property]",
-    "rules": {
-      "invalid-attr": {
-        "options": {
-          "attrs": {
-            "property": {
-              "type": "Any"
-            },
-            "content": {
-              "type": "Any"
+  "nodeRules": [
+    {
+      "selector": "meta[property]",
+      "rules": {
+        "invalid-attr": {
+          "options": {
+            "attrs": {
+              "property": {
+                "type": "Any"
+              },
+              "content": {
+                "type": "Any"
+              }
             }
           }
         }
       }
     }
-  }
+  ]
 }
 ```
 

@@ -5,7 +5,6 @@
 			"enum": [
 				"#HTMLGlobalAttrs",
 				"#GlobalEventAttrs",
-				"#DocumentElementEventAttrs",
 				"#HTMLLinkAndFetchingAttrs",
 				"#HTMLEmbededAndMediaContentAttrs",
 				"#HTMLFormControlElementAttrs",
@@ -56,7 +55,8 @@
 				"slot",
 				"xmlns",
 				"xml:lang",
-				"xml:space"
+				"xml:space",
+				"elementtiming"
 			]
 		},
 		"GlobalEventAttrs": {
@@ -73,13 +73,15 @@
 				"onchange",
 				"onclick",
 				"onclose",
-				"oncontextlost",
+				"oncompositionend",
 				"oncompositionstart",
 				"oncompositionupdate",
-				"oncompositionend",
+				"oncontextlost",
 				"oncontextmenu",
 				"oncontextrestored",
+				"oncopy",
 				"oncuechange",
+				"oncut",
 				"ondblclick",
 				"ondrag",
 				"ondragend",
@@ -93,9 +95,9 @@
 				"onended",
 				"onerror",
 				"onfocus",
-				"onformdata",
 				"onfocusin",
 				"onfocusout",
+				"onformdata",
 				"oninput",
 				"oninvalid",
 				"onkeydown",
@@ -112,6 +114,7 @@
 				"onmouseout",
 				"onmouseover",
 				"onmouseup",
+				"onpaste",
 				"onpause",
 				"onplay",
 				"onplaying",
@@ -130,17 +133,16 @@
 				"onsuspend",
 				"ontimeupdate",
 				"ontoggle",
+				"onunload",
 				"onvolumechange",
 				"onwaiting",
 				"onwebkitanimationend",
 				"onwebkitanimationiteration",
 				"onwebkitanimationstart",
 				"onwebkittransitionend",
-				"onunload",
 				"onwheel"
 			]
 		},
-		"DocumentElementEventAttrs": { "type": "string", "enum": ["oncopy", "oncut", "onpaste"] },
 		"HTMLLinkAndFetchingAttrs": {
 			"type": "string",
 			"enum": [
@@ -337,7 +339,6 @@
 	"required": [
 		"#HTMLGlobalAttrs",
 		"#GlobalEventAttrs",
-		"#DocumentElementEventAttrs",
 		"#HTMLLinkAndFetchingAttrs",
 		"#HTMLEmbededAndMediaContentAttrs",
 		"#HTMLFormControlElementAttrs",
@@ -389,7 +390,8 @@
 				"slot",
 				"xmlns",
 				"xml:lang",
-				"xml:space"
+				"xml:space",
+				"elementtiming"
 			],
 			"propertyNames": { "$ref": "#/definitions/HTMLGlobalAttrs" },
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }
@@ -409,13 +411,15 @@
 				"onchange",
 				"onclick",
 				"onclose",
-				"oncontextlost",
+				"oncompositionend",
 				"oncompositionstart",
 				"oncompositionupdate",
-				"oncompositionend",
+				"oncontextlost",
 				"oncontextmenu",
 				"oncontextrestored",
+				"oncopy",
 				"oncuechange",
+				"oncut",
 				"ondblclick",
 				"ondrag",
 				"ondragend",
@@ -429,9 +433,9 @@
 				"onended",
 				"onerror",
 				"onfocus",
-				"onformdata",
 				"onfocusin",
 				"onfocusout",
+				"onformdata",
 				"oninput",
 				"oninvalid",
 				"onkeydown",
@@ -448,6 +452,7 @@
 				"onmouseout",
 				"onmouseover",
 				"onmouseup",
+				"onpaste",
 				"onpause",
 				"onplay",
 				"onplaying",
@@ -466,23 +471,16 @@
 				"onsuspend",
 				"ontimeupdate",
 				"ontoggle",
+				"onunload",
 				"onvolumechange",
 				"onwaiting",
 				"onwebkitanimationend",
 				"onwebkitanimationiteration",
 				"onwebkitanimationstart",
 				"onwebkittransitionend",
-				"onunload",
 				"onwheel"
 			],
 			"propertyNames": { "$ref": "#/definitions/GlobalEventAttrs" },
-			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }
-		},
-		"#DocumentElementEventAttrs": {
-			"description": "[DocumentAndElementEventHandlers]( https://html.spec.whatwg.org/multipage/webappapis.html#documentandelementeventhandlers )",
-			"type": "object",
-			"required": ["oncopy", "oncut", "onpaste"],
-			"propertyNames": { "$ref": "#/definitions/DocumentElementEventAttrs" },
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }
 		},
 		"#HTMLLinkAndFetchingAttrs": {

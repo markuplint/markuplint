@@ -73,6 +73,10 @@ test('Has content', async () => {
 	expect((await mlRuleTest(rule, '<div><img /></div>')).violations).toStrictEqual([]);
 });
 
+test('Element exception', async () => {
+	expect((await mlRuleTest(rule, '<textarea></textarea>')).violations).toStrictEqual([]);
+});
+
 test('Ignore aria-busy', async () => {
 	expect((await mlRuleTest(rule, '<div aria-busy="true"></div>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<div aria-busy="true">\n\t\n\n</div>')).violations).toStrictEqual([]);

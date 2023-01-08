@@ -1,5 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
+	"_category": "a11y",
 	"definitions": {
 		"value": {
 			"type": "boolean"
@@ -20,8 +21,7 @@
 	},
 	"oneOf": [
 		{
-			"type": "boolean",
-			"enum": [false]
+			"type": "boolean"
 		},
 		{
 			"$ref": "#/definitions/value"
@@ -34,7 +34,8 @@
 				"options": { "$ref": "#/definitions/options" },
 				"option": { "$ref": "#/definitions/options", "deprecated": true },
 				"severity": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "error"
 				},
 				"reason": {
 					"type": "string"

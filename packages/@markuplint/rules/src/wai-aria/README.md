@@ -1,8 +1,6 @@
 ---
 id: wai-aria
 description: Warn if the role attribute and aria-* attributes don't set in accordance with specs that are WAI-ARIA and ARIA in HTML.
-category: a11y
-severity: error
 ---
 
 # `wai-aria`

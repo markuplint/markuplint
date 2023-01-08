@@ -1,8 +1,6 @@
 ---
 id: label-has-control
 description: Warns if the label element has no control.
-category: a11y
-severity: warning
 ---
 
 # `label-has-control`

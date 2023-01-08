@@ -24,6 +24,7 @@ import NoReferToNonExistentId from './no-refer-to-non-existent-id';
 import NoUseEventHandlerAttr from './no-use-event-handler-attr';
 import PermittedContents from './permitted-contents';
 import RequireAccessibleName from './require-accessible-name';
+import RequireDatetime from './require-datetime';
 import RequiredAttr from './required-attr';
 import RequiredElement from './required-element';
 import RequiredH1 from './required-h1';
@@ -55,6 +56,7 @@ export default {
 	'no-use-event-handler-attr': NoUseEventHandlerAttr,
 	'permitted-contents': PermittedContents,
 	'require-accessible-name': RequireAccessibleName,
+	'require-datetime': RequireDatetime,
 	'required-attr': RequiredAttr,
 	'required-element': RequiredElement,
 	'required-h1': RequiredH1,

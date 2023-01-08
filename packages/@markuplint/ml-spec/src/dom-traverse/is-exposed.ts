@@ -2,7 +2,6 @@ import type { ARIAVersion, MLMLSpec } from '../types';
 
 import { ariaSpecs } from '../specs/aria-specs';
 import { getSpecByTagName } from '../specs/get-spec-by-tag-name';
-import { isPalpableElement } from '../specs/is-palpable-elements';
 import { isPresentational } from '../specs/is-presentational';
 import { resolveNamespace } from '../utils/resolve-namespace';
 
@@ -32,7 +31,7 @@ export function isExposed(el: Element, specs: Readonly<MLMLSpec>, version: ARIAV
 
 	// According to HTML and SVG Specs with **the author's interpretation**
 	{
-		if (!isPalpableElement(el, specs, { extendsSvg: true, extendsExposableElements: true })) {
+		if (!isExposedElement(el, specs)) {
 			return false;
 		}
 	}
@@ -202,4 +201,24 @@ function hasDisplayNodeOrVisibilityHidden(el: Element) {
 	}
 	// TODO: Improve accuracy
 	return /display\s*:\s*none|visibility\s*:\s*hidden/gi.test(style);
+}
+
+function isExposedElement(el: Element, specs: Readonly<MLMLSpec>) {
+	const svgRenderedConditions = specs.def['#contentModels']['#SVGRenderable']?.join(',');
+
+	if (svgRenderedConditions && el.matches(svgRenderedConditions)) {
+		return true;
+	}
+
+	return isNotMetaOrHiddenHTMLElement(el, specs);
+}
+
+function isNotMetaOrHiddenHTMLElement(el: Element, specs: Readonly<MLMLSpec>) {
+	const metadataConditions = specs.def['#contentModels']['#metadata']?.join(',');
+
+	if (metadataConditions && el.matches(metadataConditions)) {
+		return false;
+	}
+
+	return !el.matches('input[type=hidden i]');
 }

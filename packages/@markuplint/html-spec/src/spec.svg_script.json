@@ -10,7 +10,6 @@
 	},
 	"globalAttrs": {
 		"#GlobalEventAttrs": true,
-		"#DocumentElementEventAttrs": true,
 		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
 		"#XLinkAttrs": ["xlink:href", "xlink:title"]
 	},

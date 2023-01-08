@@ -186,6 +186,11 @@
 			},
 			"defaultValue": "default",
 			"deprecated": true
+		},
+		// https://wicg.github.io/element-timing/#sec-elements-exposed
+		"elementtiming": {
+			"type": "NoEmptyAny",
+			"experimental": true
 		}
 	},
 	"#GlobalEventAttrs": {
@@ -257,8 +262,16 @@
 		"oncontextrestored": {
 			"type": "FunctionBody"
 		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncopy
+		"oncopy": {
+			"type": "FunctionBody"
+		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncuechange
 		"oncuechange": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncut
+		"oncut": {
 			"type": "FunctionBody"
 		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-ondblclick
@@ -389,6 +402,10 @@
 		"onmouseup": {
 			"type": "FunctionBody"
 		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onpaste
+		"onpaste": {
+			"type": "FunctionBody"
+		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onpause
 		"onpause": {
 			"type": "FunctionBody"
@@ -496,20 +513,6 @@
 		"onwebkittransitionend": {
 			"type": "FunctionBody",
 			"deprecated": true
-		}
-	},
-	"#DocumentElementEventAttrs": {
-		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncopy
-		"oncopy": {
-			"type": "FunctionBody"
-		},
-		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncut
-		"oncut": {
-			"type": "FunctionBody"
-		},
-		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onpaste
-		"onpaste": {
-			"type": "FunctionBody"
 		}
 	},
 	"#HTMLLinkAndFetchingAttrs": {

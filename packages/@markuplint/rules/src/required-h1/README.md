@@ -1,8 +1,6 @@
 ---
 id: required-h1
 description: Warn if there is no h1 element in the document.
-category: a11y
-severity: error
 ---
 
 # `required-h1`

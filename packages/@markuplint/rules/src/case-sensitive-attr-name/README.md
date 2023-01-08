@@ -1,9 +1,6 @@
 ---
 id: case-sensitive-attr-name
 description: Warns that the attribute name is not in one of uppercase or lowercase letters.
-fixable: true
-category: style
-severity: warning
 ---
 
 # `case-sensitive-attr-name`

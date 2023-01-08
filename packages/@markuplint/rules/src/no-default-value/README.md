@@ -1,8 +1,6 @@
 ---
 id: no-default-value
 description: Warn when it specifies the default value to the attribute.
-category: style
-severity: warning
 ---
 
 # `no-default-value`

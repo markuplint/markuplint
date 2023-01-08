@@ -8,7 +8,6 @@
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,
 		"#GlobalEventAttrs": true,
-		"#DocumentElementEventAttrs": true,
 		"#ARIAAttrs": true,
 		"#HTMLLinkAndFetchingAttrs": ["href", "target"]
 	},

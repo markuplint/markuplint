@@ -1,8 +1,6 @@
 ---
 id: deprecated-attr
 description: Warns when there is an attribute defined as deprecated or obsolete.
-category: validation
-severity: error
 ---
 
 # `deprecated-attr`

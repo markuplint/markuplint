@@ -385,6 +385,10 @@
 					},
 					"defaultValue": "default",
 					"deprecated": true
+				},
+				"elementtiming": {
+					"type": "NoEmptyAny",
+					"experimental": true
 				}
 			},
 			"#GlobalEventAttrs": {
@@ -439,7 +443,13 @@
 				"oncontextrestored": {
 					"type": "FunctionBody"
 				},
+				"oncopy": {
+					"type": "FunctionBody"
+				},
 				"oncuechange": {
+					"type": "FunctionBody"
+				},
+				"oncut": {
 					"type": "FunctionBody"
 				},
 				"ondblclick": {
@@ -538,6 +548,9 @@
 				"onmouseup": {
 					"type": "FunctionBody"
 				},
+				"onpaste": {
+					"type": "FunctionBody"
+				},
 				"onpause": {
 					"type": "FunctionBody"
 				},
@@ -619,17 +632,6 @@
 				"onwebkittransitionend": {
 					"type": "FunctionBody",
 					"deprecated": true
-				}
-			},
-			"#DocumentElementEventAttrs": {
-				"oncopy": {
-					"type": "FunctionBody"
-				},
-				"oncut": {
-					"type": "FunctionBody"
-				},
-				"onpaste": {
-					"type": "FunctionBody"
 				}
 			},
 			"#HTMLLinkAndFetchingAttrs": {
@@ -22284,6 +22286,7 @@
 				"cite",
 				"code",
 				"data",
+				"del",
 				"details",
 				"dfn",
 				"div",
@@ -22320,6 +22323,7 @@
 				"ol:has(>li)",
 				"output",
 				"p",
+				"picture",
 				"pre",
 				"progress",
 				"q",
@@ -22335,8 +22339,7 @@
 				"sup ",
 				"svg",
 				"table",
-				"text",
-				"area",
+				"textarea",
 				"time",
 				"u",
 				"ul:has(>li)",
@@ -22532,7 +22535,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#HTMLLinkAndFetchingAttrs": [
@@ -22559,7 +22561,7 @@
 					"description": "Causes the browser to treat the linked URL as a download. Can be used with or without a filename value: Without a value, the browser will suggest a filename/extension, generated from various sources: The Content-Disposition HTTP header The final segment in the URL path The media type (from the Content-Type header, the start of a data: URL, or Blob.type for a blob: URL) filename: defining a value suggests it as the filename. / and \\ characters are converted to underscores (_). Filesystems may forbid other characters in filenames, so browsers will adjust the suggested name if necessary. Note: download only works for same-origin URLs, or the blob: and data: schemes. How browsers treat downloads varies by browser, user settings, and other factors. The user may be prompted before a download starts, or the file may be saved automatically, or it may open automatically, either in an external application or in the browser itself. If the Content-Disposition header has different information from the download attribute, resulting behavior may differ: If the header specifies a filename, it takes priority over a filename specified in the download attribute. If the header specifies a disposition of inline, Chrome and Firefox prioritize the attribute and treat it as a download. Old Firefox versions (before 82) prioritize the header and will display the content inline."
 				},
 				"href": {
-					"description": "The URL that the hyperlink points to. Links are not restricted to HTTP-based URLs — they can use any URL scheme supported by browsers: Sections of a page with fragment URLs Pieces of media files with media fragments Telephone numbers with tel: URLs Email addresses with mailto: URLs While web browsers may not support other URL schemes, websites can with registerProtocolHandler()"
+					"description": "The URL that the hyperlink points to. Links are not restricted to HTTP-based URLs — they can use any URL scheme supported by browsers: Sections of a page with document fragments Specific text portions with text fragments Pieces of media files with media fragments Telephone numbers with tel: URLs Email addresses with mailto: URLs While web browsers may not support other URL schemes, websites can with registerProtocolHandler()"
 				},
 				"hreflang": {
 					"description": "Hints at the human language of the linked URL. No built-in functionality. Allowed values are the same as the global lang attribute."
@@ -22613,7 +22615,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -22656,7 +22657,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -22775,7 +22775,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#HTMLLinkAndFetchingAttrs": [
@@ -22864,7 +22863,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -22889,7 +22887,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -22937,7 +22934,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["src", "preload", "autoplay", "loop", "muted", "controls"],
 				"#HTMLGlobalAttrs": true,
@@ -22996,7 +22992,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23018,7 +23013,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#HTMLLinkAndFetchingAttrs": ["href", "target"]
@@ -23069,7 +23063,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23095,7 +23088,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23191,7 +23183,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23232,7 +23223,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23376,7 +23366,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23430,7 +23419,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLFormControlElementAttrs": [
 					"disabled",
@@ -23507,7 +23495,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["height", "width"],
 				"#HTMLGlobalAttrs": true
@@ -23552,7 +23539,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23600,7 +23586,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23629,7 +23614,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23651,7 +23635,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23717,7 +23700,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23773,7 +23755,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23817,7 +23798,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23849,7 +23829,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23884,7 +23863,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23923,7 +23901,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23936,7 +23913,7 @@
 		{
 			"name": "dfn",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn",
-			"description": "The <dfn> HTML element is used to indicate the term being defined within the context of a definition phrase or sentence. The <p> element, the <dt>/<dd> pairing, or the <section> element which is the nearest ancestor of the <dfn> is considered to be the definition of the term.",
+			"description": "The <dfn> HTML element is used to indicate the term being defined within the context of a definition phrase or sentence. The ancestor <p> element, the <dt>/<dd> pairing, or the nearest <section> ancestor of the <dfn> element, is considered to be the definition of the term.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -23952,7 +23929,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -23981,7 +23957,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24067,7 +24042,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24125,7 +24099,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24153,7 +24126,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24182,7 +24154,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24203,7 +24174,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["height", "width"],
 				"#HTMLGlobalAttrs": true
@@ -24246,7 +24216,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLFormControlElementAttrs": ["disabled", "form", "name"],
 				"#HTMLGlobalAttrs": true
@@ -24283,7 +24252,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24335,7 +24303,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24404,7 +24371,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24434,7 +24400,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24602,7 +24567,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24630,7 +24594,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24658,7 +24621,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24686,7 +24648,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24714,7 +24675,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24742,7 +24702,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24774,7 +24733,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24819,7 +24777,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24866,7 +24823,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24891,7 +24847,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24946,7 +24901,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -24985,7 +24939,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -25006,7 +24959,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "width"],
 				"#HTMLGlobalAttrs": true,
@@ -25026,6 +24978,11 @@
 				"allowpaymentrequest": {
 					"description": "Set to true if a cross-origin <iframe> should be allowed to invoke the Payment Request API. Note: This attribute is considered a legacy attribute and redefined as allow=\"payment\".",
 					"experimental": true
+				},
+				"credentialless": {
+					"description": "Set to true to make the <iframe> credentialless, meaning that its content will be loaded in a new, ephemeral context. It doesn't have access to the network, cookies, and storage data associated with its origin. It uses a new context local to the top-level document lifetime. In return, the Cross-Origin-Embedder-Policy (COEP) embedding rules can be lifted, so documents with COEP set can embed third-party documents that do not. See IFrame credentialless for more details.",
+					"experimental": true,
+					"nonStandard": true
 				},
 				"csp": {
 					"description": "A Content Security Policy enforced for the embedded resource. See HTMLIFrameElement.csp for details.",
@@ -25180,7 +25137,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "srcset", "sizes", "width"],
 				"#HTMLGlobalAttrs": true,
@@ -25207,6 +25163,9 @@
 						"invalidValueDefault": "auto",
 						"missingValueDefault": "auto"
 					}
+				},
+				"elementtiming": {
+					"description": "Marks the image for observation by the PerformanceElementTiming API. The value given becomes an identifier for the observed image element. See also the elementtiming attribute page."
 				},
 				"fetchpriority": {
 					"description": "Provides a hint of the relative priority to use when fetching the image. Allowed values: high Signals a high-priority fetch relative to other images. low Signals a low-priority fetch relative to other images. auto Default: Signals automatic determination of fetch priority relative to other images.",
@@ -25738,7 +25697,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "width"],
 				"#HTMLFormControlElementAttrs": [
@@ -26095,7 +26053,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -26145,7 +26102,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -26207,7 +26163,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -26237,7 +26192,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -26273,7 +26227,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -26305,7 +26258,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#HTMLLinkAndFetchingAttrs": [
@@ -26508,7 +26460,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -26534,7 +26485,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -26564,7 +26514,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -26707,7 +26656,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -26785,7 +26733,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#HTMLLinkAndFetchingAttrs": ["media"]
@@ -26862,7 +26809,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -26926,7 +26872,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27020,7 +26965,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27045,7 +26989,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["height", "width"],
 				"#HTMLFormControlElementAttrs": ["form"],
@@ -27154,7 +27097,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27198,7 +27140,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLFormControlElementAttrs": ["disabled"],
 				"#HTMLGlobalAttrs": true
@@ -27264,7 +27205,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLFormControlElementAttrs": ["disabled"],
 				"#HTMLGlobalAttrs": true
@@ -27303,7 +27243,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLFormControlElementAttrs": ["form", "name"],
 				"#HTMLGlobalAttrs": true
@@ -27343,7 +27282,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27425,7 +27363,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27467,7 +27404,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["src"],
 				"#HTMLGlobalAttrs": true,
@@ -27502,7 +27438,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27553,7 +27488,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27586,7 +27520,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27632,7 +27565,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27658,7 +27590,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27728,7 +27659,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27754,7 +27684,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27780,7 +27709,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27806,7 +27734,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "integrity", "fetchpriority"]
@@ -27938,7 +27865,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -27989,7 +27915,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLFormControlElementAttrs": ["autocomplete", "disabled", "form", "name", "required"],
 				"#HTMLGlobalAttrs": true
@@ -28044,7 +27969,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28074,7 +27998,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28096,7 +28019,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["height", "srcset", "sizes", "width"],
 				"#HTMLGlobalAttrs": true
@@ -28180,7 +28102,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28226,7 +28147,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28252,7 +28172,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28300,7 +28219,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28340,7 +28258,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28369,7 +28286,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28435,7 +28351,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28497,7 +28412,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28554,7 +28468,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#HTMLTableCellElementAttrs": ["colspan", "rowspan", "headers"]
@@ -28627,7 +28540,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28656,7 +28568,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLFormControlElementAttrs": [
 					"autocomplete",
@@ -28751,7 +28662,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28820,7 +28730,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#HTMLTableCellElementAttrs": ["colspan", "rowspan", "headers"]
@@ -28898,7 +28807,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28948,7 +28856,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -28978,7 +28885,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -29008,7 +28914,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -29051,7 +28956,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -29115,7 +29019,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -29170,7 +29073,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -29207,7 +29109,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -29255,7 +29156,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": [
 					"src",
@@ -29350,7 +29250,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
@@ -29411,7 +29310,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#HTMLLinkAndFetchingAttrs": [
@@ -29636,7 +29534,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGAnimationAdditionAttrs": ["additive", "accumulate"],
 				"#SVGAnimationAttributeTargetAttrs": ["attributeName"],
@@ -29784,7 +29681,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGAnimationAdditionAttrs": ["additive", "accumulate"],
 				"#SVGAnimationEventAttrs": ["onbegin", "onend", "onrepeat"],
@@ -29840,7 +29736,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGAnimationAdditionAttrs": ["additive", "accumulate"],
 				"#SVGAnimationAttributeTargetAttrs": ["attributeName"],
@@ -29900,7 +29795,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -30160,7 +30054,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
 				"#SVGPresentationAttrs": [
@@ -30255,7 +30148,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
 			},
@@ -30326,7 +30218,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -32954,7 +32845,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -33090,7 +32980,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -33252,7 +33141,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -33383,7 +33271,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -33513,7 +33400,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
 				"#SVGPresentationAttrs": [
@@ -33674,7 +33560,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
 				"#SVGPresentationAttrs": [
@@ -33972,7 +33857,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
 			},
@@ -34015,7 +33899,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
 			},
@@ -34057,7 +33940,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -34182,7 +34064,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
 				"#SVGPresentationAttrs": [
@@ -34340,7 +34221,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -34459,7 +34339,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -34573,7 +34452,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
 				"#SVGPresentationAttrs": [
@@ -34737,7 +34615,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -34863,7 +34740,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
 				"#XLinkAttrs": ["xlink:href", "xlink:title"]
@@ -34908,7 +34784,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGAnimationAttributeTargetAttrs": ["attributeName"],
 				"#SVGAnimationEventAttrs": ["onbegin", "onend", "onrepeat"],
@@ -34952,7 +34827,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
 				"#SVGPresentationAttrs": [
@@ -35063,7 +34937,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
 			},
@@ -35122,7 +34995,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -35278,7 +35150,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -35397,7 +35268,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
@@ -35480,7 +35350,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -35629,7 +35498,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -35776,7 +35644,6 @@
 			},
 			"omission": false,
 			"globalAttrs": {
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
 			},
@@ -35832,7 +35699,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -35973,7 +35839,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -36095,7 +35960,6 @@
 			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
-				"#DocumentElementEventAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
