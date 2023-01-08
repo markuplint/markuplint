@@ -28,6 +28,7 @@
 			"no-use-event-handler-attr": true,
 			"permitted-contents": true,
 			"require-accessible-name": true,
+			"require-datetime": true,
 			"required-attr": true,
 			"required-element": true,
 			"required-h1": true,
