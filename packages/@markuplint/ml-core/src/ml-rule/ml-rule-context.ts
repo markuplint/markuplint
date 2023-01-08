@@ -20,7 +20,7 @@ export class MLRuleContext<T extends RuleConfigValue, O = null> {
 	get reports() {
 		return this.#reports.map(report => ({
 			...report,
-			message: finish(report.message),
+			message: finish(report.message, this.locale),
 		}));
 	}
 
