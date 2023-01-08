@@ -14,11 +14,13 @@ async function getLocale() {
 export async function i18n(locale?: string): Promise<LocaleSet> {
 	locale = locale || (await getLocale()) || 'en';
 	const langCode = locale.split('-')[0];
-	const localeSet: LocaleSet | null = langCode
-		? await import(`@markuplint/i18n/locales/${langCode}`).catch(() => null)
-		: null;
+	const loadLocaleSet: LocaleSet | null = await import(`@markuplint/i18n/locales/${langCode}`).catch(() => null);
+	const localeSet: LocaleSet =
+		loadLocaleSet ||
+		// @ts-ignore
+		(await import('@markuplint/i18n/locales/en'));
 	return {
-		locale: langCode,
 		...localeSet,
+		locale: loadLocaleSet ? langCode : 'en',
 	};
 }

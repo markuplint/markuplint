@@ -48,6 +48,7 @@ No use deprecated element|You should not use deprecated elements from the viewpo
 [Require `doctype`](https://html.spec.whatwg.org/multipage/syntax.html#syntax-doctype)|It has the effect of avoiding quirks mode.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 No use ineffective attr| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 Allow only **permitted contents**| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
+Require the `datetime` attribute if the content of the `time` element is invalid| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 Specify required attr| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 [Specify `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 [No use `<small>` as **subheadings**](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element)|Should not use it in `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, and `<h6>`.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
