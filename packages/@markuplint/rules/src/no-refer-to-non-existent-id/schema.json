@@ -15,6 +15,12 @@
 					"default": "1.2",
 					"description": "Choose the version of WAI-ARIA to evaluate.",
 					"description:ja": "評価する WAI-ARIA のバージョンを指定します。"
+				},
+				"fragmentRefersNameAttr": {
+					"type": "boolean",
+					"default": false,
+					"description": "The fragment refers to IDs but also the value of name attributes.",
+					"description:ja": "フラグメントの参照先をIDだけでなくname属性の値も含めます。"
 				}
 			}
 		}
