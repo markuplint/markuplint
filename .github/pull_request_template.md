@@ -37,7 +37,6 @@ Fill out the checks for the applicable purpose.
     - [ ] Create an issue that requests translating the doc if you want.
   - [ ] Add to [index](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/rules/src/index.ts)
   - [ ] Add JSON schema to [schema.json](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/rules/schema.json)
-  - [ ] Add to [initializer](https://github.com/markuplint/markuplint/blob/main/packages/markuplint/src/cli/init/index.ts)
   - [ ] Add to [`@markuplint/config-presets`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/config-presets)
 - [ ] Add new parser
   - [ ] Add a test
