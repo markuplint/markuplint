@@ -7,6 +7,18 @@ test('Valid', async () => {
 	expect((await mlRuleTest(rule, '<time datetime="2000-01-01">2000/01/01</time>')).violations).toStrictEqual([]);
 });
 
+test('Mutable', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<time>{foo}</time>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([]);
+});
+
 test('Need', async () => {
 	expect((await mlRuleTest(rule, '<time>Content</time>')).violations).toStrictEqual([
 		{

@@ -15,6 +15,10 @@ export default createRule<boolean, Options>({
 	},
 	verify({ document, report, t }) {
 		document.querySelectorAll('time:not([datetime])').forEach(time => {
+			if (time.hasMutableChildren()) {
+				return;
+			}
+
 			const content = time.textContent.trim();
 			const result = check(content, 'DateTime');
 
