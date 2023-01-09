@@ -143,7 +143,7 @@ test('case-sensitive', () => {
 		expects: [
 			{
 				type: 'syntax',
-				value: 'CaSeS [ a | B | aBc ]',
+				value: '<custom>',
 			},
 		],
 	});
@@ -160,7 +160,7 @@ test('case-sensitive', () => {
 		expects: [
 			{
 				type: 'syntax',
-				value: 'CaSeS [ a | B | aBc ]',
+				value: '<custom>',
 			},
 		],
 	});

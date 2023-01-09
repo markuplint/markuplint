@@ -392,7 +392,7 @@ test('svg', async () => {
 			line: 3,
 			col: 6,
 			message:
-				'The value part of the "mask" attribute expects the CSS Syntax "<mask-layer>#" (https://csstree.github.io/docs/syntax/#Property:mask)',
+				'The value part of the "mask" attribute expects the CSS Syntax "<\'mask\'>" (https://csstree.github.io/docs/syntax/#Property:mask)',
 			raw: 'hogehoge',
 		},
 	]);
