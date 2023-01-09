@@ -1,4 +1,4 @@
-import { getDefaultRules } from './get-default-rules';
+import { getDefaultRules } from '../../../lib/cli/init/get-default-rules.mjs';
 
 test('v3.0.0', async () => {
 	const defaultRules = await getDefaultRules('3.0.0');

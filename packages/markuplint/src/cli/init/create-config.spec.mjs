@@ -1,4 +1,4 @@
-import { createConfig } from './create-config';
+import { createConfig } from '../../../lib/cli/init/create-config.mjs';
 
 test('none', () => {
 	const result = createConfig(

@@ -22,7 +22,10 @@ const icons: Record<string, string> = {
 };
 
 export async function createRule() {
-	write(head('Create a rule'));
+	// @ts-ignore
+	const version = (await import('../../../package.json', { assert: { type: 'json' } })).default.version;
+
+	write(head('Create a rule', version));
 	write.break();
 
 	const firstChoices: { name: string; value: CreateRulePurpose }[] = [

@@ -1,12 +1,16 @@
-import path from 'path';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import execa from 'execa';
 
-import { cli } from './bootstrap';
+import { cli } from '../../lib/cli/bootstrap.mjs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const entryFilePath = path.resolve(__dirname, '../../bin/markuplint');
 
-const escape = (path: string) => path.replace(/\\/g, '\\\\'); // For Windows
+const escape = path => path.replace(/\\/g, '\\\\'); // For Windows
 
 describe('STDOUT Test', () => {
 	it('empty', async () => {

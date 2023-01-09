@@ -1,7 +1,7 @@
 import { MLRule } from '@markuplint/ml-core';
 
-import { setGlobal } from './global-settings';
-import { mlTest, mlTestFile } from './testing-tool';
+import { setGlobal } from '../lib/global-settings.mjs';
+import { mlTest, mlTestFile } from '../lib/testing-tool/index.mjs';
 
 setGlobal({
 	locale: 'en',

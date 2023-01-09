@@ -1,7 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { createPlugin, createRule } = require('@markuplint/ml-core');
+import { createPlugin, createRule } from '@markuplint/ml-core';
 
-module.exports = createPlugin({
+export default createPlugin({
 	name: 'foo',
 	create(settings) {
 		return {

@@ -21,8 +21,6 @@ export function uuid() {
  */
 const PRIMARY_COLOR = 33;
 const logo = `/${c.xterm(PRIMARY_COLOR)('✔')}\\`;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const version = require('../package.json').version;
 const eaw: { characterLength: (char: string) => number } = eastasianwidth;
 
 const box = (lines: string[], { width = 40, padding = 1, center = false, noColor = false }) => {
@@ -58,7 +56,7 @@ export function error(message: string) {
 
 error.exit = () => process.exit(1);
 
-export const head = (method: string, noColor?: boolean) =>
+export const head = (method: string, version: string, noColor?: boolean) =>
 	box([`${logo} ${markuplint}`, c.blackBright(`v${version}`), '', c.bold(method)], {
 		center: true,
 		noColor,

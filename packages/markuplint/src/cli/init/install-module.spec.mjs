@@ -1,4 +1,4 @@
-import { selectModules } from './install-module';
+import { selectModules } from '../../../lib/cli/init/install-module.mjs';
 
 test('selectModules', () => {
 	expect(selectModules(['jsx'])).toStrictEqual(['markuplint', '@markuplint/jsx-parser', '@markuplint/react-spec']);

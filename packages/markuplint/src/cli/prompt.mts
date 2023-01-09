@@ -1,5 +1,7 @@
 import c from 'cli-color';
-import { prompt as enquirer } from 'enquirer';
+import * as Enquirer from 'enquirer';
+
+const enquirer = Enquirer.prompt;
 
 type SelectQuestion<T> = {
 	message: string;

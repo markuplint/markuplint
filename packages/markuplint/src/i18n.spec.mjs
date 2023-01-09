@@ -1,4 +1,4 @@
-import { i18n } from './i18n';
+import { i18n } from '../lib/i18n.mjs';
 
 test('ja', async () => {
 	const locale = await i18n('ja');

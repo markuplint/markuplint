@@ -1,8 +1,7 @@
 import type { Category, DefaultRules, Langs, RuleSettingMode } from './types.mjs';
 
-import fs from 'fs';
-import path from 'path';
-import util from 'util';
+import { writeFile } from 'node:fs/promises';
+import path from 'node:path';
 
 import { head, write, error } from '../../util.mjs';
 import { confirm, confirmSequence, multiSelect } from '../prompt.mjs';
@@ -10,8 +9,6 @@ import { confirm, confirmSequence, multiSelect } from '../prompt.mjs';
 import { createConfig, langs } from './create-config.mjs';
 import { getDefaultRules } from './get-default-rules.mjs';
 import { installModule, selectModules } from './install-module.mjs';
-
-const writeFile = util.promisify(fs.writeFile);
 
 const ruleCategories: Record<
 	Category,
@@ -37,7 +34,10 @@ const ruleCategories: Record<
 };
 
 export async function initialize() {
-	write(head('Initialization'));
+	// @ts-ignore
+	const version = (await import('../../../package.json', { assert: { type: 'json' } })).default.version;
+
+	write(head('Initialization', version));
 	write.break();
 
 	const selectedLangs = await multiSelect<Langs>({

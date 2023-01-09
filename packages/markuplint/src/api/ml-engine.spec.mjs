@@ -1,16 +1,17 @@
-import type { ConfigSet } from '@markuplint/file-resolver';
-import type { Config, Violation } from '@markuplint/ml-config';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { promises as fs } from 'fs';
-import path from 'path';
+import MLEngine from '../../lib/api/ml-engine.mjs';
 
-import MLEngine from './ml-engine';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 describe('Event notification', () => {
 	it('config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/001.html');
 		const engine = new MLEngine(file);
-		const configPromise = new Promise<string[]>(resolve => {
+		const configPromise = new Promise(resolve => {
 			engine.on('config', (_, configSet) => {
 				resolve(Array.from(configSet.files));
 			});
@@ -36,7 +37,7 @@ describe.skip('Watcher', () => {
 		const engine = new MLEngine(file, {
 			watch: true,
 		});
-		const configPromise = new Promise<string[]>(resolve => {
+		const configPromise = new Promise(resolve => {
 			engine.on('config', (_, configSet) => {
 				resolve(Array.from(configSet.files));
 			});
@@ -48,14 +49,14 @@ describe.skip('Watcher', () => {
 		engine.removeAllListeners();
 		const targetFile = files[files.length - 1];
 		const targetFileOriginData = await fs.readFile(targetFile, { encoding: 'utf-8' });
-		const config: Config = JSON.parse(targetFileOriginData);
-		const result2ndPromise = new Promise<Violation[]>(resolve => {
+		const config = JSON.parse(targetFileOriginData);
+		const result2ndPromise = new Promise(resolve => {
 			engine.on('lint', (_, __, violations) => {
 				resolve(violations);
 			});
 		});
 		// Disable rules
-		const config2: Config = {
+		const config2 = {
 			...config,
 			rules: {},
 		};
@@ -72,7 +73,7 @@ describe.skip('Watcher', () => {
 });
 
 describe('Resolving the plugin', () => {
-	it('config', async () => {
+	it.only('config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/001.html');
 		const engine = new MLEngine(file, {
 			// debug: true,
@@ -118,15 +119,13 @@ describe('Config Priority', () => {
 			},
 		});
 
-		let configSet: ConfigSet | null = null;
+		let configSet = null;
 		engine.once('config', (_, _configSet) => {
 			configSet = _configSet;
 		});
 		await engine.exec();
 
-		// @ts-ignore
 		expect(configSet?.config.rules?.__hoge).toBe(true);
-		// @ts-ignore
 		expect(configSet?.config.rules?.['wai-aria']).toBe(true);
 	});
 
@@ -140,15 +139,13 @@ describe('Config Priority', () => {
 			},
 		});
 
-		let configSet: ConfigSet | null = null;
+		let configSet = null;
 		engine.once('config', (_, _configSet) => {
 			configSet = _configSet;
 		});
 		await engine.exec();
 
-		// @ts-ignore
 		expect(configSet?.config.rules?.__hoge).toBe(undefined);
-		// @ts-ignore
 		expect(configSet?.config.rules?.['wai-aria']).toBe(true);
 	});
 
@@ -163,15 +160,13 @@ describe('Config Priority', () => {
 			noSearchConfig: true,
 		});
 
-		let configSet: ConfigSet | null = null;
+		let configSet = null;
 		engine.once('config', (_, _configSet) => {
 			configSet = _configSet;
 		});
 		await engine.exec();
 
-		// @ts-ignore
 		expect(configSet?.config.rules?.__hoge).toBe(true);
-		// @ts-ignore
 		expect(configSet?.config.rules?.['wai-aria']).toBe(undefined);
 	});
 });

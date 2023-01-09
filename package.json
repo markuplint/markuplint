@@ -55,6 +55,7 @@
 			"tsx",
 			"js",
 			"cjs",
+			"mjs",
 			"jsx",
 			"json",
 			"node"
@@ -76,6 +77,10 @@
 				"transform": {
 					"^.+\\.tsx?$": "ts-jest"
 				}
+			},
+			{
+				"displayName": "node:esm",
+				"testRegex": "(\\.|/)(spec|test)\\.mjs$"
 			},
 			{
 				"displayName": "browser",
