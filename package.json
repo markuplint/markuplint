@@ -9,7 +9,7 @@
 		"test": "jest --coverage",
 		"test:coverage": "jest --useStderr --coverage && cat ./coverage/lcov.info | coveralls",
 		"test:clear": "jest --clearCache",
-		"test:unit": "jest",
+		"test:unit": "NODE_OPTIONS=--experimental-vm-modules jest",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
 		"lint": "prettier --write './packages/**/*{ts,tsx,json,rc,md}'; eslint --fix './packages/**/*.ts'; yarn spellcheck;",
 		"ga": "actionlint .github/workflows/*.yml",
