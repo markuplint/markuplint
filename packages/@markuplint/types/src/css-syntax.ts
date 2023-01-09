@@ -1,13 +1,6 @@
 import type { CustomCssSyntax, CssSyntaxTokenizer, CSSSyntaxToken, GetNextToken, Result, CssSyntax } from './types';
 
-// @ts-ignore
 import csstree from 'css-tree';
-// @ts-ignore
-import { SyntaxMatchError } from 'css-tree/lib/lexer/error.js';
-// @ts-ignore
-import { matchAsTree } from 'css-tree/lib/lexer/match.js';
-// @ts-ignore
-import prepareTokens from 'css-tree/lib/lexer/prepare-tokens.js';
 
 import { log } from './debug';
 import { tokenizers } from './defs';
@@ -102,8 +95,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 		console.warn = warn => log('WARNING: %s (by %s => %s)', warn, value, type);
 	}
 
-	const tokens = prepareTokens(value, lexer.syntax);
-	const result = matchAsTree(tokens, matcher.match, lexer);
+	const result = lexer.match(defName, value);
 
 	if (caseSensitive) {
 		if (result.tokens && Array.isArray(result.tokens)) {
@@ -124,14 +116,14 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	// eslint-disable-next-line no-console
 	console.warn = _w;
 
-	if (result.match) {
+	if (result.matched) {
 		if (log.enabled) {
-			log('css-tree/result.match: %s', JSON.stringify(result.match, null, 2));
+			log('css-tree/result.matched: %s', JSON.stringify(result.matched, null, 2));
 		}
 		return matched();
 	}
 
-	const error: SyntaxMatchError = new SyntaxMatchError(result.reason, matcher.syntax, value, result);
+	const error: SyntaxMatchError = result.error;
 
 	if (caseSensitive) {
 		error.message = deMimicCases(error.message);
