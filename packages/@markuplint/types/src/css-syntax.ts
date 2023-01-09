@@ -83,7 +83,14 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 		);
 	});
 
-	const { isProp, name, matcher } = defToMatcher(lexer, defName);
+	const { isProp, name } = detectName(defName);
+
+	const matcher = isProp ? lexer.properties[name] : lexer.types[name];
+	if (!matcher) {
+		log('"%s" CSS syntax not found', defName);
+		throw new Error('MARKUPLINT_TYPE_NO_EXIST');
+	}
+
 	const refParam = isProp ? 'Property' : 'Type';
 	ref = ref || `https://csstree.github.io/docs/syntax/#${refParam}:${name}`;
 
@@ -151,18 +158,12 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	};
 }
 
-function defToMatcher(lexer: any, def: `<${string}>`) {
+function detectName(def: `<${string}>`) {
 	const isProp = def.search("<'") === 0;
 	const name = def.replace(/^<'?|'?>$/g, '');
-	const matcher = isProp ? lexer.properties[name] : lexer.types[name];
-	if (!matcher) {
-		log('"%s" CSS syntax not found', def);
-		throw new Error('MARKUPLINT_TYPE_NO_EXIST');
-	}
 	return {
 		isProp,
 		name,
-		matcher,
 	};
 }
 
