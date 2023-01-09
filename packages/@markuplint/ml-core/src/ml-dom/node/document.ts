@@ -1,5 +1,5 @@
 import type { MLRule } from '../../ml-rule';
-import type Ruleset from '../../ruleset';
+import type { Ruleset } from '../../ruleset';
 import type { Walker } from '../helper/walkers';
 import type { MLToken } from '../token/token';
 import type { MLAttr } from './attr';
