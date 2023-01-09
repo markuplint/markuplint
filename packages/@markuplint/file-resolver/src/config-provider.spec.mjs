@@ -1,7 +1,19 @@
-import path from 'path';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { ConfigProvider } from './config-provider';
-import { getFile } from './ml-file';
+import { jest } from '@jest/globals';
+
+import { ConfigProvider } from '../lib/config-provider.mjs';
+import { getFile } from '../lib/ml-file/index.mjs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+jest.unstable_mockModule('packaged-config', () => ({
+	default: {
+		mock: true,
+	},
+}));
 
 const configProvider = new ConfigProvider();
 

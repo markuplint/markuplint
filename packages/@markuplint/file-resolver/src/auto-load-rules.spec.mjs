@@ -1,6 +1,11 @@
+import { jest } from '@jest/globals';
 import { Ruleset } from '@markuplint/ml-core';
 
-import { autoLoadRules } from './auto-load-rules';
+import { autoLoadRules } from '../lib/auto-load-rules.mjs';
+
+jest.unstable_mockModule('markuplint-rule-fake', () => ({
+	default: {},
+}));
 
 test('built-in-rules', async () => {
 	const r = await autoLoadRules(

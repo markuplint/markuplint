@@ -1,4 +1,4 @@
-import { MLFile } from './ml-file';
+import { MLFile } from '../../lib/ml-file/ml-file.mjs';
 
 it('file path', () => {
 	const file = new MLFile('/dir/file');

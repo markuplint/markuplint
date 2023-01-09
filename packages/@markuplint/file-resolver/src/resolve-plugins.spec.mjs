@@ -1,11 +1,14 @@
+import { fileURLToPath } from 'node:url';
 import path from 'path';
 
-import { resolvePlugins } from './resolve-plugins';
+import { resolvePlugins } from '../lib/resolve-plugins.mjs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 test('resolvePlugins', async () => {
 	const plugins = await resolvePlugins([path.resolve(__dirname, '..', 'test', 'plugins', '001.js')]);
 	expect(plugins[0].name).toBe('foo');
-	// @ts-ignore
 	expect(await plugins[0].rules?.bar?.verify?.()).toEqual([]);
 });
 
