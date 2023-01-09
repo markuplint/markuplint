@@ -6,7 +6,6 @@ import { log } from './debug';
 import { tokenizers } from './defs';
 import { matched } from './match-result';
 
-// eslint-disable-next-line no-redeclare
 interface SyntaxMatchError {
 	message: string;
 	rawMessage: 'Mismatch';
