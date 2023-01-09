@@ -21,11 +21,14 @@ fs.writeFileSync(
 		definitions: {
 			'css-syntax': {
 				type: 'string',
-				enum: [...Array.from(new Set([...props, ...types])), ...Object.keys(tokenizers).map(t => `<${t}>`)],
+				enum: [
+					...Array.from(new Set([...props, ...types])),
+					...Object.keys(tokenizers).map(t => `<${t}>`),
+				].sort(),
 			},
 			'extended-type': {
 				type: 'string',
-				enum: Object.keys(extendedTypes),
+				enum: Object.keys(extendedTypes).sort(),
 			},
 			'html-attr-requirement': {
 				type: 'string',
@@ -59,8 +62,11 @@ fs.writeFileSync(
 
 function oneOf(...keys: string[]) {
 	return {
-		oneOf: keys.map(key => ({
-			$ref: `#/definitions/${key}`,
-		})),
+		oneOf: keys
+			.map(key => ({
+				$ref: `#/definitions/${key}`,
+			}))
+			// @ts-ignore Charactor sorting
+			.sort((a, b) => b.$ref - a.$ref),
 	};
 }
