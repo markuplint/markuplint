@@ -1,8 +1,8 @@
-import type { Target } from '../types';
-import type { Stats } from 'fs';
+import type { Target } from '../types.mjs';
+import type { Stats } from 'node:fs';
 
-import { promises as fs } from 'fs';
-import path from 'path';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 import minimatch from 'minimatch';
 

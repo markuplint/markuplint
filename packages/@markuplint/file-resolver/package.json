@@ -6,8 +6,9 @@
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"private": false,
-	"main": "lib/index.js",
-	"types": "lib/index.d.ts",
+	"type": "module",
+	"main": "lib/index.mjs",
+	"types": "lib/index.d.mts",
 	"publishConfig": {
 		"access": "public"
 	},

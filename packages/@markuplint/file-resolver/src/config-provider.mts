@@ -1,15 +1,15 @@
-import type { MLFile } from './ml-file';
-import type { ConfigSet, Nullable } from './types';
+import type { MLFile } from './ml-file/index.mjs';
+import type { ConfigSet, Nullable } from './types.mjs';
 import type { Config } from '@markuplint/ml-config';
 
-import path from 'path';
+import path from 'node:path';
 
 import { mergeConfig } from '@markuplint/ml-config';
 import { getPreset } from '@markuplint/ml-core';
 
-import { load as loadConfig, search } from './cosmiconfig';
-import { cacheClear, resolvePlugins } from './resolve-plugins';
-import { fileExists, nonNullableFilter, uuid } from './utils';
+import { load as loadConfig, search } from './cosmiconfig.mjs';
+import { cacheClear, resolvePlugins } from './resolve-plugins.mjs';
+import { fileExists, nonNullableFilter, uuid } from './utils.mjs';
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
 
@@ -89,7 +89,7 @@ export class ConfigProvider {
 			return null;
 		}
 		const { filePath, config } = res;
-		const pathResolvedConfig = this._pathResolve(config, filePath);
+		const pathResolvedConfig = await this._pathResolve(config, filePath);
 		this.#store.set(filePath, pathResolvedConfig);
 		return filePath;
 	}
@@ -109,7 +109,7 @@ export class ConfigProvider {
 		if (isPreset(filePath)) {
 			const [, name] = filePath.match(/^markuplint:(.+)$/i) || [];
 			const config = await getPreset(name);
-			const pathResolvedConfig = this._pathResolve(config, filePath);
+			const pathResolvedConfig = await this._pathResolve(config, filePath);
 
 			this.#store.set(filePath, pathResolvedConfig);
 			return pathResolvedConfig;
@@ -120,7 +120,7 @@ export class ConfigProvider {
 			return null;
 		}
 
-		if (!moduleExists(filePath) && !path.isAbsolute(filePath)) {
+		if (!(await moduleExists(filePath)) && !path.isAbsolute(filePath)) {
 			throw new TypeError(`${filePath} is not an absolute path`);
 		}
 
@@ -129,7 +129,7 @@ export class ConfigProvider {
 			return null;
 		}
 
-		const pathResolvedConfig = this._pathResolve(config, filePath);
+		const pathResolvedConfig = await this._pathResolve(config, filePath);
 
 		this.#store.set(filePath, pathResolvedConfig);
 		return pathResolvedConfig;
@@ -162,16 +162,16 @@ export class ConfigProvider {
 		};
 	}
 
-	private _pathResolve(config: Config, filePath: string): Config {
+	private async _pathResolve(config: Config, filePath: string): Promise<Config> {
 		const dir = path.dirname(filePath);
 		return {
 			...config,
-			extends: pathResolve(dir, config.extends),
-			plugins: pathResolve(dir, config.plugins, ['name']),
-			parser: pathResolve(dir, config.parser),
-			specs: pathResolve(dir, config.specs),
-			excludeFiles: pathResolve(dir, config.excludeFiles),
-			overrides: pathResolve(dir, config.overrides, undefined, true),
+			extends: await pathResolve(dir, config.extends),
+			plugins: await pathResolve(dir, config.plugins, ['name']),
+			parser: await pathResolve(dir, config.parser),
+			specs: await pathResolve(dir, config.specs),
+			excludeFiles: await pathResolve(dir, config.excludeFiles),
+			overrides: await pathResolve(dir, config.overrides, undefined, true),
 		};
 	}
 
@@ -194,6 +194,7 @@ export class ConfigProvider {
 		this.#recursiveLoadKeyAndDepth.set(key, depth);
 
 		let config = this.#store.get(key) || null;
+
 		if (!config) {
 			config = await this._load(key, cache);
 		}
@@ -221,7 +222,7 @@ export class ConfigProvider {
 }
 
 async function load(filePath: string, cache: boolean) {
-	if (!fileExists(filePath) && moduleExists(filePath)) {
+	if (!fileExists(filePath) && (await moduleExists(filePath))) {
 		const mod = await import(filePath);
 		const config: Config | null = mod?.default || null;
 		return config;
@@ -233,35 +234,32 @@ async function load(filePath: string, cache: boolean) {
 	return res.config;
 }
 
-function pathResolve<T extends string | (string | Record<string, unknown>)[] | Record<string, unknown> | undefined>(
-	dir: string,
-	filePath?: T,
-	resolveProps?: string[],
-	resolveKey = false,
-): T {
+async function pathResolve<
+	T extends string | (string | Record<string, unknown>)[] | Record<string, unknown> | undefined,
+>(dir: string, filePath?: T, resolveProps?: string[], resolveKey = false): Promise<T> {
 	if (filePath == null) {
 		// @ts-ignore
 		return undefined;
 	}
 	if (typeof filePath === 'string') {
 		// @ts-ignore
-		return resolve(dir, filePath);
+		return await resolve(dir, filePath);
 	}
 	if (Array.isArray(filePath)) {
 		// @ts-ignore
-		return filePath.map(fp => pathResolve(dir, fp, resolveProps));
+		return await Promise.all(filePath.map(fp => pathResolve(dir, fp, resolveProps)));
 	}
 	const res: Record<string, unknown> = {};
 	for (const [key, fp] of Object.entries(filePath)) {
 		let _key = key;
 		if (resolveKey) {
-			_key = resolve(dir, key);
+			_key = await resolve(dir, key);
 		}
 		if (typeof fp === 'string') {
 			if (!resolveProps) {
-				res[_key] = resolve(dir, fp);
+				res[_key] = await resolve(dir, fp);
 			} else if (resolveProps.includes(key)) {
-				res[_key] = resolve(dir, fp);
+				res[_key] = await resolve(dir, fp);
 			} else {
 				res[_key] = fp;
 			}
@@ -273,26 +271,25 @@ function pathResolve<T extends string | (string | Record<string, unknown>)[] | R
 	return res;
 }
 
-function resolve(dir: string, pathOrModName: string) {
-	if (moduleExists(pathOrModName) || isPreset(pathOrModName) || isPlugin(pathOrModName)) {
+async function resolve(dir: string, pathOrModName: string) {
+	if ((await moduleExists(pathOrModName)) || isPreset(pathOrModName) || isPlugin(pathOrModName)) {
 		return pathOrModName;
 	}
 	return path.resolve(dir, pathOrModName);
 }
 
-function moduleExists(name: string) {
-	try {
-		require.resolve(name);
-	} catch (err) {
-		if (
-			// @ts-ignore
-			'code' in err &&
-			// @ts-ignore
-			err.code === 'MODULE_NOT_FOUND'
-		) {
-			return false;
-		}
-		throw err;
+async function moduleExists(name: string) {
+	const mod = await import(name).catch(e => e);
+
+	if (
+		'code' in mod &&
+		(mod.code === 'MODULE_NOT_FOUND' ||
+			mod.code === 'ERR_MODULE_NOT_FOUND' ||
+			(mod.code === 'ERR_UNSUPPORTED_ESM_URL_SCHEME' && /markuplint:|plugin:/.test(String(mod))))
+	) {
+		return false;
+	} else if (mod instanceof Error) {
+		throw mod;
 	}
 
 	return true;

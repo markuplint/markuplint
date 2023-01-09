@@ -2,7 +2,7 @@ import type { AnyMLRule, Ruleset, Plugin, AnyRuleSeed } from '@markuplint/ml-cor
 
 import { MLRule } from '@markuplint/ml-core';
 
-import { autoLoadRules } from './auto-load-rules';
+import { autoLoadRules } from './auto-load-rules.mjs';
 
 let cachedPresetRules: AnyMLRule[] | null = null;
 
@@ -42,8 +42,9 @@ async function importPresetRules() {
 	if (cachedPresetRules) {
 		return cachedPresetRules.slice();
 	}
-	const modName = '@markuplint/rules';
-	const presetRules: Record<string, AnyRuleSeed> = (await import(modName)).default;
+	// @ts-ignore
+	const rules = await import('@markuplint/rules');
+	const presetRules: Record<string, AnyRuleSeed> = rules.default.default;
 	const ruleList = Object.entries(presetRules).map(([name, seed]) => {
 		const rule = new MLRule({
 			name,

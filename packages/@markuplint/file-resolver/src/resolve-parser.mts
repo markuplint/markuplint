@@ -1,10 +1,10 @@
-import type { MLFile } from './ml-file';
+import type { MLFile } from './ml-file/index.mjs';
 import type { MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
 import type { ParserConfig } from '@markuplint/ml-config';
 
 import path from 'path';
 
-import { toRegexp } from './utils';
+import { toRegexp } from './utils.mjs';
 
 const parsers = new Map<string, MLMarkupLanguageParser>();
 

@@ -1,7 +1,7 @@
-import type { MLFile } from './ml-file';
-import type { Target } from './types';
+import type { MLFile } from './ml-file/index.mjs';
+import type { Target } from './types.mjs';
 
-import { getAnonymousFile, getFiles } from './ml-file';
+import { getAnonymousFile, getFiles } from './ml-file/index.mjs';
 
 export async function resolveFiles(targetList: Target[]) {
 	const res: MLFile[] = [];

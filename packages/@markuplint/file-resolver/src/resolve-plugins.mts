@@ -54,8 +54,14 @@ function getPluginConfig(pluginPath: string | PluginConfig): PluginConfig {
 
 async function failSafeImport<T>(name: string) {
 	const res = await import(name).catch(e => e);
-	if ('code' in res && res === 'MODULE_NOT_FOUND') {
+
+	if ('code' in res && res.code === 'MODULE_NOT_FOUND') {
 		return null;
 	}
+
+	if (res instanceof Error || ('code' in res && res.code === 'ERR_REQUIRE_ESM')) {
+		throw res;
+	}
+
 	return res.default as T;
 }
