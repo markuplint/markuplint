@@ -10,7 +10,7 @@
 	"main": "lib/index.mjs",
 	"types": "lib/index.d.mts",
 	"bin": {
-		"markuplint": "bin/markuplint"
+		"markuplint": "bin/markuplint.mjs"
 	},
 	"scripts": {
 		"build": "tsc",
