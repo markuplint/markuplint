@@ -30,6 +30,7 @@ Examples
 `;
 
 export const cli = meow(help, {
+	importMeta: import.meta,
 	flags: {
 		config: {
 			type: 'string',
