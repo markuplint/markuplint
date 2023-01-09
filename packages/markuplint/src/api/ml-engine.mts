@@ -1,5 +1,5 @@
-import type { MLResultInfo } from '../types';
-import type { APIOptions, MLEngineEventMap, MLFabric } from './types';
+import type { MLResultInfo } from '../types.mjs';
+import type { APIOptions, MLEngineEventMap, MLFabric } from './types.mjs';
 import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
 import type { Ruleset, Plugin, Document, RuleConfigValue } from '@markuplint/ml-core';
 
@@ -8,8 +8,8 @@ import { MLCore, convertRuleset } from '@markuplint/ml-core';
 import { FSWatcher } from 'chokidar';
 import { StrictEventEmitter } from 'strict-event-emitter';
 
-import { log as coreLog, verbosely } from '../debug';
-import { i18n } from '../i18n';
+import { log as coreLog, verbosely } from '../debug.mjs';
+import { i18n } from '../i18n.mjs';
 
 const log = coreLog.extend('ml-engine');
 const fileLog = log.extend('file');

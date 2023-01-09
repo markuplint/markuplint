@@ -1,4 +1,4 @@
-import type { DefaultRules, Langs, RuleSettingMode } from './types';
+import type { DefaultRules, Langs, RuleSettingMode } from './types.mjs';
 import type { Config } from '@markuplint/ml-config';
 
 import { mergeConfig } from '@markuplint/ml-config';

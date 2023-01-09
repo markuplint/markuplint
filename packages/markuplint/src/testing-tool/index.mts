@@ -4,8 +4,8 @@ import type { AnyMLRule, RuleSeed } from '@markuplint/ml-core';
 
 import { MLRule } from '@markuplint/ml-core';
 
-import { lint } from '../api';
-import { getGlobal } from '../global-settings';
+import { lint } from '../api/index.mjs';
+import { getGlobal } from '../global-settings.mjs';
 
 export async function mlTest(sourceCode: string, config: Config, rules?: AnyMLRule[], locale = 'en', fix = false) {
 	const global = getGlobal();

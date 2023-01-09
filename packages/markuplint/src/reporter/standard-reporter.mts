@@ -1,9 +1,9 @@
-import type { CLIOptions } from '../cli/bootstrap';
-import type { MLResultInfo } from '../types';
+import type { CLIOptions } from '../cli/bootstrap.mjs';
+import type { MLResultInfo } from '../types.mjs';
 
 import c from 'cli-color';
 
-import { invisibleSpace, markuplint, messageToString, p, space, w } from '../util';
+import { invisibleSpace, markuplint, messageToString, p, space, w } from '../util.mjs';
 
 const loggerError = c.red;
 const loggerWarning = c.xterm(208);

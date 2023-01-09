@@ -9,9 +9,9 @@ import { resolve } from 'node:path';
 import { isMarkuplintRepo, createRuleHelper } from '@markuplint/create-rule-helper';
 import c from 'cli-color';
 
-import { write, head } from '../../util';
-import { installModule } from '../init/install-module';
-import { input, select, confirm } from '../prompt';
+import { write, head } from '../../util.mjs';
+import { installModule } from '../init/install-module.mjs';
+import { input, select, confirm } from '../prompt.mjs';
 
 const icons: Record<string, string> = {
 	README: '📝',

@@ -1,12 +1,12 @@
 import getStdin from 'get-stdin';
 
-import { verbosely } from '../debug';
+import { verbosely } from '../debug.mjs';
 
-import { cli } from './bootstrap';
-import { command } from './command';
-import { createRule } from './create-rule';
-import { initialize } from './init';
-import search from './search';
+import { cli } from './bootstrap.mjs';
+import { command } from './command.mjs';
+import { createRule } from './create-rule/index.mjs';
+import { initialize } from './init/index.mjs';
+import search from './search/index.mjs';
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {

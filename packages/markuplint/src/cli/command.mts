@@ -1,5 +1,5 @@
-import type { APIOptions } from '../api/types';
-import type { CLIOptions } from './bootstrap';
+import type { APIOptions } from '../api/types.mjs';
+import type { CLIOptions } from './bootstrap.mjs';
 import type { Target } from '@markuplint/file-resolver';
 import type { Violation } from '@markuplint/ml-config';
 
@@ -8,10 +8,10 @@ import path from 'path';
 
 import { resolveFiles } from '@markuplint/file-resolver';
 
-import { MLEngine } from '../api';
-import { log } from '../debug';
+import { MLEngine } from '../api/index.mjs';
+import { log } from '../debug.mjs';
 
-import { output } from './output';
+import { output } from './output.mjs';
 
 export async function command(files: Target[], options: CLIOptions, apiOptions?: APIOptions) {
 	const fix = options.fix;

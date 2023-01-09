@@ -1,8 +1,8 @@
-import type { CLIOptions } from '../bootstrap';
+import type { CLIOptions } from '../bootstrap.mjs';
 
 import { createRule, MLRule } from '@markuplint/ml-core';
 
-import { command } from '../command';
+import { command } from '../command.mjs';
 
 export default async function (files: string[], options: CLIOptions, selectors: string) {
 	const name = '__CLI_SEARCH__';

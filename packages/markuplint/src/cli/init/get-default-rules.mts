@@ -1,4 +1,4 @@
-import type { DefaultRules } from './types';
+import type { DefaultRules } from './types.mjs';
 
 import matter from 'gray-matter';
 import fetch from 'node-fetch';

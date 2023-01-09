@@ -6,8 +6,9 @@
 	"license": "MIT",
 	"private": false,
 	"repository": "git@github.com:markuplint/markuplint.git",
-	"main": "lib/index.js",
-	"types": "lib/index.d.ts",
+	"type": "module",
+	"main": "lib/index.mjs",
+	"types": "lib/index.d.mts",
 	"bin": {
 		"markuplint": "bin/markuplint"
 	},
