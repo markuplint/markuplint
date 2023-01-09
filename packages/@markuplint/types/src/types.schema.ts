@@ -138,6 +138,7 @@ export type CssSyntax =
 	| "<'-webkit-user-drag'>"
 	| "<'-webkit-user-modify'>"
 	| "<'-webkit-user-select'>"
+	| "<'accent-color'>"
 	| "<'align-content'>"
 	| "<'align-items'>"
 	| "<'align-self'>"
@@ -145,6 +146,7 @@ export type CssSyntax =
 	| "<'alignment-baseline'>"
 	| "<'all'>"
 	| "<'animation'>"
+	| "<'animation-composition'>"
 	| "<'animation-delay'>"
 	| "<'animation-direction'>"
 	| "<'animation-duration'>"
@@ -152,6 +154,7 @@ export type CssSyntax =
 	| "<'animation-iteration-count'>"
 	| "<'animation-name'>"
 	| "<'animation-play-state'>"
+	| "<'animation-timeline'>"
 	| "<'animation-timing-function'>"
 	| "<'appearance'>"
 	| "<'aspect-ratio'>"
@@ -251,13 +254,15 @@ export type CssSyntax =
 	| "<'break-before'>"
 	| "<'break-inside'>"
 	| "<'caption-side'>"
+	| "<'caret'>"
 	| "<'caret-color'>"
+	| "<'caret-shape'>"
 	| "<'clear'>"
 	| "<'clip'>"
 	| "<'clip-path'>"
 	| "<'clip-rule'>"
 	| "<'color'>"
-	| "<'color-adjust'>"
+	| "<'color-scheme'>"
 	| "<'column-count'>"
 	| "<'column-fill'>"
 	| "<'column-gap'>"
@@ -269,7 +274,13 @@ export type CssSyntax =
 	| "<'column-width'>"
 	| "<'columns'>"
 	| "<'contain'>"
+	| "<'contain-intrinsic-block-size'>"
+	| "<'contain-intrinsic-height'>"
+	| "<'contain-intrinsic-inline-size'>"
+	| "<'contain-intrinsic-size'>"
+	| "<'contain-intrinsic-width'>"
 	| "<'content'>"
+	| "<'content-visibility'>"
 	| "<'counter-increment'>"
 	| "<'counter-reset'>"
 	| "<'counter-set'>"
@@ -314,6 +325,7 @@ export type CssSyntax =
 	| "<'font-variant-position'>"
 	| "<'font-variation-settings'>"
 	| "<'font-weight'>"
+	| "<'forced-color-adjust'>"
 	| "<'gap'>"
 	| "<'glyph-orientation-horizontal'>"
 	| "<'glyph-orientation-vertical'>"
@@ -337,6 +349,7 @@ export type CssSyntax =
 	| "<'grid-template-rows'>"
 	| "<'hanging-punctuation'>"
 	| "<'height'>"
+	| "<'hyphenate-character'>"
 	| "<'hyphens'>"
 	| "<'image-orientation'>"
 	| "<'image-rendering'>"
@@ -345,6 +358,7 @@ export type CssSyntax =
 	| "<'initial-letter'>"
 	| "<'initial-letter-align'>"
 	| "<'inline-size'>"
+	| "<'input-security'>"
 	| "<'inset'>"
 	| "<'inset-block'>"
 	| "<'inset-block-end'>"
@@ -402,6 +416,8 @@ export type CssSyntax =
 	| "<'mask-size'>"
 	| "<'mask-type'>"
 	| "<'masonry-auto-flow'>"
+	| "<'math-depth'>"
+	| "<'math-shift'>"
 	| "<'math-style'>"
 	| "<'max-block-size'>"
 	| "<'max-height'>"
@@ -433,6 +449,7 @@ export type CssSyntax =
 	| "<'overflow-anchor'>"
 	| "<'overflow-block'>"
 	| "<'overflow-clip-box'>"
+	| "<'overflow-clip-margin'>"
 	| "<'overflow-inline'>"
 	| "<'overflow-wrap'>"
 	| "<'overflow-x'>"
@@ -467,6 +484,7 @@ export type CssSyntax =
 	| "<'place-self'>"
 	| "<'pointer-events'>"
 	| "<'position'>"
+	| "<'print-color-adjust'>"
 	| "<'quotes'>"
 	| "<'resize'>"
 	| "<'rest'>"
@@ -511,6 +529,9 @@ export type CssSyntax =
 	| "<'scroll-snap-type'>"
 	| "<'scroll-snap-type-x'>"
 	| "<'scroll-snap-type-y'>"
+	| "<'scroll-timeline'>"
+	| "<'scroll-timeline-axis'>"
+	| "<'scroll-timeline-name'>"
 	| "<'scrollbar-color'>"
 	| "<'scrollbar-gutter'>"
 	| "<'scrollbar-width'>"
@@ -607,7 +628,6 @@ export type CssSyntax =
 	| '<-ms-filter-function-progid>'
 	| '<-ms-filter-function>'
 	| '<-ms-filter>'
-	| '<-ms-legacy-expression>'
 	| '<-non-standard-color>'
 	| '<-non-standard-display>'
 	| '<-non-standard-font>'
@@ -625,7 +645,9 @@ export type CssSyntax =
 	| '<CDO-token>'
 	| '<[-token>'
 	| '<]-token>'
+	| '<abs()>'
 	| '<absolute-size>'
+	| '<acos()>'
 	| '<age>'
 	| '<alpha-value>'
 	| '<an-plus-b>'
@@ -636,7 +658,10 @@ export type CssSyntax =
 	| '<angular-color-stop>'
 	| '<animateable-feature>'
 	| '<any-value>'
+	| '<asin()>'
 	| '<at-keyword-token>'
+	| '<atan()>'
+	| '<atan2()>'
 	| '<attachment>'
 	| '<attr()>'
 	| '<attr-fallback>'
@@ -646,22 +671,24 @@ export type CssSyntax =
 	| '<attribute-selector>'
 	| '<auto-repeat>'
 	| '<auto-track-list>'
+	| '<axis>'
 	| '<bad-string-token>'
 	| '<bad-url-token>'
 	| '<baseline-position>'
 	| '<basic-shape>'
 	| '<bcp-47>'
+	| '<bg-clip>'
 	| '<bg-image>'
 	| '<bg-layer>'
 	| '<bg-position>'
 	| '<bg-size>'
 	| '<blend-mode>'
 	| '<blur()>'
-	| '<border-radius>'
 	| '<bottom>'
 	| '<box>'
 	| '<brightness()>'
 	| '<calc()>'
+	| '<calc-constant>'
 	| '<calc-product>'
 	| '<calc-sum>'
 	| '<calc-value>'
@@ -694,9 +721,12 @@ export type CssSyntax =
 	| '<content-replacement>'
 	| '<contextual-alt-values>'
 	| '<contrast()>'
+	| '<cos()>'
 	| '<counter()>'
+	| '<counter-name>'
 	| '<counter-style-name>'
 	| '<counter-style>'
+	| '<counter>'
 	| '<counters()>'
 	| '<cross-fade()>'
 	| '<cubic-bezier-timing-function>'
@@ -718,12 +748,14 @@ export type CssSyntax =
 	| '<display-listitem>'
 	| '<display-outside>'
 	| '<drop-shadow()>'
+	| '<easing-function>'
 	| '<east-asian-variant-values>'
 	| '<east-asian-width-values>'
 	| '<element()>'
 	| '<ellipse()>'
 	| '<ending-shape>'
 	| '<env()>'
+	| '<exp()>'
 	| '<explicit-track-list>'
 	| '<family-name>'
 	| '<feature-tag-value>'
@@ -737,7 +769,6 @@ export type CssSyntax =
 	| '<filter-function-list>'
 	| '<filter-function>'
 	| '<final-bg-layer>'
-	| '<fit-content()>'
 	| '<fixed-breadth>'
 	| '<fixed-repeat>'
 	| '<fixed-size>'
@@ -764,6 +795,8 @@ export type CssSyntax =
 	| '<hsla()>'
 	| '<hue-rotate()>'
 	| '<hue>'
+	| '<hwb()>'
+	| '<hypot()>'
 	| '<id-selector>'
 	| '<ident-token>'
 	| '<ident>'
@@ -781,6 +814,10 @@ export type CssSyntax =
 	| '<keyframe-block>'
 	| '<keyframe-selector>'
 	| '<keyframes-name>'
+	| '<lab()>'
+	| '<layer()>'
+	| '<layer-name>'
+	| '<lch()>'
 	| '<leader()>'
 	| '<leader-type>'
 	| '<left>'
@@ -793,6 +830,7 @@ export type CssSyntax =
 	| '<linear-color-hint>'
 	| '<linear-color-stop>'
 	| '<linear-gradient()>'
+	| '<log()>'
 	| '<mask-image>'
 	| '<mask-layer>'
 	| '<mask-position>'
@@ -819,6 +857,7 @@ export type CssSyntax =
 	| '<mf-value>'
 	| '<min()>'
 	| '<minmax()>'
+	| '<mod()>'
 	| '<name-repeat>'
 	| '<named-color>'
 	| '<namespace-prefix>'
@@ -849,7 +888,7 @@ export type CssSyntax =
 	| '<perspective()>'
 	| '<polygon()>'
 	| '<position>'
-	| '<positive-integer>'
+	| '<pow()>'
 	| '<pseudo-class-selector>'
 	| '<pseudo-element-selector>'
 	| '<pseudo-page>'
@@ -859,10 +898,13 @@ export type CssSyntax =
 	| '<relative-selector-list>'
 	| '<relative-selector>'
 	| '<relative-size>'
+	| '<rem()>'
 	| '<repeat-style>'
+	| '<repeating-conic-gradient()>'
 	| '<repeating-linear-gradient()>'
 	| '<repeating-radial-gradient()>'
 	| '<resolution>'
+	| '<reversed-counter-name>'
 	| '<rgb()>'
 	| '<rgba()>'
 	| '<right>'
@@ -871,12 +913,17 @@ export type CssSyntax =
 	| '<rotateX()>'
 	| '<rotateY()>'
 	| '<rotateZ()>'
+	| '<round()>'
+	| '<rounding-strategy>'
 	| '<saturate()>'
 	| '<scale()>'
 	| '<scale3d()>'
 	| '<scaleX()>'
 	| '<scaleY()>'
 	| '<scaleZ()>'
+	| '<scroll-timeline-axis>'
+	| '<scroll-timeline-name>'
+	| '<scroller>'
 	| '<self-position>'
 	| '<semicolon-token>'
 	| '<semitones>'
@@ -887,10 +934,14 @@ export type CssSyntax =
 	| '<shape-radius>'
 	| '<shape>'
 	| '<side-or-corner>'
+	| '<sign()>'
+	| '<sin()>'
+	| '<single-animation-composition>'
 	| '<single-animation-direction>'
 	| '<single-animation-fill-mode>'
 	| '<single-animation-iteration-count>'
 	| '<single-animation-play-state>'
+	| '<single-animation-timeline>'
 	| '<single-animation>'
 	| '<single-transition-property>'
 	| '<single-transition>'
@@ -898,6 +949,7 @@ export type CssSyntax =
 	| '<skew()>'
 	| '<skewX()>'
 	| '<skewY()>'
+	| '<sqrt()>'
 	| '<step-position>'
 	| '<step-timing-function>'
 	| '<string-token>'
@@ -911,19 +963,17 @@ export type CssSyntax =
 	| '<svg-length>'
 	| '<svg-writing-mode>'
 	| '<symbol>'
+	| '<tan()>'
 	| '<target-counter()>'
 	| '<target-counters()>'
 	| '<target-text()>'
 	| '<target>'
 	| '<time-percentage>'
 	| '<time>'
-	| '<timing-function>'
+	| '<timeline-name>'
 	| '<top>'
 	| '<track-breadth>'
-	| '<track-group>'
-	| '<track-list-v0>'
 	| '<track-list>'
-	| '<track-minmax>'
 	| '<track-repeat>'
 	| '<track-size>'
 	| '<transform-function>'
@@ -941,6 +991,7 @@ export type CssSyntax =
 	| '<url>'
 	| '<var()>'
 	| '<viewport-length>'
+	| '<visual-box>'
 	| '<whitespace-token>'
 	| '<wq-name>'
 	| '<x>'
