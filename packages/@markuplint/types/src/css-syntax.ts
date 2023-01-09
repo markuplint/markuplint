@@ -1,19 +1,11 @@
 import type { CustomCssSyntax, CssSyntaxTokenizer, CSSSyntaxToken, GetNextToken, Result, CssSyntax } from './types';
 
-// @ts-ignore
 import csstree from 'css-tree';
-// @ts-ignore
-import { SyntaxMatchError } from 'css-tree/lib/lexer/error.js';
-// @ts-ignore
-import { matchAsTree } from 'css-tree/lib/lexer/match.js';
-// @ts-ignore
-import prepareTokens from 'css-tree/lib/lexer/prepare-tokens.js';
 
 import { log } from './debug';
 import { tokenizers } from './defs';
 import { matched } from './match-result';
 
-// eslint-disable-next-line no-redeclare
 interface SyntaxMatchError {
 	message: string;
 	rawMessage: 'Mismatch';
@@ -30,6 +22,10 @@ interface SyntaxMatchError {
 		end: { offset: number; line: number; column: number };
 	};
 }
+
+const MIMIC_TAG_L = 'mimiccases---';
+const MIMIC_TAG_R = '---mimiccases';
+const MIMIC_LENGTH = (MIMIC_TAG_L + MIMIC_TAG_R).length;
 
 export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax): Result {
 	log('Search CSS Syntax: "%s"', type);
@@ -90,7 +86,14 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 		);
 	});
 
-	const { isProp, name, matcher } = defToMatcher(lexer, defName);
+	const { isProp, name } = detectName(defName);
+
+	const matcher = isProp ? lexer.properties[name] : lexer.types[name];
+	if (!matcher) {
+		log('"%s" CSS syntax not found', defName);
+		throw new Error('MARKUPLINT_TYPE_NO_EXIST');
+	}
+
 	const refParam = isProp ? 'Property' : 'Type';
 	ref = ref || `https://csstree.github.io/docs/syntax/#${refParam}:${name}`;
 
@@ -102,40 +105,31 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 		console.warn = warn => log('WARNING: %s (by %s => %s)', warn, value, type);
 	}
 
-	const tokens = prepareTokens(value, lexer.syntax);
-	const result = matchAsTree(tokens, matcher.match, lexer);
-
-	if (caseSensitive) {
-		if (result.tokens && Array.isArray(result.tokens)) {
-			let reducer = 0;
-			result.tokens = result.tokens.map((token: CSSSyntaxToken) => {
-				const value = token.value;
-				const originValue = deMimicCases(value || '');
-				const isMimiced = value !== originValue;
-				reducer += isMimiced ? 'mimiccases------mimiccases'.length : 0;
-				token.value = originValue;
-				token.balance = token.balance - reducer;
-				return token;
-			});
-		}
-	}
+	const result = lexer.match(defName, value);
 
 	log('css-tree/result: %O', result);
 	// eslint-disable-next-line no-console
 	console.warn = _w;
 
-	if (result.match) {
+	if (result.matched) {
 		if (log.enabled) {
-			log('css-tree/result.match: %s', JSON.stringify(result.match, null, 2));
+			log('css-tree/result.matched: %s', JSON.stringify(result.matched, null, 2));
 		}
 		return matched();
 	}
 
-	const error: SyntaxMatchError = new SyntaxMatchError(result.reason, matcher.syntax, value, result);
+	const error: SyntaxMatchError = result.error;
 
 	if (caseSensitive) {
-		error.message = deMimicCases(error.message);
+		const offset = error.mismatchOffset % MIMIC_LENGTH;
+		const diff = error.mismatchOffset - offset;
+		error.message = deMimicCases(error.message).replace('-'.repeat(diff), '');
 		error.syntax = deMimicCases(error.syntax);
+		error.css = deMimicCases(error.css);
+		error.mismatchOffset = offset;
+		error.column = error.column % MIMIC_LENGTH;
+		const mismatchLength = error.mismatchLength - MIMIC_LENGTH;
+		error.mismatchLength = mismatchLength < 0 ? error.mismatchLength : mismatchLength;
 	}
 
 	log('css-tree/SyntaxMatchError: %O', error);
@@ -159,18 +153,12 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	};
 }
 
-function defToMatcher(lexer: any, def: `<${string}>`) {
+function detectName(def: `<${string}>`) {
 	const isProp = def.search("<'") === 0;
 	const name = def.replace(/^<'?|'?>$/g, '');
-	const matcher = isProp ? lexer.properties[name] : lexer.types[name];
-	if (!matcher) {
-		log('"%s" CSS syntax not found', def);
-		throw new Error('MARKUPLINT_TYPE_NO_EXIST');
-	}
 	return {
 		isProp,
 		name,
-		matcher,
 	};
 }
 
@@ -180,9 +168,9 @@ function eachMimicCases(key: string, obj: Record<string, string>) {
 }
 
 function mimicCases(value: string) {
-	return value.replace(/[A-Z]/g, $0 => `mimiccases---${$0}---mimiccases`);
+	return value.replace(/[A-Z]/g, $0 => `${MIMIC_TAG_L}${$0}${MIMIC_TAG_R}`);
 }
 
 function deMimicCases(value: string) {
-	return value.replace(/mimiccases---([A-Z])---mimiccases/g, (_, $1) => $1);
+	return value.replace(new RegExp(`${MIMIC_TAG_L}([A-Z])${MIMIC_TAG_R}`, 'g'), (_, $1) => $1);
 }
