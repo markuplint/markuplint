@@ -22,6 +22,7 @@
 		"site:dev": "cd website; yarn; yarn site:start",
 		"site:lint": "cd website; yarn; yarn site:lint",
 		"site:build": "cd website; yarn; yarn site:build",
+		"site:mlpt": "cd website; yarn; yarn site:mlpt",
 		"pg:dev": "cd playground; yarn pg:dev",
 		"pg:build": "cd playground; yarn pg:build",
 		"apidoc": "typedoc --ignoreCompilerErrors --exclude '**/*+(index|.spec|.e2e|.d).ts,node_modules/**/*' --mode file --out apidoc --media packages/markuplint/media --readme ./packages/markuplint/README.md ./packages/markuplint/",

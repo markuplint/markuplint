@@ -1,0 +1,3872 @@
+{
+  "version": "0.0.0",
+  "data": [
+    {
+      "selector": "Admonition",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "alert"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Admonition/index.tsx:186:24"
+    },
+    {
+      "selector": "AlternateLangHeaders",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/SiteMetadata/index.tsx:25:9"
+    },
+    {
+      "selector": "AnnouncementBar",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          },
+          {
+            "name": "style"
+          },
+          {
+            "name": "role",
+            "value": "banner"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/AnnouncementBar/index.tsx:16:24"
+    },
+    {
+      "selector": "AnnouncementBarCloseButton",
+      "as": {
+        "element": "button",
+        "attrs": [
+          {
+            "name": "type",
+            "value": "button"
+          },
+          {
+            "name": "aria-label",
+            "value": "theme.AnnouncementBar.closeButtonAriaLabel"
+          },
+          {
+            "name": "aria-label",
+            "value": "Close"
+          },
+          {
+            "name": "aria-label",
+            "value": "The ARIA label for close button of announcement bar"
+          },
+          {
+            "name": "aria-label"
+          },
+          {
+            "name": "className",
+            "value": "clean-btn close"
+          },
+          {
+            "name": "className"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/AnnouncementBar/CloseButton/index.tsx:15:24"
+    },
+    {
+      "selector": "AnnouncementBarContent",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          },
+          {
+            "name": "dangerouslySetInnerHTML"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/AnnouncementBar/Content/index.tsx:14:24"
+    },
+    {
+      "selector": "Avatar",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "src/components/Avatar/index.tsx:10:24"
+    },
+    {
+      "selector": "BackToTopButton",
+      "as": {
+        "element": "button",
+        "attrs": [
+          {
+            "name": "aria-label",
+            "value": "theme.BackToTopButton.buttonAriaLabel"
+          },
+          {
+            "name": "aria-label",
+            "value": "Scroll back to top"
+          },
+          {
+            "name": "aria-label",
+            "value": "The ARIA label for the back to top button"
+          },
+          {
+            "name": "aria-label"
+          },
+          {
+            "name": "className",
+            "value": "clean-btn"
+          },
+          {
+            "name": "className"
+          },
+          {
+            "name": "type",
+            "value": "button"
+          },
+          {
+            "name": "onClick"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BackToTopButton/index.tsx:16:24"
+    },
+    {
+      "selector": "BannerLabel",
+      "as": {
+        "element": "BannerLabelComponent",
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocVersionBanner/index.tsx:79:9"
+    },
+    {
+      "selector": "BlogArchive",
+      "as": "LayoutProvider",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Layout/index.tsx:26:24",
+      "_via": [
+        "Layout"
+      ]
+    },
+    {
+      "selector": "BlogLayout",
+      "as": "LayoutProvider",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Layout/index.tsx:26:24",
+      "_via": [
+        "Layout"
+      ]
+    },
+    {
+      "selector": "BlogListPage",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:72:16",
+      "_via": [
+        "HtmlClassNameProvider"
+      ]
+    },
+    {
+      "selector": "BlogListPageContent",
+      "as": "LayoutProvider",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Layout/index.tsx:26:24",
+      "_via": [
+        "BlogLayout",
+        "Layout"
+      ]
+    },
+    {
+      "selector": "BlogListPageMetadata",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:27:16",
+      "_via": [
+        "PageMetadata"
+      ]
+    },
+    {
+      "selector": "BlogListPaginator",
+      "as": {
+        "element": "nav",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "pagination-nav"
+          },
+          {
+            "name": "aria-label",
+            "value": "theme.blog.paginator.navAriaLabel"
+          },
+          {
+            "name": "aria-label",
+            "value": "Blog list page navigation"
+          },
+          {
+            "name": "aria-label",
+            "value": "The ARIA label for the blog pagination"
+          },
+          {
+            "name": "aria-label"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogListPaginator/index.tsx:13:24"
+    },
+    {
+      "selector": "BlogPostItem",
+      "as": {
+        "element": "article",
+        "attrs": [
+          {
+            "name": "className"
+          },
+          {
+            "name": "itemProp",
+            "value": "blogPost"
+          },
+          {
+            "name": "itemScope"
+          },
+          {
+            "name": "itemType",
+            "value": "http://schema.org/BlogPosting"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItem/Container/index.tsx:13:24",
+      "_via": [
+        "BlogPostItemContainer"
+      ]
+    },
+    {
+      "selector": "BlogPostItemContainer",
+      "as": {
+        "element": "article",
+        "attrs": [
+          {
+            "name": "className"
+          },
+          {
+            "name": "itemProp",
+            "value": "blogPost"
+          },
+          {
+            "name": "itemScope"
+          },
+          {
+            "name": "itemType",
+            "value": "http://schema.org/BlogPosting"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItem/Container/index.tsx:13:24"
+    },
+    {
+      "selector": "BlogPostItemContent",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "id"
+          },
+          {
+            "name": "className",
+            "value": "markdown"
+          },
+          {
+            "name": "className"
+          },
+          {
+            "name": "itemProp",
+            "value": "articleBody"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItem/Content/index.tsx:15:24"
+    },
+    {
+      "selector": "BlogPostItemFooter",
+      "as": {
+        "element": "footer",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "row docusaurus-mt-lg"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItem/Footer/index.tsx:17:24"
+    },
+    {
+      "selector": "BlogPostItemFooterReadMoreLink",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "aria-label",
+            "value": "Read more about {title}"
+          },
+          {
+            "name": "aria-label",
+            "value": "theme.blog.post.readMoreLabel"
+          },
+          {
+            "name": "aria-label",
+            "value": "The ARIA label for the link to full blog posts from excerpts"
+          },
+          {
+            "name": "aria-label"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItem/Footer/ReadMoreLink/index.tsx:25:24"
+    },
+    {
+      "selector": "BlogPostItemHeader",
+      "as": "header",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItem/Header/index.tsx:13:24"
+    },
+    {
+      "selector": "BlogPostItemHeaderAuthor",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "avatar margin-bottom--sm"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItem/Header/Author/index.tsx:21:24"
+    },
+    {
+      "selector": "BlogPostItemHeaderAuthors",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "margin-top--md margin-bottom--sm"
+          },
+          {
+            "name": "className",
+            "value": "row"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItem/Header/Authors/index.tsx:16:24"
+    },
+    {
+      "selector": "BlogPostItemHeaderInfo",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "margin-vert--md"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItem/Header/Info/index.tsx:54:24"
+    },
+    {
+      "selector": "BlogPostItemHeaderTitle",
+      "as": {
+        "element": "TitleHeading",
+        "attrs": [
+          {
+            "name": "className"
+          },
+          {
+            "name": "itemProp",
+            "value": "headline"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItem/Header/Title/index.tsx:16:24"
+    },
+    {
+      "selector": "BlogPostItems",
+      "as": {
+        "element": "BlogPostProvider",
+        "attrs": [
+          {
+            "name": "key"
+          },
+          {
+            "name": "content"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItems/index.tsx:13:24"
+    },
+    {
+      "selector": "BlogPostPage",
+      "as": {
+        "element": "BlogPostProvider",
+        "attrs": [
+          {
+            "name": "content"
+          },
+          {
+            "name": "isBlogPostPage"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostPage/index.tsx:55:24"
+    },
+    {
+      "selector": "BlogPostPageContent",
+      "as": "LayoutProvider",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Layout/index.tsx:26:24",
+      "_via": [
+        "BlogLayout",
+        "Layout"
+      ]
+    },
+    {
+      "selector": "BlogPostPageMetadata",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:27:16",
+      "_via": [
+        "PageMetadata"
+      ]
+    },
+    {
+      "selector": "BlogPostPaginator",
+      "as": {
+        "element": "nav",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "pagination-nav docusaurus-mt-lg"
+          },
+          {
+            "name": "aria-label",
+            "value": "theme.blog.post.paginator.navAriaLabel"
+          },
+          {
+            "name": "aria-label",
+            "value": "Blog post page navigation"
+          },
+          {
+            "name": "aria-label",
+            "value": "The ARIA label for the blog posts pagination"
+          },
+          {
+            "name": "aria-label"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostPaginator/index.tsx:13:24"
+    },
+    {
+      "selector": "BlogSidebar",
+      "as": {
+        "element": "NavbarSecondaryMenuFiller",
+        "attrs": [
+          {
+            "name": "component"
+          },
+          {
+            "name": "props"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogSidebar/Mobile/index.tsx:31:24",
+      "_via": [
+        "BlogSidebarMobile"
+      ]
+    },
+    {
+      "selector": "BlogSidebarDesktop",
+      "as": {
+        "element": "aside",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "col col--3"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogSidebar/Desktop/index.tsx:16:24"
+    },
+    {
+      "selector": "BlogSidebarMobile",
+      "as": {
+        "element": "NavbarSecondaryMenuFiller",
+        "attrs": [
+          {
+            "name": "component"
+          },
+          {
+            "name": "props"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogSidebar/Mobile/index.tsx:31:24"
+    },
+    {
+      "selector": "BlogSidebarMobileSecondaryMenu",
+      "as": {
+        "element": "ul",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "menu__list"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogSidebar/Mobile/index.tsx:13:9"
+    },
+    {
+      "selector": "BlogTagsListPage",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:72:16",
+      "_via": [
+        "HtmlClassNameProvider"
+      ]
+    },
+    {
+      "selector": "BlogTagsPostsPage",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:72:16",
+      "_via": [
+        "HtmlClassNameProvider"
+      ]
+    },
+    {
+      "selector": "BlogTagsPostsPageContent",
+      "as": "LayoutProvider",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Layout/index.tsx:26:24",
+      "_via": [
+        "BlogLayout",
+        "Layout"
+      ]
+    },
+    {
+      "selector": "BlogTagsPostsPageMetadata",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:27:16",
+      "_via": [
+        "PageMetadata"
+      ]
+    },
+    {
+      "selector": "BreadcrumbsItem",
+      "as": {
+        "element": "li",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "breadcrumbs__item"
+          },
+          {
+            "name": "className",
+            "value": "breadcrumbs__item--active"
+          },
+          {
+            "name": "className"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocBreadcrumbs/index.tsx:55:9"
+    },
+    {
+      "selector": "BreadcrumbsItemLink",
+      "as": {
+        "element": "span",
+        "attrs": [
+          {
+            "name": "className"
+          },
+          {
+            "name": "itemProp",
+            "value": "name"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocBreadcrumbs/index.tsx:23:9"
+    },
+    {
+      "selector": "BrowserOnlyReactJson",
+      "as": "BrowserOnly",
+      "filePath": "node_modules/@docusaurus/plugin-debug/src/theme/DebugJsonView/index.tsx:18:9"
+    },
+    {
+      "selector": "CanonicalUrlHeaders",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/SiteMetadata/index.tsx:68:9"
+    },
+    {
+      "selector": "CardCategory",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "href"
+          },
+          {
+            "name": "className",
+            "value": "card padding--lg"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocCard/index.tsx:25:9",
+      "_via": [
+        "CardLayout",
+        "CardContainer"
+      ]
+    },
+    {
+      "selector": "CardContainer",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "href"
+          },
+          {
+            "name": "className",
+            "value": "card padding--lg"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocCard/index.tsx:25:9"
+    },
+    {
+      "selector": "CardLayout",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "href"
+          },
+          {
+            "name": "className",
+            "value": "card padding--lg"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocCard/index.tsx:25:9",
+      "_via": [
+        "CardContainer"
+      ]
+    },
+    {
+      "selector": "CardLink",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "href"
+          },
+          {
+            "name": "className",
+            "value": "card padding--lg"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocCard/index.tsx:25:9",
+      "_via": [
+        "CardLayout",
+        "CardContainer"
+      ]
+    },
+    {
+      "selector": "CautionIcon",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "viewBox",
+            "value": "0 0 16 16"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Admonition/index.tsx:60:9"
+    },
+    {
+      "selector": "CloseButton",
+      "as": {
+        "element": "button",
+        "attrs": [
+          {
+            "name": "type",
+            "value": "button"
+          },
+          {
+            "name": "aria-label",
+            "value": "theme.docs.sidebar.closeSidebarButtonAriaLabel"
+          },
+          {
+            "name": "aria-label",
+            "value": "Close navigation bar"
+          },
+          {
+            "name": "aria-label",
+            "value": "The ARIA label for close button of mobile sidebar"
+          },
+          {
+            "name": "aria-label"
+          },
+          {
+            "name": "className",
+            "value": "clean-btn navbar-sidebar__close"
+          },
+          {
+            "name": "onClick"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/MobileSidebar/Header/index.tsx:15:9"
+    },
+    {
+      "selector": "CodeBlock",
+      "as": {
+        "element": "CodeBlockComp",
+        "attrs": [
+          {
+            "name": "key"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/CodeBlock/index.tsx:28:24"
+    },
+    {
+      "selector": "CodeBlockContainer",
+      "as": {
+        "element": "As",
+        "attrs": [
+          {
+            "name": "style"
+          },
+          {
+            "name": "className"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/CodeBlock/Container/index.tsx:14:24"
+    },
+    {
+      "selector": "CodeBlockJSX",
+      "as": {
+        "element": "Container",
+        "attrs": [
+          {
+            "name": "as",
+            "value": "pre"
+          },
+          {
+            "name": "tabIndex"
+          },
+          {
+            "name": "className",
+            "value": "thin-scrollbar"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/CodeBlock/Content/Element.tsx:18:24"
+    },
+    {
+      "selector": "CodeBlockLine",
+      "as": {
+        "element": "span",
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/CodeBlock/Line/index.tsx:14:24"
+    },
+    {
+      "selector": "CodeBlockString",
+      "as": {
+        "element": "Container",
+        "attrs": [
+          {
+            "name": "as",
+            "value": "div"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/CodeBlock/Content/String.tsx:27:24"
+    },
+    {
+      "selector": "CollapseButton",
+      "as": {
+        "element": "button",
+        "attrs": [
+          {
+            "name": "type",
+            "value": "button"
+          },
+          {
+            "name": "title",
+            "value": "theme.docs.sidebar.collapseButtonTitle"
+          },
+          {
+            "name": "title",
+            "value": "Collapse sidebar"
+          },
+          {
+            "name": "title",
+            "value": "The title attribute for collapse button of doc sidebar"
+          },
+          {
+            "name": "title"
+          },
+          {
+            "name": "aria-label",
+            "value": "theme.docs.sidebar.collapseButtonAriaLabel"
+          },
+          {
+            "name": "aria-label",
+            "value": "Collapse sidebar"
+          },
+          {
+            "name": "aria-label",
+            "value": "The title attribute for collapse button of doc sidebar"
+          },
+          {
+            "name": "aria-label"
+          },
+          {
+            "name": "className",
+            "value": "button button--secondary button--outline"
+          },
+          {
+            "name": "className"
+          },
+          {
+            "name": "onClick"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocSidebar/Desktop/CollapseButton/index.tsx:16:24"
+    },
+    {
+      "selector": "Collapsible",
+      "as": {
+        "element": "Comp",
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-common/src/components/Collapsible/index.tsx:260:16"
+    },
+    {
+      "selector": "CollapsibleBase",
+      "as": {
+        "element": "As",
+        "attrs": [
+          {
+            "name": "ref"
+          },
+          {
+            "name": "style"
+          },
+          {
+            "name": "onTransitionEnd",
+            "value": "height"
+          },
+          {
+            "name": "onTransitionEnd"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-common/src/components/Collapsible/index.tsx:190:9"
+    },
+    {
+      "selector": "CollapsibleLazy",
+      "as": {
+        "element": "As",
+        "attrs": [
+          {
+            "name": "ref"
+          },
+          {
+            "name": "style"
+          },
+          {
+            "name": "onTransitionEnd",
+            "value": "height"
+          },
+          {
+            "name": "onTransitionEnd"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-common/src/components/Collapsible/index.tsx:190:9",
+      "_via": [
+        "CollapsibleBase"
+      ]
+    },
+    {
+      "selector": "Color",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "src/components/Color/index.tsx:12:24"
+    },
+    {
+      "selector": "ColorModeToggle",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/ColorModeToggle/index.tsx:18:9"
+    },
+    {
+      "selector": "Column",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "col footer__col"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Footer/Links/MultiColumn/index.tsx:30:9"
+    },
+    {
+      "selector": "ColumnLinkItem",
+      "as": {
+        "element": "li",
+        "attrs": [
+          {
+            "name": "key"
+          },
+          {
+            "name": "className",
+            "value": "footer__item"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Footer/Links/MultiColumn/index.tsx:15:9"
+    },
+    {
+      "selector": "composeProviders",
+      "as": "CurrentProvider",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/reactUtils.tsx:117:16"
+    },
+    {
+      "selector": "CopyButton",
+      "as": {
+        "element": "button",
+        "attrs": [
+          {
+            "name": "type",
+            "value": "button"
+          },
+          {
+            "name": "aria-label",
+            "value": "theme.CodeBlock.copied"
+          },
+          {
+            "name": "aria-label",
+            "value": "Copied"
+          },
+          {
+            "name": "aria-label",
+            "value": "The copied button label on code blocks"
+          },
+          {
+            "name": "aria-label",
+            "value": "theme.CodeBlock.copyButtonAriaLabel"
+          },
+          {
+            "name": "aria-label",
+            "value": "Copy code to clipboard"
+          },
+          {
+            "name": "aria-label",
+            "value": "The ARIA label for copy code blocks button"
+          },
+          {
+            "name": "aria-label"
+          },
+          {
+            "name": "title",
+            "value": "theme.CodeBlock.copy"
+          },
+          {
+            "name": "title",
+            "value": "Copy"
+          },
+          {
+            "name": "title",
+            "value": "The copy button label on code blocks"
+          },
+          {
+            "name": "title"
+          },
+          {
+            "name": "className",
+            "value": "clean-btn"
+          },
+          {
+            "name": "className"
+          },
+          {
+            "name": "onClick"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/CodeBlock/CopyButton/index.tsx:17:24"
+    },
+    {
+      "selector": "DangerIcon",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "viewBox",
+            "value": "0 0 12 16"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Admonition/index.tsx:38:9"
+    },
+    {
+      "selector": "Date",
+      "as": {
+        "element": "time",
+        "attrs": [
+          {
+            "name": "dateTime"
+          },
+          {
+            "name": "itemProp",
+            "value": "datePublished"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItem/Header/Info/index.tsx:42:9"
+    },
+    {
+      "selector": "DebugContent",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/plugin-debug/src/theme/DebugLayout/index.tsx:28:24",
+      "_via": [
+        "DebugLayout"
+      ]
+    },
+    {
+      "selector": "DebugJsonView",
+      "as": "BrowserOnly",
+      "filePath": "node_modules/@docusaurus/plugin-debug/src/theme/DebugJsonView/index.tsx:18:9",
+      "_via": [
+        "BrowserOnlyReactJson"
+      ]
+    },
+    {
+      "selector": "DebugLayout",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/plugin-debug/src/theme/DebugLayout/index.tsx:28:24"
+    },
+    {
+      "selector": "DebugMetadata",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/plugin-debug/src/theme/DebugLayout/index.tsx:28:24",
+      "_via": [
+        "DebugLayout"
+      ]
+    },
+    {
+      "selector": "DebugNavLink",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "className"
+          },
+          {
+            "name": "isNavLink"
+          },
+          {
+            "name": "to"
+          },
+          {
+            "name": "exact"
+          },
+          {
+            "name": "activeStyle",
+            "value": "#363739"
+          },
+          {
+            "name": "activeStyle"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/plugin-debug/src/theme/DebugLayout/index.tsx:13:9"
+    },
+    {
+      "selector": "DebugRegistry",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/plugin-debug/src/theme/DebugLayout/index.tsx:28:24",
+      "_via": [
+        "DebugLayout"
+      ]
+    },
+    {
+      "selector": "DebugRoutes",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/plugin-debug/src/theme/DebugLayout/index.tsx:28:24",
+      "_via": [
+        "DebugLayout"
+      ]
+    },
+    {
+      "selector": "DefaultNavbarItem",
+      "as": {
+        "element": "Comp",
+        "attrs": [
+          {
+            "name": "activeClassName",
+            "value": "menu__link--active"
+          },
+          {
+            "name": "activeClassName",
+            "value": "navbar__link--active"
+          },
+          {
+            "name": "activeClassName"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/DefaultNavbarItem.tsx:51:24"
+    },
+    {
+      "selector": "DefaultNavbarItemDesktop",
+      "as": "li",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/DefaultNavbarItem.tsx:16:9"
+    },
+    {
+      "selector": "DefaultNavbarItemMobile",
+      "as": {
+        "element": "li",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "menu__list-item"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/DefaultNavbarItem.tsx:39:9"
+    },
+    {
+      "selector": "Details",
+      "as": {
+        "element": "DetailsGeneric",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Details/index.tsx:19:24"
+    },
+    {
+      "selector": "DocBreadcrumbs",
+      "as": {
+        "element": "nav",
+        "attrs": [
+          {
+            "name": "className"
+          },
+          {
+            "name": "aria-label",
+            "value": "theme.docs.breadcrumbs.navAriaLabel"
+          },
+          {
+            "name": "aria-label",
+            "value": "Breadcrumbs"
+          },
+          {
+            "name": "aria-label",
+            "value": "The ARIA label for the breadcrumbs"
+          },
+          {
+            "name": "aria-label"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocBreadcrumbs/index.tsx:100:24"
+    },
+    {
+      "selector": "DocCard",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "href"
+          },
+          {
+            "name": "className",
+            "value": "card padding--lg"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocCard/index.tsx:25:9",
+      "_via": [
+        "CardLink",
+        "CardLayout",
+        "CardContainer"
+      ]
+    },
+    {
+      "selector": "DocCardList",
+      "as": {
+        "element": "DocCardListForCurrentSidebarCategory",
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocCardList/index.tsx:22:24",
+      "_via": [
+        "DocCardListForCurrentSidebarCategory",
+        "...[Recursive]"
+      ]
+    },
+    {
+      "selector": "DocCardListForCurrentSidebarCategory",
+      "as": {
+        "element": "DocCardList",
+        "attrs": [
+          {
+            "name": "items"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocCardList/index.tsx:17:9",
+      "_via": [
+        "DocCardList",
+        "...[Recursive]"
+      ]
+    },
+    {
+      "selector": "DocCategoryGeneratedIndexPage",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:27:16",
+      "_via": [
+        "DocCategoryGeneratedIndexPageMetadata",
+        "PageMetadata"
+      ]
+    },
+    {
+      "selector": "DocCategoryGeneratedIndexPageContent",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocCategoryGeneratedIndexPage/index.tsx:38:9"
+    },
+    {
+      "selector": "DocCategoryGeneratedIndexPageMetadata",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:27:16",
+      "_via": [
+        "PageMetadata"
+      ]
+    },
+    {
+      "selector": "DocItem",
+      "as": {
+        "element": "DocProvider",
+        "attrs": [
+          {
+            "name": "content"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocItem/index.tsx:15:24"
+    },
+    {
+      "selector": "DocItemContent",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "markdown"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocItem/Content/index.tsx:36:24"
+    },
+    {
+      "selector": "DocItemFooter",
+      "as": {
+        "element": "footer",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "docusaurus-mt-lg"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocItem/Footer/index.tsx:61:24"
+    },
+    {
+      "selector": "DocItemLayout",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "row"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocItem/Layout/index.tsx:48:24"
+    },
+    {
+      "selector": "DocItemMetadata",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:27:16",
+      "_via": [
+        "PageMetadata"
+      ]
+    },
+    {
+      "selector": "DocItemPaginator",
+      "as": {
+        "element": "nav",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "pagination-nav docusaurus-mt-lg"
+          },
+          {
+            "name": "aria-label",
+            "value": "theme.docs.paginator.navAriaLabel"
+          },
+          {
+            "name": "aria-label",
+            "value": "Docs pages navigation"
+          },
+          {
+            "name": "aria-label",
+            "value": "The ARIA label for the docs pagination"
+          },
+          {
+            "name": "aria-label"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocPaginator/index.tsx:13:24",
+      "_via": [
+        "DocPaginator"
+      ]
+    },
+    {
+      "selector": "DocItemTOCDesktop",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "thin-scrollbar"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/TOC/index.tsx:20:24",
+      "_via": [
+        "TOC"
+      ]
+    },
+    {
+      "selector": "DocItemTOCMobile",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/TOCCollapsible/index.tsx:17:24",
+      "_via": [
+        "TOCCollapsible"
+      ]
+    },
+    {
+      "selector": "DocItemWrapper",
+      "as": {
+        "element": "OgImg",
+        "attrs": [
+          {
+            "name": "title"
+          },
+          {
+            "name": "category"
+          }
+        ]
+      },
+      "filePath": "src/theme/DocItem/index.tsx:13:24"
+    },
+    {
+      "selector": "DocNavbarItem",
+      "as": {
+        "element": "Comp",
+        "attrs": [
+          {
+            "name": "activeClassName",
+            "value": "menu__link--active"
+          },
+          {
+            "name": "activeClassName",
+            "value": "navbar__link--active"
+          },
+          {
+            "name": "activeClassName"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/DefaultNavbarItem.tsx:51:24",
+      "_via": [
+        "DefaultNavbarItem"
+      ]
+    },
+    {
+      "selector": "DocPage",
+      "as": "LayoutProvider",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Layout/index.tsx:26:24",
+      "_via": [
+        "NotFound",
+        "Layout"
+      ]
+    },
+    {
+      "selector": "DocPageLayout",
+      "as": "LayoutProvider",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Layout/index.tsx:26:24",
+      "_via": [
+        "Layout"
+      ]
+    },
+    {
+      "selector": "DocPageLayoutMain",
+      "as": {
+        "element": "main",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocPage/Layout/Main/index.tsx:15:24"
+    },
+    {
+      "selector": "DocPageLayoutSidebar",
+      "as": {
+        "element": "aside",
+        "attrs": [
+          {
+            "name": "className"
+          },
+          {
+            "name": "onTransitionEnd"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocPage/Layout/Sidebar/index.tsx:31:24"
+    },
+    {
+      "selector": "DocPageLayoutSidebarExpandButton",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          },
+          {
+            "name": "title",
+            "value": "theme.docs.sidebar.expandButtonTitle"
+          },
+          {
+            "name": "title",
+            "value": "Expand sidebar"
+          },
+          {
+            "name": "title",
+            "value": "The ARIA label and title attribute for expand button of doc sidebar"
+          },
+          {
+            "name": "title"
+          },
+          {
+            "name": "aria-label",
+            "value": "theme.docs.sidebar.expandButtonAriaLabel"
+          },
+          {
+            "name": "aria-label",
+            "value": "Expand sidebar"
+          },
+          {
+            "name": "aria-label",
+            "value": "The ARIA label and title attribute for expand button of doc sidebar"
+          },
+          {
+            "name": "aria-label"
+          },
+          {
+            "name": "tabIndex"
+          },
+          {
+            "name": "role",
+            "value": "button"
+          },
+          {
+            "name": "onKeyDown"
+          },
+          {
+            "name": "onClick"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocPage/Layout/Sidebar/ExpandButton/index.tsx:15:24"
+    },
+    {
+      "selector": "DocPageMetadata",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:27:16",
+      "_via": [
+        "PageMetadata"
+      ]
+    },
+    {
+      "selector": "DocPaginator",
+      "as": {
+        "element": "nav",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "pagination-nav docusaurus-mt-lg"
+          },
+          {
+            "name": "aria-label",
+            "value": "theme.docs.paginator.navAriaLabel"
+          },
+          {
+            "name": "aria-label",
+            "value": "Docs pages navigation"
+          },
+          {
+            "name": "aria-label",
+            "value": "The ARIA label for the docs pagination"
+          },
+          {
+            "name": "aria-label"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocPaginator/index.tsx:13:24"
+    },
+    {
+      "selector": "DocSearch",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-search-algolia/src/theme/SearchBar/index.tsx:85:9"
+    },
+    {
+      "selector": "DocSidebar",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocSidebar/Desktop/index.tsx:18:9",
+      "_via": [
+        "DocSidebarDesktop"
+      ]
+    },
+    {
+      "selector": "DocSidebarDesktop",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocSidebar/Desktop/index.tsx:18:9"
+    },
+    {
+      "selector": "DocSidebarDesktopContent",
+      "as": {
+        "element": "nav",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "menu thin-scrollbar"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocSidebar/Desktop/Content/index.tsx:35:24"
+    },
+    {
+      "selector": "DocSidebarItem",
+      "as": {
+        "element": "li",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "menu__list-item"
+          },
+          {
+            "name": "className",
+            "value": "menu__list-item--collapsed"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocSidebarItem/Category/index.tsx:99:24",
+      "_via": [
+        "DocSidebarItemCategory"
+      ]
+    },
+    {
+      "selector": "DocSidebarItemCategory",
+      "as": {
+        "element": "li",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "menu__list-item"
+          },
+          {
+            "name": "className",
+            "value": "menu__list-item--collapsed"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocSidebarItem/Category/index.tsx:99:24"
+    },
+    {
+      "selector": "DocSidebarItemHtml",
+      "as": {
+        "element": "li",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "menu__list-item"
+          },
+          {
+            "name": "className"
+          },
+          {
+            "name": "key"
+          },
+          {
+            "name": "dangerouslySetInnerHTML"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocSidebarItem/Html/index.tsx:15:24"
+    },
+    {
+      "selector": "DocSidebarItemLink",
+      "as": {
+        "element": "li",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "menu__list-item"
+          },
+          {
+            "name": "className"
+          },
+          {
+            "name": "key"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocSidebarItem/Link/index.tsx:19:24"
+    },
+    {
+      "selector": "DocSidebarItems",
+      "as": "DocSidebarItemsExpandedStateProvider",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocSidebarItems/index.tsx:16:9"
+    },
+    {
+      "selector": "DocSidebarMobile",
+      "as": {
+        "element": "NavbarSecondaryMenuFiller",
+        "attrs": [
+          {
+            "name": "component"
+          },
+          {
+            "name": "props"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocSidebar/Mobile/index.tsx:45:9"
+    },
+    {
+      "selector": "DocSidebarMobileSecondaryMenu",
+      "as": {
+        "element": "ul",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "menu__list"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocSidebar/Mobile/index.tsx:20:6"
+    },
+    {
+      "selector": "DocSidebarNavbarItem",
+      "as": {
+        "element": "Comp",
+        "attrs": [
+          {
+            "name": "activeClassName",
+            "value": "menu__link--active"
+          },
+          {
+            "name": "activeClassName",
+            "value": "navbar__link--active"
+          },
+          {
+            "name": "activeClassName"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/DefaultNavbarItem.tsx:51:24",
+      "_via": [
+        "DefaultNavbarItem"
+      ]
+    },
+    {
+      "selector": "DocsPreferredVersionContextProvider",
+      "as": "DocsPreferredVersionContextProviderUnsafe",
+      "filePath": "node_modules/@docusaurus/theme-common/src/contexts/docsPreferredVersion.tsx:175:16"
+    },
+    {
+      "selector": "DocsVersionDropdownNavbarItem",
+      "as": {
+        "element": "Comp",
+        "attrs": [
+          {
+            "name": "activeClassName",
+            "value": "menu__link--active"
+          },
+          {
+            "name": "activeClassName",
+            "value": "navbar__link--active"
+          },
+          {
+            "name": "activeClassName"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/DefaultNavbarItem.tsx:51:24",
+      "_via": [
+        "DefaultNavbarItem"
+      ]
+    },
+    {
+      "selector": "DocsVersionNavbarItem",
+      "as": {
+        "element": "Comp",
+        "attrs": [
+          {
+            "name": "activeClassName",
+            "value": "menu__link--active"
+          },
+          {
+            "name": "activeClassName",
+            "value": "navbar__link--active"
+          },
+          {
+            "name": "activeClassName"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/DefaultNavbarItem.tsx:51:24",
+      "_via": [
+        "DefaultNavbarItem"
+      ]
+    },
+    {
+      "selector": "DocTagDocListPage",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:72:16",
+      "_via": [
+        "HtmlClassNameProvider"
+      ]
+    },
+    {
+      "selector": "DocTagsListPage",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:72:16",
+      "_via": [
+        "HtmlClassNameProvider"
+      ]
+    },
+    {
+      "selector": "DocVersionBadge",
+      "as": {
+        "element": "span",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "badge badge--secondary"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocVersionBadge/index.tsx:15:24"
+    },
+    {
+      "selector": "DocVersionBanner",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "alert alert--warning margin-bottom--md"
+          },
+          {
+            "name": "className"
+          },
+          {
+            "name": "role",
+            "value": "alert"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocVersionBanner/index.tsx:119:9",
+      "_via": [
+        "DocVersionBannerEnabled"
+      ]
+    },
+    {
+      "selector": "DocVersionBannerEnabled",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "alert alert--warning margin-bottom--md"
+          },
+          {
+            "name": "className"
+          },
+          {
+            "name": "role",
+            "value": "alert"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocVersionBanner/index.tsx:119:9"
+    },
+    {
+      "selector": "DropdownNavbarItem",
+      "as": {
+        "element": "Comp",
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/DropdownNavbarItem.tsx:184:24"
+    },
+    {
+      "selector": "DropdownNavbarItemDesktop",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "ref"
+          },
+          {
+            "name": "className",
+            "value": "navbar__item"
+          },
+          {
+            "name": "className",
+            "value": "dropdown"
+          },
+          {
+            "name": "className",
+            "value": "dropdown--hoverable"
+          },
+          {
+            "name": "className",
+            "value": "dropdown--right"
+          },
+          {
+            "name": "className",
+            "value": "right"
+          },
+          {
+            "name": "className",
+            "value": "dropdown--show"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/DropdownNavbarItem.tsx:46:9"
+    },
+    {
+      "selector": "DropdownNavbarItemMobile",
+      "as": {
+        "element": "li",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "menu__list-item"
+          },
+          {
+            "name": "className",
+            "value": "menu__list-item--collapsed"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/DropdownNavbarItem.tsx:129:9"
+    },
+    {
+      "selector": "EditMetaRow",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "row"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocItem/Footer/index.tsx:38:9"
+    },
+    {
+      "selector": "EditThisPage",
+      "as": {
+        "element": "a",
+        "attrs": [
+          {
+            "name": "href"
+          },
+          {
+            "name": "target",
+            "value": "_blank"
+          },
+          {
+            "name": "rel",
+            "value": "noreferrer noopener"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/EditThisPage/index.tsx:14:24"
+    },
+    {
+      "selector": "ErrorPageContent",
+      "as": {
+        "element": "main",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "container margin-vert--xl"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/ErrorPageContent.tsx:12:24"
+    },
+    {
+      "selector": "Feature",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "col col--4 margin-vert--md"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "src/components/HomepageFeatures/index.tsx:12:9"
+    },
+    {
+      "selector": "Footer",
+      "as": {
+        "element": "footer",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "footer"
+          },
+          {
+            "name": "className",
+            "value": "footer--dark"
+          },
+          {
+            "name": "className",
+            "value": "dark"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Footer/Layout/index.tsx:12:24",
+      "_via": [
+        "FooterLayout"
+      ]
+    },
+    {
+      "selector": "FooterCopyright",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "footer__copyright"
+          },
+          {
+            "name": "dangerouslySetInnerHTML"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Footer/Copyright/index.tsx:11:24"
+    },
+    {
+      "selector": "FooterLayout",
+      "as": {
+        "element": "footer",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "footer"
+          },
+          {
+            "name": "className",
+            "value": "footer--dark"
+          },
+          {
+            "name": "className",
+            "value": "dark"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Footer/Layout/index.tsx:12:24"
+    },
+    {
+      "selector": "FooterLinkItem",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "footer__link-item"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Footer/LinkItem/index.tsx:16:24"
+    },
+    {
+      "selector": "FooterLinks",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "row footer__links"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Footer/Links/MultiColumn/index.tsx:43:24",
+      "_via": [
+        "FooterLinksMultiColumn"
+      ]
+    },
+    {
+      "selector": "FooterLinksMultiColumn",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "row footer__links"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Footer/Links/MultiColumn/index.tsx:43:24"
+    },
+    {
+      "selector": "FooterLinksSimple",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "footer__links text--center"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Footer/Links/Simple/index.tsx:29:24"
+    },
+    {
+      "selector": "FooterLogo",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "href"
+          },
+          {
+            "name": "className"
+          },
+          {
+            "name": "target"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Footer/Logo/index.tsx:35:24"
+    },
+    {
+      "selector": "Grid",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "src/components/Grid/index.tsx:10:24"
+    },
+    {
+      "selector": "Heading",
+      "as": {
+        "element": "As",
+        "attrs": [
+          {
+            "name": "id"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Heading/index.tsx:16:24"
+    },
+    {
+      "selector": "Hero",
+      "as": {
+        "element": "header",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "hero hero--primary"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "src/components/Hero/index.tsx:13:24"
+    },
+    {
+      "selector": "Hit",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "to"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-search-algolia/src/theme/SearchBar/index.tsx:44:9"
+    },
+    {
+      "selector": "Home",
+      "as": "LayoutProvider",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Layout/index.tsx:26:24",
+      "_via": [
+        "Layout"
+      ]
+    },
+    {
+      "selector": "HomeBreadcrumbItem",
+      "as": {
+        "element": "li",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "breadcrumbs__item"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocBreadcrumbs/index.tsx:82:9"
+    },
+    {
+      "selector": "HomepageFeatures",
+      "as": {
+        "element": "section",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "src/components/HomepageFeatures/index.tsx:31:24"
+    },
+    {
+      "selector": "HtmlClassNameProvider",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:72:16"
+    },
+    {
+      "selector": "HtmlNavbarItem",
+      "as": {
+        "element": "Comp",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "menu__list-item"
+          },
+          {
+            "name": "className"
+          },
+          {
+            "name": "dangerouslySetInnerHTML"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/HtmlNavbarItem.tsx:13:24"
+    },
+    {
+      "selector": "IconArrow",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "width",
+            "value": "20"
+          },
+          {
+            "name": "height",
+            "value": "20"
+          },
+          {
+            "name": "aria-hidden",
+            "value": "true"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Icon/Arrow/index.tsx:11:24"
+    },
+    {
+      "selector": "IconClose",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "viewBox",
+            "value": "0 0 15 15"
+          },
+          {
+            "name": "width"
+          },
+          {
+            "name": "height"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Icon/Close/index.tsx:11:24"
+    },
+    {
+      "selector": "IconDarkMode",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "viewBox",
+            "value": "0 0 24 24"
+          },
+          {
+            "name": "width"
+          },
+          {
+            "name": "height"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Icon/DarkMode/index.tsx:11:24"
+    },
+    {
+      "selector": "IconEdit",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "fill",
+            "value": "currentColor"
+          },
+          {
+            "name": "height",
+            "value": "20"
+          },
+          {
+            "name": "width",
+            "value": "20"
+          },
+          {
+            "name": "viewBox",
+            "value": "0 0 40 40"
+          },
+          {
+            "name": "className"
+          },
+          {
+            "name": "aria-hidden",
+            "value": "true"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Icon/Edit/index.tsx:14:24"
+    },
+    {
+      "selector": "IconExternalLink",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "width"
+          },
+          {
+            "name": "height"
+          },
+          {
+            "name": "aria-hidden",
+            "value": "true"
+          },
+          {
+            "name": "viewBox",
+            "value": "0 0 24 24"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Icon/ExternalLink/index.tsx:13:24"
+    },
+    {
+      "selector": "IconHome",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "viewBox",
+            "value": "0 0 24 24"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Icon/Home/index.tsx:11:24"
+    },
+    {
+      "selector": "IconLanguage",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "viewBox",
+            "value": "0 0 24 24"
+          },
+          {
+            "name": "width"
+          },
+          {
+            "name": "height"
+          },
+          {
+            "name": "aria-hidden"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Icon/Language/index.tsx:11:24"
+    },
+    {
+      "selector": "IconLightMode",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "viewBox",
+            "value": "0 0 24 24"
+          },
+          {
+            "name": "width"
+          },
+          {
+            "name": "height"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Icon/LightMode/index.tsx:11:24"
+    },
+    {
+      "selector": "IconMenu",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "className"
+          },
+          {
+            "name": "width"
+          },
+          {
+            "name": "height"
+          },
+          {
+            "name": "viewBox",
+            "value": "0 0 30 30"
+          },
+          {
+            "name": "aria-hidden",
+            "value": "true"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Icon/Menu/index.tsx:11:24"
+    },
+    {
+      "selector": "InfoIcon",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "viewBox",
+            "value": "0 0 14 16"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Admonition/index.tsx:49:9"
+    },
+    {
+      "selector": "LastUpdated",
+      "as": {
+        "element": "span",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/LastUpdated/index.tsx:55:24"
+    },
+    {
+      "selector": "LastUpdatedAtDate",
+      "as": {
+        "element": "Translate",
+        "attrs": [
+          {
+            "name": "id",
+            "value": "theme.lastUpdated.atDate"
+          },
+          {
+            "name": "description",
+            "value": "The words used to describe on which date a page has been last updated"
+          },
+          {
+            "name": "values"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/LastUpdated/index.tsx:13:9"
+    },
+    {
+      "selector": "LastUpdatedByUser",
+      "as": {
+        "element": "Translate",
+        "attrs": [
+          {
+            "name": "id",
+            "value": "theme.lastUpdated.byUser"
+          },
+          {
+            "name": "description",
+            "value": "The words used to describe by who the page has been last updated"
+          },
+          {
+            "name": "values"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/LastUpdated/index.tsx:38:9"
+    },
+    {
+      "selector": "LatestVersionSuggestionLabel",
+      "as": {
+        "element": "Translate",
+        "attrs": [
+          {
+            "name": "id",
+            "value": "theme.docs.versions.latestVersionSuggestionLabel"
+          },
+          {
+            "name": "description",
+            "value": "The label used to tell the user to check the latest version"
+          },
+          {
+            "name": "values",
+            "value": "theme.docs.versions.latestVersionLinkLabel"
+          },
+          {
+            "name": "values",
+            "value": "The label used for the latest version suggestion link label"
+          },
+          {
+            "name": "values"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocVersionBanner/index.tsx:85:9"
+    },
+    {
+      "selector": "Layout",
+      "as": "LayoutProvider",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Layout/index.tsx:26:24"
+    },
+    {
+      "selector": "LayoutWrapper",
+      "as": {
+        "element": "OgImg",
+        "attrs": [
+          {
+            "name": "title"
+          }
+        ]
+      },
+      "filePath": "src/theme/Layout/index.tsx:9:24"
+    },
+    {
+      "selector": "lineTokens",
+      "as": {
+        "element": "span",
+        "attrs": [
+          {
+            "name": "key"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/CodeBlock/Line/index.tsx:30:8"
+    },
+    {
+      "selector": "LocaleDropdownNavbarItem",
+      "as": {
+        "element": "Comp",
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/DropdownNavbarItem.tsx:184:24",
+      "_via": [
+        "DropdownNavbarItem"
+      ]
+    },
+    {
+      "selector": "Logo",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "to"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Logo/index.tsx:49:24"
+    },
+    {
+      "selector": "LogoContainer",
+      "as": {
+        "element": "figure",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "src/components/LogoContainer/index.tsx:11:24"
+    },
+    {
+      "selector": "LogoImage",
+      "as": {
+        "element": "img",
+        "attrs": [
+          {
+            "name": "key"
+          },
+          {
+            "name": "src"
+          },
+          {
+            "name": "alt"
+          },
+          {
+            "name": "className"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/ThemedImage/index.tsx:16:24",
+      "_via": [
+        "ThemedImage"
+      ]
+    },
+    {
+      "selector": "LogoThemedImage",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Logo/index.tsx:16:9"
+    },
+    {
+      "selector": "MaybeLink",
+      "as": {
+        "element": "Link",
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItem/Header/Author/index.tsx:14:9"
+    },
+    {
+      "selector": "MDXA",
+      "as": {
+        "element": "Link",
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/MDXComponents/A.tsx:12:24"
+    },
+    {
+      "selector": "MDXCode",
+      "as": {
+        "element": "code",
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/MDXComponents/Code.tsx:13:24"
+    },
+    {
+      "selector": "MDXComponents",
+      "as": {
+        "element": "As",
+        "attrs": [
+          {
+            "name": "id"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Heading/index.tsx:16:24",
+      "_via": [
+        "MDXHeading",
+        "Heading"
+      ]
+    },
+    {
+      "selector": "MDXContent",
+      "as": {
+        "element": "MDXProvider",
+        "attrs": [
+          {
+            "name": "components"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/MDXContent/index.tsx:13:24"
+    },
+    {
+      "selector": "MDXDetails",
+      "as": {
+        "element": "DetailsGeneric",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Details/index.tsx:19:24",
+      "_via": [
+        "Details"
+      ]
+    },
+    {
+      "selector": "MDXHead",
+      "as": {
+        "element": "Head",
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/MDXComponents/Head.tsx:24:24"
+    },
+    {
+      "selector": "MDXHeading",
+      "as": {
+        "element": "As",
+        "attrs": [
+          {
+            "name": "id"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Heading/index.tsx:16:24",
+      "_via": [
+        "Heading"
+      ]
+    },
+    {
+      "selector": "MDXImg",
+      "as": {
+        "element": "img",
+        "attrs": [
+          {
+            "name": "loading",
+            "value": "lazy"
+          },
+          {
+            "name": "className"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/MDXComponents/Img/index.tsx:18:24"
+    },
+    {
+      "selector": "MDXPageWrapper",
+      "as": {
+        "element": "OgImg",
+        "attrs": [
+          {
+            "name": "title"
+          }
+        ]
+      },
+      "filePath": "src/theme/MDXPage/index.tsx:8:24"
+    },
+    {
+      "selector": "MDXPre",
+      "as": {
+        "element": "CodeBlockComp",
+        "attrs": [
+          {
+            "name": "key"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/CodeBlock/index.tsx:28:24",
+      "_via": [
+        "CodeBlock"
+      ]
+    },
+    {
+      "selector": "MDXUl",
+      "as": {
+        "element": "ul",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/MDXComponents/Ul/index.tsx:24:24"
+    },
+    {
+      "selector": "MobileSidebarToggle",
+      "as": {
+        "element": "button",
+        "attrs": [
+          {
+            "name": "onClick"
+          },
+          {
+            "name": "aria-label",
+            "value": "theme.docs.sidebar.toggleSidebarButtonAriaLabel"
+          },
+          {
+            "name": "aria-label",
+            "value": "Toggle navigation bar"
+          },
+          {
+            "name": "aria-label",
+            "value": "The ARIA label for hamburger menu button of mobile navigation"
+          },
+          {
+            "name": "aria-label"
+          },
+          {
+            "name": "aria-expanded"
+          },
+          {
+            "name": "className",
+            "value": "navbar__toggle clean-btn"
+          },
+          {
+            "name": "type",
+            "value": "button"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/MobileSidebar/Toggle/index.tsx:13:24"
+    },
+    {
+      "selector": "Navbar",
+      "as": {
+        "element": "nav",
+        "attrs": [
+          {
+            "name": "ref"
+          },
+          {
+            "name": "className",
+            "value": "navbar"
+          },
+          {
+            "name": "className",
+            "value": "navbar--fixed-top"
+          },
+          {
+            "name": "className",
+            "value": "navbar--dark"
+          },
+          {
+            "name": "className",
+            "value": "dark"
+          },
+          {
+            "name": "className",
+            "value": "navbar--primary"
+          },
+          {
+            "name": "className",
+            "value": "primary"
+          },
+          {
+            "name": "className",
+            "value": "navbar-sidebar--show"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/Layout/index.tsx:30:24",
+      "_via": [
+        "NavbarLayout"
+      ]
+    },
+    {
+      "selector": "NavbarBackdrop",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "role",
+            "value": "presentation"
+          },
+          {
+            "name": "className",
+            "value": "navbar-sidebar__backdrop"
+          },
+          {
+            "name": "className"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/Layout/index.tsx:20:9"
+    },
+    {
+      "selector": "NavbarColorModeToggle",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/ColorModeToggle/index.tsx:18:9",
+      "_via": [
+        "ColorModeToggle"
+      ]
+    },
+    {
+      "selector": "NavbarContent",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/Search/index.tsx:14:24",
+      "_via": [
+        "NavbarSearch"
+      ]
+    },
+    {
+      "selector": "NavbarContentLayout",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "navbar__inner"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/Content/index.tsx:38:9"
+    },
+    {
+      "selector": "NavbarItem",
+      "as": {
+        "element": "NavbarItemComponent",
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/index.tsx:21:24"
+    },
+    {
+      "selector": "NavbarItems",
+      "as": {
+        "element": "NavbarItemComponent",
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/index.tsx:21:24",
+      "_via": [
+        "NavbarItem"
+      ]
+    },
+    {
+      "selector": "NavbarLayout",
+      "as": {
+        "element": "nav",
+        "attrs": [
+          {
+            "name": "ref"
+          },
+          {
+            "name": "className",
+            "value": "navbar"
+          },
+          {
+            "name": "className",
+            "value": "navbar--fixed-top"
+          },
+          {
+            "name": "className",
+            "value": "navbar--dark"
+          },
+          {
+            "name": "className",
+            "value": "dark"
+          },
+          {
+            "name": "className",
+            "value": "navbar--primary"
+          },
+          {
+            "name": "className",
+            "value": "primary"
+          },
+          {
+            "name": "className",
+            "value": "navbar-sidebar--show"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/Layout/index.tsx:30:24"
+    },
+    {
+      "selector": "NavbarLogo",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "to"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Logo/index.tsx:49:24",
+      "_via": [
+        "Logo"
+      ]
+    },
+    {
+      "selector": "NavbarMobilePrimaryMenu",
+      "as": {
+        "element": "ul",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "menu__list"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/MobileSidebar/PrimaryMenu/index.tsx:19:24"
+    },
+    {
+      "selector": "NavbarMobileSidebar",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "navbar-sidebar"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/MobileSidebar/Layout/index.tsx:13:24",
+      "_via": [
+        "NavbarMobileSidebarLayout"
+      ]
+    },
+    {
+      "selector": "NavbarMobileSidebarHeader",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "navbar-sidebar__brand"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/MobileSidebar/Header/index.tsx:32:24"
+    },
+    {
+      "selector": "NavbarMobileSidebarLayout",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "navbar-sidebar"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/MobileSidebar/Layout/index.tsx:13:24"
+    },
+    {
+      "selector": "NavbarMobileSidebarSecondaryMenu",
+      "as": {
+        "element": "button",
+        "attrs": [
+          {
+            "name": "type",
+            "value": "button"
+          },
+          {
+            "name": "className",
+            "value": "clean-btn navbar-sidebar__back"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/MobileSidebar/SecondaryMenu/index.tsx:13:9",
+      "_via": [
+        "SecondaryMenuBackButton"
+      ]
+    },
+    {
+      "selector": "NavbarNavLink",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "href"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/NavbarItem/NavbarNavLink.tsx:16:24"
+    },
+    {
+      "selector": "NavbarProvider",
+      "as": "NavbarSecondaryMenuContentProvider",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/navbarUtils.tsx:35:16"
+    },
+    {
+      "selector": "NavbarSearch",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/Search/index.tsx:14:24"
+    },
+    {
+      "selector": "NoteIcon",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "viewBox",
+            "value": "0 0 14 16"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Admonition/index.tsx:16:9"
+    },
+    {
+      "selector": "NotFound",
+      "as": "LayoutProvider",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Layout/index.tsx:26:24",
+      "_via": [
+        "Layout"
+      ]
+    },
+    {
+      "selector": "OgImgPlayground",
+      "as": "div",
+      "filePath": "src/components/OgImgPlayground.tsx:8:24"
+    },
+    {
+      "selector": "PageMetadata",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:27:16"
+    },
+    {
+      "selector": "PaginatorNavLink",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "pagination-nav__link"
+          },
+          {
+            "name": "className",
+            "value": "pagination-nav__link--next"
+          },
+          {
+            "name": "className",
+            "value": "pagination-nav__link--prev"
+          },
+          {
+            "name": "className"
+          },
+          {
+            "name": "to"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/PaginatorNavLink/index.tsx:13:24"
+    },
+    {
+      "selector": "PluginContent",
+      "as": {
+        "element": "section",
+        "attrs": [
+          {
+            "name": "style"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/plugin-debug/src/theme/DebugContent/index.tsx:29:9"
+    },
+    {
+      "selector": "PluginHtmlClassNameProvider",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:72:16",
+      "_via": [
+        "HtmlClassNameProvider"
+      ]
+    },
+    {
+      "selector": "PluginInstanceContent",
+      "as": {
+        "element": "section",
+        "attrs": [
+          {
+            "name": "style"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/plugin-debug/src/theme/DebugContent/index.tsx:14:9"
+    },
+    {
+      "selector": "Profile",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "src/components/Profile/index.tsx:16:24"
+    },
+    {
+      "selector": "ReadMoreLabel",
+      "as": "b",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogPostItem/Footer/ReadMoreLink/index.tsx:13:9"
+    },
+    {
+      "selector": "renderElement",
+      "as": {
+        "element": "Comp",
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-common/src/contexts/navbarSecondaryMenu/display.tsx:70:9"
+    },
+    {
+      "selector": "ResetOnSidebarChange",
+      "as": {
+        "element": "React.Fragment",
+        "attrs": [
+          {
+            "name": "key",
+            "value": "noSidebar"
+          },
+          {
+            "name": "key"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocPage/Layout/Sidebar/index.tsx:22:9"
+    },
+    {
+      "selector": "ResultsFooter",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "to"
+          },
+          {
+            "name": "onClick"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-search-algolia/src/theme/SearchBar/index.tsx:59:9"
+    },
+    {
+      "selector": "resultsFooterComponent",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "to"
+          },
+          {
+            "name": "onClick"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-search-algolia/src/theme/SearchBar/index.tsx:59:9",
+      "_via": [
+        "ResultsFooter"
+      ]
+    },
+    {
+      "selector": "SearchBar",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-search-algolia/src/theme/SearchBar/index.tsx:85:9",
+      "_via": [
+        "DocSearch"
+      ]
+    },
+    {
+      "selector": "SearchMetadata",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/SearchMetadata/index.tsx:18:24"
+    },
+    {
+      "selector": "SearchNavbarItem",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/Search/index.tsx:14:24",
+      "_via": [
+        "NavbarSearch"
+      ]
+    },
+    {
+      "selector": "SearchPage",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/metadataUtils.tsx:72:16",
+      "_via": [
+        "HtmlClassNameProvider"
+      ]
+    },
+    {
+      "selector": "SearchPageContent",
+      "as": "LayoutProvider",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Layout/index.tsx:26:24",
+      "_via": [
+        "Layout"
+      ]
+    },
+    {
+      "selector": "SearchVersionSelectList",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "col"
+          },
+          {
+            "name": "className",
+            "value": "col--3"
+          },
+          {
+            "name": "className",
+            "value": "padding-left--none"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-search-algolia/src/theme/SearchPage/index.tsx:89:9"
+    },
+    {
+      "selector": "SecondaryMenuBackButton",
+      "as": {
+        "element": "button",
+        "attrs": [
+          {
+            "name": "type",
+            "value": "button"
+          },
+          {
+            "name": "className",
+            "value": "clean-btn navbar-sidebar__back"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Navbar/MobileSidebar/SecondaryMenu/index.tsx:13:9"
+    },
+    {
+      "selector": "Separator",
+      "as": {
+        "element": "span",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "footer__link-separator"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Footer/Links/Simple/index.tsx:12:9"
+    },
+    {
+      "selector": "SimpleLinkItem",
+      "as": {
+        "element": "span",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "footer__link-item"
+          },
+          {
+            "name": "dangerouslySetInnerHTML"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Footer/Links/Simple/index.tsx:16:9"
+    },
+    {
+      "selector": "SiteMetadata",
+      "as": "Head",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/SiteMetadata/index.tsx:85:24"
+    },
+    {
+      "selector": "SkipToContent",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "ref"
+          },
+          {
+            "name": "role",
+            "value": "region"
+          },
+          {
+            "name": "aria-label"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/skipToContentUtils.tsx:85:16",
+      "_via": [
+        "SkipToContentLink"
+      ]
+    },
+    {
+      "selector": "SkipToContentLink",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "ref"
+          },
+          {
+            "name": "role",
+            "value": "region"
+          },
+          {
+            "name": "aria-label"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-common/src/utils/skipToContentUtils.tsx:85:16"
+    },
+    {
+      "selector": "TabItem",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "role",
+            "value": "tabpanel"
+          },
+          {
+            "name": "className"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/TabItem/index.tsx:14:24"
+    },
+    {
+      "selector": "Tabs",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "tabs-container"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Tabs/index.tsx:34:9",
+      "_via": [
+        "TabsComponent"
+      ]
+    },
+    {
+      "selector": "TabsComponent",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "tabs-container"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Tabs/index.tsx:34:9"
+    },
+    {
+      "selector": "Tag",
+      "as": {
+        "element": "Link",
+        "attrs": [
+          {
+            "name": "href"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Tag/index.tsx:15:24"
+    },
+    {
+      "selector": "TagLetterEntryItem",
+      "as": "article",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/TagsListByLetter/index.tsx:15:9"
+    },
+    {
+      "selector": "TagsListByLetter",
+      "as": {
+        "element": "section",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "margin-vert--lg"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/TagsListByLetter/index.tsx:31:24"
+    },
+    {
+      "selector": "TagsListInline",
+      "as": "b",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/TagsListInline/index.tsx:16:24"
+    },
+    {
+      "selector": "TagsRow",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "row margin-bottom--sm"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocItem/Footer/index.tsx:20:9"
+    },
+    {
+      "selector": "ThemedImage",
+      "as": {
+        "element": "img",
+        "attrs": [
+          {
+            "name": "key"
+          },
+          {
+            "name": "src"
+          },
+          {
+            "name": "alt"
+          },
+          {
+            "name": "className"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/ThemedImage/index.tsx:16:24"
+    },
+    {
+      "selector": "TipIcon",
+      "as": {
+        "element": "svg",
+        "attrs": [
+          {
+            "name": "viewBox",
+            "value": "0 0 12 16"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/Admonition/index.tsx:27:9"
+    },
+    {
+      "selector": "TOC",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "thin-scrollbar"
+          },
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/TOC/index.tsx:20:24"
+    },
+    {
+      "selector": "TOCCollapsible",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/TOCCollapsible/index.tsx:17:24"
+    },
+    {
+      "selector": "TOCCollapsibleCollapseButton",
+      "as": {
+        "element": "button",
+        "attrs": [
+          {
+            "name": "type",
+            "value": "button"
+          },
+          {
+            "name": "className",
+            "value": "clean-btn"
+          },
+          {
+            "name": "className"
+          }
+        ],
+        "inheritAttrs": true
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/TOCCollapsible/CollapseButton/index.tsx:15:24"
+    },
+    {
+      "selector": "TOCInline",
+      "as": {
+        "element": "div",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/TOCInline/index.tsx:14:24"
+    },
+    {
+      "selector": "TOCItems",
+      "as": {
+        "element": "ul",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/TOCItems/Tree.tsx:12:9",
+      "_via": [
+        "TOCItemTree"
+      ]
+    },
+    {
+      "selector": "TOCItemTree",
+      "as": {
+        "element": "ul",
+        "attrs": [
+          {
+            "name": "className"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/TOCItems/Tree.tsx:12:9"
+    },
+    {
+      "selector": "UnmaintainedVersionLabel",
+      "as": {
+        "element": "Translate",
+        "attrs": [
+          {
+            "name": "id",
+            "value": "theme.docs.versions.unmaintainedVersionLabel"
+          },
+          {
+            "name": "description",
+            "value": "The label used to tell the user that he's browsing an unmaintained doc version"
+          },
+          {
+            "name": "values"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocVersionBanner/index.tsx:53:9"
+    },
+    {
+      "selector": "UnreleasedVersionLabel",
+      "as": {
+        "element": "Translate",
+        "attrs": [
+          {
+            "name": "id",
+            "value": "theme.docs.versions.unreleasedVersionLabel"
+          },
+          {
+            "name": "description",
+            "value": "The label used to tell the user that he's browsing an unreleased doc version"
+          },
+          {
+            "name": "values"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/DocVersionBanner/index.tsx:34:9"
+    },
+    {
+      "selector": "WordWrapButton",
+      "as": {
+        "element": "button",
+        "attrs": [
+          {
+            "name": "type",
+            "value": "button"
+          },
+          {
+            "name": "onClick"
+          },
+          {
+            "name": "className",
+            "value": "clean-btn"
+          },
+          {
+            "name": "className"
+          },
+          {
+            "name": "aria-label"
+          },
+          {
+            "name": "title"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/CodeBlock/WordWrapButton/index.tsx:15:24"
+    },
+    {
+      "selector": "Year",
+      "as": "h3",
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogArchivePage/index.tsx:20:9"
+    },
+    {
+      "selector": "YearsSection",
+      "as": {
+        "element": "section",
+        "attrs": [
+          {
+            "name": "className",
+            "value": "margin-vert--lg"
+          }
+        ]
+      },
+      "filePath": "node_modules/@docusaurus/theme-classic/src/theme/BlogArchivePage/index.tsx:37:9"
+    }
+  ]
+}

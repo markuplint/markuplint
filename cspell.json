@@ -6,7 +6,8 @@
 		"cspell.json",
 		"test/fixture/**",
 		"packages/@markuplint/html-spec/src/*.json",
-		"packages/@markuplint/html-spec/index.json"
+		"packages/@markuplint/html-spec/index.json",
+		"website/pretenders.json"
 	],
 	"dictionaries": [
 		"css",
