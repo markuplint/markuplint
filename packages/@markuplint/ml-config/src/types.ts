@@ -45,6 +45,8 @@ export type Pretender = {
 	 * If it is an Object, It creates the element by that.
 	 */
 	as: string | OriginalNode;
+
+	filePath?: string;
 };
 
 export type OriginalNode = {
