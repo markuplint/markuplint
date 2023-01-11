@@ -83,21 +83,7 @@ export type OriginalNode = {
 	/**
 	 * Attributes
 	 */
-	readonly attrs?: readonly {
-		/**
-		 * Attribute name
-		 */
-		readonly name: string;
-
-		/**
-		 * If it omits this property, the attribute is resolved as a boolean.
-		 */
-		readonly value?:
-			| string
-			| {
-					readonly fromAttr: string;
-			  };
-	}[];
+	attrs?: PretenderAttr[];
 
 	/**
 	 * To have attributes the defined element has.
@@ -108,6 +94,22 @@ export type OriginalNode = {
 	 * ARIA properties
 	 */
 	readonly aria?: PretenderARIA;
+};
+
+export type PretenderAttr = {
+	/**
+	 * Attribute name
+	 */
+	readonly name: string;
+
+	/**
+	 * If it omits this property, the attribute is resolved as a boolean.
+	 */
+	readonly value?:
+		| string
+		| {
+				readonly fromAttr: string;
+		  };
 };
 
 /**
