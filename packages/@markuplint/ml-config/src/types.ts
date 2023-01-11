@@ -64,21 +64,7 @@ export type OriginalNode = {
 	/**
 	 * Attributes
 	 */
-	attrs?: {
-		/**
-		 * Attribute name
-		 */
-		name: string;
-
-		/**
-		 * If it omits this property, the attribute is resolved as a boolean.
-		 */
-		value?:
-			| string
-			| {
-					fromAttr: string;
-			  };
-	}[];
+	attrs?: PretenderAttr[];
 
 	/**
 	 * To have attributes the defined element has.
@@ -89,6 +75,22 @@ export type OriginalNode = {
 	 * ARIA properties
 	 */
 	aria?: PretenderARIA;
+};
+
+export type PretenderAttr = {
+	/**
+	 * Attribute name
+	 */
+	name: string;
+
+	/**
+	 * If it omits this property, the attribute is resolved as a boolean.
+	 */
+	value?:
+		| string
+		| {
+				fromAttr: string;
+		  };
 };
 
 /**
