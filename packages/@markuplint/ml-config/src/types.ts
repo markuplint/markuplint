@@ -11,7 +11,7 @@ export type Config = {
 	parserOptions?: ParserOptions;
 	specs?: SpecConfig;
 	excludeFiles?: string[];
-	pretenders?: Pretender[];
+	pretenders?: PretenderDetails | Pretender[];
 	rules?: Rules;
 	nodeRules?: NodeRule[];
 	childNodeRules?: ChildNodeRule[];
@@ -20,9 +20,10 @@ export type Config = {
 
 export type OverrodeConfig = Omit<Config, '$schema' | 'extends' | 'overrides'>;
 
-export type OptimizedConfig = Omit<Config, '$schema' | 'extends' | 'plugins' | 'overrides'> & {
+export type OptimizedConfig = Omit<Config, '$schema' | 'extends' | 'plugins' | 'pretenders' | 'overrides'> & {
 	extends?: string[];
 	plugins?: PluginConfig[];
+	pretenders?: PretenderDetails;
 	overrides?: Record<string, OptimizedOverrodeConfig>;
 };
 
@@ -39,6 +40,15 @@ export interface ParserConfig {
 
 export type SpecConfig = {
 	[extensionPattern: string]: string /* module name or path */;
+};
+
+export type PretenderDetails = {
+	files?: string[];
+	/**
+	 * @experimental
+	 */
+	imports?: string[];
+	data?: Pretender[];
 };
 
 export type PretenderFileData = {

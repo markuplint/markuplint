@@ -7,6 +7,8 @@ import type {
 	OptimizedConfig,
 	OverrodeConfig,
 	OptimizedOverrodeConfig,
+	Pretender,
+	PretenderDetails,
 } from './types';
 
 import deepmerge from 'deepmerge';
@@ -35,7 +37,7 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 		parserOptions: mergeObject(a.parserOptions, b.parserOptions),
 		specs: mergeObject(a.specs, b.specs),
 		excludeFiles: concatArray(a.excludeFiles, b.excludeFiles, true),
-		pretenders: concatArray(a.pretenders, b.pretenders),
+		pretenders: mergePretenders(a.pretenders, b.pretenders),
 		rules: mergeRules(
 			// TODO: Deep merge
 			a.rules,
@@ -96,6 +98,25 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 	};
 	deleteUndefProp(res);
 	return res;
+}
+
+function mergePretenders(
+	a?: PretenderDetails | Pretender[],
+	b?: PretenderDetails | Pretender[],
+): PretenderDetails | undefined {
+	if (!a && !b) {
+		return;
+	}
+	const detailA = !Array.isArray(a) ? a : undefined;
+	const detailB = !Array.isArray(b) ? b : undefined;
+	const details = mergeObject(detailA, detailB) ?? {};
+	const dataA = Array.isArray(a) ? a : undefined;
+	const dataA2 = detailA?.data;
+	const dataB = Array.isArray(b) ? b : undefined;
+	const dataB2 = detailB?.data;
+	details.data = concatArray(concatArray(dataA, dataA2), concatArray(dataB, dataB2));
+	deleteUndefProp(details);
+	return details;
 }
 
 function mergeOverrides(

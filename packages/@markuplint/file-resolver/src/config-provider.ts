@@ -165,15 +165,17 @@ export class ConfigProvider {
 	private _pathResolve(config: Config, filePath: string): OptimizedConfig {
 		const optimizedConfig = mergeConfig(config);
 		const dir = path.dirname(filePath);
-		return {
+		const resolved = {
 			...optimizedConfig,
 			extends: pathResolve(dir, optimizedConfig.extends),
 			plugins: pathResolve(dir, optimizedConfig.plugins, ['name']),
 			parser: pathResolve(dir, optimizedConfig.parser),
 			specs: pathResolve(dir, optimizedConfig.specs),
 			excludeFiles: pathResolve(dir, optimizedConfig.excludeFiles),
+			pretenders: pathResolve(dir, optimizedConfig.pretenders, ['files']),
 			overrides: pathResolve(dir, optimizedConfig.overrides, undefined, true),
 		};
+		return resolved;
 	}
 
 	private async _recursiveLoad(
@@ -258,17 +260,15 @@ function pathResolve<T extends string | (string | Record<string, unknown>)[] | R
 		if (resolveKey) {
 			_key = resolve(dir, key);
 		}
-		if (typeof fp === 'string') {
-			if (!resolveProps) {
-				res[_key] = resolve(dir, fp);
-			} else if (resolveProps.includes(key)) {
-				res[_key] = resolve(dir, fp);
-			} else {
-				res[_key] = fp;
+		let resolveFP = fp;
+		if (!resolveProps || resolveProps.includes(key)) {
+			if (typeof fp === 'string') {
+				resolveFP = resolve(dir, fp);
+			} else if (Array.isArray(fp)) {
+				resolveFP = fp.map(_fp => pathResolve(dir, _fp));
 			}
-		} else {
-			res[_key] = fp;
 		}
+		res[_key] = resolveFP;
 	}
 	// @ts-ignore
 	return res;

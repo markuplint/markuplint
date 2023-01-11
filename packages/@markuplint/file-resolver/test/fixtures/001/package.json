@@ -10,6 +10,12 @@
 				"name": "b",
 				"foo": "001"
 			}
+		],
+		"pretenders": [
+			{
+				"selector": "MyComponent",
+				"as": "div"
+			}
 		]
 	}
 }

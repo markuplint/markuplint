@@ -31,6 +31,15 @@ it('001 + 002', async () => {
 				foo: '002',
 			},
 		],
+		pretenders: {
+			files: path.resolve(testDir, '..', 'pretenders.json'),
+			data: [
+				{
+					selector: 'MyComponent',
+					as: 'div',
+				},
+			],
+		},
 		rules: {
 			rule__enabled: true,
 			rule__disabled: false,
@@ -98,6 +107,15 @@ it('001 + 002 + 003', async () => {
 				name: path.resolve(testDir, '..', 'plugins', '001.js'),
 			},
 		],
+		pretenders: {
+			files: path.resolve(testDir, '..', 'pretenders.json'),
+			data: [
+				{
+					selector: 'MyComponent',
+					as: 'div',
+				},
+			],
+		},
 		rules: {
 			rule__enabled: false,
 			rule__disabled: true,
