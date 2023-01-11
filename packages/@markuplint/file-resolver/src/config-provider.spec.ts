@@ -15,7 +15,9 @@ it('001 + 002', async () => {
 		dummy2: false,
 		key: '002/.markuplintrc.json',
 		plugins: [
-			path.resolve(testDir, '001', 'a'),
+			{
+				name: path.resolve(testDir, '001', 'a'),
+			},
 			{
 				name: '@markuplint/file-resolver',
 				foo: '002',
@@ -77,7 +79,9 @@ it('001 + 002 + 003', async () => {
 		key: '003/.markuplintrc',
 		key2: '001-2.js',
 		plugins: [
-			path.resolve(testDir, '001', 'a'),
+			{
+				name: path.resolve(testDir, '001', 'a'),
+			},
 			{
 				name: '@markuplint/file-resolver',
 				foo: '002',
@@ -90,7 +94,9 @@ it('001 + 002 + 003', async () => {
 				name: path.resolve(testDir, '002', 'b'),
 				foo: '002',
 			},
-			path.resolve(testDir, '..', 'plugins', '001.js'),
+			{
+				name: path.resolve(testDir, '..', 'plugins', '001.js'),
+			},
 		],
 		rules: {
 			rule__enabled: false,

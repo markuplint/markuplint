@@ -15,7 +15,20 @@ it('test', () => {
 			},
 		),
 	).toStrictEqual({
-		plugins: ['a', 'b', 'c', 'd'],
+		plugins: [
+			{
+				name: 'a',
+			},
+			{
+				name: 'b',
+			},
+			{
+				name: 'c',
+			},
+			{
+				name: 'd',
+			},
+		],
 	});
 });
 
@@ -31,8 +44,12 @@ it('test', () => {
 		),
 	).toStrictEqual({
 		plugins: [
-			'a',
-			'b',
+			{
+				name: 'a',
+			},
+			{
+				name: 'b',
+			},
 			{
 				name: 'c',
 				settings: {
@@ -41,7 +58,9 @@ it('test', () => {
 					foo2: 'foo2',
 				},
 			},
-			'd',
+			{
+				name: 'd',
+			},
 		],
 	});
 });

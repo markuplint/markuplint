@@ -1,6 +1,6 @@
 import type { MLFile } from './ml-file';
 import type { ConfigSet, Nullable } from './types';
-import type { Config } from '@markuplint/ml-config';
+import type { Config, OptimizedConfig } from '@markuplint/ml-config';
 
 import path from 'path';
 
@@ -17,7 +17,7 @@ export class ConfigProvider {
 	#cache = new Map<string, ConfigSet>();
 	#held = new Set<string>();
 	#recursiveLoadKeyAndDepth = new Map<string, number>();
-	#store = new Map<string, Config>();
+	#store = new Map<string, OptimizedConfig>();
 
 	async resolve(targetFile: MLFile, names: Nullable<string>[], cache = true): Promise<ConfigSet> {
 		if (!cache) {
@@ -46,7 +46,7 @@ export class ConfigProvider {
 						const plugin = plugins.find(plugin => plugin.name === namespace);
 						const config = plugin?.configs?.[name];
 						if (config) {
-							this.set(config, held);
+							this.set(mergeConfig(config), held);
 						}
 						break;
 					}
@@ -94,7 +94,7 @@ export class ConfigProvider {
 		return filePath;
 	}
 
-	set(config: Config, key?: string) {
+	set(config: OptimizedConfig, key?: string) {
 		key = key || uuid();
 		this.#store.set(key, config);
 		return key;
@@ -151,7 +151,7 @@ export class ConfigProvider {
 		const configs = Array.from(resolvedKeys)
 			.map(name => this.#store.get(name))
 			.filter(nonNullableFilter);
-		let resultConfig: Config = {};
+		let resultConfig: OptimizedConfig = {};
 		for (const config of configs) {
 			resultConfig = mergeConfig(resultConfig, config);
 		}
@@ -162,16 +162,17 @@ export class ConfigProvider {
 		};
 	}
 
-	private _pathResolve(config: Config, filePath: string): Config {
+	private _pathResolve(config: Config, filePath: string): OptimizedConfig {
+		const optimizedConfig = mergeConfig(config);
 		const dir = path.dirname(filePath);
 		return {
-			...config,
-			extends: pathResolve(dir, config.extends),
-			plugins: pathResolve(dir, config.plugins, ['name']),
-			parser: pathResolve(dir, config.parser),
-			specs: pathResolve(dir, config.specs),
-			excludeFiles: pathResolve(dir, config.excludeFiles),
-			overrides: pathResolve(dir, config.overrides, undefined, true),
+			...optimizedConfig,
+			extends: pathResolve(dir, optimizedConfig.extends),
+			plugins: pathResolve(dir, optimizedConfig.plugins, ['name']),
+			parser: pathResolve(dir, optimizedConfig.parser),
+			specs: pathResolve(dir, optimizedConfig.specs),
+			excludeFiles: pathResolve(dir, optimizedConfig.excludeFiles),
+			overrides: pathResolve(dir, optimizedConfig.overrides, undefined, true),
 		};
 	}
 

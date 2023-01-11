@@ -3,7 +3,7 @@ import type { RegexSelector } from '@markuplint/selector';
 
 export type { RegexSelector } from '@markuplint/selector';
 
-export interface Config {
+export type Config = {
 	$schema?: string;
 	extends?: string | string[];
 	plugins?: (PluginConfig | string)[];
@@ -15,12 +15,22 @@ export interface Config {
 	rules?: Rules;
 	nodeRules?: NodeRule[];
 	childNodeRules?: ChildNodeRule[];
-	overrides?: Record<string, Omit<Config, '$schema' | 'extends' | 'overrides'>>;
-}
+	overrides?: Record<string, OverrodeConfig>;
+};
+
+export type OverrodeConfig = Omit<Config, '$schema' | 'extends' | 'overrides'>;
+
+export type OptimizedConfig = Omit<Config, '$schema' | 'extends' | 'plugins' | 'overrides'> & {
+	extends?: string[];
+	plugins?: PluginConfig[];
+	overrides?: Record<string, OptimizedOverrodeConfig>;
+};
+
+export type OptimizedOverrodeConfig = Omit<OptimizedConfig, 'extends' | 'overrides'>;
 
 export type PluginConfig = {
 	name: string;
-	settings: Record<string, any>;
+	settings?: Record<string, any>;
 };
 
 export interface ParserConfig {

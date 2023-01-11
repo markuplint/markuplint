@@ -1,18 +1,41 @@
-import type { Config, Nullable, AnyRule, AnyRuleV2, Rules } from './types';
+import type {
+	Config,
+	Nullable,
+	AnyRule,
+	AnyRuleV2,
+	Rules,
+	OptimizedConfig,
+	OverrodeConfig,
+	OptimizedOverrodeConfig,
+} from './types';
 
 import deepmerge from 'deepmerge';
 
 import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils';
 
-export function mergeConfig(a: Config, b: Config): Config {
-	const config: Config = {
+export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
+	const deleteExtendsProp = !!b;
+	b = b ?? {};
+	const config: OptimizedConfig = {
 		...a,
 		...b,
-		plugins: concatArray(a.plugins, b.plugins, true, 'name'),
+		extends: concatArray(
+			Array.isArray(a.extends) ? a.extends : a.extends ? [a.extends] : [],
+			Array.isArray(b.extends) ? b.extends : b.extends ? [b.extends] : [],
+		),
+		plugins: concatArray(a.plugins, b.plugins, true, 'name')?.map(plugin => {
+			if (typeof plugin === 'string') {
+				return {
+					name: plugin,
+				};
+			}
+			return plugin;
+		}),
 		parser: mergeObject(a.parser, b.parser),
 		parserOptions: mergeObject(a.parserOptions, b.parserOptions),
 		specs: mergeObject(a.specs, b.specs),
 		excludeFiles: concatArray(a.excludeFiles, b.excludeFiles, true),
+		pretenders: concatArray(a.pretenders, b.pretenders),
 		rules: mergeRules(
 			// TODO: Deep merge
 			a.rules,
@@ -20,10 +43,11 @@ export function mergeConfig(a: Config, b: Config): Config {
 		),
 		nodeRules: concatArray(a.nodeRules, b.nodeRules),
 		childNodeRules: concatArray(a.childNodeRules, b.childNodeRules),
-		overrides: mergeObject(a.overrides, b.overrides),
-		// delete all
-		extends: undefined,
+		overrides: mergeOverrides(a.overrides, b.overrides),
 	};
+	if (deleteExtendsProp) {
+		delete config.extends;
+	}
 	deleteUndefProp(config);
 	return config;
 }
@@ -72,6 +96,35 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 	};
 	deleteUndefProp(res);
 	return res;
+}
+
+function mergeOverrides(
+	a: Record<string, OverrodeConfig> = {},
+	b: Record<string, OverrodeConfig> = {},
+): Record<string, OptimizedOverrodeConfig> | undefined {
+	const keys = new Set<string>();
+	Object.keys(a).forEach(key => keys.add(key));
+	Object.keys(b).forEach(key => keys.add(key));
+
+	if (!keys.size) {
+		return;
+	}
+
+	const result: Record<string, OptimizedOverrodeConfig> = {};
+
+	for (const key of keys) {
+		const config = mergeConfig(a[key] ?? {}, b[key] ?? {});
+		// @ts-ignore
+		delete config.$schema;
+		// @ts-ignore
+		delete config.extends;
+		// @ts-ignore
+		delete config.overrides;
+		deleteUndefProp(config);
+		result[key] = config;
+	}
+
+	return result;
 }
 
 function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
