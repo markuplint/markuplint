@@ -16,10 +16,16 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@markuplint/ml-config": "3.1.0"
+		"@markuplint/ml-config": "3.1.0",
+		"@types/meow": "^6.0.0"
 	},
 	"dependencies": {
 		"@markuplint/parser-utils": "3.1.0",
-		"typescript": "^4.9.4"
+		"glob": "^8.0.3",
+		"typescript": "^4.9.4",
+		"meow": "9"
+	},
+	"peerDependencies": {
+		"markuplint": "3.1.0"
 	}
 }

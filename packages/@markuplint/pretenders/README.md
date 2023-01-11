@@ -6,3 +6,16 @@
 
 It loads components and then creates the [`pretenders`](https://markuplint.dev/docs/guides/besides-html#pretenders) data from them.
 
+## Install
+
+```sh
+$ npm install -D @markuplint/pretenders
+
+$ yarn add -D @markuplint/pretenders
+```
+
+## Usage
+
+```sh
+$ mlpt "**/*.jsx" --out "./pretenders.json"
+```

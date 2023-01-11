@@ -31,6 +31,11 @@ export type SpecConfig = {
 	[extensionPattern: string]: string /* module name or path */;
 };
 
+export type PretenderFileData = {
+	version: string;
+	data: Pretender[];
+};
+
 export type Pretender = {
 	/**
 	 * Target node selectors
