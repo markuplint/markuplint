@@ -1008,7 +1008,8 @@ describe('Pretenders Option', () => {
 				severity: 'error',
 				line: 1,
 				col: 5,
-				message: 'The "div" element is not allowed in the "ul" element in this context',
+				message:
+					'The "div" element is not allowed in the "ul" element in this context; <MyComponent> was evaluated as <div>.',
 				raw: '<MyComponent/>',
 			},
 		]);
@@ -1079,7 +1080,8 @@ describe('Pretenders Option', () => {
 				severity: 'error',
 				line: 1,
 				col: 9,
-				message: 'The "a" element is a transparent model but also disallows the "div" element in this context',
+				message:
+					'The "a" element is a transparent model but also disallows the "div" element in this context; <MyComponent> was evaluated as <div>.',
 				raw: '<MyComponent/>',
 			},
 		]);

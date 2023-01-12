@@ -1,5 +1,6 @@
 import type { Ruleset } from '..';
 import type { MLDocument } from '../ml-dom/node/document';
+import type { MLElement } from '../ml-dom/node/element';
 import type { RuleSeed } from './types';
 import type { LocaleSet } from '@markuplint/i18n';
 import type {
@@ -11,6 +12,8 @@ import type {
 	Severity,
 	Violation,
 } from '@markuplint/ml-config';
+
+import { translator } from '@markuplint/i18n';
 
 import { MLRuleContext } from './ml-rule-context';
 
@@ -121,9 +124,29 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 					col = report.col;
 					raw = report.raw;
 				}
+
+				let message = report.message;
+
+				// @ts-ignore
+				if (report.scope.pretenderContext) {
+					const node = report.scope as MLElement<T, O>;
+					if (node.pretenderContext && node.pretenderContext.type === 'pretender') {
+						const t = translator(locale);
+						message +=
+							// Added message
+							t(
+								'; <{0*}> was evaluated as <{1*}>',
+								node.pretenderContext.origin.localName,
+								node.pretenderContext.as.localName,
+							) +
+							// Source code file path, line, and column
+							(node.pretenderContext.filePath ? `: ${node.pretenderContext.filePath}` : t('.'));
+					}
+				}
+
 				const violation: Violation = {
 					severity: report.scope.rule.severity,
-					message: report.message,
+					message,
 					line,
 					col,
 					raw,

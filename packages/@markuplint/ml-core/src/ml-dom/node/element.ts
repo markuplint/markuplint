@@ -2755,8 +2755,12 @@ export class MLElement<T extends RuleConfigValue, O = null>
 
 		this.pretenderContext = {
 			type: 'pretender',
+			origin: {
+				localName: originName,
+			},
 			as,
 			aria,
+			filePath: pretenderConfig.filePath,
 		};
 
 		ptLog('<%s> pretends as: %s', originName, as.toNormalizeString());

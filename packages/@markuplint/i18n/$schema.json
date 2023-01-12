@@ -161,6 +161,7 @@
 			"type": "object",
 			"additionalProperties": false,
 			"properties": {
+				"; <{0}> was evaluated as <{1}>": { "type": "string" },
 				"{0:c} and {1:c}": { "type": "string" },
 				"{0:c} on {1}": { "type": "string" },
 				"{0} ({1})": { "type": "string" },
