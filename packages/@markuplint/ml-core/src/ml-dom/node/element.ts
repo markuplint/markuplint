@@ -9,6 +9,7 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 import { resolveNamespace } from '@markuplint/ml-spec';
 import { createSelector } from '@markuplint/selector';
 
+import { log as coreLog } from '../../debug';
 import { stringSplice } from '../../utils/string-splice';
 import { getAccname } from '../helper/accname';
 import {
@@ -29,6 +30,10 @@ import { MLParentNode } from './parent-node';
 import UnexpectedCallError from './unexpected-call-error';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+
+const log = coreLog.extend('ml-dom');
+const elLog = log.extend('element');
+const ptLog = elLog.extend('pretender');
 
 export class MLElement<T extends RuleConfigValue, O = null>
 	extends MLParentNode<T, O, MLASTElement>
@@ -2655,6 +2660,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 			return;
 		}
 
+		const originName = this.localName;
+
+		ptLog('<%s> matched config: %O', originName, pretenderConfig);
+
 		let nodeName: string;
 		let namespace = 'html';
 		const attributes: MLASTAttr[] = [];
@@ -2749,6 +2758,8 @@ export class MLElement<T extends RuleConfigValue, O = null>
 			as,
 			aria,
 		};
+
+		ptLog('<%s> pretends as: %s', originName, as.toNormalizeString());
 	}
 
 	/**
