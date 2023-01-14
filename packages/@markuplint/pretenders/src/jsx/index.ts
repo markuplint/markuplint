@@ -15,6 +15,12 @@ const jsxOptions = {
 	cwd: process.cwd(),
 	asFragment: [/(?:^|\.)Provider$/i] as (RegExp | string)[],
 	ignoreComponentNames: [] as string[],
+	taggedStylingComponent: [
+		// PropertyAccessExpression: styled.button`css-prop: value;`
+		/^styled\.(?<tagName>[a-z][a-z0-9]*)$/i,
+		// CallExpression: styled(Button)`css-prop: value;`
+		/^styled\s*\(\s*(?<tagName>[a-z][a-z0-9]*)\s*\)$/i,
+	] as (RegExp | string)[],
 };
 
 export function fromJSX(filePath: string[], options: Partial<typeof jsxOptions> = jsxOptions): Pretender[] {
@@ -22,6 +28,7 @@ export function fromJSX(filePath: string[], options: Partial<typeof jsxOptions> 
 		cwd = jsxOptions.cwd,
 		asFragment = jsxOptions.asFragment,
 		ignoreComponentNames = jsxOptions.ignoreComponentNames,
+		taggedStylingComponent = jsxOptions.taggedStylingComponent,
 	} = options;
 
 	const director = new PretenderDirector();
@@ -143,6 +150,37 @@ export function fromJSX(filePath: string[], options: Partial<typeof jsxOptions> 
 			 * ```
 			 */
 			find(fn, ts.isJsxFragment, foundFragment);
+		});
+
+		find(root, ts.isTaggedTemplateExpression, tagged => {
+			const tag = tagged.tag.getText(sourceFile);
+
+			/**
+			 * ```
+			 * styled.button`
+			 * -------^
+			 *  margin: ${margin};
+			 *  padding: ${padding};
+			 * `
+			 * ```
+			 */
+			for (const _pattern of taggedStylingComponent) {
+				const pattern = typeof _pattern === 'string' ? toRegexp(_pattern) : _pattern;
+				const tagName = pattern.exec(tag)?.groups?.tagName;
+				if (!tagName) {
+					continue;
+				}
+				director.add(
+					name,
+					{
+						element: tagName,
+						inheritAttrs: true,
+					},
+					fileName,
+					startLine,
+					startCol,
+				);
+			}
 		});
 
 		function foundFragment(fragment: ts.JsxFragment) {

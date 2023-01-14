@@ -79,4 +79,41 @@ describe('fromJSX', () => {
 			}),
 		).toStrictEqual([]);
 	});
+
+	test('003', () => {
+		expect(fromJSX([path.resolve(__dirname, '../../test/fixtures/003.tsx')])).toStrictEqual([
+			{
+				selector: 'Button',
+				as: {
+					element: 'button',
+					inheritAttrs: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:2:6'),
+			},
+			{
+				selector: 'MyComponent2',
+				_via: ['Button'],
+				as: {
+					element: 'button',
+					inheritAttrs: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:2:6'),
+			},
+		]);
+
+		expect(
+			fromJSX([path.resolve(__dirname, '../../test/fixtures/003.tsx')], {
+				taggedStylingComponent: [/^ORIGINAL_IDENTIFIER\.(?<tagName>[a-z][a-z0-9]*)$/],
+			}),
+		).toStrictEqual([
+			{
+				selector: 'MyComponent',
+				as: {
+					element: 'div',
+					inheritAttrs: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:7:6'),
+			},
+		]);
+	});
 });
