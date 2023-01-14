@@ -116,4 +116,35 @@ describe('fromJSX', () => {
 			},
 		]);
 	});
+
+	test('004', () => {
+		expect(
+			fromJSX([path.resolve(__dirname, '../../test/fixtures/004.tsx')], {
+				extendingWrapper: [
+					'secondary',
+					{
+						identifier: '/namespace\\.[a-z]+/i',
+						numberOfArgument: 2,
+					},
+				],
+			}),
+		).toStrictEqual([
+			{
+				selector: 'AnyPrimaryButton',
+				as: {
+					element: 'Button',
+					inheritAttrs: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/004.tsx:2:6'),
+			},
+			{
+				selector: 'SecondaryButton',
+				as: {
+					element: 'Button',
+					inheritAttrs: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/004.tsx:1:6'),
+			},
+		]);
+	});
 });

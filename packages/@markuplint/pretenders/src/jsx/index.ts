@@ -21,6 +21,12 @@ const jsxOptions = {
 		// CallExpression: styled(Button)`css-prop: value;`
 		/^styled\s*\(\s*(?<tagName>[a-z][a-z0-9]*)\s*\)$/i,
 	] as (RegExp | string)[],
+	extendingWrapper: [] as (string | RegExp | ExtendingWrapperCallerOptions)[],
+};
+
+type ExtendingWrapperCallerOptions = {
+	identifier: string | RegExp;
+	numberOfArgument: number;
 };
 
 export function fromJSX(filePath: string[], options: Partial<typeof jsxOptions> = jsxOptions): Pretender[] {
@@ -29,6 +35,7 @@ export function fromJSX(filePath: string[], options: Partial<typeof jsxOptions> 
 		asFragment = jsxOptions.asFragment,
 		ignoreComponentNames = jsxOptions.ignoreComponentNames,
 		taggedStylingComponent = jsxOptions.taggedStylingComponent,
+		extendingWrapper = jsxOptions.extendingWrapper,
 	} = options;
 
 	const director = new PretenderDirector();
@@ -170,6 +177,58 @@ export function fromJSX(filePath: string[], options: Partial<typeof jsxOptions> 
 				if (!tagName) {
 					continue;
 				}
+				director.add(
+					name,
+					{
+						element: tagName,
+						inheritAttrs: true,
+					},
+					fileName,
+					startLine,
+					startCol,
+				);
+			}
+		});
+
+		find(root, ts.isCallExpression, method => {
+			const caller = method.expression.getText(sourceFile);
+
+			/**
+			 * ```
+			 * functionCaller(Button)
+			 * ---------------^
+			 * ```
+			 *
+			 * Options: `{ numberOfArgument: 2 }`
+			 * ```
+			 * namespace.functionCaller(true, Button)
+			 * -------------------------------^
+			 * ```
+			 */
+			for (const _pattern of extendingWrapper) {
+				let pattern: RegExp;
+				let numberOfArgument = 1;
+				if (typeof _pattern === 'string') {
+					pattern = toRegexp(_pattern);
+				} else if ('identifier' in _pattern) {
+					pattern =
+						typeof _pattern.identifier === 'string' ? toRegexp(_pattern.identifier) : _pattern.identifier;
+					numberOfArgument = _pattern.numberOfArgument;
+				} else {
+					pattern = _pattern;
+				}
+
+				if (!pattern.exec(caller)) {
+					continue;
+				}
+
+				const arg = method.arguments[numberOfArgument - 1];
+				const tagName = arg?.getText(sourceFile);
+
+				if (!tagName) {
+					continue;
+				}
+
 				director.add(
 					name,
 					{
