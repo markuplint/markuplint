@@ -11,20 +11,36 @@ export function attr(attr: MLASTAttr): MLASTAttr {
 		return attr;
 	}
 
-	/**
-	 * If data-binding attributes
-	 */
-	const [, directive, potentialName] = attr.name.raw.match(/^(v-bind:|:)(.+)$/i) || [];
-	if (directive && potentialName) {
-		if (duplicatableAttrs.includes(potentialName.toLowerCase())) {
-			attr.isDuplicatable = true;
-		}
+	{
+		/**
+		 * If data-binding attributes
+		 */
+		const [, directive, potentialName] = attr.name.raw.match(/^(v-bind:|:)(.+)$/i) || [];
+		if (directive && potentialName) {
+			if (duplicatableAttrs.includes(potentialName.toLowerCase())) {
+				attr.isDuplicatable = true;
+			}
 
-		return {
-			...attr,
-			potentialName,
-			isDynamicValue: true,
-		};
+			return {
+				...attr,
+				potentialName,
+				isDynamicValue: true,
+			};
+		}
+	}
+
+	{
+		/**
+		 * `v-slot` shorthand
+		 */
+		const [, , slotName] = attr.name.raw.match(/^(#)(.+)$/i) || [];
+		if (slotName) {
+			return {
+				...attr,
+				potentialName: `v-slot:${slotName}`,
+				isDirective: true,
+			};
+		}
 	}
 
 	/**

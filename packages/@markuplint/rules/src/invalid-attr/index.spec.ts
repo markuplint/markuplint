@@ -960,4 +960,16 @@ describe('Issues', () => {
 		expect((await mlRuleTest(rule, '<div class="md:flex"></div>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<svg><rect class="md:flex"/></svg>')).violations).toStrictEqual([]);
 	});
+
+	test('#678', async () => {
+		const vue = {
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+		};
+
+		expect(
+			(await mlRuleTest(rule, '<template><div><template #header></template></div></template>', vue)).violations,
+		).toStrictEqual([]);
+	});
 });

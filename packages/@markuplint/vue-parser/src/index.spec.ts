@@ -388,4 +388,36 @@ describe('parser', () => {
 		expect((parse('<template><Transition/></template>').nodeList[0] as MLASTElement).elementType).toBe('authored');
 		expect((parse('<template><transition/></template>').nodeList[0] as MLASTElement).elementType).toBe('html');
 	});
+
+	it('Directives', () => {
+		const doc = parse(`
+	<template>
+		<div>
+			<template #header></template>
+		</div>
+	</template>
+	`);
+		const map = nodeListToDebugMaps(doc.nodeList, true);
+		expect(map).toStrictEqual([
+			'[2:12]>[3:3](12,15)#text: ⏎→→',
+			'[3:3]>[3:8](15,20)div: <div>',
+			'[3:8]>[4:4](20,24)#text: ⏎→→→',
+			'[4:4]>[4:22](24,42)template: <template␣#header>',
+			'[4:14]>[4:21](34,41)v-slot:header: #header',
+			'  [4:13]>[4:14](33,34)bN: ␣',
+			'  [4:14]>[4:21](34,41)name: #header',
+			'  [4:21]>[4:21](41,41)bE: ',
+			'  [4:21]>[4:21](41,41)equal: ',
+			'  [4:21]>[4:21](41,41)aE: ',
+			'  [4:21]>[4:21](41,41)sQ: ',
+			'  [4:21]>[4:21](41,41)value: ',
+			'  [4:21]>[4:21](41,41)eQ: ',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+			'  potentialName: v-slot:header',
+			'[4:33]>[5:3](53,56)#text: ⏎→→',
+			'[5:3]>[5:9](56,62)div: </div>',
+			'[5:9]>[6:2](62,64)#text: ⏎→',
+		]);
+	});
 });
