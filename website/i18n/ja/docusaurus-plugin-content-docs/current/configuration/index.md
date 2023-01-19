@@ -33,11 +33,11 @@
 優先的に適用されるファイル名は以下のとおりです。
 
 - `markuplint`プロパティ（`package.json`内）
-- `markuplintrc.json`
-- `markuplintrc.yaml`
-- `markuplintrc.yml`
-- `markuplintrc.js`
-- `markuplintrc.cjs`
+- `.markuplintrc.json`
+- `.markuplintrc.yaml`
+- `.markuplintrc.yml`
+- `.markuplintrc.js`
+- `.markuplintrc.cjs`
 - `markuplint.config.js`
 - `markuplint.config.cjs`
 
