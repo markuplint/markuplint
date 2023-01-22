@@ -1,12 +1,12 @@
 ---
-description: select要素にrequired属性がある場合、プレースホルダーラベルオプションを持っているかどうかを確認します。
+description: select要素にプレースホルダーラベルオプションが必要か確認します。
 ---
 
 # `placeholder-label-option`
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
-`select`要素に`required`属性がある場合、**プレースホルダーラベルオプション**を持っているかどうかを確認します。
+`select`要素に**プレースホルダーラベルオプション**が必要か確認します。
 
 > select要素がrequired属性を指定され、multiple属性を指定されず、1である表示サイズを持つ場合、および（もしあれば）select要素の選択肢のリストで最初のoptionの値が空文字列であり、そのoption要素の親ノードがselect要素（かつoptgroup要素でない）場合、そのoptionは、select要素のプレースホルダーのラベルオプションである。
 >
@@ -19,22 +19,14 @@ description: select要素にrequired属性がある場合、プレースホル�
 ❌ 間違ったコード例
 
 ```html
-<!-- 不正: multiple属性を持っている -->
-<select required multiple>
-  <option value="">プレースホルダー</option>
-  <option value="option1">オプション1</option>
-  <option value="option2">オプション2</option>
-</select>
-
-<!-- 不正: sizeが1以外 -->
-<select required size="2">
-  <option value="">プレースホルダー</option>
-  <option value="option1">オプション1</option>
-  <option value="option2">オプション2</option>
-</select>
-
 <!-- 不正: 最初のoption要素の値が空でない -->
 <select required>
+  <option value="placeholder">プレースホルダー</option>
+  <option value="option1">オプション1</option>
+  <option value="option2">オプション2</option>
+</select>
+
+<select required size="1">
   <option value="placeholder">プレースホルダー</option>
   <option value="option1">オプション1</option>
   <option value="option2">オプション2</option>
@@ -53,10 +45,25 @@ description: select要素にrequired属性がある場合、プレースホル�
 ✅ 正しいコード例
 
 ```html
+<!-- 妥当: プレースホルダーラベルオプションを持っている -->
 <select required>
   <option value="">プレースホルダー</option>
   <option value="option1">オプション1</option>
   <option value="option2">オプション2</option>
+</select>
+
+<!-- 妥当: プレースホルダーラベルオプションを持っていないが、multiple属性を持っている -->
+<select required multiple>
+  <option value="placeholder">プレースホルダー</option>
+  <option value="option1">Option 1</option>
+  <option value="option2">Option 2</option>
+</select>
+
+<!-- 妥当: プレースホルダーラベルオプションを持っていないが、1より大きいsize属性を持っている -->
+<select required size="2">
+  <option value="placeholder">プレースホルダー</option>
+  <option value="option1">Option 1</option>
+  <option value="option2">Option 2</option>
 </select>
 ```
 
