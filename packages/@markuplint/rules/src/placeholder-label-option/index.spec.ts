@@ -15,52 +15,32 @@ test('Valid placeholder', async () => {
 			)
 		).violations,
 	).toStrictEqual([]);
-});
 
-test('Invalid: has multiple', async () => {
 	expect(
 		(
 			await mlRuleTest(
 				rule,
 				`<select required multiple>
-					<option value="">Placeholder</option>
+					<option value="placeholder">Placeholder</option>
 					<option value="option1">Option 1</option>
 					<option value="option2">Option 2</option>
 				</select>`,
 			)
 		).violations,
-	).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 9,
-			raw: 'required',
-			message: 'Need the placeholder label option if it has the "required" attribute',
-		},
-	]);
-});
+	).toStrictEqual([]);
 
-test('Invalid: has size other than 1', async () => {
 	expect(
 		(
 			await mlRuleTest(
 				rule,
 				`<select required size="2">
-					<option value="">Placeholder</option>
+					<option value="placeholder">Placeholder</option>
 					<option value="option1">Option 1</option>
 					<option value="option2">Option 2</option>
 				</select>`,
 			)
 		).violations,
-	).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 9,
-			raw: 'required',
-			message: 'Need the placeholder label option if it has the "required" attribute',
-		},
-	]);
+	).toStrictEqual([]);
 });
 
 test("Invalid: first option element's value is not empty", async () => {
@@ -79,9 +59,30 @@ test("Invalid: first option element's value is not empty", async () => {
 		{
 			severity: 'error',
 			line: 1,
-			col: 9,
-			raw: 'required',
-			message: 'Need the placeholder label option if it has the "required" attribute',
+			col: 1,
+			raw: '<select required>',
+			message: 'Need the placeholder label option',
+		},
+	]);
+
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<select required size="1">
+					<option value="placeholder">Placeholder</option>
+					<option value="option1">Option 1</option>
+					<option value="option2">Option 2</option>
+				</select>`,
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<select required size="1">',
+			message: 'Need the placeholder label option',
 		},
 	]);
 });
@@ -104,9 +105,9 @@ test("Invalid: Invalid: first option element's parent is optgroup", async () => 
 		{
 			severity: 'error',
 			line: 1,
-			col: 9,
-			raw: 'required',
-			message: 'Need the placeholder label option if it has the "required" attribute',
+			col: 1,
+			raw: '<select required>',
+			message: 'Need the placeholder label option',
 		},
 	]);
 });
