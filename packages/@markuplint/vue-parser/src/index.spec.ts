@@ -350,7 +350,7 @@ describe('parser', () => {
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[2].potentialName).toBe('data-attr2');
 		// @ts-ignore
-		expect(doc.nodeList[0].attributes[3].isDirective).toBeTruthy();
+		expect(doc.nodeList[0].attributes[3].isDirective).toBeFalsy();
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[4].isDirective).toBeTruthy();
 	});
