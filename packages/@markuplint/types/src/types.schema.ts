@@ -9,35 +9,70 @@ export type Type = KeywordDefinedType | List | Enum | Number;
 export type KeywordDefinedType = CssSyntax | ExtendedType | HtmlAttrRequirement;
 export type CssSyntax =
 	| "<'--*'>"
+	| "<'-moz-appearance'>"
+	| "<'-moz-background-clip'>"
+	| "<'-moz-binding'>"
+	| "<'-moz-border-bottom-colors'>"
+	| "<'-moz-border-left-colors'>"
+	| "<'-moz-border-radius-bottomleft'>"
+	| "<'-moz-border-radius-bottomright'>"
+	| "<'-moz-border-radius-topleft'>"
+	| "<'-moz-border-radius-topright'>"
+	| "<'-moz-border-right-colors'>"
+	| "<'-moz-border-top-colors'>"
+	| "<'-moz-context-properties'>"
+	| "<'-moz-control-character-visibility'>"
+	| "<'-moz-float-edge'>"
+	| "<'-moz-force-broken-image-icon'>"
+	| "<'-moz-image-region'>"
+	| "<'-moz-orient'>"
+	| "<'-moz-osx-font-smoothing'>"
+	| "<'-moz-outline-radius'>"
+	| "<'-moz-outline-radius-bottomleft'>"
+	| "<'-moz-outline-radius-bottomright'>"
+	| "<'-moz-outline-radius-topleft'>"
+	| "<'-moz-outline-radius-topright'>"
+	| "<'-moz-stack-sizing'>"
+	| "<'-moz-text-blink'>"
+	| "<'-moz-user-focus'>"
+	| "<'-moz-user-input'>"
+	| "<'-moz-user-modify'>"
+	| "<'-moz-user-select'>"
+	| "<'-moz-window-dragging'>"
+	| "<'-moz-window-shadow'>"
 	| "<'-ms-accelerator'>"
 	| "<'-ms-block-progression'>"
 	| "<'-ms-content-zoom-chaining'>"
-	| "<'-ms-content-zooming'>"
 	| "<'-ms-content-zoom-limit'>"
 	| "<'-ms-content-zoom-limit-max'>"
 	| "<'-ms-content-zoom-limit-min'>"
 	| "<'-ms-content-zoom-snap'>"
 	| "<'-ms-content-zoom-snap-points'>"
 	| "<'-ms-content-zoom-snap-type'>"
+	| "<'-ms-content-zooming'>"
 	| "<'-ms-filter'>"
+	| "<'-ms-flex-align'>"
+	| "<'-ms-flex-item-align'>"
+	| "<'-ms-flex-line-pack'>"
+	| "<'-ms-flex-negative'>"
+	| "<'-ms-flex-order'>"
+	| "<'-ms-flex-pack'>"
+	| "<'-ms-flex-positive'>"
+	| "<'-ms-flex-preferred-size'>"
 	| "<'-ms-flow-from'>"
 	| "<'-ms-flow-into'>"
+	| "<'-ms-grid-column-align'>"
 	| "<'-ms-grid-columns'>"
+	| "<'-ms-grid-row-align'>"
 	| "<'-ms-grid-rows'>"
 	| "<'-ms-high-contrast-adjust'>"
 	| "<'-ms-hyphenate-limit-chars'>"
+	| "<'-ms-hyphenate-limit-last'>"
 	| "<'-ms-hyphenate-limit-lines'>"
 	| "<'-ms-hyphenate-limit-zone'>"
 	| "<'-ms-ime-align'>"
+	| "<'-ms-interpolation-mode'>"
 	| "<'-ms-overflow-style'>"
-	| "<'-ms-scrollbar-3dlight-color'>"
-	| "<'-ms-scrollbar-arrow-color'>"
-	| "<'-ms-scrollbar-base-color'>"
-	| "<'-ms-scrollbar-darkshadow-color'>"
-	| "<'-ms-scrollbar-face-color'>"
-	| "<'-ms-scrollbar-highlight-color'>"
-	| "<'-ms-scrollbar-shadow-color'>"
-	| "<'-ms-scrollbar-track-color'>"
 	| "<'-ms-scroll-chaining'>"
 	| "<'-ms-scroll-limit'>"
 	| "<'-ms-scroll-limit-x-max'>"
@@ -51,44 +86,35 @@ export type CssSyntax =
 	| "<'-ms-scroll-snap-x'>"
 	| "<'-ms-scroll-snap-y'>"
 	| "<'-ms-scroll-translation'>"
+	| "<'-ms-scrollbar-3dlight-color'>"
+	| "<'-ms-scrollbar-arrow-color'>"
+	| "<'-ms-scrollbar-base-color'>"
+	| "<'-ms-scrollbar-darkshadow-color'>"
+	| "<'-ms-scrollbar-face-color'>"
+	| "<'-ms-scrollbar-highlight-color'>"
+	| "<'-ms-scrollbar-shadow-color'>"
+	| "<'-ms-scrollbar-track-color'>"
 	| "<'-ms-text-autospace'>"
 	| "<'-ms-touch-select'>"
 	| "<'-ms-user-select'>"
 	| "<'-ms-wrap-flow'>"
 	| "<'-ms-wrap-margin'>"
 	| "<'-ms-wrap-through'>"
-	| "<'-moz-appearance'>"
-	| "<'-moz-binding'>"
-	| "<'-moz-border-bottom-colors'>"
-	| "<'-moz-border-left-colors'>"
-	| "<'-moz-border-right-colors'>"
-	| "<'-moz-border-top-colors'>"
-	| "<'-moz-context-properties'>"
-	| "<'-moz-float-edge'>"
-	| "<'-moz-force-broken-image-icon'>"
-	| "<'-moz-image-region'>"
-	| "<'-moz-orient'>"
-	| "<'-moz-outline-radius'>"
-	| "<'-moz-outline-radius-bottomleft'>"
-	| "<'-moz-outline-radius-bottomright'>"
-	| "<'-moz-outline-radius-topleft'>"
-	| "<'-moz-outline-radius-topright'>"
-	| "<'-moz-stack-sizing'>"
-	| "<'-moz-text-blink'>"
-	| "<'-moz-user-focus'>"
-	| "<'-moz-user-input'>"
-	| "<'-moz-user-modify'>"
-	| "<'-moz-window-dragging'>"
-	| "<'-moz-window-shadow'>"
 	| "<'-webkit-appearance'>"
+	| "<'-webkit-background-clip'>"
 	| "<'-webkit-border-before'>"
 	| "<'-webkit-border-before-color'>"
 	| "<'-webkit-border-before-style'>"
 	| "<'-webkit-border-before-width'>"
 	| "<'-webkit-box-reflect'>"
+	| "<'-webkit-column-break-after'>"
+	| "<'-webkit-column-break-before'>"
+	| "<'-webkit-column-break-inside'>"
+	| "<'-webkit-font-smoothing'>"
 	| "<'-webkit-line-clamp'>"
 	| "<'-webkit-mask'>"
 	| "<'-webkit-mask-attachment'>"
+	| "<'-webkit-mask-box-image'>"
 	| "<'-webkit-mask-clip'>"
 	| "<'-webkit-mask-composite'>"
 	| "<'-webkit-mask-image'>"
@@ -101,19 +127,26 @@ export type CssSyntax =
 	| "<'-webkit-mask-repeat-y'>"
 	| "<'-webkit-mask-size'>"
 	| "<'-webkit-overflow-scrolling'>"
+	| "<'-webkit-print-color-adjust'>"
 	| "<'-webkit-tap-highlight-color'>"
 	| "<'-webkit-text-fill-color'>"
+	| "<'-webkit-text-security'>"
 	| "<'-webkit-text-stroke'>"
 	| "<'-webkit-text-stroke-color'>"
 	| "<'-webkit-text-stroke-width'>"
 	| "<'-webkit-touch-callout'>"
+	| "<'-webkit-user-drag'>"
 	| "<'-webkit-user-modify'>"
+	| "<'-webkit-user-select'>"
+	| "<'accent-color'>"
 	| "<'align-content'>"
 	| "<'align-items'>"
 	| "<'align-self'>"
 	| "<'align-tracks'>"
+	| "<'alignment-baseline'>"
 	| "<'all'>"
 	| "<'animation'>"
+	| "<'animation-composition'>"
 	| "<'animation-delay'>"
 	| "<'animation-direction'>"
 	| "<'animation-duration'>"
@@ -121,6 +154,7 @@ export type CssSyntax =
 	| "<'animation-iteration-count'>"
 	| "<'animation-name'>"
 	| "<'animation-play-state'>"
+	| "<'animation-timeline'>"
 	| "<'animation-timing-function'>"
 	| "<'appearance'>"
 	| "<'aspect-ratio'>"
@@ -139,13 +173,13 @@ export type CssSyntax =
 	| "<'background-position-y'>"
 	| "<'background-repeat'>"
 	| "<'background-size'>"
+	| "<'baseline-shift'>"
+	| "<'behavior'>"
 	| "<'block-overflow'>"
 	| "<'block-size'>"
 	| "<'border'>"
 	| "<'border-block'>"
 	| "<'border-block-color'>"
-	| "<'border-block-style'>"
-	| "<'border-block-width'>"
 	| "<'border-block-end'>"
 	| "<'border-block-end-color'>"
 	| "<'border-block-end-style'>"
@@ -154,6 +188,8 @@ export type CssSyntax =
 	| "<'border-block-start-color'>"
 	| "<'border-block-start-style'>"
 	| "<'border-block-start-width'>"
+	| "<'border-block-style'>"
+	| "<'border-block-width'>"
 	| "<'border-bottom'>"
 	| "<'border-bottom-color'>"
 	| "<'border-bottom-left-radius'>"
@@ -171,10 +207,8 @@ export type CssSyntax =
 	| "<'border-image-source'>"
 	| "<'border-image-width'>"
 	| "<'border-inline'>"
-	| "<'border-inline-end'>"
 	| "<'border-inline-color'>"
-	| "<'border-inline-style'>"
-	| "<'border-inline-width'>"
+	| "<'border-inline-end'>"
 	| "<'border-inline-end-color'>"
 	| "<'border-inline-end-style'>"
 	| "<'border-inline-end-width'>"
@@ -182,6 +216,8 @@ export type CssSyntax =
 	| "<'border-inline-start-color'>"
 	| "<'border-inline-start-style'>"
 	| "<'border-inline-start-width'>"
+	| "<'border-inline-style'>"
+	| "<'border-inline-width'>"
 	| "<'border-left'>"
 	| "<'border-left-color'>"
 	| "<'border-left-style'>"
@@ -218,12 +254,15 @@ export type CssSyntax =
 	| "<'break-before'>"
 	| "<'break-inside'>"
 	| "<'caption-side'>"
+	| "<'caret'>"
 	| "<'caret-color'>"
+	| "<'caret-shape'>"
 	| "<'clear'>"
 	| "<'clip'>"
 	| "<'clip-path'>"
+	| "<'clip-rule'>"
 	| "<'color'>"
-	| "<'color-adjust'>"
+	| "<'color-scheme'>"
 	| "<'column-count'>"
 	| "<'column-fill'>"
 	| "<'column-gap'>"
@@ -235,14 +274,27 @@ export type CssSyntax =
 	| "<'column-width'>"
 	| "<'columns'>"
 	| "<'contain'>"
+	| "<'contain-intrinsic-block-size'>"
+	| "<'contain-intrinsic-height'>"
+	| "<'contain-intrinsic-inline-size'>"
+	| "<'contain-intrinsic-size'>"
+	| "<'contain-intrinsic-width'>"
 	| "<'content'>"
+	| "<'content-visibility'>"
 	| "<'counter-increment'>"
 	| "<'counter-reset'>"
 	| "<'counter-set'>"
+	| "<'cue'>"
+	| "<'cue-after'>"
+	| "<'cue-before'>"
 	| "<'cursor'>"
 	| "<'direction'>"
 	| "<'display'>"
+	| "<'dominant-baseline'>"
 	| "<'empty-cells'>"
+	| "<'fill'>"
+	| "<'fill-opacity'>"
+	| "<'fill-rule'>"
 	| "<'filter'>"
 	| "<'flex'>"
 	| "<'flex-basis'>"
@@ -258,7 +310,6 @@ export type CssSyntax =
 	| "<'font-kerning'>"
 	| "<'font-language-override'>"
 	| "<'font-optical-sizing'>"
-	| "<'font-variation-settings'>"
 	| "<'font-size'>"
 	| "<'font-size-adjust'>"
 	| "<'font-smooth'>"
@@ -272,8 +323,12 @@ export type CssSyntax =
 	| "<'font-variant-ligatures'>"
 	| "<'font-variant-numeric'>"
 	| "<'font-variant-position'>"
+	| "<'font-variation-settings'>"
 	| "<'font-weight'>"
+	| "<'forced-color-adjust'>"
 	| "<'gap'>"
+	| "<'glyph-orientation-horizontal'>"
+	| "<'glyph-orientation-vertical'>"
 	| "<'grid'>"
 	| "<'grid-area'>"
 	| "<'grid-auto-columns'>"
@@ -294,6 +349,7 @@ export type CssSyntax =
 	| "<'grid-template-rows'>"
 	| "<'hanging-punctuation'>"
 	| "<'height'>"
+	| "<'hyphenate-character'>"
 	| "<'hyphens'>"
 	| "<'image-orientation'>"
 	| "<'image-rendering'>"
@@ -302,6 +358,7 @@ export type CssSyntax =
 	| "<'initial-letter'>"
 	| "<'initial-letter-align'>"
 	| "<'inline-size'>"
+	| "<'input-security'>"
 	| "<'inset'>"
 	| "<'inset-block'>"
 	| "<'inset-block-end'>"
@@ -314,6 +371,7 @@ export type CssSyntax =
 	| "<'justify-items'>"
 	| "<'justify-self'>"
 	| "<'justify-tracks'>"
+	| "<'kerning'>"
 	| "<'left'>"
 	| "<'letter-spacing'>"
 	| "<'line-break'>"
@@ -336,6 +394,10 @@ export type CssSyntax =
 	| "<'margin-right'>"
 	| "<'margin-top'>"
 	| "<'margin-trim'>"
+	| "<'marker'>"
+	| "<'marker-end'>"
+	| "<'marker-mid'>"
+	| "<'marker-start'>"
 	| "<'mask'>"
 	| "<'mask-border'>"
 	| "<'mask-border-mode'>"
@@ -354,6 +416,8 @@ export type CssSyntax =
 	| "<'mask-size'>"
 	| "<'mask-type'>"
 	| "<'masonry-auto-flow'>"
+	| "<'math-depth'>"
+	| "<'math-shift'>"
 	| "<'math-style'>"
 	| "<'max-block-size'>"
 	| "<'max-height'>"
@@ -385,6 +449,7 @@ export type CssSyntax =
 	| "<'overflow-anchor'>"
 	| "<'overflow-block'>"
 	| "<'overflow-clip-box'>"
+	| "<'overflow-clip-margin'>"
 	| "<'overflow-inline'>"
 	| "<'overflow-wrap'>"
 	| "<'overflow-x'>"
@@ -409,6 +474,9 @@ export type CssSyntax =
 	| "<'page-break-before'>"
 	| "<'page-break-inside'>"
 	| "<'paint-order'>"
+	| "<'pause'>"
+	| "<'pause-after'>"
+	| "<'pause-before'>"
 	| "<'perspective'>"
 	| "<'perspective-origin'>"
 	| "<'place-content'>"
@@ -416,8 +484,12 @@ export type CssSyntax =
 	| "<'place-self'>"
 	| "<'pointer-events'>"
 	| "<'position'>"
+	| "<'print-color-adjust'>"
 	| "<'quotes'>"
 	| "<'resize'>"
+	| "<'rest'>"
+	| "<'rest-after'>"
+	| "<'rest-before'>"
 	| "<'right'>"
 	| "<'rotate'>"
 	| "<'row-gap'>"
@@ -425,29 +497,26 @@ export type CssSyntax =
 	| "<'ruby-merge'>"
 	| "<'ruby-position'>"
 	| "<'scale'>"
-	| "<'scrollbar-color'>"
-	| "<'scrollbar-gutter'>"
-	| "<'scrollbar-width'>"
 	| "<'scroll-behavior'>"
 	| "<'scroll-margin'>"
 	| "<'scroll-margin-block'>"
-	| "<'scroll-margin-block-start'>"
 	| "<'scroll-margin-block-end'>"
+	| "<'scroll-margin-block-start'>"
 	| "<'scroll-margin-bottom'>"
 	| "<'scroll-margin-inline'>"
-	| "<'scroll-margin-inline-start'>"
 	| "<'scroll-margin-inline-end'>"
+	| "<'scroll-margin-inline-start'>"
 	| "<'scroll-margin-left'>"
 	| "<'scroll-margin-right'>"
 	| "<'scroll-margin-top'>"
 	| "<'scroll-padding'>"
 	| "<'scroll-padding-block'>"
-	| "<'scroll-padding-block-start'>"
 	| "<'scroll-padding-block-end'>"
+	| "<'scroll-padding-block-start'>"
 	| "<'scroll-padding-bottom'>"
 	| "<'scroll-padding-inline'>"
-	| "<'scroll-padding-inline-start'>"
 	| "<'scroll-padding-inline-end'>"
+	| "<'scroll-padding-inline-start'>"
 	| "<'scroll-padding-left'>"
 	| "<'scroll-padding-right'>"
 	| "<'scroll-padding-top'>"
@@ -460,13 +529,32 @@ export type CssSyntax =
 	| "<'scroll-snap-type'>"
 	| "<'scroll-snap-type-x'>"
 	| "<'scroll-snap-type-y'>"
+	| "<'scroll-timeline'>"
+	| "<'scroll-timeline-axis'>"
+	| "<'scroll-timeline-name'>"
+	| "<'scrollbar-color'>"
+	| "<'scrollbar-gutter'>"
+	| "<'scrollbar-width'>"
 	| "<'shape-image-threshold'>"
 	| "<'shape-margin'>"
 	| "<'shape-outside'>"
+	| "<'shape-rendering'>"
+	| "<'speak'>"
+	| "<'speak-as'>"
+	| "<'src'>"
+	| "<'stroke'>"
+	| "<'stroke-dasharray'>"
+	| "<'stroke-dashoffset'>"
+	| "<'stroke-linecap'>"
+	| "<'stroke-linejoin'>"
+	| "<'stroke-miterlimit'>"
+	| "<'stroke-opacity'>"
+	| "<'stroke-width'>"
 	| "<'tab-size'>"
 	| "<'table-layout'>"
 	| "<'text-align'>"
 	| "<'text-align-last'>"
+	| "<'text-anchor'>"
 	| "<'text-combine-upright'>"
 	| "<'text-decoration'>"
 	| "<'text-decoration-color'>"
@@ -502,9 +590,18 @@ export type CssSyntax =
 	| "<'transition-timing-function'>"
 	| "<'translate'>"
 	| "<'unicode-bidi'>"
+	| "<'unicode-range'>"
 	| "<'user-select'>"
 	| "<'vertical-align'>"
 	| "<'visibility'>"
+	| "<'voice-balance'>"
+	| "<'voice-duration'>"
+	| "<'voice-family'>"
+	| "<'voice-pitch'>"
+	| "<'voice-range'>"
+	| "<'voice-rate'>"
+	| "<'voice-stress'>"
+	| "<'voice-volume'>"
 	| "<'white-space'>"
 	| "<'widows'>"
 	| "<'width'>"
@@ -515,109 +612,85 @@ export type CssSyntax =
 	| "<'writing-mode'>"
 	| "<'z-index'>"
 	| "<'zoom'>"
-	| "<'-moz-background-clip'>"
-	| "<'-moz-border-radius-bottomleft'>"
-	| "<'-moz-border-radius-bottomright'>"
-	| "<'-moz-border-radius-topleft'>"
-	| "<'-moz-border-radius-topright'>"
-	| "<'-moz-control-character-visibility'>"
-	| "<'-moz-osx-font-smoothing'>"
-	| "<'-moz-user-select'>"
-	| "<'-ms-flex-align'>"
-	| "<'-ms-flex-item-align'>"
-	| "<'-ms-flex-line-pack'>"
-	| "<'-ms-flex-negative'>"
-	| "<'-ms-flex-pack'>"
-	| "<'-ms-flex-order'>"
-	| "<'-ms-flex-positive'>"
-	| "<'-ms-flex-preferred-size'>"
-	| "<'-ms-interpolation-mode'>"
-	| "<'-ms-grid-column-align'>"
-	| "<'-ms-grid-row-align'>"
-	| "<'-ms-hyphenate-limit-last'>"
-	| "<'-webkit-background-clip'>"
-	| "<'-webkit-column-break-after'>"
-	| "<'-webkit-column-break-before'>"
-	| "<'-webkit-column-break-inside'>"
-	| "<'-webkit-font-smoothing'>"
-	| "<'-webkit-mask-box-image'>"
-	| "<'-webkit-print-color-adjust'>"
-	| "<'-webkit-text-security'>"
-	| "<'-webkit-user-drag'>"
-	| "<'-webkit-user-select'>"
-	| "<'alignment-baseline'>"
-	| "<'baseline-shift'>"
-	| "<'behavior'>"
-	| "<'clip-rule'>"
-	| "<'cue'>"
-	| "<'cue-after'>"
-	| "<'cue-before'>"
-	| "<'dominant-baseline'>"
-	| "<'fill'>"
-	| "<'fill-opacity'>"
-	| "<'fill-rule'>"
-	| "<'glyph-orientation-horizontal'>"
-	| "<'glyph-orientation-vertical'>"
-	| "<'kerning'>"
-	| "<'marker'>"
-	| "<'marker-end'>"
-	| "<'marker-mid'>"
-	| "<'marker-start'>"
-	| "<'pause'>"
-	| "<'pause-after'>"
-	| "<'pause-before'>"
-	| "<'rest'>"
-	| "<'rest-after'>"
-	| "<'rest-before'>"
-	| "<'shape-rendering'>"
-	| "<'src'>"
-	| "<'speak'>"
-	| "<'speak-as'>"
-	| "<'stroke'>"
-	| "<'stroke-dasharray'>"
-	| "<'stroke-dashoffset'>"
-	| "<'stroke-linecap'>"
-	| "<'stroke-linejoin'>"
-	| "<'stroke-miterlimit'>"
-	| "<'stroke-opacity'>"
-	| "<'stroke-width'>"
-	| "<'text-anchor'>"
-	| "<'unicode-range'>"
-	| "<'voice-balance'>"
-	| "<'voice-duration'>"
-	| "<'voice-family'>"
-	| "<'voice-pitch'>"
-	| "<'voice-range'>"
-	| "<'voice-rate'>"
-	| "<'voice-stress'>"
-	| "<'voice-volume'>"
+	| '<(-token>'
+	| '<)-token>'
+	| '<-legacy-gradient>'
+	| '<-legacy-linear-gradient-arguments>'
+	| '<-legacy-linear-gradient>'
+	| '<-legacy-radial-gradient-arguments>'
+	| '<-legacy-radial-gradient-shape>'
+	| '<-legacy-radial-gradient-size>'
+	| '<-legacy-radial-gradient>'
+	| '<-legacy-repeating-linear-gradient>'
+	| '<-legacy-repeating-radial-gradient>'
+	| '<-ms-filter-function-legacy>'
+	| '<-ms-filter-function-list>'
+	| '<-ms-filter-function-progid>'
+	| '<-ms-filter-function>'
+	| '<-ms-filter>'
+	| '<-non-standard-color>'
+	| '<-non-standard-display>'
+	| '<-non-standard-font>'
+	| '<-non-standard-image-rendering>'
+	| '<-non-standard-overflow>'
+	| '<-non-standard-width>'
+	| '<-webkit-gradient()>'
+	| '<-webkit-gradient-color-stop>'
+	| '<-webkit-gradient-point>'
+	| '<-webkit-gradient-radius>'
+	| '<-webkit-gradient-type>'
+	| '<-webkit-mask-box-repeat>'
+	| '<-webkit-mask-clip-style>'
+	| '<CDC-token>'
+	| '<CDO-token>'
+	| '<[-token>'
+	| '<]-token>'
+	| '<abs()>'
 	| '<absolute-size>'
+	| '<acos()>'
+	| '<age>'
 	| '<alpha-value>'
+	| '<an-plus-b>'
 	| '<angle-percentage>'
+	| '<angle>'
 	| '<angular-color-hint>'
-	| '<angular-color-stop>'
 	| '<angular-color-stop-list>'
+	| '<angular-color-stop>'
 	| '<animateable-feature>'
+	| '<any-value>'
+	| '<asin()>'
+	| '<at-keyword-token>'
+	| '<atan()>'
+	| '<atan2()>'
 	| '<attachment>'
 	| '<attr()>'
+	| '<attr-fallback>'
 	| '<attr-matcher>'
 	| '<attr-modifier>'
+	| '<attr-name>'
 	| '<attribute-selector>'
 	| '<auto-repeat>'
 	| '<auto-track-list>'
+	| '<axis>'
+	| '<bad-string-token>'
+	| '<bad-url-token>'
 	| '<baseline-position>'
 	| '<basic-shape>'
+	| '<bcp-47>'
+	| '<bg-clip>'
 	| '<bg-image>'
 	| '<bg-layer>'
 	| '<bg-position>'
 	| '<bg-size>'
-	| '<blur()>'
 	| '<blend-mode>'
+	| '<blur()>'
+	| '<bottom>'
 	| '<box>'
 	| '<brightness()>'
 	| '<calc()>'
-	| '<calc-sum>'
+	| '<calc-constant>'
 	| '<calc-product>'
+	| '<calc-sum>'
 	| '<calc-value>'
 	| '<cf-final-image>'
 	| '<cf-mixing-image>'
@@ -625,34 +698,48 @@ export type CssSyntax =
 	| '<clamp()>'
 	| '<class-selector>'
 	| '<clip-source>'
-	| '<color>'
-	| '<color-stop>'
+	| '<colon-token>'
 	| '<color-stop-angle>'
 	| '<color-stop-length>'
 	| '<color-stop-list>'
+	| '<color-stop>'
+	| '<color>'
 	| '<combinator>'
+	| '<comma-token>'
 	| '<common-lig-values>'
 	| '<compat-auto>'
+	| '<complex-selector-list>'
+	| '<complex-selector>'
 	| '<composite-style>'
 	| '<compositing-operator>'
-	| '<compound-selector>'
 	| '<compound-selector-list>'
-	| '<complex-selector>'
-	| '<complex-selector-list>'
+	| '<compound-selector>'
 	| '<conic-gradient()>'
-	| '<contextual-alt-values>'
 	| '<content-distribution>'
 	| '<content-list>'
 	| '<content-position>'
 	| '<content-replacement>'
+	| '<contextual-alt-values>'
 	| '<contrast()>'
+	| '<cos()>'
 	| '<counter()>'
-	| '<counter-style>'
+	| '<counter-name>'
 	| '<counter-style-name>'
+	| '<counter-style>'
+	| '<counter>'
 	| '<counters()>'
 	| '<cross-fade()>'
 	| '<cubic-bezier-timing-function>'
+	| '<custom-ident>'
+	| '<custom-property-name>'
+	| '<decibel>'
+	| '<declaration-list>'
+	| '<declaration-value>'
+	| '<declaration>'
+	| '<delim-token>'
 	| '<deprecated-system-color>'
+	| '<dimension-token>'
+	| '<dimension>'
 	| '<discretionary-lig-values>'
 	| '<display-box>'
 	| '<display-inside>'
@@ -661,69 +748,90 @@ export type CssSyntax =
 	| '<display-listitem>'
 	| '<display-outside>'
 	| '<drop-shadow()>'
+	| '<easing-function>'
 	| '<east-asian-variant-values>'
 	| '<east-asian-width-values>'
 	| '<element()>'
 	| '<ellipse()>'
 	| '<ending-shape>'
 	| '<env()>'
+	| '<exp()>'
 	| '<explicit-track-list>'
 	| '<family-name>'
 	| '<feature-tag-value>'
 	| '<feature-type>'
-	| '<feature-value-block>'
 	| '<feature-value-block-list>'
-	| '<feature-value-declaration>'
+	| '<feature-value-block>'
 	| '<feature-value-declaration-list>'
+	| '<feature-value-declaration>'
 	| '<feature-value-name>'
 	| '<fill-rule>'
-	| '<filter-function>'
 	| '<filter-function-list>'
+	| '<filter-function>'
 	| '<final-bg-layer>'
-	| '<fit-content()>'
 	| '<fixed-breadth>'
 	| '<fixed-repeat>'
 	| '<fixed-size>'
+	| '<flex>'
 	| '<font-stretch-absolute>'
 	| '<font-variant-css21>'
 	| '<font-weight-absolute>'
 	| '<frequency-percentage>'
+	| '<frequency>'
+	| '<function-token>'
+	| '<gender>'
 	| '<general-enclosed>'
 	| '<generic-family>'
 	| '<generic-name>'
+	| '<generic-voice>'
 	| '<geometry-box>'
 	| '<gradient>'
 	| '<grayscale()>'
 	| '<grid-line>'
+	| '<hash-token>'
+	| '<hex-color>'
 	| '<historical-lig-values>'
 	| '<hsl()>'
 	| '<hsla()>'
-	| '<hue>'
 	| '<hue-rotate()>'
+	| '<hue>'
+	| '<hwb()>'
+	| '<hypot()>'
 	| '<id-selector>'
-	| '<image>'
+	| '<ident-token>'
+	| '<ident>'
 	| '<image()>'
 	| '<image-set()>'
 	| '<image-set-option>'
 	| '<image-src>'
 	| '<image-tags>'
+	| '<image>'
 	| '<inflexible-breadth>'
 	| '<inset()>'
+	| '<integer>'
 	| '<invert()>'
-	| '<keyframes-name>'
-	| '<keyframe-block>'
 	| '<keyframe-block-list>'
+	| '<keyframe-block>'
 	| '<keyframe-selector>'
+	| '<keyframes-name>'
+	| '<lab()>'
+	| '<layer()>'
+	| '<layer-name>'
+	| '<lch()>'
 	| '<leader()>'
 	| '<leader-type>'
+	| '<left>'
 	| '<length-percentage>'
-	| '<line-names>'
+	| '<length>'
 	| '<line-name-list>'
+	| '<line-names>'
 	| '<line-style>'
 	| '<line-width>'
 	| '<linear-color-hint>'
 	| '<linear-color-stop>'
 	| '<linear-gradient()>'
+	| '<log()>'
+	| '<mask-image>'
 	| '<mask-layer>'
 	| '<mask-position>'
 	| '<mask-reference>'
@@ -733,14 +841,14 @@ export type CssSyntax =
 	| '<matrix3d()>'
 	| '<max()>'
 	| '<media-and>'
-	| '<media-condition>'
 	| '<media-condition-without-or>'
+	| '<media-condition>'
 	| '<media-feature>'
 	| '<media-in-parens>'
 	| '<media-not>'
 	| '<media-or>'
-	| '<media-query>'
 	| '<media-query-list>'
+	| '<media-query>'
 	| '<media-type>'
 	| '<mf-boolean>'
 	| '<mf-name>'
@@ -749,85 +857,121 @@ export type CssSyntax =
 	| '<mf-value>'
 	| '<min()>'
 	| '<minmax()>'
+	| '<mod()>'
+	| '<name-repeat>'
 	| '<named-color>'
 	| '<namespace-prefix>'
 	| '<ns-prefix>'
+	| '<nth>'
+	| '<number-one-or-greater>'
 	| '<number-percentage>'
+	| '<number-token>'
+	| '<number-zero-one>'
+	| '<number>'
 	| '<numeric-figure-values>'
 	| '<numeric-fraction-values>'
 	| '<numeric-spacing-values>'
-	| '<nth>'
 	| '<opacity()>'
-	| '<overflow-position>'
 	| '<outline-radius>'
+	| '<overflow-position>'
 	| '<page-body>'
-	| '<page-margin-box>'
 	| '<page-margin-box-type>'
+	| '<page-margin-box>'
 	| '<page-selector-list>'
 	| '<page-selector>'
-	| '<path()>'
+	| '<page-size>'
 	| '<paint()>'
+	| '<paint>'
+	| '<path()>'
+	| '<percentage-token>'
+	| '<percentage>'
 	| '<perspective()>'
 	| '<polygon()>'
 	| '<position>'
+	| '<pow()>'
 	| '<pseudo-class-selector>'
 	| '<pseudo-element-selector>'
 	| '<pseudo-page>'
 	| '<quote>'
 	| '<radial-gradient()>'
-	| '<relative-selector>'
+	| '<ratio>'
 	| '<relative-selector-list>'
+	| '<relative-selector>'
 	| '<relative-size>'
+	| '<rem()>'
 	| '<repeat-style>'
+	| '<repeating-conic-gradient()>'
 	| '<repeating-linear-gradient()>'
 	| '<repeating-radial-gradient()>'
+	| '<resolution>'
+	| '<reversed-counter-name>'
 	| '<rgb()>'
 	| '<rgba()>'
+	| '<right>'
 	| '<rotate()>'
 	| '<rotate3d()>'
 	| '<rotateX()>'
 	| '<rotateY()>'
 	| '<rotateZ()>'
+	| '<round()>'
+	| '<rounding-strategy>'
 	| '<saturate()>'
 	| '<scale()>'
 	| '<scale3d()>'
 	| '<scaleX()>'
 	| '<scaleY()>'
 	| '<scaleZ()>'
+	| '<scroll-timeline-axis>'
+	| '<scroll-timeline-name>'
+	| '<scroller>'
 	| '<self-position>'
-	| '<shape-radius>'
-	| '<skew()>'
-	| '<skewX()>'
-	| '<skewY()>'
+	| '<semicolon-token>'
+	| '<semitones>'
 	| '<sepia()>'
-	| '<shadow>'
 	| '<shadow-t>'
-	| '<shape>'
+	| '<shadow>'
 	| '<shape-box>'
+	| '<shape-radius>'
+	| '<shape>'
 	| '<side-or-corner>'
-	| '<single-animation>'
+	| '<sign()>'
+	| '<sin()>'
+	| '<single-animation-composition>'
 	| '<single-animation-direction>'
 	| '<single-animation-fill-mode>'
 	| '<single-animation-iteration-count>'
 	| '<single-animation-play-state>'
-	| '<single-transition>'
+	| '<single-animation-timeline>'
+	| '<single-animation>'
 	| '<single-transition-property>'
+	| '<single-transition>'
 	| '<size>'
+	| '<skew()>'
+	| '<skewX()>'
+	| '<skewY()>'
+	| '<sqrt()>'
 	| '<step-position>'
 	| '<step-timing-function>'
+	| '<string-token>'
+	| '<string>'
 	| '<subclass-selector>'
 	| '<supports-condition>'
-	| '<supports-in-parens>'
-	| '<supports-feature>'
 	| '<supports-decl>'
+	| '<supports-feature>'
+	| '<supports-in-parens>'
 	| '<supports-selector-fn>'
+	| '<svg-length>'
+	| '<svg-writing-mode>'
 	| '<symbol>'
-	| '<target>'
+	| '<tan()>'
 	| '<target-counter()>'
 	| '<target-counters()>'
 	| '<target-text()>'
+	| '<target>'
 	| '<time-percentage>'
-	| '<timing-function>'
+	| '<time>'
+	| '<timeline-name>'
+	| '<top>'
 	| '<track-breadth>'
 	| '<track-list>'
 	| '<track-repeat>'
@@ -841,174 +985,81 @@ export type CssSyntax =
 	| '<translateZ()>'
 	| '<type-or-unit>'
 	| '<type-selector>'
+	| '<urange>'
+	| '<url-modifier>'
+	| '<url-token>'
+	| '<url>'
 	| '<var()>'
 	| '<viewport-length>'
+	| '<visual-box>'
+	| '<whitespace-token>'
 	| '<wq-name>'
-	| '<-legacy-gradient>'
-	| '<-legacy-linear-gradient>'
-	| '<-legacy-repeating-linear-gradient>'
-	| '<-legacy-linear-gradient-arguments>'
-	| '<-legacy-radial-gradient>'
-	| '<-legacy-repeating-radial-gradient>'
-	| '<-legacy-radial-gradient-arguments>'
-	| '<-legacy-radial-gradient-size>'
-	| '<-legacy-radial-gradient-shape>'
-	| '<-non-standard-font>'
-	| '<-non-standard-color>'
-	| '<-non-standard-image-rendering>'
-	| '<-non-standard-overflow>'
-	| '<-non-standard-width>'
-	| '<-webkit-gradient()>'
-	| '<-webkit-gradient-color-stop>'
-	| '<-webkit-gradient-point>'
-	| '<-webkit-gradient-radius>'
-	| '<-webkit-gradient-type>'
-	| '<-webkit-mask-box-repeat>'
-	| '<-webkit-mask-clip-style>'
-	| '<-ms-filter-function-list>'
-	| '<-ms-filter-function>'
-	| '<-ms-filter-function-progid>'
-	| '<-ms-filter-function-legacy>'
-	| '<-ms-filter>'
-	| '<age>'
-	| '<attr-name>'
-	| '<attr-fallback>'
-	| '<border-radius>'
-	| '<bottom>'
-	| '<generic-voice>'
-	| '<gender>'
-	| '<left>'
-	| '<mask-image>'
-	| '<name-repeat>'
-	| '<paint>'
-	| '<page-size>'
-	| '<ratio>'
-	| '<right>'
-	| '<svg-length>'
-	| '<svg-writing-mode>'
-	| '<top>'
-	| '<track-group>'
-	| '<track-list-v0>'
-	| '<track-minmax>'
 	| '<x>'
 	| '<y>'
-	| '<declaration>'
-	| '<declaration-list>'
-	| '<url>'
-	| '<url-modifier>'
-	| '<number-zero-one>'
-	| '<number-one-or-greater>'
-	| '<positive-integer>'
-	| '<-non-standard-display>'
-	| '<ident-token>'
-	| '<function-token>'
-	| '<at-keyword-token>'
-	| '<hash-token>'
-	| '<string-token>'
-	| '<bad-string-token>'
-	| '<url-token>'
-	| '<bad-url-token>'
-	| '<delim-token>'
-	| '<number-token>'
-	| '<percentage-token>'
-	| '<dimension-token>'
-	| '<whitespace-token>'
-	| '<CDO-token>'
-	| '<CDC-token>'
-	| '<colon-token>'
-	| '<semicolon-token>'
-	| '<comma-token>'
-	| '<[-token>'
-	| '<]-token>'
-	| '<(-token>'
-	| '<)-token>'
-	| '<{-token>'
-	| '<}-token>'
-	| '<string>'
-	| '<ident>'
-	| '<custom-ident>'
-	| '<custom-property-name>'
-	| '<hex-color>'
-	| '<an-plus-b>'
-	| '<urange>'
-	| '<declaration-value>'
-	| '<any-value>'
-	| '<dimension>'
-	| '<angle>'
-	| '<decibel>'
-	| '<frequency>'
-	| '<flex>'
-	| '<length>'
-	| '<resolution>'
-	| '<semitones>'
-	| '<time>'
-	| '<percentage>'
 	| '<zero>'
-	| '<number>'
-	| '<integer>'
-	| '<-ms-legacy-expression>'
-	| '<bcp-47>';
+	| '<{-token>'
+	| '<}-token>';
 export type ExtendedType =
-	| 'Any'
-	| 'NoEmptyAny'
-	| 'OneLineAny'
-	| 'Zero'
-	| 'Number'
-	| 'Int'
-	| 'Uint'
-	| 'XMLName'
-	| 'DOMID'
-	| 'FunctionBody'
-	| 'Pattern'
-	| 'DateTime'
-	| 'TabIndex'
-	| 'BCP47'
-	| 'URL'
-	| 'AbsoluteURL'
-	| 'HashName'
-	| 'OneCodePointChar'
-	| 'CustomElementName'
-	| 'BrowsingContextName'
-	| 'BrowsingContextNameOrKeyword'
-	| 'HTTPSchemaURL'
-	| 'MIMEType'
-	| 'ItemProp'
-	| 'Srcset'
-	| 'SourceSizeList'
-	| 'IconSize'
-	| 'AutoComplete'
-	| 'Accept'
-	| 'SerializedPermissionsPolicy'
-	| '<css-declaration-list>'
-	| '<class-list>'
-	| '<svg-font-size>'
-	| '<svg-font-size-adjust>'
 	| "<'color-profile'>"
 	| "<'color-rendering'>"
 	| "<'enable-background'>"
-	| '<list-of-svg-feature-string>'
 	| '<animatable-value>'
 	| '<begin-value-list>'
-	| '<end-value-list>'
-	| '<list-of-value>'
+	| '<class-list>'
 	| '<clock-value>'
 	| '<color-matrix>'
+	| '<css-declaration-list>'
 	| '<dasharray>'
+	| '<end-value-list>'
 	| '<key-points>'
 	| '<key-splines>'
 	| '<key-times>'
-	| '<system-language>'
-	| '<origin>'
-	| '<svg-path>'
-	| '<points>'
-	| '<preserve-aspect-ratio>'
-	| '<view-box>'
-	| '<rotate>'
-	| '<text-coordinate>'
 	| '<list-of-lengths>'
 	| '<list-of-numbers>'
 	| '<list-of-percentages>'
-	| '<number-optional-number>';
+	| '<list-of-svg-feature-string>'
+	| '<list-of-value>'
+	| '<number-optional-number>'
+	| '<origin>'
+	| '<points>'
+	| '<preserve-aspect-ratio>'
+	| '<rotate>'
+	| '<svg-font-size-adjust>'
+	| '<svg-font-size>'
+	| '<svg-path>'
+	| '<system-language>'
+	| '<text-coordinate>'
+	| '<view-box>'
+	| 'AbsoluteURL'
+	| 'Accept'
+	| 'Any'
+	| 'AutoComplete'
+	| 'BCP47'
+	| 'BrowsingContextName'
+	| 'BrowsingContextNameOrKeyword'
+	| 'CustomElementName'
+	| 'DOMID'
+	| 'DateTime'
+	| 'FunctionBody'
+	| 'HTTPSchemaURL'
+	| 'HashName'
+	| 'IconSize'
+	| 'Int'
+	| 'ItemProp'
+	| 'MIMEType'
+	| 'NoEmptyAny'
+	| 'Number'
+	| 'OneCodePointChar'
+	| 'OneLineAny'
+	| 'Pattern'
+	| 'SerializedPermissionsPolicy'
+	| 'SourceSizeList'
+	| 'Srcset'
+	| 'TabIndex'
+	| 'URL'
+	| 'Uint'
+	| 'XMLName'
+	| 'Zero';
 export type HtmlAttrRequirement = 'Boolean';
 
 export interface TypesSchema {
