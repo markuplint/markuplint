@@ -94,3 +94,111 @@ test('aria-describedby', async () => {
 		},
 	]);
 });
+
+test('fragment', async () => {
+	expect((await mlRuleTest(rule, '<a href="#foo"></a>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 10,
+			raw: '#foo',
+			message: 'Missing "foo" ID',
+		},
+	]);
+
+	expect((await mlRuleTest(rule, '<a href="#"></a>')).violations).toStrictEqual([]);
+
+	expect((await mlRuleTest(rule, '<a href="#top"></a>')).violations).toStrictEqual([]);
+
+	expect((await mlRuleTest(rule, '<a href="#TOP"></a>')).violations).toStrictEqual([]);
+
+	expect(
+		(await mlRuleTest(rule, `<a href="#${encodeURI('あいうえお')}"></a><div id="あいうえお"></div>`)).violations,
+	).toStrictEqual([]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<><a href="#foo" /><div id="foo" /></>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<><a href="#foo" /><div id={foo} /></>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<><a href="#foo" /><div name="foo" /></>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 12,
+			raw: '#foo',
+			message: 'Missing "foo" ID',
+		},
+	]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<><a href="#foo" /><div name={foo} /></>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 12,
+			raw: '#foo',
+			message: 'Missing "foo" ID',
+		},
+	]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<><a href="#foo" /><div name="foo" /></>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rule: {
+					options: {
+						fragmentRefersNameAttr: true,
+					},
+				},
+			})
+		).violations,
+	).toStrictEqual([]);
+
+	expect(
+		(
+			await mlRuleTest(rule, '<><a href="#foo" /><div name={foo} /></>', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				rule: {
+					options: {
+						fragmentRefersNameAttr: true,
+					},
+				},
+			})
+		).violations,
+	).toStrictEqual([]);
+});

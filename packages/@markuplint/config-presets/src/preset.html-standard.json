@@ -67,6 +67,12 @@
 		 */
 		"placeholder-label-option": true,
 
+		/*
+		 * Require the `datetime` attribute if the content of the `time` element is invalid
+		 *
+		 */
+		"require-datetime": true,
+
 		/**
 		 * Specify required attr
 		 *

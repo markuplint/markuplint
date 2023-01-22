@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"_category": "a11y",
+	"_category": "validation",
 	"definitions": {
 		"value": {
 			"type": "boolean"
@@ -9,12 +9,17 @@
 			"type": "object",
 			"additionalProperties": false,
 			"properties": {
-				"ariaVersion": {
-					"type": "string",
-					"enum": ["1.1", "1.2"],
-					"default": "1.2",
-					"description": "Choose the version of WAI-ARIA to evaluate.",
-					"description:ja": "評価するWAI-ARIAのバージョンを指定します。"
+				"langs": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"enum": ["en", "ja", "fr", "nl", "ru", "de", "pt", "zh"],
+						"uniqueItems": true,
+						"minItems": 1
+					},
+					"default": ["en", "ja", "fr", "nl", "ru", "de", "pt", "zh"],
+					"description": "Specify languages that are parsing the content, and its order. They are parsable depending on [Chrono](https://github.com/wanasit/chrono).",
+					"description:ja": "コンテンツを解析する言語、またその優先順位を指定します。解析可能かどうかは[Chrono](https://github.com/wanasit/chrono)次第です。"
 				}
 			}
 		}

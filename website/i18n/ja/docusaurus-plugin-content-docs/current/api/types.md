@@ -85,7 +85,7 @@
 | `<list-of-percentages>`        | SVGがいくつかの属性                     |                                                                                                                    | ✅       |
 | `<number-optional-number>`     | SVGがいくつかの属性                     |                                                                                                                    | ✅       |
 
-また、**[CSSTree](https://github.com/csstree/csstree)**（ただし`v1.x`で、`v2`以降の利用は[検討中](https://github.com/markuplint/markuplint/issues/631)です）が定義されている型を使用できます。
+また、**[CSSTree](https://github.com/csstree/csstree)**が定義している型を使用できます。
 
 :::caution
 

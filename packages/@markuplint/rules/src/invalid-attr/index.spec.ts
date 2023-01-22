@@ -392,7 +392,7 @@ test('svg', async () => {
 			line: 3,
 			col: 6,
 			message:
-				'The value part of the "mask" attribute expects the CSS Syntax "<mask-layer>#" (https://csstree.github.io/docs/syntax/#Property:mask)',
+				'The value part of the "mask" attribute expects the CSS Syntax "<\'mask\'>" (https://csstree.github.io/docs/syntax/#Property:mask)',
 			raw: 'hogehoge',
 		},
 	]);
@@ -938,6 +938,26 @@ test('Booleanish', async () => {
 	).toStrictEqual([]);
 });
 
+test('WAI-Adapt', async () => {
+	expect((await mlRuleTest(rule, '<p adapt-simplification="critical"></p>')).violations).toStrictEqual([]);
+
+	expect(
+		(await mlRuleTest(rule, '<span adapt-easylang="90% of the time this happens"></span>', {})).violations,
+	).toStrictEqual([]);
+
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`
+				<label for="address" adapt-symbol="14885">Your Principal Residence</label>
+				<input type="text" id="address" adapt-purpose="street-address">
+			`,
+			)
+		).violations,
+	).toStrictEqual([]);
+});
+
 describe('Issues', () => {
 	test('#553', async () => {
 		expect(
@@ -959,5 +979,17 @@ describe('Issues', () => {
 	test('#564', async () => {
 		expect((await mlRuleTest(rule, '<div class="md:flex"></div>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<svg><rect class="md:flex"/></svg>')).violations).toStrictEqual([]);
+	});
+
+	test('#678', async () => {
+		const vue = {
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+		};
+
+		expect(
+			(await mlRuleTest(rule, '<template><div><template #header></template></div></template>', vue)).violations,
+		).toStrictEqual([]);
 	});
 });

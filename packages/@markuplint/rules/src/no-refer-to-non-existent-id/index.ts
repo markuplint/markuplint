@@ -2,16 +2,22 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { createRule, getAttrSpecs, ariaSpecs } from '@markuplint/ml-core';
 
+const HYPERLINK_SELECTOR = 'a[href], area[href]';
+
 export default createRule({
 	defaultOptions: {
 		ariaVersion: '1.2' as ARIAVersion,
+		fragmentRefersNameAttr: false,
 	},
 	async verify({ document, report, t }) {
 		const idList = new Set<string>();
+		const nameList = new Set<string>();
 		let hasDynamicId = false;
+		let hasDynamicName = false;
 
-		await document.walkOn('Attr', attr => {
-			if (attr.name.toLowerCase() !== 'id') {
+		document.querySelectorAll('[id]').forEach(el => {
+			const attr = el.getAttributeNode('id');
+			if (!attr) {
 				return;
 			}
 			if (attr.isDynamicValue) {
@@ -25,6 +31,19 @@ export default createRule({
 		if (hasDynamicId) {
 			return;
 		}
+
+		document.querySelectorAll('[name]').forEach(el => {
+			const attr = el.getAttributeNode('name');
+			if (!attr) {
+				return;
+			}
+			if (attr.isDynamicValue) {
+				hasDynamicName = true;
+			}
+			if (attr.valueType !== 'code') {
+				nameList.add(attr.value);
+			}
+		});
 
 		await document.walkOn('Attr', attr => {
 			const attrSpec = getAttrSpecs(attr.ownerElement, document.specs);
@@ -115,5 +134,63 @@ export default createRule({
 				}
 			}
 		});
+
+		/**
+		 * @see https://html.spec.whatwg.org/multipage/browsing-the-web.html#scrolling-to-a-fragment
+		 */
+		await document.walkOn('Element', el => {
+			if (el.rule.options.fragmentRefersNameAttr && hasDynamicName) {
+				return;
+			}
+
+			if (!el.matches(HYPERLINK_SELECTOR)) {
+				return;
+			}
+
+			const href = el.getAttributeNode('href');
+
+			if (!href) {
+				return;
+			}
+
+			const rawFragment = href.value.match(/^#(.+)/)?.[1];
+
+			if (rawFragment == null) {
+				return;
+			}
+
+			const decodedFragment = decode(rawFragment);
+
+			// > 2. If fragment is the empty string, then return the special value top of the document.
+			// >
+			// > 9. If decodedFragment is an ASCII case-insensitive match for the string top, then return the top of the document.
+			if (decodedFragment === '' || /^top$/i.test(decodedFragment)) {
+				return;
+			}
+
+			if (
+				!idList.has(decodedFragment) &&
+				(el.rule.options.fragmentRefersNameAttr ? !nameList.has(decodedFragment) : true)
+			) {
+				report({
+					scope: href,
+					line: href.valueNode?.startLine,
+					col: href.valueNode?.startCol,
+					raw: href.valueNode?.raw,
+					message: t('Missing {0}', t('"{0*}" ID', decodedFragment)),
+				});
+			}
+		});
 	},
 });
+
+function decode(fragment: string) {
+	try {
+		return decodeURI(fragment);
+	} catch (e: unknown) {
+		if (e instanceof URIError) {
+			return fragment;
+		}
+		throw e;
+	}
+}

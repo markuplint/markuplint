@@ -1,16 +1,5 @@
 {
 	"rules": {
-		"disallowed-element": [
-			/**
-			 * Disallow `<hgroup>`
-			 *
-			 * The hgroup element should not be used because no assistive technology supports it.
-			 *
-			 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup
-			 */
-			"hgroup"
-		],
-
 		/**
 		 * Must not duplicate **ID**
 		 *

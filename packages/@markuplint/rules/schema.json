@@ -81,6 +81,9 @@
 				"require-accessible-name": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-accessible-name/schema.json"
 				},
+				"require-datetime": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-datetime/schema.json"
+				},
 				"required-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/required-attr/schema.json"
 				},

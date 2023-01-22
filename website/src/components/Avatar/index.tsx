@@ -10,7 +10,7 @@ type Props = {
 export default function Avatar({ src, alt }: Props) {
   return (
     <div className={styles.avatar}>
-      <img src={src} alt={alt} width="1" height="1" />
+      <img src={src} alt={alt} width="1" height="1" decoding="async" loading="lazy" />
     </div>
   );
 }

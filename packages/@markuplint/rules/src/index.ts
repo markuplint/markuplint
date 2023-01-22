@@ -25,6 +25,7 @@ import NoUseEventHandlerAttr from './no-use-event-handler-attr';
 import PermittedContents from './permitted-contents';
 import PlaceholderLabelOption from './placeholder-label-option';
 import RequireAccessibleName from './require-accessible-name';
+import RequireDatetime from './require-datetime';
 import RequiredAttr from './required-attr';
 import RequiredElement from './required-element';
 import RequiredH1 from './required-h1';
@@ -57,6 +58,7 @@ export default {
 	'permitted-contents': PermittedContents,
 	'placeholder-label-option': PlaceholderLabelOption,
 	'require-accessible-name': RequireAccessibleName,
+	'require-datetime': RequireDatetime,
 	'required-attr': RequiredAttr,
 	'required-element': RequiredElement,
 	'required-h1': RequiredH1,
