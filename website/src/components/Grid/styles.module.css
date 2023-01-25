@@ -6,9 +6,9 @@
 
 .flex {
   display: flex;
-  justify-content: flex-start;
   flex-wrap: wrap;
   gap: 2em;
+  justify-content: flex-start;
 }
 
 .flex > * {
