@@ -1,14 +1,14 @@
 .color > p:first-child {
+  margin: 0;
   font-size: 1.2em;
   font-weight: bold;
-  margin: 0;
 }
 
 .color figure {
-  margin: 0;
-  padding: 0;
   display: flex;
   align-items: stretch;
+  padding: 0;
+  margin: 0;
 }
 
 .pallet {
@@ -19,15 +19,15 @@
 }
 
 .color figcaption {
-  margin: 0;
   padding: 1em;
+  margin: 0;
 }
 
 .color dl {
-  margin: 0;
-  padding: 0;
   display: grid;
   grid-template-columns: auto auto;
+  padding: 0;
+  margin: 0;
 }
 
 .color dl > div {
@@ -35,13 +35,13 @@
 }
 
 .color dt {
-  margin: 0;
   padding: 0;
+  margin: 0;
 }
 
 .color dd {
-  margin: 0;
   padding: 0;
+  margin: 0;
 }
 
 .color dd::before {
