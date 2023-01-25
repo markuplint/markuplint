@@ -1,8 +1,8 @@
 .avatar {
   width: 5em;
   height: 5em;
-  border-radius: 100%;
   overflow: hidden;
+  border-radius: 100%;
 }
 
 .avatar img {

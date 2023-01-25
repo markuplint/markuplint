@@ -4,7 +4,8 @@
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"editor.formatOnSave": true,
 	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": true
+		"source.fixAll.eslint": true,
+		"source.fixAll.stylelint": true
 	},
 	"eslint.validate": ["javascript", "javascriptreact"],
 	"eslint.workingDirectories": [
@@ -12,6 +13,9 @@
 			"mode": "auto"
 		}
 	],
+	"css.validate": false,
+	"scss.validate": false,
+	"stylelint.validate": ["css"],
 	"files.associations": {
 		".markuplintrc": "jsonc",
 		"*.schema.json": "jsonc",

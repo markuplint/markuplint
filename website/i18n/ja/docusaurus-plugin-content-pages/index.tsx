@@ -9,7 +9,13 @@ export default function Home(): JSX.Element {
       title="Markuplint - すべてのマークアップ開発者のためのリンター"
       description="あなたのマークアップに安寧を。すべてのマークアップ開発者のためのリンター。"
     >
-      <Hero tagLine="あなたのマークアップに安寧を" getStarted="はじめる" />
+      <Hero
+        tagLine="あなたのマークアップに安寧を"
+        description="すべてのマークアップ開発者のためのリンター"
+        getStarted="はじめる"
+        rules="ルールを見る"
+        faq="よくある質問を確認する"
+      />
       <main>
         <HomepageFeatures
           heading="主な機能"

@@ -9,7 +9,7 @@ export default function Home(): JSX.Element {
       title="Markuplint - A linter for all markup developers."
       description="Peace of mind in your markup. A linter for all markup developers."
     >
-      <Hero getStarted="Get Started" />
+      <Hero getStarted="Get Started" rules="See rules" faq="Check FAQ" />
       <main>
         <HomepageFeatures
           heading="Main features"

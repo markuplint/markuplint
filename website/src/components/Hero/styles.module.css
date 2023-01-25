@@ -1,39 +1,97 @@
-.heroBanner {
-  padding: 4rem 0;
-  text-align: center;
+.hero {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10em min(20%, 15vw);
   overflow: hidden;
-  background-image: url('/img/hero.jpg');
-  background-size: cover;
-  color: #fff;
 }
 
-@media (min-resolution: 2dppx) {
-  .heroBanner {
-    background-image: url('/img/hero@2x.jpg');
+.heroBody {
+  display: flex;
+  gap: 4em;
+  align-items: stretch;
+  justify-content: space-between;
+  max-width: var(--ifm-container-width-xl);
+}
+
+@media (max-width: 57em) {
+  .heroBody {
+    flex-direction: column;
   }
 }
 
-.heroTitle {
-  font-size: 4rem;
+.hero::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  content: '';
+  background: url('/img/obj-hero-dots.svg') no-repeat top left/calc(108 / 16 * 1em),
+    url('/img/obj-hero-dots.svg#r') no-repeat bottom right/calc(108 / 16 * 1em);
+  background-color: var(--ml-blue);
 }
 
-@media (max-width: 768px) {
-  .heroTitle {
-    font-size: 3.5rem;
-  }
+.hero::after {
+  --line-width: 1em;
+
+  position: absolute;
+  top: 0;
+  left: calc(var(--line-width) * -1);
+  z-index: -1;
+  width: calc(100% + var(--line-width) * 2);
+  height: 100%;
+  content: '';
+  background: url('/img/obj-hero-bg-left.svg') no-repeat bottom left var(--line-width),
+    url('/img/obj-hero-bg-right.svg#r') no-repeat top right var(--line-width);
+  background-color: var(--ifm-color-content-inverse);
+  border-radius: min(50%, 30em) 0 min(50%, 30em) 0;
+  outline: var(--ml-blue-lightest) solid var(--line-width);
+  outline-offset: calc(var(--line-width) * -1);
+}
+
+[data-theme='dark'] .hero::after {
+  outline-color: var(--ifm-color-emphasis-200);
 }
 
 .heroSubtitle {
-  font-size: 1.5rem;
+  flex: 0 1 auto;
+  padding: 0;
+  margin: 0;
+  font-size: inherit;
+}
+
+.tagline {
+  margin: 0 0 0.5em;
+  font-size: clamp(1rem, calc(8vw), calc(40 / 16 * 1rem));
+  font-weight: bold;
+  line-height: 1.1;
+  color: var(--ml-blue);
+}
+
+[data-theme='dark'] .tagline {
+  color: var(--ifm-color-primary);
+}
+
+.description {
+  position: relative;
+  z-index: 0;
+  display: block;
+  margin: 0;
+  font-size: clamp(1rem, calc(12vw), calc(64 / 16 * 1rem));
+  font-weight: bold;
+  line-height: 1.1;
+  color: var(--ifm-heading-color);
 }
 
 .buttons {
   display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-h2 {
-  margin-bottom: 2rem;
+  flex: 0 0 fit-content;
+  flex-direction: column;
+  gap: 0.5em;
+  align-items: stretch;
+  justify-content: flex-end;
 }

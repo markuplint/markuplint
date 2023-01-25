@@ -1,29 +1,29 @@
 .profile {
-  background-color: var(--ifm-breadcrumb-item-background-active);
-  padding: 1em 2em;
-  border-radius: 0.5em;
   display: block;
+  padding: 1em 2em;
   color: inherit;
+  background-color: var(--ifm-breadcrumb-item-background-active);
+  border-radius: 0.5em;
 }
 
 .profile figure {
-  margin: 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0;
+  margin: 0;
 }
 
 .profile figcaption {
-  margin: 0;
   padding: 0;
+  margin: 0;
   font-weight: bold;
 }
 
 .profile p {
-  text-align: center;
-  margin: 0 0 0.5em;
   padding: 0;
+  margin: 0 0 0.5em;
+  text-align: center;
 }
 
 .sns {
@@ -32,11 +32,11 @@
 }
 
 .sns a {
-  flex: 1 0 auto;
   display: flex;
+  flex: 1 0 auto;
   justify-content: center;
-  background-color: var(--ifm-breadcrumb-item-background-active);
   padding: 0.4em 2em;
+  background-color: var(--ifm-breadcrumb-item-background-active);
   border-radius: 0.5em;
 }
 
