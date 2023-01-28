@@ -3,7 +3,7 @@ import path from 'node:path';
 import meow from 'meow';
 
 import { getFileList } from './input';
-import { fromJSX } from './jsx';
+import { jsxScanner } from './jsx';
 import { out } from './out';
 
 const commands = meow({
@@ -33,7 +33,7 @@ async function main() {
 
 	const jsxFiles = files.filter(filePath => /\.[jt]sx?$/.test(filePath));
 
-	const pretenders = fromJSX(jsxFiles, {
+	const pretenders = await jsxScanner(jsxFiles, {
 		ignoreComponentNames: commands.flags.ignore?.split(',').map(s => s.trim()),
 	});
 

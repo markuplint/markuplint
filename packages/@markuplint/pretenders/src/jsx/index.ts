@@ -1,17 +1,29 @@
-import type { Pretender } from '@markuplint/ml-config';
+import type { Pretender, PretenderScanOptions } from '@markuplint/ml-config';
 
 import path from 'node:path';
 
 import { sliceFragment } from '@markuplint/parser-utils';
 import * as ts from 'typescript';
 
+import { createScanner } from '../create-scanner';
 import { PretenderDirector } from '../pretender-director';
 
 import { createIndentity } from './create-identify';
 import { finder } from './finder';
 import { getAttributes } from './get-attributes';
 
-const jsxOptions = {
+interface PretenderScanJSXOptions extends PretenderScanOptions {
+	asFragment?: (RegExp | string)[];
+	taggedStylingComponent?: (RegExp | string)[];
+	extendingWrapper?: (string | RegExp | ExtendingWrapperCallerOptions)[];
+}
+
+type ExtendingWrapperCallerOptions = {
+	identifier: string | RegExp;
+	numberOfArgument: number;
+};
+
+const defaultOptions: Required<PretenderScanJSXOptions> = {
 	cwd: process.cwd(),
 	asFragment: [/(?:^|\.)Provider$/i] as (RegExp | string)[],
 	ignoreComponentNames: [] as string[],
@@ -24,24 +36,20 @@ const jsxOptions = {
 	extendingWrapper: [] as (string | RegExp | ExtendingWrapperCallerOptions)[],
 };
 
-type ExtendingWrapperCallerOptions = {
-	identifier: string | RegExp;
-	numberOfArgument: number;
-};
-
-export function fromJSX(filePath: string[], options: Partial<typeof jsxOptions> = jsxOptions): Pretender[] {
+export const jsxScanner = createScanner((files, options = defaultOptions): Promise<Pretender[]> => {
 	const {
-		cwd = jsxOptions.cwd,
-		asFragment = jsxOptions.asFragment,
-		ignoreComponentNames = jsxOptions.ignoreComponentNames,
-		taggedStylingComponent = jsxOptions.taggedStylingComponent,
-		extendingWrapper = jsxOptions.extendingWrapper,
+		cwd = defaultOptions.cwd,
+		asFragment = defaultOptions.asFragment,
+		ignoreComponentNames = defaultOptions.ignoreComponentNames,
+		taggedStylingComponent = defaultOptions.taggedStylingComponent,
+		extendingWrapper = defaultOptions.extendingWrapper,
 	} = options;
 
 	const director = new PretenderDirector();
 
-	const program = ts.createProgram(filePath, {
+	const program = ts.createProgram(files, {
 		jsx: ts.JsxEmit.ReactJSX,
+		allowJs: true,
 	});
 
 	for (const sourceFile of program.getSourceFiles()) {
@@ -296,8 +304,8 @@ export function fromJSX(filePath: string[], options: Partial<typeof jsxOptions> 
 		}
 	}
 
-	return director.getPretenders();
-}
+	return Promise.resolve(director.getPretenders());
+});
 
 function toRegexp(pattern: string) {
 	const matched = pattern.match(/^\/(.+)\/([ig]*)$/i);

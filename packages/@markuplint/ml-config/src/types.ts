@@ -44,12 +44,35 @@ export type SpecConfig = {
 
 export type PretenderDetails = {
 	files?: string[];
+
+	/**
+	 * Dynamic scaning
+	 *
+	 * @experimental
+	 */
+	scan?: PretenderScanConfig[];
+
 	/**
 	 * @experimental
 	 */
 	imports?: string[];
 	data?: Pretender[];
 };
+
+export type PretenderScanConfig = {
+	/**
+	 * Supporting for Glob format
+	 */
+	files: string;
+	type: string;
+	options: PretenderScanOptions;
+};
+
+export interface PretenderScanOptions {
+	cwd?: string;
+	ignoreComponentNames?: string[];
+	[extend: string]: any;
+}
 
 export type PretenderFileData = {
 	version: string;

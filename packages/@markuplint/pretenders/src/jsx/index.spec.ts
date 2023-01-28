@@ -1,12 +1,12 @@
 import path from 'node:path';
 
-import { fromJSX } from '.';
+import { jsxScanner } from '.';
 
 const _ = (filePath: string) => filePath.split('/').join(path.sep);
 
-describe('fromJSX', () => {
-	test('001.tsx', () => {
-		expect(fromJSX([path.resolve(__dirname, '../../test/fixtures/001.tsx')])).toStrictEqual([
+describe('jsxScanner', () => {
+	test('001.tsx', async () => {
+		expect(await jsxScanner([path.resolve(__dirname, '../../test/fixtures/001.tsx')])).toStrictEqual([
 			{
 				selector: 'NodeA',
 				as: {
@@ -72,16 +72,16 @@ describe('fromJSX', () => {
 		]);
 	});
 
-	test('002', () => {
+	test('002', async () => {
 		expect(
-			fromJSX([path.resolve(__dirname, '../../test/fixtures/002.tsx')], {
+			await jsxScanner([path.resolve(__dirname, '../../test/fixtures/002.tsx')], {
 				ignoreComponentNames: ['FooBar'],
 			}),
 		).toStrictEqual([]);
 	});
 
-	test('003', () => {
-		expect(fromJSX([path.resolve(__dirname, '../../test/fixtures/003.tsx')])).toStrictEqual([
+	test('003', async () => {
+		expect(await jsxScanner([path.resolve(__dirname, '../../test/fixtures/003.tsx')])).toStrictEqual([
 			{
 				selector: 'Button',
 				as: {
@@ -102,7 +102,7 @@ describe('fromJSX', () => {
 		]);
 
 		expect(
-			fromJSX([path.resolve(__dirname, '../../test/fixtures/003.tsx')], {
+			await jsxScanner([path.resolve(__dirname, '../../test/fixtures/003.tsx')], {
 				taggedStylingComponent: [/^ORIGINAL_IDENTIFIER\.(?<tagName>[a-z][a-z0-9]*)$/],
 			}),
 		).toStrictEqual([
@@ -117,9 +117,9 @@ describe('fromJSX', () => {
 		]);
 	});
 
-	test('004', () => {
+	test('004', async () => {
 		expect(
-			fromJSX([path.resolve(__dirname, '../../test/fixtures/004.tsx')], {
+			await jsxScanner([path.resolve(__dirname, '../../test/fixtures/004.tsx')], {
 				extendingWrapper: [
 					'secondary',
 					{

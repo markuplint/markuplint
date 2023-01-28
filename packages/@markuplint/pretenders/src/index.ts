@@ -1,1 +1,1 @@
-export { fromJSX } from './jsx';
+export * from './types';
