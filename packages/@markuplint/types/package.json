@@ -11,6 +11,9 @@
 	"publishConfig": {
 		"access": "public"
 	},
+	"typedoc": {
+		"entryPoint": "./src/index.ts"
+	},
 	"scripts": {
 		"build": "tsc",
 		"clean": "tsc --build --clean",
