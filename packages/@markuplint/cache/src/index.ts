@@ -27,6 +27,20 @@ export class Cache<T> {
 		return `<${this.#type}>::${this.#glob}`;
 	}
 
+	async delete(file: string) {
+		if (!this.#fileSet) {
+			const fileList = await asyncGlob(this.#glob);
+			this.#fileSet = new Set(fileList.sort());
+		}
+
+		if (!this.#fileSet.has(file)) {
+			// Re-getting data
+			return this._getData(this.#fileSet);
+		}
+
+		return null;
+	}
+
 	async get() {
 		const cachedData = globalCache.get(this.key);
 		if (cachedData) {

@@ -5,13 +5,16 @@ import { Cache } from '.';
 
 const TEST_DIR = path.resolve(__dirname, '..', '__test__');
 const TEST_WILL_ADD_FILE = path.resolve(TEST_DIR, 'f');
+const TEST_WILL_DELETE_FILE = path.resolve(TEST_DIR, 'a');
 
 beforeAll(() => {
 	fs.existsSync(TEST_WILL_ADD_FILE) && fs.rmSync(TEST_WILL_ADD_FILE);
+	fs.writeFileSync(TEST_WILL_DELETE_FILE, '');
 });
 
 afterEach(() => {
 	fs.existsSync(TEST_WILL_ADD_FILE) && fs.rmSync(TEST_WILL_ADD_FILE);
+	fs.writeFileSync(TEST_WILL_DELETE_FILE, '');
 });
 
 describe('Basic', () => {
@@ -61,5 +64,24 @@ describe('Basic', () => {
 
 		expect(result).toBe(['a', 'b', 'c', 'd', 'f'].map(item => path.resolve(TEST_DIR, item)).join());
 		expect(result).toBe(await cache.get());
+	});
+
+	test('Cache::delete', async () => {
+		const cache = new Cache('A', path.resolve(TEST_DIR, '*'), files => {
+			return Promise.resolve(Array.from(files).join());
+		});
+		fs.rmSync(TEST_WILL_DELETE_FILE);
+		const result = await cache.delete(TEST_WILL_DELETE_FILE);
+
+		expect(result).toBe(['b', 'c', 'd'].map(item => path.resolve(TEST_DIR, item)).join());
+	});
+
+	test('Cache::delete (a file was not deleted)', async () => {
+		const cache = new Cache('A', path.resolve(TEST_DIR, '*'), files => {
+			return Promise.resolve(Array.from(files).join());
+		});
+		const result = await cache.delete(TEST_WILL_DELETE_FILE);
+
+		expect(result).toBe(null);
 	});
 });
