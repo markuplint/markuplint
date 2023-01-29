@@ -26,6 +26,7 @@ describe('Basic', () => {
 			'.npmignore',
 			'README.md',
 			'__mocks__',
+			'__test__',
 			'lib',
 			'node_modules',
 			'package.json',

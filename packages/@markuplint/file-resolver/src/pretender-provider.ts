@@ -9,6 +9,8 @@ import type { PretenderScannerScanMethod } from '@markuplint/pretenders';
 
 import { Cache } from '@markuplint/cache';
 
+import { Watcher } from './watcher';
+
 type PretendersConfig = OptimizedConfig['pretenders'];
 
 const DIDNT_SPECIFY_CONFIG_ERROR_MSG =
@@ -47,12 +49,44 @@ export class PretenderProvider {
 			}
 		}
 	}
+
+	/**
+	 * Stops watching.
+	 * It does nothing if it is not in watching mode or it doesn't have scanning files.
+	 */
+	async unwatch() {
+		for (const scanner of this.#scanners) {
+			await scanner.unwatch();
+		}
+	}
+
+	/**
+	 * Starts watching related files.
+	 * It passes the results of pretenders to callback every file changed.
+	 * It requires calling `setConfig` method in advance before calling this.
+	 *
+	 * @param callback
+	 */
+	async watch(callback: (pretenders: Pretender[]) => void) {
+		for (const scanner of this.#scanners) {
+			await scanner.watch(async () => {
+				if (!this.#staticData) {
+					throw new ReferenceError(DIDNT_SPECIFY_CONFIG_ERROR_MSG);
+				}
+				const allPretenders = await this.getPretenders();
+				callback(allPretenders);
+			});
+		}
+	}
 }
 
 class Scanner<O extends PretenderScanOptions = PretenderScanOptions> {
 	#cache: Cache<Pretender[]>;
+	#options?: O;
+	#watcher: Watcher | null = null;
 
-	constructor(type: string, glob: string, options: O, method: PretenderScannerScanMethod<O>) {
+	constructor(type: string, glob: string, method: PretenderScannerScanMethod<O>, options?: O) {
+		this.#options = options;
 		this.#cache = new Cache(type, glob, files => {
 			return method(Array.from(files), options);
 		});
@@ -67,6 +101,31 @@ class Scanner<O extends PretenderScanOptions = PretenderScanOptions> {
 	async scan() {
 		const pretenders = await this.#cache.get();
 		return pretenders;
+	}
+
+	/**
+	 * Stops watching.
+	 * It does nothing if it is not in watching mode.
+	 */
+	async unwatch() {
+		await this.#watcher?.close();
+	}
+
+	/**
+	 * Starts watching related files.
+	 * It passes the results of pretenders to callback every file changed.
+	 *
+	 * @param callback
+	 */
+	async watch(callback: () => void) {
+		this.#watcher = await Watcher.create(this.#cache.glob, this.#options);
+		this.#watcher.addChangeListener(async (file, type) => {
+			const pretenders = type === 'unlink' ? await this.#cache.delete(file) : await this.#cache.update(file);
+			if (!pretenders) {
+				return;
+			}
+			callback();
+		});
 	}
 }
 
