@@ -65,7 +65,7 @@ export type PretenderScanConfig = {
 	 */
 	files: string;
 	type: string;
-	options: PretenderScanOptions;
+	options?: PretenderScanOptions;
 };
 
 export interface PretenderScanOptions {

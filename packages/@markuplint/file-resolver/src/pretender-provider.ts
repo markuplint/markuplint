@@ -7,7 +7,7 @@ import type {
 } from '@markuplint/ml-config';
 import type { PretenderScannerScanMethod } from '@markuplint/pretenders';
 
-import { asyncGlob } from './utils';
+import { Cache } from '@markuplint/cache';
 
 type PretendersConfig = OptimizedConfig['pretenders'];
 
@@ -41,7 +41,7 @@ export class PretenderProvider {
 			for (const scan of scanConfig) {
 				if (scan.type === 'jsx') {
 					const { jsxScanner } = await import('@markuplint/pretenders/lib/jsx');
-					const scanner = new Scanner(scan.files, scan.options, jsxScanner);
+					const scanner = new Scanner(scan.type, scan.files, jsxScanner, scan.options);
 					this.#scanners.push(scanner);
 				}
 			}
@@ -50,14 +50,12 @@ export class PretenderProvider {
 }
 
 class Scanner<O extends PretenderScanOptions = PretenderScanOptions> {
-	#glob: string;
-	readonly #options: O;
-	readonly #method: PretenderScannerScanMethod<O>;
+	#cache: Cache<Pretender[]>;
 
-	constructor(glob: string, options: O, method: PretenderScannerScanMethod<O>) {
-		this.#glob = glob;
-		this.#options = options;
-		this.#method = method;
+	constructor(type: string, glob: string, options: O, method: PretenderScannerScanMethod<O>) {
+		this.#cache = new Cache(type, glob, files => {
+			return method(Array.from(files), options);
+		});
 	}
 
 	/**
@@ -67,8 +65,7 @@ class Scanner<O extends PretenderScanOptions = PretenderScanOptions> {
 	 * @returns
 	 */
 	async scan() {
-		const files = await asyncGlob(this.#glob);
-		const pretenders = await this.#method(files, this.#options);
+		const pretenders = await this.#cache.get();
 		return pretenders;
 	}
 }

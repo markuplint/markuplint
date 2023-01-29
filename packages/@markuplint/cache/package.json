@@ -1,0 +1,25 @@
+{
+	"name": "@markuplint/cache",
+	"version": "0.0.0",
+	"description": "Cache utilities",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"private": false,
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsc",
+		"clean": "tsc --build --clean"
+	},
+	"dependencies": {
+		"glob": "^8.1.0",
+		"minimatch": "^6.1.6"
+	},
+	"devDependencies": {
+		"@types/minimatch": "^5.1.2"
+	}
+}
