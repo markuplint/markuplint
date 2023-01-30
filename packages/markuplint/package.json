@@ -1,6 +1,6 @@
 {
 	"name": "markuplint",
-	"version": "3.1.0",
+	"version": "3.2.0",
 	"description": "A linter for all markup developers",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
@@ -8,6 +8,9 @@
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
+	"typedoc": {
+		"entryPoint": "./src/index.ts"
+	},
 	"bin": {
 		"markuplint": "bin/markuplint"
 	},
@@ -25,16 +28,16 @@
 		"execa": "5"
 	},
 	"dependencies": {
-		"@markuplint/create-rule-helper": "3.1.0",
-		"@markuplint/file-resolver": "3.1.0",
-		"@markuplint/html-parser": "3.1.0",
-		"@markuplint/html-spec": "3.1.0",
-		"@markuplint/i18n": "3.0.0-rc.5",
+		"@markuplint/create-rule-helper": "3.2.0",
+		"@markuplint/file-resolver": "3.2.0",
+		"@markuplint/html-parser": "3.2.0",
+		"@markuplint/html-spec": "3.2.0",
+		"@markuplint/i18n": "3.2.0",
 		"@markuplint/ml-ast": "3.0.0-rc.5",
-		"@markuplint/ml-config": "3.1.0",
-		"@markuplint/ml-core": "3.1.0",
-		"@markuplint/ml-spec": "3.1.0",
-		"@markuplint/rules": "3.1.0",
+		"@markuplint/ml-config": "3.2.0",
+		"@markuplint/ml-core": "3.2.0",
+		"@markuplint/ml-spec": "3.2.0",
+		"@markuplint/rules": "3.2.0",
 		"chokidar": "^3.5.3",
 		"cli-color": "^2.0.3",
 		"debug": "^4.3.4",

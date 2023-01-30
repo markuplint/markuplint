@@ -25,7 +25,7 @@
 		"site:mlpt": "cd website; yarn; yarn site:mlpt",
 		"pg:dev": "cd playground; yarn pg:dev",
 		"pg:build": "cd playground; yarn pg:build",
-		"apidoc": "typedoc --ignoreCompilerErrors --exclude '**/*+(index|.spec|.e2e|.d).ts,node_modules/**/*' --mode file --out apidoc --media packages/markuplint/media --readme ./packages/markuplint/README.md ./packages/markuplint/",
+		"apidoc": "typedoc --options ./typedoc.json",
 		"release": "lerna publish --exact",
 		"release:next": "lerna publish --dist-tag next --exact --force-publish",
 		"release:canary": "lerna publish --preid dev --canary --exact --force-publish",
@@ -134,7 +134,9 @@
 		"textlint-rule-preset-jtf-style": "^2.3.13",
 		"ts-jest": "^29.0.3",
 		"ts-node": "^10.9.1",
-		"typedoc": "^0.23.23",
+		"typedoc-plugin-mdn-links": "^2.0.2",
+		"typedoc-plugin-resolve-crossmodule-references": "^0.3.3",
+		"typedoc": "^0.23.24",
 		"typescript": "^4.9.4"
 	}
 }

@@ -11,26 +11,102 @@ export function attr(attr: MLASTAttr): MLASTAttr {
 		return attr;
 	}
 
-	/**
-	 * If data-binding attributes
-	 */
-	const [, directive, potentialName] = attr.name.raw.match(/^(v-bind:|:)(.+)$/i) || [];
-	if (directive && potentialName) {
-		if (duplicatableAttrs.includes(potentialName.toLowerCase())) {
-			attr.isDuplicatable = true;
+	{
+		/**
+		 * `v-on`
+		 */
+		const [, directive, potentialName, modifier] = attr.name.raw.match(/^(v-on:|@)([^.]+)(?:\.([^.]))?$/i) || [];
+		if (directive && potentialName) {
+			return {
+				...attr,
+				potentialName: `on${potentialName.toLowerCase()}`,
+				isDynamicValue: true,
+				// @ts-ignore
+				_modifier: modifier,
+			};
 		}
+	}
 
-		return {
-			...attr,
-			potentialName,
-			isDynamicValue: true,
-		};
+	{
+		/**
+		 * `v-bind`
+		 */
+		const [, directive, potentialName, modifier] = attr.name.raw.match(/^(v-bind:|:)([^.]+)(?:\.([^.]))?$/i) || [];
+		if (directive && potentialName) {
+			if (duplicatableAttrs.includes(potentialName.toLowerCase())) {
+				attr.isDuplicatable = true;
+			}
+
+			if (!modifier) {
+				return {
+					...attr,
+					potentialName,
+					isDynamicValue: true,
+				};
+			}
+
+			switch (modifier) {
+				case '.attr': {
+					return {
+						...attr,
+						potentialName,
+						isDynamicValue: true,
+						// @ts-ignore
+						_modifier: modifier,
+					};
+				}
+				// TODO: Supporting for `prop` and `camel` https://github.com/markuplint/markuplint/pull/681
+				case '.prop':
+				case '.camel':
+				default: {
+					const name = `v-bind:${potentialName}${modifier ?? ''}`;
+					return {
+						...attr,
+						potentialName: attr.name.raw !== name ? name : undefined,
+						isDirective: true,
+						// @ts-ignore
+						_modifier: modifier,
+					};
+				}
+			}
+		}
+	}
+
+	{
+		/**
+		 * `v-model`
+		 */
+		const [, directive, modifier] = attr.name.raw.match(/^(v-model)(?:\.([^.]))?$/i) || [];
+		if (directive) {
+			// TODO: Supporting for `v-model` https://github.com/markuplint/markuplint/pull/681
+			return {
+				...attr,
+				isDirective: true,
+				// @ts-ignore
+				_modifier: modifier,
+			};
+		}
+	}
+
+	{
+		/**
+		 * `v-slot`
+		 */
+		const [, , slotName] = attr.name.raw.match(/^(v-slot:|#)(.+)$/i) || [];
+		const name = `v-slot:${slotName}`;
+		if (slotName) {
+			return {
+				...attr,
+				potentialName: attr.name.raw !== name ? name : undefined,
+				isDirective: true,
+			};
+		}
 	}
 
 	/**
 	 * If directives
 	 */
-	if (/^(?:v-|@)/.test(attr.name.raw)) {
+	if (/^v-/.test(attr.name.raw)) {
 		return {
 			...attr,
 			isDirective: true,

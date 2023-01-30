@@ -43,6 +43,13 @@ export function attrCheck(
 			// Ignore checking because ARIA attributes are check on another rule
 			return false;
 		}
+
+		// @see https://www.w3.org/TR/adapt/
+		// It is an experimental
+		if (/^adapt-.+$/.test(name)) {
+			// Ignore checking because "adapt-*" attribute is any type
+			return false;
+		}
 	}
 
 	// Existence

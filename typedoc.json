@@ -1,0 +1,23 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"name": "Markuplit API",
+	"tsconfig": "./tsconfig.json",
+	"entryPointStrategy": "packages",
+	"entryPoints": [
+		"packages/markuplint",
+		"packages/@markuplint/file-resolver",
+		"packages/@markuplint/html-parser",
+		"packages/@markuplint/i18n",
+		"packages/@markuplint/ml-ast",
+		"packages/@markuplint/ml-config",
+		"packages/@markuplint/ml-core",
+		"packages/@markuplint/ml-spec",
+		"packages/@markuplint/parser-utils",
+		"packages/@markuplint/selector",
+		"packages/@markuplint/test-tools",
+		"packages/@markuplint/types"
+	],
+	"exclude": ["**/*.d.ts"],
+	"out": "./apidoc",
+	"plugin": ["typedoc-plugin-mdn-links", "typedoc-plugin-resolve-crossmodule-references"]
+}

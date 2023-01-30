@@ -31,11 +31,11 @@ You can apply even if the filename is not `.markuplintrc`.
 The priority applied names are:
 
 - `markuplint` field in `package.json`
-- `markuplintrc.json`
-- `markuplintrc.yaml`
-- `markuplintrc.yml`
-- `markuplintrc.js`
-- `markuplintrc.cjs`
+- `.markuplintrc.json`
+- `.markuplintrc.yaml`
+- `.markuplintrc.yml`
+- `.markuplintrc.js`
+- `.markuplintrc.cjs`
 - `markuplint.config.js`
 - `markuplint.config.cjs`
 
