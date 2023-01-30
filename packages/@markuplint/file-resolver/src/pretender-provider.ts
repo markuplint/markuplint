@@ -16,9 +16,12 @@ type PretendersConfig = OptimizedConfig['pretenders'];
 const DIDNT_SPECIFY_CONFIG_ERROR_MSG =
 	'Cannot return pretenders because it did not specify the configuration yet. It might be the wrong order to call this method';
 
+type PretenderWatchCallback = (pretenders: Pretender[]) => void;
+
 export class PretenderProvider {
 	#staticData: Pretender[] | null = null;
 	#scanners: Scanner[] = [];
+	#watchCallback: PretenderWatchCallback | null = null;
 
 	async getPretenders() {
 		if (!this.#staticData) {
@@ -48,6 +51,12 @@ export class PretenderProvider {
 				}
 			}
 		}
+
+		// It regards to be enabled watch mode if it has `#watchCallback`.
+		// And call the watch method then add the callback to each scanner.
+		if (this.#watchCallback) {
+			await this.watch(this.#watchCallback);
+		}
 	}
 
 	/**
@@ -67,14 +76,15 @@ export class PretenderProvider {
 	 *
 	 * @param callback
 	 */
-	async watch(callback: (pretenders: Pretender[]) => void) {
+	async watch(callback: PretenderWatchCallback) {
+		this.#watchCallback = callback;
 		for (const scanner of this.#scanners) {
 			await scanner.watch(async () => {
 				if (!this.#staticData) {
 					throw new ReferenceError(DIDNT_SPECIFY_CONFIG_ERROR_MSG);
 				}
 				const allPretenders = await this.getPretenders();
-				callback(allPretenders);
+				this.#watchCallback?.(allPretenders);
 			});
 		}
 	}

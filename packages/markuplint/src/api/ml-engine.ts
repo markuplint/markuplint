@@ -1,6 +1,7 @@
 import type { MLResultInfo } from '../types';
 import type { APIOptions, MLEngineEventMap, MLFabric } from './types';
 import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
+import type { Pretender } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue } from '@markuplint/ml-core';
 
 import {
@@ -134,11 +135,13 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 			watch: enable,
 		};
 
-		if (enable) {
-			this.#watcher.on('change', this.onChange.bind(this));
-		} else {
+		if (!enable) {
 			this.#watcher.removeAllListeners();
+			void this.#pretenderProvider.unwatch();
 		}
+
+		this.#watcher.on('change', this.onChange.bind(this));
+		void this.#pretenderProvider.watch(this.watchPretenders.bind(this));
 	}
 
 	private async createCore(fabric: MLFabric) {
@@ -363,5 +366,15 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		}
 
 		return this.createCore(fabric);
+	}
+
+	private async watchPretenders(pretenders: Pretender[]) {
+		if (!this.#core) {
+			await this.setup();
+			return;
+		}
+
+		this.#core.update({ pretenders });
+		await this.exec();
 	}
 }

@@ -75,7 +75,7 @@ export class MLCore {
 		this._createDocument();
 	}
 
-	update({ parser, ruleset, rules, locale, schemas, parserOptions }: Partial<MLFabric>) {
+	update({ parser, ruleset, rules, locale, schemas, parserOptions, pretenders }: Partial<MLFabric>) {
 		this.#parser = parser ?? this.#parser;
 		this.#ruleset = {
 			rules: ruleset?.rules ?? this.#ruleset.rules,
@@ -85,6 +85,7 @@ export class MLCore {
 		this.#rules = rules ?? this.#rules;
 		this.#locale = locale ?? this.#locale;
 		this.#schemas = schemas ?? this.#schemas;
+		this.#pretenders = pretenders ?? this.#pretenders;
 		if (
 			parserOptions &&
 			(parserOptions.ignoreFrontMatter !== this.#parserOptions.ignoreFrontMatter ||
