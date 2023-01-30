@@ -8,8 +8,7 @@
     "site:build": "yarn site:prebuild; docusaurus build",
     "site:prebuild": "node scripts/prebuild/index.mjs; npx prettier --write './src/**/*{ts,tsx,json,rc,md,mdx,css,scss}';",
     "site:lint": "prettier --write './**/*{js,ts,tsx,mdx}' './*{json,rc,js}' '!./build/**/*' '!./.docusaurus/**/*'; eslint --fix './**/*.{js,ts,tsx}' './*.{js,ts}'; textlint --fix './website/i18n/ja'; yarn site:markuplint",
-    "site:markuplint": "yarn site:mlpt; ../packages/markuplint/bin/markuplint \"src/**/*\"",
-    "site:mlpt": "\"../packages/@markuplint/pretenders/bin/mlpt\" \"src/**/*\" \"node_modules/@docusaurus/**/*\" \"node_modules/react-router-dom/**/*\" -O \"./pretenders.json\" --ignore \"MDXPage\""
+    "site:markuplint": "../packages/markuplint/bin/markuplint \"src/**/*\""
   },
   "author": "Yusuke Hirao",
   "license": "MIT",

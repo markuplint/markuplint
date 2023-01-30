@@ -5,7 +5,20 @@
   },
   "specs": ["@markuplint/react-spec"],
   "pretenders": {
-    "files": ["./pretenders.json"]
+    "scan": [
+      {
+        "files": "./src/**/*",
+        "type": "jsx"
+      },
+      {
+        "files": "./node_modules/@docusaurus/**/*",
+        "type": "jsx"
+      },
+      {
+        "files": "./node_modules/react-router-dom/**/*",
+        "type": "jsx"
+      }
+    ]
   },
   "rules": {
     "attr-duplication": true,
