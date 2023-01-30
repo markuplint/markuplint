@@ -165,14 +165,17 @@ export class ConfigProvider {
 	private _pathResolve(config: Config, filePath: string): OptimizedConfig {
 		const optimizedConfig = mergeConfig(config);
 		const dir = path.dirname(filePath);
-		const resolved = {
+		const resolved: OptimizedConfig = {
 			...optimizedConfig,
 			extends: pathResolve(dir, optimizedConfig.extends),
 			plugins: pathResolve(dir, optimizedConfig.plugins, ['name']),
 			parser: pathResolve(dir, optimizedConfig.parser),
 			specs: pathResolve(dir, optimizedConfig.specs),
 			excludeFiles: pathResolve(dir, optimizedConfig.excludeFiles),
-			pretenders: pathResolve(dir, optimizedConfig.pretenders, ['files']),
+			pretenders: optimizedConfig.pretenders && {
+				...pathResolve(dir, optimizedConfig.pretenders, ['files']),
+				scan: pathResolve(dir, optimizedConfig.pretenders.scan, ['files']),
+			},
 			overrides: pathResolve(dir, optimizedConfig.overrides, undefined, true),
 		};
 		return resolved;

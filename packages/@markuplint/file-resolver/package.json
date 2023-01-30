@@ -26,6 +26,7 @@
 		"@markuplint/ml-config": "3.1.0",
 		"@markuplint/ml-core": "3.1.0",
 		"@markuplint/ml-spec": "3.1.0",
+		"@markuplint/pretenders": "0.0.0",
 		"cosmiconfig": "^8.0.0",
 		"glob": "^8.0.3",
 		"jsonc": "^2.0.0",

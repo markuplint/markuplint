@@ -1,6 +1,11 @@
 import type { Nullable } from './types';
 
-import fs from 'fs';
+import fs from 'node:fs';
+import { promisify } from 'node:util';
+
+import glob from 'glob';
+
+const aGlob = promisify(glob);
 
 export function nonNullableFilter<T>(item: Nullable<T>): item is T {
 	return !!item;
@@ -16,6 +21,10 @@ export function uuid() {
 
 export function fileExists(filePath: string) {
 	return fs.existsSync(filePath);
+}
+
+export function asyncGlob(pattern: string) {
+	return aGlob(pattern);
 }
 
 export function toRegexp(pattern: string) {

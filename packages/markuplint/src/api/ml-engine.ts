@@ -7,9 +7,9 @@ import {
 	ConfigProvider,
 	resolveFiles,
 	resolveParser,
-	resolvePretenders,
 	resolveRules,
 	resolveSpecs,
+	PretenderProvider,
 } from '@markuplint/file-resolver';
 import { mergeConfig } from '@markuplint/ml-config';
 import { MLCore, convertRuleset } from '@markuplint/ml-core';
@@ -35,6 +35,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 	}
 
 	#configProvider: ConfigProvider;
+	#pretenderProvider = new PretenderProvider();
 	#core: MLCore | null = null;
 	#file: MLFile;
 	#options?: APIOptions & MLEngineOptions;
@@ -315,7 +316,8 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 	}
 
 	private async resolvePretenders(configSet: ConfigSet) {
-		const pretenders = await resolvePretenders(configSet.config.pretenders);
+		await this.#pretenderProvider.setConfig(configSet.config.pretenders);
+		const pretenders = await this.#pretenderProvider.getPretenders();
 		return pretenders;
 	}
 
