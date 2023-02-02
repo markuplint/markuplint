@@ -40,22 +40,25 @@ export function sequentialWalker<T extends RuleConfigValue, O = null, N = MLNode
 	});
 
 	const loop = (index = 0) => {
-		if (index >= list.length) {
-			_resolve();
-			return;
-		}
+		while (true) {
+			if (index >= list.length) {
+				_resolve();
+				return;
+			}
 
-		const node = list[index];
-		if (!node) {
-			_resolve();
-			return;
-		}
+			const node = list[index];
+			if (!node) {
+				_resolve();
+				return;
+			}
 
-		const result = walker(node);
-		if (result instanceof Promise) {
-			result.then(() => loop(index + 1)).catch(_reject);
-		} else {
-			loop(index + 1);
+			const result = walker(node);
+			if (result instanceof Promise) {
+				result.then(() => loop(index + 1)).catch(_reject);
+				return;
+			} else {
+				index = index + 1;
+			}
 		}
 	};
 
