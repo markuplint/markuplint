@@ -80,3 +80,7 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+.navbar__toggle {
+  margin-right: 1rem;
+}
