@@ -86,6 +86,6 @@
   margin-right: 1rem;
 }
 
-main article {
+.markdown {
   --ifm-link-decoration: underline;
 }
