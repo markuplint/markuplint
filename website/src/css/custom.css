@@ -35,6 +35,29 @@
   --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 30%);
 }
 
+code {
+  /**
+   * For the choice of hue, referred to color univarsal design
+   * https://cudo.jp/?page_id=1565
+   */
+  --code-color-red-light: hsl(18deg 100% 70%);
+  --code-color-red-dark: hsl(18deg 100% 40%);
+  --code-color-yellow-light: hsl(57deg 70% 80%);
+  --code-color-yellow-dark: hsl(57deg 80% 25%);
+  --code-color-green-light: hsl(162deg 67% 60%);
+  --code-color-green-dark: hsl(162deg 100% 25%);
+  --code-color-blue-light: hsl(219deg 100% 70%);
+  --code-color-blue-dark: hsl(219deg 100% 40%);
+  --code-color-sky-light: hsl(200deg 100% 82%);
+  --code-color-sky-dark: hsl(200deg 100% 35%);
+  --code-color-pink-light: hsl(359deg 100% 80%);
+  --code-color-pink-dark: hsl(359deg 80% 48%);
+  --code-color-purple-light: hsl(300deg 50% 75%);
+  --code-color-purple-dark: hsl(300deg 100% 30%);
+  --code-color-lime-light: hsl(100deg 40% 50%);
+  --code-color-lime-dark: hsl(100deg 80% 25%);
+}
+
 .iconLink {
   transition: background-color var(--ifm-transition-fast);
 }
