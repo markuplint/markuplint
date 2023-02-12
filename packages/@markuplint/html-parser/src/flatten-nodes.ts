@@ -234,13 +234,21 @@ function arrayize(nodeTree: MLASTNode[], rawHtml: string) {
 				node.prevNode = textNode;
 
 				if (node.parentNode && node.parentNode.childNodes) {
-					node.parentNode.childNodes.unshift(textNode);
+					if (!node.parentNode.childNodes.length) {
+						node.parentNode.childNodes.push(textNode);
+					} else if (node.parentNode.childNodes[0].startOffset >= textNode.startOffset) {
+						node.parentNode.childNodes.unshift(textNode);
+					}
+					// else {
+					// 	console.log({
+					// 		root: node.raw,
+					// 		'[0]': node.parentNode.childNodes[0].raw,
+					// 		insert: textNode.raw,
+					// 	});
+					// }
 				}
+
 				nodeOrders.push(textNode);
-			} else if (/^<\/[a-z0-9][a-z0-9:-]*>$/i.test(html)) {
-				// close tag
-			} else {
-				// never
 			}
 		}
 
@@ -256,5 +264,5 @@ function arrayize(nodeTree: MLASTNode[], rawHtml: string) {
 		nodeOrders.push(node);
 	});
 
-	return nodeOrders;
+	return nodeOrders.slice();
 }
