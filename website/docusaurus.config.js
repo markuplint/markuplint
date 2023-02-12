@@ -100,18 +100,6 @@ const config = {
             position: 'left',
           },
           {
-            href: 'https://github.com/markuplint/markuplint',
-            position: 'right',
-            className: 'iconLink iconLink--github',
-            'aria-label': 'GitHub',
-          },
-          {
-            href: 'https://twitter.com/markuplint',
-            position: 'right',
-            className: 'iconLink iconLink--twitter',
-            'aria-label': 'Twitter',
-          },
-          {
             type: 'localeDropdown',
             position: 'right',
           },
@@ -119,6 +107,28 @@ const config = {
       },
       footer: {
         style: 'dark',
+        links: [
+          {
+            html: /* html */ `
+            <a
+              href="https://github.com/markuplint/markuplint"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="iconLink iconLink--github"
+              >GitHub</a
+            >`,
+          },
+          {
+            html: /* html */ `
+            <a
+              href="https://twitter.com/markuplint"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="iconLink iconLink--twitter"
+              >Twitter</a
+            >`,
+          },
+        ],
         copyright: `© ${new Date().getFullYear()} Markuplint.`,
       },
       announcementBar: isNextVersion
