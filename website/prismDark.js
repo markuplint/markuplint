@@ -22,7 +22,7 @@ module.exports = {
     },
     {
       types: ['attr-value'],
-      style: { color: 'var(--code-color-red-light)' },
+      style: { color: 'var(--code-color-orange-light)' },
     },
 
     // CSS
@@ -50,11 +50,11 @@ module.exports = {
     },
     {
       types: ['string'],
-      style: { color: 'var(--code-color-red-light)' },
+      style: { color: 'var(--code-color-orange-light)' },
     },
     {
       types: ['regex'],
-      style: { color: 'var(--code-color-pink-light)' },
+      style: { color: 'var(--code-color-red-light)' },
     },
     {
       types: ['builtin', 'boolean'],
