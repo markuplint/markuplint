@@ -6,7 +6,7 @@ module.exports = {
   // Plain text
   plain: {
     color: 'var(--ifm-color-content)',
-    backgroundColor: 'rgb(200, 205, 210, 0.05)',
+    backgroundColor: '#202025',
   },
   styles: [
     ...darkTheme.styles,
