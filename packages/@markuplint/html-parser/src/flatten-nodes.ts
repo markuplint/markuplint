@@ -199,18 +199,15 @@ function arrayize(nodeTree: MLASTNode[], rawHtml: string) {
 
 	let prevLine = 1;
 	let prevCol = 1;
-	let currentStartOffset = 0;
 	let currentEndOffset = 0;
 
 	/**
 	 * pushing list
 	 */
 	walk(nodeTree, node => {
-		currentStartOffset = node.startOffset;
-
-		const diff = currentStartOffset - currentEndOffset;
+		const diff = node.startOffset - currentEndOffset;
 		if (diff > 0) {
-			const html = rawHtml.slice(currentEndOffset, currentStartOffset);
+			const html = rawHtml.slice(currentEndOffset, node.startOffset);
 
 			/**
 			 * first white spaces
@@ -247,13 +244,13 @@ function arrayize(nodeTree: MLASTNode[], rawHtml: string) {
 			}
 		}
 
-		currentEndOffset = currentStartOffset + node.raw.length;
+		currentEndOffset = node.startOffset + node.raw.length;
 
 		prevLine = node.endLine;
 		prevCol = node.endCol;
 
 		// for ghost nodes
-		node.startOffset = node.startOffset || currentStartOffset;
+		node.startOffset = node.startOffset || node.startOffset;
 		node.endOffset = node.endOffset || currentEndOffset;
 
 		nodeOrders.push(node);
