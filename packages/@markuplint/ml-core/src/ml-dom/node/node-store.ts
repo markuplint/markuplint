@@ -18,7 +18,13 @@ class NodeStore {
 		const node = this.#store.get(astNode.uuid);
 		if (!node) {
 			nodeStoreError('Ref ID: %s (%s: "%s")', astNode.uuid, astNode.nodeName, astNode.raw);
-			nodeStoreError('Map: %O', this.#store);
+			nodeStoreError(
+				'Map: %O',
+				Array.from(this.#store.entries()).map(([id, node]) => ({
+					id,
+					name: node.nodeName,
+				})),
+			);
 			throw new ParserError('Broke mapping nodes.', {
 				line: astNode.startLine,
 				col: astNode.startCol,
@@ -39,7 +45,12 @@ class NodeStore {
 			nodeStoreError('Invalid node: %O', node);
 		}
 
-		nodeStoreLog('Mapped: %s (%s: "%s")', astNode.uuid, astNode.nodeName, astNode.raw);
+		nodeStoreLog(
+			'Mapped: %s (%s: "%s")',
+			astNode.uuid,
+			astNode.nodeName,
+			astNode.raw.replace(/\n/g, '⏎').replace(/\t/g, '→'),
+		);
 		this.#store.set(astNode.uuid, node);
 	}
 }
