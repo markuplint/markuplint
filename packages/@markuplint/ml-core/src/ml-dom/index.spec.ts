@@ -639,4 +639,57 @@ describe('Issues', () => {
 		const elements = dom.querySelectorAll('*');
 		expect(elements.length).toBe(2);
 	});
+
+	test('#698', () => {
+		const dom = createTestDocument(
+			`<ul>
+	{#if cond === valueA}
+		<li>A</li>
+	{:else if cond === valueB}
+		<li>B</li>
+	{/if}
+</ul>`,
+			{ parser: require('@markuplint/svelte-parser') },
+		);
+
+		// 💡 This calling is a test that checks it
+		// doesn't throw an error when it referrers a DOM object.
+		dom.querySelectorAll('*');
+
+		const map = dom.debugMap();
+		expect(map).toStrictEqual([
+			'[1:1]>[1:5](0,4)UL: <ul>',
+			'  namespaceURI: true',
+			'  elementType: html',
+			'  isInFragmentDocument: true',
+			'  isForeignElement: false',
+			'[1:5]>[2:2](4,6)#text: ⏎→',
+			'[2:2]>[2:23](6,27)#ml-block: {#if␣cond␣===␣valueA}',
+			'[2:23]>[2:27](27,31)LI: <li>',
+			'  namespaceURI: true',
+			'  elementType: html',
+			'  isInFragmentDocument: true',
+			'  isForeignElement: false',
+			'[2:27]>[4:4](31,39)#text: ⏎→→A⏎→␣␣',
+			'[4:9]>[5:28](44,72)#ml-block: ⏎→{:else␣if␣cond␣===␣valueB}',
+			'[5:28]>[5:28](72,72)#ml-block: ',
+			'[5:28]>[5:32](72,76)LI: <li>',
+			'  namespaceURI: true',
+			'  elementType: html',
+			'  isInFragmentDocument: true',
+			'  isForeignElement: false',
+			'[5:32]>[7:4](76,84)#text: ⏎→→B⏎→␣␣',
+			'[7:9]>[8:28](89,117)#ml-block: ⏎→{:else␣if␣cond␣===␣valueC}',
+			'[8:28]>[8:28](117,117)#ml-block: ',
+			'[8:28]>[8:32](117,121)LI: <li>',
+			'  namespaceURI: true',
+			'  elementType: html',
+			'  isInFragmentDocument: true',
+			'  isForeignElement: false',
+			'[8:32]>[10:4](121,129)#text: ⏎→→C⏎→␣␣',
+			'[10:9]>[11:2](134,136)#text: ⏎→',
+			'[11:2]>[11:7](136,141)#ml-block: {/if}',
+			'[11:7]>[12:1](141,142)#text: ⏎',
+		]);
+	});
 });

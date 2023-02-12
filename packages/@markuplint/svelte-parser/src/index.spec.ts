@@ -478,4 +478,38 @@ describe('Issues', () => {
 			'[16:1]>[16:7](161,167)nav: </nav>',
 		]);
 	});
+
+	test('#698', () => {
+		const r = parse(`<ul>
+	{#if cond === valueA}
+		<li>A</li>
+	{:else if cond === valueB}
+		<li>B</li>
+	{/if}
+</ul>`);
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:5](0,4)ul: <ul>',
+			'[1:5]>[2:2](4,6)#text: ⏎→',
+			'[2:2]>[3:3](6,30)IfBlock: {#if␣cond␣===␣valueA}⏎→→',
+			'[3:3]>[3:7](30,34)li: <li>',
+			'[3:7]>[3:8](34,35)#text: A',
+			'[3:8]>[3:13](35,40)li: </li>',
+			'[3:13]>[4:28](40,68)ElseBlock: ⏎→{:else␣if␣cond␣===␣valueB}',
+			'[4:28]>[5:3](68,71)IfBlock: ⏎→→',
+			'[5:3]>[5:7](71,75)li: <li>',
+			'[5:7]>[5:8](75,76)#text: B',
+			'[5:8]>[5:13](76,81)li: </li>',
+			'[5:13]>[6:2](81,83)#text: ⏎→',
+			'[6:2]>[6:7](83,88)IfBlock: {/if}',
+			'[6:7]>[7:1](88,89)#text: ⏎',
+			'[7:1]>[7:6](89,94)ul: </ul>',
+		]);
+
+		expect(r.nodeList[12].raw).toBe('{/if}');
+		// @ts-ignore
+		expect(r.nodeList[0].childNodes[3].raw).toBe(r.nodeList[12].raw);
+		// @ts-ignore
+		expect(r.nodeList[0].childNodes[3].uuid).toBe(r.nodeList[12].uuid);
+	});
 });
