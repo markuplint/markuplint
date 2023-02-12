@@ -109,6 +109,16 @@ code {
   margin-right: 1rem;
 }
 
-main article {
+.markdown {
   --ifm-link-decoration: underline;
+}
+
+.DocSearch {
+  --docsearch-searchbox-background: var(--ifm-navbar-background-color);
+  --docsearch-muted-color: var(--ifm-color-content-secondary);
+  --docsearch-hit-active-color: var(--ifm-color-content-inverse);
+}
+
+.DocSearch-Button {
+  box-shadow: inset 0 0 0 1px var(--ifm-color-emphasis-300);
 }
