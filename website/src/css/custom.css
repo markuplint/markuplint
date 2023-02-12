@@ -35,7 +35,7 @@
   --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 30%);
 }
 
-code {
+.theme-code-block {
   /**
    * For the choice of hue, referred to color univarsal design
    * https://cudo.jp/?page_id=1565
