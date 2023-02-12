@@ -318,6 +318,11 @@ function solveCtrlBlock(
 	nextNode: MLASTNode | null,
 	options?: ParserOptions,
 ) {
+	// if (originNode.elseif) {
+	// 	const childNodes = originNode.children && traverse(originNode.children, parentNode, rawHtml, options);
+	// 	return childNodes ?? [];
+	// }
+
 	const children = originNode.children || [];
 	const reEndTag = new RegExp(`{/${ctrlName}}$`, 'i');
 	const startTagEndOffset = children.length ? children[0].start : raw.replace(reEndTag, '').length + startOffset;
