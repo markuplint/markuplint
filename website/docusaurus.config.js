@@ -2,10 +2,10 @@
 // Note: type annotations allow type checking and IDEs autocompletion
 
 const npm2yarn = require('@docusaurus/remark-plugin-npm2yarn');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
-const lightCodeTheme = require('prism-react-renderer/themes/github');
 
 const { isNextVersion, url, editUrlBase, algoliaIndexName } = require('./config');
+const darkCodeTheme = require('./prismDark');
+const lightCodeTheme = require('./prismLight');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
