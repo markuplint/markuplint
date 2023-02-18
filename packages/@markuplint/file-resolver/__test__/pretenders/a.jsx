@@ -1,0 +1,1 @@
+const ComponentA = () => <div className="a"></div>;

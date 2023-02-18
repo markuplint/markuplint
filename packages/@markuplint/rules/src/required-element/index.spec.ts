@@ -126,7 +126,7 @@ describe('Pretenders Option', () => {
 				line: 1,
 				col: 7,
 				raw: '<Head>',
-				message: 'Require the "meta[charset="UTF-8"]" element',
+				message: 'Require the "meta[charset="UTF-8"]" element; <Head> was evaluated as <head>.',
 			},
 		]);
 	});

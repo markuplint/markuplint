@@ -15,7 +15,20 @@ it('test', () => {
 			},
 		),
 	).toStrictEqual({
-		plugins: ['a', 'b', 'c', 'd'],
+		plugins: [
+			{
+				name: 'a',
+			},
+			{
+				name: 'b',
+			},
+			{
+				name: 'c',
+			},
+			{
+				name: 'd',
+			},
+		],
 	});
 });
 
@@ -31,8 +44,12 @@ it('test', () => {
 		),
 	).toStrictEqual({
 		plugins: [
-			'a',
-			'b',
+			{
+				name: 'a',
+			},
+			{
+				name: 'b',
+			},
 			{
 				name: 'c',
 				settings: {
@@ -41,7 +58,9 @@ it('test', () => {
 					foo2: 'foo2',
 				},
 			},
-			'd',
+			{
+				name: 'd',
+			},
 		],
 	});
 });
@@ -228,6 +247,103 @@ it('test', () => {
 					ruleB: true,
 				},
 			},
+		},
+	});
+});
+
+it('test', () => {
+	expect(
+		mergeConfig(
+			{
+				pretenders: [
+					{
+						selector: 'MyComponent',
+						as: 'div',
+					},
+				],
+			},
+			{
+				pretenders: {
+					files: ['./pretenders.json'],
+				},
+			},
+		),
+	).toStrictEqual({
+		pretenders: {
+			files: ['./pretenders.json'],
+			data: [
+				{
+					selector: 'MyComponent',
+					as: 'div',
+				},
+			],
+		},
+	});
+});
+
+it('test', () => {
+	expect(
+		mergeConfig(
+			{
+				pretenders: [
+					{
+						selector: 'MyComponent',
+						as: 'div',
+					},
+				],
+			},
+			{
+				pretenders: undefined,
+			},
+		),
+	).toStrictEqual({
+		pretenders: {
+			data: [
+				{
+					selector: 'MyComponent',
+					as: 'div',
+				},
+			],
+		},
+	});
+});
+
+it('test', () => {
+	expect(
+		mergeConfig(
+			{
+				pretenders: [
+					{
+						selector: 'MyComponent',
+						as: 'div',
+					},
+				],
+			},
+			{
+				pretenders: {
+					files: ['../pretenders.json'],
+					data: [
+						{
+							selector: 'MyComponent2',
+							as: 'section',
+						},
+					],
+				},
+			},
+		),
+	).toStrictEqual({
+		pretenders: {
+			files: ['../pretenders.json'],
+			data: [
+				{
+					selector: 'MyComponent',
+					as: 'div',
+				},
+				{
+					selector: 'MyComponent2',
+					as: 'section',
+				},
+			],
 		},
 	});
 });

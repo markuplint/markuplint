@@ -1,9 +1,18 @@
 import type { MLResultInfo } from '../types';
 import type { APIOptions, MLEngineEventMap, MLFabric } from './types';
 import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
+import type { Pretender } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue } from '@markuplint/ml-core';
 
-import { ConfigProvider, resolveFiles, resolveParser, resolveRules, resolveSpecs } from '@markuplint/file-resolver';
+import {
+	ConfigProvider,
+	resolveFiles,
+	resolveParser,
+	resolveRules,
+	resolveSpecs,
+	PretenderProvider,
+} from '@markuplint/file-resolver';
+import { mergeConfig } from '@markuplint/ml-config';
 import { MLCore, convertRuleset } from '@markuplint/ml-core';
 import { FSWatcher } from 'chokidar';
 import { StrictEventEmitter } from 'strict-event-emitter';
@@ -27,6 +36,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 	}
 
 	#configProvider: ConfigProvider;
+	#pretenderProvider = new PretenderProvider();
 	#core: MLCore | null = null;
 	#file: MLFile;
 	#options?: APIOptions & MLEngineOptions;
@@ -125,11 +135,13 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 			watch: enable,
 		};
 
-		if (enable) {
-			this.#watcher.on('change', this.onChange.bind(this));
-		} else {
+		if (!enable) {
 			this.#watcher.removeAllListeners();
+			void this.#pretenderProvider.unwatch();
 		}
+
+		this.#watcher.on('change', this.onChange.bind(this));
+		void this.#pretenderProvider.watch(this.watchPretenders.bind(this));
 	}
 
 	private async createCore(fabric: MLFabric) {
@@ -215,6 +227,9 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 			return null;
 		}
 
+		const pretenders = await this.resolvePretenders(configSet);
+		fileLog('Resolved pretenders: %O', pretenders);
+
 		const ruleset = this.resolveRuleset(configSet);
 		fileLog('Resolved ruleset: %O', ruleset);
 
@@ -247,7 +262,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		return {
 			parser,
 			parserOptions,
-			pretenders: configSet.config.pretenders ?? [],
+			pretenders,
 			ruleset,
 			schemas,
 			rules,
@@ -257,7 +272,8 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 	}
 
 	private async resolveConfig(cache: boolean) {
-		const defaultConfigKey = this.#options?.defaultConfig && this.#configProvider.set(this.#options?.defaultConfig);
+		const defaultConfigKey =
+			this.#options?.defaultConfig && this.#configProvider.set(mergeConfig(this.#options?.defaultConfig));
 		configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
 		this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
 
@@ -267,7 +283,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
 		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 
-		const configKey = this.#options?.config && this.#configProvider.set(this.#options.config);
+		const configKey = this.#options?.config && this.#configProvider.set(mergeConfig(this.#options.config));
 		configLog('option.config: %s', configKey ?? 'N/A');
 		this.emit('log', 'option.config', configFilePathsFromTarget ?? 'N/A');
 
@@ -300,6 +316,12 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		this.emit('parser', this.#file.path, parser.parserModName);
 		fileLog('Fetched Parser module: %s', parser.parserModName);
 		return parser;
+	}
+
+	private async resolvePretenders(configSet: ConfigSet) {
+		await this.#pretenderProvider.setConfig(configSet.config.pretenders);
+		const pretenders = await this.#pretenderProvider.getPretenders();
+		return pretenders;
 	}
 
 	private async resolveRules(plugins: Plugin[], ruleset: Ruleset) {
@@ -344,5 +366,15 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		}
 
 		return this.createCore(fabric);
+	}
+
+	private async watchPretenders(pretenders: Pretender[]) {
+		if (!this.#core) {
+			await this.setup();
+			return;
+		}
+
+		this.#core.update({ pretenders });
+		await this.exec();
 	}
 }

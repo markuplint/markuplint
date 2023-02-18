@@ -7,6 +7,9 @@
 	},
 	"references": [
 		{
+			"path": "../cache"
+		},
+		{
 			"path": "../ml-ast"
 		},
 		{
@@ -17,6 +20,9 @@
 		},
 		{
 			"path": "../ml-spec"
+		},
+		{
+			"path": "../pretenders"
 		}
 	],
 	"include": ["./src/**/*"],

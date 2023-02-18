@@ -9,6 +9,9 @@ type Props = {
   category?: string;
 };
 
+/**
+ * @pretends null
+ */
 export default function OgImg({ title, category }: Props) {
   const { i18n } = useDocusaurusContext();
   const image = getOgImgUrl(category, title, i18n.currentLocale);

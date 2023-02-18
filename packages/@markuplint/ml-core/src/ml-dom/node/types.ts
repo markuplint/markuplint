@@ -75,8 +75,12 @@ export type PretenderContext<N extends MLElement<T, O>, T extends RuleConfigValu
 
 export type PretenderContextPretender<N extends MLElement<T, O>, T extends RuleConfigValue, O = null> = {
 	readonly type: 'pretender';
+	readonly origin: {
+		readonly localName: string;
+	};
 	readonly as: N;
 	readonly aria?: PretenderARIA;
+	readonly filePath?: string;
 };
 
 export type PretenderContextPretended<N extends MLElement<T, O>, T extends RuleConfigValue, O = null> = {

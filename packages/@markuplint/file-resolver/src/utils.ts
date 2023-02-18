@@ -1,6 +1,6 @@
 import type { Nullable } from './types';
 
-import fs from 'fs';
+import fs from 'node:fs';
 
 export function nonNullableFilter<T>(item: Nullable<T>): item is T {
 	return !!item;

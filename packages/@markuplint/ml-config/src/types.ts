@@ -3,7 +3,7 @@ import type { RegexSelector } from '@markuplint/selector';
 
 export type { RegexSelector } from '@markuplint/selector';
 
-export interface Config {
+export type Config = {
 	$schema?: string;
 	extends?: string | string[];
 	plugins?: (PluginConfig | string)[];
@@ -11,16 +11,27 @@ export interface Config {
 	parserOptions?: ParserOptions;
 	specs?: SpecConfig;
 	excludeFiles?: string[];
-	pretenders?: Pretender[];
+	pretenders?: PretenderDetails | Pretender[];
 	rules?: Rules;
 	nodeRules?: NodeRule[];
 	childNodeRules?: ChildNodeRule[];
-	overrides?: Record<string, Omit<Config, '$schema' | 'extends' | 'overrides'>>;
-}
+	overrides?: Record<string, OverrodeConfig>;
+};
+
+export type OverrodeConfig = Omit<Config, '$schema' | 'extends' | 'overrides'>;
+
+export type OptimizedConfig = Omit<Config, '$schema' | 'extends' | 'plugins' | 'pretenders' | 'overrides'> & {
+	extends?: string[];
+	plugins?: PluginConfig[];
+	pretenders?: PretenderDetails;
+	overrides?: Record<string, OptimizedOverrodeConfig>;
+};
+
+export type OptimizedOverrodeConfig = Omit<OptimizedConfig, 'extends' | 'overrides'>;
 
 export type PluginConfig = {
 	name: string;
-	settings: Record<string, any>;
+	settings?: Record<string, any>;
 };
 
 export interface ParserConfig {
@@ -29,6 +40,43 @@ export interface ParserConfig {
 
 export type SpecConfig = {
 	[extensionPattern: string]: string /* module name or path */;
+};
+
+export type PretenderDetails = {
+	files?: string[];
+
+	/**
+	 * Dynamic scaning
+	 *
+	 * @experimental
+	 */
+	scan?: PretenderScanConfig[];
+
+	/**
+	 * @experimental
+	 */
+	imports?: string[];
+	data?: Pretender[];
+};
+
+export type PretenderScanConfig = {
+	/**
+	 * Supporting for Glob format
+	 */
+	files: string;
+	type: string;
+	options?: PretenderScanOptions;
+};
+
+export interface PretenderScanOptions {
+	cwd?: string;
+	ignoreComponentNames?: string[];
+	[extend: string]: any;
+}
+
+export type PretenderFileData = {
+	version: string;
+	data: Pretender[];
 };
 
 export type Pretender = {
@@ -45,6 +93,8 @@ export type Pretender = {
 	 * If it is an Object, It creates the element by that.
 	 */
 	as: string | OriginalNode;
+
+	filePath?: string;
 };
 
 export type OriginalNode = {
@@ -64,21 +114,7 @@ export type OriginalNode = {
 	/**
 	 * Attributes
 	 */
-	attrs?: {
-		/**
-		 * Attribute name
-		 */
-		name: string;
-
-		/**
-		 * If it omits this property, the attribute is resolved as a boolean.
-		 */
-		value?:
-			| string
-			| {
-					fromAttr: string;
-			  };
-	}[];
+	attrs?: PretenderAttr[];
 
 	/**
 	 * To have attributes the defined element has.
@@ -89,6 +125,22 @@ export type OriginalNode = {
 	 * ARIA properties
 	 */
 	aria?: PretenderARIA;
+};
+
+export type PretenderAttr = {
+	/**
+	 * Attribute name
+	 */
+	name: string;
+
+	/**
+	 * If it omits this property, the attribute is resolved as a boolean.
+	 */
+	value?:
+		| string
+		| {
+				fromAttr: string;
+		  };
 };
 
 /**

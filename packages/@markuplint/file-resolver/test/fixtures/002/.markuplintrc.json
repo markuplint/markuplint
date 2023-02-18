@@ -12,6 +12,9 @@
 			"foo": "002"
 		}
 	],
+	"pretenders": {
+		"files": "../../pretenders.json"
+	},
 	"rules": {
 		"rule__enabled": true,
 		"rule__disabled": false,

@@ -15,7 +15,9 @@ it('001 + 002', async () => {
 		dummy2: false,
 		key: '002/.markuplintrc.json',
 		plugins: [
-			path.resolve(testDir, '001', 'a'),
+			{
+				name: path.resolve(testDir, '001', 'a'),
+			},
 			{
 				name: '@markuplint/file-resolver',
 				foo: '002',
@@ -29,6 +31,15 @@ it('001 + 002', async () => {
 				foo: '002',
 			},
 		],
+		pretenders: {
+			files: path.resolve(testDir, '..', 'pretenders.json'),
+			data: [
+				{
+					selector: 'MyComponent',
+					as: 'div',
+				},
+			],
+		},
 		rules: {
 			rule__enabled: true,
 			rule__disabled: false,
@@ -77,7 +88,9 @@ it('001 + 002 + 003', async () => {
 		key: '003/.markuplintrc',
 		key2: '001-2.js',
 		plugins: [
-			path.resolve(testDir, '001', 'a'),
+			{
+				name: path.resolve(testDir, '001', 'a'),
+			},
 			{
 				name: '@markuplint/file-resolver',
 				foo: '002',
@@ -90,8 +103,19 @@ it('001 + 002 + 003', async () => {
 				name: path.resolve(testDir, '002', 'b'),
 				foo: '002',
 			},
-			path.resolve(testDir, '..', 'plugins', '001.js'),
+			{
+				name: path.resolve(testDir, '..', 'plugins', '001.js'),
+			},
 		],
+		pretenders: {
+			files: path.resolve(testDir, '..', 'pretenders.json'),
+			data: [
+				{
+					selector: 'MyComponent',
+					as: 'div',
+				},
+			],
+		},
 		rules: {
 			rule__enabled: false,
 			rule__disabled: true,

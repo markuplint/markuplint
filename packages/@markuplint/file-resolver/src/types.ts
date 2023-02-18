@@ -1,10 +1,10 @@
-import type { Config } from '@markuplint/ml-config';
+import type { OptimizedConfig } from '@markuplint/ml-config';
 import type { Plugin } from '@markuplint/ml-core';
 
 export type Nullable<T> = T | null | undefined;
 
 export interface ConfigSet {
-	config: Config;
+	config: OptimizedConfig;
 	plugins: Plugin[];
 	files: Set<string>;
 	errs: Error[];

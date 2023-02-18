@@ -1858,6 +1858,46 @@
     npmlog "^6.0.2"
     write-file-atomic "^4.0.1"
 
+"@markuplint/ml-config@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-config/-/ml-config-3.1.0.tgz#c6e8d1bdaa4b17e3b093ee16d9671ba7aff2f394"
+  integrity sha512-kOSkN7rOrjLwXT1OyoZvn+uFXx4JVdHKvFMKJewMzM8FmyhLlbH5YH6qjJ4tbHqUXzsxxnZ489atU1uRmutRdg==
+  dependencies:
+    "@markuplint/selector" "3.1.0"
+    deepmerge "^4.2.2"
+    is-plain-object "^5.0.0"
+    mustache "^4.2.0"
+
+"@markuplint/parser-utils@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/parser-utils/-/parser-utils-3.1.0.tgz#745cc54d08d6d005f54f3b73769296389a79fb46"
+  integrity sha512-iZyvUUYpbCy/XxaPmPrkPTqWlvLYqEZQzJTJt7ch7m+OIiVBJ2pBkpQGuWWgfZKAnG7iZmO4BMCkW1oXADINAA==
+  dependencies:
+    "@markuplint/ml-ast" "3.0.0-rc.5"
+    "@markuplint/types" "3.0.0"
+    tslib "^2.4.1"
+    uuid "^9.0.0"
+
+"@markuplint/selector@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/selector/-/selector-3.1.0.tgz#42eac7aac7bca402f66191343b91a269b34195b9"
+  integrity sha512-rR+1oRTYlp1fF1d4v8AYa/kJYjD5SI+9tfyl1hPdmpNrMwJ4WJ4G0XKu7V8DA8k4Ujo0zD8GrUCmwvrWCnGtcA==
+  dependencies:
+    debug "^4.3.4"
+    postcss-selector-parser "^6.0.11"
+    tslib "^2.4.1"
+
+"@markuplint/types@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/types/-/types-3.0.0.tgz#208bb2efe0578d7708eb4e8723945bb681af5f24"
+  integrity sha512-2uYR4YvLBMxoqKfpjVmN6c/qkNVszKZleft+ufoJiCY3to5A+2C3Ghpo6nko6aFPTGfG1W1o7TIbWQQX6XTR+w==
+  dependencies:
+    bcp-47 "1"
+    css-tree "1"
+    debug "^4.3.4"
+    leven "3"
+    whatwg-mimetype "2"
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -2714,6 +2754,11 @@
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.5.tgz#1001cc5e6a3704b83c236027e77f2f58ea010f40"
   integrity sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==
+
+"@types/minimatch@^5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-5.1.2.tgz#07508b45797cb81ec3f273011b054cd0755eddca"
+  integrity sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==
 
 "@types/minimist@^1.2.0", "@types/minimist@^1.2.2":
   version "1.2.2"
@@ -4938,7 +4983,7 @@ css-select@^5.1.0:
     domutils "^3.0.1"
     nth-check "^2.0.1"
 
-css-tree@^1.1.2, css-tree@^1.1.3:
+css-tree@1, css-tree@^1.1.2, css-tree@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/css-tree/-/css-tree-1.1.3.tgz#eb4870fb6fd7707327ec95c2ff2ab09b5e8db91d"
   integrity sha512-tRpdppF7TRazZrjJ6v3stzv93qxRcSsFmW6cX0Zm2NVKpxE1WV1HblnghVv9TreireHkqI/VDEsfolRF1p6y7Q==
@@ -6803,6 +6848,17 @@ glob@^8.0.1, glob@^8.0.3:
   version "8.0.3"
   resolved "https://registry.yarnpkg.com/glob/-/glob-8.0.3.tgz#415c6eb2deed9e502c68fa44a272e6da6eeca42e"
   integrity sha512-ull455NHSHI/Y1FqGaaYFaLGkNMMJbavMrEGFXG/PGrg6y7sutWHUHrz6gy6WEBH6akM1M414dWKCNs+IhKdiQ==
+  dependencies:
+    fs.realpath "^1.0.0"
+    inflight "^1.0.4"
+    inherits "2"
+    minimatch "^5.0.1"
+    once "^1.3.0"
+
+glob@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-8.1.0.tgz#d388f656593ef708ee3e34640fdfb99a9fd1c33e"
+  integrity sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==
   dependencies:
     fs.realpath "^1.0.0"
     inflight "^1.0.4"
@@ -9462,6 +9518,13 @@ minimatch@^5.1.2:
   version "5.1.6"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.6.tgz#1cfcb8cf5522ea69952cd2af95ae09477f122a96"
   integrity sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g==
+  dependencies:
+    brace-expansion "^2.0.1"
+
+minimatch@^6.1.6:
+  version "6.1.6"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-6.1.6.tgz#5384bb324be5b5dae12a567c03d22908febd0ddd"
+  integrity sha512-6bR3UIeh/DF8+p6A9Spyuy67ShOq42rOkHWi7eUe3Ua99Zo5lZfGC6lJJWkeoK4k9jQFT3Pl7czhTXimG2XheA==
   dependencies:
     brace-expansion "^2.0.1"
 
