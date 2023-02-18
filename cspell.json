@@ -25,6 +25,7 @@
 	"words": [
 		"abnf",
 		"accname",
+		"APCA",
 		"arrayize",
 		"astro",
 		"astrojs",
@@ -139,7 +140,10 @@
 	"overrides": [
 		{
 			"filename": "packages/@markuplint/types/src/whatwg/check-autocomplete.spec.ts",
-			"words": ["neme", "emall"]
+			"words": [
+				"neme",
+				"emall"
+			]
 		}
 	]
 }
