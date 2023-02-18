@@ -22975,7 +22975,7 @@
 		{
 			"name": "b",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b",
-			"description": "The <b> HTML element is used to draw the reader's attention to the element's contents, which are not otherwise granted special importance. This was formerly known as the Boldface element, and most browsers still draw the text in boldface. However, you should not use <b> for styling text; instead, you should use the CSS font-weight property to create boldface text, or the <strong> element to indicate that text is of special importance.",
+			"description": "The <b> HTML element is used to draw the reader's attention to the element's contents, which are not otherwise granted special importance. This was formerly known as the Boldface element, and most browsers still draw the text in boldface. However, you should not use <b> for styling text or granting importance. If you wish to create boldface text, you should use the CSS font-weight property. If you wish to indicate an element is of special importance, you should use the <strong> element.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -28380,7 +28380,7 @@
 					"deprecated": true
 				},
 				"rules": {
-					"description": "This enumerated attribute defines where rules, i.e. lines, should appear in a table. It can have the following values: none, which indicates that no rules will be displayed; it is the default value; groups, which will cause the rules to be displayed between row groups (defined by the <thead>, <tbody> and <tfoot> elements) and between column groups (defined by the <col> and <colgroup> elements) only; rows, which will cause the rules to be displayed between rows; columns, which will cause the rules to be displayed between columns; all, which will cause the rules to be displayed between rows and columns. To achieve a similar effect, apply the border property to the appropriate <thead>, <tbody>, <tfoot>, <col>, or <colgroup> elements.",
+					"description": "This enumerated attribute defines where rules, i.e. lines, should appear in a table. It can have the following values: none, which indicates that no rules will be displayed; it is the default value; groups, which will cause the rules to be displayed between row groups (defined by the <thead>, <tbody> and <tfoot> elements) and between column groups (defined by the <col> and <colgroup> elements) only; rows, which will cause the rules to be displayed between rows; cols, which will cause the rules to be displayed between columns; all, which will cause the rules to be displayed between rows and columns. To achieve a similar effect, apply the border property to the appropriate <thead>, <tbody>, <tfoot>, <col>, or <colgroup> elements.",
 					"deprecated": true
 				},
 				"summary": {
@@ -30299,10 +30299,10 @@
 			},
 			"attributes": {
 				"cx": {
-					"description": "The x position of the ellipse. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The x position of the center of the ellipse. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
 				},
 				"cy": {
-					"description": "The y position of the ellipse. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The y position of the center of the ellipse. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
 				},
 				"pathLength": {
 					"type": "<number>",
@@ -35921,22 +35921,23 @@
 			},
 			"attributes": {
 				"height": {
-					"description": "The height of the use element. Value type: <length> ; Default value: 0; Animatable: yes"
+					"description": "The height of the use element.Value type: <length> ; Default value: 0; Animatable: yes"
 				},
 				"href": {
 					"type": "URL"
 				},
 				"width": {
-					"description": "The width of the use element. Value type: <length> ; Default value: 0; Animatable: yes"
+					"description": "The width of the use element.Value type: <length> ; Default value: 0; Animatable: yes"
 				},
 				"x": {
-					"description": "The x coordinate of the use element. Value type: <coordinate> ; Default value: 0; Animatable: yes"
+					"description": "The x coordinate of an additional final offset transformation applied to the <use> element.Value type: <coordinate> ; Default value: 0; Animatable: yes"
 				},
 				"xlink:href": {
-					"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time.An <IRI> reference to an element/fragment that needs to be duplicated. Value type: <IRI> ; Default value: none; Animatable: yes"
+					"description": "An <IRI> reference to an element/fragment that needs to be duplicated. If both href and xlink:href are present, the value given by href is used.Value type: <IRI> ; Default value: none; Animatable: yes",
+					"deprecated": true
 				},
 				"y": {
-					"description": "The y coordinate of the use element. Value type: <coordinate> ; Default value: 0; Animatable: yes"
+					"description": "The y coordinate of an additional final offset transformation applied to the <use> element.Value type: <coordinate> ; Default value: 0; Animatable: yes"
 				}
 			}
 		},
