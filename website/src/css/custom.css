@@ -6,32 +6,49 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #0071bc;
-  --ifm-color-primary-dark: #0066a9;
-  --ifm-color-primary-darker: #0060a0;
-  --ifm-color-primary-darkest: #004f84;
-  --ifm-color-primary-light: #007ccf;
-  --ifm-color-primary-lighter: #0082d8;
-  --ifm-color-primary-lightest: #0093f4;
-  --ifm-link-color: #005c99;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 10%);
-  --ifm-h2-font-size: 2rem;
-  --ifm-h3-font-size: 1.5rem;
+  /**
+   * Branding colors:
+   * https://markuplint.dev/community/branding
+   */
   --ml-blue: #1572eb;
   --ml-blue-lightest: #d0e6fb;
   --ml-ink: #333;
+
+  /**
+   * Colors other than brand colors are determined by the tool:
+   * https://docusaurus.io/docs/styling-layout#styling-your-site-with-infima
+   * Adjustment values: (light) -80/-50/-25/0/10/25/50, (dark) -30/-20/-10/0/10/25/50
+   */
+  --ifm-color-primary-lightest: var(--ml-blue-lightest);
+  --ifm-color-primary-lighter: #8bb9f5;
+  --ifm-color-primary-light: #5096f0;
+  /* Contrast AA (primary: 4.52, primary-dark: 5.36) */
+  --ifm-color-primary: var(--ml-blue);
+  --ifm-color-primary-dark: #1267d4;
+  /* Contrast AAA (primary-darker: 7.1, primary-darkest: 11.29) */
+  --ifm-color-primary-darker: #0f55b1;
+  --ifm-color-primary-darkest: #0a3976;
+  --ifm-link-color: var(--ifm-color-primary-darker);
+  --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 10%);
+
+  --ifm-code-font-size: 95%;
+  --ifm-h2-font-size: 2rem;
+  --ifm-h3-font-size: 1.5rem;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #61c0ff;
-  --ifm-color-primary-dark: #3eb2ff;
-  --ifm-color-primary-darker: #2cabff;
-  --ifm-color-primary-darkest: #0094f6;
-  --ifm-color-primary-light: #84ceff;
-  --ifm-color-primary-lighter: #96d5ff;
-  --ifm-color-primary-lightest: #cbeaff;
+  /* Contrast AAA (primary: 8.63, lighter colors have higher values) */
+  /* Additionally, primary has Lc-61.5 for the background color of #1b1b1d in APCA */
+  --ifm-color-primary-lightest: #f5f9fe;
+  --ifm-color-primary-lighter: #d2e4fb;
+  --ifm-color-primary-light: #aecef8;
+  --ifm-color-primary: #8bb9f5;
+  /* Contrast AA (primary-dark: 6.82, primary-darker: 4.72) */
+  --ifm-color-primary-dark: #68a4f2;
+  --ifm-color-primary-darker: #3384ed;
+  --ifm-color-primary-darkest: #0f55b1;
+  --ifm-link-color: var(--ifm-color-primary-light);
   --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 30%);
 }
 
