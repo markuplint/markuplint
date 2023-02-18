@@ -56,6 +56,52 @@
   --code-color-purple-dark: hsl(300deg 100% 30%);
   --code-color-lime-light: hsl(100deg 40% 50%);
   --code-color-lime-dark: hsl(100deg 80% 25%);
+  --code-icon-padding-start: 6px;
+  --code-icon-padding-end: 6px;
+  --code-icon-size: 1.25em;
+  --code-icon-background-size: calc(
+    var(--code-icon-size) + var(--code-icon-padding-start) + var(--code-icon-padding-end)
+  );
+
+  overflow: hidden;
+}
+
+.theme-code-block.config {
+  --code-background-color: var(--ifm-color-primary-contrast-background);
+  --code-icon-background-color: var(--ifm-color-primary);
+  --code-icon-image: url('/img/icon-gear.svg');
+}
+
+.theme-code-block.config pre {
+  padding-left: var(--code-icon-background-size);
+  background-color: var(--code-background-color);
+}
+
+.theme-code-block.config pre::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--code-icon-background-size);
+  height: var(--code-icon-background-size);
+  content: '';
+  background-color: var(--code-icon-background-color);
+  border-right: 2px solid var(--ifm-color-content-inverse);
+  border-bottom: 2px solid var(--ifm-color-content-inverse);
+  border-bottom-right-radius: 0.8rem;
+}
+
+.theme-code-block.config pre::after {
+  position: absolute;
+  top: var(--code-icon-padding-start);
+  left: var(--code-icon-padding-start);
+  width: var(--code-icon-size);
+  height: var(--code-icon-size);
+  content: '';
+  background-color: var(--ifm-color-content-inverse);
+  mask-image: var(--code-icon-image);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
 }
 
 .iconLink {
