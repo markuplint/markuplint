@@ -1,5 +1,5 @@
 import { readFile, readdir, stat } from 'node:fs/promises';
-import { resolve, basename, extname } from 'node:path';
+import { resolve, basename, extname, relative, dirname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import matter from 'gray-matter';
@@ -48,10 +48,12 @@ async function getRulePaths() {
  */
 async function getDocFile(filePath, value, options, severity, inherit) {
   const editUrlBase = await getEditUrlBase();
-  const name = basename(filePath);
+  const fileBase = basename(filePath);
+  const rulesAbsDir = resolve(projectRoot, RULES_DIR);
+  const ruleName = dirname(relative(rulesAbsDir, filePath));
   const doc = await readFile(filePath, { encoding: 'utf-8' });
   const { data: frontMatter, content } = matter(doc);
-  frontMatter.custom_edit_url = `${editUrlBase}/${RULES_DIR}/${name}`;
+  frontMatter.custom_edit_url = `${editUrlBase}/${RULES_DIR}/${ruleName}/${fileBase}`;
 
   const fileName = basename(filePath, extname(filePath));
   const lang = (/^README(?:\.([a-z]+))?$/.exec(fileName) || [])[1];
