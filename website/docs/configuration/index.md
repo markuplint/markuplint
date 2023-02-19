@@ -8,15 +8,15 @@ The automatic loading is **recursively searching up from a directory that the ta
 
 <file-tree>
 
-- 📂 A
-  - 📄 .markuplintrc # (1)
-  - 📂 B
-    - 📄 index.html # <- Apply (1) A/.markuplintrc
-    - 📂 C
-      - 📄 index.html # <- Apply (1) A/.markuplintrc
-      - 📂 D
-        - 📄 .markuplintrc # (2)
-        - 📄 index.html # <- Apply (2) A/B/C/D/.markuplintrc
+- 📂 `A`
+  - 📄 `.markuplintrc` # (1)
+  - 📂 `B`
+    - 📄 `index.html` # <- Apply (1) `A/.markuplintrc`
+    - 📂 `C`
+      - 📄 `index.html` # <- Apply (1) `A/.markuplintrc`
+      - 📂 `D`
+        - 📄 `.markuplintrc` # (2)
+        - 📄 `index.html` # <- Apply (2) `A/B/C/D/.markuplintrc`
 
 </file-tree>
 

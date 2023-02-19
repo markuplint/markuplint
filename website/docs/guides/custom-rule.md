@@ -26,12 +26,12 @@ And then there are the below files created:
 
 <file-tree>
 
-- 📂 [cwd]
-  - 📂 [dir-name]
-    - 📄 index.ts # or index.js
-    - 📂 rules
-      - 📄 [rule-name].ts # or [rule-name].js
-      - 📄 [rule-name].spec.ts # or [rule-name].spec.js [Optional]
+- 📂 `[cwd]`
+  - 📂 `[dir-name]`
+    - 📄 `index.ts` # or `index.js`
+    - 📂 `rules`
+      - 📄 `[rule-name].ts` # or `[rule-name].js`
+      - 📄 `[rule-name].spec.ts` # or `[rule-name].spec.js` [Optional]
 
 </file-tree>
 
@@ -84,15 +84,15 @@ Eventually, there are the below files created:
 
 <FileTree>
 
-- 📂 [cwd]
-  - 📄 README.md
-  - 📄 package.json
-  - 📄 tsconfig.json # Only when chose TypeScript
-  - 📂 src
-    - 📄 index.ts # or index.js
-    - 📂 rules
-      - 📄 [rule-name].ts # or [rule-name].js
-      - 📄 [rule-name].spec.ts # or [rule-name].spec.js [Optional]
+- 📂 `[cwd]`
+  - 📄 `README.md`
+  - 📄 `package.json`
+  - 📄 `tsconfig.json` # Only when chose TypeScript
+  - 📂 `src`
+    - 📄 `index.ts` # or `index.js`
+    - 📂 `rules`
+      - 📄 `[rule-name].ts` # or `[rule-name].js`
+      - 📄 `[rule-name].spec.ts` # or `[rule-name].spec.js` [Optional]
 
 </FileTree>
 

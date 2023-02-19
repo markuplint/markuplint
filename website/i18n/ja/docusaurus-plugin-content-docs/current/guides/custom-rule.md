@@ -30,12 +30,12 @@ npx markuplint --create-rule
 
 <file-tree>
 
-- 📂 [cwd]
-  - 📂 [dir-name]
-    - 📄 index.ts # もしくは index.js
-    - 📂 rules
-      - 📄 [rule-name].ts # もしくは [rule-name].js
-      - 📄 [rule-name].spec.ts # もしくは [rule-name].spec.js （任意）
+- 📂 `[cwd]`
+  - 📂 `[dir-name]`
+    - 📄 `index.ts` # もしくは `index.js`
+    - 📂 `rules`
+      - 📄 `[rule-name].ts` # もしくは `[rule-name].js`
+      - 📄 `[rule-name].spec.ts` # もしくは `[rule-name].spec.js` （任意）
 
 </file-tree>
 
@@ -89,15 +89,15 @@ export default createPlugin({
 
 <FileTree>
 
-- 📂 [cwd]
-  - 📄 README.md
-  - 📄 package.json
-  - 📄 tsconfig.json # TypeScriptを選択したときのみ
-  - 📂 src
-    - 📄 index.ts # もしくは index.js
-    - 📂 rules
-      - 📄 [rule-name].ts # もしくは [rule-name].js
-      - 📄 [rule-name].spec.ts # もしくは [rule-name].spec.js （任意）
+- 📂 `[cwd]`
+  - 📄 `README.md`
+  - 📄 `package.json`
+  - 📄 `tsconfig.json` # TypeScriptを選択したときのみ
+  - 📂 `src`
+    - 📄 `index.ts` # もしくは `index.js`
+    - 📂 `rules`
+      - 📄 `[rule-name].ts` # もしくは `[rule-name].js`
+      - 📄 `[rule-name].spec.ts` # もしくは `[rule-name].spec.js` （任意）
 
 </FileTree>
 
