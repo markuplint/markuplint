@@ -30,7 +30,6 @@
   /* Contrast AAA (primary-darker: 7.1, primary-darkest: 11.29) */
   --ifm-color-primary-darker: #0f55b1;
   --ifm-color-primary-darkest: #0a3976;
-  --ifm-color-primary-contrast-background: hsl(214deg 84% 97%);
   --ifm-link-color: var(--ifm-color-primary-darker);
   --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 10%);
   --ifm-code-font-size: 95%;
@@ -51,7 +50,6 @@
   --ifm-color-primary-dark: #68a4f2;
   --ifm-color-primary-darker: #3384ed;
   --ifm-color-primary-darkest: #0f55b1;
-  --ifm-color-primary-contrast-background: hsl(214deg 84% 10%);
   --ifm-link-color: var(--ifm-color-primary-light);
   --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 30%);
 }
@@ -85,9 +83,13 @@
 }
 
 .theme-code-block.config {
-  --code-background-color: var(--ifm-color-primary-contrast-background);
+  --code-background-color: hsl(214deg 70% 98%);
   --code-icon-background-color: var(--ifm-color-primary);
   --code-icon-image: url('/img/icon-gear.svg');
+}
+
+[data-theme='dark'] .theme-code-block.config {
+  --code-background-color: hsl(214deg 30% 13%);
 }
 
 .theme-code-block.config pre {
