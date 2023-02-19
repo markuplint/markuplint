@@ -222,6 +222,10 @@
 		"onbeforematch": {
 			"type": "FunctionBody"
 		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onbeforematch
+		"onbeforetoggle": {
+			"type": "FunctionBody"
+		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onabort
 		"onblur": {
 			"type": "FunctionBody"
