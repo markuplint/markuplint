@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/html-spec",
-	"version": "3.2.0",
+	"version": "3.3.0",
 	"description": "A specification of HTML Living Standard for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -26,6 +26,6 @@
 		"strip-json-comments": "3"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "3.2.0"
+		"@markuplint/ml-spec": "3.3.0"
 	}
 }
