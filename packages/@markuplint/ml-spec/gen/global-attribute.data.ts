@@ -26,6 +26,7 @@ export const globalAttrs: Record<
 			'itemtype',
 			'lang',
 			'nonce',
+			'popover',
 			'spellcheck',
 			'style',
 			'tabindex',

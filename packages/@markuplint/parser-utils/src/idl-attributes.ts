@@ -105,6 +105,7 @@ const idlContentMap = {
 	pattern: 'pattern',
 	placeholder: 'placeholder',
 	playsInline: 'playsinline',
+	popover: 'popover',
 	poster: 'poster',
 	preload: 'preload',
 	profile: 'profile',

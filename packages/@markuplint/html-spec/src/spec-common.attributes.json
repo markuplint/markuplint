@@ -121,6 +121,18 @@
 		"nonce": {
 			"type": "Any"
 		},
+		// https://html.spec.whatwg.org/multipage/popover.html#the-popover-attribute
+		"popover": {
+			"type": {
+				"enum": ["", "auto", "manual"],
+				"disallowToSurroundBySpaces": true,
+				"invalidValueDefault": "manual",
+				"missingValueDefault": "no popover",
+				"sameStates": {
+					"auto": [""]
+				}
+			}
+		},
 		// https://html.spec.whatwg.org/multipage/interaction.html#attr-spellcheck
 		"spellcheck": {
 			"type": {

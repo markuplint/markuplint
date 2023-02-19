@@ -331,6 +331,17 @@
 				"nonce": {
 					"type": "Any"
 				},
+				"popover": {
+					"type": {
+						"enum": ["", "auto", "manual"],
+						"disallowToSurroundBySpaces": true,
+						"invalidValueDefault": "manual",
+						"missingValueDefault": "no popover",
+						"sameStates": {
+							"auto": [""]
+						}
+					}
+				},
 				"spellcheck": {
 					"type": {
 						"enum": ["", "true", "false"],
