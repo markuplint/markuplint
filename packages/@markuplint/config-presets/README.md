@@ -25,7 +25,7 @@ You can choose some presets appropriately for your preference.
 Ruleset|Description|`recommended`|`recommended-vue`|`recommended-svelte`|`recommended-static-html`|`recommended-react`|`a11y`|`code-styles`|`html-standard`|`performance`|`rdfa`|`security`|
 ---|---|---|---|---|---|---|---|---|---|---|---|---|
 [Must not duplicate **ID**](https://www.w3.org/WAI/WCAG21/Techniques/html/H93.html)|Be able to avoid problems in assistive technologies from the viewpoint of machine readability.|✅|✅|✅|✅|✅|✅|❌|✅|❌|❌|❌|
-[Disallow `autofocus` attr](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
+[Disallow `accesskey` attr](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey#accessibility_concerns)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [`tabindex` attr only `-1` or `0`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 `<label>` should have control| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [Use **landmark**](https://www.w3.org/TR/wai-aria-practices/examples/landmarks/)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
@@ -40,6 +40,7 @@ Require `<track>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 Require `<video muted>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 No merge cells| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [`<summary>` no contains interactive contents](https://github.com/whatwg/html/issues/2272#issuecomment-1242415594)|There is a case where an assistive technology can't access contents, or contents don't propagate a mouse event to `<summary>`.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
+[Disallow `autofocus` attr to except in the dialog scope](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations)|Don't take away a focus to forced. However,  the `dialog` element and its descendants allow it.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [No duplicate attr](https://html.spec.whatwg.org/multipage/parsing.html#parse-error-duplicate-attribute)|The parser ignores all such duplicate occurrences of the attribute.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 Use **character reference**| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 No use deprecated attr|You should not use deprecated attributes from the viewpoint of compatibility.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|

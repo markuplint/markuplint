@@ -25,6 +25,18 @@
 		]
 	},
 	"attributes": {
+		// https://html.spec.whatwg.org/multipage/popover.html#attr-popover-hide-target
+		"popoverhidetarget": {
+			"type": "DOMID"
+		},
+		// https://html.spec.whatwg.org/multipage/popover.html#attr-popover-show-target
+		"popovershowtarget": {
+			"type": "DOMID"
+		},
+		// https://html.spec.whatwg.org/multipage/popover.html#attr-popover-toggle-target
+		"popovertoggletarget": {
+			"type": "DOMID"
+		},
 		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-type
 		"type": {
 			"type": {

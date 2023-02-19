@@ -25,6 +25,7 @@
 	"words": [
 		"abnf",
 		"accname",
+		"APCA",
 		"arrayize",
 		"astro",
 		"astrojs",
@@ -92,6 +93,7 @@
 		"Nuxt",
 		"omittedtag",
 		"onbeforematch",
+		"onbeforetoggle",
 		"oncontextlost",
 		"oncontextrestored",
 		"onwebkitanimationend",

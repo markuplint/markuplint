@@ -6,58 +6,89 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #0071bc;
-  --ifm-color-primary-dark: #0066a9;
-  --ifm-color-primary-darker: #0060a0;
-  --ifm-color-primary-darkest: #004f84;
-  --ifm-color-primary-light: #007ccf;
-  --ifm-color-primary-lighter: #0082d8;
-  --ifm-color-primary-lightest: #0093f4;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 10%);
-  --ifm-h2-font-size: 2rem;
-  --ifm-h3-font-size: 1.5rem;
+  /**
+   * Branding colors:
+   * https://markuplint.dev/community/branding
+   */
   --ml-blue: #1572eb;
   --ml-blue-lightest: #d0e6fb;
   --ml-ink: #333;
+
+  /**
+   * Colors other than brand colors are determined by the tool:
+   * https://docusaurus.io/docs/styling-layout#styling-your-site-with-infima
+   * Adjustment values: (light) -80/-50/-25/0/10/25/50, (dark) -30/-20/-10/0/10/25/50
+   */
+  --ifm-color-primary-lightest: var(--ml-blue-lightest);
+  --ifm-color-primary-lighter: #8bb9f5;
+  --ifm-color-primary-light: #5096f0;
+  /* Contrast AA (primary: 4.52, primary-dark: 5.36) */
+  --ifm-color-primary: var(--ml-blue);
+  --ifm-color-primary-dark: #1267d4;
+  /* Contrast AAA (primary-darker: 7.1, primary-darkest: 11.29) */
+  --ifm-color-primary-darker: #0f55b1;
+  --ifm-color-primary-darkest: #0a3976;
+  --ifm-link-color: var(--ifm-color-primary-darker);
+  --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 10%);
+
+  --ifm-code-font-size: 95%;
+  --ifm-h2-font-size: 2rem;
+  --ifm-h3-font-size: 1.5rem;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #61c0ff;
-  --ifm-color-primary-dark: #3eb2ff;
-  --ifm-color-primary-darker: #2cabff;
-  --ifm-color-primary-darkest: #0094f6;
-  --ifm-color-primary-light: #84ceff;
-  --ifm-color-primary-lighter: #96d5ff;
-  --ifm-color-primary-lightest: #cbeaff;
+  /* Contrast AAA (primary: 8.63, lighter colors have higher values) */
+  /* Additionally, primary has Lc-61.5 for the background color of #1b1b1d in APCA */
+  --ifm-color-primary-lightest: #f5f9fe;
+  --ifm-color-primary-lighter: #d2e4fb;
+  --ifm-color-primary-light: #aecef8;
+  --ifm-color-primary: #8bb9f5;
+  /* Contrast AA (primary-dark: 6.82, primary-darker: 4.72) */
+  --ifm-color-primary-dark: #68a4f2;
+  --ifm-color-primary-darker: #3384ed;
+  --ifm-color-primary-darkest: #0f55b1;
+  --ifm-link-color: var(--ifm-color-primary-light);
   --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 30%);
 }
 
+.theme-code-block {
+  /**
+   * For the choice of hue, referred to color univarsal design
+   * https://jfly.uni-koeln.de/colorset/
+   */
+  --code-color-red-light: hsl(18deg 100% 70%);
+  --code-color-red-dark: hsl(18deg 100% 40%);
+  --code-color-yellow-light: hsl(57deg 70% 80%);
+  --code-color-yellow-dark: hsl(57deg 80% 25%);
+  --code-color-green-light: hsl(162deg 67% 60%);
+  --code-color-green-dark: hsl(162deg 100% 25%);
+  --code-color-blue-light: hsl(219deg 80% 70%);
+  --code-color-blue-dark: hsl(219deg 100% 40%);
+  --code-color-sky-light: hsl(200deg 100% 82%);
+  --code-color-sky-dark: hsl(200deg 100% 35%);
+  --code-color-orange-light: hsl(41deg 90% 70%);
+  --code-color-orange-dark: hsl(41deg 100% 30%);
+  --code-color-purple-light: hsl(300deg 50% 75%);
+  --code-color-purple-dark: hsl(300deg 100% 30%);
+  --code-color-lime-light: hsl(100deg 40% 50%);
+  --code-color-lime-dark: hsl(100deg 80% 25%);
+}
+
 .iconLink {
-  transition: background-color var(--ifm-transition-fast);
-}
-
-.iconLink.navbar__link {
-  border-radius: 9999px;
-}
-
-.iconLink.navbar__link:hover {
-  background-color: var(--ifm-color-emphasis-200);
+  display: inline-flex;
+  column-gap: 8px;
+  align-items: center;
 }
 
 .iconLink::before {
-  display: block;
+  display: inline-block;
   width: 24px;
   height: 24px;
   content: '';
-  background-color: #000;
+  background-color: currentColor;
   mask-repeat: no-repeat;
   mask-position: center;
-}
-
-[data-theme='dark'] .iconLink::before {
-  background-color: #fff;
 }
 
 .iconLink.iconLink--github::before {
@@ -79,4 +110,50 @@
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+.navbar__toggle {
+  margin-right: 1rem;
+}
+
+:where(.navbar__items:not(.navbar__items--right)) .navbar__link {
+  padding-inline: min(1%, var(--ifm-navbar-item-padding-horizontal));
+}
+
+.markdown {
+  --ifm-link-decoration: underline;
+}
+
+.DocSearch {
+  --docsearch-searchbox-background: var(--ifm-navbar-background-color);
+  --docsearch-muted-color: var(--ifm-color-content-secondary);
+  --docsearch-hit-active-color: var(--ifm-color-content-inverse);
+}
+
+.DocSearch-Button {
+  box-shadow: inset 0 0 0 1px var(--ifm-color-emphasis-300);
+}
+
+@media (max-width: 1200px) {
+  .navbar :is(.DocSearch-Button-Placeholder, .DocSearch-Button-Keys) {
+    display: none;
+  }
+}
+
+.footer {
+  --ifm-footer-link-hover-color: var(--ifm-color-primary-lighter);
+  --ifm-link-color: var(--ifm-footer-link-color);
+  --ifm-link-hover-color: var(--ifm-footer-link-hover-color);
+}
+
+.footer__links {
+  display: grid;
+  grid-auto-flow: column;
+  column-gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer__link-separator {
+  display: none;
 }
