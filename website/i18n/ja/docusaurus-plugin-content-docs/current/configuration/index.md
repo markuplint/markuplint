@@ -1,5 +1,3 @@
-import FileTree from '@site/src/components/FileTree';
-
 # 設定
 
 ## 設定ファイル
@@ -8,7 +6,7 @@ import FileTree from '@site/src/components/FileTree';
 
 自動読み込みは、**ターゲットが存在するディレクトリから再帰的に検索していきます**。つまり、各ターゲットに最も近い設定ファイルを適用します。
 
-<FileTree>
+<file-tree>
 
 - 📂 A
   - 📄 .markuplintrc # ①
@@ -20,7 +18,7 @@ import FileTree from '@site/src/components/FileTree';
         - 📄 .markuplintrc # ②
         - 📄 index.html # <- ② A/B/C/D/.markuplintrc が適用される
 
-</FileTree>
+</file-tree>
 
 :::note
 

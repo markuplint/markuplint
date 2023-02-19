@@ -1,5 +1,3 @@
-import FileTree from '@site/src/components/FileTree';
-
 # カスタムルールをつくる
 
 [APIドキュメント](/docs/api/)を参照しながらカスタムルールを作成できますが、コマンドを利用することで楽に作成ができます。
@@ -30,7 +28,7 @@ npx markuplint --create-rule
 
 すると、以下のファイルが作成されます。
 
-<FileTree>
+<file-tree>
 
 - 📂 [cwd]
   - 📂 [dir-name]
@@ -39,7 +37,7 @@ npx markuplint --create-rule
       - 📄 [rule-name].ts # もしくは [rule-name].js
       - 📄 [rule-name].spec.ts # もしくは [rule-name].spec.js （任意）
 
-</FileTree>
+</file-tree>
 
 :::info
 

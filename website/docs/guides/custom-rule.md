@@ -1,5 +1,3 @@
-import FileTree from '@site/src/components/FileTree';
-
 # Creating custom rule
 
 You can create a custom rule while referring to the [**API document**](/docs/api/), but it recommends you use the below command:
@@ -26,7 +24,7 @@ And choose the languages, either **TypeScript** or **JavaScript**. Then decide w
 
 And then there are the below files created:
 
-<FileTree>
+<file-tree>
 
 - 📂 [cwd]
   - 📂 [dir-name]
@@ -35,7 +33,7 @@ And then there are the below files created:
       - 📄 [rule-name].ts # or [rule-name].js
       - 📄 [rule-name].spec.ts # or [rule-name].spec.js [Optional]
 
-</FileTree>
+</file-tree>
 
 :::info
 The **test** code is written in [**Jest**](https://jestjs.io/) format. Please rewrite it you need.
