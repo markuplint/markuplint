@@ -1,0 +1,44 @@
+.fileTree {
+  margin: 0 0 1em;
+  overflow: auto;
+  white-space: pre;
+  background-color: var(--ifm-code-background);
+  border-radius: var(--ifm-code-border-radius);
+}
+
+.fileTree > ul {
+  width: max-content;
+  padding: 0;
+  margin: 0;
+}
+
+.fileTree ul {
+  list-style: none;
+}
+
+.fileTree li {
+  position: relative;
+}
+
+.fileTree ul ul li::before {
+  position: absolute;
+  top: 0;
+  left: calc(-1 * (var(--ifm-list-left-padding) - 0.5em));
+  display: block;
+  width: calc(var(--ifm-list-left-padding) - 1em);
+  height: 1em;
+  content: '';
+  border-bottom: 1px solid var(--ifm-color-emphasis-500);
+  border-left: 1px solid var(--ifm-color-emphasis-500);
+}
+
+.fileTree ul ul li:not(:last-child)::after {
+  position: absolute;
+  top: 1em;
+  left: calc(-1 * (var(--ifm-list-left-padding) - 0.5em));
+  display: block;
+  width: calc(var(--ifm-list-left-padding) - 1em);
+  height: 1em;
+  content: '';
+  border-left: 1px solid var(--ifm-color-emphasis-500);
+}
