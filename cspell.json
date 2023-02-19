@@ -93,6 +93,7 @@
 		"Nuxt",
 		"omittedtag",
 		"onbeforematch",
+		"onbeforetoggle",
 		"oncontextlost",
 		"oncontextrestored",
 		"onwebkitanimationend",
@@ -140,10 +141,7 @@
 	"overrides": [
 		{
 			"filename": "packages/@markuplint/types/src/whatwg/check-autocomplete.spec.ts",
-			"words": [
-				"neme",
-				"emall"
-			]
+			"words": ["neme", "emall"]
 		}
 	]
 }

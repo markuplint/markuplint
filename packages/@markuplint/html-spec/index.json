@@ -331,6 +331,17 @@
 				"nonce": {
 					"type": "Any"
 				},
+				"popover": {
+					"type": {
+						"enum": ["", "auto", "manual"],
+						"disallowToSurroundBySpaces": true,
+						"invalidValueDefault": "manual",
+						"missingValueDefault": "no popover",
+						"sameStates": {
+							"auto": [""]
+						}
+					}
+				},
 				"spellcheck": {
 					"type": {
 						"enum": ["", "true", "false"],
@@ -23464,6 +23475,15 @@
 				"name": {
 					"description": "The name of the button, submitted as a pair with the button's value as part of the form data, when that button is used to submit the form."
 				},
+				"popoverhidetarget": {
+					"type": "DOMID"
+				},
+				"popovershowtarget": {
+					"type": "DOMID"
+				},
+				"popovertoggletarget": {
+					"type": "DOMID"
+				},
 				"type": {
 					"type": {
 						"enum": ["submit", "reset", "button"],
@@ -25902,6 +25922,18 @@
 						"[type='password' i]",
 						"[type='number' i]"
 					]
+				},
+				"popoverhidetarget": {
+					"type": "DOMID",
+					"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
+				},
+				"popovershowtarget": {
+					"type": "DOMID",
+					"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
+				},
+				"popovertoggletarget": {
+					"type": "DOMID",
+					"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
 				},
 				"readonly": {
 					"condition": [

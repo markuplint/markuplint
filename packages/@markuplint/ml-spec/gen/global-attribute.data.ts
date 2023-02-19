@@ -26,6 +26,7 @@ export const globalAttrs: Record<
 			'itemtype',
 			'lang',
 			'nonce',
+			'popover',
 			'spellcheck',
 			'style',
 			'tabindex',
@@ -53,6 +54,7 @@ export const globalAttrs: Record<
 			'onauxclick',
 			'onbeforeinput', // UI Events
 			'onbeforematch',
+			'onbeforetoggle',
 			'onblur',
 			'oncancel',
 			'oncanplay',
