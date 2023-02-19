@@ -415,6 +415,9 @@
 				"onbeforematch": {
 					"type": "FunctionBody"
 				},
+				"onbeforetoggle": {
+					"type": "FunctionBody"
+				},
 				"onblur": {
 					"type": "FunctionBody"
 				},
