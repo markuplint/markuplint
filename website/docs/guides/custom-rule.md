@@ -82,7 +82,7 @@ And choose the languages, either **TypeScript** or **JavaScript**. Then decide w
 
 Eventually, there are the below files created:
 
-<FileTree>
+<file-tree>
 
 - 📂 `[cwd]`
   - 📄 `README.md`
@@ -94,7 +94,7 @@ Eventually, there are the below files created:
       - 📄 `[rule-name].ts` # or `[rule-name].js`
       - 📄 `[rule-name].spec.ts` # or `[rule-name].spec.js` [Optional]
 
-</FileTree>
+</file-tree>
 
 ## How to basic evaluate
 

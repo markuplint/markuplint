@@ -1,7 +1,6 @@
 .fileTree {
   margin: 0 0 1em;
   overflow: auto;
-  white-space: pre;
   background-color: var(--ifm-code-background);
   border-radius: var(--ifm-code-border-radius);
 }

@@ -87,7 +87,7 @@ export default createPlugin({
 
 最終的に以下のファイルが作成されます。
 
-<FileTree>
+<file-tree>
 
 - 📂 `[cwd]`
   - 📄 `README.md`
@@ -99,7 +99,7 @@ export default createPlugin({
       - 📄 `[rule-name].ts` # もしくは `[rule-name].js`
       - 📄 `[rule-name].spec.ts` # もしくは `[rule-name].spec.js` （任意）
 
-</FileTree>
+</file-tree>
 
 ## 基本的な評価方法
 
