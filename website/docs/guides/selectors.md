@@ -69,7 +69,7 @@ It supports parts of [**W3C Selectors Level 4**](https://www.w3.org/TR/selectors
 
 It supports **`:has` selector**. You can select elements flexibly if you do it with combinator operators.
 
-```json title=":has selector with Subsequent-sibling combinator"
+```json class=config title=":has selector with Subsequent-sibling combinator"
 {
   "nodeRules": [
     {
@@ -89,7 +89,7 @@ It supports **`:has` selector**. You can select elements flexibly if you do it w
 
 It applies **specificity** same as **CSS Selectors**. By doing this, you can control priority to apply rules.
 
-```json title="Control priority"
+```json class=config title="Control priority"
 {
   "nodeRules": [
     {
@@ -117,7 +117,7 @@ Apply according to settings **in order** when selectors are the same specificity
 :::tip
 It supports **`:where` selector**. The selector always has zero specificity.
 
-```json title="Control priority"
+```json class=config title="Control priority"
 {
   "nodeRules": [
     {
@@ -213,7 +213,7 @@ For example, `:model(interactive)` matches `<a>`(with `href` attr), `<button>`, 
 Use **regular expressions** to select elements.
 Specify it to match the **node name**, **attribute name**, or **attribute value**, or combine each.
 
-```json
+```json class=config
 {
   "childNodeRules": [
     {

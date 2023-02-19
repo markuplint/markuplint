@@ -62,7 +62,7 @@ description: 許可されていない要素もしくはテキストノードを�
 
 ルールを設定したい対象の要素を配列で指定します。次の例はカスタム要素の`x-container`と`x-item`それぞれにルールを指定していることになります。
 
-```json
+```json class=config
 {
   "rules": {
     "permitted-contents": [
@@ -94,7 +94,7 @@ description: 許可されていない要素もしくはテキストノードを�
 
 そのうち`require`、`optional`、`oneOrMore`、`zeroOrMore`は要素の個数を意味します。そのキーワードをキーとしてタグ名（もしくはテキストノードの場合 `#text`）を指定します。それぞれのキーワードを同時に指定できません。
 
-```json
+```json class=config
 {
   "rules": {
     "permitted-contents": [
@@ -141,7 +141,7 @@ description: 許可されていない要素もしくはテキストノードを�
 | ---------- | ----------- |
 | `choice`   | いずれか1つ |
 
-```json
+```json class=config
 {
   "rules": {
     "permitted-contents": [

@@ -8,7 +8,7 @@ Markuplintは実行時、[設定ファイル](/docs/configuration)を自動で�
 
 [設定ファイル](/docs/configuration)が必要になります。用意できたら`rules`プロパティに必要な[ルール](/docs/rules)を追加します。
 
-```json
+```json class=config
 {
   "rules": {
     // ここに追加していく
@@ -27,7 +27,7 @@ Markuplintは実行時、[設定ファイル](/docs/configuration)を自動で�
 
 構造の一部にのみにルールを適用したい場合は、[**セレクタ**](./selectors)を`nodeRules`または`childNodeRules`プロパティに設定します。また、`childNodeRules`は対象要素の子要素（`inheritance`を設定すれば子孫も含む）に対して適用されます。
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -75,7 +75,7 @@ Markuplintは実行時、[設定ファイル](/docs/configuration)を自動で�
 
 スラッシュ区切りでプラグイン名とルール名を指定することでカスタムルールが適用されます。
 
-```json title="設定ファイル"
+```json class=config title="設定ファイル"
 {
   "rules": {
     "[plugin-name]/[rule-name]": true
@@ -105,7 +105,7 @@ module.exports = createPlugin({
 });
 ```
 
-```json title="設定ファイル"
+```json class=config title="設定ファイル"
 {
   "plugins": ["./plugin.js"],
   "rules": {

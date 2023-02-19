@@ -40,7 +40,7 @@ HTML標準に準拠しているかどうかは[`permitted-contents`](../permitte
 
 `rules`に指定すると、ドキュメント全体から要素を検索します。
 
-```json
+```json class=config
 {
   "rules": {
     "disallowed-element": ["hgroup"]
@@ -50,7 +50,7 @@ HTML標準に準拠しているかどうかは[`permitted-contents`](../permitte
 
 `nodeRules`または` childNodeRules`に指定されている場合、ターゲット要素の子要素から要素を検索します。
 
-```json
+```json class=config
 {
   "nodeRules": [
     {

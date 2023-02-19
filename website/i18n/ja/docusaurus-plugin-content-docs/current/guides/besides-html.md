@@ -99,7 +99,7 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 
 [設定ファイル](/docs/configuration)の`parser`プロパティに適用するプラグインを指定します。また、スペックが存在する場合は`specs`プロパティにも追加します。`parser`プロパティのキーに対象ファイル名を特定できる正規表現を設定します。
 
-```json title="Reactでつかう"
+```json class=config title="Reactでつかう"
 {
   "parser": {
     ".jsx$": "@markuplint/jsx-parser"
@@ -110,7 +110,7 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 }
 ```
 
-```json title="Vueでつかう"
+```json class=config title="Vueでつかう"
 {
   "parser": {
     ".vue$": "@markuplint/vue-parser"
@@ -167,7 +167,7 @@ const Component = ({ list }) => {
 
 コンポーネントとマッチする[セレクタ](./selectors)と、コンポーネントが公開する要素のプロパティを指定すると、各ルールでコンポーネントをレンダリングされたHTML要素として評価します。
 
-```json
+```json class=config
 {
   "pretenders": [
     {

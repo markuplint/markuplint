@@ -6,7 +6,7 @@
 
 [設定](/docs/configuration)の`extends`プロパティを以下のように指定します。
 
-```json
+```json class=config
 {
   "extends": ["markuplint:recommended"]
 }
@@ -14,7 +14,7 @@
 
 好みに合わせて、いくつかの**基本プリセット**を選択できます。
 
-```json
+```json class=config
 {
   "extends": ["markuplint:html-standard", "markuplint:a11y"]
 }

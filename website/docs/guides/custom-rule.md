@@ -39,7 +39,7 @@ The **test** code is written in [**Jest**](https://jestjs.io/) format. Please re
 
 Eventually, you should specify it to the configuration to apply it.
 
-```json
+```json class=config
 {
   "plugins": ["./[dir-name]/index.js"], // Need transpile if the source is TypeScript
   "rules": {

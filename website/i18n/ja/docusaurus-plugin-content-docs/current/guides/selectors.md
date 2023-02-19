@@ -77,7 +77,7 @@
 
 <!-- textlint-enable ja-technical-writing/max-kanji-continuous-len -->
 
-```json title=":hasセレクタと一般兄弟結合子"
+```json class=config title=":hasセレクタと一般兄弟結合子"
 {
   "nodeRules": [
     {
@@ -97,7 +97,7 @@
 
 **CSSセレクタ**と同じく**詳細度**がを適用されます。これにより、ルールを適用する優先順位を制御できます。
 
-```json title="優先順位の制御"
+```json class=config title="優先順位の制御"
 {
   "nodeRules": [
     {
@@ -128,7 +128,7 @@
 
 **`:where`セレクタ**をサポートしています。このセレクタの詳細度は常にゼロになります。
 
-```json title="優先順位の制御"
+```json class=config title="優先順位の制御"
 {
   "nodeRules": [
     {
@@ -223,7 +223,7 @@ WAI-ARIAのバージョンは`:role(form|1.1)`のようにパイプで区切っ�
 
 **正規表現**を使用して要素を選択します。**ノード名**、**属性名**、**属性値**のいずれかにマッチするように指定するか、それぞれを組み合わせて指定します。
 
-```json
+```json class=config
 {
   "childNodeRules": [
     {

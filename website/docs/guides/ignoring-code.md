@@ -11,7 +11,7 @@ Use [`excludeFiles`](/docs/configuration/properties#excludefiles) property on th
 Use [`nodeRules`](/docs/configuration/properties#noderules) or [`childNodeRules`](/docs/configuration/properties#childnoderules) property on the configuration.
 See [Applying to some](./applying-rules/#applying-to-some).
 
-```json
+```json class=config
 {
   "rules": {
     "any-rule": true
@@ -31,7 +31,7 @@ See [Applying to some](./applying-rules/#applying-to-some).
 
 Use [`overrides`](/docs/configuration/properties#overrides) property on the configuration.
 
-```json
+```json class=config
 {
   "rules": {
     "any-rule": true

@@ -149,7 +149,7 @@ _[The Open Graph protocol](https://ogp.me/)_ and _[RDFa](https://rdfa.info/)_ ar
 
 ### The Open Graph protocol
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -175,7 +175,7 @@ _[The Open Graph protocol](https://ogp.me/)_ and _[RDFa](https://rdfa.info/)_ ar
 
 ### RDFa (RDFa lite)
 
-```json
+```json class=config
 {
   "rules": {
     "invalid-attr": {

@@ -28,7 +28,7 @@ description: 指定された規則に則ったクラス名でなければ警告�
 
 BEM系のCSS設計:
 
-```json
+```json class=config
 {
   "rules": {
     // Enable class-naming rule to childNodeRules.

@@ -53,7 +53,7 @@ It is possible to make the structure robust by setting element relationships on 
 
 Specify the target element for which you want to set a rule as an array. In the following example, rules are specified for each of the custom elements `x-container` and `x-item`.
 
-```json
+```json class=config
 {
   "rules": {
     "permitted-contents": [
@@ -85,7 +85,7 @@ It is defined using one of the five keywords `require`, `optional`, `oneOrMore`,
 
 Of these, `require`, `optional`, `oneOrMore` and `zeroOrMore` mean the number of elements. Specify the tag name (or `# text` for text nodes) using the keyword as a key. Each keyword cannot be simultaneously specified.
 
-```json
+```json class=config
 {
   "rules": {
     "permitted-contents": [
@@ -132,7 +132,7 @@ The `choice` keyword has the following meanings for the specified array:
 | -------- | -------- |
 | `choice` | Any one  |
 
-```json
+```json class=config
 {
   "rules": {
     "permitted-contents": [

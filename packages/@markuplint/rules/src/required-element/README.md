@@ -40,7 +40,7 @@ Use the [`required-h1`](../required-h1/) rule if you expect to require the h1 el
 
 If specified to `rules`, It searches the element from a document.
 
-```json
+```json class=config
 {
   "rules": {
     "required-element": ["meta[charset=\"UTF-8\"]"]
@@ -50,7 +50,7 @@ If specified to `rules`, It searches the element from a document.
 
 If specified to `nodeRules` or `childNodeRules`, It searches the element from child elements of the target element.
 
-```json
+```json class=config
 {
   "nodeRules": [
     {

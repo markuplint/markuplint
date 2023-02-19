@@ -76,7 +76,7 @@ Naturally, you can apply the [**custom rule**](./custom-rule) created by you or 
 
 It applies the rule when specifying its plugin name and rule name solidus separated.
 
-```json title="Configuration" class=config
+```json class=config title="Configuration" class=config
 {
   "rules": {
     "[plugin-name]/[rule-name]": true
@@ -106,7 +106,7 @@ module.exports = createPlugin({
 });
 ```
 
-```json title="Configuration" class=config
+```json class=config title="Configuration" class=config
 {
   "plugins": ["./plugin.js"],
   "rules": {

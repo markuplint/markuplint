@@ -11,7 +11,7 @@
 設定の[`nodeRules`](/docs/configuration/properties#noderules)もしくは[`childNodeRules`](/docs/configuration/properties#childnoderules)プロパティを使います。
 [部分的な適用](./applying-rules/#applying-to-some)を参考にしてください。
 
-```json
+```json class=config
 {
   "rules": {
     "any-rule": true
@@ -31,7 +31,7 @@
 
 設定の[`overrides`](/docs/configuration/properties#overrides)プロパティを使います。
 
-```json
+```json class=config
 {
   "rules": {
     "any-rule": true
