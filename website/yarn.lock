@@ -5847,7 +5847,7 @@ markdown-escapes@^1.0.0:
   resolved "https://registry.yarnpkg.com/markdown-escapes/-/markdown-escapes-1.0.4.tgz#c95415ef451499d7602b91095f3c8e8975f78535"
   integrity sha512-8z4efJYk43E0upd0NbVXwgSTQs6cT3T06etieCMEg7dRbzCbxUCK/GHlX8mhHRDcp+OLlHkPKsvqQTCvsRl2cg==
 
-markuplint@^3.3.0:
+markuplint@3.*:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/markuplint/-/markuplint-3.3.0.tgz#5588b1084da26e69cac611a58113872be60ba14b"
   integrity sha512-7RWPSFO9C4Lai/eoL+kYfQ4T/FUFEMB/Ss587yYPJI+GvvVC9IpAgSnfTQq4E/Df4LHiTwkHBUXfc/EucCOmzQ==
