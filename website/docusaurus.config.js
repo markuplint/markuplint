@@ -95,7 +95,7 @@ const config = {
             label: 'Community',
           },
           {
-            href: 'https://playground.markuplint.dev/',
+            to: '/playground',
             label: 'Playground',
             position: 'left',
           },
