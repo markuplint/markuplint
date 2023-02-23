@@ -1,3 +1,5 @@
+import { Config } from '@markuplint/ml-config';
+
 export const defaultCode = /* html */ `<!doctype html>
 <html
   LANG="en">
@@ -44,7 +46,7 @@ export const defaultCode = /* html */ `<!doctype html>
 </html>
 `;
 
-export const defaultConfig = JSON.stringify({
+export const defaultConfig: Config = {
   rules: {
     'attr-duplication': true,
     'attr-value-quotes': true,
@@ -77,4 +79,4 @@ export const defaultConfig = JSON.stringify({
     'use-list': true,
     'wai-aria': true,
   },
-});
+};

@@ -2,7 +2,7 @@ import * as HTMLParser from '@markuplint/html-parser';
 import rules from '@markuplint/rules';
 import spec from '@markuplint/html-spec';
 import type { LocaleSet } from '@markuplint/i18n';
-
+import { Config } from '@markuplint/ml-config';
 import { MLCore, Ruleset, MLRule } from '@markuplint/ml-core';
 import { getEndCol, getEndLine } from '@markuplint/parser-utils';
 import { Diagnostic } from '../types';
@@ -52,13 +52,3 @@ export const diagnose = async (linter: MLCore, code: string) => {
   }
   return diagnostics;
 };
-
-export function convertRuleset(ruleset?: string) {
-  return ruleset
-    ? JSON.parse(ruleset)
-    : {
-        rules: {},
-        nodeRules: [],
-        childNodeRules: [],
-      };
-}
