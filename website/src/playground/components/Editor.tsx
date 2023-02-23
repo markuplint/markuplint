@@ -1,21 +1,28 @@
-import React, { memo, useCallback, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import MonacoEditor, { useMonaco } from '@monaco-editor/react';
-import type { OnChange } from '@monaco-editor/react';
-import { diagnose, convertRuleset } from './diagnose';
+import { diagnose } from './diagnose';
 import { defaultCode, defaultConfig } from './defaultSample';
 import { MLCore } from '@markuplint/ml-core';
+import { Diagnostic } from '../types';
 
-export const Editor = memo((props: { linter: MLCore }) => {
+export const Editor = memo((props: { linter: MLCore; onUpdate: (value: readonly Diagnostic[]) => void }) => {
   const monaco = useMonaco();
 
-  const onChange: OnChange = async value => {
-    console.log(value);
-    const diagnostics = await diagnose(props.linter, value);
-    console.log(diagnostics);
-    const model = monaco.editor.getModels()[0];
-    console.log(model);
-    monaco.editor.setModelMarkers(model, 'Markuplint', diagnostics);
-  };
+  const onChange = useCallback(() => {
+    (async () => {
+      const model = monaco.editor.getModels()[0];
+      console.log(model);
+      const code = model.getValue();
+      const diagnostics = await diagnose(props.linter, code);
+      monaco.editor.setModelMarkers(model, 'Markuplint', diagnostics);
+
+      props.onUpdate(diagnostics);
+    })();
+  }, [props.linter]);
+
+  useEffect(() => {
+    onChange();
+  }, [onChange]);
 
   return (
     <MonacoEditor

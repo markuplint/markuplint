@@ -1,14 +1,11 @@
 import * as HTMLParser from '@markuplint/html-parser';
 import rules from '@markuplint/rules';
 import spec from '@markuplint/html-spec';
-import type { I18n, LocaleSet, Translator } from '@markuplint/i18n';
-// TODO
-// @ts-ignore
-import { translator } from '@markuplint/i18n';
+import type { LocaleSet } from '@markuplint/i18n';
 
 import { MLCore, Ruleset, MLRule } from '@markuplint/ml-core';
 import { getEndCol, getEndLine } from '@markuplint/parser-utils';
-import type { editor } from 'monaco-editor';
+import { Diagnostic } from '../types';
 
 export const createLinter = async (ruleset: Ruleset): Promise<MLCore> => {
   const language = navigator.language || '';
@@ -42,7 +39,7 @@ export const diagnose = async (linter: MLCore, code: string) => {
 
   linter.setCode(code);
   const reports = await linter.verify();
-  const diagnostics: editor.IMarkerData[] = [];
+  const diagnostics: Diagnostic[] = [];
   for (const report of reports) {
     diagnostics.push({
       severity: SEVERITY_MAP[report.severity],

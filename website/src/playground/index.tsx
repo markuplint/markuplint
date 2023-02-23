@@ -4,10 +4,13 @@ import { defaultConfig } from './components/defaultSample';
 import { convertRuleset, createLinter } from './components/diagnose';
 import { Editor } from './components/Editor';
 import { MLCore } from '@markuplint/ml-core';
+import { Output } from './components/Output';
+import { Diagnostic } from './types';
 
 export default function Playground() {
   const ruleset = convertRuleset(defaultConfig);
   const [linter, setLinter] = useState<MLCore | null>(null);
+  const [diagnostics, setDiagnostics] = useState<readonly Diagnostic[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -33,8 +36,8 @@ export default function Playground() {
           gutterStyle={() => ({ cursor: 'row-resize', height: '5px', backgroundColor: 'gray' })}
           direction="vertical"
         >
-          <Editor linter={linter}></Editor>
-          <div>Output</div>
+          <Editor linter={linter} onUpdate={value => setDiagnostics(value)}></Editor>
+          <Output diagnostics={diagnostics} />
         </Split>
       </Split>
     </main>
