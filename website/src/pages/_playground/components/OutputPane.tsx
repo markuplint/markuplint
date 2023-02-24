@@ -1,22 +1,22 @@
 import React from 'react';
-import { Diagnostic } from '../modules/lint';
+import { Report } from '../modules/lint';
 
-export const Output = (props: { diagnostics: readonly Diagnostic[] }) => {
+export default function Output({ reports }: { reports: readonly Report[] }) {
   return (
     <div style={{ maxHeight: '100%', overflowY: 'auto' }}>
       <ul>
-        {props.diagnostics.map((diagnostic, i) => (
+        {reports.map((report, i) => (
           <li key={i}>
-            <span>{icon(diagnostic.severity)}</span>
-            <span>{diagnostic.message}</span>
+            <span>{icon(report.severity)}</span>
+            <span>{report.message}</span>
           </li>
         ))}
       </ul>
     </div>
   );
-};
+}
 
-const icon = (severity: Diagnostic['severity']) => {
+const icon = (severity: Report['severity']) => {
   switch (severity) {
     case 1: {
       return '💡';

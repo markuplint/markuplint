@@ -6,7 +6,7 @@ import { MLCore, Ruleset, MLRule } from '@markuplint/ml-core';
 import { getEndCol, getEndLine } from '@markuplint/parser-utils';
 import { editor } from 'monaco-editor';
 
-export type Diagnostic = Readonly<editor.IMarkerData>;
+export type Report = Readonly<editor.IMarkerData>;
 
 export const createLinter = async (ruleset: Ruleset): Promise<MLCore> => {
   const language = navigator.language || '';
@@ -31,7 +31,7 @@ export const createLinter = async (ruleset: Ruleset): Promise<MLCore> => {
   return linter;
 };
 
-export const diagnose = async (linter: MLCore, code: string) => {
+export const lint = async (linter: MLCore, code: string) => {
   const SEVERITY_MAP = {
     info: 2,
     warning: 4,
@@ -39,17 +39,15 @@ export const diagnose = async (linter: MLCore, code: string) => {
   };
 
   linter.setCode(code);
-  const reports = await linter.verify();
-  const diagnostics: Diagnostic[] = [];
-  for (const report of reports) {
-    diagnostics.push({
-      severity: SEVERITY_MAP[report.severity],
-      startLineNumber: report.line,
-      startColumn: report.col,
-      endLineNumber: getEndLine(report.raw, report.line),
-      endColumn: getEndCol(report.raw, report.col),
-      message: `${report.message} (${report.ruleId})`,
-    });
-  }
-  return diagnostics;
+  const violations = await linter.verify();
+  const reports: Report[] = violations.map(violation => ({
+    severity: SEVERITY_MAP[violation.severity],
+    startLineNumber: violation.line,
+    startColumn: violation.col,
+    endLineNumber: getEndLine(violation.raw, violation.line),
+    endColumn: getEndCol(violation.raw, violation.col),
+    message: `${violation.message} (${violation.ruleId})`,
+  }));
+
+  return reports;
 };

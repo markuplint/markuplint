@@ -1,14 +1,20 @@
-import React, { memo, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import MonacoEditor, { useMonaco } from '@monaco-editor/react';
-import { diagnose } from '../modules/lint';
+import { lint } from '../modules/lint';
 import { defaultCode } from '../modules/default-values';
 import { MLCore } from '@markuplint/ml-core';
-import { Diagnostic } from '../modules/lint';
-import { decode, encode } from '../modules/code-save';
+import { Report } from '../modules/lint';
+import { loadCode, saveCode } from '../modules/code-save';
 
-const initialCode = location.hash ? decode(location.hash.slice(1)) : defaultCode;
+const initialCode = loadCode() || defaultCode;
 
-export const Editor = memo((props: { linter: MLCore; onUpdate: (value: readonly Diagnostic[]) => void }) => {
+export default function EditorPane({
+  linter,
+  onUpdate,
+}: {
+  linter: MLCore;
+  onUpdate: (value: readonly Report[]) => void;
+}) {
   const monaco = useMonaco();
 
   const onChange = useCallback(() => {
@@ -17,14 +23,14 @@ export const Editor = memo((props: { linter: MLCore; onUpdate: (value: readonly 
     const model = monaco.editor.getModels()[0];
     (async () => {
       const code = model.getValue();
-      const diagnostics = await diagnose(props.linter, code);
-      monaco.editor.setModelMarkers(model, 'Markuplint', diagnostics);
+      const reports = await lint(linter, code);
+      monaco.editor.setModelMarkers(model, 'Markuplint', reports);
 
-      props.onUpdate(diagnostics);
+      onUpdate(reports);
 
-      location.hash = encode(code);
+      saveCode(code);
     })();
-  }, [props.linter, monaco]);
+  }, [linter, monaco]);
 
   useEffect(() => {
     onChange();
@@ -40,4 +46,4 @@ export const Editor = memo((props: { linter: MLCore; onUpdate: (value: readonly 
       options={{ minimap: { enabled: false } }}
     />
   );
-});
+}

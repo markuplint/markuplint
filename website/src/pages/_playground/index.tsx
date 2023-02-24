@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import Split from 'react-split';
+import { MLCore, Ruleset } from '@markuplint/ml-core';
+import ConfigPane from './components/ConfigPane';
+import EditorPane from './components/EditorPane';
+import OutputPane from './components/OutputPane';
 import { defaultConfig } from './modules/default-values';
 import { createLinter } from './modules/lint';
-import { Editor } from './components/Editor';
-import { MLCore, Ruleset } from '@markuplint/ml-core';
-import { Output } from './components/Output';
-import { Diagnostic } from './modules/lint';
+import type { Report } from './modules/lint';
 
 export default function Playground() {
   const config = defaultConfig;
   const ruleset = new Ruleset(config);
   const [linter, setLinter] = useState<MLCore | null>(null);
-  const [diagnostics, setDiagnostics] = useState<readonly Diagnostic[]>([]);
+  const [reports, setReports] = useState<readonly Report[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -29,9 +30,7 @@ export default function Playground() {
         gutterStyle={() => ({ cursor: 'col-resize', width: '5px', backgroundColor: 'gray' })}
         direction="horizontal"
       >
-        <pre>
-          <code>{JSON.stringify(config, null, 2)}</code>
-        </pre>
+        <ConfigPane config={config} />
         <Split
           style={{ height: '100%' }}
           sizes={[75, 25]}
@@ -39,8 +38,8 @@ export default function Playground() {
           gutterStyle={() => ({ cursor: 'row-resize', height: '5px', backgroundColor: 'gray' })}
           direction="vertical"
         >
-          <Editor linter={linter} onUpdate={value => setDiagnostics(value)}></Editor>
-          <Output diagnostics={diagnostics} />
+          <EditorPane linter={linter} onUpdate={value => setReports(value)}></EditorPane>
+          <OutputPane reports={reports} />
         </Split>
       </Split>
     </main>
