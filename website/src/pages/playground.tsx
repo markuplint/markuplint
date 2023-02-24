@@ -1,6 +1,6 @@
 import Layout from '@theme/Layout';
 import React from 'react';
-import Playground from '../playground';
+import Playground from './_playground';
 
 export default function PlaygroundPage(): JSX.Element {
   return (

@@ -1,10 +1,10 @@
 import React, { memo, useCallback, useEffect } from 'react';
 import MonacoEditor, { useMonaco } from '@monaco-editor/react';
-import { diagnose } from './diagnose';
-import { defaultCode } from './defaultSample';
+import { diagnose } from '../modules/lint';
+import { defaultCode } from '../modules/default-values';
 import { MLCore } from '@markuplint/ml-core';
-import { Diagnostic } from '../types';
-import { decode, encode } from '../utils.ts';
+import { Diagnostic } from '../modules/lint';
+import { decode, encode } from '../modules/code-save';
 
 const initialCode = location.hash ? decode(location.hash.slice(1)) : defaultCode;
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Diagnostic } from '../types';
+import { Diagnostic } from '../modules/lint';
 
 export const Output = (props: { diagnostics: readonly Diagnostic[] }) => {
   return (

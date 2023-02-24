@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Split from 'react-split';
-import { defaultConfig } from './components/defaultSample';
-import { createLinter } from './components/diagnose';
+import { defaultConfig } from './modules/default-values';
+import { createLinter } from './modules/lint';
 import { Editor } from './components/Editor';
 import { MLCore, Ruleset } from '@markuplint/ml-core';
 import { Output } from './components/Output';
-import { Diagnostic } from './types';
+import { Diagnostic } from './modules/lint';
 
 export default function Playground() {
   const config = defaultConfig;

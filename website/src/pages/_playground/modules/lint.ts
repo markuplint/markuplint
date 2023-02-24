@@ -2,10 +2,11 @@ import * as HTMLParser from '@markuplint/html-parser';
 import rules from '@markuplint/rules';
 import spec from '@markuplint/html-spec';
 import type { LocaleSet } from '@markuplint/i18n';
-import { Config } from '@markuplint/ml-config';
 import { MLCore, Ruleset, MLRule } from '@markuplint/ml-core';
 import { getEndCol, getEndLine } from '@markuplint/parser-utils';
-import { Diagnostic } from '../types';
+import { editor } from 'monaco-editor';
+
+export type Diagnostic = Readonly<editor.IMarkerData>;
 
 export const createLinter = async (ruleset: Ruleset): Promise<MLCore> => {
   const language = navigator.language || '';
