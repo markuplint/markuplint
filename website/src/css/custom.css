@@ -75,25 +75,29 @@
   --code-color-purple-dark: hsl(300deg 100% 30%);
   --code-color-lime-light: hsl(100deg 40% 50%);
   --code-color-lime-dark: hsl(100deg 80% 25%);
-  --code-icon-padding: 0.25em;
-  --code-icon-size: 1em;
-  --code-icon-background-size: calc(var(--code-icon-size) + var(--code-icon-padding) * 2);
+  --code-label-padding-block: 0.25rem;
+  --code-label-padding-right: 0.8em;
+  --code-label-icon-size: 1rem;
+  --code-label-background-height: calc(var(--code-label-icon-size) + var(--code-label-padding-block) * 2);
 
   overflow: hidden;
 }
 
 .theme-code-block.config {
   --code-background-color: hsl(214deg 70% 98%);
-  --code-icon-background-color: var(--ifm-color-primary);
-  --code-icon-image: url('/img/icon-gear.svg');
+  --code-label-color: var(--ifm-color-primary-darkest);
+  --code-label-background-color: var(--ifm-color-primary-lightest);
+  --code-label-image: url('/img/icon-gear.svg');
 }
 
 [data-theme='dark'] .theme-code-block.config {
   --code-background-color: hsl(214deg 30% 13%);
+  --code-label-color: var(--ifm-color-primary-lightest);
+  --code-label-background-color: var(--ifm-color-primary-darkest);
 }
 
 .theme-code-block.config pre {
-  padding-left: var(--code-icon-background-size);
+  padding-top: var(--code-label-background-height);
   background-color: var(--code-background-color);
 }
 
@@ -101,24 +105,34 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: calc(var(--code-icon-background-size) + 0.2em);
-  height: var(--code-icon-background-size);
-  content: '';
-  background-color: var(--code-icon-background-color);
-  border-right: 2px solid var(--ifm-color-content-inverse);
-  border-bottom: 2px solid var(--ifm-color-content-inverse);
-  border-bottom-right-radius: 40% 100%;
+  box-sizing: border-box;
+  min-height: var(--code-label-background-height);
+  padding: var(--code-label-padding-block) var(--code-label-padding-right) var(--code-label-padding-block)
+    calc(var(--code-label-icon-size) + 0.6em);
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.9em;
+  font-weight: bold;
+  line-height: 1;
+  color: var(--code-label-color);
+  content: 'Configuration';
+  background-color: var(--code-label-background-color);
+  border-bottom-right-radius: var(--code-label-padding-right) 100%;
+}
+
+.theme-code-block.config pre:lang(ja)::before {
+  content: '設定ファイル';
 }
 
 .theme-code-block.config pre::after {
   position: absolute;
-  top: var(--code-icon-padding);
-  left: var(--code-icon-padding);
-  width: var(--code-icon-size);
-  height: var(--code-icon-size);
+  top: var(--code-label-padding-block);
+  left: var(--code-label-padding-block);
+  width: var(--code-label-icon-size);
+  height: var(--code-label-icon-size);
+  color: var(--code-label-color);
   content: '';
-  background-color: var(--ifm-color-content-inverse);
-  mask-image: var(--code-icon-image);
+  background-color: currentColor;
+  mask-image: var(--code-label-image);
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: contain;

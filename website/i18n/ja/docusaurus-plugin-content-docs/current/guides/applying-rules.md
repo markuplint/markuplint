@@ -75,7 +75,7 @@ Markuplintは実行時、[設定ファイル](/docs/configuration)を自動で�
 
 スラッシュ区切りでプラグイン名とルール名を指定することでカスタムルールが適用されます。
 
-```json class=config title="設定ファイル"
+```json class=config
 {
   "rules": {
     "[plugin-name]/[rule-name]": true
@@ -105,7 +105,7 @@ module.exports = createPlugin({
 });
 ```
 
-```json class=config title="設定ファイル"
+```json class=config
 {
   "plugins": ["./plugin.js"],
   "rules": {
