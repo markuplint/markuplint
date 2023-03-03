@@ -7,9 +7,11 @@ import type {
 	MLASTTag,
 	MLASTText,
 } from '@markuplint/ml-ast';
+import type { ParserOptions } from 'parse5';
 import type { ElementLocation, Location } from 'parse5/dist/common/token';
 import type {
 	CommentNode,
+	DefaultTreeAdapterMap,
 	Document,
 	DocumentFragment,
 	Element,
@@ -32,7 +34,10 @@ type P5LocatableNode = (TextNode | Element | CommentNode) & TraversalNode;
 type P5Document = Document & TraversalNode;
 type P5Fragment = DocumentFragment & TraversalNode;
 
-const P5_OPTIONS = { sourceCodeLocationInfo: true };
+const P5_OPTIONS: ParserOptions<DefaultTreeAdapterMap> = {
+	scriptingEnabled: false,
+	sourceCodeLocationInfo: true,
+};
 
 export function createTree(
 	rawCode: string,
@@ -311,33 +316,8 @@ function nodeize(
  * getChildNodes
  *
  * - If node has "content" property then parse as document fragment.
- * - If node is <noscript> then that childNodes is a TextNode. But parse as document fragment it for disabled script.
  */
 function getChildNodes(rootNode: P5Node | P5Document | P5Fragment) {
-	if (rootNode.nodeName === 'noscript') {
-		const textNode = rootNode.childNodes[0];
-		if (!textNode || textNode.nodeName !== '#text') {
-			return [];
-		}
-		// @ts-ignore
-		const html: string = textNode.value;
-
-		// @ts-ignore
-		const { startOffset, startLine, startCol } = textNode.sourceCodeLocation;
-
-		const breakCount = startLine - 1;
-		const indentWidth = startCol - 1;
-		const offsetSpaces =
-			' '.repeat(startOffset - Math.max(breakCount, 0) - Math.max(indentWidth, 0)) +
-			'\n'.repeat(breakCount) +
-			' '.repeat(indentWidth);
-
-		const fragment = parseFragment(`${offsetSpaces}${html}`, P5_OPTIONS);
-		const childNodes = fragment.childNodes.slice(offsetSpaces ? 1 : 0);
-		// const childNodes = ('childNodes' in _childNodes && _childNodes.childNodes) || [];
-
-		return childNodes;
-	}
 	return rootNode.content ? rootNode.content.childNodes : rootNode.childNodes || [];
 }
 
