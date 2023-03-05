@@ -608,6 +608,28 @@ describe('parser', () => {
 		]);
 	});
 
+	/**
+	 * https://github.com/markuplint/markuplint/issues/737
+	 */
+	it('<noscript> (Issue: #737)', () => {
+		const doc = parse('<html><body><noscript>\r\n<div>text</div>\r\n</noscript></body></html>');
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:7](0,6)html: <html>',
+			'[N/A]>[N/A](N/A)head: ',
+			'[1:7]>[1:13](6,12)body: <body>',
+			'[1:13]>[1:23](12,22)noscript: <noscript>',
+			'[1:23]>[2:1](22,24)#text: ␣⏎',
+			'[2:1]>[2:6](24,29)div: <div>',
+			'[2:6]>[2:10](29,33)#text: text',
+			'[2:10]>[2:16](33,39)div: </div>',
+			'[2:16]>[3:1](39,41)#text: ␣⏎',
+			'[3:1]>[3:12](41,52)noscript: </noscript>',
+			'[3:12]>[3:19](52,59)body: </body>',
+			'[3:19]>[3:26](59,66)html: </html>',
+		]);
+	});
+
 	it('<form>', () => {
 		const doc = parse(`
 	<div>

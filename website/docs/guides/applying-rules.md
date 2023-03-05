@@ -8,7 +8,7 @@ Markuplint searches a [configuration file](/docs/configuration) automatically wh
 
 It need a [configuration file](/docs/configuration). You ready it then you add [rules](/docs/rules) needed to the `rules` property.
 
-```json
+```json class=config
 {
   "rules": {
     // Add to here
@@ -28,7 +28,7 @@ It's to be enabled if specified besides `false` as the value. So it's to be disa
 If you want the part of structures only to apply rules then set with [**selector**](./selectors) to `nodeRules` or `childNodeRules` property.
 `nodeRules` affect only the target element. And `childNodeRules` affect child (includes descendants if set to `inheritance`) elements of the target element.
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -76,7 +76,7 @@ Naturally, you can apply the [**custom rule**](./custom-rule) created by you or 
 
 It applies the rule when specifying its plugin name and rule name solidus separated.
 
-```json title="Configuration"
+```json class=config
 {
   "rules": {
     "[plugin-name]/[rule-name]": true
@@ -106,7 +106,7 @@ module.exports = createPlugin({
 });
 ```
 
-```json title="Configuration"
+```json class=config
 {
   "plugins": ["./plugin.js"],
   "rules": {

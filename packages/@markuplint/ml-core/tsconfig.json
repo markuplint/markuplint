@@ -22,6 +22,9 @@
 			"path": "../html-parser"
 		},
 		{
+			"path": "../html-spec"
+		},
+		{
 			"path": "../parser-utils"
 		},
 		{

@@ -43,7 +43,7 @@ const Component = (props) => {
 
 ## Configuration Example
 
-```json
+```json class=config
 {
   "rules": {
     "required-attr": "alt"
@@ -51,7 +51,7 @@ const Component = (props) => {
 }
 ```
 
-```json
+```json class=config
 {
   "rules": {
     "required-attr": ["alt", "src"]
@@ -59,7 +59,7 @@ const Component = (props) => {
 }
 ```
 
-```json
+```json class=config
 {
   "rules": {
     "required-attr": [
@@ -77,7 +77,7 @@ Since we ordinary want to configure required attributes for each element type, `
 
 Example configuration that `alt` attribute must be required on `<img>` element:
 
-```json
+```json class=config
 {
   "rules": {
     "required-attr": true

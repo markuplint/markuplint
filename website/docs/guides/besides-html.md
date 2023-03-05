@@ -1,6 +1,6 @@
 # Using to besides HTML
 
-You can also apply it to syntaxes **besides HTML** if using plugins together.
+You can also apply it to syntaxes **besides HTML** such as template engines or frameworks if using plugins together.
 
 ## Installing plugins
 
@@ -100,7 +100,7 @@ Specify a plugin to apply to the `parser` property on the [configuration file](/
 And If it has spec add to the `specs` property.
 Set a regular expression that can identify the target file name to the `parser` property key.
 
-```json title="Use React"
+```json class=config title="Use React"
 {
   "parser": {
     ".jsx$": "@markuplint/jsx-parser"
@@ -111,7 +111,7 @@ Set a regular expression that can identify the target file name to the `parser` 
 }
 ```
 
-```json title="Use Vue"
+```json class=config title="Use Vue"
 {
   "parser": {
     ".vue$": "@markuplint/vue-parser"
@@ -168,7 +168,7 @@ The **Pretenders** feature resolves that.
 
 It evaluates components as rendered HTML elements on each rule if you specify a [selector](./selectors) for a component and properties of an element that it exposes.
 
-```json
+```json class=config
 {
   "pretenders": [
     {

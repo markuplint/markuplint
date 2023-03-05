@@ -4,7 +4,7 @@ import path from 'path';
 import { resolveNamespace } from '@markuplint/ml-spec';
 import { getAttrSpecs } from '@markuplint/ml-spec/lib/specs/get-attr-specs';
 import Ajv, { type ValidateFunction } from 'ajv';
-import { sync as glob } from 'glob';
+import glob from 'glob';
 import strip from 'strip-json-comments';
 
 import htmlSpec, { specs } from '../index';
@@ -74,7 +74,7 @@ describe('schema', () => {
 
 	for (const [testName, validator, targetFiles] of map) {
 		test(testName, async () => {
-			const files = glob(targetFiles);
+			const files = await glob(targetFiles);
 			for (const jsonPath of files) {
 				const json = JSON.parse(strip(await readFile(jsonPath, { encoding: 'utf-8' })));
 				const isValid = validator(json);

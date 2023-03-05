@@ -56,7 +56,7 @@ description: WAI-ARIAおよびARIA in HTMLの仕様のとおりrole属性また�
 
 以下はSafariとVoiceOverの環境で、SVGを読み込んでいる`img`要素に`role="img"`が必要な場合に、`disallowSetImplicitRole`を無効化する例です。（この問題は[この課題](https://bugs.webkit.org/show_bug.cgi?id=145263)に基づいています）
 
-```json
+```json class=config
 {
   "rules": {
     "wai-aria": true

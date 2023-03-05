@@ -27,7 +27,7 @@ Warn if the class name does not conform to the specified rules.
 
 The BEM-like CSS structure:
 
-```json
+```json class=config
 {
   "rules": {
     // Enable class-naming rule to childNodeRules.

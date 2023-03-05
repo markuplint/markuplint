@@ -50,7 +50,7 @@ Suppose defining the following rule:
 
 Use [`class-naming`](/docs/rules/class-naming) rule with [`regexSelector`](/docs/configuration/properties#regexselector).
 
-```json
+```json class=config
 {
   "rules": {
     "class-naming": "/^[A-Z][a-z0-9]+$/"

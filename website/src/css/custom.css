@@ -22,15 +22,16 @@
   --ifm-color-primary-lightest: var(--ml-blue-lightest);
   --ifm-color-primary-lighter: #8bb9f5;
   --ifm-color-primary-light: #5096f0;
+
   /* Contrast AA (primary: 4.52, primary-dark: 5.36) */
   --ifm-color-primary: var(--ml-blue);
   --ifm-color-primary-dark: #1267d4;
+
   /* Contrast AAA (primary-darker: 7.1, primary-darkest: 11.29) */
   --ifm-color-primary-darker: #0f55b1;
   --ifm-color-primary-darkest: #0a3976;
   --ifm-link-color: var(--ifm-color-primary-darker);
   --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 10%);
-
   --ifm-code-font-size: 95%;
   --ifm-h2-font-size: 2rem;
   --ifm-h3-font-size: 1.5rem;
@@ -39,11 +40,13 @@
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
   /* Contrast AAA (primary: 8.63, lighter colors have higher values) */
+
   /* Additionally, primary has Lc-61.5 for the background color of #1b1b1d in APCA */
   --ifm-color-primary-lightest: #f5f9fe;
   --ifm-color-primary-lighter: #d2e4fb;
   --ifm-color-primary-light: #aecef8;
   --ifm-color-primary: #8bb9f5;
+
   /* Contrast AA (primary-dark: 6.82, primary-darker: 4.72) */
   --ifm-color-primary-dark: #68a4f2;
   --ifm-color-primary-darker: #3384ed;
@@ -73,6 +76,69 @@
   --code-color-purple-dark: hsl(300deg 100% 30%);
   --code-color-lime-light: hsl(100deg 40% 50%);
   --code-color-lime-dark: hsl(100deg 80% 25%);
+  --code-label-padding-block: 0.25rem;
+  --code-label-padding-right: 0.8em;
+  --code-label-icon-size: 1rem;
+  --code-label-background-height: calc(var(--code-label-icon-size) + var(--code-label-padding-block) * 2);
+
+  overflow: hidden;
+}
+
+.theme-code-block.config {
+  --code-background-color: hsl(214deg 70% 98%);
+  --code-label-color: var(--ifm-color-primary-darkest);
+  --code-label-background-color: var(--ifm-color-primary-lightest);
+  --code-label-image: url('/img/icon-gear.svg');
+}
+
+[data-theme='dark'] .theme-code-block.config {
+  --code-background-color: hsl(214deg 30% 13%);
+  --code-label-color: var(--ifm-color-primary-lightest);
+  --code-label-background-color: var(--ifm-color-primary-darkest);
+}
+
+.theme-code-block.config pre {
+  padding-top: var(--code-label-background-height);
+  background-color: var(--code-background-color);
+}
+
+.theme-code-block.config pre::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  min-height: var(--code-label-background-height);
+  padding: var(--code-label-padding-block) var(--code-label-padding-right) var(--code-label-padding-block)
+    calc(var(--code-label-icon-size) + 0.6em);
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.9em;
+  font-weight: bold;
+  line-height: 1;
+  color: var(--code-label-color);
+  content: 'Configuration';
+  background-color: var(--code-label-background-color);
+  border-bottom-right-radius: var(--code-label-padding-right) 100%;
+}
+
+.theme-code-block.config pre:lang(ja)::before {
+  content: '設定ファイル';
+}
+
+.theme-code-block.config pre::after {
+  position: absolute;
+  top: var(--code-label-padding-block);
+  left: var(--code-label-padding-block);
+  width: var(--code-label-icon-size);
+  height: var(--code-label-icon-size);
+  color: var(--code-label-color);
+  content: '';
+  background-color: currentColor;
+  mask-image: var(--code-label-image);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
 }
 
 .iconLink {
@@ -128,6 +194,18 @@
   --docsearch-searchbox-background: var(--ifm-navbar-background-color);
   --docsearch-muted-color: var(--ifm-color-content-secondary);
   --docsearch-hit-active-color: var(--ifm-color-content-inverse);
+}
+
+.DocSearch-Form {
+  --docsearch-searchbox-shadow: inset 0 0 0 1px var(--ifm-color-emphasis-300);
+}
+
+.DocSearch-Form:focus-within:not(:has(.DocSearch-Reset:focus-visible)) {
+  --docsearch-searchbox-shadow: inset 0 0 0 2px var(--docsearch-primary-color);
+}
+
+.DocSearch-Hit a {
+  outline-offset: -1px;
 }
 
 .DocSearch-Button {

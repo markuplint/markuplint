@@ -47,7 +47,7 @@ npx markuplint --create-rule
 
 最終的には、設定ファイルに指定して適用します。
 
-```json
+```json class=config
 {
   "plugins": ["./[dir-name]/index.js"], // ソースがTypeScriptの場合、別途トランスパイルが必要です。
   "rules": {
