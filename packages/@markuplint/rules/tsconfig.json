@@ -20,6 +20,9 @@
 			"path": "../html-spec"
 		},
 		{
+			"path": "../selector"
+		},
+		{
 			"path": "../types"
 		}
 	],
