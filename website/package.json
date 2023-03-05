@@ -36,6 +36,9 @@
     "stylelint-order": "^6.0.1",
     "typescript": "^4.7.4"
   },
+  "resolutions": {
+    "@docsearch/css": "^3.3.3"
+  },
   "engines": {
     "node": ">=16.14"
   }
