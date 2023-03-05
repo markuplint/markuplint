@@ -13,16 +13,7 @@
 			"options": {
 				"attrs": {
 					/**
-					 * Disallow `autofocus` attr
-					 *
-					 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations
-					 */
-					"autofocus": {
-						"disallowed": true
-					},
-
-					/**
-					 * Disallow `autofocus` attr
+					 * Disallow `accesskey` attr
 					 *
 					 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey#accessibility_concerns
 					 */
@@ -161,6 +152,27 @@
 				 * @see https://github.com/whatwg/html/issues/2272#issuecomment-1242415594
 				 */
 				"disallowed-element": [":model(interactive)"]
+			}
+		},
+		{
+			"selector": ":where(:not(dialog, dialog *))",
+			"rules": {
+				"invalid-attr": {
+					"options": {
+						"attrs": {
+							/**
+							 * Disallow `autofocus` attr to except in the dialog scope
+							 *
+							 * Don't take away a focus to forced. However,  the `dialog` element and its descendants allow it.
+							 *
+							 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations
+							 */
+							"autofocus": {
+								"disallowed": true
+							}
+						}
+					}
+				}
 			}
 		}
 	]

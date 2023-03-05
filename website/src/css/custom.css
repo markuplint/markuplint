@@ -38,9 +38,10 @@
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
-:root[data-theme='dark'] {
-  /* Contrast AAA (primary: 8.63, lighter colors have higher values)
-     Additionally, primary has Lc-61.5 for the background color of #1b1b1d in APCA */
+[data-theme='dark'] {
+  /* Contrast AAA (primary: 8.63, lighter colors have higher values) */
+
+  /* Additionally, primary has Lc-61.5 for the background color of #1b1b1d in APCA */
   --ifm-color-primary-lightest: #f5f9fe;
   --ifm-color-primary-lighter: #d2e4fb;
   --ifm-color-primary-light: #aecef8;
@@ -191,6 +192,18 @@
   --docsearch-searchbox-background: var(--ifm-navbar-background-color);
   --docsearch-muted-color: var(--ifm-color-content-secondary);
   --docsearch-hit-active-color: var(--ifm-color-content-inverse);
+}
+
+.DocSearch-Form {
+  --docsearch-searchbox-shadow: inset 0 0 0 1px var(--ifm-color-emphasis-300);
+}
+
+.DocSearch-Form:focus-within:not(:has(.DocSearch-Reset:focus-visible)) {
+  --docsearch-searchbox-shadow: inset 0 0 0 2px var(--docsearch-primary-color);
+}
+
+.DocSearch-Hit a {
+  outline-offset: -1px;
 }
 
 .DocSearch-Button {

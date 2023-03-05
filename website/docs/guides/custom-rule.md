@@ -24,14 +24,16 @@ And choose the languages, either **TypeScript** or **JavaScript**. Then decide w
 
 And then there are the below files created:
 
-```
-📂 [cwd]
-└── 📂 [dir-name]
-    ├── 📄 index.ts # or index.js
-    └── 📂 rules
-        ├── 📄 [rule-name].ts # or [rule-name].js
-        └── 📄 [rule-name].spec.ts # or [rule-name].spec.js [Optional]
-```
+<file-tree>
+
+- 📂 `[cwd]`
+  - 📂 `[dir-name]`
+    - 📄 `index.ts` # or `index.js`
+    - 📂 `rules`
+      - 📄 `[rule-name].ts` # or `[rule-name].js`
+      - 📄 `[rule-name].spec.ts` # or `[rule-name].spec.js` [Optional]
+
+</file-tree>
 
 :::info
 The **test** code is written in [**Jest**](https://jestjs.io/) format. Please rewrite it you need.
@@ -80,17 +82,19 @@ And choose the languages, either **TypeScript** or **JavaScript**. Then decide w
 
 Eventually, there are the below files created:
 
-```
-📂 [cwd]
-├── 📄 README.md
-├── 📄 package.json
-├── 📄 tsconfig.json # Only when chose TypeScript
-└── 📂 src
-    ├── 📄 index.ts # or index.js
-    └── 📂 rules
-        ├── 📄 [rule-name].ts # or [rule-name].js
-        └── 📄 [rule-name].spec.ts # or [rule-name].spec.js [Optional]
-```
+<file-tree>
+
+- 📂 `[cwd]`
+  - 📄 `README.md`
+  - 📄 `package.json`
+  - 📄 `tsconfig.json` # Only when chose TypeScript
+  - 📂 `src`
+    - 📄 `index.ts` # or `index.js`
+    - 📂 `rules`
+      - 📄 `[rule-name].ts` # or `[rule-name].js`
+      - 📄 `[rule-name].spec.ts` # or `[rule-name].spec.js` [Optional]
+
+</file-tree>
 
 ## How to basic evaluate
 

@@ -28,14 +28,16 @@ npx markuplint --create-rule
 
 すると、以下のファイルが作成されます。
 
-```
-📂 [cwd]
-└── 📂 [dir-name]
-    ├── 📄 index.ts # もしくは index.js
-    └── 📂 rules
-        ├── 📄 [rule-name].ts # もしくは [rule-name].js
-        └── 📄 [rule-name].spec.ts # もしくは [rule-name].spec.js （任意）
-```
+<file-tree>
+
+- 📂 `[cwd]`
+  - 📂 `[dir-name]`
+    - 📄 `index.ts` # もしくは `index.js`
+    - 📂 `rules`
+      - 📄 `[rule-name].ts` # もしくは `[rule-name].js`
+      - 📄 `[rule-name].spec.ts` # もしくは `[rule-name].spec.js` （任意）
+
+</file-tree>
 
 :::info
 
@@ -85,17 +87,19 @@ export default createPlugin({
 
 最終的に以下のファイルが作成されます。
 
-```
-📂 [cwd]
-├── 📄 README.md
-├── 📄 package.json
-├── 📄 tsconfig.json # TypeScriptを選択したときのみ
-└── 📂 src
-    ├── 📄 index.ts # もしくは index.js
-    └── 📂 rules
-        ├── 📄 [rule-name].ts # もしくは [rule-name].js
-        └── 📄 [rule-name].spec.ts # もしくは [rule-name].spec.js （任意）
-```
+<file-tree>
+
+- 📂 `[cwd]`
+  - 📄 `README.md`
+  - 📄 `package.json`
+  - 📄 `tsconfig.json` # TypeScriptを選択したときのみ
+  - 📂 `src`
+    - 📄 `index.ts` # もしくは `index.js`
+    - 📂 `rules`
+      - 📄 `[rule-name].ts` # もしくは `[rule-name].js`
+      - 📄 `[rule-name].spec.ts` # もしくは `[rule-name].spec.js` （任意）
+
+</file-tree>
 
 ## 基本的な評価方法
 

@@ -1,6 +1,6 @@
 # Using to besides HTML
 
-You can also apply it to syntaxes **besides HTML** if using plugins together.
+You can also apply it to syntaxes **besides HTML** such as template engines or frameworks if using plugins together.
 
 ## Installing plugins
 

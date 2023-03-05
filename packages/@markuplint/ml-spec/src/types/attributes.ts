@@ -1083,6 +1083,7 @@ export interface GlobalAttributes {
 				| 'onauxclick'
 				| 'onbeforeinput'
 				| 'onbeforematch'
+				| 'onbeforetoggle'
 				| 'onblur'
 				| 'oncancel'
 				| 'oncanplay'
