@@ -107,6 +107,8 @@
   top: 0;
   left: 0;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
   min-height: var(--code-label-background-height);
   padding: var(--code-label-padding-block) var(--code-label-padding-right) var(--code-label-padding-block)
     calc(var(--code-label-icon-size) + 0.6em);
