@@ -137,7 +137,7 @@
   --docsearch-searchbox-shadow: inset 0 0 0 1px var(--ifm-color-emphasis-300);
 }
 
-.DocSearch-Form:focus-within {
+.DocSearch-Form:focus-within:not(:has(.DocSearch-Reset:focus-visible)) {
   --docsearch-searchbox-shadow: inset 0 0 0 2px var(--docsearch-primary-color);
 }
 
