@@ -103,6 +103,7 @@
 				"newlines-between": "always"
 			}
 		],
+		"import/no-extraneous-dependencies": 2,
 
 		"sort-class-members/sort-class-members": [
 			1,
@@ -136,5 +137,13 @@
 				"project": ["packages/*/tsconfig.json"]
 			}
 		}
-	}
+	},
+	"overrides": [
+		{
+			"files": ["**/*.spec.ts"],
+			"rules": {
+				"import/no-extraneous-dependencies": 0
+			}
+		}
+	]
 }
