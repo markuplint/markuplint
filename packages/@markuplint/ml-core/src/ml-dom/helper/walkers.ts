@@ -40,6 +40,7 @@ export function sequentialWalker<T extends RuleConfigValue, O = null, N = MLNode
 	});
 
 	const loop = (index = 0) => {
+		// eslint-disable-next-line no-constant-condition
 		while (true) {
 			if (index >= list.length) {
 				_resolve();

@@ -24,6 +24,8 @@
 	},
 	"dependencies": {
 		"@markuplint/config-presets": "3.3.0",
+		"@markuplint/html-parser": "3.3.0",
+		"@markuplint/html-spec": "3.3.0",
 		"@markuplint/i18n": "3.3.0",
 		"@markuplint/ml-ast": "3.0.0",
 		"@markuplint/ml-config": "3.3.0",
