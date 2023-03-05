@@ -2,7 +2,7 @@
 
 設定は、以下のプロパティを持ちます。
 
-```json
+```json class=config
 {
   "extends": [],
   "plugins": {},
@@ -50,7 +50,7 @@ If you specify other config file [paths](#resolving-specified-paths), it merges 
 
 他の設定ファイルへの[パス](#resolving-specified-paths)を指定した場合、その設定をマージします。
 
-```json
+```json class=config
 {
   "extends": [
     // ローカルファイルとして読み込む
@@ -63,7 +63,7 @@ If you specify other config file [paths](#resolving-specified-paths), it merges 
 
 `markuplint:`というプレフィックスがついた名前は、Markuplintから提供された[**preset**](/docs/guides/presets)を読み込みます。
 
-```json
+```json class=config
 {
   "extends": ["markuplint:recommended"]
 }
@@ -71,7 +71,7 @@ If you specify other config file [paths](#resolving-specified-paths), it merges 
 
 `plugin:`というプレフィックスがついた名前は、プラグインから提供された設定を読み込みます。スラッシュの前はプラグインがもつ名前空間です。スラッシュの後ろは、そのプラグイン固有の設定名です。
 
-```json
+```json class=config
 {
   "extends": ["plugin:third-party-plugin-name/config-name"],
   "plugins": ["third-party-plugin"]
@@ -90,7 +90,7 @@ interface Config {
 
 任意のプラグインを読み込むことができます。パッケージ名または[パス](#resolving-specified-paths)を指定します。プラグインが設定をもつ場合は`settings`に指定できます。
 
-```json
+```json class=config
 {
   "plugins": [
     "third-party-plugin",
@@ -130,7 +130,7 @@ interface Config {
 
 キーに正規表現を、値に[パーサ](/docs/guides/besides-html#supported-syntaxes)のファイル[パス](#resolving-specified-paths)またはパッケージ名を指定します。正規表現は、対象ファイルにマッチするものを指定します（例は拡張子を示しています）。
 
-```json
+```json class=config
 {
   "parser": {
     "\\.pug$": "@markuplint/pug-parser",
@@ -154,7 +154,7 @@ interface Config {
 
 ### `parserOptions`
 
-```json
+```json class=config
 {
   "parserOptions": {
     "ignoreFrontMatter": true,
@@ -181,7 +181,7 @@ prop: value
 
 **React**や**Vue**などを使っている場合、Markuplintのパーサーはコンポーネントに小文字の名前を付けると、ネイティブのHTML要素として検出します。ほとんどの場合、コンポーネントは大文字から命名する必要がありますが、パーサプラグインごとに特定のパターンがあります（例：Vue: [Built-in Special Elements](https://vuejs.org/api/built-in-special-elements.html)）。もし、異なる命名パターンが必要な場合は、`authoredElementName`オプションを指定することで解決できます。デフォルトは`undefined`です。
 
-```json
+```json class=config
 {
   "parserOptions": {
     "authoredElementName": ["custom", "mine"]
@@ -211,7 +211,7 @@ interface Config {
 
 キーに正規表現を、値に[**スペック**](/docs/guides/besides-html#supported-syntaxes)ファイルの[パス](#resolving-specified-paths)またはパッケージ名を指定します。正規表現は、対象ファイルにマッチするものを指定します（例は拡張子を示しています）。
 
-```json
+```json class=config
 {
   "specs": {
     "\\.vue$": "@markuplint/vue-spec",
@@ -235,14 +235,14 @@ interface Config {
 
 配列または文字列で指定可能ですが、**非推奨**です。
 
-```json
+```json class=config
 {
   // 非推奨
   "specs": ["@markuplint/vue-spec", "./path/to/custom-specs/any-lang"]
 }
 ```
 
-```json
+```json class=config
 {
   // 非推奨
   "specs": "@markuplint/vue-spec"
@@ -255,7 +255,7 @@ interface Config {
 
 必要であれば、ファイルを除外できます。値は**設定ファイルからの相対パスか絶対パス**が必要です。パスはglob形式も可能です。
 
-```json
+```json class=config
 {
   "excludeFiles": ["./ignore.html", "./ignore/**/*.html"]
 }
@@ -275,7 +275,7 @@ interface Config {
 
 `false`を指定した場合、ルールは**無効**になります。`true`を指定すると、各ルールが持つ**デフォルト値**として適用されます。
 
-```json
+```json class=config
 {
   "rules": {
     "rule-name": "value" // ここにルール名と値を設定します
@@ -285,7 +285,7 @@ interface Config {
 
 もしくは、**Object**で詳細を指定します。
 
-```json
+```json class=config
 {
   "rules": {
     "rule-name": {
@@ -322,7 +322,7 @@ interface Config {
 
 ルール名はスラッシュを含む場合があります。その場合、そのルールがプラグインによるものであることを示します。スラッシュの前はプラグインがもつ名前空間です。スラッシュの後ろは、そのプラグイン固有の一意なルール名です。
 
-```json
+```json class=config
 {
   "plugins": ["third-party-plugin", "./path/to/local-plugin.js"],
   "rules": {
@@ -359,7 +359,7 @@ type Rule<T, O> =
 
 `selector`か`regexSelector`のどちらかが必要です。`rules`フィールドも必須です。[`rules`](#rules)プロパティと同じ値を指定します。
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -388,7 +388,7 @@ type Rule<T, O> =
 
 正規表現はスラッシュで挟む必要があります。そうでない場合は、単なる文字列として適用されます。
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -409,7 +409,7 @@ type Rule<T, O> =
 
 正規表現で文字列をキャプチャし、[`rules`](#rules)プロパティの値に展開する**強力な機能**を備えています。先頭に$マークを付けたキャプチャ番号を変数として展開します。値は[Mustache](https://mustache.github.io/)形式で指定します。
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -430,7 +430,7 @@ type Rule<T, O> =
 
 もちろん、**名前付きキャプチャグループ**を使うことも可能です。名前を変数として展開します。
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -451,7 +451,7 @@ type Rule<T, O> =
 
 **名前付きキャプチャ**の使用を推奨します。番号付きキャプチャは衝突して上書きされる可能性があります。
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -480,7 +480,7 @@ type Rule<T, O> =
 
 `combination`フィールドを使えば、複雑な条件でも要素を選択できます。
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -513,7 +513,7 @@ type Rule<T, O> =
 
 ノードは無制限に深く定義できます。
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -622,7 +622,7 @@ interface Config {
 
 **要素名**もしくは**要素のプロパティ**を受け取ります。必須です。
 
-```json title="要素名"
+```json class=config title="要素名"
 {
   "pretenders": [
     {
@@ -633,7 +633,7 @@ interface Config {
 }
 ```
 
-```json title="要素のプロパティ"
+```json class=config title="要素のプロパティ"
 {
   "pretenders": [
     {
@@ -667,7 +667,7 @@ const MyComponent = props => {
 };
 ```
 
-```json
+```json class=config
 {
   "pretenders": [
     {
@@ -698,7 +698,7 @@ const MyPicture = () => {
 };
 ```
 
-```json
+```json class=config
 {
   "pretenders": [
     {
@@ -753,7 +753,7 @@ const MyIcon = ({ label }) => {
 };
 ```
 
-```json
+```json class=config
 {
   "pretenders": [
     {
@@ -819,7 +819,7 @@ It applies to **glob format paths** specified to a key.
 
 `overrides`オプションを指定すると、特定のファイルに対して設定を上書きできます。キーに指定されたglob形式のパスに適用します。
 
-```json
+```json class=config
 {
   "rules": {
     "any-rule": true

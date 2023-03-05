@@ -46,7 +46,7 @@ const Component = (props) => {
 
 ## 設定例
 
-```json
+```json class=config
 {
   "rules": {
     "required-attr": "alt"
@@ -54,7 +54,7 @@ const Component = (props) => {
 }
 ```
 
-```json
+```json class=config
 {
   "rules": {
     "required-attr": ["alt", "width", "height"]
@@ -62,7 +62,7 @@ const Component = (props) => {
 }
 ```
 
-```json
+```json class=config
 {
   "rules": {
     "required-attr": [
@@ -80,7 +80,7 @@ const Component = (props) => {
 
 以下は `<img>` 要素上で `alt` 属性を必須とする設定例です。
 
-```json
+```json class=config
 {
   "rules": {
     "required-attr": true

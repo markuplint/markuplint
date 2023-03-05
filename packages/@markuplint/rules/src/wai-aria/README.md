@@ -56,7 +56,7 @@ Explains an example of when changes configs are necessary due to browser support
 Below is an example of disabling `disallowSetImplicitRole` when the `img` element loading SVG requires `role="img"` in Safari and VoiceOver environments.
 (This matter is based on [the issue](https://bugs.webkit.org/show_bug.cgi?id=145263).)
 
-```json
+```json class=config
 {
   "rules": {
     "wai-aria": true

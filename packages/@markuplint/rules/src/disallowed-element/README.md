@@ -35,7 +35,7 @@ Use [`permitted-contents`](../permitted-contents) rule if you expect to check co
 
 If specified to `rules`, It searches the element from a document.
 
-```json
+```json class=config
 {
   "rules": {
     "disallowed-element": ["hgroup"]
@@ -45,7 +45,7 @@ If specified to `rules`, It searches the element from a document.
 
 If specified to `nodeRules` or `childNodeRules`, It searches the element from child elements of the target element.
 
-```json
+```json class=config
 {
   "nodeRules": [
     {

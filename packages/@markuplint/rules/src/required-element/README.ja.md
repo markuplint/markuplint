@@ -41,7 +41,7 @@ h1要素が必要な場合は[`required-h1`](../required-h1/)ルールを使用�
 
 `rules`に指定すると、ドキュメント全体から要素を検索します。
 
-```json
+```json class=config
 {
   "rules": {
     "required-element": ["meta[charset=\"UTF-8\"]"]
@@ -51,7 +51,7 @@ h1要素が必要な場合は[`required-h1`](../required-h1/)ルールを使用�
 
 `nodeRules`または` childNodeRules`に指定されている場合、ターゲット要素の子要素から要素を検索します。
 
-```json
+```json class=config
 {
   "nodeRules": [
     {

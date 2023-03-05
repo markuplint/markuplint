@@ -150,7 +150,7 @@ const Component = (props) => {
 
 ### Open Graphプロトコル
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -176,7 +176,7 @@ const Component = (props) => {
 
 ### RDFa (RDFa lite)
 
-```json
+```json class=config
 {
   "rules": {
     "invalid-attr": {

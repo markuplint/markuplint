@@ -2,7 +2,7 @@
 
 The configuration has the following properties:
 
-```json
+```json class=config
 {
   "extends": [],
   "plugins": {},
@@ -51,7 +51,7 @@ If it is a relative path, the basis becomes the directory that has the configura
 
 If you specify other config file [paths](#resolving-specified-paths), it merges the current setting with them.
 
-```json
+```json class=config
 {
   "extends": [
     // load as a local file
@@ -64,7 +64,7 @@ If you specify other config file [paths](#resolving-specified-paths), it merges 
 
 The name added the prefix `markuplint:` loads a [**preset**](/docs/guides/presets) provided from Markuplint.
 
-```json
+```json class=config
 {
   "extends": ["markuplint:recommended"]
 }
@@ -74,7 +74,7 @@ The name added the prefix `plugin:` loads the config provided from any plugins.
 The before the solidus is a namespace determined by the plugin.
 The after the solidus is the unique config name on the plugin.
 
-```json
+```json class=config
 {
   "extends": ["plugin:third-party-plugin-name/config-name"],
   "plugins": ["third-party-plugin"]
@@ -95,7 +95,7 @@ You can load any plugins.
 Specify a package name or a [path](#resolving-specified-paths).
 Can specify `settings` if the plugin has it.
 
-```json
+```json class=config
 {
   "plugins": [
     "third-party-plugin",
@@ -136,7 +136,7 @@ interface Config {
 Specify a regex to the key, and the [**parser**](/docs/guides/besides-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
 The regex should be specify it matches the target file (ex., the extension part).
 
-```json
+```json class=config
 {
   "parser": {
     "\\.pug$": "@markuplint/pug-parser",
@@ -160,7 +160,7 @@ interface Config {
 
 ### `parserOptions`
 
-```json
+```json class=config
 {
   "parserOptions": {
     "ignoreFrontMatter": true,
@@ -189,7 +189,7 @@ If you use **React**, **Vue**, or more, Markuplint's parser detects a component 
 In most cases, components should start naming upper case, but each syntax parser plugin may has a specific pattern (Ex. Vue: [Built-in Special Elements](https://vuejs.org/api/built-in-special-elements.html)).
 If you need different naming patterns, You can specify the `authoredElementName` option to resolve. Default is `undefined`.
 
-```json
+```json class=config
 {
   "parserOptions": {
     "authoredElementName": ["custom", "mine"]
@@ -220,7 +220,7 @@ interface Config {
 Specify a regex to the key, and the [**spec**](/docs/guides/besides-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
 The regex should be specify it matches the target file (ex., the extension part).
 
-```json
+```json class=config
 {
   "specs": {
     "\\.vue$": "@markuplint/vue-spec",
@@ -244,14 +244,14 @@ interface Config {
 
 You can specify it as Array or string, but it's **deprecated**.
 
-```json
+```json class=config
 {
   // Deprecated
   "specs": ["@markuplint/vue-spec", "./path/to/custom-specs/any-lang"]
 }
 ```
 
-```json
+```json class=config
 {
   // Deprecated
   "specs": "@markuplint/vue-spec"
@@ -266,7 +266,7 @@ It can exclude files if you need them.
 The values require the **relative path from the configuration file** or the absolute path.
 Paths can be glob format.
 
-```json
+```json class=config
 {
   "excludeFiles": ["./ignore.html", "./ignore/**/*.html"]
 }
@@ -286,7 +286,7 @@ Configure to enable or specify details to [rules](/docs/guides/applying-rules). 
 
 The rule becomes **disabled** if specified as `false`. It applies as the **default value** each rule has if specified as `true`.
 
-```json
+```json class=config
 {
   "rules": {
     "rule-name": "value" // Specify the rule name and value to here
@@ -296,7 +296,7 @@ The rule becomes **disabled** if specified as `false`. It applies as the **defau
 
 Otherwise, you can specify details by **Object**:
 
-```json
+```json class=config
 {
   "rules": {
     "rule-name": {
@@ -336,7 +336,7 @@ In that case, it indicates the rule is from a plugin.
 The before the solidus is a namespace determined by the plugin.
 The after the solidus is the unique rule name on the plugin.
 
-```json
+```json class=config
 {
   "plugins": ["third-party-plugin", "./path/to/local-plugin.js"],
   "rules": {
@@ -374,7 +374,7 @@ Be careful to the value is an array.
 
 It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).　And it also requires `rules` field. It specifies the same value of the [`rules`](#rules) property.
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -404,7 +404,7 @@ So each of these enables to omit. It is AND condition if combine.
 
 The regular expression format must be nested by solidus. Otherwise, it is applied as just a string.
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -425,7 +425,7 @@ The regular expression format must be nested by solidus. Otherwise, it is applie
 
 It has a **powerful feature** that captures a string through regular expressions and expands it for the value of the [`rules`](#rules) property. It expands the capturing incremental number prepended `$` mark as a variable. It should specify the value in the [Mustache](https://mustache.github.io/) format.
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -447,7 +447,7 @@ It has a **powerful feature** that captures a string through regular expressions
 Of course, you can use the **named capture group**.
 It expands the name as a variable.
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -468,7 +468,7 @@ It expands the name as a variable.
 Recommend using **named capture**.
 The numbered capture may conflict and be overwritten.
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -496,7 +496,7 @@ The numbered capture may conflict and be overwritten.
 :::
 You can select the element in complex conditions if you use the `combination` field.
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -525,7 +525,7 @@ The above is the same as CSS selector `img:has(~ source)`.
 
 You can define nodes unlimitedly deeply.
 
-```json
+```json class=config
 {
   "nodeRules": [
     {
@@ -636,7 +636,7 @@ It accepts [**Selector**](/docs/guides/selectors) to matche the target component
 
 It accepts an **element name** or an **element with properties**. It's required.
 
-```json title="Element name"
+```json class=config title="Element name"
 {
   "pretenders": [
     {
@@ -647,7 +647,7 @@ It accepts an **element name** or an **element with properties**. It's required.
 }
 ```
 
-```json title="Element with properties"
+```json class=config title="Element with properties"
 {
   "pretenders": [
     {
@@ -683,7 +683,7 @@ const MyComponent = props => {
 };
 ```
 
-```json
+```json class=config
 {
   "pretenders": [
     {
@@ -714,7 +714,7 @@ const MyPicture = () => {
 };
 ```
 
-```json
+```json class=config
 {
   "pretenders": [
     {
@@ -771,7 +771,7 @@ const MyIcon = ({ label }) => {
 };
 ```
 
-```json
+```json class=config
 {
   "pretenders": [
     {
@@ -835,7 +835,7 @@ type OriginalNode = {
 You can override configurations to specific files if you specify the `overrides` option.
 It applies to **glob format paths** specified to a key.
 
-```json
+```json class=config
 {
   "rules": {
     "any-rule": true

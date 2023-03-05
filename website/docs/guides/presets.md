@@ -6,7 +6,7 @@ There are some presets. It recommends specifying these because rules need to ena
 
 Specify the `extends` property of the [configuration](/docs/configuration) like below:
 
-```json
+```json class=config
 {
   "extends": ["markuplint:recommended"]
 }
@@ -14,7 +14,7 @@ Specify the `extends` property of the [configuration](/docs/configuration) like 
 
 You can choose some **base presets** appropriately for your preference.
 
-```json
+```json class=config
 {
   "extends": ["markuplint:html-standard", "markuplint:a11y"]
 }

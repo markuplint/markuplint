@@ -32,7 +32,7 @@ Suppose defining the following rule:
 
 Use [`invalid-attr`](/docs/rules/invalid-attr) rule with [`regexSelector`](/docs/configuration/properties#regexselector).
 
-```json
+```json class=config
 {
   "rules": {
     "invalid-attr": true
