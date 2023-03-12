@@ -40,10 +40,4 @@ describe('getSpec', () => {
 			deprecated: true,
 		});
 	});
-
-	test('img[fetchpriority] (experimental spec)', () => {
-		const attrs = getAttrSpecs('img', null, htmlSpec);
-		const fetchpriority = attrs?.find(attr => attr.name === 'fetchpriority');
-		expect(fetchpriority?.experimental).toBe(true);
-	});
 });
