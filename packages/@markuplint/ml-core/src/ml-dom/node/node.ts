@@ -1,10 +1,10 @@
-import type { RuleInfo } from '../..';
 import type { MLBlock } from './block';
 import type { MLChildNode } from './child-node';
 import type { MLDocument } from './document';
 import type { MLDocumentFragment } from './document-fragment';
 import type { MLElement } from './element';
 import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types';
+import type { RuleInfo } from '../..';
 import type { MLASTAbstractNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
 import type { AnyRule, RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
 

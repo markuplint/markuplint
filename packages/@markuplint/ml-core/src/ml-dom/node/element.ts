@@ -2461,7 +2461,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-getelementsbyclassname
 	 */
-	getElementsByTagName(qualifiedName: string): ReturnType<typeof Element['prototype']['getElementsByTagName']> {
+	getElementsByTagName(qualifiedName: string): ReturnType<(typeof Element)['prototype']['getElementsByTagName']> {
 		return toHTMLCollection(
 			this._descendantsToArray<MLElement<T, O>>(node => {
 				if (node.is(node.ELEMENT_NODE) && node.nodeName.toLowerCase() === qualifiedName.toLowerCase()) {

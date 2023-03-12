@@ -47,7 +47,7 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 				const keys = new Set([
 					...Object.keys(result.def['#contentModels']),
 					...Object.keys(extendedSpec.def['#contentModels']),
-				]) as Set<keyof typeof result.def['#contentModels']>;
+				]) as Set<keyof (typeof result.def)['#contentModels']>;
 				for (const modelName of keys) {
 					const mainModel = result.def['#contentModels'][modelName];
 					const exModel = extendedSpec.def['#contentModels'][modelName];

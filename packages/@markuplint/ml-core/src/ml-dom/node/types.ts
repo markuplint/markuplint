@@ -1,4 +1,3 @@
-import type { MLToken } from '../token/token';
 import type { MLAttr } from './attr';
 import type { MLBlock } from './block';
 import type { MLComment } from './comment';
@@ -8,6 +7,7 @@ import type { MLDocumentType } from './document-type';
 import type { MLElement } from './element';
 import type { MLNode } from './node';
 import type { MLText } from './text';
+import type { MLToken } from '../token/token';
 import type {
 	MLASTAbstractNode,
 	MLASTAttr,

@@ -1,5 +1,5 @@
-import type { MLResultInfo } from '../types';
 import type { APIOptions } from './types';
+import type { MLResultInfo } from '../types';
 import type { Target } from '@markuplint/file-resolver';
 
 import { resolveFiles } from '@markuplint/file-resolver';
