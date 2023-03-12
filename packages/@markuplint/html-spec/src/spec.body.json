@@ -85,7 +85,13 @@
 		"permittedRoles": false,
 		"namingProhibited": true,
 		"properties": {
-			"global": true
+			"global": true,
+			"without": [
+				{
+					"name": "aria-hidden",
+					"type": "must-not"
+				}
+			]
 		},
 		"1.1": {
 			"implicitRole": false,
