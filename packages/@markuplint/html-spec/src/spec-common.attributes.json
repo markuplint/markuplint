@@ -30,7 +30,7 @@
 		// https://html.spec.whatwg.org/multipage/interaction.html#attr-contenteditable
 		"contenteditable": {
 			"type": {
-				"enum": ["", "true", "false"],
+				"enum": ["", "true", "false", "plaintext-only"],
 				"disallowToSurroundBySpaces": true,
 				"invalidValueDefault": "inherit",
 				"missingValueDefault": "inherit",

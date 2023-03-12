@@ -254,7 +254,7 @@
 				},
 				"contenteditable": {
 					"type": {
-						"enum": ["", "true", "false"],
+						"enum": ["", "true", "false", "plaintext-only"],
 						"disallowToSurroundBySpaces": true,
 						"invalidValueDefault": "inherit",
 						"missingValueDefault": "inherit",
