@@ -7,7 +7,7 @@
 [![GitHub Stars](https://img.shields.io/github/stars/markuplint.svg)](https://github.com/markuplint/markuplint)
 [![Follow us on Twitter](https://img.shields.io/twitter/follow/markuplint?label=Follow)](https://twitter.com/intent/user?screen_name=markuplint)
 
-**Peace of mind in your markup** - A linter for all markup developers.
+**Peace of mind in your markup** - An HTML linter for all markup developers.
 
 ## Features
 

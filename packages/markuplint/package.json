@@ -1,7 +1,7 @@
 {
 	"name": "markuplint",
 	"version": "3.4.0",
-	"description": "A linter for all markup developers",
+	"description": "An HTML linter for all markup developers",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
 	"private": false,

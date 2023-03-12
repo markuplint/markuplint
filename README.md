@@ -4,7 +4,7 @@
 [![Gitter](https://badges.gitter.im/markuplint/community.svg)](https://gitter.im/markuplint/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmarkuplint%2Fmarkuplint.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmarkuplint%2Fmarkuplint?ref=badge_shield)
 
-**Peace of mind in your markup** - A linter for all markup developers.
+**Peace of mind in your markup** - An HTML linter for all markup developers.
 
 ## Website
 
