@@ -6,8 +6,8 @@ import React from 'react';
 export default function Home(): JSX.Element {
   return (
     <Layout
-      title="Markuplint - A linter for all markup developers."
-      description="Peace of mind in your markup. A linter for all markup developers."
+      title="Markuplint - An HTML linter for all markup developers."
+      description="Peace of mind in your markup. An HTML linter for all markup developers."
     >
       <Hero getStarted="Get Started" rules="See rules" faq="Check FAQ" />
       <main>
