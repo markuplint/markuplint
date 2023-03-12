@@ -15,6 +15,12 @@ export default createRule({
 		let hasDynamicId = false;
 		let hasDynamicName = false;
 
+		const isMutable = document.nodeList.some(node => node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK));
+
+		if (isMutable) {
+			return;
+		}
+
 		document.querySelectorAll('[id]').forEach(el => {
 			const attr = el.getAttributeNode('id');
 			if (!attr) {

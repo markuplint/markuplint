@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { getFile } from './ml-file';
 import { resolveParser } from './resolve-parser';
 

@@ -25,7 +25,7 @@ export function resolveNamespace(name: string, namespaceURI: string | null = 'ht
 	}
 	const [_explicitNS, _localName] = name.split(':');
 	const explicitNS = _localName ? _explicitNS : null;
-	const localName = _localName ?? _explicitNS;
+	const localName = _localName ?? _explicitNS ?? '';
 	const namespace =
 		(['html', 'svg', 'mml', 'xlink'] as const).find(_ns => _ns === (explicitNS || getNS(namespaceURI || null))) ||
 		'html';

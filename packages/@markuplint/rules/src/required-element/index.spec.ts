@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { mlRuleTest } from 'markuplint';
 
 import rule from '.';

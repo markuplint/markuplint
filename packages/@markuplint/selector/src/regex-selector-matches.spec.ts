@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { regexSelectorMatches } from './regex-selector-matches';
 
 it('regexSelectorMatches', () => {

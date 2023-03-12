@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { exchangeValueOnRule, provideValue } from './utils';
 
 it('provideValue', () => {

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import specs from '@markuplint/html-spec';
 
 import { getRoleSpec } from './get-role-spec';

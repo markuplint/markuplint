@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { mlRuleTest } from 'markuplint';
 
 import rule from './';
@@ -201,4 +203,27 @@ test('fragment', async () => {
 			})
 		).violations,
 	).toStrictEqual([]);
+});
+
+describe('Issues', () => {
+	test('#748', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+	<main>
+		<?php foo() ?>
+		<a href="#foo">link</a>
+		<div id="foo"></div>
+	</main>`,
+					{
+						parser: {
+							'.*': '@markuplint/php-parser',
+						},
+					},
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
 });

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { parse } from './';
 
 describe('Tags', () => {

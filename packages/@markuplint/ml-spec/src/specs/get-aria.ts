@@ -28,6 +28,9 @@ export function getARIA(
 			continue;
 		}
 		const condARIA = conditions[cond];
+		if (!condARIA) {
+			continue;
+		}
 		implicitRole = condARIA.implicitRole ?? implicitRole;
 		permittedRoles = condARIA.permittedRoles ?? permittedRoles;
 		implicitProperties = condARIA.implicitProperties ?? implicitProperties;

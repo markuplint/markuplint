@@ -34,9 +34,9 @@ export default createRule<boolean, Options>({
 				message,
 				line: 1,
 				col: 1,
-				raw: document.nodeList[0].raw.slice(0, 1),
+				raw: document.nodeList[0]?.raw.slice(0, 1) ?? '',
 			});
-		} else if (document.rule.options['expected-once'] && h1Stack.length > 1) {
+		} else if (document.rule.options['expected-once'] && h1Stack.length > 1 && h1Stack[1]) {
 			const message = t('{0} is {1:c}', t('the "{0*}" {1}', 'h1', 'element'), 'duplicated');
 			report({
 				message,

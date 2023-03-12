@@ -34,7 +34,7 @@ function ariaPseudoClassParser(syntax: string): {
 	const version = _version === '1.1' ? '1.1' : '1.2';
 
 	return {
-		role: roleName.trim().toLowerCase(),
+		role: roleName?.trim().toLowerCase() ?? syntax.trim().toLowerCase(),
 		version,
 	};
 }

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { tokenizer } from './create-token';
 
 describe('tokenizer', () => {

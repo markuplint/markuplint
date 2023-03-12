@@ -51,6 +51,10 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 
 				const [num, sign, extra] = TokenCollection.fromPatterns(d, [/[0-9]+/, /./]);
 
+				if (!num) {
+					return;
+				}
+
 				log('Date part: "%s" => %O', d.value, { num, sign });
 
 				if (!num.match(/^[0-9]+$/)) {
@@ -147,6 +151,10 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 
 					const [num, dpfp, sign] = TokenCollection.fromPatterns(t, [/[0-9]+/, /(\.[0-9]*)?/, /[^0-9]+/]);
 
+					if (!num) {
+						continue;
+					}
+
 					log('Time part (h|m|s): "%s" => %O', t.value, { num, dpfp, sign });
 
 					if (!num.match(/^[0-9]+$/)) {
@@ -159,6 +167,10 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 
 					if (dpfp && dpfp.value) {
 						const [dp, fp] = TokenCollection.fromPatterns(dpfp, [/\./, /[0-9]+/]);
+
+						if (!dp) {
+							continue;
+						}
 
 						log('Second fractional part (h|m|s): "%s" => %O', dpfp.value, { dp, fp });
 

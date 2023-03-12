@@ -30,10 +30,11 @@ export default function parseRawTag(
 	let col = startCol + (startLine === 1 ? offsetColumn : 0);
 
 	const matches = raw.match(reTag);
-	if (!matches) {
+	const tagWithAttrs = matches?.[1];
+
+	if (!tagWithAttrs) {
 		throw new SyntaxError(`Invalid tag syntax: "${raw}"`);
 	}
-	const tagWithAttrs = matches[1];
 
 	// eslint-disable-next-line no-control-regex
 	const tagNameSplitted = tagWithAttrs.split(/[\u0000\u0009\u000A\u000C\u0020/>]/);
@@ -66,12 +67,12 @@ export default function parseRawTag(
 	}
 
 	const endTokens = reEndTokens.exec(raw);
-	const selfClosingSolidus = tokenizer(endTokens && endTokens[1], line, col, offset);
+	const selfClosingSolidus = tokenizer(endTokens?.[1] ?? '', line, col, offset);
 	line = selfClosingSolidus.endLine;
 	col = selfClosingSolidus.endCol;
 	offset = selfClosingSolidus.endOffset;
 
-	const endSpace = tokenizer(endTokens && endTokens[2], line, col, offset);
+	const endSpace = tokenizer(endTokens?.[2] ?? '', line, col, offset);
 
 	return {
 		tagName,

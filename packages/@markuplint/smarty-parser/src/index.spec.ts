@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 
 import { parse } from './';
@@ -140,5 +142,16 @@ describe('Tags', () => {
 
 	it('smarty-scriptlet', () => {
 		expect(parse('{ any }').nodeList[0].nodeName).toBe('#ps:smarty-scriptlet');
+	});
+});
+
+describe('Issues', () => {
+	test('#470', () => {
+		const ast = parse("<script>{literal}const obj = { foo: 'bar' };{/literal}</script>");
+		expect(nodeListToDebugMaps(ast.nodeList)).toStrictEqual([
+			'[1:1]>[1:9](0,8)script: <script>',
+			"[1:9]>[1:55](8,54)#ps:smarty-literal: {literal}const␣obj␣=␣{␣foo:␣'bar'␣};{/literal}",
+			'[1:55]>[1:64](54,63)script: </script>',
+		]);
 	});
 });

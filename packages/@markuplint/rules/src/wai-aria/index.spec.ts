@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { mlRuleTest } from 'markuplint';
 
 import rule from './';
@@ -355,6 +357,14 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				line: 1,
 				col: 32,
 				message:
+					'The "aria-checked" ARIA state must not use on the "input" element. Add the "checked" attribute if you use the ARIA state',
+				raw: 'aria-checked="true"',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message:
 					'The "aria-checked" ARIA state has the same semantics as the current "checked" attribute or the implicit "checked" attribute',
 				raw: 'aria-checked="true"',
 			},
@@ -365,6 +375,14 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 		const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="false" />');
 
 		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message:
+					'The "aria-checked" ARIA state must not use on the "input" element. Add the "checked" attribute if you use the ARIA state',
+				raw: 'aria-checked="false"',
+			},
 			{
 				severity: 'error',
 				line: 1,
@@ -383,6 +401,14 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				severity: 'error',
 				line: 1,
 				col: 24,
+				message:
+					'The "aria-checked" ARIA state must not use on the "input" element. Add the "checked" attribute if you use the ARIA state',
+				raw: 'aria-checked="true"',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 24,
 				message: 'The "aria-checked" ARIA state contradicts the implicit "checked" attribute',
 				raw: 'aria-checked="true"',
 			},
@@ -392,7 +418,16 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	test('check and aria-checked="mixed"', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="mixed" />');
 
-		expect(violations).toStrictEqual([]);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message:
+					'The "aria-checked" ARIA state must not use on the "input" element. Add the "checked" attribute if you use the ARIA state',
+				raw: 'aria-checked="mixed"',
+			},
+		]);
 	});
 
 	test('placeholder="type hints" and aria-placeholder="type hints"', async () => {
@@ -455,7 +490,16 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 			},
 		});
 
-		expect(violations).toStrictEqual([]);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message:
+					'The "aria-checked" ARIA state must not use on the "input" element. Add the "checked" attribute if you use the ARIA state',
+				raw: 'aria-checked="true"',
+			},
+		]);
 	});
 });
 
@@ -895,6 +939,36 @@ test('Booleanish', async () => {
 			raw: 'aria-hidden="invalid"',
 		},
 	]);
+});
+
+describe('Disallowed prop each element', () => {
+	test('disabled link', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="path/to" aria-disabled="true">disabled link</a>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 19,
+				message:
+					'The "aria-disabled" ARIA state is not recommended to use on the "a" element. Remove the "href" attribute if you use the ARIA state',
+				raw: 'aria-disabled="true"',
+			},
+		]);
+	});
+
+	// https://github.com/markuplint/markuplint/issues/745
+	test('#745 Updated spec', async () => {
+		const { violations } = await mlRuleTest(rule, '<html><body aria-hidden="true"></body></html>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 13,
+				message: 'The "aria-hidden" ARIA state must not use on the "body" element',
+				raw: 'aria-hidden="true"',
+			},
+		]);
+	});
 });
 
 describe('Issues', () => {

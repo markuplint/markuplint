@@ -20,7 +20,11 @@ export async function resolveParser(file: MLFile, parserConfig?: ParserConfig, p
 	if (parserConfig) {
 		for (const pattern of Object.keys(parserConfig)) {
 			if (path.basename(file.path).match(toRegexp(pattern))) {
-				parserModName = parserConfig[pattern];
+				const modName = parserConfig[pattern];
+				if (!modName) {
+					continue;
+				}
+				parserModName = modName;
 				matched = true;
 				break;
 			}

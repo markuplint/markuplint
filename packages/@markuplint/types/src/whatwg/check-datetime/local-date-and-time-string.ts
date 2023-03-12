@@ -135,6 +135,11 @@ export const checkNormalizedLocalDateAndTimeString: CustomSyntaxChecker = () =>
 		 */
 		const [, , , , , , , , , , second, , fp] = tokens;
 
+		if (!second || !fp) {
+			log('Failed: %O', res);
+			return res;
+		}
+
 		const _second = second.toNumber() || 0;
 		const _fp = fp.toNumber() || 0;
 

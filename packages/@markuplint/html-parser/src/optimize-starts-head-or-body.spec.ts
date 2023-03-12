@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { isStartsHeadTagOrBodyTag, optimizeStartsHeadTagOrBodyTagSetup } from './optimize-starts-head-or-body';
 
 test('isStartsHeadTagOrBodyTag', () => {

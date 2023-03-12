@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { MLASTElement, MLASTHTMLAttr, MLASTPreprocessorSpecificAttr } from '@markuplint/ml-ast';
 
 import { nodeListToDebugMaps } from '@markuplint/parser-utils';

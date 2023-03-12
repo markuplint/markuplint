@@ -127,8 +127,9 @@ export class TokenCollection extends Array<Token> {
 			}
 			const lastChar = last[0];
 			if (
+				lastChar &&
 				!separators.includes(char) &&
-				!separators.includes(last[0]) &&
+				!separators.includes(lastChar) &&
 				((Token.whitespace.includes(lastChar) && Token.whitespace.includes(char)) ||
 					(!Token.whitespace.includes(lastChar) && !Token.whitespace.includes(char)))
 			) {
@@ -413,6 +414,9 @@ export class TokenCollection extends Array<Token> {
 		const tokens = this.slice();
 		for (let i = 0; i < tokens.length; i++) {
 			const token = tokens[i];
+			if (!token) {
+				continue;
+			}
 			const expectedTokenNumber = tokenNumbers[i % tokenNumbers.length];
 			if (token.type !== expectedTokenNumber) {
 				return {

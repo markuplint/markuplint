@@ -93,7 +93,7 @@ export default createRule<Bullets, Options>({
 
 function isMayListItem(text: string, bullets: Bullets, spaceNeededBullets: string[]) {
 	const textArray = Array.from(text);
-	const firstLetter = textArray[0];
+	const firstLetter = textArray[0] ?? '';
 	const isBullet = bullets.includes(firstLetter);
 	const needSpace = spaceNeededBullets.includes(firstLetter);
 
@@ -102,7 +102,7 @@ function isMayListItem(text: string, bullets: Bullets, spaceNeededBullets: strin
 		return false;
 	}
 
-	if (isBullet && needSpace) {
+	if (isBullet && needSpace && text[1]) {
 		const secondLetter = text[1];
 		const isSpace = /^\s$/.test(secondLetter);
 		return isSpace;

@@ -149,7 +149,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 	// > just autofill detail tokens
 	// > (i.e. the "on" and "off" keywords are not allowed).
 	if (head.match(['on', 'off'], true)) {
-		if (tail.length) {
+		if (tail[0]) {
 			acLog('[Unmatched ("%s")] Unexpected pair with "on" or "off": "%s"', value, tail.value);
 			return tail[0].unmatched({
 				reason: 'extra-token',
@@ -278,7 +278,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 	}
 
 	if (head.match([...autofillFieldNames, ...contactableFieldNames], true)) {
-		if (tail.length) {
+		if (tail[0]) {
 			if (tail[0].match(webauthnFieldNames)) {
 				return matched();
 			}

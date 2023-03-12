@@ -22,7 +22,7 @@ export class Token {
 
 	static getCol(value: string, offset: number) {
 		const lines = value.slice(0, offset).split(/\n/g);
-		return lines[lines.length - 1].length + 1;
+		return (lines[lines.length - 1] ?? '').length + 1;
 	}
 
 	static getLine(value: string, offset: number) {
@@ -30,10 +30,10 @@ export class Token {
 	}
 
 	static getType(value: string, separators?: string[]) {
-		if (Token.whitespace.includes(value[0])) {
+		if (Token.whitespace.includes(value[0] ?? '')) {
 			return Token.WhiteSpace;
 		}
-		if (separators?.includes(value[0])) {
+		if (separators?.includes(value[0] ?? '')) {
 			switch (value[0]) {
 				case ',':
 					return Token.Comma;

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { CustomCssSyntax } from './types';
 
 import { cssSyntaxMatch } from './css-syntax';

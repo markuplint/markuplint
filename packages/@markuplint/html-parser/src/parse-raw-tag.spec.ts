@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import parseRawTag from './parse-raw-tag';
 
 test('tag only', () => {

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { isAbsURL } from './is-abs-url';
 
 const is = isAbsURL();

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { resolveNamespace } from './resolve-namespace';
 
 test('tag', () => {

@@ -40,11 +40,11 @@ export function attrTokenizer(attr: ASTAttribute, rawHtml: string, codeOffset: n
 		rawValue = '';
 		rawValueStart = name.endOffset;
 	} else if (isDynamicValue) {
-		rawValue = attr.value[0].expression.codeChunks.join('');
-		rawValueStart = attr.value[0].expression.start;
+		rawValue = attr.value[0]?.expression.codeChunks.join('') ?? '';
+		rawValueStart = attr.value[0]?.expression.start ?? name.endOffset;
 	} else {
-		rawValue = attr.value[0].raw;
-		rawValueStart = attr.value[0].start;
+		rawValue = attr.value[0]?.raw ?? '';
+		rawValueStart = attr.value[0]?.start ?? name.endOffset;
 	}
 
 	const value = createTokenFromRawCode(rawValue, rawValueStart + codeOffset, rawHtml);

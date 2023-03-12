@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { parseADatetime, getCandidateDatetimeString } from './utils';
 
 test('parseADatetime', () => {

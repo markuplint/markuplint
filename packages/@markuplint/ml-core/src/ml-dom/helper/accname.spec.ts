@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { MLElement } from '../node/element';
 
 import { parse } from '@markuplint/html-parser';

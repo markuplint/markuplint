@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { check } from './check';
 
 test('Any', () => {

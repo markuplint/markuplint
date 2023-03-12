@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { i18n } from './i18n';
 
 test('ja', async () => {

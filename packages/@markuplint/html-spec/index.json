@@ -148,7 +148,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/altGlyphDef",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/altGlyphItem",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animate",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateColor",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateMotion",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateTransform",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/circle",
@@ -254,7 +253,7 @@
 				},
 				"contenteditable": {
 					"type": {
-						"enum": ["", "true", "false"],
+						"enum": ["", "true", "false", "plaintext-only"],
 						"disallowToSurroundBySpaces": true,
 						"invalidValueDefault": "inherit",
 						"missingValueDefault": "inherit",
@@ -745,8 +744,7 @@
 						"enum": ["high", "low", "auto"],
 						"invalidValueDefault": "auto",
 						"missingValueDefault": "auto"
-					},
-					"experimental": true
+					}
 				}
 			},
 			"#HTMLEmbededAndMediaContentAttrs": {
@@ -23223,7 +23221,13 @@
 				"permittedRoles": false,
 				"namingProhibited": true,
 				"properties": {
-					"global": true
+					"global": true,
+					"without": [
+						{
+							"name": "aria-hidden",
+							"type": "must-not"
+						}
+					]
 				},
 				"1.1": {
 					"implicitRole": false,
@@ -23448,7 +23452,7 @@
 			},
 			"attributes": {
 				"autocomplete": {
-					"description": "This attribute on a <button> is nonstandard and Firefox-specific. Unlike other browsers, Firefox persists the dynamic disabled state of a <button> across page loads. Setting autocomplete=\"off\" on the button disables this feature; see bug 654072.",
+					"description": "This attribute on a <button> is nonstandard and Firefox-specific. Unlike other browsers, Firefox persists the dynamic disabled state of a <button> across page loads. Setting autocomplete=\"off\" on the button disables this feature; see Firefox bug 654072.",
 					"nonStandard": true
 				},
 				"autofocus": {
@@ -23478,14 +23482,16 @@
 				"name": {
 					"description": "The name of the button, submitted as a pair with the button's value as part of the form data, when that button is used to submit the form."
 				},
-				"popoverhidetarget": {
+				"popovertarget": {
 					"type": "DOMID"
 				},
-				"popovershowtarget": {
-					"type": "DOMID"
-				},
-				"popovertoggletarget": {
-					"type": "DOMID"
+				"popovertargetaction": {
+					"type": {
+						"enum": ["toggle", "show", "hide"],
+						"disallowToSurroundBySpaces": true,
+						"invalidValueDefault": "toggle",
+						"missingValueDefault": "toggle"
+					}
 				},
 				"type": {
 					"type": {
@@ -25011,10 +25017,6 @@
 					"description": "A Content Security Policy enforced for the embedded resource. See HTMLIFrameElement.csp for details.",
 					"experimental": true
 				},
-				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching the iframe document. Allowed values: high Signals a high-priority fetch relative to other iframe documents. low Signals a low-priority fetch relative to other iframe documents. auto Default: Signals automatic determination of fetch priority relative to other iframe documents.",
-					"experimental": true
-				},
 				"frameborder": {
 					"description": "The value 1 (the default) draws a border around this frame. The value 0 removes the border around this frame, but you should instead use the CSS property border to control <iframe> borders.",
 					"deprecated": true
@@ -25926,16 +25928,17 @@
 						"[type='number' i]"
 					]
 				},
-				"popoverhidetarget": {
+				"popovertarget": {
 					"type": "DOMID",
 					"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
 				},
-				"popovershowtarget": {
-					"type": "DOMID",
-					"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
-				},
-				"popovertoggletarget": {
-					"type": "DOMID",
+				"popovertargetaction": {
+					"type": {
+						"enum": ["toggle", "show", "hide"],
+						"disallowToSurroundBySpaces": true,
+						"invalidValueDefault": "toggle",
+						"missingValueDefault": "toggle"
+					},
 					"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
 				},
 				"readonly": {
@@ -28513,7 +28516,7 @@
 					"deprecated": true
 				},
 				"align": {
-					"description": "This enumerated attribute specifies how the cell content's horizontal alignment will be handled. Possible values are: left: The content is aligned to the left of the cell. center: The content is centered in the cell. right: The content is aligned to the right of the cell. justify (with text only): The content is stretched out inside the cell so that it covers its entire width. char (with text only): The content is aligned to a character inside the <th> element with minimal offset. This character is defined by the char and charoff attributes Unimplemented (see bug 2212). The default value when this attribute is not specified is left. Note: To achieve the same effect as the left, center, right or justify values, apply the CSS text-align property to the element. To achieve the same effect as the char value, give the text-align property the same value you would use for the char. Unimplemented in CSS.",
+					"description": "This enumerated attribute specifies how the cell content's horizontal alignment will be handled. Possible values are: left: The content is aligned to the left of the cell. center: The content is centered in the cell. right: The content is aligned to the right of the cell. justify (with text only): The content is stretched out inside the cell so that it covers its entire width. char (with text only): The content is aligned to a character inside the <th> element with minimal offset. This character is defined by the char and charoff attributes. The default value when this attribute is not specified is left. Note: To achieve the same effect as the left, center, right or justify values, apply the CSS text-align property to the element. To achieve the same effect as the char value, give the text-align property the same value you would use for the char.",
 					"deprecated": true
 				},
 				"axis": {
@@ -28702,7 +28705,7 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Note: To achieve the same effect as the left, center, right or justify values, use the CSS text-align property on it. To achieve the same effect as the char value, in CSS, you can use the value of the char as the value of the text-align property Unimplemented.",
+					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Note: To achieve the same effect as the left, center, right or justify values, use the CSS text-align property on it. To achieve the same effect as the char value, in CSS, you can use the value of the char as the value of the text-align property.",
 					"deprecated": true
 				},
 				"bgcolor": {
@@ -29659,24 +29662,6 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {}
-		},
-		{
-			"name": "svg:animateColor",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The SVG <animate> element provides a way to animate an attribute of an element over time.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
@@ -33562,7 +33547,7 @@
 			"name": "svg:marker",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/marker",
-			"description": "The <marker> element defines the graphic that is to be used for drawing arrowheads or polymarkers on a given <path>, <line>, <polyline> or <polygon> element.",
+			"description": "The <marker> element defines a graphic used for drawing arrowheads or polymarkers on a given <path>, <line>, <polyline> or <polygon> element.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -35848,7 +35833,7 @@
 			"name": "svg:use",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use",
-			"description": "The <use> element takes nodes from within the SVG document, and duplicates them somewhere else.",
+			"description": "The <use> element takes nodes from within the SVG document, and duplicates them somewhere else. The effect is the same as if the nodes were deeply cloned into a non-exposed DOM, then pasted where the use element is, much like cloned template elements.",
 			"categories": [],
 			"contentModel": {
 				"contents": [

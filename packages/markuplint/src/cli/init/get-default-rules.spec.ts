@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { getDefaultRules } from './get-default-rules';
 
 test('v3.0.0', async () => {

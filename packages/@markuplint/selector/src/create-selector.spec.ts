@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import specs from '@markuplint/html-spec';
 import { createJSDOMElement } from '@markuplint/test-tools';
 

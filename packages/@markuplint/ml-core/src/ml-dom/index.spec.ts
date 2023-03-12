@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { MLElement } from './node/element';
 
 import { createRule } from '../ml-rule/create-test-rule';

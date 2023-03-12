@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { ignoreFrontMatter } from './ignore-front-matter';
 
 describe('ignoreFrontMatter', () => {
