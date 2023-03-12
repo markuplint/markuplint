@@ -745,8 +745,7 @@
 						"enum": ["high", "low", "auto"],
 						"invalidValueDefault": "auto",
 						"missingValueDefault": "auto"
-					},
-					"experimental": true
+					}
 				}
 			},
 			"#HTMLEmbededAndMediaContentAttrs": {
@@ -25017,10 +25016,6 @@
 				},
 				"csp": {
 					"description": "A Content Security Policy enforced for the embedded resource. See HTMLIFrameElement.csp for details.",
-					"experimental": true
-				},
-				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching the iframe document. Allowed values: high Signals a high-priority fetch relative to other iframe documents. low Signals a low-priority fetch relative to other iframe documents. auto Default: Signals automatic determination of fetch priority relative to other iframe documents.",
 					"experimental": true
 				},
 				"frameborder": {

@@ -636,14 +636,13 @@
 				}
 			}
 		},
-		// https://wicg.github.io/priority-hints/#solution
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-fetchpriority
 		"fetchpriority": {
 			"type": {
 				"enum": ["high", "low", "auto"],
 				"invalidValueDefault": "auto",
 				"missingValueDefault": "auto"
-			},
-			"experimental": true
+			}
 		}
 	},
 	"#HTMLEmbededAndMediaContentAttrs": {
