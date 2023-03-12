@@ -20,7 +20,9 @@ export default function Hero(props: Props) {
         <div className={styles.heroBody}>
           <h1 className={styles.heroSubtitle}>
             <span className={styles.tagline}>{props.tagLine ?? siteConfig.tagline}</span>{' '}
-            <span className={styles.description}>{props.description ?? 'A linter for all markup developers'}</span>
+            <span className={styles.description}>
+              {props.description ?? 'An HTML linter for all markup developers'}
+            </span>
           </h1>
           <div className={styles.buttons}>
             <Link className="button button--primary button--lg" to="/docs/guides/">

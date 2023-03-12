@@ -6,12 +6,12 @@ import React from 'react';
 export default function Home(): JSX.Element {
   return (
     <Layout
-      title="Markuplint - すべてのマークアップ開発者のためのリンター"
-      description="あなたのマークアップに安寧を。すべてのマークアップ開発者のためのリンター。"
+      title="Markuplint - すべてのマークアップ開発者のためのHTMLリンター"
+      description="あなたのマークアップに安寧を。すべてのマークアップ開発者のためのHTMLリンター。"
     >
       <Hero
         tagLine="あなたのマークアップに安寧を"
-        description="すべてのマークアップ開発者のためのリンター"
+        description="すべてのマークアップ開発者のためのHTMLリンター"
         getStarted="はじめる"
         rules="ルールを見る"
         faq="よくある質問を確認する"
