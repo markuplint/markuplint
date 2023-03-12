@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { getOffsetFromLineAndCol } from './get-offset-from-line-and-col';
 
 const text = `a

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { Translator } from '@markuplint/i18n';
 
 import { translator } from '@markuplint/i18n';

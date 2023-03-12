@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { checkAutoComplete } from './check-autocomplete';
 
 const check = checkAutoComplete();

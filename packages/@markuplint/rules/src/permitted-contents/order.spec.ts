@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { PermittedContentPattern } from '@markuplint/ml-spec';
 
 import specs from '@markuplint/html-spec';

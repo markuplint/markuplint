@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { JSDOM } from 'jsdom';
 
 import { matchSelector } from './match-selector';

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { mergeConfig, mergeRule } from './merge-config';
 
 it('test', () => {

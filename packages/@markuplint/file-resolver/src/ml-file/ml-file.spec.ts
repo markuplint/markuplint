@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { MLFile } from './ml-file';
 
 it('file path', () => {

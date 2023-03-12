@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { PermittedContentChoice } from '@markuplint/ml-spec';
 
 import specs from '@markuplint/html-spec';

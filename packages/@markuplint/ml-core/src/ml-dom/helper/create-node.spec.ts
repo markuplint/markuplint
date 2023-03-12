@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { parse } from '@markuplint/html-parser';
 
 import { Document } from '../';

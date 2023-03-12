@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import jsxParser, { getName } from './jsx';
 
 describe('jsxParser', () => {

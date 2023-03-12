@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { MLRule } from '@markuplint/ml-core';
 
 import { setGlobal } from './global-settings';

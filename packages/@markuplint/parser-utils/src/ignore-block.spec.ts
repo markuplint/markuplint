@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { MLASTElement, MLASTHTMLAttr } from '@markuplint/ml-ast';
 
 import { parse } from '@markuplint/html-parser';

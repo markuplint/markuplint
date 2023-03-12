@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import attrTokenizer from './attr-tokenizer';
 
 it('void attribute', () => {

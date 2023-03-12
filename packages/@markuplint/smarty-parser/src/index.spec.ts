@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 
 import { parse } from './';

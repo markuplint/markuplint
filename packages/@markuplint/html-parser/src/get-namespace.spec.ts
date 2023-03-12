@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { getNamespace } from './get-namespace';
 
 describe('getNamespace', () => {

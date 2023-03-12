@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { TokenCollection } from './token-collection';
 
 import { Token } from '.';

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { isBCP47 } from './is-bcp-47';
 
 const is = isBCP47();

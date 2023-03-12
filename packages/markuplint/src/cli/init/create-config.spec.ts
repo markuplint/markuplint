@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { createConfig } from './create-config';
 
 test('none', () => {

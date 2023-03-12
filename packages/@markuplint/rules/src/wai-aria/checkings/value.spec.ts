@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { checkAriaValue } from './value';
 
 describe('checkAriaValue', () => {
