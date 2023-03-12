@@ -1,27 +1,10 @@
 import type { CustomCssSyntax, CssSyntaxTokenizer, CSSSyntaxToken, GetNextToken, Result, CssSyntax } from './types';
 
-import csstree from 'css-tree';
+import { fork } from 'css-tree';
 
 import { log } from './debug';
 import { tokenizers } from './defs';
 import { matched } from './match-result';
-
-interface SyntaxMatchError {
-	message: string;
-	rawMessage: 'Mismatch';
-	syntax: string;
-	css: string;
-	mismatchOffset: number;
-	mismatchLength: number;
-	offset: number;
-	line: number;
-	column: number;
-	loc: {
-		source: '<unknown>';
-		start: { offset: number; line: number; column: number };
-		end: { offset: number; line: number; column: number };
-	};
-}
 
 const MIMIC_TAG_L = 'mimiccases---';
 const MIMIC_TAG_R = '---mimiccases';
@@ -74,13 +57,14 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	}
 
 	// @ts-ignore
-	const lexer = csstree.fork({
+	const lexer = fork({
 		types: typesExtended,
 		properties: propsExtended,
 	}).lexer;
 
 	Object.keys(typesCheckers).forEach(key => {
 		const checker = typesCheckers[key];
+		// @ts-ignore
 		lexer.addType_(key, (token: CSSSyntaxToken, getNextToken: GetNextToken) =>
 			checker?.(token, getNextToken, cssSyntaxMatch),
 		);
@@ -88,6 +72,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 
 	const { isProp, name } = detectName(defName);
 
+	// @ts-ignore
 	const matcher = isProp ? lexer.properties[name] : lexer.types[name];
 	if (!matcher) {
 		log('"%s" CSS syntax not found', defName);
@@ -111,14 +96,15 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	// eslint-disable-next-line no-console
 	console.warn = _w;
 
-	if (result.matched) {
-		if (log.enabled) {
-			log('css-tree/result.matched: %s', JSON.stringify(result.matched, null, 2));
-		}
+	if (!result.error) {
 		return matched();
 	}
 
-	const error: SyntaxMatchError = result.error;
+	if (!('css' in result.error)) {
+		throw result.error;
+	}
+
+	const error = result.error;
 
 	if (caseSensitive) {
 		const offset = error.mismatchOffset % MIMIC_LENGTH;

@@ -11,6 +11,7 @@ export * from './dom-traverse/is-exposed';
 export * from './dom-traverse/may-be-focusable';
 export * from './specs/aria-specs';
 export * from './specs/content-model-category-to-tag-names';
+export * from './specs/get-aria';
 export * from './specs/get-role-spec';
 export * from './specs/get-spec-by-tag-name';
 export * from './specs/is-nothing-content-model';

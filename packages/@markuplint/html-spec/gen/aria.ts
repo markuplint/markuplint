@@ -146,7 +146,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		roles[noneRoleIndex] = {
 			...presentationRole,
 			name: 'none',
-			description: roles[noneRoleIndex].description,
+			description: roles[noneRoleIndex]?.description,
 		};
 	}
 
@@ -278,9 +278,13 @@ async function getAriaInHtml() {
 		}
 		const implicitProp = $($implicitProp).find('td:nth-of-type(1) code').eq(0).text();
 		const [name, _value] = implicitProp.split('=');
-		const value = _value.replace(/"|'/g, '').trim();
+		if (!name) {
+			continue;
+		}
+
+		const value = _value?.replace(/"|'/g, '').trim() || null;
 		const data = {
-			name,
+			name: name,
 			value: value === '...' ? null : value,
 			htmlAttrName,
 		};
