@@ -6,6 +6,11 @@ import { ignoreBlock, restoreNode } from '@markuplint/parser-utils';
 export const parse: Parse = rawCode => {
 	const blocks = ignoreBlock(rawCode, [
 		{
+			type: 'smarty-literal',
+			start: /{literal}/,
+			end: /{\/literal}/,
+		},
+		{
 			type: 'smarty-comment',
 			start: /{\*/,
 			end: /\*}/,
