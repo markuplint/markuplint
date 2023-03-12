@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { checkMIMEType } from './check-mime-type';
 
 const check = checkMIMEType();

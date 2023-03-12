@@ -97,17 +97,19 @@ export default createRule<RequiredAttributes>({
 						const expects = spec.values.length === 1 ? t(spec.values) : t('either {0}', t(spec.values));
 						const message = t('{0} expects {1}', t('the "{0*}" {1}', spec.name, 'attribute'), expects);
 						const attrToken = el.getAttributeToken(spec.name);
-						const valueToken = attrToken[0].valueNode;
+						const valueToken = attrToken[0]?.valueNode;
 						const token = valueToken || attrToken[0];
-						report({
-							scope: {
-								rule: el.rule,
-								raw: token.raw,
-								startCol: token.startCol,
-								startLine: token.startLine,
-							},
-							message,
-						});
+						if (token) {
+							report({
+								scope: {
+									rule: el.rule,
+									raw: token.raw,
+									startCol: token.startCol,
+									startLine: token.startLine,
+								},
+								message,
+							});
+						}
 					}
 				}
 			}

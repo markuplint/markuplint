@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Ruleset } from '@markuplint/ml-core';
 
 import { autoLoadRules } from './auto-load-rules';

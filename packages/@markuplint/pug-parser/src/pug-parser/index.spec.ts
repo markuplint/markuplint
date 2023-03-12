@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { pugParse } from '.';
 
 describe('parser', () => {

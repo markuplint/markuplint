@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import specs, { specs as elements } from '@markuplint/html-spec';
 import { createTestElement } from '@markuplint/ml-core';
 import { getContentModel } from '@markuplint/ml-spec';

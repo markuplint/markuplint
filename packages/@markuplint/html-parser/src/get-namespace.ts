@@ -28,7 +28,7 @@ export function getNamespace(tagName: string, parentNamespace: string = DEFAULT_
 		const doc = parse(tag);
 		node = doc.childNodes[0];
 	}
-	if ('namespaceURI' in node) {
+	if (node && 'namespaceURI' in node) {
 		return node.namespaceURI as NamespaceURI;
 	}
 	return DEFAULT_NAMESPACE;

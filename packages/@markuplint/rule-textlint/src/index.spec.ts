@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import path from 'path';
 
 import { mlTest, mlTestFile } from 'markuplint';

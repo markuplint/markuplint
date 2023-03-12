@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { TransparentModel } from './types';
 
 import specs from '@markuplint/html-spec';

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { SelectorMatchedResult } from './types';
 
 import { JSDOM } from 'jsdom';

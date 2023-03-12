@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { taggedTemplateTranslator, translator } from './translator';
 
 const ja = {

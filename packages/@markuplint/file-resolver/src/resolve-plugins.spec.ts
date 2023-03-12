@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import path from 'path';
 
 import { resolvePlugins } from './resolve-plugins';

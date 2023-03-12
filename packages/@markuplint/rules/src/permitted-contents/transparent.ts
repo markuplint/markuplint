@@ -5,7 +5,7 @@ import { cmLog } from './debug';
 const transparentLog = cmLog.extend('transparent');
 
 export function transparent(nodes: ChildNode[], specs: Specs, options: Options, depth: number): Result {
-	if (nodes.length === 0 || nodes[0].parentElement?.parentElement) {
+	if (nodes.length === 0 || nodes[0]?.parentElement?.parentElement) {
 		transparentLog('Skipped');
 		return {
 			type: nodes.length === 0 ? 'MATCHED_ZERO' : 'MATCHED',

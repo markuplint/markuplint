@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { isDocumentFragment } from '../lib';
 
 import { createTree } from './create-tree';

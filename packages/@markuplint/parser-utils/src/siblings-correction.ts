@@ -11,6 +11,9 @@ export function siblingsCorrection(nodeList: MLASTNode[]) {
 	for (let i = 0; i < nodeList.length; i++) {
 		const prevNode = nodeList[i - 1] || null;
 		const node = nodeList[i];
+		if (!node) {
+			continue;
+		}
 		const nextNode = nodeList[i + 1] || null;
 		node.prevNode = prevNode;
 		node.nextNode = nextNode;

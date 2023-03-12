@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { isInt, isUint, isFloat, isNonZeroUint, isQuantity } from '.';
 
 test('int', () => {

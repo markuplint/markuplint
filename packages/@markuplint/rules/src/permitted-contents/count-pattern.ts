@@ -227,9 +227,10 @@ function compereResult(a: Result, b: Result | null): Result {
 		return a;
 	}
 
-	const result = [a, b].sort(
-		(a, b) => (b.hint.missing?.barelyMatchedElements ?? 0) - (a.hint.missing?.barelyMatchedElements ?? 0),
-	)[0];
+	const result =
+		[a, b].sort(
+			(a, b) => (b.hint.missing?.barelyMatchedElements ?? 0) - (a.hint.missing?.barelyMatchedElements ?? 0),
+		)[0] ?? a;
 
 	return result;
 }

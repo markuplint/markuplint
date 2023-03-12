@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { selectModules } from './install-module';
 
 test('selectModules', () => {

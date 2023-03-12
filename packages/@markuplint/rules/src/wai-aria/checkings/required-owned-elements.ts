@@ -112,7 +112,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 					'{0}. Or, {1}',
 					t(
 						'require {0}',
-						role.requiredOwnedElements.length === 1
+						role.requiredOwnedElements.length === 1 && role.requiredOwnedElements[0]
 							? t('the "{0*}" {1}', role.requiredOwnedElements[0], 'role')
 							: t('the {0}', 'roles') + `: ${t(role.requiredOwnedElements)}`,
 					),
@@ -126,7 +126,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			message: t(
 				'{0} expects {1}',
 				t('the "{0*}" {1}', role.name, 'role'),
-				role.requiredOwnedElements.length === 1
+				role.requiredOwnedElements.length === 1 && role.requiredOwnedElements[0]
 					? t('the "{0*}" {1}', role.requiredOwnedElements[0], 'role')
 					: t('the {0}', 'roles') + `: ${t(role.requiredOwnedElements)}`,
 			),

@@ -127,7 +127,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 	}
 
 	private _pick(token: string, _offset = 0): (Scope & { _searchedIndex: number }) | null {
-		token = token.trim().split(/\s+/g)[0];
+		token = token.trim().split(/\s+/g)[0] ?? '';
 		if (!token) {
 			return null;
 		}

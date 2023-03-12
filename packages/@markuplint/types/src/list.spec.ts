@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { checkList } from './list';
 
 test('Zero space', () => {

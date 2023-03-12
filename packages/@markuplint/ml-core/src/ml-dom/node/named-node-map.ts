@@ -19,7 +19,7 @@ export class MLNamedNodeMap<T extends RuleConfigValue, O = null> extends Array<M
 	}
 
 	item(index: number): MLAttr<T, O> | null {
-		return this[index];
+		return this[index] ?? null;
 	}
 
 	/**

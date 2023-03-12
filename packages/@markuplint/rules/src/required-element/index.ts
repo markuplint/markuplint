@@ -20,7 +20,7 @@ export default createRule<string[], Options>({
 						message,
 						line: 1,
 						col: 1,
-						raw: document.nodeList[0].raw.slice(0, 1),
+						raw: document.nodeList[0]?.raw.slice(0, 1) ?? '',
 					});
 				}
 			}

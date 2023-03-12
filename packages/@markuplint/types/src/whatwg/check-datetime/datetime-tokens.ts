@@ -160,7 +160,7 @@ export const datetimeTokenCheck: Record<
 		const year = this._year || 2000;
 		const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 		const month = this._month || 1;
-		const dayOfMonth = daysOfMonth[month] + (month === 2 && isLeap ? 1 : 0);
+		const dayOfMonth = (daysOfMonth[month] ?? 0) + (month === 2 && isLeap ? 1 : 0);
 		const _date = date.toNumber();
 
 		log('Temporary Year and Month: %s, %s', this._year, this._month);
@@ -582,7 +582,7 @@ const daysOfMonth = [
 	30,
 	// 12
 	31,
-];
+] as const;
 
 export function getMaxWeekNum(year: number) {
 	let date = 31;

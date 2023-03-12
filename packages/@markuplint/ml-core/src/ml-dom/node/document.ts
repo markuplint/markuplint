@@ -2368,6 +2368,10 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 		// global rules to #document
 		Object.keys(ruleset.rules).forEach(ruleName => {
 			const rule = ruleset.rules[ruleName];
+			if (rule == null) {
+				return;
+			}
+
 			ruleMapper.set(this, ruleName, {
 				from: 'rules',
 				specificity: [0, 0, 0],
@@ -2384,6 +2388,10 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 			// global rules to each element
 			Object.keys(ruleset.rules).forEach(ruleName => {
 				const rule = ruleset.rules[ruleName];
+				if (rule == null) {
+					return;
+				}
+
 				ruleMapper.set(node, ruleName, {
 					from: 'rules',
 					specificity: [0, 0, 0],
@@ -2423,6 +2431,10 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 
 				for (const ruleName of ruleList) {
 					const rule = nodeRule.rules[ruleName];
+					if (rule == null) {
+						continue;
+					}
+
 					const convertedRule = exchangeValueOnRule(rule, matches.data || {});
 					if (convertedRule === undefined) {
 						continue;
@@ -2477,6 +2489,9 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 
 					Object.keys(nodeRuleRules).forEach(ruleName => {
 						const rule = nodeRuleRules[ruleName];
+						if (rule == null) {
+							return;
+						}
 
 						const convertedRule = exchangeValueOnRule(rule, matches.data || {});
 						if (convertedRule === undefined) {

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { Config, Violation } from '@markuplint/ml-config';
 

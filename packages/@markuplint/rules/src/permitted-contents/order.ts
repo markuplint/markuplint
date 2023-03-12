@@ -39,7 +39,7 @@ export function order(
 
 	const unmatchedResults: Result[] = [];
 
-	while (patterns.length) {
+	while (patterns.length && patterns[0]) {
 		result = complexBranch(patterns[0], collection.unmatched, specs, options, depth);
 		collection.addMatched(result.matched);
 

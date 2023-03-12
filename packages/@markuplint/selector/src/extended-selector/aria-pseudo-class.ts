@@ -49,7 +49,7 @@ function ariaPseudoClassParser(syntax: string): {
 	version?: ARIAVersion;
 } {
 	const [_query, _version] = syntax.split('|');
-	const query = _query.replace(/\s+/g, '').toLowerCase();
+	const query = _query?.replace(/\s+/g, '').toLowerCase();
 	const version = _version === '1.1' ? '1.1' : '1.2';
 
 	switch (query) {

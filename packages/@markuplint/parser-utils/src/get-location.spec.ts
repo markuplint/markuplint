@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { getEndCol, getEndLine } from './get-location';
 
 describe('getEndLine', () => {

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import htmlSpec from '@markuplint/html-spec';
 
 import { getAttrSpecs } from './get-attr-specs';

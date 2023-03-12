@@ -38,6 +38,9 @@ export class RuleMapper {
 			ruleMapperNodeLog('<%s>', node.nodeName);
 			Object.keys(rules).forEach(ruleName => {
 				const rule = rules[ruleName];
+				if (!rule) {
+					return;
+				}
 				node.rules[ruleName] = rule.rule;
 				ruleMapperNodeRuleLog('[from: %s(%s)] %s: %o', rule.from, rule.specificity, ruleName, rule.rule);
 			});

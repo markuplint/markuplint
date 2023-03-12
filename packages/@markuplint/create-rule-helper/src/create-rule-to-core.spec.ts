@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { rm, readdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 

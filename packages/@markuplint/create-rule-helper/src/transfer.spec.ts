@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { rm } from 'node:fs/promises';
 import { resolve, relative, sep } from 'node:path';
 

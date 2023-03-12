@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { createJSDOMElement as c } from '@markuplint/test-tools';
 
 import { getAccname } from './accname-computation';

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
 
 import { isDocumentFragment, parse } from './';

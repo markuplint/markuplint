@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { ARIAVersion } from '../types';
 
 import specs from '@markuplint/html-spec';

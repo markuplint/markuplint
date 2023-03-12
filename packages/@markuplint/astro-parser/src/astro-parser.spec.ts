@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { AstroCompileError, astroParse } from './astro-parser';
 
 it('Basic', () => {

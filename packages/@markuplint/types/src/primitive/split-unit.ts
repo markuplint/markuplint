@@ -14,7 +14,7 @@ export function splitUnit(value: string) {
 	}
 	const [, num, unit] = matched;
 	return {
-		num,
-		unit,
+		num: num ?? value,
+		unit: unit ?? '',
 	};
 }

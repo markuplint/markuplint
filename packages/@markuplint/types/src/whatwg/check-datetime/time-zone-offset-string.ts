@@ -48,9 +48,11 @@ export function parseTimeZone(zone: string | Token) {
 
 			if (sign.match('Z')) {
 				if (tail.value) {
-					return tail[0].unmatched({
-						reason: 'extra-token',
-					});
+					return (
+						tail[0]?.unmatched({
+							reason: 'extra-token',
+						}) ?? unmatched(tail.value, 'extra-token')
+					);
 				}
 
 				return matched();
