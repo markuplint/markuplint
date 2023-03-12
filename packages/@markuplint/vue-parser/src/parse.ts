@@ -50,7 +50,7 @@ export const parse: Parse = (rawCode, options) => {
 	if (templateEndTagIndex !== -1) {
 		const templateEndTag = nodeList[templateEndTagIndex];
 		for (const node of nodeList) {
-			if (node.nextNode && node.nextNode.uuid === templateEndTag.uuid) {
+			if (node.nextNode && node.nextNode.uuid === templateEndTag?.uuid) {
 				node.nextNode = null;
 			}
 		}

@@ -293,7 +293,7 @@ export function modelLog(model: Model | PermittedContentPattern[], repeat: Repea
 }
 
 function orderLog(order: PermittedContentPattern[], repeat: RepeatSign) {
-	return order.length === 1
+	return order.length === 1 && order[0]
 		? markRepeat(patternLog(order[0]), repeat)
 		: markRepeat(order.map(pattern => patternLog(pattern)).join(''), repeat);
 }

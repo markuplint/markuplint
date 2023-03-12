@@ -76,7 +76,7 @@ export function nodeize(
 			const children = originNode.children || [];
 			const reEndTag = new RegExp(`</${originNode.name}\\s*>$`, 'i');
 			const startTagEndOffset = children.length
-				? children[0].start
+				? children[0]?.start ?? 0
 				: raw.replace(reEndTag, '').length + startOffset;
 			const startTagLocation = sliceFragment(rawHtml, startOffset, startTagEndOffset);
 
@@ -320,7 +320,9 @@ function solveCtrlBlock(
 ) {
 	const children = originNode.children || [];
 	const reEndTag = new RegExp(`{/${ctrlName}}$`, 'i');
-	const startTagEndOffset = children.length ? children[0].start : raw.replace(reEndTag, '').length + startOffset;
+	const startTagEndOffset = children.length
+		? children[0]?.start ?? 0
+		: raw.replace(reEndTag, '').length + startOffset;
 	const startTagLocation = sliceFragment(rawHtml, startOffset, startTagEndOffset);
 
 	let endTag: MLASTPreprocessorSpecificBlock | null = null;
@@ -352,7 +354,9 @@ function solveCtrlBlock(
 	let elseTag: MLASTPreprocessorSpecificBlock | null = null;
 	if (originNode.else) {
 		const elseNode = originNode.else;
-		const elseTagStartOffset = children.length ? children[children.length - 1].end : startTagLocation.endOffset;
+		const elseTagStartOffset = children.length
+			? children[children.length - 1]?.end ?? 0
+			: startTagLocation.endOffset;
 		const elseTagLocation = sliceFragment(rawHtml, elseTagStartOffset, elseNode.start);
 
 		elseTag = {

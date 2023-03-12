@@ -44,7 +44,7 @@ export class ConfigProvider {
 				switch (prefix) {
 					case 'plugin:': {
 						const plugin = plugins.find(plugin => plugin.name === namespace);
-						const config = plugin?.configs?.[name];
+						const config = name && plugin?.configs?.[name];
 						if (config) {
 							this.set(config, held);
 						}
@@ -64,9 +64,10 @@ export class ConfigProvider {
 			const globs = Object.keys(overrides);
 			for (const glob of globs) {
 				const isMatched = targetFile.matches(glob);
-				if (isMatched) {
+				const config = overrides[glob];
+				if (isMatched && config) {
 					// Note: Original config disappears
-					configSet.config = overrides[glob];
+					configSet.config = config;
 				}
 			}
 		}
@@ -108,7 +109,7 @@ export class ConfigProvider {
 
 		if (isPreset(filePath)) {
 			const [, name] = filePath.match(/^markuplint:(.+)$/i) || [];
-			const config = await getPreset(name);
+			const config = await getPreset(name ?? filePath);
 			const pathResolvedConfig = this._pathResolve(config, filePath);
 
 			this.#store.set(filePath, pathResolvedConfig);

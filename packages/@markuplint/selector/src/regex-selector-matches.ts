@@ -15,7 +15,7 @@ export function regexSelectorMatches(reg: string, raw: string, ignoreCase: boole
 
 function toRegexp(pattern: string) {
 	const matched = pattern.match(/^\/(.+)\/([ig]*)$/i);
-	if (matched) {
+	if (matched && matched[1]) {
 		return new RegExp(matched[1], matched[2]);
 	}
 	return pattern;

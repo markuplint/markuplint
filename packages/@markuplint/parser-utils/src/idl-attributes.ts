@@ -439,7 +439,7 @@ export function searchIDLAttribute(name: string) {
 }
 
 function camelize(str: string) {
-	return str.replace(/[:-][a-z]/g, $0 => $0[1].toUpperCase());
+	return str.replace(/[:-][a-z]/g, $0 => $0[1]?.toUpperCase() ?? '');
 }
 
 function hyphenize(str: string) {

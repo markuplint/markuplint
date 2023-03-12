@@ -61,7 +61,7 @@ class Ruleset {
 
 		if (this.headCombinator) {
 			if (depth <= 0) {
-				throw new InvalidSelectorError(`'${this.#selectorGroup[0].selector}' is not a valid selector`);
+				throw new InvalidSelectorError(`'${this.#selectorGroup[0]?.selector}' is not a valid selector`);
 			}
 		}
 	}
@@ -90,7 +90,7 @@ class StructuredSelector {
 		this.#selector = selector;
 		this.#edge = new SelectorTarget(extended, depth);
 		this.headCombinator =
-			this.#selector.nodes[0].type === 'combinator' ? this.#selector.nodes[0].value || null : null;
+			this.#selector.nodes[0]?.type === 'combinator' ? this.#selector.nodes[0].value || null : null;
 		if (0 < depth && this.headCombinator) {
 			this.#selector.nodes.unshift(pseudo({ value: ':scope' }));
 		}
@@ -793,6 +793,10 @@ function pseudoMatch(
 
 				const content = pseudo.nodes.map(node => node.toString()).join('');
 				const hook = extended[ext];
+				if (!hook) {
+					continue;
+				}
+
 				const matcher = hook(content);
 				return matcher(el);
 			}

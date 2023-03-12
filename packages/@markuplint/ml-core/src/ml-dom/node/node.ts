@@ -228,8 +228,8 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-firstchild%E2%91%A0
 	 */
-	get firstChild() {
-		return this.childNodes[0] || null;
+	get firstChild(): MLChildNode<T, O> | null {
+		return this.childNodes[0] ?? null;
 	}
 
 	/**
@@ -250,8 +250,8 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-lastchild%E2%91%A0
 	 */
-	get lastChild() {
-		return this.childNodes[this.childNodes.length - 1] || null;
+	get lastChild(): MLChildNode<T, O> | null {
+		return this.childNodes[this.childNodes.length - 1] ?? null;
 	}
 
 	/**

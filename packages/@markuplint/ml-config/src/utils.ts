@@ -23,7 +23,7 @@ type PlainData =
  */
 export function provideValue(template: string, data: Record<string, string>) {
 	const ast = mustache.parse(template);
-	if (ast.length === 1 && ast[0][0] === 'text') {
+	if (ast.length === 1 && ast[0]?.[0] === 'text') {
 		// It doesn't have a variable
 		return template;
 	}

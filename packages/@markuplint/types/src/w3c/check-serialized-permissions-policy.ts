@@ -105,7 +105,7 @@ function _checkSerializedPermissionsPolicy(value: string) {
 		 * > ```
 		 */
 		if (!featureIdentifier || !featureIdentifier.match(/^[a-z0-9-]+$/i)) {
-			return featureIdentifier.unmatched({
+			return featureIdentifier!.unmatched({
 				reason: 'unexpected-token',
 				expects: [{ type: 'common', value: 'feature-identifier' }],
 				partName: 'feature-identifier',

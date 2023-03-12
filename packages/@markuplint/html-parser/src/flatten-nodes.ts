@@ -31,7 +31,7 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastT
 						prevWreckagesText.startLine,
 						prevWreckagesText.startCol,
 					);
-					if (wreckages.length) {
+					if (wreckages.length && wreckages[0]) {
 						// console.log('wreckages\n', wreckages);
 						const lastText = wreckages[0];
 						const raw = lastText.raw;

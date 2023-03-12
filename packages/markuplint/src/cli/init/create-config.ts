@@ -82,6 +82,9 @@ export function createConfig(langs: Langs[], mode: RuleSettingMode, defaultRules
 		const ruleNames = Object.keys(defaultRules);
 		for (const ruleName of ruleNames) {
 			const rule = defaultRules[ruleName];
+			if (!rule) {
+				continue;
+			}
 			config.rules[ruleName] = rule.defaultValue;
 		}
 	}

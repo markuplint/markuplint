@@ -56,7 +56,7 @@ export function attr(attr: SvelteDirective, rawHTML: string): MLASTAttr | { __sp
 	}
 
 	const [baseName, subName] = token.name.raw.split(':');
-	if (baseName.toLowerCase() === 'class') {
+	if (baseName?.toLowerCase() === 'class') {
 		token.isDuplicatable = true;
 
 		if (subName) {

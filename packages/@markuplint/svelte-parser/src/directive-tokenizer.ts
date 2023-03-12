@@ -25,17 +25,17 @@ export default function directiveTokenizer(
 	let valueChars = '';
 
 	const [before, after] = raw.split(rawValue);
-	const beforeMatchedMap = before.match(reBeforeStructure);
-	const beforeWithoutNameMatchedMap = before.match(reBeforeStructureWithoutName);
-	const afterMatchedMap = after.match(reAfterStructure);
+	const beforeMatchedMap = before?.match(reBeforeStructure);
+	const beforeWithoutNameMatchedMap = before?.match(reBeforeStructureWithoutName);
+	const afterMatchedMap = after?.match(reAfterStructure);
 
 	if (beforeMatchedMap && afterMatchedMap) {
-		spacesBeforeAttrString = beforeMatchedMap[1];
-		nameChars = beforeMatchedMap[2];
-		spacesBeforeEqualChars = beforeMatchedMap[3] || '';
+		spacesBeforeAttrString = beforeMatchedMap[1] ?? '';
+		nameChars = beforeMatchedMap[2] ?? '';
+		spacesBeforeEqualChars = beforeMatchedMap[3] ?? '';
 		equalChars = beforeMatchedMap[4] || null;
-		spacesAfterEqualChars = beforeMatchedMap[5] || '';
-		valueChars = (beforeMatchedMap[6] || '') + rawValue + (afterMatchedMap[1] || '');
+		spacesAfterEqualChars = beforeMatchedMap[5] ?? '';
+		valueChars = (beforeMatchedMap[6] ?? '') + rawValue + (afterMatchedMap[1] || '');
 	} else if (beforeWithoutNameMatchedMap && afterMatchedMap) {
 		valueChars = (beforeWithoutNameMatchedMap[1] || '') + rawValue + (afterMatchedMap[1] || '');
 	} else if (reNameOnly.test(raw)) {

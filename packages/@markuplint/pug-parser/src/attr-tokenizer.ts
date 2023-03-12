@@ -5,7 +5,7 @@ import { tokenizer, uuid } from '@markuplint/parser-utils';
 
 export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 	if (attr.raw[0] === '#' || attr.raw[0] === '.') {
-		let value = '';
+		let value: string | undefined = '';
 		if (typeof attr.val === 'string') {
 			[, , value] = attr.val.match(/(['"`]?)([^\1]+)(\1)/) || ['', '', ''];
 		} else {
@@ -22,7 +22,7 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 			startCol: attr.column,
 			endCol: attr.endColumn,
 			potentialName: attr.name,
-			potentialValue: value,
+			potentialValue: value ?? '',
 			valueType: 'string',
 			isDuplicatable: attr.raw[0] === '.',
 			nodeName: '#pug-special-attr',
@@ -55,11 +55,11 @@ export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
 		const equalAndBeforeSpaceAfterSpace = withoutName.slice(0, valueOffset);
 		const [, before, equal, after] = equalAndBeforeSpaceAfterSpace.match(/^(\s*)(=)(\s*)$/) || ['', '', '', ''];
 		const [, quote, coreValue] = attr.val.match(/(['"`]?)([^\1]+)(\1)/) || ['', '', ''];
-		spacesBeforeEqualChars = before;
-		equalChars = equal;
-		spacesAfterEqualChars = after;
-		quoteChars = quote;
-		valueChars = coreValue;
+		spacesBeforeEqualChars = before ?? '';
+		equalChars = equal ?? '';
+		spacesAfterEqualChars = after ?? '';
+		quoteChars = quote ?? '';
+		valueChars = coreValue ?? '';
 		if (quote === '`' || quote === '') {
 			isDynamicValue = true;
 		}

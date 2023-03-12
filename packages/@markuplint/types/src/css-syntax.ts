@@ -59,7 +59,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 			const valueOrChecker = types[key];
 			if (typeof valueOrChecker === 'string') {
 				typesExtended[key] = valueOrChecker;
-			} else {
+			} else if (valueOrChecker) {
 				typesCheckers[key] = valueOrChecker;
 			}
 		});
@@ -82,7 +82,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	Object.keys(typesCheckers).forEach(key => {
 		const checker = typesCheckers[key];
 		lexer.addType_(key, (token: CSSSyntaxToken, getNextToken: GetNextToken) =>
-			checker(token, getNextToken, cssSyntaxMatch),
+			checker?.(token, getNextToken, cssSyntaxMatch),
 		);
 	});
 
@@ -164,6 +164,9 @@ function detectName(def: `<${string}>`) {
 
 function eachMimicCases(key: string, obj: Record<string, string>) {
 	const value = obj[key];
+	if (!value) {
+		return;
+	}
 	obj[key] = mimicCases(value);
 }
 

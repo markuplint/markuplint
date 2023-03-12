@@ -8,7 +8,21 @@ class MLNodeList<T extends RuleConfigValue, O, N extends MLChildNode<T, O>> exte
 	}
 
 	item(index: number): N {
-		return this[index];
+		const node = this[index];
+		if (!node) {
+			/**
+			 * ⚠ TYPE CONTRADICTION
+			 *
+			 * It throws an error because it should return null but the `item` method of `NodeListOf` doesn't return null in the type definition of TypeScript.
+			 *
+			 * @see https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-844377136
+			 *
+			 * > item
+			 * > Returns the index-th item in the collection. If index is greater than or equal to the number of nodes in the list, this returns null.
+			 */
+			throw new ReferenceError('Invalid index');
+		}
+		return node;
 	}
 }
 
@@ -23,8 +37,8 @@ class MLHTMLCollection<T extends RuleConfigValue, O = null>
 	extends Array<MLElement<T, O>>
 	implements HTMLCollectionOf<MLElement<T, O>>
 {
-	item(index: number): MLElement<T, O> {
-		return this[index];
+	item(index: number): MLElement<T, O> | null {
+		return this[index] ?? null;
 	}
 
 	namedItem(name: string): MLElement<T, O> | null {

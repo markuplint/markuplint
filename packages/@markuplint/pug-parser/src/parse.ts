@@ -243,7 +243,11 @@ class Parser {
 
 			let node: MLASTNode;
 			if (Array.isArray(nodes)) {
-				node = nodes[nodes.length - 1];
+				const lastNode = nodes[nodes.length - 1];
+				if (!lastNode) {
+					continue;
+				}
+				node = lastNode;
 			} else {
 				node = nodes;
 			}

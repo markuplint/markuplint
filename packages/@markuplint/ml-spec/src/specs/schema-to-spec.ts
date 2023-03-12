@@ -71,10 +71,10 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 					...exSpec,
 					globalAttrs: {
 						...elSpec.globalAttrs,
-						...exSpec.globalAttrs,
+						...exSpec?.globalAttrs,
 					},
-					attributes: mergeAttrSpec(elSpec.attributes, exSpec.attributes),
-					categories: mergeArray(elSpec.categories, exSpec.categories),
+					attributes: mergeAttrSpec(elSpec.attributes, exSpec?.attributes),
+					categories: mergeArray(elSpec.categories, exSpec?.categories),
 				});
 			}
 
@@ -92,7 +92,7 @@ function mergeAttrSpec(
 	const result: Record<string, Attribute> = {};
 	const keys = Array.from(new Set([...Object.keys(std), ...Object.keys(ex)]));
 	for (const key of keys) {
-		const _std = std[key];
+		const _std = std[key]!;
 		const _ex = ex[key];
 		result[key] = {
 			..._std,

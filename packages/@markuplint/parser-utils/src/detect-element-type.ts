@@ -43,7 +43,7 @@ function _distinguishAuthoredName(name: string, patterns: ParserAuthoredElementN
 
 function toRegexp(pattern: string) {
 	const matched = pattern.match(/^\/(.+)\/([ig]*)$/i);
-	if (matched) {
+	if (matched && matched[1]) {
 		return new RegExp(matched[1], matched[2]);
 	}
 	return new RegExp(pattern);

@@ -135,6 +135,10 @@ function parseTryMultipleLangs(content: string, langs: Lang[], base?: Date) {
 
 		const result = results[0];
 
+		if (!result) {
+			continue;
+		}
+
 		// Is not a range or period
 		if (result.end) {
 			continue;
