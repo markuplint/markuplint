@@ -148,7 +148,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/altGlyphDef",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/altGlyphItem",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animate",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateColor",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateMotion",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateTransform",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/circle",
@@ -25939,7 +25938,7 @@
 						"disallowToSurroundBySpaces": true,
 						"invalidValueDefault": "toggle",
 						"missingValueDefault": "toggle"
-				},
+					},
 					"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
 				},
 				"readonly": {
@@ -29663,24 +29662,6 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {}
-		},
-		{
-			"name": "svg:animateColor",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The SVG <animate> element provides a way to animate an attribute of an element over time.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
