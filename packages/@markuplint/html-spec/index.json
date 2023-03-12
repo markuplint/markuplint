@@ -25929,16 +25929,17 @@
 						"[type='number' i]"
 					]
 				},
-				"popoverhidetarget": {
+				"popovertarget": {
 					"type": "DOMID",
 					"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
 				},
-				"popovershowtarget": {
-					"type": "DOMID",
-					"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
+				"popovertargetaction": {
+					"type": {
+						"enum": ["toggle", "show", "hide"],
+						"disallowToSurroundBySpaces": true,
+						"invalidValueDefault": "toggle",
+						"missingValueDefault": "toggle"
 				},
-				"popovertoggletarget": {
-					"type": "DOMID",
 					"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
 				},
 				"readonly": {
