@@ -9,6 +9,7 @@
 		"experimentalDecorators": true,
 		"esModuleInterop": true,
 		"noImplicitAny": true,
+		"noUncheckedIndexedAccess": true,
 		"declaration": true,
 		"lib": ["dom", "es2015", "es2016", "es2017", "es2018", "es2019", "esnext"],
 		"importHelpers": true,
