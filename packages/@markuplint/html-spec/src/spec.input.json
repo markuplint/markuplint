@@ -179,19 +179,19 @@
 				"[type='number' i]"
 			]
 		},
-		// https://html.spec.whatwg.org/multipage/popover.html#attr-popover-hide-target
-		"popoverhidetarget": {
+		// https://html.spec.whatwg.org/multipage/popover.html#attr-popovertarget
+		"popovertarget": {
 			"type": "DOMID",
 			"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
 		},
-		// https://html.spec.whatwg.org/multipage/popover.html#attr-popover-show-target
-		"popovershowtarget": {
-			"type": "DOMID",
-			"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
-		},
-		// https://html.spec.whatwg.org/multipage/popover.html#attr-popover-toggle-target
-		"popovertoggletarget": {
-			"type": "DOMID",
+		// https://html.spec.whatwg.org/multipage/popover.html#attr-popovertargetaction
+		"popovertargetaction": {
+			"type": {
+				"enum": ["toggle", "show", "hide"],
+				"disallowToSurroundBySpaces": true,
+				"invalidValueDefault": "toggle",
+				"missingValueDefault": "toggle"
+			},
 			"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-readonly

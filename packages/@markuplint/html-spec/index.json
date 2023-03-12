@@ -23478,14 +23478,16 @@
 				"name": {
 					"description": "The name of the button, submitted as a pair with the button's value as part of the form data, when that button is used to submit the form."
 				},
-				"popoverhidetarget": {
+				"popovertarget": {
 					"type": "DOMID"
 				},
-				"popovershowtarget": {
-					"type": "DOMID"
-				},
-				"popovertoggletarget": {
-					"type": "DOMID"
+				"popovertargetaction": {
+					"type": {
+						"enum": ["toggle", "show", "hide"],
+						"disallowToSurroundBySpaces": true,
+						"invalidValueDefault": "toggle",
+						"missingValueDefault": "toggle"
+					}
 				},
 				"type": {
 					"type": {
