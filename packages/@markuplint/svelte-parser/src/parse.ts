@@ -1,8 +1,7 @@
 import type { SvelteNode } from './svelte-parser';
 import type { MLASTNode, Parse } from '@markuplint/ml-ast';
 
-import { flattenNodes } from '@markuplint/html-parser';
-import { ParserError, ignoreBlock, restoreNode } from '@markuplint/parser-utils';
+import { flattenNodes, ParserError, ignoreBlock, restoreNode } from '@markuplint/parser-utils';
 
 import svelteParse from './svelte-parser';
 import { traverse } from './traverse';
@@ -51,10 +50,9 @@ export const parse: Parse = (rawCode, options) => {
 		};
 	}
 
-	const nodeList: MLASTNode[] = restoreNode(
-		flattenNodes(traverse(ast, null, blocks.replaced, options), blocks.replaced),
-		blocks,
-	);
+	const nodes = traverse(ast, null, blocks.replaced, options);
+
+	const nodeList: MLASTNode[] = restoreNode(flattenNodes(nodes, blocks.replaced), blocks);
 
 	return {
 		nodeList,

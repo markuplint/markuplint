@@ -1,9 +1,9 @@
 import type { MLASTNode, MLASTText } from '@markuplint/ml-ast';
 
-import { getEndCol, getEndLine, uuid, walk } from '@markuplint/parser-utils';
-
 import { removeDeprecatedNode } from './remove-deprecated-node';
 import tagSplitter from './tag-splitter';
+
+import { getEndCol, getEndLine, uuid, walk } from '@markuplint/parser-utils';
 
 export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastText = true) {
 	const nodeOrders: MLASTNode[] = arrayize(nodeTree, rawHtml);
@@ -236,13 +236,13 @@ function arrayize(nodeTree: MLASTNode[], rawHtml: string) {
 				if (node.parentNode && node.parentNode.childNodes) {
 					if (!node.parentNode.childNodes.length) {
 						node.parentNode.childNodes.push(textNode);
-					} else if (node.parentNode.childNodes[0].startOffset >= textNode.startOffset) {
+					} else if (node.parentNode.childNodes[0]?.startOffset ?? 0 >= textNode.startOffset) {
 						node.parentNode.childNodes.unshift(textNode);
 					}
 					// else {
 					// 	console.log({
 					// 		root: node.raw,
-					// 		'[0]': node.parentNode.childNodes[0].raw,
+					// 		'[0]': node.parentNode.childNodes[0]?.raw,
 					// 		insert: textNode.raw,
 					// 	});
 					// }
