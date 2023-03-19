@@ -1,5 +1,5 @@
-import type { APIOptions } from '../api/types';
 import type { CLIOptions } from './bootstrap';
+import type { APIOptions } from '../api/types';
 import type { Target } from '@markuplint/file-resolver';
 import type { Violation } from '@markuplint/ml-config';
 

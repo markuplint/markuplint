@@ -1,7 +1,3 @@
-import type { MLRule } from '../../ml-rule';
-import type Ruleset from '../../ruleset';
-import type { Walker } from '../helper/walkers';
-import type { MLToken } from '../token/token';
 import type { MLAttr } from './attr';
 import type { MLComment } from './comment';
 import type { MLDocumentType } from './document-type';
@@ -9,6 +5,10 @@ import type { MLElement } from './element';
 import type { MLNode } from './node';
 import type { MLText } from './text';
 import type { DocumentNodeType } from './types';
+import type { MLRule } from '../../ml-rule';
+import type Ruleset from '../../ruleset';
+import type { Walker } from '../helper/walkers';
+import type { MLToken } from '../token/token';
 import type { EndTagType, MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
 import type { Pretender, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';

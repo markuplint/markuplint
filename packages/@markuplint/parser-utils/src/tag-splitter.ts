@@ -1,6 +1,6 @@
-import { getEndCol, getEndLine } from '@markuplint/parser-utils';
-
 import { reSplitterTag, reTagName } from './const';
+
+import { getEndCol, getEndLine } from '@markuplint/parser-utils';
 
 export interface N {
 	type: 'text' | 'starttag' | 'endtag' | 'comment' | 'boguscomment';

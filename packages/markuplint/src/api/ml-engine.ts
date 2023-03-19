@@ -1,5 +1,5 @@
-import type { MLResultInfo } from '../types';
 import type { APIOptions, MLEngineEventMap, MLFabric } from './types';
+import type { MLResultInfo } from '../types';
 import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
 import type { Ruleset, Plugin, Document, RuleConfigValue } from '@markuplint/ml-core';
 

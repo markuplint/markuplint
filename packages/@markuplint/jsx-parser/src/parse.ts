@@ -1,8 +1,7 @@
 import type { JSXNode } from './jsx';
 import type { MLASTNode, Parse } from '@markuplint/ml-ast';
 
-import { flattenNodes } from '@markuplint/html-parser';
-import { ParserError, walk } from '@markuplint/parser-utils';
+import { flattenNodes, ParserError, walk } from '@markuplint/parser-utils';
 
 import jsxParser from './jsx';
 import { traverse } from './traverse';

@@ -1,8 +1,7 @@
 // @ts-nocheck
 
-import { isDocumentFragment } from '../lib';
+import { isDocumentFragment, createTree } from '@markuplint/html-parser';
 
-import { createTree } from './create-tree';
 import { flattenNodes } from './flatten-nodes';
 
 function toTree(rawCode: string) {

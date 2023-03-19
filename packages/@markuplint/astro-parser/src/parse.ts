@@ -12,8 +12,8 @@ import type {
 	Parse,
 } from '@markuplint/ml-ast';
 
-import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
-import { detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { parseRawTag } from '@markuplint/html-parser';
+import { flattenNodes, detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
 
 import { AstroCompileError, astroParse } from './astro-parser';
 import { attrTokenizer } from './attr-tokenizer';

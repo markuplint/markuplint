@@ -8,8 +8,16 @@ import type {
 	Parse,
 } from '@markuplint/ml-ast';
 
-import { getNamespace, parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
-import { detectElementType, ignoreFrontMatter, ParserError, tokenizer, uuid, walk } from '@markuplint/parser-utils';
+import { getNamespace, parse as htmlParser, isDocumentFragment } from '@markuplint/html-parser';
+import {
+	detectElementType,
+	ignoreFrontMatter,
+	ParserError,
+	tokenizer,
+	uuid,
+	walk,
+	removeDeprecatedNode,
+} from '@markuplint/parser-utils';
 
 import attrTokenizer from './attr-tokenizer';
 import { pugParse } from './pug-parser';

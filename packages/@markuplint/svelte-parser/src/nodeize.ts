@@ -14,6 +14,7 @@ import { getNamespace, parseRawTag } from '@markuplint/html-parser';
 import { detectElementType, sliceFragment, uuid } from '@markuplint/parser-utils';
 
 import { attr } from './attr';
+import { parseCtrlBlock } from './parse-ctrl-block';
 import { traverse } from './traverse';
 
 export function nodeize(
@@ -159,10 +160,21 @@ export function nodeize(
 			return startTag;
 		}
 		case 'IfBlock': {
-			return solveCtrlBlock('if', originNode, raw, rawHtml, startOffset, parentNode, prevNode, nextNode, options);
+			const ifBlocks = parseCtrlBlock(
+				'if',
+				originNode,
+				raw,
+				rawHtml,
+				startOffset,
+				parentNode,
+				prevNode,
+				nextNode,
+				options,
+			);
+			return ifBlocks;
 		}
 		case 'EachBlock': {
-			return solveCtrlBlock(
+			return parseCtrlBlock(
 				'each',
 				originNode,
 				raw,
@@ -305,100 +317,4 @@ export function nodeize(
 			};
 		}
 	}
-}
-
-function solveCtrlBlock(
-	ctrlName: string,
-	originNode: SvelteNode,
-	raw: string,
-	rawHtml: string,
-	startOffset: number,
-	parentNode: MLASTParentNode | null,
-	prevNode: MLASTNode | null,
-	nextNode: MLASTNode | null,
-	options?: ParserOptions,
-) {
-	const children = originNode.children || [];
-	const reEndTag = new RegExp(`{/${ctrlName}}$`, 'i');
-	const startTagEndOffset = children.length
-		? children[0]?.start ?? 0
-		: raw.replace(reEndTag, '').length + startOffset;
-	const startTagLocation = sliceFragment(rawHtml, startOffset, startTagEndOffset);
-
-	let endTag: MLASTPreprocessorSpecificBlock | null = null;
-	const endTagRawMatched = raw.match(reEndTag);
-	if (endTagRawMatched) {
-		const endTagRaw = endTagRawMatched[0];
-		const endTagStartOffset = originNode.end - endTagRaw.length;
-		const endTagEndOffset = originNode.end;
-		const endTagLocation = sliceFragment(rawHtml, endTagStartOffset, endTagEndOffset);
-		endTag = {
-			uuid: uuid(),
-			raw: endTagRaw,
-			startOffset: endTagStartOffset,
-			endOffset: endTagEndOffset,
-			startLine: endTagLocation.startLine,
-			endLine: endTagLocation.endLine,
-			startCol: endTagLocation.startCol,
-			endCol: endTagLocation.endCol,
-			nodeName: originNode.type,
-			type: 'psblock',
-			parentNode,
-			prevNode,
-			nextNode,
-			isFragment: false,
-			isGhost: false,
-		};
-	}
-
-	let elseTag: MLASTPreprocessorSpecificBlock | null = null;
-	if (originNode.else) {
-		const elseNode = originNode.else;
-		const elseTagStartOffset = children.length
-			? children[children.length - 1]?.end ?? 0
-			: startTagLocation.endOffset;
-		const elseTagLocation = sliceFragment(rawHtml, elseTagStartOffset, elseNode.start);
-
-		elseTag = {
-			uuid: uuid(),
-			...elseTagLocation,
-			nodeName: elseNode.type,
-			type: 'psblock',
-			parentNode,
-			prevNode,
-			nextNode,
-			isFragment: false,
-			isGhost: false,
-		};
-
-		if (elseNode.children) {
-			elseTag.childNodes = traverse(elseNode.children, elseTag, rawHtml, options);
-		}
-	}
-
-	const tag: MLASTPreprocessorSpecificBlock = {
-		uuid: uuid(),
-		...startTagLocation,
-		nodeName: originNode.type,
-		type: 'psblock',
-		parentNode,
-		prevNode,
-		nextNode,
-		isFragment: false,
-		isGhost: false,
-	};
-
-	if (originNode.children) {
-		tag.childNodes = traverse(originNode.children, tag, rawHtml, options);
-	}
-
-	const tags: MLASTPreprocessorSpecificBlock[] = [tag];
-	if (elseTag) {
-		tags.push(elseTag);
-	}
-	if (endTag) {
-		tags.push(endTag);
-	}
-
-	return tags;
 }

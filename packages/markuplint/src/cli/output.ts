@@ -1,5 +1,5 @@
-import type { MLResultInfo } from '../types';
 import type { CLIOptions } from './bootstrap';
+import type { MLResultInfo } from '../types';
 
 import stripAnsi from 'strip-ansi';
 

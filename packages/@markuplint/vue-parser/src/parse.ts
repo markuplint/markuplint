@@ -9,8 +9,8 @@ import type {
 	Parse,
 } from '@markuplint/ml-ast';
 
-import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
-import { getEndCol, getEndLine, uuid, ParserError, detectElementType } from '@markuplint/parser-utils';
+import { parseRawTag } from '@markuplint/html-parser';
+import { flattenNodes, getEndCol, getEndLine, uuid, ParserError, detectElementType } from '@markuplint/parser-utils';
 
 import { attr } from './attr';
 import vueParse from './vue-parser';

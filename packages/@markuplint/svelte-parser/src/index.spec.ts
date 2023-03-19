@@ -113,8 +113,7 @@ describe('parser', () => {
 			'[3:3]>[3:6](42,45)p: <p>',
 			'[3:6]>[3:14](45,53)#text: too␣hot!',
 			'[3:14]>[3:18](53,57)p: </p>',
-			'[3:18]>[4:38](57,95)ElseBlock: ⏎→{:else␣if␣80␣>␣porridge.temperature}',
-			'[4:38]>[5:3](95,98)IfBlock: ⏎→→',
+			'[3:18]>[5:3](57,98)ElseIfBlock: ⏎→{:else␣if␣80␣>␣porridge.temperature}⏎→→',
 			'[5:3]>[5:6](98,101)p: <p>',
 			'[5:6]>[5:15](101,110)#text: too␣cold!',
 			'[5:15]>[5:19](110,114)p: </p>',
@@ -477,5 +476,37 @@ describe('Issues', () => {
 			'[15:7]>[16:1](160,161)#text: ⏎',
 			'[16:1]>[16:7](161,167)nav: </nav>',
 		]);
+	});
+
+	test('#698', () => {
+		const r = parse(`<ul>
+	{#if cond === valueA}
+		<li>A</li>
+	{:else if cond === valueB}
+		<li>B</li>
+	{/if}
+</ul>`);
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:5](0,4)ul: <ul>',
+			'[1:5]>[2:2](4,6)#text: ⏎→',
+			'[2:2]>[3:3](6,30)IfBlock: {#if␣cond␣===␣valueA}⏎→→',
+			'[3:3]>[3:7](30,34)li: <li>',
+			'[3:7]>[3:8](34,35)#text: A',
+			'[3:8]>[3:13](35,40)li: </li>',
+			'[3:13]>[5:3](40,71)ElseIfBlock: ⏎→{:else␣if␣cond␣===␣valueB}⏎→→',
+			'[5:3]>[5:7](71,75)li: <li>',
+			'[5:7]>[5:8](75,76)#text: B',
+			'[5:8]>[5:13](76,81)li: </li>',
+			'[5:13]>[6:2](81,83)#text: ⏎→',
+			'[6:2]>[6:7](83,88)IfBlock: {/if}',
+			'[6:7]>[7:1](88,89)#text: ⏎',
+			'[7:1]>[7:6](89,94)ul: </ul>',
+		]);
+
+		expect(r.nodeList[0].childNodes[4].raw).toBe('{/if}');
+		expect(r.nodeList[11].raw).toBe('{/if}');
+		expect(r.nodeList[0].childNodes[4].raw).toBe(r.nodeList[11].raw);
+		expect(r.nodeList[0].childNodes[4].uuid).toBe(r.nodeList[11].uuid);
 	});
 });
