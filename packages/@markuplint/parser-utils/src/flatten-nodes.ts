@@ -252,14 +252,6 @@ function arrayize(nodeTree: MLASTNode[], rawHtml: string) {
 					newChildNodes.sort((a, b) => a.startOffset - b.startOffset);
 
 					node.parentNode.childNodes = newChildNodes;
-
-					// else {
-					// 	console.log({
-					// 		root: node.raw,
-					// 		'[0]': node.parentNode.childNodes[0]?.raw,
-					// 		insert: textNode.raw,
-					// 	});
-					// }
 				}
 
 				nodeOrders.push(textNode);
