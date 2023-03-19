@@ -113,8 +113,7 @@ describe('parser', () => {
 			'[3:3]>[3:6](42,45)p: <p>',
 			'[3:6]>[3:14](45,53)#text: too␣hot!',
 			'[3:14]>[3:18](53,57)p: </p>',
-			'[3:18]>[4:38](57,95)ElseBlock: ⏎→{:else␣if␣80␣>␣porridge.temperature}',
-			'[4:38]>[5:3](95,98)IfBlock: ⏎→→',
+			'[3:18]>[5:3](57,98)ElseIfBlock: ⏎→{:else␣if␣80␣>␣porridge.temperature}⏎→→',
 			'[5:3]>[5:6](98,101)p: <p>',
 			'[5:6]>[5:15](101,110)#text: too␣cold!',
 			'[5:15]>[5:19](110,114)p: </p>',
@@ -495,8 +494,7 @@ describe('Issues', () => {
 			'[3:3]>[3:7](30,34)li: <li>',
 			'[3:7]>[3:8](34,35)#text: A',
 			'[3:8]>[3:13](35,40)li: </li>',
-			'[3:13]>[4:28](40,68)ElseBlock: ⏎→{:else␣if␣cond␣===␣valueB}',
-			'[4:28]>[5:3](68,71)IfBlock: ⏎→→',
+			'[3:13]>[5:3](40,71)ElseIfBlock: ⏎→{:else␣if␣cond␣===␣valueB}⏎→→',
 			'[5:3]>[5:7](71,75)li: <li>',
 			'[5:7]>[5:8](75,76)#text: B',
 			'[5:8]>[5:13](76,81)li: </li>',
@@ -506,10 +504,9 @@ describe('Issues', () => {
 			'[7:1]>[7:6](89,94)ul: </ul>',
 		]);
 
-		expect(r.nodeList[12].raw).toBe('{/if}');
-		// @ts-ignore
-		expect(r.nodeList[0].childNodes[3].raw).toBe(r.nodeList[12].raw);
-		// @ts-ignore
-		expect(r.nodeList[0].childNodes[3].uuid).toBe(r.nodeList[12].uuid);
+		expect(r.nodeList[0].childNodes[4].raw).toBe('{/if}');
+		expect(r.nodeList[11].raw).toBe('{/if}');
+		expect(r.nodeList[0].childNodes[4].raw).toBe(r.nodeList[11].raw);
+		expect(r.nodeList[0].childNodes[4].uuid).toBe(r.nodeList[11].uuid);
 	});
 });
