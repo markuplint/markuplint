@@ -1097,7 +1097,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get oncopy(): ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null {
+	get oncopy(): ((this: GlobalEventHandlers, ev: ClipboardEvent) => any) | null {
 		throw new UnexpectedCallError('Not supported "oncopy" property');
 	}
 
@@ -1119,7 +1119,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get oncut(): ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null {
+	get oncut(): ((this: GlobalEventHandlers, ev: ClipboardEvent) => any) | null {
 		throw new UnexpectedCallError('Not supported "onpointerleave" property');
 	}
 
@@ -1504,7 +1504,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onpaste(): ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null {
+	get onpaste(): ((this: GlobalEventHandlers, ev: ClipboardEvent) => any) | null {
 		throw new UnexpectedCallError('Not supported "onpaste" property');
 	}
 
@@ -2250,6 +2250,17 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 */
 	blur(): void {
 		throw new UnexpectedCallError('Not supported "blur" method');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	checkVisibility(options?: CheckVisibilityOptions): boolean {
+		throw new UnexpectedCallError('Not supported "checkVisibility" method');
 	}
 
 	/**

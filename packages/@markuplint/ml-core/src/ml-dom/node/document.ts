@@ -728,7 +728,7 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get oncopy(): ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null {
+	get oncopy(): ((this: GlobalEventHandlers, ev: ClipboardEvent) => any) | null {
 		throw new UnexpectedCallError('Not supported "oncopy" property');
 	}
 
@@ -750,7 +750,7 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get oncut(): ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null {
+	get oncut(): ((this: GlobalEventHandlers, ev: ClipboardEvent) => any) | null {
 		throw new UnexpectedCallError('Not supported "oncut" property');
 	}
 
@@ -1135,7 +1135,7 @@ export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNod
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onpaste(): ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null {
+	get onpaste(): ((this: GlobalEventHandlers, ev: ClipboardEvent) => any) | null {
 		throw new UnexpectedCallError('Not supported "onpaste" property');
 	}
 
