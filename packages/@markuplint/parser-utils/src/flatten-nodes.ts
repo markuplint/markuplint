@@ -234,11 +234,25 @@ function arrayize(nodeTree: MLASTNode[], rawHtml: string) {
 				node.prevNode = textNode;
 
 				if (node.parentNode && node.parentNode.childNodes) {
-					if (!node.parentNode.childNodes.length) {
-						node.parentNode.childNodes.push(textNode);
-					} else if (node.parentNode.childNodes[0]?.startOffset ?? 0 >= textNode.startOffset) {
-						node.parentNode.childNodes.unshift(textNode);
+					const newChildNodes = [...node.parentNode.childNodes];
+
+					if (
+						newChildNodes.some(child => {
+							return (
+								// Out of start offset
+								textNode.endOffset < child.startOffset ||
+								// Out of end offset
+								child.endOffset < textNode.startOffset
+							);
+						})
+					) {
+						newChildNodes.push(textNode);
 					}
+
+					newChildNodes.sort((a, b) => a.startOffset - b.startOffset);
+
+					node.parentNode.childNodes = newChildNodes;
+
 					// else {
 					// 	console.log({
 					// 		root: node.raw,
