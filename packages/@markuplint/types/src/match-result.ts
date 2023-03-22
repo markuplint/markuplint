@@ -5,13 +5,16 @@ import type {
 	UnmatchedResultOptions,
 	UnmatchedResultReason,
 } from './types';
+import type { ReadonlyDeep, WritableDeep } from 'type-fest';
 
 export function matches(
 	checker: FormattedPrimitiveTypeCheck,
-	options?: UnmatchedResultOptions & {
-		ref?: string;
-		reason?: UnmatchedResultReason;
-	},
+	options?: ReadonlyDeep<
+		UnmatchedResultOptions & {
+			ref?: string;
+			reason?: UnmatchedResultReason;
+		}
+	>,
 ) {
 	return (value: string) => {
 		const valid = checker(value);
@@ -30,13 +33,20 @@ export function matched(): MatchedResult {
 
 export function unmatched(
 	value: string,
-	reason?: UnmatchedResultReason,
-	options?: UnmatchedResultOptions & {
-		ref?: string;
-	},
+	reason?: ReadonlyDeep<UnmatchedResultReason>,
+	options?: ReadonlyDeep<
+		UnmatchedResultOptions & {
+			ref?: string;
+		}
+	>,
 ): UnmatchedResult {
+	const _options = options as WritableDeep<
+		UnmatchedResultOptions & {
+			ref?: string;
+		}
+	>;
 	return {
-		...options,
+		..._options,
 		matched: false,
 		ref: options?.ref || null,
 		raw: value,

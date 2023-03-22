@@ -9,7 +9,7 @@ import { splitUnit } from './split-unit';
  * @param units
  * @param numberType
  */
-export function isQuantity(value: string, units: string[], numberType: 'int' | 'uint' | 'float' = 'float') {
+export function isQuantity(value: string, units: readonly string[], numberType: 'int' | 'uint' | 'float' = 'float') {
 	const { num, unit } = splitUnit(value);
 	if (!units.includes(unit.toLowerCase())) {
 		return false;

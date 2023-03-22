@@ -1,4 +1,6 @@
+import type { TokenValue } from './types';
 import type { UnmatchedResult, UnmatchedResultOptions, UnmatchedResultReason } from '../types';
+import type { ReadonlyDeep } from 'type-fest';
 
 export class Token {
 	/**
@@ -29,7 +31,7 @@ export class Token {
 		return value.slice(0, offset).split(/\n/g).length;
 	}
 
-	static getType(value: string, separators?: string[]) {
+	static getType(value: string, separators?: readonly string[]) {
 		if (Token.whitespace.includes(value[0] ?? '')) {
 			return Token.WhiteSpace;
 		}
@@ -42,40 +44,40 @@ export class Token {
 		return Token.Ident;
 	}
 
-	static shiftLocation(token: Token, offset: number) {
+	static shiftLocation(token: ReadonlyDeep<Token>, offset: number) {
 		const shifted = token.offset + offset;
 		return {
 			offset: shifted,
-			line: Token.getLine(token.#originalValue, shifted),
-			column: Token.getCol(token.#originalValue, shifted),
+			line: Token.getLine(token.originalValue, shifted),
+			column: Token.getCol(token.originalValue, shifted),
 		};
 	}
 
 	readonly offset: number;
-	#originalValue: string;
+	readonly originalValue: string;
 	readonly type: number;
 	readonly value: string;
 
-	constructor(value: string, offset: number, originalValue: string, separators?: string[]) {
+	constructor(value: string, offset: number, originalValue: string, separators?: readonly string[]) {
 		this.type = Token.getType(value, separators);
 		this.value = value;
 		this.offset = offset;
-		this.#originalValue = originalValue;
+		this.originalValue = originalValue;
 	}
 
 	get length() {
 		return this.value.length;
 	}
 
-	get origin() {
-		return this.#originalValue;
+	clone() {
+		return new Token(this.value, this.offset, this.originalValue);
 	}
 
 	/**
 	 *
 	 * @param value The token value or the token type or its list
 	 */
-	includes(value: string | RegExp | number | (string | RegExp | number)[], caseInsensitive?: boolean): boolean {
+	includes(value: TokenValue, caseInsensitive?: boolean): boolean {
 		if (Array.isArray(value)) {
 			return value.some(v => this.includes(v));
 		}
@@ -95,7 +97,7 @@ export class Token {
 	 *
 	 * @param value The token value or the token type or its list
 	 */
-	match(value: string | RegExp | number | (string | RegExp | number)[], caseInsensitive?: boolean): boolean {
+	match(value: TokenValue, caseInsensitive?: boolean): boolean {
 		if (Array.isArray(value)) {
 			return value.some(v => this.match(v));
 		}
@@ -124,10 +126,12 @@ export class Token {
 	}
 
 	unmatched(
-		options?: UnmatchedResultOptions & {
-			ref?: string;
-			reason?: UnmatchedResultReason;
-		},
+		options?: ReadonlyDeep<
+			UnmatchedResultOptions & {
+				ref?: string;
+				reason?: UnmatchedResultReason;
+			}
+		>,
 	): UnmatchedResult {
 		return {
 			...options,
@@ -136,8 +140,8 @@ export class Token {
 			raw: this.value,
 			offset: this.offset,
 			length: this.value.length,
-			line: Token.getLine(this.#originalValue, this.offset),
-			column: Token.getCol(this.#originalValue, this.offset),
+			line: Token.getLine(this.originalValue, this.offset),
+			column: Token.getCol(this.originalValue, this.offset),
 			reason: options?.reason ?? 'syntax-error',
 		};
 	}

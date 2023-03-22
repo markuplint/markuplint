@@ -144,6 +144,19 @@
 			"rules": {
 				"import/no-extraneous-dependencies": 0
 			}
+		},
+		{
+			"files": ["packages/@markuplint/types/**/*.ts"],
+			"rules": {
+				"@typescript-eslint/prefer-readonly-parameter-types": [
+					"warn",
+					{
+						"checkParameterProperties": false,
+						"ignoreInferredTypes": true,
+						"treatMethodsAsReadonly": false
+					}
+				]
+			}
 		}
 	]
 }

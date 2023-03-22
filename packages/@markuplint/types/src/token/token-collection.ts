@@ -1,5 +1,7 @@
+import type { TokenValue } from './types';
 import type { UnmatchedResult } from '..';
 import type { Expect, Result, List } from '../types';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { matched, unmatched } from '../match-result';
 
@@ -11,21 +13,21 @@ type TokenCollectionOptions = Partial<
 	}
 >;
 
-export type TokenEachCheck = (head: Token | null, tail: TokenCollection) => Result | void;
+export type TokenEachCheck = (head: ReadonlyDeep<Token> | null, tail: ReadonlyDeep<TokenCollection>) => Result | void;
 
 export class TokenCollection extends Array<Token> {
 	static fromPatterns(
-		value: Token | string,
-		patterns: RegExp[],
-		typeOptions?: Omit<TokenCollectionOptions, 'specificSeparator'> & { repeat?: boolean },
+		value: ReadonlyDeep<Token> | string,
+		patterns: readonly Readonly<RegExp>[],
+		typeOptions?: ReadonlyDeep<Omit<TokenCollectionOptions, 'specificSeparator'> & { repeat?: boolean }>,
 	) {
-		const origin = typeof value === 'string' ? value : value.origin;
+		const originalValue = typeof value === 'string' ? value : value.originalValue;
 		let strings = typeof value === 'string' ? value : value.value;
 		let cumulativeOffset = typeof value === 'string' ? 0 : value.offset;
 		const tokens: Token[] = [];
 
 		function addToken(tokenValue: string) {
-			const token = new Token(tokenValue, cumulativeOffset, origin);
+			const token = new Token(tokenValue, cumulativeOffset, originalValue);
 			tokens.push(token);
 
 			strings = strings.slice(tokenValue.length);
@@ -81,9 +83,9 @@ export class TokenCollection extends Array<Token> {
 	readonly separator: NonNullable<List['separator']>;
 	readonly unique: NonNullable<List['unique']>;
 
-	constructor(value?: string, typeOptions?: TokenCollectionOptions);
+	constructor(value?: string, typeOptions?: ReadonlyDeep<TokenCollectionOptions>);
 	constructor(value?: number); // for map method etc.
-	constructor(value?: string | number, typeOptions?: TokenCollectionOptions) {
+	constructor(value?: string | number, typeOptions?: ReadonlyDeep<TokenCollectionOptions>) {
 		super();
 
 		this.disallowToSurroundBySpaces = typeOptions?.disallowToSurroundBySpaces || false;
@@ -109,10 +111,10 @@ export class TokenCollection extends Array<Token> {
 		}
 
 		if (typeOptions?.specificSeparator) {
-			if (Array.isArray(typeOptions.specificSeparator)) {
-				separators.push(...typeOptions.specificSeparator);
-			} else {
+			if (typeof typeOptions.specificSeparator === 'string') {
 				separators.push(typeOptions.specificSeparator);
+			} else {
+				separators.push(...typeOptions.specificSeparator);
 			}
 		}
 
@@ -248,7 +250,9 @@ export class TokenCollection extends Array<Token> {
 		return chunks;
 	}
 
-	compareTokens(callback: (prev: Token, current: Token) => Token | null | void) {
+	compareTokens(
+		callback: (prev: ReadonlyDeep<Token>, current: ReadonlyDeep<Token>) => ReadonlyDeep<Token> | null | void,
+	) {
 		const _tokens = this.slice();
 		let prev = _tokens.shift();
 		while (prev) {
@@ -273,7 +277,7 @@ export class TokenCollection extends Array<Token> {
 		return [a, b] as const;
 	}
 
-	eachCheck(...callbacks: TokenEachCheck[]): Result {
+	eachCheck(...callbacks: ReadonlyDeep<TokenEachCheck[]>): Result {
 		let headAndTail = this.headAndTail();
 		let head = headAndTail.head;
 		let tail = headAndTail.tail;
@@ -340,7 +344,7 @@ export class TokenCollection extends Array<Token> {
 		return matched();
 	}
 
-	filter(callback: (value: Token, index: number, array: Token[]) => boolean) {
+	filter(callback: Parameters<Array<Token>['filter']>[0]) {
 		return TokenCollection._new(super.filter(callback), this);
 	}
 
@@ -383,7 +387,7 @@ export class TokenCollection extends Array<Token> {
 	 *
 	 * @param value The token value or the token type or its list
 	 */
-	has(value: string | RegExp | number | (string | RegExp | number)[]) {
+	has(value: TokenValue) {
 		return this.some(t => t.match(value));
 	}
 
@@ -401,7 +405,7 @@ export class TokenCollection extends Array<Token> {
 	 *
 	 * @param value The token value or the token type or its list
 	 */
-	search(value: string | RegExp | number | (string | RegExp | number)[]) {
+	search(value: TokenValue) {
 		for (const token of this) {
 			if (token.includes(value)) {
 				return token;
@@ -440,7 +444,7 @@ export class TokenCollection extends Array<Token> {
 		return this.map(t => t.toJSON());
 	}
 
-	private static _new(tokens: Token[], old?: TokenCollection) {
+	private static _new(tokens: readonly ReadonlyDeep<Token>[], old?: ReadonlyDeep<TokenCollection>) {
 		const newCollection = new TokenCollection('', old);
 		newCollection.push(...tokens);
 		return newCollection;

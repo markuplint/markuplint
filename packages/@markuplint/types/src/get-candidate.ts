@@ -2,7 +2,10 @@ import leven from 'leven';
 
 type NullableString = string | null | undefined;
 
-export function getCandidate(value: NullableString, ...candidates: (NullableString | NullableString[])[]) {
+export function getCandidate(
+	value: NullableString,
+	...candidates: readonly (NullableString | readonly NullableString[])[]
+) {
 	if (!value) {
 		return;
 	}

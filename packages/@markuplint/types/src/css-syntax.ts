@@ -1,4 +1,5 @@
 import type { CustomCssSyntax, CssSyntaxTokenizer, CSSSyntaxToken, GetNextToken, Result, CssSyntax } from './types';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { fork } from 'css-tree';
 
@@ -10,7 +11,7 @@ const MIMIC_TAG_L = 'mimiccases---';
 const MIMIC_TAG_R = '---mimiccases';
 const MIMIC_LENGTH = (MIMIC_TAG_L + MIMIC_TAG_R).length;
 
-export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax): Result {
+export function cssSyntaxMatch(value: string, type: ReadonlyDeep<CssSyntax | CustomCssSyntax>): Result {
 	log('Search CSS Syntax: "%s"', type);
 
 	const origin = value;
@@ -20,7 +21,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	let propsExtended: Record<string, string>;
 	let ref: string | undefined = undefined;
 	let caseSensitive = false;
-	let ebnf: Record<string, string | string[]> | null = null;
+	let ebnf: Record<string, string | readonly string[]> | null = null;
 
 	if (typeof type === 'string') {
 		defName = type;
@@ -65,7 +66,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	Object.keys(typesCheckers).forEach(key => {
 		const checker = typesCheckers[key];
 		// @ts-ignore
-		lexer.addType_(key, (token: CSSSyntaxToken, getNextToken: GetNextToken) =>
+		lexer.addType_(key, (token: ReadonlyDeep<CSSSyntaxToken>, getNextToken: GetNextToken) =>
 			checker?.(token, getNextToken, cssSyntaxMatch),
 		);
 	});
@@ -148,7 +149,19 @@ function detectName(def: `<${string}>`) {
 	};
 }
 
-function eachMimicCases(key: string, obj: Record<string, string>) {
+/**
+ *
+ * @param key
+ * @param obj
+ * @modifies obj
+ * @returns
+ */
+function eachMimicCases(
+	key: string,
+	// Mutable
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	obj: Record<string, string>,
+) {
 	const value = obj[key];
 	if (!value) {
 		return;

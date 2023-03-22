@@ -5,22 +5,22 @@ export type { Type, List, Enum, CssSyntax, KeywordDefinedType, Number } from './
 export type Result = UnmatchedResult | MatchedResult;
 
 export type UnmatchedResult = {
-	matched: false;
-	ref: string | null;
-	raw: string;
-	length: number;
-	offset: number;
-	line: number;
-	column: number;
-	reason: UnmatchedResultReason;
-	passCount?: number;
+	readonly matched: false;
+	readonly ref: string | null;
+	readonly raw: string;
+	readonly length: number;
+	readonly offset: number;
+	readonly line: number;
+	readonly column: number;
+	readonly reason: UnmatchedResultReason;
+	readonly passCount?: number;
 } & UnmatchedResultOptions;
 
 export type UnmatchedResultOptions = {
-	partName?: string;
-	expects?: Expect[];
-	extra?: Expect;
-	candidate?: string;
+	readonly partName?: string;
+	readonly expects?: readonly Expect[];
+	readonly extra?: Expect;
+	readonly candidate?: string;
 };
 
 export type UnmatchedResultReason =
@@ -60,12 +60,12 @@ export type UnmatchedResultReason =
 	  };
 
 export type MatchedResult = {
-	matched: true;
+	readonly matched: true;
 };
 
 export type Expect = {
-	type: 'const' | 'format' | 'syntax' | 'regexp' | 'common';
-	value: string;
+	readonly type: 'const' | 'format' | 'syntax' | 'regexp' | 'common';
+	readonly value: string;
 };
 
 export type FormattedPrimitiveTypeCheck = (value: string) => boolean;
@@ -110,7 +110,7 @@ export type CSSSyntaxToken = {
 };
 
 export type CssSyntaxTokenizer = (
-	token: CSSSyntaxToken | null,
+	token: Readonly<CSSSyntaxToken> | null,
 	getNextToken: GetNextToken,
 	match: typeof cssSyntaxMatch,
 ) => number;

@@ -1,5 +1,6 @@
 import type { Token } from '../token';
 import type { CustomSyntaxChecker } from '../types';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { log } from '../debug';
 import { matched, unmatched } from '../match-result';
@@ -201,7 +202,7 @@ function _checkSerializedPermissionsPolicy(value: string) {
  * > If they are required, they must be percent-encoded
  * > as "%27", "%2A", "%2C" or "%3B", respectively.
  */
-function checkSerializedOrigin(token: Token) {
+function checkSerializedOrigin(token: ReadonlyDeep<Token>) {
 	const url = parseUrl(token.value);
 
 	log('Parse URL: "%s" => %O', token.value, url);

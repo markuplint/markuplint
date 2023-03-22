@@ -4,7 +4,7 @@ import type { Number } from './types.schema';
 import { matched, unmatched } from './match-result';
 import { isFloat, isInt } from './primitive';
 
-export function checkNumber(value: string, type: Number, ref?: string): Result {
+export function checkNumber(value: string, type: Readonly<Number>, ref?: string): Result {
 	if (!value) {
 		return unmatched(value, 'empty-token');
 	}
