@@ -154,7 +154,8 @@
 				"packages/@markuplint/ml-ast/**/*.ts",
 				"packages/@markuplint/i18n/**/*.ts",
 				"packages/@markuplint/parser-utils/**/*.ts",
-				"packages/@markuplint/rules/**/*.ts"
+				"packages/@markuplint/rules/**/*.ts",
+				"packages/@markuplint/html-parser/**/*.ts"
 			],
 			"excludedFiles": ["**/*.spec.ts"],
 			"rules": {
