@@ -1,4 +1,5 @@
 import type { ARIAAttributeValue, ARIAProperty, ARIAVersion, MLMLSpec } from '../types';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { ariaSpecs as _ariaSpecs } from '../specs/aria-specs';
 
@@ -16,7 +17,12 @@ type ARIAProp = {
 
 type ARIAPropReferenceType = 'default' | 'html-attr' | 'aria-attr';
 
-export function getComputedAriaProps(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): ARIAProps {
+export function getComputedAriaProps(
+	specs: ReadonlyDeep<MLMLSpec>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	version: ARIAVersion,
+): ARIAProps {
 	const ariaSpecs = _ariaSpecs(specs, version);
 
 	const { role } = getComputedRole(specs, el, version);
@@ -86,7 +92,12 @@ export function getComputedAriaProps(specs: Readonly<MLMLSpec>, el: Element, ver
 	return props;
 }
 
-function isValidAriaValue(spec: ARIAProperty, role: string, value: string | undefined, enumList: string[]) {
+function isValidAriaValue(
+	spec: ReadonlyDeep<ARIAProperty>,
+	role: string,
+	value: string | undefined,
+	enumList: readonly string[],
+) {
 	let type: ARIAAttributeValue = spec.value;
 	if (spec.conditionalValue) {
 		for (const cond of spec.conditionalValue) {

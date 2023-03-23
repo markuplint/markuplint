@@ -54,7 +54,8 @@ export const checkingRequiredOwnedElements: ElementChecker<
 				if (
 					role.requiredOwnedElements.some(ownedRole =>
 						isRequiredOwnedElement(
-							computedChild,
+							computedChild.el,
+							computedChild.role,
 							ownedRole,
 							child.ownerMLDocument.specs,
 							child.rule.options.version,

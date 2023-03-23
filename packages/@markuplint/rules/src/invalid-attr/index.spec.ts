@@ -478,6 +478,9 @@ test('Vue iterator', async () => {
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
+			specs: {
+				'.*': '@markuplint/vue-spec',
+			},
 		},
 	);
 

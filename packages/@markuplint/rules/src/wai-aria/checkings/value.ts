@@ -1,13 +1,14 @@
 import type { Options } from '../types';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 export const checkingValue: AttrChecker<
 	boolean,
 	Options,
 	{
 		role?: ARIARole | null;
-		propSpecs: ARIAProperty[];
+		propSpecs: ReadonlyDeep<ARIAProperty[]>;
 		booleanish?: boolean;
 	}
 > =
@@ -34,7 +35,12 @@ export const checkingValue: AttrChecker<
 		};
 	};
 
-function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, role?: string, booleanish?: boolean) {
+function checkAria(
+	propSpec: ReadonlyDeep<ARIAProperty> | undefined,
+	currentValue: string,
+	role?: string,
+	booleanish?: boolean,
+) {
 	if (!propSpec) {
 		return {
 			currentValue,
@@ -64,7 +70,7 @@ function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, rol
  *
  * @see https://www.w3.org/TR/wai-aria-1.2/#propcharacteristic_value
  */
-export function checkAriaValue(type: string, value: string, tokenEnum: string[], booleanish?: boolean) {
+export function checkAriaValue(type: string, value: string, tokenEnum: readonly string[], booleanish?: boolean) {
 	switch (type) {
 		case 'token': {
 			return tokenEnum.includes(value);

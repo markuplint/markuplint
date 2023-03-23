@@ -1,6 +1,9 @@
-type NamedDefinition = string | { name: string };
+type NamedDefinition = string | { readonly name: string };
 
-export function mergeArray<T extends NamedDefinition>(a: T[], b: T[] | null | undefined): T[] {
+export function mergeArray<T extends NamedDefinition>(
+	a: readonly T[],
+	b: readonly T[] | null | undefined,
+): readonly T[] {
 	if (!b) {
 		return a;
 	}

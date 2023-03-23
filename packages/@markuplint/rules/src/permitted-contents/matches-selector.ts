@@ -1,5 +1,6 @@
-import type { ChildNode, Options, Result, Specs } from './types';
+import type { ChildNode, Result, Specs } from './types';
 import type { Category } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
 
@@ -17,8 +18,7 @@ type Condition = {
 export function matchesSelector(
 	query: string,
 	node: ChildNode | undefined,
-	specs: Specs,
-	options: Options,
+	specs: ReadonlyDeep<Specs>,
 	depth: number,
 ): SelectorResult {
 	const nodeLog = cmLog.extend(`node#${depth}`);
@@ -169,8 +169,8 @@ const conditionWithoutSpecs: Record<string, Condition> = {
 		hasText: true,
 	},
 };
-const optConditionSpecsBaseCaches = new Map<Specs, Map<string, Condition>>();
-function optCondition(query: string, specs: Specs): Readonly<Condition> {
+const optConditionSpecsBaseCaches = new Map<ReadonlyDeep<Specs>, Map<string, Condition>>();
+function optCondition(query: string, specs: ReadonlyDeep<Specs>): Readonly<Condition> {
 	const condWithoutSpecs = conditionWithoutSpecs[query];
 	if (condWithoutSpecs) {
 		return condWithoutSpecs;

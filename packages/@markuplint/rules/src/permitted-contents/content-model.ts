@@ -1,5 +1,6 @@
 import type { ContentModelResult, Element, Options, Specs, TagRule } from './types';
 import type { MLMLSpec } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { getContentModel } from '@markuplint/ml-spec';
 
@@ -28,8 +29,8 @@ function createModel(el: Element, rules: readonly TagRule[]) {
 	return model;
 }
 
-const caches = new Map<string, Specs>();
-function cachedSpecs(specs: MLMLSpec, rules: readonly TagRule[]): Specs {
+const caches = new Map<string, ReadonlyDeep<Specs>>();
+function cachedSpecs(specs: ReadonlyDeep<MLMLSpec>, rules: readonly TagRule[]): ReadonlyDeep<Specs> {
 	if (!rules.length) {
 		return specs;
 	}
@@ -41,7 +42,7 @@ function cachedSpecs(specs: MLMLSpec, rules: readonly TagRule[]): Specs {
 		return cached;
 	}
 
-	const merged: Specs = {
+	const merged: ReadonlyDeep<Specs> = {
 		...specs,
 		specs: [
 			...specs.specs,

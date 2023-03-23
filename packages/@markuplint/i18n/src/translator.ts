@@ -7,10 +7,10 @@ const defaultListFormat: ListFormat = {
 };
 
 export function translator(localeSet?: LocaleSet): Translator {
-	return (messageTmpl: string | string[], ...keywords: Primitive[]) => {
+	return (messageTmpl, ...keywords) => {
 		let message = messageTmpl;
 
-		if (Array.isArray(messageTmpl)) {
+		if (typeof messageTmpl !== 'string') {
 			const format = localeSet?.listFormat || defaultListFormat;
 			return `${format.quoteStart}${messageTmpl
 				.map(keyword => translateKeyword(keyword, '', localeSet))

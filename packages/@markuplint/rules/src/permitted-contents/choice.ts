@@ -1,5 +1,6 @@
 import type { ChildNode, MatchedReason, Options, Result, Specs } from './types';
 import type { PermittedContentChoice } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { bgBlue, bgGreen, cmLog } from './debug';
 import { order } from './order';
@@ -8,9 +9,9 @@ import { Collection, modelLog } from './utils';
 const indexes = new WeakMap<Result<MatchedReason>, number>();
 
 export function choice(
-	pattern: PermittedContentChoice,
+	pattern: ReadonlyDeep<PermittedContentChoice>,
 	elements: ChildNode[],
-	specs: Specs,
+	specs: ReadonlyDeep<Specs>,
 	options: Options,
 	depth: number,
 ): Result {
@@ -75,7 +76,7 @@ export function choice(
 	};
 }
 
-function choiceLogString(choice: PermittedContentChoice['choice'], index: number, barely = false) {
+function choiceLogString(choice: ReadonlyDeep<PermittedContentChoice['choice']>, index: number, barely = false) {
 	const colorFn = barely ? bgBlue : bgGreen;
 	return choice
 		.map((pattern, i) => {

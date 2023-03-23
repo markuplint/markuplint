@@ -11,6 +11,7 @@ import type {
 	MLMLSpec,
 } from '@markuplint/ml-spec';
 import type { SelectorMatchedResult } from '@markuplint/selector';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { createSelector } from '@markuplint/selector';
 
@@ -30,7 +31,7 @@ export function getChildNodesWithoutWhitespaces(el: Element): ChildNode[] {
 	return nodes;
 }
 
-export function isModel(model: Model | PermittedContentPattern[]): model is Model {
+export function isModel(model: ReadonlyDeep<Model | PermittedContentPattern[]>): model is ReadonlyDeep<Model> {
 	if (typeof model === 'string') {
 		return true;
 	}
@@ -47,7 +48,7 @@ export function isModel(model: Model | PermittedContentPattern[]): model is Mode
 	return modelMode;
 }
 
-export function matches(selector: string, node: ChildNode, specs: Specs) {
+export function matches(selector: string, node: ChildNode, specs: ReadonlyDeep<Specs>) {
 	const selectorResult = createSelector(selector, specs as MLMLSpec).search(node);
 
 	const matched = selectorResult.filter((r): r is SelectorMatchedResult => r.matched);
@@ -87,38 +88,50 @@ function descendants(selectorResult: SelectorMatchedResult): ChildNode[] {
 	return nodes;
 }
 
-export function isRequire(content: PermittedContentPattern): content is PermittedContentRequire {
+export function isRequire(
+	content: ReadonlyDeep<PermittedContentPattern>,
+): content is ReadonlyDeep<PermittedContentRequire> {
 	return 'require' in content;
 }
 
-export function isOptional(content: PermittedContentPattern): content is PermittedContentOptional {
+export function isOptional(
+	content: ReadonlyDeep<PermittedContentPattern>,
+): content is ReadonlyDeep<PermittedContentOptional> {
 	return 'optional' in content;
 }
 
-export function isOneOrMore(content: PermittedContentPattern): content is PermittedContentOneOrMore {
+export function isOneOrMore(
+	content: ReadonlyDeep<PermittedContentPattern>,
+): content is ReadonlyDeep<PermittedContentOneOrMore> {
 	return 'oneOrMore' in content;
 }
 
-export function isZeroOrMore(content: PermittedContentPattern): content is PermittedContentZeroOrMore {
+export function isZeroOrMore(
+	content: ReadonlyDeep<PermittedContentPattern>,
+): content is ReadonlyDeep<PermittedContentZeroOrMore> {
 	return 'zeroOrMore' in content;
 }
 
-export function isChoice(content: PermittedContentPattern): content is PermittedContentChoice {
+export function isChoice(
+	content: ReadonlyDeep<PermittedContentPattern>,
+): content is ReadonlyDeep<PermittedContentChoice> {
 	return 'choice' in content;
 }
 
-export function isTransparent(content: PermittedContentPattern): content is PermittedContentTransparent {
+export function isTransparent(
+	content: ReadonlyDeep<PermittedContentPattern>,
+): content is ReadonlyDeep<PermittedContentTransparent> {
 	return 'transparent' in content;
 }
 
 export function normalizeModel(
 	pattern:
-		| PermittedContentRequire
-		| PermittedContentOptional
-		| PermittedContentOneOrMore
-		| PermittedContentZeroOrMore,
+		| ReadonlyDeep<PermittedContentRequire>
+		| ReadonlyDeep<PermittedContentOptional>
+		| ReadonlyDeep<PermittedContentOneOrMore>
+		| ReadonlyDeep<PermittedContentZeroOrMore>,
 ) {
-	let model: Model | PermittedContentPattern[];
+	let model: ReadonlyDeep<Model | PermittedContentPattern[]>;
 	let min: number;
 	let max: number;
 	let repeat: RepeatSign;
@@ -282,7 +295,7 @@ export class Collection {
 
 export class UnsupportedError extends Error {}
 
-export function modelLog(model: Model | PermittedContentPattern[], repeat: RepeatSign): string {
+export function modelLog(model: ReadonlyDeep<Model | PermittedContentPattern[]>, repeat: RepeatSign): string {
 	if (!isModel(model)) {
 		return orderLog(model, repeat);
 	}
@@ -292,13 +305,13 @@ export function modelLog(model: Model | PermittedContentPattern[], repeat: Repea
 	return `(<${model.join('>|<')}>)${repeat}`;
 }
 
-function orderLog(order: PermittedContentPattern[], repeat: RepeatSign) {
+function orderLog(order: ReadonlyDeep<PermittedContentPattern[]>, repeat: RepeatSign) {
 	return order.length === 1 && order[0]
 		? markRepeat(patternLog(order[0]), repeat)
 		: markRepeat(order.map(pattern => patternLog(pattern)).join(''), repeat);
 }
 
-function patternLog(pattern: PermittedContentPattern): string {
+function patternLog(pattern: ReadonlyDeep<PermittedContentPattern>): string {
 	if (isTransparent(pattern)) {
 		// 適当
 		return `:transparent(${modelLog(pattern.transparent, '')})`;

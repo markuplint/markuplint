@@ -1,11 +1,17 @@
 import type { ARIAVersion, ComputedRole, MLMLSpec, RoleComputationError } from '../types';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { getRoleSpec } from '../specs/get-role-spec';
 import { resolveNamespace } from '../utils/resolve-namespace';
 
 import { getPermittedRoles } from './get-permitted-roles';
 
-export function getExplicitRole(specs: MLMLSpec, el: Element, version: ARIAVersion): ComputedRole {
+export function getExplicitRole(
+	specs: ReadonlyDeep<MLMLSpec>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	version: ARIAVersion,
+): ComputedRole {
 	const roleValue = el.getAttribute('role');
 	const roleNames = roleValue?.toLowerCase().trim().split(/\s+/g) || [];
 	const permittedRoles = getPermittedRoles(el, version, specs);
@@ -89,11 +95,15 @@ export function getExplicitRole(specs: MLMLSpec, el: Element, version: ARIAVersi
 	};
 }
 
-function isLandmarkRole(role: NonNullable<ReturnType<typeof getRoleSpec>>) {
+function isLandmarkRole(role: ReadonlyDeep<NonNullable<ReturnType<typeof getRoleSpec>>>) {
 	return role?.superClassRoles.some(su => su.name === 'landmark');
 }
 
-function isValidLandmarkRole(el: Element, role: NonNullable<ReturnType<typeof getRoleSpec>>) {
+function isValidLandmarkRole(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	role: ReadonlyDeep<NonNullable<ReturnType<typeof getRoleSpec>>>,
+) {
 	if (!role.accessibleNameRequired) {
 		return true;
 	}

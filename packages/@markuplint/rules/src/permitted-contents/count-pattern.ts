@@ -5,6 +5,7 @@ import type {
 	PermittedContentRequire,
 	PermittedContentZeroOrMore,
 } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { cmLog } from './debug';
 import { recursiveBranch } from './recursive-branch';
@@ -22,12 +23,12 @@ import { Collection, mergeHints, modelLog, normalizeModel } from './utils';
  */
 export function countPattern(
 	pattern:
-		| PermittedContentOneOrMore
-		| PermittedContentOptional
-		| PermittedContentRequire
-		| PermittedContentZeroOrMore,
+		| ReadonlyDeep<PermittedContentOneOrMore>
+		| ReadonlyDeep<PermittedContentOptional>
+		| ReadonlyDeep<PermittedContentRequire>
+		| ReadonlyDeep<PermittedContentZeroOrMore>,
 	elements: readonly ChildNode[],
-	specs: Specs,
+	specs: ReadonlyDeep<Specs>,
 	options: Options,
 	depth: number,
 ): Result {

@@ -1,18 +1,19 @@
 import type { ARIAVersion, Matches, MLMLSpec } from '../types';
 import type { ARIA, PermittedRoles } from '../types/aria';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { getSpecByTagName } from './get-spec-by-tag-name';
 import { resolveVersion } from './resolve-version';
 
-const cache = new Map<string, Omit<ARIA, ARIAVersion> | null>();
+const cache = new Map<string, Omit<ReadonlyDeep<ARIA>, ARIAVersion> | null>();
 
 export function getARIA(
-	specs: Readonly<MLMLSpec>,
+	specs: ReadonlyDeep<MLMLSpec>,
 	localName: string,
 	namespace: string | null,
 	version: ARIAVersion,
 	matches: Matches,
-): Omit<ARIA, ARIAVersion | 'conditions'> | null {
+): Omit<ReadonlyDeep<ARIA>, ARIAVersion | 'conditions'> | null {
 	const aria = getVersionResolvedARIA(specs, localName, namespace, version);
 	if (!aria) {
 		return null;
@@ -47,7 +48,7 @@ export function getARIA(
 }
 
 function getVersionResolvedARIA(
-	specs: Readonly<MLMLSpec>,
+	specs: ReadonlyDeep<MLMLSpec>,
 	localName: string,
 	namespace: string | null,
 	version: ARIAVersion,
@@ -64,13 +65,16 @@ function getVersionResolvedARIA(
 	}
 	aria = resolveVersion(spec, version);
 	if (aria.permittedRoles) {
-		aria.permittedRoles = optimizePermittedRoles(aria.permittedRoles);
+		aria = {
+			...aria,
+			permittedRoles: optimizePermittedRoles(aria.permittedRoles),
+		};
 	}
 	cache.set(key, aria);
 	return aria;
 }
 
-function optimizePermittedRoles(permittedRoles: PermittedRoles) {
+function optimizePermittedRoles(permittedRoles: ReadonlyDeep<PermittedRoles>) {
 	if (!Array.isArray(permittedRoles)) {
 		return permittedRoles;
 	}

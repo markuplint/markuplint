@@ -1,5 +1,6 @@
 import type { ChildNode, Options, Result, Specs } from './types';
 import type { PermittedContentPattern } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { deepCopy } from '../helpers';
 
@@ -18,9 +19,9 @@ import { Collection, mergeHints, modelLog } from './utils';
  * @returns
  */
 export function order(
-	contents: ReadonlyArray<PermittedContentPattern>,
+	contents: ReadonlyDeep<PermittedContentPattern[]>,
 	nodes: ReadonlyArray<ChildNode>,
-	specs: Specs,
+	specs: ReadonlyDeep<Specs>,
 	options: Options,
 	depth: number,
 ): Result {

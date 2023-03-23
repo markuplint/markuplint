@@ -1,10 +1,11 @@
 import type { ARIAVersion, ARIARoleInSchema, MLMLSpec, ARIARole } from '../types';
 import type { NamespaceURI } from '@markuplint/ml-ast';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { ariaSpecs } from './aria-specs';
 
 export function getRoleSpec(
-	specs: Readonly<MLMLSpec>,
+	specs: ReadonlyDeep<MLMLSpec>,
 	roleName: string,
 	namespace: NamespaceURI,
 	version: ARIAVersion,
@@ -17,21 +18,21 @@ export function getRoleSpec(
 	return {
 		name: role.name,
 		isAbstract: !!role.isAbstract,
-		requiredContextRole: role.requiredContextRole ?? [],
-		requiredOwnedElements: role.requiredOwnedElements ?? [],
+		requiredContextRole: role.requiredContextRole?.slice() ?? [],
+		requiredOwnedElements: role.requiredOwnedElements?.slice() ?? [],
 		accessibleNameRequired: !!role.accessibleNameRequired,
 		accessibleNameFromAuthor: !!role.accessibleNameFromAuthor,
 		accessibleNameFromContent: !!role.accessibleNameFromContent,
 		accessibleNameProhibited: !!role.accessibleNameProhibited,
 		childrenPresentational: !!role.childrenPresentational,
-		ownedProperties: role.ownedProperties ?? [],
-		prohibitedProperties: role.prohibitedProperties ?? [],
+		ownedProperties: role.ownedProperties?.slice() ?? [],
+		prohibitedProperties: role.prohibitedProperties?.slice() ?? [],
 		superClassRoles,
 	};
 }
 
 function recursiveTraverseSuperClassRoles(
-	specs: Readonly<MLMLSpec>,
+	specs: ReadonlyDeep<MLMLSpec>,
 	roleName: string,
 	namespace: NamespaceURI,
 	version: ARIAVersion,
@@ -49,7 +50,7 @@ function recursiveTraverseSuperClassRoles(
 }
 
 function getSuperClassRoles(
-	specs: Readonly<MLMLSpec>,
+	specs: ReadonlyDeep<MLMLSpec>,
 	roleName: string,
 	namespace: NamespaceURI,
 	version: ARIAVersion,
@@ -62,7 +63,7 @@ function getSuperClassRoles(
 	);
 }
 
-function getRoleByName(specs: Readonly<MLMLSpec>, roleName: string, namespace: NamespaceURI, version: ARIAVersion) {
+function getRoleByName(specs: ReadonlyDeep<MLMLSpec>, roleName: string, namespace: NamespaceURI, version: ARIAVersion) {
 	const { roles, graphicsRoles } = ariaSpecs(specs, version);
 	let role = roles.find(r => r.name === roleName);
 	if (!role && namespace === 'http://www.w3.org/2000/svg') {

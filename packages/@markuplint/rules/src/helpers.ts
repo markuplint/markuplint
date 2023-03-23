@@ -3,6 +3,7 @@ import type { Translator } from '@markuplint/i18n';
 import type { PlainData } from '@markuplint/ml-config';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 // @ts-ignore
 import structuredClone from '@ungap/structured-clone';
@@ -12,13 +13,13 @@ import { attrCheck } from './attr-check';
 
 export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
 	node: Element<T, O>,
-	condition: Attribute['condition'],
+	condition: ReadonlyDeep<Attribute['condition']>,
 ) {
 	if (!condition) {
 		return true;
 	}
 
-	const condSelector = Array.isArray(condition) ? condition.join(',') : condition;
+	const condSelector = typeof condition === 'string' ? condition : condition.join(',');
 
 	return node.matches(condSelector);
 }
@@ -75,7 +76,7 @@ export function isValidAttr(
 	value: string,
 	isDynamicValue: boolean,
 	node: Element<any, any>,
-	attrSpecs: Attribute[],
+	attrSpecs: ReadonlyDeep<Attribute[]>,
 	log?: Log,
 ) {
 	let invalid: ReturnType<typeof attrCheck> = false;
@@ -94,7 +95,7 @@ export function isValidAttr(
 	return invalid;
 }
 
-export function toNormalizedValue(value: string, spec: Attribute) {
+export function toNormalizedValue(value: string, spec: ReadonlyDeep<Attribute>) {
 	let normalized = value;
 
 	if (!spec.caseSensitive) {

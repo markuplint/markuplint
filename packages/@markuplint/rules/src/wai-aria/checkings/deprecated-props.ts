@@ -1,11 +1,12 @@
 import type { Options } from '../types';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 export const checkingDeprecatedProps: AttrChecker<
 	boolean,
 	Options,
-	{ role: ARIARole | null; propSpecs: ARIAProperty[] }
+	{ role: ARIARole | null; propSpecs: ReadonlyDeep<ARIAProperty[]> }
 > =
 	({ attr, role, propSpecs }) =>
 	t => {

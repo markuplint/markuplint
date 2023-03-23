@@ -1,5 +1,6 @@
 import type { Translator } from '@markuplint/i18n';
 import type { Attribute as AttrSpec, AttributeType } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { check } from '@markuplint/types';
 
@@ -31,7 +32,7 @@ export function attrCheck(
 	name: string,
 	value: string,
 	isCustomRule: boolean,
-	spec?: AttrSpec,
+	spec?: ReadonlyDeep<AttrSpec>,
 ): Invalid | false {
 	if (!isCustomRule) {
 		if (/^data-.+$/.test(name)) {

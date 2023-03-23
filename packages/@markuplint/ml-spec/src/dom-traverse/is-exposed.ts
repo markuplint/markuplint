@@ -1,4 +1,5 @@
 import type { ARIAVersion, MLMLSpec } from '../types';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { ariaSpecs } from '../specs/aria-specs';
 import { getSpecByTagName } from '../specs/get-spec-by-tag-name';
@@ -16,7 +17,12 @@ import { getComputedRole } from './get-computed-role';
  * @param el
  * @param version
  */
-export function isExposed(el: Element, specs: Readonly<MLMLSpec>, version: ARIAVersion): boolean {
+export function isExposed(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	specs: ReadonlyDeep<MLMLSpec>,
+	version: ARIAVersion,
+): boolean {
 	// According to WAI-ARIA
 	if (isExcluding(el, specs, version)) {
 		return false;
@@ -57,7 +63,12 @@ export function isExposed(el: Element, specs: Readonly<MLMLSpec>, version: ARIAV
  * @param el
  * @param version
  */
-function isExcluding(el: Element, specs: Readonly<MLMLSpec>, version: ARIAVersion): boolean {
+function isExcluding(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	specs: ReadonlyDeep<MLMLSpec>,
+	version: ARIAVersion,
+): boolean {
 	/**
 	 * The following elements are not exposed via the accessibility API and
 	 * user agents MUST NOT include them in the accessibility tree:
@@ -141,7 +152,12 @@ function isExcluding(el: Element, specs: Readonly<MLMLSpec>, version: ARIAVersio
  * @param el
  * @param version
  */
-function isIncluding(el: Element, specs: Readonly<MLMLSpec>, version: ARIAVersion): boolean {
+function isIncluding(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	specs: ReadonlyDeep<MLMLSpec>,
+	version: ARIAVersion,
+): boolean {
 	/**
 	 * > **meet any** of the following criteria:
 	 */
@@ -194,7 +210,10 @@ function isIncluding(el: Element, specs: Readonly<MLMLSpec>, version: ARIAVersio
 	return results.includes(true);
 }
 
-function hasDisplayNodeOrVisibilityHidden(el: Element) {
+function hasDisplayNodeOrVisibilityHidden(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+) {
 	const style = el.getAttribute('style');
 	if (!style) {
 		return false;
@@ -203,7 +222,11 @@ function hasDisplayNodeOrVisibilityHidden(el: Element) {
 	return /display\s*:\s*none|visibility\s*:\s*hidden/gi.test(style);
 }
 
-function isExposedElement(el: Element, specs: Readonly<MLMLSpec>) {
+function isExposedElement(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	specs: ReadonlyDeep<MLMLSpec>,
+) {
 	const svgRenderedConditions = specs.def['#contentModels']['#SVGRenderable']?.join(',');
 
 	if (svgRenderedConditions && el.matches(svgRenderedConditions)) {
@@ -213,7 +236,11 @@ function isExposedElement(el: Element, specs: Readonly<MLMLSpec>) {
 	return isNotMetaOrHiddenHTMLElement(el, specs);
 }
 
-function isNotMetaOrHiddenHTMLElement(el: Element, specs: Readonly<MLMLSpec>) {
+function isNotMetaOrHiddenHTMLElement(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	specs: ReadonlyDeep<MLMLSpec>,
+) {
 	const metadataConditions = specs.def['#contentModels']['#metadata']?.join(',');
 
 	if (metadataConditions && el.matches(metadataConditions)) {

@@ -1,4 +1,4 @@
-export type Translator = (messageTmpl: string | string[], ...keywords: Primitive[]) => string;
+export type Translator = (messageTmpl: string | readonly string[], ...keywords: Primitive[]) => string;
 
 export type LocaleSet = {
 	locale: string;

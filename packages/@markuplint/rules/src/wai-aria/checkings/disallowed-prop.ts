@@ -1,13 +1,14 @@
 import type { Options } from '../types';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { getARIA } from '@markuplint/ml-spec';
 
 export const checkingDisallowedProp: AttrChecker<
 	boolean,
 	Options,
-	{ role: ARIARole | null; propSpecs: ARIAProperty[] }
+	{ role: ARIARole | null; propSpecs: ReadonlyDeep<ARIAProperty[]> }
 > =
 	({ attr, role, propSpecs }) =>
 	t => {

@@ -1,10 +1,10 @@
-import type { ChildNode, Options, Result, Specs } from './types';
+import type { ChildNode, Result } from './types';
 
 import { cmLog } from './debug';
 
 const transparentLog = cmLog.extend('transparent');
 
-export function transparent(nodes: ChildNode[], specs: Specs, options: Options, depth: number): Result {
+export function transparent(nodes: ChildNode[]): Result {
 	if (nodes.length === 0 || nodes[0]?.parentElement?.parentElement) {
 		transparentLog('Skipped');
 		return {

@@ -12,6 +12,7 @@ import type { MLToken } from '../token/token';
 import type { EndTagType, MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
 import { schemaToSpec } from '@markuplint/ml-spec';
@@ -87,7 +88,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 *
 	 */
-	readonly specs: Readonly<MLMLSpec>;
+	readonly specs: ReadonlyDeep<MLMLSpec>;
 
 	#tokenList: ReadonlyArray<MLToken> | null = null;
 

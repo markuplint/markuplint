@@ -1,4 +1,8 @@
 import type { ARIAVersion, Matches, MLMLSpec } from '../types';
+import type { PermittedARIAAAMInfo, PermittedRoles } from '../types/aria';
+import type { ReadonlyDeep } from 'type-fest';
+
+import { isPlainObject } from 'is-plain-object';
 
 import { mergeArray } from '../utils/merge-array';
 
@@ -13,12 +17,15 @@ import { getARIA } from './get-aria';
  * - If `false`, this mean is "No".
  */
 export function getPermittedRoles(
-	specs: Readonly<MLMLSpec>,
+	specs: ReadonlyDeep<MLMLSpec>,
 	localName: string,
 	namespace: string | null,
 	version: ARIAVersion,
 	matches: Matches,
-): { name: string; deprecated?: boolean }[] {
+): readonly {
+	readonly name: string;
+	readonly deprecated?: boolean;
+}[] {
 	const aria = getARIA(specs, localName, namespace, version, matches);
 	if (!aria) {
 		return [];
@@ -26,7 +33,7 @@ export function getPermittedRoles(
 	const { implicitRole, permittedRoles } = aria;
 	const { roles, graphicsRoles } = ariaSpecs(specs, version);
 
-	let permittedRoleList: { name: string }[] = [];
+	let permittedRoleList: readonly { readonly name: string }[] = [];
 
 	if (permittedRoles === true) {
 		permittedRoleList = mergeArray(
@@ -39,19 +46,7 @@ export function getPermittedRoles(
 		);
 	}
 
-	if (Array.isArray(permittedRoles)) {
-		permittedRoleList = mergeArray(
-			permittedRoleList,
-			permittedRoles.map(role => {
-				if (typeof role === 'string') {
-					return {
-						name: role,
-					};
-				}
-				return role;
-			}),
-		);
-	} else if (!(typeof permittedRoles === 'boolean')) {
+	if (isAAMInfo(permittedRoles)) {
 		if (permittedRoles['core-aam']) {
 			permittedRoleList = mergeArray(
 				permittedRoleList,
@@ -72,6 +67,18 @@ export function getPermittedRoles(
 					})),
 			);
 		}
+	} else if (typeof permittedRoles !== 'boolean') {
+		permittedRoleList = mergeArray(
+			permittedRoleList,
+			permittedRoles.map(role => {
+				if (typeof role === 'string') {
+					return {
+						name: role,
+					};
+				}
+				return role;
+			}),
+		);
 	}
 
 	if (implicitRole) {
@@ -84,4 +91,8 @@ export function getPermittedRoles(
 	}
 
 	return permittedRoleList;
+}
+
+function isAAMInfo(permittedRoles: ReadonlyDeep<PermittedRoles>): permittedRoles is ReadonlyDeep<PermittedARIAAAMInfo> {
+	return isPlainObject(permittedRoles);
 }

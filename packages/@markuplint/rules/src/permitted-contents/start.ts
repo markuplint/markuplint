@@ -1,5 +1,6 @@
 import type { ContentModelResult, Element, Options, Specs } from './types';
 import type { ContentModel } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { order } from './order';
 import { representTransparentNodes } from './represent-transparent-nodes';
@@ -15,9 +16,9 @@ import { getChildNodesWithoutWhitespaces } from './utils';
  * @returns
  */
 export function start(
-	contents: ContentModel['contents'],
+	contents: ReadonlyDeep<ContentModel['contents']>,
 	el: Element,
-	specs: Specs,
+	specs: ReadonlyDeep<Specs>,
 	options: Options,
 ): ContentModelResult[] {
 	if (contents === false) {

@@ -1,7 +1,8 @@
 import type { ARIAVersion } from '../types';
 import type { ARIA } from '../types/aria';
+import type { ReadonlyDeep } from 'type-fest';
 
-export function resolveVersion(aria: ARIA, version: ARIAVersion): Omit<ARIA, ARIAVersion> {
+export function resolveVersion(aria: ReadonlyDeep<ARIA>, version: ARIAVersion): Omit<ReadonlyDeep<ARIA>, ARIAVersion> {
 	const implicitRole = aria[version]?.implicitRole ?? aria.implicitRole;
 	const permittedRoles = aria[version]?.permittedRoles ?? aria.permittedRoles;
 	const implicitProperties = aria[version]?.implicitProperties ?? aria.implicitProperties;
