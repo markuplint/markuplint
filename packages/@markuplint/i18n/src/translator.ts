@@ -53,7 +53,7 @@ export function translator(localeSet?: LocaleSet): Translator {
  */
 export function taggedTemplateTranslator(localeSet?: LocaleSet) {
 	const t = translator(localeSet);
-	return (strings: TemplateStringsArray, ...keys: Primitive[]) => {
+	return (strings: Readonly<TemplateStringsArray>, ...keys: readonly Primitive[]) => {
 		let i = 0;
 		const template = strings.raw
 			.map((place, index) => {
