@@ -16,4 +16,5 @@ export type MLFabric = {
 	readonly schemas: MLSchema;
 	readonly parserOptions: ParserOptions;
 	readonly pretenders: readonly Pretender[];
+	readonly configErrors?: readonly Readonly<Error>[];
 };

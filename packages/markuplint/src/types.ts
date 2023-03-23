@@ -2,10 +2,10 @@ import type { Config, PlainData, RuleConfigValue, Violation } from '@markuplint/
 import type { Document, Ruleset } from '@markuplint/ml-core';
 
 export interface MLResultInfo {
-	violations: Violation[];
-	filePath: string;
-	sourceCode: string;
-	fixedCode: string;
+	readonly violations: readonly Violation[];
+	readonly filePath: string;
+	readonly sourceCode: string;
+	readonly fixedCode: string;
 }
 
 /**

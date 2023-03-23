@@ -4,7 +4,7 @@ import { createRule, MLRule } from '@markuplint/ml-core';
 
 import { command } from '../command';
 
-export default async function (files: string[], options: CLIOptions, selectors: string) {
+export default async function (files: readonly string[], options: CLIOptions, selectors: string) {
 	const name = '__CLI_SEARCH__';
 	const locations: {
 		file: string;

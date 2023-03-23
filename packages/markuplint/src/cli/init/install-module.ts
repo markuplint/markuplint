@@ -12,7 +12,7 @@ export type InstallModuleResult = {
 	alreadyExists: boolean;
 };
 
-export function selectModules(selectedLangs: Langs[]) {
+export function selectModules(selectedLangs: readonly Langs[]) {
 	const modules = ['markuplint', ...selectedLangs.map(lang => `@markuplint/${lang}-parser`)];
 
 	if (selectedLangs.includes('vue')) {

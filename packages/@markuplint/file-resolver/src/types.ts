@@ -4,10 +4,10 @@ import type { Plugin } from '@markuplint/ml-core';
 export type Nullable<T> = T | null | undefined;
 
 export interface ConfigSet {
-	config: Config;
-	plugins: Plugin[];
-	files: Set<string>;
-	errs: Error[];
+	readonly config: Config;
+	readonly plugins: readonly Plugin[];
+	readonly files: ReadonlySet<string>;
+	readonly errs: readonly Readonly<Error>[];
 }
 
 export type Target =

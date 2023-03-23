@@ -32,7 +32,7 @@ export const langs: Record<Langs, string> = {
 	liquid: 'liquid (Shopify)',
 };
 
-export function createConfig(langs: Langs[], mode: RuleSettingMode, defaultRules: DefaultRules): Config {
+export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, defaultRules: DefaultRules): Config {
 	let config: Writable<Config> = {};
 
 	const parser: Writable<Config['parser']> = { ...config.parser };

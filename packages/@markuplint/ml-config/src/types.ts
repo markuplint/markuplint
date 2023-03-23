@@ -216,13 +216,13 @@ export type Scope<T extends RuleConfigValue, O extends PlainData = undefined> = 
 };
 
 export type Violation = {
-	ruleId: string;
-	severity: Severity;
-	message: string;
-	reason?: string;
-	line: number;
-	col: number;
-	raw: string;
+	readonly ruleId: string;
+	readonly severity: Severity;
+	readonly message: string;
+	readonly reason?: string;
+	readonly line: number;
+	readonly col: number;
+	readonly raw: string;
 };
 
 export type RuleInfo<T extends RuleConfigValue, O extends PlainData = undefined> = {

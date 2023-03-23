@@ -12,54 +12,54 @@ export async function lint_v1(options: {
 	/**
 	 * Glob pattern
 	 */
-	files?: string | string[];
+	readonly files?: string | readonly string[];
 
 	/**
 	 * Target source code of evaluation
 	 */
-	sourceCodes?: string | string[];
+	readonly sourceCodes?: string | readonly string[];
 
 	/**
 	 * File names when `sourceCodes`
 	 */
-	names?: string | string[];
+	readonly names?: string | readonly string[];
 
 	/**
 	 * Workspace path when `sourceCodes`
 	 */
-	workspace?: string;
+	readonly workspace?: string;
 
 	/**
 	 * Configure file or object
 	 */
-	config?: string | Config;
+	readonly config?: string | Config;
 
 	/**
 	 * The config applied when not resolved from files or set it explicitly.
 	 */
-	defaultConfig?: Config;
+	readonly defaultConfig?: Config;
 
 	/**
 	 * Rules (default: `@markuplint/rules`)
 	 */
-	rules?: MLRule<RuleConfigValue, PlainData>[];
+	readonly rules?: readonly Readonly<MLRule<RuleConfigValue, PlainData>>[];
 
 	/**
 	 * Auto resolve rules
 	 *
 	 * Auto importing form *node_modules* when set `@markuplint/rule-{RULE_NAME}` or `markuplint-rule-{RULE_NAME}` in config rules
 	 */
-	rulesAutoResolve?: boolean;
+	readonly rulesAutoResolve?: boolean;
 
 	/**
 	 * Auto fix
 	 */
-	fix?: boolean;
+	readonly fix?: boolean;
 
 	/**
 	 * Locale
 	 */
-	locale?: string;
+	readonly locale?: string;
 }) {
 	const filePathList = options.files ? (Array.isArray(options.files) ? options.files : [options.files]) : [];
 	const codes = options.sourceCodes

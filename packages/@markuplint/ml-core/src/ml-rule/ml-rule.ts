@@ -14,6 +14,7 @@ import type {
 	Violation,
 } from '@markuplint/ml-config';
 
+import { deleteUndefProp } from '@markuplint/ml-config';
 import { isPlainObject } from 'is-plain-object';
 
 import { MLRuleContext } from './ml-rule-context';
@@ -126,10 +127,9 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 					col,
 					raw,
 					ruleId: this.name,
+					reason: report.scope.rule.reason || document.rule.reason,
 				};
-				if (report.scope.rule.reason || document.rule.reason) {
-					violation.reason = report.scope.rule.reason || document.rule.reason;
-				}
+				deleteUndefProp(violation);
 				return violation;
 			}
 
@@ -140,10 +140,10 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 				col: report.col,
 				raw: report.raw,
 				ruleId: this.name,
+				reason: document.rule.reason,
 			};
-			if (document.rule.reason) {
-				violation.reason = document.rule.reason;
-			}
+
+			deleteUndefProp(violation);
 			return violation;
 		});
 

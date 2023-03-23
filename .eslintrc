@@ -158,7 +158,8 @@
 				"packages/@markuplint/html-parser/**/*.ts",
 				"packages/@markuplint/ml-core/**/*.ts",
 				"packages/@markuplint/file-resolver/**/*.ts",
-				"packages/@markuplint/create-rule-helper/**/*.ts"
+				"packages/@markuplint/create-rule-helper/**/*.ts",
+				"packages/markuplint/**/*.ts"
 			],
 			"excludedFiles": ["**/*.spec.ts"],
 			"rules": {
