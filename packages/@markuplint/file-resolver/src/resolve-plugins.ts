@@ -34,15 +34,21 @@ async function importPlugin(pluginPath: string | PluginConfig): Promise<Plugin> 
 		...pluginCreator.create(config.settings),
 	};
 	cache.set(plugin.name, plugin);
-	if (!plugin.name) {
-		plugin.name = config.name
+
+	let name = plugin.name;
+
+	if (!name) {
+		name = config.name
 			.toLowerCase()
 			.replace(/^(?:markuplint-rule-|@markuplint\/rule-)/i, '')
 			.replace(/\s+|\/|\\|\./g, '-');
 		// eslint-disable-next-line no-console
-		console.info(`The plugin name became "${plugin.name}"`);
+		console.info(`The plugin name became "${name}"`);
 	}
-	return plugin;
+	return {
+		...plugin,
+		name,
+	};
 }
 
 function getPluginConfig(pluginPath: string | PluginConfig): PluginConfig {

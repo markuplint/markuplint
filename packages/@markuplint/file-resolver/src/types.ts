@@ -16,15 +16,15 @@ export type Target =
 			/**
 			 * Target source code of evaluation
 			 */
-			sourceCode: string;
+			readonly sourceCode: string;
 
 			/**
 			 * File names when `sourceCodes`
 			 */
-			name?: string;
+			readonly name?: string;
 
 			/**
 			 * Workspace path when `sourceCodes`
 			 */
-			workspace?: string;
+			readonly workspace?: string;
 	  };

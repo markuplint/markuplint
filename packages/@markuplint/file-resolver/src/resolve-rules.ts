@@ -7,7 +7,7 @@ import { autoLoadRules } from './auto-load-rules';
 let cachedPresetRules: AnyMLRule[] | null = null;
 
 export async function resolveRules(
-	plugins: Plugin[],
+	plugins: readonly Plugin[],
 	ruleset: Ruleset,
 	importPreset: boolean,
 	/**
