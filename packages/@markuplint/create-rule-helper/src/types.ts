@@ -1,25 +1,25 @@
 export type CreateRuleHelperParams = CreateRuleCreatorParams & {
-	purpose: CreateRulePurpose;
+	readonly purpose: CreateRulePurpose;
 };
 
 export type CreateRuleCreatorParams = {
-	pluginName: string;
-	ruleName: string;
-	lang: CreateRuleLanguage;
-	needTest: boolean;
-	core?: CreateRuleCreatorCoreParams;
+	readonly pluginName: string;
+	readonly ruleName: string;
+	readonly lang: CreateRuleLanguage;
+	readonly needTest: boolean;
+	readonly core?: CreateRuleCreatorCoreParams;
 };
 
 export type CreateRuleCreatorCoreParams = {
-	description: string;
-	category: string;
-	severity: string;
+	readonly description: string;
+	readonly category: string;
+	readonly severity: string;
 };
 
 export type CreateRuleHelperResult = {
-	files: File[];
-	dependencies: string[];
-	devDependencies: string[];
+	readonly files: readonly File[];
+	readonly dependencies: readonly string[];
+	readonly devDependencies: readonly string[];
 };
 
 export type CreateRuleLanguage = 'JAVASCRIPT' | 'TYPESCRIPT';
@@ -27,10 +27,10 @@ export type CreateRuleLanguage = 'JAVASCRIPT' | 'TYPESCRIPT';
 export type CreateRulePurpose = 'ADD_TO_PROJECT' | 'PUBLISH_AS_PACKAGE' | 'CONTRIBUTE_TO_CORE';
 
 export type File = {
-	ext: string;
-	name: string;
-	fileName: string;
-	test: boolean;
-	destDir: string;
-	filePath: string;
+	readonly ext: string;
+	readonly name: string;
+	readonly fileName: string;
+	readonly test: boolean;
+	readonly destDir: string;
+	readonly filePath: string;
 };

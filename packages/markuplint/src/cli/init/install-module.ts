@@ -25,7 +25,7 @@ export function selectModules(selectedLangs: Langs[]) {
 	return modules;
 }
 
-export async function installModule(module: string[], dev = false): Promise<InstallModuleResult> {
+export async function installModule(module: readonly string[], dev = false): Promise<InstallModuleResult> {
 	module = module.map(m => m.trim());
 	const uninstallMods: string[] = [];
 	try {

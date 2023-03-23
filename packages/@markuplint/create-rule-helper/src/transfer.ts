@@ -11,9 +11,9 @@ import { fsExists } from './fs-exists';
 import glob from './glob';
 
 type TransferOptions = {
-	transpile?: boolean;
-	test?: boolean;
-	replacer?: Record<string, string | void>;
+	readonly transpile?: boolean;
+	readonly test?: boolean;
+	readonly replacer?: Readonly<Record<string, string | void>>;
 };
 
 export async function transfer(baseDir: string, destDir: string, options?: TransferOptions) {
@@ -59,49 +59,51 @@ async function transferFile(file: File, options?: TransferOptions) {
 	contents = contents.replace(/\n\s*\/\/ prettier-ignore/, '');
 	contents = contents.replace(/\n\s*<!-- prettier-ignore(?:-(?:start|end))? -->/, '');
 
+	const newFile = { ...file };
+
 	// TypeScript transpiles to JS
-	if (file.ext === '.ts' && options?.transpile) {
-		file.ext = '.js';
+	if (newFile.ext === '.ts' && options?.transpile) {
+		newFile.ext = '.js';
 		contents = transpile(
 			contents,
 			{
 				target: ScriptTarget.ESNext,
 			},
-			file.filePath,
+			newFile.filePath,
 		);
 
 		// Insert new line before comments and the export keyword
 		contents = contents.replace(/(\n)(\s+\/\*\*|export)/g, '$1\n$2');
 	}
 
-	const candidateName = options?.replacer?.[file.name.replace(/_/g, '')];
+	const candidateName = options?.replacer?.[newFile.name.replace(/_/g, '')];
 	if (candidateName) {
-		file.name = candidateName;
-		file.fileName = candidateName + (file.test ? '.spec' : '');
+		newFile.name = candidateName;
+		newFile.fileName = candidateName + (newFile.test ? '.spec' : '');
 	}
 
-	const dest = resolve(file.destDir, file.fileName + file.ext);
+	const dest = resolve(newFile.destDir, newFile.fileName + newFile.ext);
 
 	// Prettier
 	const parser =
-		file.ext === '.md'
+		newFile.ext === '.md'
 			? 'markdown'
-			: file.ext === '.json'
+			: newFile.ext === '.json'
 			? 'json'
-			: file.ext === '.ts'
+			: newFile.ext === '.ts'
 			? options?.transpile
 				? 'babel'
 				: 'typescript'
 			: undefined;
 	contents = format(contents, { parser, filepath: dest });
 
-	if (!(await fsExists(file.destDir))) {
-		await fs.mkdir(file.destDir, { recursive: true });
+	if (!(await fsExists(newFile.destDir))) {
+		await fs.mkdir(newFile.destDir, { recursive: true });
 	}
 
 	await fs.writeFile(dest, contents, { encoding: 'utf-8' });
 
-	return file;
+	return newFile;
 }
 
 async function scan(baseDir: string, destDir: string) {
