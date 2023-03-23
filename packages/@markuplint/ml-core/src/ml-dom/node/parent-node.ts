@@ -1,6 +1,6 @@
 import type { MLElement } from './element';
 import type { MLASTAbstractNode } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { syncWalk } from '../helper/walkers';
 import { getChildren } from '../manipulations/get-children';
@@ -13,7 +13,11 @@ import UnexpectedCallError from './unexpected-call-error';
  *
  * @see https://dom.spec.whatwg.org/#interface-parentnode
  */
-export abstract class MLParentNode<T extends RuleConfigValue, O = null, A extends MLASTAbstractNode = MLASTAbstractNode>
+export abstract class MLParentNode<
+		T extends RuleConfigValue,
+		O extends PlainData = undefined,
+		A extends MLASTAbstractNode = MLASTAbstractNode,
+	>
 	extends MLNode<T, O, A>
 	implements ParentNode
 {

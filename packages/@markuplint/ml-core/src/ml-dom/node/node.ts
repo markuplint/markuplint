@@ -6,7 +6,7 @@ import type { MLElement } from './element';
 import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types';
 import type { RuleInfo } from '../..';
 import type { MLASTAbstractNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
-import type { AnyRule, RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
+import type { AnyRule, PlainData, Rule, RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLToken } from '../token/token';
 
@@ -15,7 +15,11 @@ import { toNodeList } from './node-list';
 import { nodeStore } from './node-store';
 import UnexpectedCallError from './unexpected-call-error';
 
-export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLASTAbstractNode = MLASTAbstractNode>
+export abstract class MLNode<
+		T extends RuleConfigValue,
+		O extends PlainData = undefined,
+		A extends MLASTAbstractNode = MLASTAbstractNode,
+	>
 	extends MLToken<A>
 	implements Node
 {
@@ -469,9 +473,19 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 			throw new Error('Invalid call: Some rule evaluations may not be running asynchronously.');
 		}
 		const name = this.ownerMLDocument.currentRule.name;
-		const rule = this.rules[name] as RuleConfig<T, O> | T | undefined;
+		const settingRule = this.rules[name];
 
-		return this.ownerMLDocument.currentRule.optimizeOption(rule);
+		const rule = this.ownerMLDocument.currentRule.optimizeOption(settingRule as Rule<T, O>);
+
+		if (!rule) {
+			throw new Error(
+				`Rule data "${name}" doesn't exist in rules ([${Object.keys(this.rules).map(
+					name => `"${name}"`,
+				)}]) of ${this.nodeName}("${this.raw}")`,
+			);
+		}
+
+		return rule;
 	}
 
 	/**

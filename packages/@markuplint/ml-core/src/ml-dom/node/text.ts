@@ -1,6 +1,6 @@
 import type { TextNodeType } from './types';
 import type { MLASTText } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLCharacterData } from './character-data';
 import UnexpectedCallError from './unexpected-call-error';
@@ -12,7 +12,10 @@ import UnexpectedCallError from './unexpected-call-error';
  */
 const rawTextElements = ['script', 'style'];
 
-export class MLText<T extends RuleConfigValue, O = null> extends MLCharacterData<T, O, MLASTText> implements Text {
+export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
+	extends MLCharacterData<T, O, MLASTText>
+	implements Text
+{
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *

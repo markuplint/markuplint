@@ -1,9 +1,12 @@
 import type { MLAttr } from './attr';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import UnexpectedCallError from './unexpected-call-error';
 
-export class MLNamedNodeMap<T extends RuleConfigValue, O = null> extends Array<MLAttr<T, O>> implements NamedNodeMap {
+export class MLNamedNodeMap<T extends RuleConfigValue, O extends PlainData = undefined>
+	extends Array<MLAttr<T, O>>
+	implements NamedNodeMap
+{
 	getNamedItem(qualifiedName: string): MLAttr<T, O> | null {
 		return this.find(attr => attr.name === qualifiedName) || null;
 	}
@@ -63,7 +66,7 @@ export class MLNamedNodeMap<T extends RuleConfigValue, O = null> extends Array<M
 	}
 }
 
-export function toNamedNodeMap<T extends RuleConfigValue, O = null>(
+export function toNamedNodeMap<T extends RuleConfigValue, O extends PlainData = undefined>(
 	nodes: ReadonlyArray<MLAttr<T, O>>,
 ): MLNamedNodeMap<T, O> {
 	const namedNodeMap = new MLNamedNodeMap(...nodes);

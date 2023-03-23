@@ -1,6 +1,7 @@
 import type { APIOptions, MLEngineEventMap, MLFabric } from './types';
 import type { MLResultInfo } from '../types';
 import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
+import type { PlainData } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue } from '@markuplint/ml-core';
 
 import { ConfigProvider, resolveFiles, resolveParser, resolveRules, resolveSpecs } from '@markuplint/file-resolver';
@@ -44,7 +45,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		}
 	}
 
-	get document(): Document<RuleConfigValue, unknown> | null {
+	get document(): Document<RuleConfigValue, PlainData> | null {
 		if (this.#core?.document instanceof Error) {
 			return null;
 		}
@@ -247,7 +248,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		return {
 			parser,
 			parserOptions,
-			pretenders: configSet.config.pretenders ?? [],
+			pretenders: configSet.config.pretenders?.slice() ?? [],
 			ruleset,
 			schemas,
 			rules,

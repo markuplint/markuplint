@@ -1,5 +1,5 @@
 import type { Target } from '@markuplint/file-resolver';
-import type { Config, RuleConfigValue, Rule, RegexSelector } from '@markuplint/ml-config';
+import type { Config, RuleConfigValue, Rule, RegexSelector, PlainData } from '@markuplint/ml-config';
 import type { AnyMLRule, RuleSeed } from '@markuplint/ml-core';
 
 import { MLRule } from '@markuplint/ml-core';
@@ -26,7 +26,7 @@ export async function mlTest(sourceCode: string, config: Config, rules?: AnyMLRu
 	};
 }
 
-export async function mlRuleTest<T extends RuleConfigValue, O = null>(
+export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>(
 	rule: RuleSeed<T, O>,
 	sourceCode: string,
 	config: Omit<Config, 'rules' | 'nodeRules' | 'childNodeRules'> & {
@@ -116,7 +116,7 @@ export async function mlTestFile(target: Target, config?: Config, rules?: AnyMLR
 	};
 }
 
-export interface NodeRule<T extends RuleConfigValue, O = void> {
+export interface NodeRule<T extends RuleConfigValue, O extends PlainData = undefined> {
 	selector?: string;
 	regexSelector?: RegexSelector;
 	categories?: string[];
@@ -125,7 +125,7 @@ export interface NodeRule<T extends RuleConfigValue, O = void> {
 	rule?: Rule<T, O>;
 }
 
-export interface ChildNodeRule<T extends RuleConfigValue, O = void> {
+export interface ChildNodeRule<T extends RuleConfigValue, O extends PlainData = undefined> {
 	selector?: string;
 	regexSelector?: RegexSelector;
 	inheritance?: boolean;

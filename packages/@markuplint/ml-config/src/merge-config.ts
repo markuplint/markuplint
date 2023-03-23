@@ -1,4 +1,5 @@
 import type { Config, Nullable, AnyRule, AnyRuleV2, Rules } from './types';
+import type { Writable } from 'type-fest';
 
 import deepmerge from 'deepmerge';
 
@@ -54,7 +55,7 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 			}
 			return oB;
 		}
-		const value = Array.isArray(oA.value) && Array.isArray(b) ? [...oA.value, oB] : oB;
+		const value = Array.isArray(oA.value) && Array.isArray(oB) ? [...oA.value, ...oB] : oB;
 		const res = cleanOptions({ ...oA, value });
 		deleteUndefProp(res);
 		return res;
@@ -87,11 +88,11 @@ function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 }
 
 function concatArray<T extends any>(
-	a: Nullable<T[]>,
-	b: Nullable<T[]>,
+	a: Nullable<readonly T[]>,
+	b: Nullable<readonly T[]>,
 	uniquely = false,
 	comparePropName?: string,
-): T[] | undefined {
+): readonly T[] | undefined {
 	const newArray: T[] = [];
 	function concat(item: T) {
 		if (!uniquely) {
@@ -159,7 +160,7 @@ function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
 	if (b == null) {
 		return a && optimizeRules(a);
 	}
-	const res: Rules = optimizeRules(a);
+	const res = optimizeRules(a);
 	for (const [key, rule] of Object.entries(b)) {
 		const merged = mergeRule(res[key], rule);
 		if (merged != null) {
@@ -167,11 +168,11 @@ function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
 		}
 	}
 	deleteUndefProp(res);
-	return res;
+	return Object.freeze(res);
 }
 
 function optimizeRules(rules: Rules) {
-	const res: Rules = {};
+	const res: Writable<Rules> = {};
 	for (const [key, rule] of Object.entries(rules)) {
 		const _rule = optimizeRule(rule);
 		if (_rule != null) {

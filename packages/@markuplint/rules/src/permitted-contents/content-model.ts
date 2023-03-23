@@ -5,7 +5,7 @@ import { getContentModel } from '@markuplint/ml-spec';
 
 import { start } from './start';
 
-export function contentModel(el: Element, rules: TagRule[], options: Options): ContentModelResult[] {
+export function contentModel(el: Element, rules: readonly TagRule[], options: Options): ContentModelResult[] {
 	const model = createModel(el, rules);
 	if (model == null) {
 		return [
@@ -22,14 +22,14 @@ export function contentModel(el: Element, rules: TagRule[], options: Options): C
 	return result;
 }
 
-function createModel(el: Element, rules: TagRule[]) {
+function createModel(el: Element, rules: readonly TagRule[]) {
 	const specs = cachedSpecs(el.ownerMLDocument.specs, rules);
 	const model = getContentModel(el, specs.specs);
 	return model;
 }
 
 const caches = new Map<string, Specs>();
-function cachedSpecs(specs: MLMLSpec, rules: TagRule[]): Specs {
+function cachedSpecs(specs: MLMLSpec, rules: readonly TagRule[]): Specs {
 	if (!rules.length) {
 		return specs;
 	}

@@ -1,7 +1,7 @@
 import type { MLDocument } from '../node/document';
 import type { MappedNode } from '../node/types';
 import type { MLASTAbstractNode, MLASTNode } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLBlock } from '../node/block';
 import { MLComment } from '../node/comment';
@@ -9,7 +9,7 @@ import { MLDocumentType } from '../node/document-type';
 import { MLElement } from '../node/element';
 import { MLText } from '../node/text';
 
-export function createNode<N extends MLASTAbstractNode, T extends RuleConfigValue, O = null>(
+export function createNode<N extends MLASTAbstractNode, T extends RuleConfigValue, O extends PlainData = undefined>(
 	astNode: N,
 	document: MLDocument<T, O>,
 ): MappedNode<N, T, O> {

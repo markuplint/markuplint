@@ -16,15 +16,15 @@ export type SelectorUnmatchedResult = {
 };
 
 export type RegexSelector = RegexSelectorWithoutCombination & {
-	combination?: {
-		combinator: RegexSelectorCombinator;
+	readonly combination?: {
+		readonly combinator: RegexSelectorCombinator;
 	} & RegexSelector;
 };
 
 export type RegexSelectorCombinator = ' ' | '>' | '+' | '~' | ':has(+)' | ':has(~)';
 
 export type RegexSelectorWithoutCombination = {
-	nodeName?: string;
-	attrName?: string;
-	attrValue?: string;
+	readonly nodeName?: string;
+	readonly attrName?: string;
+	readonly attrValue?: string;
 };

@@ -32,7 +32,7 @@ import RequiredH1 from './required-h1';
 import UseList from './use-list';
 import WaiAria from './wai-aria';
 
-export default {
+const rules = {
 	'attr-duplication': AttrDuplication,
 	'attr-value-quotes': AttrValueQuotes,
 	'case-sensitive-attr-name': CaseSensitiveAttrName,
@@ -64,4 +64,6 @@ export default {
 	'required-h1': RequiredH1,
 	'use-list': UseList,
 	'wai-aria': WaiAria,
-} as Record<string, AnyRuleSeed>;
+} as const satisfies Record<string, AnyRuleSeed<any, any>>;
+
+export default rules;

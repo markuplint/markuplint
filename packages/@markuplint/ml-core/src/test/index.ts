@@ -1,5 +1,5 @@
 import type { MLMarkupLanguageParser } from '@markuplint/ml-ast';
-import type { Config, RuleConfigValue } from '@markuplint/ml-config';
+import type { Config, PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import { parse } from '@markuplint/html-parser';
@@ -14,7 +14,7 @@ export type CreateTestOptions = {
 	specs?: MLMLSpec;
 };
 
-export function createTestDocument<T extends RuleConfigValue = any, O = any>(
+export function createTestDocument<T extends RuleConfigValue = any, O extends PlainData = any>(
 	sourceCode: string,
 	options?: CreateTestOptions,
 ) {

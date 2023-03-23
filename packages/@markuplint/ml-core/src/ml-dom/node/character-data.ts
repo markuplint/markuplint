@@ -1,6 +1,6 @@
 import type { MLElement } from './element';
 import type { MLASTAbstractNode } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import {
 	after,
@@ -16,7 +16,7 @@ import UnexpectedCallError from './unexpected-call-error';
 
 export abstract class MLCharacterData<
 		T extends RuleConfigValue,
-		O = null,
+		O extends PlainData = undefined,
 		A extends MLASTAbstractNode = MLASTAbstractNode,
 	>
 	extends MLNode<T, O, A>

@@ -2,13 +2,13 @@ import type { MLDocument } from './document';
 import type { MLElement } from './element';
 import type { DocumentTypeNodeType } from './types';
 import type { MLASTDoctype } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { after, before, remove, replaceWith } from '../manipulations/child-node-methods';
 
 import { MLNode } from './node';
 
-export class MLDocumentType<T extends RuleConfigValue, O = null>
+export class MLDocumentType<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLNode<T, O, MLASTDoctype>
 	implements DocumentType
 {

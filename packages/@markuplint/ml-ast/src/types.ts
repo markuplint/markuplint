@@ -171,15 +171,15 @@ export interface MLMarkupLanguageParser {
 export type EndTagType = 'xml' | 'omittable' | 'never';
 
 export type ParserOptions = {
-	ignoreFrontMatter?: boolean;
-	authoredElementName?: ParserAuthoredElementNameDistinguishing;
+	readonly ignoreFrontMatter?: boolean;
+	readonly authoredElementName?: ParserAuthoredElementNameDistinguishing;
 };
 
 export type ParserAuthoredElementNameDistinguishing =
 	| string
-	| RegExp
+	| Readonly<RegExp>
 	| ParserAuthoredElementNameDistinguishingFunction
-	| (string | RegExp | ParserAuthoredElementNameDistinguishingFunction)[];
+	| readonly (string | Readonly<RegExp> | ParserAuthoredElementNameDistinguishingFunction)[];
 
 export type ParserAuthoredElementNameDistinguishingFunction = (name: string) => boolean;
 

@@ -1,13 +1,15 @@
 import type { MLNode } from '../node/node';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-export type Walker<T extends RuleConfigValue, O = null, N = MLNode<T, O>> = (
+export type Walker<T extends RuleConfigValue, O extends PlainData = undefined, N = MLNode<T, O>> = (
 	node: N,
 ) => void | Promise<void> | Promise<void>[];
 
-export type SyncWalker<T extends RuleConfigValue, O = null, N = MLNode<T, O>> = (node: N) => void;
+export type SyncWalker<T extends RuleConfigValue, O extends PlainData = undefined, N = MLNode<T, O>> = (
+	node: N,
+) => void;
 
-export function syncWalk<T extends RuleConfigValue, O = null>(
+export function syncWalk<T extends RuleConfigValue, O extends PlainData = undefined>(
 	nodeList: ReadonlyArray<MLNode<T, O>>,
 	walker: SyncWalker<T, O>,
 ) {
@@ -19,7 +21,7 @@ export function syncWalk<T extends RuleConfigValue, O = null>(
 	}
 }
 
-export function sequentialWalker<T extends RuleConfigValue, O = null, N = MLNode<T, O>>(
+export function sequentialWalker<T extends RuleConfigValue, O extends PlainData = undefined, N = MLNode<T, O>>(
 	list: ReadonlyArray<N>,
 	walker: Walker<T, O, N>,
 ) {

@@ -3,7 +3,7 @@ import type { MLNamedNodeMap } from './named-node-map';
 import type { MLText } from './text';
 import type { ElementNodeType, PretenderContext } from './types';
 import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
-import type { Pretender, PretenderARIA, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
+import type { PlainData, Pretender, PretenderARIA, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
@@ -30,7 +30,7 @@ import UnexpectedCallError from './unexpected-call-error';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
-export class MLElement<T extends RuleConfigValue, O = null>
+export class MLElement<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLParentNode<T, O, MLASTElement>
 	implements Element, HTMLOrSVGElement, HTMLElement
 {

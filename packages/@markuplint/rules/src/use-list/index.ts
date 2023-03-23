@@ -2,7 +2,7 @@ import { createRule } from '@markuplint/ml-core';
 
 import { decodeCharRef } from '../helpers';
 
-type Bullets = string[];
+type Bullets = readonly string[];
 
 type Options = {
 	spaceNeededBullets?: string[];

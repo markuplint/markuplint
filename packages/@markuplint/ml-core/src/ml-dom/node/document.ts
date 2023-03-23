@@ -10,7 +10,7 @@ import type Ruleset from '../../ruleset';
 import type { Walker } from '../helper/walkers';
 import type { MLToken } from '../token/token';
 import type { EndTagType, MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
-import type { Pretender, RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
@@ -31,7 +31,10 @@ const log = coreLog.extend('ml-dom');
 const docLog = log.extend('document');
 const ruleLog = docLog.extend('rule');
 
-export class MLDocument<T extends RuleConfigValue, O = null> extends MLParentNode<T, O> implements Document {
+export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefined>
+	extends MLParentNode<T, O>
+	implements Document
+{
 	/**
 	 * Detect value as a true if its attribute is booleanish value and omitted.
 	 *

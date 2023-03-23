@@ -146,7 +146,7 @@
 			}
 		},
 		{
-			"files": ["packages/@markuplint/types/**/*.ts"],
+			"files": ["packages/@markuplint/types/**/*.ts", "packages/@markuplint/ml-config/**/*.ts"],
 			"rules": {
 				"@typescript-eslint/prefer-readonly-parameter-types": [
 					"warn",

@@ -234,12 +234,9 @@ async function load(filePath: string, cache: boolean) {
 	return res.config;
 }
 
-function pathResolve<T extends string | (string | Record<string, unknown>)[] | Record<string, unknown> | undefined>(
-	dir: string,
-	filePath?: T,
-	resolveProps?: string[],
-	resolveKey = false,
-): T {
+function pathResolve<
+	T extends string | readonly (string | Record<string, unknown>)[] | Readonly<Record<string, unknown>> | undefined,
+>(dir: string, filePath?: T, resolveProps?: string[], resolveKey = false): T {
 	if (filePath == null) {
 		// @ts-ignore
 		return undefined;

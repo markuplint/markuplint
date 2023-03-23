@@ -1,4 +1,4 @@
-import type { Config, RuleConfigValue } from '@markuplint/ml-config';
+import type { Config, PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import type { MLRule } from '@markuplint/ml-core';
 
 import { lint } from './lint';
@@ -42,7 +42,7 @@ export async function lint_v1(options: {
 	/**
 	 * Rules (default: `@markuplint/rules`)
 	 */
-	rules?: MLRule<RuleConfigValue, unknown>[];
+	rules?: MLRule<RuleConfigValue, PlainData>[];
 
 	/**
 	 * Auto resolve rules

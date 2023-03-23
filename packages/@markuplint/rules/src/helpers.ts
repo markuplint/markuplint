@@ -1,5 +1,6 @@
 import type { Log } from './debug';
 import type { Translator } from '@markuplint/i18n';
+import type { PlainData } from '@markuplint/ml-config';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 
@@ -9,7 +10,10 @@ import { decode as decodeHtmlEntities } from 'html-entities';
 
 import { attrCheck } from './attr-check';
 
-export function attrMatches<T extends RuleConfigValue, R>(node: Element<T, R>, condition: Attribute['condition']) {
+export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
+	node: Element<T, O>,
+	condition: Attribute['condition'],
+) {
 	if (!condition) {
 		return true;
 	}
@@ -135,7 +139,10 @@ export function accnameMayBeMutable(el: Element<any, any>, document: Document<an
 }
 
 const labelable = ['button', 'input:not([type=hidden])', 'meter', 'output', 'progress', 'select', 'textarea'];
-export function getOwnedLabel<V extends RuleConfigValue, O>(el: Element<V, O>, document: Document<V, O>) {
+export function getOwnedLabel<V extends RuleConfigValue, O extends PlainData>(
+	el: Element<V, O>,
+	document: Document<V, O>,
+) {
 	if (!labelable.some(cond => el.matches(cond))) {
 		return null;
 	}

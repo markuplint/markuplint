@@ -2,13 +2,17 @@ import type { MLDocument } from './document';
 import type { MLElement } from './element';
 import type { MarkuplintPreprocessorBlockType } from './types';
 import type { MLASTPreprocessorSpecificBlock } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { after, before, remove, replaceWith } from '../manipulations/child-node-methods';
 
 import { MLNode } from './node';
 
-export class MLBlock<T extends RuleConfigValue, O = null> extends MLNode<T, O, MLASTPreprocessorSpecificBlock> {
+export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined> extends MLNode<
+	T,
+	O,
+	MLASTPreprocessorSpecificBlock
+> {
 	readonly isTransparent: boolean;
 
 	constructor(astNode: MLASTPreprocessorSpecificBlock, document: MLDocument<T, O>) {

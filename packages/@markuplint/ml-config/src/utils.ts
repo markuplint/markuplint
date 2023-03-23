@@ -1,18 +1,15 @@
-import type { AnyRule, AnyRuleV2, RuleConfig, RuleConfigV2, RuleConfigValue } from './types';
+import type {
+	AnyRule,
+	AnyRuleV2,
+	PlainData,
+	PrimitiveScalar,
+	RuleConfig,
+	RuleConfigV2,
+	RuleConfigValue,
+} from './types';
 
 import { isPlainObject } from 'is-plain-object';
 import mustache from 'mustache';
-
-type PlainData =
-	| string
-	| number
-	| boolean
-	| null
-	| undefined
-	| PlainData[]
-	| {
-			[key: string]: PlainData;
-	  };
 
 /**
  * Return undefined if the template doesn't include the variable that is set as a property in data.
@@ -21,7 +18,7 @@ type PlainData =
  * @param template Mustache template string
  * @param data Captured string for replacement
  */
-export function provideValue(template: string, data: Record<string, string>) {
+export function provideValue(template: string, data: Readonly<Record<string, string>>) {
 	const ast = mustache.parse(template);
 	if (ast.length === 1 && ast[0]?.[0] === 'text') {
 		// It doesn't have a variable
@@ -36,7 +33,10 @@ export function provideValue(template: string, data: Record<string, string>) {
 	return result;
 }
 
-export function exchangeValueOnRule(rule: AnyRule | AnyRuleV2, data: Record<string, string>): AnyRule | undefined {
+export function exchangeValueOnRule(
+	rule: AnyRule | AnyRuleV2,
+	data: Readonly<Record<string, string>>,
+): AnyRule | undefined {
 	if (isRuleConfigValue(rule)) {
 		return exchangeValue(rule, data);
 	}
@@ -49,9 +49,14 @@ export function exchangeValueOnRule(rule: AnyRule | AnyRuleV2, data: Record<stri
 	}
 	const options = extractOptions(result);
 	if (options) {
+		const newOptions = exchangeOption(options as PlainData, data);
 		result = {
 			...result,
-			options: exchangeOption(options as PlainData, data),
+			...(newOptions == null
+				? undefined
+				: {
+						options: newOptions,
+				  }),
 		};
 	}
 	if (result.reason != null) {
@@ -66,8 +71,8 @@ export function exchangeValueOnRule(rule: AnyRule | AnyRuleV2, data: Record<stri
 }
 
 export function cleanOptions(
-	rule: RuleConfig<RuleConfigValue, unknown> | RuleConfigV2<RuleConfigValue, unknown>,
-): RuleConfig<RuleConfigValue, unknown> {
+	rule: RuleConfig<RuleConfigValue, PlainData> | RuleConfigV2<RuleConfigValue, PlainData>,
+): RuleConfig<RuleConfigValue, PlainData> {
 	const res = {
 		severity: rule.severity,
 		value: rule.value,
@@ -114,7 +119,7 @@ export function deleteUndefProp(obj: any) {
  * @param rule
  * @returns
  */
-function extractOptions(rule: RuleConfig<RuleConfigValue, unknown> | RuleConfigV2<RuleConfigValue, unknown>): unknown {
+function extractOptions(rule: RuleConfig<RuleConfigValue, PlainData> | RuleConfigV2<RuleConfigValue, PlainData>) {
 	if ('options' in rule && rule.options) {
 		return rule.options;
 	}
@@ -123,7 +128,7 @@ function extractOptions(rule: RuleConfig<RuleConfigValue, unknown> | RuleConfigV
 	}
 }
 
-function exchangeValue(rule: RuleConfigValue, data: Record<string, string>): RuleConfigValue | undefined {
+function exchangeValue(rule: RuleConfigValue, data: Readonly<Record<string, string>>): RuleConfigValue | undefined {
 	if (rule == null) {
 		return rule;
 	}
@@ -138,13 +143,13 @@ function exchangeValue(rule: RuleConfigValue, data: Record<string, string>): Rul
 				}
 				return val;
 			})
-			.filter(item => item !== undefined);
+			.filter((item): item is PrimitiveScalar => item !== undefined);
 		return ruleArray.length ? ruleArray : undefined;
 	}
 	return rule;
 }
 
-function exchangeOption(optionValue: PlainData, data: Record<string, string>): PlainData | undefined {
+function exchangeOption(optionValue: PlainData, data: Readonly<Record<string, string>>): PlainData | undefined {
 	if (optionValue == null) {
 		return optionValue;
 	}
@@ -154,7 +159,7 @@ function exchangeOption(optionValue: PlainData, data: Record<string, string>): P
 	if (typeof optionValue === 'string') {
 		return provideValue(optionValue, data);
 	}
-	if (Array.isArray(optionValue)) {
+	if (isArray<PlainData>(optionValue)) {
 		return optionValue.map(v => exchangeOption(v, data));
 	}
 	const result: Record<string, PlainData> = {};
@@ -162,4 +167,18 @@ function exchangeOption(optionValue: PlainData, data: Record<string, string>): P
 		result[key] = exchangeOption(optionValue[key], data);
 	});
 	return result;
+}
+
+/**
+ * Array.isArray for ReadonlyArray
+ *
+ * > Array.isArray type narrows to any[] for ReadonlyArray<T>
+ *
+ * @see https://github.com/microsoft/TypeScript/issues/17002
+ *
+ * @param value
+ * @returns
+ */
+function isArray<T>(value: any): value is T[] | readonly T[] {
+	return Array.isArray(value);
 }

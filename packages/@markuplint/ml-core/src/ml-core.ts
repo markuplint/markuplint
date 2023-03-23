@@ -3,7 +3,7 @@ import type Ruleset from './ruleset';
 import type { MLFabric, MLSchema } from './types';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { MLASTDocument, MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
-import type { Pretender, RuleConfigValue, Violation } from '@markuplint/ml-config';
+import type { PlainData, Pretender, RuleConfigValue, Violation } from '@markuplint/ml-config';
 
 import { ParserError } from '@markuplint/parser-utils';
 
@@ -20,13 +20,13 @@ export type MLCoreParams = {
 
 export class MLCore {
 	#ast: MLASTDocument | null = null;
-	#document!: Document<RuleConfigValue, unknown> | ParserError;
+	#document!: Document<RuleConfigValue, PlainData> | ParserError;
 	#filename: string;
 	#locale: LocaleSet;
 	#parser: MLMarkupLanguageParser;
 	#parserOptions: ParserOptions;
 	#pretenders: Pretender[];
-	#rules: MLRule<RuleConfigValue, unknown>[];
+	#rules: MLRule<RuleConfigValue, PlainData>[];
 	#ruleset: Ruleset;
 	#schemas: MLSchema;
 	#sourceCode: string;

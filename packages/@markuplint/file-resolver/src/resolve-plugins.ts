@@ -3,7 +3,7 @@ import type { Plugin, PluginCreator } from '@markuplint/ml-core';
 
 const cache = new Map<string, Plugin>();
 
-export async function resolvePlugins(pluginPaths?: (string | PluginConfig)[]) {
+export async function resolvePlugins(pluginPaths?: readonly (string | PluginConfig)[]) {
 	if (!pluginPaths) {
 		return [];
 	}

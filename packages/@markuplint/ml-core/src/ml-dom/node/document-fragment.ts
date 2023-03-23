@@ -1,11 +1,11 @@
 import type { DocumentFragmentNodeType } from './types';
 import type { MLASTAbstractNode } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLParentNode } from './parent-node';
 import UnexpectedCallError from './unexpected-call-error';
 
-export class MLDocumentFragment<T extends RuleConfigValue, O = null>
+export class MLDocumentFragment<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLParentNode<T, O, MLASTAbstractNode>
 	implements DocumentFragment
 {
