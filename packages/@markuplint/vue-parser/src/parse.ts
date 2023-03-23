@@ -64,6 +64,7 @@ export const parse: Parse = (rawCode, options) => {
 };
 
 function traverse(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	rootNode: ASTNode,
 	parentNode: MLASTParentNode | null = null,
 	rawHtml: string,
@@ -94,8 +95,11 @@ function traverse(
 }
 
 function nodeize(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	originNode: ASTNode,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	prevNode: MLASTNode | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
 	options?: ParserOptions,

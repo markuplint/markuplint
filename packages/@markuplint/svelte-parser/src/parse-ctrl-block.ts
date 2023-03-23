@@ -7,12 +7,16 @@ import { traverse } from './traverse';
 
 export function parseCtrlBlock(
 	ctrlName: 'if' | 'each',
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	originNode: SvelteNode,
 	raw: string,
 	rawHtml: string,
 	startOffset: number,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parentNode: MLASTParentNode | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	prevNode: MLASTNode | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nextNode: MLASTNode | null,
 	options?: ParserOptions,
 ) {
@@ -116,13 +120,17 @@ export function parseCtrlBlock(
 }
 
 function parseIfBlock(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	originNode: SvelteNode,
 	raw: string,
 	rawHtml: string,
 	statementStartOffset: number,
 	tokenStartOffset: number,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parentNode: MLASTParentNode | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	prevNode: MLASTNode | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nextNode: MLASTNode | null,
 	options?: ParserOptions,
 ) {

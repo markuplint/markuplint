@@ -25,7 +25,11 @@ function getOffsetsFromLines(pug: string): number[] {
 	return result;
 }
 
-function mergeTextNode(nodes: ASTNode[], pug: string) {
+function mergeTextNode(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodes: readonly ASTNode[],
+	pug: string,
+) {
 	const baseNodes: ASTNode[] = [];
 	for (const node of nodes) {
 		const prevNode: ASTNode | null = baseNodes[baseNodes.length - 1] || null;
@@ -47,7 +51,13 @@ function mergeTextNode(nodes: ASTNode[], pug: string) {
  * @param tokens Lexed token list
  * @param pug Raw code
  */
-function optimizeAST(originalAST: PugAST<PugASTNode>, tokens: PugLexToken[], pug: string): ASTBlock {
+function optimizeAST(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	originalAST: PugAST<PugASTNode>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	tokens: readonly PugLexToken[],
+	pug: string,
+): ASTBlock {
 	const nodes: ASTNode[] = [];
 
 	for (const node of originalAST.nodes) {
@@ -354,10 +364,12 @@ function optimizeAST(originalAST: PugAST<PugASTNode>, tokens: PugLexToken[], pug
 }
 
 function optimizeASTOfConditionalNode(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: PugASTConditionalNode<PugAST<PugASTNode>>,
-	tokens: PugLexToken[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	tokens: readonly PugLexToken[],
 	pug: string,
-	offsets: number[],
+	offsets: readonly number[],
 	depth: number,
 ) {
 	const altNodes: ASTNode[] = [];
@@ -444,7 +456,8 @@ function getLocationFromToken(
 	offset: number,
 	line: number,
 	column: number,
-	tokens: PugLexToken[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	tokens: readonly PugLexToken[],
 	tokenType: string | string[] = '',
 ) {
 	let tokenOfCurrentNode: PugLexToken | null = null;
@@ -477,7 +490,14 @@ function getLocationFromToken(
 	};
 }
 
-function getAttrs(originalAttrs: PugASTAttr[], tokens: PugLexToken[], offsets: number[], pug: string) {
+function getAttrs(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	originalAttrs: readonly PugASTAttr[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	tokens: readonly PugLexToken[],
+	offsets: readonly number[],
+	pug: string,
+) {
 	const attrs: ASTAttr[] = [];
 
 	for (const attr of originalAttrs) {
@@ -522,8 +542,9 @@ function getEndAttributeLocation(
 	offset: number,
 	line: number,
 	column: number,
-	tokens: PugLexToken[],
-	offsets: number[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	tokens: readonly PugLexToken[],
+	offsets: readonly number[],
 ) {
 	let beforeNewlineToken: PugLexToken | null = null;
 	for (const token of tokens) {
@@ -554,7 +575,13 @@ function getEndAttributeLocation(
 	};
 }
 
-function getPipelessText(node: PugASTTextNode, pug: string, tokens: PugLexToken[]) {
+function getPipelessText(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: PugASTTextNode,
+	pug: string,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	tokens: readonly PugLexToken[],
+) {
 	let startPipelessText: PugLexToken | null = null;
 	let endPipelessText: PugLexToken | null = null;
 	for (const token of tokens) {
@@ -595,8 +622,9 @@ function getRawTextAndLocationEnd(
 	offset: number,
 	line: number,
 	column: number,
-	tokens: PugLexToken[],
-	offsets: number[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	tokens: readonly PugLexToken[],
+	offsets: readonly number[],
 	pug: string,
 ) {
 	let beforeNewlineToken: PugLexToken | null = null;

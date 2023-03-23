@@ -1,6 +1,7 @@
 /* global cheerio */
 
 import type { ElementSpec, ExtendedElementSpec, Category, Attribute } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import fetch from './fetch';
 import { getThisOutline, sortObjectByKey } from './utils';
@@ -23,7 +24,10 @@ export async function fetchHTMLElementLinks() {
 	return lists;
 }
 
-export function fetchObsoleteElements(obsoleteList: string[], specs: ExtendedElementSpec[]): ExtendedElementSpec[] {
+export function fetchObsoleteElements(
+	obsoleteList: readonly string[],
+	specs: ReadonlyDeep<ExtendedElementSpec[]>,
+): ExtendedElementSpec[] {
 	return obsoleteList
 		.map<ElementSpec | null>(name => {
 			const found = specs.find(e => e.name === name);
@@ -159,7 +163,11 @@ export async function fetchHTMLElement(link: string) {
 	return spec;
 }
 
-function getProperty($: cheerio.Root, prop: string) {
+function getProperty(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	$: cheerio.Root,
+	prop: string,
+) {
 	const $tr = $(MAIN_ARTICLE_SELECTOR).find('table.properties tr') || $('#Technical_summary').next('table tr');
 	const $th = $(
 		$tr
@@ -174,7 +182,12 @@ function getProperty($: cheerio.Root, prop: string) {
 		.replace(/(?:\r?\n|\s)+/gi, ' ');
 }
 
-function getAttributes($: cheerio.Root, heading: string, tagName: string) {
+function getAttributes(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	$: cheerio.Root,
+	heading: string,
+	tagName: string,
+) {
 	const $heading = $(heading);
 	const $outline = getThisOutline($, $heading);
 	const attributes: Record<string, Attribute> = {};
@@ -242,7 +255,10 @@ function getAttributes($: cheerio.Root, heading: string, tagName: string) {
 	return { attributes };
 }
 
-function getItsHeading($start: cheerio.Cheerio) {
+function getItsHeading(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	$start: cheerio.Cheerio,
+) {
 	let $needle = upToPrevOrParent($start);
 	while ($needle.length) {
 		if (isHeading($needle)) {
@@ -253,7 +269,10 @@ function getItsHeading($start: cheerio.Cheerio) {
 	return null;
 }
 
-function upToPrevOrParent($start: cheerio.Cheerio) {
+function upToPrevOrParent(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	$start: cheerio.Cheerio,
+) {
 	let $needle = $start.prev();
 	if (!$needle.length) {
 		$needle = $start.parent();
@@ -261,7 +280,10 @@ function upToPrevOrParent($start: cheerio.Cheerio) {
 	return $needle;
 }
 
-function isHeading($el: cheerio.Cheerio) {
+function isHeading(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	$el: cheerio.Cheerio,
+) {
 	// @ts-ignore
 	return /^h[1-6]$/i.test($el[0].tagName);
 }

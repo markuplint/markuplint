@@ -146,21 +146,7 @@
 			}
 		},
 		{
-			"files": [
-				"packages/@markuplint/types/**/*.ts",
-				"packages/@markuplint/ml-config/**/*.ts",
-				"packages/@markuplint/ml-spec/**/*.ts",
-				"packages/@markuplint/selector/**/*.ts",
-				"packages/@markuplint/ml-ast/**/*.ts",
-				"packages/@markuplint/i18n/**/*.ts",
-				"packages/@markuplint/parser-utils/**/*.ts",
-				"packages/@markuplint/rules/**/*.ts",
-				"packages/@markuplint/html-parser/**/*.ts",
-				"packages/@markuplint/ml-core/**/*.ts",
-				"packages/@markuplint/file-resolver/**/*.ts",
-				"packages/@markuplint/create-rule-helper/**/*.ts",
-				"packages/markuplint/**/*.ts"
-			],
+			"files": ["packages/@markuplint/**/*.ts", "packages/markuplint/**/*.ts"],
 			"excludedFiles": ["**/*.spec.ts"],
 			"rules": {
 				"@typescript-eslint/prefer-readonly-parameter-types": [

@@ -41,7 +41,10 @@ export const parse: Parse = (rawCode, options) => {
 	};
 };
 
-function provideChildNodesToPSBlock(list: MLASTNode[]) {
+function provideChildNodesToPSBlock(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	list: readonly MLASTNode[],
+) {
 	walk(list, psBlockNode => {
 		if (psBlockNode.type !== 'psblock') {
 			return;

@@ -8,6 +8,7 @@ import type {
 	ARIARoleInSchema,
 	EquivalentHtmlAttr,
 } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import fetch from './fetch';
 import { arrayUnique, nameCompare } from './utils';
@@ -43,7 +44,10 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 	);
 	const $roleList = $('#role_definitions section.role');
 	const roles: ARIARoleInSchema[] = [];
-	const getAttr = (li: cheerio.Element): ARIARoleOwnedProperties => {
+	const getAttr = (
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		li: cheerio.Element,
+	): ARIARoleOwnedProperties => {
 		const $li = $(li);
 		const text = $li.text();
 		const isDeprecated = /deprecated/i.test(text) || undefined;
@@ -155,7 +159,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 	return roles;
 }
 
-async function getProps(version: ARIAVersion, roles: ARIARoleInSchema[]) {
+async function getProps(version: ARIAVersion, roles: ReadonlyDeep<ARIARoleInSchema[]>) {
 	const $ = await fetch(`https://www.w3.org/TR/wai-aria-${version}/`);
 
 	const ariaNameList: Set<string> = new Set();
@@ -295,7 +299,11 @@ async function getAriaInHtml() {
 	};
 }
 
-function $$($el: cheerio.Cheerio, selectors: string[]) {
+function $$(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	$el: cheerio.Cheerio,
+	selectors: readonly string[],
+) {
 	let $found = $el;
 	for (const selector of selectors) {
 		$found = $el.find(selector);
