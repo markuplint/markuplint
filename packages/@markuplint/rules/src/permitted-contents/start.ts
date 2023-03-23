@@ -17,6 +17,7 @@ import { getChildNodesWithoutWhitespaces } from './utils';
  */
 export function start(
 	contents: ReadonlyDeep<ContentModel['contents']>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 	specs: ReadonlyDeep<Specs>,
 	options: Options,

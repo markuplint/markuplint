@@ -6,7 +6,12 @@ import { getContentModel } from '@markuplint/ml-spec';
 
 import { start } from './start';
 
-export function contentModel(el: Element, rules: readonly TagRule[], options: Options): ContentModelResult[] {
+export function contentModel(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	rules: ReadonlyDeep<TagRule[]>,
+	options: Options,
+): ContentModelResult[] {
 	const model = createModel(el, rules);
 	if (model == null) {
 		return [
@@ -23,14 +28,18 @@ export function contentModel(el: Element, rules: readonly TagRule[], options: Op
 	return result;
 }
 
-function createModel(el: Element, rules: readonly TagRule[]) {
+function createModel(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	rules: ReadonlyDeep<TagRule[]>,
+) {
 	const specs = cachedSpecs(el.ownerMLDocument.specs, rules);
 	const model = getContentModel(el, specs.specs);
 	return model;
 }
 
 const caches = new Map<string, ReadonlyDeep<Specs>>();
-function cachedSpecs(specs: ReadonlyDeep<MLMLSpec>, rules: readonly TagRule[]): ReadonlyDeep<Specs> {
+function cachedSpecs(specs: ReadonlyDeep<MLMLSpec>, rules: ReadonlyDeep<TagRule[]>): ReadonlyDeep<Specs> {
 	if (!rules.length) {
 		return specs;
 	}

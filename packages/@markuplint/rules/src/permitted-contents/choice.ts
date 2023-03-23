@@ -10,7 +10,8 @@ const indexes = new WeakMap<Result<MatchedReason>, number>();
 
 export function choice(
 	pattern: ReadonlyDeep<PermittedContentChoice>,
-	elements: ChildNode[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	elements: readonly ChildNode[],
 	specs: ReadonlyDeep<Specs>,
 	options: Options,
 	depth: number,

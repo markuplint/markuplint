@@ -17,6 +17,7 @@ type Condition = {
 
 export function matchesSelector(
 	query: string,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: ChildNode | undefined,
 	specs: ReadonlyDeep<Specs>,
 	depth: number,

@@ -118,7 +118,7 @@ export function valueCheck(
 	t: Translator,
 	name: string,
 	value: string,
-	type: AttributeType,
+	type: ReadonlyDeep<AttributeType>,
 ): string | [string, Loc] | false {
 	if (type === 'Boolean') {
 		// Valid because an attribute is exist

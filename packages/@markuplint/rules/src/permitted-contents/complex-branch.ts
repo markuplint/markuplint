@@ -19,7 +19,8 @@ import { isChoice, isTransparent } from './utils';
  */
 export function complexBranch(
 	pattern: ReadonlyDeep<PermittedContentPattern>,
-	elements: ChildNode[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	elements: readonly ChildNode[],
 	specs: ReadonlyDeep<Specs>,
 	options: Options,
 	depth: number,

@@ -153,8 +153,10 @@
 				"packages/@markuplint/selector/**/*.ts",
 				"packages/@markuplint/ml-ast/**/*.ts",
 				"packages/@markuplint/i18n/**/*.ts",
-				"packages/@markuplint/parser-utils/**/*.ts"
+				"packages/@markuplint/parser-utils/**/*.ts",
+				"packages/@markuplint/rules/**/*.ts"
 			],
+			"excludedFiles": ["**/*.spec.ts"],
 			"rules": {
 				"@typescript-eslint/prefer-readonly-parameter-types": [
 					"warn",

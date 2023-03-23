@@ -12,6 +12,7 @@ import { decode as decodeHtmlEntities } from 'html-entities';
 import { attrCheck } from './attr-check';
 
 export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: Element<T, O>,
 	condition: ReadonlyDeep<Attribute['condition']>,
 ) {
@@ -75,8 +76,10 @@ export function isValidAttr(
 	name: string,
 	value: string,
 	isDynamicValue: boolean,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: Element<any, any>,
 	attrSpecs: ReadonlyDeep<Attribute[]>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	log?: Log,
 ) {
 	let invalid: ReturnType<typeof attrCheck> = false;
@@ -126,7 +129,12 @@ export function toNormalizedValue(value: string, spec: ReadonlyDeep<Attribute>) 
 	return normalized;
 }
 
-export function accnameMayBeMutable(el: Element<any, any>, document: Document<any, any>) {
+export function accnameMayBeMutable(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<any, any>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	document: Document<any, any>,
+) {
 	if (el.hasMutableAttributes() || el.hasMutableChildren(true)) {
 		return true;
 	}
@@ -141,7 +149,9 @@ export function accnameMayBeMutable(el: Element<any, any>, document: Document<an
 
 const labelable = ['button', 'input:not([type=hidden])', 'meter', 'output', 'progress', 'select', 'textarea'];
 export function getOwnedLabel<V extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<V, O>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	document: Document<V, O>,
 ) {
 	if (!labelable.some(cond => el.matches(cond))) {
@@ -167,7 +177,7 @@ export function decodeCharRef(characterReference: string) {
 export class Collection<T> {
 	#items = new Set<T>();
 
-	constructor(...items: (T | null | undefined)[]) {
+	constructor(...items: readonly (T | null | undefined)[]) {
 		this.add(...items);
 	}
 
@@ -175,7 +185,7 @@ export class Collection<T> {
 		return this.#items.values();
 	}
 
-	add(...items: (T | null | undefined)[]) {
+	add(...items: readonly (T | null | undefined)[]) {
 		for (const item of items) {
 			if (item == null) {
 				continue;

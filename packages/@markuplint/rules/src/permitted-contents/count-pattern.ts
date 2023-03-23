@@ -27,6 +27,7 @@ export function countPattern(
 		| ReadonlyDeep<PermittedContentOptional>
 		| ReadonlyDeep<PermittedContentRequire>
 		| ReadonlyDeep<PermittedContentZeroOrMore>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	elements: readonly ChildNode[],
 	specs: ReadonlyDeep<Specs>,
 	options: Options,
@@ -217,7 +218,12 @@ export function countPattern(
 }
 
 const cLog = cmLog.extend('countCompereResult');
-function compereResult(a: Result, b: Result | null): Result {
+function compereResult(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	a: Readonly<Result>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	b: Readonly<Result> | null,
+): Result {
 	cLog('current: %s %O\nbarely: %s %O', a.type, a.hint, b?.type, b?.hint);
 
 	if (b == null) {

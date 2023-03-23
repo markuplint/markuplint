@@ -9,6 +9,7 @@ import { Collection, isModel } from './utils';
 
 export function recursiveBranch(
 	model: ReadonlyDeep<Model | PermittedContentPattern[]>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodes: readonly ChildNode[],
 	specs: ReadonlyDeep<Specs>,
 	options: Options,

@@ -1,18 +1,19 @@
 import type { Translator } from '@markuplint/i18n';
 import type { AttributeType } from '@markuplint/ml-spec';
 import type { UnmatchedResult, List, Number, Expect } from '@markuplint/types';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { isList, isKeyword, isEnum } from '@markuplint/types';
 
 export function createMessageValueExpected(
 	t: Translator,
 	baseTarget: string,
-	type: AttributeType,
-	matches: UnmatchedResult,
+	type: ReadonlyDeep<AttributeType>,
+	matches: ReadonlyDeep<UnmatchedResult>,
 ) {
 	let target = baseTarget;
 	let listDescriptionPart: string | undefined;
-	let tokenType: Exclude<AttributeType, List>;
+	let tokenType: Exclude<ReadonlyDeep<AttributeType>, List>;
 
 	if (isList(type)) {
 		listDescriptionPart = t(
@@ -41,7 +42,7 @@ export function __createMessageValueExpected(
 	t: Translator,
 	baseTarget: string,
 	expected: string | null,
-	matches: Pick<UnmatchedResult, 'partName' | 'reason' | 'raw' | 'candidate' | 'ref' | 'extra'>,
+	matches: Pick<ReadonlyDeep<UnmatchedResult>, 'partName' | 'reason' | 'raw' | 'candidate' | 'ref' | 'extra'>,
 ) {
 	let target = baseTarget;
 	let reasonPart: string | undefined;
@@ -216,8 +217,8 @@ export function __createMessageValueExpected(
 }
 
 function createExpectedObject(
-	type: Exclude<AttributeType, List>,
-	matches: UnmatchedResult,
+	type: ReadonlyDeep<Exclude<AttributeType, List>>,
+	matches: ReadonlyDeep<UnmatchedResult>,
 	t: Translator,
 ): string | null {
 	const expectedObject: string[] = [];
@@ -248,7 +249,7 @@ function createExpectedObject(
 	return expects;
 }
 
-function expectValueToWord(t: Translator, expect: Expect, type: Exclude<AttributeType, List>) {
+function expectValueToWord(t: Translator, expect: Expect, type: ReadonlyDeep<Exclude<AttributeType, List>>) {
 	switch (expect.type) {
 		case 'common':
 			return expect.value;
@@ -266,7 +267,7 @@ function expectValueToWord(t: Translator, expect: Expect, type: Exclude<Attribut
 	}
 }
 
-function createExpectedNumber(t: Translator, type: Number) {
+function createExpectedNumber(t: Translator, type: Readonly<Number>) {
 	if (type.gt != null) {
 		if (type.lt != null) {
 			return t('{0} greater than {1} less than {2}', type.type, type.gt, type.lt);

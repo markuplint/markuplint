@@ -60,5 +60,5 @@ export type TagRule = {
 } & ContentModel;
 
 export type Options = {
-	ignoreHasMutableChildren: boolean;
+	readonly ignoreHasMutableChildren: boolean;
 };

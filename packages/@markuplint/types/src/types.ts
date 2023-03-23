@@ -42,21 +42,21 @@ export type UnmatchedResultReason =
 	| 'must-be-percent-encoded'
 	| 'must-be-serialized'
 	| {
-			type: 'out-of-range';
-			gt?: number;
-			gte?: number;
-			lt?: number;
-			lte?: number;
+			readonly type: 'out-of-range';
+			readonly gt?: number;
+			readonly gte?: number;
+			readonly lt?: number;
+			readonly lte?: number;
 	  }
 	| {
-			type: 'out-of-range-length-char';
-			gte: number;
-			lte?: number;
+			readonly type: 'out-of-range-length-char';
+			readonly gte: number;
+			readonly lte?: number;
 	  }
 	| {
-			type: 'out-of-range-length-digit';
-			gte: number;
-			lte?: number;
+			readonly type: 'out-of-range-length-digit';
+			readonly gte: number;
+			readonly lte?: number;
 	  };
 
 export type MatchedResult = {

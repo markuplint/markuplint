@@ -19,7 +19,10 @@ import { bgGreen, green, bgRed, bgBlue, blue, bgMagenta, cyan } from './debug';
 import { transparentMode } from './represent-transparent-nodes';
 
 const getChildNodesWithoutWhitespacesCaches = new Map<Element, ChildNode[]>();
-export function getChildNodesWithoutWhitespaces(el: Element): ChildNode[] {
+export function getChildNodesWithoutWhitespaces(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+): ChildNode[] {
 	let nodes = getChildNodesWithoutWhitespacesCaches.get(el);
 	if (nodes) {
 		return nodes;
@@ -48,7 +51,12 @@ export function isModel(model: ReadonlyDeep<Model | PermittedContentPattern[]>):
 	return modelMode;
 }
 
-export function matches(selector: string, node: ChildNode, specs: ReadonlyDeep<Specs>) {
+export function matches(
+	selector: string,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: ChildNode,
+	specs: ReadonlyDeep<Specs>,
+) {
 	const selectorResult = createSelector(selector, specs as MLMLSpec).search(node);
 
 	const matched = selectorResult.filter((r): r is SelectorMatchedResult => r.matched);
@@ -72,7 +80,10 @@ export function matches(selector: string, node: ChildNode, specs: ReadonlyDeep<S
 	};
 }
 
-function descendants(selectorResult: SelectorMatchedResult): ChildNode[] {
+function descendants(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	selectorResult: SelectorMatchedResult,
+): ChildNode[] {
 	let nodes: ChildNode[] = selectorResult.nodes.slice() as ChildNode[];
 	while (selectorResult.has.length) {
 		for (const dep of selectorResult.has) {
@@ -180,7 +191,12 @@ export function normalizeModel(
 	};
 }
 
-export function mergeHints(a: Hints, b: Hints) {
+export function mergeHints(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	a: Readonly<Hints>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	b: Readonly<Hints>,
+) {
 	const missing = [a.missing, b.missing].sort(
 		(a, b) => (b?.barelyMatchedElements ?? 0) - (a?.barelyMatchedElements ?? 0),
 	)[0];
@@ -207,7 +223,10 @@ export class Collection {
 	#nodes: ReadonlySet<ChildNode>;
 	#origin: readonly ChildNode[];
 
-	constructor(origin: readonly ChildNode[]) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		origin: readonly ChildNode[],
+	) {
 		this.#origin = origin.slice();
 		this.#nodes = new Set(this.#origin);
 	}
@@ -228,7 +247,10 @@ export class Collection {
 		return Array.from(this.#nodes).filter(n => !this.#matched.has(n));
 	}
 
-	addMatched(nodes: ChildNode[]) {
+	addMatched(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		nodes: ChildNode[],
+	) {
 		const i = this.#matched.size;
 
 		for (const node of nodes) {

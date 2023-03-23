@@ -20,7 +20,8 @@ import { Collection, mergeHints, modelLog } from './utils';
  */
 export function order(
 	contents: ReadonlyDeep<PermittedContentPattern[]>,
-	nodes: ReadonlyArray<ChildNode>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodes: readonly ChildNode[],
 	specs: ReadonlyDeep<Specs>,
 	options: Options,
 	depth: number,
