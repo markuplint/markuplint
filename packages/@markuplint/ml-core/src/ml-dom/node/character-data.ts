@@ -71,7 +71,10 @@ export abstract class MLCharacterData<
 	/**
 	 * @implements DOM API: `CharacterData`
 	 */
-	after(...nodes: (string | MLElement<any, any>)[]): void {
+	after(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		after(this, ...nodes);
 	}
 
@@ -81,7 +84,10 @@ export abstract class MLCharacterData<
 	/**
 	 * @implements DOM API: `CharacterData`
 	 */
-	before(...nodes: (string | MLElement<any, any>)[]): void {
+	before(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		before(this, ...nodes);
 	}
 
@@ -104,7 +110,10 @@ export abstract class MLCharacterData<
 	/**
 	 * @implements DOM API: `CharacterData`
 	 */
-	replaceWith(...nodes: (string | MLElement<any, any>)[]): void {
+	replaceWith(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		replaceWith(this, ...nodes);
 	}
 

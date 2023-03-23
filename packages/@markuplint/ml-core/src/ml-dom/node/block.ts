@@ -15,7 +15,12 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 > {
 	readonly isTransparent: boolean;
 
-	constructor(astNode: MLASTPreprocessorSpecificBlock, document: MLDocument<T, O>) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		astNode: MLASTPreprocessorSpecificBlock,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		document: MLDocument<T, O>,
+	) {
 		super(astNode, document);
 		// TODO:
 		this.isTransparent = true;
@@ -42,14 +47,20 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 	/**
 	 * @implements DOM API: `ChildNode`
 	 */
-	after(...nodes: (string | MLElement<any, any>)[]): void {
+	after(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		after(this, ...nodes);
 	}
 
 	/**
 	 * @implements DOM API: `ChildNode`
 	 */
-	before(...nodes: (string | MLElement<any, any>)[]): void {
+	before(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		before(this, ...nodes);
 	}
 
@@ -63,7 +74,10 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 	/**
 	 * @implements DOM API: `ChildNode`
 	 */
-	replaceWith(...nodes: (string | MLElement<any, any>)[]): void {
+	replaceWith(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		replaceWith(this, ...nodes);
 	}
 }

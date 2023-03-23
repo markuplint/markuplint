@@ -13,9 +13,9 @@ import { Document } from './ml-dom';
 const resultLog = log.extend('result');
 
 export type MLCoreParams = {
-	sourceCode: string;
-	filename: string;
-	debug?: boolean;
+	readonly sourceCode: string;
+	readonly filename: string;
+	readonly debug?: boolean;
 } & MLFabric;
 
 export class MLCore {
@@ -26,7 +26,7 @@ export class MLCore {
 	#parser: MLMarkupLanguageParser;
 	#parserOptions: ParserOptions;
 	#pretenders: Pretender[];
-	#rules: MLRule<RuleConfigValue, PlainData>[];
+	#rules: Readonly<MLRule<RuleConfigValue, PlainData>>[];
 	#ruleset: Ruleset;
 	#schemas: MLSchema;
 	#sourceCode: string;
@@ -58,8 +58,8 @@ export class MLCore {
 		this.#locale = locale;
 		this.#schemas = schemas;
 		this.#filename = filename;
-		this.#rules = rules;
-		this.#pretenders = pretenders;
+		this.#rules = rules.slice();
+		this.#pretenders = pretenders.slice();
 
 		this._parse();
 		this._createDocument();
@@ -82,7 +82,7 @@ export class MLCore {
 			nodeRules: ruleset?.nodeRules ?? this.#ruleset.nodeRules,
 			childNodeRules: ruleset?.childNodeRules ?? this.#ruleset.childNodeRules,
 		};
-		this.#rules = rules ?? this.#rules;
+		this.#rules = (rules ?? this.#rules).slice();
 		this.#locale = locale ?? this.#locale;
 		this.#schemas = schemas ?? this.#schemas;
 		if (

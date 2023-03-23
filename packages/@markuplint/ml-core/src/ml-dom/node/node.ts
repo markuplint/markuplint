@@ -164,7 +164,11 @@ export abstract class MLNode<
 
 	protected _astToken: A;
 
-	constructor(astNode: A, document: MLDocument<T, O>) {
+	constructor(
+		astNode: A,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		document: MLDocument<T, O>,
+	) {
 		super(astNode);
 		this._astToken = astNode;
 		this.#ownerDocument = document;
@@ -560,6 +564,7 @@ export abstract class MLNode<
 	 */
 	addEventListener(
 		type: string,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		callback?: EventListenerOrEventListenerObject | null,
 		options: AddEventListenerOptions | boolean = {},
 	): void {
@@ -595,7 +600,10 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-comparedocumentposition%E2%91%A0
 	 */
-	compareDocumentPosition(other: Node): number {
+	compareDocumentPosition(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		other: Node,
+	): number {
 		throw new UnexpectedCallError('Not supported "compareDocumentPosition" method');
 	}
 
@@ -606,7 +614,10 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-contains%E2%91%A0
 	 */
-	contains(other: Node | null): boolean {
+	contains(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		other: Node | null,
+	): boolean {
 		throw new UnexpectedCallError('Not supported "contains" method');
 	}
 
@@ -617,7 +628,10 @@ export abstract class MLNode<
 	 * @implements DOM API: `EventTarget`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-eventtarget-dispatchevent%E2%91%A2
 	 */
-	dispatchEvent(event: Event): boolean {
+	dispatchEvent(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		event: Event,
+	): boolean {
 		throw new UnexpectedCallError('Not supported "dispatchEvent" method');
 	}
 
@@ -628,7 +642,10 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-getrootnode%E2%91%A0
 	 */
-	getRootNode(options?: GetRootNodeOptions): MLNode<T, O> {
+	getRootNode(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		options?: GetRootNodeOptions,
+	): MLNode<T, O> {
 		if (options) {
 			throw new UnexpectedCallError('Not supported options');
 		}
@@ -654,7 +671,11 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-insertbefore
 	 */
-	insertBefore<T extends Node>(node: T, child: Node | null): T {
+	insertBefore<T extends Node>(
+		node: T,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		child: Node | null,
+	): T {
 		throw new UnexpectedCallError('Not supported "insertBefore" method');
 	}
 
@@ -683,7 +704,10 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-isequalnode%E2%91%A0
 	 */
-	isEqualNode(otherNode: Node | null): boolean {
+	isEqualNode(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		otherNode: Node | null,
+	): boolean {
 		throw new UnexpectedCallError('Not supported "isEqualNode" method');
 	}
 
@@ -701,7 +725,10 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-issamenode
 	 */
-	isSameNode(otherNode: Node | null): boolean {
+	isSameNode(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		otherNode: Node | null,
+	): boolean {
 		throw new UnexpectedCallError('Not supported "isSameNode" method');
 	}
 
@@ -758,6 +785,7 @@ export abstract class MLNode<
 	 */
 	removeEventListener(
 		type: string,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		callback?: EventListenerOrEventListenerObject | null,
 		options: EventListenerOptions | boolean = {},
 	): void {
@@ -771,14 +799,21 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-replacechild
 	 */
-	replaceChild<T extends Node>(node: Node, child: T): T {
+	replaceChild<T extends Node>(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		node: Node,
+		child: T,
+	): T {
 		throw new UnexpectedCallError('Not supported "removeChild" method');
 	}
 
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
-	resetChildren(childNodes?: NodeListOf<MLChildNode<T, O>>) {
+	resetChildren(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		childNodes?: NodeListOf<MLChildNode<T, O>>,
+	) {
 		this.#childNodes = childNodes ?? this.#childNodes;
 	}
 }

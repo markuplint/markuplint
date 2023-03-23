@@ -8,7 +8,7 @@ export type Plugin = {
 };
 
 export type PluginCreator<S extends CreatePluginSettings> = {
-	name: string;
+	readonly name: string;
 	create(setting: S): Omit<Plugin, 'name'>;
 };
 

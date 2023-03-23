@@ -51,7 +51,10 @@ export class MLNamedNodeMap<T extends RuleConfigValue, O extends PlainData = und
 	 * @unsupported
 	 * @implements DOM API: `NamedNodeMap`
 	 */
-	setNamedItem(attr: MLAttr<T, O>): MLAttr<T, O> | null {
+	setNamedItem(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		attr: MLAttr<T, O>,
+	): MLAttr<T, O> | null {
 		throw new UnexpectedCallError('Not supported "setNamedItem" method');
 	}
 
@@ -61,12 +64,16 @@ export class MLNamedNodeMap<T extends RuleConfigValue, O extends PlainData = und
 	 * @unsupported
 	 * @implements DOM API: `NamedNodeMap`
 	 */
-	setNamedItemNS(attr: MLAttr<T, O>): MLAttr<T, O> | null {
+	setNamedItemNS(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		attr: MLAttr<T, O>,
+	): MLAttr<T, O> | null {
 		throw new UnexpectedCallError('Not supported "setNamedItemNS" method');
 	}
 }
 
 export function toNamedNodeMap<T extends RuleConfigValue, O extends PlainData = undefined>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodes: ReadonlyArray<MLAttr<T, O>>,
 ): MLNamedNodeMap<T, O> {
 	const namedNodeMap = new MLNamedNodeMap(...nodes);

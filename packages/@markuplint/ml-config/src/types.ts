@@ -197,22 +197,22 @@ export type Report<T extends RuleConfigValue, O extends PlainData = undefined> =
 	| (Report1<T, O> & Report2);
 
 export type Report1<T extends RuleConfigValue, O extends PlainData = undefined> = {
-	message: string;
-	scope: Scope<T, O>;
+	readonly message: string;
+	readonly scope: Scope<T, O>;
 };
 
 export type Report2 = {
-	message: string;
-	line: number;
-	col: number;
-	raw: string;
+	readonly message: string;
+	readonly line: number;
+	readonly col: number;
+	readonly raw: string;
 };
 
 export type Scope<T extends RuleConfigValue, O extends PlainData = undefined> = {
-	rule: RuleInfo<T, O>;
-	startLine: number;
-	startCol: number;
-	raw: string;
+	readonly rule: RuleInfo<T, O>;
+	readonly startLine: number;
+	readonly startCol: number;
+	readonly raw: string;
 };
 
 export type Violation = {

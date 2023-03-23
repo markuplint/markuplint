@@ -39,6 +39,7 @@ class NodeStore {
 
 	setNode<A extends MLASTAbstractNode, T extends RuleConfigValue, O extends PlainData = undefined>(
 		astNode: A,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		node: MLNode<T, O, A>,
 	) {
 		if (node.is(node.DOCUMENT_NODE)) {

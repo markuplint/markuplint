@@ -11,6 +11,7 @@ import { MLText } from '../node/text';
 
 export function createNode<N extends MLASTAbstractNode, T extends RuleConfigValue, O extends PlainData = undefined>(
 	astNode: N,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	document: MLDocument<T, O>,
 ): MappedNode<N, T, O> {
 	const _astNode = astNode as MLASTNode;

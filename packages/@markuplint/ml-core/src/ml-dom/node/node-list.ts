@@ -6,7 +6,15 @@ class MLNodeList<T extends RuleConfigValue, O extends PlainData, N extends MLChi
 	extends Array<N>
 	implements NodeListOf<N>
 {
-	forEach(callbackfn: (value: N, key: number, parent: MLNodeList<T, O, N>) => void, thisArg?: any): void {
+	forEach(
+		callbackfn: (
+			value: N,
+			key: number,
+			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+			parent: MLNodeList<T, O, N>,
+		) => void,
+		thisArg?: any,
+	): void {
 		return super.forEach.bind(this)((v, k) => callbackfn(v, k, thisArg ?? this));
 	}
 
@@ -50,6 +58,7 @@ class MLHTMLCollection<T extends RuleConfigValue, O extends PlainData = undefine
 }
 
 export function toHTMLCollection<T extends RuleConfigValue, O extends PlainData = undefined>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodes: ReadonlyArray<MLElement<T, O>>,
 ): HTMLCollectionOf<MLElement<T, O>> {
 	const collection = new MLHTMLCollection(...nodes);
@@ -57,6 +66,7 @@ export function toHTMLCollection<T extends RuleConfigValue, O extends PlainData 
 }
 
 export function nodeListToHTMLCollection<T extends RuleConfigValue, O extends PlainData = undefined>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodeList: NodeListOf<MLChildNode<T, O>>,
 ): HTMLCollectionOf<MLElement<T, O>> {
 	const collection = new MLHTMLCollection<T, O>();

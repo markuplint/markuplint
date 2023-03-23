@@ -14,6 +14,7 @@ export type MLChildNode<T extends RuleConfigValue, O extends PlainData = undefin
 	| MLBlock<T, O>;
 
 export function isChildNode<T extends RuleConfigValue, O extends PlainData = undefined>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: MLNode<T, O>,
 ): node is MLChildNode<T, O> {
 	return (

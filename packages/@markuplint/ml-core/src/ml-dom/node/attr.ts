@@ -45,7 +45,12 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 */
 	readonly valueType: 'string' | 'number' | 'boolean' | 'code' = 'string';
 
-	constructor(astToken: MLASTAttr, ownElement: MLElement<T, O>) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		astToken: MLASTAttr,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		ownElement: MLElement<T, O>,
+	) {
 		super(astToken, ownElement.ownerMLDocument);
 
 		if (this._astToken.type === 'html-attr') {

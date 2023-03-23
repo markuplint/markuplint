@@ -22,7 +22,11 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 	#ownerAttrs: MLAttr<any, any>[];
 	#set: Set<string>;
 
-	constructor(tokens: string, ownerAttrs: MLAttr<any, any>[]) {
+	constructor(
+		tokens: string,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		ownerAttrs: MLAttr<any, any>[],
+	) {
 		const list = tokens
 			.split(/\s+/)
 			.map(t => t.trim())
@@ -37,7 +41,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 		return this.join(' ');
 	}
 
-	add(...tokens: string[]): void {
+	add(...tokens: readonly string[]): void {
 		for (const token of tokens) {
 			if (this.#set.has(token)) {
 				continue;
@@ -106,7 +110,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 		};
 	}
 
-	remove(...tokens: string[]): void {
+	remove(...tokens: readonly string[]): void {
 		throw new UnexpectedCallError('Not supported "remove" method');
 	}
 

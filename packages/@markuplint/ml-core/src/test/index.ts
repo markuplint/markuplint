@@ -1,6 +1,7 @@
 import type { MLMarkupLanguageParser } from '@markuplint/ml-ast';
 import type { Config, PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { parse } from '@markuplint/html-parser';
 import spec from '@markuplint/html-spec';
@@ -9,9 +10,9 @@ import { convertRuleset } from '../convert-ruleset';
 import { Document } from '../ml-dom';
 
 export type CreateTestOptions = {
-	config?: Config;
-	parser?: MLMarkupLanguageParser;
-	specs?: MLMLSpec;
+	readonly config?: Config;
+	readonly parser?: Readonly<MLMarkupLanguageParser>;
+	readonly specs?: ReadonlyDeep<MLMLSpec>;
 };
 
 export function createTestDocument<T extends RuleConfigValue = any, O extends PlainData = any>(

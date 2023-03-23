@@ -53,7 +53,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 *
 	 */
-	currentRule: MLRule<T, O> | null = null;
+	currentRule: Readonly<MLRule<T, O>> | null = null;
 
 	/**
 	 * This is defined by the parser.
@@ -77,13 +77,45 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	readonly nodeList: ReadonlyArray<MLNode<T, O>>;
 
-	readonly ontouchcancel?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
+	readonly ontouchcancel?:
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TouchEvent,
+		  ) => any)
+		| null
+		| undefined;
 
-	readonly ontouchend?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
+	readonly ontouchend?:
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TouchEvent,
+		  ) => any)
+		| null
+		| undefined;
 
-	readonly ontouchmove?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
+	readonly ontouchmove?:
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TouchEvent,
+		  ) => any)
+		| null
+		| undefined;
 
-	readonly ontouchstart?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
+	readonly ontouchstart?:
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TouchEvent,
+		  ) => any)
+		| null
+		| undefined;
 
 	/**
 	 *
@@ -98,14 +130,15 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @param ruleset ruleset object
 	 */
 	constructor(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		ast: MLASTDocument,
 		ruleset: Ruleset,
-		schemas: readonly [MLMLSpec, ...ExtendedSpec[]],
+		schemas: readonly [ReadonlyDeep<MLMLSpec>, ...ReadonlyDeep<ExtendedSpec>[]],
 		options?: {
-			filename?: string;
-			endTag?: 'xml' | 'omittable' | 'never';
-			booleanish?: boolean;
-			pretenders?: Pretender[];
+			readonly filename?: string;
+			readonly endTag?: 'xml' | 'omittable' | 'never';
+			readonly booleanish?: boolean;
+			readonly pretenders?: readonly Pretender[];
 		},
 	) {
 		// @ts-ignore
@@ -129,7 +162,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				.filter((n): n is MLNode<T, O> => !!n),
 		);
 
-		this._pretending(options?.pretenders);
+		this._pretending(options?.pretenders?.slice());
 		this._ruleMapping(ruleset);
 	}
 
@@ -299,7 +332,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	get defaultView(): any {
 		return {
-			getComputedStyle(_el: MLElement<T, O>) {
+			getComputedStyle(
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				_el: MLElement<T, O>,
+			) {
 				return {
 					getPropertyValue(_propName: string) {
 						return {};
@@ -567,7 +603,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onabort(): ((this: GlobalEventHandlers, ev: UIEvent) => any) | null {
+	get onabort():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: UIEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onabort" property');
 	}
 
@@ -578,7 +621,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onanimationcancel(): ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null {
+	get onanimationcancel():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: AnimationEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onanimationcancel" property');
 	}
 
@@ -589,7 +639,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onanimationend(): ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null {
+	get onanimationend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: AnimationEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onanimationend" property');
 	}
 
@@ -600,7 +657,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onanimationiteration(): ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null {
+	get onanimationiteration():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: AnimationEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onanimationiteration" property');
 	}
 
@@ -611,7 +675,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onanimationstart(): ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null {
+	get onanimationstart():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: AnimationEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onanimationstart" property');
 	}
 
@@ -622,7 +693,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onauxclick(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onauxclick():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onauxclick" property');
 	}
 
@@ -633,7 +711,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onbeforeinput(): ((this: GlobalEventHandlers, ev: InputEvent) => any) | null {
+	get onbeforeinput():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: InputEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onbeforeinput" property');
 	}
 
@@ -644,7 +729,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onblur(): ((this: GlobalEventHandlers, ev: FocusEvent) => any) | null {
+	get onblur():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: FocusEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onblur" property');
 	}
 
@@ -655,7 +747,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get oncancel(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get oncancel():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oncanplay" property');
 	}
 
@@ -666,7 +765,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get oncanplay(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get oncanplay():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oncanplay" property');
 	}
 
@@ -677,7 +783,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get oncanplaythrough(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get oncanplaythrough():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oncanplaythrough" property');
 	}
 
@@ -688,7 +801,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onchange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onchange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onchange" property');
 	}
 
@@ -699,7 +819,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onclick(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onclick():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onclick" property');
 	}
 
@@ -710,7 +837,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onclose(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onclose():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onclose" property');
 	}
 
@@ -721,7 +855,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get oncontextmenu(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get oncontextmenu():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oncontextmenu" property');
 	}
 
@@ -732,7 +873,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get oncopy(): ((this: GlobalEventHandlers, ev: ClipboardEvent) => any) | null {
+	get oncopy():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: ClipboardEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oncopy" property');
 	}
 
@@ -743,7 +891,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get oncuechange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get oncuechange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oncuechange" property');
 	}
 
@@ -754,7 +909,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get oncut(): ((this: GlobalEventHandlers, ev: ClipboardEvent) => any) | null {
+	get oncut():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: ClipboardEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oncut" property');
 	}
 
@@ -765,7 +927,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ondblclick(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get ondblclick():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondblclick" property');
 	}
 
@@ -776,7 +945,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ondrag(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondrag():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondrag" property');
 	}
 
@@ -787,7 +963,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ondragend(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondragend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondragend" property');
 	}
 
@@ -798,7 +981,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ondragenter(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondragenter():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondragenter" property');
 	}
 
@@ -809,7 +999,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ondragleave(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondragleave():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondragleave" property');
 	}
 
@@ -820,7 +1017,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ondragover(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondragover():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondragover" property');
 	}
 
@@ -831,7 +1035,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ondragstart(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondragstart():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondragstart" property');
 	}
 
@@ -842,7 +1053,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ondrop(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondrop():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondrop" property');
 	}
 
@@ -853,7 +1071,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ondurationchange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get ondurationchange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondurationchange" property');
 	}
 
@@ -864,7 +1089,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onemptied(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onemptied():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onemptied" property');
 	}
 
@@ -875,7 +1107,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onended(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onended():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onended" property');
 	}
 
@@ -897,7 +1136,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onfocus(): ((this: GlobalEventHandlers, ev: FocusEvent) => any) | null {
+	get onfocus():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: FocusEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onfocus" property');
 	}
 
@@ -908,7 +1154,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onformdata(): ((this: GlobalEventHandlers, ev: FormDataEvent) => any) | null {
+	get onformdata():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: FormDataEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onformdata" property');
 	}
 
@@ -919,7 +1172,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onfullscreenchange(): ((this: Document, ev: Event) => any) | null {
+	get onfullscreenchange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: Document,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onfullscreenchange" property');
 	}
 
@@ -930,7 +1190,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onfullscreenerror(): ((this: Document, ev: Event) => any) | null {
+	get onfullscreenerror():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: Document,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onfullscreenerror" property');
 	}
 
@@ -941,7 +1208,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ongotpointercapture(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get ongotpointercapture():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ongotpointercapture" property');
 	}
 
@@ -952,7 +1226,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get oninput(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get oninput():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oninput" property');
 	}
 
@@ -963,7 +1244,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get oninvalid(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get oninvalid():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oninvalid" property');
 	}
 
@@ -974,7 +1262,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onkeydown(): ((this: GlobalEventHandlers, ev: KeyboardEvent) => any) | null {
+	get onkeydown():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: KeyboardEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onkeydown" property');
 	}
 
@@ -985,7 +1280,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onkeypress(): ((this: GlobalEventHandlers, ev: KeyboardEvent) => any) | null {
+	get onkeypress():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: KeyboardEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onkeypress" property');
 	}
 
@@ -996,7 +1298,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onkeyup(): ((this: GlobalEventHandlers, ev: KeyboardEvent) => any) | null {
+	get onkeyup():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: KeyboardEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onkeyup" property');
 	}
 
@@ -1007,7 +1316,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onload(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onload():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onload" property');
 	}
 
@@ -1018,7 +1334,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onloadeddata(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onloadeddata():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onloadeddata" property');
 	}
 
@@ -1029,7 +1352,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onloadedmetadata(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onloadedmetadata():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onloadedmetadata" property');
 	}
 
@@ -1040,7 +1370,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onloadstart(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onloadstart():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onloadstart" property');
 	}
 
@@ -1051,7 +1388,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onlostpointercapture(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onlostpointercapture():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onlostpointercapture" property');
 	}
 
@@ -1062,7 +1406,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onmousedown(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmousedown():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmousedown" property');
 	}
 
@@ -1073,7 +1424,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onmouseenter(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmouseenter():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmouseenter" property');
 	}
 
@@ -1084,7 +1442,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onmouseleave(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmouseleave():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmouseleave" property');
 	}
 
@@ -1095,7 +1460,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onmousemove(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmousemove():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmousemove" property');
 	}
 
@@ -1106,7 +1478,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onmouseout(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmouseout():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmouseout" property');
 	}
 
@@ -1117,7 +1496,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onmouseover(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmouseover():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmouseover" property');
 	}
 
@@ -1128,7 +1514,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onmouseup(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmouseup():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmouseup" property');
 	}
 
@@ -1139,7 +1532,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onpaste(): ((this: GlobalEventHandlers, ev: ClipboardEvent) => any) | null {
+	get onpaste():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: ClipboardEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpaste" property');
 	}
 
@@ -1150,7 +1550,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onpause(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onpause():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpause" property');
 	}
 
@@ -1161,7 +1568,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onplay(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onplay():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onplay" property');
 	}
 
@@ -1172,7 +1586,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onplaying(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onplaying():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onplaying" property');
 	}
 
@@ -1183,7 +1604,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onpointercancel(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointercancel():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointercancel" property');
 	}
 
@@ -1194,7 +1622,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onpointerdown(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointerdown():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerdown" property');
 	}
 
@@ -1205,7 +1640,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onpointerenter(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointerenter():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerenter" property');
 	}
 
@@ -1216,7 +1658,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onpointerleave(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointerleave():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerleave" property');
 	}
 
@@ -1227,7 +1676,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onpointerlockchange(): ((this: Document, ev: Event) => any) | null {
+	get onpointerlockchange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: Document,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerlockchange" property');
 	}
 
@@ -1238,7 +1694,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onpointerlockerror(): ((this: Document, ev: Event) => any) | null {
+	get onpointerlockerror():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: Document,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerlockerror" property');
 	}
 
@@ -1249,7 +1712,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onpointermove(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointermove():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointermove" property');
 	}
 
@@ -1260,7 +1730,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onpointerout(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointerout():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerout" property');
 	}
 
@@ -1271,7 +1748,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onpointerover(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointerover():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerover" property');
 	}
 
@@ -1282,7 +1766,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onpointerup(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointerup():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerup" property');
 	}
 
@@ -1293,7 +1784,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onprogress(): ((this: GlobalEventHandlers, ev: ProgressEvent<EventTarget>) => any) | null {
+	get onprogress():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: ProgressEvent<EventTarget>,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onprogress" property');
 	}
 
@@ -1304,7 +1802,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onratechange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onratechange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onratechange" property');
 	}
 
@@ -1315,7 +1820,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onreadystatechange(): ((this: Document, ev: Event) => any) | null {
+	get onreadystatechange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: Document,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onreadystatechange" property');
 	}
 
@@ -1326,7 +1838,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onreset(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onreset():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onreset" property');
 	}
 
@@ -1337,7 +1856,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onresize(): ((this: GlobalEventHandlers, ev: UIEvent) => any) | null {
+	get onresize():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: UIEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onresize" property');
 	}
 
@@ -1348,7 +1874,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onscroll(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onscroll():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onscroll" property');
 	}
 
@@ -1359,7 +1892,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onsecuritypolicyviolation(): ((this: GlobalEventHandlers, ev: SecurityPolicyViolationEvent) => any) | null {
+	get onsecuritypolicyviolation():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: SecurityPolicyViolationEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onsecuritypolicyviolation" property');
 	}
 
@@ -1370,7 +1910,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onseeked(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onseeked():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onseeked" property');
 	}
 
@@ -1381,7 +1928,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onseeking(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onseeking():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onseeking" property');
 	}
 
@@ -1392,7 +1946,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onselect(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onselect():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onselect" property');
 	}
 
@@ -1403,7 +1964,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onselectionchange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onselectionchange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onselectionchange" property');
 	}
 
@@ -1414,7 +1982,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onselectstart(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onselectstart():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onselectstart" property');
 	}
 
@@ -1425,7 +2000,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onslotchange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onslotchange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onslotchange" property');
 	}
 
@@ -1436,7 +2018,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onstalled(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onstalled():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onstalled" property');
 	}
 
@@ -1447,7 +2036,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onsubmit(): ((this: GlobalEventHandlers, ev: SubmitEvent) => any) | null {
+	get onsubmit():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: SubmitEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onsubmit" property');
 	}
 
@@ -1458,7 +2054,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onsuspend(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onsuspend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onsuspend" property');
 	}
 
@@ -1469,7 +2072,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ontimeupdate(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get ontimeupdate():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ontimeupdate" property');
 	}
 
@@ -1480,7 +2090,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ontoggle(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get ontoggle():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ontoggle" property');
 	}
 
@@ -1491,7 +2108,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ontransitioncancel(): ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null {
+	get ontransitioncancel():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TransitionEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ontransitioncancel" property');
 	}
 
@@ -1502,7 +2126,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ontransitionend(): ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null {
+	get ontransitionend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TransitionEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ontransitionend" property');
 	}
 
@@ -1513,7 +2144,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ontransitionrun(): ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null {
+	get ontransitionrun():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TransitionEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ontransitionrun" property');
 	}
 
@@ -1524,7 +2162,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get ontransitionstart(): ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null {
+	get ontransitionstart():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TransitionEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ontransitionstart" property');
 	}
 
@@ -1535,7 +2180,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onvisibilitychange(): ((this: Document, ev: Event) => any) | null {
+	get onvisibilitychange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: Document,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onvisibilitychange" property');
 	}
 
@@ -1546,7 +2198,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onvolumechange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onvolumechange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onvolumechange" property');
 	}
 
@@ -1557,7 +2216,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onwaiting(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onwaiting():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onwaiting" property');
 	}
 
@@ -1568,7 +2234,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onwebkitanimationend(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onwebkitanimationend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onwebkitanimationend" property');
 	}
 
@@ -1579,7 +2252,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onwebkitanimationiteration(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onwebkitanimationiteration():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onwebkitanimationiteration" property');
 	}
 
@@ -1590,7 +2270,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onwebkitanimationstart(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onwebkitanimationstart():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onwebkitanimationstart" property');
 	}
 
@@ -1601,7 +2288,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onwebkittransitionend(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onwebkittransitionend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onwebkittransitionend" property');
 	}
 
@@ -1612,7 +2306,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	get onwheel(): ((this: GlobalEventHandlers, ev: WheelEvent) => any) | null {
+	get onwheel():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: WheelEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onwheel" property');
 	}
 
@@ -1912,7 +2613,11 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	createExpression(expression: string, resolver?: XPathNSResolver | null): XPathExpression {
+	createExpression(
+		expression: string,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		resolver?: XPathNSResolver | null,
+	): XPathExpression {
 		throw new UnexpectedCallError('Not supported "createExpression" method');
 	}
 
@@ -1922,7 +2627,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	createNSResolver(nodeResolver: Node): XPathNSResolver {
+	createNSResolver(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		nodeResolver: Node,
+	): XPathNSResolver {
 		throw new UnexpectedCallError('Not supported "createNSResolver" method');
 	}
 
@@ -1932,7 +2640,13 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	createNodeIterator(root: Node, whatToShow?: number, filter?: NodeFilter | null): NodeIterator {
+	createNodeIterator(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		root: Node,
+		whatToShow?: number,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		filter?: NodeFilter | null,
+	): NodeIterator {
 		throw new UnexpectedCallError('Not supported "createNodeIterator" method');
 	}
 
@@ -1972,7 +2686,13 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	createTreeWalker(root: Node, whatToShow?: number, filter?: NodeFilter | null): TreeWalker {
+	createTreeWalker(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		root: Node,
+		whatToShow?: number,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		filter?: NodeFilter | null,
+	): TreeWalker {
 		throw new UnexpectedCallError('Not supported "createTreeWalker" method');
 	}
 
@@ -2011,9 +2731,12 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	evaluate(
 		expression: string,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		contextNode: Node,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		resolver?: XPathNSResolver | null,
 		type?: number,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		result?: XPathResult | null,
 	): XPathResult {
 		throw new UnexpectedCallError('Not supported "evaluate" method');
@@ -2278,7 +3001,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
 	 */
-	setRule(rule: MLRule<T, O> | null) {
+	setRule(rule: Readonly<MLRule<T, O>> | null) {
 		this.currentRule = rule;
 	}
 
@@ -2334,7 +3057,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	write(...text: string[]): void {
+	write(...text: readonly string[]): void {
 		throw new UnexpectedCallError('Not supported "write" method');
 	}
 
@@ -2344,11 +3067,11 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	writeln(...text: string[]): void {
+	writeln(...text: readonly string[]): void {
 		throw new UnexpectedCallError('Not supported "writeln" method');
 	}
 
-	private _pretending(pretenders?: Pretender[]) {
+	private _pretending(pretenders?: readonly Pretender[]) {
 		if (docLog.enabled) {
 			docLog('Pretending: %O', pretenders);
 		}

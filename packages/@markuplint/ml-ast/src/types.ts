@@ -178,7 +178,7 @@ export type ParserOptions = {
 export type ParserAuthoredElementNameDistinguishing =
 	| string
 	| Readonly<RegExp>
-	| ParserAuthoredElementNameDistinguishingFunction
+	| Readonly<ParserAuthoredElementNameDistinguishingFunction>
 	| readonly (string | Readonly<RegExp> | ParserAuthoredElementNameDistinguishingFunction)[];
 
 export type ParserAuthoredElementNameDistinguishingFunction = (name: string) => boolean;

@@ -4,11 +4,17 @@ import type { Translator } from '@markuplint/i18n';
 import type { PlainData, Report, RuleConfigValue, Severity } from '@markuplint/ml-config';
 
 export type RuleSeed<T extends RuleConfigValue = boolean, O extends PlainData = undefined> = {
-	defaultSeverity?: Severity;
-	defaultValue?: T;
-	defaultOptions?: O;
-	verify(context: ReturnType<MLRuleContext<T, O>['provide']>): void | Promise<void>;
-	fix?(context: ReturnType<MLRuleContext<T, O>['provide']>): void | Promise<void>;
+	readonly defaultSeverity?: Severity;
+	readonly defaultValue?: T;
+	readonly defaultOptions?: O;
+	verify(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		context: ReturnType<MLRuleContext<T, O>['provide']>,
+	): void | Promise<void>;
+	fix?(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		context: ReturnType<MLRuleContext<T, O>['provide']>,
+	): void | Promise<void>;
 };
 
 export type Checker<
@@ -22,9 +28,8 @@ export type ElementChecker<
 	O extends PlainData = undefined,
 	P extends Record<string, unknown> = {},
 > = (
-	params: P & {
-		el: Element<T, O>;
-	},
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	params: P & { el: Element<T, O> },
 ) => CheckerReport<T, O>;
 
 export type AttrChecker<
@@ -32,9 +37,8 @@ export type AttrChecker<
 	O extends PlainData = undefined,
 	P extends Record<string, unknown> = {},
 > = (
-	params: P & {
-		attr: Attr<T, O>;
-	},
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	params: P & { attr: Attr<T, O> },
 ) => CheckerReport<T, O>;
 
 export type CheckerReport<T extends RuleConfigValue, O extends PlainData = undefined> = (

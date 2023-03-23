@@ -4,7 +4,12 @@ interface Location {
 	raw: string;
 }
 
-export function getLocationFromChars(searches: string[], text: string, currentLine: number, currentCol: number) {
+export function getLocationFromChars(
+	searches: readonly string[],
+	text: string,
+	currentLine: number,
+	currentCol: number,
+) {
 	const lines = text.split(/\r?\n/g);
 	const foundLocations: Location[] = [];
 	lines.forEach((lineText, i) => {

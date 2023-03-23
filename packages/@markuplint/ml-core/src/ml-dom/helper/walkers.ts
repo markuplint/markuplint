@@ -10,6 +10,7 @@ export type SyncWalker<T extends RuleConfigValue, O extends PlainData = undefine
 ) => void;
 
 export function syncWalk<T extends RuleConfigValue, O extends PlainData = undefined>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodeList: ReadonlyArray<MLNode<T, O>>,
 	walker: SyncWalker<T, O>,
 ) {

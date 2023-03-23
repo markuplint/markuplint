@@ -75,7 +75,10 @@ export abstract class MLParentNode<
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-append%E2%91%A0
 	 */
-	append(...nodes: (string | Node)[]): void {
+	append(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | Node)[]
+	): void {
 		throw new UnexpectedCallError('Not supported "append" method');
 	}
 
@@ -86,7 +89,10 @@ export abstract class MLParentNode<
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-prepend%E2%91%A0
 	 */
-	prepend(...nodes: (string | Node)[]): void {
+	prepend(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | Node)[]
+	): void {
 		throw new UnexpectedCallError('Not supported "prepend" method');
 	}
 
@@ -128,12 +134,18 @@ export abstract class MLParentNode<
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-replacechildren%E2%91%A0
 	 */
-	replaceChildren(...nodes: (string | Node)[]): void {
+	replaceChildren(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | Node)[]
+	): void {
 		throw new UnexpectedCallError('Not supported "replaceChildren" method');
 	}
 
 	protected _descendantsToArray<N extends MLNode<T, O>>(
-		filter?: (node: MLNode<T, O>) => N | null | void,
+		filter?: (
+			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+			node: MLNode<T, O>,
+		) => N | null | void,
 	): ReadonlyArray<N> {
 		const nodeList: N[] = [];
 		syncWalk(Array.from(this.childNodes), node => {

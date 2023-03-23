@@ -16,7 +16,12 @@ export class MLDocumentType<T extends RuleConfigValue, O extends PlainData = und
 	readonly publicId: string;
 	readonly systemId: string;
 
-	constructor(astNode: MLASTDoctype, document: MLDocument<T, O>) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		astNode: MLASTDoctype,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		document: MLDocument<T, O>,
+	) {
 		super(astNode, document);
 		this.name = astNode.name;
 		this.publicId = astNode.publicId;
@@ -42,14 +47,20 @@ export class MLDocumentType<T extends RuleConfigValue, O extends PlainData = und
 	/**
 	 * @implements DOM API: `CharacterData`
 	 */
-	after(...nodes: (string | MLElement<any, any>)[]): void {
+	after(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		after(this, ...nodes);
 	}
 
 	/**
 	 * @implements DOM API: `CharacterData`
 	 */
-	before(...nodes: (string | MLElement<any, any>)[]): void {
+	before(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		before(this, ...nodes);
 	}
 
@@ -63,7 +74,10 @@ export class MLDocumentType<T extends RuleConfigValue, O extends PlainData = und
 	/**
 	 * @implements DOM API: `CharacterData`
 	 */
-	replaceWith(...nodes: (string | MLElement<any, any>)[]): void {
+	replaceWith(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		replaceWith(this, ...nodes);
 	}
 }

@@ -26,11 +26,11 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 	readonly name: string;
 	#v: RuleSeed<T, O>['verify'];
 
-	constructor(o: RuleSeed<T, O> & { name: string }) {
+	constructor(o: Readonly<RuleSeed<T, O>> & { readonly name: string }) {
 		this.name = o.name;
-		this.defaultSeverity = o.defaultSeverity || 'error';
-		this.defaultValue = o.defaultValue ?? (true as T);
-		this.defaultOptions = o.defaultOptions ?? (null as unknown as O);
+		this.defaultSeverity = o.defaultSeverity ?? 'error';
+		this.defaultValue = (o.defaultValue ?? true) as T;
+		this.defaultOptions = o.defaultOptions as O;
 		this.#v = o.verify;
 		this.#f = o.fix;
 	}
@@ -89,7 +89,12 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		};
 	}
 
-	async verify(document: MLDocument<T, O>, locale: LocaleSet, fix: boolean): Promise<Violation[]> {
+	async verify(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		document: MLDocument<T, O>,
+		locale: LocaleSet,
+		fix: boolean,
+	): Promise<Violation[]> {
 		if (!this.#v) {
 			return [];
 		}

@@ -11,7 +11,11 @@ export class MLRuleContext<T extends RuleConfigValue, O extends PlainData = unde
 	#reports: Report<T, O>[] = [];
 	readonly translate: Translator;
 
-	constructor(document: MLDocument<T, O>, locale: LocaleSet) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		document: MLDocument<T, O>,
+		locale: LocaleSet,
+	) {
 		this.document = document;
 		this.translate = translator(locale);
 		this.locale = locale.locale;
