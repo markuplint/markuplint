@@ -1,5 +1,4 @@
 import type { Attribute } from '@markuplint/html-spec';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
@@ -25,11 +24,9 @@ export default createRule<RequiredAttributes>({
 
 			const attributeSpecs: Record<
 				string,
-				ReadonlyDeep<
-					Pick<Attribute, 'name' | 'required' | 'requiredEither' | 'condition'> & {
-						values: string[];
-					}
-				>
+				Pick<Attribute, 'name' | 'required' | 'requiredEither' | 'condition'> & {
+					values: string[];
+				}
 			> = {};
 
 			if (attrSpec && el.elementType === 'html') {

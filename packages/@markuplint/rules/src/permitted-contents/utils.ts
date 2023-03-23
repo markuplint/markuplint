@@ -55,7 +55,7 @@ export function matches(
 	selector: string,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: ChildNode,
-	specs: ReadonlyDeep<Specs>,
+	specs: Specs,
 ) {
 	const selectorResult = createSelector(selector, specs as MLMLSpec).search(node);
 

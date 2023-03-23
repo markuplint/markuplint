@@ -9,7 +9,7 @@ export function createMessageValueExpected(
 	t: Translator,
 	baseTarget: string,
 	type: ReadonlyDeep<AttributeType>,
-	matches: ReadonlyDeep<UnmatchedResult>,
+	matches: UnmatchedResult,
 ) {
 	let target = baseTarget;
 	let listDescriptionPart: string | undefined;
@@ -42,7 +42,7 @@ export function __createMessageValueExpected(
 	t: Translator,
 	baseTarget: string,
 	expected: string | null,
-	matches: Pick<ReadonlyDeep<UnmatchedResult>, 'partName' | 'reason' | 'raw' | 'candidate' | 'ref' | 'extra'>,
+	matches: Pick<UnmatchedResult, 'partName' | 'reason' | 'raw' | 'candidate' | 'ref' | 'extra'>,
 ) {
 	let target = baseTarget;
 	let reasonPart: string | undefined;
@@ -218,7 +218,7 @@ export function __createMessageValueExpected(
 
 function createExpectedObject(
 	type: ReadonlyDeep<Exclude<AttributeType, List>>,
-	matches: ReadonlyDeep<UnmatchedResult>,
+	matches: UnmatchedResult,
 	t: Translator,
 ): string | null {
 	const expectedObject: string[] = [];

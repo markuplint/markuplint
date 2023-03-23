@@ -1,13 +1,12 @@
 import type { MLMLSpec, Attribute } from '../types';
 import type { NamespaceURI } from '@markuplint/ml-ast';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { resolveNamespace } from '../utils/resolve-namespace';
 
-const cacheMap = new Map<string, ReadonlyDeep<Attribute>[] | null>();
-const schemaCache = new WeakSet<ReadonlyDeep<MLMLSpec>>();
+const cacheMap = new Map<string, readonly Attribute[] | null>();
+const schemaCache = new WeakSet<MLMLSpec>();
 
-export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, schema: ReadonlyDeep<MLMLSpec>) {
+export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, schema: MLMLSpec) {
 	if (!schemaCache.has(schema)) {
 		cacheMap.clear();
 	}
@@ -29,7 +28,7 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 	}
 
 	const globalAttrs = schema.def['#globalAttrs'];
-	let attrs: Record<string, Partial<ReadonlyDeep<Attribute>>> = {};
+	let attrs: Record<string, Partial<Attribute>> = {};
 
 	for (const catName in elSpec.globalAttrs) {
 		// @ts-ignore
@@ -76,7 +75,7 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 		};
 	}
 
-	const attrList = Object.keys(attrs).map<ReadonlyDeep<Attribute>>(name => {
+	const attrList = Object.keys(attrs).map<Attribute>(name => {
 		const attr = attrs[name];
 		return { name, type: 'Any', ...attr };
 	});

@@ -1,17 +1,18 @@
 import type { Element as _Element, ChildNode as _ChildNode } from '@markuplint/ml-core';
 import type { ContentModel, MLMLSpec } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 export type Element = _Element<TagRule[], Options>;
 
 export type ChildNode = _ChildNode<TagRule[], Options>;
 
 export type Specs = {
-	cites: MLMLSpec['cites'];
-	def: MLMLSpec['def'];
-	specs: {
-		name: string;
-		contentModel: {
-			contents: MLMLSpec['specs'][0]['contentModel']['contents'];
+	readonly cites: MLMLSpec['cites'];
+	readonly def: MLMLSpec['def'];
+	readonly specs: readonly {
+		readonly name: string;
+		readonly contentModel: {
+			readonly contents: MLMLSpec['specs'][0]['contentModel']['contents'];
 		};
 	}[];
 };
@@ -56,8 +57,8 @@ export type TransparentModel = {
 };
 
 export type TagRule = {
-	tag: string;
-} & ContentModel;
+	readonly tag: string;
+} & ReadonlyDeep<ContentModel>;
 
 export type Options = {
 	readonly ignoreHasMutableChildren: boolean;

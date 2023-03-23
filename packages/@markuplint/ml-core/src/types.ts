@@ -4,9 +4,8 @@ import type { LocaleSet } from '@markuplint/i18n';
 import type { MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
 import type { Pretender } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
-import type { ReadonlyDeep } from 'type-fest';
 
-export type MLSchema = ReadonlyDeep<[MLMLSpec, ...ExtendedSpec[]]>;
+export type MLSchema = readonly [MLMLSpec, ...ExtendedSpec[]];
 
 export type MLFabric = {
 	readonly parser: Readonly<MLMarkupLanguageParser>;

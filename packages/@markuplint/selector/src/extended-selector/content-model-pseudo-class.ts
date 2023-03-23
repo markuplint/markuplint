@@ -1,12 +1,11 @@
 import type { SelectorMatchedResult, SelectorResult } from '../types';
 import type { Category, MLMLSpec } from '@markuplint/ml-spec';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
 
 import { createSelector } from '../create-selector';
 
-export function contentModelPseudoClass(specs: ReadonlyDeep<MLMLSpec>) {
+export function contentModelPseudoClass(specs: MLMLSpec) {
 	return (category: string) =>
 		(
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

@@ -32,7 +32,7 @@ export function attrCheck(
 	name: string,
 	value: string,
 	isCustomRule: boolean,
-	spec?: ReadonlyDeep<AttrSpec>,
+	spec?: AttrSpec,
 ): Invalid | false {
 	if (!isCustomRule) {
 		if (/^data-.+$/.test(name)) {

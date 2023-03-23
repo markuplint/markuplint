@@ -1,5 +1,4 @@
 import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { isPresentational } from '../specs/is-presentational';
 
@@ -10,7 +9,7 @@ import { getImplicitRole } from './get-implicit-role';
 export function hasRequiredOwnedElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	version: ARIAVersion,
 ): boolean {
 	/**
@@ -44,9 +43,9 @@ export function hasRequiredOwnedElement(
 export function isRequiredOwnedElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	role: ReadonlyDeep<ComputedRole['role']>,
+	role: ComputedRole['role'],
 	query: string,
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	version: ARIAVersion,
 ) {
 	const [baseRole, owningRole] = query.split(' > ') as [string, string | undefined];
@@ -85,7 +84,7 @@ export function isRequiredOwnedElement(
 function getClosestNonPresentationalDescendants(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	version: ARIAVersion,
 ): ComputedRole[] {
 	const owned: ComputedRole[] = [];

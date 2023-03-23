@@ -62,6 +62,7 @@ export async function getElements() {
 			const mdnData = await fetchHTMLElement(cite);
 			// @ts-ignore
 			delete el.name;
+			// @ts-ignore
 			delete el.namespace;
 			return {
 				// @ts-ignore

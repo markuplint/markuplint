@@ -22,7 +22,7 @@ export function order(
 	contents: ReadonlyDeep<PermittedContentPattern[]>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodes: readonly ChildNode[],
-	specs: ReadonlyDeep<Specs>,
+	specs: Specs,
 	options: Options,
 	depth: number,
 ): Result {

@@ -8,7 +8,7 @@ import type {
 	ARIARoleInSchema,
 	EquivalentHtmlAttr,
 } from '@markuplint/ml-spec';
-import type { ReadonlyDeep } from 'type-fest';
+import type { WritableDeep } from 'type-fest';
 
 import fetch from './fetch';
 import { arrayUnique, nameCompare } from './utils';
@@ -159,7 +159,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 	return roles;
 }
 
-async function getProps(version: ARIAVersion, roles: ReadonlyDeep<ARIARoleInSchema[]>) {
+async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]) {
 	const $ = await fetch(`https://www.w3.org/TR/wai-aria-${version}/`);
 
 	const ariaNameList: Set<string> = new Set();
@@ -225,7 +225,7 @@ async function getProps(version: ARIAVersion, roles: ReadonlyDeep<ARIARoleInSche
 				}));
 			}
 
-			const aria: ARIAProperty = {
+			const aria: WritableDeep<ARIAProperty> = {
 				name,
 				type,
 				deprecated,

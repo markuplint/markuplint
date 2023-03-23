@@ -1,13 +1,9 @@
 import type { MLMLSpec } from '../types';
 import type { Category } from '../types/permitted-structures';
-import type { ReadonlyDeep } from 'type-fest';
 
 const cache = new Map<Category, ReadonlyArray<string>>();
 
-export function contentModelCategoryToTagNames(
-	contentModel: Category,
-	def: ReadonlyDeep<MLMLSpec['def']>,
-): ReadonlyArray<string> {
+export function contentModelCategoryToTagNames(contentModel: Category, def: MLMLSpec['def']): ReadonlyArray<string> {
 	const cached = cache.get(contentModel);
 	if (cached) {
 		return cached;

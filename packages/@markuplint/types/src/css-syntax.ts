@@ -1,5 +1,4 @@
 import type { CustomCssSyntax, CssSyntaxTokenizer, CSSSyntaxToken, GetNextToken, Result, CssSyntax } from './types';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { fork } from 'css-tree';
 
@@ -11,7 +10,7 @@ const MIMIC_TAG_L = 'mimiccases---';
 const MIMIC_TAG_R = '---mimiccases';
 const MIMIC_LENGTH = (MIMIC_TAG_L + MIMIC_TAG_R).length;
 
-export function cssSyntaxMatch(value: string, type: ReadonlyDeep<CssSyntax | CustomCssSyntax>): Result {
+export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax): Result {
 	log('Search CSS Syntax: "%s"', type);
 
 	const origin = value;
@@ -66,7 +65,7 @@ export function cssSyntaxMatch(value: string, type: ReadonlyDeep<CssSyntax | Cus
 	Object.keys(typesCheckers).forEach(key => {
 		const checker = typesCheckers[key];
 		// @ts-ignore
-		lexer.addType_(key, (token: ReadonlyDeep<CSSSyntaxToken>, getNextToken: GetNextToken) =>
+		lexer.addType_(key, (token: CSSSyntaxToken, getNextToken: GetNextToken) =>
 			checker?.(token, getNextToken, cssSyntaxMatch),
 		);
 	});

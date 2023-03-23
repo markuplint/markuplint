@@ -7,12 +7,12 @@ import type { MLText } from './text';
 import type { DocumentNodeType } from './types';
 import type { MLRule } from '../../ml-rule';
 import type Ruleset from '../../ruleset';
+import type { MLSchema } from '../../types';
 import type { Walker } from '../helper/walkers';
 import type { MLToken } from '../token/token';
 import type { EndTagType, MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-config';
-import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
-import type { ReadonlyDeep } from 'type-fest';
+import type { MLMLSpec } from '@markuplint/ml-spec';
 
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
 import { schemaToSpec } from '@markuplint/ml-spec';
@@ -120,7 +120,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 *
 	 */
-	readonly specs: ReadonlyDeep<MLMLSpec>;
+	readonly specs: MLMLSpec;
 
 	#tokenList: ReadonlyArray<MLToken> | null = null;
 
@@ -133,7 +133,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		ast: MLASTDocument,
 		ruleset: Ruleset,
-		schemas: readonly [ReadonlyDeep<MLMLSpec>, ...ReadonlyDeep<ExtendedSpec>[]],
+		schemas: MLSchema,
 		options?: {
 			readonly filename?: string;
 			readonly endTag?: 'xml' | 'omittable' | 'never';

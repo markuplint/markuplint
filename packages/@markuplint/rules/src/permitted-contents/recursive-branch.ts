@@ -11,7 +11,7 @@ export function recursiveBranch(
 	model: ReadonlyDeep<Model | PermittedContentPattern[]>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodes: readonly ChildNode[],
-	specs: ReadonlyDeep<Specs>,
+	specs: Specs,
 	options: Options,
 	depth: number,
 ): SelectorResult {

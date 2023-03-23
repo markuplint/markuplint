@@ -1,14 +1,13 @@
 import type { Options } from '../types';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, Attribute } from '@markuplint/ml-spec';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { isValidAttr } from '../../helpers';
 
 export const checkingImplicitProps: AttrChecker<
 	boolean,
 	Options,
-	{ propSpecs: ReadonlyDeep<ARIAProperty[]>; attrSpecs: ReadonlyDeep<Attribute[]> | null }
+	{ propSpecs: readonly ARIAProperty[]; attrSpecs: readonly Attribute[] | null }
 > =
 	({ attr, propSpecs, attrSpecs }) =>
 	t => {

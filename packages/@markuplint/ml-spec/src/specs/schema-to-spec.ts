@@ -1,5 +1,4 @@
 import type { ElementSpec, ExtendedSpec, MLMLSpec, Attribute } from '../types';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { mergeArray } from '../utils/merge-array';
 
@@ -10,7 +9,7 @@ import { mergeArray } from '../utils/merge-array';
  *
  * @param schemas `MLDocument.schemas`
  */
-export function schemaToSpec(schemas: ReadonlyDeep<[MLMLSpec, ...ExtendedSpec[]]>) {
+export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 	const [main, ...extendedSpecs] = schemas;
 	const result = { ...main };
 	for (const extendedSpec of extendedSpecs) {
@@ -64,7 +63,7 @@ export function schemaToSpec(schemas: ReadonlyDeep<[MLMLSpec, ...ExtendedSpec[]]
 		}
 		if (extendedSpec.specs) {
 			const exSpecs = extendedSpec.specs.slice();
-			const specs: ReadonlyDeep<ElementSpec>[] = [];
+			const specs: ElementSpec[] = [];
 			for (const elSpec of result.specs) {
 				const tagName = elSpec.name.toLowerCase();
 				const index = exSpecs.findIndex(spec => spec.name.toLowerCase() === tagName);
@@ -93,10 +92,10 @@ export function schemaToSpec(schemas: ReadonlyDeep<[MLMLSpec, ...ExtendedSpec[]]
 }
 
 function mergeAttrSpec(
-	std: ReadonlyDeep<Record<string, Attribute>>,
-	ex: ReadonlyDeep<Record<string, Partial<Attribute>>> = {},
-): Record<string, ReadonlyDeep<Attribute>> {
-	const result: Record<string, ReadonlyDeep<Attribute>> = {};
+	std: Readonly<Record<string, Attribute>>,
+	ex: Readonly<Record<string, Partial<Attribute>>> = {},
+): Record<string, Readonly<Attribute>> {
+	const result: Record<string, Attribute> = {};
 	const keys = Array.from(new Set([...Object.keys(std), ...Object.keys(ex)]));
 	for (const key of keys) {
 		const _std = std[key]!;

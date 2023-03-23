@@ -1,5 +1,4 @@
 import type { ChildNode, Options, Result, Specs } from './types';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { getContentModel } from '@markuplint/ml-spec';
 
@@ -11,7 +10,7 @@ export const transparentMode = new Map<ChildNode, true>();
 export function representTransparentNodes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodes: ChildNode[],
-	specs: ReadonlyDeep<Specs>,
+	specs: Specs,
 	options: Options,
 ): {
 	nodes: ChildNode[];

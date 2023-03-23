@@ -7,7 +7,7 @@ import { resolveNamespace } from '../utils/resolve-namespace';
 import { getPermittedRoles } from './get-permitted-roles';
 
 export function getExplicitRole(
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 	version: ARIAVersion,

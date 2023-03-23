@@ -75,38 +75,38 @@ export type FormattedPrimitiveTypeCreator<O = never> = (options?: O) => Formatte
 export type Defs = Record<string, CustomCssSyntax | CustomSyntax>;
 
 export type CustomSyntax = {
-	ref: string;
-	expects?: Expect[];
-	is: CustomSyntaxCheck;
+	readonly ref: string;
+	readonly expects?: readonly Expect[];
+	readonly is: CustomSyntaxCheck;
 };
 
 export type CustomSyntaxCheck = (value: string) => Result;
 export type CustomSyntaxChecker<O = {}> = (options?: O) => CustomSyntaxCheck;
 
 export type CustomCssSyntax = {
-	ref: string;
-	caseSensitive?: boolean;
-	expects?: Expect[];
-	syntax: {
-		apply: `<${string}>`;
-		def: Record<string, string | CssSyntaxTokenizer>;
+	readonly ref: string;
+	readonly caseSensitive?: boolean;
+	readonly expects?: readonly Expect[];
+	readonly syntax: {
+		readonly apply: `<${string}>`;
+		readonly def: Readonly<Record<string, string | CssSyntaxTokenizer>>;
 		/**
 		 * @deprecated
 		 */
-		ebnf?: Record<string, string | string[]>;
+		readonly ebnf?: Readonly<Record<string, string | readonly string[]>>;
 		/**
 		 * @deprecated
 		 */
-		properties?: Record<string, string>;
+		readonly properties?: Readonly<Record<string, string>>;
 	};
 };
 
 export type CSSSyntaxToken = {
-	type: number;
-	value: string;
-	index: number;
-	balance: number;
-	node?: any;
+	readonly type: number;
+	readonly value: string;
+	readonly index: number;
+	readonly balance: number;
+	readonly node?: any;
 };
 
 export type CssSyntaxTokenizer = (

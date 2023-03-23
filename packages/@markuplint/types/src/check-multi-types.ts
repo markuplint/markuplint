@@ -1,10 +1,9 @@
 import type { CustomSyntaxCheck, UnmatchedResult } from './types';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { log } from './debug';
 import { matched } from './match-result';
 
-export function checkMultiTypes(value: string, checks: ReadonlyDeep<CustomSyntaxCheck[]>) {
+export function checkMultiTypes(value: string, checks: readonly CustomSyntaxCheck[]) {
 	let unmatched: UnmatchedResult | undefined;
 
 	for (const check of checks) {

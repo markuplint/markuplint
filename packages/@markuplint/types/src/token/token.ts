@@ -1,6 +1,5 @@
 import type { TokenValue } from './types';
 import type { UnmatchedResult, UnmatchedResultOptions, UnmatchedResultReason } from '../types';
-import type { ReadonlyDeep } from 'type-fest';
 
 export class Token {
 	/**
@@ -44,7 +43,7 @@ export class Token {
 		return Token.Ident;
 	}
 
-	static shiftLocation(token: ReadonlyDeep<Token>, offset: number) {
+	static shiftLocation(token: Readonly<Token>, offset: number) {
 		const shifted = token.offset + offset;
 		return {
 			offset: shifted,
@@ -126,12 +125,10 @@ export class Token {
 	}
 
 	unmatched(
-		options?: ReadonlyDeep<
-			UnmatchedResultOptions & {
-				ref?: string;
-				reason?: UnmatchedResultReason;
-			}
-		>,
+		options?: UnmatchedResultOptions & {
+			readonly ref?: string;
+			readonly reason?: UnmatchedResultReason;
+		},
 	): UnmatchedResult {
 		return {
 			...options,

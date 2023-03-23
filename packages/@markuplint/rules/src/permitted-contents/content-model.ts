@@ -1,6 +1,5 @@
 import type { ContentModelResult, Element, Options, Specs, TagRule } from './types';
 import type { MLMLSpec } from '@markuplint/ml-spec';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { getContentModel } from '@markuplint/ml-spec';
 
@@ -9,7 +8,7 @@ import { start } from './start';
 export function contentModel(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	rules: ReadonlyDeep<TagRule[]>,
+	rules: readonly TagRule[],
 	options: Options,
 ): ContentModelResult[] {
 	const model = createModel(el, rules);
@@ -31,15 +30,15 @@ export function contentModel(
 function createModel(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	rules: ReadonlyDeep<TagRule[]>,
+	rules: readonly TagRule[],
 ) {
 	const specs = cachedSpecs(el.ownerMLDocument.specs, rules);
 	const model = getContentModel(el, specs.specs);
 	return model;
 }
 
-const caches = new Map<string, ReadonlyDeep<Specs>>();
-function cachedSpecs(specs: ReadonlyDeep<MLMLSpec>, rules: ReadonlyDeep<TagRule[]>): ReadonlyDeep<Specs> {
+const caches = new Map<string, Specs>();
+function cachedSpecs(specs: MLMLSpec, rules: readonly TagRule[]): Specs {
 	if (!rules.length) {
 		return specs;
 	}
@@ -51,7 +50,7 @@ function cachedSpecs(specs: ReadonlyDeep<MLMLSpec>, rules: ReadonlyDeep<TagRule[
 		return cached;
 	}
 
-	const merged: ReadonlyDeep<Specs> = {
+	const merged: Specs = {
 		...specs,
 		specs: [
 			...specs.specs,

@@ -1,7 +1,6 @@
 /* global cheerio */
 
 import type { ElementSpec, ExtendedElementSpec, Category, Attribute } from '@markuplint/ml-spec';
-import type { ReadonlyDeep } from 'type-fest';
 
 import fetch from './fetch';
 import { getThisOutline, sortObjectByKey } from './utils';
@@ -26,7 +25,7 @@ export async function fetchHTMLElementLinks() {
 
 export function fetchObsoleteElements(
 	obsoleteList: readonly string[],
-	specs: ReadonlyDeep<ExtendedElementSpec[]>,
+	specs: readonly ExtendedElementSpec[],
 ): ExtendedElementSpec[] {
 	return obsoleteList
 		.map<ElementSpec | null>(name => {

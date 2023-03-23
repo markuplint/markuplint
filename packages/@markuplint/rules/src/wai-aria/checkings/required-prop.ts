@@ -1,12 +1,11 @@
 import type { Options } from '../types';
 import type { ElementChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
-import type { ReadonlyDeep } from 'type-fest';
 
 export const checkingRequiredProp: ElementChecker<
 	boolean,
 	Options,
-	{ role?: (ARIARole & { isImplicit?: boolean }) | null; propSpecs: ReadonlyDeep<ARIAProperty[]> }
+	{ role?: (ARIARole & { isImplicit?: boolean }) | null; propSpecs: readonly ARIAProperty[] }
 > =
 	({ el, role, propSpecs }) =>
 	t => {

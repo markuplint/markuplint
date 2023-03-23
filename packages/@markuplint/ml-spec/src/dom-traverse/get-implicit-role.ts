@@ -1,12 +1,11 @@
 import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { getImplicitRole as _getImplicitRole } from '../specs/get-implicit-role';
 import { getRoleSpec } from '../specs/get-role-spec';
 import { resolveNamespace } from '../utils/resolve-namespace';
 
 export function getImplicitRole(
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 	version: ARIAVersion,
@@ -41,7 +40,7 @@ export function getImplicitRoleName(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 	version: ARIAVersion,
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 ) {
 	return _getImplicitRole(specs, el.localName, el.namespaceURI, version, el.matches.bind(el));
 }

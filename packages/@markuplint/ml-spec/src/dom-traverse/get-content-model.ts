@@ -4,7 +4,7 @@ import type { ReadonlyDeep } from 'type-fest';
 
 import { getSpec } from './get-spec';
 
-type Specs = ReadonlyDeep<Pick<ElementSpec, 'name' | 'contentModel'>[]>;
+type Specs = readonly Pick<ElementSpec, 'name' | 'contentModel'>[];
 
 const cachesBySpecs = new Map<Specs, Map<Element, ReadonlyDeep<PermittedContentPattern[]> | boolean | null>>();
 export function getContentModel(

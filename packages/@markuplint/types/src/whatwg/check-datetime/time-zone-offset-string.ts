@@ -1,6 +1,5 @@
 import type { Token } from '../../token';
 import type { CustomSyntaxChecker } from '../../types';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { log } from '../../debug';
 import { matched, unmatched } from '../../match-result';
@@ -18,7 +17,7 @@ export const checkTimeZoneOffsetString: CustomSyntaxChecker = () =>
 		return parseTimeZone(value);
 	};
 
-export function parseTimeZone(zone: string | ReadonlyDeep<Token>) {
+export function parseTimeZone(zone: string | Readonly<Token>) {
 	const value = typeof zone === 'string' ? zone : zone.value;
 
 	const zoneTokens = TokenCollection.fromPatterns(zone, [

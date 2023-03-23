@@ -1,5 +1,5 @@
 import type { Specificity, RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCombination } from './types';
-import type { ReadonlyDeep, Writable } from 'type-fest';
+import type { Writable } from 'type-fest';
 
 import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is';
 import { regexSelectorMatches } from './regex-selector-matches';
@@ -66,7 +66,7 @@ function regexSelect(
 
 class SelectorTarget {
 	#combinedFrom: {
-		target: ReadonlyDeep<SelectorTarget>;
+		target: Readonly<SelectorTarget>;
 		combinator: RegexSelectorCombinator;
 	} | null = null;
 
@@ -76,7 +76,7 @@ class SelectorTarget {
 		this.#selector = selector;
 	}
 
-	from(target: ReadonlyDeep<SelectorTarget>, combinator: RegexSelectorCombinator) {
+	from(target: Readonly<SelectorTarget>, combinator: RegexSelectorCombinator) {
 		this.#combinedFrom = { target, combinator };
 	}
 

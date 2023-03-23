@@ -2,49 +2,50 @@ import type { ARIA } from './aria';
 import type { AttributeJSON, AttributeType, GlobalAttributes } from './attributes';
 import type { ContentModel, Category } from './permitted-structures';
 import type { NamespaceURI } from '@markuplint/ml-ast';
+import type { ReadonlyDeep } from 'type-fest';
 
 /**
  * markuplint Markup-language spec
  */
 export interface MLMLSpec {
-	cites: Cites;
-	def: SpecDefs;
-	specs: ElementSpec[];
+	readonly cites: Cites;
+	readonly def: SpecDefs;
+	readonly specs: readonly ElementSpec[];
 }
 
 export type ExtendedElementSpec = Partial<Omit<ElementSpec, 'name' | 'attributes'>> & {
-	name: ElementSpec['name'];
-	attributes?: Record<string, Partial<Attribute>>;
+	readonly name: ElementSpec['name'];
+	readonly attributes?: Readonly<Record<string, Partial<Attribute>>>;
 };
 
 export type ExtendedSpec = {
-	cites?: Cites;
-	def?: Partial<SpecDefs>;
-	specs?: ExtendedElementSpec[];
+	readonly cites?: Cites;
+	readonly def?: Partial<SpecDefs>;
+	readonly specs?: readonly ExtendedElementSpec[];
 };
 
 /**
  * Reference URLs
  */
-export type Cites = string[];
+export type Cites = readonly string[];
 
 export type SpecDefs = {
-	'#globalAttrs': Partial<{
-		'#extends': Record<string, Partial<Attribute>>;
-		'#HTMLGlobalAttrs': Record<string, Partial<Attribute>>;
-		[OtherGlobalAttrs: string]: Record<string, Partial<Attribute>>;
-	}>;
-	'#aria': {
-		'1.2': ARIASpec;
-		'1.1': ARIASpec;
+	readonly '#globalAttrs': {
+		readonly [category: string]: Readonly<Record<string, Partial<Attribute>>>;
 	};
-	'#contentModels': { [model in Category]?: string[] };
+	readonly '#aria': {
+		readonly '1.2': ARIASpec;
+		readonly '1.1': ARIASpec;
+	};
+	readonly '#contentModels': {
+		readonly [model in Category]?: readonly string[];
+	};
 };
 
 type ARIASpec = {
-	roles: ARIARoleInSchema[];
-	graphicsRoles: ARIARoleInSchema[];
-	props: ARIAProperty[];
+	readonly roles: readonly ARIARoleInSchema[];
+	readonly graphicsRoles: readonly ARIARoleInSchema[];
+	readonly props: readonly ARIAProperty[];
 };
 
 /**
@@ -54,77 +55,77 @@ export type ElementSpec = {
 	/**
 	 * Tag name
 	 */
-	name: string;
+	readonly name: string;
 
 	/**
 	 * Namespaces in XML
 	 * @see https://www.w3.org/TR/xml-names/
 	 */
-	namespace?: NamespaceURI;
+	readonly namespace?: NamespaceURI;
 
 	/**
 	 * Reference URL
 	 */
-	cite: string;
+	readonly cite: string;
 
 	/**
 	 * Description
 	 */
-	description?: string;
+	readonly description?: string;
 
 	/**
 	 * Experimental technology
 	 */
-	experimental?: true;
+	readonly experimental?: true;
 
 	/**
 	 * Obsolete or alternative elements
 	 */
-	obsolete?:
+	readonly obsolete?:
 		| true
 		| {
-				alt: string;
+				readonly alt: string;
 		  };
 
 	/**
 	 * Deprecated
 	 */
-	deprecated?: true;
+	readonly deprecated?: true;
 
 	/**
 	 * Non-standard
 	 */
-	nonStandard?: true;
+	readonly nonStandard?: true;
 
 	/**
 	 * Element categories
 	 */
-	categories: Category[];
+	readonly categories: readonly Category[];
 
 	/**
 	 * Permitted contents and permitted parents
 	 */
-	contentModel: ContentModel;
+	readonly contentModel: ReadonlyDeep<ContentModel>;
 
 	/**
 	 * Tag omission
 	 */
-	omission: ElementSpecOmission;
+	readonly omission: ElementSpecOmission;
 
 	/**
 	 * Global Attributes
 	 */
-	globalAttrs: GlobalAttributes;
+	readonly globalAttrs: ReadonlyDeep<GlobalAttributes>;
 
 	/**
 	 * Attributes
 	 */
-	attributes: Record<string, Attribute>;
+	readonly attributes: Readonly<Record<string, Attribute>>;
 
 	/**
 	 * WAI-ARIA role and properties
 	 */
-	aria: ARIA;
+	readonly aria: ReadonlyDeep<ARIA>;
 
 	/**
 	 * If true, it is possible to add any properties as attributes,
@@ -134,77 +135,77 @@ export type ElementSpec = {
 	 *
 	 * **It assumes to specify it on the parser plugin.**
 	 */
-	possibleToAddProperties?: true;
+	readonly possibleToAddProperties?: true;
 };
 
 type ElementSpecOmission = false | ElementSpecOmissionTags;
 
 type ElementSpecOmissionTags = {
-	startTag: boolean | ElementCondition;
-	endTag: boolean | ElementCondition;
+	readonly startTag: boolean | ElementCondition;
+	readonly endTag: boolean | ElementCondition;
 };
 
 type ElementCondition = {
-	__WIP__: 'WORK_IN_PROGRESS';
+	readonly __WIP__: 'WORK_IN_PROGRESS';
 };
 
 export type Attribute = {
-	name: string;
-	type: AttributeType | AttributeType[];
-	description?: string;
-	caseSensitive?: true;
-	experimental?: boolean;
-	obsolete?: true;
-	deprecated?: boolean;
-	nonStandard?: true;
+	readonly name: string;
+	readonly type: ReadonlyDeep<AttributeType> | readonly ReadonlyDeep<AttributeType>[];
+	readonly description?: string;
+	readonly caseSensitive?: true;
+	readonly experimental?: boolean;
+	readonly obsolete?: true;
+	readonly deprecated?: boolean;
+	readonly nonStandard?: true;
 } & ExtendableAttributeSpec;
 
-type ExtendableAttributeSpec = Omit<AttributeJSON, 'type'>;
+type ExtendableAttributeSpec = Omit<ReadonlyDeep<AttributeJSON>, 'type'>;
 
 export type ARIARole = {
-	name: string;
-	isAbstract: boolean;
-	requiredContextRole: string[];
-	requiredOwnedElements: string[];
-	accessibleNameRequired: boolean;
-	accessibleNameFromAuthor: boolean;
-	accessibleNameFromContent: boolean;
-	accessibleNameProhibited: boolean;
-	childrenPresentational: boolean;
-	ownedProperties: ARIARoleOwnedProperties[];
-	prohibitedProperties: string[];
+	readonly name: string;
+	readonly isAbstract: boolean;
+	readonly requiredContextRole: readonly string[];
+	readonly requiredOwnedElements: readonly string[];
+	readonly accessibleNameRequired: boolean;
+	readonly accessibleNameFromAuthor: boolean;
+	readonly accessibleNameFromContent: boolean;
+	readonly accessibleNameProhibited: boolean;
+	readonly childrenPresentational: boolean;
+	readonly ownedProperties: readonly ARIARoleOwnedProperties[];
+	readonly prohibitedProperties: readonly string[];
 };
 
 export type ARIARoleInSchema = Partial<
 	ARIARole & {
-		description: string;
-		generalization: string[];
+		readonly description: string;
+		readonly generalization: readonly string[];
 	}
 > & {
-	name: string;
+	readonly name: string;
 };
 
 export type ARIARoleOwnedProperties = {
-	name: string;
-	inherited?: true;
-	required?: true;
-	deprecated?: true;
+	readonly name: string;
+	readonly inherited?: true;
+	readonly required?: true;
+	readonly deprecated?: true;
 };
 
 export type ARIAProperty = {
-	name: string;
-	type: 'property' | 'state';
-	deprecated?: true;
-	isGlobal?: true;
-	value: ARIAAttributeValue;
-	conditionalValue?: {
-		role: string[];
-		value: ARIAAttributeValue;
+	readonly name: string;
+	readonly type: 'property' | 'state';
+	readonly deprecated?: true;
+	readonly isGlobal?: true;
+	readonly value: ARIAAttributeValue;
+	readonly conditionalValue?: readonly {
+		readonly role: readonly string[];
+		readonly value: ARIAAttributeValue;
 	}[];
-	enum: string[];
-	defaultValue?: string;
-	equivalentHtmlAttrs?: EquivalentHtmlAttr[];
-	valueDescriptions?: Record<string, string>;
+	readonly enum: readonly string[];
+	readonly defaultValue?: string;
+	readonly equivalentHtmlAttrs?: readonly EquivalentHtmlAttr[];
+	readonly valueDescriptions?: Readonly<Record<string, string>>;
 };
 
 export type ARIAAttributeValue =
@@ -223,22 +224,22 @@ export type ARIAAttributeValue =
 export type ARIAVersion = '1.1' | '1.2';
 
 export type EquivalentHtmlAttr = {
-	htmlAttrName: string;
-	isNotStrictEquivalent?: true;
-	value: string | null;
+	readonly htmlAttrName: string;
+	readonly isNotStrictEquivalent?: true;
+	readonly value: string | null;
 };
 
 export type Matches = (selector: string) => boolean;
 
 export type ComputedRole = {
-	el: Element;
-	role:
+	readonly el: Element;
+	readonly role:
 		| (ARIARole & {
-				superClassRoles: ARIARoleInSchema[];
-				isImplicit?: boolean;
+				readonly superClassRoles: readonly ARIARoleInSchema[];
+				readonly isImplicit?: boolean;
 		  })
 		| null;
-	errorType?: RoleComputationError;
+	readonly errorType?: RoleComputationError;
 };
 
 export type RoleComputationError =

@@ -17,7 +17,7 @@ import { getARIA } from './get-aria';
  * - If `false`, this mean is "No".
  */
 export function getPermittedRoles(
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	localName: string,
 	namespace: string | null,
 	version: ARIAVersion,

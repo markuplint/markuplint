@@ -1,5 +1,4 @@
 import type { ARIAVersion, MLMLSpec } from '../types';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { ariaSpecs } from '../specs/aria-specs';
 import { getSpecByTagName } from '../specs/get-spec-by-tag-name';
@@ -20,7 +19,7 @@ import { getComputedRole } from './get-computed-role';
 export function isExposed(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	version: ARIAVersion,
 ): boolean {
 	// According to WAI-ARIA
@@ -66,7 +65,7 @@ export function isExposed(
 function isExcluding(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	version: ARIAVersion,
 ): boolean {
 	/**
@@ -155,7 +154,7 @@ function isExcluding(
 function isIncluding(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	version: ARIAVersion,
 ): boolean {
 	/**
@@ -225,7 +224,7 @@ function hasDisplayNodeOrVisibilityHidden(
 function isExposedElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 ) {
 	const svgRenderedConditions = specs.def['#contentModels']['#SVGRenderable']?.join(',');
 
@@ -239,7 +238,7 @@ function isExposedElement(
 function isNotMetaOrHiddenHTMLElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 ) {
 	const metadataConditions = specs.def['#contentModels']['#metadata']?.join(',');
 

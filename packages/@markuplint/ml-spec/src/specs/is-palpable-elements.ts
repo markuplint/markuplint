@@ -1,5 +1,4 @@
 import type { MLMLSpec } from '../types';
-import type { ReadonlyDeep } from 'type-fest';
 
 /**
  * Exposable content models and elements
@@ -35,7 +34,7 @@ const exposableElementsThatAreNoBelongingAModel: string[] = [
 export function isPalpableElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	options?: {
 		readonly extendsSvg?: boolean;
 		readonly extendsExposableElements?: boolean;

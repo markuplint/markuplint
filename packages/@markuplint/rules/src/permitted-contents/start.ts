@@ -19,7 +19,7 @@ export function start(
 	contents: ReadonlyDeep<ContentModel['contents']>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	specs: ReadonlyDeep<Specs>,
+	specs: Specs,
 	options: Options,
 ): ContentModelResult[] {
 	if (contents === false) {

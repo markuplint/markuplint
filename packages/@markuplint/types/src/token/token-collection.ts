@@ -13,11 +13,11 @@ type TokenCollectionOptions = Partial<
 	}
 >;
 
-export type TokenEachCheck = (head: ReadonlyDeep<Token> | null, tail: ReadonlyDeep<TokenCollection>) => Result | void;
+export type TokenEachCheck = (head: Readonly<Token> | null, tail: ReadonlyDeep<TokenCollection>) => Result | void;
 
 export class TokenCollection extends Array<Token> {
 	static fromPatterns(
-		value: ReadonlyDeep<Token> | string,
+		value: Readonly<Token> | string,
 		patterns: readonly Readonly<RegExp>[],
 		typeOptions?: ReadonlyDeep<Omit<TokenCollectionOptions, 'specificSeparator'> & { repeat?: boolean }>,
 	) {
@@ -250,9 +250,7 @@ export class TokenCollection extends Array<Token> {
 		return chunks;
 	}
 
-	compareTokens(
-		callback: (prev: ReadonlyDeep<Token>, current: ReadonlyDeep<Token>) => ReadonlyDeep<Token> | null | void,
-	) {
+	compareTokens(callback: (prev: Readonly<Token>, current: Readonly<Token>) => Readonly<Token> | null | void) {
 		const _tokens = this.slice();
 		let prev = _tokens.shift();
 		while (prev) {
@@ -277,7 +275,7 @@ export class TokenCollection extends Array<Token> {
 		return [a, b] as const;
 	}
 
-	eachCheck(...callbacks: ReadonlyDeep<TokenEachCheck[]>): Result {
+	eachCheck(...callbacks: readonly TokenEachCheck[]): Result {
 		let headAndTail = this.headAndTail();
 		let head = headAndTail.head;
 		let tail = headAndTail.tail;
@@ -444,7 +442,7 @@ export class TokenCollection extends Array<Token> {
 		return this.map(t => t.toJSON());
 	}
 
-	private static _new(tokens: readonly ReadonlyDeep<Token>[], old?: ReadonlyDeep<TokenCollection>) {
+	private static _new(tokens: readonly Readonly<Token>[], old?: ReadonlyDeep<TokenCollection>) {
 		const newCollection = new TokenCollection('', old);
 		newCollection.push(...tokens);
 		return newCollection;

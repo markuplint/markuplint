@@ -1,5 +1,4 @@
 import type { ARIAVersion, MLMLSpec } from '../types';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { isPresentational } from '../specs/is-presentational';
 
@@ -8,7 +7,7 @@ import { getComputedRole } from './get-computed-role';
 export function getNonPresentationalAncestor(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	version: ARIAVersion,
 ) {
 	let ancestor: Element | null = el.parentElement;

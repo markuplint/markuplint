@@ -1,14 +1,13 @@
 import type { Options } from '../types';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
-import type { ReadonlyDeep } from 'type-fest';
 
 export const checkingValue: AttrChecker<
 	boolean,
 	Options,
 	{
 		role?: ARIARole | null;
-		propSpecs: ReadonlyDeep<ARIAProperty[]>;
+		propSpecs: readonly ARIAProperty[];
 		booleanish?: boolean;
 	}
 > =
@@ -35,12 +34,7 @@ export const checkingValue: AttrChecker<
 		};
 	};
 
-function checkAria(
-	propSpec: ReadonlyDeep<ARIAProperty> | undefined,
-	currentValue: string,
-	role?: string,
-	booleanish?: boolean,
-) {
+function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, role?: string, booleanish?: boolean) {
 	if (!propSpec) {
 		return {
 			currentValue,

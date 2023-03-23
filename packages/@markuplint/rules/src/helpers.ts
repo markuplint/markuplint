@@ -3,7 +3,6 @@ import type { Translator } from '@markuplint/i18n';
 import type { PlainData } from '@markuplint/ml-config';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
-import type { ReadonlyDeep } from 'type-fest';
 
 // @ts-ignore
 import structuredClone from '@ungap/structured-clone';
@@ -14,7 +13,7 @@ import { attrCheck } from './attr-check';
 export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: Element<T, O>,
-	condition: ReadonlyDeep<Attribute['condition']>,
+	condition: Attribute['condition'],
 ) {
 	if (!condition) {
 		return true;
@@ -78,7 +77,7 @@ export function isValidAttr(
 	isDynamicValue: boolean,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: Element<any, any>,
-	attrSpecs: ReadonlyDeep<Attribute[]>,
+	attrSpecs: readonly Attribute[],
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	log?: Log,
 ) {
@@ -98,7 +97,7 @@ export function isValidAttr(
 	return invalid;
 }
 
-export function toNormalizedValue(value: string, spec: ReadonlyDeep<Attribute>) {
+export function toNormalizedValue(value: string, spec: Attribute) {
 	let normalized = value;
 
 	if (!spec.caseSensitive) {

@@ -8,7 +8,7 @@ import { resolveVersion } from './resolve-version';
 const cache = new Map<string, Omit<ReadonlyDeep<ARIA>, ARIAVersion> | null>();
 
 export function getARIA(
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	localName: string,
 	namespace: string | null,
 	version: ARIAVersion,
@@ -47,12 +47,7 @@ export function getARIA(
 	};
 }
 
-function getVersionResolvedARIA(
-	specs: ReadonlyDeep<MLMLSpec>,
-	localName: string,
-	namespace: string | null,
-	version: ARIAVersion,
-) {
+function getVersionResolvedARIA(specs: MLMLSpec, localName: string, namespace: string | null, version: ARIAVersion) {
 	const key = localName + namespace + version;
 	let aria = cache.get(key);
 	if (aria !== undefined) {

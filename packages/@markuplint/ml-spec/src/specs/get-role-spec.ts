@@ -1,11 +1,10 @@
 import type { ARIAVersion, ARIARoleInSchema, MLMLSpec, ARIARole } from '../types';
 import type { NamespaceURI } from '@markuplint/ml-ast';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { ariaSpecs } from './aria-specs';
 
 export function getRoleSpec(
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	roleName: string,
 	namespace: NamespaceURI,
 	version: ARIAVersion,
@@ -32,7 +31,7 @@ export function getRoleSpec(
 }
 
 function recursiveTraverseSuperClassRoles(
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	roleName: string,
 	namespace: NamespaceURI,
 	version: ARIAVersion,
@@ -49,12 +48,7 @@ function recursiveTraverseSuperClassRoles(
 	return roles;
 }
 
-function getSuperClassRoles(
-	specs: ReadonlyDeep<MLMLSpec>,
-	roleName: string,
-	namespace: NamespaceURI,
-	version: ARIAVersion,
-) {
+function getSuperClassRoles(specs: MLMLSpec, roleName: string, namespace: NamespaceURI, version: ARIAVersion) {
 	const role = getRoleByName(specs, roleName, namespace, version);
 	return (
 		role?.generalization
@@ -63,7 +57,7 @@ function getSuperClassRoles(
 	);
 }
 
-function getRoleByName(specs: ReadonlyDeep<MLMLSpec>, roleName: string, namespace: NamespaceURI, version: ARIAVersion) {
+function getRoleByName(specs: MLMLSpec, roleName: string, namespace: NamespaceURI, version: ARIAVersion) {
 	const { roles, graphicsRoles } = ariaSpecs(specs, version);
 	let role = roles.find(r => r.name === roleName);
 	if (!role && namespace === 'http://www.w3.org/2000/svg') {

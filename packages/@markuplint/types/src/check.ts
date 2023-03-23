@@ -40,10 +40,10 @@ export function isNumber(type: ReadonlyDeep<Type>): type is ReadonlyDeep<Number>
 	return typeof type !== 'string' && 'enum' in type;
 }
 
-export function isCSSSyntax(type: ReadonlyDeep<CustomSyntax | CustomCssSyntax>): type is ReadonlyDeep<CustomCssSyntax> {
+export function isCSSSyntax(type: CustomSyntax | CustomCssSyntax): type is CustomCssSyntax {
 	return typeof type === 'string' || 'syntax' in type;
 }
 
-export function isCustomSyntax(type: ReadonlyDeep<CustomSyntax | CustomCssSyntax>): type is ReadonlyDeep<CustomSyntax> {
+export function isCustomSyntax(type: CustomSyntax | CustomCssSyntax): type is CustomSyntax {
 	return !isCSSSyntax(type);
 }

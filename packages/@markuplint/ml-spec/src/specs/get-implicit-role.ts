@@ -1,10 +1,9 @@
 import type { ARIAVersion, Matches, MLMLSpec } from '../types';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { getARIA } from './get-aria';
 
 export function getImplicitRole(
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	localName: string,
 	namespace: string | null,
 	version: ARIAVersion,

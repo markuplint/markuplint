@@ -1,5 +1,4 @@
 import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { ariaSpecs } from '../specs/aria-specs';
 import { isPresentational } from '../specs/is-presentational';
@@ -12,7 +11,7 @@ import { isRequiredOwnedElement } from './has-required-owned-elements';
 import { mayBeFocusable } from './may-be-focusable';
 
 export function getComputedRole(
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 	version: ARIAVersion,
@@ -170,7 +169,7 @@ export function getComputedRole(
 function isEnabledAttr(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	specs: ReadonlyDeep<MLMLSpec>,
+	specs: MLMLSpec,
 	attrName: string,
 ) {
 	const attrs = getAttrSpecs(el, specs);
