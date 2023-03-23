@@ -5,7 +5,12 @@ import tagSplitter from './tag-splitter';
 
 import { getEndCol, getEndLine, uuid, walk } from '@markuplint/parser-utils';
 
-export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastText = true) {
+export function flattenNodes(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodeTree: MLASTNode[],
+	rawHtml: string,
+	createLastText = true,
+) {
 	const nodeOrders: MLASTNode[] = arrayize(nodeTree, rawHtml);
 
 	{
@@ -194,7 +199,11 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastT
 	return result;
 }
 
-function arrayize(nodeTree: MLASTNode[], rawHtml: string) {
+function arrayize(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodeTree: MLASTNode[],
+	rawHtml: string,
+) {
 	const nodeOrders: MLASTNode[] = [];
 
 	let prevLine = 1;

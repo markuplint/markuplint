@@ -152,7 +152,8 @@
 				"packages/@markuplint/ml-spec/**/*.ts",
 				"packages/@markuplint/selector/**/*.ts",
 				"packages/@markuplint/ml-ast/**/*.ts",
-				"packages/@markuplint/i18n/**/*.ts"
+				"packages/@markuplint/i18n/**/*.ts",
+				"packages/@markuplint/parser-utils/**/*.ts"
 			],
 			"rules": {
 				"@typescript-eslint/prefer-readonly-parameter-types": [
