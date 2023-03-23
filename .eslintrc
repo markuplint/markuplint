@@ -150,6 +150,7 @@
 				"packages/@markuplint/types/**/*.ts",
 				"packages/@markuplint/ml-config/**/*.ts",
 				"packages/@markuplint/ml-spec/**/*.ts",
+				"packages/@markuplint/selector/**/*.ts"
 			],
 			"rules": {
 				"@typescript-eslint/prefer-readonly-parameter-types": [

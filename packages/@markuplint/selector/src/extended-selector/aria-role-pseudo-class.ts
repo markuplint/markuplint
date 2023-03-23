@@ -1,11 +1,15 @@
 import type { SelectorResult } from '../types';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { getComputedRole } from '@markuplint/ml-spec';
 
-export function ariaRolePseudoClass(specs: MLMLSpec) {
+export function ariaRolePseudoClass(specs: ReadonlyDeep<MLMLSpec>) {
 	return (content: string) =>
-		(el: Element): SelectorResult => {
+		(
+			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+			el: Element,
+		): SelectorResult => {
 			const aria = ariaPseudoClassParser(content);
 
 			const computed = getComputedRole(specs, el, aria.version ?? '1.2');

@@ -8,7 +8,10 @@ import { getAccname } from '@markuplint/ml-spec';
  */
 export function ariaPseudoClass() {
 	return (content: string) =>
-		(el: Element): SelectorResult => {
+		(
+			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+			el: Element,
+		): SelectorResult => {
 			const aria = ariaPseudoClassParser(content);
 			const name = getAccname(el);
 			switch (aria.type) {
