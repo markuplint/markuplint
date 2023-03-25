@@ -25759,6 +25759,10 @@
 					"type": "Any",
 					"condition": "[type='image' i]"
 				},
+				"autocapitalize": {
+					"description": "(Safari only). A string which indicates how auto-capitalization should be applied while the user is editing this field. Permitted values are: none Do not automatically capitalize any text sentences Automatically capitalize the first character of each sentence. words Automatically capitalize the first character of each word. characters Automatically capitalize every character.",
+					"nonStandard": true
+				},
 				"autocomplete": {
 					"condition": [
 						":not([type])",
