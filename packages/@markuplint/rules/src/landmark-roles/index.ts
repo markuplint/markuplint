@@ -15,7 +15,7 @@ type RoleSet = {
 	[role in Roles]: Element<boolean, Options>[];
 };
 
-const selectors: { [role in Roles]: string[] } = {
+const selectors: { readonly [role in Roles]: string[] } = {
 	complementary: ['[role="complementary"]', 'aside'],
 	contentinfo: ['[role="contentinfo"]'],
 	form: ['[role="form"]', 'form[aria-labelledby]', 'form[aria-label]', 'form[title]'],
@@ -133,13 +133,19 @@ export default createRule<boolean, Options>({
 	},
 });
 
-function landmarkRoleElementUUIDList(roleset: RoleSet) {
+function landmarkRoleElementUUIDList(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	roleset: RoleSet,
+) {
 	return Object.values(roleset)
 		.map(elements => elements.map(element => element.uuid))
 		.flat();
 }
 
-function hasLabel(el: Element<boolean, Options>) {
+function hasLabel(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<boolean, Options>,
+) {
 	const hasHeading = !!el.querySelectorAll('h1, h2, h3, h4, h5, h6').length;
 	if (hasHeading && el.matches('[aria-labelledby]')) {
 		return true;

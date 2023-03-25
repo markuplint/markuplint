@@ -10,7 +10,7 @@ export async function installScaffold(
 	scaffoldType: 'core' | 'project' | 'package',
 	dest: string,
 	params: CreateRuleCreatorParams & {
-		packageJson?: boolean;
+		readonly packageJson?: boolean;
 	},
 ): Promise<CreateRuleHelperResult> {
 	const exists = await fsExists(dest);

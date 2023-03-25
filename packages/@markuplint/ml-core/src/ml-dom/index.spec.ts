@@ -639,4 +639,48 @@ describe('Issues', () => {
 		const elements = dom.querySelectorAll('*');
 		expect(elements.length).toBe(2);
 	});
+
+	test('#698', () => {
+		const dom = createTestDocument(
+			`<ul>
+	{#if cond === valueA}
+		<li>A</li>
+	{:else if cond === valueB}
+		<li>B</li>
+	{/if}
+</ul>`,
+			{ parser: require('@markuplint/svelte-parser') },
+		);
+
+		// 💡 This calling is a test that checks it
+		// doesn't throw an error when it referrers a DOM object.
+		dom.querySelectorAll('*');
+
+		const map = dom.debugMap();
+		expect(map).toStrictEqual([
+			'[1:1]>[1:5](0,4)UL: <ul>',
+			'  namespaceURI: true',
+			'  elementType: html',
+			'  isInFragmentDocument: true',
+			'  isForeignElement: false',
+			'[1:5]>[2:2](4,6)#text: ⏎→',
+			'[2:2]>[3:3](6,30)#ml-block: {#if␣cond␣===␣valueA}⏎→→',
+			'[3:3]>[3:7](30,34)LI: <li>',
+			'  namespaceURI: true',
+			'  elementType: html',
+			'  isInFragmentDocument: true',
+			'  isForeignElement: false',
+			'[3:7]>[3:8](34,35)#text: A',
+			'[3:13]>[5:3](40,71)#ml-block: ⏎→{:else␣if␣cond␣===␣valueB}⏎→→',
+			'[5:3]>[5:7](71,75)LI: <li>',
+			'  namespaceURI: true',
+			'  elementType: html',
+			'  isInFragmentDocument: true',
+			'  isForeignElement: false',
+			'[5:7]>[5:8](75,76)#text: B',
+			'[5:13]>[6:2](81,83)#text: ⏎→',
+			'[6:2]>[6:7](83,88)#ml-block: {/if}',
+			'[6:7]>[7:1](88,89)#text: ⏎',
+		]);
+	});
 });

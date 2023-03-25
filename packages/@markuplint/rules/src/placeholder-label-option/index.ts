@@ -30,7 +30,10 @@ export default createRule<boolean>({
  * @param select
  * @returns
  */
-function needPlaceholderLabelOption(select: Element<boolean>) {
+function needPlaceholderLabelOption(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	select: Element<boolean>,
+) {
 	const hasRequired = select.hasAttribute('required');
 	if (!hasRequired) {
 		return false;
@@ -61,7 +64,10 @@ function needPlaceholderLabelOption(select: Element<boolean>) {
  * @param select
  * @returns
  */
-function hasPlaceholderLabelOption(select: Element<boolean>) {
+function hasPlaceholderLabelOption(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	select: Element<boolean>,
+) {
 	// > has a required attribute specified
 	if (!select.hasAttribute('required')) {
 		return false;

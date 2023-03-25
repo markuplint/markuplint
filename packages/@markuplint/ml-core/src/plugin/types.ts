@@ -1,15 +1,15 @@
-import type { AnyRuleSeed } from '../ml-rule';
+import type { RuleSeed } from '../ml-rule';
 import type { Config } from '@markuplint/ml-config';
 
 export type Plugin = {
-	name: string;
-	rules?: Record<string, AnyRuleSeed>;
-	configs?: Record<string, Config>;
+	readonly name: string;
+	readonly rules?: Readonly<Record<string, Readonly<RuleSeed<any, any>>>>;
+	readonly configs?: Readonly<Record<string, Config>>;
 };
 
 export type PluginCreator<S extends CreatePluginSettings> = {
-	name: string;
+	readonly name: string;
 	create(setting: S): Omit<Plugin, 'name'>;
 };
 
-export type CreatePluginSettings = Record<string, unknown>;
+export type CreatePluginSettings = Readonly<Record<string, unknown>>;

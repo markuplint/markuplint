@@ -6,7 +6,7 @@ import { resolveFiles } from '@markuplint/file-resolver';
 
 import MLEngine from './ml-engine';
 
-export async function lint(targetList: Target[], options?: APIOptions) {
+export async function lint(targetList: readonly Readonly<Target>[], options?: APIOptions) {
 	const res: MLResultInfo[] = [];
 	const files = await resolveFiles(targetList);
 

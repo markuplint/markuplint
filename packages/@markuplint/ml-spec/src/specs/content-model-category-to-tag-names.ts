@@ -8,7 +8,7 @@ export function contentModelCategoryToTagNames(contentModel: Category, def: MLML
 	if (cached) {
 		return cached;
 	}
-	const tags: string[] | undefined = def['#contentModels'][contentModel];
+	const tags: readonly string[] | undefined = def['#contentModels'][contentModel];
 	const sortedTag = Object.freeze(tags && Array.isArray(tags) ? tags.sort() : []);
 	cache.set(contentModel, sortedTag);
 	return sortedTag;

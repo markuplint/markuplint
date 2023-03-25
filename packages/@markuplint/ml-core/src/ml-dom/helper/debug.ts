@@ -1,7 +1,11 @@
 import type { MLAttr } from '../node/attr';
 import type { MLNode } from '../node/node';
 
-export function nodeListToDebugMaps(nodeList: Readonly<MLNode<any, any>[]>, withAttr = false): string[] {
+export function nodeListToDebugMaps(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodeList: Readonly<MLNode<any, any>[]>,
+	withAttr = false,
+): string[] {
 	return nodeList
 		.map(n => {
 			const r: string[] = [];
@@ -28,7 +32,10 @@ export function nodeListToDebugMaps(nodeList: Readonly<MLNode<any, any>[]>, with
 		.flat();
 }
 
-function attributesToDebugMaps(attributes: ReadonlyArray<MLAttr<any, any>>): string[] {
+function attributesToDebugMaps(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attributes: ReadonlyArray<MLAttr<any, any>>,
+): string[] {
 	return attributes
 		.map(n => {
 			const r = [

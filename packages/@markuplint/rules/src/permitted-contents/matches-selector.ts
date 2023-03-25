@@ -1,4 +1,4 @@
-import type { ChildNode, Options, Result, Specs } from './types';
+import type { ChildNode, Result, Specs } from './types';
 import type { Category } from '@markuplint/ml-spec';
 
 import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
@@ -16,9 +16,9 @@ type Condition = {
 
 export function matchesSelector(
 	query: string,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: ChildNode | undefined,
 	specs: Specs,
-	options: Options,
 	depth: number,
 ): SelectorResult {
 	const nodeLog = cmLog.extend(`node#${depth}`);

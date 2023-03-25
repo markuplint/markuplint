@@ -53,6 +53,7 @@
 		"strict-event-emitter": "^0.2.8",
 		"strip-ansi": "6",
 		"tslib": "^2.4.1",
+		"type-fest": "^3.6.1",
 		"uuid": "^9.0.0"
 	}
 }

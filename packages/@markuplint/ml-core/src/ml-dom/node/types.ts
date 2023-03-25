@@ -19,10 +19,10 @@ import type {
 	MLASTText,
 	MLToken as MLASTToken,
 } from '@markuplint/ml-ast/';
-import type { PretenderARIA, RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, PretenderARIA, RuleConfigValue } from '@markuplint/ml-config';
 
 // prettier-ignore
-export type MappedNode<N, T extends RuleConfigValue, O = null>
+export type MappedNode<N, T extends RuleConfigValue, O extends PlainData = undefined>
 	= N extends MLASTElement ? MLElement<T, O>
 	: N extends MLASTParentNode ? MLElement<T, O>
 	: N extends MLASTComment ? MLComment<T, O>
@@ -35,7 +35,7 @@ export type MappedNode<N, T extends RuleConfigValue, O = null>
 	: never;
 
 // prettier-ignore
-export type NodeTypeOf<NT extends NodeType, T extends RuleConfigValue, O = null>
+export type NodeTypeOf<NT extends NodeType, T extends RuleConfigValue, O extends PlainData = undefined>
 = NT extends ElementNodeType ? MLElement<T, O>
 : NT extends CommentNodeType ? MLComment<T, O>
 : NT extends TextNodeType ? MLText<T, O>
@@ -69,17 +69,25 @@ export type NodeType =
 	| DocumentFragmentNodeType
 	| MarkuplintPreprocessorBlockType;
 
-export type PretenderContext<N extends MLElement<T, O>, T extends RuleConfigValue, O = null> =
+export type PretenderContext<N extends MLElement<T, O>, T extends RuleConfigValue, O extends PlainData = undefined> =
 	| PretenderContextPretender<N, T, O>
 	| PretenderContextPretended<N, T, O>;
 
-export type PretenderContextPretender<N extends MLElement<T, O>, T extends RuleConfigValue, O = null> = {
+export type PretenderContextPretender<
+	N extends MLElement<T, O>,
+	T extends RuleConfigValue,
+	O extends PlainData = undefined,
+> = {
 	readonly type: 'pretender';
 	readonly as: N;
 	readonly aria?: PretenderARIA;
 };
 
-export type PretenderContextPretended<N extends MLElement<T, O>, T extends RuleConfigValue, O = null> = {
+export type PretenderContextPretended<
+	N extends MLElement<T, O>,
+	T extends RuleConfigValue,
+	O extends PlainData = undefined,
+> = {
 	readonly type: 'origin';
 	readonly origin: N;
 };

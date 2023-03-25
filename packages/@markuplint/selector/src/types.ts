@@ -1,30 +1,30 @@
-export type Specificity = [number, number, number];
+export type Specificity = readonly [number, number, number];
 
 export type SelectorResult = SelectorMatchedResult | SelectorUnmatchedResult;
 
 export type SelectorMatchedResult = {
-	specificity: Specificity;
-	matched: true;
-	nodes: (Element | Text)[];
-	has: SelectorMatchedResult[];
+	readonly specificity: Specificity;
+	readonly matched: true;
+	readonly nodes: readonly (Element | Text)[];
+	readonly has: readonly SelectorMatchedResult[];
 };
 
 export type SelectorUnmatchedResult = {
-	specificity: Specificity;
-	matched: false;
-	not?: SelectorMatchedResult[];
+	readonly specificity: Specificity;
+	readonly matched: false;
+	readonly not?: readonly SelectorMatchedResult[];
 };
 
 export type RegexSelector = RegexSelectorWithoutCombination & {
-	combination?: {
-		combinator: RegexSelectorCombinator;
+	readonly combination?: {
+		readonly combinator: RegexSelectorCombinator;
 	} & RegexSelector;
 };
 
 export type RegexSelectorCombinator = ' ' | '>' | '+' | '~' | ':has(+)' | ':has(~)';
 
 export type RegexSelectorWithoutCombination = {
-	nodeName?: string;
-	attrName?: string;
-	attrValue?: string;
+	readonly nodeName?: string;
+	readonly attrName?: string;
+	readonly attrValue?: string;
 };

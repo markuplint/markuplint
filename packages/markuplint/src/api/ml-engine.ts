@@ -1,7 +1,8 @@
-import type { APIOptions, MLEngineEventMap, MLFabric } from './types';
+import type { APIOptions, MLEngineEventMap } from './types';
 import type { MLResultInfo } from '../types';
 import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
-import type { Ruleset, Plugin, Document, RuleConfigValue } from '@markuplint/ml-core';
+import type { PlainData } from '@markuplint/ml-config';
+import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@markuplint/ml-core';
 
 import { ConfigProvider, resolveFiles, resolveParser, resolveRules, resolveSpecs } from '@markuplint/file-resolver';
 import { MLCore, convertRuleset } from '@markuplint/ml-core';
@@ -16,8 +17,8 @@ const fileLog = log.extend('file');
 const configLog = log.extend('config');
 
 type MLEngineOptions = {
-	debug?: boolean;
-	watch?: boolean;
+	readonly debug?: boolean;
+	readonly watch?: boolean;
 };
 
 export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
@@ -28,11 +29,11 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 
 	#configProvider: ConfigProvider;
 	#core: MLCore | null = null;
-	#file: MLFile;
+	#file: Readonly<MLFile>;
 	#options?: APIOptions & MLEngineOptions;
 	#watcher = new FSWatcher();
 
-	constructor(file: MLFile, options?: APIOptions & MLEngineOptions) {
+	constructor(file: Readonly<MLFile>, options?: APIOptions & MLEngineOptions) {
 		super();
 		this.#file = file;
 		this.#options = options;
@@ -44,7 +45,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		}
 	}
 
-	get document(): Document<RuleConfigValue, unknown> | null {
+	get document(): Document<RuleConfigValue, PlainData> | null {
 		if (this.#core?.document instanceof Error) {
 			return null;
 		}
@@ -295,14 +296,17 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		return configSet;
 	}
 
-	private async resolveParser(configSet: ConfigSet) {
+	private async resolveParser(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		configSet: ConfigSet,
+	) {
 		const parser = await resolveParser(this.#file, configSet.config.parser, configSet.config.parserOptions);
 		this.emit('parser', this.#file.path, parser.parserModName);
 		fileLog('Fetched Parser module: %s', parser.parserModName);
 		return parser;
 	}
 
-	private async resolveRules(plugins: Plugin[], ruleset: Ruleset) {
+	private async resolveRules(plugins: readonly Plugin[], ruleset: Ruleset) {
 		const rules = await resolveRules(
 			plugins,
 			ruleset,
@@ -317,13 +321,19 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		return rules;
 	}
 
-	private resolveRuleset(configSet: ConfigSet) {
+	private resolveRuleset(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		configSet: ConfigSet,
+	) {
 		const ruleset = convertRuleset(configSet.config);
 		this.emit('ruleset', this.#file.path, ruleset);
 		return ruleset;
 	}
 
-	private async resolveSchemas(configSet: ConfigSet) {
+	private async resolveSchemas(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		configSet: ConfigSet,
+	) {
 		const { schemas } = await resolveSpecs(this.#file.path, configSet.config.specs);
 		this.emit('schemas', this.#file.path, schemas);
 		return schemas;

@@ -73,7 +73,7 @@ export default createRule<RequiredAttributes>({
 				} else if (spec.required === true) {
 					invalid = attrMatches(el, spec.condition) && didntHave;
 				} else if (spec.required) {
-					const selector = Array.isArray(spec.required) ? spec.required.join(',') : spec.required;
+					const selector = typeof spec.required === 'string' ? spec.required : spec.required.join(',');
 					invalid = el.matches(selector) && didntHave;
 				}
 

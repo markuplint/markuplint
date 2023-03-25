@@ -1,6 +1,6 @@
 import type { MLElement } from './element';
 import type { MLASTAbstractNode } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import {
 	after,
@@ -16,7 +16,7 @@ import UnexpectedCallError from './unexpected-call-error';
 
 export abstract class MLCharacterData<
 		T extends RuleConfigValue,
-		O = null,
+		O extends PlainData = undefined,
 		A extends MLASTAbstractNode = MLASTAbstractNode,
 	>
 	extends MLNode<T, O, A>
@@ -71,7 +71,10 @@ export abstract class MLCharacterData<
 	/**
 	 * @implements DOM API: `CharacterData`
 	 */
-	after(...nodes: (string | MLElement<any, any>)[]): void {
+	after(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		after(this, ...nodes);
 	}
 
@@ -81,7 +84,10 @@ export abstract class MLCharacterData<
 	/**
 	 * @implements DOM API: `CharacterData`
 	 */
-	before(...nodes: (string | MLElement<any, any>)[]): void {
+	before(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		before(this, ...nodes);
 	}
 
@@ -104,7 +110,10 @@ export abstract class MLCharacterData<
 	/**
 	 * @implements DOM API: `CharacterData`
 	 */
-	replaceWith(...nodes: (string | MLElement<any, any>)[]): void {
+	replaceWith(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		replaceWith(this, ...nodes);
 	}
 

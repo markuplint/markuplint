@@ -1,5 +1,6 @@
 import type { ChildNode, Options, Result, Specs } from './types';
 import type { PermittedContentPattern } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { choice } from './choice';
 import { countPattern } from './count-pattern';
@@ -17,8 +18,9 @@ import { isChoice, isTransparent } from './utils';
  * @returns
  */
 export function complexBranch(
-	pattern: PermittedContentPattern,
-	elements: ChildNode[],
+	pattern: ReadonlyDeep<PermittedContentPattern>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	elements: readonly ChildNode[],
 	specs: Specs,
 	options: Options,
 	depth: number,
@@ -28,7 +30,7 @@ export function complexBranch(
 	}
 
 	if (isTransparent(pattern)) {
-		return transparent(elements, specs, options, depth);
+		return transparent(elements);
 	}
 
 	return countPattern(pattern, elements, specs, options, depth);

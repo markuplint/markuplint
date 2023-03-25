@@ -25,7 +25,7 @@ const logo = `/${c.xterm(PRIMARY_COLOR)('✔')}\\`;
 const version = require('../package.json').version;
 const eaw: { characterLength: (char: string) => number } = eastasianwidth;
 
-const box = (lines: string[], { width = 40, padding = 1, center = false, noColor = false }) => {
+const box = (lines: readonly string[], { width = 40, padding = 1, center = false, noColor = false }) => {
 	const bt = `┌${'─'.repeat(width - 2)}┐`;
 	const pd = `│${' '.repeat(width - 2)}│`;
 	const bb = `└${'─'.repeat(width - 2)}┘`;

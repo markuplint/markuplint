@@ -3,7 +3,11 @@ import { JSDOM } from 'jsdom';
 export function createJSDOMElement(
 	html: string,
 	selector?: string,
-	matches?: (this: Element, selector: string) => boolean,
+	matches?: (
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		this: Element,
+		selector: string,
+	) => boolean,
 ) {
 	if (/^<html>/i.test(html)) {
 		const dom = new JSDOM(html);

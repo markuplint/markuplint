@@ -12,7 +12,7 @@ const defaultLangs: Lang[] = ['en', 'ja', 'fr', 'nl', 'ru', 'de', 'pt', 'zh'];
  * @param base Reference date for a test
  * @returns
  */
-export function parseADatetime(content: string, langs: Lang[], base?: Date) {
+export function parseADatetime(content: string, langs: readonly Lang[], base?: Readonly<Date>) {
 	const date = parseTryMultipleLangs(content, langs, base);
 
 	if (!date) {
@@ -77,7 +77,7 @@ export function getCandidateDatetimeString(content: string, langs: Lang[] = defa
 	return datetimeStr;
 }
 
-function toDatetimeString(date: DateTimeData) {
+function toDatetimeString(date: Readonly<DateTimeData>) {
 	if (only(date, ['year', 'month'])) {
 		return `${f(date.year, 4)}-${f(date.month, 2)}`;
 	}
@@ -123,7 +123,7 @@ function toDatetimeString(date: DateTimeData) {
 	return null;
 }
 
-function parseTryMultipleLangs(content: string, langs: Lang[], base?: Date) {
+function parseTryMultipleLangs(content: string, langs: readonly Lang[], base?: Readonly<Date>) {
 	for (const lang of langs) {
 		const results = chrono[lang].casual.parse(content, base);
 
@@ -150,7 +150,7 @@ function parseTryMultipleLangs(content: string, langs: Lang[], base?: Date) {
 }
 
 function only<K extends DateTimeKey[], U extends K[number], R extends Required<Pick<DateTimeData, U>>>(
-	date: DateTimeData,
+	date: Readonly<DateTimeData>,
 	keys: K,
 ): date is R {
 	const list = Object.keys(date) as DateTimeKey[];

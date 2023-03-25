@@ -12,8 +12,8 @@ import type {
 	Parse,
 } from '@markuplint/ml-ast';
 
-import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
-import { detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { parseRawTag } from '@markuplint/html-parser';
+import { flattenNodes, detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
 
 import { AstroCompileError, astroParse } from './astro-parser';
 import { attrTokenizer } from './attr-tokenizer';
@@ -63,6 +63,7 @@ export const parse: Parse = (rawCode, options) => {
 };
 
 function traverse(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	rootNode: ASTNode,
 	parentNode: MLASTParentNode | null = null,
 	scopeNS: NamespaceURI,
@@ -98,8 +99,11 @@ function traverse(
 }
 
 function nodeize(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	originNode: ASTNode,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	prevNode: MLASTNode | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parentNode: MLASTParentNode | null,
 	scopeNS: NamespaceURI,
 	rawHtml: string,
@@ -276,14 +280,18 @@ function nodeize(
 
 function parseElement(
 	nodeName: string,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	originNode: ASTNode | ASTStyleNode,
 	scopeNS: NamespaceURI,
 	rawHtml: string,
 	startLine: number,
 	startCol: number,
 	startOffset: number,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parentNode: MLASTParentNode | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	prevNode: MLASTNode | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nextNode: MLASTNode | null,
 	offset: number,
 	options?: ParserOptions,
@@ -353,7 +361,12 @@ function parseElement(
 		type: 'starttag',
 		namespace: scopeNS,
 		elementType: detectElementType(tagName, options?.authoredElementName, /^[A-Z]|\./),
-		attributes: originNode.attributes.map((attr: ASTAttribute) => attrTokenizer(attr, rawHtml, offset)),
+		attributes: originNode.attributes.map(
+			(
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				attr: ASTAttribute,
+			) => attrTokenizer(attr, rawHtml, offset),
+		),
 		hasSpreadAttr: false,
 		parentNode,
 		prevNode,
@@ -374,7 +387,8 @@ function parseElement(
 }
 
 function parseStyle(
-	nodes: ASTStyleNode[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodes: readonly ASTStyleNode[],
 	scopeNS: NamespaceURI,
 	rawHtml: string,
 	offset: number,

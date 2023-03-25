@@ -1,4 +1,5 @@
 import type { Specificity, RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCombination } from './types';
+import type { Writable } from 'type-fest';
 
 import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is';
 import { regexSelectorMatches } from './regex-selector-matches';
@@ -7,17 +8,21 @@ import { Selector } from './selector';
 export type SelectorMatches = SelectorMatched | SelectorUnmatched;
 
 type SelectorMatched = {
-	matched: true;
-	selector: string;
-	specificity: Specificity;
-	data?: Record<string, string>;
+	readonly matched: true;
+	readonly selector: string;
+	readonly specificity: Specificity;
+	readonly data?: Readonly<Record<string, string>>;
 };
 
 type SelectorUnmatched = {
-	matched: false;
+	readonly matched: false;
 };
 
-export function matchSelector(el: Node, selector: string | RegexSelector | undefined): SelectorMatches {
+export function matchSelector(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Node,
+	selector: string | RegexSelector | undefined,
+): SelectorMatches {
 	if (!selector) {
 		return {
 			matched: false,
@@ -42,7 +47,11 @@ export function matchSelector(el: Node, selector: string | RegexSelector | undef
 	return regexSelect(el, selector);
 }
 
-function regexSelect(el: Node, selector: RegexSelector): SelectorMatches {
+function regexSelect(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Node,
+	selector: RegexSelector,
+): SelectorMatches {
 	let edge = new SelectorTarget(selector);
 	let edgeSelector = selector.combination;
 	while (edgeSelector) {
@@ -56,18 +65,25 @@ function regexSelect(el: Node, selector: RegexSelector): SelectorMatches {
 }
 
 class SelectorTarget {
-	#combinedFrom: { target: SelectorTarget; combinator: RegexSelectorCombinator } | null = null;
+	#combinedFrom: {
+		target: Readonly<SelectorTarget>;
+		combinator: RegexSelectorCombinator;
+	} | null = null;
+
 	#selector: RegexSelectorWithoutCombination;
 
 	constructor(selector: RegexSelectorWithoutCombination) {
 		this.#selector = selector;
 	}
 
-	from(target: SelectorTarget, combinator: RegexSelectorCombinator) {
+	from(target: Readonly<SelectorTarget>, combinator: RegexSelectorCombinator) {
 		this.#combinedFrom = { target, combinator };
 	}
 
-	match(el: Node): SelectorMatches {
+	match(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		el: Node,
+	): SelectorMatches {
 		const unitCheck = this._matchWithoutCombineChecking(el);
 		if (!unitCheck.matched) {
 			return unitCheck;
@@ -158,12 +174,19 @@ class SelectorTarget {
 		}
 	}
 
-	private _matchWithoutCombineChecking(el: Node) {
+	private _matchWithoutCombineChecking(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		el: Node,
+	) {
 		return uncombinedRegexSelect(el, this.#selector);
 	}
 }
 
-function uncombinedRegexSelect(el: Node, selector: RegexSelectorWithoutCombination): SelectorMatches {
+function uncombinedRegexSelect(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Node,
+	selector: RegexSelectorWithoutCombination,
+): SelectorMatches {
 	if (!isElement(el)) {
 		return {
 			matched: false,
@@ -173,7 +196,7 @@ function uncombinedRegexSelect(el: Node, selector: RegexSelectorWithoutCombinati
 	let matched = true;
 	let data: Record<string, string> = {};
 	let tagSelector = '';
-	const specificity: Specificity = [0, 0, 0];
+	const specificity: Writable<Specificity> = [0, 0, 0];
 	const specifiedAttr = new Map<string, string>();
 
 	if (selector.nodeName) {

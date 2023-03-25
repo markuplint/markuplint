@@ -8,8 +8,16 @@ import type {
 	Parse,
 } from '@markuplint/ml-ast';
 
-import { getNamespace, parse as htmlParser, isDocumentFragment, removeDeprecatedNode } from '@markuplint/html-parser';
-import { detectElementType, ignoreFrontMatter, ParserError, tokenizer, uuid, walk } from '@markuplint/parser-utils';
+import { getNamespace, parse as htmlParser, isDocumentFragment } from '@markuplint/html-parser';
+import {
+	detectElementType,
+	ignoreFrontMatter,
+	ParserError,
+	tokenizer,
+	uuid,
+	walk,
+	removeDeprecatedNode,
+} from '@markuplint/parser-utils';
 
 import attrTokenizer from './attr-tokenizer';
 import { pugParse } from './pug-parser';
@@ -59,7 +67,10 @@ class Parser {
 		// console.log(JSON.stringify(this.#ast, null, 2));
 	}
 
-	flattenNodes(nodeTree: MLASTNode[]) {
+	flattenNodes(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		nodeTree: readonly MLASTNode[],
+	) {
 		const nodeOrders: MLASTNode[] = [];
 		walk(nodeTree, node => {
 			nodeOrders.push(node);
@@ -76,8 +87,11 @@ class Parser {
 	}
 
 	nodeize(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: ASTNode,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		prevNode: MLASTNode | null,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		parentNode: MLASTParentNode | null,
 	): MLASTNode | MLASTNode[] | null {
 		const nextNode = null;
@@ -231,7 +245,11 @@ class Parser {
 		}
 	}
 
-	traverse(astNodes: ASTNode[], parentNode: MLASTParentNode | null = null): MLASTNode[] {
+	traverse(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		astNodes: readonly ASTNode[],
+		parentNode: MLASTParentNode | null = null,
+	): MLASTNode[] {
 		const nodeList: MLASTNode[] = [];
 
 		let prevNode: MLASTNode | null = null;

@@ -1,9 +1,8 @@
 import type { Parse } from '@markuplint/ml-ast';
 
-import { ignoreFrontMatter } from '@markuplint/parser-utils';
+import { ignoreFrontMatter, flattenNodes } from '@markuplint/parser-utils';
 
 import { createTree } from './create-tree';
-import { flattenNodes } from './flatten-nodes';
 import isDocumentFragment from './is-document-fragment';
 import {
 	isStartsHeadTagOrBodyTag,

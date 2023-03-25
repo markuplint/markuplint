@@ -6,7 +6,11 @@ import { searchIDLAttribute, sliceFragment, tokenizer, uuid } from '@markuplint/
 
 import { getAttrName } from './jsx';
 
-export function attr(attr: JSXAttribute, rawHTML: string): MLASTAttr {
+export function attr(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attr: JSXAttribute,
+	rawHTML: string,
+): MLASTAttr {
 	const beforeHtml = rawHTML.substr(0, attr.range[0]);
 	const spacesBeforeNameStr = (beforeHtml.match(/\s+$/) || [''])[0];
 	const startOffset = attr.range[0] - spacesBeforeNameStr.length;

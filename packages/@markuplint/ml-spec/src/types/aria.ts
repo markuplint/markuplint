@@ -22,10 +22,7 @@ export type PermittedRoles =
 					[k: string]: unknown;
 			  }
 	  )[]
-	| {
-			'core-aam'?: true;
-			'graphics-aam'?: true;
-	  };
+	| PermittedARIAAAMInfo;
 /**
  * If set false:
  * > No role or aria-* attributes
@@ -143,6 +140,10 @@ export interface ARIA {
 			};
 		};
 	};
+}
+export interface PermittedARIAAAMInfo {
+	'core-aam'?: true;
+	'graphics-aam'?: true;
 }
 export interface ImplicitProperties {
 	/**

@@ -9,8 +9,8 @@ import type {
 	Parse,
 } from '@markuplint/ml-ast';
 
-import { flattenNodes, parseRawTag } from '@markuplint/html-parser';
-import { getEndCol, getEndLine, uuid, ParserError, detectElementType } from '@markuplint/parser-utils';
+import { parseRawTag } from '@markuplint/html-parser';
+import { flattenNodes, getEndCol, getEndLine, uuid, ParserError, detectElementType } from '@markuplint/parser-utils';
 
 import { attr } from './attr';
 import vueParse from './vue-parser';
@@ -64,6 +64,7 @@ export const parse: Parse = (rawCode, options) => {
 };
 
 function traverse(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	rootNode: ASTNode,
 	parentNode: MLASTParentNode | null = null,
 	rawHtml: string,
@@ -94,8 +95,11 @@ function traverse(
 }
 
 function nodeize(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	originNode: ASTNode,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	prevNode: MLASTNode | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
 	options?: ParserOptions,

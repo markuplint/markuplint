@@ -2,16 +2,25 @@ import type { MLDocument } from './document';
 import type { MLElement } from './element';
 import type { MarkuplintPreprocessorBlockType } from './types';
 import type { MLASTPreprocessorSpecificBlock } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { after, before, remove, replaceWith } from '../manipulations/child-node-methods';
 
 import { MLNode } from './node';
 
-export class MLBlock<T extends RuleConfigValue, O = null> extends MLNode<T, O, MLASTPreprocessorSpecificBlock> {
+export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined> extends MLNode<
+	T,
+	O,
+	MLASTPreprocessorSpecificBlock
+> {
 	readonly isTransparent: boolean;
 
-	constructor(astNode: MLASTPreprocessorSpecificBlock, document: MLDocument<T, O>) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		astNode: MLASTPreprocessorSpecificBlock,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		document: MLDocument<T, O>,
+	) {
 		super(astNode, document);
 		// TODO:
 		this.isTransparent = true;
@@ -38,14 +47,20 @@ export class MLBlock<T extends RuleConfigValue, O = null> extends MLNode<T, O, M
 	/**
 	 * @implements DOM API: `ChildNode`
 	 */
-	after(...nodes: (string | MLElement<any, any>)[]): void {
+	after(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		after(this, ...nodes);
 	}
 
 	/**
 	 * @implements DOM API: `ChildNode`
 	 */
-	before(...nodes: (string | MLElement<any, any>)[]): void {
+	before(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		before(this, ...nodes);
 	}
 
@@ -59,7 +74,10 @@ export class MLBlock<T extends RuleConfigValue, O = null> extends MLNode<T, O, M
 	/**
 	 * @implements DOM API: `ChildNode`
 	 */
-	replaceWith(...nodes: (string | MLElement<any, any>)[]): void {
+	replaceWith(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		replaceWith(this, ...nodes);
 	}
 }

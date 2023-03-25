@@ -45,11 +45,6 @@ export async function resolveSpecs(filePath: string, specConfig?: SpecConfig) {
 		if (typeof specConfig === 'string') {
 			const spec = await importSpecs<ExtendedSpec>(specConfig);
 			extendedSpecs.push(spec);
-		} else if (Array.isArray(specConfig)) {
-			for (const specModName of specConfig) {
-				const spec = await importSpecs<ExtendedSpec>(specModName);
-				extendedSpecs.push(spec);
-			}
 		} else {
 			for (const pattern of Object.keys(specConfig)) {
 				if (path.basename(filePath).match(toRegexp(pattern))) {

@@ -4,8 +4,8 @@ import htmlSpec from '@markuplint/html-spec';
 
 import { schemaToSpec } from './schema-to-spec';
 
-describe('getSpec', () => {
-	test('Overriding', () => {
+describe('schemaToSpec', () => {
+	test('specs', () => {
 		const exAttr = {
 			ref: 'N/A',
 			type: 'Boolean',
@@ -37,5 +37,27 @@ describe('getSpec', () => {
 		]);
 		const aElAttrs = mergedSpec.specs.find(el => el.name === 'a')!.attributes;
 		expect(aElAttrs['extended-attr']).toStrictEqual(exAttr2);
+	});
+
+	test('globalAttrs.extends', () => {
+		const keyAttr = {
+			type: 'NoEmptyAny',
+			description: 'A special attribute for list rendering',
+			condition: '[v-for]',
+		} as const;
+		const mergedSpec = schemaToSpec([
+			htmlSpec,
+			{
+				def: {
+					'#globalAttrs': {
+						'#extends': {
+							key: keyAttr,
+						},
+					},
+				},
+			},
+		]);
+		const key = mergedSpec.def['#globalAttrs']['#HTMLGlobalAttrs']['key'];
+		expect(key).toStrictEqual(keyAttr);
 	});
 });

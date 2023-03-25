@@ -13,10 +13,10 @@ export class ParserError extends Error {
 			raw = '',
 			nodeName = null,
 		}: {
-			line?: number;
-			col?: number;
-			raw?: string;
-			nodeName?: string | null;
+			readonly line?: number;
+			readonly col?: number;
+			readonly raw?: string;
+			readonly nodeName?: string | null;
 		},
 	) {
 		super(nodeName ? `The ${nodeName} is invalid element (${line}:${col}): ${message}` : message);

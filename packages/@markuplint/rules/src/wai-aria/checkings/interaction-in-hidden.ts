@@ -37,7 +37,10 @@ export const checkingInteractionInHidden: ElementChecker<boolean, Options> =
 		};
 	};
 
-function getClosestAriaHidden(el: Element<boolean, Options>): Attr<boolean, Options> | null {
+function getClosestAriaHidden(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<boolean, Options>,
+): Attr<boolean, Options> | null {
 	let current: Element<boolean, Options> | null = el;
 	while (current) {
 		const ariaHidden = current.getAttributeNode('aria-hidden');

@@ -1,6 +1,6 @@
-import { getEndCol, getEndLine } from '@markuplint/parser-utils';
-
 import { reSplitterTag, reTagName } from './const';
+
+import { getEndCol, getEndLine } from '@markuplint/parser-utils';
 
 export interface N {
 	type: 'text' | 'starttag' | 'endtag' | 'comment' | 'boguscomment';
@@ -43,7 +43,7 @@ function tagSplitterAsString(raw: string): string[] {
 	return nodes;
 }
 
-function withLocation(nodes: string[], line: number, col: number): N[] {
+function withLocation(nodes: readonly string[], line: number, col: number): N[] {
 	const result: N[] = [];
 
 	for (const node of nodes) {

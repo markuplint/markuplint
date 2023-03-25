@@ -14,6 +14,7 @@ const lintEngineCache = new Map<string, TextLintEngine>();
 export const defaultOptions = true;
 
 export const textlintVerify: (
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	...args: Parameters<RuleSeed<boolean, Option>['verify']>
 ) => Promise<TextlintResult | undefined> = async ({ document }) => {
 	const html = document.toString();

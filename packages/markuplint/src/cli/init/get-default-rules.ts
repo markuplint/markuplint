@@ -1,4 +1,5 @@
 import type { DefaultRules } from './types';
+import type { Writable } from 'type-fest';
 
 import matter from 'gray-matter';
 import fetch from 'node-fetch';
@@ -10,9 +11,9 @@ const RULES_README_URL =
 
 export async function getDefaultRules(version: string) {
 	const json = await safeFetch(RULES_SCHEMA_URL, version);
-	const rules: DefaultRules = {};
+	const rules: Writable<DefaultRules> = {};
 	await Promise.all(
-		Object.entries(json.definitions.rules.properties).map(async ([name, rule]: [string, any]) => {
+		Object.entries(json.definitions.rules.properties).map(async ([name, rule]: readonly [string, any]) => {
 			const json = await safeFetch(rule.$ref.replace('/main/', '/[VERSION]/'), version);
 			let severity = (Array.isArray(json.oneOf) ? json.oneOf : []).find((val: any) => val.properties)?.properties
 				?.severity?.default;

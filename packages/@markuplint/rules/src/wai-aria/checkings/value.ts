@@ -7,7 +7,7 @@ export const checkingValue: AttrChecker<
 	Options,
 	{
 		role?: ARIARole | null;
-		propSpecs: ARIAProperty[];
+		propSpecs: readonly ARIAProperty[];
 		booleanish?: boolean;
 	}
 > =
@@ -64,7 +64,7 @@ function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, rol
  *
  * @see https://www.w3.org/TR/wai-aria-1.2/#propcharacteristic_value
  */
-export function checkAriaValue(type: string, value: string, tokenEnum: string[], booleanish?: boolean) {
+export function checkAriaValue(type: string, value: string, tokenEnum: readonly string[], booleanish?: boolean) {
 	switch (type) {
 		case 'token': {
 			return tokenEnum.includes(value);

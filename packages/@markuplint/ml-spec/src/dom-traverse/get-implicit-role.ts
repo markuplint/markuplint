@@ -4,7 +4,12 @@ import { getImplicitRole as _getImplicitRole } from '../specs/get-implicit-role'
 import { getRoleSpec } from '../specs/get-role-spec';
 import { resolveNamespace } from '../utils/resolve-namespace';
 
-export function getImplicitRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): ComputedRole {
+export function getImplicitRole(
+	specs: MLMLSpec,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	version: ARIAVersion,
+): ComputedRole {
 	const implicitRole = getImplicitRoleName(el, version, specs);
 	if (implicitRole === false) {
 		// No Corresponding Role
@@ -31,6 +36,11 @@ export function getImplicitRole(specs: Readonly<MLMLSpec>, el: Element, version:
 	};
 }
 
-export function getImplicitRoleName(el: Element, version: ARIAVersion, specs: Readonly<MLMLSpec>) {
+export function getImplicitRoleName(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	version: ARIAVersion,
+	specs: MLMLSpec,
+) {
 	return _getImplicitRole(specs, el.localName, el.namespaceURI, version, el.matches.bind(el));
 }

@@ -5,7 +5,10 @@ import type { MLASTNode } from '@markuplint/ml-ast';
  * @disruptive
  * @param nodeOrders [Disruptive change]
  */
-export function removeDeprecatedNode(nodeOrders: MLASTNode[]) {
+export function removeDeprecatedNode(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodeOrders: MLASTNode[],
+) {
 	/**
 	 * sorting
 	 */

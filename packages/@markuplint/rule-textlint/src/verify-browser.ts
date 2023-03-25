@@ -7,6 +7,7 @@ import { lintText } from './helper';
 export const defaultOptions = {};
 
 export const textlintVerify: (
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	...args: Parameters<RuleSeed<boolean, Option>['verify']>
 ) => Promise<TextlintResult | undefined> = async context => {
 	const html = context.document.toString();

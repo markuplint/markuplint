@@ -1,11 +1,12 @@
 import type { Result } from './types';
 import type { List } from './types.schema';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { check } from './check';
 import { matched } from './match-result';
 import { Token, TokenCollection } from './token';
 
-export function checkList(value: string, type: List, ref?: string, cache = true): Result {
+export function checkList(value: string, type: ReadonlyDeep<List>, ref?: string, cache = true): Result {
 	const tokens = new TokenCollection(value, type);
 
 	const matches = tokens.check({ ref });

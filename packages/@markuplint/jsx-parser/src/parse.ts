@@ -1,8 +1,7 @@
 import type { JSXNode } from './jsx';
 import type { MLASTNode, Parse } from '@markuplint/ml-ast';
 
-import { flattenNodes } from '@markuplint/html-parser';
-import { ParserError, walk } from '@markuplint/parser-utils';
+import { flattenNodes, ParserError, walk } from '@markuplint/parser-utils';
 
 import jsxParser from './jsx';
 import { traverse } from './traverse';
@@ -42,7 +41,10 @@ export const parse: Parse = (rawCode, options) => {
 	};
 };
 
-function provideChildNodesToPSBlock(list: MLASTNode[]) {
+function provideChildNodesToPSBlock(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	list: readonly MLASTNode[],
+) {
 	walk(list, psBlockNode => {
 		if (psBlockNode.type !== 'psblock') {
 			return;

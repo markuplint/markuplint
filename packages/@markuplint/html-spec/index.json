@@ -110,6 +110,7 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot",
@@ -22176,6 +22177,7 @@
 				"s",
 				"samp",
 				"script",
+				"search",
 				"section",
 				"select",
 				"slot",
@@ -22342,6 +22344,7 @@
 				"ruby",
 				"s",
 				"samp",
+				"search",
 				"section",
 				"select",
 				"small",
@@ -23459,7 +23462,7 @@
 					"description": "This Boolean attribute specifies that the button should have input focus when the page loads. Only one element in a document can have this attribute."
 				},
 				"disabled": {
-					"description": "This Boolean attribute prevents the user from interacting with the button: it cannot be pressed or focused. Firefox, unlike other browsers, persists the dynamic disabled state of a <button> across page loads. Use the autocomplete attribute to control this feature."
+					"description": "This Boolean attribute prevents the user from interacting with the button: it cannot be pressed or focused. Firefox, unlike other browsers, persists the dynamic disabled state of a <button> across page loads. To control this feature, use the [autocomplete]] (#autocomplete) attribute."
 				},
 				"form": {
 					"description": "The <form> element to associate the button with (its form owner). The value of this attribute must be the id of a <form> in the same document. (If this attribute is not set, the <button> is associated with its ancestor <form> element, if any.) This attribute lets you associate <button> elements to <form>s anywhere in the document, not just inside a <form>. It can also override an ancestor <form> element."
@@ -23677,7 +23680,7 @@
 					"deprecated": true
 				},
 				"char": {
-					"description": "This attribute is used to set the character to align the cells in a column on. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
+					"description": "This attribute sets the character to align the cells in a column on. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
 					"deprecated": true
 				},
 				"charoff": {
@@ -25755,6 +25758,10 @@
 				"alt": {
 					"type": "Any",
 					"condition": "[type='image' i]"
+				},
+				"autocapitalize": {
+					"description": "(Safari only). A string which indicates how auto-capitalization should be applied while the user is editing this field. Permitted values are: none Do not automatically capitalize any text sentences Automatically capitalize the first character of each sentence. words Automatically capitalize the first character of each word. characters Automatically capitalize every character.",
+					"nonStandard": true
 				},
 				"autocomplete": {
 					"condition": [
@@ -27836,6 +27843,34 @@
 			}
 		},
 		{
+			"name": "search",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search",
+			"description": "",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"oneOrMore": ":model(flow)"
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": "search",
+				"permittedRoles": ["form", "group", "none", "presentation", "region"],
+				"properties": {
+					"global": true,
+					"role": "search"
+				}
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {}
+		},
+		{
 			"name": "section",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section",
 			"description": "The <section> HTML element represents a generic standalone section of a document, which doesn't have a more specific semantic element to represent it. Sections should always have a heading, with very few exceptions.",
@@ -28729,7 +28764,7 @@
 		{
 			"name": "th",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th",
-			"description": "The <th> HTML element defines a cell as header of a group of table cells. The exact nature of this group is defined by the scope and headers attributes.",
+			"description": "The <th> HTML element defines a cell as the header of a group of table cells. The exact nature of this group is defined by the scope and headers attributes.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -28965,7 +29000,7 @@
 					"deprecated": true
 				},
 				"char": {
-					"description": "A string which sets the character to align the cells in each of the row's columns on (each row's centering that uses the same character gets aligned with others using the same character. Typical values for this include a period (\".\") or comma (\",\") when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: This attribute is not only obsolete, but was rarely implemented anyway. To achieve the same effect as the char attribute, set the CSS text-align property to the same string you would specify for the char property, such as text-align: \".\".",
+					"description": "A string that sets the character to align the cells in each row's columns (each row's centering that uses the same character gets aligned with others using the same character. Typical values for this include a period (\".\") or comma (\",\") when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: This attribute is obsolete and rarely implemented anyway. To achieve the same effect as the char attribute, set the CSS text-align property to the same string you would specify for the char property, such as text-align: \".\".",
 					"deprecated": true
 				},
 				"charoff": {

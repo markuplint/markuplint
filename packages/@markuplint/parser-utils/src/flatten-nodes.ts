@@ -1,11 +1,16 @@
 import type { MLASTNode, MLASTText } from '@markuplint/ml-ast';
 
-import { getEndCol, getEndLine, uuid, walk } from '@markuplint/parser-utils';
-
 import { removeDeprecatedNode } from './remove-deprecated-node';
 import tagSplitter from './tag-splitter';
 
-export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastText = true) {
+import { getEndCol, getEndLine, uuid, walk } from '@markuplint/parser-utils';
+
+export function flattenNodes(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodeTree: MLASTNode[],
+	rawHtml: string,
+	createLastText = true,
+) {
 	const nodeOrders: MLASTNode[] = arrayize(nodeTree, rawHtml);
 
 	{
@@ -194,23 +199,24 @@ export function flattenNodes(nodeTree: MLASTNode[], rawHtml: string, createLastT
 	return result;
 }
 
-function arrayize(nodeTree: MLASTNode[], rawHtml: string) {
+function arrayize(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodeTree: MLASTNode[],
+	rawHtml: string,
+) {
 	const nodeOrders: MLASTNode[] = [];
 
 	let prevLine = 1;
 	let prevCol = 1;
-	let currentStartOffset = 0;
 	let currentEndOffset = 0;
 
 	/**
 	 * pushing list
 	 */
 	walk(nodeTree, node => {
-		currentStartOffset = node.startOffset;
-
-		const diff = currentStartOffset - currentEndOffset;
+		const diff = node.startOffset - currentEndOffset;
 		if (diff > 0) {
-			const html = rawHtml.slice(currentEndOffset, currentStartOffset);
+			const html = rawHtml.slice(currentEndOffset, node.startOffset);
 
 			/**
 			 * first white spaces
@@ -237,27 +243,41 @@ function arrayize(nodeTree: MLASTNode[], rawHtml: string) {
 				node.prevNode = textNode;
 
 				if (node.parentNode && node.parentNode.childNodes) {
-					node.parentNode.childNodes.unshift(textNode);
+					const newChildNodes = [...node.parentNode.childNodes];
+
+					if (
+						newChildNodes.some(child => {
+							return (
+								// Out of start offset
+								textNode.endOffset < child.startOffset ||
+								// Out of end offset
+								child.endOffset < textNode.startOffset
+							);
+						})
+					) {
+						newChildNodes.push(textNode);
+					}
+
+					newChildNodes.sort((a, b) => a.startOffset - b.startOffset);
+
+					node.parentNode.childNodes = newChildNodes;
 				}
+
 				nodeOrders.push(textNode);
-			} else if (/^<\/[a-z0-9][a-z0-9:-]*>$/i.test(html)) {
-				// close tag
-			} else {
-				// never
 			}
 		}
 
-		currentEndOffset = currentStartOffset + node.raw.length;
+		currentEndOffset = node.startOffset + node.raw.length;
 
 		prevLine = node.endLine;
 		prevCol = node.endCol;
 
 		// for ghost nodes
-		node.startOffset = node.startOffset || currentStartOffset;
+		node.startOffset = node.startOffset || node.startOffset;
 		node.endOffset = node.endOffset || currentEndOffset;
 
 		nodeOrders.push(node);
 	});
 
-	return nodeOrders;
+	return nodeOrders.slice();
 }

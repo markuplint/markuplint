@@ -1,11 +1,11 @@
-import type { Config, Violation } from '@markuplint/ml-config';
+import type { Config, PlainData, RuleConfigValue, Violation } from '@markuplint/ml-config';
 import type { Document, Ruleset } from '@markuplint/ml-core';
 
 export interface MLResultInfo {
-	violations: Violation[];
-	filePath: string;
-	sourceCode: string;
-	fixedCode: string;
+	readonly violations: readonly Violation[];
+	readonly filePath: string;
+	readonly sourceCode: string;
+	readonly fixedCode: string;
 }
 
 /**
@@ -16,7 +16,7 @@ export interface MLResultInfo_v1 {
 	filePath: string;
 	sourceCode: string;
 	fixedCode: string;
-	document: Document<any, unknown> | null;
+	document: Document<RuleConfigValue, PlainData> | null;
 	parser: string;
 	locale?: string;
 	ruleset: Ruleset;

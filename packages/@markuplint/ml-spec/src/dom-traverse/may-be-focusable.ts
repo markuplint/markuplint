@@ -2,7 +2,11 @@ import type { MLMLSpec } from '../types';
 
 import { getSelectorsByContentModelCategory } from '../specs/get-selectors-by-content-model-category';
 
-export function mayBeFocusable(el: Element, specs: Readonly<MLMLSpec>): boolean {
+export function mayBeFocusable(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	specs: MLMLSpec,
+): boolean {
 	return [
 		/**
 		 * Interactive content

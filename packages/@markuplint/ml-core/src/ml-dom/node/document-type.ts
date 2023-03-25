@@ -2,13 +2,13 @@ import type { MLDocument } from './document';
 import type { MLElement } from './element';
 import type { DocumentTypeNodeType } from './types';
 import type { MLASTDoctype } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { after, before, remove, replaceWith } from '../manipulations/child-node-methods';
 
 import { MLNode } from './node';
 
-export class MLDocumentType<T extends RuleConfigValue, O = null>
+export class MLDocumentType<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLNode<T, O, MLASTDoctype>
 	implements DocumentType
 {
@@ -16,7 +16,12 @@ export class MLDocumentType<T extends RuleConfigValue, O = null>
 	readonly publicId: string;
 	readonly systemId: string;
 
-	constructor(astNode: MLASTDoctype, document: MLDocument<T, O>) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		astNode: MLASTDoctype,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		document: MLDocument<T, O>,
+	) {
 		super(astNode, document);
 		this.name = astNode.name;
 		this.publicId = astNode.publicId;
@@ -42,14 +47,20 @@ export class MLDocumentType<T extends RuleConfigValue, O = null>
 	/**
 	 * @implements DOM API: `CharacterData`
 	 */
-	after(...nodes: (string | MLElement<any, any>)[]): void {
+	after(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		after(this, ...nodes);
 	}
 
 	/**
 	 * @implements DOM API: `CharacterData`
 	 */
-	before(...nodes: (string | MLElement<any, any>)[]): void {
+	before(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		before(this, ...nodes);
 	}
 
@@ -63,7 +74,10 @@ export class MLDocumentType<T extends RuleConfigValue, O = null>
 	/**
 	 * @implements DOM API: `CharacterData`
 	 */
-	replaceWith(...nodes: (string | MLElement<any, any>)[]): void {
+	replaceWith(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		replaceWith(this, ...nodes);
 	}
 }

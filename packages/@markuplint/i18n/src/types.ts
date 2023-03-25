@@ -1,20 +1,20 @@
-export type Translator = (messageTmpl: string | string[], ...keywords: Primitive[]) => string;
+export type Translator = (messageTmpl: string | readonly string[], ...keywords: readonly Primitive[]) => string;
 
 export type LocaleSet = {
-	locale: string;
-	listFormat?: ListFormat;
-	keywords?: LocalesKeywords;
-	sentences?: LocalesKeywords;
+	readonly locale: string;
+	readonly listFormat?: ListFormat;
+	readonly keywords?: LocalesKeywords;
+	readonly sentences?: LocalesKeywords;
 };
 
 export type ListFormat = {
-	quoteStart: string;
-	quoteEnd: string;
-	separator: string;
+	readonly quoteStart: string;
+	readonly quoteEnd: string;
+	readonly separator: string;
 };
 
 export type Primitive = string | number | boolean;
 
 export type LocalesKeywords = {
-	[messageId: string]: string | void;
+	readonly [messageId: string]: string;
 };

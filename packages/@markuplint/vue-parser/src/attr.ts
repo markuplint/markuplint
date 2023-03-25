@@ -2,7 +2,10 @@ import type { MLASTAttr } from '@markuplint/ml-ast';
 
 const duplicatableAttrs = ['class', 'style'];
 
-export function attr(attr: MLASTAttr): MLASTAttr {
+export function attr(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attr: MLASTAttr,
+): MLASTAttr {
 	if (attr.type !== 'html-attr') {
 		const name = attr.potentialName;
 		if (duplicatableAttrs.includes(name)) {

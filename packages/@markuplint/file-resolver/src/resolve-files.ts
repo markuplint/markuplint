@@ -3,7 +3,7 @@ import type { Target } from './types';
 
 import { getAnonymousFile, getFiles } from './ml-file';
 
-export async function resolveFiles(targetList: Target[]) {
+export async function resolveFiles(targetList: readonly Readonly<Target>[]) {
 	const res: MLFile[] = [];
 	for (const target of targetList) {
 		if (typeof target === 'string') {

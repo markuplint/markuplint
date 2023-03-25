@@ -56,7 +56,10 @@ export const checkingPresentationalChildren: ElementChecker<boolean, Options> =
 		};
 	};
 
-function getAncestorHasPresentationalChildren(el: Element<boolean, Options>): ComputedRole | null {
+function getAncestorHasPresentationalChildren(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<boolean, Options>,
+): ComputedRole | null {
 	let current: Element<boolean, Options> | null = el.parentElement;
 	while (current) {
 		const computed = getComputedRole(el.ownerMLDocument.specs, current, el.rule.options.version);

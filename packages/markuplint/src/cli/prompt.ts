@@ -2,8 +2,11 @@ import c from 'cli-color';
 import { prompt as enquirer } from 'enquirer';
 
 type SelectQuestion<T> = {
-	message: string;
-	choices: { name: string; value: T }[];
+	readonly message: string;
+	readonly choices: readonly {
+		readonly name: string;
+		readonly value: T;
+	}[];
 };
 
 export async function select<T>(question: SelectQuestion<T>) {
@@ -37,7 +40,7 @@ export async function multiSelect<T>(question: SelectQuestion<T>) {
 	return res['__Q__'] as T[];
 }
 
-export async function input<T extends string = string>(question: string, validation?: RegExp) {
+export async function input<T extends string = string>(question: string, validation?: Readonly<RegExp>) {
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
 		const _res = await enquirer({
@@ -57,7 +60,7 @@ export async function input<T extends string = string>(question: string, validat
 	}
 }
 
-export async function confirm(question: string, options?: { initial?: boolean }) {
+export async function confirm(question: string, options?: { readonly initial?: boolean }) {
 	const res = await enquirer({
 		message: question,
 		name: '__Q__',
@@ -69,9 +72,9 @@ export async function confirm(question: string, options?: { initial?: boolean })
 }
 
 export async function confirmSequence<T extends string = string>(
-	questions: {
-		message: string;
-		name: T;
+	questions: readonly {
+		readonly message: string;
+		readonly name: T;
 	}[],
 ) {
 	const res = await enquirer<Record<T, boolean>>(

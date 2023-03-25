@@ -3,7 +3,12 @@ import type { MLASTHTMLAttr } from '@markuplint/ml-ast';
 
 import { createTokenFromRawCode, sliceFragment, uuid } from '@markuplint/parser-utils';
 
-export function attrTokenizer(attr: ASTAttribute, rawHtml: string, codeOffset: number): MLASTHTMLAttr {
+export function attrTokenizer(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attr: ASTAttribute,
+	rawHtml: string,
+	codeOffset: number,
+): MLASTHTMLAttr {
 	const { raw, startOffset } = sliceFragment(rawHtml, attr.start + codeOffset, attr.end + codeOffset);
 
 	const isDynamicValue =

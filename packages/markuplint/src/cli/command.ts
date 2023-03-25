@@ -13,7 +13,7 @@ import { log } from '../debug';
 
 import { output } from './output';
 
-export async function command(files: Target[], options: CLIOptions, apiOptions?: APIOptions) {
+export async function command(files: readonly Readonly<Target>[], options: CLIOptions, apiOptions?: APIOptions) {
 	const fix = options.fix;
 	const configFile = options.config && path.join(process.cwd(), options.config);
 	const locale = options.locale;
