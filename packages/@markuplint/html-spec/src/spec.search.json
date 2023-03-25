@@ -1,0 +1,26 @@
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-search-element
+// https://www.w3.org/TR/html-aria/#el-search
+// https://w3c.github.io/html-aria/#el-search
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(flow)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": "search",
+		"permittedRoles": ["form", "group", "none", "presentation", "region"],
+		"properties": {
+			"global": true,
+			"role": "search"
+		}
+	}
+}
