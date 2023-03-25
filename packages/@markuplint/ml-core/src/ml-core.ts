@@ -82,7 +82,7 @@ export class MLCore {
 			nodeRules: ruleset?.nodeRules ?? this.#ruleset.nodeRules,
 			childNodeRules: ruleset?.childNodeRules ?? this.#ruleset.childNodeRules,
 		};
-		this.#rules = (rules ?? this.#rules).slice();
+		this.#rules = rules?.slice() ?? this.#rules;
 		this.#locale = locale ?? this.#locale;
 		this.#schemas = schemas ?? this.#schemas;
 		if (

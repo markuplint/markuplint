@@ -162,7 +162,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				.filter((n): n is MLNode<T, O> => !!n),
 		);
 
-		this._pretending(options?.pretenders?.slice());
+		this._pretending(options?.pretenders);
 		this._ruleMapping(ruleset);
 	}
 

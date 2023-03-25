@@ -17,15 +17,15 @@ export function getRoleSpec(
 	return {
 		name: role.name,
 		isAbstract: !!role.isAbstract,
-		requiredContextRole: role.requiredContextRole?.slice() ?? [],
-		requiredOwnedElements: role.requiredOwnedElements?.slice() ?? [],
+		requiredContextRole: role.requiredContextRole ?? [],
+		requiredOwnedElements: role.requiredOwnedElements ?? [],
 		accessibleNameRequired: !!role.accessibleNameRequired,
 		accessibleNameFromAuthor: !!role.accessibleNameFromAuthor,
 		accessibleNameFromContent: !!role.accessibleNameFromContent,
 		accessibleNameProhibited: !!role.accessibleNameProhibited,
 		childrenPresentational: !!role.childrenPresentational,
-		ownedProperties: role.ownedProperties?.slice() ?? [],
-		prohibitedProperties: role.prohibitedProperties?.slice() ?? [],
+		ownedProperties: role.ownedProperties ?? [],
+		prohibitedProperties: role.prohibitedProperties ?? [],
 		superClassRoles,
 	};
 }

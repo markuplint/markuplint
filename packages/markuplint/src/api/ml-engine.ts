@@ -232,7 +232,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 			}
 		}
 
-		const rules = await this.resolveRules(configSet.plugins.slice(), ruleset);
+		const rules = await this.resolveRules(configSet.plugins, ruleset);
 		fileLog('Resolved rules: %O', rules);
 
 		const locale = await i18n(this.#options?.locale);

@@ -235,7 +235,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 			acLog('[Unmatched ("%s")] Unexpected token: "%s"', value, contactableFiledToken.value);
 			return contactableFiledToken.unmatched({
 				reason: 'unexpected-token',
-				expects: contactableFieldNames.slice().map(token => ({
+				expects: contactableFieldNames.map(token => ({
 					type: 'const' as const,
 					value: token,
 				})),
@@ -355,7 +355,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		);
 	} else if (!hasContactingToken) {
 		expects.push(
-			...contactingTokens.slice().map(token => ({
+			...contactingTokens.map(token => ({
 				type: 'const' as const,
 				value: token,
 			})),
