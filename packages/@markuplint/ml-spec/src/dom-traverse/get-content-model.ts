@@ -1,12 +1,17 @@
 import type { ElementSpec } from '../types';
 import type { PermittedContentPattern } from '../types/permitted-structures';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { getSpec } from './get-spec';
 
-type Specs = Pick<ElementSpec, 'name' | 'contentModel'>[];
+type Specs = readonly Pick<ElementSpec, 'name' | 'contentModel'>[];
 
-const cachesBySpecs = new Map<Specs, Map<Element, PermittedContentPattern[] | boolean | null>>();
-export function getContentModel(el: Element, specs: Pick<ElementSpec, 'name' | 'contentModel'>[]) {
+const cachesBySpecs = new Map<Specs, Map<Element, ReadonlyDeep<PermittedContentPattern[]> | boolean | null>>();
+export function getContentModel(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	specs: Specs,
+) {
 	const cacheByEl = cachesBySpecs.get(specs) ?? new Map<Element, PermittedContentPattern[] | boolean>();
 	const cached = cacheByEl.get(el);
 	if (cached) {

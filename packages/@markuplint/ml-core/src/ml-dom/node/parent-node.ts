@@ -1,6 +1,6 @@
 import type { MLElement } from './element';
 import type { MLASTAbstractNode } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { syncWalk } from '../helper/walkers';
 import { getChildren } from '../manipulations/get-children';
@@ -13,7 +13,11 @@ import UnexpectedCallError from './unexpected-call-error';
  *
  * @see https://dom.spec.whatwg.org/#interface-parentnode
  */
-export abstract class MLParentNode<T extends RuleConfigValue, O = null, A extends MLASTAbstractNode = MLASTAbstractNode>
+export abstract class MLParentNode<
+		T extends RuleConfigValue,
+		O extends PlainData = undefined,
+		A extends MLASTAbstractNode = MLASTAbstractNode,
+	>
 	extends MLNode<T, O, A>
 	implements ParentNode
 {
@@ -71,7 +75,10 @@ export abstract class MLParentNode<T extends RuleConfigValue, O = null, A extend
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-append%E2%91%A0
 	 */
-	append(...nodes: (string | Node)[]): void {
+	append(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | Node)[]
+	): void {
 		throw new UnexpectedCallError('Not supported "append" method');
 	}
 
@@ -82,7 +89,10 @@ export abstract class MLParentNode<T extends RuleConfigValue, O = null, A extend
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-prepend%E2%91%A0
 	 */
-	prepend(...nodes: (string | Node)[]): void {
+	prepend(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | Node)[]
+	): void {
 		throw new UnexpectedCallError('Not supported "prepend" method');
 	}
 
@@ -124,12 +134,18 @@ export abstract class MLParentNode<T extends RuleConfigValue, O = null, A extend
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-replacechildren%E2%91%A0
 	 */
-	replaceChildren(...nodes: (string | Node)[]): void {
+	replaceChildren(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | Node)[]
+	): void {
 		throw new UnexpectedCallError('Not supported "replaceChildren" method');
 	}
 
 	protected _descendantsToArray<N extends MLNode<T, O>>(
-		filter?: (node: MLNode<T, O>) => N | null | void,
+		filter?: (
+			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+			node: MLNode<T, O>,
+		) => N | null | void,
 	): ReadonlyArray<N> {
 		const nodeList: N[] = [];
 		syncWalk(Array.from(this.childNodes), node => {

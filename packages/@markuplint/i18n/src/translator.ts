@@ -7,10 +7,10 @@ const defaultListFormat: ListFormat = {
 };
 
 export function translator(localeSet?: LocaleSet): Translator {
-	return (messageTmpl: string | string[], ...keywords: Primitive[]) => {
+	return (messageTmpl, ...keywords) => {
 		let message = messageTmpl;
 
-		if (Array.isArray(messageTmpl)) {
+		if (typeof messageTmpl !== 'string') {
 			const format = localeSet?.listFormat || defaultListFormat;
 			return `${format.quoteStart}${messageTmpl
 				.map(keyword => translateKeyword(keyword, '', localeSet))
@@ -53,7 +53,7 @@ export function translator(localeSet?: LocaleSet): Translator {
  */
 export function taggedTemplateTranslator(localeSet?: LocaleSet) {
 	const t = translator(localeSet);
-	return (strings: TemplateStringsArray, ...keys: Primitive[]) => {
+	return (strings: Readonly<TemplateStringsArray>, ...keys: readonly Primitive[]) => {
 		let i = 0;
 		const template = strings.raw
 			.map((place, index) => {

@@ -3,7 +3,7 @@ import type { ARIAVersion, Matches, MLMLSpec } from '../types';
 import { getARIA } from './get-aria';
 
 export function getImplicitRole(
-	specs: Readonly<MLMLSpec>,
+	specs: MLMLSpec,
 	localName: string,
 	namespace: string | null,
 	version: ARIAVersion,

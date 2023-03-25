@@ -1,7 +1,7 @@
 let globalSettings: Partial<GlobalSettings> = {};
 
 export type GlobalSettings = {
-	locale: string;
+	readonly locale: string;
 };
 
 export function setGlobal(settings: Partial<GlobalSettings>) {

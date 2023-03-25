@@ -17,43 +17,49 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 			result.cites = [...result.cites, ...extendedSpec.cites];
 		}
 		if (extendedSpec.def) {
+			const def = { ...result.def };
 			if (extendedSpec.def['#globalAttrs']?.['#extends']) {
-				result.def['#globalAttrs']['#HTMLGlobalAttrs'] = {
-					...(result.def['#globalAttrs']?.['#HTMLGlobalAttrs'] || {}),
-					...(extendedSpec.def['#globalAttrs']?.['#extends'] || {}),
+				const gAttrs = { ...def['#globalAttrs'] };
+				gAttrs['#HTMLGlobalAttrs'] = {
+					...(def['#globalAttrs']?.['#HTMLGlobalAttrs'] ?? {}),
+					...(extendedSpec.def['#globalAttrs']?.['#extends'] ?? {}),
 				};
+				def['#globalAttrs'] = gAttrs;
 			}
 			if (extendedSpec.def['#aria']) {
-				result.def['#aria'] = {
+				def['#aria'] = {
 					'1.1': {
-						roles: mergeArray(result.def['#aria']['1.1'].roles, extendedSpec.def['#aria']['1.1'].roles),
-						props: mergeArray(result.def['#aria']['1.1'].props, extendedSpec.def['#aria']['1.1'].props),
+						roles: mergeArray(def['#aria']['1.1'].roles, extendedSpec.def['#aria']['1.1'].roles),
+						props: mergeArray(def['#aria']['1.1'].props, extendedSpec.def['#aria']['1.1'].props),
 						graphicsRoles: mergeArray(
-							result.def['#aria']['1.1'].graphicsRoles,
+							def['#aria']['1.1'].graphicsRoles,
 							extendedSpec.def['#aria']['1.1'].graphicsRoles,
 						),
 					},
 					'1.2': {
-						roles: mergeArray(result.def['#aria']['1.2'].roles, extendedSpec.def['#aria']['1.2'].roles),
-						props: mergeArray(result.def['#aria']['1.2'].props, extendedSpec.def['#aria']['1.2'].props),
+						roles: mergeArray(def['#aria']['1.2'].roles, extendedSpec.def['#aria']['1.2'].roles),
+						props: mergeArray(def['#aria']['1.2'].props, extendedSpec.def['#aria']['1.2'].props),
 						graphicsRoles: mergeArray(
-							result.def['#aria']['1.2'].graphicsRoles,
+							def['#aria']['1.2'].graphicsRoles,
 							extendedSpec.def['#aria']['1.2'].graphicsRoles,
 						),
 					},
 				};
 			}
 			if (extendedSpec.def['#contentModels']) {
+				const models = { ...def['#contentModels'] };
 				const keys = new Set([
-					...Object.keys(result.def['#contentModels']),
+					...Object.keys(def['#contentModels']),
 					...Object.keys(extendedSpec.def['#contentModels']),
-				]) as Set<keyof (typeof result.def)['#contentModels']>;
+				]) as Set<keyof (typeof def)['#contentModels']>;
 				for (const modelName of keys) {
-					const mainModel = result.def['#contentModels'][modelName];
+					const mainModel = def['#contentModels'][modelName];
 					const exModel = extendedSpec.def['#contentModels'][modelName];
-					result.def['#contentModels'][modelName] = [...(mainModel || []), ...(exModel || [])];
+					models[modelName] = [...(mainModel ?? []), ...(exModel ?? [])];
 				}
+				def['#contentModels'] = models;
 			}
+			result.def = def;
 		}
 		if (extendedSpec.specs) {
 			const exSpecs = extendedSpec.specs.slice();
@@ -86,9 +92,9 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 }
 
 function mergeAttrSpec(
-	std: Record<string, Attribute>,
-	ex: Record<string, Partial<Attribute>> = {},
-): Record<string, Attribute> {
+	std: Readonly<Record<string, Attribute>>,
+	ex: Readonly<Record<string, Partial<Attribute>>> = {},
+): Record<string, Readonly<Attribute>> {
 	const result: Record<string, Attribute> = {};
 	const keys = Array.from(new Set([...Object.keys(std), ...Object.keys(ex)]));
 	for (const key of keys) {

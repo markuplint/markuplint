@@ -5,7 +5,7 @@ import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 export const checkingRequiredProp: ElementChecker<
 	boolean,
 	Options,
-	{ role?: (ARIARole & { isImplicit?: boolean }) | null; propSpecs: ARIAProperty[] }
+	{ role?: (ARIARole & { isImplicit?: boolean }) | null; propSpecs: readonly ARIAProperty[] }
 > =
 	({ el, role, propSpecs }) =>
 	t => {

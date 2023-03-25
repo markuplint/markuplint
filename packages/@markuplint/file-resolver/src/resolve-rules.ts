@@ -4,10 +4,10 @@ import { MLRule } from '@markuplint/ml-core';
 
 import { autoLoadRules } from './auto-load-rules';
 
-let cachedPresetRules: AnyMLRule[] | null = null;
+let cachedPresetRules: Readonly<AnyMLRule>[] | null = null;
 
 export async function resolveRules(
-	plugins: Plugin[],
+	plugins: readonly Plugin[],
 	ruleset: Ruleset,
 	importPreset: boolean,
 	/**

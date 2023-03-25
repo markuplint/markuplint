@@ -17,6 +17,9 @@ const voidElements = [
 	'wbr',
 ];
 
-export function isVoidElement(el: Element) {
+export function isVoidElement(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+) {
 	return voidElements.includes(el.localName);
 }

@@ -5,7 +5,7 @@ import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 export const checkingDeprecatedProps: AttrChecker<
 	boolean,
 	Options,
-	{ role: ARIARole | null; propSpecs: ARIAProperty[] }
+	{ role: ARIARole | null; propSpecs: readonly ARIAProperty[] }
 > =
 	({ attr, role, propSpecs }) =>
 	t => {

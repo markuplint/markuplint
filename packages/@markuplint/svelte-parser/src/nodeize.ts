@@ -18,8 +18,11 @@ import { parseCtrlBlock } from './parse-ctrl-block';
 import { traverse } from './traverse';
 
 export function nodeize(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	originNode: SvelteNode,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	prevNode: MLASTNode | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
 	options?: ParserOptions,

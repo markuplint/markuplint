@@ -1,4 +1,5 @@
 import type { SelectorMatchedResult, SelectorResult, Specificity } from './types';
+import type { ReadonlyDeep, Writable } from 'type-fest';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
 import parser, { pseudo } from 'postcss-selector-parser';
@@ -11,7 +12,15 @@ import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is';
 const selLog = coreLog.extend('selector');
 const resLog = coreLog.extend('result');
 
-type ExtendedPseudoClass = Record<string, (content: string) => (el: Element) => SelectorResult>;
+type ExtendedPseudoClass = Readonly<
+	Record<
+		string,
+		(content: string) => (
+			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+			el: Element,
+		) => SelectorResult
+	>
+>;
 
 export class Selector {
 	#ruleset: Ruleset;
@@ -20,7 +29,13 @@ export class Selector {
 		this.#ruleset = Ruleset.parse(selector, extended);
 	}
 
-	match(el: Node, scope: ParentNode | null = isElement(el) ? el : null): Specificity | false {
+	match(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		el: Node,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		scope?: ParentNode | null,
+	): Specificity | false {
+		scope = isElement(el) ? el : null;
 		const results = this.search(el, scope);
 		for (const result of results) {
 			if (result.matched) {
@@ -30,7 +45,13 @@ export class Selector {
 		return false;
 	}
 
-	search(el: Node, scope: ParentNode | null = isElement(el) ? el : null) {
+	search(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		el: Node,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		scope?: ParentNode | null,
+	) {
+		scope = isElement(el) ? el : null;
 		return this.#ruleset.match(el, scope);
 	}
 }
@@ -54,7 +75,7 @@ class Ruleset {
 	readonly headCombinator: string | null;
 	#selectorGroup: StructuredSelector[] = [];
 
-	constructor(selectors: parser.Selector[], extended: ExtendedPseudoClass, depth: number) {
+	constructor(selectors: ReadonlyDeep<parser.Selector[]>, extended: ExtendedPseudoClass, depth: number) {
 		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector, depth, extended)));
 		const head = this.#selectorGroup[0];
 		this.headCombinator = head?.headCombinator || null;
@@ -66,7 +87,12 @@ class Ruleset {
 		}
 	}
 
-	match(el: Node, scope: ParentNode | null): SelectorResult[] {
+	match(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		el: Node,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		scope: ParentNode | null,
+	): SelectorResult[] {
 		coreLog(
 			'<%s> (%s)',
 			isElement(el) ? el.localName : el.nodeName,
@@ -84,17 +110,18 @@ class Ruleset {
 class StructuredSelector {
 	#edge: SelectorTarget;
 	readonly headCombinator: string | null;
-	#selector: parser.Selector;
+	#selector: ReadonlyDeep<parser.Selector>;
 
-	constructor(selector: parser.Selector, depth: number, extended: ExtendedPseudoClass) {
+	constructor(selector: ReadonlyDeep<parser.Selector>, depth: number, extended: ExtendedPseudoClass) {
 		this.#selector = selector;
 		this.#edge = new SelectorTarget(extended, depth);
 		this.headCombinator =
 			this.#selector.nodes[0]?.type === 'combinator' ? this.#selector.nodes[0].value || null : null;
+		const nodes = this.#selector.nodes.slice();
 		if (0 < depth && this.headCombinator) {
-			this.#selector.nodes.unshift(pseudo({ value: ':scope' }));
+			nodes.unshift(pseudo({ value: ':scope' }));
 		}
-		this.#selector.nodes.forEach(node => {
+		nodes.forEach(node => {
 			switch (node.type) {
 				case 'combinator': {
 					const combinedTarget = new SelectorTarget(extended, depth);
@@ -123,21 +150,30 @@ class StructuredSelector {
 		return this.#selector.nodes.join('');
 	}
 
-	match(el: Node, scope: ParentNode | null): SelectorResult {
+	match(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		el: Node,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		scope: ParentNode | null,
+	): SelectorResult {
 		return this.#edge.match(el, scope, 0);
 	}
 }
 
 class SelectorTarget {
-	attr: parser.Attribute[] = [];
-	class: parser.ClassName[] = [];
-	#combinedFrom: { target: SelectorTarget; combinator: parser.Combinator } | null = null;
+	attr: ReadonlyDeep<parser.Attribute>[] = [];
+	class: ReadonlyDeep<parser.ClassName>[] = [];
+	#combinedFrom: {
+		target: ReadonlyDeep<SelectorTarget>;
+		combinator: ReadonlyDeep<parser.Combinator>;
+	} | null = null;
+
 	readonly depth: number;
 	#extended: ExtendedPseudoClass;
-	id: parser.Identifier[] = [];
+	id: ReadonlyDeep<parser.Identifier>[] = [];
 	#isAdded = false;
-	pseudo: parser.Pseudo[] = [];
-	tag: parser.Tag | parser.Universal | null = null;
+	pseudo: ReadonlyDeep<parser.Pseudo>[] = [];
+	tag: ReadonlyDeep<parser.Tag> | ReadonlyDeep<parser.Universal> | null = null;
 
 	constructor(extended: ExtendedPseudoClass, depth: number) {
 		this.#extended = extended;
@@ -146,12 +182,12 @@ class SelectorTarget {
 
 	add(
 		selector:
-			| parser.Tag
-			| parser.Identifier
-			| parser.ClassName
-			| parser.Attribute
-			| parser.Universal
-			| parser.Pseudo,
+			| ReadonlyDeep<parser.Tag>
+			| ReadonlyDeep<parser.Identifier>
+			| ReadonlyDeep<parser.ClassName>
+			| ReadonlyDeep<parser.Attribute>
+			| ReadonlyDeep<parser.Universal>
+			| ReadonlyDeep<parser.Pseudo>,
 	) {
 		this.#isAdded = true;
 		switch (selector.type) {
@@ -179,11 +215,17 @@ class SelectorTarget {
 		}
 	}
 
-	from(target: SelectorTarget, combinator: parser.Combinator) {
+	from(target: ReadonlyDeep<SelectorTarget>, combinator: ReadonlyDeep<parser.Combinator>) {
 		this.#combinedFrom = { target, combinator };
 	}
 
-	match(el: Node, scope: ParentNode | null, count: number): SelectorResult {
+	match(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		el: Node,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		scope: ParentNode | null,
+		count: number,
+	): SelectorResult {
 		const result = this._match(el, scope, count);
 		if (selLog.enabled) {
 			const nodeName = el.nodeName;
@@ -208,7 +250,13 @@ class SelectorTarget {
 		].join('');
 	}
 
-	private _match(el: Node, scope: ParentNode | null, count: number): SelectorResult & { combinator?: string } {
+	private _match(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		el: Node,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		scope: ParentNode | null,
+		count: number,
+	): SelectorResult & { combinator?: string } {
 		const unitCheck = this._matchWithoutCombineChecking(el, scope);
 		if (!unitCheck.matched) {
 			return unitCheck;
@@ -276,7 +324,7 @@ class SelectorTarget {
 				const matchedNodes: (Element | Text)[] = [];
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
-				const specificity = unitCheck.specificity;
+				const specificity: Writable<Specificity> = [...unitCheck.specificity];
 				const parentNode = el.parentElement;
 
 				if (parentNode) {
@@ -319,7 +367,7 @@ class SelectorTarget {
 				const matchedNodes: (Element | Text)[] = [];
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
-				const specificity = unitCheck.specificity;
+				const specificity: Writable<Specificity> = [...unitCheck.specificity];
 
 				if (el.previousElementSibling) {
 					const res = target.match(el.previousElementSibling, scope, count + 1);
@@ -418,8 +466,13 @@ class SelectorTarget {
 		}
 	}
 
-	private _matchWithoutCombineChecking(el: Node, scope: ParentNode | null): SelectorResult {
-		const specificity: Specificity = [0, 0, 0];
+	private _matchWithoutCombineChecking(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		el: Node,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		scope: ParentNode | null,
+	): SelectorResult {
+		const specificity: Writable<Specificity> = [0, 0, 0];
 
 		if (!isElement(el)) {
 			return {
@@ -524,7 +577,11 @@ class SelectorTarget {
 	}
 }
 
-function attrMatch(attr: parser.Attribute, el: Element) {
+function attrMatch(
+	attr: ReadonlyDeep<parser.Attribute>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+) {
 	return Array.from(el.attributes).some(attrOfEl => {
 		if (attr.attribute !== attrOfEl.localName) {
 			return false;
@@ -586,8 +643,10 @@ function attrMatch(attr: parser.Attribute, el: Element) {
 }
 
 function pseudoMatch(
-	pseudo: parser.Pseudo,
+	pseudo: ReadonlyDeep<parser.Pseudo>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	scope: ParentNode | null,
 	extended: ExtendedPseudoClass,
 	depth: number,
@@ -805,11 +864,20 @@ function pseudoMatch(
 	}
 }
 
-function isScope(el: Element, scope: ParentNode | null) {
+function isScope(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	scope: ParentNode | null,
+) {
 	return el === scope || el.parentNode === null;
 }
 
-function getDescendants(el: Element, includeSelf = false): Element[] {
+function getDescendants(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	includeSelf = false,
+): Element[] {
 	return [
 		...Array.from(el.children)
 			.map(child => getDescendants(child, true))
@@ -818,11 +886,17 @@ function getDescendants(el: Element, includeSelf = false): Element[] {
 	];
 }
 
-function getSiblings(el: Element) {
+function getSiblings(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+) {
 	return Array.from(el.parentElement?.children || []);
 }
 
-function getSpecificity(results: SelectorResult[]) {
+function getSpecificity(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	results: readonly SelectorResult[],
+) {
 	let specificity: Specificity | void;
 	for (const result of results) {
 		if (specificity) {

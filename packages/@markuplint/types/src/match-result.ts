@@ -9,8 +9,8 @@ import type {
 export function matches(
 	checker: FormattedPrimitiveTypeCheck,
 	options?: UnmatchedResultOptions & {
-		ref?: string;
-		reason?: UnmatchedResultReason;
+		readonly ref?: string;
+		readonly reason?: UnmatchedResultReason;
 	},
 ) {
 	return (value: string) => {
@@ -32,7 +32,7 @@ export function unmatched(
 	value: string,
 	reason?: UnmatchedResultReason,
 	options?: UnmatchedResultOptions & {
-		ref?: string;
+		readonly ref?: string;
 	},
 ): UnmatchedResult {
 	return {

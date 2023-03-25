@@ -3,7 +3,7 @@ import type { NamespaceURI } from '@markuplint/ml-ast';
 
 import { resolveNamespace } from '../utils/resolve-namespace';
 
-const cacheMap = new Map<string, Attribute[] | null>();
+const cacheMap = new Map<string, readonly Attribute[] | null>();
 const schemaCache = new WeakSet<MLMLSpec>();
 
 export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, schema: MLMLSpec) {
@@ -66,7 +66,7 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 			continue;
 		}
 
-		const current = attrs[attrName] as Omit<Attribute, 'name'> | undefined;
+		const current = attrs[attrName];
 
 		attrs[attrName] = {
 			description: '',
@@ -75,7 +75,7 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 		};
 	}
 
-	const attrList: Attribute[] = Object.keys(attrs).map<Attribute>(name => {
+	const attrList = Object.keys(attrs).map<Attribute>(name => {
 		const attr = attrs[name];
 		return { name, type: 'Any', ...attr };
 	});
@@ -101,7 +101,7 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 	return attrList;
 }
 
-type HasName = { name: string };
+type HasName = { readonly name: string };
 
 export function nameCompare(a: HasName | string, b: HasName | string) {
 	const nameA = typeof a === 'string' ? a : a.name.toUpperCase();

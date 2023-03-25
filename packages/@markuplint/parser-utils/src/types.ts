@@ -1,20 +1,20 @@
 export type Code = {
-	type: string;
-	index: number;
-	startTag: string;
-	taggedCode: string;
-	endTag: string | null;
+	readonly type: string;
+	readonly index: number;
+	readonly startTag: string;
+	readonly taggedCode: string;
+	readonly endTag: string | null;
 };
 
 export type IgnoreTag = {
-	type: string;
-	start: RegExp;
-	end: RegExp;
+	readonly type: string;
+	readonly start: Readonly<RegExp>;
+	readonly end: Readonly<RegExp>;
 };
 
 export type IgnoreBlock = {
-	source: string;
-	replaced: string;
-	stack: Code[];
-	maskChar: string;
+	readonly source: string;
+	readonly replaced: string;
+	readonly stack: readonly Code[];
+	readonly maskChar: string;
 };

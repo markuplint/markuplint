@@ -16,8 +16,11 @@ import { getAttr, getName } from './jsx';
 import { traverse } from './traverse';
 
 export function nodeize(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	originNode: JSXNode,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	prevNode: MLASTNode | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
 	options?: ParserOptions,

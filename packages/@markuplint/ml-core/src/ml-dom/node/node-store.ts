@@ -1,7 +1,7 @@
 import type { MLNode } from './node';
 import type { MappedNode } from './types';
 import type { MLASTAbstractNode } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { ParserError } from '@markuplint/parser-utils';
 
@@ -13,7 +13,9 @@ const nodeStoreError = nodeStoreLog.extend('error');
 class NodeStore {
 	#store = new Map<string, MLNode<any, any, any>>();
 
-	getNode<N extends MLASTAbstractNode, T extends RuleConfigValue, O = null>(astNode: N): MappedNode<N, T, O> {
+	getNode<N extends MLASTAbstractNode, T extends RuleConfigValue, O extends PlainData = undefined>(
+		astNode: N,
+	): MappedNode<N, T, O> {
 		// console.log(`Get: ${astNode.uuid} -> ${astNode.raw.trim()}(${astNode.type})`);
 		const node = this.#store.get(astNode.uuid);
 		if (!node) {
@@ -35,7 +37,11 @@ class NodeStore {
 		return node as MappedNode<N, T, O>;
 	}
 
-	setNode<A extends MLASTAbstractNode, T extends RuleConfigValue, O = null>(astNode: A, node: MLNode<T, O, A>) {
+	setNode<A extends MLASTAbstractNode, T extends RuleConfigValue, O extends PlainData = undefined>(
+		astNode: A,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		node: MLNode<T, O, A>,
+	) {
 		if (node.is(node.DOCUMENT_NODE)) {
 			return;
 		}

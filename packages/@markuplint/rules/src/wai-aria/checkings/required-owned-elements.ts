@@ -54,7 +54,8 @@ export const checkingRequiredOwnedElements: ElementChecker<
 				if (
 					role.requiredOwnedElements.some(ownedRole =>
 						isRequiredOwnedElement(
-							computedChild,
+							computedChild.el,
+							computedChild.role,
 							ownedRole,
 							child.ownerMLDocument.specs,
 							child.rule.options.version,
@@ -133,7 +134,10 @@ export const checkingRequiredOwnedElements: ElementChecker<
 		};
 	};
 
-function mayBeBeforeCreated(el: Element<boolean, Options>) {
+function mayBeBeforeCreated(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<boolean, Options>,
+) {
 	if (el.isEmpty()) {
 		return true;
 	}

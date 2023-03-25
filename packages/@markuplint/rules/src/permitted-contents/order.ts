@@ -1,5 +1,6 @@
 import type { ChildNode, Options, Result, Specs } from './types';
 import type { PermittedContentPattern } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { deepCopy } from '../helpers';
 
@@ -18,8 +19,9 @@ import { Collection, mergeHints, modelLog } from './utils';
  * @returns
  */
 export function order(
-	contents: ReadonlyArray<PermittedContentPattern>,
-	nodes: ReadonlyArray<ChildNode>,
+	contents: ReadonlyDeep<PermittedContentPattern[]>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodes: readonly ChildNode[],
 	specs: Specs,
 	options: Options,
 	depth: number,

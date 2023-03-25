@@ -3,7 +3,10 @@ import type { MLASTAttr } from '@markuplint/ml-ast';
 
 import { tokenizer, uuid } from '@markuplint/parser-utils';
 
-export default function attrTokenizer(attr: ASTAttr): MLASTAttr {
+export default function attrTokenizer(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attr: ASTAttr,
+): MLASTAttr {
 	if (attr.raw[0] === '#' || attr.raw[0] === '.') {
 		let value: string | undefined = '';
 		if (typeof attr.val === 'string') {

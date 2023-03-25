@@ -32,11 +32,12 @@ const exposableElementsThatAreNoBelongingAModel: string[] = [
 ];
 
 export function isPalpableElement(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
-	specs: Readonly<MLMLSpec>,
+	specs: MLMLSpec,
 	options?: {
-		extendsSvg?: boolean;
-		extendsExposableElements?: boolean;
+		readonly extendsSvg?: boolean;
+		readonly extendsExposableElements?: boolean;
 	},
 ) {
 	const conditions = [specs.def['#contentModels']['#palpable']?.join(',') || ''];

@@ -5,7 +5,7 @@ import { resolveNamespace } from '../utils/resolve-namespace';
 const cache = new Map<string, any>();
 
 export function getSpecByTagName<K extends keyof ElementSpec = keyof ElementSpec>(
-	specs: Readonly<Pick<ElementSpec, 'name' | K>[]>,
+	specs: readonly Pick<ElementSpec, 'name' | K>[],
 	localName: string,
 	namespace: string | null,
 ) {

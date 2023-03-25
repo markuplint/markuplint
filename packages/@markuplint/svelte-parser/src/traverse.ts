@@ -4,7 +4,8 @@ import type { MLASTNode, MLASTParentNode, ParserOptions } from '@markuplint/ml-a
 import { nodeize } from './nodeize';
 
 export function traverse(
-	astNodes: SvelteNode[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	astNodes: readonly SvelteNode[],
 	parentNode: MLASTParentNode | null = null,
 	rawHtml: string,
 	options?: ParserOptions,

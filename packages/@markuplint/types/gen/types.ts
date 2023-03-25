@@ -60,7 +60,7 @@ fs.writeFileSync(
 	{ encoding: 'utf-8' },
 );
 
-function oneOf(...keys: string[]) {
+function oneOf(...keys: readonly string[]) {
 	return {
 		oneOf: keys
 			.map(key => ({

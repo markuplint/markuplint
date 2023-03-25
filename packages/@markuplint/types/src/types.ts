@@ -5,22 +5,22 @@ export type { Type, List, Enum, CssSyntax, KeywordDefinedType, Number } from './
 export type Result = UnmatchedResult | MatchedResult;
 
 export type UnmatchedResult = {
-	matched: false;
-	ref: string | null;
-	raw: string;
-	length: number;
-	offset: number;
-	line: number;
-	column: number;
-	reason: UnmatchedResultReason;
-	passCount?: number;
+	readonly matched: false;
+	readonly ref: string | null;
+	readonly raw: string;
+	readonly length: number;
+	readonly offset: number;
+	readonly line: number;
+	readonly column: number;
+	readonly reason: UnmatchedResultReason;
+	readonly passCount?: number;
 } & UnmatchedResultOptions;
 
 export type UnmatchedResultOptions = {
-	partName?: string;
-	expects?: Expect[];
-	extra?: Expect;
-	candidate?: string;
+	readonly partName?: string;
+	readonly expects?: readonly Expect[];
+	readonly extra?: Expect;
+	readonly candidate?: string;
 };
 
 export type UnmatchedResultReason =
@@ -42,30 +42,30 @@ export type UnmatchedResultReason =
 	| 'must-be-percent-encoded'
 	| 'must-be-serialized'
 	| {
-			type: 'out-of-range';
-			gt?: number;
-			gte?: number;
-			lt?: number;
-			lte?: number;
+			readonly type: 'out-of-range';
+			readonly gt?: number;
+			readonly gte?: number;
+			readonly lt?: number;
+			readonly lte?: number;
 	  }
 	| {
-			type: 'out-of-range-length-char';
-			gte: number;
-			lte?: number;
+			readonly type: 'out-of-range-length-char';
+			readonly gte: number;
+			readonly lte?: number;
 	  }
 	| {
-			type: 'out-of-range-length-digit';
-			gte: number;
-			lte?: number;
+			readonly type: 'out-of-range-length-digit';
+			readonly gte: number;
+			readonly lte?: number;
 	  };
 
 export type MatchedResult = {
-	matched: true;
+	readonly matched: true;
 };
 
 export type Expect = {
-	type: 'const' | 'format' | 'syntax' | 'regexp' | 'common';
-	value: string;
+	readonly type: 'const' | 'format' | 'syntax' | 'regexp' | 'common';
+	readonly value: string;
 };
 
 export type FormattedPrimitiveTypeCheck = (value: string) => boolean;
@@ -75,42 +75,42 @@ export type FormattedPrimitiveTypeCreator<O = never> = (options?: O) => Formatte
 export type Defs = Record<string, CustomCssSyntax | CustomSyntax>;
 
 export type CustomSyntax = {
-	ref: string;
-	expects?: Expect[];
-	is: CustomSyntaxCheck;
+	readonly ref: string;
+	readonly expects?: readonly Expect[];
+	readonly is: CustomSyntaxCheck;
 };
 
 export type CustomSyntaxCheck = (value: string) => Result;
 export type CustomSyntaxChecker<O = {}> = (options?: O) => CustomSyntaxCheck;
 
 export type CustomCssSyntax = {
-	ref: string;
-	caseSensitive?: boolean;
-	expects?: Expect[];
-	syntax: {
-		apply: `<${string}>`;
-		def: Record<string, string | CssSyntaxTokenizer>;
+	readonly ref: string;
+	readonly caseSensitive?: boolean;
+	readonly expects?: readonly Expect[];
+	readonly syntax: {
+		readonly apply: `<${string}>`;
+		readonly def: Readonly<Record<string, string | CssSyntaxTokenizer>>;
 		/**
 		 * @deprecated
 		 */
-		ebnf?: Record<string, string | string[]>;
+		readonly ebnf?: Readonly<Record<string, string | readonly string[]>>;
 		/**
 		 * @deprecated
 		 */
-		properties?: Record<string, string>;
+		readonly properties?: Readonly<Record<string, string>>;
 	};
 };
 
 export type CSSSyntaxToken = {
-	type: number;
-	value: string;
-	index: number;
-	balance: number;
-	node?: any;
+	readonly type: number;
+	readonly value: string;
+	readonly index: number;
+	readonly balance: number;
+	readonly node?: any;
 };
 
 export type CssSyntaxTokenizer = (
-	token: CSSSyntaxToken | null,
+	token: Readonly<CSSSyntaxToken> | null,
 	getNextToken: GetNextToken,
 	match: typeof cssSyntaxMatch,
 ) => number;

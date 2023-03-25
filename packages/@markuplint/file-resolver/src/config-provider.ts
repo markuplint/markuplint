@@ -19,7 +19,7 @@ export class ConfigProvider {
 	#recursiveLoadKeyAndDepth = new Map<string, number>();
 	#store = new Map<string, Config>();
 
-	async resolve(targetFile: MLFile, names: Nullable<string>[], cache = true): Promise<ConfigSet> {
+	async resolve(targetFile: Readonly<MLFile>, names: readonly Nullable<string>[], cache = true): Promise<ConfigSet> {
 		if (!cache) {
 			this.#store.clear();
 			this.#cache.clear();
@@ -81,7 +81,7 @@ export class ConfigProvider {
 		return result;
 	}
 
-	async search(targetFile: MLFile) {
+	async search(targetFile: Readonly<MLFile>) {
 		if (!(await targetFile.dirExists())) {
 			return null;
 		}
@@ -136,7 +136,7 @@ export class ConfigProvider {
 		return pathResolvedConfig;
 	}
 
-	private async _mergeConfigs(keys: string[], cache: boolean) {
+	private async _mergeConfigs(keys: readonly string[], cache: boolean) {
 		const resolvedKeys = new Set<string>();
 		const errs: Error[] = [];
 		for (const key of keys) {
@@ -234,12 +234,9 @@ async function load(filePath: string, cache: boolean) {
 	return res.config;
 }
 
-function pathResolve<T extends string | (string | Record<string, unknown>)[] | Record<string, unknown> | undefined>(
-	dir: string,
-	filePath?: T,
-	resolveProps?: string[],
-	resolveKey = false,
-): T {
+function pathResolve<
+	T extends string | readonly (string | Record<string, unknown>)[] | Readonly<Record<string, unknown>> | undefined,
+>(dir: string, filePath?: T, resolveProps?: readonly string[], resolveKey = false): T {
 	if (filePath == null) {
 		// @ts-ignore
 		return undefined;

@@ -8,7 +8,11 @@ import { toRegexp } from './utils';
 
 const parsers = new Map<string, MLMarkupLanguageParser>();
 
-export async function resolveParser(file: MLFile, parserConfig?: ParserConfig, parserOptions?: ParserOptions) {
+export async function resolveParser(
+	file: Readonly<MLFile>,
+	parserConfig?: ParserConfig,
+	parserOptions?: ParserOptions,
+) {
 	parserConfig = {
 		...parserConfig,
 		'/\\.html?$/i': '@markuplint/html-parser',

@@ -36,7 +36,10 @@ export default function jsxParser(jsxCode: string): JSXNode[] {
 	return recursiveSearchJSXElements(ast.body, null);
 }
 
-export function getName(tagName: JSXTagNameExpression): string {
+export function getName(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	tagName: JSXTagNameExpression,
+): string {
 	switch (tagName.type) {
 		case 'JSXIdentifier': {
 			return tagName.name;
@@ -58,7 +61,10 @@ export function getName(tagName: JSXTagNameExpression): string {
 	}
 }
 
-export function getAttr(attributes: (JSXAttribute | JSXSpreadAttribute)[]) {
+export function getAttr(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attributes: readonly (JSXAttribute | JSXSpreadAttribute)[],
+) {
 	let hasSpreadAttr = false;
 	const attrs: JSXAttribute[] = [];
 	for (const attr of attributes) {
@@ -75,14 +81,21 @@ export function getAttr(attributes: (JSXAttribute | JSXSpreadAttribute)[]) {
 	};
 }
 
-export function getAttrName(name: JSXIdentifier | JSXNamespacedName): string {
+export function getAttrName(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	name: JSXIdentifier | JSXNamespacedName,
+): string {
 	if (typeof name.name === 'string') {
 		return name.name;
 	}
 	return name.name.name;
 }
 
-function recursiveSearchJSXElements(tree: ((Node & { __parentId?: number | null }) | null)[], parentId: number | null) {
+function recursiveSearchJSXElements(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	tree: readonly ((Node & { __parentId?: number | null }) | null)[],
+	parentId: number | null,
+) {
 	const jsxList: (JSXElement | JSXFragment)[] = [];
 	for (const node of tree) {
 		if (!node) {

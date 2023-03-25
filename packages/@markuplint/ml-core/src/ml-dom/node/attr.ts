@@ -1,7 +1,7 @@
 import type { MLElement } from './element';
 import type { AttributeNodeType } from './types';
 import type { MLASTAttr } from '@markuplint/ml-ast';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
 
@@ -11,7 +11,10 @@ import { MLDomTokenList } from './dom-token-list';
 import { MLNode } from './node';
 import UnexpectedCallError from './unexpected-call-error';
 
-export class MLAttr<T extends RuleConfigValue, O = null> extends MLNode<T, O, MLASTAttr> implements Attr {
+export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
+	extends MLNode<T, O, MLASTAttr>
+	implements Attr
+{
 	readonly candidate?: string;
 	readonly endQuote: MLToken | null = null;
 	readonly equal: MLToken | null = null;
@@ -42,7 +45,12 @@ export class MLAttr<T extends RuleConfigValue, O = null> extends MLNode<T, O, ML
 	 */
 	readonly valueType: 'string' | 'number' | 'boolean' | 'code' = 'string';
 
-	constructor(astToken: MLASTAttr, ownElement: MLElement<T, O>) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		astToken: MLASTAttr,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		ownElement: MLElement<T, O>,
+	) {
 		super(astToken, ownElement.ownerMLDocument);
 
 		if (this._astToken.type === 'html-attr') {

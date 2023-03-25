@@ -113,7 +113,11 @@ export default createRule<TagRule[], Options>({
 	},
 });
 
-function name(scope: ChildNode, t: Translator) {
+function name(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	scope: ChildNode,
+	t: Translator,
+) {
 	if (scope.is(scope.ELEMENT_NODE)) {
 		return t('the "{0}" {1}', scope.localName, 'element');
 	}

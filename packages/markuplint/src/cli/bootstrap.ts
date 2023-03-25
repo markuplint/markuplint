@@ -1,3 +1,5 @@
+import type { ReadonlyDeep } from 'type-fest';
+
 import meow from 'meow';
 
 export const help = `
@@ -85,4 +87,4 @@ export const cli = meow(help, {
 	},
 });
 
-export type CLIOptions = typeof cli.flags;
+export type CLIOptions = ReadonlyDeep<typeof cli.flags>;

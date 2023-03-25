@@ -24,5 +24,8 @@
 		"@markuplint/parser-utils": "3.4.0",
 		"parse5": "7.1.2",
 		"tslib": "^2.4.1"
+	},
+	"devDependencies": {
+		"type-fest": "^3.7.0"
 	}
 }

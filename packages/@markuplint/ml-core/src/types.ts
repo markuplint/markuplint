@@ -5,14 +5,15 @@ import type { MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
 import type { Pretender } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
-export type MLSchema = Readonly<[MLMLSpec, ...ExtendedSpec[]]>;
+export type MLSchema = readonly [MLMLSpec, ...ExtendedSpec[]];
 
 export type MLFabric = {
-	parser: MLMarkupLanguageParser;
-	ruleset: Partial<Ruleset>;
-	rules: AnyMLRule[];
-	locale: LocaleSet;
-	schemas: MLSchema;
-	parserOptions: ParserOptions;
-	pretenders: Pretender[];
+	readonly parser: Readonly<MLMarkupLanguageParser>;
+	readonly ruleset: Partial<Readonly<Ruleset>>;
+	readonly rules: readonly Readonly<AnyMLRule>[];
+	readonly locale: LocaleSet;
+	readonly schemas: MLSchema;
+	readonly parserOptions: ParserOptions;
+	readonly pretenders: readonly Pretender[];
+	readonly configErrors?: readonly Readonly<Error>[];
 };

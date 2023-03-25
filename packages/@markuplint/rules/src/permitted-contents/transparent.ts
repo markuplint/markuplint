@@ -1,10 +1,13 @@
-import type { ChildNode, Options, Result, Specs } from './types';
+import type { ChildNode, Result } from './types';
 
 import { cmLog } from './debug';
 
 const transparentLog = cmLog.extend('transparent');
 
-export function transparent(nodes: ChildNode[], specs: Specs, options: Options, depth: number): Result {
+export function transparent(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodes: readonly ChildNode[],
+): Result {
 	if (nodes.length === 0 || nodes[0]?.parentElement?.parentElement) {
 		transparentLog('Skipped');
 		return {

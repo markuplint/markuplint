@@ -6,7 +6,10 @@ import type { MLText } from '../node/text';
  * @deprecated
  * @param node
  */
-export function getIndent(node: MLNode<any, any>) {
+export function getIndent(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: MLNode<any, any>,
+) {
 	const prevToken = node.prevToken;
 	if (!prevToken) {
 		return null;
@@ -59,7 +62,14 @@ class MLDOMIndentation {
 	#node: MLText<any, any>;
 	#parent: MLNode<any, any>;
 
-	constructor(originTextNode: MLText<any, any>, raw: string, line: number, parentNode: MLNode<any, any>) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		originTextNode: MLText<any, any>,
+		raw: string,
+		line: number,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		parentNode: MLNode<any, any>,
+	) {
 		this.line = line;
 		this.#node = originTextNode;
 		this.#parent = parentNode;
@@ -104,6 +114,9 @@ class MLDOMIndentation {
 	}
 }
 
-function isFirstToken(node: MLNode<any, any>) {
+function isFirstToken(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: MLNode<any, any>,
+) {
 	return !node.prevToken;
 }

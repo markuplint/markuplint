@@ -1,5 +1,6 @@
 import type { Log } from './debug';
 import type { Translator } from '@markuplint/i18n';
+import type { PlainData } from '@markuplint/ml-config';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 
@@ -9,12 +10,16 @@ import { decode as decodeHtmlEntities } from 'html-entities';
 
 import { attrCheck } from './attr-check';
 
-export function attrMatches<T extends RuleConfigValue, R>(node: Element<T, R>, condition: Attribute['condition']) {
+export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: Element<T, O>,
+	condition: Attribute['condition'],
+) {
 	if (!condition) {
 		return true;
 	}
 
-	const condSelector = Array.isArray(condition) ? condition.join(',') : condition;
+	const condSelector = typeof condition === 'string' ? condition : condition.join(',');
 
 	return node.matches(condSelector);
 }
@@ -70,8 +75,10 @@ export function isValidAttr(
 	name: string,
 	value: string,
 	isDynamicValue: boolean,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: Element<any, any>,
-	attrSpecs: Attribute[],
+	attrSpecs: readonly Attribute[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	log?: Log,
 ) {
 	let invalid: ReturnType<typeof attrCheck> = false;
@@ -121,7 +128,12 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 	return normalized;
 }
 
-export function accnameMayBeMutable(el: Element<any, any>, document: Document<any, any>) {
+export function accnameMayBeMutable(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<any, any>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	document: Document<any, any>,
+) {
 	if (el.hasMutableAttributes() || el.hasMutableChildren(true)) {
 		return true;
 	}
@@ -135,7 +147,12 @@ export function accnameMayBeMutable(el: Element<any, any>, document: Document<an
 }
 
 const labelable = ['button', 'input:not([type=hidden])', 'meter', 'output', 'progress', 'select', 'textarea'];
-export function getOwnedLabel<V extends RuleConfigValue, O>(el: Element<V, O>, document: Document<V, O>) {
+export function getOwnedLabel<V extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<V, O>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	document: Document<V, O>,
+) {
 	if (!labelable.some(cond => el.matches(cond))) {
 		return null;
 	}
@@ -159,7 +176,7 @@ export function decodeCharRef(characterReference: string) {
 export class Collection<T> {
 	#items = new Set<T>();
 
-	constructor(...items: (T | null | undefined)[]) {
+	constructor(...items: readonly (T | null | undefined)[]) {
 		this.add(...items);
 	}
 
@@ -167,7 +184,7 @@ export class Collection<T> {
 		return this.#items.values();
 	}
 
-	add(...items: (T | null | undefined)[]) {
+	add(...items: readonly (T | null | undefined)[]) {
 		for (const item of items) {
 			if (item == null) {
 				continue;

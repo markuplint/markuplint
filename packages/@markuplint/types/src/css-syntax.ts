@@ -20,7 +20,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	let propsExtended: Record<string, string>;
 	let ref: string | undefined = undefined;
 	let caseSensitive = false;
-	let ebnf: Record<string, string | string[]> | null = null;
+	let ebnf: Record<string, string | readonly string[]> | null = null;
 
 	if (typeof type === 'string') {
 		defName = type;
@@ -148,7 +148,19 @@ function detectName(def: `<${string}>`) {
 	};
 }
 
-function eachMimicCases(key: string, obj: Record<string, string>) {
+/**
+ *
+ * @param key
+ * @param obj
+ * @modifies obj
+ * @returns
+ */
+function eachMimicCases(
+	key: string,
+	// Mutable
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	obj: Record<string, string>,
+) {
 	const value = obj[key];
 	if (!value) {
 		return;

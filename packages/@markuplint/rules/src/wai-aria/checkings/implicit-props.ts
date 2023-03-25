@@ -7,7 +7,7 @@ import { isValidAttr } from '../../helpers';
 export const checkingImplicitProps: AttrChecker<
 	boolean,
 	Options,
-	{ propSpecs: ARIAProperty[]; attrSpecs: Attribute[] | null }
+	{ propSpecs: readonly ARIAProperty[]; attrSpecs: readonly Attribute[] | null }
 > =
 	({ attr, propSpecs, attrSpecs }) =>
 	t => {

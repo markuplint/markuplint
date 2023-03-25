@@ -1,6 +1,6 @@
 /* global cheerio */
 
-type HasName = { name: string };
+type HasName = { readonly name: string };
 
 export function nameCompare(a: HasName | string, b: HasName | string) {
 	const nameA = typeof a === 'string' ? a : a.name?.toUpperCase() || String(a);
@@ -27,7 +27,7 @@ export function sortObjectByKey<T>(o: T): T {
 	return newObj;
 }
 
-export function arrayUnique<T extends HasName>(array: T[]) {
+export function arrayUnique<T extends HasName>(array: readonly T[]) {
 	const nameStack: string[] = [];
 	const result: T[] = [];
 	for (const item of array) {
@@ -40,7 +40,12 @@ export function arrayUnique<T extends HasName>(array: T[]) {
 	return result;
 }
 
-export function getThisOutline($: cheerio.Root, $start: cheerio.Cheerio) {
+export function getThisOutline(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	$: cheerio.Root,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	$start: cheerio.Cheerio,
+) {
 	const $container = $('<div></div>');
 	let $next = $start.next();
 	const els = [$start.clone()];

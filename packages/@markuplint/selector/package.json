@@ -28,6 +28,7 @@
 		"@markuplint/ml-spec": "3.4.0",
 		"@types/debug": "^4.1.7",
 		"@types/jsdom": "16",
-		"jsdom": "19"
+		"jsdom": "19",
+		"type-fest": "^3.6.1"
 	}
 }

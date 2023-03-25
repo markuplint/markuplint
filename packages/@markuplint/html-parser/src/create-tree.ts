@@ -18,6 +18,7 @@ import type {
 	Node,
 	TextNode,
 } from 'parse5/dist/tree-adapters/default';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
 import { parse, parseFragment } from 'parse5';
@@ -25,14 +26,14 @@ import { parse, parseFragment } from 'parse5';
 import parseRawTag from './parse-raw-tag';
 
 interface TraversalNode {
-	childNodes?: P5Node[];
-	content?: P5Fragment;
+	readonly childNodes?: readonly P5Node[];
+	readonly content?: P5Fragment;
 }
 
-type P5Node = Node & TraversalNode;
-type P5LocatableNode = (TextNode | Element | CommentNode) & TraversalNode;
-type P5Document = Document & TraversalNode;
-type P5Fragment = DocumentFragment & TraversalNode;
+type P5Node = ReadonlyDeep<Node> & TraversalNode;
+type P5LocatableNode = ReadonlyDeep<TextNode | Element | CommentNode> & TraversalNode;
+type P5Document = ReadonlyDeep<Document> & TraversalNode;
+type P5Fragment = ReadonlyDeep<DocumentFragment> & TraversalNode;
 
 const P5_OPTIONS: ParserOptions<DefaultTreeAdapterMap> = {
 	scriptingEnabled: false,
@@ -46,14 +47,13 @@ export function createTree(
 	offsetLine: number,
 	offsetColumn: number,
 ) {
-	const doc = isFragment
-		? (parseFragment(rawCode, P5_OPTIONS) as P5Fragment)
-		: (parse(rawCode, P5_OPTIONS) as P5Document);
+	const doc = isFragment ? parseFragment(rawCode, P5_OPTIONS) : parse(rawCode, P5_OPTIONS);
 	return createTreeRecursive(doc, null, rawCode, offsetOffset, offsetLine, offsetColumn);
 }
 
 function createTreeRecursive(
 	rootNode: P5Node,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
 	offsetOffset: number,
@@ -84,7 +84,9 @@ function createTreeRecursive(
 
 function nodeize(
 	originNode: P5Node,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	prevNode: MLASTNode | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
 	offsetOffset: number,

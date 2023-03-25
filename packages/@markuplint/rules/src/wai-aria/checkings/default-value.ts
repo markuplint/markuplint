@@ -2,7 +2,7 @@ import type { Options } from '../types';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty } from '@markuplint/ml-spec';
 
-export const checkingDefaultValue: AttrChecker<boolean, Options, { propSpecs: ARIAProperty[] }> =
+export const checkingDefaultValue: AttrChecker<boolean, Options, { propSpecs: readonly ARIAProperty[] }> =
 	({ attr, propSpecs }) =>
 	t => {
 		if (attr.isDynamicValue) {

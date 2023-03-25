@@ -17,7 +17,7 @@ export const checkTimeZoneOffsetString: CustomSyntaxChecker = () =>
 		return parseTimeZone(value);
 	};
 
-export function parseTimeZone(zone: string | Token) {
+export function parseTimeZone(zone: string | Readonly<Token>) {
 	const value = typeof zone === 'string' ? zone : zone.value;
 
 	const zoneTokens = TokenCollection.fromPatterns(zone, [

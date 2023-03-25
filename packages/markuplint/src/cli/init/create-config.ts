@@ -1,7 +1,6 @@
 import type { DefaultRules, Langs, RuleSettingMode } from './types';
 import type { Config } from '@markuplint/ml-config';
-
-import { mergeConfig } from '@markuplint/ml-config';
+import type { Writable } from 'type-fest';
 
 const extRExp: Record<Langs, `\\.${string}$`> = {
 	jsx: '\\.[jt]sx?$',
@@ -33,33 +32,41 @@ export const langs: Record<Langs, string> = {
 	liquid: 'liquid (Shopify)',
 };
 
-export function createConfig(langs: Langs[], mode: RuleSettingMode, defaultRules: DefaultRules) {
-	let config: Config = {};
+export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, defaultRules: DefaultRules): Config {
+	let config: Writable<Config> = {};
 
+	const parser: Writable<Config['parser']> = { ...config.parser };
 	for (const lang of langs) {
-		config.parser = config.parser || {};
 		const ext = extRExp[lang];
 		if (!ext) {
 			continue;
 		}
-		config.parser[ext] = `@markuplint/${lang}-parser`;
+		parser[ext] = `@markuplint/${lang}-parser`;
 
 		if (lang === 'vue') {
-			config = mergeConfig(config, {
+			config = {
+				...config,
 				specs: {
+					...config.specs,
 					'\\.vue$': '@markuplint/vue-spec',
 				},
-			});
+			};
 		}
 		if (lang === 'jsx') {
-			config = mergeConfig(config, {
+			config = {
+				...config,
 				specs: {
+					...config.specs,
 					'\\.[jt]sx?$': '@markuplint/react-spec',
 				},
-			});
+			};
 		}
 	}
+	if (Object.keys(parser).length) {
+		config.parser = parser;
+	}
 
+	const rules: Writable<Config['rules']> = { ...config.rules };
 	if (Array.isArray(mode)) {
 		const ruleNames = Object.keys(defaultRules);
 
@@ -69,24 +76,23 @@ export function createConfig(langs: Langs[], mode: RuleSettingMode, defaultRules
 				continue;
 			}
 			if (mode.includes(rule.category)) {
-				if (!config.rules) {
-					config.rules = {};
-				}
-				config.rules[ruleName] = rule.defaultValue;
+				rules[ruleName] = rule.defaultValue;
 			}
 		}
 	} else if (mode === 'recommended') {
 		config.extends = [...(config.extends || []), 'markuplint:recommended'];
 	} else {
-		config.rules = {};
 		const ruleNames = Object.keys(defaultRules);
 		for (const ruleName of ruleNames) {
 			const rule = defaultRules[ruleName];
 			if (!rule) {
 				continue;
 			}
-			config.rules[ruleName] = rule.defaultValue;
+			rules[ruleName] = rule.defaultValue;
 		}
+	}
+	if (Object.keys(rules).length) {
+		config.rules = rules;
 	}
 
 	return config;

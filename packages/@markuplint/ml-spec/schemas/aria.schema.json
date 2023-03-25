@@ -26,21 +26,24 @@
 					}
 				},
 				{
-					"type": "object",
-					"minProperties": 1,
-					"additionalProperties": false,
-					"properties": {
-						"core-aam": {
-							"type": "boolean",
-							"enum": [true]
-						},
-						"graphics-aam": {
-							"type": "boolean",
-							"enum": [true]
-						}
-					}
+					"$ref": "#/definitions/PermittedARIAAAMInfo"
 				}
 			]
+		},
+		"PermittedARIAAAMInfo": {
+			"type": "object",
+			"minProperties": 1,
+			"additionalProperties": false,
+			"properties": {
+				"core-aam": {
+					"type": "boolean",
+					"enum": [true]
+				},
+				"graphics-aam": {
+					"type": "boolean",
+					"enum": [true]
+				}
+			}
 		},
 		"PermittedARIAProperties": {
 			"description": "If set false:\n> No role or aria-* attributes",

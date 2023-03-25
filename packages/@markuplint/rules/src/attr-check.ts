@@ -1,5 +1,6 @@
 import type { Translator } from '@markuplint/i18n';
 import type { Attribute as AttrSpec, AttributeType } from '@markuplint/ml-spec';
+import type { ReadonlyDeep } from 'type-fest';
 
 import { check } from '@markuplint/types';
 
@@ -117,7 +118,7 @@ export function valueCheck(
 	t: Translator,
 	name: string,
 	value: string,
-	type: AttributeType,
+	type: ReadonlyDeep<AttributeType>,
 ): string | [string, Loc] | false {
 	if (type === 'Boolean') {
 		// Valid because an attribute is exist

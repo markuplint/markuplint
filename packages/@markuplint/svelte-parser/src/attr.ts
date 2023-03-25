@@ -8,7 +8,11 @@ import directiveTokenizer from './directive-tokenizer';
 
 const specificBindDirective = ['bind:group', 'bind:this'];
 
-export function attr(attr: SvelteDirective, rawHTML: string): MLASTAttr | { __spreadAttr: true } {
+export function attr(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attr: SvelteDirective,
+	rawHTML: string,
+): MLASTAttr | { __spreadAttr: true } {
 	const isShorthand =
 		attr.value && Array.isArray(attr.value)
 			? attr.value.some((val: any) => val.type === 'AttributeShorthand')

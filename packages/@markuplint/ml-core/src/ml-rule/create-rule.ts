@@ -1,6 +1,6 @@
 import type { RuleSeed } from './types';
-import type { RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-export function createRule<T extends RuleConfigValue, O = null>(seed: RuleSeed<T, O>) {
+export function createRule<T extends RuleConfigValue, O extends PlainData = undefined>(seed: Readonly<RuleSeed<T, O>>) {
 	return seed;
 }

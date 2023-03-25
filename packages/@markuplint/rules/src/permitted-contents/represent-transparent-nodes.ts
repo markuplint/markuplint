@@ -8,6 +8,7 @@ import { Collection, getChildNodesWithoutWhitespaces, isTransparent, matches } f
 export const transparentMode = new Map<ChildNode, true>();
 
 export function representTransparentNodes(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodes: ChildNode[],
 	specs: Specs,
 	options: Options,

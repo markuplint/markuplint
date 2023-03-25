@@ -1,6 +1,10 @@
 import type { MLASTAttr, MLASTNode, MLToken } from '@markuplint/ml-ast';
 
-export function nodeListToDebugMaps(nodeList: MLASTNode[], withAttr = false) {
+export function nodeListToDebugMaps(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodeList: MLASTNode[],
+	withAttr = false,
+) {
 	return nodeList
 		.map(n => {
 			const r: string[] = [];
@@ -17,7 +21,10 @@ export function nodeListToDebugMaps(nodeList: MLASTNode[], withAttr = false) {
 		.flat();
 }
 
-export function attributesToDebugMaps(attributes: MLASTAttr[]) {
+export function attributesToDebugMaps(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attributes: MLASTAttr[],
+) {
 	return attributes.map(n => {
 		const r = [
 			tokenDebug({

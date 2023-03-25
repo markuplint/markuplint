@@ -24,7 +24,8 @@
 		"fast-xml-parser": "^4.0.12",
 		"glob": "^9.2.1",
 		"node-fetch": "2",
-		"strip-json-comments": "3"
+		"strip-json-comments": "3",
+		"type-fest": "^3.7.0"
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "3.4.0"

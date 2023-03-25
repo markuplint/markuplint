@@ -3,7 +3,7 @@ import type Ruleset from './ruleset';
 import type { MLFabric, MLSchema } from './types';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { MLASTDocument, MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
-import type { Pretender, RuleConfigValue, Violation } from '@markuplint/ml-config';
+import type { PlainData, Pretender, RuleConfigValue, Violation } from '@markuplint/ml-config';
 
 import { ParserError } from '@markuplint/parser-utils';
 
@@ -13,20 +13,20 @@ import { Document } from './ml-dom';
 const resultLog = log.extend('result');
 
 export type MLCoreParams = {
-	sourceCode: string;
-	filename: string;
-	debug?: boolean;
+	readonly sourceCode: string;
+	readonly filename: string;
+	readonly debug?: boolean;
 } & MLFabric;
 
 export class MLCore {
 	#ast: MLASTDocument | null = null;
-	#document!: Document<RuleConfigValue, unknown> | ParserError;
+	#document!: Document<RuleConfigValue, PlainData> | ParserError;
 	#filename: string;
 	#locale: LocaleSet;
 	#parser: MLMarkupLanguageParser;
 	#parserOptions: ParserOptions;
 	#pretenders: Pretender[];
-	#rules: MLRule<RuleConfigValue, unknown>[];
+	#rules: Readonly<MLRule<RuleConfigValue, PlainData>>[];
 	#ruleset: Ruleset;
 	#schemas: MLSchema;
 	#sourceCode: string;
@@ -58,8 +58,8 @@ export class MLCore {
 		this.#locale = locale;
 		this.#schemas = schemas;
 		this.#filename = filename;
-		this.#rules = rules;
-		this.#pretenders = pretenders;
+		this.#rules = rules.slice();
+		this.#pretenders = pretenders.slice();
 
 		this._parse();
 		this._createDocument();
@@ -82,7 +82,7 @@ export class MLCore {
 			nodeRules: ruleset?.nodeRules ?? this.#ruleset.nodeRules,
 			childNodeRules: ruleset?.childNodeRules ?? this.#ruleset.childNodeRules,
 		};
-		this.#rules = rules ?? this.#rules;
+		this.#rules = rules?.slice() ?? this.#rules;
 		this.#locale = locale ?? this.#locale;
 		this.#schemas = schemas ?? this.#schemas;
 		if (

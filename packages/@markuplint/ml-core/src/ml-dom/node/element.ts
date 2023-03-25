@@ -3,7 +3,7 @@ import type { MLNamedNodeMap } from './named-node-map';
 import type { MLText } from './text';
 import type { ElementNodeType, PretenderContext } from './types';
 import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
-import type { Pretender, PretenderARIA, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
+import type { PlainData, Pretender, PretenderARIA, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
@@ -30,7 +30,7 @@ import UnexpectedCallError from './unexpected-call-error';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
-export class MLElement<T extends RuleConfigValue, O = null>
+export class MLElement<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLParentNode<T, O, MLASTElement>
 	implements Element, HTMLOrSVGElement, HTMLElement
 {
@@ -47,15 +47,57 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	readonly namespaceURI: NamespaceURI;
 	#normalizedAttrs: Map<MLAttr<T, O>[], MLNamedNodeMap<T, O>> = new Map();
 	#normalizedString: string | null = null;
-	readonly ontouchcancel?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
-	readonly ontouchend?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
-	readonly ontouchmove?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
-	readonly ontouchstart?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
+
+	readonly ontouchcancel?:
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TouchEvent,
+		  ) => any)
+		| null
+		| undefined;
+
+	readonly ontouchend?:
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TouchEvent,
+		  ) => any)
+		| null
+		| undefined;
+
+	readonly ontouchmove?:
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TouchEvent,
+		  ) => any)
+		| null
+		| undefined;
+
+	readonly ontouchstart?:
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TouchEvent,
+		  ) => any)
+		| null
+		| undefined;
+
 	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
 	readonly selfClosingSolidus: MLToken | null;
 	readonly #tagOpenChar: string;
 
-	constructor(astNode: MLASTElement, document: MLDocument<T, O>) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		astNode: MLASTElement,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		document: MLDocument<T, O>,
+	) {
 		super(astNode, document);
 		this.#attributes = astNode.attributes.map(attr => new MLAttr(attr, this));
 		this.hasSpreadAttr = astNode.hasSpreadAttr;
@@ -932,7 +974,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onabort(): ((this: GlobalEventHandlers, ev: UIEvent) => any) | null {
+	get onabort():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: UIEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onabort" property');
 	}
 
@@ -943,7 +992,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onanimationcancel(): ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null {
+	get onanimationcancel():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: AnimationEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onanimationcancel" property');
 	}
 
@@ -954,7 +1010,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onanimationend(): ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null {
+	get onanimationend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: AnimationEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onanimationend" property');
 	}
 
@@ -965,7 +1028,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onanimationiteration(): ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null {
+	get onanimationiteration():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: AnimationEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onanimationiteration" property');
 	}
 
@@ -976,7 +1046,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onanimationstart(): ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null {
+	get onanimationstart():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: AnimationEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onanimationstart" property');
 	}
 
@@ -987,7 +1064,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onauxclick(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onauxclick():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onauxclick" property');
 	}
 
@@ -998,7 +1082,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onbeforeinput(): ((this: GlobalEventHandlers, ev: InputEvent) => any) | null {
+	get onbeforeinput():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: InputEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onbeforeinput" property');
 	}
 
@@ -1009,7 +1100,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onblur(): ((this: GlobalEventHandlers, ev: FocusEvent) => any) | null {
+	get onblur():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: FocusEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onblur" property');
 	}
 
@@ -1020,7 +1118,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get oncancel(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get oncancel():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oncanplay" property');
 	}
 
@@ -1031,7 +1136,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get oncanplay(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get oncanplay():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oncanplay" property');
 	}
 
@@ -1042,7 +1154,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get oncanplaythrough(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get oncanplaythrough():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oncanplaythrough" property');
 	}
 
@@ -1053,7 +1172,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onchange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onchange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onchange" property');
 	}
 
@@ -1064,7 +1190,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onclick(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onclick():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onclick" property');
 	}
 
@@ -1075,7 +1208,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onclose(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onclose():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onclose" property');
 	}
 
@@ -1086,7 +1226,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get oncontextmenu(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get oncontextmenu():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oncontextmenu" property');
 	}
 
@@ -1097,7 +1244,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get oncopy(): ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null {
+	get oncopy():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: ClipboardEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oncopy" property');
 	}
 
@@ -1108,7 +1262,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get oncuechange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get oncuechange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerleave" property');
 	}
 
@@ -1119,7 +1280,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get oncut(): ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null {
+	get oncut():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: ClipboardEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerleave" property');
 	}
 
@@ -1130,7 +1298,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ondblclick(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get ondblclick():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondblclick" property');
 	}
 
@@ -1141,7 +1316,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ondrag(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondrag():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondrag" property');
 	}
 
@@ -1152,7 +1334,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ondragend(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondragend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondragend" property');
 	}
 
@@ -1163,7 +1352,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ondragenter(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondragenter():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondragenter" property');
 	}
 
@@ -1174,7 +1370,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ondragleave(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondragleave():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondragleave" property');
 	}
 
@@ -1185,7 +1388,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ondragover(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondragover():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondragover" property');
 	}
 
@@ -1196,7 +1406,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ondragstart(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondragstart():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondragstart" property');
 	}
 
@@ -1207,7 +1424,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ondrop(): ((this: GlobalEventHandlers, ev: DragEvent) => any) | null {
+	get ondrop():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: DragEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondrop" property');
 	}
 
@@ -1218,7 +1442,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ondurationchange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get ondurationchange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ondurationchange" property');
 	}
 
@@ -1229,7 +1460,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onemptied(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onemptied():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onemptied" property');
 	}
 
@@ -1240,7 +1478,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onended(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onended():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onended" property');
 	}
 
@@ -1262,7 +1507,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onfocus(): ((this: GlobalEventHandlers, ev: FocusEvent) => any) | null {
+	get onfocus():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: FocusEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onfocus" property');
 	}
 
@@ -1273,7 +1525,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onformdata(): ((this: GlobalEventHandlers, ev: FormDataEvent) => any) | null {
+	get onformdata():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: FormDataEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onformdata" property');
 	}
 
@@ -1284,7 +1543,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onfullscreenchange(): ((this: Element, ev: Event) => any) | null {
+	get onfullscreenchange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: Element,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onfullscreenchange" property');
 	}
 
@@ -1295,7 +1561,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onfullscreenerror(): ((this: Element, ev: Event) => any) | null {
+	get onfullscreenerror():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: Element,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onfullscreenerror" property');
 	}
 
@@ -1306,7 +1579,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ongotpointercapture(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get ongotpointercapture():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ongotpointercapture" property');
 	}
 
@@ -1317,7 +1597,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get oninput(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get oninput():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oninput" property');
 	}
 
@@ -1328,7 +1615,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get oninvalid(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get oninvalid():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "oninvalid" property');
 	}
 
@@ -1339,7 +1633,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onkeydown(): ((this: GlobalEventHandlers, ev: KeyboardEvent) => any) | null {
+	get onkeydown():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: KeyboardEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onkeydown" property');
 	}
 
@@ -1350,7 +1651,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onkeypress(): ((this: GlobalEventHandlers, ev: KeyboardEvent) => any) | null {
+	get onkeypress():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: KeyboardEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onkeypress" property');
 	}
 
@@ -1361,7 +1669,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onkeyup(): ((this: GlobalEventHandlers, ev: KeyboardEvent) => any) | null {
+	get onkeyup():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: KeyboardEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onkeyup" property');
 	}
 
@@ -1372,7 +1687,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onload(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onload():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onload" property');
 	}
 
@@ -1383,7 +1705,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onloadeddata(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onloadeddata():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onloadeddata" property');
 	}
 
@@ -1394,7 +1723,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onloadedmetadata(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onloadedmetadata():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onloadedmetadata" property');
 	}
 
@@ -1405,7 +1741,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onloadstart(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onloadstart():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onloadstart" property');
 	}
 
@@ -1416,7 +1759,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onlostpointercapture(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onlostpointercapture():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onlostpointercapture" property');
 	}
 
@@ -1427,7 +1777,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onmousedown(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmousedown():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmousedown" property');
 	}
 
@@ -1438,7 +1795,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onmouseenter(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmouseenter():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmouseenter" property');
 	}
 
@@ -1449,7 +1813,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onmouseleave(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmouseleave():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmouseleave" property');
 	}
 
@@ -1460,7 +1831,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onmousemove(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmousemove():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmousemove" property');
 	}
 
@@ -1471,7 +1849,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onmouseout(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmouseout():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmouseout" property');
 	}
 
@@ -1482,7 +1867,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onmouseover(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmouseover():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmouseover" property');
 	}
 
@@ -1493,7 +1885,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onmouseup(): ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null {
+	get onmouseup():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: MouseEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onmouseup" property');
 	}
 
@@ -1504,7 +1903,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onpaste(): ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null {
+	get onpaste():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: ClipboardEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpaste" property');
 	}
 
@@ -1515,7 +1921,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onpause(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onpause():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpause" property');
 	}
 
@@ -1526,7 +1939,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onplay(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onplay():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onplay" property');
 	}
 
@@ -1537,7 +1957,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onplaying(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onplaying():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onplaying" property');
 	}
 
@@ -1548,7 +1975,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onpointercancel(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointercancel():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointercancel" property');
 	}
 
@@ -1559,7 +1993,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onpointerdown(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointerdown():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerdown" property');
 	}
 
@@ -1570,7 +2011,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onpointerenter(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointerenter():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerenter" property');
 	}
 
@@ -1581,7 +2029,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onpointerleave(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointerleave():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerleave" property');
 	}
 
@@ -1592,7 +2047,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onpointermove(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointermove():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointermove" property');
 	}
 
@@ -1603,7 +2065,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onpointerout(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointerout():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerout" property');
 	}
 
@@ -1614,7 +2083,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onpointerover(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointerover():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerover" property');
 	}
 
@@ -1625,7 +2101,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onpointerup(): ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null {
+	get onpointerup():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: PointerEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onpointerup" property');
 	}
 
@@ -1636,7 +2119,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onprogress(): ((this: GlobalEventHandlers, ev: ProgressEvent<EventTarget>) => any) | null {
+	get onprogress():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: ProgressEvent<EventTarget>,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onprogress" property');
 	}
 
@@ -1647,7 +2137,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onratechange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onratechange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onratechange" property');
 	}
 
@@ -1658,7 +2155,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onreset(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onreset():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onreset" property');
 	}
 
@@ -1669,7 +2173,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onresize(): ((this: GlobalEventHandlers, ev: UIEvent) => any) | null {
+	get onresize():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: UIEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onresize" property');
 	}
 
@@ -1680,7 +2191,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onscroll(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onscroll():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onscroll" property');
 	}
 
@@ -1691,7 +2209,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onsecuritypolicyviolation(): ((this: GlobalEventHandlers, ev: SecurityPolicyViolationEvent) => any) | null {
+	get onsecuritypolicyviolation():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: SecurityPolicyViolationEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onsecuritypolicyviolation" property');
 	}
 
@@ -1702,7 +2227,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onseeked(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onseeked():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onseeked" property');
 	}
 
@@ -1713,7 +2245,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onseeking(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onseeking():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onseeking" property');
 	}
 
@@ -1724,7 +2263,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onselect(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onselect():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onselect" property');
 	}
 
@@ -1735,7 +2281,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onselectionchange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onselectionchange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onselectionchange" property');
 	}
 
@@ -1746,7 +2299,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onselectstart(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onselectstart():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onselectstart" property');
 	}
 
@@ -1757,7 +2317,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onslotchange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onslotchange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onslotchange" property');
 	}
 
@@ -1768,7 +2335,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onstalled(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onstalled():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onstalled" property');
 	}
 
@@ -1779,7 +2353,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onsubmit(): ((this: GlobalEventHandlers, ev: SubmitEvent) => any) | null {
+	get onsubmit():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: SubmitEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onsubmit" property');
 	}
 
@@ -1790,7 +2371,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onsuspend(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onsuspend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onsuspend" property');
 	}
 
@@ -1801,7 +2389,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ontimeupdate(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get ontimeupdate():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ontimeupdate" property');
 	}
 
@@ -1812,7 +2407,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ontoggle(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get ontoggle():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ontoggle" property');
 	}
 
@@ -1823,7 +2425,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ontransitioncancel(): ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null {
+	get ontransitioncancel():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TransitionEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ontransitioncancel" property');
 	}
 
@@ -1834,7 +2443,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ontransitionend(): ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null {
+	get ontransitionend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TransitionEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ontransitionend" property');
 	}
 
@@ -1845,7 +2461,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ontransitionrun(): ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null {
+	get ontransitionrun():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TransitionEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ontransitionrun" property');
 	}
 
@@ -1856,7 +2479,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ontransitionstart(): ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null {
+	get ontransitionstart():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: TransitionEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "ontransitionstart" property');
 	}
 
@@ -1867,7 +2497,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onvolumechange(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onvolumechange():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onvolumechange" property');
 	}
 
@@ -1878,7 +2515,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onwaiting(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onwaiting():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onwaiting" property');
 	}
 
@@ -1889,7 +2533,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onwebkitanimationend(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onwebkitanimationend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onwebkitanimationend" property');
 	}
 
@@ -1900,7 +2551,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onwebkitanimationiteration(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onwebkitanimationiteration():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onwebkitanimationiteration" property');
 	}
 
@@ -1911,7 +2569,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onwebkitanimationstart(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onwebkitanimationstart():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onwebkitanimationstart" property');
 	}
 
@@ -1922,7 +2587,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onwebkittransitionend(): ((this: GlobalEventHandlers, ev: Event) => any) | null {
+	get onwebkittransitionend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onwebkittransitionend" property');
 	}
 
@@ -1933,7 +2605,14 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get onwheel(): ((this: GlobalEventHandlers, ev: WheelEvent) => any) | null {
+	get onwheel():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: WheelEvent,
+		  ) => any)
+		| null {
 		throw new UnexpectedCallError('Not supported "onwheel" property');
 	}
 
@@ -2194,7 +2873,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	/**
 	 * @implements DOM API: `Element`
 	 */
-	after(...nodes: (string | MLElement<any, any>)[]): void {
+	after(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		after(this, ...nodes);
 	}
 
@@ -2206,7 +2888,9 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @see https://www.w3.org/TR/web-animations-1/#dom-animatable-animate
 	 */
 	animate(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		keyframes: Keyframe[] | PropertyIndexedKeyframes | null,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		options?: number | KeyframeAnimationOptions,
 	): Animation {
 		throw new UnexpectedCallError('Not supported "animate" method');
@@ -2230,14 +2914,20 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-attachshadow%E2%91%A0
 	 */
-	attachShadow(init: ShadowRootInit): ShadowRoot {
+	attachShadow(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		init: ShadowRootInit,
+	): ShadowRoot {
 		throw new UnexpectedCallError('Not supported "attachShadow" method');
 	}
 
 	/**
 	 * @implements DOM API: `Element`
 	 */
-	before(...nodes: (string | MLElement<any, any>)[]): void {
+	before(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		before(this, ...nodes);
 	}
 
@@ -2250,6 +2940,20 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 */
 	blur(): void {
 		throw new UnexpectedCallError('Not supported "blur" method');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	checkVisibility(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		options?: CheckVisibilityOptions,
+	): boolean {
+		throw new UnexpectedCallError('Not supported "checkVisibility" method');
 	}
 
 	/**
@@ -2291,7 +2995,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	focus(options?: FocusOptions): void {
+	focus(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		options?: FocusOptions,
+	): void {
 		throw new UnexpectedCallError('Not supported "focus" method');
 	}
 
@@ -2309,7 +3016,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @implements DOM API: `Element`
 	 * @see https://www.w3.org/TR/web-animations-1/#dom-animatable-getanimations
 	 */
-	getAnimations(options?: GetAnimationsOptions): Animation[] {
+	getAnimations(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		options?: GetAnimationsOptions,
+	): Animation[] {
 		throw new UnexpectedCallError('Not supported "getAnimations" method');
 	}
 
@@ -2575,7 +3285,11 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#dom-element-insertadjacentelement
 	 */
-	insertAdjacentElement(where: InsertPosition, element: MLElement<T, O>): MLElement<T, O> | null {
+	insertAdjacentElement(
+		where: InsertPosition,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		element: MLElement<T, O>,
+	): MLElement<T, O> | null {
 		// TODO:
 		throw new UnexpectedCallError('Does not implement "insertAdjacentElement" method yet');
 	}
@@ -2607,7 +3321,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
-	isDescendantByUUIDList(uuidList: string[]) {
+	isDescendantByUUIDList(uuidList: readonly string[]) {
 		let el = this.parentElement;
 
 		if (el === null) {
@@ -2649,7 +3363,7 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	/**
 	 * Pretenders Initialization
 	 */
-	pretending(pretenders: Pretender[]) {
+	pretending(pretenders: readonly Pretender[]) {
 		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
 		if (!pretenderConfig) {
 			return;
@@ -2798,14 +3512,20 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @implements DOM API: `Element`
 	 * @see https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-D589198
 	 */
-	removeAttributeNode(attr: Attr): Attr {
+	removeAttributeNode(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		attr: Attr,
+	): Attr {
 		throw new UnexpectedCallError('Not supported "removeAttributeNode" method');
 	}
 
 	/**
 	 * @implements DOM API: `Element`
 	 */
-	replaceWith(...nodes: (string | MLElement<any, any>)[]): void {
+	replaceWith(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		...nodes: (string | MLElement<any, any>)[]
+	): void {
 		replaceWith(this, ...nodes);
 	}
 
@@ -2816,7 +3536,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @implements DOM API: `Element`
 	 * @see https://fullscreen.spec.whatwg.org/#dom-element-requestfullscreen
 	 */
-	requestFullscreen(options?: FullscreenOptions): Promise<void> {
+	requestFullscreen(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		options?: FullscreenOptions,
+	): Promise<void> {
 		throw new UnexpectedCallError('Not supported "requestFullscreen" method');
 	}
 
@@ -2860,7 +3583,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @implements DOM API: `Element`
 	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-scrollintoview
 	 */
-	scrollIntoView(arg?: boolean | ScrollIntoViewOptions): void {
+	scrollIntoView(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		arg?: boolean | ScrollIntoViewOptions,
+	): void {
 		throw new UnexpectedCallError('Not supported "scrollIntoView" method');
 	}
 
@@ -2904,7 +3630,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#dom-element-setattributenode
 	 */
-	setAttributeNode(attr: Attr): Attr | null {
+	setAttributeNode(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		attr: Attr,
+	): Attr | null {
 		throw new UnexpectedCallError('Not supported "setAttributeNode" method');
 	}
 
@@ -2915,7 +3644,10 @@ export class MLElement<T extends RuleConfigValue, O = null>
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#dom-element-setattributenodens
 	 */
-	setAttributeNodeNS(attr: Attr): Attr | null {
+	setAttributeNodeNS(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		attr: Attr,
+	): Attr | null {
 		throw new UnexpectedCallError('Not supported "setAttributeNodeNS" method');
 	}
 

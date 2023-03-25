@@ -4,6 +4,8 @@ import type { MLDocument } from '../ml-dom/node/document';
 import type { LocaleSet } from '@markuplint/i18n';
 import type {
 	GlobalRuleInfo,
+	PlainData,
+	Rule,
 	RuleConfig,
 	RuleConfigValue,
 	RuleInfo,
@@ -12,9 +14,12 @@ import type {
 	Violation,
 } from '@markuplint/ml-config';
 
+import { deleteUndefProp } from '@markuplint/ml-config';
+import { isPlainObject } from 'is-plain-object';
+
 import { MLRuleContext } from './ml-rule-context';
 
-export class MLRule<T extends RuleConfigValue, O = null> {
+export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> {
 	readonly defaultOptions: O;
 	readonly defaultSeverity: Severity;
 	readonly defaultValue: T;
@@ -22,11 +27,11 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	readonly name: string;
 	#v: RuleSeed<T, O>['verify'];
 
-	constructor(o: RuleSeed<T, O> & { name: string }) {
+	constructor(o: Readonly<RuleSeed<T, O>> & { readonly name: string }) {
 		this.name = o.name;
-		this.defaultSeverity = o.defaultSeverity || 'error';
-		this.defaultValue = o.defaultValue ?? (true as T);
-		this.defaultOptions = o.defaultOptions ?? (null as unknown as O);
+		this.defaultSeverity = o.defaultSeverity ?? 'error';
+		this.defaultValue = (o.defaultValue ?? true) as T;
+		this.defaultOptions = o.defaultOptions as O;
 		this.#v = o.verify;
 		this.#f = o.fix;
 	}
@@ -57,7 +62,7 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		};
 	}
 
-	optimizeOption(configSettings: T | RuleConfig<T, O> | undefined): RuleInfo<T, O> {
+	optimizeOption(configSettings: Rule<T, O> | null | undefined): RuleInfo<T, O> {
 		if (configSettings === undefined || typeof configSettings === 'boolean') {
 			return {
 				disabled: !configSettings,
@@ -67,23 +72,12 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 				reason: undefined,
 			};
 		}
-		if (!Array.isArray(configSettings) && typeof configSettings === 'object' && configSettings !== null) {
+		if (isRuleConfig(configSettings)) {
 			return {
 				disabled: false,
 				severity: configSettings.severity || this.defaultSeverity,
 				value: configSettings.value !== undefined ? configSettings.value : this.defaultValue,
-				options: Array.isArray(this.defaultOptions)
-					? configSettings.options
-						? // prettier-ignore
-						  // @ts-ignore for "as" casting
-						  this.defaultOptions.concat(configSettings.option) as O
-						: this.defaultOptions
-					: this.defaultOptions !== null &&
-					  typeof this.defaultOptions === 'object' &&
-					  // for example `configSettings.option === true`
-					  (configSettings.options == null || typeof configSettings.options === 'object')
-					? { ...this.defaultOptions, ...(configSettings.options || {}) }
-					: configSettings.options || this.defaultOptions,
+				options: mergeOptions(this.defaultOptions, configSettings.options),
 				reason: configSettings.reason,
 			};
 		}
@@ -96,7 +90,12 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 		};
 	}
 
-	async verify(document: MLDocument<T, O>, locale: LocaleSet, fix: boolean): Promise<Violation[]> {
+	async verify(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		document: MLDocument<T, O>,
+		locale: LocaleSet,
+		fix: boolean,
+	): Promise<Violation[]> {
 		if (!this.#v) {
 			return [];
 		}
@@ -128,10 +127,9 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 					col,
 					raw,
 					ruleId: this.name,
+					reason: report.scope.rule.reason || document.rule.reason,
 				};
-				if (report.scope.rule.reason || document.rule.reason) {
-					violation.reason = report.scope.rule.reason || document.rule.reason;
-				}
+				deleteUndefProp(violation);
 				return violation;
 			}
 
@@ -142,10 +140,10 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 				col: report.col,
 				raw: report.raw,
 				ruleId: this.name,
+				reason: document.rule.reason,
 			};
-			if (document.rule.reason) {
-				violation.reason = document.rule.reason;
-			}
+
+			deleteUndefProp(violation);
 			return violation;
 		});
 
@@ -155,10 +153,30 @@ export class MLRule<T extends RuleConfigValue, O = null> {
 	}
 
 	private _optimize(rules: Rules | undefined, ruleName: string) {
-		const rule = (rules && rules[ruleName]) || false;
-		const info = this.optimizeOption(rule as T | RuleConfig<T, O>);
+		const rule = (rules?.[ruleName] ?? false) as Rule<T, O>;
+		const info = this.optimizeOption(rule);
 		return info;
 	}
 }
 
-export type AnyMLRule = MLRule<RuleConfigValue, unknown>;
+export type AnyMLRule = MLRule<RuleConfigValue, PlainData>;
+
+function isRuleConfig<T extends RuleConfigValue, O extends PlainData = undefined>(
+	data: T | RuleConfig<T, O>,
+): data is RuleConfig<T, O> {
+	return isPlainObject(data);
+}
+
+function mergeOptions<O extends PlainData>(a: Readonly<O>, b: Readonly<O> | undefined): O {
+	if (Array.isArray(a) && Array.isArray(b)) {
+		// @ts-ignore
+		return [...a, ...b];
+	}
+
+	if (isPlainObject(a) && isPlainObject(b)) {
+		// @ts-ignore
+		return { ...a, ...b };
+	}
+
+	return b ?? a;
+}

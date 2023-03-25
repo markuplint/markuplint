@@ -1,5 +1,5 @@
 import type { Target } from '@markuplint/file-resolver';
-import type { Config, RuleConfigValue, Rule, RegexSelector } from '@markuplint/ml-config';
+import type { Config, RuleConfigValue, Rule, RegexSelector, PlainData } from '@markuplint/ml-config';
 import type { AnyMLRule, RuleSeed } from '@markuplint/ml-core';
 
 import { MLRule } from '@markuplint/ml-core';
@@ -7,7 +7,13 @@ import { MLRule } from '@markuplint/ml-core';
 import { lint } from '../api';
 import { getGlobal } from '../global-settings';
 
-export async function mlTest(sourceCode: string, config: Config, rules?: AnyMLRule[], locale = 'en', fix = false) {
+export async function mlTest(
+	sourceCode: string,
+	config: Config,
+	rules?: readonly Readonly<AnyMLRule>[],
+	locale = 'en',
+	fix = false,
+) {
 	const global = getGlobal();
 	const results = await lint([{ sourceCode }], {
 		config,
@@ -26,8 +32,8 @@ export async function mlTest(sourceCode: string, config: Config, rules?: AnyMLRu
 	};
 }
 
-export async function mlRuleTest<T extends RuleConfigValue, O = null>(
-	rule: RuleSeed<T, O>,
+export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>(
+	rule: Readonly<RuleSeed<T, O>>,
 	sourceCode: string,
 	config: Omit<Config, 'rules' | 'nodeRules' | 'childNodeRules'> & {
 		rule?: Rule<T, Partial<O>>;
@@ -96,7 +102,13 @@ export async function mlRuleTest<T extends RuleConfigValue, O = null>(
 	return res;
 }
 
-export async function mlTestFile(target: Target, config?: Config, rules?: AnyMLRule[], locale?: string, fix = false) {
+export async function mlTestFile(
+	target: Target,
+	config?: Config,
+	rules?: readonly Readonly<AnyMLRule>[],
+	locale?: string,
+	fix = false,
+) {
 	const global = getGlobal();
 	const results = await lint([target], {
 		config,
@@ -116,7 +128,7 @@ export async function mlTestFile(target: Target, config?: Config, rules?: AnyMLR
 	};
 }
 
-export interface NodeRule<T extends RuleConfigValue, O = void> {
+export interface NodeRule<T extends RuleConfigValue, O extends PlainData = undefined> {
 	selector?: string;
 	regexSelector?: RegexSelector;
 	categories?: string[];
@@ -125,7 +137,7 @@ export interface NodeRule<T extends RuleConfigValue, O = void> {
 	rule?: Rule<T, O>;
 }
 
-export interface ChildNodeRule<T extends RuleConfigValue, O = void> {
+export interface ChildNodeRule<T extends RuleConfigValue, O extends PlainData = undefined> {
 	selector?: string;
 	regexSelector?: RegexSelector;
 	inheritance?: boolean;

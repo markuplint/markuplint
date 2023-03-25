@@ -6,7 +6,7 @@ import type { MLElement } from './element';
 import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types';
 import type { RuleInfo } from '../..';
 import type { MLASTAbstractNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
-import type { AnyRule, RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
+import type { AnyRule, PlainData, Rule, RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLToken } from '../token/token';
 
@@ -15,7 +15,11 @@ import { toNodeList } from './node-list';
 import { nodeStore } from './node-store';
 import UnexpectedCallError from './unexpected-call-error';
 
-export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLASTAbstractNode = MLASTAbstractNode>
+export abstract class MLNode<
+		T extends RuleConfigValue,
+		O extends PlainData = undefined,
+		A extends MLASTAbstractNode = MLASTAbstractNode,
+	>
 	extends MLToken<A>
 	implements Node
 {
@@ -160,7 +164,11 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 
 	protected _astToken: A;
 
-	constructor(astNode: A, document: MLDocument<T, O>) {
+	constructor(
+		astNode: A,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		document: MLDocument<T, O>,
+	) {
 		super(astNode);
 		this._astToken = astNode;
 		this.#ownerDocument = document;
@@ -469,9 +477,19 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 			throw new Error('Invalid call: Some rule evaluations may not be running asynchronously.');
 		}
 		const name = this.ownerMLDocument.currentRule.name;
-		const rule = this.rules[name] as RuleConfig<T, O> | T | undefined;
+		const settingRule = this.rules[name];
 
-		return this.ownerMLDocument.currentRule.optimizeOption(rule);
+		const rule = this.ownerMLDocument.currentRule.optimizeOption(settingRule as Rule<T, O>);
+
+		if (!rule) {
+			throw new Error(
+				`Rule data "${name}" doesn't exist in rules ([${Object.keys(this.rules).map(
+					name => `"${name}"`,
+				)}]) of ${this.nodeName}("${this.raw}")`,
+			);
+		}
+
+		return rule;
 	}
 
 	/**
@@ -546,6 +564,7 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 */
 	addEventListener(
 		type: string,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		callback?: EventListenerOrEventListenerObject | null,
 		options: AddEventListenerOptions | boolean = {},
 	): void {
@@ -581,7 +600,10 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-comparedocumentposition%E2%91%A0
 	 */
-	compareDocumentPosition(other: Node): number {
+	compareDocumentPosition(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		other: Node,
+	): number {
 		throw new UnexpectedCallError('Not supported "compareDocumentPosition" method');
 	}
 
@@ -592,7 +614,10 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-contains%E2%91%A0
 	 */
-	contains(other: Node | null): boolean {
+	contains(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		other: Node | null,
+	): boolean {
 		throw new UnexpectedCallError('Not supported "contains" method');
 	}
 
@@ -603,7 +628,10 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 * @implements DOM API: `EventTarget`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-eventtarget-dispatchevent%E2%91%A2
 	 */
-	dispatchEvent(event: Event): boolean {
+	dispatchEvent(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		event: Event,
+	): boolean {
 		throw new UnexpectedCallError('Not supported "dispatchEvent" method');
 	}
 
@@ -614,7 +642,10 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-getrootnode%E2%91%A0
 	 */
-	getRootNode(options?: GetRootNodeOptions): MLNode<T, O> {
+	getRootNode(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		options?: GetRootNodeOptions,
+	): MLNode<T, O> {
 		if (options) {
 			throw new UnexpectedCallError('Not supported options');
 		}
@@ -640,7 +671,11 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-insertbefore
 	 */
-	insertBefore<T extends Node>(node: T, child: Node | null): T {
+	insertBefore<T extends Node>(
+		node: T,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		child: Node | null,
+	): T {
 		throw new UnexpectedCallError('Not supported "insertBefore" method');
 	}
 
@@ -669,7 +704,10 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-isequalnode%E2%91%A0
 	 */
-	isEqualNode(otherNode: Node | null): boolean {
+	isEqualNode(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		otherNode: Node | null,
+	): boolean {
 		throw new UnexpectedCallError('Not supported "isEqualNode" method');
 	}
 
@@ -687,7 +725,10 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-issamenode
 	 */
-	isSameNode(otherNode: Node | null): boolean {
+	isSameNode(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		otherNode: Node | null,
+	): boolean {
 		throw new UnexpectedCallError('Not supported "isSameNode" method');
 	}
 
@@ -744,6 +785,7 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 */
 	removeEventListener(
 		type: string,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		callback?: EventListenerOrEventListenerObject | null,
 		options: EventListenerOptions | boolean = {},
 	): void {
@@ -757,14 +799,21 @@ export abstract class MLNode<T extends RuleConfigValue, O = null, A extends MLAS
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-replacechild
 	 */
-	replaceChild<T extends Node>(node: Node, child: T): T {
+	replaceChild<T extends Node>(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		node: Node,
+		child: T,
+	): T {
 		throw new UnexpectedCallError('Not supported "removeChild" method');
 	}
 
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
-	resetChildren(childNodes?: NodeListOf<MLChildNode<T, O>>) {
+	resetChildren(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		childNodes?: NodeListOf<MLChildNode<T, O>>,
+	) {
 		this.#childNodes = childNodes ?? this.#childNodes;
 	}
 }

@@ -7,7 +7,10 @@ import { createSelector } from '../create-selector';
 
 export function contentModelPseudoClass(specs: MLMLSpec) {
 	return (category: string) =>
-		(el: Element): SelectorResult => {
+		(
+			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+			el: Element,
+		): SelectorResult => {
 			category = category.trim().toLowerCase();
 
 			const selectors = contentModelCategoryToTagNames(`#${category}` as Category, specs.def);

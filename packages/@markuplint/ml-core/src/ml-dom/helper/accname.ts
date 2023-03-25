@@ -7,7 +7,11 @@ import { log } from '../../debug';
 
 const accnameLog = log.extend('accname');
 
-export function getAccname(el: MLElement<any, any>, version: ARIAVersion): string {
+export function getAccname(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<any, any>,
+	version: ARIAVersion,
+): string {
 	let accname = safeGet(el);
 	if (accname) {
 		return accname;
@@ -35,7 +39,10 @@ export function getAccname(el: MLElement<any, any>, version: ARIAVersion): strin
 	return '';
 }
 
-function safeGet(el: MLElement<any, any>) {
+function safeGet(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<any, any>,
+) {
 	try {
 		const name = get(el);
 		return name;
@@ -46,7 +53,10 @@ function safeGet(el: MLElement<any, any>) {
 	}
 }
 
-function getAccnameFromPretender(el: MLElement<any, any>) {
+function getAccnameFromPretender(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<any, any>,
+) {
 	if (el.pretenderContext?.type === 'pretender' && el.pretenderContext.aria?.name) {
 		if (typeof el.pretenderContext.aria.name === 'boolean') {
 			return 'some-name(Pretender Options)';
@@ -60,11 +70,18 @@ function getAccnameFromPretender(el: MLElement<any, any>) {
 	return '';
 }
 
-function isHidden(el: MLElement<any, any>) {
+function isHidden(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<any, any>,
+) {
 	return el.getAttribute('aria-hidden') === 'true' || el.hasAttribute('hidden');
 }
 
-function isFromContent(el: MLElement<any, any>, version: ARIAVersion) {
+function isFromContent(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<any, any>,
+	version: ARIAVersion,
+) {
 	const role = getComputedRole(el.ownerMLDocument.specs, el, version);
 	return !!role.role?.accessibleNameFromContent;
 }

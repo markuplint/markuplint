@@ -1,17 +1,21 @@
 import type { CheckerReport } from './types';
 import type { MLDocument } from '../ml-dom/node/document';
 import type { LocaleSet, Translator } from '@markuplint/i18n';
-import type { Report, RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, Report, RuleConfigValue } from '@markuplint/ml-config';
 
 import { translator } from '@markuplint/i18n';
 
-export class MLRuleContext<T extends RuleConfigValue, O = null> {
+export class MLRuleContext<T extends RuleConfigValue, O extends PlainData = undefined> {
 	readonly document: MLDocument<T, O>;
 	readonly locale: string;
 	#reports: Report<T, O>[] = [];
 	readonly translate: Translator;
 
-	constructor(document: MLDocument<T, O>, locale: LocaleSet) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		document: MLDocument<T, O>,
+		locale: LocaleSet,
+	) {
 		this.document = document;
 		this.translate = translator(locale);
 		this.locale = locale.locale;
@@ -64,7 +68,7 @@ function finish(message: string, locale = 'en') {
 	return message;
 }
 
-function is<T extends RuleConfigValue, O = null>(r1: Report<T, O>, r2: Report<T, O>): boolean {
+function is<T extends RuleConfigValue, O extends PlainData = undefined>(r1: Report<T, O>, r2: Report<T, O>): boolean {
 	if ('col' in r1 && 'col' in r2) {
 		return r1.col === r2.col && r1.line === r2.line && r1.message === r2.message && r1.raw === r2.raw;
 	}

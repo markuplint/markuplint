@@ -3,7 +3,7 @@ import type { CustomSyntaxCheck, UnmatchedResult } from './types';
 import { log } from './debug';
 import { matched } from './match-result';
 
-export function checkMultiTypes(value: string, checks: CustomSyntaxCheck[]) {
+export function checkMultiTypes(value: string, checks: readonly CustomSyntaxCheck[]) {
 	let unmatched: UnmatchedResult | undefined;
 
 	for (const check of checks) {

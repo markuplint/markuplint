@@ -6,7 +6,12 @@ import { getComputedRole } from './get-computed-role';
 import { getExplicitRole } from './get-explicit-role';
 import { getImplicitRole } from './get-implicit-role';
 
-export function hasRequiredOwnedElement(el: Element, specs: Readonly<MLMLSpec>, version: ARIAVersion): boolean {
+export function hasRequiredOwnedElement(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	specs: MLMLSpec,
+	version: ARIAVersion,
+): boolean {
 	/**
 	 * The element has aria-owns which means it may have owned elements.
 	 *
@@ -26,7 +31,7 @@ export function hasRequiredOwnedElement(el: Element, specs: Readonly<MLMLSpec>, 
 	}
 	for (const expectRole of computed.role.requiredOwnedElements) {
 		for (const owned of getClosestNonPresentationalDescendants(el, specs, version)) {
-			if (isRequiredOwnedElement(owned, expectRole, specs, version)) {
+			if (isRequiredOwnedElement(owned.el, owned.role, expectRole, specs, version)) {
 				return true;
 			}
 		}
@@ -35,9 +40,16 @@ export function hasRequiredOwnedElement(el: Element, specs: Readonly<MLMLSpec>, 
 	return false;
 }
 
-export function isRequiredOwnedElement(owned: ComputedRole, query: string, specs: MLMLSpec, version: ARIAVersion) {
+export function isRequiredOwnedElement(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	role: ComputedRole['role'],
+	query: string,
+	specs: MLMLSpec,
+	version: ARIAVersion,
+) {
 	const [baseRole, owningRole] = query.split(' > ') as [string, string | undefined];
-	if (owned.role?.name !== baseRole) {
+	if (role?.name !== baseRole) {
 		return false;
 	}
 
@@ -45,7 +57,7 @@ export function isRequiredOwnedElement(owned: ComputedRole, query: string, specs
 		return true;
 	}
 
-	for (const owning of getClosestNonPresentationalDescendants(owned.el, specs, version)) {
+	for (const owning of getClosestNonPresentationalDescendants(el, specs, version)) {
 		if (owning.role?.name === owningRole) {
 			return true;
 		}
@@ -69,7 +81,12 @@ export function isRequiredOwnedElement(owned: ComputedRole, query: string, specs
  * However, the presentational role behaves transparently
  * according to the sample code in WAI-ARIA specification.
  */
-function getClosestNonPresentationalDescendants(el: Element, specs: MLMLSpec, version: ARIAVersion): ComputedRole[] {
+function getClosestNonPresentationalDescendants(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	specs: MLMLSpec,
+	version: ARIAVersion,
+): ComputedRole[] {
 	const owned: ComputedRole[] = [];
 	for (const child of Array.from(el.children)) {
 		const implicitRole = getImplicitRole(specs, child, version);

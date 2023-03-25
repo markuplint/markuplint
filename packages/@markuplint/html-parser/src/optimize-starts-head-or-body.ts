@@ -35,7 +35,9 @@ export function optimizeStartsHeadTagOrBodyTagSetup(rawCode: string) {
 }
 
 export function optimizeStartsHeadTagOrBodyTagResume(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodeList: MLASTNode[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	replacements: ReturnType<typeof optimizeStartsHeadTagOrBodyTagSetup>,
 ) {
 	nodeList.forEach(node => {

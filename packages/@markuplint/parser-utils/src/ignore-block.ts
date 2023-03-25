@@ -6,7 +6,7 @@ import { uuid } from './create-token';
 import { sliceFragment } from './get-location';
 import { siblingsCorrection } from './siblings-correction';
 
-export function ignoreBlock(source: string, tags: IgnoreTag[], maskChar = MASK_CHAR): IgnoreBlock {
+export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar = MASK_CHAR): IgnoreBlock {
 	let replaced = source;
 	const stack: Code[] = [];
 	for (const tag of tags) {
@@ -49,8 +49,8 @@ export function ignoreBlock(source: string, tags: IgnoreTag[], maskChar = MASK_C
 }
 
 function maskText(
-	start: RegExp,
-	end: RegExp,
+	start: Readonly<RegExp>,
+	end: Readonly<RegExp>,
 	replaced: string,
 	masking: (startTag: string, taggedCode: string, endTag?: string) => string,
 ) {
@@ -80,7 +80,11 @@ function maskText(
 	};
 }
 
-export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
+export function restoreNode(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodeList: MLASTNode[],
+	ignoreBlock: IgnoreBlock,
+) {
 	nodeList = nodeList.slice();
 	const { source, stack, maskChar } = ignoreBlock;
 	for (const node of nodeList) {
@@ -216,7 +220,7 @@ export function restoreNode(nodeList: MLASTNode[], ignoreBlock: IgnoreBlock) {
 	return nodeList;
 }
 
-function snap(str: string, reg: RegExp): [number, string] | [number, string, string, string] {
+function snap(str: string, reg: Readonly<RegExp>): [number, string] | [number, string, string, string] {
 	const matched = reg.exec(str);
 	if (!matched) {
 		return [-1, str];
@@ -228,15 +232,15 @@ function snap(str: string, reg: RegExp): [number, string] | [number, string, str
 	return [index, above, snapPoint, below];
 }
 
-function removeGlobalOption(reg: RegExp) {
+function removeGlobalOption(reg: Readonly<RegExp>) {
 	return new RegExp(reg.source, reg.ignoreCase ? 'i' : '');
 }
 
-function prepend(reg: RegExp, str: string) {
+function prepend(reg: Readonly<RegExp>, str: string) {
 	return new RegExp(str + reg.source, reg.ignoreCase ? 'i' : '');
 }
 
-function append(reg: RegExp, str: string) {
+function append(reg: Readonly<RegExp>, str: string) {
 	return new RegExp(reg.source + str, reg.ignoreCase ? 'i' : '');
 }
 

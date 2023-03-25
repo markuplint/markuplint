@@ -10,7 +10,12 @@ import { getNonPresentationalAncestor } from './get-non-presentational-ancestor'
 import { isRequiredOwnedElement } from './has-required-owned-elements';
 import { mayBeFocusable } from './may-be-focusable';
 
-export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version: ARIAVersion): ComputedRole {
+export function getComputedRole(
+	specs: MLMLSpec,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	version: ARIAVersion,
+): ComputedRole {
 	const implicitRole = getImplicitRole(specs, el, version);
 	const explicitRole = getExplicitRole(specs, el, version);
 	const computedRole = explicitRole.role ? explicitRole : implicitRole;
@@ -123,7 +128,7 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version:
 					// const ancestor = nonPresentationalAncestor.el;
 					// const ancestorImplicitRole = getImplicitRole(specs, ancestor, version);
 					// console.log({ nonPresentationalAncestor, ancestorImplicitRole });
-					return isRequiredOwnedElement(implicitRole, expected, specs, version);
+					return isRequiredOwnedElement(implicitRole.el, implicitRole.role, expected, specs, version);
 				})
 			) {
 				return {
@@ -161,7 +166,12 @@ export function getComputedRole(specs: Readonly<MLMLSpec>, el: Element, version:
  * The attribute is available in its owner element,
  * it has the attribute.
  */
-function isEnabledAttr(el: Element, specs: MLMLSpec, attrName: string) {
+function isEnabledAttr(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	specs: MLMLSpec,
+	attrName: string,
+) {
 	const attrs = getAttrSpecs(el, specs);
 	const attr = attrs?.find(attr => attr.name === attrName);
 	return !!attr && el.hasAttribute(attrName);
@@ -170,7 +180,14 @@ function isEnabledAttr(el: Element, specs: MLMLSpec, attrName: string) {
 /**
  * Determines whether some ancestors match the condition that the specified callback function.
  */
-function someAncestors(el: Element, predicate: (ancestor: Element) => boolean) {
+function someAncestors(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	predicate: (
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		ancestor: Element,
+	) => boolean,
+) {
 	const list: Element[] = [];
 	let current: Element | null = el;
 	while (current) {
