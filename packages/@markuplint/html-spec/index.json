@@ -110,6 +110,7 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot",
@@ -22176,6 +22177,7 @@
 				"s",
 				"samp",
 				"script",
+				"search",
 				"section",
 				"select",
 				"slot",
@@ -22342,6 +22344,7 @@
 				"ruby",
 				"s",
 				"samp",
+				"search",
 				"section",
 				"select",
 				"small",
@@ -27834,6 +27837,34 @@
 					]
 				}
 			}
+		},
+		{
+			"name": "search",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search",
+			"description": "",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"oneOrMore": ":model(flow)"
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": "search",
+				"permittedRoles": ["form", "group", "none", "presentation", "region"],
+				"properties": {
+					"global": true,
+					"role": "search"
+				}
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {}
 		},
 		{
 			"name": "section",
