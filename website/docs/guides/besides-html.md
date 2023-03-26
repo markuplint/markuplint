@@ -103,10 +103,10 @@ Set a regular expression that can identify the target file name to the `parser` 
 ```json class=config title="Use React"
 {
   "parser": {
-    ".jsx$": "@markuplint/jsx-parser"
+    "\\.jsx$": "@markuplint/jsx-parser"
   },
   "specs": {
-    ".jsx$": "@markuplint/react-spec"
+    "\\.jsx$": "@markuplint/react-spec"
   }
 }
 ```
@@ -114,10 +114,10 @@ Set a regular expression that can identify the target file name to the `parser` 
 ```json class=config title="Use Vue"
 {
   "parser": {
-    ".vue$": "@markuplint/vue-parser"
+    "\\.vue$": "@markuplint/vue-parser"
   },
   "specs": {
-    ".vue$": "@markuplint/vue-spec"
+    "\\.vue$": "@markuplint/vue-spec"
   }
 }
 ```
