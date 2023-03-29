@@ -34,7 +34,7 @@ npx markuplint --init
 ```json title="package.json"
 {
   "scripts": {
-    "html:lint": "markuplint \"**/*.html\""
+    "lint:html": "markuplint \"**/*.html\""
   }
 }
 ```
@@ -44,7 +44,7 @@ npx markuplint --init
 以下のようにスクリプトを実行します。
 
 ```shell npm2yarn
-npm run html:lint
+npm run lint:html
 ```
 
 ## Visual Studio Codeでつかう

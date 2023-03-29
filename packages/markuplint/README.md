@@ -47,7 +47,7 @@ Add a command to the `scripts` option on `package.json`:
 ```json
 {
   "scripts": {
-    "html:lint": "markuplint **/*.html"
+    "lint:html": "markuplint **/*.html"
   }
 }
 ```
@@ -57,9 +57,9 @@ If you want to change the target path, you can change it for your project.
 Execute the script:
 
 ```
-$ npm run html:lint
+$ npm run lint:html
 # or
-$ yarn html:lint
+$ yarn lint:html
 ```
 
 ### Command line options
