@@ -997,4 +997,16 @@ describe('Issues', () => {
 			(await mlRuleTest(rule, '<template><div><template #header></template></div></template>', vue)).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#783', async () => {
+		const vue = {
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+		};
+
+		expect(
+			(await mlRuleTest(rule, '<template><button @click.stop="foo"></button></template>', vue)).violations,
+		).toStrictEqual([]);
+	});
 });
