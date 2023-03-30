@@ -9,6 +9,7 @@ export * from './get-space-before';
 export * from './idl-attributes';
 export * from './ignore-block';
 export * from './ignore-front-matter';
+export * from './parse-attr';
 export * from './parser-error';
 export * from './remove-deprecated-node';
 export * from './tag-splitter';
