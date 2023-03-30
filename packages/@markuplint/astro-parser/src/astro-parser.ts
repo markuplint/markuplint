@@ -1,27 +1,29 @@
-import type { Attribute, Style, TemplateNode } from '@astrojs/parser';
+import type { RootNode } from '@astrojs/compiler/shared/ast';
 
-import { CompileError as AstroCompileError, parse } from '@astrojs/parser';
+import { ParserError } from '@markuplint/parser-utils';
+import { parseTemplate } from 'astro-eslint-parser';
 
-export { CompileError as AstroCompileError } from '@astrojs/parser';
-export type ASTNode = TemplateNode;
-export type ASTStyleNode = Style;
-export type ASTAttribute = Attribute;
-export type AstroAST = {
-	html?: ASTNode;
-	style?: ASTStyleNode[];
-};
+// eslint-disable-next-line import/no-extraneous-dependencies
+export type {
+	RootNode,
+	ElementNode,
+	CustomElementNode,
+	ComponentNode,
+	FragmentNode,
+	AttributeNode,
+	Node,
+} from '@astrojs/compiler/shared/ast';
 
-export function astroParse(code: string): AstroAST | AstroCompileError {
-	try {
-		const ast = parse(code, {});
-		return {
-			html: ast.html,
-			style: ast.css,
-		};
-	} catch (e) {
-		if (e instanceof AstroCompileError) {
-			return e;
-		}
-		throw e;
+export function astroParse(code: string): RootNode {
+	const { result } = parseTemplate(code);
+
+	if (result.diagnostics[0]) {
+		const error = result.diagnostics[0];
+		throw new ParserError(error.text, {
+			line: error.location.line,
+			col: error.location.column,
+		});
 	}
+
+	return result.ast;
 }
