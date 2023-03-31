@@ -256,7 +256,7 @@ function recursiveSearchJSXElements(
 			case AST_NODE_TYPES.SpreadElement:
 			case AST_NODE_TYPES.ThrowStatement:
 			case AST_NODE_TYPES.YieldExpression: {
-				jsxList.push(...recursiveSearchJSXElements([node.argument || null], parentId));
+				jsxList.push(...recursiveSearchJSXElements([node.argument ?? null], parentId));
 				continue;
 			}
 			case AST_NODE_TYPES.TemplateLiteral: {
@@ -381,7 +381,7 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TSEnumMember: {
-				jsxList.push(...recursiveSearchJSXElements([node.id, node.initializer || null], parentId));
+				jsxList.push(...recursiveSearchJSXElements([node.id, node.initializer ?? null], parentId));
 				continue;
 			}
 			case AST_NODE_TYPES.TSCallSignatureDeclaration:
@@ -400,7 +400,7 @@ function recursiveSearchJSXElements(
 			}
 			case AST_NODE_TYPES.TSDeclareFunction: {
 				jsxList.push(...recursiveSearchJSXElements(node.params, parentId));
-				jsxList.push(...recursiveSearchJSXElements([node.body || null], parentId));
+				jsxList.push(...recursiveSearchJSXElements([node.body ?? null], parentId));
 				continue;
 			}
 			case AST_NODE_TYPES.TSImportEqualsDeclaration: {
@@ -413,7 +413,7 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TSModuleDeclaration: {
-				jsxList.push(...recursiveSearchJSXElements([node.body || null], parentId));
+				jsxList.push(...recursiveSearchJSXElements([node.body ?? null], parentId));
 				if (node.modifiers) {
 					jsxList.push(...recursiveSearchJSXElements(node.modifiers, parentId));
 				}
@@ -427,7 +427,7 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TSPropertySignature: {
-				jsxList.push(...recursiveSearchJSXElements([node.key, node.initializer || null], parentId));
+				jsxList.push(...recursiveSearchJSXElements([node.key, node.initializer ?? null], parentId));
 				continue;
 			}
 			case AST_NODE_TYPES.TSTypeLiteral: {

@@ -17,7 +17,7 @@ export async function resolveParser(
 		...parserConfig,
 		'/\\.html?$/i': '@markuplint/html-parser',
 	};
-	parserOptions = parserOptions || {};
+	parserOptions = parserOptions ?? {};
 
 	let parserModName = '@markuplint/html-parser';
 	let matched = false;

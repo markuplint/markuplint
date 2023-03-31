@@ -194,7 +194,7 @@ export class ConfigProvider {
 
 		this.#recursiveLoadKeyAndDepth.set(key, depth);
 
-		let config = this.#store.get(key) || null;
+		let config = this.#store.get(key) ?? null;
 		if (!config) {
 			config = await this._load(key, cache);
 		}
@@ -224,7 +224,7 @@ export class ConfigProvider {
 async function load(filePath: string, cache: boolean) {
 	if (!fileExists(filePath) && moduleExists(filePath)) {
 		const mod = await import(filePath);
-		const config: Config | null = mod?.default || null;
+		const config: Config | null = mod?.default ?? null;
 		return config;
 	}
 	const res = await loadConfig<Config>(filePath, !cache);

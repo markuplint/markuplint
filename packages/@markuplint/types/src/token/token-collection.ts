@@ -352,7 +352,7 @@ export class TokenCollection extends Array<Token> {
 				return current;
 			}
 		});
-		return resultToken || null;
+		return resultToken ?? null;
 	}
 
 	getDuplicated() {
@@ -393,7 +393,7 @@ export class TokenCollection extends Array<Token> {
 		const copy = this.slice();
 		const head = copy.shift();
 		if (!head) {
-			return { head: head || null, tail: TokenCollection._new([], this) };
+			return { head: head ?? null, tail: TokenCollection._new([], this) };
 		}
 		const tail = TokenCollection._new(copy, this);
 		return { head, tail };

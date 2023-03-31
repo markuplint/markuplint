@@ -3162,7 +3162,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						continue;
 					}
 
-					const convertedRule = exchangeValueOnRule(rule, matches.data || {});
+					const convertedRule = exchangeValueOnRule(rule, matches.data ?? {});
 					if (convertedRule === undefined) {
 						continue;
 					}
@@ -3220,7 +3220,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 							return;
 						}
 
-						const convertedRule = exchangeValueOnRule(rule, matches.data || {});
+						const convertedRule = exchangeValueOnRule(rule, matches.data ?? {});
 						if (convertedRule === undefined) {
 							return;
 						}

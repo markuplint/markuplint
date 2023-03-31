@@ -133,7 +133,7 @@ export class Token {
 		return {
 			...options,
 			matched: false,
-			ref: options?.ref || null,
+			ref: options?.ref ?? null,
 			raw: this.value,
 			offset: this.offset,
 			length: this.value.length,

@@ -27,7 +27,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 		propsExtended = {};
 	} else {
 		defName = type.syntax.apply;
-		ebnf = type.syntax.ebnf || null;
+		ebnf = type.syntax.ebnf ?? null;
 
 		if (ebnf) {
 			// Work in progress

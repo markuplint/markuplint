@@ -454,8 +454,8 @@ export abstract class MLNode<
 			this.#prevToken = null;
 			return this.#prevToken;
 		}
-		this.#prevToken = this.ownerMLDocument.nodeList[index - 1] || null;
-		return this.#prevToken || null;
+		this.#prevToken = this.ownerMLDocument.nodeList[index - 1] ?? null;
+		return this.#prevToken ?? null;
 	}
 
 	/**

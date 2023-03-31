@@ -78,7 +78,7 @@ class Ruleset {
 	constructor(selectors: ReadonlyDeep<parser.Selector[]>, extended: ExtendedPseudoClass, depth: number) {
 		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector, depth, extended)));
 		const head = this.#selectorGroup[0];
-		this.headCombinator = head?.headCombinator || null;
+		this.headCombinator = head?.headCombinator ?? null;
 
 		if (this.headCombinator) {
 			if (depth <= 0) {
@@ -116,7 +116,7 @@ class StructuredSelector {
 		this.#selector = selector;
 		this.#edge = new SelectorTarget(extended, depth);
 		this.headCombinator =
-			this.#selector.nodes[0]?.type === 'combinator' ? this.#selector.nodes[0].value || null : null;
+			this.#selector.nodes[0]?.type === 'combinator' ? this.#selector.nodes[0].value ?? null : null;
 		const nodes = this.#selector.nodes.slice();
 		if (0 < depth && this.headCombinator) {
 			nodes.unshift(pseudo({ value: ':scope' }));
@@ -233,7 +233,7 @@ class SelectorTarget {
 			const combinator = result.combinator ? ` ${result.combinator}` : '';
 			selLog('The %s element by "%s" => %s (%d)', nodeName, `${selector}${combinator}`, result.matched, count);
 			if (selector === ':scope') {
-				selLog(`† Scope is the ${scope?.nodeName || null}`);
+				selLog(`† Scope is the ${scope?.nodeName ?? null}`);
 			}
 		}
 		delete result.combinator;

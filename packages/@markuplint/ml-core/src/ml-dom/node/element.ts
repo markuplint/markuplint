@@ -3060,7 +3060,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#dom-element-getattributenode
 	 */
 	getAttributeNode(qualifiedName: string): MLAttr<T, O> | null {
-		return this.getAttributeToken(qualifiedName)[0] || null;
+		return this.getAttributeToken(qualifiedName)[0] ?? null;
 	}
 
 	/**

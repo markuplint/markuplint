@@ -58,7 +58,7 @@ export function nodeize(
 				nextNode,
 				isFragment: false,
 				isGhost: false,
-				__parentId: originNode.__parentId || null,
+				__parentId: originNode.__parentId ?? null,
 			};
 			return node;
 		}
@@ -144,7 +144,7 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				__parentId: originNode.__parentId || null,
+				__parentId: originNode.__parentId ?? null,
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
@@ -194,7 +194,7 @@ export function nodeize(
 					isGhost: false,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
-					__parentId: originNode.__parentId || null,
+					__parentId: originNode.__parentId ?? null,
 				};
 			}
 
@@ -216,7 +216,7 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				__parentId: originNode.__parentId || null,
+				__parentId: originNode.__parentId ?? null,
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
@@ -250,7 +250,7 @@ export function nodeize(
 				nextNode,
 				isFragment: false,
 				isGhost: false,
-				__parentId: originNode.__parentId || null,
+				__parentId: originNode.__parentId ?? null,
 			};
 		}
 	}

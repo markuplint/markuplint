@@ -32,7 +32,7 @@ function mergeTextNode(
 ) {
 	const baseNodes: ASTNode[] = [];
 	for (const node of nodes) {
-		const prevNode: ASTNode | null = baseNodes[baseNodes.length - 1] || null;
+		const prevNode: ASTNode | null = baseNodes[baseNodes.length - 1] ?? null;
 		if (prevNode && prevNode.type === 'Text' && node.type === 'Text') {
 			prevNode.raw = pug.slice(prevNode.offset, node.endOffset);
 			prevNode.endColumn = node.endColumn;

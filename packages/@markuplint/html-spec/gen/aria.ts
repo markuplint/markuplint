@@ -286,7 +286,7 @@ async function getAriaInHtml() {
 			continue;
 		}
 
-		const value = _value?.replace(/"|'/g, '').trim() || null;
+		const value = _value?.replace(/"|'/g, '').trim() ?? null;
 		const data = {
 			name: name,
 			value: value === '...' ? null : value,

@@ -38,7 +38,7 @@ export function unmatched(
 	return {
 		...options,
 		matched: false,
-		ref: options?.ref || null,
+		ref: options?.ref ?? null,
 		raw: value,
 		offset: 0,
 		length: value.length,

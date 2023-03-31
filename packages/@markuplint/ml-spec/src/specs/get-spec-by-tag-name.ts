@@ -14,7 +14,7 @@ export function getSpecByTagName<K extends keyof ElementSpec = keyof ElementSpec
 	if (spec !== undefined) {
 		return spec;
 	}
-	spec = specs.find(spec => spec.name === localNameWithNS) || null;
+	spec = specs.find(spec => spec.name === localNameWithNS) ?? null;
 	cache.set(localNameWithNS, spec);
 	return spec;
 }

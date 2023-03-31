@@ -53,7 +53,7 @@ function getSuperClassRoles(specs: MLMLSpec, roleName: string, namespace: Namesp
 	return (
 		role?.generalization
 			?.map(roleName => getRoleByName(specs, roleName, namespace, version))
-			.filter((role): role is ARIARoleInSchema => !!role) || null
+			.filter((role): role is ARIARoleInSchema => !!role) ?? null
 	);
 }
 

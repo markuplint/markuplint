@@ -56,7 +56,7 @@ export class RuleMapper {
 		ruleName: string,
 		rule: MappingLayer,
 	) {
-		const rules = this.#ruleMap.get(node.uuid) || {};
+		const rules = this.#ruleMap.get(node.uuid) ?? {};
 		const currentRule = rules[ruleName];
 		if (currentRule) {
 			const order = compareSpecificity(currentRule.specificity, rule.specificity);

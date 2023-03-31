@@ -57,7 +57,7 @@ export abstract class MLParentNode<
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-firstelementchild%E2%91%A0
 	 */
 	get firstElementChild() {
-		return this.children[0] || null;
+		return this.children[0] ?? null;
 	}
 
 	/**
@@ -65,7 +65,7 @@ export abstract class MLParentNode<
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-lastelementchild%E2%91%A0
 	 */
 	get lastElementChild() {
-		return this.children[0] || null;
+		return this.children[0] ?? null;
 	}
 
 	/**
@@ -102,7 +102,7 @@ export abstract class MLParentNode<
 	 */
 	querySelector(selectors: string): MLElement<T, O> | null {
 		const selected = this.querySelectorAll(selectors);
-		return selected[0] || null;
+		return selected[0] ?? null;
 	}
 
 	/**

@@ -24,7 +24,7 @@ function tree(html: string, version: ARIAVersion) {
 	const tree: [string, string | null][] = [];
 	let current: Element | null = el;
 	while (current) {
-		tree.push([current.localName, getComputedRole(specs, current, version).role?.name || null]);
+		tree.push([current.localName, getComputedRole(specs, current, version).role?.name ?? null]);
 		current = current.children.item(0);
 	}
 	return tree;

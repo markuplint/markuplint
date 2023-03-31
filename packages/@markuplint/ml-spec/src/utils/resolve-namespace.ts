@@ -27,7 +27,7 @@ export function resolveNamespace(name: string, namespaceURI: string | null = 'ht
 	const explicitNS = _localName ? _explicitNS : null;
 	const localName = _localName ?? _explicitNS ?? '';
 	const namespace =
-		(['html', 'svg', 'mml', 'xlink'] as const).find(_ns => _ns === (explicitNS || getNS(namespaceURI || null))) ||
+		(['html', 'svg', 'mml', 'xlink'] as const).find(_ns => _ns === (explicitNS || getNS(namespaceURI ?? null))) ||
 		'html';
 	const result: NamespacedElementName = {
 		localNameWithNS: `${namespace === 'html' ? '' : `${namespace}:`}${localName}`,

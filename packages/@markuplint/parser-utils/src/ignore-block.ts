@@ -67,7 +67,7 @@ function maskText(
 			index,
 			startTag,
 			taggedCode,
-			endTag: endTag || null,
+			endTag: endTag ?? null,
 		});
 		/**
 		 * It will not replace line breaks because detects line number.
