@@ -140,8 +140,8 @@ export const checkNormalizedLocalDateAndTimeString: CustomSyntaxChecker = () =>
 			return res;
 		}
 
-		const _second = second.toNumber() || 0;
-		const _fp = fp.toNumber() || 0;
+		const _second = second.toNumber();
+		const _fp = fp.toNumber();
 
 		log('Omitting the seconds component: "%s.%s" => %d, %d', second?.value, fp?.value, _second, _fp);
 

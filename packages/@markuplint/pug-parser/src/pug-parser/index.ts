@@ -64,7 +64,7 @@ function optimizeAST(
 		const line = node.line;
 		const column = node.column;
 		const offsets = getOffsetsFromLines(pug);
-		const lineOffset = Math.max(offsets[line - 2] ?? 0, 0) || 0;
+		const lineOffset = Math.max(offsets[line - 2] ?? 0, 0);
 		const offset = lineOffset + column - 1;
 
 		const { endLine, endColumn, endOffset } = getLocationFromToken(offset, line, column, tokens);
@@ -384,7 +384,7 @@ function optimizeASTOfConditionalNode(
 
 	if (tokenOfCurrentNode) {
 		// console.log(JSON.stringify(node, null, 2));
-		const lineOffset = Math.max(offsets[node.line - 2] ?? 0, 0) || 0;
+		const lineOffset = Math.max(offsets[node.line - 2] ?? 0, 0);
 		const offset = lineOffset + node.column - 1;
 
 		const length = tokenOfCurrentNode.loc.end.column - tokenOfCurrentNode.loc.start.column;
@@ -421,7 +421,7 @@ function optimizeASTOfConditionalNode(
 					return [];
 				}
 
-				const lineOffset = Math.max(offsets[tokenOfCurrentNode.loc.start.line - 2] ?? 0, 0) || 0;
+				const lineOffset = Math.max(offsets[tokenOfCurrentNode.loc.start.line - 2] ?? 0, 0);
 				const offset = lineOffset + tokenOfCurrentNode.loc.start.column - 1;
 				const length = tokenOfCurrentNode.loc.end.column - tokenOfCurrentNode.loc.start.column;
 				const endOffset = offset + length;
@@ -558,7 +558,7 @@ function getEndAttributeLocation(
 			token.type !== 'id' &&
 			token.type !== 'class'
 		) {
-			const endAttrLineOffset = Math.max(offsets[beforeNewlineToken.loc.end.line - 2] ?? 0, 0) || 0;
+			const endAttrLineOffset = Math.max(offsets[beforeNewlineToken.loc.end.line - 2] ?? 0, 0);
 			const endAttrOffset = endAttrLineOffset + beforeNewlineToken.loc.end.column - 1;
 			return {
 				endOffset: endAttrOffset,
@@ -638,7 +638,7 @@ function getRawTextAndLocationEnd(
 			token.type !== 'indent' &&
 			token.type !== 'outdent'
 		) {
-			const endAttrLineOffset = Math.max(offsets[beforeNewlineToken.loc.end.line - 2] ?? 0, 0) || 0;
+			const endAttrLineOffset = Math.max(offsets[beforeNewlineToken.loc.end.line - 2] ?? 0, 0);
 			const endAttrOffset = endAttrLineOffset + beforeNewlineToken.loc.end.column - 1;
 			return {
 				endOffset: endAttrOffset,
