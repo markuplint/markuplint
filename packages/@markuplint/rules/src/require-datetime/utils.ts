@@ -34,7 +34,7 @@ export function parseADatetime(content: string, langs: readonly Lang[], base?: R
 		data.hour = date.get('hour')!;
 	}
 	if (date.isCertain('hour')) {
-		data.minute = date.get('minute') || 0;
+		data.minute = date.get('minute') ?? 0;
 	}
 	if (date.isCertain('second')) {
 		data.second = date.get('second')!;

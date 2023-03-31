@@ -288,7 +288,7 @@ export class TokenCollection extends Array<Token> {
 			wait--;
 			const result = callback.call(this, head, tail);
 			if (result && !result.matched) {
-				passCount += result.passCount || 0;
+				passCount += result.passCount ?? 0;
 				if (prev && result.offset === 0 && result.length === 0) {
 					const { offset, line, column } = Token.shiftLocation(prev, cumulativeOffset);
 					firstUnmatched = firstUnmatched || {
@@ -324,7 +324,7 @@ export class TokenCollection extends Array<Token> {
 					passCount += 4 * wait;
 				}
 			}
-			cumulativeOffset = head?.length || 0;
+			cumulativeOffset = head?.length ?? 0;
 			headAndTail = tail.headAndTail();
 			prev = head;
 			head = headAndTail.head;

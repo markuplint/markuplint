@@ -501,7 +501,7 @@ function getAttrs(
 	const attrs: ASTAttr[] = [];
 
 	for (const attr of originalAttrs) {
-		const attrLineOffset = offsets[attr.line - 2] || 0;
+		const attrLineOffset = offsets[attr.line - 2] ?? 0;
 		const attrOffset = attrLineOffset + attr.column - 1;
 
 		let tokenOfCurrentAttr: PugLexToken | null = null;

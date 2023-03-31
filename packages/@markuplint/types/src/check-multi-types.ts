@@ -17,9 +17,9 @@ export function checkMultiTypes(value: string, checks: readonly CustomSyntaxChec
 
 		// @ts-ignore
 		log('%s(%d) vs %s(%d)', unmatched?._fn, unmatched?.passCount, res._fn, res.passCount);
-		const passedA = unmatched?.passCount || 0;
-		const passedB = res.passCount || 0;
-		const offsetA = unmatched?.offset || 0;
+		const passedA = unmatched?.passCount ?? 0;
+		const passedB = res.passCount ?? 0;
+		const offsetA = unmatched?.offset ?? 0;
 		const offsetB = res.offset;
 
 		if (passedA < passedB || (passedA === passedB && offsetA <= offsetB)) {

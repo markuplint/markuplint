@@ -354,7 +354,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		const maxweek = getMaxWeekNum(this._year || 0);
+		const maxweek = getMaxWeekNum(this._year ?? 0);
 		const _week = week.toNumber();
 
 		if (!(1 <= _week && _week <= maxweek)) {
