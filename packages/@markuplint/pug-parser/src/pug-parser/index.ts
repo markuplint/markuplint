@@ -458,16 +458,13 @@ function getLocationFromToken(
 	column: number,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	tokens: readonly PugLexToken[],
-	tokenType: string | string[] = '',
+	tokenType?: string | readonly string[],
 ) {
+	const tokenTypes = typeof tokenType === 'string' ? (tokenType !== '' ? [tokenType] : null) : tokenType ?? null;
 	let tokenOfCurrentNode: PugLexToken | null = null;
 	for (const token of tokens) {
 		if (
-			(tokenType
-				? Array.isArray(tokenType)
-					? tokenType.includes(token.type)
-					: tokenType === token.type
-				: true) &&
+			(tokenTypes == null || tokenTypes.includes(token.type)) &&
 			token.loc.start.line === line &&
 			token.loc.start.column === column
 		) {

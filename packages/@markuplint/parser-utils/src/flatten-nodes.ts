@@ -72,7 +72,7 @@ export function flattenNodes(
 			if (lastNode.type === 'text') {
 				// Correction for Parse5 AST
 				// prev node: ? -> html
-				lastNode.prevNode = lastNode.parentNode && lastNode.parentNode.parentNode;
+				lastNode.prevNode = lastNode.parentNode?.parentNode ?? lastNode.parentNode;
 				if (lastNode.prevNode) {
 					lastNode.prevNode.nextNode = lastNode;
 				}
@@ -92,8 +92,8 @@ export function flattenNodes(
 				const lastTextContent = rawHtml.slice(lastOffset);
 				// console.log(`"${lastTextContent}"`);
 				if (lastTextContent) {
-					const line = lastNode ? lastNode.endLine : 0;
-					const col = lastNode ? lastNode.endCol : 0;
+					const line = lastNode?.endLine ?? 0;
+					const col = lastNode?.endCol ?? 0;
 					const lastTextNode: MLASTText = {
 						uuid: uuid(),
 						raw: lastTextContent,
