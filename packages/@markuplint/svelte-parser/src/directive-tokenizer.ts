@@ -33,11 +33,11 @@ export default function directiveTokenizer(
 		spacesBeforeAttrString = beforeMatchedMap[1] ?? '';
 		nameChars = beforeMatchedMap[2] ?? '';
 		spacesBeforeEqualChars = beforeMatchedMap[3] ?? '';
-		equalChars = beforeMatchedMap[4] || null;
+		equalChars = beforeMatchedMap[4] ?? null;
 		spacesAfterEqualChars = beforeMatchedMap[5] ?? '';
-		valueChars = (beforeMatchedMap[6] ?? '') + rawValue + (afterMatchedMap[1] || '');
+		valueChars = (beforeMatchedMap[6] ?? '') + rawValue + (afterMatchedMap[1] ?? '');
 	} else if (beforeWithoutNameMatchedMap && afterMatchedMap) {
-		valueChars = (beforeWithoutNameMatchedMap[1] || '') + rawValue + (afterMatchedMap[1] || '');
+		valueChars = (beforeWithoutNameMatchedMap[1] ?? '') + rawValue + (afterMatchedMap[1] ?? '');
 	} else if (reNameOnly.test(raw)) {
 		const token = attrTokenizer(raw, line, col, startOffset);
 		token.isDirective = true;

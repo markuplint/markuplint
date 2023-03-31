@@ -8,7 +8,7 @@ export async function readPackageJson(dir: string) {
 		const json = await fs.readFile(filePath, { encoding: 'utf-8' });
 		const data = JSON.parse(json);
 
-		return (data?.name as string) || null;
+		return (data?.name as string) ?? null;
 	} catch (_) {
 		return null;
 	}

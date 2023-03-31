@@ -18,11 +18,11 @@ function distinguishAuthoredName(
 	pattern?: ParserAuthoredElementNameDistinguishing,
 	defaultPattern?: ParserAuthoredElementNameDistinguishing,
 ) {
-	if (pattern) {
+	if (pattern != null) {
 		return _distinguishAuthoredName(name, pattern);
 	}
 
-	if (defaultPattern) {
+	if (defaultPattern != null) {
 		return _distinguishAuthoredName(name, defaultPattern);
 	}
 

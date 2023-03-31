@@ -11,7 +11,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 		let message = messageTmpl;
 
 		if (typeof messageTmpl !== 'string') {
-			const format = localeSet?.listFormat || defaultListFormat;
+			const format = localeSet?.listFormat ?? defaultListFormat;
 			return `${format.quoteStart}${messageTmpl
 				.map(keyword => translateKeyword(keyword, '', localeSet))
 				.join(`${format.quoteEnd}${format.separator}${format.quoteStart}`)}${format.quoteEnd}`;

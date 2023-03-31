@@ -14,7 +14,7 @@ export function getContentModel(
 ) {
 	const cacheByEl = cachesBySpecs.get(specs) ?? new Map<Element, PermittedContentPattern[] | boolean>();
 	const cached = cacheByEl.get(el);
-	if (cached) {
+	if (cached !== undefined) {
 		return cached;
 	}
 

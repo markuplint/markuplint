@@ -773,7 +773,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-id%E2%91%A0
 	 */
 	get id() {
-		return this.getAttribute('id') || '';
+		return this.getAttribute('id') ?? '';
 	}
 
 	/**
@@ -2683,7 +2683,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			gap = gap + this.fixedNodeName.length - this.nodeName.length;
 		}
 		for (const attr of Array.from(this.attributes)) {
-			const startOffset = (attr.spacesBeforeName?.startOffset || attr.startOffset) - this.startOffset;
+			const startOffset = (attr.spacesBeforeName?.startOffset ?? attr.startOffset) - this.startOffset;
 			const fixedAttr = attr.toString();
 			if (attr.originRaw !== fixedAttr) {
 				fixed = stringSplice(fixed, startOffset + gap, attr.originRaw.length, fixedAttr);
@@ -2783,7 +2783,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-slot%E2%91%A0
 	 */
 	get slot() {
-		return this.getAttribute('slot') || '';
+		return this.getAttribute('slot') ?? '';
 	}
 
 	/**
@@ -2844,7 +2844,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 	get textContent(): string {
 		return Array.from(this.childNodes)
-			.map(child => child.textContent || '')
+			.map(child => child.textContent ?? '')
 			.join('');
 	}
 
@@ -3060,7 +3060,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#dom-element-getattributenode
 	 */
 	getAttributeNode(qualifiedName: string): MLAttr<T, O> | null {
-		return this.getAttributeToken(qualifiedName)[0] || null;
+		return this.getAttributeToken(qualifiedName)[0] ?? null;
 	}
 
 	/**
@@ -3227,7 +3227,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#dom-element-hasattributes
 	 */
 	hasAttributes() {
-		return !!this.attributes.length;
+		return this.attributes.length > 0;
 	}
 
 	/**
@@ -3354,9 +3354,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-matches%E2%91%A0
 	 */
 	matches(selector: string): boolean {
-		return !!createSelector(selector, this.ownerMLDocument.specs).match(
-			// Prioritize the pretender
-			this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as : this,
+		return (
+			createSelector(selector, this.ownerMLDocument.specs).match(
+				// Prioritize the pretender
+				this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as : this,
+			) !== false
 		);
 	}
 
@@ -3377,18 +3379,19 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			nodeName = pretenderConfig.as;
 		} else {
 			nodeName = pretenderConfig.as.element;
-			namespace = pretenderConfig.as.namespace || namespace;
+			namespace = pretenderConfig.as.namespace ?? namespace;
 			if (pretenderConfig.as.inheritAttrs) {
 				attributes.push(...this._astToken.attributes);
 			}
 			if (pretenderConfig.as.attrs) {
 				attributes.push(
 					...pretenderConfig.as.attrs.map(({ name, value }, i) => {
-						const _value = value
-							? typeof value === 'string'
-								? value
-								: this.getAttribute(value.fromAttr) || ''
-							: '';
+						const _value =
+							value != null
+								? typeof value === 'string'
+									? value
+									: this.getAttribute(value.fromAttr) ?? ''
+								: '';
 						return {
 							...this._astToken,
 							uuid: `${this.uuid}_attr_${i}`,
@@ -3672,7 +3675,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 		const children = this.getChildElementsAndTextNodeWithoutWhitespaces();
 		const attrs = this.attributes.map(attr => attr.toNormalizeString());
-		const attrString = attrs.length ? ' ' + attrs.join('') : '';
+		const attrString = attrs.length > 0 ? ' ' + attrs.join('') : '';
 		const startTag = `<${this.nodeName}${attrString}>`;
 		const childNodes = children.map(node => {
 			if (node.is(node.ELEMENT_NODE)) {

@@ -11,7 +11,7 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 		cacheMap.clear();
 	}
 
-	const { localNameWithNS } = resolveNamespace(localName, namespace || undefined);
+	const { localNameWithNS } = resolveNamespace(localName, namespace ?? undefined);
 
 	const cache = cacheMap.get(localNameWithNS);
 
@@ -33,7 +33,7 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 	for (const catName in elSpec.globalAttrs) {
 		// @ts-ignore
 		const catAttrs: boolean | string[] = elSpec.globalAttrs[catName];
-		if (!catAttrs) {
+		if (catAttrs === false) {
 			continue;
 		}
 		if (typeof catAttrs === 'boolean') {
@@ -79,21 +79,6 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 		const attr = attrs[name];
 		return { name, type: 'Any', ...attr };
 	});
-
-	for (const attr of attrList) {
-		if (!attr.type) {
-			throw new Error(
-				`The type is empty in the ${attr.name} attribute of the ${localName} element,
-					'packages',
-					'@markuplint',
-					'html-spec',
-					'src',
-					'attributes',
-					nameWithNS.replace(':', '_') + '.json',
-				)})`,
-			);
-		}
-	}
 
 	attrList.sort(nameCompare);
 

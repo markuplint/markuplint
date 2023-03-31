@@ -215,7 +215,7 @@ export abstract class MLNode<
 			this.is(this.MARKUPLINT_PREPROCESSOR_BLOCK)
 		) {
 			// @ts-ignore
-			const astChildren: MLASTNode[] = this._astToken.childNodes || [];
+			const astChildren: MLASTNode[] = this._astToken.childNodes ?? [];
 			const childNodes = astChildren
 				.map(node => nodeStore.getNode<typeof node, T, O>(node))
 				.filter((node): node is MLChildNode<T, O> => isChildNode(node));
@@ -454,8 +454,8 @@ export abstract class MLNode<
 			this.#prevToken = null;
 			return this.#prevToken;
 		}
-		this.#prevToken = this.ownerMLDocument.nodeList[index - 1] || null;
-		return this.#prevToken || null;
+		this.#prevToken = this.ownerMLDocument.nodeList[index - 1] ?? null;
+		return this.#prevToken ?? null;
 	}
 
 	/**
@@ -481,6 +481,7 @@ export abstract class MLNode<
 
 		const rule = this.ownerMLDocument.currentRule.optimizeOption(settingRule as Rule<T, O>);
 
+		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 		if (!rule) {
 			throw new Error(
 				`Rule data "${name}" doesn't exist in rules ([${Object.keys(this.rules).map(

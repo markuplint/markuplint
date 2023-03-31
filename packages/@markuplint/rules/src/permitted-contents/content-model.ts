@@ -39,7 +39,7 @@ function createModel(
 
 const caches = new Map<string, Specs>();
 function cachedSpecs(specs: MLMLSpec, rules: readonly TagRule[]): Specs {
-	if (!rules.length) {
+	if (rules.length === 0) {
 		return specs;
 	}
 

@@ -62,7 +62,7 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 			};
 		}
 	}
-	if (Object.keys(parser).length) {
+	if (Object.keys(parser).length > 0) {
 		config.parser = parser;
 	}
 
@@ -80,7 +80,7 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 			}
 		}
 	} else if (mode === 'recommended') {
-		config.extends = [...(config.extends || []), 'markuplint:recommended'];
+		config.extends = [...(config.extends ?? []), 'markuplint:recommended'];
 	} else {
 		const ruleNames = Object.keys(defaultRules);
 		for (const ruleName of ruleNames) {
@@ -91,7 +91,7 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 			rules[ruleName] = rule.defaultValue;
 		}
 	}
-	if (Object.keys(rules).length) {
+	if (Object.keys(rules).length > 0) {
 		config.rules = rules;
 	}
 

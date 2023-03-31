@@ -30,25 +30,23 @@ export function flattenNodes(
 			const endTag = node;
 			if (endTag.nodeName.toLowerCase() === 'body' && prevToken.type === 'text') {
 				const prevWreckagesText = prevToken;
-				if (prevWreckagesText) {
-					const wreckages = tagSplitter(
-						prevWreckagesText.raw,
-						prevWreckagesText.startLine,
-						prevWreckagesText.startCol,
-					);
-					if (wreckages.length && wreckages[0]) {
-						// console.log('wreckages\n', wreckages);
-						const lastText = wreckages[0];
-						const raw = lastText.raw;
-						const startLine = lastText.line;
-						const startCol = lastText.col;
-						prevWreckagesText.raw = raw;
-						prevWreckagesText.endOffset = prevWreckagesText.startOffset + raw.length;
-						prevWreckagesText.startLine = startLine;
-						prevWreckagesText.endLine = getEndLine(raw, startLine);
-						prevWreckagesText.startCol = startCol;
-						prevWreckagesText.endCol = getEndCol(raw, startCol);
-					}
+				const wreckages = tagSplitter(
+					prevWreckagesText.raw,
+					prevWreckagesText.startLine,
+					prevWreckagesText.startCol,
+				);
+				if (wreckages.length > 0 && wreckages[0]) {
+					// console.log('wreckages\n', wreckages);
+					const lastText = wreckages[0];
+					const raw = lastText.raw;
+					const startLine = lastText.line;
+					const startCol = lastText.col;
+					prevWreckagesText.raw = raw;
+					prevWreckagesText.endOffset = prevWreckagesText.startOffset + raw.length;
+					prevWreckagesText.startLine = startLine;
+					prevWreckagesText.endLine = getEndLine(raw, startLine);
+					prevWreckagesText.startCol = startCol;
+					prevWreckagesText.endCol = getEndCol(raw, startCol);
 				}
 			}
 		}
@@ -72,7 +70,7 @@ export function flattenNodes(
 			if (lastNode.type === 'text') {
 				// Correction for Parse5 AST
 				// prev node: ? -> html
-				lastNode.prevNode = lastNode.parentNode && lastNode.parentNode.parentNode;
+				lastNode.prevNode = lastNode.parentNode?.parentNode ?? lastNode.parentNode;
 				if (lastNode.prevNode) {
 					lastNode.prevNode.nextNode = lastNode;
 				}
@@ -92,8 +90,8 @@ export function flattenNodes(
 				const lastTextContent = rawHtml.slice(lastOffset);
 				// console.log(`"${lastTextContent}"`);
 				if (lastTextContent) {
-					const line = lastNode ? lastNode.endLine : 0;
-					const col = lastNode ? lastNode.endCol : 0;
+					const line = lastNode?.endLine ?? 0;
+					const col = lastNode?.endCol ?? 0;
 					const lastTextNode: MLASTText = {
 						uuid: uuid(),
 						raw: lastTextContent,
@@ -111,11 +109,9 @@ export function flattenNodes(
 						isFragment: false,
 						isGhost: false,
 					};
-					if (lastNode) {
-						lastNode.nextNode = lastTextNode;
-						if ((lastNode.type === 'starttag' || lastNode.type === 'endtag') && lastNode.pearNode) {
-							lastNode.pearNode.nextNode = lastTextNode;
-						}
+					lastNode.nextNode = lastTextNode;
+					if ((lastNode.type === 'starttag' || lastNode.type === 'endtag') && lastNode.pearNode) {
+						lastNode.pearNode.nextNode = lastTextNode;
 					}
 					nodeOrders.push(lastTextNode);
 				}
@@ -128,7 +124,7 @@ export function flattenNodes(
 	 */
 	const result: MLASTNode[] = [];
 	nodeOrders.forEach(node => {
-		const prevNode = result[result.length - 1] || null;
+		const prevNode = result[result.length - 1] ?? null;
 		if (node.type === 'text' && prevNode && prevNode.type === 'text') {
 			prevNode.raw = prevNode.raw + node.raw;
 			prevNode.endOffset = node.endOffset;
@@ -273,8 +269,7 @@ function arrayize(
 		prevCol = node.endCol;
 
 		// for ghost nodes
-		node.startOffset = node.startOffset || node.startOffset;
-		node.endOffset = node.endOffset || currentEndOffset;
+		node.endOffset = node.endOffset ?? currentEndOffset;
 
 		nodeOrders.push(node);
 	});

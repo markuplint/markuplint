@@ -62,7 +62,7 @@ function traverse(
 		return nodeList;
 	}
 
-	if (!rootNode.children.length) {
+	if (rootNode.children.length === 0) {
 		return nodeList;
 	}
 
@@ -204,7 +204,7 @@ function nodeize(
 				isGhost: false,
 			};
 
-			if (originNode.children.length) {
+			if (originNode.children.length > 0) {
 				node.childNodes = traverse(originNode, parentNode, scopeNS, rawHtml, offset, options, true);
 			}
 
@@ -302,9 +302,9 @@ function parseElement(
 
 	let childrenStart: number;
 	let childrenEnd: number;
-	if (originNode.children && originNode.children[0]) {
-		childrenStart = (originNode.children[0].position?.start?.offset || 0) + offset;
-		childrenEnd = (originNode.children[originNode.children.length - 1]?.position?.end?.offset || 0) + offset;
+	if (originNode.children[0]) {
+		childrenStart = (originNode.children[0].position?.start?.offset ?? 0) + offset;
+		childrenEnd = (originNode.children[originNode.children.length - 1]?.position?.end?.offset ?? 0) + offset;
 	} else {
 		childrenStart = offset + (originNode.position.end?.offset ?? nextNode?.endOffset ?? rawHtml.length - offset);
 		childrenEnd = childrenStart;
@@ -312,7 +312,7 @@ function parseElement(
 		const startTagEndOffset = childrenStart;
 		const tag = rawHtml.slice(startTagStartOffset, startTagEndOffset);
 		const expectedCloseTag = `</${originNode.name}>`;
-		if (tag.search(expectedCloseTag) !== -1) {
+		if (tag.includes(expectedCloseTag)) {
 			childrenStart -= expectedCloseTag.length;
 			childrenEnd = childrenStart;
 		}

@@ -59,7 +59,7 @@ function getVersionResolvedARIA(specs: MLMLSpec, localName: string, namespace: s
 		return null;
 	}
 	aria = resolveVersion(spec, version);
-	if (aria.permittedRoles) {
+	if (aria.permittedRoles !== false) {
 		aria = {
 			...aria,
 			permittedRoles: optimizePermittedRoles(aria.permittedRoles),

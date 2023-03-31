@@ -23,6 +23,9 @@
 			"path": "../selector"
 		},
 		{
+			"path": "../shared"
+		},
+		{
 			"path": "../types"
 		}
 	],

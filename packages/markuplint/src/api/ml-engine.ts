@@ -97,7 +97,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 			};
 		}
 
-		const debugMap = ('debugMap' in core.document && core.document.debugMap()) || null;
+		const debugMap = 'debugMap' in core.document ? core.document.debugMap() : null;
 
 		this.emit('lint', this.#file.path, sourceCode, violations, fixedCode, debugMap);
 		log('exec: end');
@@ -194,7 +194,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		}
 
 		// Exclude
-		const excludeFiles = configSet.config.excludeFiles || [];
+		const excludeFiles = configSet.config.excludeFiles ?? [];
 		for (const excludeFile of excludeFiles) {
 			if (this.#file.matches(excludeFile)) {
 				this.emit('exclude', this.#file.path, excludeFile);
@@ -221,7 +221,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 
 		const schemas = await this.resolveSchemas(configSet);
 		if (fileLog.enabled) {
-			if (schemas[0].cites.length) {
+			if (schemas[0].cites.length > 0) {
 				const [, ...additionalSpecs] = schemas;
 				fileLog('Resolved schemas: HTML Standard');
 				for (const additionalSpec of additionalSpecs) {
@@ -264,7 +264,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 
 		const configFilePathsFromTarget = this.#options?.noSearchConfig
 			? defaultConfigKey ?? null
-			: (await this.#configProvider.search(this.#file)) || defaultConfigKey;
+			: (await this.#configProvider.search(this.#file)) ?? defaultConfigKey;
 		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
 		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 

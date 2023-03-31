@@ -61,7 +61,7 @@ export function matches(
 
 	const matched = selectorResult.filter((r): r is SelectorMatchedResult => r.matched);
 
-	if (matched.length) {
+	if (matched.length > 0) {
 		return {
 			matched: true,
 		};
@@ -85,9 +85,9 @@ function descendants(
 	selectorResult: SelectorMatchedResult,
 ): ChildNode[] {
 	let nodes: ChildNode[] = selectorResult.nodes.slice() as ChildNode[];
-	while (selectorResult.has.length) {
+	while (selectorResult.has.length > 0) {
 		for (const dep of selectorResult.has) {
-			if (!dep.has.length) {
+			if (dep.has.length === 0) {
 				nodes = dep.nodes as ChildNode[];
 				continue;
 			}

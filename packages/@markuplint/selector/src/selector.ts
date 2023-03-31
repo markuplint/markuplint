@@ -78,7 +78,7 @@ class Ruleset {
 	constructor(selectors: ReadonlyDeep<parser.Selector[]>, extended: ExtendedPseudoClass, depth: number) {
 		this.#selectorGroup.push(...selectors.map(selector => new StructuredSelector(selector, depth, extended)));
 		const head = this.#selectorGroup[0];
-		this.headCombinator = head?.headCombinator || null;
+		this.headCombinator = head?.headCombinator ?? null;
 
 		if (this.headCombinator) {
 			if (depth <= 0) {
@@ -116,7 +116,7 @@ class StructuredSelector {
 		this.#selector = selector;
 		this.#edge = new SelectorTarget(extended, depth);
 		this.headCombinator =
-			this.#selector.nodes[0]?.type === 'combinator' ? this.#selector.nodes[0].value || null : null;
+			this.#selector.nodes[0]?.type === 'combinator' ? this.#selector.nodes[0].value ?? null : null;
 		const nodes = this.#selector.nodes.slice();
 		if (0 < depth && this.headCombinator) {
 			nodes.unshift(pseudo({ value: ':scope' }));
@@ -229,11 +229,11 @@ class SelectorTarget {
 		const result = this._match(el, scope, count);
 		if (selLog.enabled) {
 			const nodeName = el.nodeName;
-			const selector = this.#combinedFrom?.target.toString() || this.toString();
+			const selector = this.#combinedFrom?.target.toString() ?? this.toString();
 			const combinator = result.combinator ? ` ${result.combinator}` : '';
 			selLog('The %s element by "%s" => %s (%d)', nodeName, `${selector}${combinator}`, result.matched, count);
 			if (selector === ':scope') {
-				selLog(`† Scope is the ${scope?.nodeName || null}`);
+				selLog(`† Scope is the ${scope?.nodeName ?? null}`);
 			}
 		}
 		delete result.combinator;
@@ -303,7 +303,7 @@ class SelectorTarget {
 						unitCheck.specificity[2] + res.specificity[2],
 					];
 				}
-				if (matchedNodes.length) {
+				if (matchedNodes.length > 0) {
 					return {
 						combinator: '␣',
 						specificity,
@@ -346,7 +346,7 @@ class SelectorTarget {
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
 				}
-				if (matchedNodes.length) {
+				if (matchedNodes.length > 0) {
 					return {
 						combinator: '>',
 						specificity,
@@ -388,7 +388,7 @@ class SelectorTarget {
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
 				}
-				if (matchedNodes.length) {
+				if (matchedNodes.length > 0) {
 					return {
 						combinator: '+',
 						specificity,
@@ -438,7 +438,7 @@ class SelectorTarget {
 						unitCheck.specificity[2] + res.specificity[2],
 					];
 				}
-				if (matchedNodes.length) {
+				if (matchedNodes.length > 0) {
 					return {
 						combinator: '~',
 						specificity,
@@ -619,7 +619,7 @@ function attrMatch(
 					break;
 				}
 				case '*=': {
-					if (valueOfEl.indexOf(value) === -1) {
+					if (!valueOfEl.includes(value)) {
 						return false;
 					}
 					break;
@@ -663,7 +663,7 @@ function pseudoMatch(
 			let parent = el.parentElement;
 			while (parent) {
 				const matched = ruleset.match(parent, scope).filter((r): r is SelectorMatchedResult => r.matched);
-				if (matched.length) {
+				if (matched.length > 0) {
 					return {
 						specificity,
 						matched: true,
@@ -708,7 +708,7 @@ function pseudoMatch(
 			const matched = resList.filter((r): r is SelectorMatchedResult => r.matched);
 			return {
 				specificity,
-				matched: !!matched.length,
+				matched: matched.length > 0,
 				nodes: matched.map(m => m.nodes).flat(),
 				has: matched.map(m => m.has).flat(),
 			};
@@ -722,7 +722,7 @@ function pseudoMatch(
 					const has = getSiblings(el)
 						.map(sib => ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched))
 						.flat();
-					if (has.length) {
+					if (has.length > 0) {
 						return {
 							specificity,
 							matched: true,
@@ -739,7 +739,7 @@ function pseudoMatch(
 					const has = getDescendants(el)
 						.map(sib => ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched))
 						.flat();
-					if (has.length) {
+					if (has.length > 0) {
 						return {
 							specificity,
 							matched: true,
@@ -760,7 +760,7 @@ function pseudoMatch(
 			const matched = resList.filter((r): r is SelectorMatchedResult => r.matched);
 			return {
 				specificity: [0, 0, 0],
-				matched: !!matched.length,
+				matched: matched.length > 0,
 				nodes: matched.map(m => m.nodes).flat(),
 				has: matched.map(m => m.has).flat(),
 			};
@@ -870,7 +870,7 @@ function isScope(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	scope: ParentNode | null,
 ) {
-	return el === scope || el.parentNode === null;
+	return el === scope ?? el.parentNode === null;
 }
 
 function getDescendants(
@@ -890,7 +890,7 @@ function getSiblings(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 ) {
-	return Array.from(el.parentElement?.children || []);
+	return Array.from(el.parentElement?.children ?? []);
 }
 
 function getSpecificity(

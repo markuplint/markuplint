@@ -51,7 +51,7 @@ export function sequentialWalker<T extends RuleConfigValue, O extends PlainData 
 			}
 
 			const node = list[index];
-			if (!node) {
+			if (node == null) {
 				_resolve();
 				return;
 			}

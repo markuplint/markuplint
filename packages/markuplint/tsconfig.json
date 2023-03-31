@@ -32,6 +32,9 @@
 		},
 		{
 			"path": "../@markuplint/html-spec"
+		},
+		{
+			"path": "../@markuplint/shared"
 		}
 	],
 	"include": ["./src/**/*"],

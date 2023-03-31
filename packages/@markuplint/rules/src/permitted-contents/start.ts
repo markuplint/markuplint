@@ -23,7 +23,7 @@ export function start(
 	options: Options,
 ): ContentModelResult[] {
 	if (contents === false) {
-		if (el.childNodes.length) {
+		if (el.childNodes.length > 0) {
 			return [
 				{
 					type: 'NOTHING',

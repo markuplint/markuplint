@@ -12,7 +12,7 @@ import rules from '@markuplint/rules';
 export type { MLCore } from '@markuplint/ml-core';
 
 export const createLinter = async (ruleset: Ruleset) => {
-	const language = navigator.language || '';
+	const language = navigator.language ?? '';
 	const langCode = language.split(/_|-/)[0];
 	// @ts-ignore TODO: Solve types
 	const localSet: LocaleSet =

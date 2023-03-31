@@ -11,7 +11,7 @@ import { getComputedAriaProps } from './get-computed-aria-props';
 function _(html: string, selector?: string) {
 	return createJSDOMElement(html, selector, function (selector) {
 		// JSDOM supports no level 4 selectors yet.
-		return !!createSelector(selector, specs).match(this);
+		return createSelector(selector, specs).match(this) !== false;
 	});
 }
 

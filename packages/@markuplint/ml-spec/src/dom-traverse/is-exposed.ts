@@ -30,7 +30,7 @@ export function isExposed(
 	// Return true if the element is unknown, deprecated, or obsolete.
 	const { localName, namespace } = resolveNamespace(el.localName, el.namespaceURI);
 	const spec = getSpecByTagName(specs.specs, localName, namespace);
-	if (!spec || spec.deprecated || spec.obsolete) {
+	if (!spec || spec.deprecated || spec.obsolete != null) {
 		return true;
 	}
 
@@ -93,7 +93,7 @@ function isExcluding(
 	 *   These exceptions and conditions are documented in the presentation (role)
 	 *   section.
 	 */
-	if (isPresentational((el.getAttribute('role') || '').split(/\s+/)[0])) {
+	if (isPresentational((el.getAttribute('role') ?? '').split(/\s+/)[0])) {
 		return true;
 	}
 

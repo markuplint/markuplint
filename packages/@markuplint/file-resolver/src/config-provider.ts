@@ -1,15 +1,17 @@
 import type { MLFile } from './ml-file';
-import type { ConfigSet, Nullable } from './types';
+import type { ConfigSet } from './types';
 import type { Config } from '@markuplint/ml-config';
+import type { Nullable } from '@markuplint/shared';
 
 import path from 'path';
 
 import { mergeConfig } from '@markuplint/ml-config';
 import { getPreset } from '@markuplint/ml-core';
+import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
 import { load as loadConfig, search } from './cosmiconfig';
 import { cacheClear, resolvePlugins } from './resolve-plugins';
-import { fileExists, nonNullableFilter, uuid } from './utils';
+import { fileExists, uuid } from './utils';
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
 
@@ -36,15 +38,15 @@ export class ConfigProvider {
 
 		const plugins = await resolvePlugins(configSet.config.plugins);
 
-		if (this.#held.size) {
+		if (this.#held.size > 0) {
 			const extendHelds = Array.from(this.#held.values());
 			for (const held of extendHelds) {
-				const [, prefix, namespace, name] = held.match(/^([a-z]+:)([^/]+)(?:\/(.+))?$/) || [];
+				const [, prefix, namespace, name] = held.match(/^([a-z]+:)([^/]+)(?:\/(.+))?$/) ?? [];
 
 				switch (prefix) {
 					case 'plugin:': {
 						const plugin = plugins.find(plugin => plugin.name === namespace);
-						const config = name && plugin?.configs?.[name];
+						const config = plugin?.configs?.[name ?? ''];
 						if (config) {
 							this.set(config, held);
 						}
@@ -96,7 +98,7 @@ export class ConfigProvider {
 	}
 
 	set(config: Config, key?: string) {
-		key = key || uuid();
+		key = key ?? uuid();
 		this.#store.set(key, config);
 		return key;
 	}
@@ -108,7 +110,7 @@ export class ConfigProvider {
 		}
 
 		if (isPreset(filePath)) {
-			const [, name] = filePath.match(/^markuplint:(.+)$/i) || [];
+			const [, name] = filePath.match(/^markuplint:(.+)$/i) ?? [];
 			const config = await getPreset(name ?? filePath);
 			const pathResolvedConfig = this._pathResolve(config, filePath);
 
@@ -194,7 +196,7 @@ export class ConfigProvider {
 
 		this.#recursiveLoadKeyAndDepth.set(key, depth);
 
-		let config = this.#store.get(key) || null;
+		let config = this.#store.get(key) ?? null;
 		if (!config) {
 			config = await this._load(key, cache);
 		}
@@ -203,7 +205,7 @@ export class ConfigProvider {
 			return { stack, errs: null };
 		}
 
-		const depKeys = config.extends ? (Array.isArray(config.extends) ? config.extends : [config.extends]) : null;
+		const depKeys = config.extends !== null ? toNoEmptyStringArrayFromStringOrArray(config.extends) : null;
 		if (depKeys) {
 			for (const depKey of depKeys) {
 				const keys = await this._recursiveLoad(depKey, cache, depth + 1);
@@ -224,7 +226,7 @@ export class ConfigProvider {
 async function load(filePath: string, cache: boolean) {
 	if (!fileExists(filePath) && moduleExists(filePath)) {
 		const mod = await import(filePath);
-		const config: Config | null = mod?.default || null;
+		const config: Config | null = mod?.default ?? null;
 		return config;
 	}
 	const res = await loadConfig<Config>(filePath, !cache);

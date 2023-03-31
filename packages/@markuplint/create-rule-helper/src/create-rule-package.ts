@@ -16,7 +16,7 @@ export async function createRulePackage({
 
 	const files = await glob(newRuleDir);
 
-	if (files.length) {
+	if (files.length > 0) {
 		throw new CreateRuleHelperError('The directory is not empty');
 	}
 

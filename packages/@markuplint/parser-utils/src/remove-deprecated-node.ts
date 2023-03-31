@@ -35,7 +35,7 @@ export function removeDeprecatedNode(
 		stack[id] = i;
 	});
 	let r = nodeOrders.length;
-	while (r--) {
+	while (r-- > 0) {
 		if (removeIndexes.includes(r)) {
 			nodeOrders.splice(r, 1);
 		}

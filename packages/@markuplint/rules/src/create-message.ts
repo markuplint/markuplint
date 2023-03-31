@@ -74,7 +74,7 @@ export function __createMessageValueExpected(
 			break;
 		}
 		case 'extra-token': {
-			const token = matches.partName || 'token';
+			const token = matches.partName ?? 'token';
 			reasonPart = t('Found {0}', t('extra {0}', token)) + ' ' + t([matches.raw]);
 			if (matches.extra) {
 				const extra = expectValueToWord(t, matches.extra, 'Any');
@@ -223,7 +223,7 @@ function createExpectedObject(
 ): string | null {
 	const expectedObject: string[] = [];
 
-	if (matches.expects?.length) {
+	if (matches.expects && matches.expects.length > 0) {
 		expectedObject.push(
 			...matches.expects.map(expect => {
 				return expectValueToWord(t, expect, type);

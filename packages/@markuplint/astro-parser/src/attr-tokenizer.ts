@@ -56,7 +56,7 @@ export function attrTokenizer(
 	 *
 	 * @see https://docs.astro.build/en/reference/directives-reference/
 	 */
-	const [, directive] = result.name.raw.match(/^([^:]+):([^:]+)$/) || [];
+	const [, directive] = result.name.raw.match(/^([^:]+):([^:]+)$/) ?? [];
 	if (directive) {
 		const lowerCaseDirectiveName = directive.toLowerCase();
 		switch (lowerCaseDirectiveName) {

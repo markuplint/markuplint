@@ -12,6 +12,6 @@ import type { FormattedPrimitiveTypeCreator } from '../types';
  */
 export const isItempropName: FormattedPrimitiveTypeCreator = () => {
 	return value => {
-		return value.indexOf(':') === -1 && value.indexOf('.') === -1 && value.indexOf(' ') === -1;
+		return value.includes(':') && value.includes('.') && value.includes(' ');
 	};
 };

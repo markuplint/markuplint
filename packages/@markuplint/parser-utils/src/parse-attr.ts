@@ -104,7 +104,7 @@ export function tokenize(raw: string, options?: ParseAttrOptions) {
 	let value = '';
 	let endQuote = '';
 	let afterAttr = '';
-	while (charactors.length) {
+	while (charactors.length > 0) {
 		const charactor = charactors.shift()!;
 
 		if (state === 'b-name') {

@@ -30,7 +30,7 @@ export function getAccname(
 					return getAccname(child, version);
 				}
 				if (child.is(child.TEXT_NODE)) {
-					return child.textContent || '';
+					return child.textContent ?? '';
 				}
 				return '';
 			})
@@ -57,7 +57,7 @@ function getAccnameFromPretender(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: MLElement<any, any>,
 ) {
-	if (el.pretenderContext?.type === 'pretender' && el.pretenderContext.aria?.name) {
+	if (el.pretenderContext?.type === 'pretender' && el.pretenderContext.aria?.name != null) {
 		if (typeof el.pretenderContext.aria.name === 'boolean') {
 			return 'some-name(Pretender Options)';
 		}

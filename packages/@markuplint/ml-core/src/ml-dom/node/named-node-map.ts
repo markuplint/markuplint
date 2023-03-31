@@ -8,7 +8,7 @@ export class MLNamedNodeMap<T extends RuleConfigValue, O extends PlainData = und
 	implements NamedNodeMap
 {
 	getNamedItem(qualifiedName: string): MLAttr<T, O> | null {
-		return this.find(attr => attr.name === qualifiedName) || null;
+		return this.find(attr => attr.name === qualifiedName) ?? null;
 	}
 
 	/**

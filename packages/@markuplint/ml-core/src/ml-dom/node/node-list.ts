@@ -53,7 +53,7 @@ class MLHTMLCollection<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	namedItem(name: string): MLElement<T, O> | null {
-		return this.find(el => el.getAttribute('name') === name) || null;
+		return this.find(el => el.getAttribute('name') === name) ?? null;
 	}
 }
 

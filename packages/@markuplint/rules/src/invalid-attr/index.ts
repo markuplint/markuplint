@@ -62,7 +62,7 @@ export default createRule<boolean, Option>({
 			const valueNode = attr.valueNode;
 			const value = attr.value;
 
-			if (attr.rule.options.ignoreAttrNamePrefix) {
+			if (attr.rule.options.ignoreAttrNamePrefix != null) {
 				const ignoreAttrNamePrefixes = Array.isArray(attr.rule.options.ignoreAttrNamePrefix)
 					? attr.rule.options.ignoreAttrNamePrefix
 					: [attr.rule.options.ignoreAttrNamePrefix];
@@ -107,7 +107,7 @@ export default createRule<boolean, Option>({
 				invalid = isValidAttr(t, name, value, attr.isDynamicValue || false, attr.ownerElement, attrSpecs, log);
 			}
 
-			if (invalid) {
+			if (invalid !== false) {
 				switch (invalid.invalidType) {
 					case 'disallowed-attr': {
 						report({
@@ -124,9 +124,10 @@ export default createRule<boolean, Option>({
 							scope: attr,
 							message: invalid.message,
 							line: (valueNode?.startLine ?? 0) + (invalid.loc?.line ?? 0),
-							col: invalid.loc?.line
-								? invalid.loc?.col + 1
-								: (valueNode?.startCol ?? 0) + (invalid.loc?.col ?? 0),
+							col:
+								invalid.loc && invalid.loc.line > 0
+									? invalid.loc?.col + 1
+									: (valueNode?.startCol ?? 0) + (invalid.loc?.col ?? 0),
 							raw: invalid.loc?.raw ?? value,
 						});
 						break;

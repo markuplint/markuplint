@@ -17,23 +17,23 @@ export async function resolveParser(
 		...parserConfig,
 		'/\\.html?$/i': '@markuplint/html-parser',
 	};
-	parserOptions = parserOptions || {};
+	parserOptions = parserOptions ?? {};
 
 	let parserModName = '@markuplint/html-parser';
 	let matched = false;
-	if (parserConfig) {
-		for (const pattern of Object.keys(parserConfig)) {
-			if (path.basename(file.path).match(toRegexp(pattern))) {
-				const modName = parserConfig[pattern];
-				if (!modName) {
-					continue;
-				}
-				parserModName = modName;
-				matched = true;
-				break;
+
+	for (const pattern of Object.keys(parserConfig)) {
+		if (path.basename(file.path).match(toRegexp(pattern))) {
+			const modName = parserConfig[pattern];
+			if (!modName) {
+				continue;
 			}
+			parserModName = modName;
+			matched = true;
+			break;
 		}
 	}
+
 	const parser = await importParser(parserModName);
 
 	return {

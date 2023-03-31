@@ -79,7 +79,7 @@ export default createRule<Bullets, Options>({
 			}
 
 			const bullets = textNode.rule.value;
-			const spaceNeededBullets = textNode.rule.options.spaceNeededBullets || [];
+			const spaceNeededBullets = textNode.rule.options.spaceNeededBullets ?? [];
 
 			if (isMayListItem(text, bullets, spaceNeededBullets)) {
 				report({

@@ -10,7 +10,7 @@ export default function attrTokenizer(
 	if (attr.raw[0] === '#' || attr.raw[0] === '.') {
 		let value: string | undefined = '';
 		if (typeof attr.val === 'string') {
-			[, , value] = attr.val.match(/(['"`]?)([^\1]+)(\1)/) || ['', '', ''];
+			[, , value] = attr.val.match(/(['"`]?)([^\1]+)(\1)/) ?? ['', '', ''];
 		} else {
 			value = `${attr.val}`;
 		}
@@ -56,8 +56,8 @@ export default function attrTokenizer(
 		const withoutName = attr.raw.slice(attr.name.length);
 		const valueOffset = withoutName.indexOf(attr.val);
 		const equalAndBeforeSpaceAfterSpace = withoutName.slice(0, valueOffset);
-		const [, before, equal, after] = equalAndBeforeSpaceAfterSpace.match(/^(\s*)(=)(\s*)$/) || ['', '', '', ''];
-		const [, quote, coreValue] = attr.val.match(/(['"`]?)([^\1]+)(\1)/) || ['', '', ''];
+		const [, before, equal, after] = equalAndBeforeSpaceAfterSpace.match(/^(\s*)(=)(\s*)$/) ?? ['', '', '', ''];
+		const [, quote, coreValue] = attr.val.match(/(['"`]?)([^\1]+)(\1)/) ?? ['', '', ''];
 		spacesBeforeEqualChars = before ?? '';
 		equalChars = equal ?? '';
 		spacesAfterEqualChars = after ?? '';

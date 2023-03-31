@@ -1,5 +1,6 @@
 import type { ParserOptions } from '@markuplint/ml-ast';
 import type { RegexSelector } from '@markuplint/selector';
+import type { Nullable } from '@markuplint/shared';
 
 export type { RegexSelector } from '@markuplint/selector';
 
@@ -237,5 +238,3 @@ export type GlobalRuleInfo<T extends RuleConfigValue, O extends PlainData = unde
 	nodeRules: RuleInfo<T, O>[];
 	childNodeRules: RuleInfo<T, O>[];
 };
-
-export type Nullable<T> = T | null | undefined;

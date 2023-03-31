@@ -27,7 +27,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 		propsExtended = {};
 	} else {
 		defName = type.syntax.apply;
-		ebnf = type.syntax.ebnf || null;
+		ebnf = type.syntax.ebnf ?? null;
 
 		if (ebnf) {
 			// Work in progress
@@ -80,7 +80,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	}
 
 	const refParam = isProp ? 'Property' : 'Type';
-	ref = ref || `https://csstree.github.io/docs/syntax/#${refParam}:${name}`;
+	ref = ref ?? `https://csstree.github.io/docs/syntax/#${refParam}:${name}`;
 
 	// eslint-disable-next-line no-console
 	const _w = console.warn;

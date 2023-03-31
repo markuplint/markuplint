@@ -24,6 +24,7 @@
 		"@markuplint/ml-core": "3.4.0",
 		"@markuplint/ml-spec": "3.4.0",
 		"@markuplint/selector": "3.4.0",
+		"@markuplint/shared": "3.4.0",
 		"@markuplint/types": "3.3.0",
 		"@ungap/structured-clone": "^1.0.1",
 		"ansi-colors": "^4.1.3",

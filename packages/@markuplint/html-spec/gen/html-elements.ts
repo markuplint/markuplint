@@ -75,12 +75,12 @@ export async function getElements() {
 				aria: el.aria,
 				omission: mdnData.omission,
 				...el,
-				globalAttrs: sortObjectByKey(el.globalAttrs || {}),
+				globalAttrs: sortObjectByKey(el.globalAttrs ?? {}),
 				attributes: sortObjectByKey(
 					(() => {
 						const attrs = { ...el.attributes };
 
-						for (const mdnAttr of Object.values(mdnData.attributes || {})) {
+						for (const mdnAttr of Object.values(mdnData.attributes ?? {})) {
 							if (!mdnAttr.name) {
 								continue;
 							}

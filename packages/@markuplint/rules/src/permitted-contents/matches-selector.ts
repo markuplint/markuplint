@@ -30,7 +30,7 @@ export function matchesSelector(
 			nodeLog('<#text>.matches(%s) => ""', query);
 			return {
 				type: 'MATCHED_ZERO',
-				matched: node ? [node] : [],
+				matched: [],
 				unmatched: [],
 				zeroMatch: true,
 				query,

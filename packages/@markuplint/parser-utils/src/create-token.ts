@@ -5,7 +5,7 @@ import { v4 as uuid4 } from 'uuid';
 import { getEndCol, getEndLine, sliceFragment } from './get-location';
 
 export function tokenizer(raw: string | null, startLine: number, startCol: number, startOffset: number): MLToken {
-	raw = raw || '';
+	raw = raw ?? '';
 	const endLine = getEndLine(raw, startLine);
 	const endCol = getEndCol(raw, startCol);
 	const endOffset = startOffset + raw.length;
@@ -22,7 +22,7 @@ export function tokenizer(raw: string | null, startLine: number, startCol: numbe
 }
 
 export function createTokenFromRawCode(raw: string | null, startOffset: number, rawCode: string): MLToken {
-	raw = raw || '';
+	raw = raw ?? '';
 	const loc = sliceFragment(rawCode, startOffset, startOffset + raw.length);
 	return {
 		uuid: uuid(),

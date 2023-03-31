@@ -77,11 +77,10 @@ export function nodeize(
 			};
 		}
 		case 'Element': {
-			const children = originNode.children || [];
+			const children = originNode.children ?? [];
 			const reEndTag = new RegExp(`</${originNode.name}\\s*>$`, 'i');
-			const startTagEndOffset = children.length
-				? children[0]?.start ?? 0
-				: raw.replace(reEndTag, '').length + startOffset;
+			const startTagEndOffset =
+				children.length > 0 ? children[0]?.start ?? 0 : raw.replace(reEndTag, '').length + startOffset;
 			const startTagLocation = sliceFragment(rawHtml, startOffset, startTagEndOffset);
 
 			let endTag: MLASTElementCloseTag | null = null;
@@ -119,7 +118,7 @@ export function nodeize(
 				};
 			}
 
-			const directives = (originNode.attributes as SvelteDirective[]).map(a => attr(a, rawHtml)) || [];
+			const directives = (originNode.attributes as SvelteDirective[]).map(a => attr(a, rawHtml)) ?? [];
 			const attributes = directives.filter((d): d is MLASTAttr => !('__spreadAttr' in d));
 			const hasSpreadAttr = directives.some(d => '__spreadAttr' in d);
 

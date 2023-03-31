@@ -17,7 +17,7 @@ export function nodeListToDebugMaps(
 			if (n.is(n.ELEMENT_NODE)) {
 				r.push(`  namespaceURI: ${!!n.namespaceURI}`);
 				r.push(`  elementType: ${n.elementType}`);
-				r.push(`  isInFragmentDocument: ${!!n.isInFragmentDocument}`);
+				r.push(`  isInFragmentDocument: ${n.isInFragmentDocument()}`);
 				r.push(`  isForeignElement: ${!!n.isForeignElement}`);
 				if (withAttr) {
 					r.push(
@@ -102,7 +102,7 @@ function tokenDebug<
 	},
 >(n: N, type = '') {
 	return `[${n.startLine}:${n.startCol}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${
-		n.nodeName || n.potentialName || n.name || n.type || type
+		n.nodeName ?? n.potentialName ?? n.name ?? n.type ?? type
 	}: ${visibleWhiteSpace(n.raw)}`;
 }
 

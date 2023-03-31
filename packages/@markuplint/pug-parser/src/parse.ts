@@ -109,7 +109,7 @@ class Parser {
 				return {
 					uuid: uuid(),
 					raw: originNode.raw,
-					name: originNode.val || '',
+					name: originNode.val ?? '',
 					// TODO:
 					publicId: '',
 					// TODO:
@@ -211,7 +211,7 @@ class Parser {
 					tagCloseChar: '',
 				};
 
-				if (originNode.block.nodes.length) {
+				if (originNode.block.nodes.length > 0) {
 					tag.childNodes = this.traverse(originNode.block.nodes, tag);
 				}
 
@@ -236,7 +236,7 @@ class Parser {
 					isGhost: false,
 				};
 
-				if ('block' in originNode && originNode.block?.nodes.length) {
+				if ('block' in originNode && originNode.block && originNode.block.nodes.length > 0) {
 					tag.childNodes = this.traverse(originNode.block.nodes, tag);
 				}
 
