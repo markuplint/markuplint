@@ -26,7 +26,7 @@ export const textlintVerify: (
 
 	if (options === true) {
 		const dirname = document.filename && path.dirname(document.filename);
-		const cacheKey = dirname || '';
+		const cacheKey = dirname ?? '';
 
 		let lintEngine: TextLintEngine;
 

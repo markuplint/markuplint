@@ -333,7 +333,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		const [prefix, namedGroupStr] = head.value.split('-');
 		const candidatePrefix = getCandidate(prefix, 'section');
 		if (candidatePrefix) {
-			candidate = `${candidatePrefix}-${namedGroupStr || ''}`;
+			candidate = `${candidatePrefix}-${namedGroupStr ?? ''}`;
 		}
 	} else if (!hasPartOfAddress) {
 		expects.unshift(

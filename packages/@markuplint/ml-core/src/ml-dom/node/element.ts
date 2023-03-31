@@ -773,7 +773,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-id%E2%91%A0
 	 */
 	get id() {
-		return this.getAttribute('id') || '';
+		return this.getAttribute('id') ?? '';
 	}
 
 	/**
@@ -2783,7 +2783,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-slot%E2%91%A0
 	 */
 	get slot() {
-		return this.getAttribute('slot') || '';
+		return this.getAttribute('slot') ?? '';
 	}
 
 	/**
@@ -2844,7 +2844,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 	get textContent(): string {
 		return Array.from(this.childNodes)
-			.map(child => child.textContent || '')
+			.map(child => child.textContent ?? '')
 			.join('');
 	}
 
@@ -3387,7 +3387,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 						const _value = value
 							? typeof value === 'string'
 								? value
-								: this.getAttribute(value.fromAttr) || ''
+								: this.getAttribute(value.fromAttr) ?? ''
 							: '';
 						return {
 							...this._astToken,

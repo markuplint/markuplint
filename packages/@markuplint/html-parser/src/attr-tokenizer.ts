@@ -62,11 +62,11 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 	const attrToken = tokenizer(
 		nameChars +
 			spacesBeforeEqualChars +
-			(equalChars || '') +
+			(equalChars ?? '') +
 			spacesAfterEqualChars +
-			(quoteChars || '') +
-			(valueChars || '') +
-			(quoteChars || ''),
+			(quoteChars ?? '') +
+			(valueChars ?? '') +
+			(quoteChars ?? ''),
 		name.startLine,
 		name.startCol,
 		name.startOffset,

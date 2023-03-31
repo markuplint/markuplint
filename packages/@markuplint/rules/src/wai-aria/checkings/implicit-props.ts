@@ -26,7 +26,7 @@ export const checkingImplicitProps: AttrChecker<
 			const isValid = isValidAttr(
 				t,
 				equivalentHtmlAttr.htmlAttrName,
-				equivalentHtmlAttr.value || '',
+				equivalentHtmlAttr.value ?? '',
 				false,
 				attr.ownerElement,
 				attrSpecs,

@@ -43,7 +43,7 @@ for (const file of files) {
 					.map(section => cleanComment(section))
 					.filter(s => !/^@see\s/.test(s));
 				const text = line.map(line => cleanComment(line)).filter(s => s);
-				const url = (text.find(t => /^@see\s/i.test(t)) || '').replace(/^@see\s/i, '');
+				const url = (text.find(t => /^@see\s/i.test(t)) ?? '').replace(/^@see\s/i, '');
 
 				if (!heading) {
 					return;

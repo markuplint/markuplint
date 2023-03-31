@@ -19,7 +19,7 @@ export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar
 				const mask =
 					maskChar.repeat(startTag.length) +
 					taggedCode.replace(/[^\n]/g, maskChar) +
-					maskChar.repeat((endTag || '').length);
+					maskChar.repeat((endTag ?? '').length);
 				return mask;
 			},
 		);
@@ -31,7 +31,7 @@ export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar
 			const mask =
 				maskChar.repeat(startTag.length) +
 				taggedCode.replace(/[^\n]/g, maskChar) +
-				maskChar.repeat((endTag || '').length);
+				maskChar.repeat((endTag ?? '').length);
 			const taggedMask = `<!${mask.slice(2).slice(0, -1)}>`;
 			return taggedMask;
 		});
@@ -72,7 +72,7 @@ function maskText(
 		/**
 		 * It will not replace line breaks because detects line number.
 		 */
-		replaced = above + masking(startTag, taggedCode, endTag) + (below || '');
+		replaced = above + masking(startTag, taggedCode, endTag) + (below ?? '');
 	}
 	return {
 		replaced,
@@ -100,7 +100,7 @@ export function restoreNode(
 			for (const tag of stack) {
 				if (node.startOffset <= tag.index && tag.index < node.endOffset) {
 					const start = tag.index - node.startOffset;
-					const body = tag.startTag + tag.taggedCode + (tag.endTag || '');
+					const body = tag.startTag + tag.taggedCode + (tag.endTag ?? '');
 					const above = node.raw.slice(pointer, start);
 					const below = text.slice(above.length + body.length);
 					if (above) {

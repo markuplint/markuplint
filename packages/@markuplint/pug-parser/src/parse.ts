@@ -109,7 +109,7 @@ class Parser {
 				return {
 					uuid: uuid(),
 					raw: originNode.raw,
-					name: originNode.val || '',
+					name: originNode.val ?? '',
 					// TODO:
 					publicId: '',
 					// TODO:

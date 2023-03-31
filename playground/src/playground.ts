@@ -77,7 +77,7 @@ export default class Playground {
 			language: 'html',
 		});
 
-		this.#rulesetString = ruleset || '';
+		this.#rulesetString = ruleset ?? '';
 		this.#ruleset = convertRuleset(ruleset);
 
 		void createLinter(this.#ruleset).then(linter => (this.#linter = linter));
@@ -96,7 +96,7 @@ export default class Playground {
 		if (ruleset === this.#rulesetString) {
 			return;
 		}
-		this.#rulesetString = ruleset || '';
+		this.#rulesetString = ruleset ?? '';
 		this.#ruleset = convertRuleset(ruleset);
 		this._onChange();
 	}

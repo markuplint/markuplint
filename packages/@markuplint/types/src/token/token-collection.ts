@@ -50,7 +50,7 @@ export class TokenCollection extends Array<Token> {
 					if (res.index !== 0) {
 						value = strings.slice(res.index + res[0].length);
 					} else {
-						value = res[0] || '';
+						value = res[0] ?? '';
 					}
 				}
 

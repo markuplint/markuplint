@@ -138,11 +138,11 @@ function nodeize(
 				uuid: uuid(),
 				raw,
 				// @ts-ignore
-				name: originNode.name || '',
+				name: originNode.name ?? '',
 				// @ts-ignore
-				publicId: originNode.publicId || '',
+				publicId: originNode.publicId ?? '',
 				// @ts-ignore
-				systemId: originNode.systemId || '',
+				systemId: originNode.systemId ?? '',
 				startOffset: startOffset + offsetOffset,
 				endOffset: endOffset + offsetOffset,
 				startLine: startLine + offsetLine,

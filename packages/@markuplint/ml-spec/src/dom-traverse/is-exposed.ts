@@ -93,7 +93,7 @@ function isExcluding(
 	 *   These exceptions and conditions are documented in the presentation (role)
 	 *   section.
 	 */
-	if (isPresentational((el.getAttribute('role') || '').split(/\s+/)[0])) {
+	if (isPresentational((el.getAttribute('role') ?? '').split(/\s+/)[0])) {
 		return true;
 	}
 

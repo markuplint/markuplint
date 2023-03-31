@@ -30,7 +30,7 @@ export function getAccname(
 					return getAccname(child, version);
 				}
 				if (child.is(child.TEXT_NODE)) {
-					return child.textContent || '';
+					return child.textContent ?? '';
 				}
 				return '';
 			})

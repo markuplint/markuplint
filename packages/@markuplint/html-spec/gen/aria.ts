@@ -66,7 +66,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 
 	$roleList.each((_, el) => {
 		const $el = $(el);
-		const name = $el.find('.role-name').attr('title')?.trim() || '';
+		const name = $el.find('.role-name').attr('title')?.trim() ?? '';
 		const description = $el
 			.find('.role-description p')
 			.toArray()

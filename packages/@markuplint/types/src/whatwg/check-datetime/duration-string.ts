@@ -126,7 +126,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 
 				const [h, m, s] = timeTokens;
 
-				if ((h?.value || '') + (m?.value || '') + (s?.value || '') === '') {
+				if ((h?.value ?? '') + (m?.value ?? '') + (s?.value ?? '') === '') {
 					return unmatched('', 'missing-token', {
 						expects: [
 							{ type: 'common', value: 'hour' },
