@@ -273,7 +273,6 @@ function arrayize(
 		prevCol = node.endCol;
 
 		// for ghost nodes
-		node.startOffset = node.startOffset || node.startOffset;
 		node.endOffset = node.endOffset ?? currentEndOffset;
 
 		nodeOrders.push(node);
