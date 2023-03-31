@@ -159,7 +159,7 @@ function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
 		return b && optimizeRules(b);
 	}
 	if (b == null) {
-		return a && optimizeRules(a);
+		return optimizeRules(a);
 	}
 	const res = optimizeRules(a);
 	for (const [key, rule] of Object.entries(b)) {

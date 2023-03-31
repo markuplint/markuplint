@@ -30,25 +30,23 @@ export function flattenNodes(
 			const endTag = node;
 			if (endTag.nodeName.toLowerCase() === 'body' && prevToken.type === 'text') {
 				const prevWreckagesText = prevToken;
-				if (prevWreckagesText) {
-					const wreckages = tagSplitter(
-						prevWreckagesText.raw,
-						prevWreckagesText.startLine,
-						prevWreckagesText.startCol,
-					);
-					if (wreckages.length > 0 && wreckages[0]) {
-						// console.log('wreckages\n', wreckages);
-						const lastText = wreckages[0];
-						const raw = lastText.raw;
-						const startLine = lastText.line;
-						const startCol = lastText.col;
-						prevWreckagesText.raw = raw;
-						prevWreckagesText.endOffset = prevWreckagesText.startOffset + raw.length;
-						prevWreckagesText.startLine = startLine;
-						prevWreckagesText.endLine = getEndLine(raw, startLine);
-						prevWreckagesText.startCol = startCol;
-						prevWreckagesText.endCol = getEndCol(raw, startCol);
-					}
+				const wreckages = tagSplitter(
+					prevWreckagesText.raw,
+					prevWreckagesText.startLine,
+					prevWreckagesText.startCol,
+				);
+				if (wreckages.length > 0 && wreckages[0]) {
+					// console.log('wreckages\n', wreckages);
+					const lastText = wreckages[0];
+					const raw = lastText.raw;
+					const startLine = lastText.line;
+					const startCol = lastText.col;
+					prevWreckagesText.raw = raw;
+					prevWreckagesText.endOffset = prevWreckagesText.startOffset + raw.length;
+					prevWreckagesText.startLine = startLine;
+					prevWreckagesText.endLine = getEndLine(raw, startLine);
+					prevWreckagesText.startCol = startCol;
+					prevWreckagesText.endCol = getEndCol(raw, startCol);
 				}
 			}
 		}
@@ -111,11 +109,9 @@ export function flattenNodes(
 						isFragment: false,
 						isGhost: false,
 					};
-					if (lastNode) {
-						lastNode.nextNode = lastTextNode;
-						if ((lastNode.type === 'starttag' || lastNode.type === 'endtag') && lastNode.pearNode) {
-							lastNode.pearNode.nextNode = lastTextNode;
-						}
+					lastNode.nextNode = lastTextNode;
+					if ((lastNode.type === 'starttag' || lastNode.type === 'endtag') && lastNode.pearNode) {
+						lastNode.pearNode.nextNode = lastTextNode;
 					}
 					nodeOrders.push(lastTextNode);
 				}

@@ -302,7 +302,7 @@ function parseElement(
 
 	let childrenStart: number;
 	let childrenEnd: number;
-	if (originNode.children && originNode.children[0]) {
+	if (originNode.children[0]) {
 		childrenStart = (originNode.children[0].position?.start?.offset ?? 0) + offset;
 		childrenEnd = (originNode.children[originNode.children.length - 1]?.position?.end?.offset ?? 0) + offset;
 	} else {

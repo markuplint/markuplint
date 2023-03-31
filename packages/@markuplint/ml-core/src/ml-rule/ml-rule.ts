@@ -96,10 +96,6 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		locale: LocaleSet,
 		fix: boolean,
 	): Promise<Violation[]> {
-		if (!this.#v) {
-			return [];
-		}
-
 		document.setRule(this);
 
 		const context = new MLRuleContext(document, locale);

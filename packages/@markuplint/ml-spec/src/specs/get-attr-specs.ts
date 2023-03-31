@@ -80,21 +80,6 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 		return { name, type: 'Any', ...attr };
 	});
 
-	for (const attr of attrList) {
-		if (!attr.type) {
-			throw new Error(
-				`The type is empty in the ${attr.name} attribute of the ${localName} element,
-					'packages',
-					'@markuplint',
-					'html-spec',
-					'src',
-					'attributes',
-					nameWithNS.replace(':', '_') + '.json',
-				)})`,
-			);
-		}
-	}
-
 	attrList.sort(nameCompare);
 
 	cacheMap.set(localNameWithNS, attrList);

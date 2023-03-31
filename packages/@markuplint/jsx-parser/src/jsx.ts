@@ -45,12 +45,8 @@ export function getName(
 			return tagName.name;
 		}
 		case 'JSXMemberExpression': {
-			let name = tagName.property.name;
-			if (tagName.object) {
-				const parentName = getName(tagName.object);
-				name = parentName + '.' + name;
-			}
-			return name;
+			const parentName = getName(tagName.object);
+			return parentName + '.' + tagName.property.name;
 		}
 		case 'JSXNamespacedName': {
 			return `${tagName.namespace.name}:${tagName.name.name}`;
@@ -187,15 +183,14 @@ function recursiveSearchJSXElements(
 
 				jsxList.push(node);
 				jsxList.push(...recursiveSearchJSXElements(node.children, id));
-				if (node.openingElement) {
-					const hasSpreadAttr = node.openingElement.attributes.some(
-						attr => attr.type === AST_NODE_TYPES.JSXSpreadAttribute,
-					);
-					if (hasSpreadAttr) {
-						(node as JSXElementHasSpreadAttribute).__hasSpreadAttribute = true;
-					}
-					jsxList.push(...recursiveSearchJSXElements(node.openingElement.attributes, null));
+
+				const hasSpreadAttr = node.openingElement.attributes.some(
+					attr => attr.type === AST_NODE_TYPES.JSXSpreadAttribute,
+				);
+				if (hasSpreadAttr) {
+					(node as JSXElementHasSpreadAttribute).__hasSpreadAttribute = true;
 				}
+				jsxList.push(...recursiveSearchJSXElements(node.openingElement.attributes, null));
 				continue;
 			}
 			case AST_NODE_TYPES.JSXFragment: {
@@ -447,9 +442,7 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 		}
-		if (node) {
-			throw new Error('Unsupported node');
-		}
+		throw new Error('Unsupported node');
 	}
 	return jsxList;
 }

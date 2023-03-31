@@ -457,7 +457,7 @@ export const types: Defs = {
 			if (!height) {
 				return sep.unmatched({ reason: 'unexpected-token' });
 			}
-			if (tail && tail[0]) {
+			if (tail[0]) {
 				return tail[0].unmatched({ reason: 'extra-token' });
 			}
 			if (!isUint(width.value)) {

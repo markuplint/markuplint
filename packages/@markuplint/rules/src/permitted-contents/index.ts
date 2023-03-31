@@ -13,10 +13,6 @@ export default createRule<TagRule[], Options>({
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			if (!el.rule.value) {
-				return;
-			}
-
 			if (el.rule.options.ignoreHasMutableChildren && el.hasMutableChildren()) {
 				return;
 			}
@@ -25,13 +21,11 @@ export default createRule<TagRule[], Options>({
 			for (const { type, scope, query, hint } of results) {
 				let message = '';
 
-				if (hint) {
-					if (hint.max != null) {
-						message =
-							t('there is more content than it needs') +
-							t('. ') +
-							t('the max number of elements required is {0}', `${hint.max}`);
-					}
+				if (hint.max != null) {
+					message =
+						t('there is more content than it needs') +
+						t('. ') +
+						t('the max number of elements required is {0}', `${hint.max}`);
 				}
 
 				switch (type) {

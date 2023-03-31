@@ -10,9 +10,6 @@ export default createRule<Value>({
 	defaultValue: null,
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			if (!el.rule.value) {
-				return;
-			}
 			const classPatterns = toNoEmptyStringArrayFromStringOrArray(el.rule.value).filter(
 				className => className && typeof className === 'string',
 			);

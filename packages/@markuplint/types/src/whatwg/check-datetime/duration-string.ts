@@ -139,7 +139,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 				const specified = new Set<'H' | 'M' | 'S'>();
 
 				for (const t of timeTokens) {
-					if (!t || !t.value) {
+					if (!t.value) {
 						continue;
 					}
 
