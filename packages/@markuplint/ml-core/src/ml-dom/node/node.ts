@@ -481,6 +481,7 @@ export abstract class MLNode<
 
 		const rule = this.ownerMLDocument.currentRule.optimizeOption(settingRule as Rule<T, O>);
 
+		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 		if (!rule) {
 			throw new Error(
 				`Rule data "${name}" doesn't exist in rules ([${Object.keys(this.rules).map(
