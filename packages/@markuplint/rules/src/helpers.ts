@@ -15,7 +15,7 @@ export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
 	node: Element<T, O>,
 	condition: Attribute['condition'],
 ) {
-	if (!condition) {
+	if (condition == null) {
 		return true;
 	}
 
@@ -85,13 +85,19 @@ export function isValidAttr(
 	const spec = attrSpecs.find(s => s.name.toLowerCase() === name.toLowerCase());
 	log && log('Spec of the %s attr: %o', name, spec);
 	invalid = attrCheck(t, name, value, false, spec);
-	if (!invalid && spec && spec.condition && !node.hasSpreadAttr && !attrMatches(node, spec.condition)) {
+	if (
+		invalid === false &&
+		spec &&
+		spec.condition != null &&
+		!node.hasSpreadAttr &&
+		!attrMatches(node, spec.condition)
+	) {
 		invalid = {
 			invalidType: 'non-existent',
 			message: t('{0} is {1}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed'),
 		};
 	}
-	if (invalid && invalid.invalidType === 'invalid-value' && isDynamicValue) {
+	if (invalid !== false && invalid.invalidType === 'invalid-value' && isDynamicValue) {
 		invalid = false;
 	}
 	return invalid;

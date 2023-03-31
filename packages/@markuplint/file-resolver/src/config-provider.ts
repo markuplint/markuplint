@@ -1,14 +1,13 @@
 import type { MLFile } from './ml-file';
 import type { ConfigSet } from './types';
 import type { Config } from '@markuplint/ml-config';
-import type { Nullable} from '@markuplint/shared';
-
+import type { Nullable } from '@markuplint/shared';
 
 import path from 'path';
 
 import { mergeConfig } from '@markuplint/ml-config';
 import { getPreset } from '@markuplint/ml-core';
-import { nonNullableFilter , toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
+import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
 import { load as loadConfig, search } from './cosmiconfig';
 import { cacheClear, resolvePlugins } from './resolve-plugins';
@@ -47,7 +46,7 @@ export class ConfigProvider {
 				switch (prefix) {
 					case 'plugin:': {
 						const plugin = plugins.find(plugin => plugin.name === namespace);
-						const config = name && plugin?.configs?.[name];
+						const config = plugin?.configs?.[name ?? ''];
 						if (config) {
 							this.set(config, held);
 						}

@@ -3354,9 +3354,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-matches%E2%91%A0
 	 */
 	matches(selector: string): boolean {
-		return !!createSelector(selector, this.ownerMLDocument.specs).match(
-			// Prioritize the pretender
-			this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as : this,
+		return (
+			createSelector(selector, this.ownerMLDocument.specs).match(
+				// Prioritize the pretender
+				this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as : this,
+			) !== false
 		);
 	}
 
@@ -3384,11 +3386,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (pretenderConfig.as.attrs) {
 				attributes.push(
 					...pretenderConfig.as.attrs.map(({ name, value }, i) => {
-						const _value = value
-							? typeof value === 'string'
-								? value
-								: this.getAttribute(value.fromAttr) ?? ''
-							: '';
+						const _value =
+							value != null
+								? typeof value === 'string'
+									? value
+									: this.getAttribute(value.fromAttr) ?? ''
+								: '';
 						return {
 							...this._astToken,
 							uuid: `${this.uuid}_attr_${i}`,

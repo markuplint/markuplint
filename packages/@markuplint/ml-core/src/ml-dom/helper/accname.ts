@@ -57,7 +57,7 @@ function getAccnameFromPretender(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: MLElement<any, any>,
 ) {
-	if (el.pretenderContext?.type === 'pretender' && el.pretenderContext.aria?.name) {
+	if (el.pretenderContext?.type === 'pretender' && el.pretenderContext.aria?.name != null) {
 		if (typeof el.pretenderContext.aria.name === 'boolean') {
 			return 'some-name(Pretender Options)';
 		}

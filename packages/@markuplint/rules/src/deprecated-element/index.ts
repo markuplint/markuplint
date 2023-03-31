@@ -13,11 +13,11 @@ export default createRule({
 				return;
 			}
 			const spec = getSpec(el, document.specs.specs);
-			if (spec && (spec.obsolete || spec.deprecated || spec.nonStandard)) {
+			if (spec && (spec.obsolete != null || spec.deprecated || spec.nonStandard)) {
 				const message = t(
 					'{0} is {1:c}',
 					t('the "{0*}" {1}', el.localName, 'element'),
-					spec.deprecated ? 'deprecated' : spec.obsolete ? 'obsolete' : 'non-standard',
+					spec.deprecated ? 'deprecated' : spec.obsolete != null ? 'obsolete' : 'non-standard',
 				);
 				report({
 					scope: el,

@@ -67,7 +67,7 @@ export function getCandidateDatetimeString(content: string, langs: Lang[] = defa
 		return null;
 	}
 
-	if (date.zone) {
+	if (date.zone != null) {
 		const plusMinus = date.zone < 0 ? '-' : '+';
 		const hour = Math.floor(Math.abs(date.zone) / 60);
 		const minute = Math.abs(date.zone) % 60;

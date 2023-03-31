@@ -30,7 +30,7 @@ export function isExposed(
 	// Return true if the element is unknown, deprecated, or obsolete.
 	const { localName, namespace } = resolveNamespace(el.localName, el.namespaceURI);
 	const spec = getSpecByTagName(specs.specs, localName, namespace);
-	if (!spec || spec.deprecated || spec.obsolete) {
+	if (!spec || spec.deprecated || spec.obsolete != null) {
 		return true;
 	}
 

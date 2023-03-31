@@ -31,7 +31,7 @@ export const checkingImplicitProps: AttrChecker<
 				attr.ownerElement,
 				attrSpecs,
 			);
-			if (isValid && isValid.invalidType === 'non-existent') {
+			if (isValid !== false && isValid.invalidType === 'non-existent') {
 				continue;
 			}
 

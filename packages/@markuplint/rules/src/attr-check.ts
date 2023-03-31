@@ -85,24 +85,24 @@ export function attrCheck(
 	const types = toNonNullableArrayFromItemOrArray(spec.type);
 	const invalidList = types.map(type => {
 		const invalid = valueCheck(t, name, value, type);
-		if (invalid) {
-			if (typeof invalid === 'string') {
-				return {
-					invalidType: 'invalid-value' as const,
-					message: invalid,
-				};
-			} else {
-				return {
-					invalidType: 'invalid-value' as const,
-					message: invalid[0],
-					loc: invalid[1],
-				};
-			}
+		if (invalid === false) {
+			return false;
 		}
-		return false;
+		if (typeof invalid === 'string') {
+			return {
+				invalidType: 'invalid-value' as const,
+				message: invalid,
+			};
+		} else {
+			return {
+				invalidType: 'invalid-value' as const,
+				message: invalid[0],
+				loc: invalid[1],
+			};
+		}
 	});
 
-	if (invalidList.some(i => !i)) {
+	if (invalidList.some(i => i === false)) {
 		return false;
 	}
 
@@ -116,7 +116,7 @@ export function valueCheck(
 	name: string,
 	value: string,
 	type: ReadonlyDeep<AttributeType>,
-): string | [string, Loc] | false {
+): [string, Loc] | false {
 	if (type === 'Boolean') {
 		// Valid because an attribute is exist
 		return false;

@@ -110,7 +110,7 @@ export class TokenCollection extends Array<Token> {
 			separators.push(',');
 		}
 
-		if (typeOptions?.specificSeparator) {
+		if (typeOptions?.specificSeparator != null) {
 			if (typeof typeOptions.specificSeparator === 'string') {
 				separators.push(typeOptions.specificSeparator);
 			} else {

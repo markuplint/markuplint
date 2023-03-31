@@ -48,8 +48,8 @@ export function exchangeValueOnRule(
 		};
 	}
 	const options = extractOptions(result);
-	if (options) {
-		const newOptions = exchangeOption(options as PlainData, data);
+	if (options != null && options !== '' && options !== 0) {
+		const newOptions = exchangeOption(options, data);
 		result = {
 			...result,
 			...(newOptions == null
@@ -63,7 +63,7 @@ export function exchangeValueOnRule(
 		const exchangedValue = exchangeValue(result.reason, data);
 		result = {
 			...result,
-			reason: exchangedValue ? `${exchangedValue}` : undefined,
+			reason: exchangedValue != null ? `${exchangedValue}` : undefined,
 		};
 	}
 	deleteUndefProp(result);
@@ -120,10 +120,10 @@ export function deleteUndefProp(obj: any) {
  * @returns
  */
 function extractOptions(rule: RuleConfig<RuleConfigValue, PlainData> | RuleConfigV2<RuleConfigValue, PlainData>) {
-	if ('options' in rule && rule.options) {
+	if ('options' in rule && rule.options != null) {
 		return rule.options;
 	}
-	if ('option' in rule && rule.option) {
+	if ('option' in rule && rule.option != null) {
 		return rule.option;
 	}
 }

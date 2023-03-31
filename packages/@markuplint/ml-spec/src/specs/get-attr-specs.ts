@@ -33,7 +33,7 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 	for (const catName in elSpec.globalAttrs) {
 		// @ts-ignore
 		const catAttrs: boolean | string[] = elSpec.globalAttrs[catName];
-		if (!catAttrs) {
+		if (catAttrs === false) {
 			continue;
 		}
 		if (typeof catAttrs === 'boolean') {
