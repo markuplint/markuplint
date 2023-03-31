@@ -2,6 +2,7 @@ import type { Translator } from '@markuplint/i18n';
 import type { Attribute as AttrSpec, AttributeType } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
+import { toNonNullableArrayFromItemOrArray } from '@markuplint/shared';
 import { check } from '@markuplint/types';
 
 import { createMessageValueExpected } from './create-message';
@@ -81,12 +82,8 @@ export function attrCheck(
 		};
 	}
 
-	const types = Array.isArray(spec.type) ? spec.type : [spec.type];
+	const types = toNonNullableArrayFromItemOrArray(spec.type);
 	const invalidList = types.map(type => {
-		if (!type) {
-			log('attrCheck: %o', arguments);
-			throw new Error('type is empty in spec');
-		}
 		const invalid = valueCheck(t, name, value, type);
 		if (invalid) {
 			if (typeof invalid === 'string') {

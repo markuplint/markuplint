@@ -29,6 +29,7 @@
 		"@markuplint/ml-config": "3.4.0",
 		"@markuplint/ml-core": "3.4.0",
 		"@markuplint/ml-spec": "3.4.0",
+		"@markuplint/shared": "3.4.0",
 		"cosmiconfig": "^8.0.0",
 		"glob": "^8.0.3",
 		"jsonc": "^2.0.0",

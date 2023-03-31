@@ -1,6 +1,8 @@
 import type { Config, PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import type { MLRule } from '@markuplint/ml-core';
 
+import { toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
+
 import { lint } from './lint';
 
 /**
@@ -61,12 +63,8 @@ export async function lint_v1(options: {
 	 */
 	readonly locale?: string;
 }) {
-	const filePathList = options.files ? (Array.isArray(options.files) ? options.files : [options.files]) : [];
-	const codes = options.sourceCodes
-		? Array.isArray(options.sourceCodes)
-			? options.sourceCodes
-			: [options.sourceCodes]
-		: [];
+	const filePathList = toNoEmptyStringArrayFromStringOrArray(options.files);
+	const codes = toNoEmptyStringArrayFromStringOrArray(options.sourceCodes);
 
 	const files = [
 		...filePathList,

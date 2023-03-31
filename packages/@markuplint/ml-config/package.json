@@ -20,6 +20,7 @@
 	},
 	"devDependencies": {
 		"@markuplint/ml-ast": "3.0.0",
+		"@markuplint/shared": "3.4.0",
 		"@types/mustache": "^4.2.2"
 	},
 	"dependencies": {

@@ -1,4 +1,5 @@
-import type { Config, Nullable, AnyRule, AnyRuleV2, Rules } from './types';
+import type { Config, AnyRule, AnyRuleV2, Rules } from './types';
+import type { Nullable } from '@markuplint/shared';
 import type { Writable } from 'type-fest';
 
 import deepmerge from 'deepmerge';

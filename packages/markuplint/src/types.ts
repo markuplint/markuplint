@@ -26,5 +26,3 @@ export interface MLResultInfo_v1 {
 		error: string[];
 	};
 }
-
-export type Nullable<T> = T | null | undefined;

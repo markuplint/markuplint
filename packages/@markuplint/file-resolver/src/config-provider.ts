@@ -1,15 +1,18 @@
 import type { MLFile } from './ml-file';
-import type { ConfigSet, Nullable } from './types';
+import type { ConfigSet } from './types';
 import type { Config } from '@markuplint/ml-config';
+import type { Nullable} from '@markuplint/shared';
+
 
 import path from 'path';
 
 import { mergeConfig } from '@markuplint/ml-config';
 import { getPreset } from '@markuplint/ml-core';
+import { nonNullableFilter , toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
 import { load as loadConfig, search } from './cosmiconfig';
 import { cacheClear, resolvePlugins } from './resolve-plugins';
-import { fileExists, nonNullableFilter, uuid } from './utils';
+import { fileExists, uuid } from './utils';
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
 
@@ -203,7 +206,7 @@ export class ConfigProvider {
 			return { stack, errs: null };
 		}
 
-		const depKeys = config.extends ? (Array.isArray(config.extends) ? config.extends : [config.extends]) : null;
+		const depKeys = config.extends !== null ? toNoEmptyStringArrayFromStringOrArray(config.extends) : null;
 		if (depKeys) {
 			for (const depKey of depKeys) {
 				const keys = await this._recursiveLoad(depKey, cache, depth + 1);
