@@ -24,7 +24,7 @@ export function standardReporter(results: MLResultInfo, options: CLIOptions) {
 
 	const out: string[] = [];
 
-	if (results.violations.length) {
+	if (results.violations.length > 0) {
 		const lines = results.sourceCode.split(/\r?\n/g);
 		for (const violation of results.violations) {
 			const prev = lines[violation.line - 2] ?? '';

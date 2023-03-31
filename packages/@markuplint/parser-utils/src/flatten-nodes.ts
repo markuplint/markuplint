@@ -36,7 +36,7 @@ export function flattenNodes(
 						prevWreckagesText.startLine,
 						prevWreckagesText.startCol,
 					);
-					if (wreckages.length && wreckages[0]) {
+					if (wreckages.length > 0 && wreckages[0]) {
 						// console.log('wreckages\n', wreckages);
 						const lastText = wreckages[0];
 						const raw = lastText.raw;

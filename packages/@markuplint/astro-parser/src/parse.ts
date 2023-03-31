@@ -62,7 +62,7 @@ function traverse(
 		return nodeList;
 	}
 
-	if (!rootNode.children.length) {
+	if (rootNode.children.length === 0) {
 		return nodeList;
 	}
 
@@ -204,7 +204,7 @@ function nodeize(
 				isGhost: false,
 			};
 
-			if (originNode.children.length) {
+			if (originNode.children.length > 0) {
 				node.childNodes = traverse(originNode, parentNode, scopeNS, rawHtml, offset, options, true);
 			}
 

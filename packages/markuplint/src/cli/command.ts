@@ -54,7 +54,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		if (!result) {
 			continue;
 		}
-		if (!hasError && result.violations.length) {
+		if (!hasError && result.violations.length > 0) {
 			hasError = true;
 		}
 		if (fix) {

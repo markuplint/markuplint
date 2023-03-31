@@ -144,7 +144,7 @@ function exchangeValue(rule: RuleConfigValue, data: Readonly<Record<string, stri
 				return val;
 			})
 			.filter((item): item is PrimitiveScalar => item !== undefined);
-		return ruleArray.length ? ruleArray : undefined;
+		return ruleArray.length > 0 ? ruleArray : undefined;
 	}
 	return rule;
 }

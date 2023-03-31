@@ -49,7 +49,7 @@ export function contentModelPseudoClass(specs: MLMLSpec) {
 				.flat()
 				.filter((m): m is SelectorMatchedResult => m.matched);
 
-			if (matched.length) {
+			if (matched.length > 0) {
 				return {
 					specificity: [0, 1, 0],
 					matched: true,

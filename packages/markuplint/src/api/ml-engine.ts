@@ -221,7 +221,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 
 		const schemas = await this.resolveSchemas(configSet);
 		if (fileLog.enabled) {
-			if (schemas[0].cites.length) {
+			if (schemas[0].cites.length > 0) {
 				const [, ...additionalSpecs] = schemas;
 				fileLog('Resolved schemas: HTML Standard');
 				for (const additionalSpec of additionalSpecs) {

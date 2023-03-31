@@ -3180,7 +3180,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			});
 
 			// overwrite rule to child node
-			if (selectorTarget && ruleset.childNodeRules.length) {
+			if (selectorTarget && ruleset.childNodeRules.length > 0) {
 				const descendants: MLNode<T, O>[] = [];
 				const children = Array.from(selectorTarget.childNodes);
 				syncWalk(children, childNode => {

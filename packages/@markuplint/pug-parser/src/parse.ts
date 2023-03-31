@@ -211,7 +211,7 @@ class Parser {
 					tagCloseChar: '',
 				};
 
-				if (originNode.block.nodes.length) {
+				if (originNode.block.nodes.length > 0) {
 					tag.childNodes = this.traverse(originNode.block.nodes, tag);
 				}
 

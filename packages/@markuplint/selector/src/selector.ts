@@ -303,7 +303,7 @@ class SelectorTarget {
 						unitCheck.specificity[2] + res.specificity[2],
 					];
 				}
-				if (matchedNodes.length) {
+				if (matchedNodes.length > 0) {
 					return {
 						combinator: '␣',
 						specificity,
@@ -346,7 +346,7 @@ class SelectorTarget {
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
 				}
-				if (matchedNodes.length) {
+				if (matchedNodes.length > 0) {
 					return {
 						combinator: '>',
 						specificity,
@@ -388,7 +388,7 @@ class SelectorTarget {
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
 				}
-				if (matchedNodes.length) {
+				if (matchedNodes.length > 0) {
 					return {
 						combinator: '+',
 						specificity,
@@ -438,7 +438,7 @@ class SelectorTarget {
 						unitCheck.specificity[2] + res.specificity[2],
 					];
 				}
-				if (matchedNodes.length) {
+				if (matchedNodes.length > 0) {
 					return {
 						combinator: '~',
 						specificity,
@@ -663,7 +663,7 @@ function pseudoMatch(
 			let parent = el.parentElement;
 			while (parent) {
 				const matched = ruleset.match(parent, scope).filter((r): r is SelectorMatchedResult => r.matched);
-				if (matched.length) {
+				if (matched.length > 0) {
 					return {
 						specificity,
 						matched: true,
@@ -708,7 +708,7 @@ function pseudoMatch(
 			const matched = resList.filter((r): r is SelectorMatchedResult => r.matched);
 			return {
 				specificity,
-				matched: !!matched.length,
+				matched: matched.length > 0,
 				nodes: matched.map(m => m.nodes).flat(),
 				has: matched.map(m => m.has).flat(),
 			};
@@ -722,7 +722,7 @@ function pseudoMatch(
 					const has = getSiblings(el)
 						.map(sib => ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched))
 						.flat();
-					if (has.length) {
+					if (has.length > 0) {
 						return {
 							specificity,
 							matched: true,
@@ -739,7 +739,7 @@ function pseudoMatch(
 					const has = getDescendants(el)
 						.map(sib => ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched))
 						.flat();
-					if (has.length) {
+					if (has.length > 0) {
 						return {
 							specificity,
 							matched: true,
@@ -760,7 +760,7 @@ function pseudoMatch(
 			const matched = resList.filter((r): r is SelectorMatchedResult => r.matched);
 			return {
 				specificity: [0, 0, 0],
-				matched: !!matched.length,
+				matched: matched.length > 0,
 				nodes: matched.map(m => m.nodes).flat(),
 				has: matched.map(m => m.has).flat(),
 			};

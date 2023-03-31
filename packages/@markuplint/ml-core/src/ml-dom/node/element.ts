@@ -3672,7 +3672,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 		const children = this.getChildElementsAndTextNodeWithoutWhitespaces();
 		const attrs = this.attributes.map(attr => attr.toNormalizeString());
-		const attrString = attrs.length ? ' ' + attrs.join('') : '';
+		const attrString = attrs.length > 0 ? ' ' + attrs.join('') : '';
 		const startTag = `<${this.nodeName}${attrString}>`;
 		const childNodes = children.map(node => {
 			if (node.is(node.ELEMENT_NODE)) {

@@ -242,7 +242,7 @@ export class TokenCollection extends Array<Token> {
 	chunk(split: number) {
 		const chunks: TokenCollection[] = [];
 		const tokens = this.slice();
-		while (tokens.length) {
+		while (tokens.length > 0) {
 			const chunkTokens = tokens.splice(0, split);
 			const chunk = TokenCollection._new(chunkTokens, this);
 			chunks.push(chunk);

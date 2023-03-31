@@ -24,7 +24,7 @@ export function simpleReporter(results: MLResultInfo, options: CLIOptions) {
 
 	const out: string[] = [];
 
-	if (results.violations.length) {
+	if (results.violations.length > 0) {
 		out.push(`<${markuplint}> ${c.underline(results.filePath)}: ${loggerError('✗')}`);
 		for (const violation of results.violations) {
 			const s = violation.severity === 'error' ? loggerError('✖') : loggerWarning('⚠️');

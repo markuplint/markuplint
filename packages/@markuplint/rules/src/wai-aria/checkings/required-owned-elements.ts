@@ -26,7 +26,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 		if (!role) {
 			return;
 		}
-		if (!role.requiredOwnedElements.length) {
+		if (role.requiredOwnedElements.length === 0) {
 			return;
 		}
 		/**

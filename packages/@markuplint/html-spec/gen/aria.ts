@@ -79,7 +79,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			.map(a => $(a).text().trim());
 		const isAbstract = $features.find('.role-abstract').text().trim().toLowerCase() === 'true' || undefined;
 		let $ownedRequiredProps = $features.find('.role-required-properties li').toArray();
-		if (!$ownedRequiredProps.length) {
+		if ($ownedRequiredProps.length === 0) {
 			$ownedRequiredProps = $features.find('.role-required-properties').toArray();
 		}
 		const ownedRequiredProps = $ownedRequiredProps.map(getAttr).map(p => ({ ...p, required: true as const }));
@@ -218,7 +218,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 
 			let equivalentHtmlAttrs: EquivalentHtmlAttr[] | undefined;
 			const implicitOwnProps = implicitProps.filter(p => p.name === name);
-			if (implicitOwnProps.length) {
+			if (implicitOwnProps.length > 0) {
 				equivalentHtmlAttrs = implicitOwnProps.map(attr => ({
 					htmlAttrName: attr.htmlAttrName,
 					value: attr.value,
@@ -234,7 +234,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 				defaultValue,
 				isGlobal,
 				equivalentHtmlAttrs,
-				valueDescriptions: Object.keys(valueDescriptions).length ? valueDescriptions : undefined,
+				valueDescriptions: Object.keys(valueDescriptions).length > 0 ? valueDescriptions : undefined,
 			};
 
 			// Conditional Value

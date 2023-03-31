@@ -95,11 +95,11 @@ export async function createRule() {
 		);
 	}
 
-	if (result.dependencies.length) {
+	if (result.dependencies.length > 0) {
 		await installModule(result.dependencies);
 	}
 
-	if (result.devDependencies.length) {
+	if (result.devDependencies.length > 0) {
 		await installModule(result.devDependencies, true);
 	}
 }

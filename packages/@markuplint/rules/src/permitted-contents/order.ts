@@ -41,7 +41,7 @@ export function order(
 
 	const unmatchedResults: Result[] = [];
 
-	while (patterns.length && patterns[0]) {
+	while (patterns.length > 0 && patterns[0]) {
 		result = complexBranch(patterns[0], collection.unmatched, specs, options, depth);
 		collection.addMatched(result.matched);
 
@@ -100,7 +100,7 @@ export function order(
 		patterns.shift();
 	}
 
-	if (collection.unmatched.length) {
+	if (collection.unmatched.length > 0) {
 		orderLog('Result (UNEXPECTED_EXTRA_NODE): %s', collection.toString(true));
 		return {
 			type: 'UNEXPECTED_EXTRA_NODE',
@@ -112,7 +112,7 @@ export function order(
 		};
 	}
 
-	const resultType = collection.matched.length ? 'MATCHED' : 'MATCHED_ZERO';
+	const resultType = collection.matched.length > 0 ? 'MATCHED' : 'MATCHED_ZERO';
 
 	orderLog('Result (%s): %s', resultType, collection.toString(true));
 

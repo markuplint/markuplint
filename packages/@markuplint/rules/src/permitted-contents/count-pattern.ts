@@ -180,7 +180,7 @@ export function countPattern(
 			}),
 		};
 
-		if (!prevResult && collection.unmatched.length) {
+		if (!prevResult && collection.unmatched.length > 0) {
 			prevResult = matchedResult;
 			ptLog('continue⤴️ (add prev)');
 			continue;

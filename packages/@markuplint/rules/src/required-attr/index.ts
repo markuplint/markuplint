@@ -91,7 +91,7 @@ export default createRule<RequiredAttributes>({
 
 				const value = el.getAttribute(spec.name);
 
-				if (spec.values.length && value) {
+				if (spec.values.length > 0 && value) {
 					const matched = spec.values.some(pattern => match(value, pattern));
 					if (!matched) {
 						const expects = spec.values.length === 1 ? t(spec.values) : t('either {0}', t(spec.values));
