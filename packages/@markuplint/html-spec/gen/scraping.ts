@@ -259,7 +259,7 @@ function getItsHeading(
 	$start: cheerio.Cheerio,
 ) {
 	let $needle = upToPrevOrParent($start);
-	while ($needle.length) {
+	while ($needle.length > 0) {
 		if (isHeading($needle)) {
 			return $needle;
 		}
@@ -273,7 +273,7 @@ function upToPrevOrParent(
 	$start: cheerio.Cheerio,
 ) {
 	let $needle = $start.prev();
-	if (!$needle.length) {
+	if ($needle.length === 0) {
 		$needle = $start.parent();
 	}
 	return $needle;

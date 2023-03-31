@@ -146,7 +146,7 @@ function hasLabel(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<boolean, Options>,
 ) {
-	const hasHeading = !!el.querySelectorAll('h1, h2, h3, h4, h5, h6').length;
+	const hasHeading = el.querySelectorAll('h1, h2, h3, h4, h5, h6').length > 0;
 	if (hasHeading && el.matches('[aria-labelledby]')) {
 		return true;
 	}

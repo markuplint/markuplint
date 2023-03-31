@@ -39,7 +39,7 @@ export class ConfigProvider {
 
 		const plugins = await resolvePlugins(configSet.config.plugins);
 
-		if (this.#held.size) {
+		if (this.#held.size > 0) {
 			const extendHelds = Array.from(this.#held.values());
 			for (const held of extendHelds) {
 				const [, prefix, namespace, name] = held.match(/^([a-z]+:)([^/]+)(?:\/(.+))?$/) ?? [];

@@ -124,7 +124,8 @@ export default createRule<boolean, Option>({
 							scope: attr,
 							message: invalid.message,
 							line: (valueNode?.startLine ?? 0) + (invalid.loc?.line ?? 0),
-							col: invalid.loc?.line
+							col:
+								invalid.loc && invalid.loc.line > 0
 								? invalid.loc?.col + 1
 								: (valueNode?.startCol ?? 0) + (invalid.loc?.col ?? 0),
 							raw: invalid.loc?.raw ?? value,

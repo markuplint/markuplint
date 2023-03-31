@@ -124,7 +124,7 @@ export const types: Defs = {
 					reason: 'unexpected-space',
 				});
 			}
-			if (!tokens.length) {
+			if (tokens.length === 0) {
 				return unmatched(value, 'empty-token');
 			}
 			return matched();

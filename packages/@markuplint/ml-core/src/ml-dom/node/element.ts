@@ -3227,7 +3227,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#dom-element-hasattributes
 	 */
 	hasAttributes() {
-		return !!this.attributes.length;
+		return this.attributes.length > 0;
 	}
 
 	/**

@@ -236,7 +236,7 @@ class Parser {
 					isGhost: false,
 				};
 
-				if ('block' in originNode && originNode.block?.nodes.length) {
+				if ('block' in originNode && originNode.block && originNode.block.nodes.length > 0) {
 					tag.childNodes = this.traverse(originNode.block.nodes, tag);
 				}
 

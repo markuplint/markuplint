@@ -32,7 +32,7 @@ export const checkMIMEType: CustomSyntaxChecker<{
 		if (value.toLowerCase() === mimeType.essence) {
 			return matched();
 		}
-		if (!withoutParameters && mimeType.parameters.size) {
+		if (!withoutParameters && mimeType.parameters.size > 0) {
 			return matched();
 		}
 		const extraToken = value.slice(mimeType.essence.length);

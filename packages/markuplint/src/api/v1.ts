@@ -86,7 +86,7 @@ export async function lint_v1(options: {
 	const result = await lint(files, {
 		config,
 		configFile,
-		noSearchConfig: !options.files,
+		noSearchConfig: filePathList.length === 0,
 		rules: options.rules,
 		autoLoad: options.rulesAutoResolve ?? true,
 		locale: options.locale,

@@ -52,12 +52,13 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		const text = $li.text();
 		const isDeprecated = /deprecated/i.test(text) || undefined;
 		const $a = $li.find('a');
-		const name = $a.length
-			? $a
-					.text()
-					.replace(/\s*\(\s*state\s*\)\s*/i, '')
-					.trim()
-			: text.trim();
+		const name =
+			$a.length > 0
+				? $a
+						.text()
+						.replace(/\s*\(\s*state\s*\)\s*/i, '')
+						.trim()
+				: text.trim();
 		return {
 			name,
 			deprecated: isDeprecated,
@@ -307,7 +308,7 @@ function $$(
 	let $found = $el;
 	for (const selector of selectors) {
 		$found = $el.find(selector);
-		if ($found.length) {
+		if ($found.length > 0) {
 			return $found;
 		}
 	}

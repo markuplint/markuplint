@@ -223,7 +223,7 @@ function createExpectedObject(
 ): string | null {
 	const expectedObject: string[] = [];
 
-	if (matches.expects?.length) {
+	if (matches.expects && matches.expects.length > 0) {
 		expectedObject.push(
 			...matches.expects.map(expect => {
 				return expectValueToWord(t, expect, type);

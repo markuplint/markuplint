@@ -49,7 +49,7 @@ export function getThisOutline(
 	const $container = $('<div></div>');
 	let $next = $start.next();
 	const els = [$start.clone()];
-	while (!!$next.length && !$next.filter('h2').length) {
+	while ($next.length > 0 && $next.filter('h2').length === 0) {
 		els.push($next.clone());
 		$next = $next.next();
 	}
