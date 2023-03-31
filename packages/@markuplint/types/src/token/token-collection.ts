@@ -88,13 +88,13 @@ export class TokenCollection extends Array<Token> {
 	constructor(value?: string | number, typeOptions?: ReadonlyDeep<TokenCollectionOptions>) {
 		super();
 
-		this.disallowToSurroundBySpaces = typeOptions?.disallowToSurroundBySpaces || false;
-		this.allowEmpty = typeOptions?.allowEmpty || true;
-		this.ordered = typeOptions?.ordered || false;
-		this.unique = typeOptions?.unique || false;
-		this.caseInsensitive = typeOptions?.caseInsensitive || true;
+		this.disallowToSurroundBySpaces = typeOptions?.disallowToSurroundBySpaces ?? false;
+		this.allowEmpty = typeOptions?.allowEmpty ?? true;
+		this.ordered = typeOptions?.ordered ?? false;
+		this.unique = typeOptions?.unique ?? false;
+		this.caseInsensitive = typeOptions?.caseInsensitive ?? true;
 		this.number = typeOptions?.number;
-		this.separator = typeOptions?.separator || 'space';
+		this.separator = typeOptions?.separator ?? 'space';
 
 		if (typeof value === 'number') {
 			this.length = value;
@@ -291,7 +291,7 @@ export class TokenCollection extends Array<Token> {
 				passCount += result.passCount ?? 0;
 				if (prev && result.offset === 0 && result.length === 0) {
 					const { offset, line, column } = Token.shiftLocation(prev, cumulativeOffset);
-					firstUnmatched = firstUnmatched || {
+					firstUnmatched = firstUnmatched ?? {
 						...result,
 						offset,
 						line,
@@ -299,7 +299,7 @@ export class TokenCollection extends Array<Token> {
 					};
 				}
 				if (!prev && this.value.length === 0) {
-					firstUnmatched = firstUnmatched || {
+					firstUnmatched = firstUnmatched ?? {
 						...result,
 						reason: 'empty-token',
 						expects: undefined,
@@ -316,7 +316,7 @@ export class TokenCollection extends Array<Token> {
 						}
 					}
 				}
-				firstUnmatched = firstUnmatched || result;
+				firstUnmatched = firstUnmatched ?? result;
 			} else if (result && !firstUnmatched && result.matched) {
 				return result;
 			} else {

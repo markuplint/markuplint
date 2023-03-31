@@ -429,8 +429,7 @@ export function searchIDLAttribute(name: string) {
 				idlPropName.toLowerCase() === camelizedName.toLowerCase() ||
 				contentAttrName.toLowerCase() === name.toLowerCase() ||
 				hyphenize(idlPropName) === name.toLowerCase(),
-		) ||
-		[];
+		  ) ?? [];
 	return {
 		idlPropName,
 		contentAttrName,

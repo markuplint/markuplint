@@ -96,7 +96,7 @@ function nodeize(
 	const nextNode = null;
 	const location = getLocation(originNode);
 	if (!location) {
-		const prevToken = prevNode || parentNode;
+		const prevToken = prevNode ?? parentNode;
 		const startOffset = prevToken ? prevToken.endOffset : 0;
 		const endOffset = prevToken ? prevToken.endOffset : 0;
 		const startLine = prevToken ? prevToken.endLine : 0;
@@ -131,7 +131,7 @@ function nodeize(
 		return node;
 	}
 	const { startOffset, endOffset, startLine, endLine, startCol, endCol } = location;
-	const raw = rawHtml.slice(startOffset, endOffset || startOffset);
+	const raw = rawHtml.slice(startOffset, endOffset ?? startOffset);
 	switch (originNode.nodeName) {
 		case '#documentType': {
 			return {
@@ -202,7 +202,7 @@ function nodeize(
 			const tagLoc = 'startTag' in location ? location.startTag : null;
 			const startTagRaw = tagLoc
 				? rawHtml.slice(tagLoc.startOffset, tagLoc.endOffset)
-				: rawHtml.slice(startOffset, endOffset || startOffset);
+				: rawHtml.slice(startOffset, endOffset ?? startOffset);
 			const tagTokens = parseRawTag(
 				startTagRaw,
 				startLine,

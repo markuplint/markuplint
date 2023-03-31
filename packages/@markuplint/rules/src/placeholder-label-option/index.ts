@@ -44,7 +44,7 @@ function needPlaceholderLabelOption(
 		return false;
 	}
 
-	const size = select.getAttribute('size') || '1';
+	const size = select.getAttribute('size') ?? '1';
 	if (size !== '1') {
 		return false;
 	}
@@ -79,7 +79,7 @@ function hasPlaceholderLabelOption(
 	}
 
 	// > has a display size of 1
-	const size = select.getAttribute('size') || '1';
+	const size = select.getAttribute('size') ?? '1';
 	if (size !== '1') {
 		return false;
 	}

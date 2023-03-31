@@ -23,7 +23,7 @@ export function checkList(value: string, type: ReadonlyDeep<List>, ref?: string,
 			const { offset, line, column } = Token.shiftLocation(token, res.offset);
 			return {
 				...res,
-				partName: res.partName || 'the content of the list',
+				partName: res.partName ?? 'the content of the list',
 				offset,
 				line,
 				column,

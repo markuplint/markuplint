@@ -274,7 +274,7 @@ function arrayize(
 
 		// for ghost nodes
 		node.startOffset = node.startOffset || node.startOffset;
-		node.endOffset = node.endOffset || currentEndOffset;
+		node.endOffset = node.endOffset ?? currentEndOffset;
 
 		nodeOrders.push(node);
 	});

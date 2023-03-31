@@ -29,7 +29,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			'File list: %O',
 			fileList.map(f => f.path),
 		);
-		log('Config: %s', configFile || 'N/A');
+		log('Config: %s', configFile ?? 'N/A');
 		log('Fix option: %s', fix);
 	}
 

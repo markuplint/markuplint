@@ -2683,7 +2683,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			gap = gap + this.fixedNodeName.length - this.nodeName.length;
 		}
 		for (const attr of Array.from(this.attributes)) {
-			const startOffset = (attr.spacesBeforeName?.startOffset || attr.startOffset) - this.startOffset;
+			const startOffset = (attr.spacesBeforeName?.startOffset ?? attr.startOffset) - this.startOffset;
 			const fixedAttr = attr.toString();
 			if (attr.originRaw !== fixedAttr) {
 				fixed = stringSplice(fixed, startOffset + gap, attr.originRaw.length, fixedAttr);
@@ -3377,7 +3377,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			nodeName = pretenderConfig.as;
 		} else {
 			nodeName = pretenderConfig.as.element;
-			namespace = pretenderConfig.as.namespace || namespace;
+			namespace = pretenderConfig.as.namespace ?? namespace;
 			if (pretenderConfig.as.inheritAttrs) {
 				attributes.push(...this._astToken.attributes);
 			}

@@ -11,7 +11,7 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 		cacheMap.clear();
 	}
 
-	const { localNameWithNS } = resolveNamespace(localName, namespace || undefined);
+	const { localNameWithNS } = resolveNamespace(localName, namespace ?? undefined);
 
 	const cache = cacheMap.get(localNameWithNS);
 

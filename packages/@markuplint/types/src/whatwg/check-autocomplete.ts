@@ -364,7 +364,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		candidate = getCandidate(head.value, autofillFieldNames, contactingTokens, contactableFieldNames);
 	}
 
-	candidate = candidate || getCandidate(head.value, autofillFieldNames);
+	candidate = candidate ?? getCandidate(head.value, autofillFieldNames);
 
 	if (candidate) {
 		acLog('[Unmatched ("%s")] Unexpected token: "%s", Do you mean "%s"? ', value, head.value, candidate);

@@ -12,7 +12,7 @@ export function attr(
 	rawHTML: string,
 ): MLASTAttr {
 	const beforeHtml = rawHTML.substr(0, attr.range[0]);
-	const spacesBeforeNameStr = (beforeHtml.match(/\s+$/) || [''])[0];
+	const spacesBeforeNameStr = (beforeHtml.match(/\s+$/) ?? [''])[0];
 	const startOffset = attr.range[0] - spacesBeforeNameStr.length;
 	const endOffset = attr.range[1];
 	const attrLoc = sliceFragment(rawHTML, startOffset, endOffset);

@@ -27,7 +27,7 @@ export function checkMultiTypes(value: string, checks: readonly CustomSyntaxChec
 		}
 	}
 
-	const result = unmatched || matched();
+	const result = unmatched ?? matched();
 
 	log('%d checks result: %O', checks.length, result);
 

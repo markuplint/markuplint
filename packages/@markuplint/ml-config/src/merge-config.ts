@@ -77,10 +77,10 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 
 function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 	if (a == null) {
-		return b || undefined;
+		return b ?? undefined;
 	}
 	if (b == null) {
-		return a || undefined;
+		return a ?? undefined;
 	}
 	const res = deepmerge<T>(a, b);
 	deleteUndefProp(res);

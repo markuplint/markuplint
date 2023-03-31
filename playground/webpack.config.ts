@@ -169,7 +169,7 @@ async function htmlConfig() {
 export default async (_: any, argv: Configuration): Promise<Configuration | Configuration[]> => {
 	const { mode } = argv;
 
-	const config = await build(mode || 'development');
+	const config = await build(mode ?? 'development');
 
 	return config;
 };

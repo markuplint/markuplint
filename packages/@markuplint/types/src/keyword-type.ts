@@ -56,8 +56,8 @@ function _checkKeywordType(value: string, type: KeywordDefinedType): Result {
 	if (!matches.matched) {
 		return {
 			...matches,
-			ref: matches.ref || def.ref,
-			expects: matches.expects || def.expects,
+			ref: matches.ref ?? def.ref,
+			expects: matches.expects ?? def.expects,
 		};
 	}
 	return matches;

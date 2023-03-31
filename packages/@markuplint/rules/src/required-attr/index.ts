@@ -98,7 +98,7 @@ export default createRule<RequiredAttributes>({
 						const message = t('{0} expects {1}', t('the "{0*}" {1}', spec.name, 'attribute'), expects);
 						const attrToken = el.getAttributeToken(spec.name);
 						const valueToken = attrToken[0]?.valueNode;
-						const token = valueToken || attrToken[0];
+						const token = valueToken ?? attrToken[0];
 						if (token) {
 							report({
 								scope: {

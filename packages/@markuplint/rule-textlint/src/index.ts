@@ -18,7 +18,7 @@ export default createRule<boolean, Option>({
 		const html = context.document.toString();
 		for (const result of textlintResult.messages) {
 			const message = context.translate(`Invalid text: ${result.message}`);
-			const [s, e] = result.fix?.range || [result.index, result.index];
+			const [s, e] = result.fix?.range ?? [result.index, result.index];
 			const raw = html.slice(s, e) ?? '';
 			context.report({
 				message,

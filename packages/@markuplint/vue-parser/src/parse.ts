@@ -111,7 +111,7 @@ function nodeize(
 	const endLine = originNode.loc.end.line;
 	const startCol = originNode.loc.start.column + 1;
 	const endCol = originNode.loc.end.column + 1;
-	const raw = rawHtml.slice(startOffset, endOffset || startOffset);
+	const raw = rawHtml.slice(startOffset, endOffset ?? startOffset);
 
 	switch (originNode.type) {
 		case 'VText': {

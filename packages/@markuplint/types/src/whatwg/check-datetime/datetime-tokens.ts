@@ -157,9 +157,9 @@ export const datetimeTokenCheck: Record<
 		}
 
 		// Set the leap year if _year is null
-		const year = this._year || 2000;
+		const year = this._year ?? 2000;
 		const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-		const month = this._month || 1;
+		const month = this._month ?? 1;
 		const dayOfMonth = (daysOfMonth[month] ?? 0) + (month === 2 && isLeap ? 1 : 0);
 		const _date = date.toNumber();
 

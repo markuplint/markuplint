@@ -9,7 +9,7 @@ export function getSpecByTagName<K extends keyof ElementSpec = keyof ElementSpec
 	localName: string,
 	namespace: string | null,
 ) {
-	const { localNameWithNS } = resolveNamespace(localName, namespace || undefined);
+	const { localNameWithNS } = resolveNamespace(localName, namespace ?? undefined);
 	let spec: Pick<ElementSpec, 'name' | K> | null | undefined = cache.get(localNameWithNS);
 	if (spec !== undefined) {
 		return spec;

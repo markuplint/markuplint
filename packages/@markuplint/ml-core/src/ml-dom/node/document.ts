@@ -146,7 +146,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 
 		this.isFragment = ast.isFragment;
 		this.specs = schemaToSpec(schemas);
-		this.booleanish = options?.booleanish || false;
+		this.booleanish = options?.booleanish ?? false;
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
 
@@ -3142,7 +3142,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 					return;
 				}
 
-				const selector = nodeRule.selector || nodeRule.regexSelector;
+				const selector = nodeRule.selector ?? nodeRule.regexSelector;
 
 				const matches = matchSelector(selectorTarget, selector);
 
@@ -3193,7 +3193,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 					}
 					const nodeRuleRules = nodeRule.rules;
 
-					const selector = nodeRule.selector || nodeRule.regexSelector;
+					const selector = nodeRule.selector ?? nodeRule.regexSelector;
 					if (!selector) {
 						return;
 					}

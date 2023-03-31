@@ -167,7 +167,7 @@ function getProperty(
 	$: cheerio.Root,
 	prop: string,
 ) {
-	const $tr = $(MAIN_ARTICLE_SELECTOR).find('table.properties tr') || $('#Technical_summary').next('table tr');
+	const $tr = $(MAIN_ARTICLE_SELECTOR).find('table.properties tr') ?? $('#Technical_summary').next('table tr');
 	const $th = $(
 		$tr
 			.find('th')

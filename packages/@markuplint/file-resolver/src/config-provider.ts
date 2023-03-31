@@ -96,7 +96,7 @@ export class ConfigProvider {
 	}
 
 	set(config: Config, key?: string) {
-		key = key || uuid();
+		key = key ?? uuid();
 		this.#store.set(key, config);
 		return key;
 	}

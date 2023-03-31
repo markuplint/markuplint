@@ -111,7 +111,7 @@ export function attrCheck(
 
 	const invalid = invalidList.find(i => i);
 
-	return invalid || false;
+	return invalid ?? false;
 }
 
 export function valueCheck(

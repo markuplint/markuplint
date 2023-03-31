@@ -264,7 +264,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 
 		const configFilePathsFromTarget = this.#options?.noSearchConfig
 			? defaultConfigKey ?? null
-			: (await this.#configProvider.search(this.#file)) || defaultConfigKey;
+			: (await this.#configProvider.search(this.#file)) ?? defaultConfigKey;
 		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
 		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 

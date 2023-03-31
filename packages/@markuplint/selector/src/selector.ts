@@ -229,7 +229,7 @@ class SelectorTarget {
 		const result = this._match(el, scope, count);
 		if (selLog.enabled) {
 			const nodeName = el.nodeName;
-			const selector = this.#combinedFrom?.target.toString() || this.toString();
+			const selector = this.#combinedFrom?.target.toString() ?? this.toString();
 			const combinator = result.combinator ? ` ${result.combinator}` : '';
 			selLog('The %s element by "%s" => %s (%d)', nodeName, `${selector}${combinator}`, result.matched, count);
 			if (selector === ':scope') {
@@ -870,7 +870,7 @@ function isScope(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	scope: ParentNode | null,
 ) {
-	return el === scope || el.parentNode === null;
+	return el === scope ?? el.parentNode === null;
 }
 
 function getDescendants(
