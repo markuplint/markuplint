@@ -121,7 +121,8 @@ export class Token {
 	}
 
 	toNumber() {
-		return parseFloat(this.value);
+		const num = parseFloat(this.value);
+		return isNaN(num) ? 0 : num;
 	}
 
 	unmatched(
