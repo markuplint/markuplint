@@ -83,7 +83,7 @@ export class Token {
 		if (typeof value === 'string') {
 			const a = caseInsensitive ? this.value.toLowerCase() : this.value;
 			const b = caseInsensitive ? value.toLowerCase() : value;
-			return a.indexOf(b) !== -1;
+			return a.includes(b);
 		}
 		if (value instanceof RegExp) {
 			const pattern = new RegExp(value, caseInsensitive ? 'i' : '');

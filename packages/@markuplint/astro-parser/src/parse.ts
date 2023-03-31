@@ -312,7 +312,7 @@ function parseElement(
 		const startTagEndOffset = childrenStart;
 		const tag = rawHtml.slice(startTagStartOffset, startTagEndOffset);
 		const expectedCloseTag = `</${originNode.name}>`;
-		if (tag.search(expectedCloseTag) !== -1) {
+		if (tag.includes(expectedCloseTag)) {
 			childrenStart -= expectedCloseTag.length;
 			childrenEnd = childrenStart;
 		}

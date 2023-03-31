@@ -619,7 +619,7 @@ function attrMatch(
 					break;
 				}
 				case '*=': {
-					if (valueOfEl.indexOf(value) === -1) {
+					if (!valueOfEl.includes(value)) {
 						return false;
 					}
 					break;
