@@ -39,6 +39,18 @@
 		"@typescript-eslint/consistent-type-imports": 1,
 		"@typescript-eslint/require-await": "error",
 		"@typescript-eslint/no-floating-promises": "error",
+		"@typescript-eslint/strict-boolean-expressions": [
+			"error",
+			{
+				"allowString": true,
+				"allowNumber": false,
+				"allowNullableObject": true,
+				"allowNullableEnum": false,
+				"allowNullableString": true,
+				"allowNullableBoolean": true,
+				"allowAny": true
+			}
+		],
 		"@typescript-eslint/member-ordering": [
 			"warn",
 			{
