@@ -80,7 +80,7 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 			}
 		}
 	} else if (mode === 'recommended') {
-		config.extends = [...(config.extends || []), 'markuplint:recommended'];
+		config.extends = [...(config.extends ?? []), 'markuplint:recommended'];
 	} else {
 		const ruleNames = Object.keys(defaultRules);
 		for (const ruleName of ruleNames) {

@@ -67,7 +67,7 @@ function provideChildNodesToPSBlock(
 				return;
 			}
 
-			psBlockNode.childNodes = psBlockNode.childNodes || [];
+			psBlockNode.childNodes = psBlockNode.childNodes ?? [];
 
 			if (candidate.parentNode) {
 				return;

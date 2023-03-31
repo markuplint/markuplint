@@ -21,7 +21,7 @@ export function attr(
 	if (attr.value === null || attr.value.type === 'Literal') {
 		ast = attrTokenizer(attrLoc.raw, attrLoc.startLine, attrLoc.startCol, attrLoc.startOffset);
 	} else {
-		const spacesBeforeNameLine = attr.loc.start.line - (spacesBeforeNameStr.match(/\n/g) || []).length;
+		const spacesBeforeNameLine = attr.loc.start.line - (spacesBeforeNameStr.match(/\n/g) ?? []).length;
 		const spacesBeforeNameLastBreakIndex = spacesBeforeNameStr.lastIndexOf('\n');
 		const spacesBeforeNameColumn =
 			spacesBeforeNameLastBreakIndex === -1

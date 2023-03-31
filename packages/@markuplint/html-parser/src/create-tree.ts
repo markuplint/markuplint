@@ -320,7 +320,7 @@ function nodeize(
  * - If node has "content" property then parse as document fragment.
  */
 function getChildNodes(rootNode: P5Node | P5Document | P5Fragment) {
-	return rootNode.content ? rootNode.content.childNodes : rootNode.childNodes || [];
+	return rootNode.content ? rootNode.content.childNodes : rootNode.childNodes ?? [];
 }
 
 function hasLocation(node: P5Node): node is P5LocatableNode {

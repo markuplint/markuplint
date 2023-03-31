@@ -70,7 +70,7 @@ export function keys<T, K = keyof T>(object: T): K[] {
 }
 
 export function getName(origin: string) {
-	const [, ns, localName] = origin.match(/^(?:(svg)_)?([a-z0-9_]+)/i) || [];
+	const [, ns, localName] = origin.match(/^(?:(svg)_)?([a-z0-9_]+)/i) ?? [];
 	const name = localName ?? origin;
 	const ml = ns === 'svg' ? 'SVG' : 'HTML';
 	const namespace: 'http://www.w3.org/2000/svg' | undefined = ns === 'svg' ? 'http://www.w3.org/2000/svg' : undefined;

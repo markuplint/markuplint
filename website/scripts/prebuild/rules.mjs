@@ -56,7 +56,7 @@ async function getDocFile(filePath, value, options, severity, inherit) {
   frontMatter.custom_edit_url = `${editUrlBase}/${RULES_DIR}/${ruleName}/${fileBase}`;
 
   const fileName = basename(filePath, extname(filePath));
-  const lang = (/^README(?:\.([a-z]+))?$/.exec(fileName) || [])[1];
+  const lang = (/^README(?:\.([a-z]+))?$/.exec(fileName) ?? [])[1];
 
   const id = frontMatter.id ?? inherit?.id;
 

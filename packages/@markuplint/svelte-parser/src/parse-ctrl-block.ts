@@ -34,7 +34,7 @@ export function parseCtrlBlock(
 		);
 	}
 
-	const children = originNode.children || [];
+	const children = originNode.children ?? [];
 	const reEndTag = new RegExp('{/each}$', 'i');
 	const startTagEndOffset = children.length
 		? children[0]?.start ?? 0
@@ -134,7 +134,7 @@ function parseIfBlock(
 	nextNode: MLASTNode | null,
 	options?: ParserOptions,
 ) {
-	const children = originNode.children || [];
+	const children = originNode.children ?? [];
 	const startTagEndOffset = children[0]?.start ?? tokenStartOffset;
 	const startTagLocation = sliceFragment(rawHtml, tokenStartOffset, startTagEndOffset);
 

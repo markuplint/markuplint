@@ -890,7 +890,7 @@ function getSiblings(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 ) {
-	return Array.from(el.parentElement?.children || []);
+	return Array.from(el.parentElement?.children ?? []);
 }
 
 function getSpecificity(

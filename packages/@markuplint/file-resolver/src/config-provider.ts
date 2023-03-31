@@ -39,7 +39,7 @@ export class ConfigProvider {
 		if (this.#held.size) {
 			const extendHelds = Array.from(this.#held.values());
 			for (const held of extendHelds) {
-				const [, prefix, namespace, name] = held.match(/^([a-z]+:)([^/]+)(?:\/(.+))?$/) || [];
+				const [, prefix, namespace, name] = held.match(/^([a-z]+:)([^/]+)(?:\/(.+))?$/) ?? [];
 
 				switch (prefix) {
 					case 'plugin:': {
@@ -108,7 +108,7 @@ export class ConfigProvider {
 		}
 
 		if (isPreset(filePath)) {
-			const [, name] = filePath.match(/^markuplint:(.+)$/i) || [];
+			const [, name] = filePath.match(/^markuplint:(.+)$/i) ?? [];
 			const config = await getPreset(name ?? filePath);
 			const pathResolvedConfig = this._pathResolve(config, filePath);
 

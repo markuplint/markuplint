@@ -194,7 +194,7 @@ export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
 		}
 
 		// Exclude
-		const excludeFiles = configSet.config.excludeFiles || [];
+		const excludeFiles = configSet.config.excludeFiles ?? [];
 		for (const excludeFile of excludeFiles) {
 			if (this.#file.matches(excludeFile)) {
 				this.emit('exclude', this.#file.path, excludeFile);

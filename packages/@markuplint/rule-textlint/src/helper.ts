@@ -17,7 +17,7 @@ export const lintText = async (
 		...option,
 		ext: '.html',
 		plugins: [
-			...(option.plugins || []),
+			...(option.plugins ?? []),
 			{
 				pluginId: 'html',
 				plugin: TextlintPluginHTML,

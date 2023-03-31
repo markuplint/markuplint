@@ -13,7 +13,7 @@ export function getExplicitRole(
 	version: ARIAVersion,
 ): ComputedRole {
 	const roleValue = el.getAttribute('role');
-	const roleNames = roleValue?.toLowerCase().trim().split(/\s+/g) || [];
+	const roleNames = roleValue?.toLowerCase().trim().split(/\s+/g) ?? [];
 	const permittedRoles = getPermittedRoles(el, version, specs);
 	const { namespaceURI } = resolveNamespace(el.localName, el.namespaceURI);
 

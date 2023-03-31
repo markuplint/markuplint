@@ -215,7 +215,7 @@ export abstract class MLNode<
 			this.is(this.MARKUPLINT_PREPROCESSOR_BLOCK)
 		) {
 			// @ts-ignore
-			const astChildren: MLASTNode[] = this._astToken.childNodes || [];
+			const astChildren: MLASTNode[] = this._astToken.childNodes ?? [];
 			const childNodes = astChildren
 				.map(node => nodeStore.getNode<typeof node, T, O>(node))
 				.filter((node): node is MLChildNode<T, O> => isChildNode(node));
