@@ -1,6 +1,7 @@
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { createRule, getAttrSpecs, ariaSpecs } from '@markuplint/ml-core';
+import { decodeEntities } from '@markuplint/shared';
 
 const HYPERLINK_SELECTOR = 'a[href], area[href]';
 
@@ -30,7 +31,7 @@ export default createRule({
 				hasDynamicId = true;
 			}
 			if (attr.valueType !== 'code') {
-				idList.add(attr.value);
+				idList.add(decodeEntities(attr.value));
 			}
 		});
 
@@ -47,7 +48,7 @@ export default createRule({
 				hasDynamicName = true;
 			}
 			if (attr.valueType !== 'code') {
-				nameList.add(attr.value);
+				nameList.add(decodeEntities(attr.value));
 			}
 		});
 
