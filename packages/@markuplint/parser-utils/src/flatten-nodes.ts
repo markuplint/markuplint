@@ -125,14 +125,25 @@ export function flattenNodes(
 	const result: MLASTNode[] = [];
 	nodeOrders.forEach(node => {
 		const prevNode = result[result.length - 1] ?? null;
-		if (node.type === 'text' && prevNode && prevNode.type === 'text') {
+		if (node.type === 'text' && prevNode?.type === 'text') {
 			prevNode.raw = prevNode.raw + node.raw;
 			prevNode.endOffset = node.endOffset;
 			prevNode.endLine = node.endLine;
 			prevNode.endCol = node.endCol;
 			prevNode.nextNode = node.nextNode;
-			if (prevNode.parentNode && prevNode.parentNode.childNodes) {
-				prevNode.parentNode.childNodes = prevNode.parentNode.childNodes.filter(n => n.uuid !== node.uuid);
+			if (prevNode.parentNode) {
+				if (prevNode.parentNode.childNodes) {
+					if (
+						prevNode.parentNode.childNodes.findIndex(
+							currentChild => currentChild.uuid === prevNode.uuid,
+						) === -1
+					) {
+						prevNode.parentNode.childNodes.unshift(prevNode);
+					} else {
+						prevNode.parentNode.childNodes = [prevNode];
+					}
+				}
+				prevNode.parentNode.childNodes = prevNode.parentNode.childNodes?.filter(n => n.uuid !== node.uuid);
 			}
 			if (node.nextNode) {
 				node.nextNode.prevNode = prevNode;
