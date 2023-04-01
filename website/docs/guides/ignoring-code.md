@@ -14,18 +14,20 @@ See [Applying to some](./applying-rules/#applying-to-some).
 ```json class=config
 {
   "rules": {
-    "any-rule": true
+    "[[target-rule-id]]": true
   },
   "nodeRules": [
     {
       "selector": ".ignore",
       "rules": {
-        "any-rule": false
+        "[[target-rule-id]]": false
       }
     }
   ]
 }
 ```
+
+Replace the `[[target-rule-id]]` portion with [the rule ID](/docs/rules) you would like to disable as appropriate.
 
 ### Overriding to disable rules
 
@@ -34,14 +36,16 @@ Use [`overrides`](/docs/configuration/properties#overrides) property on the conf
 ```json class=config
 {
   "rules": {
-    "any-rule": true
+    "[[target-rule-id]]": true
   },
   "overrides": {
     "./path/to/**/*": {
       "rules": {
-        "any-rule": false
+        "[[target-rule-id]]": false
       }
     }
   }
 }
 ```
+
+Replace the `[[target-rule-id]]` portion with [the rule ID](/docs/rules) you would like to disable as appropriate.
